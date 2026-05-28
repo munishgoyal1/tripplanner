@@ -1,0 +1,86 @@
+REQUIREMENTS LOG — multiagent personal assistant
+=================================================
+This is a running log of all user requirements, decisions, and feature requests.
+Append new entries at the bottom with a date stamp.
+
+=== 2026-05-28 — Session 1: Project bootstrap ===
+
+USER: munishgoyal1 (Munish Goyal)
+GITHUB: https://github.com/munishgoyal1/multiagent (private)
+AZURE ACCOUNT: munishgoyal1@gmail.com
+
+--- VISION ---
+Build a personal multi-agent assistant for day-to-day life tasks.
+Not a toy — a real system the user relies on daily.
+
+--- INITIAL REQUIREMENTS ---
+1. Agent that acts as a personal assistant for daily tasks
+2. Help with TODOs — track, prioritize, remind
+3. Send text messages to people (follow-up contacts)
+4. Send emails to people
+5. Make/manage calls to people for follow-ups
+6. Read and connect with user's Google account (Gmail, Calendar, Keep)
+7. Help plan trips properly (flights, hotels, itineraries)
+8. Help with budgeting (track expenses, summaries)
+9. Multi-agent architecture with sub-agents and orchestration
+10. Host on user's personal Azure account (munishgoyal1@gmail.com)
+
+--- TECH STACK DECISIONS ---
+- Language: Python 3.11+ (best AI/agent ecosystem, Google API libs, Twilio SDK)
+- Agent framework: LangGraph (mature multi-agent orchestration, state mgmt)
+- LLM: Azure OpenAI GPT-4o (user's Azure account)
+- Web API: FastAPI + Uvicorn
+- Hosting target: Azure Container Apps (serverless, scales to zero)
+- Persistence: Azure Cosmos DB (future) / in-memory (current)
+- Google APIs: google-api-python-client + google-auth-oauthlib
+- Google Keep: gkeepapi (unofficial, no official API exists)
+- SMS/Calls: Twilio
+- CLI: Rich library
+
+--- SUB-AGENTS CREATED ---
+1. Todo Agent — add/list/complete/delete + auto-scan from 4 sources
+2. Comms Agent — send SMS, email, initiate calls
+3. Calendar Agent — list events, create events, find free slots
+4. Trip Planner Agent — search flights/hotels, create itineraries
+5. Budget Agent — add/list expenses, budget summary
+6. General fallback — direct LLM answers
+
+--- ORCHESTRATION ---
+- LangGraph StateGraph with router node
+- Router uses LLM to classify intent → routes to correct sub-agent
+- Each sub-agent has tools bound via bind_tools()
+- ToolNode executes tool calls
+- Conditional edges: sub-agent → tools → end
+
+--- FEATURE: TODO BUILDER (2026-05-28) ---
+Requirement: "Build a todo builder looking at my google keep, email,
+whatsapp and my call records"
+
+Implementation:
+- 4 data source connectors:
+  a) Google Keep (gkeepapi) — reads notes & checklists
+  b) Gmail (official API) — scans inbox for action items
+  c) WhatsApp — parses exported chat .txt files (no personal API exists)
+  d) Call records — Google Takeout JSON + generic CSV
+- LLM-powered TODO extractor (todo_extractor.py):
+  - Combines text from all sources
+  - Sends to GPT-4o with extraction prompt
+  - Returns structured JSON: title, priority, due, source, context, people
+  - Deduplicates before adding to store
+- 5 new scan tools added to Todo Agent:
+  scan_all_sources, scan_keep, scan_gmail, scan_whatsapp, scan_calls
+- Data directories: data/whatsapp/, data/calls/ (gitignored, personal data)
+
+--- SETUP REQUIREMENTS FOR EACH SOURCE ---
+Google Keep: GOOGLE_KEEP_EMAIL + GOOGLE_KEEP_TOKEN (or APP_PASSWORD) in .env
+Gmail: OAuth credentials.json from Google Cloud Console, first run opens browser
+WhatsApp: Export chats from phone, drop .txt files in data/whatsapp/
+Call records: Google Takeout JSON or CSV in data/calls/
+Azure OpenAI: AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_API_KEY in .env
+
+--- DOCUMENTATION REQUIREMENT (2026-05-28) ---
+Keep a running requirements log (this file) and self-sufficient docs
+so any agent in any future session can reload context and continue work.
+
+=== END OF SESSION 1 ENTRIES ===
+(Append new requirements below this line)
