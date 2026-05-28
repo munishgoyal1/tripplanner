@@ -18,10 +18,15 @@ class Settings(BaseModel):
     azure_openai_deployment: str = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
     azure_openai_api_version: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
 
-    # Google
+    # Google OAuth (Gmail, Calendar)
     google_credentials_path: str = os.getenv(
         "GOOGLE_CREDENTIALS_PATH", "credentials/google_credentials.json"
     )
+
+    # Google Keep (uses separate auth — no official API)
+    google_keep_email: str = os.getenv("GOOGLE_KEEP_EMAIL", "")
+    google_keep_token: str = os.getenv("GOOGLE_KEEP_TOKEN", "")
+    google_keep_app_password: str = os.getenv("GOOGLE_KEEP_APP_PASSWORD", "")
 
     # Twilio
     twilio_account_sid: str = os.getenv("TWILIO_ACCOUNT_SID", "")

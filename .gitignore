@@ -12,6 +12,10 @@ env/
 .env
 credentials/
 
+# Data directories (contain personal data)
+data/whatsapp/
+data/calls/
+
 # IDE
 .vscode/
 .idea/

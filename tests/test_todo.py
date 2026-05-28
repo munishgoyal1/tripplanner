@@ -11,6 +11,7 @@ def test_add_todo():
     result = add_todo.invoke({"title": "Buy groceries", "priority": "high"})
     assert "Added TODO #1" in result
     assert len(_todos) == 1
+    assert _todos[0]["source"] == "manual"
 
 
 def test_list_todos_empty():
