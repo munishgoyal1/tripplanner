@@ -84,3 +84,39 @@ so any agent in any future session can reload context and continue work.
 
 === END OF SESSION 1 ENTRIES ===
 (Append new requirements below this line)
+
+=== 2026-05-28 — Session 2: Trip Planner Upgrade ===
+
+--- REQUIREMENT ---
+Improve Trip Planner Agent to be preference-aware:
+- Suggested itineraries, transport, and hotel options based on saved/inferred user preferences
+- Persistent user preference memory (JSON file at ~/.multiagent/user_preferences.json)
+- Family configuration (adults, children with ages, elderly, pets)
+- Trip style tracking (leisure | balanced | packed_sightseeing | adventure)
+- Budget level, hotel preferences (stars, amenities, chains, room type)
+- Transport preferences (flight class, direct flights, train/car/bus openness)
+- Food preferences (dietary restrictions, cuisine likes/dislikes)
+- Past trip history with ratings for learning
+- Proactive: agent loads preferences first, generates complete suggestions, only asks what it can't infer
+
+--- IMPLEMENTATION ---
+New files:
+- src/multiagent/tools/user_preferences.py — persistent JSON-backed preference store
+  Functions: load_preferences, save_preferences, update_preferences, add_past_trip
+  Deep-merge logic so partial updates don't wipe existing data
+- tests/test_trip.py — 14 tests covering preferences store + all 6 trip tools
+
+Updated files:
+- src/multiagent/agents/trip_agent.py — fully rewritten with 6 tools:
+  1. get_travel_preferences — load saved prefs
+  2. save_travel_preferences — update prefs from conversation
+  3. record_past_trip — build trip history for learning
+  4. suggest_itinerary — preference-aware day-by-day planning
+  5. suggest_hotels — family-size & budget aware hotel suggestions
+  6. suggest_transport — multi-modal transport comparison
+- README.md — updated capabilities table, project structure, roadmap
+- .github/copilot-instructions.md — updated current state
+
+No graph.py changes needed — exports kept same names (TRIP_SYSTEM_PROMPT, TRIP_TOOLS)
+
+=== END OF SESSION 2 ENTRIES ===

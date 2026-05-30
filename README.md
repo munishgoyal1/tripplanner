@@ -39,7 +39,7 @@ by a shared ToolNode, and results flow back to the user.
 | **Todo** | add, list, complete, delete, scan_all_sources, scan_keep, scan_gmail, scan_whatsapp, scan_calls | Working (in-memory) |
 | **Comms** | send_sms, send_email, initiate_call | Twilio wired, Gmail stub |
 | **Calendar** | list_events, create_event, find_free_slots | Google API stub |
-| **Trip Planner** | search_flights, search_hotels, create_itinerary | Stubs |
+| **Trip Planner** | get/save_travel_preferences, suggest_itinerary, suggest_hotels, suggest_transport, record_past_trip | Working (preference-aware) |
 | **Budget** | add_expense, list_expenses, budget_summary | Working (in-memory) |
 
 ### TODO Builder (key feature)
@@ -164,7 +164,7 @@ multiagent/
 │   │   ├── todo_agent.py         # 9 tools: manual CRUD + 5 source scanners
 │   │   ├── comms_agent.py        # SMS, email, phone calls
 │   │   ├── calendar_agent.py     # Google Calendar (stub)
-│   │   ├── trip_agent.py         # Trip planning (stub)
+│   │   ├── trip_agent.py         # Preference-aware trip planning (6 tools)
 │   │   └── budget_agent.py       # Expense tracking
 │   │
 │   └── tools/
@@ -173,11 +173,13 @@ multiagent/
 │       ├── gmail_connector.py    # Gmail inbox scanner
 │       ├── whatsapp_parser.py    # WhatsApp .txt chat parser
 │       ├── call_records_parser.py# Call log JSON/CSV parser
-│       └── todo_extractor.py     # LLM-powered TODO extraction engine
+│       ├── todo_extractor.py     # LLM-powered TODO extraction engine
+│       └── user_preferences.py  # Persistent JSON user preference store
 │
 ├── tests/
 │   ├── test_todo.py
 │   ├── test_budget.py
+│   ├── test_trip.py
 │   ├── test_whatsapp.py
 │   └── test_call_records.py
 │
@@ -206,6 +208,7 @@ pytest
 - [ ] Wire up Calendar agent with Google Calendar API
 - [ ] Replace in-memory stores with Azure Cosmos DB
 - [ ] Add contacts database (names ↔ phone/email mapping)
+- [x] Add user preference memory for trip planner
 - [ ] Implement real flight/hotel search APIs for trip planner
 - [ ] Deploy to Azure Container Apps via `azd`
 - [ ] Add a simple web UI (Streamlit or React)

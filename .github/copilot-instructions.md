@@ -47,6 +47,9 @@ TODOs, messaging, calendar, trip planning, and budgeting.
 ## Current State (last updated 2026-05-28)
 - 5 sub-agents: todo, comms, calendar, trip, budget
 - Todo agent has 9 tools: 4 manual CRUD + 5 source scanners
+- Trip agent has 6 tools: preference CRUD + itinerary/hotel/transport suggestions
+- Persistent user preferences at ~/.multiagent/user_preferences.json
+  (family config, trip style, budget, hotel/transport/food prefs, past trip history)
 - 4 source connectors: Google Keep, Gmail, WhatsApp parser, Call records parser
 - LLM-powered TODO extractor combines all sources
 - In-memory storage (Cosmos DB planned)
