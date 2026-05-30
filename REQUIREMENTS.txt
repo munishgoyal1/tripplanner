@@ -220,3 +220,76 @@ Production: https://api.amadeus.com (real bookings, requires paid plan)
   TestActivityHelpers (2)
 
 === END OF SESSION 3 ENTRIES ===
+
+
+=== 2026-05-30 — Session 4: Rich data sources (Google Places + Tavily) ===
+
+USER QUESTION:
+"Will it help to use rich travel related data sources like TripAdvisor or other
+such travel websites and reviews and using past itineraries, or is the LLM
+capable to provide right answers?"
+
+DECISION:
+LLM alone is INSUFFICIENT. Knowledge is stale (training cutoff), prone to
+hallucinated ratings, no fresh seasonal advice, no real review snippets.
+Added two complementary data sources with free tiers:
+
+1. Google Places API (New) v1 — ratings, reviews, restaurants, attractions
+2. Tavily Search API — fresh web content (recent guides, seasonal tips)
+
+DEFERRED: TripAdvisor Content API — requires application approval, B2B-only
+for non-affiliates. Added to roadmap.
+
+--- IMPLEMENTATION (Session 4) ---
+
+NEW FILES:
+1. src/multiagent/tools/google_places.py
+   - is_configured() helper
+   - search_places_with_reviews(query, city, max_results)
+     POST /places:searchText with X-Goog-FieldMask
+   - get_place_reviews(place_id, max_reviews)
+     GET /places/{id} with reviews + editorialSummary
+   - nearby_restaurants(city, cuisine, dietary, min_rating, max_results)
+     Text search + client-side rating filter, sorted by popularity
+
+2. src/multiagent/tools/web_search.py
+   - is_configured() helper
+   - web_search(query, max_results, search_depth)
+     POST https://api.tavily.com/search with include_answer=True
+
+CONFIG (src/multiagent/config.py):
+- Added google_places_api_key (env: GOOGLE_PLACES_API_KEY)
+- Added tavily_api_key (env: TAVILY_API_KEY)
+- Both default to empty; tools return friendly "not configured" when missing
+
+AGENT (src/multiagent/agents/trip_agent.py):
+- 14 tools → 18 tools
+- Imports search_places_with_reviews, get_place_reviews, nearby_restaurants,
+  web_search
+- STEP 3 of system prompt expanded to call Google Places for hotel ratings
+  and restaurants in parallel with Amadeus searches
+- Rule #2 strengthened: never hallucinate ratings; always cite real Google
+  ratings (e.g. "4.6 stars, 1.2k reviews")
+
+TESTS (tests/test_trip.py):
+- Added TestGooglePlacesHelpers: _format_place full/minimal, _format_reviews
+  truncates text at 300 chars, not-configured returns friendly message for
+  search_places_with_reviews and nearby_restaurants
+- Added TestWebSearchHelpers: not-configured returns friendly message
+- 26 tests → 31 tests, all passing in ~0.8s
+- No network calls; all tests use monkeypatch on get_settings
+
+DOCS:
+- README.md: updated diagram (18 tools, 4 tool families), capability table,
+  setup sections for both new APIs with free-tier limits, project tree, and
+  roadmap (marked done + added TripAdvisor as future)
+- .github/copilot-instructions.md: updated current state to 18 tools
+- This REQUIREMENTS.txt entry
+
+NOT CHANGED:
+- Amadeus integration (still primary for bookable inventory)
+- Trip plan lifecycle (draft → finalize → book)
+- User preferences storage
+- Single-agent architecture
+
+=== END OF SESSION 4 ENTRIES ===

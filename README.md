@@ -17,17 +17,18 @@ User ──► FastAPI / CLI
               │
               ▼
       ┌──────────────┐
-      │  Trip Agent   │  (GPT-4o + 14 tools)
+      │  Trip Agent   │  (GPT-4o + 18 tools)
       └──────┬───────┘
              │
-     ┌───────┼───────────────┐
-     ▼       ▼               ▼
-  Search   Planner       Preferences
-  Tools    Tools         Store
-     │       │               │
-     ▼       ▼               ▼
-  Amadeus  Trip State    ~/.multiagent/
-  APIs     Manager       preferences
+     ┌───────┼────────┬──────────┐
+     ▼       ▼        ▼          ▼
+  Search  Reviews   Web        Planner +
+  Tools   Tools     Search     Preferences
+     │      │         │            │
+     ▼      ▼         ▼            ▼
+  Amadeus  Google   Tavily      ~/.multiagent/
+  APIs     Places   Search      trip state +
+                                preferences
 ```
 
 Single-agent LangGraph graph with a tool-calling loop. The agent calls search
@@ -45,6 +46,10 @@ lifecycle, and persists user preferences to disk for learning.
 | `search_hotels` | Real hotel search — names, ratings, rooms, prices | Amadeus API |
 | `search_activities` | Sightseeing, tours, attraction tickets with prices | Amadeus API |
 | `search_points_of_interest` | Landmarks, restaurants, attractions | Amadeus API |
+| `search_places_with_reviews` | Hotels/attractions with real Google ratings & reviews | Google Places |
+| `get_place_reviews` | Detailed reviews & editorial summary for a place | Google Places |
+| `nearby_restaurants` | Top-rated restaurants by cuisine & dietary needs | Google Places |
+| `web_search` | Fresh travel content (recent guides, seasonal tips) | Tavily |
 | `create_trip_plan` | Initialize a new trip plan draft | Working |
 | `get_trip_plan` | View current plan with selections | Working |
 | `update_trip_plan` | Add flights/hotels/activities to plan | Working |
@@ -133,6 +138,27 @@ uv run uvicorn multiagent.api:app --reload
    Use `https://api.amadeus.com` for production (real bookings).
    Free tier: 2,000 API calls/month.
 
+### Google Places API (recommended — adds real ratings & reviews)
+1. Go to [console.cloud.google.com](https://console.cloud.google.com)
+2. Create/select a project → enable **Places API (New)**
+3. Create an API key under "Credentials"
+4. Set in `.env`:
+   ```
+   GOOGLE_PLACES_API_KEY=your-key
+   ```
+   Free tier: $200/month credit (~10K text searches).
+   Without this key, the agent still works but can't show real ratings.
+
+### Tavily Web Search (recommended — fresh content beyond LLM cutoff)
+1. Sign up free at [tavily.com](https://tavily.com)
+2. Copy your API key
+3. Set in `.env`:
+   ```
+   TAVILY_API_KEY=your-key
+   ```
+   Free tier: 1,000 searches/month.
+   Used for "best things to do in X (2026)", seasonal advice, recent openings.
+
 ## Project Structure
 
 ```
@@ -158,11 +184,13 @@ multiagent/
 │       ├── flight_search.py      # Flight search + IATA resolution
 │       ├── hotel_search.py       # Hotel search + formatting
 │       ├── activities_search.py  # Tours, attractions, POI search
+│       ├── google_places.py      # Real ratings, reviews, restaurants
+│       ├── web_search.py         # Tavily live web search
 │       ├── trip_planner.py       # Trip plan state (draft→finalize→book)
 │       └── user_preferences.py   # Persistent user preference store
 │
 ├── tests/
-│   └── test_trip.py              # 26 tests (prefs, plan state, helpers)
+│   └── test_trip.py              # 31 tests (prefs, plan state, helpers)
 │
 └── ~/.multiagent/                # User data (created at runtime)
     ├── user_preferences.json     # Preferences & past trip history
@@ -187,8 +215,11 @@ uv run pytest -v
 
 - [x] Persistent user preference memory
 - [x] Real flight/hotel/activity search via Amadeus
+- [x] Real ratings & reviews via Google Places
+- [x] Fresh web content via Tavily search
 - [x] Trip plan lifecycle (draft → finalize → book)
 - [x] Past trip history for learning
+- [ ] TripAdvisor Content API (deeper review data, requires approval)
 - [ ] Real booking execution (Amadeus Flight Orders API)
 - [ ] Hotel booking integration (Booking.com / Agoda API)
 - [ ] Activity booking integration (Viator / GetYourGuide)

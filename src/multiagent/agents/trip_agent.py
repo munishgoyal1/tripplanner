@@ -9,6 +9,11 @@ from langchain_core.tools import tool
 
 from multiagent.tools.activities_search import search_activities, search_points_of_interest
 from multiagent.tools.flight_search import search_flights
+from multiagent.tools.google_places import (
+    get_place_reviews,
+    nearby_restaurants,
+    search_places_with_reviews,
+)
 from multiagent.tools.hotel_search import search_hotels
 from multiagent.tools.trip_planner import (
     create_trip_plan,
@@ -23,6 +28,7 @@ from multiagent.tools.user_preferences import (
     load_preferences,
     update_preferences,
 )
+from multiagent.tools.web_search import web_search
 
 
 # ---------------------------------------------------------------------------
@@ -93,16 +99,22 @@ STEP 2 — UNDERSTAND THE REQUEST
 STEP 3 — PARALLEL SEARCH (do all at once)
   Call these tools in parallel based on preferences:
   a) search_flights — real flights with airlines, times, stops, prices
-  b) search_hotels — real hotels with names, ratings, prices
-  c) search_activities — sightseeing, tours, attraction tickets with prices
+  b) search_hotels — real hotels with names, ratings, prices (Amadeus pricing)
+  c) search_places_with_reviews — Google ratings/reviews for shortlisted hotels
+     and attractions. ALWAYS run this on any hotel before recommending it.
+  d) search_activities — sightseeing, tours, attraction tickets with prices
+  e) nearby_restaurants — top-rated restaurants near the hotel matching dietary needs
+  f) web_search — fresh travel guides, recent reviews, seasonal advice when
+     structured APIs don't cover it (e.g. "is Goa safe in monsoon?")
 
   Present results in a clean summary:
-  ┌─────────────────────────────────────┐
-  │ ✈️ FLIGHTS: top 3-5 options         │
-  │ 🏨 HOTELS: top 3-5 options          │
-  │ 🎯 ACTIVITIES: top 5-10 options     │
-  │ 💰 COST ESTIMATE: total per person  │
-  └─────────────────────────────────────┘
+  ┌──────────────────────────────────────────────┐
+  │ ✈️ FLIGHTS: top 3-5 options                  │
+  │ 🏨 HOTELS: top 3-5 with Google rating + price│
+  │ 🍽️ RESTAURANTS: 5-8 rated 4.0+ near hotel    │
+  │ 🎯 ACTIVITIES: top 5-10 options              │
+  │ 💰 COST ESTIMATE: total per person           │
+  └──────────────────────────────────────────────┘
 
 STEP 4 — BUILD ITINERARY
   Using the preferences (trip_style, family, dietary needs), build a day-by-day
@@ -148,6 +160,8 @@ CRITICAL RULES:
    generate a near-final plan immediately. Only ask what you truly cannot infer.
 2. SHOW REAL DATA — always search for actual flights, hotels, and activities with
    real prices. Never give vague "around $X" estimates when you can search.
+   For ratings & reviews use search_places_with_reviews / get_place_reviews — do NOT
+   make up ratings or review snippets. Cite real Google ratings (e.g. "4.6★, 1.2k reviews").
 3. COSTS EVERYWHERE — every suggestion must have a price. Show per-person and
    total costs. Include cost breakdown at the end.
 4. LEARN FROM HISTORY — if a user rated a past trip highly, suggest similar
@@ -165,11 +179,17 @@ TRIP_TOOLS = [
     get_travel_preferences,
     save_travel_preferences,
     record_past_trip,
-    # Real search
+    # Real search (Amadeus — bookable inventory)
     search_flights,
     search_hotels,
     search_activities,
     search_points_of_interest,
+    # Ratings & reviews (Google Places)
+    search_places_with_reviews,
+    get_place_reviews,
+    nearby_restaurants,
+    # Fresh web content (Tavily)
+    web_search,
     # Trip plan management
     create_trip_plan,
     get_trip_plan,

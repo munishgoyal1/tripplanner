@@ -302,3 +302,82 @@ class TestActivityHelpers:
 
     def test_unknown_city_coords(self):
         assert _get_coords("Narnia") is None
+
+
+# ---------------------------------------------------------------------------
+# Google Places + Web search helpers (no network — config checks only)
+# ---------------------------------------------------------------------------
+from multiagent.tools import google_places, web_search
+from multiagent.tools.google_places import (
+    _format_place,
+    _format_reviews,
+    nearby_restaurants,
+    search_places_with_reviews,
+)
+from multiagent.tools.web_search import web_search as web_search_tool
+
+
+class TestGooglePlacesHelpers:
+    def test_format_place_full(self):
+        out = _format_place({
+            "id": "abc",
+            "displayName": {"text": "Taj Mahal Palace"},
+            "formattedAddress": "Mumbai, India",
+            "rating": 4.6,
+            "userRatingCount": 1234,
+            "priceLevel": "PRICE_LEVEL_VERY_EXPENSIVE",
+            "types": ["lodging", "hotel", "establishment"],
+            "websiteUri": "https://taj.com",
+            "internationalPhoneNumber": "+91 22 6665 3366",
+            "currentOpeningHours": {"openNow": True},
+        })
+        assert out["name"] == "Taj Mahal Palace"
+        assert out["rating"] == 4.6
+        assert out["place_id"] == "abc"
+        assert len(out["types"]) == 3
+
+    def test_format_place_minimal(self):
+        out = _format_place({})
+        assert out["name"] == ""
+        assert out["rating"] is None
+        assert out["types"] == []
+
+    def test_format_reviews_truncates(self):
+        reviews = [
+            {
+                "rating": 5,
+                "text": {"text": "x" * 500},
+                "authorAttribution": {"displayName": "Alice"},
+                "relativeTimeDescription": "1 month ago",
+            }
+        ] * 10
+        out = _format_reviews(reviews, limit=3)
+        assert len(out) == 3
+        assert len(out[0]["text"]) == 300
+
+    def test_not_configured_returns_friendly_message(self, monkeypatch):
+        from multiagent import config
+        monkeypatch.setattr(
+            config, "get_settings",
+            lambda: type("S", (), {"google_places_api_key": ""})(),
+        )
+        # Re-bind in module under test
+        monkeypatch.setattr(google_places, "get_settings", config.get_settings)
+        assert not google_places.is_configured()
+        result = search_places_with_reviews.invoke({"query": "test", "city": "Goa"})
+        assert "not configured" in result.lower()
+        result = nearby_restaurants.invoke({"city": "Goa"})
+        assert "not configured" in result.lower()
+
+
+class TestWebSearchHelpers:
+    def test_not_configured_returns_friendly_message(self, monkeypatch):
+        from multiagent import config
+        monkeypatch.setattr(
+            config, "get_settings",
+            lambda: type("S", (), {"tavily_api_key": ""})(),
+        )
+        monkeypatch.setattr(web_search, "get_settings", config.get_settings)
+        assert not web_search.is_configured()
+        result = web_search_tool.invoke({"query": "best beaches in Goa"})
+        assert "not configured" in result.lower()
