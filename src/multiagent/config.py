@@ -18,20 +18,13 @@ class Settings(BaseModel):
     azure_openai_deployment: str = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
     azure_openai_api_version: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
 
-    # Google OAuth (Gmail, Calendar)
-    google_credentials_path: str = os.getenv(
-        "GOOGLE_CREDENTIALS_PATH", "credentials/google_credentials.json"
-    )
-
-    # Google Keep (uses separate auth — no official API)
-    google_keep_email: str = os.getenv("GOOGLE_KEEP_EMAIL", "")
-    google_keep_token: str = os.getenv("GOOGLE_KEEP_TOKEN", "")
-    google_keep_app_password: str = os.getenv("GOOGLE_KEEP_APP_PASSWORD", "")
-
-    # Twilio
-    twilio_account_sid: str = os.getenv("TWILIO_ACCOUNT_SID", "")
-    twilio_auth_token: str = os.getenv("TWILIO_AUTH_TOKEN", "")
-    twilio_phone_number: str = os.getenv("TWILIO_PHONE_NUMBER", "")
+    # Amadeus Self-Service API (flights, hotels, activities)
+    # Sign up free: https://developers.amadeus.com
+    amadeus_api_key: str = os.getenv("AMADEUS_API_KEY", "")
+    amadeus_api_secret: str = os.getenv("AMADEUS_API_SECRET", "")
+    amadeus_base_url: str = os.getenv(
+        "AMADEUS_BASE_URL", "https://test.api.amadeus.com"
+    )  # Use https://api.amadeus.com for production
 
     # General
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

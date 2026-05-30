@@ -120,3 +120,103 @@ Updated files:
 No graph.py changes needed — exports kept same names (TRIP_SYSTEM_PROMPT, TRIP_TOOLS)
 
 === END OF SESSION 2 ENTRIES ===
+
+=== 2026-05-30 — Session 3: Full-Service Trip Planner Pivot ===
+
+--- REQUIREMENT ---
+User directive (verbatim):
+"lets remove other call, whatsapp message gmail personal assistance stuff. lets only
+focus only on the planner agent that helps plan itinerary according to known preferences
+of the travelling group/family and also provide exact flight or transport timings/provider/
+company, exact hotel recommendation, local land package local sightseeing booking and
+attraction tickets etc. along with the costs. finally if the user says execute then
+finalizes the trip and goes and makes the bookings on behalf of user and done. This whole
+process should take maximum half an hour of interaction with user to refine their taste
+and preference and with past experience and their travel and preference history you should
+be able to provide a near to final plan in least number of iterations or question answer
+interactions etc. in a seamless manner."
+
+Key requirements distilled:
+1. REMOVE all non-trip agents (todo, comms, calendar, budget) and their tools/connectors
+2. Single focus: trip planning with REAL search data (not LLM hallucinations)
+3. Real flight search — actual airlines, prices, times, stops
+4. Real hotel search — actual hotel names, star ratings, room prices
+5. Real activity/sightseeing search — tours, tickets, POI with prices
+6. Trip plan lifecycle: draft → finalized → booked (with execute command)
+7. Maximum 30 minutes of interaction to reach a bookable plan
+8. Learn from preferences + past trips to minimize Q&A rounds
+9. Costs shown everywhere — flights, hotels, activities, total breakdown
+
+--- ARCHITECTURE CHANGES ---
+- Removed multi-agent router — single Trip Agent only
+- graph.py: simplified to agent → tools → agent loop (no router node)
+- Removed all non-trip agents, connectors, and tests
+- Added Amadeus Self-Service API integration (free tier, 2000 calls/month)
+
+--- DELETED FILES ---
+Agents: todo_agent.py, comms_agent.py, calendar_agent.py, budget_agent.py
+Connectors: keep_connector.py, gmail_connector.py, google_auth.py,
+            whatsapp_parser.py, call_records_parser.py, todo_extractor.py
+Tests: test_budget.py, test_call_records.py, test_todo.py, test_whatsapp.py
+Data: data/whatsapp/, data/calls/
+
+--- REMOVED DEPENDENCIES ---
+google-api-python-client, google-auth-oauthlib, gkeepapi, twilio, pycryptodome
+
+--- NEW FILES ---
+1. src/multiagent/tools/amadeus_client.py
+   - Thin HTTP client for Amadeus Self-Service APIs
+   - OAuth2 client_credentials token with 60s buffer cache
+   - get(path, params) and post(path, body) methods
+   - Uses httpx (already in deps)
+
+2. src/multiagent/tools/flight_search.py
+   - search_flights() — Amadeus Flight Offers Search API
+   - resolve_iata() — maps ~80 city names to IATA codes (India + international)
+   - _format_flights() — human-readable flight results with prices
+
+3. src/multiagent/tools/hotel_search.py
+   - search_hotels() — two-step: Hotel List API → Hotel Offers API
+   - Filters by star rating, max price, rooms needed
+   - _format_hotels() — shows hotel name, rating, price per night
+
+4. src/multiagent/tools/activities_search.py
+   - search_activities() — Amadeus Tours & Activities API
+   - search_points_of_interest() — Amadeus POI API
+   - _CITY_COORDS — lat/lon for ~50 cities
+   - _get_coords() — resolve city to coordinates
+
+5. src/multiagent/tools/trip_planner.py
+   - Trip plan state manager with lifecycle: draft → finalized → booked
+   - Storage: ~/.multiagent/active_trip.json (active), ~/.multiagent/trips/ (archive)
+   - Tools: create_trip_plan, get_trip_plan, update_trip_plan, finalize_trip,
+     execute_bookings, list_past_trips
+
+--- UPDATED FILES ---
+- src/multiagent/agents/trip_agent.py — rewritten with 14 tools + detailed system prompt
+- src/multiagent/graph.py — simplified single-agent loop (no router)
+- src/multiagent/config.py — removed Google/Twilio settings, added Amadeus settings
+- pyproject.toml — version 0.2.0, removed old deps, updated description
+- tests/test_trip.py — 26 tests covering prefs, plan state, flight/activity helpers
+- README.md — complete rewrite for trip-planner-only architecture
+- .github/copilot-instructions.md — updated to reflect current state
+
+--- API: AMADEUS SELF-SERVICE (test environment) ---
+Base URL: https://test.api.amadeus.com
+Auth: OAuth2 client_credentials at /v1/security/oauth2/token
+Endpoints used:
+  - GET /v2/shopping/flight-offers — flight search
+  - GET /v1/reference-data/locations/hotels/by-city — hotel list by city
+  - GET /v3/shopping/hotel-offers — hotel pricing
+  - GET /v1/shopping/activities — tours & activities
+  - GET /v1/reference-data/locations/pois — points of interest
+Free tier: 2,000 calls/month, test data only
+Production: https://api.amadeus.com (real bookings, requires paid plan)
+
+--- TEST RESULTS ---
+26 tests, all passing:
+  TestDeepMerge (3), TestLoadSave (4), TestPreferenceTools (4),
+  TestTripPlanState (10 incl. full lifecycle), TestFlightHelpers (3),
+  TestActivityHelpers (2)
+
+=== END OF SESSION 3 ENTRIES ===

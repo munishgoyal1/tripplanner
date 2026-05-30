@@ -1,4 +1,4 @@
-"""Trip Planner Agent — preference-aware trip planning with itineraries, transport & hotels."""
+"""Trip Planner Agent — full-service trip planning with real search, bookings & preferences."""
 
 from __future__ import annotations
 
@@ -7,6 +7,17 @@ import json
 from langchain_core.messages import SystemMessage
 from langchain_core.tools import tool
 
+from multiagent.tools.activities_search import search_activities, search_points_of_interest
+from multiagent.tools.flight_search import search_flights
+from multiagent.tools.hotel_search import search_hotels
+from multiagent.tools.trip_planner import (
+    create_trip_plan,
+    execute_bookings,
+    finalize_trip,
+    get_trip_plan,
+    list_past_trips,
+    update_trip_plan,
+)
 from multiagent.tools.user_preferences import (
     add_past_trip,
     load_preferences,
@@ -43,7 +54,7 @@ def save_travel_preferences(updates_json: str) -> str:
 
 @tool
 def record_past_trip(destination: str, dates: str, rating: int = 0, notes: str = "") -> str:
-    """Record a completed trip to build preference history.
+    """Record a completed trip to build preference history and improve future suggestions.
 
     Args:
         destination: City or region visited.
@@ -56,249 +67,114 @@ def record_past_trip(destination: str, dates: str, rating: int = 0, notes: str =
 
 
 # ---------------------------------------------------------------------------
-# Suggestion tools — preference-aware
-# ---------------------------------------------------------------------------
-def _prefs_summary() -> str:
-    """Build a compact preference context string for LLM prompts."""
-    p = load_preferences()
-    fam = p["family"]
-    family_str = f"{fam['adults']} adults"
-    if fam["children"]:
-        family_str += f", {fam['children']} children (ages {fam['child_ages']})"
-    if fam["elderly"]:
-        family_str += f", {fam['elderly']} elderly"
-    if fam["pets"]:
-        family_str += ", traveling with pets"
-
-    hotel = p["hotel_preferences"]
-    transport = p["transport_preferences"]
-    food = p["food_preferences"]
-
-    past = p.get("past_trips", [])
-    past_str = ""
-    if past:
-        recent = past[-5:]
-        past_str = "Recent trips: " + "; ".join(
-            f"{t['destination']} ({t.get('rating', '?')}/5)" for t in recent
-        )
-
-    return (
-        f"Family: {family_str}\n"
-        f"Trip style: {p['trip_style']}\n"
-        f"Budget: {p['budget_level']}\n"
-        f"Hotel: {hotel['star_rating_min']}+ stars, room={hotel['room_type']}, "
-        f"amenities={hotel['preferred_amenities']}\n"
-        f"Transport: flight={transport['flight_class']}, "
-        f"direct={transport['prefer_direct_flights']}, "
-        f"train={transport['open_to_trains']}, car={transport['open_to_rental_car']}\n"
-        f"Food: dietary={food['dietary']}, likes={food['cuisine_likes']}\n"
-        f"Accessibility: {p.get('accessibility_needs', [])}\n"
-        f"{past_str}"
-    )
-
-
-@tool
-def suggest_itinerary(destination: str, days: int, interests: str = "") -> str:
-    """Suggest a day-by-day itinerary tailored to the user's preferences.
-
-    Args:
-        destination: City or region to visit.
-        days: Number of days.
-        interests: Optional extra interests for this trip (e.g. 'history, wine').
-    """
-    ctx = _prefs_summary()
-    p = load_preferences()
-    style = p["trip_style"]
-
-    style_guidance = {
-        "leisure": (
-            "Plan a relaxed pace — no more than 2 activities per day. "
-            "Include downtime, late starts, and leisure options (cafés, parks, spas)."
-        ),
-        "balanced": (
-            "Mix sightseeing with free time. 2-3 activities per day with "
-            "breaks for meals and rest."
-        ),
-        "packed_sightseeing": (
-            "Pack the days with top attractions and hidden gems. "
-            "Early starts, full days, maximize coverage."
-        ),
-        "adventure": (
-            "Focus on adventure activities: hiking, water sports, local experiences. "
-            "Off-the-beaten-path destinations preferred."
-        ),
-    }
-
-    guidance = style_guidance.get(style, style_guidance["balanced"])
-
-    children = p["family"]["children"]
-    kid_note = ""
-    if children:
-        ages = p["family"]["child_ages"]
-        kid_note = (
-            f"\nTraveling with {children} child(ren) aged {ages}. "
-            "Include kid-friendly activities, rest time, and easy dining options."
-        )
-
-    return (
-        f"=== Itinerary Suggestion: {destination} ({days} days) ===\n\n"
-        f"User context:\n{ctx}\n\n"
-        f"Style guidance: {guidance}{kid_note}\n"
-        f"Extra interests: {interests or 'none specified'}\n\n"
-        f"Please generate a detailed day-by-day plan for {destination} over {days} days "
-        f"considering all the above preferences. Include:\n"
-        f"- Morning / afternoon / evening blocks\n"
-        f"- Restaurant type suggestions matching dietary preferences\n"
-        f"- Travel time estimates between spots\n"
-        f"- Cost estimates per day ({p['budget_level']} budget)"
-    )
-
-
-@tool
-def suggest_hotels(city: str, checkin: str, checkout: str) -> str:
-    """Suggest hotels based on saved preferences (budget, family size, amenities).
-
-    Args:
-        city: City to stay in.
-        checkin: Check-in date (YYYY-MM-DD).
-        checkout: Check-out date (YYYY-MM-DD).
-    """
-    p = load_preferences()
-    fam = p["family"]
-    hotel = p["hotel_preferences"]
-    budget = p["budget_level"]
-
-    total_people = fam["adults"] + fam["children"] + fam["elderly"]
-    rooms_hint = max(1, (total_people + 1) // 2)  # rough: 2 per room
-    if fam["children"] and fam["adults"] >= 2:
-        rooms_hint = max(1, fam["adults"] // 2 + (1 if fam["children"] else 0))
-
-    budget_ranges = {
-        "budget": "$50-$100/night",
-        "moderate": "$100-$200/night",
-        "premium": "$200-$400/night",
-        "luxury": "$400+/night",
-    }
-
-    kid_features = ""
-    if fam["children"]:
-        kid_features = (
-            "Family-friendly features needed: cribs/extra beds, "
-            "kids' menu, babysitting, play area. "
-        )
-
-    amenities = ", ".join(hotel["preferred_amenities"]) if hotel["preferred_amenities"] else "none specified"
-    chains = ", ".join(hotel["preferred_chains"]) if hotel["preferred_chains"] else "no preference"
-
-    return (
-        f"=== Hotel Suggestions: {city} ({checkin} to {checkout}) ===\n\n"
-        f"Party size: {total_people} people ({fam['adults']} adults, "
-        f"{fam['children']} children, {fam['elderly']} elderly)\n"
-        f"Estimated rooms needed: {rooms_hint}\n"
-        f"Budget range: {budget_ranges.get(budget, budget_ranges['moderate'])}\n"
-        f"Minimum stars: {hotel['star_rating_min']}\n"
-        f"Room type: {hotel['room_type']}\n"
-        f"Required amenities: {amenities}\n"
-        f"Preferred chains: {chains}\n"
-        f"{kid_features}"
-        f"Accessibility needs: {p.get('accessibility_needs', [])}\n\n"
-        f"Please suggest 3-5 hotel options in {city} matching these criteria, "
-        f"with approximate pricing and pros/cons for each."
-    )
-
-
-@tool
-def suggest_transport(origin: str, destination: str, date: str, travelers: int = 0) -> str:
-    """Suggest transport options based on saved preferences.
-
-    Args:
-        origin: Departure city.
-        destination: Arrival city.
-        date: Travel date (YYYY-MM-DD).
-        travelers: Number of travelers (0 = auto-detect from family config).
-    """
-    p = load_preferences()
-    fam = p["family"]
-    transport = p["transport_preferences"]
-    budget = p["budget_level"]
-
-    total = travelers or (fam["adults"] + fam["children"] + fam["elderly"])
-
-    options = []
-    options.append(
-        f"✈️ Flight: {transport['flight_class']} class, "
-        f"{'direct preferred' if transport['prefer_direct_flights'] else 'connections OK'}"
-    )
-    if transport["open_to_trains"]:
-        options.append("🚄 Train: user is open to train travel")
-    if transport["open_to_rental_car"]:
-        options.append("🚗 Rental car: user is open to driving")
-    if transport["open_to_bus"]:
-        options.append("🚌 Bus: user is open to bus travel")
-
-    kid_note = ""
-    if fam["children"]:
-        ages = fam["child_ages"]
-        kid_note = (
-            f"\nTraveling with children (ages {ages}). "
-            "Consider: car seats, family boarding, extra luggage allowance."
-        )
-
-    return (
-        f"=== Transport Options: {origin} → {destination} on {date} ===\n\n"
-        f"Travelers: {total}\n"
-        f"Budget level: {budget}\n"
-        f"Preferred options:\n" + "\n".join(f"  {o}" for o in options) +
-        f"{kid_note}\n\n"
-        f"Please compare available transport options with:\n"
-        f"- Approximate cost for {total} travelers\n"
-        f"- Duration and convenience\n"
-        f"- Recommendation based on preferences"
-    )
-
-
-# ---------------------------------------------------------------------------
 # System prompt
 # ---------------------------------------------------------------------------
 TRIP_SYSTEM_PROMPT = SystemMessage(content="""\
-You are the Trip Planner Agent for Munish Goyal's personal assistant.
+You are a full-service Trip Planner Agent. Your goal is to produce a complete,
+bookable trip plan in the fewest interactions possible — ideally under 30 minutes
+of user time.
 
-You plan trips end-to-end: itineraries, hotels, transport, packing, and local tips.
-You are PREFERENCE-AWARE — always start by loading the user's saved preferences
-with get_travel_preferences before making any suggestions.
+═══════════════════════════════════════════════════════════════
+WORKFLOW (follow this order every time):
+═══════════════════════════════════════════════════════════════
 
-Your workflow:
-1. ALWAYS call get_travel_preferences first to understand the user's profile.
-2. If key preferences are missing (family config, trip style, budget), ASK the user
-   and then call save_travel_preferences to persist their answers.
-3. When suggesting itineraries, hotels, or transport — use the preference-aware tools
-   (suggest_itinerary, suggest_hotels, suggest_transport) that automatically
-   incorporate saved preferences.
-4. After a trip is discussed/completed, offer to record_past_trip to improve future
-   suggestions.
-5. Learn from past trips — if a user rated a destination poorly, avoid similar
-   suggestions; if highly rated, suggest similar experiences.
+STEP 1 — LOAD PREFERENCES (silent, automatic)
+  Call get_travel_preferences immediately. Never skip this.
+  If critical info is missing (family config, budget, style), ask ONCE with a
+  consolidated question covering everything you need.
+  Save answers with save_travel_preferences.
 
-Key preference dimensions you track:
+STEP 2 — UNDERSTAND THE REQUEST
+  User says something like "plan a trip to Goa" or "we want to go somewhere warm".
+  Extract: destination, dates, origin city.
+  If dates aren't given, suggest reasonable dates and confirm.
+  Call create_trip_plan to initialize the plan.
+
+STEP 3 — PARALLEL SEARCH (do all at once)
+  Call these tools in parallel based on preferences:
+  a) search_flights — real flights with airlines, times, stops, prices
+  b) search_hotels — real hotels with names, ratings, prices
+  c) search_activities — sightseeing, tours, attraction tickets with prices
+
+  Present results in a clean summary:
+  ┌─────────────────────────────────────┐
+  │ ✈️ FLIGHTS: top 3-5 options         │
+  │ 🏨 HOTELS: top 3-5 options          │
+  │ 🎯 ACTIVITIES: top 5-10 options     │
+  │ 💰 COST ESTIMATE: total per person  │
+  └─────────────────────────────────────┘
+
+STEP 4 — BUILD ITINERARY
+  Using the preferences (trip_style, family, dietary needs), build a day-by-day
+  itinerary that includes:
+  - Morning / afternoon / evening activities
+  - Specific restaurant recommendations (matching dietary prefs)
+  - Travel time between spots
+  - Which attraction tickets to pre-book
+  - Local transport within the destination
+  - Cost per day
+
+  Update the trip plan with update_trip_plan.
+
+STEP 5 — REFINE (1-2 rounds max)
+  Ask: "Does this look good, or would you like to adjust anything?"
+  Handle changes efficiently. Don't re-search everything — just what changed.
+
+STEP 6 — FINALIZE
+  Call finalize_trip to lock the plan and show the complete cost breakdown.
+  Show a clear summary with everything booked.
+
+STEP 7 — EXECUTE (on user command)
+  When user says "execute", "book it", "go ahead", or similar:
+  Call execute_bookings to process all bookings.
+  The trip is saved to history automatically.
+
+═══════════════════════════════════════════════════════════════
+PREFERENCE DIMENSIONS YOU TRACK:
+═══════════════════════════════════════════════════════════════
 - Family: adults, children (ages), elderly, pets
-- Trip style: leisure (relaxed) | balanced | packed_sightseeing | adventure
+- Trip style: leisure | balanced | packed_sightseeing | adventure
 - Budget: budget | moderate | premium | luxury
-- Hotel: star rating, amenities, room type, chain preferences
-- Transport: flight class, direct flights, openness to trains/cars/buses
-- Food: dietary restrictions, cuisine preferences
+- Hotel: star rating, amenities (pool, gym, breakfast, spa), room type, chains
+- Transport: flight class, direct flights preference, train/car/bus openness
+- Food: dietary restrictions, cuisine likes/dislikes
 - Accessibility needs
 - Past trip history with ratings
 
-Be proactive: if the user says "plan a trip to Goa" without details, pull their
-preferences and generate a complete personalized suggestion rather than asking
-20 questions. Only ask what you truly cannot infer.
+═══════════════════════════════════════════════════════════════
+CRITICAL RULES:
+═══════════════════════════════════════════════════════════════
+1. BE PROACTIVE — don't ask 20 questions. Use saved preferences + past trips to
+   generate a near-final plan immediately. Only ask what you truly cannot infer.
+2. SHOW REAL DATA — always search for actual flights, hotels, and activities with
+   real prices. Never give vague "around $X" estimates when you can search.
+3. COSTS EVERYWHERE — every suggestion must have a price. Show per-person and
+   total costs. Include cost breakdown at the end.
+4. LEARN FROM HISTORY — if a user rated a past trip highly, suggest similar
+   experiences. If rated poorly, avoid similar options.
+5. COMPLETE PLANS — a finalized plan must include: flights, hotels, day-wise
+   itinerary, activity tickets, local transport, restaurant suggestions, and
+   a total cost breakdown.
+6. If Amadeus API is not configured, use your knowledge to provide realistic
+   recommendations with approximate pricing, and note that real-time prices
+   require API setup.
 """)
 
 TRIP_TOOLS = [
+    # Preferences
     get_travel_preferences,
     save_travel_preferences,
     record_past_trip,
-    suggest_itinerary,
-    suggest_hotels,
-    suggest_transport,
+    # Real search
+    search_flights,
+    search_hotels,
+    search_activities,
+    search_points_of_interest,
+    # Trip plan management
+    create_trip_plan,
+    get_trip_plan,
+    update_trip_plan,
+    finalize_trip,
+    execute_bookings,
+    list_past_trips,
 ]

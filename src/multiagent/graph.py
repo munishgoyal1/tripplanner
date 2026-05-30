@@ -1,11 +1,7 @@
-"""LangGraph multi-agent orchestration graph.
+"""LangGraph trip planner orchestration graph.
 
-The orchestrator routes user requests to the appropriate sub-agent:
-  - todo    → Todo Agent
-  - comms   → Communications Agent
-  - calendar→ Calendar Agent
-  - trip    → Trip Planner Agent
-  - budget  → Budget Agent
+Single-agent graph focused on trip planning with tool-calling loop:
+  Trip Agent → Tools → Trip Agent → ... → END
 """
 
 from __future__ import annotations
@@ -13,15 +9,11 @@ from __future__ import annotations
 import operator
 from typing import Annotated, TypedDict
 
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from multiagent.agents.budget_agent import BUDGET_SYSTEM_PROMPT, BUDGET_TOOLS
-from multiagent.agents.calendar_agent import CALENDAR_SYSTEM_PROMPT, CALENDAR_TOOLS
-from multiagent.agents.comms_agent import COMMS_SYSTEM_PROMPT, COMMS_TOOLS
-from multiagent.agents.todo_agent import TODO_SYSTEM_PROMPT, TODO_TOOLS
 from multiagent.agents.trip_agent import TRIP_SYSTEM_PROMPT, TRIP_TOOLS
 from multiagent.config import get_settings
 
@@ -49,74 +41,23 @@ def _get_llm() -> AzureChatOpenAI:
 
 
 # ---------------------------------------------------------------------------
-# Router — decides which sub-agent to invoke
+# Trip agent node
 # ---------------------------------------------------------------------------
-ROUTER_PROMPT = SystemMessage(content="""\
-You are an orchestrator that routes the user's request to the correct sub-agent.
-Respond with EXACTLY one word — the agent name:
-  todo, comms, calendar, trip, budget, or general
-
-Rules:
-- Tasks, reminders, follow-ups → todo
-- SMS, email, phone calls → comms
-- Calendar events, scheduling, free time → calendar
-- Travel, flights, hotels, itineraries → trip
-- Expenses, money, budgets, spending → budget
-- Anything else → general
-""")
-
-
-def router(state: AgentState) -> AgentState:
-    llm = _get_llm()
-    response = llm.invoke([ROUTER_PROMPT] + state["messages"][-3:])
-    agent_name = response.content.strip().lower().split()[0] if response.content else "general"
-    valid = {"todo", "comms", "calendar", "trip", "budget", "general"}
-    if agent_name not in valid:
-        agent_name = "general"
-    return {"messages": [], "current_agent": agent_name}
+def trip_agent(state: AgentState) -> AgentState:
+    """The trip planner agent — invokes LLM with tools bound."""
+    llm = _get_llm().bind_tools(TRIP_TOOLS)
+    response = llm.invoke([TRIP_SYSTEM_PROMPT] + state["messages"])
+    return {"messages": [response], "current_agent": "trip"}
 
 
 # ---------------------------------------------------------------------------
-# Sub-agent nodes
+# Tool execution
 # ---------------------------------------------------------------------------
-AGENT_CONFIG = {
-    "todo": (TODO_SYSTEM_PROMPT, TODO_TOOLS),
-    "comms": (COMMS_SYSTEM_PROMPT, COMMS_TOOLS),
-    "calendar": (CALENDAR_SYSTEM_PROMPT, CALENDAR_TOOLS),
-    "trip": (TRIP_SYSTEM_PROMPT, TRIP_TOOLS),
-    "budget": (BUDGET_SYSTEM_PROMPT, BUDGET_TOOLS),
-}
+tool_node = ToolNode(TRIP_TOOLS)
 
 
-def _make_agent_node(agent_name: str):
-    """Create a node function for a sub-agent."""
-    system_prompt, tools = AGENT_CONFIG[agent_name]
-
-    def agent_node(state: AgentState) -> AgentState:
-        llm = _get_llm().bind_tools(tools)
-        response = llm.invoke([system_prompt] + state["messages"])
-        return {"messages": [response], "current_agent": agent_name}
-
-    return agent_node
-
-
-def general_node(state: AgentState) -> AgentState:
-    """Fallback: answer directly without specialized tools."""
-    llm = _get_llm()
-    system = SystemMessage(content="You are a helpful personal assistant. Answer the user's question directly.")
-    response = llm.invoke([system] + state["messages"])
-    return {"messages": [response], "current_agent": "general"}
-
-
-# ---------------------------------------------------------------------------
-# Tool execution nodes
-# ---------------------------------------------------------------------------
-ALL_TOOLS = TODO_TOOLS + COMMS_TOOLS + CALENDAR_TOOLS + TRIP_TOOLS + BUDGET_TOOLS
-tool_node = ToolNode(ALL_TOOLS)
-
-
-def should_use_tools(state: AgentState) -> str:
-    """Check if the last message has tool calls."""
+def _should_continue(state: AgentState) -> str:
+    """Route: if last message has tool calls → tools, else → end."""
     last = state["messages"][-1]
     if hasattr(last, "tool_calls") and last.tool_calls:
         return "tools"
@@ -129,32 +70,16 @@ def should_use_tools(state: AgentState) -> str:
 def build_graph() -> StateGraph:
     graph = StateGraph(AgentState)
 
-    # Add nodes
-    graph.add_node("router", router)
-    for name in AGENT_CONFIG:
-        graph.add_node(name, _make_agent_node(name))
-    graph.add_node("general", general_node)
+    graph.add_node("trip_agent", trip_agent)
     graph.add_node("tools", tool_node)
 
-    # Entry point
-    graph.set_entry_point("router")
+    graph.set_entry_point("trip_agent")
 
-    # Router → sub-agent
-    graph.add_conditional_edges(
-        "router",
-        lambda s: s["current_agent"],
-        {name: name for name in list(AGENT_CONFIG) + ["general"]},
-    )
+    # Agent → tools or end
+    graph.add_conditional_edges("trip_agent", _should_continue, {"tools": "tools", "end": END})
 
-    # Each sub-agent → tools or end
-    for name in AGENT_CONFIG:
-        graph.add_conditional_edges(name, should_use_tools, {"tools": "tools", "end": END})
-
-    # General → end (no tools)
-    graph.add_edge("general", END)
-
-    # Tools → end
-    graph.add_edge("tools", END)
+    # Tools → back to agent (for multi-step tool calling)
+    graph.add_edge("tools", "trip_agent")
 
     return graph.compile()
 

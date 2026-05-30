@@ -1,1 +1,1 @@
-"""Tools package — reusable tool functions for agents."""
+"""Tools package — search providers, trip planning, and user preferences."""
