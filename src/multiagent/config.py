@@ -42,6 +42,15 @@ class Settings(BaseModel):
     # Sign up free: https://tavily.com (1000 searches/month free)
     tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
 
+    # Azure Cosmos DB — persistent storage for hosted multi-user mode.
+    # When set, the trip planner persists preferences and trips here instead
+    # of ~/.multiagent/. Leave empty for local CLI / test mode.
+    # Use the NoSQL API and enable Free Tier (1000 RU/s + 25 GB free).
+    cosmos_endpoint: str = os.getenv("COSMOS_ENDPOINT", "")
+    cosmos_key: str = os.getenv("COSMOS_KEY", "")
+    cosmos_connection_string: str = os.getenv("COSMOS_CONNECTION_STRING", "")
+    cosmos_database: str = os.getenv("COSMOS_DATABASE", "multiagent")
+
     # General
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 

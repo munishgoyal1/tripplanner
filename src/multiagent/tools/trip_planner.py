@@ -1,7 +1,11 @@
 """Trip plan state manager — draft, finalize, execute bookings.
 
-Persists the active trip plan to ~/.multiagent/active_trip.json so the
-conversation can be interrupted and resumed.
+Two backends, auto-selected:
+- **Cosmos DB** when ``COSMOS_ENDPOINT`` is configured (hosted multi-user mode)
+- **Local JSON files** otherwise (CLI / tests / dev)
+
+Active trip lives in the ``users`` container (one doc per user); archived
+trips live in the ``trips`` container (one doc per trip, queryable by user).
 """
 
 from __future__ import annotations
@@ -13,37 +17,86 @@ from typing import Any
 
 from langchain_core.tools import tool
 
+from multiagent import storage_cosmos
 from multiagent.tools.user_preferences import add_past_trip, load_preferences
+from multiagent.user_context import get_user_id
 
 _TRIPS_DIR = Path.home() / ".multiagent"
 _ACTIVE_TRIP_FILE = _TRIPS_DIR / "active_trip.json"
 _TRIP_HISTORY_DIR = _TRIPS_DIR / "trips"
 
+_COSMOS_USERS_CONTAINER = "users"
+_COSMOS_TRIPS_CONTAINER = "trips"
+_ACTIVE_TRIP_DOC_ID = "active_trip"
+
+
+def _resolve_active_trip_path() -> Path:
+    uid = get_user_id()
+    if uid == "local":
+        return _ACTIVE_TRIP_FILE
+    return _TRIPS_DIR / "users" / uid / "active_trip.json"
+
+
+def _resolve_trip_history_dir() -> Path:
+    uid = get_user_id()
+    if uid == "local":
+        return _TRIP_HISTORY_DIR
+    return _TRIPS_DIR / "users" / uid / "trips"
+
 
 def _ensure_dirs() -> None:
-    _TRIPS_DIR.mkdir(parents=True, exist_ok=True)
-    _TRIP_HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+    _resolve_active_trip_path().parent.mkdir(parents=True, exist_ok=True)
+    _resolve_trip_history_dir().mkdir(parents=True, exist_ok=True)
 
 
 def _load_active_trip() -> dict[str, Any] | None:
-    if _ACTIVE_TRIP_FILE.exists():
-        return json.loads(_ACTIVE_TRIP_FILE.read_text(encoding="utf-8"))
+    if storage_cosmos.is_enabled():
+        return storage_cosmos.read_doc(
+            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID
+        )
+    path = _resolve_active_trip_path()
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
     return None
 
 
 def _save_active_trip(plan: dict[str, Any]) -> None:
+    if storage_cosmos.is_enabled():
+        storage_cosmos.upsert_doc(
+            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID, plan
+        )
+        return
     _ensure_dirs()
-    _ACTIVE_TRIP_FILE.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+    _resolve_active_trip_path().write_text(
+        json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
 
 
-def _archive_trip(plan: dict[str, Any]) -> Path:
-    """Archive a finalized trip to the history directory."""
-    _ensure_dirs()
+def _delete_active_trip() -> None:
+    if storage_cosmos.is_enabled():
+        storage_cosmos.delete_doc(
+            _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID
+        )
+        return
+    _resolve_active_trip_path().unlink(missing_ok=True)
+
+
+def _archive_trip(plan: dict[str, Any]) -> str:
+    """Archive a finalized trip and return a human-readable handle."""
     slug = plan.get("destination", "trip").lower().replace(" ", "_")
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = _TRIP_HISTORY_DIR / f"{slug}_{ts}.json"
+    handle = f"{slug}_{ts}"
+
+    if storage_cosmos.is_enabled():
+        storage_cosmos.upsert_doc(
+            _COSMOS_TRIPS_CONTAINER, get_user_id(), handle, plan
+        )
+        return handle
+
+    _ensure_dirs()
+    path = _resolve_trip_history_dir() / f"{handle}.json"
     path.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
-    return path
+    return str(path)
 
 
 @tool
@@ -277,7 +330,7 @@ def execute_bookings() -> str:
     )
 
     # Clear active trip
-    _ACTIVE_TRIP_FILE.unlink(missing_ok=True)
+    _delete_active_trip()
 
     results.append("\n✅ All bookings executed! Trip saved to your history.")
     results.append("After your trip, update the rating with record_past_trip to improve future suggestions.")
@@ -287,8 +340,23 @@ def execute_bookings() -> str:
 @tool
 def list_past_trips() -> str:
     """List all archived trip plans from history."""
-    _ensure_dirs()
-    trips = sorted(_TRIP_HISTORY_DIR.glob("*.json"))
+    if storage_cosmos.is_enabled():
+        items = storage_cosmos.query_docs(_COSMOS_TRIPS_CONTAINER, get_user_id())
+        if not items:
+            return "No past trips in archive."
+        lines = ["Past trips:"]
+        for data in items:
+            dest = data.get("destination", "?")
+            dates = f"{data.get('departure_date', '?')} to {data.get('return_date', '?')}"
+            status = data.get("status", "?")
+            cost = data.get("total_cost", 0)
+            cost_str = f"₹{cost:,.0f}" if isinstance(cost, (int, float)) else str(cost)
+            lines.append(f"  {dest} ({dates}) — {status} — {cost_str}")
+        return "\n".join(lines)
+
+    history_dir = _resolve_trip_history_dir()
+    history_dir.mkdir(parents=True, exist_ok=True)
+    trips = sorted(history_dir.glob("*.json"))
     if not trips:
         return "No past trips in archive."
 

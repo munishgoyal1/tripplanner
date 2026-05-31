@@ -345,3 +345,94 @@ NOT CHANGED:
 
 === END OF SESSION 5 ENTRIES ===
 
+
+=== SESSION 6 (2026-05-31): HOSTED MODE — CHAT UI + COSMOS + ACA ===
+
+USER REQUEST:
+"how can we make it hosted and for global users, saving data and preferences
+etc. in a persistent database. build or use out of box standard chat box
+interface for users to interact instead of CLI, and create required infra in
+Azure to host it behind a domain name as well. use all cheap options, and
+preferably not crossing the monthly 10k INR free credit limit given at azure,
+as this is a test version firstly."
+
+DECISIONS (5 scoping questions answered by user):
+1. Phase first: hosting (not booking) — Duffel booking flow deferred
+2. Chat UI: Chainlit (Python-native, built-in chat UX, websocket-based)
+3. Auth: none for v1 — public beta. Each browser session = one anonymous user
+4. Domain: default *.azurecontainerapps.io URL (free, no custom DNS yet)
+5. Duffel: stay in test mode (no real bookings)
+
+ARCHITECTURE (hosted vs local):
+- LOCAL MODE (CLI + tests): preferences/trips stored in ~/.multiagent/*.json,
+  user_id="local" (default ContextVar)
+- HOSTED MODE (Chainlit + Azure): same code, but storage_cosmos.is_enabled()
+  flips dispatch to Azure Cosmos DB. user_id pulled from cl.user_session.get("id")
+- Same agent, same tools, same graph — only the persistence + entrypoint differ
+
+NEW FILES:
+- src/multiagent/user_context.py — ContextVar holding current user_id
+  (get_user_id, set_user_id, is_default_user). Default = "local".
+- src/multiagent/storage_cosmos.py — optional Cosmos backend
+  (is_enabled, read_doc, upsert_doc, delete_doc, query_docs, reset_client_for_tests).
+  Lazy imports of azure-cosmos so the package is optional at runtime.
+- src/multiagent/web/__init__.py — package marker
+- src/multiagent/web/app.py — Chainlit chat app (on_chat_start, on_message)
+  Sets user_id from cl.user_session, invokes app_graph via asyncio.to_thread.
+- chainlit.md — welcome screen with sample prompts and public-beta notice
+- Dockerfile — python:3.12-slim, pip install ".[web]", runs chainlit on :8000
+- .dockerignore — excludes venv, tests, infra, secrets
+- infra/main.bicep — RG-scope IaC for ACA + Cosmos (Free Tier) + Log Analytics
+- infra/main.bicepparam — pulls all values via readEnvironmentVariable
+- infra/README.md — deploy quickstart (GHCR + az deployment group create)
+- tests/test_trip.py: new TestCosmosDispatch (8 tests) + TestUserContext (2 tests)
+
+MODIFIED FILES:
+- src/multiagent/config.py — added cosmos_endpoint/cosmos_key/cosmos_connection_string
+  /cosmos_database settings (all optional, read from env)
+- src/multiagent/tools/user_preferences.py — load/save dispatch to Cosmos when enabled
+  Module attrs _PREFS_DIR/_PREFS_FILE preserved so tests still monkeypatch.
+- src/multiagent/tools/trip_planner.py — _load/save/delete_active_trip + _archive_trip
+  + list_past_trips all dispatch to Cosmos when enabled
+- pyproject.toml — added azure-cosmos to main deps, new [web] extra with chainlit>=1.3
+
+INFRA CHOSEN (cheapest within ₹10K/mo Azure free credit):
+- Log Analytics workspace (PerGB2018, 30-day retention) — required by ACA, ~₹150-400/mo
+- Cosmos DB NoSQL (Free Tier ON: 1000 RU/s + 25 GB free, one per subscription)
+  - Database "multiagent" with provisioned 1000 RU/s shared by 2 containers
+  - users container: /user_id PK, doc ids = "preferences" + "active_trip"
+  - trips container: /user_id PK, doc per archived trip
+- Container Apps environment (Consumption plan, no fixed cost)
+- Container App: 0.5 CPU / 1 Gi memory, min=0/max=1 replicas, scales to zero
+  External HTTP ingress on port 8000, secrets injected as env vars
+- Image source: GHCR public (ghcr.io/munishgoyal1/multiagent:latest) — NOT ACR
+  (avoids ₹420/mo Basic SKU charge). Public image = no pull secret needed.
+
+DEPLOY FLOW (Phase B, requires user approval before az calls):
+1. docker build + push to ghcr.io/munishgoyal1/multiagent:latest (make public)
+2. Export AOAI + Duffel + Google + Tavily keys + CONTAINER_IMAGE to shell env
+3. az deployment group create -g rg-multiagent-trip-planner
+   -f infra/main.bicep -p infra/main.bicepparam
+4. Output URL = live chat. Test, then iterate via `az containerapp update --image`
+
+TEST RESULTS:
+- All 36 existing tests pass after the storage refactor
+- 10 new tests added (Cosmos dispatch + user context) — total 46 passing
+- No network in any test — all monkeypatch storage_cosmos.is_enabled/read_doc/upsert_doc
+
+SECURITY POSTURE:
+- All API keys → ACA secrets (encrypted at rest, injected as env vars)
+- No keys in image (Dockerfile copies code only) — runtime-only via ACA secret refs
+- Cosmos: server-side encryption by default, partition by /user_id isolates data
+- Public ingress: rely on AOAI's 10K TPM throttle for v1; rate-limit revisit later
+
+NOT CHANGED:
+- graph.py — same single-agent loop
+- agents/trip_agent.py — same 19 tools, same prompt
+- All tool implementations (Duffel/Amadeus/Places/Tavily) — backend-agnostic now
+- CLI still works locally (cli.py), API still works locally (api.py)
+
+=== END OF SESSION 6 ENTRIES ===
+
+
+

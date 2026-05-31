@@ -1,8 +1,11 @@
-"""Persistent user preferences store — JSON file backed.
+"""Persistent user preferences store.
+
+Two backends, auto-selected:
+- **Cosmos DB** when ``COSMOS_ENDPOINT`` is configured (hosted multi-user mode)
+- **Local JSON file** otherwise (CLI / tests / dev)
 
 Stores family configuration, trip style, budget level, transport/hotel
-preferences, dietary needs, and past trip history. Shared across agents
-but primarily used by the Trip Planner.
+preferences, dietary needs, and past trip history.
 """
 
 from __future__ import annotations
@@ -11,8 +14,14 @@ import json
 from pathlib import Path
 from typing import Any
 
+from multiagent import storage_cosmos
+from multiagent.user_context import get_user_id
+
 _PREFS_DIR = Path.home() / ".multiagent"
 _PREFS_FILE = _PREFS_DIR / "user_preferences.json"
+
+_COSMOS_CONTAINER = "users"
+_PREFS_DOC_ID = "preferences"
 
 _DEFAULT_PREFS: dict[str, Any] = {
     "family": {
@@ -47,22 +56,42 @@ _DEFAULT_PREFS: dict[str, Any] = {
 }
 
 
-def _ensure_dir() -> None:
-    _PREFS_DIR.mkdir(parents=True, exist_ok=True)
+def _resolve_prefs_path() -> Path:
+    """Path used by the local file backend for the current user.
+
+    The default ("local") user maps to ``_PREFS_FILE`` so tests can monkeypatch
+    the module attr. Real per-user IDs (Chainlit sessions) get a scoped subdir.
+    """
+    uid = get_user_id()
+    if uid == "local":
+        return _PREFS_FILE
+    return _PREFS_DIR / "users" / uid / "preferences.json"
 
 
 def load_preferences() -> dict[str, Any]:
-    """Load preferences from disk, merging with defaults for any missing keys."""
-    if _PREFS_FILE.exists():
-        raw = json.loads(_PREFS_FILE.read_text(encoding="utf-8"))
+    """Load preferences, merging with defaults for any missing keys."""
+    if storage_cosmos.is_enabled():
+        raw = storage_cosmos.read_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID)
+        if raw:
+            return _deep_merge(_DEFAULT_PREFS, raw)
+        return json.loads(json.dumps(_DEFAULT_PREFS))
+
+    path = _resolve_prefs_path()
+    if path.exists():
+        raw = json.loads(path.read_text(encoding="utf-8"))
         return _deep_merge(_DEFAULT_PREFS, raw)
-    return json.loads(json.dumps(_DEFAULT_PREFS))  # deep copy
+    return json.loads(json.dumps(_DEFAULT_PREFS))
 
 
 def save_preferences(prefs: dict[str, Any]) -> None:
-    """Persist preferences to disk."""
-    _ensure_dir()
-    _PREFS_FILE.write_text(json.dumps(prefs, indent=2, ensure_ascii=False), encoding="utf-8")
+    """Persist preferences (Cosmos when configured, else local JSON)."""
+    if storage_cosmos.is_enabled():
+        storage_cosmos.upsert_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID, prefs)
+        return
+
+    path = _resolve_prefs_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(prefs, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def update_preferences(updates: dict[str, Any]) -> dict[str, Any]:

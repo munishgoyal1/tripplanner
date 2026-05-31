@@ -12,28 +12,46 @@ and can execute bookings on the user's behalf.
 
 ## Architecture
 
+Two run modes from the same codebase — only persistence + entrypoint differ.
+
+### Local mode (CLI / API / tests)
 ```
-User ──► FastAPI / CLI
-              │
-              ▼
-      ┌──────────────┐
-      │  Trip Agent   │  (GPT-4o + 18 tools)
-      └──────┬───────┘
-             │
-     ┌───────┼────────┬──────────┐
-     ▼       ▼        ▼          ▼
-  Search  Reviews   Web        Planner +
-  Tools   Tools     Search     Preferences
-     │      │         │            │
-     ▼      ▼         ▼            ▼
-  Amadeus  Google   Tavily      ~/.multiagent/
-  APIs     Places   Search      trip state +
-                                preferences
+User ──► Rich CLI  or  FastAPI
+                  │
+                  ▼
+          ┌──────────────┐
+          │  Trip Agent  │  (GPT-4o + 19 tools)
+          └──────┬───────┘
+                 │
+         ┌───────┼────────┬──────────┐
+         ▼       ▼        ▼          ▼
+      Search  Reviews   Web        Planner +
+      Tools   Tools     Search     Preferences
+         │      │         │            │
+         ▼      ▼         ▼            ▼
+      Duffel  Google   Tavily      ~/.multiagent/
+      Amadeus Places   Search      *.json (local)
+```
+
+### Hosted mode (Chainlit on Azure Container Apps)
+```
+Browser ──► *.azurecontainerapps.io ──► Chainlit chat UI
+                                              │
+                                              ▼
+                                       Trip Agent (same)
+                                              │
+                                              ▼
+                                        Azure Cosmos DB
+                                        (per-user docs,
+                                         /user_id partition,
+                                         Free Tier 1000 RU/s)
 ```
 
 Single-agent LangGraph graph with a tool-calling loop. The agent calls search
-tools (Amadeus API), manages a trip plan through draft → finalized → booked
-lifecycle, and persists user preferences to disk for learning.
+tools (Duffel primary, Amadeus fallback), manages a trip plan through draft →
+finalized → booked lifecycle, and persists user preferences. Storage dispatch
+is automatic: `storage_cosmos.is_enabled()` returns True iff `COSMOS_ENDPOINT`
+is set, otherwise local JSON files are used.
 
 ## Capabilities
 
@@ -87,11 +105,12 @@ Stored at `~/.multiagent/user_preferences.json`, tracks:
 | Travel APIs | Amadeus Self-Service | Flights, hotels, activities, POI |
 | Web API | FastAPI + Uvicorn | Async, fast, auto-docs |
 | CLI | Rich | Beautiful terminal UI |
-| Persistence | JSON files (~/.multiagent/) | Preferences + trip history |
-| Hosting target | Azure Container Apps | Serverless, scales to zero |
+| Persistence | JSON files (local) / Cosmos DB (hosted) | Auto-dispatch via env var |
+| Hosting target | Azure Container Apps + Chainlit UI | Serverless, scales to zero |
 
 ## Quick Start
 
+### Local CLI
 ```bash
 # Clone
 git clone https://github.com/munishgoyal1/multiagent.git
@@ -113,6 +132,19 @@ uv run python -m multiagent.cli
 # Run the API server
 uv run uvicorn multiagent.api:app --reload
 ```
+
+### Local hosted-UI preview (Chainlit chat)
+```bash
+uv pip install ".[web]"
+uv run chainlit run src/multiagent/web/app.py --port 8000
+# open http://localhost:8000
+```
+
+### Deploy to Azure (hosted, multi-user, Cosmos-backed)
+See [infra/README.md](infra/README.md) for the full deploy walkthrough
+(GHCR push + `az deployment group create`). Designed to stay inside the
+₹10,000/mo Azure free credit by combining Container Apps scale-to-zero
+with Cosmos DB Free Tier (1000 RU/s + 25 GB free).
 
 ## Setup
 
@@ -167,32 +199,45 @@ multiagent/
 ├── .github/copilot-instructions.md  # Agent context for Copilot/AI sessions
 ├── pyproject.toml                # Dependencies & project config
 ├── Dockerfile                    # Container image for Azure deployment
+├── chainlit.md                   # Welcome screen for hosted chat UI
+│
+├── infra/
+│   ├── main.bicep                # RG-scope IaC (ACA + Cosmos + Log Analytics)
+│   ├── main.bicepparam           # Pulls values from env vars
+│   └── README.md                 # Deploy walkthrough
 │
 ├── src/multiagent/
 │   ├── __init__.py
 │   ├── __main__.py               # Entry: python -m multiagent
-│   ├── config.py                 # Pydantic Settings from .env
+│   ├── config.py                 # Pydantic Settings from .env (incl. Cosmos)
 │   ├── graph.py                  # LangGraph single-agent with tool loop
-│   ├── cli.py                    # Rich interactive CLI
-│   ├── api.py                    # FastAPI server (/chat, /health)
+│   ├── cli.py                    # Rich interactive CLI (local)
+│   ├── api.py                    # FastAPI server (local)
+│   ├── user_context.py           # ContextVar holding current user_id
+│   ├── storage_cosmos.py         # Optional Cosmos backend (lazy import)
+│   │
+│   ├── web/
+│   │   ├── __init__.py
+│   │   └── app.py                # Chainlit chat app (hosted mode entrypoint)
 │   │
 │   ├── agents/
-│   │   └── trip_agent.py         # Trip planner (14 tools, preference-aware)
+│   │   └── trip_agent.py         # Trip planner (19 tools, preference-aware)
 │   │
 │   └── tools/
-│       ├── amadeus_client.py     # Amadeus API HTTP client (OAuth2)
-│       ├── flight_search.py      # Flight search + IATA resolution
-│       ├── hotel_search.py       # Hotel search + formatting
-│       ├── activities_search.py  # Tours, attractions, POI search
+│       ├── duffel_flights.py     # Duffel flight search (PRIMARY)
+│       ├── amadeus_client.py     # Amadeus OAuth2 client
+│       ├── flight_search.py      # Amadeus flight search (fallback)
+│       ├── hotel_search.py       # Amadeus hotel search
+│       ├── activities_search.py  # Amadeus tours & POI
 │       ├── google_places.py      # Real ratings, reviews, restaurants
 │       ├── web_search.py         # Tavily live web search
-│       ├── trip_planner.py       # Trip plan state (draft→finalize→book)
-│       └── user_preferences.py   # Persistent user preference store
+│       ├── trip_planner.py       # Trip lifecycle (Cosmos-aware)
+│       └── user_preferences.py   # Preference store (Cosmos-aware)
 │
 ├── tests/
-│   └── test_trip.py              # 31 tests (prefs, plan state, helpers)
+│   └── test_trip.py              # 46 tests (prefs, planner, helpers, Cosmos dispatch)
 │
-└── ~/.multiagent/                # User data (created at runtime)
+└── ~/.multiagent/                # User data when running locally
     ├── user_preferences.json     # Preferences & past trip history
     ├── active_trip.json          # Current trip plan in progress
     └── trips/                    # Archived booked trips
@@ -214,18 +259,22 @@ uv run pytest -v
 ## Roadmap
 
 - [x] Persistent user preference memory
-- [x] Real flight/hotel/activity search via Amadeus
+- [x] Real flight search via Duffel (primary) + Amadeus (fallback)
+- [x] Real hotel/activity search via Amadeus
 - [x] Real ratings & reviews via Google Places
 - [x] Fresh web content via Tavily search
 - [x] Trip plan lifecycle (draft → finalize → book)
 - [x] Past trip history for learning
+- [x] Chainlit chat UI for hosted multi-user mode
+- [x] Azure Cosmos DB persistence (auto-dispatch when configured)
+- [x] Azure Container Apps Bicep IaC (Free Tier compatible)
 - [ ] TripAdvisor Content API (deeper review data, requires approval)
-- [ ] Real booking execution (Amadeus Flight Orders API)
+- [ ] Real booking execution via Duffel Orders API
 - [ ] Hotel booking integration (Booking.com / Agoda API)
 - [ ] Activity booking integration (Viator / GetYourGuide)
 - [ ] Multi-city trip support
 - [ ] Group trip planning (multiple families)
-- [ ] Deploy to Azure Container Apps via `azd`
+- [ ] Custom domain + auth on top of the hosted Chainlit UI
 
 ## Key Files for New Agents/Sessions
 

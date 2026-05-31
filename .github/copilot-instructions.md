@@ -40,26 +40,42 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-05-30)
+## Current State (last updated 2026-05-31)
+- **Two run modes from one codebase:**
+  - LOCAL: CLI (`cli.py`) or FastAPI (`api.py`) — persistence to `~/.multiagent/*.json`
+  - HOSTED: Chainlit chat UI (`web/app.py`) — persistence to Azure Cosmos DB
+  - Auto-dispatch via `storage_cosmos.is_enabled()` (True when `COSMOS_ENDPOINT` env var set)
+  - Per-user identity tracked via `multiagent.user_context.get_user_id()` (ContextVar, default `"local"`)
 - Single trip planner agent with 19 tools across 5 families:
-  - Preferences (3): get/save/record_past_trip
+  - Preferences (3): get/save/record_past_trip (Cosmos-aware)
   - Duffel flight search (1): search_flights_duffel — PREFERRED primary flight provider
   - Amadeus search (4): flights (fallback), hotels, activities, POI
     (Amadeus self-service is being decommissioned 2026-07-17; kept for hotels & activities)
   - Google Places ratings (3): search_places_with_reviews, get_place_reviews, nearby_restaurants
   - Tavily web search (1): web_search
-  - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips
+  - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips (Cosmos-aware)
 - Trip plan lifecycle: draft → finalized → booked (with execute command)
-- Persistent user preferences at ~/.multiagent/user_preferences.json
-  (family config, trip style, budget, hotel/transport/food prefs, past trip history)
-- Trip state at ~/.multiagent/active_trip.json, archived in ~/.multiagent/trips/
-- 36 tests all passing (preferences, plan state, flight/activity/places/web/duffel helpers)
-- Removed: todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
+- Persistent user preferences:
+  - Local: `~/.multiagent/user_preferences.json`
+  - Hosted: Cosmos DB `users` container, doc id `preferences`, PK `/user_id`
+- Trip state:
+  - Local: `~/.multiagent/active_trip.json`, archived in `~/.multiagent/trips/`
+  - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
+- Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
+  Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
+- 46 tests all passing (10 new Cosmos dispatch + user_context tests added in Session 6)
 - New API keys gracefully degrade — tools return "not configured" when env var missing.
+- Removed (Session 1): todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
 
 ## Files to Read for Context
-- `REQUIREMENTS.txt` — full history of requirements and decisions
-- `README.md` — architecture, setup, project structure
-- `src/multiagent/graph.py` — single-agent tool loop
+- `REQUIREMENTS.txt` — full history of requirements and decisions (Session 6 = hosted mode)
+- `README.md` — architecture (local + hosted), setup, project structure
+- `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
+- `src/multiagent/graph.py` — single-agent tool loop (unchanged for hosted mode)
 - `src/multiagent/agents/trip_agent.py` — trip agent with 19 tools
+- `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
+- `src/multiagent/user_context.py` — per-request user_id ContextVar
+- `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint
 - `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
+- `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier
+
