@@ -8,6 +8,7 @@ from langchain_core.messages import SystemMessage
 from langchain_core.tools import tool
 
 from multiagent.tools.activities_search import search_activities, search_points_of_interest
+from multiagent.tools.duffel_flights import search_flights_duffel
 from multiagent.tools.flight_search import search_flights
 from multiagent.tools.google_places import (
     get_place_reviews,
@@ -98,7 +99,10 @@ STEP 2 — UNDERSTAND THE REQUEST
 
 STEP 3 — PARALLEL SEARCH (do all at once)
   Call these tools in parallel based on preferences:
-  a) search_flights — real flights with airlines, times, stops, prices
+  a) search_flights_duffel — PREFERRED flight search (Duffel API). Real airlines,
+     times, stops, prices. Use this first. Only fall back to search_flights
+     (Amadeus) if Duffel returns nothing useful — Amadeus self-service is being
+     decommissioned on July 17, 2026.
   b) search_hotels — real hotels with names, ratings, prices (Amadeus pricing)
   c) search_places_with_reviews — Google ratings/reviews for shortlisted hotels
      and attractions. ALWAYS run this on any hotel before recommending it.
@@ -179,8 +183,10 @@ TRIP_TOOLS = [
     get_travel_preferences,
     save_travel_preferences,
     record_past_trip,
-    # Real search (Amadeus — bookable inventory)
+    # Flights — Duffel preferred, Amadeus kept as fallback (deprecating 2026-07-17)
+    search_flights_duffel,
     search_flights,
+    # Real search (Amadeus — bookable inventory)
     search_hotels,
     search_activities,
     search_points_of_interest,

@@ -19,12 +19,19 @@ class Settings(BaseModel):
     azure_openai_api_version: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
 
     # Amadeus Self-Service API (flights, hotels, activities)
-    # Sign up free: https://developers.amadeus.com
+    # NOTE: Amadeus Self-Service is being decommissioned on July 17, 2026.
+    # Code preserved for future enterprise-tier migration. Prefer Duffel for new searches.
+    # Sign up free (while available): https://developers.amadeus.com
     amadeus_api_key: str = os.getenv("AMADEUS_API_KEY", "")
     amadeus_api_secret: str = os.getenv("AMADEUS_API_SECRET", "")
     amadeus_base_url: str = os.getenv(
         "AMADEUS_BASE_URL", "https://test.api.amadeus.com"
     )  # Use https://api.amadeus.com for production
+
+    # Duffel API (primary flight provider) — modern flight search & booking
+    # Free test mode (no credit card): https://app.duffel.com/sign-up
+    # Test tokens look like duffel_test_xxx and return synthetic offers.
+    duffel_api_key: str = os.getenv("DUFFEL_API_KEY", "")
 
     # Google Places API (New) — restaurant/attraction ratings & reviews
     # Get a key: https://console.cloud.google.com (enable 'Places API (New)')

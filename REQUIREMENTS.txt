@@ -293,3 +293,55 @@ NOT CHANGED:
 - Single-agent architecture
 
 === END OF SESSION 4 ENTRIES ===
+
+
+=== SESSION 5 (2026-05-30): SWITCH FLIGHT PROVIDER TO DUFFEL ===
+
+MOTIVATION:
+- Discovered Amadeus Self-Service portal is being decommissioned on July 17, 2026.
+- User decision: KEEP Amadeus code intact (for future enterprise-tier access)
+  but switch primary flight searches to Duffel for now.
+- Tavily key added to .env (no other API changes from user side).
+
+DUFFEL INTEGRATION (src/multiagent/tools/duffel_flights.py — new file):
+- @tool search_flights_duffel(origin, destination, departure_date, return_date,
+  adults, children, infants, cabin_class, max_connections, max_results)
+- POST https://api.duffel.com/air/offer_requests with return_offers=true
+- Headers: Authorization Bearer, Duffel-Version: v2, JSON content
+- Reuses resolve_iata() from flight_search.py (city → IATA mapping)
+- Sorts offers by total_amount ascending, returns top N
+- Friendly 'not configured' message with signup link when DUFFEL_API_KEY empty
+- Handles HTTPStatusError by parsing errors[].title/message from response body
+
+CONFIG (src/multiagent/config.py):
+- New setting: duffel_api_key from DUFFEL_API_KEY env var
+- Amadeus block re-commented as 'kept for future enterprise migration'
+
+AGENT WIRING (src/multiagent/agents/trip_agent.py):
+- Imports search_flights_duffel alongside search_flights
+- TRIP_TOOLS list grew from 18 → 19 tools (search_flights_duffel first)
+- System prompt STEP 3a updated: prefer Duffel, fall back to Amadeus only if
+  Duffel returns nothing (and notes Amadeus deprecation date)
+
+.env / .env.example:
+- New DUFFEL_API_KEY section marked PREFERRED with sign-up link
+- Amadeus section re-labeled DEPRECATED (hotels/activities fallback only)
+- User pastes duffel_test_* token into .env (free, no credit card)
+
+TESTS (tests/test_trip.py):
+- New TestDuffelHelpers class: _format_duration ISO 8601, _format_segment,
+  _format_offers empty/sorted-by-price, not-configured friendly message
+- 31 tests → 36 tests, still all offline (monkeypatched get_settings)
+
+DOCS:
+- .github/copilot-instructions.md updated: 19 tools, Duffel listed as primary
+  flight provider, Amadeus marked as deprecated fallback
+- This REQUIREMENTS.txt entry
+
+NOT CHANGED:
+- Amadeus flight_search.py / hotel_search.py / activities_search.py kept as-is
+- All Google Places, Tavily, trip_planner, user_preferences tools untouched
+- Single-agent architecture unchanged
+
+=== END OF SESSION 5 ENTRIES ===
+

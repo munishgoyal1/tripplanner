@@ -41,9 +41,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-05-30)
-- Single trip planner agent with 18 tools across 4 families:
+- Single trip planner agent with 19 tools across 5 families:
   - Preferences (3): get/save/record_past_trip
-  - Amadeus real search (4): flights, hotels, activities, POI
+  - Duffel flight search (1): search_flights_duffel — PREFERRED primary flight provider
+  - Amadeus search (4): flights (fallback), hotels, activities, POI
+    (Amadeus self-service is being decommissioned 2026-07-17; kept for hotels & activities)
   - Google Places ratings (3): search_places_with_reviews, get_place_reviews, nearby_restaurants
   - Tavily web search (1): web_search
   - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips
@@ -51,7 +53,7 @@ Learns from user preferences and past trips.
 - Persistent user preferences at ~/.multiagent/user_preferences.json
   (family config, trip style, budget, hotel/transport/food prefs, past trip history)
 - Trip state at ~/.multiagent/active_trip.json, archived in ~/.multiagent/trips/
-- 31 tests all passing (preferences, plan state, flight/activity/places/web helpers)
+- 36 tests all passing (preferences, plan state, flight/activity/places/web/duffel helpers)
 - Removed: todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
 - New API keys gracefully degrade — tools return "not configured" when env var missing.
 
@@ -59,5 +61,5 @@ Learns from user preferences and past trips.
 - `REQUIREMENTS.txt` — full history of requirements and decisions
 - `README.md` — architecture, setup, project structure
 - `src/multiagent/graph.py` — single-agent tool loop
-- `src/multiagent/agents/trip_agent.py` — trip agent with 18 tools
-- `src/multiagent/tools/` — Amadeus, Google Places, Tavily, plan state, preferences
+- `src/multiagent/agents/trip_agent.py` — trip agent with 19 tools
+- `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences

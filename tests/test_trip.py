@@ -381,3 +381,109 @@ class TestWebSearchHelpers:
         assert not web_search.is_configured()
         result = web_search_tool.invoke({"query": "best beaches in Goa"})
         assert "not configured" in result.lower()
+
+
+# ---------------------------------------------------------------------------
+# Duffel flight search helpers (no network — formatting & config checks only)
+# ---------------------------------------------------------------------------
+from multiagent.tools import duffel_flights
+from multiagent.tools.duffel_flights import (
+    _format_duration,
+    _format_offers,
+    _format_segment,
+    search_flights_duffel,
+)
+
+
+class TestDuffelHelpers:
+    def test_format_duration_basic(self):
+        assert _format_duration("PT5H30M") == "5h 30m"
+        assert _format_duration("PT2H") == "2h"
+        assert _format_duration("PT45M") == "45m"
+        assert _format_duration("") == ""
+
+    def test_format_segment_minimal(self):
+        seg = {
+            "marketing_carrier": {"iata_code": "AI"},
+            "marketing_carrier_flight_number": "101",
+            "origin": {"iata_code": "DEL"},
+            "destination": {"iata_code": "BOM"},
+            "departing_at": "2026-03-01T09:30:00",
+            "arriving_at": "2026-03-01T11:45:00",
+            "duration": "PT2H15M",
+        }
+        line = _format_segment(seg)
+        assert "AI101" in line
+        assert "DEL 09:30" in line
+        assert "BOM 11:45" in line
+        assert "2h 15m" in line
+
+    def test_format_offers_empty(self):
+        assert "No Duffel offers" in _format_offers([], 5)
+
+    def test_format_offers_sorts_by_price(self):
+        offers = [
+            {
+                "total_amount": "500.00",
+                "total_currency": "INR",
+                "owner": {"name": "Expensive Air"},
+                "slices": [
+                    {
+                        "duration": "PT2H",
+                        "segments": [
+                            {
+                                "marketing_carrier": {"iata_code": "XX"},
+                                "marketing_carrier_flight_number": "999",
+                                "origin": {"iata_code": "DEL"},
+                                "destination": {"iata_code": "BOM"},
+                                "departing_at": "2026-03-01T08:00:00",
+                                "arriving_at": "2026-03-01T10:00:00",
+                                "duration": "PT2H",
+                            }
+                        ],
+                    }
+                ],
+            },
+            {
+                "total_amount": "100.00",
+                "total_currency": "INR",
+                "owner": {"name": "Cheap Air"},
+                "slices": [
+                    {
+                        "duration": "PT2H",
+                        "segments": [
+                            {
+                                "marketing_carrier": {"iata_code": "YY"},
+                                "marketing_carrier_flight_number": "1",
+                                "origin": {"iata_code": "DEL"},
+                                "destination": {"iata_code": "BOM"},
+                                "departing_at": "2026-03-01T09:00:00",
+                                "arriving_at": "2026-03-01T11:00:00",
+                                "duration": "PT2H",
+                            }
+                        ],
+                    }
+                ],
+            },
+        ]
+        out = _format_offers(offers, 5)
+        cheap_pos = out.find("Cheap Air")
+        exp_pos = out.find("Expensive Air")
+        assert 0 <= cheap_pos < exp_pos
+
+    def test_not_configured_returns_friendly_message(self, monkeypatch):
+        from multiagent import config
+        monkeypatch.setattr(
+            config, "get_settings",
+            lambda: type("S", (), {"duffel_api_key": ""})(),
+        )
+        monkeypatch.setattr(duffel_flights, "get_settings", config.get_settings)
+        assert not duffel_flights.is_configured()
+        result = search_flights_duffel.invoke({
+            "origin": "Delhi",
+            "destination": "Mumbai",
+            "departure_date": "2026-03-01",
+        })
+        assert "not configured" in result.lower()
+        assert "duffel.com/sign-up" in result.lower()
+
