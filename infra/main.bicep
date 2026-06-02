@@ -87,6 +87,46 @@ var appName = '${namePrefix}-app-${suffix}'
 var cosmosAccountName = toLower('${namePrefix}-cosmos-${suffix}')
 var cosmosDatabaseName = 'multiagent'
 
+// OAuth secrets are only attached when a value is supplied. Container Apps
+// rejects empty-string secret values, so we conditionally build the secrets
+// and env arrays from the OAuth params.
+var oauthSecrets = concat(
+  empty(googleOauthClientId) ? [] : [{ name: 'google-oauth-client-id', value: googleOauthClientId }],
+  empty(googleOauthClientSecret) ? [] : [{ name: 'google-oauth-client-secret', value: googleOauthClientSecret }],
+  empty(githubOauthClientId) ? [] : [{ name: 'github-oauth-client-id', value: githubOauthClientId }],
+  empty(githubOauthClientSecret) ? [] : [{ name: 'github-oauth-client-secret', value: githubOauthClientSecret }],
+  empty(chainlitAuthSecret) ? [] : [{ name: 'chainlit-auth-secret', value: chainlitAuthSecret }]
+)
+
+var oauthEnv = concat(
+  empty(googleOauthClientId) ? [] : [{ name: 'OAUTH_GOOGLE_CLIENT_ID', secretRef: 'google-oauth-client-id' }],
+  empty(googleOauthClientSecret) ? [] : [{ name: 'OAUTH_GOOGLE_CLIENT_SECRET', secretRef: 'google-oauth-client-secret' }],
+  empty(githubOauthClientId) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_ID', secretRef: 'github-oauth-client-id' }],
+  empty(githubOauthClientSecret) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_SECRET', secretRef: 'github-oauth-client-secret' }],
+  empty(chainlitAuthSecret) ? [] : [{ name: 'CHAINLIT_AUTH_SECRET', secretRef: 'chainlit-auth-secret' }]
+)
+
+var baseSecrets = [
+  { name: 'azure-openai-api-key', value: azureOpenAiApiKey }
+  { name: 'duffel-api-key', value: duffelApiKey }
+  { name: 'google-places-api-key', value: googlePlacesApiKey }
+  { name: 'tavily-api-key', value: tavilyApiKey }
+  { name: 'cosmos-key', value: cosmos.listKeys().primaryMasterKey }
+]
+
+var baseEnv = [
+  { name: 'AZURE_OPENAI_ENDPOINT', value: azureOpenAiEndpoint }
+  { name: 'AZURE_OPENAI_DEPLOYMENT', value: azureOpenAiDeployment }
+  { name: 'AZURE_OPENAI_API_VERSION', value: azureOpenAiApiVersion }
+  { name: 'AZURE_OPENAI_API_KEY', secretRef: 'azure-openai-api-key' }
+  { name: 'DUFFEL_API_KEY', secretRef: 'duffel-api-key' }
+  { name: 'GOOGLE_PLACES_API_KEY', secretRef: 'google-places-api-key' }
+  { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
+  { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
+  { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
+  { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
+]
+
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logsName
   location: location
@@ -209,18 +249,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
       }
-      secrets: [
-        { name: 'azure-openai-api-key', value: azureOpenAiApiKey }
-        { name: 'duffel-api-key', value: duffelApiKey }
-        { name: 'google-places-api-key', value: googlePlacesApiKey }
-        { name: 'tavily-api-key', value: tavilyApiKey }
-        { name: 'cosmos-key', value: cosmos.listKeys().primaryMasterKey }
-        { name: 'google-oauth-client-id', value: googleOauthClientId }
-        { name: 'google-oauth-client-secret', value: googleOauthClientSecret }
-        { name: 'github-oauth-client-id', value: githubOauthClientId }
-        { name: 'github-oauth-client-secret', value: githubOauthClientSecret }
-        { name: 'chainlit-auth-secret', value: chainlitAuthSecret }
-      ]
+      secrets: concat(baseSecrets, oauthSecrets)
     }
     template: {
       containers: [
@@ -231,23 +260,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: [
-            { name: 'AZURE_OPENAI_ENDPOINT', value: azureOpenAiEndpoint }
-            { name: 'AZURE_OPENAI_DEPLOYMENT', value: azureOpenAiDeployment }
-            { name: 'AZURE_OPENAI_API_VERSION', value: azureOpenAiApiVersion }
-            { name: 'AZURE_OPENAI_API_KEY', secretRef: 'azure-openai-api-key' }
-            { name: 'DUFFEL_API_KEY', secretRef: 'duffel-api-key' }
-            { name: 'GOOGLE_PLACES_API_KEY', secretRef: 'google-places-api-key' }
-            { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
-            { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
-            { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
-            { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
-            { name: 'OAUTH_GOOGLE_CLIENT_ID', secretRef: 'google-oauth-client-id' }
-            { name: 'OAUTH_GOOGLE_CLIENT_SECRET', secretRef: 'google-oauth-client-secret' }
-            { name: 'OAUTH_GITHUB_CLIENT_ID', secretRef: 'github-oauth-client-id' }
-            { name: 'OAUTH_GITHUB_CLIENT_SECRET', secretRef: 'github-oauth-client-secret' }
-            { name: 'CHAINLIT_AUTH_SECRET', secretRef: 'chainlit-auth-secret' }
-          ]
+          env: concat(baseEnv, oauthEnv)
         }
       ]
       scale: {
