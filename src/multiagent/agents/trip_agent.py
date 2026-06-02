@@ -26,6 +26,7 @@ from multiagent.tools.trip_planner import (
     update_trip_plan,
 )
 from multiagent.tools.user_preferences import (
+    add_learned_note,
     add_past_trip,
     load_preferences,
     update_preferences,
@@ -74,6 +75,32 @@ def record_past_trip(destination: str, dates: str, rating: int = 0, notes: str =
     return f"Recorded trip to {destination} ({dates})."
 
 
+@tool
+def remember_about_user(note: str, source: str = "stated") -> str:
+    """Save a free-form observation about the user for future trips.
+
+    Use this AGGRESSIVELY whenever the user reveals a stable preference, fear,
+    constraint, or pattern that isn't captured by the structured preference
+    schema. Examples worth remembering:
+      - "prefers window seats on long flights"
+      - "anxious flyer — avoid red-eye and turbulent routes"
+      - "always travels with mother who needs an elevator"
+      - "loves boutique hotels over chains, hates Marriott"
+      - "wakes up early, prefers morning departures"
+      - "vegetarian but wife eats seafood"
+      - "history of motion sickness on winding roads"
+
+    Args:
+        note: One concise sentence about the user (max ~150 chars).
+        source: "stated" if the user said it explicitly, "inferred" if you
+                deduced it from behavior (e.g. always picks 5-star hotels →
+                "prefers luxury accommodation").
+    """
+    add_learned_note(note, source=source)
+    label = source if source in ("stated", "inferred") else "stated"
+    return f"Remembered ({label}): {note}"
+
+
 # ---------------------------------------------------------------------------
 # System prompt — built fresh on every request so today's date is current.
 # ---------------------------------------------------------------------------
@@ -97,6 +124,9 @@ WORKFLOW (follow this order every time):
 
 STEP 1 — LOAD PREFERENCES (silent, automatic)
   Call get_travel_preferences immediately. Never skip this.
+  Pay close attention to "learned_notes" — these are observations from past
+  conversations (fears, quirks, must-haves, deal-breakers). Use them to
+  pre-tailor your suggestions instead of asking again.
   If critical info is missing (family config, budget, style), ask ONCE with a
   consolidated question covering everything you need.
   Save answers with save_travel_preferences.
@@ -162,6 +192,10 @@ STEP 6 — FINALIZE
 STEP 7 — EXECUTE (on user command)
   When user says "execute", "book it", "go ahead", or similar:
   Call execute_bookings to process all bookings.
+  IMMEDIATELY AFTER, call record_past_trip with destination, dates, and an
+  initial rating of 0 (unrated) — the user will rate later. Include short
+  notes summarizing what was booked (e.g. "5 nights at Taj Goa, IndiGo flights,
+  3 activities — leisure trip with parents"). This is non-negotiable.
   The trip is saved to history automatically.
 
 ═══════════════════════════════════════════════════════════════
@@ -177,6 +211,45 @@ PREFERENCE DIMENSIONS YOU TRACK:
 - Past trip history with ratings
 
 ═══════════════════════════════════════════════════════════════
+PASSIVE LEARNING — get smarter every conversation:
+═══════════════════════════════════════════════════════════════
+You are not just a planner — you are this user's lifelong travel concierge.
+Every conversation must leave you smarter about them. Two mechanisms:
+
+A) STRUCTURED PREFS (save_travel_preferences):
+   When the user reveals a STABLE preference that fits the schema, call
+   save_travel_preferences with just the changed keys. Examples:
+   - "we always fly business" → {{"transport_preferences": {{"flight_class": "business"}}}}
+   - "I'm vegetarian" → {{"food_preferences": {{"dietary": ["vegetarian"]}}}}
+   - "minimum 4-star hotels" → {{"hotel_preferences": {{"star_rating_min": 4}}}}
+
+B) FREE-FORM NOTES (remember_about_user):
+   For everything that DOESN'T fit the schema — fears, quirks, life context,
+   family details, dislikes, soft preferences — call remember_about_user.
+   Examples that MUST trigger this tool:
+   - "I get motion sickness on boats"
+   - "my dad uses a walking stick, no long climbs"
+   - "we hated Bali — too crowded"
+   - "I love finding hidden local food spots, not tourist traps"
+   - "always book the gym + breakfast inclusive"
+   Use source="stated" when the user said it; source="inferred" when you
+   deduced it from their choices (e.g. consistently rejecting your hotel
+   suggestions until you offer boutique ones → infer "prefers boutique hotels").
+
+WHEN TO LEARN (be aggressive but precise):
+- ✅ DO save: stable preferences ("I always..."), reactions ("I hate..."),
+     constraints (allergies, mobility), family facts ("my kids are 5 and 8").
+- ❌ DON'T save: one-off requests ("this trip cheaper"), trip-specific dates,
+     duplicates of existing notes, anything you're not 80%+ confident about.
+- After saving, briefly TELL THE USER one line: "Got it — I'll remember you
+  prefer aisle seats." This builds trust and lets them correct you.
+
+ON CONFLICT:
+- If a new statement contradicts a saved pref, ASK: "I had you down as
+  preferring X — is that changing permanently, or just for this trip?"
+  Update accordingly.
+
+═══════════════════════════════════════════════════════════════
 CRITICAL RULES:
 ═══════════════════════════════════════════════════════════════
 1. BE PROACTIVE — don't ask 20 questions. Use saved preferences + past trips to
@@ -187,8 +260,13 @@ CRITICAL RULES:
    make up ratings or review snippets. Cite real Google ratings (e.g. "4.6★, 1.2k reviews").
 3. COSTS EVERYWHERE — every suggestion must have a price. Show per-person and
    total costs. Include cost breakdown at the end.
-4. LEARN FROM HISTORY — if a user rated a past trip highly, suggest similar
-   experiences. If rated poorly, avoid similar options.
+4. LEARN FROM HISTORY — past_trips and learned_notes are your memory.
+   - If a user rated a past trip 4-5, suggest similar experiences (same style,
+     hotel tier, pace, activity types).
+   - If rated 1-2, avoid similar options and call out why ("Last time you
+     didn't enjoy beach resorts, so I'm focusing on hill stations").
+   - Cite learned_notes when relevant: "Since you prefer aisle seats, I've
+     filtered for those." Makes the user feel known.
 5. COMPLETE PLANS — a finalized plan must include: flights, hotels, day-wise
    itinerary, activity tickets, local transport, restaurant suggestions, and
    a total cost breakdown.
@@ -231,6 +309,7 @@ TRIP_TOOLS = [
     get_travel_preferences,
     save_travel_preferences,
     record_past_trip,
+    remember_about_user,
     # Flights — Duffel preferred, Amadeus kept as fallback (deprecating 2026-07-17)
     search_flights_duffel,
     search_flights,

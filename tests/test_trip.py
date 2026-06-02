@@ -734,3 +734,90 @@ class TestSystemPromptDateInjection:
         """Importers that grab the static TRIP_SYSTEM_PROMPT still work."""
         assert TRIP_SYSTEM_PROMPT is not None
         assert "Trip Planner Agent" in TRIP_SYSTEM_PROMPT.content
+
+
+# ---------------------------------------------------------------------------
+# Passive learning — learned_notes + remember_about_user tool
+# ---------------------------------------------------------------------------
+from multiagent.agents.trip_agent import remember_about_user
+from multiagent.tools.user_preferences import add_learned_note
+
+
+class TestPassiveLearning:
+    """Free-form observations get persisted, deduped, and tagged with source."""
+
+    def test_add_learned_note_appends(self):
+        prefs = add_learned_note("prefers window seats", source="stated")
+        assert any(n["note"] == "prefers window seats" for n in prefs["learned_notes"])
+        assert prefs["learned_notes"][-1]["source"] == "stated"
+        assert "at" in prefs["learned_notes"][-1]
+
+    def test_add_learned_note_dedupes_case_insensitive(self):
+        add_learned_note("Prefers window seats", source="stated")
+        prefs = add_learned_note("prefers WINDOW seats", source="inferred")
+        notes = [n for n in prefs["learned_notes"] if "window seats" in n["note"].lower()]
+        assert len(notes) == 1
+
+    def test_add_learned_note_rejects_empty(self):
+        prefs = add_learned_note("   ", source="stated")
+        assert prefs["learned_notes"] == []
+
+    def test_add_learned_note_invalid_source_defaults_to_stated(self):
+        prefs = add_learned_note("dislikes red-eyes", source="garbage")
+        last = prefs["learned_notes"][-1]
+        assert last["source"] == "stated"
+
+    def test_remember_about_user_tool(self):
+        result = remember_about_user.invoke({
+            "note": "anxious flyer — avoid red-eyes",
+            "source": "stated",
+        })
+        assert "Remembered" in result
+        prefs = load_preferences()
+        assert any("anxious flyer" in n["note"] for n in prefs["learned_notes"])
+
+    def test_remember_about_user_inferred(self):
+        result = remember_about_user.invoke({
+            "note": "prefers boutique hotels over chains",
+            "source": "inferred",
+        })
+        assert "inferred" in result
+        prefs = load_preferences()
+        match = [n for n in prefs["learned_notes"] if "boutique" in n["note"]]
+        assert match and match[0]["source"] == "inferred"
+
+    def test_default_prefs_include_learned_notes(self):
+        prefs = load_preferences()
+        assert "learned_notes" in prefs
+        assert prefs["learned_notes"] == []
+
+
+class TestPassiveLearningPromptRules:
+    """The system prompt must explicitly instruct the model to learn passively."""
+
+    def test_prompt_mentions_remember_about_user(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "remember_about_user" in msg.content
+
+    def test_prompt_has_passive_learning_section(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "PASSIVE LEARNING" in msg.content
+
+    def test_prompt_distinguishes_stated_vs_inferred(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "stated" in msg.content
+        assert "inferred" in msg.content
+
+    def test_prompt_loads_learned_notes_in_step_1(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "learned_notes" in msg.content
+
+    def test_prompt_auto_records_after_execute(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        # Step 7 must require record_past_trip after execute_bookings
+        assert "record_past_trip" in msg.content
+        assert "non-negotiable" in msg.content.lower() or "immediately after" in msg.content.lower()
+
+    def test_prompt_has_conflict_resolution_rule(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "CONFLICT" in msg.content or "conflict" in msg.content.lower()

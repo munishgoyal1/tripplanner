@@ -53,6 +53,11 @@ _DEFAULT_PREFS: dict[str, Any] = {
     },
     "accessibility_needs": [],
     "past_trips": [],  # [{destination, dates, rating, notes}]
+    # Free-form observations the agent picks up during conversation.
+    # Each entry: {"note": str, "source": "stated" | "inferred", "at": ISO date}
+    # Examples: "prefers window seats", "scared of long bus rides",
+    # "always travels with mother who needs an elevator".
+    "learned_notes": [],
 }
 
 
@@ -115,6 +120,28 @@ def add_past_trip(
         "dates": dates,
         "rating": rating,
         "notes": notes,
+    })
+    save_preferences(prefs)
+    return prefs
+
+
+def add_learned_note(note: str, source: str = "stated") -> dict[str, Any]:
+    """Append a free-form observation about the user.
+
+    De-dupes by exact note text (case-insensitive) so the same insight isn't
+    written twice across turns.
+    """
+    from datetime import datetime, timezone
+
+    prefs = load_preferences()
+    existing = {n.get("note", "").strip().lower() for n in prefs.get("learned_notes", [])}
+    cleaned = note.strip()
+    if cleaned.lower() in existing or not cleaned:
+        return prefs
+    prefs.setdefault("learned_notes", []).append({
+        "note": cleaned,
+        "source": source if source in ("stated", "inferred") else "stated",
+        "at": datetime.now(timezone.utc).date().isoformat(),
     })
     save_preferences(prefs)
     return prefs
