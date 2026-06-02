@@ -24,6 +24,24 @@ _COSMOS_CONTAINER = "users"
 _PREFS_DOC_ID = "preferences"
 
 _DEFAULT_PREFS: dict[str, Any] = {
+    # Who the user is (extracted passively from conversation)
+    "profile": {
+        "display_name": None,     # "Munish"
+        "home_city": None,        # "Bengaluru"
+        "home_country": None,     # "India"
+        "age_band": None,         # "20-30" | "30-40" | "40-50" | "50-60" | "60+"
+        "occupation": None,       # "software engineer" | "doctor" | ...
+    },
+    # Rich family roster (richer than the legacy `family` counts below)
+    # Each: {relationship, name, age, dietary, mobility, interests, notes}
+    "family_members": [],
+    # High-level interests / dislikes the user reveals over time
+    "interests": [],              # ["hiking", "food", "culture", "photography"]
+    "dislikes": [],               # ["crowded places", "long drives", "spicy food"]
+    # Trips the user CASUALLY MENTIONED (not planned by this agent).
+    # Each: {destination, when, with_whom, sentiment, notes, source, at}
+    "past_trip_mentions": [],
+    # Legacy counters (kept for back-compat; family_members is the new source of truth)
     "family": {
         "adults": 1,
         "children": 0,
@@ -52,7 +70,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "cuisine_dislikes": [],
     },
     "accessibility_needs": [],
-    "past_trips": [],  # [{destination, dates, rating, notes}]
+    "past_trips": [],  # agent-planned trips: [{destination, dates, rating, notes}]
     # Free-form observations the agent picks up during conversation.
     # Each entry: {"note": str, "source": "stated" | "inferred", "at": ISO date}
     # Examples: "prefers window seats", "scared of long bus rides",
@@ -143,6 +161,191 @@ def add_learned_note(note: str, source: str = "stated") -> dict[str, Any]:
         "source": source if source in ("stated", "inferred") else "stated",
         "at": datetime.now(timezone.utc).date().isoformat(),
     })
+    save_preferences(prefs)
+    return prefs
+
+
+_VALID_RELATIONSHIPS = {
+    "self", "spouse", "partner", "child", "parent", "sibling",
+    "friend", "pet", "other",
+}
+
+
+def update_profile(updates: dict[str, Any]) -> dict[str, Any]:
+    """Patch the user's profile (display_name, home_city, etc.).
+
+    Only non-None values in `updates` are applied — explicit None is treated
+    as 'don't touch this field' rather than 'clear it' so the agent can call
+    the tool with partial info safely.
+    """
+    prefs = load_preferences()
+    profile = dict(prefs.get("profile") or {})
+    for key, val in updates.items():
+        if val is None:
+            continue
+        if isinstance(val, str):
+            val = val.strip()
+            if not val:
+                continue
+        profile[key] = val
+    prefs["profile"] = profile
+    save_preferences(prefs)
+    return prefs
+
+
+def upsert_family_member(
+    relationship: str,
+    name: str | None = None,
+    age: int | None = None,
+    dietary: list[str] | None = None,
+    mobility: list[str] | None = None,
+    interests: list[str] | None = None,
+    notes: str | None = None,
+) -> dict[str, Any]:
+    """Add or update a family member, keyed by (relationship, name).
+
+    Match is case-insensitive on both. When a match exists, non-None fields
+    overwrite; list fields are merged (de-duped). Unknown relationship maps
+    to 'other'.
+    """
+    rel = (relationship or "").strip().lower()
+    if rel not in _VALID_RELATIONSHIPS:
+        rel = "other"
+    nm = (name or "").strip() or None
+
+    prefs = load_preferences()
+    members = list(prefs.get("family_members") or [])
+
+    def _key(m: dict[str, Any]) -> tuple[str, str]:
+        return (
+            (m.get("relationship") or "").strip().lower(),
+            (m.get("name") or "").strip().lower(),
+        )
+
+    target_key = (rel, (nm or "").lower())
+    existing_idx = next(
+        (i for i, m in enumerate(members) if _key(m) == target_key),
+        None,
+    )
+
+    def _merge_list(old: list[str] | None, new: list[str] | None) -> list[str]:
+        merged: list[str] = []
+        seen: set[str] = set()
+        for item in (old or []) + (new or []):
+            if not isinstance(item, str):
+                continue
+            cleaned = item.strip()
+            if not cleaned:
+                continue
+            key = cleaned.lower()
+            if key not in seen:
+                seen.add(key)
+                merged.append(cleaned)
+        return merged
+
+    if existing_idx is not None:
+        member = dict(members[existing_idx])
+        if age is not None:
+            member["age"] = age
+        if dietary is not None:
+            member["dietary"] = _merge_list(member.get("dietary"), dietary)
+        if mobility is not None:
+            member["mobility"] = _merge_list(member.get("mobility"), mobility)
+        if interests is not None:
+            member["interests"] = _merge_list(member.get("interests"), interests)
+        if notes is not None and notes.strip():
+            member["notes"] = notes.strip()
+        members[existing_idx] = member
+    else:
+        members.append({
+            "relationship": rel,
+            "name": nm,
+            "age": age,
+            "dietary": _merge_list(None, dietary),
+            "mobility": _merge_list(None, mobility),
+            "interests": _merge_list(None, interests),
+            "notes": (notes or "").strip() or None,
+        })
+
+    prefs["family_members"] = members
+    save_preferences(prefs)
+    return prefs
+
+
+def _append_unique_str(field: str, item: str) -> dict[str, Any]:
+    cleaned = (item or "").strip()
+    if not cleaned:
+        return load_preferences()
+    prefs = load_preferences()
+    bucket = list(prefs.get(field) or [])
+    if cleaned.lower() not in {x.strip().lower() for x in bucket if isinstance(x, str)}:
+        bucket.append(cleaned)
+        prefs[field] = bucket
+        save_preferences(prefs)
+    return prefs
+
+
+def add_interest(item: str) -> dict[str, Any]:
+    """Append a high-level interest (de-duped, case-insensitive)."""
+    return _append_unique_str("interests", item)
+
+
+def add_dislike(item: str) -> dict[str, Any]:
+    """Append a high-level dislike (de-duped, case-insensitive)."""
+    return _append_unique_str("dislikes", item)
+
+
+def add_trip_mention(
+    destination: str,
+    when: str | None = None,
+    with_whom: str | None = None,
+    sentiment: str = "neutral",
+    notes: str = "",
+    source: str = "stated",
+) -> dict[str, Any]:
+    """Record a trip the user casually mentioned (NOT planned by this agent).
+
+    De-dupes by (destination, when) case-insensitive — if the same pair shows
+    up again, the existing entry's sentiment/notes get updated instead of a
+    duplicate row being added.
+    """
+    from datetime import datetime, timezone
+
+    dest = (destination or "").strip()
+    if not dest:
+        return load_preferences()
+    when_norm = (when or "").strip() or None
+    sentiment_norm = sentiment if sentiment in ("positive", "negative", "mixed", "neutral") else "neutral"
+    source_norm = source if source in ("stated", "inferred") else "stated"
+
+    prefs = load_preferences()
+    mentions = list(prefs.get("past_trip_mentions") or [])
+    target_key = (dest.lower(), (when_norm or "").lower())
+    existing_idx = next(
+        (
+            i for i, m in enumerate(mentions)
+            if (
+                (m.get("destination") or "").strip().lower(),
+                (m.get("when") or "").strip().lower(),
+            ) == target_key
+        ),
+        None,
+    )
+    entry = {
+        "destination": dest,
+        "when": when_norm,
+        "with_whom": (with_whom or "").strip() or None,
+        "sentiment": sentiment_norm,
+        "notes": (notes or "").strip(),
+        "source": source_norm,
+        "at": datetime.now(timezone.utc).date().isoformat(),
+    }
+    if existing_idx is not None:
+        merged = {**mentions[existing_idx], **{k: v for k, v in entry.items() if v not in (None, "")}}
+        mentions[existing_idx] = merged
+    else:
+        mentions.append(entry)
+    prefs["past_trip_mentions"] = mentions
     save_preferences(prefs)
     return prefs
 

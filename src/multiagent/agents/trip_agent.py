@@ -26,10 +26,15 @@ from multiagent.tools.trip_planner import (
     update_trip_plan,
 )
 from multiagent.tools.user_preferences import (
+    add_dislike,
+    add_interest,
     add_learned_note,
     add_past_trip,
+    add_trip_mention,
     load_preferences,
     update_preferences,
+    update_profile,
+    upsert_family_member,
 )
 from multiagent.tools.web_search import web_search
 
@@ -101,6 +106,146 @@ def remember_about_user(note: str, source: str = "stated") -> str:
     return f"Remembered ({label}): {note}"
 
 
+@tool
+def update_user_profile(
+    display_name: str | None = None,
+    home_city: str | None = None,
+    home_country: str | None = None,
+    age_band: str | None = None,
+    occupation: str | None = None,
+) -> str:
+    """Save basic profile facts about the user.
+
+    Call this as soon as you learn the user's name, city, country, age band,
+    or occupation. Pass ONLY the fields you just learned (others stay
+    unchanged). Examples:
+      - User: "I'm Munish from Bengaluru" → update_user_profile(display_name="Munish", home_city="Bengaluru", home_country="India")
+      - User: "I'm a doctor" → update_user_profile(occupation="doctor")
+
+    Args:
+        display_name: First name or how the user introduces themselves.
+        home_city: City of residence (e.g. "Bengaluru").
+        home_country: Country of residence (e.g. "India").
+        age_band: One of "20-30", "30-40", "40-50", "50-60", "60+".
+        occupation: Free-form (e.g. "software engineer", "retired teacher").
+    """
+    update_profile({
+        "display_name": display_name,
+        "home_city": home_city,
+        "home_country": home_country,
+        "age_band": age_band,
+        "occupation": occupation,
+    })
+    saved = {k: v for k, v in {
+        "display_name": display_name,
+        "home_city": home_city,
+        "home_country": home_country,
+        "age_band": age_band,
+        "occupation": occupation,
+    }.items() if v}
+    return f"Profile updated: {saved}" if saved else "Profile unchanged (nothing to save)."
+
+
+@tool
+def add_family_member(
+    relationship: str,
+    name: str | None = None,
+    age: int | None = None,
+    dietary: list[str] | None = None,
+    mobility: list[str] | None = None,
+    interests: list[str] | None = None,
+    notes: str | None = None,
+) -> str:
+    """Add or update a family member who travels with the user.
+
+    Upserts by (relationship, name). Use this whenever the user mentions
+    someone in their travel party — spouse, child, parent, sibling, friend,
+    pet. Examples:
+      - "my wife Priya loves beaches" → add_family_member(relationship="spouse", name="Priya", interests=["beaches"])
+      - "my son is 8 and allergic to peanuts" → add_family_member(relationship="child", age=8, dietary=["nut-free"])
+      - "my mom uses a wheelchair" → add_family_member(relationship="parent", mobility=["wheelchair"])
+
+    Args:
+        relationship: spouse | partner | child | parent | sibling | friend | pet | other
+        name: Their name if known (omit if not).
+        age: Age in years (omit if not known).
+        dietary: Dietary restrictions (vegetarian, vegan, halal, nut-free, etc.).
+        mobility: Mobility constraints (wheelchair, walking-stick, slow-walker).
+        interests: Things they like (beaches, museums, hiking, photography).
+        notes: One-line free-form note.
+    """
+    upsert_family_member(
+        relationship=relationship,
+        name=name,
+        age=age,
+        dietary=dietary,
+        mobility=mobility,
+        interests=interests,
+        notes=notes,
+    )
+    label = f"{relationship}" + (f" '{name}'" if name else "")
+    return f"Saved family member: {label}."
+
+
+@tool
+def add_user_interest(item: str) -> str:
+    """Add a high-level interest the user revealed (de-duped automatically).
+
+    Use for broad themes — NOT trip-specific desires. Examples:
+      - "I love photography" → add_user_interest("photography")
+      - "we always do a wildlife safari" → add_user_interest("wildlife")
+      - "I'm a foodie" → add_user_interest("food")
+    """
+    add_interest(item)
+    return f"Added interest: {item}"
+
+
+@tool
+def add_user_dislike(item: str) -> str:
+    """Add a high-level dislike (de-duped automatically).
+
+    Examples:
+      - "I hate crowded places" → add_user_dislike("crowded places")
+      - "never put me on a bus longer than 4 hours" → add_user_dislike("long bus rides")
+    """
+    add_dislike(item)
+    return f"Added dislike: {item}"
+
+
+@tool
+def record_trip_mention(
+    destination: str,
+    when: str | None = None,
+    with_whom: str | None = None,
+    sentiment: str = "neutral",
+    notes: str = "",
+) -> str:
+    """Record a trip the user CASUALLY MENTIONED (different from record_past_trip).
+
+    Use this when the user references past travel in conversation — even briefly:
+      - "we went to Bali last summer and loved it" → record_trip_mention("Bali", when="summer 2024", sentiment="positive", notes="loved it")
+      - "Goa was too crowded for us" → record_trip_mention("Goa", sentiment="negative", notes="found it too crowded")
+      - "I visited Paris in 2019" → record_trip_mention("Paris", when="2019")
+
+    De-dupes by (destination, when) — same trip won't be saved twice.
+
+    Args:
+        destination: City / region / country.
+        when: Free-form time reference ("summer 2024", "Dec 2023", "2019").
+        with_whom: "family", "friends", "solo", "spouse", etc.
+        sentiment: "positive" | "negative" | "mixed" | "neutral".
+        notes: One-line note about what made it positive/negative.
+    """
+    add_trip_mention(
+        destination=destination,
+        when=when,
+        with_whom=with_whom,
+        sentiment=sentiment,
+        notes=notes,
+    )
+    return f"Recorded trip mention: {destination} ({when or 'unspecified time'}, {sentiment})."
+
+
 # ---------------------------------------------------------------------------
 # System prompt — built fresh on every request so today's date is current.
 # ---------------------------------------------------------------------------
@@ -124,12 +269,20 @@ WORKFLOW (follow this order every time):
 
 STEP 1 — LOAD PREFERENCES (silent, automatic)
   Call get_travel_preferences immediately. Never skip this.
-  Pay close attention to "learned_notes" — these are observations from past
-  conversations (fears, quirks, must-haves, deal-breakers). Use them to
-  pre-tailor your suggestions instead of asking again.
-  If critical info is missing (family config, budget, style), ask ONCE with a
-  consolidated question covering everything you need.
-  Save answers with save_travel_preferences.
+  The loaded prefs include:
+    • profile (name, home_city, country, age_band, occupation) — use to
+      personalize greetings ("Hi Munish") and infer trip origins
+    • family_members (spouse, kids, parents, pets with ages/dietary/mobility)
+      — use these counts/needs INSTEAD of asking
+    • interests / dislikes — bias suggestions toward likes, away from dislikes
+    • past_trip_mentions — trips the user casually mentioned (with sentiment)
+    • past_trips — agent-planned trips with ratings
+    • learned_notes — observations from past conversations (fears, quirks,
+      must-haves, deal-breakers)
+  Use ALL of this to pre-tailor your suggestions instead of asking again.
+  If genuinely critical info is missing (e.g. trip budget for THIS trip), ask
+  ONCE with a consolidated question. Otherwise: DON'T ASK, INFER + EXTRACT.
+  Save answers/extractions immediately via the appropriate tool.
 
 STEP 2 — UNDERSTAND THE REQUEST
   User says something like "plan a trip to Goa" or "we want to go somewhere warm".
@@ -214,40 +367,58 @@ PREFERENCE DIMENSIONS YOU TRACK:
 PASSIVE LEARNING — get smarter every conversation:
 ═══════════════════════════════════════════════════════════════
 You are not just a planner — you are this user's lifelong travel concierge.
-Every conversation must leave you smarter about them. Two mechanisms:
+Every conversation MUST leave you smarter about them. NEVER ask for info you
+can extract from what they've already said.
 
-A) STRUCTURED PREFS (save_travel_preferences):
-   When the user reveals a STABLE preference that fits the schema, call
-   save_travel_preferences with just the changed keys. Examples:
-   - "we always fly business" → {{"transport_preferences": {{"flight_class": "business"}}}}
-   - "I'm vegetarian" → {{"food_preferences": {{"dietary": ["vegetarian"]}}}}
-   - "minimum 4-star hotels" → {{"hotel_preferences": {{"star_rating_min": 4}}}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXTRACTION CHECKLIST — listen for ANY of these signals every turn:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-B) FREE-FORM NOTES (remember_about_user):
-   For everything that DOESN'T fit the schema — fears, quirks, life context,
-   family details, dislikes, soft preferences — call remember_about_user.
-   Examples that MUST trigger this tool:
-   - "I get motion sickness on boats"
-   - "my dad uses a walking stick, no long climbs"
-   - "we hated Bali — too crowded"
-   - "I love finding hidden local food spots, not tourist traps"
-   - "always book the gym + breakfast inclusive"
-   Use source="stated" when the user said it; source="inferred" when you
-   deduced it from their choices (e.g. consistently rejecting your hotel
-   suggestions until you offer boutique ones → infer "prefers boutique hotels").
+| Signal user gives                          | Tool to call IMMEDIATELY    |
+|--------------------------------------------|-----------------------------|
+| Own name, city, country, age, job          | update_user_profile         |
+| Family/partner/child/parent/pet mentioned  | add_family_member           |
+| High-level interest ("I love photography") | add_user_interest           |
+| High-level dislike ("I hate crowds")       | add_user_dislike            |
+| Past trip mentioned ("we went to Bali")    | record_trip_mention         |
+| Structured pref (food/hotel/flight class)  | save_travel_preferences     |
+| Anything else (quirks, fears, life facts)  | remember_about_user         |
 
-WHEN TO LEARN (be aggressive but precise):
+PARALLEL TOOL CALLS — when one message has multiple signals, FIRE ALL
+RELEVANT TOOLS IN THE SAME TURN (parallel tool calls).
+Example: "Hi, I'm Munish from Bengaluru, my wife Priya loves beaches and
+my 8yo son is allergic to peanuts. We did Goa last year and it was too crowded."
+→ Call ALL of these in one turn:
+  • update_user_profile(display_name="Munish", home_city="Bengaluru", home_country="India")
+  • add_family_member(relationship="spouse", name="Priya", interests=["beaches"])
+  • add_family_member(relationship="child", age=8, dietary=["nut-free"])
+  • record_trip_mention(destination="Goa", when="last year", sentiment="negative", notes="too crowded")
+  • add_user_dislike("crowded places")
+
+REFINEMENT RULES (keep prior data fresh as you learn more):
+- ADD: brand-new info → save as a new entry
+- MERGE: more detail on existing entity → call the same tool with the new
+  fields; the upsert logic merges them
+- CONFLICT: new info contradicts old → ASK ONCE ("I had you down as preferring
+  X — is that changing permanently or just for this trip?") then update
+
+QUALITY BAR (be aggressive but precise):
 - ✅ DO save: stable preferences ("I always..."), reactions ("I hate..."),
-     constraints (allergies, mobility), family facts ("my kids are 5 and 8").
-- ❌ DON'T save: one-off requests ("this trip cheaper"), trip-specific dates,
-     duplicates of existing notes, anything you're not 80%+ confident about.
-- After saving, briefly TELL THE USER one line: "Got it — I'll remember you
-  prefer aisle seats." This builds trust and lets them correct you.
+     identity facts (name/city/job), family roster, past trip references,
+     allergies, mobility constraints.
+- ❌ DON'T save: one-off trip requests ("this time cheaper"), trip dates,
+     duplicates of existing entries, guesses you're <80% confident about,
+     anything sensitive the user clearly wants kept private.
 
-ON CONFLICT:
-- If a new statement contradicts a saved pref, ASK: "I had you down as
-  preferring X — is that changing permanently, or just for this trip?"
-  Update accordingly.
+CONFIRMATION (build trust, allow corrections):
+- After extracting, give ONE SHORT acknowledgement at the end of your reply:
+  "Got it — I've noted you're in Bengaluru, traveling with Priya and your son."
+  Keep it to one line so the user can correct in one breath.
+
+SOURCE TAGGING:
+- For remember_about_user and record_trip_mention, use source="stated" when
+  the user said it explicitly, "inferred" when you deduced it from their
+  choices (e.g. they keep rejecting chain hotels → infer "prefers boutique").
 
 ═══════════════════════════════════════════════════════════════
 CRITICAL RULES:
@@ -310,6 +481,12 @@ TRIP_TOOLS = [
     save_travel_preferences,
     record_past_trip,
     remember_about_user,
+    # Continuous learning (extract during natural conversation)
+    update_user_profile,
+    add_family_member,
+    add_user_interest,
+    add_user_dislike,
+    record_trip_mention,
     # Flights — Duffel preferred, Amadeus kept as fallback (deprecating 2026-07-17)
     search_flights_duffel,
     search_flights,

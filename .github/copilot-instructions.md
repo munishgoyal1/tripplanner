@@ -46,8 +46,11 @@ Learns from user preferences and past trips.
   - HOSTED: Chainlit chat UI (`web/app.py`) — persistence to Azure Cosmos DB
   - Auto-dispatch via `storage_cosmos.is_enabled()` (True when `COSMOS_ENDPOINT` env var set)
   - Per-user identity tracked via `multiagent.user_context.get_user_id()` (ContextVar, default `"local"`)
-- Single trip planner agent with 20 tools across 5 families:
-  - Preferences (4): get/save/record_past_trip/remember_about_user (Cosmos-aware)
+- Single trip planner agent with 25 tools across 5 families:
+  - Preferences & continuous learning (9):
+    - get_travel_preferences, save_travel_preferences, record_past_trip, remember_about_user
+    - update_user_profile, add_family_member, add_user_interest, add_user_dislike,
+      record_trip_mention (Cosmos-aware)
   - Duffel flight search (1): search_flights_duffel — PREFERRED primary flight provider
   - Amadeus search (4): flights (fallback), hotels, activities, POI
     (Amadeus self-service is being decommissioned 2026-07-17; kept for hotels & activities)
@@ -55,9 +58,17 @@ Learns from user preferences and past trips.
   - Tavily web search (1): web_search
   - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips (Cosmos-aware)
 - Trip plan lifecycle: draft → finalized → booked (with execute command)
-- Persistent user preferences (includes free-form `learned_notes: []` field for
-  observations the agent extracts passively during conversation; each entry
-  is `{note, source: stated|inferred, at}`):
+- Persistent user preferences — expanded continuous-learning schema (Session 10):
+  - `profile` {display_name, home_city, home_country, age_band, occupation}
+  - `family_members` [{relationship, name, age, dietary, mobility, interests, notes}]
+  - `interests`, `dislikes` — string lists, deduped case-insensitively
+  - `past_trip_mentions` [{destination, when, with_whom, sentiment, notes, source, at}]
+    — trips user *casually mentioned* (vs. `past_trips` = agent-planned + rated)
+  - `learned_notes` — free-form observations the agent extracts passively
+    (each `{note, source: stated|inferred, at}`)
+  - Legacy keys preserved: `family`, `trip_style`, `budget_level`,
+    `hotel_preferences`, `transport_preferences`, `food_preferences`,
+    `accessibility_needs`, `past_trips`
   - Local: `~/.multiagent/user_preferences.json`
   - Hosted: Cosmos DB `users` container, doc id `preferences`, PK `/user_id`
 - Trip state:
@@ -65,7 +76,11 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 67 tests all passing (Session 9: 13 new tests for passive learning + learned_notes)
+- 92 tests all passing (Session 10: 25 new tests for continuous-learning schema +
+  5 extraction tools + EXTRACTION CHECKLIST prompt rules).
+- Azure OpenAI **API version must be `2024-10-21`** (data-plane GA); `2024-11-20`
+  is a model snapshot date and produces 404 NotFoundError. Bicepparam default,
+  GitHub secret, and live container env all aligned on `2024-10-21`.
 - New API keys gracefully degrade — tools return "not configured" when env var missing.
 - Removed (Session 1): todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
 
@@ -74,7 +89,7 @@ Learns from user preferences and past trips.
 - `README.md` — architecture (local + hosted), setup, project structure
 - `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
 - `src/multiagent/graph.py` — single-agent tool loop (unchanged for hosted mode)
-- `src/multiagent/agents/trip_agent.py` — trip agent with 20 tools
+- `src/multiagent/agents/trip_agent.py` — trip agent with 25 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
 - `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint

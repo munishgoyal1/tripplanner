@@ -821,3 +821,205 @@ class TestPassiveLearningPromptRules:
     def test_prompt_has_conflict_resolution_rule(self):
         msg = build_trip_system_prompt(today=date(2026, 6, 2))
         assert "CONFLICT" in msg.content or "conflict" in msg.content.lower()
+
+
+# ---------------------------------------------------------------------------
+# Continuous learning — profile / family / interests / dislikes / trip_mentions
+# ---------------------------------------------------------------------------
+from multiagent.agents.trip_agent import (
+    add_family_member as tool_add_family_member,
+    add_user_dislike as tool_add_user_dislike,
+    add_user_interest as tool_add_user_interest,
+    record_trip_mention as tool_record_trip_mention,
+    update_user_profile as tool_update_user_profile,
+)
+from multiagent.tools.user_preferences import (
+    add_dislike,
+    add_interest,
+    add_trip_mention,
+    update_profile,
+    upsert_family_member,
+)
+
+
+class TestProfileStore:
+    """update_profile patches without nuking existing fields."""
+
+    def test_partial_update_preserves_others(self):
+        update_profile({"display_name": "Munish", "home_city": "Bengaluru"})
+        prefs = update_profile({"occupation": "engineer"})
+        prof = prefs["profile"]
+        assert prof["display_name"] == "Munish"
+        assert prof["home_city"] == "Bengaluru"
+        assert prof["occupation"] == "engineer"
+
+    def test_none_values_are_ignored(self):
+        update_profile({"display_name": "Munish"})
+        prefs = update_profile({"display_name": None, "home_country": "India"})
+        assert prefs["profile"]["display_name"] == "Munish"
+        assert prefs["profile"]["home_country"] == "India"
+
+    def test_empty_string_ignored(self):
+        update_profile({"display_name": "Munish"})
+        prefs = update_profile({"display_name": "   "})
+        assert prefs["profile"]["display_name"] == "Munish"
+
+
+class TestFamilyMemberUpsert:
+    """upsert_family_member: insert + merge + list-field dedup."""
+
+    def test_insert_new_member(self):
+        prefs = upsert_family_member("spouse", name="Priya", interests=["beaches"])
+        spouses = [m for m in prefs["family_members"] if m["relationship"] == "spouse"]
+        assert len(spouses) == 1
+        assert spouses[0]["name"] == "Priya"
+        assert spouses[0]["interests"] == ["beaches"]
+
+    def test_upsert_merges_interests(self):
+        upsert_family_member("spouse", name="Priya", interests=["beaches"])
+        prefs = upsert_family_member("spouse", name="priya", interests=["photography"])
+        spouses = [m for m in prefs["family_members"] if m["relationship"] == "spouse"]
+        assert len(spouses) == 1
+        assert set(spouses[0]["interests"]) == {"beaches", "photography"}
+
+    def test_upsert_updates_age(self):
+        upsert_family_member("child", name="Aarav", age=7)
+        prefs = upsert_family_member("child", name="Aarav", age=8)
+        kids = [m for m in prefs["family_members"] if m["relationship"] == "child"]
+        assert kids[0]["age"] == 8
+
+    def test_unknown_relationship_maps_to_other(self):
+        prefs = upsert_family_member("cousin-twice-removed", name="X")
+        assert any(m["relationship"] == "other" for m in prefs["family_members"])
+
+    def test_anonymous_member_no_name(self):
+        prefs = upsert_family_member("child", age=5)
+        kids = [m for m in prefs["family_members"] if m["relationship"] == "child"]
+        assert any(m["age"] == 5 and not m.get("name") for m in kids)
+
+
+class TestInterestsDislikes:
+    def test_add_interest_dedupes(self):
+        add_interest("hiking")
+        prefs = add_interest("Hiking")
+        assert prefs["interests"].count("hiking") == 1
+
+    def test_add_dislike_dedupes(self):
+        add_dislike("crowds")
+        prefs = add_dislike("CROWDS")
+        assert prefs["dislikes"].count("crowds") == 1
+
+    def test_empty_rejected(self):
+        prefs = add_interest("   ")
+        assert "   " not in prefs["interests"]
+
+
+class TestTripMentions:
+    def test_record_basic(self):
+        prefs = add_trip_mention("Bali", when="summer 2024", sentiment="positive", notes="loved it")
+        bali = [m for m in prefs["past_trip_mentions"] if m["destination"] == "Bali"]
+        assert len(bali) == 1
+        assert bali[0]["sentiment"] == "positive"
+
+    def test_dedup_same_dest_and_when(self):
+        add_trip_mention("Goa", when="2023", sentiment="negative", notes="crowded")
+        prefs = add_trip_mention("Goa", when="2023", sentiment="negative", notes="really crowded")
+        goa = [m for m in prefs["past_trip_mentions"] if m["destination"] == "Goa"]
+        assert len(goa) == 1
+        assert "really crowded" in goa[0]["notes"]
+
+    def test_invalid_sentiment_falls_back(self):
+        prefs = add_trip_mention("Paris", sentiment="amazing-vibes")
+        paris = [m for m in prefs["past_trip_mentions"] if m["destination"] == "Paris"]
+        assert paris[0]["sentiment"] == "neutral"
+
+    def test_empty_destination_skipped(self):
+        before = load_preferences().get("past_trip_mentions", [])
+        prefs = add_trip_mention("   ")
+        assert len(prefs["past_trip_mentions"]) == len(before)
+
+
+class TestExtractionTools:
+    """The @tool wrappers route to the helpers correctly."""
+
+    def test_update_user_profile_tool(self):
+        result = tool_update_user_profile.invoke({
+            "display_name": "Munish",
+            "home_city": "Bengaluru",
+            "home_country": "India",
+        })
+        assert "Profile updated" in result
+        prefs = load_preferences()
+        assert prefs["profile"]["display_name"] == "Munish"
+        assert prefs["profile"]["home_city"] == "Bengaluru"
+
+    def test_add_family_member_tool(self):
+        result = tool_add_family_member.invoke({
+            "relationship": "child",
+            "name": "Aarav",
+            "age": 8,
+            "dietary": ["nut-free"],
+        })
+        assert "Saved family member" in result
+        prefs = load_preferences()
+        kids = [m for m in prefs["family_members"] if m.get("name") == "Aarav"]
+        assert kids and "nut-free" in kids[0]["dietary"]
+
+    def test_add_user_interest_tool(self):
+        tool_add_user_interest.invoke({"item": "photography"})
+        prefs = load_preferences()
+        assert "photography" in prefs["interests"]
+
+    def test_add_user_dislike_tool(self):
+        tool_add_user_dislike.invoke({"item": "long bus rides"})
+        prefs = load_preferences()
+        assert "long bus rides" in prefs["dislikes"]
+
+    def test_record_trip_mention_tool(self):
+        result = tool_record_trip_mention.invoke({
+            "destination": "Tokyo",
+            "when": "2023",
+            "sentiment": "positive",
+            "notes": "loved the food",
+        })
+        assert "Tokyo" in result
+        prefs = load_preferences()
+        tokyo = [m for m in prefs["past_trip_mentions"] if m["destination"] == "Tokyo"]
+        assert tokyo and tokyo[0]["sentiment"] == "positive"
+
+
+class TestExtractionPromptRules:
+    """System prompt must guide the model toward continuous extraction."""
+
+    def test_prompt_has_extraction_checklist(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "EXTRACTION CHECKLIST" in msg.content
+
+    def test_prompt_mentions_all_new_tools(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        for name in [
+            "update_user_profile",
+            "add_family_member",
+            "add_user_interest",
+            "add_user_dislike",
+            "record_trip_mention",
+        ]:
+            assert name in msg.content, f"prompt missing reference to {name}"
+
+    def test_prompt_demands_parallel_calls(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "PARALLEL" in msg.content or "parallel" in msg.content
+
+    def test_prompt_step1_lists_new_sections(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        # STEP 1 should now describe the new schema
+        for token in ["profile", "family_members", "interests", "past_trip_mentions"]:
+            assert token in msg.content, f"prompt STEP 1 doesn't mention {token}"
+
+    def test_default_prefs_have_new_sections(self):
+        prefs = load_preferences()
+        assert "profile" in prefs
+        assert "family_members" in prefs
+        assert "interests" in prefs
+        assert "dislikes" in prefs
+        assert "past_trip_mentions" in prefs
