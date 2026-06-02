@@ -9,7 +9,7 @@ Learns from user preferences and past trips.
 
 ## Owner & Accounts
 - GitHub: munishgoyal1 — repo is private
-- Azure: munishgoyal1@gmail.com (personal subscription, GPT-4o deployed)
+- Azure: munishgoyal1@gmail.com (personal subscription, gpt-4.1 primary; gpt-4o + gpt-5 also deployed)
 - Amadeus: Self-Service API (test environment, 2000 calls/month free)
 - Google Places: free $200/month credit (Places API New)
 - Tavily: free 1000 searches/month
@@ -18,7 +18,7 @@ Learns from user preferences and past trips.
 - Python 3.11+, typed with `from __future__ import annotations`
 - Single agent in `src/multiagent/agents/trip_agent.py`
 - Tools as `@tool`-decorated functions (langchain_core.tools)
-- Agent exports: `TRIP_SYSTEM_PROMPT` (SystemMessage) and `TRIP_TOOLS` (list)
+- Agent exports: `build_trip_system_prompt()` factory (injects today's date) and `TRIP_TOOLS` (list). `TRIP_SYSTEM_PROMPT` snapshot kept for back-compat.
 - API clients and search tools go in `src/multiagent/tools/`
 - Config via Pydantic `Settings` from `.env` (see `config.py`)
 - Graph in `graph.py` — single-agent tool-calling loop
@@ -40,7 +40,7 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-05-31)
+## Current State (last updated 2026-06-02)
 - **Two run modes from one codebase:**
   - LOCAL: CLI (`cli.py`) or FastAPI (`api.py`) — persistence to `~/.multiagent/*.json`
   - HOSTED: Chainlit chat UI (`web/app.py`) — persistence to Azure Cosmos DB
@@ -63,7 +63,7 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 46 tests all passing (10 new Cosmos dispatch + user_context tests added in Session 6)
+- 54 tests all passing (8 new date-injection tests added in Session 8)
 - New API keys gracefully degrade — tools return "not configured" when env var missing.
 - Removed (Session 1): todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
 

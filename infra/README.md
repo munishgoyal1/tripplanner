@@ -16,7 +16,7 @@ Stays at ~₹0 when idle thanks to scale-to-zero.
 
 - Azure subscription with the Cosmos DB Free Tier slot still available
 - Existing resource group: `rg-multiagent-trip-planner` (eastus2)
-- Azure OpenAI deployed: `aoai-multiagent-mugoy` (gpt-4o)
+- Azure OpenAI deployed: `aoai-multiagent-mugoy` (gpt-4.1 primary; gpt-4o and gpt-5 also available)
 - Docker installed locally
 - GitHub Container Registry account (or Docker Hub) for the image
 

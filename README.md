@@ -20,7 +20,7 @@ User ──► Rich CLI  or  FastAPI
                   │
                   ▼
           ┌──────────────┐
-          │  Trip Agent  │  (GPT-4o + 19 tools)
+          │  Trip Agent  │  (GPT-4.1 + 19 tools)
           └──────┬───────┘
                  │
          ┌───────┼────────┬──────────┐
@@ -101,7 +101,7 @@ Stored at `~/.multiagent/user_preferences.json`, tracks:
 |---|---|---|
 | Language | Python 3.11+ | Best AI agent ecosystem |
 | Agent framework | LangGraph | Tool-calling loop with state |
-| LLM | Azure OpenAI (GPT-4o) | User's own Azure account |
+| LLM | Azure OpenAI (GPT-4.1; GPT-5 also deployed) | User's own Azure account |
 | Travel APIs | Amadeus Self-Service | Flights, hotels, activities, POI |
 | Web API | FastAPI + Uvicorn | Async, fast, auto-docs |
 | CLI | Rich | Beautiful terminal UI |
@@ -150,12 +150,12 @@ with Cosmos DB Free Tier (1000 RU/s + 25 GB free).
 
 ### Azure OpenAI (required)
 1. Create an Azure OpenAI resource at portal.azure.com
-2. Deploy a `gpt-4o` model
+2. Deploy a `gpt-4.1` model (or `gpt-5` for top reasoning)
 3. Set in `.env`:
    ```
    AZURE_OPENAI_ENDPOINT=https://YOUR_RESOURCE.openai.azure.com/
    AZURE_OPENAI_API_KEY=your-key
-   AZURE_OPENAI_DEPLOYMENT=gpt-4o
+   AZURE_OPENAI_DEPLOYMENT=gpt-4.1
    ```
 
 ### Amadeus API (required for real search)
