@@ -1,5 +1,11 @@
 FROM python:3.12-slim
 
+# Link this image to the source repo so GHCR auto-grants the repo's Actions
+# workflow push access (avoids `denied: write_package` on CI runs).
+LABEL org.opencontainers.image.source="https://github.com/munishgoyal1/multiagent"
+LABEL org.opencontainers.image.description="AI trip planner — Chainlit chat UI + LangGraph"
+LABEL org.opencontainers.image.licenses="MIT"
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
