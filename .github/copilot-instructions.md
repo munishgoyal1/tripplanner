@@ -46,6 +46,13 @@ Learns from user preferences and past trips.
   - HOSTED: Chainlit chat UI (`web/app.py`) — persistence to Azure Cosmos DB
   - Auto-dispatch via `storage_cosmos.is_enabled()` (True when `COSMOS_ENDPOINT` env var set)
   - Per-user identity tracked via `multiagent.user_context.get_user_id()` (ContextVar, default `"local"`)
+- **Identity tracks (Session 11, hosted mode only)**:
+  - OAuth login (Google + GitHub) → identifier `"{provider}-{external_id}"` (cross-device)
+  - Persistent guest cookie `multiagent_guest_id` → identifier `"guest-<uuid>"` (same browser, 1 year)
+  - Per-session fallback → Chainlit session id (legacy, used when `CHAINLIT_AUTH_SECRET` unset)
+  - Facebook OAuth is **not** wired (not in Chainlit's built-in providers); GitHub was added instead.
+  - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
+    leaving them unset keeps the app login-less.
 - Single trip planner agent with 25 tools across 5 families:
   - Preferences & continuous learning (9):
     - get_travel_preferences, save_travel_preferences, record_past_trip, remember_about_user

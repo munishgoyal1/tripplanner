@@ -47,6 +47,26 @@ param googlePlacesApiKey string = ''
 @description('Tavily web-search API key.')
 param tavilyApiKey string = ''
 
+@secure()
+@description('Google OAuth client id (web app). Optional; enables Sign in with Google.')
+param googleOauthClientId string = ''
+
+@secure()
+@description('Google OAuth client secret. Required when googleOauthClientId is set.')
+param googleOauthClientSecret string = ''
+
+@secure()
+@description('GitHub OAuth client id. Optional; enables Sign in with GitHub.')
+param githubOauthClientId string = ''
+
+@secure()
+@description('GitHub OAuth client secret. Required when githubOauthClientId is set.')
+param githubOauthClientSecret string = ''
+
+@secure()
+@description('Chainlit auth secret (random 32+ char string). REQUIRED to enable any OAuth or persistent guest cookies. Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))".')
+param chainlitAuthSecret string = ''
+
 @description('Enable Cosmos Free Tier (only one per subscription).')
 param enableCosmosFreeTier bool = true
 
@@ -195,6 +215,11 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
         { name: 'google-places-api-key', value: googlePlacesApiKey }
         { name: 'tavily-api-key', value: tavilyApiKey }
         { name: 'cosmos-key', value: cosmos.listKeys().primaryMasterKey }
+        { name: 'google-oauth-client-id', value: googleOauthClientId }
+        { name: 'google-oauth-client-secret', value: googleOauthClientSecret }
+        { name: 'github-oauth-client-id', value: githubOauthClientId }
+        { name: 'github-oauth-client-secret', value: githubOauthClientSecret }
+        { name: 'chainlit-auth-secret', value: chainlitAuthSecret }
       ]
     }
     template: {
@@ -217,6 +242,11 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
             { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
             { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
+            { name: 'OAUTH_GOOGLE_CLIENT_ID', secretRef: 'google-oauth-client-id' }
+            { name: 'OAUTH_GOOGLE_CLIENT_SECRET', secretRef: 'google-oauth-client-secret' }
+            { name: 'OAUTH_GITHUB_CLIENT_ID', secretRef: 'github-oauth-client-id' }
+            { name: 'OAUTH_GITHUB_CLIENT_SECRET', secretRef: 'github-oauth-client-secret' }
+            { name: 'CHAINLIT_AUTH_SECRET', secretRef: 'chainlit-auth-secret' }
           ]
         }
       ]
