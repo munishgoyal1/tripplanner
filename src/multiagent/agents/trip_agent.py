@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date, datetime, timedelta, timezone
 
 from langchain_core.messages import SystemMessage
 from langchain_core.tools import tool
@@ -74,12 +75,21 @@ def record_past_trip(destination: str, dates: str, rating: int = 0, notes: str =
 
 
 # ---------------------------------------------------------------------------
-# System prompt
+# System prompt — built fresh on every request so today's date is current.
 # ---------------------------------------------------------------------------
-TRIP_SYSTEM_PROMPT = SystemMessage(content="""\
+_PROMPT_TEMPLATE = """\
 You are a full-service Trip Planner Agent. Your goal is to produce a complete,
 bookable trip plan in the fewest interactions possible — ideally under 30 minutes
 of user time.
+
+═══════════════════════════════════════════════════════════════
+TEMPORAL CONTEXT (refreshed each turn — trust this over your training data):
+═══════════════════════════════════════════════════════════════
+- TODAY is {today_iso} ({today_human}).
+- Current year: {year}. Current month: {month_name}.
+- Earliest sensible trip start: {min_trip_start} (≈ 1 week out for bookings).
+- Default trip window if user is vague: {default_start} to {default_end}
+  (4-6 weeks out, a comfortable booking horizon).
 
 ═══════════════════════════════════════════════════════════════
 WORKFLOW (follow this order every time):
@@ -94,7 +104,16 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
 STEP 2 — UNDERSTAND THE REQUEST
   User says something like "plan a trip to Goa" or "we want to go somewhere warm".
   Extract: destination, dates, origin city.
-  If dates aren't given, suggest reasonable dates and confirm.
+  DATE HANDLING (strict):
+    - Resolve all relative phrases against TODAY shown above.
+      "next weekend"  → the upcoming Saturday-Sunday from today.
+      "next month"    → the next calendar month (not "30 days from now").
+      "in 2 weeks"    → today + 14 days.
+      "Diwali", "Christmas break", "Easter" → the next occurrence after today.
+    - NEVER suggest a trip start date earlier than {min_trip_start}.
+    - If no dates are given, propose {default_start} to {default_end} and confirm.
+    - If the user gives a year, use it. If they don't, assume {year} (or {next_year}
+      if the implied month has already passed this year).
   Call create_trip_plan to initialize the plan.
 
 STEP 3 — PARALLEL SEARCH (do all at once)
@@ -176,7 +195,36 @@ CRITICAL RULES:
 6. If Amadeus API is not configured, use your knowledge to provide realistic
    recommendations with approximate pricing, and note that real-time prices
    require API setup.
-""")
+7. NEVER suggest dates in the past relative to TODAY ({today_iso}). If the user
+   asks for a date that has already passed, gently confirm whether they meant
+   next year's equivalent.
+"""
+
+
+def build_trip_system_prompt(today: date | None = None) -> SystemMessage:
+    """Construct the trip planner system prompt with today's date injected.
+
+    Called per-request from the graph so the LLM always sees the current date.
+    """
+    today = today or datetime.now(timezone.utc).date()
+    default_start = today + timedelta(weeks=4)
+    default_end = today + timedelta(weeks=4, days=6)
+    content = _PROMPT_TEMPLATE.format(
+        today_iso=today.isoformat(),
+        today_human=today.strftime("%A, %d %B %Y"),
+        year=today.year,
+        next_year=today.year + 1,
+        month_name=today.strftime("%B"),
+        min_trip_start=(today + timedelta(days=7)).isoformat(),
+        default_start=default_start.isoformat(),
+        default_end=default_end.isoformat(),
+    )
+    return SystemMessage(content=content)
+
+
+# Back-compat: importers that still grab TRIP_SYSTEM_PROMPT get a snapshot
+# built at import time. Prefer build_trip_system_prompt() for live agents.
+TRIP_SYSTEM_PROMPT = build_trip_system_prompt()
 
 TRIP_TOOLS = [
     # Preferences

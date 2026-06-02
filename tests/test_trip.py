@@ -680,3 +680,57 @@ class TestUserContext:
             user_context._user_id.reset(token)
         assert user_context.get_user_id() == "local"
 
+
+
+# ---------------------------------------------------------------------------
+# Trip system prompt — temporal context injection
+# ---------------------------------------------------------------------------
+from datetime import date, datetime, timedelta, timezone
+
+from multiagent.agents.trip_agent import TRIP_SYSTEM_PROMPT, build_trip_system_prompt
+
+
+class TestSystemPromptDateInjection:
+    """The agent must always know today's date and never suggest past dates."""
+
+    def test_includes_today_iso(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "2026-06-02" in msg.content
+        assert "TODAY is 2026-06-02" in msg.content
+
+    def test_includes_human_readable_date(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        # Tuesday, 02 June 2026
+        assert "June 2026" in msg.content
+
+    def test_includes_min_trip_start(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        # min trip = today + 7 days
+        assert "2026-06-09" in msg.content
+
+    def test_includes_default_window(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        # default = +4 weeks ... +4 weeks + 6 days
+        assert "2026-06-30" in msg.content
+        assert "2026-07-06" in msg.content
+
+    def test_includes_current_and_next_year(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "2026" in msg.content
+        assert "2027" in msg.content
+
+    def test_never_in_past_rule_present(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "NEVER suggest" in msg.content
+        assert "past" in msg.content.lower()
+
+    def test_default_today_is_now(self):
+        """When no date is passed, the prompt should use today's UTC date."""
+        msg = build_trip_system_prompt()
+        today = datetime.now(timezone.utc).date().isoformat()
+        assert today in msg.content
+
+    def test_module_level_constant_exists_for_back_compat(self):
+        """Importers that grab the static TRIP_SYSTEM_PROMPT still work."""
+        assert TRIP_SYSTEM_PROMPT is not None
+        assert "Trip Planner Agent" in TRIP_SYSTEM_PROMPT.content

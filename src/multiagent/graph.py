@@ -14,7 +14,7 @@ from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from multiagent.agents.trip_agent import TRIP_SYSTEM_PROMPT, TRIP_TOOLS
+from multiagent.agents.trip_agent import TRIP_TOOLS, build_trip_system_prompt
 from multiagent.config import get_settings
 
 
@@ -46,7 +46,7 @@ def _get_llm() -> AzureChatOpenAI:
 def trip_agent(state: AgentState) -> AgentState:
     """The trip planner agent — invokes LLM with tools bound."""
     llm = _get_llm().bind_tools(TRIP_TOOLS)
-    response = llm.invoke([TRIP_SYSTEM_PROMPT] + state["messages"])
+    response = llm.invoke([build_trip_system_prompt()] + state["messages"])
     return {"messages": [response], "current_agent": "trip"}
 
 
