@@ -83,8 +83,14 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 173 tests all passing (Session 12: 16 new tests for the right-rail sidebar
-  panels + focus-action builder; Session 10 added 25 continuous-learning tests).
+- 177 tests all passing (Session 12: 20 tests for the right-rail sidebar
+  panels + focus-action builder + destination-highlights fallback; Session 10
+  added 25 continuous-learning tests).
+- **Currency rule (Session 12)**: trip agent prompt CRITICAL RULE 8 pins all
+  prices to the user's HOME currency (from `profile.home_country`; default INR
+  ₹ for India/unknown). Sticky for the whole conversation; converts source
+  currencies (e.g. Duffel USD) to home currency. Fixes prices flipping
+  INR↔USD between sessions.
 - **Right-rail sidebar (Session 12, hosted mode only)**: `web/sidebar.py` +
   `web/places_cache.py`. Plugin-style — each panel is a function
   `render(SidebarContext) -> list[Element]` registered in `PANELS`. v1 panels
@@ -96,6 +102,10 @@ Learns from user preferences and past trips.
   No `place_id` is stored in the trip plan — sidebar resolves by name+city
   on demand. To add a panel: append to `PANELS`. To re-order/hide: edit
   that list. No other changes needed.
+  When no hotels/activities are selected yet but a destination is known, the
+  sidebar falls back to the destination's top hotels & attractions
+  (`places_cache.top_places`) so panels fill during browsing instead of
+  staying blank; a "popular spots" note flags these as suggestions.
 - Azure OpenAI **API version must be `2024-10-21`** (data-plane GA); `2024-11-20`
   is a model snapshot date and produces 404 NotFoundError. Bicepparam default,
   GitHub secret, and live container env all aligned on `2024-10-21`.

@@ -57,7 +57,10 @@ def _itinerary_items(
     """Return ``[{kind, name}, ...]`` for the things we'd show in the sidebar.
 
     If focus is set, returns just that one item. Otherwise enumerates all
-    selected hotels followed by all selected activities.
+    selected hotels followed by all selected activities. When nothing has been
+    selected yet but a destination is known, falls back to the destination's
+    top hotels & attractions so the panels populate during browsing instead of
+    sitting empty until the user locks a choice.
     """
     if focus and focus.get("name"):
         return [{"kind": focus.get("kind", "place"), "name": focus["name"]}]
@@ -70,13 +73,40 @@ def _itinerary_items(
     for a in trip.get("selected_activities") or []:
         if isinstance(a, dict) and a.get("name"):
             items.append({"kind": "attraction", "name": str(a["name"])})
-    return items
+    if items:
+        return items
+
+    # Nothing selected yet — surface the destination's highlights so the
+    # gallery and reviews aren't blank while the user is still deciding.
+    destination = str(trip.get("destination") or "").strip()
+    if not destination:
+        return []
+    fallback: list[dict[str, str]] = []
+    for name in places_cache.top_places(destination, "hotel", n=2):
+        fallback.append({"kind": "hotel", "name": name})
+    for name in places_cache.top_places(destination, "attraction", n=4):
+        fallback.append({"kind": "attraction", "name": name})
+    return fallback
 
 
 def _fmt_money(value: Any) -> str:
     if isinstance(value, (int, float)) and value:
         return f"₹{value:,.0f}"
     return "—"
+
+
+def _has_selections(trip: dict[str, Any] | None) -> bool:
+    if not trip:
+        return False
+    return bool((trip.get("selected_hotels") or []) or (trip.get("selected_activities") or []))
+
+
+def _is_fallback(trip: dict[str, Any] | None, focus: dict[str, Any] | None) -> bool:
+    """True when the gallery/reviews are showing destination highlights rather
+    than the user's own picks (no selections yet, not focused on one item)."""
+    if focus and focus.get("name"):
+        return False
+    return bool(trip and trip.get("destination")) and not _has_selections(trip)
 
 
 # ---------------------------------------------------------------------------
@@ -146,6 +176,17 @@ def panel_gallery(ctx: SidebarContext) -> list[Element]:
 
     destination = (ctx.trip or {}).get("destination", "")
     elements: list[Element] = []
+    if _is_fallback(ctx.trip, ctx.focus):
+        elements.append(
+            cl.Text(
+                name="Gallery",
+                content=(
+                    f"📸 _Popular spots in **{destination}** — pick favourites "
+                    "and I'll swap these for your actual itinerary._"
+                ),
+                display="side",
+            )
+        )
     for item in items[:_MAX_GALLERY_ITEMS]:
         urls = places_cache.get_photos(item["name"], destination, max_photos=3)
         for i, url in enumerate(urls):
@@ -166,6 +207,11 @@ def panel_reviews(ctx: SidebarContext) -> list[Element]:
 
     destination = (ctx.trip or {}).get("destination", "")
     blocks: list[str] = []
+    items_rendered = 0
+    if _is_fallback(ctx.trip, ctx.focus):
+        blocks.append(
+            f"_Top-rated places in **{destination}** to get you started:_\n"
+        )
     for item in items[:_MAX_REVIEW_ITEMS]:
         info = places_cache.get_summary(item["name"], destination)
         if not info:
@@ -193,8 +239,9 @@ def panel_reviews(ctx: SidebarContext) -> list[Element]:
         if info.get("website"):
             blocks.append(f"[Website ↗]({info['website']})")
         blocks.append("")
+        items_rendered += 1
 
-    if not blocks:
+    if not items_rendered:
         return []
     return [
         cl.Text(

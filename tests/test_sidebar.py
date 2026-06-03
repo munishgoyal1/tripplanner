@@ -254,3 +254,73 @@ def test_focus_actions_payloads_are_well_formed() -> None:
 def test_focus_actions_no_reset_when_no_real_items() -> None:
     trip = {"destination": "X", "selected_hotels": [], "selected_activities": []}
     assert build_focus_actions(trip) == []
+
+
+# --- destination-highlights fallback --------------------------------------
+
+
+def test_itinerary_falls_back_to_top_places_when_nothing_selected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_top(destination: str, kind: str, n: int = 4) -> list[str]:
+        return [f"{kind}-{destination}-{i}" for i in range(n)]
+
+    monkeypatch.setattr(sidebar.places_cache, "top_places", fake_top)
+    trip = {"destination": "Goa", "selected_hotels": [], "selected_activities": []}
+    items = sidebar._itinerary_items(trip, None)
+    assert {i["name"] for i in items} == {
+        "hotel-Goa-0",
+        "hotel-Goa-1",
+        "attraction-Goa-0",
+        "attraction-Goa-1",
+        "attraction-Goa-2",
+        "attraction-Goa-3",
+    }
+    assert sidebar._is_fallback(trip, None) is True
+
+
+def test_itinerary_prefers_real_selections_over_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    called = False
+
+    def fake_top(destination: str, kind: str, n: int = 4) -> list[str]:
+        nonlocal called
+        called = True
+        return ["should-not-appear"]
+
+    monkeypatch.setattr(sidebar.places_cache, "top_places", fake_top)
+    items = sidebar._itinerary_items(SAMPLE_TRIP, None)
+    assert called is False
+    assert {i["name"] for i in items} == {
+        "Taj Exotica Resort",
+        "W Goa",
+        "Dudhsagar Falls Trek",
+        "Old Goa Churches",
+    }
+    assert sidebar._is_fallback(SAMPLE_TRIP, None) is False
+
+
+def test_fallback_gallery_shows_suggestion_note(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        sidebar.places_cache, "top_places", lambda d, k, n=4: [f"{k}-1"]
+    )
+    trip = {"destination": "Goa", "selected_hotels": [], "selected_activities": []}
+    ctx = SidebarContext(trip=trip, focus=None, user_id="u")
+    out = panel_gallery(ctx)
+    assert any(isinstance(e, cl.Text) and "Popular spots" in e.content for e in out)
+
+
+def test_fallback_reviews_shows_suggestion_note(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        sidebar.places_cache, "top_places", lambda d, k, n=4: [f"{k}-1"]
+    )
+    trip = {"destination": "Goa", "selected_hotels": [], "selected_activities": []}
+    ctx = SidebarContext(trip=trip, focus=None, user_id="u")
+    out = panel_reviews(ctx)
+    assert len(out) == 1
+    assert "to get you started" in out[0].content

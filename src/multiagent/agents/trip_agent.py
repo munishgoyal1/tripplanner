@@ -447,6 +447,15 @@ CRITICAL RULES:
 7. NEVER suggest dates in the past relative to TODAY ({today_iso}). If the user
    asks for a date that has already passed, gently confirm whether they meant
    next year's equivalent.
+8. CURRENCY — always present prices in the user's HOME currency, derived from
+   profile.home_country (India → INR ₹, USA → USD $, UK → GBP £, EU → EUR €,
+   UAE → AED, etc.). Default to INR (₹) when home_country is India or unknown.
+   This is sticky: pick the home currency once and use it for EVERY amount in
+   the whole conversation — flights, hotels, activities, day costs, and the
+   final total. If a search API returns a different currency (e.g. Duffel in
+   USD), convert to the home currency and show that as the primary figure
+   (you may add the original in parentheses, e.g. "₹8,500 (~$102)"). NEVER
+   silently switch currencies mid-plan or between turns.
 """
 
 

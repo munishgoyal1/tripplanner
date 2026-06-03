@@ -193,6 +193,46 @@ def get_summary(name: str, city: str) -> dict[str, Any] | None:
     return info
 
 
+def top_places(destination: str, kind: str, n: int = 4) -> list[str]:
+    """Return the names of the top ``n`` hotels/attractions in ``destination``.
+
+    Used by the sidebar as a fallback so the panels fill in with the
+    destination's highlights *before* the user has locked any selections.
+    ``kind`` is ``"hotel"`` or ``"attraction"``. Results are cached per
+    ``(destination, kind)`` so we only hit Places once.
+    """
+    if not is_configured() or not destination:
+        return []
+    cache = _cache()
+    ck = f"__top__|{kind}|{destination.strip().lower()}"
+    if ck in cache:
+        return cache[ck].get("names", [])
+
+    query = (
+        f"best hotels in {destination}"
+        if kind == "hotel"
+        else f"top tourist attractions in {destination}"
+    )
+    names: list[str] = []
+    try:
+        resp = httpx.post(
+            f"{_BASE}/places:searchText",
+            headers=_headers("places.displayName,places.rating"),
+            json={"textQuery": query, "pageSize": max(n, 1)},
+            timeout=_HTTP_TIMEOUT_S,
+        )
+        resp.raise_for_status()
+        for p in (resp.json().get("places") or [])[:n]:
+            name = p.get("displayName", {}).get("text")
+            if name:
+                names.append(name)
+    except httpx.HTTPError as exc:
+        log.warning("top_places lookup failed for %s: %s", destination, exc)
+
+    cache[ck] = {"names": names}
+    return names
+
+
 def clear_cache() -> None:
     """Drop every cached entry. Useful for tests."""
     try:
