@@ -356,9 +356,28 @@ if _auth_secret_present():
     # Starlette middleware to set the guest cookie when missing on a response.
     # Imported lazily so unit-test imports don't pull in Chainlit's server.
     try:  # pragma: no cover - exercised at runtime
+        from chainlit.oauth_providers import get_configured_oauth_providers
         from chainlit.server import app as _chainlit_app
         from starlette.middleware.base import BaseHTTPMiddleware
         from starlette.responses import RedirectResponse
+
+        def _signin_target() -> str:
+            """Where /sign-in should send the browser.
+
+            If exactly one OAuth provider is configured we redirect straight
+            to its authorize endpoint so the user gets to Google in one
+            click (Google's default behaviour does SSO automatically when
+            the browser already has an active Google session). With multiple
+            providers we fall back to Chainlit's /login page so the user
+            can pick.
+            """
+            try:
+                providers = list(get_configured_oauth_providers() or [])
+            except Exception:
+                providers = []
+            if len(providers) == 1:
+                return f"/auth/oauth/{providers[0]}"
+            return "/login"
 
         class _AuthFlowMiddleware(BaseHTTPMiddleware):
             """Handle ``/sign-in`` upgrades and persistent guest cookies.
@@ -370,7 +389,8 @@ if _auth_secret_present():
 
             async def dispatch(self, request, call_next):
                 if request.url.path == "/sign-in" and request.method == "GET":
-                    response = RedirectResponse(url="/login", status_code=303)
+                    target = _signin_target()
+                    response = RedirectResponse(url=target, status_code=303)
                     response.delete_cookie(_GUEST_COOKIE)
                     response.set_cookie(
                         key=_SIGNIN_INTENT_COOKIE,
