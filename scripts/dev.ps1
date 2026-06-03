@@ -80,7 +80,12 @@ if ($WithAuth) {
     $env:CHAINLIT_AUTH_SECRET = ""
 }
 
-$browserFlag = if ($NoBrowser) { "--headless" } else { "" }
+$chainlitArgs = @(
+    "-m", "chainlit", "run", "src/multiagent/web/app.py",
+    "--port", "$Port",
+    "-w"
+)
+if ($NoBrowser) { $chainlitArgs += "--headless" }
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
@@ -93,4 +98,4 @@ Write-Host "  Ctrl+C to stop" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host ""
 
-& $python -m chainlit run src/multiagent/web/app.py --port $Port -w $browserFlag
+& $python @chainlitArgs
