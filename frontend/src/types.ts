@@ -76,6 +76,8 @@ export interface NewsItem {
 export interface DestinationOverview {
   destination: string;
   summary: string;
+  rating: number | null;
+  review_count: number | null;
   photos: string[];
   key_attractions: KeyAttraction[];
   reviews: DestinationReview[];

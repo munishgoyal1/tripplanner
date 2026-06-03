@@ -226,6 +226,8 @@ def build_destination_overview(
         return {
             "destination": "",
             "summary": "",
+            "rating": None,
+            "review_count": 0,
             "photos": [],
             "key_attractions": [],
             "reviews": [],
@@ -267,6 +269,12 @@ def build_destination_overview(
                     }
                 )
 
+    rated = [a["rating"] for a in key_attractions if a.get("rating")]
+    agg_rating = round(sum(rated) / len(rated), 1) if rated else None
+    agg_reviews = sum(
+        int(a["review_count"]) for a in key_attractions if a.get("review_count")
+    )
+
     news: list[dict[str, str]] = []
     if include_news:
         news = _fetch_destination_news(destination)
@@ -274,6 +282,8 @@ def build_destination_overview(
     return {
         "destination": destination,
         "summary": summary,
+        "rating": agg_rating,
+        "review_count": agg_reviews,
         "photos": photos[:_MAX_GALLERY_ITEMS],
         "key_attractions": key_attractions,
         "reviews": reviews[:_MAX_REVIEWS_PER_ITEM * 3],
@@ -287,7 +297,7 @@ def _fetch_destination_news(destination: str) -> list[dict[str, str]]:
         from multiagent.tools import web_search
 
         data = web_search.search_raw(
-            f"latest travel news and updates for {destination}",
+            f"latest positive travel news, new openings and good updates for {destination}",
             max_results=_MAX_NEWS_ITEMS,
             topic="news",
         )
