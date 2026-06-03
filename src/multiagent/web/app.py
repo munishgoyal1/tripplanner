@@ -26,6 +26,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import time
 import uuid
 from typing import Any
 
@@ -35,11 +36,20 @@ from chainlit.input_widget import NumberInput, Select, Switch, Tags, TextInput
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multiagent.graph import app_graph
+from multiagent.observability import (
+    app_event,
+    audit_enabled_for_user_messages,
+    audit_event,
+    setup_logging,
+)
 from multiagent.tools import about_me_extractor
 from multiagent.tools import user_preferences as prefs_store
 from multiagent.user_context import set_user_id
 
+setup_logging()
 log = logging.getLogger(__name__)
+
+_now = time.monotonic
 
 WELCOME_BASE = (
     "\u2708\ufe0f **Trip Planner**\n\n"
@@ -707,6 +717,12 @@ async def on_chat_start() -> None:
     cl.user_session.set("messages", [])
     # Make sure prefs_store reads/writes the right user before building the form.
     set_user_id(str(identifier))
+    app_event(
+        "session_start",
+        user_id=str(identifier),
+        is_guest=str(identifier).startswith("guest-"),
+        has_oauth=_oauth_configured(),
+    )
     await _build_chat_settings().send()
     welcome = WELCOME_BASE
     if identifier.startswith("guest-") and _oauth_configured():
@@ -742,7 +758,20 @@ async def on_message(msg: cl.Message) -> None:
     # Slash commands bypass the LLM entirely - keeps profile UX snappy and
     # avoids burning tokens on simple "show me what you remember" requests.
     if await _maybe_handle_slash_command(msg.content):
+        app_event("slash_command", user_id=user_id, length=len(msg.content))
         return
+
+    # APP LOG: only counts -- no content. Safe to keep in stdout / Log Analytics.
+    app_event(
+        "user_message",
+        user_id=user_id,
+        length=len(msg.content),
+        words=len(msg.content.split()),
+    )
+    # AUDIT LOG: raw content goes to the restricted sink only when explicitly
+    # enabled via AUDIT_USER_MESSAGES=1. Never on stdout, regardless.
+    if audit_enabled_for_user_messages():
+        audit_event("user_message", user_id=user_id, content=msg.content)
 
     messages: list = cl.user_session.get("messages") or []
     messages.append(HumanMessage(content=msg.content))
@@ -751,7 +780,10 @@ async def on_message(msg: cl.Message) -> None:
     await answer.send()
 
     open_tool_steps: dict[str, cl.Step] = {}
+    tool_starts: dict[str, float] = {}
+    tool_call_count = 0
     final_state: dict | None = None
+    turn_start = _now()
 
     try:
         async for event in app_graph.astream_events(
@@ -774,12 +806,22 @@ async def on_message(msg: cl.Message) -> None:
                 step.input = _format_tool_input(data.get("input"))
                 await step.send()
                 open_tool_steps[run_id] = step
+                tool_starts[run_id] = _now()
+                tool_call_count += 1
 
             elif kind == "on_tool_end":
                 step = open_tool_steps.pop(run_id, None)
                 if step is not None:
                     step.output = _format_tool_output(data.get("output"))
                     await step.update()
+                started = tool_starts.pop(run_id, None)
+                app_event(
+                    "tool_call",
+                    user_id=user_id,
+                    tool=name,
+                    status="ok",
+                    ms=int((_now() - started) * 1000) if started else None,
+                )
 
             elif kind == "on_chain_end" and name in {"LangGraph", "trip_agent_graph"}:
                 output = data.get("output")
@@ -788,6 +830,13 @@ async def on_message(msg: cl.Message) -> None:
 
     except Exception as exc:  # surface failure to the user without crashing the chat
         log.exception("graph streaming failed")
+        app_event(
+            "turn_error",
+            user_id=user_id,
+            error_kind=exc.__class__.__name__,
+            tool_calls=tool_call_count,
+            ms=int((_now() - turn_start) * 1000),
+        )
         # Close any dangling tool steps so the UI doesn't show spinners forever.
         for step in open_tool_steps.values():
             step.output = "(interrupted)"
@@ -815,3 +864,10 @@ async def on_message(msg: cl.Message) -> None:
         answer.content = last_ai.content if last_ai else "_(no response)_"
 
     await answer.update()
+    app_event(
+        "turn_complete",
+        user_id=user_id,
+        tool_calls=tool_call_count,
+        reply_length=len(answer.content or ""),
+        ms=int((_now() - turn_start) * 1000),
+    )

@@ -6,6 +6,9 @@ from langchain_core.messages import HumanMessage
 from rich.console import Console
 from rich.markdown import Markdown
 
+from multiagent.observability import setup_logging
+
+setup_logging()
 console = Console()
 
 

@@ -6,6 +6,10 @@ from fastapi import FastAPI
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel
 
+from multiagent.observability import app_event, setup_logging
+
+setup_logging()
+
 app = FastAPI(title="Personal Assistant API", version="0.1.0")
 
 
@@ -22,6 +26,7 @@ class ChatResponse(BaseModel):
 async def chat(req: ChatRequest) -> ChatResponse:
     from multiagent.graph import app_graph
 
+    app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
     result = app_graph.invoke({
         "messages": [HumanMessage(content=req.message)],
         "current_agent": "",
@@ -33,6 +38,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
             reply = msg.content
             break
 
+    app_event("api_chat_response", reply_length=len(reply))
     return ChatResponse(reply=reply, agent=result.get("current_agent", "unknown"))
 
 

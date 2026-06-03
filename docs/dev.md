@@ -95,6 +95,98 @@ When you Ctrl+C the dev server, `test.ps1` auto-closes the watcher window.
 
 ---
 
+## Observability
+
+Two completely separate log streams. Both are auto-wired from
+`multiagent.observability` and start with `setup_logging()` at the top of
+each entrypoint (`web/app.py`, `api.py`, `cli.py`).
+
+### Stream 1 — App log (sanitized, public-readable)
+
+- **Local dev**: human-friendly text on stdout (`HH:MM:SS LEVEL logger: msg`).
+- **Hosted (Container Apps)**: one-line JSON to stdout, auto-shipped to the
+  Log Analytics workspace provisioned by `infra/main.bicep`.
+- **What's sanitized before anything is written**:
+  - Emails (`<email>`), phones (`<phone>`), IPv4s (`<ip>`), credit cards
+    (`<card>`), Bearer tokens (`Bearer <token>`), `api_key=…` / `token=…` /
+    `password=…` patterns (`<redacted>`).
+  - `user_id` is replaced with a SHA-256 prefix `u_<12hex>` (stable for
+    correlation, irreversible).
+  - Reserved field names like `content`, `email`, `phone`, `name`,
+    `display_name`, `query`, `text`, `message`, `destination`, `passport`,
+    `dob`, etc. are dropped to `"<redacted>"` so the app log never carries
+    the actual user message body or trip details.
+
+Structured events emitted from `web/app.py`:
+
+| `event_kind` | Fields |
+|---|---|
+| `session_start` | `is_guest`, `has_oauth` |
+| `user_message` | `length`, `words` |
+| `slash_command` | `length` |
+| `tool_call` | `tool`, `status`, `ms` |
+| `turn_complete` | `tool_calls`, `reply_length`, `ms` |
+| `turn_error` | `error_kind`, `tool_calls`, `ms` |
+| `oauth_login` | `provider` (no email / no name) |
+
+KQL example once the container is running on Azure:
+
+```kql
+ContainerAppConsoleLogs_CL
+| where ContainerAppName_s startswith "multiagent-app-"
+| extend e = parse_json(Log_s)
+| where tostring(e.event_kind) == "tool_call"
+| summarize p95_ms = percentile(tolong(e.ms), 95), n = count()
+        by tool = tostring(e.tool)
+| order by n desc
+```
+
+### Stream 2 — Audit log (restricted, contains raw values)
+
+For the rare cases where you need the actual user input (e.g. compliance
+review, dataset curation), there's a separate sink that **never** touches
+stdout:
+
+- **Local dev**: appended as JSON Lines to
+  `~/.multiagent/audit/<YYYY-MM-DD>.jsonl`.
+- **Hosted**: written to the Cosmos DB container `audit_events` (partition
+  key `/user_id`, `defaultTtl = 90 days` so PII auto-expires).
+
+Events that go here:
+
+| `kind` | Fields |
+|---|---|
+| `oauth_login` | `provider`, raw `name`, raw `email` |
+| `user_message` | raw `content` — only when `AUDIT_USER_MESSAGES=1` |
+
+`audit_event` writes are best-effort: if Cosmos is unreachable, the call
+falls back to the local JSONL file and a single WARNING is emitted to the
+app log. A failed audit write never blocks a user request.
+
+Querying the audit container from the Azure Portal → Cosmos → `audit_events`
+→ Items / Query:
+
+```sql
+SELECT TOP 50 c.ts, c.kind, c.content
+FROM c
+WHERE c.user_id = 'google-12345'
+  AND c.kind = 'user_message'
+ORDER BY c.ts DESC
+```
+
+### Env switches
+
+| Var | Default | Effect |
+|---|---|---|
+| `LOG_LEVEL` | `INFO` | Standard Python log level. |
+| `LOG_JSON` | unset locally / `1` in Bicep | Emit JSON instead of text on stdout. |
+| `AUDIT_USER_MESSAGES` | unset (off) | When `1`, persist raw message bodies to the audit sink. **Opt-in.** |
+
+Bicep exposes `auditUserMessages` (default `false`) so the same opt-in is
+visible at deploy time.
+
+---
+
 ## Keyboard cheat sheet
 
 | When you want to... | Where | Keys |

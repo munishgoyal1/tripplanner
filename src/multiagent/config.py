@@ -53,6 +53,15 @@ class Settings(BaseModel):
 
     # General
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
+    # When set to "1", logs to stdout in JSON form (queryable in Log Analytics
+    # / Kusto). Auto-on when COSMOS_ENDPOINT is set (hosted mode). Leave unset
+    # for human-friendly text logs in local dev.
+    log_json: str = os.getenv("LOG_JSON", "")
+    # When "1", on_message ALSO writes the raw user message body to the
+    # restricted audit sink (Cosmos container `audit_events` in hosted mode,
+    # ~/.multiagent/audit/<date>.jsonl locally). The app log only sees
+    # length/word count -- never the content.
+    audit_user_messages: str = os.getenv("AUDIT_USER_MESSAGES", "")
 
 
 @lru_cache

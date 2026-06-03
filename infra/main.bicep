@@ -3,7 +3,7 @@
 // Provisioned resources:
 //   1. Log Analytics workspace (required by Container Apps)
 //   2. Cosmos DB account (NoSQL API, Free Tier ON, single region)
-//   3. Cosmos database + 2 containers (users, trips) partitioned by /user_id
+//   3. Cosmos database + 3 containers (users, trips, audit_events) partitioned by /user_id
 //   4. Container Apps managed environment (Consumption plan)
 //   5. Container App with public ingress on port 8000 (Chainlit + websockets)
 //
@@ -80,6 +80,9 @@ param minReplicas int = 0
 @maxValue(10)
 param maxReplicas int = 1
 
+@description('If true, the restricted audit sink also stores the raw user message body. Opt-in for privacy; off by default.')
+param auditUserMessages bool = false
+
 var suffix = uniqueString(resourceGroup().id)
 var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
@@ -125,6 +128,11 @@ var baseEnv = [
   { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
   { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
   { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
+  // Structured JSON logs to stdout -> Container Apps Log Analytics -> KQL.
+  { name: 'LOG_JSON', value: '1' }
+  // Whether to also persist raw user-message content to the restricted
+  // audit_events Cosmos container. Off by default.
+  { name: 'AUDIT_USER_MESSAGES', value: auditUserMessages ? '1' : '' }
 ]
 
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
@@ -209,6 +217,29 @@ resource tripsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/cont
         ]
         kind: 'Hash'
       }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        automatic: true
+      }
+    }
+  }
+}
+
+// Restricted audit sink for raw user-message content + identity events.
+// PII auto-expires after 90 days (defaultTtl 7,776,000 s).
+resource auditContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: cosmosDb
+  name: 'audit_events'
+  properties: {
+    resource: {
+      id: 'audit_events'
+      partitionKey: {
+        paths: [
+          '/user_id'
+        ]
+        kind: 'Hash'
+      }
+      defaultTtl: 7776000
       indexingPolicy: {
         indexingMode: 'consistent'
         automatic: true
