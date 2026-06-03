@@ -52,6 +52,46 @@ the WebSocket, and reloads the browser — wiping the in-progress chat.
 | `.\scripts\test.ps1 -Port 8080`  | Different port                              | OFF |
 | `.\scripts\test.ps1 -Watch`      | Re-enable hot reload (only if YOU edit)     | ON  |
 | `.\scripts\test.ps1 -OpenBrowser`| Auto-open VS Code's built-in browser        | OFF |
+| `.\scripts\test.ps1 -NoAutoHeal` | Skip the auto-heal watcher window           | OFF |
+
+---
+
+## Auto-heal watcher
+
+`test.ps1` opens a **second pwsh window** running `scripts/autoheal.ps1`. It
+tails the server log at `logs/server-<timestamp>.log` (also tee'd by
+`dev.ps1`) and applies safe fixes when known issues appear.
+
+| Pattern detected | What the healer does | Restart needed? |
+|---|---|---|
+| `ModuleNotFoundError: No module named '<X>'` | Prints the exact `pip install -e ".[dev,web]"` command | Yes (after you run it) |
+| `json.decoder.JSONDecodeError` near user data | Moves the bad file to `*.corrupt.<stamp>`; app recreates defaults | No |
+| `ImportError: bad magic number` etc. | Wipes `src/**/__pycache__/` so Python regenerates | Yes |
+| `OSError: [Errno 10048]` (port in use) | Identifies the listener PID + prints exact `Stop-Process` command | No |
+| `openai.NotFoundError` / `DeploymentNotFound` | Prints known-good API version + reminds you to check `AZURE_OPENAI_DEPLOYMENT` | Yes (after you fix .env) |
+| `openai.AuthenticationError` / 401 | Lists the four env vars to recheck in `.env` | Yes |
+| `openai.RateLimitError` / 429 | Detection only — prints "wait ~30s" advice | No |
+
+Each healer has a per-healer cooldown (30–120s) so the same fix doesn't spam
+on a repeating exception. Actions are logged to `logs/autoheal.log` with
+timestamps.
+
+**Safety**: package installs are never executed automatically — the watcher
+prints the command and you copy-paste. Only fully reversible local actions
+(file rename, cache delete) run by themselves.
+
+**Disable per-run**: `.\scripts\test.ps1 -NoAutoHeal`
+**Detection-only**: `.\scripts\test.ps1 -AutoHealDryRun` (logs what *would*
+happen without changing anything — useful when you're tweaking the healer
+rules in `scripts/autoheal.ps1`).
+
+**Adding a new healer**: edit the `$Healers` array in
+[`scripts/autoheal.ps1`](../scripts/autoheal.ps1). Each entry is `Name`,
+`Pattern` (regex, multi-line, case-insensitive), `Cooldown` (seconds), and
+`Action` (script block that takes the regex match). Keep actions safe and
+reversible.
+
+When you Ctrl+C the dev server, `test.ps1` auto-closes the watcher window.
 
 ---
 

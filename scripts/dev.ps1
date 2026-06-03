@@ -26,7 +26,8 @@ param(
     [switch]$UseCosmos,
     [switch]$WithAuth,
     [switch]$NoBrowser,
-    [switch]$NoWatch
+    [switch]$NoWatch,
+    [string]$LogFile
 )
 
 $ErrorActionPreference = "Stop"
@@ -117,6 +118,8 @@ $reloadLine = if ($NoWatch) {
     "  Reload:  Edit any .py in src/ -> page auto-reloads in ~3s"
 }
 
+$logLine = if ($LogFile) { "  Logs:    tee'd to $LogFile (auto-heal watcher tails this)" } else { "" }
+
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host "  Trip Planner -- local dev$(if ($NoWatch) { ' (NO hot reload)' } else { ' (hot reload)' })" -ForegroundColor Green
@@ -124,9 +127,21 @@ Write-Host "  http://localhost:$Port" -ForegroundColor Green
 Write-Host "  Storage: $(if ($UseCosmos) { 'Cosmos (PROD)' } else { '~/.multiagent/ (local JSON)' })" -ForegroundColor Green
 Write-Host "  Auth:    $(if ($WithAuth) { 'enabled' } else { 'disabled (guest-only)' })" -ForegroundColor Green
 Write-Host $reloadLine -ForegroundColor Green
+if ($logLine) { Write-Host $logLine -ForegroundColor Green }
 Write-Host "  Ctrl+C to stop" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host ""
 
 
-& $python @chainlitArgs
+if ($LogFile) {
+    $logDir = Split-Path -Parent $LogFile
+    if ($logDir -and -not (Test-Path $logDir)) {
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    }
+    # Touch the file so the watcher (which polls for it) can start tailing immediately,
+    # even before chainlit produces its first line of output.
+    New-Item -ItemType File -Path $LogFile -Force | Out-Null
+    & $python @chainlitArgs 2>&1 | Tee-Object -FilePath $LogFile -Append
+} else {
+    & $python @chainlitArgs
+}
