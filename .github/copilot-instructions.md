@@ -1,20 +1,39 @@
 # Copilot Instructions — multiagent
 
-> **Read [docs/CODEMAP.md](../docs/CODEMAP.md) FIRST.** It is the canonical
-> file index and is kept up to date with the code. Use it instead of grepping
-> the repo to "rediscover" structure on every task.
+> **Read [docs/CODEMAP.md](../docs/CODEMAP.md) (where) and
+> [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste) FIRST.**
+> They are the canonical, committed sources of truth and are kept up to date
+> with the code. Use them instead of grepping the repo to "rediscover"
+> structure or owner intent on every task.
 
 ## Agent efficiency rules (avoid wasting the user's time)
 - Read big chunks (50–200 lines) and read multiple files in parallel.
   Do NOT dribble 5-line reads.
 - Batch independent tool calls into ONE turn. Only chain when an output is
   needed for the next input.
-- Trust this file + `docs/CODEMAP.md` + `/memories/repo/multiagent.md`.
-  Skip re-exploration on every task.
+- Trust this file + `docs/CODEMAP.md` + `docs/PRODUCT.md` +
+  `/memories/repo/multiagent.md`. Skip re-exploration on every task.
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
+
+## Memory maintenance (KEEP CONTEXT FRESH — do this every session)
+Whenever the owner teaches a new preference, taste, or requirement, update
+the right place IN THE SAME TURN so future sessions don't relearn it:
+
+| What changed                                | Update                                |
+|---------------------------------------------|---------------------------------------|
+| Cross-project habit (terse, no servers, …)  | `/memories/preferences.md`            |
+| Repo-only gotcha / landmine                 | `/memories/repo/multiagent.md`        |
+| Vision / scope / taste / design language    | `docs/PRODUCT.md` (commit)            |
+| File layout / commands / contracts          | `docs/CODEMAP.md` (commit)            |
+| New requirement / decision (with date)      | `REQUIREMENTS.txt` (commit)           |
+| Architecture / config shift                 | `README.md` + this file (commit)      |
+| Current in-flight TODOs only                | `/memories/session/<topic>.md`        |
+
+The latest instruction always wins — delete stale entries, don't pile up.
+Stale memory is worse than no memory.
 
 ## What is this project?
 An AI-powered trip planner for Munish Goyal (munishgoyal1).

@@ -512,3 +512,19 @@ STILL TODO (this session, in progress):
 - frontend/.gitignore: ignore *.tsbuildinfo so the typescript incremental file doesn't get committed.
 - Validation: tsc clean, npm run build clean (no PostCSS warning), pytest 167 passed.
 
+
+
+=== 2026-06-03 — Session 15: Ongoing-context memory layers ===
+
+USER ASK: don't just fix this session — make me fast on an ONGOING basis. Maintain everything you need to keep context of my needs, taste, style, and the requirements of this web app.
+
+WHAT SHIPPED:
+- docs/CODEMAP.md (where things live) — already in last session.
+- docs/PRODUCT.md (NEW) — what/why + non-goals + owner taste (Airbnb/TripAdvisor magazine, coral brand, sticky suggestions, no-flicker switching, sticky currency, additive About-me merge) + owner working style + roadmap signals.
+- .github/copilot-instructions.md — added a 'Memory maintenance' table mapping each kind of change to the right file, plus a pointer to PRODUCT.md alongside CODEMAP.md.
+- /memories/preferences.md (user-wide) — added Communication style + Dev workflow + Active workspaces sections so the rules apply outside this repo too.
+- /memories/repo/multiagent.md (workspace-scoped) — added Memory-maintenance rule at the top, Owner taste signals + Owner working style sections at the bottom, plus pointer to PRODUCT.md.
+
+MECHANISM: every session now starts with CODEMAP + PRODUCT in scope (committed) and the two memory files auto-loaded. The Memory-maintenance table in copilot-instructions tells the next agent WHERE to write down new things so it doesn't get lost.
+
+NO CODE CHANGES, NO TEST RUN.
