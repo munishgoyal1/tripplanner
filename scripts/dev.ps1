@@ -11,6 +11,9 @@
 #   scripts\dev.ps1 -Port 8080     # custom port
 #   scripts\dev.ps1 -UseCosmos     # talk to production Cosmos (read/write live data!)
 #   scripts\dev.ps1 -WithAuth      # enable OAuth + guest cookie locally
+#   scripts\dev.ps1 -NoWatch       # disable hot reload (you Ctrl+C + rerun to pick
+#                                    up code changes; your browser chat stays intact
+#                                    while the agent is editing files)
 #
 # First-time setup:
 #   1. Copy .env.example to .env and fill in keys (or already done -- your .env exists).
@@ -22,7 +25,8 @@ param(
     [int]$Port = 8000,
     [switch]$UseCosmos,
     [switch]$WithAuth,
-    [switch]$NoBrowser
+    [switch]$NoBrowser,
+    [switch]$NoWatch
 )
 
 $ErrorActionPreference = "Stop"
@@ -102,20 +106,27 @@ if ($WithAuth) {
 
 $chainlitArgs = @(
     "-m", "chainlit", "run", "src/multiagent/web/app.py",
-    "--port", "$Port",
-    "-w"
+    "--port", "$Port"
 )
+if (-not $NoWatch) { $chainlitArgs += "-w" }
 if ($NoBrowser) { $chainlitArgs += "--headless" }
+
+$reloadLine = if ($NoWatch) {
+    "  Reload:  MANUAL -- edits are NOT auto-applied. Ctrl+C + rerun to pick them up."
+} else {
+    "  Reload:  Edit any .py in src/ -> page auto-reloads in ~3s"
+}
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Host "  Trip Planner -- local dev (hot reload)" -ForegroundColor Green
+Write-Host "  Trip Planner -- local dev$(if ($NoWatch) { ' (NO hot reload)' } else { ' (hot reload)' })" -ForegroundColor Green
 Write-Host "  http://localhost:$Port" -ForegroundColor Green
 Write-Host "  Storage: $(if ($UseCosmos) { 'Cosmos (PROD)' } else { '~/.multiagent/ (local JSON)' })" -ForegroundColor Green
 Write-Host "  Auth:    $(if ($WithAuth) { 'enabled' } else { 'disabled (guest-only)' })" -ForegroundColor Green
-Write-Host "  Edit any .py file in src/ -> page reloads in ~3s" -ForegroundColor Green
+Write-Host $reloadLine -ForegroundColor Green
 Write-Host "  Ctrl+C to stop" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host ""
+
 
 & $python @chainlitArgs
