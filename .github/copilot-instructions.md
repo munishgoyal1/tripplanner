@@ -1,5 +1,21 @@
 # Copilot Instructions — multiagent
 
+> **Read [docs/CODEMAP.md](../docs/CODEMAP.md) FIRST.** It is the canonical
+> file index and is kept up to date with the code. Use it instead of grepping
+> the repo to "rediscover" structure on every task.
+
+## Agent efficiency rules (avoid wasting the user's time)
+- Read big chunks (50–200 lines) and read multiple files in parallel.
+  Do NOT dribble 5-line reads.
+- Batch independent tool calls into ONE turn. Only chain when an output is
+  needed for the next input.
+- Trust this file + `docs/CODEMAP.md` + `/memories/repo/multiagent.md`.
+  Skip re-exploration on every task.
+- Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
+  after every micro-edit (exception: when a mid-edit failure is suspected).
+- One milestone = one commit + push. Per owner rule, never leave unpushed work.
+- Do not add docstrings/type-hints/comments to code you didn't touch.
+
 ## What is this project?
 An AI-powered trip planner for Munish Goyal (munishgoyal1).
 It uses LangGraph with a single Trip Agent + 18 tools to create complete,
