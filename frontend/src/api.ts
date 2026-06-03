@@ -60,7 +60,7 @@ export interface AuthSession {
   picture?: string;
 }
 
-export async function fetchAuthConfig(): Promise<{ google: boolean }> {
+export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri?: string }> {
   try {
     const res = await fetch(`${BASE}/auth/config`);
     return res.json();

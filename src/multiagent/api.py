@@ -308,9 +308,15 @@ def _secure_cookie(request: Request) -> bool:
 
 
 @app.get("/auth/config")
-async def auth_config() -> dict:
-    """Tells the SPA whether to show the 'Sign in with Google' button."""
-    return {"google": oauth.is_enabled()}
+async def auth_config(request: Request) -> dict:
+    """Tells the SPA whether to show the 'Sign in with Google' button, and
+    surfaces the exact redirect URI the backend will hand to Google — copy
+    this verbatim into the Google Cloud Console 'Authorized redirect URIs'
+    list to avoid redirect_uri_mismatch."""
+    return {
+        "google": oauth.is_enabled(),
+        "redirect_uri": oauth.redirect_uri(str(request.base_url)),
+    }
 
 
 @app.get("/auth/me")
