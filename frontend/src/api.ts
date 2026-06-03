@@ -43,6 +43,64 @@ export function getDisplayName(): string {
   return localStorage.getItem("multiagent_display_name") || "";
 }
 
+// ---------------------------------------------------------------------------
+// Google OAuth. The backend owns the redirect dance and drops a signed,
+// HttpOnly session cookie; here we just (a) ask whether it's configured,
+// (b) read the current session, and (c) kick off / tear down login. When a
+// Google session exists we mirror its user_id into localStorage so every
+// existing param-based call (chat, trip, preferences) uses the Google identity
+// — and it's the SAME `google-<sub>` id the Chainlit app uses, so state is
+// shared across both UIs.
+// ---------------------------------------------------------------------------
+export interface AuthSession {
+  authenticated: boolean;
+  user_id?: string;
+  display_name?: string;
+  email?: string;
+  picture?: string;
+}
+
+export async function fetchAuthConfig(): Promise<{ google: boolean }> {
+  try {
+    const res = await fetch(`${BASE}/auth/config`);
+    return res.json();
+  } catch {
+    return { google: false };
+  }
+}
+
+// Reads the session cookie. If authenticated, mirrors the identity into
+// localStorage so the rest of the app picks it up transparently.
+export async function syncAuth(): Promise<AuthSession> {
+  try {
+    const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
+    const session: AuthSession = await res.json();
+    if (session.authenticated && session.user_id) {
+      localStorage.setItem("multiagent_user_id", session.user_id);
+      if (session.display_name) {
+        localStorage.setItem("multiagent_display_name", session.display_name);
+      }
+    }
+    return session;
+  } catch {
+    return { authenticated: false };
+  }
+}
+
+export function loginWithGoogle(): void {
+  const back = window.location.pathname + window.location.search;
+  window.location.href = `${BASE}/auth/login/google?redirect=${encodeURIComponent(back)}`;
+}
+
+export async function logoutGoogle(): Promise<void> {
+  try {
+    await fetch(`${BASE}/auth/logout`, { method: "POST", credentials: "include" });
+  } catch {
+    /* ignore */
+  }
+  signOut();
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end") => void;

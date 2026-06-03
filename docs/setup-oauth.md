@@ -133,3 +133,82 @@ Run: `chainlit run src/multiagent/web/app.py --port 8000`.
 | No login screen appears | `CHAINLIT_AUTH_SECRET` not set on the Container App. Run `az containerapp show … --query properties.template.containers[0].env` and confirm it's present. |
 | Guest cookie identity changes after each visit | Browser is blocking cookies for the Container App domain, or the user is in private/incognito mode. |
 | User logs in but sees no past trips | Cosmos document was created under their old `guest-<uuid>` id. Migration of guest → logged-in identity is not implemented yet; tracked as a follow-up. |
+
+---
+
+# Google OAuth for the React SPA (`frontend/`)
+
+The standalone SPA talks to the plain FastAPI backend (`api.py`), not
+Chainlit, so it has its own OAuth flow in `src/multiagent/web/oauth.py`. It
+deliberately **reuses the exact same env vars and identifier scheme** as the
+Chainlit app — `OAUTH_GOOGLE_CLIENT_ID`, `OAUTH_GOOGLE_CLIENT_SECRET`,
+`CHAINLIT_AUTH_SECRET`, and the `google-<sub>` user id — so a user who signs
+in with Google resolves to the **same identity on both UIs**, and their
+preferences and trips carry across with zero migration. No extra Python
+dependencies (stdlib + the existing `httpx`).
+
+It degrades gracefully: with the env vars unset, the **Sign in with Google**
+button is hidden and the SPA falls back to name / anonymous sign-in.
+
+## Endpoints (FastAPI)
+
+| Route | Purpose |
+|-------|---------|
+| `GET /auth/config` | `{ "google": true/false }` — tells the SPA whether to show the button. |
+| `GET /auth/login/google?redirect=/` | Redirects the browser to Google's consent screen. |
+| `GET /auth/callback/google` | Google returns here; the backend exchanges the code, sets a signed HttpOnly `mg_session` cookie, and bounces back to the SPA. |
+| `GET /auth/me` | Current session `{ authenticated, user_id, display_name, email, picture }`. |
+| `POST /auth/logout` | Clears the session cookie. |
+
+The session cookie is signed with HMAC-SHA256 using `CHAINLIT_AUTH_SECRET`
+(or `WEB_SESSION_SECRET` as a fallback).
+
+## Redirect URI — the one thing you must get right
+
+Set `OAUTH_REDIRECT_BASE` to the public base that fronts `/auth/...`, and
+register `<OAUTH_REDIRECT_BASE>/auth/callback/google` in the Google console.
+
+* **Local dev** (everything stays same-origin through the Vite proxy on
+  `:5173`, which avoids cross-origin cookie headaches):
+  ```
+  OAUTH_REDIRECT_BASE=http://localhost:5173/api
+  ```
+  Register this exact redirect URI in Google:
+  ```
+  http://localhost:5173/api/auth/callback/google
+  ```
+* **Production** (single origin serving SPA + API):
+  ```
+  OAUTH_REDIRECT_BASE=https://your-app.example.com/api
+  # register https://your-app.example.com/api/auth/callback/google
+  ```
+
+If `OAUTH_REDIRECT_BASE` is unset, the callback URI is derived from the
+incoming request — fine when the SPA and API already share an origin.
+
+## Local dev steps
+
+1. Create (or reuse) a Google OAuth **Web application** client and add the
+   redirect URI `http://localhost:5173/api/auth/callback/google`.
+2. Put these in your `.env` (or shell):
+   ```
+   CHAINLIT_AUTH_SECRET=<any random string; reused as the session signing key>
+   OAUTH_GOOGLE_CLIENT_ID=<client id>
+   OAUTH_GOOGLE_CLIENT_SECRET=<client secret>
+   OAUTH_REDIRECT_BASE=http://localhost:5173/api
+   ```
+3. Run the SPA stack: `scripts\dev-spa.ps1` (backend on `:8000`, Vite on
+   `:5173`). Open <http://localhost:5173>, click the account menu →
+   **Sign in with Google**.
+
+## Production CORS note
+
+Cookie-based sessions need credentials, which browsers forbid alongside the
+`*` CORS wildcard. When the SPA is on a **different origin** from the API,
+set explicit origins so credentials are allowed:
+```
+WEB_ALLOWED_ORIGINS=https://your-spa.example.com
+```
+When the SPA and API share an origin (e.g. served behind one Container App),
+no change is needed — requests are same-origin and CORS doesn't apply.
+

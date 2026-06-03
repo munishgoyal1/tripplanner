@@ -26,13 +26,14 @@ import json
 import os
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from pydantic import BaseModel
 
 from multiagent.observability import app_event, setup_logging
+from multiagent.web import oauth
 
 setup_logging()
 
@@ -40,11 +41,16 @@ app = FastAPI(title="Personal Assistant API", version="0.1.0")
 
 # CORS — the SPA runs on a different origin in dev (Vite :5173). Override the
 # allowed origins in production via WEB_ALLOWED_ORIGINS (comma-separated).
-_origins = os.getenv("WEB_ALLOWED_ORIGINS", "*").split(",")
+# Cookie-based OAuth needs credentials, which browsers forbid alongside the
+# "*" wildcard — so only enable credentials when explicit origins are set.
+# (In dev the SPA talks to the API through the Vite proxy, i.e. same-origin,
+# so credentials flow without CORS anyway.)
+_origins = [o.strip() for o in os.getenv("WEB_ALLOWED_ORIGINS", "*").split(",") if o.strip()]
+_allow_credentials = _origins != ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in _origins if o.strip()],
-    allow_credentials=False,
+    allow_origins=_origins,
+    allow_credentials=_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -289,6 +295,114 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
     prefs_store.save_preferences(prefs)
     app_event("api_preferences_saved")
     return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# Google OAuth — standalone (the Chainlit app has its own; both share the
+# `google-<sub>` identifier scheme so a user is the same across both UIs).
+# All endpoints degrade gracefully: when OAUTH_GOOGLE_CLIENT_ID etc. are unset,
+# /auth/me reports {authenticated: false} and the SPA falls back to name/anon.
+# ---------------------------------------------------------------------------
+def _secure_cookie(request: Request) -> bool:
+    return oauth.redirect_uri(str(request.base_url)).startswith("https://")
+
+
+@app.get("/auth/config")
+async def auth_config() -> dict:
+    """Tells the SPA whether to show the 'Sign in with Google' button."""
+    return {"google": oauth.is_enabled()}
+
+
+@app.get("/auth/me")
+async def auth_me(request: Request) -> dict:
+    """Return the signed-in identity (from the session cookie) or anonymous."""
+    session = oauth.read_session(request.cookies.get(oauth.SESSION_COOKIE))
+    if not session:
+        return {"authenticated": False}
+    return {"authenticated": True, **session}
+
+
+@app.get("/auth/login/google")
+async def auth_login_google(request: Request, redirect: str = "/") -> RedirectResponse:
+    """Kick off the authorization-code flow → redirect the browser to Google."""
+    if not oauth.is_enabled():
+        return RedirectResponse(redirect or "/", status_code=302)
+    callback = oauth.redirect_uri(str(request.base_url))
+    url, state_token = oauth.build_authorize_url(callback, redirect or "/")
+    res = RedirectResponse(url, status_code=302)
+    res.set_cookie(
+        "mg_oauth_state",
+        state_token,
+        max_age=600,
+        httponly=True,
+        samesite="lax",
+        secure=_secure_cookie(request),
+        path="/",
+    )
+    return res
+
+
+@app.get("/auth/callback/google")
+async def auth_callback_google(
+    request: Request, code: str = "", state: str = "", error: str = ""
+) -> RedirectResponse:
+    """Google redirects here with ?code. Exchange it, set the session cookie,
+    then bounce back to the SPA path the user started from."""
+    post_login = oauth.verify_state(request.cookies.get("mg_oauth_state"), state)
+    if error or not code or post_login is None:
+        app_event("api_oauth_callback_rejected", reason=error or "bad_state")
+        res = RedirectResponse("/?auth=failed", status_code=302)
+        res.delete_cookie("mg_oauth_state", path="/")
+        return res
+
+    callback = oauth.redirect_uri(str(request.base_url))
+    try:
+        profile = await oauth.exchange_code(code, callback)
+    except Exception as exc:
+        app_event("api_oauth_exchange_error", error=type(exc).__name__)
+        res = RedirectResponse("/?auth=failed", status_code=302)
+        res.delete_cookie("mg_oauth_state", path="/")
+        return res
+
+    identifier = profile["identifier"]
+    # Seed the display name on first login (mirrors the Chainlit app).
+    try:
+        from multiagent.tools import user_preferences as prefs_store
+        from multiagent.user_context import set_user_id
+
+        set_user_id(identifier)
+        prefs = prefs_store.load_preferences()
+        profile_blob = dict(prefs.get("profile") or {})
+        if not profile_blob.get("display_name") and profile.get("name"):
+            profile_blob["display_name"] = profile["name"].split()[0]
+            prefs["profile"] = profile_blob
+            prefs_store.save_preferences(prefs)
+    except Exception:
+        pass  # profile seeding is best-effort; never block login
+
+    app_event("api_oauth_login", provider="google")
+    token = oauth.make_session_token(
+        identifier, profile.get("name", ""), profile.get("email", ""), profile.get("picture", "")
+    )
+    res = RedirectResponse(post_login or "/", status_code=302)
+    res.delete_cookie("mg_oauth_state", path="/")
+    res.set_cookie(
+        oauth.SESSION_COOKIE,
+        token,
+        max_age=30 * 24 * 60 * 60,
+        httponly=True,
+        samesite="lax",
+        secure=_secure_cookie(request),
+        path="/",
+    )
+    return res
+
+
+@app.post("/auth/logout")
+async def auth_logout() -> JSONResponse:
+    res = JSONResponse({"ok": True})
+    res.delete_cookie(oauth.SESSION_COOKIE, path="/")
+    return res
 
 
 @app.get("/health")
