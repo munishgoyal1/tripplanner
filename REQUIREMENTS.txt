@@ -498,3 +498,17 @@ STILL TODO (this session, in progress):
 - Part A frontend caching (keep prior DestinationOverview visible while the new one loads).
 - Part D — Airbnb/TripAdvisor-style restyle of the React components, keeping the chat+panel layout.
 
+
+## Session 14 — Frontend speed + Airbnb/TripAdvisor restyle (shipped)
+- Decision: keep current chat + right-rail layout; restyle in-place.
+- New design tokens in tailwind.config.js: coral brand palette (50/100/500/600/700), teal accent, ink/muted/surface neutrals, shadow-card/shadow-pop, rounded 4xl, Inter (UI) + Fraunces (display).
+- frontend/index.html now loads Google Fonts via <link> (PostCSS-friendly, no CSS @import).
+- Reusable component classes added to frontend/src/index.css: .card, .card-hover, .pill, .chip, .btn-primary, .btn-ghost, .display, .input.
+- ChatPanel: sticky blurred header with brand-gradient chip, display heading, rounded message bubbles with shadow-card+ring, rounded-2xl composer, btn-primary Send.
+- TripPanel: high-contrast magazine-style HERO summary (ink gradient + coral/teal glows + chips + cost pill), sticky focus toolbar with circular steppers, ItemCard uses .card .card-hover with In trip emerald pill, hover-to-Remove with group/btn, btn-primary 'Add to trip'.
+- DestinationOverview: rounded-3xl card, taller hero (h-64), amber rating pill, italic quote blockquotes, attractions cards lift on hover with ring-brand/40.
+- Lightbox/SettingsModal left functional; bg-brand DEFAULT still resolves so existing utilities are unaffected.
+- Performance: getCachedOverview + per-destination cache + in-flight de-dup in frontend/src/api.ts; consumer seeds from cache on mount and keeps the previous destination card on screen (dimmed) during fetch — Dubai→Paris no longer flickers/blanks.
+- frontend/.gitignore: ignore *.tsbuildinfo so the typescript incremental file doesn't get committed.
+- Validation: tsc clean, npm run build clean (no PostCSS warning), pytest 167 passed.
+

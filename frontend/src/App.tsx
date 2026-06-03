@@ -120,7 +120,7 @@ export default function App() {
   };
 
   return (
-    <div ref={containerRef} className="flex h-screen bg-slate-100">
+    <div ref={containerRef} className="flex h-screen bg-surface">
       <section
         className="flex w-full min-w-0 flex-col md:w-auto"
         style={isDesktop ? { flexBasis: `${chatPct}%` } : undefined}
@@ -131,9 +131,9 @@ export default function App() {
       <div
         onMouseDown={startDrag}
         title="Drag to resize"
-        className="group relative hidden w-1.5 flex-shrink-0 cursor-col-resize bg-slate-200 transition-colors hover:bg-brand/50 md:block"
+        className="group relative hidden w-1.5 flex-shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-brand/30 md:block"
       >
-        <span className="absolute left-1/2 top-1/2 h-10 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/70" />
+        <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
       </div>
 
       <aside className="hidden min-w-0 flex-1 md:block">

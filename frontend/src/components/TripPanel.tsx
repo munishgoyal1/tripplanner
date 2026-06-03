@@ -35,9 +35,9 @@ function isSelectable(kind: string): boolean {
 function Stars({ rating, count }: { rating: number | null; count: number | null }) {
   if (rating == null) return null;
   return (
-    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
+    <span className="pill bg-amber-50 text-amber-700 ring-1 ring-amber-100">
       ★ {rating.toFixed(1)}
-      {count != null && <span className="text-amber-400/80"> ({count})</span>}
+      {count != null && <span className="text-amber-500/80"> ({count})</span>}
     </span>
   );
 }
@@ -59,77 +59,97 @@ function ItemCard({
 }) {
   const icon = ICONS[item.kind] ?? "\u{1F4CD}";
   const photos = item.photos;
-  const heroHeight = focused ? "h-60" : "h-40";
+  const heroHeight = focused ? "h-72" : "h-52";
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition hover:shadow-md">
-      {photos.length > 0 && (
+    <article className="card card-hover group">
+      {photos.length > 0 ? (
         <div className="relative">
           <button onClick={() => onOpenPhoto(photos, 0, item.name)} className="block w-full">
             <img
               src={photos[0]}
               alt={item.name}
-              className={`w-full ${heroHeight} object-cover transition-transform duration-500 hover:scale-105`}
+              className={`w-full ${heroHeight} object-cover transition-transform duration-700 group-hover:scale-[1.03]`}
             />
           </button>
+
+          {/* Top-left "kind" badge so the eye can scan the list quickly. */}
+          <span className="pill absolute left-3 top-3 bg-white/95 text-ink shadow-sm backdrop-blur">
+            {icon}
+            <span className="capitalize">{item.kind === "attraction" ? "activity" : item.kind}</span>
+          </span>
+
+          {item.selected && (
+            <span className="pill absolute right-3 top-3 bg-emerald-500/95 text-white shadow-sm backdrop-blur">
+              ✓ In trip
+            </span>
+          )}
+
           {photos.length > 1 && (
             <button
               onClick={() => onOpenPhoto(photos, 0, item.name)}
-              className="absolute right-3 top-3 rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur hover:bg-black/60"
+              className="absolute bottom-3 right-3 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur transition hover:bg-black/75"
             >
-              📷 {photos.length}
+              📷 {photos.length} photos
             </button>
           )}
         </div>
-      )}
+      ) : null}
 
-      <div className="p-3.5">
-        <div className="flex items-start justify-between gap-2">
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="font-semibold text-ink">
-              {icon} {item.name}
-            </div>
-            {item.address && <div className="text-xs text-slate-500">{item.address}</div>}
+            <h3 className="display truncate text-base font-semibold text-ink">
+              {item.name}
+            </h3>
+            {item.address && (
+              <p className="mt-0.5 truncate text-xs text-muted">{item.address}</p>
+            )}
           </div>
           <Stars rating={item.rating} count={item.review_count} />
         </div>
 
         {focused && photos.length > 1 && (
-          <div className="mt-2.5 flex gap-2 overflow-x-auto pb-1">
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {photos.slice(1).map((p, i) => (
               <button
                 key={i}
                 onClick={() => onOpenPhoto(photos, i + 1, item.name)}
-                className="flex-shrink-0 overflow-hidden rounded-lg"
+                className="flex-shrink-0 overflow-hidden rounded-2xl"
               >
                 <img
                   src={p}
                   alt={item.name}
-                  className="h-20 w-28 object-cover transition-transform duration-300 hover:scale-110"
+                  className="h-24 w-32 object-cover transition-transform duration-300 hover:scale-110"
                 />
               </button>
             ))}
           </div>
         )}
 
-        {item.summary && <p className="mt-2.5 text-sm leading-relaxed text-slate-600">{item.summary}</p>}
+        {item.summary && (
+          <p className="mt-3 text-sm leading-relaxed text-slate-600">{item.summary}</p>
+        )}
 
         {item.reviews.length > 0 && (
-          <div className="mt-2.5 space-y-2">
+          <div className="mt-3 space-y-2">
             {item.reviews.slice(0, focused ? 4 : 2).map((r, i) => (
-              <div key={i} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
-                <p className="text-xs text-slate-600">“{r.text}”</p>
-                <p className="mt-1 text-[11px] text-slate-400">{r.author}</p>
-              </div>
+              <blockquote
+                key={i}
+                className="rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-2"
+              >
+                <p className="text-xs italic text-slate-600">“{r.text}”</p>
+                <footer className="mt-1 text-[11px] text-muted">— {r.author}</footer>
+              </blockquote>
             ))}
           </div>
         )}
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           {!focused && (
             <button
               onClick={() => onFocus(item.kind, item.name)}
               title="See this item on its own with all photos and reviews"
-              className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200"
+              className="btn-ghost"
             >
               View details
             </button>
@@ -140,16 +160,16 @@ function ItemCard({
               <button
                 onClick={() => onDeselect(item.kind, item.name)}
                 title="Remove this from your saved trip picks"
-                className="group rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-600 hover:bg-rose-50 hover:text-rose-600"
+                className="group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-rose-50 hover:text-rose-700 hover:ring-rose-200"
               >
-                <span className="group-hover:hidden">✓ In trip</span>
-                <span className="hidden group-hover:inline">✕ Remove</span>
+                <span className="group-hover/btn:hidden">✓ Saved</span>
+                <span className="hidden group-hover/btn:inline">✕ Remove</span>
               </button>
             ) : (
               <button
                 onClick={() => onSelect(item.kind, item.name)}
                 title="Save this to your trip so the agent keeps it in the plan"
-                className="rounded-lg bg-brand px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:opacity-90"
+                className="btn-primary px-4 py-1.5 text-xs"
               >
                 + Add to trip
               </button>
@@ -160,14 +180,14 @@ function ItemCard({
               href={item.website}
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200"
+              className="btn-ghost"
             >
               Website ↗
             </a>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -186,13 +206,13 @@ function NavStrip({
 }) {
   if (navList.length === 0) return null;
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1">
+    <div className="flex gap-2 overflow-x-auto pb-1.5">
       <button
         onClick={onClearFocus}
-        className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+        className={`flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
           focusIndex < 0
-            ? "bg-brand text-white shadow-sm"
-            : "bg-white text-slate-600 ring-1 ring-slate-200 hover:ring-brand"
+            ? "bg-ink text-white shadow-sm"
+            : "bg-white text-slate-700 ring-1 ring-slate-200 hover:ring-ink"
         }`}
       >
         🗺️ Whole trip
@@ -201,10 +221,10 @@ function NavStrip({
         <button
           key={i}
           onClick={() => onFocus(n.kind, n.name)}
-          className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+          className={`flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-medium transition ${
             i === focusIndex
               ? "bg-brand text-white shadow-sm"
-              : "bg-white text-slate-600 ring-1 ring-slate-200 hover:ring-brand"
+              : "bg-white text-slate-700 ring-1 ring-slate-200 hover:ring-brand"
           }`}
         >
           {(ICONS[n.kind] ?? "📍") + " " + n.name}
@@ -234,12 +254,27 @@ export default function TripPanel({
     setLb({ photos, index, alt });
 
   if (loading && !view) {
-    return <div className="p-5 text-sm text-slate-400">Loading trip…</div>;
+    return (
+      <div className="grid h-full place-items-center bg-surface p-6 text-sm text-muted">
+        Loading your trip…
+      </div>
+    );
   }
   if (!view || !view.has_trip) {
     return (
-      <div className="grid h-full place-items-center p-6 text-center text-sm text-slate-400">
-        {view?.empty_message || "No active trip yet. Start chatting to plan one."}
+      <div className="grid h-full place-items-center bg-surface p-8 text-center">
+        <div className="max-w-sm">
+          <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-3xl bg-white text-2xl shadow-card ring-1 ring-slate-100">
+            🌍
+          </div>
+          <p className="display text-base font-semibold text-ink">
+            Your trip canvas is empty
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {view?.empty_message ||
+              "Tell the chat where and when you'd like to go — I'll fill this side with photos, ratings and details."}
+          </p>
+        </div>
       </div>
     );
   }
@@ -249,30 +284,27 @@ export default function TripPanel({
   const total = navList.length;
 
   return (
-    <div className="flex h-full flex-col bg-slate-100">
+    <div className="flex h-full flex-col bg-surface">
       {focused && (
-        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-200 bg-white/90 px-4 py-2 backdrop-blur">
-          <button
-            onClick={onClearFocus}
-            className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
-          >
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+          <button onClick={onClearFocus} className="btn-ghost">
             ← Whole trip
           </button>
           {total > 1 && (
             <div className="ml-auto flex items-center gap-1.5">
               <button
                 onClick={() => onStep(-1)}
-                className="grid h-7 w-7 place-items-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"
+                className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
                 title="Previous"
               >
                 ‹
               </button>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs font-medium text-muted">
                 {focusIndex >= 0 ? focusIndex + 1 : "–"} / {total}
               </span>
               <button
                 onClick={() => onStep(1)}
-                className="grid h-7 w-7 place-items-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"
+                className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
                 title="Next"
               >
                 ›
@@ -282,47 +314,90 @@ export default function TripPanel({
         </div>
       )}
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
-        <div className="rounded-2xl bg-gradient-to-br from-brand to-indigo-600 p-4 text-white shadow-sm">
-          <h2 className="text-lg font-semibold">{view.title}</h2>
-          <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-white/85">
-            {ov.origin && (
+      <div className="flex-1 space-y-4 overflow-y-auto p-5">
+        {/* Hero summary — high-contrast, travel-magazine vibe. */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-ink via-slate-800 to-slate-900 p-5 text-white shadow-card">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                "radial-gradient(60% 80% at 110% -10%, rgba(225,29,72,0.5), transparent 60%), radial-gradient(60% 80% at -10% 110%, rgba(15,118,110,0.4), transparent 60%)",
+            }}
+          />
+          <div className="relative">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">
+              Your trip
+            </p>
+            <h2 className="display mt-1 text-2xl font-semibold leading-tight">
+              {view.title}
+            </h2>
+
+            <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-sm">
+              {ov.origin && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-white/50">From</div>
+                  <div className="font-medium">{ov.origin}</div>
+                </div>
+              )}
+              {ov.destination && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-white/50">To</div>
+                  <div className="font-medium">{ov.destination}</div>
+                </div>
+              )}
+              {ov.departure_date && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-white/50">
+                    Depart
+                  </div>
+                  <div className="font-medium">{ov.departure_date}</div>
+                </div>
+              )}
+              {ov.return_date && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-white/50">
+                    Return
+                  </div>
+                  <div className="font-medium">{ov.return_date}</div>
+                </div>
+              )}
               <div>
-                <span className="text-white/60">From</span> {ov.origin}
+                <div className="text-[10px] uppercase tracking-wider text-white/50">
+                  Travelers
+                </div>
+                <div className="font-medium">{ov.travelers}</div>
               </div>
-            )}
-            {ov.destination && (
               <div>
-                <span className="text-white/60">To</span> {ov.destination}
+                <div className="text-[10px] uppercase tracking-wider text-white/50">
+                  Status
+                </div>
+                <div className="font-medium capitalize">{ov.status}</div>
               </div>
-            )}
-            {ov.departure_date && (
-              <div>
-                <span className="text-white/60">Depart</span> {ov.departure_date}
-              </div>
-            )}
-            {ov.return_date && (
-              <div>
-                <span className="text-white/60">Return</span> {ov.return_date}
-              </div>
-            )}
-            <div>
-              <span className="text-white/60">Travelers</span> {ov.travelers}
             </div>
-            <div>
-              <span className="text-white/60">Status</span> {ov.status}
+
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4">
+              <span className="chip bg-white/10 text-white/90">
+                ✈️ {ov.counts.flights} flights
+              </span>
+              <span className="chip bg-white/10 text-white/90">
+                🏨 {ov.counts.hotels} hotels
+              </span>
+              <span className="chip bg-white/10 text-white/90">
+                🎯 {ov.counts.activities} activities
+              </span>
+              {ov.counts.days > 0 && (
+                <span className="chip bg-white/10 text-white/90">
+                  📅 {ov.counts.days} days
+                </span>
+              )}
+              {ov.total_cost_display && (
+                <span className="ml-auto rounded-full bg-white px-3.5 py-1 text-sm font-semibold text-ink shadow-sm">
+                  {ov.total_cost_display}
+                </span>
+              )}
             </div>
           </div>
-          {ov.total_cost_display && (
-            <div className="mt-2 text-sm font-semibold">Total: {ov.total_cost_display}</div>
-          )}
-          <div className="mt-2 flex gap-3 text-xs text-white/85">
-            <span>✈️ {ov.counts.flights}</span>
-            <span>🏨 {ov.counts.hotels}</span>
-            <span>🎯 {ov.counts.activities}</span>
-            {ov.counts.days > 0 && <span>📅 {ov.counts.days}d</span>}
-          </div>
-        </div>
+        </section>
 
         {/* Click-based navigator (replaces the dropdown) */}
         {total > 0 && (
@@ -335,9 +410,9 @@ export default function TripPanel({
         )}
 
         {view.is_fallback && (
-          <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-700">
-            Popular spots in {ov.destination || "your destination"} — nothing picked yet.
-            Hit “+ Add to trip” to save any of these.
+          <p className="rounded-2xl bg-amber-50 px-4 py-2.5 text-xs font-medium text-amber-800 ring-1 ring-amber-100">
+            ✨ Popular spots in {ov.destination || "your destination"} — nothing
+            picked yet. Tap “+ Add to trip” on any card to save it.
           </p>
         )}
 
@@ -345,9 +420,9 @@ export default function TripPanel({
           <DestinationOverview destination={ov.destination} onFocus={onFocus} />
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {view.items.length === 0 ? (
-            <p className="rounded-xl bg-white px-3 py-4 text-center text-xs text-slate-400">
+            <p className="rounded-2xl bg-white px-3 py-6 text-center text-sm text-muted ring-1 ring-slate-100">
               {focused
                 ? "Nothing to show for this item."
                 : "No hotels or activities saved yet. Ask the agent for options, then add the ones you like."}

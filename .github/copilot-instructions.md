@@ -99,12 +99,23 @@ Learns from user preferences and past trips.
 - **Right-rail trip panel (hosted mode)**: rendered by the React SPA
   (`frontend/src/components/TripPanel.tsx` + `DestinationOverview.tsx`),
   backed server-side by `web/places_cache.py` (Google Places photos/reviews,
-  parallel prefetch + 30-min TTL). Panels are Overview, Photo gallery, and
-  Reviews & descriptions. When no hotels/activities are selected yet but a
-  destination is known, the panel falls back to the destination's top hotels &
-  attractions (`places_cache.top_places`) so it fills during browsing; selected
-  items are merged with suggestions and marked "In trip" (Airbnb/TripAdvisor
-  style) so picking one no longer hides the rest.
+  parallel prefetch + 30-min TTL). The frontend additionally caches the
+  `/destination/overview` response in a module-level `Map` (same 30-min TTL)
+  and keeps the previous destination's card visible (dimmed) while a new one
+  loads — switching Dubai → Paris no longer blanks the panel. When no
+  hotels/activities are selected yet but a destination is known, the panel
+  falls back to the destination's top hotels & attractions
+  (`places_cache.top_places`) so it fills during browsing; selected items are
+  merged with suggestions and marked "In trip" (Airbnb/TripAdvisor style) so
+  picking one no longer hides the rest.
+- **UI polish (Airbnb/TripAdvisor-style)**: Tailwind theme uses coral `brand`
+  (#e11d48) + teal `accent`, Inter for UI + Fraunces for display headings
+  (loaded via `<link>` in `frontend/index.html`), `rounded-3xl` cards with
+  `shadow-card`/`shadow-pop`, sticky composer/toolbar with backdrop blur,
+  rating pills, "In trip" ribbons, and a magazine-style hero summary on the
+  trip panel. Reusable component classes (`.card`, `.btn-primary`,
+  `.btn-ghost`, `.pill`, `.chip`, `.display`) live in
+  `frontend/src/index.css`.
 - **Decoupled trip view-model (frontend-agnostic)**: data shaping lives in
   pure-Python `web/trip_view.py` (ZERO UI imports) — `build_view(trip, focus)
   -> dict` is the single JSON view-model contract, served by the `GET /trip/view`

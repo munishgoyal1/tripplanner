@@ -49,8 +49,7 @@ export function getDisplayName(): string {
 // (b) read the current session, and (c) kick off / tear down login. When a
 // Google session exists we mirror its user_id into localStorage so every
 // existing param-based call (chat, trip, preferences) uses the Google identity
-// — and it's the SAME `google-<sub>` id the Chainlit app uses, so state is
-// shared across both UIs.
+// — the `google-<sub>` id is stable across devices.
 // ---------------------------------------------------------------------------
 export interface AuthSession {
   authenticated: boolean;
@@ -240,12 +239,57 @@ export async function savePreferences(prefs: Preferences): Promise<SavePrefsResu
   return res.json();
 }
 
+// ---------------------------------------------------------------------------
+// Destination overview — module-level cache so flipping between trips (e.g.
+// Dubai → Paris → Dubai) is instant after the first fetch and never shows an
+// empty panel for places we've already loaded. The backend has its own 30-min
+// Places cache; this avoids a network round-trip on top of that.
+// ---------------------------------------------------------------------------
+const OVERVIEW_TTL_MS = 30 * 60 * 1000;
+interface OverviewEntry {
+  at: number;
+  data: DestinationOverview;
+}
+const overviewCache = new Map<string, OverviewEntry>();
+const overviewInflight = new Map<string, Promise<DestinationOverview>>();
+
+function overviewKey(destination: string | undefined, news: boolean): string {
+  return `${(destination ?? "").toLowerCase().trim()}|${news ? 1 : 0}`;
+}
+
+export function getCachedOverview(
+  destination?: string,
+  news = true,
+): DestinationOverview | null {
+  const entry = overviewCache.get(overviewKey(destination, news));
+  if (!entry) return null;
+  if (Date.now() - entry.at > OVERVIEW_TTL_MS) return null;
+  return entry.data;
+}
+
 export async function fetchDestinationOverview(
   destination?: string,
   news = true,
 ): Promise<DestinationOverview> {
+  const key = overviewKey(destination, news);
+  const fresh = getCachedOverview(destination, news);
+  if (fresh) return fresh;
+  const pending = overviewInflight.get(key);
+  if (pending) return pending;
+
   const params = new URLSearchParams({ user_id: getUserId(), news: String(news) });
   if (destination) params.set("destination", destination);
-  const res = await fetch(`${BASE}/destination/overview?${params.toString()}`);
-  return res.json();
+  const req = fetch(`${BASE}/destination/overview?${params.toString()}`)
+    .then((res) => res.json() as Promise<DestinationOverview>)
+    .then((data) => {
+      overviewCache.set(key, { at: Date.now(), data });
+      overviewInflight.delete(key);
+      return data;
+    })
+    .catch((err) => {
+      overviewInflight.delete(key);
+      throw err;
+    });
+  overviewInflight.set(key, req);
+  return req;
 }
