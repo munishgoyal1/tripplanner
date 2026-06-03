@@ -108,6 +108,9 @@ Stored at `~/.multiagent/user_preferences.json`, tracks:
 | Persistence | JSON files (local) / Cosmos DB (hosted) | Auto-dispatch via env var |
 | Hosting target | Azure Container Apps + Chainlit UI | Serverless, scales to zero |
 
+> **Developing locally?** See [`docs/dev.md`](docs/dev.md) for the one-page cheat
+> sheet (`.\scripts\test.ps1`, Ctrl+C / F5 loop, scripts table, keyboard shortcuts).
+
 ## Quick Start
 
 ### Local CLI
