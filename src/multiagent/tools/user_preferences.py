@@ -11,11 +11,16 @@ preferences, dietary needs, and past trip history.
 from __future__ import annotations
 
 import json
+import logging
+import os
+import tempfile
 from pathlib import Path
 from typing import Any
 
 from multiagent import storage_cosmos
 from multiagent.user_context import get_user_id
+
+log = logging.getLogger(__name__)
 
 _PREFS_DIR = Path.home() / ".multiagent"
 _PREFS_FILE = _PREFS_DIR / "user_preferences.json"
@@ -91,6 +96,63 @@ def _resolve_prefs_path() -> Path:
     return _PREFS_DIR / "users" / uid / "preferences.json"
 
 
+def _read_json_file(path: Path) -> dict[str, Any] | None:
+    """Read a JSON file tolerantly.
+
+    Returns ``None`` if the file is missing, empty, or contains invalid JSON
+    (e.g. a half-written file from a concurrent crash). The caller falls back
+    to defaults. We log a warning so the corruption isn't silent, and the
+    corrupted file is renamed to ``*.corrupt`` so the user can inspect it.
+    """
+    if not path.exists():
+        return None
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        log.warning("Could not read %s: %s", path, exc)
+        return None
+    if not text.strip():
+        return None
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        backup = path.with_suffix(path.suffix + ".corrupt")
+        try:
+            path.replace(backup)
+            log.warning(
+                "Preferences file %s was corrupt (%s); moved to %s and restoring defaults",
+                path,
+                exc,
+                backup,
+            )
+        except OSError:
+            log.warning("Preferences file %s was corrupt (%s)", path, exc)
+        return None
+
+
+def _write_json_file_atomic(path: Path, data: dict[str, Any]) -> None:
+    """Write JSON atomically so concurrent reads never see a half-written file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(data, indent=2, ensure_ascii=False)
+    # Write to a sibling temp file then rename. On Windows, os.replace is atomic
+    # within the same directory.
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=path.name + ".",
+        suffix=".tmp",
+        dir=str(path.parent),
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(payload)
+        os.replace(tmp_name, path)
+    except Exception:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
+
 def load_preferences() -> dict[str, Any]:
     """Load preferences, merging with defaults for any missing keys."""
     if storage_cosmos.is_enabled():
@@ -100,8 +162,8 @@ def load_preferences() -> dict[str, Any]:
         return json.loads(json.dumps(_DEFAULT_PREFS))
 
     path = _resolve_prefs_path()
-    if path.exists():
-        raw = json.loads(path.read_text(encoding="utf-8"))
+    raw = _read_json_file(path)
+    if raw is not None:
         return _deep_merge(_DEFAULT_PREFS, raw)
     return json.loads(json.dumps(_DEFAULT_PREFS))
 
@@ -112,9 +174,7 @@ def save_preferences(prefs: dict[str, Any]) -> None:
         storage_cosmos.upsert_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID, prefs)
         return
 
-    path = _resolve_prefs_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(prefs, indent=2, ensure_ascii=False), encoding="utf-8")
+    _write_json_file_atomic(_resolve_prefs_path(), prefs)
 
 
 def update_preferences(updates: dict[str, Any]) -> dict[str, Any]:
