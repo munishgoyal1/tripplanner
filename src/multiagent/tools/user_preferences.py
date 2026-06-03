@@ -81,6 +81,13 @@ _DEFAULT_PREFS: dict[str, Any] = {
     # Examples: "prefers window seats", "scared of long bus rides",
     # "always travels with mother who needs an elevator".
     "learned_notes": [],
+    # User-authored free-text "About me" written via the ChatSettings panel.
+    # Treated as the SOURCE OF TRUTH for whatever it covers: when the user
+    # saves a new value the LLM extracts structured fields from it and
+    # overwrites the corresponding individual fields (home_city, interests,
+    # dietary, etc.). The raw text is also kept verbatim so the agent can
+    # quote it back when reasoning.
+    "about_me": "",
 }
 
 

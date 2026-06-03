@@ -23,6 +23,7 @@ don't include it; see ``docs/setup-oauth.md`` for the custom-flow path.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import uuid
@@ -34,6 +35,7 @@ from chainlit.input_widget import NumberInput, Select, Switch, Tags, TextInput
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multiagent.graph import app_graph
+from multiagent.tools import about_me_extractor
 from multiagent.tools import user_preferences as prefs_store
 from multiagent.user_context import set_user_id
 
@@ -51,8 +53,11 @@ WELCOME_BASE = (
     "- _Weekend getaway from Bangalore to Coorg next month, mid budget_\n"
     "- _10 days in Japan in April, history and food, $4k total_\n\n"
     "\u2699\ufe0f _Tap the **gear icon** next to the message box to edit your "
-    "travel preferences (home city, budget, dietary, interests...). For the "
-    "full data dump, type **`/profile`**; **`/help`** lists all commands._"
+    "travel preferences. The **About me** field at the top accepts free text "
+    "(\"I'm Munish, 43, in Bengaluru, travel with wife Megha 40 and son Amay 11, "
+    "love hills and beaches, vegetarian\") and I'll auto-extract the structured "
+    "fields below. For the full data dump, type **`/profile`**; "
+    "**`/help`** lists all commands._"
 )
 
 _SIGN_IN_HINT_TEMPLATE = (
@@ -450,6 +455,24 @@ def _build_chat_settings() -> cl.ChatSettings:
     return cl.ChatSettings(
         [
             TextInput(
+                id="about_me",
+                label="About me (free text)",
+                initial=str(prefs.get("about_me") or ""),
+                placeholder=(
+                    "Tell me anything about you and your travel preferences in your own "
+                    "words. e.g. 'I'm Munish, 43, live in Bengaluru, travel with my "
+                    "wife Megha (40) and son Amay (11). We love hill stations and "
+                    "beaches, prefer 4-star hotels, vegetarian, no early-morning "
+                    "flights.' When you save, I'll extract structured fields from "
+                    "this and overwrite the matching fields below."
+                ),
+                description=(
+                    "Saving this re-extracts your home city, family, interests, "
+                    "dietary, etc. from this text. Leave blank to skip extraction."
+                ),
+                multiline=True,
+            ),
+            TextInput(
                 id="display_name",
                 label="Your name",
                 initial=profile.get("display_name") or "",
@@ -528,8 +551,22 @@ def _build_chat_settings() -> cl.ChatSettings:
     )
 
 
-def _apply_settings(values: dict[str, Any]) -> None:
-    """Merge widget values back into the structured preferences dict."""
+_ABOUT_ME_MAX_CHARS = 8000
+
+
+def _apply_settings(values: dict[str, Any]) -> dict[str, Any]:
+    """Merge widget values back into the structured preferences dict.
+
+    Returns a small status dict the caller can use to confirm what happened::
+
+        {"about_me_extracted": ["profile.home_city", "interests", ...]}
+
+    When the user changes the free-text ``about_me`` field, an LLM extraction
+    pass converts it into structured fields and those OVERWRITE the matching
+    individual widget values. We apply widget values first, then layer the
+    extracted fields on top so the free-text wins (per the user's intent:
+    "extracted info should overwrite corresponding individual fields").
+    """
     prefs = prefs_store.load_preferences()
     profile = dict(prefs.get("profile") or {})
     hotel = dict(prefs.get("hotel_preferences") or {})
@@ -574,7 +611,52 @@ def _apply_settings(values: dict[str, Any]) -> None:
     prefs["hotel_preferences"] = hotel
     prefs["transport_preferences"] = transport
     prefs["food_preferences"] = food
+
+    # --- About me: save raw, then extract & overlay structured fields ------
+    new_about = (str(values.get("about_me") or "")).strip()
+    if len(new_about) > _ABOUT_ME_MAX_CHARS:
+        new_about = new_about[:_ABOUT_ME_MAX_CHARS]
+    old_about = (str(prefs.get("about_me") or "")).strip()
+    prefs["about_me"] = new_about
+
+    extracted_keys: list[str] = []
+    if new_about and new_about != old_about:
+        extracted = about_me_extractor.extract_about_me(new_about)
+        learned_to_append = extracted.pop("_learned_notes_to_append", None)
+        if extracted:
+            prefs = prefs_store._deep_merge(prefs, extracted)  # noqa: SLF001 (internal helper)
+            extracted_keys = _flatten_keys(extracted)
+        if learned_to_append:
+            existing = list(prefs.get("learned_notes") or [])
+            seen = {(n.get("note") or "").strip().lower() for n in existing if isinstance(n, dict)}
+            for entry in learned_to_append:
+                key = entry["note"].strip().lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                existing.append(entry)
+            prefs["learned_notes"] = existing
+            extracted_keys.append("learned_notes")
+
     prefs_store.save_preferences(prefs)
+    return {"about_me_extracted": extracted_keys}
+
+
+def _flatten_keys(d: dict[str, Any], prefix: str = "") -> list[str]:
+    """Flatten the top-level dotted paths for a status message.
+
+    Only goes one level deep (e.g. ``profile.home_city``) which is enough for
+    a friendly summary of what changed.
+    """
+    out: list[str] = []
+    for key, val in d.items():
+        path = f"{prefix}{key}"
+        if isinstance(val, dict):
+            for sub in val.keys():
+                out.append(f"{path}.{sub}")
+        else:
+            out.append(path)
+    return out
 
 
 @cl.on_settings_update
@@ -582,13 +664,35 @@ async def on_settings_update(settings: dict) -> None:
     """Persist the gear-icon form values into the user's preferences."""
     user_id = cl.user_session.get("user_id") or "anonymous"
     set_user_id(user_id)
-    _apply_settings(settings)
-    await cl.Message(
-        content=(
+    # Run synchronously in a worker thread — _apply_settings may call the LLM
+    # for the "About me" extraction pass, which is a blocking HTTPS call.
+    try:
+        status = await asyncio.to_thread(_apply_settings, settings)
+    except Exception:
+        log.exception("on_settings_update: _apply_settings failed")
+        await cl.Message(
+            content=(
+                "\u26a0\ufe0f Couldn't save your settings just now. Your previous "
+                "values are still in place. Please try again."
+            )
+        ).send()
+        return
+
+    extracted = status.get("about_me_extracted") or []
+    if extracted:
+        bullets = "\n".join(f"- `{k}`" for k in extracted)
+        msg = (
+            "\u2705 Preferences saved. I extracted these fields from your "
+            "**About me** text and overwrote them:\n\n"
+            f"{bullets}\n\n"
+            "Type `/profile` to see the full saved state."
+        )
+    else:
+        msg = (
             "\u2705 Preferences saved. I'll use these on your next trip request. "
             "Type `/profile` to see the full saved state."
         )
-    ).send()
+    await cl.Message(content=msg).send()
 
 
 @cl.on_chat_start
