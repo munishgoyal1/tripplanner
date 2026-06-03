@@ -6,11 +6,17 @@
 # can compare them side by side during the migration.
 #
 # What you get:
-#   * FastAPI on :8000 (uvicorn --reload) -- /chat/stream, /trip/view, /trip/select
-#   * Vite dev server on :5173 with hot reload; /api is proxied to :8000
+#   * FastAPI on :8000 (uvicorn) -- /chat/stream, /trip/view, /trip/select
+#   * Vite dev server on :5173; /api is proxied to :8000
+#
+# Hot reload is OFF by default (matches the no-auto-reload preference):
+#   * Frontend changes  -> refresh the browser (Ctrl+R) to pick them up.
+#   * Backend changes   -> Ctrl+C and rerun this script.
+#   Pass -Watch to enable live reload for both (uvicorn --reload + Vite HMR).
 #
 # Usage:
-#   scripts\dev-spa.ps1               # start both (backend + frontend)
+#   scripts\dev-spa.ps1               # start both (backend + frontend), no hot reload
+#   scripts\dev-spa.ps1 -Watch        # enable live reload for both
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
 #
@@ -23,7 +29,8 @@
 param(
     [int]$ApiPort = 8000,
     [switch]$BackendOnly,
-    [switch]$FrontendOnly
+    [switch]$FrontendOnly,
+    [switch]$Watch
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,8 +41,9 @@ if (-not $FrontendOnly) {
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
     $py = Join-Path $repoRoot ".venv\Scripts\python.exe"
     if (-not (Test-Path $py)) { $py = "python" }
-    $backend = Start-Process -PassThru -NoNewWindow $py `
-        -ArgumentList "-m", "uvicorn", "multiagent.api:app", "--reload", "--port", "$ApiPort"
+    $uvicornArgs = @("-m", "uvicorn", "multiagent.api:app", "--port", "$ApiPort")
+    if ($Watch) { $uvicornArgs += "--reload" }
+    $backend = Start-Process -PassThru -NoNewWindow $py -ArgumentList $uvicornArgs
 }
 
 if (-not $BackendOnly) {
@@ -49,6 +57,7 @@ if (-not $BackendOnly) {
     Push-Location frontend
     try {
         $env:VITE_API_TARGET = "http://localhost:$ApiPort"
+        $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
         npm run dev
     }
     finally {
