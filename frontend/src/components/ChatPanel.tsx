@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { streamChat } from "../api";
+import { streamChat, signIn, signOut, getDisplayName, isAnonymousUser } from "../api";
 import type { ChatMessage } from "../types";
 import SettingsModal from "./SettingsModal";
 
@@ -18,6 +18,8 @@ export default function ChatPanel({ onTurnComplete }: Props) {
   const [busy, setBusy] = useState(false);
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
+  const [nameInput, setNameInput] = useState(getDisplayName());
   const [attachments, setAttachments] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -94,17 +96,81 @@ export default function ChatPanel({ onTurnComplete }: Props) {
           <h1 className="text-lg font-semibold text-ink">Trip Planner</h1>
           <p className="text-xs text-slate-500">Powered by your AI travel agent</p>
         </div>
-        <button
-          onClick={() => setShowSettings(true)}
-          title="Travel preferences"
-          aria-label="Travel preferences"
-          className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-ink"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-1">
+          <div className="relative">
+            <button
+              onClick={() => setShowAccount((s) => !s)}
+              title="Account"
+              aria-label="Account"
+              className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-ink"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span className="max-w-[8rem] truncate">
+                {isAnonymousUser() ? "Sign in" : getDisplayName() || "Account"}
+              </span>
+            </button>
+            {showAccount && (
+              <div className="absolute right-0 z-20 mt-1 w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
+                <p className="mb-2 text-xs text-slate-500">
+                  Sign in with a name so your preferences and trips follow you
+                  across devices. (Use “local” to share state with the CLI.)
+                </p>
+                <input
+                  className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-brand focus:outline-none"
+                  placeholder="Your name"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && nameInput.trim()) {
+                      signIn(nameInput);
+                      setShowAccount(false);
+                      window.location.reload();
+                    }
+                  }}
+                />
+                <div className="mt-2 flex justify-between gap-2">
+                  {!isAnonymousUser() && (
+                    <button
+                      onClick={() => {
+                        signOut();
+                        window.location.reload();
+                      }}
+                      className="rounded-lg px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-100"
+                    >
+                      Sign out
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (!nameInput.trim()) return;
+                      signIn(nameInput);
+                      setShowAccount(false);
+                      window.location.reload();
+                    }}
+                    disabled={!nameInput.trim()}
+                    className="ml-auto rounded-lg bg-brand px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40"
+                  >
+                    Sign in
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setShowSettings(true)}
+            title="Travel preferences"
+            aria-label="Travel preferences"
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-ink"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">

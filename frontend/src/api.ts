@@ -14,6 +14,35 @@ export function getUserId(): string {
   return id;
 }
 
+// Whether the current identity is the anonymous, per-browser one (vs. a name
+// the user explicitly signed in with). Used to show "Sign in" vs the name.
+export function isAnonymousUser(): boolean {
+  return getUserId().startsWith("web-");
+}
+
+// Sign in by claiming a stable identity. The same name on another device
+// resolves to the same id, so preferences and trips follow the user. Passing
+// "local" shares state with the CLI for convenient local testing.
+export function signIn(name: string): string {
+  const trimmed = name.trim();
+  const id =
+    trimmed.toLowerCase() === "local"
+      ? "local"
+      : `user-${trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`;
+  localStorage.setItem("multiagent_user_id", id);
+  localStorage.setItem("multiagent_display_name", trimmed);
+  return id;
+}
+
+export function signOut(): void {
+  localStorage.removeItem("multiagent_user_id");
+  localStorage.removeItem("multiagent_display_name");
+}
+
+export function getDisplayName(): string {
+  return localStorage.getItem("multiagent_display_name") || "";
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end") => void;
@@ -100,6 +129,16 @@ export async function fetchTripView(focus?: {
 
 export async function selectItem(kind: string, name: string): Promise<TripView> {
   const res = await fetch(`${BASE}/trip/select`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ kind, name, user_id: getUserId() }),
+  });
+  const json = await res.json();
+  return json.view as TripView;
+}
+
+export async function deselectItem(kind: string, name: string): Promise<TripView> {
+  const res = await fetch(`${BASE}/trip/deselect`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind, name, user_id: getUserId() }),

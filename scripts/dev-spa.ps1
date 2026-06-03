@@ -17,6 +17,7 @@
 # Usage:
 #   scripts\dev-spa.ps1               # start both (backend + frontend), no hot reload
 #   scripts\dev-spa.ps1 -Watch        # enable live reload for both
+#   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
 #
@@ -30,7 +31,8 @@ param(
     [int]$ApiPort = 8000,
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
-    [switch]$Watch
+    [switch]$Watch,
+    [switch]$Logs
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,6 +41,10 @@ Set-Location $repoRoot
 
 if (-not $FrontendOnly) {
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
+    if ($Logs) {
+        $env:LOG_LEVEL = "DEBUG"
+        Write-Host "  LOG_LEVEL=DEBUG (verbose backend logs)" -ForegroundColor DarkGray
+    }
     $py = Join-Path $repoRoot ".venv\Scripts\python.exe"
     if (-not (Test-Path $py)) { $py = "python" }
     $uvicornArgs = @("-m", "uvicorn", "multiagent.api:app", "--port", "$ApiPort")

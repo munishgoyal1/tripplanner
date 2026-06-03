@@ -204,6 +204,19 @@ async def trip_select(req: SelectRequest) -> dict:
     return {"ok": ok, "view": trip_view.build_view(trip, None)}
 
 
+@app.post("/trip/deselect")
+async def trip_deselect(req: SelectRequest) -> dict:
+    """Remove a hotel/attraction from the active trip (the SPA's 'Remove')."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(req.user_id)
+    ok = trip_planner.remove_selection(req.kind, req.name)
+    trip = trip_planner.load_active_trip_dict()
+    return {"ok": ok, "view": trip_view.build_view(trip, None)}
+
+
 @app.get("/preferences")
 async def get_preferences(user_id: str = "local") -> dict:
     """Return the editable subset of the user's saved preferences (for the

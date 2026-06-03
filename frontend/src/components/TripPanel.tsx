@@ -6,6 +6,19 @@ interface Props {
   onFocus: (kind: string, name: string) => void;
   onClearFocus: () => void;
   onSelect: (kind: string, name: string) => void;
+  onDeselect: (kind: string, name: string) => void;
+}
+
+const ICONS: Record<string, string> = {
+  hotel: "\u{1F3E8}",
+  activity: "\u{1F3AF}",
+  attraction: "\u{1F3AF}",
+  flight: "\u2708\uFE0F",
+};
+
+// Both "activity" and "attraction" map to the same trip bucket server-side.
+function isSelectable(kind: string): boolean {
+  return kind === "hotel" || kind === "activity" || kind === "attraction";
 }
 
 function Stars({ rating, count }: { rating: number | null; count: number | null }) {
@@ -20,14 +33,18 @@ function Stars({ rating, count }: { rating: number | null; count: number | null 
 
 function ItemCard({
   item,
+  focused,
   onFocus,
   onSelect,
+  onDeselect,
 }: {
   item: TripItem;
+  focused: boolean;
   onFocus: (kind: string, name: string) => void;
   onSelect: (kind: string, name: string) => void;
+  onDeselect: (kind: string, name: string) => void;
 }) {
-  const icon = item.kind === "hotel" ? "🏨" : item.kind === "activity" ? "🎯" : "✈️";
+  const icon = ICONS[item.kind] ?? "\u{1F4CD}";
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
       <div className="flex items-start justify-between gap-2">
@@ -65,26 +82,37 @@ function ItemCard({
         </div>
       )}
 
-      <div className="mt-2 flex gap-2">
-        <button
-          onClick={() => onFocus(item.kind, item.name)}
-          className="rounded-lg bg-slate-100 px-3 py-1 text-xs text-slate-600 hover:bg-slate-200"
-        >
-          Focus
-        </button>
-        {!item.selected && (item.kind === "hotel" || item.kind === "activity") && (
+      <div className="mt-2 flex flex-wrap gap-2">
+        {!focused && (
           <button
-            onClick={() => onSelect(item.kind, item.name)}
-            className="rounded-lg bg-brand px-3 py-1 text-xs text-white hover:opacity-90"
+            onClick={() => onFocus(item.kind, item.name)}
+            title="See this item on its own with all photos and reviews"
+            className="rounded-lg bg-slate-100 px-3 py-1 text-xs text-slate-600 hover:bg-slate-200"
           >
-            Add to trip
+            View details
           </button>
         )}
-        {item.selected && (
-          <span className="rounded-lg bg-emerald-50 px-3 py-1 text-xs text-emerald-600">
-            ✓ In trip
-          </span>
-        )}
+
+        {isSelectable(item.kind) &&
+          (item.selected ? (
+            <button
+              onClick={() => onDeselect(item.kind, item.name)}
+              title="Remove this from your saved trip picks"
+              className="group rounded-lg bg-emerald-50 px-3 py-1 text-xs text-emerald-600 hover:bg-rose-50 hover:text-rose-600"
+            >
+              <span className="group-hover:hidden">✓ In trip</span>
+              <span className="hidden group-hover:inline">✕ Remove</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onSelect(item.kind, item.name)}
+              title="Save this to your trip so the agent keeps it in the plan"
+              className="rounded-lg bg-brand px-3 py-1 text-xs text-white hover:opacity-90"
+            >
+              + Add to trip
+            </button>
+          ))}
+
         {item.website && (
           <a
             href={item.website}
@@ -106,6 +134,7 @@ export default function TripPanel({
   onFocus,
   onClearFocus,
   onSelect,
+  onDeselect,
 }: Props) {
   if (loading && !view) {
     return <div className="p-5 text-sm text-slate-400">Loading trip…</div>;
@@ -119,8 +148,23 @@ export default function TripPanel({
   }
 
   const ov = view.overview;
+  const focused = !!view.focus;
   return (
-    <div className="h-full overflow-y-auto bg-slate-50 p-4">
+    <div className="flex h-full flex-col bg-slate-50">
+      {focused && (
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2">
+          <button
+            onClick={onClearFocus}
+            className="rounded-lg bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200"
+          >
+            ← Back to whole trip
+          </button>
+          <span className="truncate text-xs text-slate-500">
+            Viewing {view.focus?.name}
+          </span>
+        </div>
+      )}
+      <div className="flex-1 overflow-y-auto p-4">
       <div className="rounded-xl bg-white p-4 shadow-sm">
         <h2 className="text-lg font-semibold text-ink">{view.title}</h2>
         <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-600">
@@ -166,23 +210,31 @@ export default function TripPanel({
 
       {view.is_fallback && (
         <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-          Showing popular spots — nothing selected yet.
+          Popular spots in {ov.destination || "your destination"} — nothing
+          picked yet. Hit “+ Add to trip” to save any of these.
         </p>
       )}
 
-      {view.focus && (
-        <button
-          onClick={onClearFocus}
-          className="mt-3 text-xs font-medium text-brand hover:underline"
-        >
-          ← Back to whole trip
-        </button>
-      )}
-
       <div className="mt-3 space-y-3">
-        {view.items.map((it, i) => (
-          <ItemCard key={i} item={it} onFocus={onFocus} onSelect={onSelect} />
-        ))}
+        {view.items.length === 0 ? (
+          <p className="rounded-lg bg-white px-3 py-4 text-center text-xs text-slate-400">
+            {focused
+              ? "Nothing to show for this item."
+              : "No hotels or activities saved yet. Ask the agent for options, then add the ones you like."}
+          </p>
+        ) : (
+          view.items.map((it, i) => (
+            <ItemCard
+              key={i}
+              item={it}
+              focused={focused}
+              onFocus={onFocus}
+              onSelect={onSelect}
+              onDeselect={onDeselect}
+            />
+          ))
+        )}
+      </div>
       </div>
     </div>
   );

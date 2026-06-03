@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import TripPanel from "./components/TripPanel";
-import { fetchTripView, selectItem } from "./api";
+import { fetchTripView, selectItem, deselectItem } from "./api";
 import type { TripView } from "./types";
 
 export default function App() {
@@ -41,6 +41,10 @@ export default function App() {
     setView(await selectItem(kind, name));
   };
 
+  const handleDeselect = async (kind: string, name: string) => {
+    setView(await deselectItem(kind, name));
+  };
+
   return (
     <div className="flex h-screen">
       <section className="flex w-full flex-col md:w-1/2 lg:w-3/5">
@@ -53,6 +57,7 @@ export default function App() {
           onFocus={handleFocus}
           onClearFocus={handleClearFocus}
           onSelect={handleSelect}
+          onDeselect={handleDeselect}
         />
       </aside>
     </div>

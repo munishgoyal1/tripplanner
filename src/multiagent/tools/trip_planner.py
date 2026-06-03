@@ -91,6 +91,27 @@ def add_selection(kind: str, item: dict[str, Any]) -> bool:
     return True
 
 
+def remove_selection(kind: str, name: str) -> bool:
+    """Remove a previously-added hotel/attraction from the active trip (UI helper).
+
+    The reverse of :func:`add_selection`. Matched case-insensitively by name.
+    Returns ``True`` when there's an active trip to update, ``False`` otherwise.
+    Non-tool: called by the panel's "Remove from trip" button, not the LLM.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    key = "selected_hotels" if kind == "hotel" else "selected_activities"
+    bucket = plan.get(key) or []
+    target = str(name or "").strip().lower()
+    kept = [x for x in bucket if str(x.get("name") or "").strip().lower() != target]
+    if len(kept) == len(bucket):
+        return True
+    plan[key] = kept
+    _save_active_trip(plan)
+    return True
+
+
 def _save_active_trip(plan: dict[str, Any]) -> None:
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(
