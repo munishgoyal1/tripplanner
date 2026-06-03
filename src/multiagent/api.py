@@ -81,6 +81,23 @@ class SelectRequest(BaseModel):
     user_id: str = "local"
 
 
+class PreferencesRequest(BaseModel):
+    user_id: str = "local"
+    # Editable subset of the structured preferences. All optional — only
+    # provided keys are merged (additive, never wiping unspecified fields).
+    display_name: str | None = None
+    home_city: str | None = None
+    home_country: str | None = None
+    trip_style: str | None = None
+    budget_level: str | None = None
+    flight_class: str | None = None
+    prefer_direct_flights: bool | None = None
+    hotel_star_rating_min: int | None = None
+    dietary: list[str] | None = None
+    interests: list[str] | None = None
+    dislikes: list[str] | None = None
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest) -> ChatResponse:
     from multiagent.graph import app_graph
@@ -187,7 +204,80 @@ async def trip_select(req: SelectRequest) -> dict:
     return {"ok": ok, "view": trip_view.build_view(trip, None)}
 
 
+@app.get("/preferences")
+async def get_preferences(user_id: str = "local") -> dict:
+    """Return the editable subset of the user's saved preferences (for the
+    SPA settings panel — mirrors the old Chainlit gear form)."""
+    from multiagent.tools import user_preferences as prefs_store
+    from multiagent.user_context import set_user_id
+
+    set_user_id(user_id)
+    prefs = prefs_store.load_preferences()
+    profile = prefs.get("profile") or {}
+    transport = prefs.get("transport_preferences") or {}
+    hotel = prefs.get("hotel_preferences") or {}
+    food = prefs.get("food_preferences") or {}
+    return {
+        "display_name": profile.get("display_name") or "",
+        "home_city": profile.get("home_city") or "",
+        "home_country": profile.get("home_country") or "",
+        "trip_style": prefs.get("trip_style") or "",
+        "budget_level": prefs.get("budget_level") or "",
+        "flight_class": transport.get("flight_class") or "",
+        "prefer_direct_flights": bool(transport.get("prefer_direct_flights", True)),
+        "hotel_star_rating_min": int(hotel.get("star_rating_min") or 3),
+        "dietary": list(food.get("dietary") or []),
+        "interests": list(prefs.get("interests") or []),
+        "dislikes": list(prefs.get("dislikes") or []),
+    }
+
+
+@app.post("/preferences")
+async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
+    """Merge the provided preference fields and persist them (additive — only
+    keys present in the request are written)."""
+    from multiagent.tools import user_preferences as prefs_store
+    from multiagent.user_context import set_user_id
+
+    set_user_id(req.user_id)
+    prefs = prefs_store.load_preferences()
+    profile = dict(prefs.get("profile") or {})
+    transport = dict(prefs.get("transport_preferences") or {})
+    hotel = dict(prefs.get("hotel_preferences") or {})
+    food = dict(prefs.get("food_preferences") or {})
+
+    if req.display_name is not None:
+        profile["display_name"] = req.display_name.strip() or None
+    if req.home_city is not None:
+        profile["home_city"] = req.home_city.strip() or None
+    if req.home_country is not None:
+        profile["home_country"] = req.home_country.strip() or None
+    if req.trip_style is not None:
+        prefs["trip_style"] = req.trip_style or None
+    if req.budget_level is not None:
+        prefs["budget_level"] = req.budget_level or None
+    if req.flight_class is not None:
+        transport["flight_class"] = req.flight_class or None
+    if req.prefer_direct_flights is not None:
+        transport["prefer_direct_flights"] = req.prefer_direct_flights
+    if req.hotel_star_rating_min is not None:
+        hotel["star_rating_min"] = max(1, min(5, int(req.hotel_star_rating_min)))
+    if req.dietary is not None:
+        food["dietary"] = [d.strip() for d in req.dietary if d.strip()]
+    if req.interests is not None:
+        prefs["interests"] = [d.strip() for d in req.interests if d.strip()]
+    if req.dislikes is not None:
+        prefs["dislikes"] = [d.strip() for d in req.dislikes if d.strip()]
+
+    prefs["profile"] = profile
+    prefs["transport_preferences"] = transport
+    prefs["hotel_preferences"] = hotel
+    prefs["food_preferences"] = food
+    prefs_store.save_preferences(prefs)
+    app_event("api_preferences_saved")
+    return {"ok": True}
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"status": "ok"}
-

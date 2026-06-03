@@ -107,3 +107,31 @@ export async function selectItem(kind: string, name: string): Promise<TripView> 
   const json = await res.json();
   return json.view as TripView;
 }
+
+export interface Preferences {
+  display_name: string;
+  home_city: string;
+  home_country: string;
+  trip_style: string;
+  budget_level: string;
+  flight_class: string;
+  prefer_direct_flights: boolean;
+  hotel_star_rating_min: number;
+  dietary: string[];
+  interests: string[];
+  dislikes: string[];
+}
+
+export async function fetchPreferences(): Promise<Preferences> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await fetch(`${BASE}/preferences?${params.toString()}`);
+  return res.json();
+}
+
+export async function savePreferences(prefs: Preferences): Promise<void> {
+  await fetch(`${BASE}/preferences`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...prefs, user_id: getUserId() }),
+  });
+}

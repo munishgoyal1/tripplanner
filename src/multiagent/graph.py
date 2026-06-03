@@ -37,6 +37,10 @@ def _get_llm() -> AzureChatOpenAI:
         azure_deployment=s.azure_openai_deployment,
         api_version=s.azure_openai_api_version,
         temperature=0.3,
+        # Stream tokens so astream_events emits on_chat_model_stream chunks —
+        # this is what lets the web UIs render the reply as it's typed instead
+        # of waiting for the whole turn (which felt "stuck").
+        streaming=True,
     )
 
 
