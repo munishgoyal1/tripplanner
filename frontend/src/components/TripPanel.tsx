@@ -1,4 +1,5 @@
 import type { TripItem, TripView } from "../types";
+import DestinationOverview from "./DestinationOverview";
 
 interface Props {
   view: TripView | null;
@@ -213,6 +214,36 @@ export default function TripPanel({
           Popular spots in {ov.destination || "your destination"} — nothing
           picked yet. Hit “+ Add to trip” to save any of these.
         </p>
+      )}
+
+      {!focused && ov.destination && (
+        <div className="mt-3">
+          <DestinationOverview destination={ov.destination} onFocus={onFocus} />
+        </div>
+      )}
+
+      {!focused && view.items.length > 0 && (
+        <div className="mt-3">
+          <label className="mb-1 block text-xs font-medium text-slate-500">
+            Jump to a hotel or attraction
+          </label>
+          <select
+            className="input"
+            value=""
+            onChange={(e) => {
+              if (!e.target.value) return;
+              const [kind, ...rest] = e.target.value.split("::");
+              onFocus(kind, rest.join("::"));
+            }}
+          >
+            <option value="">Select to see its photos, reviews & details…</option>
+            {view.items.map((it, i) => (
+              <option key={i} value={`${it.kind}::${it.name}`}>
+                {(ICONS[it.kind] ?? "📍") + " " + it.name}
+              </option>
+            ))}
+          </select>
+        </div>
       )}
 
       <div className="mt-3 space-y-3">

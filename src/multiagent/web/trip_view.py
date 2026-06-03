@@ -205,3 +205,102 @@ def build_view(
         "overview": _build_overview(trip),
         "items": items,
     }
+
+
+_MAX_OVERVIEW_ATTRACTIONS = 6
+_MAX_NEWS_ITEMS = 4
+
+
+def build_destination_overview(
+    destination: str, *, include_news: bool = True
+) -> dict[str, Any]:
+    """Build a destination-level overview shown before any trip exists.
+
+    Combines Google Places (photos, key attractions, reviews) with fresh
+    Tavily news. Frontend-agnostic — consumed by ``GET /destination/overview``
+    and rendered by the SPA. Network calls degrade gracefully: a missing API
+    key just yields an empty section rather than an error.
+    """
+    destination = (destination or "").strip()
+    if not destination:
+        return {
+            "destination": "",
+            "summary": "",
+            "photos": [],
+            "key_attractions": [],
+            "reviews": [],
+            "news": [],
+        }
+
+    attraction_names = places_cache.top_places(
+        destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
+    )
+
+    photos: list[str] = []
+    key_attractions: list[dict[str, Any]] = []
+    reviews: list[dict[str, Any]] = []
+    summary = ""
+    for name in attraction_names:
+        info = places_cache.get_summary(name, destination) or {}
+        pics = places_cache.get_photos(name, destination, max_photos=2)
+        photos.extend(pics)
+        if not summary and info.get("editorial_summary"):
+            summary = info["editorial_summary"]
+        key_attractions.append(
+            {
+                "name": info.get("name") or name,
+                "rating": info.get("rating"),
+                "review_count": info.get("review_count"),
+                "summary": info.get("editorial_summary") or "",
+                "photo": pics[0] if pics else None,
+            }
+        )
+        for r in (info.get("reviews") or [])[:1]:
+            text = (r.get("text") or "").strip()
+            if text:
+                reviews.append(
+                    {
+                        "place": info.get("name") or name,
+                        "rating": r.get("rating"),
+                        "text": text,
+                        "author": r.get("author") or "Guest",
+                    }
+                )
+
+    news: list[dict[str, str]] = []
+    if include_news:
+        news = _fetch_destination_news(destination)
+
+    return {
+        "destination": destination,
+        "summary": summary,
+        "photos": photos[:_MAX_GALLERY_ITEMS],
+        "key_attractions": key_attractions,
+        "reviews": reviews[:_MAX_REVIEWS_PER_ITEM * 3],
+        "news": news,
+    }
+
+
+def _fetch_destination_news(destination: str) -> list[dict[str, str]]:
+    """Fetch fresh travel news for ``destination`` via Tavily; never raises."""
+    try:
+        from multiagent.tools import web_search
+
+        data = web_search.search_raw(
+            f"latest travel news and updates for {destination}",
+            max_results=_MAX_NEWS_ITEMS,
+            topic="news",
+        )
+    except Exception:
+        return []
+    out: list[dict[str, str]] = []
+    for r in data.get("results", [])[:_MAX_NEWS_ITEMS]:
+        if r.get("title"):
+            out.append(
+                {
+                    "title": r.get("title", ""),
+                    "url": r.get("url", ""),
+                    "content": r.get("content", ""),
+                }
+            )
+    return out

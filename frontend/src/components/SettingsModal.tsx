@@ -22,6 +22,7 @@ function parseList(s: string): string[] {
 export default function SettingsModal({ onClose }: Props) {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
+  const [extracted, setExtracted] = useState<string[] | null>(null);
 
   useEffect(() => {
     fetchPreferences()
@@ -37,8 +38,15 @@ export default function SettingsModal({ onClose }: Props) {
     if (!prefs) return;
     setSaving(true);
     try {
-      await savePreferences(prefs);
-      onClose();
+      const result = await savePreferences(prefs);
+      if (result.about_me_extracted && result.about_me_extracted.length > 0) {
+        // Re-load so the form reflects the structured fields the LLM filled
+        // in, and surface a confirmation instead of closing immediately.
+        setExtracted(result.about_me_extracted);
+        setPrefs(await fetchPreferences());
+      } else {
+        onClose();
+      }
     } finally {
       setSaving(false);
     }
@@ -64,6 +72,26 @@ export default function SettingsModal({ onClose }: Props) {
           <p className="text-sm text-slate-500">Loading…</p>
         ) : (
           <div className="space-y-4 text-sm">
+            <Field label="About me (free text — the agent learns from this)">
+              <textarea
+                className="input min-h-[96px] resize-y"
+                placeholder={
+                  "Tell me about yourself and your travel style in plain words. " +
+                  "e.g. I'm Munish from Bengaluru. I travel with my wife Priya and " +
+                  "our 6-year-old son Aarav (vegetarian). We love beaches, hiking " +
+                  "and good coffee, but hate crowded tourist traps and late nights."
+                }
+                value={prefs.about_me}
+                onChange={(e) => set("about_me", e.target.value)}
+              />
+            </Field>
+            {extracted && (
+              <div className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                ✓ Saved. I picked up and filled in:{" "}
+                <span className="font-medium">{extracted.join(", ")}</span>. These
+                were added without removing anything you'd already set.
+              </div>
+            )}
             <Field label="Display name">
               <input
                 className="input"

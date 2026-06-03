@@ -51,3 +51,33 @@ export interface ChatMessage {
   text: string;
   tools?: string[];
 }
+
+export interface KeyAttraction {
+  name: string;
+  rating: number | null;
+  review_count: number | null;
+  summary: string;
+  photo: string | null;
+}
+
+export interface DestinationReview {
+  place: string;
+  rating: number | null;
+  text: string;
+  author: string;
+}
+
+export interface NewsItem {
+  title: string;
+  url: string;
+  content: string;
+}
+
+export interface DestinationOverview {
+  destination: string;
+  summary: string;
+  photos: string[];
+  key_attractions: KeyAttraction[];
+  reviews: DestinationReview[];
+  news: NewsItem[];
+}

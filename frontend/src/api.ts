@@ -1,4 +1,4 @@
-import type { TripView } from "./types";
+import type { TripView, DestinationOverview } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
@@ -217,6 +217,7 @@ export interface Preferences {
   dietary: string[];
   interests: string[];
   dislikes: string[];
+  about_me: string;
 }
 
 export async function fetchPreferences(): Promise<Preferences> {
@@ -225,10 +226,26 @@ export async function fetchPreferences(): Promise<Preferences> {
   return res.json();
 }
 
-export async function savePreferences(prefs: Preferences): Promise<void> {
-  await fetch(`${BASE}/preferences`, {
+export interface SavePrefsResult {
+  ok: boolean;
+  about_me_extracted: string[];
+}
+
+export async function savePreferences(prefs: Preferences): Promise<SavePrefsResult> {
+  const res = await fetch(`${BASE}/preferences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...prefs, user_id: getUserId() }),
   });
+  return res.json();
+}
+
+export async function fetchDestinationOverview(
+  destination?: string,
+  news = true,
+): Promise<DestinationOverview> {
+  const params = new URLSearchParams({ user_id: getUserId(), news: String(news) });
+  if (destination) params.set("destination", destination);
+  const res = await fetch(`${BASE}/destination/overview?${params.toString()}`);
+  return res.json();
 }

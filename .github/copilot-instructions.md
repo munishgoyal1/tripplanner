@@ -139,10 +139,16 @@ Learns from user preferences and past trips.
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
 - `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint (wires sidebar)
-- `src/multiagent/web/trip_view.py` — pure-Python frontend-agnostic view-model (`build_view`)
+- `src/multiagent/web/trip_view.py` — pure-Python frontend-agnostic view-model
+  (`build_view`, `build_destination_overview` w/ Tavily news)
 - `src/multiagent/web/sidebar.py` — thin Chainlit adapter (renders `TripPanel` custom element)
 - `public/elements/TripPanel.jsx` — interactive React custom element for the trip panel
 - `src/multiagent/web/places_cache.py` — per-session Google Places cache for the sidebar
+- `src/multiagent/tools/preferences_merge.py` — shared About-me extract+additive-merge
+  (no Chainlit/FastAPI imports; used by both `web/app.py` and `api.py`)
+- `frontend/` — standalone React 19 + Vite + TS SPA (Option C), shares the FastAPI backend;
+  `DestinationOverview.tsx` (reviews/photos/attractions/news), `SettingsModal.tsx`
+  (About-me textbox + extractor), `TripPanel.tsx` (focus nav + item picker)
 - `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
 - `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier
 

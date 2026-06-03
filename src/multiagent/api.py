@@ -103,6 +103,9 @@ class PreferencesRequest(BaseModel):
     dietary: list[str] | None = None
     interests: list[str] | None = None
     dislikes: list[str] | None = None
+    # Free-text "About me" blurb. When provided and changed, the backend runs
+    # the LLM extractor and additively overlays the structured fields it finds.
+    about_me: str | None = None
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -198,6 +201,27 @@ async def trip_view_endpoint(
     return trip_view.build_view(trip, focus)
 
 
+@app.get("/destination/overview")
+async def destination_overview_endpoint(
+    destination: str = "", user_id: str = "local", news: bool = True
+) -> dict:
+    """Destination-level overview (photos, key attractions, reviews, news).
+
+    When ``destination`` is omitted, falls back to the active trip's
+    destination so the SPA can show "about the place" before any selections.
+    """
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(user_id)
+    if not destination:
+        trip = trip_planner.load_active_trip_dict()
+        destination = str((trip or {}).get("destination") or "")
+    return trip_view.build_destination_overview(destination, include_news=news)
+
+
+
 @app.post("/trip/select")
 async def trip_select(req: SelectRequest) -> dict:
     """Add a hotel/attraction to the active trip (the SPA's 'Add to trip')."""
@@ -249,6 +273,7 @@ async def get_preferences(user_id: str = "local") -> dict:
         "dietary": list(food.get("dietary") or []),
         "interests": list(prefs.get("interests") or []),
         "dislikes": list(prefs.get("dislikes") or []),
+        "about_me": prefs.get("about_me") or "",
     }
 
 
@@ -256,6 +281,7 @@ async def get_preferences(user_id: str = "local") -> dict:
 async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
     """Merge the provided preference fields and persist them (additive — only
     keys present in the request are written)."""
+    from multiagent.tools import preferences_merge
     from multiagent.tools import user_preferences as prefs_store
     from multiagent.user_context import set_user_id
 
@@ -293,9 +319,16 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
     prefs["transport_preferences"] = transport
     prefs["hotel_preferences"] = hotel
     prefs["food_preferences"] = food
+
+    # Free-text About-me: extract structured fields and overlay additively
+    # (same shared logic the Chainlit settings form uses).
+    extracted_keys: list[str] = []
+    if req.about_me is not None:
+        prefs, extracted_keys = preferences_merge.apply_about_me(prefs, req.about_me)
+
     prefs_store.save_preferences(prefs)
     app_event("api_preferences_saved")
-    return {"ok": True}
+    return {"ok": True, "about_me_extracted": extracted_keys}
 
 
 # ---------------------------------------------------------------------------

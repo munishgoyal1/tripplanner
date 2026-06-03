@@ -38,11 +38,15 @@ export default function App() {
   };
 
   const handleSelect = async (kind: string, name: string) => {
-    setView(await selectItem(kind, name));
+    const next = await selectItem(kind, name);
+    // selectItem returns the whole-trip view; if the user is currently zoomed
+    // into one item, re-fetch the focused view so the panel doesn't jump back.
+    setView(focus ? await fetchTripView(focus) : next);
   };
 
   const handleDeselect = async (kind: string, name: string) => {
-    setView(await deselectItem(kind, name));
+    const next = await deselectItem(kind, name);
+    setView(focus ? await fetchTripView(focus) : next);
   };
 
   return (
