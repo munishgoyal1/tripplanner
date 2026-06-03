@@ -32,6 +32,7 @@ from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from pydantic import BaseModel
 
+from multiagent import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from multiagent.observability import app_event, setup_logging
 from multiagent.web import oauth
 
