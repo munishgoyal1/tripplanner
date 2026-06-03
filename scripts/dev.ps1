@@ -36,6 +36,19 @@ if (-not (Test-Path .env)) {
     exit 1
 }
 
+# Load .env into the current process so things like CHAINLIT_AUTH_SECRET and the
+# OAUTH_* values are visible to PowerShell *before* we decide to generate an
+# ephemeral fallback. (Chainlit also re-reads .env, this just keeps our checks honest.)
+Get-Content .env | ForEach-Object {
+    if ($_ -match '^\s*#') { return }
+    if ($_ -match '^\s*$') { return }
+    if ($_ -match '^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*)$') {
+        $name  = $Matches[1]
+        $value = $Matches[2].Trim('"').Trim("'")
+        Set-Item -Path "Env:$name" -Value $value
+    }
+}
+
 $python = ".venv\Scripts\python.exe"
 if (-not (Test-Path $python)) {
     Write-Error ".venv not found. Run:  python -m venv .venv ; .venv\Scripts\python.exe -m pip install -e `".[dev,web]`""
@@ -71,10 +84,17 @@ if ($UseCosmos) {
 if ($WithAuth) {
     if (-not $env:CHAINLIT_AUTH_SECRET) {
         $env:CHAINLIT_AUTH_SECRET = & $python -c "import secrets; print(secrets.token_urlsafe(32))"
-        Write-Host "-> Generated ephemeral CHAINLIT_AUTH_SECRET for this session" -ForegroundColor Cyan
+        Write-Host "-> Generated ephemeral CHAINLIT_AUTH_SECRET (not in .env)" -ForegroundColor Cyan
+        Write-Host "   JWTs will be invalidated on every restart. Add CHAINLIT_AUTH_SECRET to .env for stable sessions." -ForegroundColor DarkYellow
+    } else {
+        Write-Host "-> Using CHAINLIT_AUTH_SECRET from .env (sessions survive restarts)" -ForegroundColor Cyan
     }
-    Write-Host "  Note: OAuth requires separate dev OAuth apps with localhost redirect URIs." -ForegroundColor DarkGray
-    Write-Host "        See docs/setup-oauth.md -> 'Local development with OAuth' section." -ForegroundColor DarkGray
+    if ($env:OAUTH_GOOGLE_CLIENT_ID -and $env:OAUTH_GOOGLE_CLIENT_SECRET) {
+        Write-Host "-> Google OAuth provider configured" -ForegroundColor Cyan
+    } else {
+        Write-Host "  Note: OAuth requires separate dev OAuth apps with localhost redirect URIs." -ForegroundColor DarkGray
+        Write-Host "        See docs/setup-oauth.md -> 'Local development with OAuth' section." -ForegroundColor DarkGray
+    }
 } else {
     # Force-disable auth for the cleanest local loop.
     $env:CHAINLIT_AUTH_SECRET = ""

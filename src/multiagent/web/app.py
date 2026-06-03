@@ -36,7 +36,7 @@ from multiagent.user_context import set_user_id
 
 log = logging.getLogger(__name__)
 
-WELCOME = (
+WELCOME_BASE = (
     "\u2708\ufe0f **Trip Planner**\n\n"
     "Tell me where you'd like to go and I'll plan it end-to-end \u2014 flights, "
     "hotels, activities and a day-wise itinerary.\n\n"
@@ -49,8 +49,58 @@ WELCOME = (
     "- _10 days in Japan in April, history and food, $4k total_"
 )
 
+_SIGN_IN_HINT_TEMPLATE = (
+    "\n\n---\n"
+    "\U0001f511 _You're chatting as a guest. "
+    "[Sign in with Google]({url}) to keep your preferences across devices._"
+)
+
 _GUEST_COOKIE = "multiagent_guest_id"
 _GUEST_COOKIE_MAX_AGE = 365 * 24 * 60 * 60  # 1 year
+_SIGNIN_INTENT_COOKIE = "mg_signin"
+_SIGNIN_INTENT_MAX_AGE = 600  # 10 minutes — long enough to finish OAuth
+
+
+def _parse_cookies(cookie_header: str) -> dict[str, str]:
+    cookies: dict[str, str] = {}
+    for chunk in (cookie_header or "").split(";"):
+        chunk = chunk.strip()
+        if "=" in chunk:
+            k, v = chunk.split("=", 1)
+            cookies[k.strip()] = v.strip()
+    return cookies
+
+
+def _oauth_configured() -> bool:
+    return any(
+        os.environ.get(f"OAUTH_{p}_CLIENT_ID") and os.environ.get(f"OAUTH_{p}_CLIENT_SECRET")
+        for p in ("GOOGLE", "GITHUB")
+    )
+
+
+def _sign_in_url() -> str:
+    """Build an absolute URL to ``/sign-in``.
+
+    Chainlit's React markdown renderer only treats links as external (i.e.
+    real browser navigation, honoring ``target='_blank'``) when the href has
+    an explicit ``http(s)://`` scheme. Relative paths are caught by the SPA
+    router and bounce back to ``/``. We derive the origin from the WebSocket
+    request environ, falling back to ``CHAINLIT_URL`` or localhost.
+    """
+    try:
+        environ = cl.context.session.environ or {}
+    except Exception:
+        environ = {}
+    host = environ.get("HTTP_HOST") or environ.get("HTTP_X_FORWARDED_HOST")
+    if host:
+        proto = (
+            environ.get("HTTP_X_FORWARDED_PROTO")
+            or environ.get("wsgi.url_scheme")
+            or "http"
+        )
+        return f"{proto}://{host}/sign-in"
+    base = os.environ.get("CHAINLIT_URL", "http://localhost:8000").rstrip("/")
+    return f"{base}/sign-in"
 
 
 def _last_ai_message(messages: list) -> AIMessage | None:
@@ -106,18 +156,14 @@ if _auth_secret_present():
 
         Chainlit invokes this on every request when auth is configured. We
         only return a guest user — the OAuth callback above takes precedence
-        if the user has actually signed in.
+        if the user has actually signed in. Returning ``None`` causes Chainlit
+        to redirect to the login screen, which we use for the explicit
+        "Sign in with Google" flow (see ``/sign-in`` route).
         """
-        cookie_header = headers.get("cookie") or headers.get("Cookie") or ""
-        guest_id = None
-        for chunk in cookie_header.split(";"):
-            chunk = chunk.strip()
-            if chunk.startswith(f"{_GUEST_COOKIE}="):
-                guest_id = chunk.split("=", 1)[1].strip()
-                break
-        if not guest_id:
-            # No cookie yet — the middleware below sets one on the response.
-            guest_id = f"guest-{uuid.uuid4()}"
+        cookies = _parse_cookies(headers.get("cookie") or headers.get("Cookie") or "")
+        if cookies.get(_SIGNIN_INTENT_COOKIE) == "1":
+            return None
+        guest_id = cookies.get(_GUEST_COOKIE) or f"guest-{uuid.uuid4()}"
         identifier = guest_id if guest_id.startswith("guest-") else f"guest-{guest_id}"
         return cl.User(identifier=identifier, metadata={"role": "guest"})
 
@@ -126,11 +172,36 @@ if _auth_secret_present():
     try:  # pragma: no cover - exercised at runtime
         from chainlit.server import app as _chainlit_app
         from starlette.middleware.base import BaseHTTPMiddleware
+        from starlette.responses import RedirectResponse
 
-        class _GuestCookieMiddleware(BaseHTTPMiddleware):
+        class _AuthFlowMiddleware(BaseHTTPMiddleware):
+            """Handle ``/sign-in`` upgrades and persistent guest cookies.
+
+            Chainlit registers a catch-all route for the React SPA, so a
+            normal ``add_route`` call for ``/sign-in`` is shadowed. Doing the
+            work in middleware guarantees we run before route matching.
+            """
+
             async def dispatch(self, request, call_next):
+                if request.url.path == "/sign-in" and request.method == "GET":
+                    response = RedirectResponse(url="/login", status_code=303)
+                    response.delete_cookie(_GUEST_COOKIE)
+                    response.set_cookie(
+                        key=_SIGNIN_INTENT_COOKIE,
+                        value="1",
+                        max_age=_SIGNIN_INTENT_MAX_AGE,
+                        httponly=True,
+                        samesite="lax",
+                    )
+                    return response
                 response = await call_next(request)
-                if _GUEST_COOKIE not in request.cookies:
+                signin_intent = request.cookies.get(_SIGNIN_INTENT_COOKIE) == "1"
+                # Once the OAuth handshake has issued a session JWT, drop the
+                # sign-in intent cookie so it doesn't keep forcing /login.
+                if signin_intent and request.url.path.startswith("/auth/oauth/"):
+                    response.delete_cookie(_SIGNIN_INTENT_COOKIE)
+                    signin_intent = False
+                if _GUEST_COOKIE not in request.cookies and not signin_intent:
                     response.set_cookie(
                         key=_GUEST_COOKIE,
                         value=f"guest-{uuid.uuid4()}",
@@ -140,9 +211,9 @@ if _auth_secret_present():
                     )
                 return response
 
-        _chainlit_app.add_middleware(_GuestCookieMiddleware)
+        _chainlit_app.add_middleware(_AuthFlowMiddleware)
     except Exception:  # pragma: no cover - non-fatal if Chainlit changes API
-        log.warning("Could not install guest-cookie middleware", exc_info=True)
+        log.warning("Could not install auth-flow middleware", exc_info=True)
 
 
 @cl.on_chat_start
@@ -155,7 +226,10 @@ async def on_chat_start() -> None:
         identifier = cl.user_session.get("id") or "anonymous"
     cl.user_session.set("user_id", str(identifier))
     cl.user_session.set("messages", [])
-    await cl.Message(content=WELCOME).send()
+    welcome = WELCOME_BASE
+    if identifier.startswith("guest-") and _oauth_configured():
+        welcome += _SIGN_IN_HINT_TEMPLATE.format(url=_sign_in_url())
+    await cl.Message(content=welcome).send()
 
 
 def _format_tool_input(value: Any) -> str:
