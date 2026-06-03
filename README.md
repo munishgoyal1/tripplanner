@@ -140,6 +140,31 @@ uv run chainlit run src/multiagent/web/app.py --port 8000
 # open http://localhost:8000
 ```
 
+### Fast dev loop (recommended — sub-second iteration)
+
+Don't wait 3–4 minutes for CI on every code change. Use the local hot-reload
+script — it watches `src/` and reloads on save:
+
+```powershell
+scripts\dev.ps1                 # default: local JSON storage, no auth, port 8000
+scripts\dev.ps1 -Port 8080      # custom port
+scripts\dev.ps1 -UseCosmos      # talk to live PROD Cosmos (careful!)
+scripts\dev.ps1 -WithAuth       # enable OAuth + guest cookie locally
+```
+
+Three speeds of feedback you actually have:
+
+| Speed | Command | When |
+|---|---|---|
+| ~1 sec | `.venv\Scripts\python.exe -m pytest -q` | logic/tool changes — runs 92 tests |
+| ~3 sec reload | `scripts\dev.ps1` | UI / agent prompt / streaming changes — Chainlit hot-reload on save |
+| ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
+
+The local loop and the deployed app run **identical code**. Only persistence
+differs: leave `COSMOS_ENDPOINT` unset → `~/.multiagent/*.json`; set it →
+Cosmos. Leave `CHAINLIT_AUTH_SECRET` unset → no login (guest-only). So the
+inner loop is essentially: edit Python → save → tab to browser → refresh.
+
 ### Deploy to Azure (hosted, multi-user, Cosmos-backed)
 See [infra/README.md](infra/README.md) for the full deploy walkthrough
 (GHCR push + `az deployment group create`). Designed to stay inside the
