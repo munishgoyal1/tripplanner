@@ -86,10 +86,12 @@ Learns from user preferences and past trips.
 - 177 tests all passing (Session 12: 20 tests for the right-rail sidebar
   panels + focus-action builder + destination-highlights fallback; Session 10
   added 25 continuous-learning tests).
-- **Currency rule (Session 12)**: trip agent prompt CRITICAL RULE 8 pins all
-  prices to the user's HOME currency (from `profile.home_country`; default INR
-  ₹ for India/unknown). Sticky for the whole conversation; converts source
-  currencies (e.g. Duffel USD) to home currency. Fixes prices flipping
+- **Currency rule (Session 12)**: trip agent prompt CRITICAL RULE 8 picks ONE
+  sticky display currency per plan. Domestic trips use the user's HOME currency
+  (from `profile.home_country`; default INR ₹). International trips may use USD
+  (or the destination's local currency) where it makes most sense, optionally
+  showing the home-currency equivalent in parentheses. Converts source
+  currencies (e.g. Duffel USD) to the chosen one. Fixes prices flipping
   INR↔USD between sessions.
 - **Right-rail sidebar (Session 12, hosted mode only)**: `web/sidebar.py` +
   `web/places_cache.py`. Plugin-style — each panel is a function
