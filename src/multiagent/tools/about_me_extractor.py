@@ -69,6 +69,23 @@ Rules:
 - Be conservative — only include a field if the text clearly supports it.
 - If the text is unrelated to travel preferences, return {}.
 
+STRONG-SIGNAL RULE (very important):
+The extracted dict is **ADDED** to the user's saved preferences — it can never
+be used to delete a prior value. So:
+  * Only emit a `likes`-style entry (interests / cuisine_likes) when the text
+    contains a clear positive ("love", "favourite", "always pick", a repeated
+    mention across multiple trips). Don't emit on mild praise.
+  * Only emit a `dislikes`-style entry (dislikes / cuisine_dislikes) when the
+    text contains a clearly strong negative ("hate", "never want", "always
+    avoid", "can't stand"). Mild language like "didn't really like" or
+    "wasn't a fan" is NOT strong enough — OMIT.
+  * For scalar fields the user already saved (e.g. home_city), the merge
+    layer will keep the existing value. Still emit your best extraction —
+    the merge layer chooses, not you.
+  * NEVER imagine a "removal" operation. There is no way to remove a saved
+    interest via this extraction. If the user contradicts a prior like,
+    simply omit it; do not add to dislikes unless the language is strong.
+
 Output: a single JSON object. No markdown fence. No prose."""
 
 

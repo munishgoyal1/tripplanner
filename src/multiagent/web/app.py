@@ -474,11 +474,14 @@ def _build_chat_settings() -> cl.ChatSettings:
                     "wife Megha (40) and son Amay (11). We love hill stations and "
                     "beaches, prefer 4-star hotels, vegetarian, no early-morning "
                     "flights.' When you save, I'll extract structured fields from "
-                    "this and overwrite the matching fields below."
+                    "this and add anything new to the matching fields below — "
+                    "existing values are kept, nothing is ever removed."
                 ),
                 description=(
-                    "Saving this re-extracts your home city, family, interests, "
-                    "dietary, etc. from this text. Leave blank to skip extraction."
+                    "Saving this adds any new details (home city, family, "
+                    "interests, dietary, etc.) to your profile. Existing values "
+                    "are never overwritten — clear individual fields manually "
+                    "if you want to change them."
                 ),
                 multiline=True,
             ),
@@ -563,6 +566,127 @@ def _build_chat_settings() -> cl.ChatSettings:
 
 _ABOUT_ME_MAX_CHARS = 8000
 
+# Path-aware merge rules for fields extracted from the free-text About-me.
+# Anything not listed here falls back to "set only if currently empty".
+_ADDITIVE_LIST_PATHS: frozenset[str] = frozenset({
+    "interests",
+    "dislikes",
+    "food_preferences.dietary",
+    "food_preferences.cuisine_likes",
+    "food_preferences.cuisine_dislikes",
+})
+
+
+def _union_keep_existing_case(existing: list[Any], incoming: list[Any]) -> list[str]:
+    """Append items from ``incoming`` to ``existing`` with case-insensitive
+    dedupe. The casing already saved by the user wins; nothing is removed."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for item in list(existing or []) + list(incoming or []):
+        if item is None:
+            continue
+        s = str(item).strip()
+        if not s:
+            continue
+        key = s.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(s)
+    return out
+
+
+def _merge_family_member(existing: dict, incoming: dict) -> dict:
+    """Fill in blank scalar fields on ``existing`` and union the list-typed
+    sub-fields (dietary/mobility/interests). Never overwrites a populated
+    scalar; never removes a list item."""
+    merged = dict(existing)
+    for key in ("name", "age", "notes"):
+        if not merged.get(key) and incoming.get(key) is not None:
+            merged[key] = incoming[key]
+    for key in ("dietary", "mobility", "interests"):
+        if incoming.get(key):
+            merged[key] = _union_keep_existing_case(
+                merged.get(key) or [], incoming.get(key) or []
+            )
+    return merged
+
+
+def _additive_overlay_extracted(prefs: dict[str, Any], extracted: dict[str, Any]) -> dict[str, Any]:
+    """Layer LLM-extracted fields onto saved prefs **additively**.
+
+    Rules (per the user's request "always additive, never remove"):
+      * List fields in ``_ADDITIVE_LIST_PATHS`` → union with existing.
+      * Scalar fields → only set when the saved value is empty/None. Never
+        overwrites an explicit prior value.
+      * ``family_members`` → append new entries by (relationship, lowercase
+        name). Existing entries get sub-field fills (blanks only) and
+        list-typed sub-fields get unioned.
+
+    The extractor may also emit ``_learned_notes_to_append``; the caller
+    handles that separately.
+    """
+    result = dict(prefs)
+
+    # --- 1. nested groups (profile / food / transport / hotel) ----------
+    for group in ("profile", "food_preferences", "transport_preferences", "hotel_preferences"):
+        new_group = extracted.get(group)
+        if not isinstance(new_group, dict):
+            continue
+        cur_group = dict(result.get(group) or {})
+        for sub_key, sub_val in new_group.items():
+            path = f"{group}.{sub_key}"
+            if path in _ADDITIVE_LIST_PATHS:
+                cur_group[sub_key] = _union_keep_existing_case(
+                    cur_group.get(sub_key) or [], sub_val if isinstance(sub_val, list) else []
+                )
+            else:  # scalar — fill only when blank
+                if cur_group.get(sub_key) in (None, "", [], {}):
+                    cur_group[sub_key] = sub_val
+        result[group] = cur_group
+
+    # --- 2. top-level scalars (trip_style, budget_level) ----------------
+    for key in ("trip_style", "budget_level"):
+        if key in extracted and result.get(key) in (None, "", [], {}):
+            result[key] = extracted[key]
+
+    # --- 3. top-level lists (interests, dislikes) -----------------------
+    for key in ("interests", "dislikes"):
+        if key in extracted:
+            result[key] = _union_keep_existing_case(
+                result.get(key) or [], extracted.get(key) or []
+            )
+
+    # --- 4. family_members ----------------------------------------------
+    new_fams = extracted.get("family_members")
+    if isinstance(new_fams, list) and new_fams:
+        existing: list[dict] = list(result.get("family_members") or [])
+        # Build an index by (relationship, name.lower()) for in-place merge.
+        # Entries without a name fall back to (relationship, "") — but in
+        # that case we still APPEND a new entry rather than merge, because
+        # we can't be sure two unnamed "child" rows are the same kid.
+        index: dict[tuple[str, str], int] = {}
+        for i, m in enumerate(existing):
+            if not isinstance(m, dict):
+                continue
+            rel = str(m.get("relationship") or "").lower()
+            name = str(m.get("name") or "").strip().lower()
+            if name:
+                index[(rel, name)] = i
+        for incoming in new_fams:
+            if not isinstance(incoming, dict):
+                continue
+            rel = str(incoming.get("relationship") or "").lower()
+            name = str(incoming.get("name") or "").strip().lower()
+            key = (rel, name)
+            if name and key in index:
+                existing[index[key]] = _merge_family_member(existing[index[key]], incoming)
+            else:
+                existing.append(incoming)
+        result["family_members"] = existing
+
+    return result
+
 
 def _apply_settings(values: dict[str, Any]) -> dict[str, Any]:
     """Merge widget values back into the structured preferences dict.
@@ -572,10 +696,11 @@ def _apply_settings(values: dict[str, Any]) -> dict[str, Any]:
         {"about_me_extracted": ["profile.home_city", "interests", ...]}
 
     When the user changes the free-text ``about_me`` field, an LLM extraction
-    pass converts it into structured fields and those OVERWRITE the matching
-    individual widget values. We apply widget values first, then layer the
-    extracted fields on top so the free-text wins (per the user's intent:
-    "extracted info should overwrite corresponding individual fields").
+    pass converts it into structured fields and those are layered on top of
+    the widget values **additively** — list fields get unioned, blank scalar
+    fields get filled in, and family members get appended/extended. We never
+    remove or overwrite an existing value via this path (per the user's
+    intent: "always additive, don't remove existing data").
     """
     prefs = prefs_store.load_preferences()
     profile = dict(prefs.get("profile") or {})
@@ -634,7 +759,9 @@ def _apply_settings(values: dict[str, Any]) -> dict[str, Any]:
         extracted = about_me_extractor.extract_about_me(new_about)
         learned_to_append = extracted.pop("_learned_notes_to_append", None)
         if extracted:
-            prefs = prefs_store._deep_merge(prefs, extracted)  # noqa: SLF001 (internal helper)
+            # Additive overlay: union list fields, fill blank scalars, merge
+            # family members. Never removes or overwrites prior data.
+            prefs = _additive_overlay_extracted(prefs, extracted)
             extracted_keys = _flatten_keys(extracted)
         if learned_to_append:
             existing = list(prefs.get("learned_notes") or [])
@@ -692,8 +819,8 @@ async def on_settings_update(settings: dict) -> None:
     if extracted:
         bullets = "\n".join(f"- `{k}`" for k in extracted)
         msg = (
-            "\u2705 Preferences saved. I extracted these fields from your "
-            "**About me** text and overwrote them:\n\n"
+            "\u2705 Preferences saved. I picked up these fields from your "
+            "**About me** text and added them (existing values were kept):\n\n"
             f"{bullets}\n\n"
             "Type `/profile` to see the full saved state."
         )
