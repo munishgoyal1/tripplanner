@@ -1,23 +1,25 @@
-"""Per-session cache for Google Places lookups used by the right-rail sidebar.
+"""Process-level cache for Google Places lookups used by the trip panel.
 
 Why a separate module? The graph's ``@tool`` functions in
 ``multiagent.tools.google_places`` return formatted strings designed for an
-LLM to read. The sidebar needs structured dicts and image URLs we can pass
-into ``cl.Image``. Rather than parse LLM-formatted output, this module hits
-the Places API (v1) directly and caches by ``(name, city)``.
+LLM to read. The frontend needs structured dicts and image URLs. Rather than
+parse LLM-formatted output, this module hits the Places API (v1) directly and
+caches by ``(name, city)``.
 
-Per-user, per-session cache lives in ``cl.user_session`` under the key
-``"places_cache"``. It's cleared on chat restart (Chainlit lifecycle), which
-keeps signed photo URLs from going stale (Google photo URIs expire within
-an hour or so).
+The cache is a module-level dict shared across the FastAPI process. Each entry
+carries a timestamp and expires after ``_TTL_S`` so signed photo URLs (which
+Google expires within an hour or so) don't go stale.
 
-Outside a Chainlit request (e.g. unit tests) the cache falls back to a
-module-level dict so the helpers stay importable.
+Lookups are parallelized: ``prefetch`` warms many places at once and photos
+for a single place are fetched concurrently, so switching destinations no
+longer blocks on dozens of sequential round-trips.
 """
 
 from __future__ import annotations
 
 import logging
+import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import httpx
@@ -29,23 +31,20 @@ log = logging.getLogger(__name__)
 
 _MAX_PHOTOS_PER_PLACE = 3
 _HTTP_TIMEOUT_S = 10
+_TTL_S = 30 * 60  # signed photo URIs go stale within ~1h; refresh well before
+_MAX_WORKERS = 8
 
-# Fallback cache for non-Chainlit contexts (tests, scripts).
-_FALLBACK_CACHE: dict[str, dict[str, Any]] = {}
+# Process-wide cache (shared across FastAPI requests; safe under the GIL).
+_CACHE: dict[str, dict[str, Any]] = {}
 
 
 def _cache() -> dict[str, dict[str, Any]]:
-    """Return the session-scoped cache, or a process-wide fallback."""
-    try:
-        import chainlit as cl
+    """Return the process-wide cache."""
+    return _CACHE
 
-        c = cl.user_session.get("places_cache")
-        if c is None:
-            c = {}
-            cl.user_session.set("places_cache", c)
-        return c
-    except Exception:
-        return _FALLBACK_CACHE
+
+def _fresh(entry: dict[str, Any] | None) -> bool:
+    return entry is not None and (time.time() - entry.get("__at__", 0.0)) < _TTL_S
 
 
 def _key(name: str, city: str) -> str:
@@ -97,6 +96,19 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
             ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")
         ],
     }
+
+
+def _photo_uris(refs: list[str], max_width_px: int = 800) -> list[str]:
+    """Resolve several photo references to URLs concurrently (order kept)."""
+    refs = [r for r in refs if r]
+    if not refs:
+        return []
+    if len(refs) == 1:
+        uri = _photo_uri(refs[0], max_width_px)
+        return [uri] if uri else []
+    with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(refs))) as ex:
+        uris = list(ex.map(lambda r: _photo_uri(r, max_width_px), refs))
+    return [u for u in uris if u]
 
 
 def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
@@ -156,12 +168,15 @@ def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
 def _ensure(name: str, city: str) -> dict[str, Any]:
     """Return cached info for ``(name, city)``; populate on first request.
 
-    Always returns a dict — empty `{}` for known-misses so we don't retry."""
+    Always returns a dict — empty `{}` for known-misses so we don't retry
+    within the TTL window."""
     cache = _cache()
     k = _key(name, city)
-    if k in cache:
-        return cache[k]
+    entry = cache.get(k)
+    if _fresh(entry):
+        return entry  # type: ignore[return-value]
     info = _lookup_place(name, city) or {}
+    info["__at__"] = time.time()
     cache[k] = info
     return info
 
@@ -174,13 +189,35 @@ def get_photos(
     if not info:
         return []
     if "photo_urls" not in info:
-        urls: list[str] = []
-        for ref in (info.get("photo_refs") or [])[:max_photos]:
-            uri = _photo_uri(ref)
-            if uri:
-                urls.append(uri)
-        info["photo_urls"] = urls
+        info["photo_urls"] = _photo_uris((info.get("photo_refs") or [])[:max_photos])
     return info.get("photo_urls") or []
+
+
+def prefetch(
+    names: list[str],
+    city: str,
+    *,
+    max_photos: int = _MAX_PHOTOS_PER_PLACE,
+    with_reviews: bool = True,
+) -> None:
+    """Warm the cache for many places concurrently.
+
+    Switching destinations needs a lookup + photos (+ reviews) for every
+    place. Doing that serially is dozens of blocking round-trips; fanning the
+    places out across a thread pool collapses it to roughly the latency of the
+    slowest single place.
+    """
+    todo = list(dict.fromkeys(n for n in names if n))
+    if not todo:
+        return
+
+    def _one(name: str) -> None:
+        if with_reviews:
+            get_summary(name, city)  # populates lookup + reviews
+        get_photos(name, city, max_photos=max_photos)  # populates lookup + photos
+
+    with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(todo))) as ex:
+        list(ex.map(_one, todo))
 
 
 def get_summary(name: str, city: str) -> dict[str, Any] | None:
@@ -205,8 +242,9 @@ def top_places(destination: str, kind: str, n: int = 4) -> list[str]:
         return []
     cache = _cache()
     ck = f"__top__|{kind}|{destination.strip().lower()}"
-    if ck in cache:
-        return cache[ck].get("names", [])
+    entry = cache.get(ck)
+    if _fresh(entry):
+        return entry.get("names", [])  # type: ignore[union-attr]
 
     query = (
         f"best hotels in {destination}"
@@ -229,16 +267,10 @@ def top_places(destination: str, kind: str, n: int = 4) -> list[str]:
     except httpx.HTTPError as exc:
         log.warning("top_places lookup failed for %s: %s", destination, exc)
 
-    cache[ck] = {"names": names}
+    cache[ck] = {"names": names, "__at__": time.time()}
     return names
 
 
 def clear_cache() -> None:
     """Drop every cached entry. Useful for tests."""
-    try:
-        import chainlit as cl
-
-        cl.user_session.set("places_cache", {})
-    except Exception:
-        pass
-    _FALLBACK_CACHE.clear()
+    _CACHE.clear()

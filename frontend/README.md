@@ -1,12 +1,13 @@
-# Trip Planner — React SPA (Option C)
+# Trip Planner — React SPA
 
 A standalone React single-page app for the AI trip planner. It talks to the
-existing FastAPI backend (`src/multiagent/api.py`) over HTTP + Server-Sent
-Events — **no Chainlit dependency**. This is the future-facing frontend that
-gives full control over the UX (routing, layout, mobile, maps, drag-drop, …).
+FastAPI backend (`src/multiagent/api.py`) over HTTP + Server-Sent Events. This
+is the **only** UI and gives full control over the UX (routing, layout, mobile,
+maps, drag-drop, …).
 
-The Chainlit app (`src/multiagent/web/app.py`) still runs as a fallback during
-the migration. Both are just clients of the same agent backend.
+In production the same FastAPI process serves this SPA's production build
+(`frontend/dist`) at the root origin and the API under `/api`, so there is a
+single origin and one container.
 
 ## Architecture
 

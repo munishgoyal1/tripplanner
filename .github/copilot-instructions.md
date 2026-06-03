@@ -43,14 +43,16 @@ Learns from user preferences and past trips.
 ## Current State (last updated 2026-06-02)
 - **Two run modes from one codebase:**
   - LOCAL: CLI (`cli.py`) or FastAPI (`api.py`) — persistence to `~/.multiagent/*.json`
-  - HOSTED: Chainlit chat UI (`web/app.py`) — persistence to Azure Cosmos DB
+  - HOSTED: React SPA (`frontend/`) served by FastAPI (`api.py`) — persistence to Azure Cosmos DB.
+    In production the SAME FastAPI process serves the built SPA from `frontend/dist`
+    at the root origin and the API under `/api` (single origin, one container).
   - Auto-dispatch via `storage_cosmos.is_enabled()` (True when `COSMOS_ENDPOINT` env var set)
   - Per-user identity tracked via `multiagent.user_context.get_user_id()` (ContextVar, default `"local"`)
-- **Identity tracks (Session 11, hosted mode only)**:
-  - OAuth login (Google + GitHub) → identifier `"{provider}-{external_id}"` (cross-device)
-  - Persistent guest cookie `multiagent_guest_id` → identifier `"guest-<uuid>"` (same browser, 1 year)
-  - Per-session fallback → Chainlit session id (legacy, used when `CHAINLIT_AUTH_SECRET` unset)
-  - Facebook OAuth is **not** wired (not in Chainlit's built-in providers); GitHub was added instead.
+- **Identity tracks (hosted mode)**:
+  - OAuth login (Google) via standalone `web/oauth.py` → identifier `"google-<sub>"` (cross-device).
+    Signed HttpOnly `mg_session` cookie (HMAC-SHA256 with `WEB_SESSION_SECRET`,
+    falls back to `CHAINLIT_AUTH_SECRET` for back-compat).
+  - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
   - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
 - Single trip planner agent with 25 tools across 5 families:
@@ -94,36 +96,20 @@ Learns from user preferences and past trips.
   showing the home-currency equivalent in parentheses. Converts source
   currencies (e.g. Duffel USD) to the chosen one. Fixes prices flipping
   INR↔USD between sessions.
-- **Right-rail sidebar (Session 12, hosted mode only)**: `web/sidebar.py` +
-  `web/places_cache.py`. Plugin-style — each panel is a function
-  `render(SidebarContext) -> list[Element]` registered in `PANELS`. v1 panels
-  are Overview, Photo gallery (Google Places photos), Reviews & descriptions.
-  Refreshes automatically after every agent turn. Hotels/attractions in the
-  reply get `cl.Action` "🏨/🎯/🌐 Whole trip" buttons that zoom the sidebar via
-  `@cl.action_callback("focus_item")`. Places lookups (Text Search + Photo
-  URI + Reviews) cached per-session under `cl.user_session["places_cache"]`.
-  No `place_id` is stored in the trip plan — sidebar resolves by name+city
-  on demand. To add a panel: append to `PANELS`. To re-order/hide: edit
-  that list. No other changes needed.
-  When no hotels/activities are selected yet but a destination is known, the
-  sidebar falls back to the destination's top hotels & attractions
-  (`places_cache.top_places`) so panels fill during browsing instead of
-  staying blank; a "popular spots" note flags these as suggestions.
-- **Decoupled trip panel (Session 13, frontend-agnostic)**: data shaping moved
-  into pure-Python `web/trip_view.py` (ZERO Chainlit imports) — `build_view(trip,
-  focus) -> dict` is the single JSON view-model contract. Consumed by BOTH the
-  Chainlit panel and the `GET /trip/view` FastAPI endpoint (`api.py`), so a
-  future standalone React/HTML frontend (option C) reuses the same contract with
-  no backend rework. Rendering is the interactive React custom element
-  `public/elements/TripPanel.jsx` (overview header, per-item photo/review cards,
-  in-element "Back to whole trip" button, and an "Add to trip" button →
-  `select_item` action → `trip_planner.add_selection`). `web/sidebar.py` is now
-  a thin adapter: helpers delegate to `trip_view`, `render_sidebar` pushes a
-  single `cl.CustomElement(name="TripPanel", props=build_view(...))` and falls
-  back to the legacy `PANELS` (cl.Text/cl.Image) only if the custom element
-  fails. This answers the panel-recovery question: the rail auto-reopens on the
-  next `set_elements` (every turn) and the element has its own Back control, so
-  Chainlit's built-in collapse arrow is no longer the only way back.
+- **Right-rail trip panel (hosted mode)**: rendered by the React SPA
+  (`frontend/src/components/TripPanel.tsx` + `DestinationOverview.tsx`),
+  backed server-side by `web/places_cache.py` (Google Places photos/reviews,
+  parallel prefetch + 30-min TTL). Panels are Overview, Photo gallery, and
+  Reviews & descriptions. When no hotels/activities are selected yet but a
+  destination is known, the panel falls back to the destination's top hotels &
+  attractions (`places_cache.top_places`) so it fills during browsing; selected
+  items are merged with suggestions and marked "In trip" (Airbnb/TripAdvisor
+  style) so picking one no longer hides the rest.
+- **Decoupled trip view-model (frontend-agnostic)**: data shaping lives in
+  pure-Python `web/trip_view.py` (ZERO UI imports) — `build_view(trip, focus)
+  -> dict` is the single JSON view-model contract, served by the `GET /trip/view`
+  FastAPI endpoint and consumed by the React `TripPanel.tsx`. `build_view` merges
+  selected items with deduped destination top-places so the panel never collapses.
 - Azure OpenAI **API version must be `2024-10-21`** (data-plane GA); `2024-11-20`
   is a model snapshot date and produces 404 NotFoundError. Bicepparam default,
   GitHub secret, and live container env all aligned on `2024-10-21`.
@@ -138,17 +124,15 @@ Learns from user preferences and past trips.
 - `src/multiagent/agents/trip_agent.py` — trip agent with 25 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
-- `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint (wires sidebar)
+- `src/multiagent/web/oauth.py` — standalone Google OAuth (HMAC `mg_session` cookie)
 - `src/multiagent/web/trip_view.py` — pure-Python frontend-agnostic view-model
   (`build_view`, `build_destination_overview` w/ Tavily news)
-- `src/multiagent/web/sidebar.py` — thin Chainlit adapter (renders `TripPanel` custom element)
-- `public/elements/TripPanel.jsx` — interactive React custom element for the trip panel
-- `src/multiagent/web/places_cache.py` — per-session Google Places cache for the sidebar
+- `src/multiagent/web/places_cache.py` — Google Places cache (parallel prefetch + TTL)
 - `src/multiagent/tools/preferences_merge.py` — shared About-me extract+additive-merge
-  (no Chainlit/FastAPI imports; used by both `web/app.py` and `api.py`)
-- `frontend/` — standalone React 19 + Vite + TS SPA (Option C), shares the FastAPI backend;
-  `DestinationOverview.tsx` (reviews/photos/attractions/news), `SettingsModal.tsx`
-  (About-me textbox + extractor), `TripPanel.tsx` (focus nav + item picker)
+  (no UI imports; used by `api.py`)
+- `frontend/` — React 19 + Vite + TS SPA (the UI), served by FastAPI in prod;
+  `App.tsx`, `ChatPanel.tsx`, `DestinationOverview.tsx` (reviews/photos/attractions/news),
+  `SettingsModal.tsx` (About-me textbox + extractor), `TripPanel.tsx` (focus nav + item picker)
 - `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
 - `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier
 

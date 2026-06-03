@@ -95,7 +95,7 @@ def _resolve_prefs_path() -> Path:
     """Path used by the local file backend for the current user.
 
     The default ("local") user maps to ``_PREFS_FILE`` so tests can monkeypatch
-    the module attr. Real per-user IDs (Chainlit sessions) get a scoped subdir.
+    the module attr. Real per-user IDs (OAuth/guest sessions) get a scoped subdir.
     """
     uid = get_user_id()
     if uid == "local":

@@ -1,16 +1,16 @@
 """Tests for the additive overlay that merges About-me extractions back
 into saved preferences without ever removing or overwriting prior data.
 
-These exercise the pure helpers in ``multiagent.web.app`` — no Chainlit
-runtime, no LLM, no I/O.
+These exercise the pure helpers in ``multiagent.tools.preferences_merge`` —
+no frontend runtime, no LLM, no I/O.
 """
 
 from __future__ import annotations
 
-from multiagent.web.app import (
-    _additive_overlay_extracted,
-    _merge_family_member,
-    _union_keep_existing_case,
+from multiagent.tools.preferences_merge import (
+    additive_overlay_extracted as _additive_overlay_extracted,
+    merge_family_member as _merge_family_member,
+    union_keep_existing_case as _union_keep_existing_case,
 )
 
 

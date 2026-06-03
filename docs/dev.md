@@ -195,7 +195,7 @@ visible at deploy time.
 | Restart the dev server             | dev-server terminal | `↑` then `Enter` |
 | Refresh page (use new backend code) | browser tab        | `F5` *(or `Ctrl+R`)* |
 | Force-drop browser cache too       | browser tab         | `Ctrl+Shift+R` *(only if F5 shows stale UI)* |
-| Cancel a long-running request      | browser            | Click the **Stop** button in Chainlit composer |
+| Cancel a long-running request      | browser            | Click the **Stop** button in the chat composer |
 | Copy text from terminal            | terminal           | Mouse-select, then `Enter` *(not Ctrl+C — that kills the server!)* |
 
 > **`Ctrl+C` is for the TERMINAL.** In the browser it just copies selected text.
@@ -260,7 +260,7 @@ next save.
 ## Other useful commands
 
 ```powershell
-# CLI mode (no browser, no Chainlit)
+# CLI mode (no browser)
 .\.venv\Scripts\python.exe -m multiagent.cli
 
 # FastAPI mode (curl-friendly, no browser UI)

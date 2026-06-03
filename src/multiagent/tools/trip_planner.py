@@ -64,7 +64,7 @@ def load_active_trip_dict() -> dict[str, Any] | None:
     """Public, non-tool accessor for the current active trip.
 
     The ``get_trip_plan`` ``@tool`` returns a formatted string for the LLM;
-    UI code (e.g. the Chainlit sidebar) needs the raw dict.
+    UI code (e.g. the trip panel) needs the raw dict.
     """
     return _load_active_trip()
 

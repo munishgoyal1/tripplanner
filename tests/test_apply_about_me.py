@@ -1,6 +1,6 @@
 """Tests for the shared apply_about_me flow (preferences_merge).
 
-These lock in the contract used by BOTH frontends (Chainlit settings form and
+These lock in the contract used by the frontend (the About-me settings form and
 the SPA `POST /preferences`): store the raw blurb, extract only when it
 changed, overlay additively, and never remove prior data. The LLM extractor is
 stubbed so these run offline and deterministically.

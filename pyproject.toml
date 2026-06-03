@@ -27,9 +27,6 @@ dev = [
 azure = [
     "azure-identity>=1.19",
 ]
-web = [
-    "chainlit>=1.3",
-]
 
 [tool.ruff]
 line-length = 100

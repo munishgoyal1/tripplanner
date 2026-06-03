@@ -1,19 +1,17 @@
 """Pure-Python view-model builder for the trip panel.
 
 This module is the **decoupling boundary** between the trip-planner backend
-and whatever frontend renders it. It contains **no Chainlit imports** and no
-UI-framework code — only plain functions that turn a trip dict into a
-JSON-serializable ``dict`` describing what to show.
+and whatever frontend renders it. It contains **no UI-framework imports** —
+only plain functions that turn a trip dict into a JSON-serializable ``dict``
+describing what to show.
 
-Today the Chainlit sidebar (``web/sidebar.py``) renders this view-model into a
-React custom element. Tomorrow a standalone React/HTML frontend can fetch the
-exact same JSON from ``GET /trip/view`` (see ``api.py``) and render it however
-it likes. Keeping the shaping here means swapping the frontend never touches
-the data logic.
+The React SPA (``frontend/``) fetches this JSON from ``GET /trip/view`` (see
+``api.py``) and renders it. Keeping the shaping here means the frontend never
+touches the data logic.
 
 The only external dependency is ``places_cache`` for photos/reviews — that's a
-data source (Google Places), not a UI concern, and it degrades gracefully
-outside a Chainlit request.
+data source (Google Places), not a UI concern, and it degrades gracefully when
+unconfigured.
 """
 
 from __future__ import annotations
@@ -59,33 +57,39 @@ def itinerary_items(
 ) -> list[dict[str, str]]:
     """Return ``[{kind, name}, ...]`` for the things to show.
 
-    Focused → just that one item. Otherwise selected hotels then activities.
-    Nothing selected but a destination is known → fall back to the
-    destination's top hotels & attractions so panels populate during browsing.
+    Focused → just that one item. Otherwise the user's selected hotels and
+    activities come first, followed by the destination's top hotels &
+    attractions that aren't already selected — so adding something to the trip
+    never hides the rest of the places you can still browse.
     """
     if focus and focus.get("name"):
         return [{"kind": focus.get("kind", "place"), "name": focus["name"]}]
     if not trip:
         return []
+
     items: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+
+    def _add(kind: str, name: str) -> None:
+        key = (kind, name.strip().lower())
+        if name and key not in seen:
+            seen.add(key)
+            items.append({"kind": kind, "name": name})
+
     for h in trip.get("selected_hotels") or []:
         if isinstance(h, dict) and h.get("name"):
-            items.append({"kind": "hotel", "name": str(h["name"])})
+            _add("hotel", str(h["name"]))
     for a in trip.get("selected_activities") or []:
         if isinstance(a, dict) and a.get("name"):
-            items.append({"kind": "attraction", "name": str(a["name"])})
-    if items:
-        return items
+            _add("attraction", str(a["name"]))
 
     destination = str(trip.get("destination") or "").strip()
-    if not destination:
-        return []
-    fallback: list[dict[str, str]] = []
-    for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
-        fallback.append({"kind": "hotel", "name": name})
-    for name in places_cache.top_places(destination, "attraction", n=_FALLBACK_ATTRACTIONS):
-        fallback.append({"kind": "attraction", "name": name})
-    return fallback
+    if destination:
+        for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
+            _add("hotel", name)
+        for name in places_cache.top_places(destination, "attraction", n=_FALLBACK_ATTRACTIONS):
+            _add("attraction", name)
+    return items
 
 
 def _selected_names(trip: dict[str, Any] | None, kind: str) -> set[str]:
@@ -189,6 +193,9 @@ def build_view(
         "hotel": _selected_names(trip, "hotel"),
         "attraction": _selected_names(trip, "attraction"),
     }
+    places_cache.prefetch(
+        [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
+    )
     items = [_build_item(ref, destination, selected_names) for ref in refs]
 
     title = f"\u2708\ufe0f {destination}" if destination else "Trip planner"
@@ -237,6 +244,7 @@ def build_destination_overview(
     attraction_names = places_cache.top_places(
         destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
     )
+    places_cache.prefetch(attraction_names, destination, max_photos=2)
 
     photos: list[str] = []
     key_attractions: list[dict[str, Any]] = []

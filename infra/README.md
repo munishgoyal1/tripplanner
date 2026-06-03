@@ -7,7 +7,7 @@ Cheapest viable footprint for global hosting:
 | Log Analytics workspace | Required by Container Apps | First 5 GB/mo free |
 | Cosmos DB (NoSQL) | Persist preferences + trips | **1000 RU/s + 25 GB free** (one per subscription) |
 | Container Apps environment | Hosting fabric | n/a (env itself is free) |
-| Container App | Chainlit UI + agent | **180k vCPU-sec + 2M req/mo free**, scales to zero |
+| Container App | React SPA + FastAPI agent | **180k vCPU-sec + 2M req/mo free**, scales to zero |
 
 Estimated cost at low usage: well under your ₹10,000/mo Azure free credit.
 Stays at ~₹0 when idle thanks to scale-to-zero.
@@ -51,7 +51,8 @@ az deployment group create `
   --query "properties.outputs.containerAppUrl.value" -o tsv
 ```
 
-The output URL is the live Chainlit chat — open it in a browser.
+The output URL is the live app — open it in a browser (FastAPI serves the
+React SPA at the root and the API under `/api`).
 
 ## Subsequent image updates
 

@@ -71,9 +71,9 @@ $Healers = @(
             param($m)
             $mod = $m.Groups[1].Value
             Write-Healer "Missing Python module: $mod" "Red"
-            Write-Healer "Most likely you skipped a `pip install -e .[dev,web]` after a pull." "Yellow"
+            Write-Healer "Most likely you skipped a `pip install -e .[dev]` after a pull." "Yellow"
             Write-Healer "FIX (run in repo root, then restart server):" "Yellow"
-            Write-Healer "    .\.venv\Scripts\python.exe -m pip install -e `".[dev,web]`"" "Green"
+            Write-Healer "    .\.venv\Scripts\python.exe -m pip install -e `".[dev]`"" "Green"
         }
     },
     @{
@@ -137,7 +137,7 @@ $Healers = @(
         Action   = {
             param($m)
             $port = 8000
-            if ($env:CHAINLIT_PORT) { $port = $env:CHAINLIT_PORT }
+            if ($env:API_PORT) { $port = $env:API_PORT }
             Write-Healer "Port $port is already in use." "Red"
             $owner = $null
             try {

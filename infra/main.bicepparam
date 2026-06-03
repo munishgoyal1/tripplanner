@@ -16,13 +16,13 @@ param duffelApiKey = readEnvironmentVariable('DUFFEL_API_KEY', '')
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')
 
-// OAuth (all optional). Leaving CHAINLIT_AUTH_SECRET unset disables login
+// OAuth (all optional). Leaving WEB_SESSION_SECRET unset disables login
 // flows entirely — the app stays usable with ephemeral per-session identity.
 param googleOauthClientId = readEnvironmentVariable('OAUTH_GOOGLE_CLIENT_ID', '')
 param googleOauthClientSecret = readEnvironmentVariable('OAUTH_GOOGLE_CLIENT_SECRET', '')
 param githubOauthClientId = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_ID', '')
 param githubOauthClientSecret = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_SECRET', '')
-param chainlitAuthSecret = readEnvironmentVariable('CHAINLIT_AUTH_SECRET', '')
+param webSessionSecret = readEnvironmentVariable('WEB_SESSION_SECRET', readEnvironmentVariable('CHAINLIT_AUTH_SECRET', ''))
 
 param enableCosmosFreeTier = true
 param minReplicas = 0

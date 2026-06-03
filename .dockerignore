@@ -33,4 +33,8 @@ azure.yaml
 README.md
 REQUIREMENTS.txt
 *.md
-!chainlit.md
+
+# Frontend: copy source for the Docker build stage, but never the local
+# install/build output (the image rebuilds these via `npm ci && npm run build`).
+frontend/node_modules/
+frontend/dist/

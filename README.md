@@ -33,10 +33,10 @@ User ──► Rich CLI  or  FastAPI
       Amadeus Places   Search      *.json (local)
 ```
 
-### Hosted mode (Chainlit on Azure Container Apps)
+### Hosted mode (React SPA + FastAPI on Azure Container Apps)
 ```
-Browser ──► *.azurecontainerapps.io ──► Chainlit chat UI
-                                              │
+Browser ──► *.azurecontainerapps.io ──► React SPA (served by FastAPI)
+                                              │  /api/* (HTTP + SSE)
                                               ▼
                                        Trip Agent (same)
                                               │
@@ -46,6 +46,11 @@ Browser ──► *.azurecontainerapps.io ──► Chainlit chat UI
                                          /user_id partition,
                                          Free Tier 1000 RU/s)
 ```
+
+The React single-page app (`frontend/`) is the only UI. In production the same
+FastAPI process (`api.py`) serves the built SPA from `frontend/dist` and the
+`/api/*` endpoints on one port, so there is a single origin and no separate web
+server.
 
 Single-agent LangGraph graph with a tool-calling loop. The agent calls search
 tools (Duffel primary, Amadeus fallback), manages a trip plan through draft →
@@ -106,7 +111,7 @@ Stored at `~/.multiagent/user_preferences.json`, tracks:
 | Web API | FastAPI + Uvicorn | Async, fast, auto-docs |
 | CLI | Rich | Beautiful terminal UI |
 | Persistence | JSON files (local) / Cosmos DB (hosted) | Auto-dispatch via env var |
-| Hosting target | Azure Container Apps + Chainlit UI | Serverless, scales to zero |
+| Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
 > **Developing locally?** See [`docs/dev.md`](docs/dev.md) for the one-page cheat
 > sheet (`.\scripts\test.ps1`, Ctrl+C / F5 loop, scripts table, keyboard shortcuts).
@@ -136,23 +141,28 @@ uv run python -m multiagent.cli
 uv run uvicorn multiagent.api:app --reload
 ```
 
-### Local hosted-UI preview (Chainlit chat)
+### Local hosted-UI preview (React SPA + FastAPI)
 ```bash
-uv pip install ".[web]"
-uv run chainlit run src/multiagent/web/app.py --port 8000
+# Backend (API) + Vite dev server together, with the /api proxy wired up:
+scripts\dev-spa.ps1
+# open http://localhost:5173
+#
+# Or run just the backend and have it serve a production SPA build:
+cd frontend; npm install; npm run build; cd ..
+uv run uvicorn multiagent.api:app --port 8000
 # open http://localhost:8000
 ```
 
 ### Fast dev loop (recommended — sub-second iteration)
 
-Don't wait 3–4 minutes for CI on every code change. Use the local hot-reload
-script — it watches `src/` and reloads on save:
+Don't wait 3–4 minutes for CI on every code change. Use the local dev script
+— it runs the FastAPI backend plus the Vite dev server together:
 
 ```powershell
-scripts\dev.ps1                 # default: local JSON storage, no auth, port 8000
-scripts\dev.ps1 -Port 8080      # custom port
-scripts\dev.ps1 -UseCosmos      # talk to live PROD Cosmos (careful!)
-scripts\dev.ps1 -WithAuth       # enable OAuth + guest cookie locally
+scripts\dev-spa.ps1                 # backend on :8000 + Vite on :5173
+scripts\dev-spa.ps1 -Watch          # enable live reload for both
+scripts\dev-spa.ps1 -BackendOnly    # just the API
+scripts\dev-spa.ps1 -FrontendOnly   # just Vite
 ```
 
 Three speeds of feedback you actually have:
@@ -160,13 +170,13 @@ Three speeds of feedback you actually have:
 | Speed | Command | When |
 |---|---|---|
 | ~1 sec | `.venv\Scripts\python.exe -m pytest -q` | logic/tool changes — runs 92 tests |
-| ~3 sec reload | `scripts\dev.ps1` | UI / agent prompt / streaming changes — Chainlit hot-reload on save |
+| ~3 sec reload | `scripts\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
 | ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
 
 The local loop and the deployed app run **identical code**. Only persistence
 differs: leave `COSMOS_ENDPOINT` unset → `~/.multiagent/*.json`; set it →
-Cosmos. Leave `CHAINLIT_AUTH_SECRET` unset → no login (guest-only). So the
-inner loop is essentially: edit Python → save → tab to browser → refresh.
+Cosmos. Leave `WEB_SESSION_SECRET` unset → no login (guest-only). So the
+inner loop is essentially: edit code → save → tab to browser → refresh.
 
 ### Deploy to Azure (hosted, multi-user, Cosmos-backed)
 See [infra/README.md](infra/README.md) for the full deploy walkthrough
@@ -226,8 +236,11 @@ multiagent/
 ├── REQUIREMENTS.txt              # Running log of all requirements & decisions
 ├── .github/copilot-instructions.md  # Agent context for Copilot/AI sessions
 ├── pyproject.toml                # Dependencies & project config
-├── Dockerfile                    # Container image for Azure deployment
-├── chainlit.md                   # Welcome screen for hosted chat UI
+├── Dockerfile                    # Multistage: build SPA (node) + run FastAPI (uvicorn)
+│
+├── frontend/                     # React 19 + Vite + TS single-page app (the UI)
+│   ├── src/                      # App.tsx, ChatPanel, TripPanel, DestinationOverview, ...
+│   └── dist/                     # Production build, served by FastAPI in prod
 │
 ├── infra/
 │   ├── main.bicep                # RG-scope IaC (ACA + Cosmos + Log Analytics)
@@ -240,13 +253,15 @@ multiagent/
 │   ├── config.py                 # Pydantic Settings from .env (incl. Cosmos)
 │   ├── graph.py                  # LangGraph single-agent with tool loop
 │   ├── cli.py                    # Rich interactive CLI (local)
-│   ├── api.py                    # FastAPI server (local)
+│   ├── api.py                    # FastAPI server: /api endpoints + serves the SPA
 │   ├── user_context.py           # ContextVar holding current user_id
 │   ├── storage_cosmos.py         # Optional Cosmos backend (lazy import)
 │   │
 │   ├── web/
 │   │   ├── __init__.py
-│   │   └── app.py                # Chainlit chat app (hosted mode entrypoint)
+│   │   ├── trip_view.py          # Pure-Python view-model (frontend-agnostic)
+│   │   ├── places_cache.py       # Google Places cache (photos/reviews)
+│   │   └── oauth.py              # Standalone Google OAuth (HMAC session cookie)
 │   │
 │   ├── agents/
 │   │   └── trip_agent.py         # Trip planner (19 tools, preference-aware)
@@ -293,7 +308,7 @@ uv run pytest -v
 - [x] Fresh web content via Tavily search
 - [x] Trip plan lifecycle (draft → finalize → book)
 - [x] Past trip history for learning
-- [x] Chainlit chat UI for hosted multi-user mode
+- [x] React SPA (served by FastAPI) for hosted multi-user mode
 - [x] Azure Cosmos DB persistence (auto-dispatch when configured)
 - [x] Azure Container Apps Bicep IaC (Free Tier compatible)
 - [ ] TripAdvisor Content API (deeper review data, requires approval)
@@ -302,7 +317,7 @@ uv run pytest -v
 - [ ] Activity booking integration (Viator / GetYourGuide)
 - [ ] Multi-city trip support
 - [ ] Group trip planning (multiple families)
-- [ ] Custom domain + auth on top of the hosted Chainlit UI
+- [ ] Custom domain + auth on top of the hosted SPA
 
 ## Key Files for New Agents/Sessions
 

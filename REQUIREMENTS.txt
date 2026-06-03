@@ -435,4 +435,66 @@ NOT CHANGED:
 === END OF SESSION 6 ENTRIES ===
 
 
+=== 2026-06-02 — Session 14: Right-rail perf, Chainlit removal, "In trip" fix, UI polish ===
+
+USER (verbatim): "it takes long to load the right side photos/details about new place.
+e.g. shifting from dubai plan to paris plan. Make it faster. and now that i am comfortable
+with this new react based code instructing you, can i safely ask you to remove chainlit UI
+to make things lighter and simplified from code base perspective. Also why selecting in trip,
+hides other places from the UI view? You made good improvements overall, but i want more
+iterative improvements to make it look more modern. Why dont you take inspiration from airbnb
+or tripadvisor kind of large popular travel websites"
+
+DECISIONS:
+A. Perf — right rail photos/details slow on destination switch (Dubai→Paris). Make faster.
+B. Chainlit removal — CONFIRMED full removal + rewire hosting: the React SPA (frontend/) is the
+   ONLY UI; in production FastAPI (api.py) serves the built SPA from frontend/dist at the root
+   origin and the API under /api (single origin, one container).
+C. "In trip" bug — selecting an item must NOT hide the other suggestions. Keep showing the
+   destination's top places alongside the user's picks, marking selected ones "In trip"
+   (Airbnb/TripAdvisor browsing style).
+D. UI polish — substantial Airbnb/TripAdvisor-inspired restyle, KEEPING the current
+   chat + right-panel layout.
+
+CHANGES (Part B — Chainlit removal + hosting rewire):
+- DELETED: src/multiagent/web/app.py, src/multiagent/web/sidebar.py,
+  public/elements/TripPanel.jsx, chainlit.md, tests/test_sidebar.py, scripts/dev.ps1.
+- pyproject.toml — removed the [web] extra (chainlit dependency gone).
+- Dockerfile — now multistage: stage 1 (node:20-slim) runs `npm ci` + `npm run build` to
+  produce frontend/dist; stage 2 (python:3.12-slim) `pip install "."` (no [web]), copies the
+  SPA build to /app/frontend/dist, sets SPA_DIST_DIR, runs uvicorn multiagent.api:app on :8000.
+- src/multiagent/api.py — (1) added an `/api` prefix-strip middleware so the single-origin prod
+  serving mirrors the dev Vite proxy; (2) at end of file, serves the SPA: mounts /assets and
+  adds a catch-all that returns real files or index.html (registered LAST so API routes win);
+  (3) the /trip/view and destination-overview endpoints offload the blocking Google Places work
+  via asyncio.to_thread so they don't stall the event loop.
+- Identity — standalone Google OAuth lives in src/multiagent/web/oauth.py (HMAC-signed HttpOnly
+  `mg_session` cookie, identifier `google-<sub>`). Secret env renamed CHAINLIT_AUTH_SECRET →
+  WEB_SESSION_SECRET (old name still read as a fallback for back-compat). Guest fallback is a
+  persistent `web-<uuid>` id in localStorage.
+- infra/main.bicep + main.bicepparam — param chainlitAuthSecret → webSessionSecret; secret
+  chainlit-auth-secret → web-session-secret; env CHAINLIT_AUTH_SECRET → WEB_SESSION_SECRET
+  (bicepparam falls back to the old env var name).
+- .github/workflows/deploy.yml — maps the existing `secrets.CHAINLIT_AUTH_SECRET` GH secret to
+  the new WEB_SESSION_SECRET env (no need to re-create the secret).
+- scripts/dev-spa.ps1 / autoheal.ps1, .env.example, .dockerignore, .gitignore — de-Chainlited.
+- Docs (README.md, infra/README.md, frontend/README.md, docs/setup-oauth.md, docs/dev.md,
+  .github/copilot-instructions.md) — updated to describe the SPA-served-by-FastAPI hosting and
+  the standalone Google OAuth flow.
+
+CHANGES (Part A backend + Part C):
+- src/multiagent/web/places_cache.py — parallelized the ~24 sequential Google Places HTTP calls
+  via ThreadPoolExecutor (prefetch + _photo_uris) and added a 30-min TTL cache, so switching
+  destinations no longer re-fetches everything serially.
+- src/multiagent/web/trip_view.py — `itinerary_items` now merges the user's selected items with
+  the destination's deduped top places (selected first, capped), so selecting an item marks it
+  "In trip" instead of collapsing the list.
+
+TEST RESULTS:
+- 167 tests pass (removed the obsolete sidebar tests; test_about_me_additive_merge repointed
+  to multiagent.tools.preferences_merge). `import multiagent.api` is clean.
+
+STILL TODO (this session, in progress):
+- Part A frontend caching (keep prior DestinationOverview visible while the new one loads).
+- Part D — Airbnb/TripAdvisor-style restyle of the React components, keeping the chat+panel layout.
 

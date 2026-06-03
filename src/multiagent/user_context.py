@@ -1,8 +1,9 @@
 """Per-request user identity context.
 
 The trip agent's tools persist preferences and trip state per user. In CLI
-and test mode there's one implicit user ("local"); in the hosted Chainlit
-app each chat session sets its own ID before invoking the graph.
+and test mode there's one implicit user ("local"); in the hosted app the
+FastAPI request handler sets the user ID (from the OAuth session or guest id)
+before invoking the graph.
 
 This module exposes a ContextVar so any tool can ask "who is the current
 user?" without changing tool signatures.

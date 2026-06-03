@@ -5,7 +5,7 @@
 //   2. Cosmos DB account (NoSQL API, Free Tier ON, single region)
 //   3. Cosmos database + 3 containers (users, trips, audit_events) partitioned by /user_id
 //   4. Container Apps managed environment (Consumption plan)
-//   5. Container App with public ingress on port 8000 (Chainlit + websockets)
+//   5. Container App with public ingress on port 8000 (FastAPI serves the SPA)
 //
 // Cost-keepers:
 //   - Cosmos Free Tier: first 1000 RU/s + 25 GB free per subscription, forever
@@ -64,8 +64,8 @@ param githubOauthClientId string = ''
 param githubOauthClientSecret string = ''
 
 @secure()
-@description('Chainlit auth secret (random 32+ char string). REQUIRED to enable any OAuth or persistent guest cookies. Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))".')
-param chainlitAuthSecret string = ''
+@description('Web session signing secret (random 32+ char string). REQUIRED to enable any OAuth or persistent guest cookies. Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))".')
+param webSessionSecret string = ''
 
 @description('Enable Cosmos Free Tier (only one per subscription).')
 param enableCosmosFreeTier bool = true
@@ -98,7 +98,7 @@ var oauthSecrets = concat(
   empty(googleOauthClientSecret) ? [] : [{ name: 'google-oauth-client-secret', value: googleOauthClientSecret }],
   empty(githubOauthClientId) ? [] : [{ name: 'github-oauth-client-id', value: githubOauthClientId }],
   empty(githubOauthClientSecret) ? [] : [{ name: 'github-oauth-client-secret', value: githubOauthClientSecret }],
-  empty(chainlitAuthSecret) ? [] : [{ name: 'chainlit-auth-secret', value: chainlitAuthSecret }]
+  empty(webSessionSecret) ? [] : [{ name: 'web-session-secret', value: webSessionSecret }]
 )
 
 var oauthEnv = concat(
@@ -106,7 +106,7 @@ var oauthEnv = concat(
   empty(googleOauthClientSecret) ? [] : [{ name: 'OAUTH_GOOGLE_CLIENT_SECRET', secretRef: 'google-oauth-client-secret' }],
   empty(githubOauthClientId) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_ID', secretRef: 'github-oauth-client-id' }],
   empty(githubOauthClientSecret) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_SECRET', secretRef: 'github-oauth-client-secret' }],
-  empty(chainlitAuthSecret) ? [] : [{ name: 'CHAINLIT_AUTH_SECRET', secretRef: 'chainlit-auth-secret' }]
+  empty(webSessionSecret) ? [] : [{ name: 'WEB_SESSION_SECRET', secretRef: 'web-session-secret' }]
 )
 
 var baseSecrets = [

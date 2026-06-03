@@ -1,9 +1,10 @@
 """FastAPI server for the personal assistant.
 
-This is the **frontend-agnostic backend**. The Chainlit app (``web/app.py``)
-and the React SPA (``frontend/``) are both just clients of these endpoints —
-no UI framework is imported here. The trip-panel data contract lives in the
-pure-Python ``web/trip_view.py`` and is served verbatim by ``GET /trip/view``.
+This is the **frontend-agnostic backend** that also serves the built React SPA
+(``frontend/dist``) at the root origin. The SPA is just a client of these
+endpoints — no UI framework is imported here. The trip-panel data contract
+lives in the pure-Python ``web/trip_view.py`` and is served verbatim by
+``GET /trip/view``.
 
 Endpoints
 ---------
@@ -22,6 +23,7 @@ in-flight chat turns for context.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 from typing import Any
@@ -55,6 +57,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-untyped-def]
+    """Let the SPA call ``/api/...`` in production the same way it does in dev.
+
+    The API routes live at the root (``/chat``, ``/trip/view``, ...). In dev the
+    Vite proxy rewrites ``/api`` away; in production (single origin) we do the
+    same rewrite here so one build works in both places.
+    """
+    path = request.scope.get("path", "")
+    if path == "/api":
+        request.scope["path"] = "/"
+    elif path.startswith("/api/"):
+        request.scope["path"] = path[4:]
+    return await call_next(request)
 
 # In-memory per-user chat history. Replace with Redis/Cosmos for multi-replica
 # hosting; fine for single-process dev and the personal-use footprint.
@@ -141,8 +159,8 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
     """Stream the agent turn as Server-Sent Events.
 
     Emits ``token`` (assistant text deltas), ``tool`` (tool start/end), then a
-    final ``done`` with the full reply — mirroring the Chainlit experience so
-    the SPA gets live typing and tool-progress without coupling to Chainlit.
+    final ``done`` with the full reply, so the SPA gets live typing and
+    tool-progress over a plain HTTP stream.
     """
     from multiagent.graph import app_graph
     from multiagent.user_context import set_user_id
@@ -189,8 +207,8 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 async def trip_view_endpoint(
     user_id: str = "local", focus_kind: str = "", focus_name: str = ""
 ) -> dict:
-    """Frontend-agnostic trip-panel view-model (same shape the Chainlit panel
-    renders). ``focus_kind``/``focus_name`` optionally zoom one item."""
+    """Frontend-agnostic trip-panel view-model. ``focus_kind``/``focus_name``
+    optionally zoom one item."""
     from multiagent.tools import trip_planner
     from multiagent.user_context import set_user_id
     from multiagent.web import trip_view
@@ -198,7 +216,7 @@ async def trip_view_endpoint(
     set_user_id(user_id)
     trip = trip_planner.load_active_trip_dict()
     focus = {"kind": focus_kind, "name": focus_name} if focus_name else None
-    return trip_view.build_view(trip, focus)
+    return await asyncio.to_thread(trip_view.build_view, trip, focus)
 
 
 @app.get("/destination/overview")
@@ -218,7 +236,9 @@ async def destination_overview_endpoint(
     if not destination:
         trip = trip_planner.load_active_trip_dict()
         destination = str((trip or {}).get("destination") or "")
-    return trip_view.build_destination_overview(destination, include_news=news)
+    return await asyncio.to_thread(
+        trip_view.build_destination_overview, destination, include_news=news
+    )
 
 
 
@@ -251,7 +271,7 @@ async def trip_deselect(req: SelectRequest) -> dict:
 @app.get("/preferences")
 async def get_preferences(user_id: str = "local") -> dict:
     """Return the editable subset of the user's saved preferences (for the
-    SPA settings panel — mirrors the old Chainlit gear form)."""
+    SPA settings panel)."""
     from multiagent.tools import user_preferences as prefs_store
     from multiagent.user_context import set_user_id
 
@@ -321,7 +341,7 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
     prefs["food_preferences"] = food
 
     # Free-text About-me: extract structured fields and overlay additively
-    # (same shared logic the Chainlit settings form uses).
+    # (shared logic in preferences_merge).
     extracted_keys: list[str] = []
     if req.about_me is not None:
         prefs, extracted_keys = preferences_merge.apply_about_me(prefs, req.about_me)
@@ -332,10 +352,9 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Google OAuth — standalone (the Chainlit app has its own; both share the
-# `google-<sub>` identifier scheme so a user is the same across both UIs).
-# All endpoints degrade gracefully: when OAUTH_GOOGLE_CLIENT_ID etc. are unset,
-# /auth/me reports {authenticated: false} and the SPA falls back to name/anon.
+# Google OAuth — standalone HMAC-signed session cookie. Degrades gracefully:
+# when OAUTH_GOOGLE_CLIENT_ID etc. are unset, /auth/me reports
+# {authenticated: false} and the SPA falls back to name/anon.
 # ---------------------------------------------------------------------------
 def _secure_cookie(request: Request) -> bool:
     return oauth.redirect_uri(str(request.base_url)).startswith("https://")
@@ -405,7 +424,7 @@ async def auth_callback_google(
         return res
 
     identifier = profile["identifier"]
-    # Seed the display name on first login (mirrors the Chainlit app).
+    # Seed the display name on first login.
     try:
         from multiagent.tools import user_preferences as prefs_store
         from multiagent.user_context import set_user_id
@@ -448,3 +467,37 @@ async def auth_logout() -> JSONResponse:
 @app.get("/health")
 async def health() -> dict:
     return {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Static SPA — serve the built React frontend (frontend/dist) so a single
+# container/origin hosts both the API and the UI. Registered LAST so it never
+# shadows an API route; the catch-all returns index.html for client-side
+# routing. Skipped entirely when the build is absent (pure-API dev runs).
+# ---------------------------------------------------------------------------
+from pathlib import Path  # noqa: E402
+
+from fastapi.responses import FileResponse  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+
+_SPA_DIST = (
+    Path(os.environ["SPA_DIST_DIR"])
+    if os.environ.get("SPA_DIST_DIR")
+    else Path(__file__).resolve().parents[2] / "frontend" / "dist"
+)
+
+if (_SPA_DIST / "index.html").is_file():
+    _assets = _SPA_DIST / "assets"
+    if _assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(_assets)), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    async def _spa_index() -> FileResponse:
+        return FileResponse(str(_SPA_DIST / "index.html"))
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def _spa_catchall(full_path: str) -> FileResponse:
+        target = _SPA_DIST / full_path
+        if target.is_file():
+            return FileResponse(str(target))
+        return FileResponse(str(_SPA_DIST / "index.html"))

@@ -1,9 +1,8 @@
 # SPA dev runner -- React frontend (Vite) + FastAPI backend together.
 #
-# This is the "Option C" stack: a standalone React single-page app talking to
-# the FastAPI backend (api.py) over HTTP/SSE. It runs ALONGSIDE the Chainlit
-# stack (scripts\dev.ps1) -- both are clients of the same agent backend, so you
-# can compare them side by side during the migration.
+# The app stack: a standalone React single-page app talking to the FastAPI
+# backend (api.py) over HTTP/SSE. This is the only UI; in production FastAPI
+# also serves the built SPA from frontend/dist on the same port.
 #
 # What you get:
 #   * FastAPI on :8000 (uvicorn) -- /chat/stream, /trip/view, /trip/select
@@ -22,7 +21,7 @@
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
 #
 # First-time setup:
-#   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev,web]"
+#   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev]"
 #   2. Frontend: cd frontend ; npm install   (once)
 #   3. cp frontend\.env.example frontend\.env  (optional; defaults work in dev)
 

@@ -1,6 +1,6 @@
 """Tests for the pure-Python trip view-model (``multiagent.web.trip_view``).
 
-These run with NO Chainlit context — proving the view-model is fully
+These run with NO UI context — proving the view-model is fully
 decoupled from the frontend. Places lookups are monkeypatched so we never
 touch the network.
 """
