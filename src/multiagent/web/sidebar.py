@@ -27,7 +27,7 @@ from typing import Any, Callable
 import chainlit as cl
 from chainlit.element import Element
 
-from multiagent.web import places_cache
+from multiagent.web import places_cache, trip_view
 
 log = logging.getLogger(__name__)
 
@@ -47,66 +47,28 @@ PanelFn = Callable[[SidebarContext], list[Element]]
 
 
 # ---------------------------------------------------------------------------
-# helpers
+# helpers — data shaping lives in the pure-Python ``trip_view`` module so the
+# backend stays frontend-agnostic; these are thin re-exports for the panels.
 # ---------------------------------------------------------------------------
 
 
 def _itinerary_items(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> list[dict[str, str]]:
-    """Return ``[{kind, name}, ...]`` for the things we'd show in the sidebar.
-
-    If focus is set, returns just that one item. Otherwise enumerates all
-    selected hotels followed by all selected activities. When nothing has been
-    selected yet but a destination is known, falls back to the destination's
-    top hotels & attractions so the panels populate during browsing instead of
-    sitting empty until the user locks a choice.
-    """
-    if focus and focus.get("name"):
-        return [{"kind": focus.get("kind", "place"), "name": focus["name"]}]
-    if not trip:
-        return []
-    items: list[dict[str, str]] = []
-    for h in trip.get("selected_hotels") or []:
-        if isinstance(h, dict) and h.get("name"):
-            items.append({"kind": "hotel", "name": str(h["name"])})
-    for a in trip.get("selected_activities") or []:
-        if isinstance(a, dict) and a.get("name"):
-            items.append({"kind": "attraction", "name": str(a["name"])})
-    if items:
-        return items
-
-    # Nothing selected yet — surface the destination's highlights so the
-    # gallery and reviews aren't blank while the user is still deciding.
-    destination = str(trip.get("destination") or "").strip()
-    if not destination:
-        return []
-    fallback: list[dict[str, str]] = []
-    for name in places_cache.top_places(destination, "hotel", n=2):
-        fallback.append({"kind": "hotel", "name": name})
-    for name in places_cache.top_places(destination, "attraction", n=4):
-        fallback.append({"kind": "attraction", "name": name})
-    return fallback
+    return trip_view.itinerary_items(trip, focus)
 
 
 def _fmt_money(value: Any) -> str:
-    if isinstance(value, (int, float)) and value:
-        return f"₹{value:,.0f}"
-    return "—"
+    return trip_view.fmt_money(value)
 
 
 def _has_selections(trip: dict[str, Any] | None) -> bool:
-    if not trip:
-        return False
-    return bool((trip.get("selected_hotels") or []) or (trip.get("selected_activities") or []))
+    return trip_view.has_selections(trip)
 
 
 def _is_fallback(trip: dict[str, Any] | None, focus: dict[str, Any] | None) -> bool:
-    """True when the gallery/reviews are showing destination highlights rather
-    than the user's own picks (no selections yet, not focused on one item)."""
-    if focus and focus.get("name"):
-        return False
-    return bool(trip and trip.get("destination")) and not _has_selections(trip)
+    return trip_view.is_fallback(trip, focus)
+
 
 
 # ---------------------------------------------------------------------------
@@ -265,26 +227,38 @@ async def render_sidebar(
     focus: dict[str, Any] | None,
     user_id: str,
 ) -> None:
-    """Re-render every panel and push the result to ``cl.ElementSidebar``."""
-    ctx = SidebarContext(trip=trip, focus=focus, user_id=user_id)
-    elements: list[Element] = []
-    for panel in PANELS:
-        try:
-            elements.extend(panel(ctx))
-        except Exception:  # one bad panel must not break the rail
-            log.exception("sidebar panel %s failed", panel.__name__)
+    """Re-render the right rail and push it to ``cl.ElementSidebar``.
 
+    Primary path renders the interactive ``TripPanel`` React custom element
+    from the pure-Python view-model (``trip_view.build_view``). If that fails
+    for any reason we fall back to the legacy markdown/image ``PANELS`` so the
+    rail is never blank.
+    """
     title = "Trip planner"
     if trip and trip.get("destination"):
         title = f"✈️ {trip['destination']}"
         if focus and focus.get("name"):
             title = f"{title} — {focus['name']}"
 
+    elements: list[Element] = []
+    try:
+        view = trip_view.build_view(trip, focus)
+        elements = [cl.CustomElement(name="TripPanel", props=view, display="side")]
+    except Exception:
+        log.exception("TripPanel view build failed; using legacy panels")
+        ctx = SidebarContext(trip=trip, focus=focus, user_id=user_id)
+        for panel in PANELS:
+            try:
+                elements.extend(panel(ctx))
+            except Exception:  # one bad panel must not break the rail
+                log.exception("sidebar panel %s failed", panel.__name__)
+
     try:
         await cl.ElementSidebar.set_title(title)
         await cl.ElementSidebar.set_elements(elements)
     except Exception:
         log.exception("sidebar emit failed")
+
 
 
 def build_focus_actions(trip: dict[str, Any] | None) -> list[cl.Action]:

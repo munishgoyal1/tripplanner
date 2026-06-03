@@ -69,6 +69,28 @@ def load_active_trip_dict() -> dict[str, Any] | None:
     return _load_active_trip()
 
 
+def add_selection(kind: str, item: dict[str, Any]) -> bool:
+    """Add a hotel/attraction to the active trip's selections (UI helper).
+
+    ``kind`` is ``"hotel"`` or ``"attraction"``. Deduped by name. Returns
+    ``True`` when there's an active trip to update, ``False`` otherwise.
+    Non-tool: called by the panel's "Add to trip" button, not the LLM.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    key = "selected_hotels" if kind == "hotel" else "selected_activities"
+    bucket = plan.setdefault(key, [])
+    name = str(item.get("name") or "").strip()
+    if not name:
+        return False
+    if any(str(x.get("name") or "").strip().lower() == name.lower() for x in bucket):
+        return True
+    bucket.append(item)
+    _save_active_trip(plan)
+    return True
+
+
 def _save_active_trip(plan: dict[str, Any]) -> None:
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(

@@ -83,9 +83,10 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 177 tests all passing (Session 12: 20 tests for the right-rail sidebar
-  panels + focus-action builder + destination-highlights fallback; Session 10
-  added 25 continuous-learning tests).
+- 182 tests all passing (Session 13: 5 tests for the decoupled `trip_view`
+  view-model; Session 12: 20 tests for the right-rail sidebar panels +
+  focus-action builder + destination-highlights fallback; Session 10 added 25
+  continuous-learning tests).
 - **Currency rule (Session 12)**: trip agent prompt CRITICAL RULE 8 picks ONE
   sticky display currency per plan. Domestic trips use the user's HOME currency
   (from `profile.home_country`; default INR ₹). International trips may use USD
@@ -108,6 +109,21 @@ Learns from user preferences and past trips.
   sidebar falls back to the destination's top hotels & attractions
   (`places_cache.top_places`) so panels fill during browsing instead of
   staying blank; a "popular spots" note flags these as suggestions.
+- **Decoupled trip panel (Session 13, frontend-agnostic)**: data shaping moved
+  into pure-Python `web/trip_view.py` (ZERO Chainlit imports) — `build_view(trip,
+  focus) -> dict` is the single JSON view-model contract. Consumed by BOTH the
+  Chainlit panel and the `GET /trip/view` FastAPI endpoint (`api.py`), so a
+  future standalone React/HTML frontend (option C) reuses the same contract with
+  no backend rework. Rendering is the interactive React custom element
+  `public/elements/TripPanel.jsx` (overview header, per-item photo/review cards,
+  in-element "Back to whole trip" button, and an "Add to trip" button →
+  `select_item` action → `trip_planner.add_selection`). `web/sidebar.py` is now
+  a thin adapter: helpers delegate to `trip_view`, `render_sidebar` pushes a
+  single `cl.CustomElement(name="TripPanel", props=build_view(...))` and falls
+  back to the legacy `PANELS` (cl.Text/cl.Image) only if the custom element
+  fails. This answers the panel-recovery question: the rail auto-reopens on the
+  next `set_elements` (every turn) and the element has its own Back control, so
+  Chainlit's built-in collapse arrow is no longer the only way back.
 - Azure OpenAI **API version must be `2024-10-21`** (data-plane GA); `2024-11-20`
   is a model snapshot date and produces 404 NotFoundError. Bicepparam default,
   GitHub secret, and live container env all aligned on `2024-10-21`.
@@ -123,7 +139,9 @@ Learns from user preferences and past trips.
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
 - `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint (wires sidebar)
-- `src/multiagent/web/sidebar.py` — plugin-style right-rail panel registry
+- `src/multiagent/web/trip_view.py` — pure-Python frontend-agnostic view-model (`build_view`)
+- `src/multiagent/web/sidebar.py` — thin Chainlit adapter (renders `TripPanel` custom element)
+- `public/elements/TripPanel.jsx` — interactive React custom element for the trip panel
 - `src/multiagent/web/places_cache.py` — per-session Google Places cache for the sidebar
 - `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
 - `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier

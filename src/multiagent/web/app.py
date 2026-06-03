@@ -870,6 +870,27 @@ async def _on_focus_item(action: cl.Action) -> None:
     await _refresh_sidebar()
 
 
+@cl.action_callback("select_item")
+async def _on_select_item(action: cl.Action) -> None:
+    """Add a hotel/attraction (from the panel's *Add to trip*) to the trip."""
+    payload = action.payload or {}
+    name = str(payload.get("name") or "").strip()
+    if not name:
+        return
+    kind = payload.get("kind", "attraction")
+    user_id = cl.user_session.get("user_id") or "anonymous"
+    set_user_id(user_id)
+    try:
+        ok = trip_planner.add_selection(kind, {"name": name})
+    except Exception:  # pragma: no cover -- never block the chat on this
+        log.exception("select_item: failed to add %s", name)
+        ok = False
+    if ok:
+        cl.user_session.set("sidebar_focus", None)
+    await _refresh_sidebar()
+
+
+
 @cl.on_chat_start
 async def on_chat_start() -> None:
     """Initialize per-session state and greet the user."""

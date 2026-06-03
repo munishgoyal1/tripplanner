@@ -42,6 +42,24 @@ async def chat(req: ChatRequest) -> ChatResponse:
     return ChatResponse(reply=reply, agent=result.get("current_agent", "unknown"))
 
 
+@app.get("/trip/view")
+async def trip_view_endpoint(user_id: str = "local", focus_kind: str = "", focus_name: str = "") -> dict:
+    """Frontend-agnostic trip-panel view-model.
+
+    Returns the same JSON the Chainlit panel renders, so an alternative
+    React/HTML frontend can consume it directly. ``user_id`` selects whose
+    active trip to read; ``focus_kind``/``focus_name`` optionally zoom one item.
+    """
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(user_id)
+    trip = trip_planner.load_active_trip_dict()
+    focus = {"kind": focus_kind, "name": focus_name} if focus_name else None
+    return trip_view.build_view(trip, focus)
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"status": "ok"}
