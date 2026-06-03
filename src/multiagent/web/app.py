@@ -23,7 +23,6 @@ don't include it; see ``docs/setup-oauth.md`` for the custom-flow path.
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import uuid
@@ -41,7 +40,13 @@ WELCOME = (
     "\u2708\ufe0f **Trip Planner**\n\n"
     "Tell me where you'd like to go and I'll plan it end-to-end \u2014 flights, "
     "hotels, activities and a day-wise itinerary.\n\n"
-    "_Try: \"Plan a 5-day family trip to Goa in January for 2 adults and 1 child\"_"
+    "_The first reply for a fresh request can take ~10\u201320s while I search "
+    "flights, hotels and reviews. You'll see each search appear as a step "
+    "above the reply so you know what's happening._\n\n"
+    "**Try one of:**\n"
+    "- _Plan a 5-day family trip to Goa in January for 2 adults and 1 child_\n"
+    "- _Weekend getaway from Bangalore to Coorg next month, mid budget_\n"
+    "- _10 days in Japan in April, history and food, $4k total_"
 )
 
 _GUEST_COOKIE = "multiagent_guest_id"
@@ -153,36 +158,99 @@ async def on_chat_start() -> None:
     await cl.Message(content=WELCOME).send()
 
 
+def _format_tool_input(value: Any) -> str:
+    if isinstance(value, dict):
+        return "\n".join(f"{k} = {v}" for k, v in value.items() if v not in (None, ""))
+    return str(value) if value is not None else ""
+
+
+def _format_tool_output(value: Any, limit: int = 1500) -> str:
+    text = getattr(value, "content", None)
+    if text is None:
+        text = str(value) if value is not None else ""
+    return text if len(text) <= limit else text[:limit] + "\n…(truncated)"
+
+
 @cl.on_message
 async def on_message(msg: cl.Message) -> None:
-    """Handle one user turn: run the graph, stream the assistant reply."""
+    """Handle one user turn with token streaming and live tool steps.
+
+    The graph is run via ``astream_events`` so we can:
+      * Stream the assistant's final reply token-by-token (no long blank wait).
+      * Surface each tool call as a collapsible Chainlit Step in real time
+        (e.g. "Searching flights…", "Looking up hotels…").
+    """
     user_id = cl.user_session.get("user_id") or "anonymous"
     set_user_id(user_id)
 
     messages: list = cl.user_session.get("messages") or []
     messages.append(HumanMessage(content=msg.content))
 
-    thinking = cl.Message(content="")
-    await thinking.send()
+    answer = cl.Message(content="")
+    await answer.send()
+
+    open_tool_steps: dict[str, cl.Step] = {}
+    final_state: dict | None = None
 
     try:
-        # LangGraph's sync invoke runs inside a worker thread to avoid
-        # blocking Chainlit's event loop.
-        result = await asyncio.to_thread(
-            app_graph.invoke,
+        async for event in app_graph.astream_events(
             {"messages": messages, "current_agent": ""},
-        )
+            version="v2",
+        ):
+            kind = event.get("event")
+            name = event.get("name", "")
+            run_id = event.get("run_id", "")
+            data = event.get("data", {}) or {}
+
+            if kind == "on_chat_model_stream":
+                chunk = data.get("chunk")
+                content = getattr(chunk, "content", "") if chunk is not None else ""
+                if content:
+                    await answer.stream_token(content)
+
+            elif kind == "on_tool_start":
+                step = cl.Step(name=name, type="tool")
+                step.input = _format_tool_input(data.get("input"))
+                await step.send()
+                open_tool_steps[run_id] = step
+
+            elif kind == "on_tool_end":
+                step = open_tool_steps.pop(run_id, None)
+                if step is not None:
+                    step.output = _format_tool_output(data.get("output"))
+                    await step.update()
+
+            elif kind == "on_chain_end" and name in {"LangGraph", "trip_agent_graph"}:
+                output = data.get("output")
+                if isinstance(output, dict) and "messages" in output:
+                    final_state = output
+
     except Exception as exc:  # surface failure to the user without crashing the chat
-        log.exception("graph invocation failed")
-        thinking.content = (
+        log.exception("graph streaming failed")
+        # Close any dangling tool steps so the UI doesn't show spinners forever.
+        for step in open_tool_steps.values():
+            step.output = "(interrupted)"
+            try:
+                await step.update()
+            except Exception:  # pragma: no cover
+                pass
+        answer.content = (
             f"\u26a0\ufe0f Something went wrong: `{exc.__class__.__name__}: {exc}`"
         )
-        await thinking.update()
+        await answer.update()
         return
 
-    new_messages = list(result.get("messages", messages))
-    cl.user_session.set("messages", new_messages)
+    if final_state is not None:
+        cl.user_session.set("messages", list(final_state["messages"]))
+    else:
+        # Fallback: at least keep the user message in history so the next turn isn't lost.
+        cl.user_session.set("messages", messages)
 
-    last_ai = _last_ai_message(new_messages)
-    thinking.content = last_ai.content if last_ai else "_(no response)_"
-    await thinking.update()
+    # Degenerate case: the model returned no streamed tokens (rare). Recover
+    # the final AI message from state so the user still sees something.
+    if not answer.content:
+        source = list(final_state["messages"]) if final_state else messages
+        last_ai = _last_ai_message(source)
+        answer.content = last_ai.content if last_ai else "_(no response)_"
+
+    await answer.update()
