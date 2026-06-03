@@ -67,6 +67,9 @@ param githubOauthClientSecret string = ''
 @description('Web session signing secret (random 32+ char string). REQUIRED to enable any OAuth or persistent guest cookies. Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))".')
 param webSessionSecret string = ''
 
+@description('Public HTTPS base URL the OAuth callback returns to (no trailing slash). Required when serving Sign in with Google through Container Apps ingress, which terminates TLS and forwards plain HTTP to the container, so request.base_url is http://. Example: https://multiagent-app-xxx.region.azurecontainerapps.io')
+param oauthRedirectBase string = ''
+
 @description('Enable Cosmos Free Tier (only one per subscription).')
 param enableCosmosFreeTier bool = true
 
@@ -106,7 +109,8 @@ var oauthEnv = concat(
   empty(googleOauthClientSecret) ? [] : [{ name: 'OAUTH_GOOGLE_CLIENT_SECRET', secretRef: 'google-oauth-client-secret' }],
   empty(githubOauthClientId) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_ID', secretRef: 'github-oauth-client-id' }],
   empty(githubOauthClientSecret) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_SECRET', secretRef: 'github-oauth-client-secret' }],
-  empty(webSessionSecret) ? [] : [{ name: 'WEB_SESSION_SECRET', secretRef: 'web-session-secret' }]
+  empty(webSessionSecret) ? [] : [{ name: 'WEB_SESSION_SECRET', secretRef: 'web-session-secret' }],
+  empty(oauthRedirectBase) ? [] : [{ name: 'OAUTH_REDIRECT_BASE', value: oauthRedirectBase }]
 )
 
 var baseSecrets = [

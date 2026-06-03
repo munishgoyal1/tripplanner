@@ -23,6 +23,7 @@ param googleOauthClientSecret = readEnvironmentVariable('OAUTH_GOOGLE_CLIENT_SEC
 param githubOauthClientId = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_ID', '')
 param githubOauthClientSecret = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_SECRET', '')
 param webSessionSecret = readEnvironmentVariable('WEB_SESSION_SECRET', readEnvironmentVariable('CHAINLIT_AUTH_SECRET', ''))
+param oauthRedirectBase = readEnvironmentVariable('OAUTH_REDIRECT_BASE', '')
 
 param enableCosmosFreeTier = true
 param minReplicas = 0

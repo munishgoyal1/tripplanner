@@ -91,6 +91,8 @@ jobs:
           OAUTH_GOOGLE_CLIENT_SECRET: ${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }}
           OAUTH_GITHUB_CLIENT_ID: ${{ secrets.OAUTH_GITHUB_CLIENT_ID }}
           OAUTH_GITHUB_CLIENT_SECRET: ${{ secrets.OAUTH_GITHUB_CLIENT_SECRET }}
+          # Public HTTPS callback base for Google OAuth (ingress terminates TLS).
+          OAUTH_REDIRECT_BASE: ${{ secrets.OAUTH_REDIRECT_BASE }}
           # Web session signing secret (reuses the existing CHAINLIT_AUTH_SECRET
           # GitHub secret value so no new secret needs to be created).
           WEB_SESSION_SECRET: ${{ secrets.CHAINLIT_AUTH_SECRET }}
