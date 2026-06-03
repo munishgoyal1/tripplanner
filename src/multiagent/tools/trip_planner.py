@@ -60,6 +60,15 @@ def _load_active_trip() -> dict[str, Any] | None:
     return None
 
 
+def load_active_trip_dict() -> dict[str, Any] | None:
+    """Public, non-tool accessor for the current active trip.
+
+    The ``get_trip_plan`` ``@tool`` returns a formatted string for the LLM;
+    UI code (e.g. the Chainlit sidebar) needs the raw dict.
+    """
+    return _load_active_trip()
+
+
 def _save_active_trip(plan: dict[str, Any]) -> None:
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(

@@ -43,8 +43,10 @@ from multiagent.observability import (
     setup_logging,
 )
 from multiagent.tools import about_me_extractor
+from multiagent.tools import trip_planner
 from multiagent.tools import user_preferences as prefs_store
 from multiagent.user_context import set_user_id
+from multiagent.web.sidebar import build_focus_actions, render_sidebar
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -62,6 +64,10 @@ WELCOME_BASE = (
     "- _Plan a 5-day family trip to Goa in January for 2 adults and 1 child_\n"
     "- _Weekend getaway from Bangalore to Coorg next month, mid budget_\n"
     "- _10 days in Japan in April, history and food, $4k total_\n\n"
+    "\U0001f5bc\ufe0f _As you plan, the **side panel** on the right fills with "
+    "photos, ratings and reviews for every hotel and attraction in your trip. "
+    "Tap a \U0001f3e8 / \U0001f3af button under any of my replies to zoom in on "
+    "one item, or **Whole trip** to zoom back out._\n\n"
     "\u2699\ufe0f _Tap the **gear icon** next to the message box to edit your "
     "travel preferences. The **About me** field at the top accepts free text "
     "(\"I'm Munish, 43, in Bengaluru, travel with wife Megha 40 and son Amay 11, "
@@ -832,6 +838,38 @@ async def on_settings_update(settings: dict) -> None:
     await cl.Message(content=msg).send()
 
 
+async def _refresh_sidebar() -> None:
+    """Reload the active trip and re-render every panel in the right rail.
+
+    Safe to call any time — silently no-ops outside a Chainlit context or
+    when there's nothing to show. Uses the current ``sidebar_focus`` from
+    the session (set by :func:`_on_focus_item`).
+    """
+    user_id = cl.user_session.get("user_id") or "anonymous"
+    set_user_id(user_id)
+    try:
+        trip = trip_planner.load_active_trip_dict()
+    except Exception:  # pragma: no cover -- never block the chat on this
+        log.exception("sidebar refresh: failed to load active trip")
+        trip = None
+    focus = cl.user_session.get("sidebar_focus")
+    await render_sidebar(trip, focus, user_id)
+
+
+@cl.action_callback("focus_item")
+async def _on_focus_item(action: cl.Action) -> None:
+    """Zoom the sidebar onto a single hotel/attraction (or reset to overview)."""
+    payload = action.payload or {}
+    if payload.get("kind") == "overview":
+        cl.user_session.set("sidebar_focus", None)
+    else:
+        cl.user_session.set(
+            "sidebar_focus",
+            {"kind": payload.get("kind", "place"), "name": payload.get("name", "")},
+        )
+    await _refresh_sidebar()
+
+
 @cl.on_chat_start
 async def on_chat_start() -> None:
     """Initialize per-session state and greet the user."""
@@ -855,6 +893,9 @@ async def on_chat_start() -> None:
     if identifier.startswith("guest-") and _oauth_configured():
         welcome += _SIGN_IN_HINT_TEMPLATE.format(url=_sign_in_url())
     await cl.Message(content=welcome).send()
+    # Open the side panel right away so returning users see their trip and
+    # first-time users see the "no trip yet" prompt.
+    await _refresh_sidebar()
 
 
 def _format_tool_input(value: Any) -> str:
@@ -998,3 +1039,24 @@ async def on_message(msg: cl.Message) -> None:
         reply_length=len(answer.content or ""),
         ms=int((_now() - turn_start) * 1000),
     )
+
+    # Refresh the right-rail side panel and attach per-item focus buttons
+    # to the agent's reply. Anything that fails here is logged but never
+    # bubbles up — sidebar is supplementary, the chat reply is the contract.
+    try:
+        trip = trip_planner.load_active_trip_dict()
+    except Exception:  # pragma: no cover
+        log.exception("sidebar: failed to load active trip after turn")
+        trip = None
+    focus_actions = build_focus_actions(trip)
+    if focus_actions:
+        answer.actions = focus_actions
+        try:
+            await answer.update()
+        except Exception:  # pragma: no cover
+            log.exception("sidebar: failed to attach focus actions")
+    focus = cl.user_session.get("sidebar_focus")
+    try:
+        await render_sidebar(trip, focus, user_id)
+    except Exception:  # pragma: no cover
+        log.exception("sidebar: render failed")

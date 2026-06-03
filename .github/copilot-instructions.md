@@ -83,8 +83,19 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 92 tests all passing (Session 10: 25 new tests for continuous-learning schema +
-  5 extraction tools + EXTRACTION CHECKLIST prompt rules).
+- 173 tests all passing (Session 12: 16 new tests for the right-rail sidebar
+  panels + focus-action builder; Session 10 added 25 continuous-learning tests).
+- **Right-rail sidebar (Session 12, hosted mode only)**: `web/sidebar.py` +
+  `web/places_cache.py`. Plugin-style — each panel is a function
+  `render(SidebarContext) -> list[Element]` registered in `PANELS`. v1 panels
+  are Overview, Photo gallery (Google Places photos), Reviews & descriptions.
+  Refreshes automatically after every agent turn. Hotels/attractions in the
+  reply get `cl.Action` "🏨/🎯/🌐 Whole trip" buttons that zoom the sidebar via
+  `@cl.action_callback("focus_item")`. Places lookups (Text Search + Photo
+  URI + Reviews) cached per-session under `cl.user_session["places_cache"]`.
+  No `place_id` is stored in the trip plan — sidebar resolves by name+city
+  on demand. To add a panel: append to `PANELS`. To re-order/hide: edit
+  that list. No other changes needed.
 - Azure OpenAI **API version must be `2024-10-21`** (data-plane GA); `2024-11-20`
   is a model snapshot date and produces 404 NotFoundError. Bicepparam default,
   GitHub secret, and live container env all aligned on `2024-10-21`.
@@ -99,7 +110,9 @@ Learns from user preferences and past trips.
 - `src/multiagent/agents/trip_agent.py` — trip agent with 25 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
-- `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint
+- `src/multiagent/web/app.py` — Chainlit hosted chat entrypoint (wires sidebar)
+- `src/multiagent/web/sidebar.py` — plugin-style right-rail panel registry
+- `src/multiagent/web/places_cache.py` — per-session Google Places cache for the sidebar
 - `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
 - `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier
 
