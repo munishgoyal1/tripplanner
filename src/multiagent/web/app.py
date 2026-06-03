@@ -30,6 +30,7 @@ from typing import Any
 
 import chainlit as cl
 import yaml
+from chainlit.input_widget import NumberInput, Select, Switch, Tags, TextInput
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multiagent.graph import app_graph
@@ -49,8 +50,9 @@ WELCOME_BASE = (
     "- _Plan a 5-day family trip to Goa in January for 2 adults and 1 child_\n"
     "- _Weekend getaway from Bangalore to Coorg next month, mid budget_\n"
     "- _10 days in Japan in April, history and food, $4k total_\n\n"
-    "\U0001f4cb _Type **`/profile`** any time to see or edit everything I've "
-    "remembered about you. Type **`/help`** for the full command list._"
+    "\u2699\ufe0f _Tap the **gear icon** next to the message box to edit your "
+    "travel preferences (home city, budget, dietary, interests...). For the "
+    "full data dump, type **`/profile`**; **`/help`** lists all commands._"
 )
 
 _SIGN_IN_HINT_TEMPLATE = (
@@ -400,6 +402,175 @@ if _auth_secret_present():
         log.warning("Could not install auth-flow middleware", exc_info=True)
 
 
+# ---------------------------------------------------------------------------
+# Chat settings panel - the "gear icon" form. Covers the 80% of preferences
+# most users want to set; power users can still use /profile for the full
+# YAML view + edit. Mapping is bidirectional: load_preferences() -> widgets,
+# widget values -> save_preferences().
+# ---------------------------------------------------------------------------
+_TRIP_STYLES = ["balanced", "relaxed", "adventurous", "cultural", "foodie", "luxury", "budget"]
+_BUDGET_LEVELS = ["budget", "moderate", "comfortable", "luxury"]
+_FLIGHT_CLASSES = ["economy", "premium_economy", "business", "first"]
+
+
+def _select_index(values: list[str], current: str | None) -> int:
+    try:
+        return values.index(current) if current else 0
+    except ValueError:
+        return 0
+
+
+def _build_chat_settings() -> cl.ChatSettings:
+    """Build the settings form pre-populated from the user's saved prefs."""
+    prefs = prefs_store.load_preferences()
+    profile = prefs.get("profile") or {}
+    hotel = prefs.get("hotel_preferences") or {}
+    transport = prefs.get("transport_preferences") or {}
+    food = prefs.get("food_preferences") or {}
+    return cl.ChatSettings(
+        [
+            TextInput(
+                id="display_name",
+                label="Your name",
+                initial=profile.get("display_name") or "",
+                placeholder="What should I call you?",
+            ),
+            TextInput(
+                id="home_city",
+                label="Home city",
+                initial=profile.get("home_city") or "",
+                placeholder="e.g. Bangalore",
+            ),
+            TextInput(
+                id="home_country",
+                label="Home country",
+                initial=profile.get("home_country") or "",
+                placeholder="e.g. India",
+            ),
+            Select(
+                id="trip_style",
+                label="Default trip style",
+                values=_TRIP_STYLES,
+                initial_index=_select_index(_TRIP_STYLES, prefs.get("trip_style")),
+            ),
+            Select(
+                id="budget_level",
+                label="Default budget level",
+                values=_BUDGET_LEVELS,
+                initial_index=_select_index(_BUDGET_LEVELS, prefs.get("budget_level")),
+            ),
+            Select(
+                id="flight_class",
+                label="Flight class",
+                values=_FLIGHT_CLASSES,
+                initial_index=_select_index(_FLIGHT_CLASSES, transport.get("flight_class")),
+            ),
+            Switch(
+                id="prefer_direct_flights",
+                label="Prefer direct flights",
+                initial=bool(transport.get("prefer_direct_flights", True)),
+            ),
+            NumberInput(
+                id="hotel_star_rating_min",
+                label="Minimum hotel star rating",
+                initial=int(hotel.get("star_rating_min") or 3),
+                placeholder="1-5",
+            ),
+            Tags(
+                id="dietary",
+                label="Dietary restrictions",
+                initial=list(food.get("dietary") or []),
+                description="e.g. vegetarian, halal, gluten-free",
+            ),
+            Tags(
+                id="cuisine_likes",
+                label="Cuisines you love",
+                initial=list(food.get("cuisine_likes") or []),
+            ),
+            Tags(
+                id="cuisine_dislikes",
+                label="Cuisines you avoid",
+                initial=list(food.get("cuisine_dislikes") or []),
+            ),
+            Tags(
+                id="interests",
+                label="Interests",
+                initial=list(prefs.get("interests") or []),
+                description="e.g. hiking, museums, photography, nightlife",
+            ),
+            Tags(
+                id="dislikes",
+                label="Things to avoid",
+                initial=list(prefs.get("dislikes") or []),
+                description="e.g. crowded places, late nights, seafood",
+            ),
+        ]
+    )
+
+
+def _apply_settings(values: dict[str, Any]) -> None:
+    """Merge widget values back into the structured preferences dict."""
+    prefs = prefs_store.load_preferences()
+    profile = dict(prefs.get("profile") or {})
+    hotel = dict(prefs.get("hotel_preferences") or {})
+    transport = dict(prefs.get("transport_preferences") or {})
+    food = dict(prefs.get("food_preferences") or {})
+
+    def _clean_str(v: Any) -> str | None:
+        if v is None:
+            return None
+        s = str(v).strip()
+        return s or None
+
+    def _clean_list(v: Any) -> list[str]:
+        if not v:
+            return []
+        if isinstance(v, str):
+            v = [v]
+        return [str(x).strip() for x in v if str(x).strip()]
+
+    profile["display_name"] = _clean_str(values.get("display_name"))
+    profile["home_city"] = _clean_str(values.get("home_city"))
+    profile["home_country"] = _clean_str(values.get("home_country"))
+    if values.get("trip_style"):
+        prefs["trip_style"] = values["trip_style"]
+    if values.get("budget_level"):
+        prefs["budget_level"] = values["budget_level"]
+    if values.get("flight_class"):
+        transport["flight_class"] = values["flight_class"]
+    transport["prefer_direct_flights"] = bool(values.get("prefer_direct_flights", True))
+    try:
+        star = int(values.get("hotel_star_rating_min") or 3)
+        hotel["star_rating_min"] = max(1, min(5, star))
+    except (TypeError, ValueError):
+        pass
+    food["dietary"] = _clean_list(values.get("dietary"))
+    food["cuisine_likes"] = _clean_list(values.get("cuisine_likes"))
+    food["cuisine_dislikes"] = _clean_list(values.get("cuisine_dislikes"))
+    prefs["interests"] = _clean_list(values.get("interests"))
+    prefs["dislikes"] = _clean_list(values.get("dislikes"))
+
+    prefs["profile"] = profile
+    prefs["hotel_preferences"] = hotel
+    prefs["transport_preferences"] = transport
+    prefs["food_preferences"] = food
+    prefs_store.save_preferences(prefs)
+
+
+@cl.on_settings_update
+async def on_settings_update(settings: dict) -> None:
+    """Persist the gear-icon form values into the user's preferences."""
+    user_id = cl.user_session.get("user_id") or "anonymous"
+    set_user_id(user_id)
+    _apply_settings(settings)
+    await cl.Message(
+        content=(
+            "\u2705 Preferences saved. I'll use these on your next trip request. "
+            "Type `/profile` to see the full saved state."
+        )
+    ).send()
+
+
 @cl.on_chat_start
 async def on_chat_start() -> None:
     """Initialize per-session state and greet the user."""
@@ -410,6 +581,9 @@ async def on_chat_start() -> None:
         identifier = cl.user_session.get("id") or "anonymous"
     cl.user_session.set("user_id", str(identifier))
     cl.user_session.set("messages", [])
+    # Make sure prefs_store reads/writes the right user before building the form.
+    set_user_id(str(identifier))
+    await _build_chat_settings().send()
     welcome = WELCOME_BASE
     if identifier.startswith("guest-") and _oauth_configured():
         welcome += _SIGN_IN_HINT_TEMPLATE.format(url=_sign_in_url())
