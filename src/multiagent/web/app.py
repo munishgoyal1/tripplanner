@@ -29,9 +29,11 @@ import uuid
 from typing import Any
 
 import chainlit as cl
+import yaml
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multiagent.graph import app_graph
+from multiagent.tools import user_preferences as prefs_store
 from multiagent.user_context import set_user_id
 
 log = logging.getLogger(__name__)
@@ -46,7 +48,9 @@ WELCOME_BASE = (
     "**Try one of:**\n"
     "- _Plan a 5-day family trip to Goa in January for 2 adults and 1 child_\n"
     "- _Weekend getaway from Bangalore to Coorg next month, mid budget_\n"
-    "- _10 days in Japan in April, history and food, $4k total_"
+    "- _10 days in Japan in April, history and food, $4k total_\n\n"
+    "\U0001f4cb _Type **`/profile`** any time to see or edit everything I've "
+    "remembered about you. Type **`/help`** for the full command list._"
 )
 
 _SIGN_IN_HINT_TEMPLATE = (
@@ -111,6 +115,165 @@ def _last_ai_message(messages: list) -> AIMessage | None:
 
 
 # ---------------------------------------------------------------------------
+# Slash commands — let the user inspect and edit everything we remember
+# about them, without going through the LLM. Keeps preferences transparent.
+# ---------------------------------------------------------------------------
+_PROFILE_HELP = (
+    "**Profile commands**\n"
+    "- `/profile` \u2014 show everything I've saved about you (as editable YAML)\n"
+    "- `/profile save` *(followed by an edited YAML block)* \u2014 overwrite saved prefs\n"
+    "- `/profile reset` \u2014 wipe all saved prefs and start fresh\n"
+    "- `/whoami` \u2014 show your identity (sign-in name and id)\n"
+    "- `/help` \u2014 show this list\n\n"
+    "Anything else is a normal trip-planning request \u2014 just tell me where "
+    "you want to go."
+)
+
+# Keys we hide from the editable YAML because they're either internal
+# bookkeeping or auto-managed (timestamps, system-set lists).
+_PROFILE_HIDDEN_KEYS = {"learned_notes"}
+
+
+def _format_prefs_yaml(prefs: dict[str, Any]) -> str:
+    visible = {k: v for k, v in prefs.items() if k not in _PROFILE_HIDDEN_KEYS}
+    return yaml.safe_dump(
+        visible,
+        sort_keys=False,
+        allow_unicode=True,
+        default_flow_style=False,
+    )
+
+
+def _strip_yaml_fence(text: str) -> str:
+    """Allow users to paste the YAML either raw or inside `````yaml ... ````` fences."""
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        lines = stripped.splitlines()
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]
+        stripped = "\n".join(lines)
+    return stripped
+
+
+async def _send_profile_view() -> None:
+    prefs = prefs_store.load_preferences()
+    yaml_text = _format_prefs_yaml(prefs)
+    body = (
+        "\U0001f4cb **Your saved preferences** (everything I remember about you):\n\n"
+        f"```yaml\n{yaml_text}```\n"
+        "To **edit**, copy the block above, change anything you like, then send "
+        "it back to me as:\n\n"
+        "```\n/profile save\n<paste the edited YAML here>\n```\n"
+        "_Tip: you can wrap the YAML in_ ```yaml ... ``` _fences or paste it raw \u2014 "
+        "both work._"
+    )
+    await cl.Message(content=body).send()
+
+
+async def _handle_profile_save(payload: str) -> None:
+    yaml_text = _strip_yaml_fence(payload)
+    if not yaml_text.strip():
+        await cl.Message(
+            content=(
+                "\u26a0\ufe0f I didn't see any YAML after `/profile save`. Send "
+                "`/profile` first to see the current values, then paste the edited "
+                "block on a new line after `/profile save`."
+            )
+        ).send()
+        return
+    try:
+        parsed = yaml.safe_load(yaml_text)
+    except yaml.YAMLError as exc:
+        await cl.Message(
+            content=(
+                "\u274c Couldn't parse that as YAML:\n\n"
+                f"```\n{exc}\n```\n"
+                "Send `/profile` again to get a fresh copy and try once more."
+            )
+        ).send()
+        return
+    if not isinstance(parsed, dict):
+        await cl.Message(
+            content=(
+                "\u274c The YAML must be a mapping at the top level (key: value pairs). "
+                "Send `/profile` to see the expected shape."
+            )
+        ).send()
+        return
+    # Preserve hidden fields (learned_notes) - only overwrite what the user sees.
+    current = prefs_store.load_preferences()
+    merged = {**current, **parsed}
+    for key in _PROFILE_HIDDEN_KEYS:
+        merged[key] = current.get(key, [])
+    prefs_store.save_preferences(merged)
+    await cl.Message(
+        content="\u2705 Saved. Send `/profile` again to see the new values."
+    ).send()
+
+
+async def _handle_profile_reset() -> None:
+    import copy
+
+    defaults = copy.deepcopy(prefs_store._DEFAULT_PREFS)  # noqa: SLF001
+    prefs_store.save_preferences(defaults)
+    await cl.Message(
+        content=(
+            "\u267b\ufe0f All saved preferences wiped. I won't remember anything "
+            "about you until you tell me again (or sign in)."
+        )
+    ).send()
+
+
+async def _handle_whoami() -> None:
+    user = cl.user_session.get("user")
+    if user is None:
+        await cl.Message(content="You're not signed in (anonymous session).").send()
+        return
+    md = user.metadata or {}
+    lines = [
+        f"**Display name:** {user.display_name or '_(none)_'}",
+        f"**Identifier:** `{user.identifier}`",
+    ]
+    if md.get("provider"):
+        lines.append(f"**Signed in via:** {md['provider']}")
+    if md.get("email"):
+        lines.append(f"**Email:** {md['email']}")
+    if md.get("role"):
+        lines.append(f"**Role:** {md['role']}")
+    await cl.Message(content="\n".join(lines)).send()
+
+
+async def _maybe_handle_slash_command(text: str) -> bool:
+    """Return True if ``text`` is a slash command we handled."""
+    stripped = text.lstrip()
+    if not stripped.startswith("/"):
+        return False
+    first_line, _, rest = stripped.partition("\n")
+    cmd = first_line.strip().lower()
+    if cmd in ("/help", "/?"):
+        await cl.Message(content=_PROFILE_HELP).send()
+        return True
+    if cmd == "/whoami":
+        await _handle_whoami()
+        return True
+    if cmd == "/profile":
+        await _send_profile_view()
+        return True
+    if cmd == "/profile reset":
+        await _handle_profile_reset()
+        return True
+    if cmd == "/profile save":
+        await _handle_profile_save(rest)
+        return True
+    await cl.Message(
+        content=f"Unknown command `{cmd}`. Send `/help` for the list."
+    ).send()
+    return True
+
+
+# ---------------------------------------------------------------------------
 # Authentication callbacks (only active when CHAINLIT_AUTH_SECRET is set)
 # ---------------------------------------------------------------------------
 def _auth_secret_present() -> bool:
@@ -140,14 +303,35 @@ if _auth_secret_present():
             or default_user.identifier
         )
         identifier = f"{provider_id}-{external_id}"
+        name = (
+            raw_user_data.get("name")
+            or raw_user_data.get("given_name")
+            or raw_user_data.get("login")
+        )
+        email = raw_user_data.get("email")
+        picture = raw_user_data.get("picture") or raw_user_data.get("avatar_url")
         metadata = {
             "provider": provider_id,
-            "email": raw_user_data.get("email"),
-            "name": raw_user_data.get("name") or raw_user_data.get("login"),
-            "picture": raw_user_data.get("picture") or raw_user_data.get("avatar_url"),
+            "email": email,
+            "name": name,
+            "picture": picture,
             "role": "user",
         }
-        return cl.User(identifier=identifier, metadata=metadata)
+        # Seed the profile so the agent (and `/profile`) see the real name
+        # immediately, without waiting for the user to introduce themselves.
+        if name:
+            try:
+                set_user_id(identifier)
+                prefs_store.update_profile({
+                    "display_name": name.split()[0] if name else None,
+                })
+            except Exception:  # pragma: no cover - non-fatal
+                log.warning("Could not seed profile from OAuth payload", exc_info=True)
+        return cl.User(
+            identifier=identifier,
+            display_name=name or identifier,
+            metadata=metadata,
+        )
 
     @cl.header_auth_callback
     def header_auth_callback(headers: dict) -> cl.User | None:
@@ -256,6 +440,11 @@ async def on_message(msg: cl.Message) -> None:
     """
     user_id = cl.user_session.get("user_id") or "anonymous"
     set_user_id(user_id)
+
+    # Slash commands bypass the LLM entirely - keeps profile UX snappy and
+    # avoids burning tokens on simple "show me what you remember" requests.
+    if await _maybe_handle_slash_command(msg.content):
+        return
 
     messages: list = cl.user_session.get("messages") or []
     messages.append(HumanMessage(content=msg.content))
