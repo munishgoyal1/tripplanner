@@ -16,6 +16,7 @@ from langgraph.prebuilt import ToolNode
 
 from multiagent.agents.trip_agent import TRIP_TOOLS, build_trip_system_prompt
 from multiagent.config import get_settings
+from multiagent.tools_cache import wrap_tools_with_cache
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +61,12 @@ def trip_agent(state: AgentState) -> AgentState:
 # ---------------------------------------------------------------------------
 # Tool execution
 # ---------------------------------------------------------------------------
-tool_node = ToolNode(TRIP_TOOLS)
+# Wrap the tools with read-through caching for deterministic lookups (flights,
+# place reviews, weather, etc.); stateful tools (write/finalize) pass through
+# untouched. This is what stops the agent from re-billing Amadeus/Google on
+# every turn for the same query.
+_CACHED_TOOLS = wrap_tools_with_cache(list(TRIP_TOOLS))
+tool_node = ToolNode(_CACHED_TOOLS)
 
 
 def _should_continue(state: AgentState) -> str:

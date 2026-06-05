@@ -819,3 +819,28 @@ TEST RESULTS: 219 tests pass.
 #   blip. Listening state styles the button (pulsing brand color).
 # - Pure additive change in ChatPanel.tsx. No new tests (UI-only,
 #   relies on a browser-only API).
+
+# Session 16.18 (2026-06-05): tool result caching (#7.1).
+# - New src/multiagent/tools_cache.py wraps every read-only tool with
+#   a read-through cache keyed by (user_id, tool_name, canonical_args).
+#   Canonical args use sort_keys JSON so equivalent dicts hash the same.
+#   Cache TTL default 30 minutes (long enough to dedup a session, short
+#   enough that prices/hours don't go stale).
+# - Stateful tools are whitelisted in _STATEFUL_TOOLS (create/update/
+#   finalize/execute trip, save_travel_preferences, record_past_trip,
+#   record_trip_postmortem, remember_about_user, update_user_profile,
+#   add_family_member, add_user_interest, add_user_dislike,
+#   record_trip_mention). These bypass the cache entirely \u2014 we must
+#   never serve a stale write.
+# - Two backends, chosen at call time: Cosmos 'tool_cache' container
+#   (partition /user_id) when storage_cosmos.is_enabled(), otherwise
+#   an in-process LRU(256) with TTL. Cosmos failures fall back to LRU
+#   so a network blip never blocks the agent.
+# - graph.py now does TRIP_TOOLS \u2192 wrap_tools_with_cache(...) \u2192 ToolNode.
+#   We build new StructuredTool copies (not in-place mutation) so any
+#   test or call site that imports the originals keeps non-cached
+#   behaviour \u2014 prevents shared-singleton interference.
+# - +10 tests (tests/test_tools_cache.py): canonical key stability,
+#   miss-then-hit, stateful bypass, TTL expiry, per-user isolation,
+#   coerce_result on dict/list, wrap dedupes, wrap skips stateful,
+#   LRU eviction. Total: 284.

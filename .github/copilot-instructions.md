@@ -133,7 +133,14 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 274 tests all passing (Session 16.15: +10 for `web/share.py` read-only
+- 284 tests all passing (Session 16.18: +10 for `tools_cache.py` read-through
+  cache wrapping every read-only tool — keyed by `(user_id, tool_name,
+  canonical_args)`, Cosmos `tool_cache` container when enabled else
+  in-process LRU(256) with TTL (30 min default); stateful tools like
+  `update_trip_plan`/`finalize_trip`/`save_travel_preferences` bypass the
+  cache; wired into `graph.py` via `wrap_tools_with_cache(TRIP_TOOLS)` that
+  returns new `StructuredTool` copies so the originals are unaffected;
+  Session 16.15: +10 for `web/share.py` read-only
   share-link tokens (HMAC over `(user_id, created_at)`, idempotent, sanitized
   public view) surfaced via `POST /trip/share` + `GET /trip/shared/{token}`
   and a "Share" pill next to "Add to calendar" in `TripPanel.tsx`;
