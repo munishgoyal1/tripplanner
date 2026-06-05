@@ -186,7 +186,10 @@ Learns from user preferences and past trips.
   rating pills, "In trip" ribbons, and a magazine-style hero summary on the
   trip panel. Reusable component classes (`.card`, `.btn-primary`,
   `.btn-ghost`, `.pill`, `.chip`, `.display`) live in
-  `frontend/src/index.css`.
+  `frontend/src/index.css`. On mobile (`<768px`) the right-rail trip panel
+  becomes a fixed bottom-sheet (88vh, slide-up, scrim) toggled by a floating
+  "Trip details" pill in the bottom-right; the sheet auto-closes when the
+  viewport crosses back to desktop and on Escape.
 - **Decoupled trip view-model (frontend-agnostic)**: data shaping lives in
   pure-Python `web/trip_view.py` (ZERO UI imports) — `build_view(trip, focus)
   -> dict` is the single JSON view-model contract, served by the `GET /trip/view`

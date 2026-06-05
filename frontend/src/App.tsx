@@ -119,6 +119,34 @@ export default function App() {
     if (!focus) setNavList(next.items.map((it) => ({ kind: it.kind, name: it.name })));
   };
 
+  // --- mobile bottom-sheet for the trip panel -------------------------------
+  const [mobileTripOpen, setMobileTripOpen] = useState(false);
+  // Auto-close the sheet when we cross into desktop layout.
+  useEffect(() => {
+    if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
+  }, [isDesktop, mobileTripOpen]);
+  // Close on Escape so keyboard users can dismiss.
+  useEffect(() => {
+    if (!mobileTripOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileTripOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileTripOpen]);
+
+  const tripPanelProps = {
+    view,
+    loading,
+    navList,
+    focusIndex,
+    onFocus: handleFocus,
+    onClearFocus: handleClearFocus,
+    onStep: handleStep,
+    onSelect: handleSelect,
+    onDeselect: handleDeselect,
+  };
+
   return (
     <div ref={containerRef} className="flex h-screen bg-surface">
       <section
@@ -137,18 +165,60 @@ export default function App() {
       </div>
 
       <aside className="hidden min-w-0 flex-1 md:block">
-        <TripPanel
-          view={view}
-          loading={loading}
-          navList={navList}
-          focusIndex={focusIndex}
-          onFocus={handleFocus}
-          onClearFocus={handleClearFocus}
-          onStep={handleStep}
-          onSelect={handleSelect}
-          onDeselect={handleDeselect}
-        />
+        <TripPanel {...tripPanelProps} />
       </aside>
+
+      {/* Mobile-only: floating button + bottom-sheet for the trip panel. */}
+      {!isDesktop && view?.has_trip && !mobileTripOpen && (
+        <button
+          type="button"
+          onClick={() => setMobileTripOpen(true)}
+          aria-label="Open trip details"
+          className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-pop ring-1 ring-black/10 transition active:scale-95 md:hidden"
+        >
+          <span>{"\uD83E\uDDF3"}</span>
+          <span>Trip details</span>
+        </button>
+      )}
+      {!isDesktop && (
+        <>
+          <div
+            onClick={() => setMobileTripOpen(false)}
+            aria-hidden={!mobileTripOpen}
+            className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity md:hidden ${
+              mobileTripOpen ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+          />
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-label="Trip details"
+            className={`fixed inset-x-0 bottom-0 z-50 flex h-[88vh] flex-col rounded-t-3xl bg-surface shadow-pop transition-transform duration-300 md:hidden ${
+              mobileTripOpen ? "translate-y-0" : "translate-y-full"
+            }`}
+          >
+            <div className="flex items-center justify-between px-4 pt-2 pb-1">
+              <button
+                type="button"
+                onClick={() => setMobileTripOpen(false)}
+                aria-label="Close trip details"
+                className="-ml-2 grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
+              >
+                <span className="text-xl leading-none">×</span>
+              </button>
+              <div
+                onClick={() => setMobileTripOpen(false)}
+                className="mx-auto -ml-10 h-1.5 w-12 cursor-pointer rounded-full bg-slate-300"
+                aria-hidden
+              />
+              <span className="w-10" aria-hidden />
+            </div>
+            <div className="min-h-0 flex-1">
+              <TripPanel {...tripPanelProps} />
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }

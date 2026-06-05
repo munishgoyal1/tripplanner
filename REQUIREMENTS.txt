@@ -790,3 +790,17 @@ TEST RESULTS: 219 tests pass.
 # - TripPanel hero adds a 'Share' pill next to 'Add to calendar' that
 #   mints the token, copies the URL to clipboard, and shows feedback.
 # - +10 tests (tests/test_share.py). Total: 274.
+
+# Session 16.16 (2026-06-05): mobile bottom-sheet for TripPanel (#6.4).
+# - On viewports <768px the right-rail trip panel is hidden and a fixed
+#   bottom-right floating button ('Trip details') opens a bottom-sheet
+#   (88vh, rounded-t-3xl, scrim, slide-up animation) that mounts the
+#   SAME TripPanel component (no duplicated UI).
+# - Sheet closes via the close button, the swipe handle, tapping the
+#   scrim, or Escape. It auto-closes when the viewport widens past
+#   md so we never end up with both layouts mounted.
+# - Floating button only renders when there is an active trip, so it
+#   doesn't get in the user's way during the planning phase.
+# - Pure additive change in frontend/src/App.tsx; TripPanel itself
+#   was not modified.
+# - No new tests (UI-only).
