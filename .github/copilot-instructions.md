@@ -133,7 +133,8 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 225 tests all passing (Session 16.8: +2 for `record_trip_postmortem`
+- 230 tests all passing (Session 16.9: +5 for `_summarize_tool_input` SSE
+  tool-arg preview helper used by `/chat/stream`; Session 16.8: +2 for `record_trip_postmortem`
   structured post-mortem; Session 16.7: +4 for `trip_view.family_pills`
   family-fit pills; Session 16.6: +8 for `tools/memory_recall.py` BM25-lite
   recall; Session 16.5: +5 for `tools/events.py` local events;

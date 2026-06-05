@@ -732,3 +732,9 @@ TEST RESULTS: 219 tests pass.
 - Wrapped as @tool record_trip_postmortem(destination, rating, what_worked, what_didnt, dates) — semicolon-separated bullets. Wired into TRIP_TOOLS (10 preference/learning tools, 33 total).
 - Agent prompt STEP 7b nudges the model to call record_trip_postmortem whenever the user reports back on a completed trip.
 - Tests: +2 covering update of an existing past_trip (rating + bullets + learned_notes surfacing) and append-when-no-match path. 225 total.
+
+[Session 16.9 - 2026-06-05] Milestone #5.1: SSE tool-progress streaming, enriched.
+- Backend /chat/stream now annotates each on_tool_start SSE event with a one-line args preview (key=value pairs, per-value 40-char cap, overall 160-char cap) and emits duration_ms on on_tool_end.
+- New helper api._summarize_tool_input(raw, max_len) keeps the wire payload small while staying chatty — UI shows "running search_hotels(city=Paris, nights=5)..." instead of just the tool name.
+- Frontend api.ts StreamHandlers.onTool gained an extras param (args, duration_ms); ChatPanel persists a per-message tool_trace [{name, args, duration_ms}] and tooltips/inline-tags each tool chip with its duration.
+- Tests: +5 in test_sse_tool_summary.py covering None, dict, {"input":...} wrapper unwrap, truncation, and list values. Total 230.

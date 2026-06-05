@@ -47,10 +47,17 @@ export interface TripView {
 
 export type ChatRole = "user" | "assistant";
 
+export interface ToolTraceEntry {
+  name: string;
+  args?: string;
+  duration_ms?: number;
+}
+
 export interface ChatMessage {
   role: ChatRole;
   text: string;
   tools?: string[];
+  tool_trace?: ToolTraceEntry[];
 }
 
 export interface KeyAttraction {

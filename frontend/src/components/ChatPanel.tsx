@@ -27,7 +27,7 @@ export default function ChatPanel({ onTurnComplete }: Props) {
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [nameInput, setNameInput] = useState(getDisplayName());
@@ -66,6 +66,7 @@ export default function ChatPanel({ onTurnComplete }: Props) {
     ]);
 
     const usedTools = new Set<string>();
+    const toolTrace: { name: string; args?: string; duration_ms?: number }[] = [];
     await streamChat(outgoing, {
       onToken: (t) =>
         setMessages((m) => {
@@ -76,11 +77,20 @@ export default function ChatPanel({ onTurnComplete }: Props) {
           };
           return copy;
         }),
-      onTool: (name, phase) => {
+      onTool: (name, phase, extras) => {
         if (phase === "start") {
           usedTools.add(name);
-          setActiveTool(name);
+          toolTrace.push({ name, args: extras?.args });
+          setActiveTool({ name, args: extras?.args });
         } else {
+          // Attach the duration to the most recent matching start entry that
+          // doesn't already have one.
+          for (let i = toolTrace.length - 1; i >= 0; i--) {
+            if (toolTrace[i].name === name && toolTrace[i].duration_ms === undefined) {
+              toolTrace[i].duration_ms = extras?.duration_ms;
+              break;
+            }
+          }
           setActiveTool(null);
         }
       },
@@ -91,6 +101,7 @@ export default function ChatPanel({ onTurnComplete }: Props) {
           copy[copy.length - 1] = {
             ...copy[copy.length - 1],
             tools: Array.from(usedTools),
+            tool_trace: toolTrace.slice(),
           };
           return copy;
         });
@@ -269,18 +280,34 @@ export default function ChatPanel({ onTurnComplete }: Props) {
               {m.text || (busy && i === messages.length - 1 ? "…" : "")}
               {m.tools && m.tools.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {m.tools.map((t) => (
-                    <span
-                      key={t}
-                      className={`rounded-full px-2 py-0.5 text-[10px] ${
-                        m.role === "user"
-                          ? "bg-white/20 text-white/90"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {t}
-                    </span>
-                  ))}
+                  {m.tools.map((t) => {
+                    const trace = m.tool_trace?.find((x) => x.name === t);
+                    const tip = trace?.args
+                      ? trace.duration_ms !== undefined
+                        ? `${trace.args} · ${trace.duration_ms}ms`
+                        : trace.args
+                      : trace?.duration_ms !== undefined
+                        ? `${trace.duration_ms}ms`
+                        : undefined;
+                    return (
+                      <span
+                        key={t}
+                        title={tip}
+                        className={`rounded-full px-2 py-0.5 text-[10px] ${
+                          m.role === "user"
+                            ? "bg-white/20 text-white/90"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {t}
+                        {trace?.duration_ms !== undefined && (
+                          <span className="ml-1 text-slate-400">
+                            {trace.duration_ms}ms
+                          </span>
+                        )}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -289,7 +316,13 @@ export default function ChatPanel({ onTurnComplete }: Props) {
         {activeTool && (
           <div className="flex items-center gap-2 text-xs text-muted">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
-            running {activeTool}…
+            <span>
+              running <span className="font-medium text-ink">{activeTool.name}</span>
+              {activeTool.args ? (
+                <span className="text-muted/80">({activeTool.args})</span>
+              ) : null}
+              …
+            </span>
           </div>
         )}
         <div ref={endRef} />

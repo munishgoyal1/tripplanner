@@ -100,9 +100,14 @@ export async function logoutGoogle(): Promise<void> {
   signOut();
 }
 
+export interface ToolEventExtras {
+  args?: string;
+  duration_ms?: number;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
-  onTool: (name: string, phase: "start" | "end") => void;
+  onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
   onDone: (reply: string) => void;
   onError: (message: string) => void;
 }
@@ -160,7 +165,10 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
       h.onToken(data.text ?? "");
       break;
     case "tool":
-      h.onTool(data.name ?? "", data.phase ?? "start");
+      h.onTool(data.name ?? "", data.phase ?? "start", {
+        args: typeof data.args === "string" ? data.args : undefined,
+        duration_ms: typeof data.duration_ms === "number" ? data.duration_ms : undefined,
+      });
       break;
     case "done":
       h.onDone(data.reply ?? "");

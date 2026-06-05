@@ -26,6 +26,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import time
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -154,6 +155,36 @@ def _sse(event: str, data: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+def _summarize_tool_input(raw: Any, max_len: int = 160) -> str:
+    """Render a one-line preview of a tool's input for the SSE 'tool' event.
+
+    Keeps the panel chatty ("running search_hotels(city='Paris', nights=5)...")
+    without flooding the wire with the full payload.
+    """
+    if raw is None:
+        return ""
+    payload = raw.get("input") if isinstance(raw, dict) and "input" in raw else raw
+    if isinstance(payload, dict):
+        parts = []
+        for k, v in payload.items():
+            if isinstance(v, (list, tuple, dict)):
+                vs = json.dumps(v, ensure_ascii=False, default=str)
+            else:
+                vs = str(v)
+            if len(vs) > 40:
+                vs = vs[:37] + "..."
+            parts.append(f"{k}={vs}")
+        text = ", ".join(parts)
+    else:
+        try:
+            text = json.dumps(payload, ensure_ascii=False, default=str)
+        except Exception:
+            text = str(payload)
+    if len(text) > max_len:
+        text = text[: max_len - 1] + "\u2026"
+    return text
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest) -> StreamingResponse:
     """Stream the agent turn as Server-Sent Events.
@@ -172,12 +203,14 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 
     async def gen():
         reply_parts: list[str] = []
+        tool_starts: dict[str, float] = {}
         try:
             async for ev in app_graph.astream_events(
                 {"messages": history, "current_agent": ""}, version="v2"
             ):
                 kind = ev.get("event")
                 name = ev.get("name", "")
+                run_id = ev.get("run_id", "")
                 data = ev.get("data", {}) or {}
                 if kind == "on_chat_model_stream":
                     chunk = data.get("chunk")
@@ -186,9 +219,20 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                         reply_parts.append(text)
                         yield _sse("token", {"text": text})
                 elif kind == "on_tool_start":
-                    yield _sse("tool", {"name": name, "phase": "start"})
+                    tool_starts[run_id] = time.monotonic()
+                    args_preview = _summarize_tool_input(data.get("input"))
+                    yield _sse("tool", {
+                        "name": name,
+                        "phase": "start",
+                        "args": args_preview,
+                    })
                 elif kind == "on_tool_end":
-                    yield _sse("tool", {"name": name, "phase": "end"})
+                    started = tool_starts.pop(run_id, None)
+                    duration_ms = int((time.monotonic() - started) * 1000) if started else None
+                    payload: dict[str, Any] = {"name": name, "phase": "end"}
+                    if duration_ms is not None:
+                        payload["duration_ms"] = duration_ms
+                    yield _sse("tool", payload)
         except Exception as exc:  # surface a clean error to the client
             app_event("api_chat_stream_error", error=type(exc).__name__)
             yield _sse("error", {"message": "The assistant hit an error. Please retry."})
