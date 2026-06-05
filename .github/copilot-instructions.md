@@ -133,7 +133,9 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 233 tests all passing (Session 16.10: +3 for explicit `parallel_tool_calls=True`
+- 243 tests all passing (Session 16.11: +10 for `finalize_critic` deterministic
+  self-correction rules surfaced as a "Heads up" block in `finalize_trip`;
+  Session 16.10: +3 for explicit `parallel_tool_calls=True`
   guard + concurrent ToolNode execution check; Session 16.9: +5 for `_summarize_tool_input` SSE
   tool-arg preview helper used by `/chat/stream`; Session 16.8: +2 for `record_trip_postmortem`
   structured post-mortem; Session 16.7: +4 for `trip_view.family_pills`

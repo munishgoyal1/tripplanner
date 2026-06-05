@@ -742,3 +742,9 @@ TEST RESULTS: 219 tests pass.
 [Session 16.10 - 2026-06-05] Milestone #5.2: Explicit parallel tool calls.
 - graph.py trip_agent now calls bind_tools(TRIP_TOOLS, parallel_tool_calls=True) so the model emits independent calls in one turn and LangGraph's ToolNode dispatches them concurrently.
 - Tests: +3 in test_parallel_tools.py — three 300ms sleep-tools complete in <0.7s when fired in one AIMessage (proves parallel), single-call regression guard, and a source-level guard that fails if parallel_tool_calls=True is ever removed from trip_agent. Total 233.
+
+[Session 16.11 - 2026-06-05] Milestone #5.3: Self-correction critic on finalize_trip.
+- New module tools/finalize_critic.py runs deterministic rules over the finalized plan + saved preferences and returns a short list of "heads up" bullets — zero LLM cost, instant, easy to extend.
+- Rules: return-before-departure, hotel city mismatch with destination, missing flight on multi-day trip, kids on trip but no kid-friendly activity, mobility/accessibility need not reflected in any selection, dietary needs absent from day-wise itinerary, and previously-disliked aspect (from learned_notes "Disliked on X trip: Y") still present.
+- trip_planner.finalize_trip appends a "HEADS UP — quick sanity checks before you book" block when any rule fires; clean plans get nothing extra.
+- Tests: +10 in test_finalize_critic.py covering clean plans, each rule, and empty input. Total 243.

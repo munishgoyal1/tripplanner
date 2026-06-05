@@ -18,6 +18,7 @@ from typing import Any
 from langchain_core.tools import tool
 
 from multiagent import storage_cosmos
+from multiagent.tools.finalize_critic import critique as _critique_finalized
 from multiagent.tools.user_preferences import add_past_trip, load_preferences
 from multiagent.user_context import get_user_id
 
@@ -320,6 +321,18 @@ def finalize_trip() -> str:
     lines.append("  Status: FINALIZED — ready for booking")
     lines.append("  Say 'execute' to proceed with bookings.")
     lines.append(f"{'='*60}")
+
+    # Self-correction critic — deterministic rules over the finalized plan.
+    try:
+        prefs = load_preferences()
+    except Exception:
+        prefs = {}
+    heads_up = _critique_finalized(plan, prefs)
+    if heads_up:
+        lines.append("")
+        lines.append("  HEADS UP — quick sanity checks before you book:")
+        for item in heads_up:
+            lines.append(f"    • {item}")
 
     return "\n".join(lines)
 
