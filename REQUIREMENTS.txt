@@ -773,3 +773,20 @@ TEST RESULTS: 219 tests pass.
 # - frontend api.ts: tripIcsUrl() helper.
 # - TripPanel hero: 'Add to calendar' pill links to the .ics download.
 # - +6 tests (tests/test_ics_export.py). Total: 264.
+
+# Session 16.15 (2026-06-05): read-only share-link route (#6.3).
+# - New web/share.py: HMAC-signed opaque tokens bind (owner_user_id,
+#   trip_created_at). Idempotent (same trip -> same token), unguessable
+#   without WEB_SESSION_SECRET. Owner can revoke by rotating the secret.
+# - Token format: v1.<b64u(payload)>.<b64u(hmac-sha256)>. Stateless;
+#   no Cosmos write at mint time. Resolves to active trip first, then
+#   the trips archive (Cosmos query or local user dir).
+# - sanitize_plan() strips private fields (e.g. agent_scratchpad) and
+#   only emits a public whitelist of keys.
+# - New POST /trip/share endpoint mints tokens for the active plan.
+# - New GET /trip/shared/{token} serves the sanitized plan publicly
+#   (no auth). Returns 404 for invalid/expired tokens.
+# - frontend api.ts: shareActiveTrip() returns absolute URL.
+# - TripPanel hero adds a 'Share' pill next to 'Add to calendar' that
+#   mints the token, copies the URL to clipboard, and shows feedback.
+# - +10 tests (tests/test_share.py). Total: 274.

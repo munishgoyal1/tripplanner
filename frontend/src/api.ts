@@ -218,6 +218,24 @@ export function tripIcsUrl(): string {
   return `${BASE}/trip/export.ics?${params.toString()}`;
 }
 
+/**
+ * Mint a read-only share token for the active trip. Returns the absolute URL
+ * (origin + path) that anyone can open without logging in. Throws on failure.
+ */
+export async function shareActiveTrip(): Promise<string> {
+  const res = await fetch(`${BASE}/trip/share`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId(), kind: "share", name: "share" }),
+  });
+  const json = await res.json();
+  if (json.error || !json.token) {
+    throw new Error(json.error || "could not mint share link");
+  }
+  // The API returns a path; turn it into an absolute, copy-friendly URL.
+  return `${window.location.origin}${json.url}`;
+}
+
 export interface Preferences {
   display_name: string;
   home_city: string;

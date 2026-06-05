@@ -133,7 +133,11 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 264 tests all passing (Session 16.14: +6 for `web/ics_export.py`
+- 274 tests all passing (Session 16.15: +10 for `web/share.py` read-only
+  share-link tokens (HMAC over `(user_id, created_at)`, idempotent, sanitized
+  public view) surfaced via `POST /trip/share` + `GET /trip/shared/{token}`
+  and a "Share" pill next to "Add to calendar" in `TripPanel.tsx`;
+  Session 16.14: +6 for `web/ics_export.py`
   RFC 5545 VCALENDAR builder surfaced via `GET /trip/export.ics` and the
   "Add to calendar" link in `TripPanel.tsx`; Session 16.13: +6 for `build_map_url` Google Maps Embed
   URL builder surfaced via `destination_overview.map_url` and rendered as an

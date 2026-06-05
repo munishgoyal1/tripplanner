@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tripIcsUrl } from "../api";
+import { shareActiveTrip, tripIcsUrl } from "../api";
 import type { TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
 import Lightbox from "./Lightbox";
@@ -253,6 +253,24 @@ export default function TripPanel({
   });
   const openPhoto = (photos: string[], index: number, alt: string) =>
     setLb({ photos, index, alt });
+  const [shareState, setShareState] = useState<{ url: string; copied: boolean } | null>(
+    null,
+  );
+  const onShare = async () => {
+    try {
+      const url = await shareActiveTrip();
+      let copied = false;
+      try {
+        await navigator.clipboard.writeText(url);
+        copied = true;
+      } catch {
+        // Clipboard may be blocked (non-HTTPS, permissions) — still show the URL.
+      }
+      setShareState({ url, copied });
+    } catch (err) {
+      setShareState({ url: String((err as Error).message || err), copied: false });
+    }
+  };
 
   if (loading && !view) {
     return (
@@ -333,15 +351,35 @@ export default function TripPanel({
               <h2 className="display text-2xl font-semibold leading-tight">
                 {view.title}
               </h2>
-              <a
-                href={tripIcsUrl()}
-                download
-                title="Download .ics for your calendar"
-                className="pill mt-1 shrink-0 bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
-              >
-                <span>{"\uD83D\uDCC5"}</span>
-                <span>Add to calendar</span>
-              </a>
+              <div className="mt-1 flex shrink-0 flex-col items-end gap-1.5">
+                <div className="flex flex-wrap items-center justify-end gap-1.5">
+                  <button
+                    type="button"
+                    onClick={onShare}
+                    title="Get a read-only share link anyone can open"
+                    className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
+                  >
+                    <span>{"\uD83D\uDD17"}</span>
+                    <span>Share</span>
+                  </button>
+                  <a
+                    href={tripIcsUrl()}
+                    download
+                    title="Download .ics for your calendar"
+                    className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
+                  >
+                    <span>{"\uD83D\uDCC5"}</span>
+                    <span>Add to calendar</span>
+                  </a>
+                </div>
+                {shareState && (
+                  <div className="max-w-[18rem] truncate rounded-xl bg-white/10 px-2.5 py-1 text-[10px] text-white/85 ring-1 ring-white/20">
+                    {shareState.copied
+                      ? "Link copied to clipboard"
+                      : shareState.url}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-sm">

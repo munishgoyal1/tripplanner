@@ -90,7 +90,7 @@ scripts/
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
   test.ps1            Legacy (Chainlit era) — do not use
-tests/                pytest (264 tests, ~5s)
+tests/                pytest (274 tests, ~5s)
 docs/
   CODEMAP.md          This file
   dev.md              Dev environment notes
@@ -161,7 +161,7 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 - **`tsconfig.tsbuildinfo`** is a build artifact (in `frontend/.gitignore`).
   If tsc behaves weirdly after big edits, delete it and re-run.
 
-## 8) Tests (264 passing)
+## 8) Tests (274 passing)
 
 - [tests/test_trip.py](../tests/test_trip.py) — trip lifecycle + selection.
 - [tests/test_trip_view.py](../tests/test_trip_view.py) — view-model shape.

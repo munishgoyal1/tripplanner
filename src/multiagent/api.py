@@ -331,6 +331,36 @@ async def trip_export_ics(user_id: str = "local") -> Response:
     )
 
 
+@app.post("/trip/share")
+async def trip_share(req: SelectRequest) -> dict:
+    """Mint an opaque read-only share token for the active trip.
+
+    Re-using ``SelectRequest`` only for its ``user_id`` field — ``kind``/``name``
+    are ignored. Returns ``{token, url}`` or ``{error}`` if no active plan.
+    """
+    from multiagent.user_context import set_user_id
+    from multiagent.web.share import mint_for_active_trip
+
+    set_user_id(req.user_id)
+    token = mint_for_active_trip()
+    if not token:
+        return {"error": "no active trip to share"}
+    return {"token": token, "url": f"/trip/shared/{token}"}
+
+
+@app.get("/trip/shared/{token}")
+async def trip_shared_view(token: str) -> dict:
+    """Public read-only view of a shared trip plan. No auth required."""
+    from multiagent.web.share import resolve
+
+    plan = resolve(token)
+    if plan is None:
+        return JSONResponse(
+            {"error": "invalid or expired share link"}, status_code=404
+        )
+    return {"plan": plan}
+
+
 @app.get("/preferences")
 async def get_preferences(user_id: str = "local") -> dict:
     """Return the editable subset of the user's saved preferences (for the
