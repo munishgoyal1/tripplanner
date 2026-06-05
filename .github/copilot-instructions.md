@@ -133,7 +133,21 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 307 tests all passing (Session 16.20: +16 for
+- 322 tests all passing (Session 16.21: +15 for
+  `usage.py` per-user monthly LLM cost cap — a LangChain
+  `BaseCallbackHandler` attached to the Azure chat model in `graph.py`
+  reads `LLMResult.llm_output['token_usage']` on every completion and
+  feeds it to `usage.record_usage(user_id, model, prompt_tokens,
+  completion_tokens)`; cost is computed against a small prefix-keyed
+  rate table (gpt-5/4.1/4.1-mini/4o/4o-mini/4/3.5) and added to a
+  monthly bucket keyed `(user_id, YYYYMM)`; persisted to Cosmos doc id
+  `usage_<YYYYMM>` in the `users` container when enabled, else to
+  `~/.multiagent/usage/<user_id>_<YYYYMM>.json`; both `/chat` and
+  `/chat/stream` run `is_over_cap(user_id)` first and short-circuit
+  with a polite refusal (agent name `"cap"`) when the bucket meets or
+  exceeds `MONTHLY_LLM_COST_CAP_USD` (env, default $20; `<= 0`
+  disables); `GET /usage?user_id=<id>` exposes the live bucket and
+  cap; Session 16.20: +16 for
   `hallucination_critic.py` deterministic fact-check on the agent's final
   reply — scans for cited prices (currency-symbol or ISO code),
   clock times (12h/24h), and URLs, then verifies each appears verbatim in

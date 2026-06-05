@@ -7,8 +7,9 @@ Single-agent graph focused on trip planning with tool-calling loop:
 from __future__ import annotations
 
 import operator
-from typing import Annotated, TypedDict
+from typing import Annotated, Any, TypedDict
 
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
@@ -17,6 +18,8 @@ from langgraph.prebuilt import ToolNode
 from multiagent.agents.trip_agent import TRIP_TOOLS, build_trip_system_prompt
 from multiagent.config import get_settings
 from multiagent.tools_cache import wrap_tools_with_cache
+from multiagent.usage import record_usage
+from multiagent.user_context import get_user_id
 
 
 # ---------------------------------------------------------------------------
@@ -30,6 +33,35 @@ class AgentState(TypedDict):
 # ---------------------------------------------------------------------------
 # LLM
 # ---------------------------------------------------------------------------
+class _UsageCallback(BaseCallbackHandler):
+    """Record per-user LLM token usage after every chat completion.
+
+    Pulls ``token_usage`` out of ``LLMResult.llm_output`` (Azure OpenAI puts it
+    there) and feeds it to :mod:`multiagent.usage`, which handles the monthly
+    cost bucket and persistence.
+    """
+
+    def __init__(self, model: str) -> None:
+        self._model = model
+
+    def on_llm_end(self, response: Any, **_: Any) -> None:  # noqa: D401
+        try:
+            usage = (response.llm_output or {}).get("token_usage") or {}
+            prompt = int(usage.get("prompt_tokens") or 0)
+            completion = int(usage.get("completion_tokens") or 0)
+            if prompt == 0 and completion == 0:
+                return
+            record_usage(
+                get_user_id() or "local",
+                model=self._model,
+                prompt_tokens=prompt,
+                completion_tokens=completion,
+            )
+        except Exception:
+            # Accounting must never break a turn.
+            pass
+
+
 def _get_llm() -> AzureChatOpenAI:
     s = get_settings()
     return AzureChatOpenAI(
@@ -42,6 +74,7 @@ def _get_llm() -> AzureChatOpenAI:
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
         streaming=True,
+        callbacks=[_UsageCallback(s.azure_openai_deployment)],
     )
 
 

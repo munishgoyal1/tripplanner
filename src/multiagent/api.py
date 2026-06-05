@@ -130,10 +130,17 @@ class PreferencesRequest(BaseModel):
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest) -> ChatResponse:
     from multiagent.graph import app_graph
+    from multiagent.usage import cap_message, is_over_cap
     from multiagent.user_context import set_user_id
 
     set_user_id(req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
+
+    over, usage = is_over_cap(req.user_id)
+    if over:
+        msg = cap_message(usage)
+        app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
+        return ChatResponse(reply=msg, agent="cap")
 
     history = _history(req.user_id)
     history.append(HumanMessage(content=req.message))
@@ -202,10 +209,23 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
     tool-progress over a plain HTTP stream.
     """
     from multiagent.graph import app_graph
+    from multiagent.usage import cap_message, is_over_cap
     from multiagent.user_context import set_user_id
 
     set_user_id(req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
+
+    over, usage = is_over_cap(req.user_id)
+    if over:
+        msg = cap_message(usage)
+        app_event("api_chat_stream_capped", cost_usd=usage.get("cost_usd"))
+
+        async def _capped():
+            yield _sse("token", {"text": msg})
+            yield _sse("done", {"reply": msg, "agent": "cap"})
+
+        return StreamingResponse(_capped(), media_type="text/event-stream")
+
     history = _history(req.user_id)
     history.append(HumanMessage(content=req.message))
 
@@ -606,6 +626,24 @@ async def metrics_tools() -> dict:
     from multiagent.observability import tool_metrics_snapshot
 
     return {"tools": tool_metrics_snapshot()}
+
+
+@app.get("/usage")
+async def usage_for_user(user_id: str = "local") -> dict:
+    """Return this month's LLM token + cost usage for ``user_id`` and the cap."""
+    from multiagent.usage import get_cap_usd, get_usage, is_over_cap
+
+    over, doc = is_over_cap(user_id)
+    return {
+        "user_id": user_id,
+        "month": doc.get("month"),
+        "prompt_tokens": doc.get("prompt_tokens", 0),
+        "completion_tokens": doc.get("completion_tokens", 0),
+        "calls": doc.get("calls", 0),
+        "cost_usd": round(float(doc.get("cost_usd", 0.0)), 4),
+        "cap_usd": get_cap_usd(),
+        "over_cap": over,
+    }
 
 
 # ---------------------------------------------------------------------------

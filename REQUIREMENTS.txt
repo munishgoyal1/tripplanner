@@ -873,3 +873,25 @@ TEST RESULTS: 219 tests pass.
 #   inline). app_event('hallucination_critic', issues=N) is emitted
 #   whenever the footer fires.
 # - +16 tests. Total: 307.
+
+# Session 16.21 (2026-06-05): per-user monthly LLM cost cap (#7.4).
+# - New src/multiagent/usage.py tracks token usage per (user_id, YYYYMM)
+#   and refuses new turns once the running cost crosses
+#   MONTHLY_LLM_COST_CAP_USD (env, default \; <= 0 disables the cap).
+# - Tokens come from a LangChain BaseCallbackHandler attached to the
+#   Azure chat model in graph.py: on_llm_end reads
+#   LLMResult.llm_output['token_usage'] and feeds prompt+completion
+#   counts to usage.record_usage.
+# - Cost is computed against a small prefix-keyed rate table
+#   (gpt-5 / 4.1 / 4.1-mini / 4o / 4o-mini / 4 / 3.5); unknown models
+#   fall back to a conservative default so the meter never lies.
+# - Persistence: Cosmos doc id usage_<YYYYMM> in the users container
+#   (PK /user_id) when storage_cosmos.is_enabled(), else
+#   ~/.multiagent/usage/<user_id>_<YYYYMM>.json (honours MULTIAGENT_HOME
+#   for test isolation).
+# - /chat and /chat/stream call is_over_cap(user_id) first; when over,
+#   short-circuit with a polite refusal (agent='cap'). The stream
+#   endpoint emits the same refusal as a 'token' SSE then 'done', so
+#   the SPA renders it without special-casing.
+# - New GET /usage?user_id=<id> returns the running bucket plus the cap.
+# - +15 tests. Total: 322.
