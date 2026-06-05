@@ -133,7 +133,15 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 291 tests all passing (Session 16.19: +7 for per-tool latency + error
+- 307 tests all passing (Session 16.20: +16 for
+  `hallucination_critic.py` deterministic fact-check on the agent's final
+  reply — scans for cited prices (currency-symbol or ISO code),
+  clock times (12h/24h), and URLs, then verifies each appears verbatim in
+  some tool message from the same turn; unverified claims become a
+  "Heads up — please double-check:" footer appended to the reply; wired
+  into both `/chat` and `/chat/stream` (streaming endpoint captures tool
+  outputs via `on_tool_end` events as a synthetic `ToolMessage` list);
+  Session 16.19: +7 for per-tool latency + error
   metrics in `observability.py` (`record_tool_call`,
   `tool_metrics_snapshot`, `reset_tool_metrics`) and a `GET /metrics/tools`
   endpoint; cache wrapper in `tools_cache.py` now reports each invocation

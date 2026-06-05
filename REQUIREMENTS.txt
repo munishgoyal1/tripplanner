@@ -857,3 +857,19 @@ TEST RESULTS: 219 tests pass.
 #   introspection during a session. Long-horizon data goes to Log
 #   Analytics via the structured 'tool_call' app event each call emits.
 # - +7 tests. Total: 291.
+
+# Session 16.20 (2026-06-05): hallucination critic (#7.3).
+# - New src/multiagent/hallucination_critic.py does a deterministic
+#   fact-check of the agent's final reply. It extracts cited prices
+#   (currency symbols + ISO codes), clock times (12h/24h), and URLs,
+#   then verifies each appears verbatim in some tool message from the
+#   same turn. Anything that doesn't match becomes a 'Heads up' bullet.
+# - critique(text, messages) -> list[str]; format_heads_up(issues) -> ''
+#   or a short markdown block. No LLM call, no fuzzy matching beyond
+#   basic normalisation (lowercase, whitespace, space-after-currency).
+# - Wired into both /chat (post-process result['messages']) and
+#   /chat/stream (captures on_tool_end outputs as synthetic ToolMessages,
+#   appends the footer as a final 'token' SSE so the UI renders it
+#   inline). app_event('hallucination_critic', issues=N) is emitted
+#   whenever the footer fires.
+# - +16 tests. Total: 307.

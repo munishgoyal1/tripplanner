@@ -32,7 +32,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from pydantic import BaseModel
 
 from multiagent import config as _config  # noqa: F401  -- import triggers load_dotenv()
@@ -144,6 +144,14 @@ async def chat(req: ChatRequest) -> ChatResponse:
         if hasattr(msg, "content") and msg.content and msg.type == "ai":
             reply = msg.content
             break
+    # Hallucination critic: append a "Heads up" footer if the agent cited
+    # prices/times/URLs that don't appear in any tool message this turn.
+    from multiagent.hallucination_critic import critique, format_heads_up
+
+    issues = critique(reply, result.get("messages", []))
+    if issues:
+        reply = reply + format_heads_up(issues)
+        app_event("hallucination_critic", issues=len(issues))
     history.append(AIMessage(content=reply))
     _trim(req.user_id)
 
@@ -204,6 +212,9 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
     async def gen():
         reply_parts: list[str] = []
         tool_starts: dict[str, float] = {}
+        # Capture tool message outputs so we can fact-check the agent's final
+        # reply against them (hallucination critic).
+        tool_outputs: list[ToolMessage] = []
         try:
             async for ev in app_graph.astream_events(
                 {"messages": history, "current_agent": ""}, version="v2"
@@ -232,6 +243,18 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                     payload: dict[str, Any] = {"name": name, "phase": "end"}
                     if duration_ms is not None:
                         payload["duration_ms"] = duration_ms
+                    output = data.get("output")
+                    if output is not None:
+                        # ToolNode wraps the result in a ToolMessage; the raw
+                        # @tool may also surface a plain string.
+                        if isinstance(output, str):
+                            tool_outputs.append(ToolMessage(content=output, tool_call_id=name))
+                        else:
+                            content = getattr(output, "content", None)
+                            if content is not None:
+                                tool_outputs.append(
+                                    ToolMessage(content=content, tool_call_id=name)
+                                )
                     yield _sse("tool", payload)
         except Exception as exc:  # surface a clean error to the client
             app_event("api_chat_stream_error", error=type(exc).__name__)
@@ -239,6 +262,16 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             return
 
         reply = "".join(reply_parts)
+        # Hallucination critic: append a "Heads up" footer when the agent
+        # cited prices/times/URLs that aren't in the captured tool outputs.
+        from multiagent.hallucination_critic import critique, format_heads_up
+
+        issues = critique(reply, tool_outputs)
+        if issues:
+            footer = format_heads_up(issues)
+            reply = reply + footer
+            yield _sse("token", {"text": footer})
+            app_event("hallucination_critic", issues=len(issues))
         history.append(AIMessage(content=reply))
         _trim(req.user_id)
         app_event("api_chat_stream_done", reply_length=len(reply))
