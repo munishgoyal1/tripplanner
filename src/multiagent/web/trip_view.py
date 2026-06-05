@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from multiagent.tools import user_preferences
 from multiagent.web import places_cache
 
 _MAX_GALLERY_ITEMS = 6
@@ -50,6 +51,59 @@ def fmt_money(value: Any, symbol: str = "\u20b9") -> str:
     if isinstance(value, (int, float)) and value:
         return f"{symbol}{value:,.0f}"
     return "\u2014"
+
+
+def family_pills(prefs: dict[str, Any] | None) -> list[str]:
+    """Short, render-ready chips summarising who's on the trip.
+
+    Derived from ``family_members``, ``food_preferences.dietary``, and
+    ``accessibility_needs``. The trip agent already uses this same data to
+    bias suggestions; showing the pills makes the bias visible to the user so
+    they can correct it ("Actually we're not vegetarian anymore").
+    """
+    if not prefs:
+        return []
+    out: list[str] = []
+    members = [m for m in (prefs.get("family_members") or []) if isinstance(m, dict)]
+
+    def _age(m: dict[str, Any]) -> float | None:
+        v = m.get("age")
+        return float(v) if isinstance(v, (int, float)) else None
+
+    kid_ages = sorted({int(_age(m)) for m in members if _age(m) is not None and _age(m) < 13})
+    teen_ages = sorted({int(_age(m)) for m in members if _age(m) is not None and 13 <= _age(m) < 18})
+    senior_members = [m for m in members if _age(m) is not None and _age(m) >= 65]
+    pet_members = [m for m in members if (m.get("relationship") or "").lower() in ("pet", "dog", "cat")]
+
+    if kid_ages:
+        out.append("\U0001f476 Kid-friendly (ages " + ",".join(str(a) for a in kid_ages) + ")")
+    if teen_ages:
+        out.append("\U0001f9d2 Teen-friendly (ages " + ",".join(str(a) for a in teen_ages) + ")")
+    if senior_members:
+        mobility = next((str(m.get("mobility") or "").strip() for m in senior_members if (m.get("mobility") or "").strip()), "")
+        label = "\U0001f475 Senior-friendly" + (f" ({mobility})" if mobility else "")
+        out.append(label)
+    if pet_members:
+        out.append("\U0001f43e Pet-friendly")
+
+    diets: set[str] = set()
+    for m in members:
+        d = str(m.get("dietary") or "").strip()
+        if d:
+            diets.add(d.title())
+    for d in (prefs.get("food_preferences", {}) or {}).get("dietary") or []:
+        d = str(d or "").strip()
+        if d:
+            diets.add(d.title())
+    for d in sorted(diets):
+        out.append(f"\U0001f957 {d}")
+
+    for a in (prefs.get("accessibility_needs") or []):
+        a = str(a or "").strip()
+        if a:
+            out.append(f"\u267f {a.title()}")
+
+    return out
 
 
 def itinerary_items(
@@ -116,6 +170,10 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "days": len(trip.get("day_wise_itinerary") or []),
     }
     total = trip.get("total_cost")
+    try:
+        prefs = user_preferences.load_preferences()
+    except Exception:  # pragma: no cover - storage failure shouldn't break the view
+        prefs = None
     return {
         "destination": trip.get("destination") or "",
         "origin": trip.get("origin") or "",
@@ -127,6 +185,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total),
+        "family_pills": family_pills(prefs),
     }
 
 

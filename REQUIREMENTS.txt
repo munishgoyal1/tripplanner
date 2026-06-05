@@ -719,3 +719,9 @@ TESTS: 8 new in tests/test_memory_recall.py
 DOCS: README.md, docs/CODEMAP.md, .github/copilot-instructions.md.
 
 TEST RESULTS: 219 tests pass.
+
+[Session 16.7 - 2026-06-05] Milestone #3.2: Family-aware UI pills.
+- Added trip_view.family_pills(prefs) deriving short chips from family_members (kids <13, teens 13-17, seniors >=65 w/ mobility, pets), food_preferences.dietary, and accessibility_needs.
+- Surfaced as overview.family_pills in /trip/view JSON; rendered as accent chips above the counts row on the React TripPanel so the user can see what bias the agent is applying.
+- Frontend types.ts updated to mirror (family_pills?: string[]).
+- Tests: +4 in test_trip_view.py covering empty prefs, mixed family/diet/accessibility, teen bucket, and surfacing through build_view (total 223).

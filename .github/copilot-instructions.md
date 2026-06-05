@@ -132,7 +132,8 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 219 tests all passing (Session 16.6: +8 for `tools/memory_recall.py` BM25-lite
+- 223 tests all passing (Session 16.7: +4 for `trip_view.family_pills`
+  family-fit pills; Session 16.6: +8 for `tools/memory_recall.py` BM25-lite
   recall; Session 16.5: +5 for `tools/events.py` local events;
   Session 16.4: +6 for `tools/visa.py` visa & entry
   rules; Session 16.3: +10 for `tools/weather.py` Open-Meteo wrapper;
@@ -158,7 +159,11 @@ Learns from user preferences and past trips.
   falls back to the destination's top hotels & attractions
   (`places_cache.top_places`) so it fills during browsing; selected items are
   merged with suggestions and marked "In trip" (Airbnb/TripAdvisor style) so
-  picking one no longer hides the rest.
+  picking one no longer hides the rest. The overview header also surfaces
+  **family-fit pills** (Kid-friendly with ages, Senior-friendly with mobility
+  note, Pet-friendly, Vegetarian/Jain/etc., Wheelchair access) derived
+  server-side from `family_members` + `food_preferences.dietary` +
+  `accessibility_needs` via `trip_view.family_pills(prefs)`.
 - **UI polish (Airbnb/TripAdvisor-style)**: Tailwind theme uses coral `brand`
   (#e11d48) + teal `accent`, Inter for UI + Fraunces for display headings
   (loaded via `<link>` in `frontend/index.html`), `rounded-3xl` cards with

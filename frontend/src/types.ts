@@ -31,6 +31,7 @@ export interface TripOverview {
   counts: { flights: number; hotels: number; activities: number; days: number };
   total_cost: number | null;
   total_cost_display: string;
+  family_pills?: string[];
 }
 
 export interface TripView {

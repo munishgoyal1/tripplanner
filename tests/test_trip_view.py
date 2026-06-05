@@ -52,6 +52,7 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(trip_view.places_cache, "get_photos", fake_photos)
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
     monkeypatch.setattr(trip_view.places_cache, "top_places", fake_top)
+    monkeypatch.setattr(trip_view.user_preferences, "load_preferences", lambda: {})
 
 
 def test_no_trip_returns_empty_state() -> None:
@@ -101,3 +102,50 @@ def test_fmt_money_default_rupee() -> None:
     assert trip_view.fmt_money(82000) == "\u20b982,000"
     assert trip_view.fmt_money(0) == "\u2014"
     assert trip_view.fmt_money(None) == "\u2014"
+
+
+# ---- family_pills ---------------------------------------------------------
+
+
+def test_family_pills_empty_when_no_prefs() -> None:
+    assert trip_view.family_pills(None) == []
+    assert trip_view.family_pills({}) == []
+
+
+def test_family_pills_kids_seniors_pets_diet_accessibility() -> None:
+    prefs = {
+        "family_members": [
+            {"relationship": "spouse", "name": "A", "age": 38, "dietary": "vegetarian"},
+            {"relationship": "daughter", "name": "R", "age": 6},
+            {"relationship": "son", "name": "K", "age": 10},
+            {"relationship": "father", "name": "P", "age": 72, "mobility": "uses walking stick"},
+            {"relationship": "dog", "name": "Bruno"},
+        ],
+        "food_preferences": {"dietary": ["jain"]},
+        "accessibility_needs": ["wheelchair access"],
+    }
+    pills = trip_view.family_pills(prefs)
+    joined = " | ".join(pills)
+    assert "Kid-friendly (ages 6,10)" in joined
+    assert "Senior-friendly" in joined and "uses walking stick" in joined
+    assert "Pet-friendly" in joined
+    assert "Vegetarian" in joined and "Jain" in joined
+    assert "Wheelchair Access" in joined
+
+
+def test_family_pills_teen_bucket() -> None:
+    prefs = {"family_members": [{"relationship": "son", "name": "T", "age": 15}]}
+    pills = trip_view.family_pills(prefs)
+    assert any("Teen-friendly" in p for p in pills)
+    assert not any("Kid-friendly" in p for p in pills)
+
+
+def test_family_pills_surfaced_in_view(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        trip_view.user_preferences,
+        "load_preferences",
+        lambda: {"family_members": [{"relationship": "daughter", "name": "R", "age": 7}]},
+    )
+    view = trip_view.build_view(SAMPLE_TRIP, None)
+    pills = view["overview"]["family_pills"]
+    assert any("Kid-friendly" in p for p in pills)

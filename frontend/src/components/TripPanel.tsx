@@ -396,6 +396,20 @@ export default function TripPanel({
                 </span>
               )}
             </div>
+
+            {ov.family_pills && ov.family_pills.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {ov.family_pills.map((pill) => (
+                  <span
+                    key={pill}
+                    className="chip bg-accent/20 text-white/95 ring-1 ring-white/15"
+                    title="Inferred from your saved family / dietary / accessibility preferences"
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
