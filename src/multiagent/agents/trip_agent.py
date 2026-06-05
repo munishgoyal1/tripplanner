@@ -21,6 +21,7 @@ from multiagent.tools.routing import compute_route, optimize_day_route
 from multiagent.tools.place_hours import check_place_hours
 from multiagent.tools.weather import get_weather_forecast
 from multiagent.tools.visa import check_visa_requirements
+from multiagent.tools.events import find_local_events
 from multiagent.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
@@ -353,6 +354,12 @@ STEP 4 — BUILD ITINERARY
     days). Surface visa-required / visa-on-arrival / e-visa status, the
     typical processing time, and ALWAYS the official-source link from the
     response. Skip for purely domestic trips.
+  - Local events / festivals / holidays: call
+    find_local_events(destination, start, end) once per trip. Flag any festival,
+    parade, marathon, or public holiday overlapping the trip. Reasons:
+      • Holidays may close museums & shift restaurant hours
+      • Festivals may surge hotel prices or be the highlight of the trip
+      • Marathons / parades can break the day's transit plan
   - Which attraction tickets to pre-book
   - Local transport within the destination
   - Cost per day
@@ -547,6 +554,8 @@ TRIP_TOOLS = [
     get_weather_forecast,
     # Visa & entry rules (Tavily-backed, prefers .gov / IATA)
     check_visa_requirements,
+    # Local events / festivals / public holidays (Tavily news)
+    find_local_events,
     # Fresh web content (Tavily)
     web_search,
     # Trip plan management

@@ -664,3 +664,27 @@ TESTS: 6 new in tests/test_visa.py
 DOCS: README.md, docs/CODEMAP.md, .github/copilot-instructions.md.
 
 TEST RESULTS: 206 tests pass.
+
+## Session 16.5 (2026-06-05) — Local events & festivals tool (#2.5)
+
+NEW TOOL: find_local_events(destination, start_date, end_date, kinds="festivals and major events")
+  - Tavily search with topic="news", advanced depth, 8 results, top 5 returned.
+  - Query intentionally broad so a single call surfaces festivals, parades,
+    marathons, exhibitions, sporting events AND public holidays.
+  - Output envelope includes a "note" reminding the agent to verify dates on
+    the organizer's official site before re-planning.
+
+AGENT WIRING:
+  - Imported into trip_agent.py; added to TRIP_TOOLS as a new "Local events" group.
+  - STEP 4 prompt: call once per trip; flag holidays (closures / shifted hours),
+    festivals (price surges or highlights), and parades/marathons (transit risk).
+  - Tool count 30 → 31; family count 8 → 9.
+
+TESTS: 5 new in tests/test_events.py
+  - _build_query coverage, not-configured guard, missing-input guard,
+    structured envelope (verifies query routes through Tavily news topic with
+    advanced depth), error propagation.
+
+DOCS: README.md, docs/CODEMAP.md, .github/copilot-instructions.md.
+
+TEST RESULTS: 211 tests pass.

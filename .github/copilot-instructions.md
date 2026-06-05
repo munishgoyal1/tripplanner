@@ -90,7 +90,7 @@ Learns from user preferences and past trips.
   - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
   - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
-- Single trip planner agent with 30 tools across 8 families:
+- Single trip planner agent with 31 tools across 9 families:
   - Preferences & continuous learning (9):
     - get_travel_preferences, save_travel_preferences, record_past_trip, remember_about_user
     - update_user_profile, add_family_member, add_user_interest, add_user_dislike,
@@ -106,6 +106,8 @@ Learns from user preferences and past trips.
     16-day horizon, seasonal archive proxy beyond)
   - Visa & entry (1): check_visa_requirements (Tavily-backed, biases results
     toward .gov / embassy / IATA TravelCentre; always includes disclaimer)
+  - Local events (1): find_local_events (Tavily news topic; flags festivals,
+    parades, public holidays overlapping the trip dates)
   - Tavily web search (1): web_search
   - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips (Cosmos-aware)
 - Trip plan lifecycle: draft → finalized → booked (with execute command)
@@ -127,7 +129,8 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 206 tests all passing (Session 16.4: +6 for `tools/visa.py` visa & entry
+- 211 tests all passing (Session 16.5: +5 for `tools/events.py` local events;
+  Session 16.4: +6 for `tools/visa.py` visa & entry
   rules; Session 16.3: +10 for `tools/weather.py` Open-Meteo wrapper;
   Session 16.2: +11 for `tools/place_hours.py` opening-hours check;
   Session 16.1: +12 for `tools/routing.py` Google Routes v2 wrapper;
@@ -176,7 +179,7 @@ Learns from user preferences and past trips.
 - `README.md` — architecture (local + hosted), setup, project structure
 - `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
 - `src/multiagent/graph.py` — single-agent tool loop (unchanged for hosted mode)
-- `src/multiagent/agents/trip_agent.py` — trip agent with 30 tools (incl. EXTRACTION CHECKLIST prompt)
+- `src/multiagent/agents/trip_agent.py` — trip agent with 31 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
 - `src/multiagent/web/oauth.py` — standalone Google OAuth (HMAC `mg_session` cookie)
