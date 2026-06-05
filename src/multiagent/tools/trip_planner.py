@@ -19,6 +19,7 @@ from langchain_core.tools import tool
 
 from multiagent import storage_cosmos
 from multiagent.tools.finalize_critic import critique as _critique_finalized
+from multiagent.tools.trip_diff import diff_plans, format_diff
 from multiagent.tools.user_preferences import add_past_trip, load_preferences
 from multiagent.user_context import get_user_id
 
@@ -250,12 +251,19 @@ def update_trip_plan(updates_json: str) -> str:
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin",
     }
+    before = json.loads(json.dumps(plan))  # deep copy for diff
     for key, val in updates.items():
         if key in allowed_keys:
             plan[key] = val
 
     _save_active_trip(plan)
-    return f"Trip plan updated. Status: {plan['status']}"
+    bullets = diff_plans(before, plan)
+    if not bullets:
+        return f"Trip plan updated (no material changes). Status: {plan['status']}"
+    return (
+        f"Trip plan updated. Status: {plan['status']}\n"
+        f"What changed:\n{format_diff(bullets)}"
+    )
 
 
 @tool

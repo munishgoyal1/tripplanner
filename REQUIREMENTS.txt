@@ -748,3 +748,8 @@ TEST RESULTS: 219 tests pass.
 - Rules: return-before-departure, hotel city mismatch with destination, missing flight on multi-day trip, kids on trip but no kid-friendly activity, mobility/accessibility need not reflected in any selection, dietary needs absent from day-wise itinerary, and previously-disliked aspect (from learned_notes "Disliked on X trip: Y") still present.
 - trip_planner.finalize_trip appends a "HEADS UP — quick sanity checks before you book" block when any rule fires; clean plans get nothing extra.
 - Tests: +10 in test_finalize_critic.py covering clean plans, each rule, and empty input. Total 243.
+
+[Session 16.12 - 2026-06-05] Milestone #5.4: Structural trip-plan diff in update_trip_plan.
+- New module tools/trip_diff.py: diff_plans(before, after) returns short bullets — destination/date/origin changes, single-swap detection for hotel/flight/activity, add/remove lists, total-cost delta with signed amount, status transitions.
+- update_trip_plan now returns "Trip plan updated. Status: <s>\nWhat changed:\n  • swapped hotel: 'A' → 'B'\n  • total cost: 50,000 → 75,000 (+25,000)" so the agent (and the user) immediately see what shifted instead of an opaque ack.
+- Tests: +9 in test_trip_diff.py. Total 252.
