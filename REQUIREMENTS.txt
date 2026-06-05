@@ -576,3 +576,34 @@ DOCS UPDATED (same commit):
   "Routing & travel time (2)" family, updated trip_agent.py file pointer.
 
 TEST RESULTS: 179 tests pass (12 new for routing; 1 unrelated Windows file-locking flake on first pass cleared on re-run).
+
+## Session 16.2 (2026-06-05) — Opening-hours / closures check tool (#2.2)
+
+NEW TOOL: check_place_hours(place_id, when_iso?)
+  - Wraps Google Places API New /v1/places/{id} with field mask
+    regularOpeningHours + currentOpeningHours + utcOffsetMinutes + businessStatus.
+  - Returns the weekly schedule (human-readable strings from Google) plus, if a
+    datetime is supplied, an open/closed verdict for that local time at the place.
+  - Handles midnight-crossing periods (Fri 22:00 → Sat 02:00).
+  - Permanent / temporary closures override hour math and emit a warning.
+  - Treats supplied datetime as local time at the place (no tz conversion); the
+    raw utcOffsetMinutes is fetched but not yet exposed since the agent already
+    plans in local time.
+
+AGENT WIRING:
+  - Added to trip_agent.py imports + TRIP_TOOLS (Google Places group).
+  - STEP 4 of system prompt now instructs the agent to call check_place_hours
+    before pinning any museum / monument / restaurant to a specific day & time.
+  - Tool count 27 → 28; family count unchanged (still 6).
+
+TESTS: 11 new in tests/test_place_hours.py
+  - Helper coverage: _parse_when (3 formats + bad), _is_open_at (simple,
+    midnight crossing, missing close = 24/7, empty periods).
+  - @tool coverage: not configured guard, schedule-only response,
+    open/closed verdict on Mon vs Tue, permanent closure warning,
+    invalid when_iso, correct field mask + api key header.
+
+DOCS: README.md capability table, docs/CODEMAP.md tools listing,
+.github/copilot-instructions.md (tool count + new family entry).
+
+TEST RESULTS: 190 tests pass.

@@ -18,6 +18,7 @@ from multiagent.tools.google_places import (
 )
 from multiagent.tools.hotel_search import search_hotels
 from multiagent.tools.routing import compute_route, optimize_day_route
+from multiagent.tools.place_hours import check_place_hours
 from multiagent.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
@@ -334,6 +335,10 @@ STEP 4 — BUILD ITINERARY
   - Use optimize_day_route when the user has a bag of attractions to pack
     into one day and the visit order isn't fixed — it reshuffles intermediate
     stops to minimize total travel time (first + last stay pinned).
+  - Opening hours: before pinning any museum / monument / restaurant to a
+    specific day & time slot, call check_place_hours(place_id, when_iso) —
+    catches "Louvre on Tuesday" or "that bistro is closed Sunday lunch" type
+    mistakes. Skip for hotels and open-air spots.
   - Which attraction tickets to pre-book
   - Local transport within the destination
   - Cost per day
@@ -520,6 +525,7 @@ TRIP_TOOLS = [
     search_places_with_reviews,
     get_place_reviews,
     nearby_restaurants,
+    check_place_hours,
     # Routing & travel time (Google Routes API)
     compute_route,
     optimize_day_route,
