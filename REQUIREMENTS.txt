@@ -804,3 +804,18 @@ TEST RESULTS: 219 tests pass.
 # - Pure additive change in frontend/src/App.tsx; TripPanel itself
 #   was not modified.
 # - No new tests (UI-only).
+
+# Session 16.17 (2026-06-05): voice dictation on chat composer (#6.5).
+# - ChatPanel adds a feature-detected mic button using the Web Speech
+#   API (window.SpeechRecognition || webkitSpeechRecognition). The
+#   button only renders when the browser supports it (Chrome/Edge/
+#   Safari) so unsupported browsers see no broken UI.
+# - Toggle behaviour: first tap starts a continuous recognizer with
+#   interim results; second tap stops it. Interim/final transcripts
+#   are appended to whatever the user has already typed (we snapshot
+#   the existing input before starting so we never wipe it).
+# - Auto-stops on send and on the recognizer's own end/error events,
+#   so the mic never keeps capturing across turns or after a network
+#   blip. Listening state styles the button (pulsing brand color).
+# - Pure additive change in ChatPanel.tsx. No new tests (UI-only,
+#   relies on a browser-only API).

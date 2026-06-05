@@ -37,6 +37,68 @@ export default function ChatPanel({ onTurnComplete }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
+  // --- mic dictation (Web Speech API, Chrome/Edge/Safari) -------------------
+  // Feature-detected at runtime; no SpeechRecognition types in lib.dom yet,
+  // so we keep this loosely typed and guard everywhere.
+  const recognitionRef = useRef<any>(null);
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const SpeechRec =
+    typeof window !== "undefined"
+      ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      : null;
+  const micSupported = Boolean(SpeechRec);
+  const [listening, setListening] = useState(false);
+
+  const stopListening = () => {
+    try {
+      recognitionRef.current?.stop?.();
+    } catch {
+      // already stopped
+    }
+    setListening(false);
+  };
+
+  const toggleListening = () => {
+    if (!micSupported) return;
+    if (listening) {
+      stopListening();
+      return;
+    }
+    try {
+      const r = new SpeechRec();
+      r.continuous = true;
+      r.interimResults = true;
+      r.lang = navigator.language || "en-US";
+      // Snapshot what's already typed so we append rather than replace.
+      const base = inputRef.current ? inputRef.current.trimEnd() + " " : "";
+      let finalText = "";
+      r.onresult = (ev: any) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const chunk = ev.results[i][0].transcript;
+          if (ev.results[i].isFinal) finalText += chunk;
+          else interim += chunk;
+        }
+        setInput((base + finalText + interim).replace(/\s+/g, " ").trimStart());
+      };
+      r.onerror = () => setListening(false);
+      r.onend = () => setListening(false);
+      recognitionRef.current = r;
+      r.start();
+      setListening(true);
+    } catch {
+      setListening(false);
+    }
+  };
+
+  // If the user starts a turn while we're still listening, stop the mic so
+  // it doesn't keep appending speech after the send.
+  useEffect(() => {
+    if (busy && listening) stopListening();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busy]);
+
   // On load, learn whether Google OAuth is available and pick up any existing
   // session (the cookie mirrors its identity into localStorage via syncAuth).
   useEffect(() => {
@@ -51,6 +113,7 @@ export default function ChatPanel({ onTurnComplete }: Props) {
   async function send() {
     const text = input.trim();
     if ((!text && attachments.length === 0) || busy) return;
+    if (listening) stopListening();
     const note =
       attachments.length > 0
         ? `\n\n[attached: ${attachments.join(", ")}]`
@@ -370,6 +433,27 @@ export default function ChatPanel({ onTurnComplete }: Props) {
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
             </svg>
           </button>
+          {micSupported && (
+            <button
+              onClick={toggleListening}
+              disabled={busy}
+              title={listening ? "Stop dictation" : "Start voice dictation"}
+              aria-label={listening ? "Stop dictation" : "Start voice dictation"}
+              aria-pressed={listening}
+              className={`rounded-full p-2.5 ring-1 transition disabled:opacity-40 ${
+                listening
+                  ? "bg-brand text-white ring-brand shadow-pop animate-pulse"
+                  : "text-slate-500 ring-slate-200 hover:bg-slate-50 hover:text-ink"
+              }`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="3" width="6" height="12" rx="3" />
+                <path d="M5 11a7 7 0 0 0 14 0" />
+                <line x1="12" y1="18" x2="12" y2="22" />
+                <line x1="9" y1="22" x2="15" y2="22" />
+              </svg>
+            </button>
+          )}
           <textarea
             className="flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             rows={2}
