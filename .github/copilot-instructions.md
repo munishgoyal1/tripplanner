@@ -133,7 +133,14 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 284 tests all passing (Session 16.18: +10 for `tools_cache.py` read-through
+- 291 tests all passing (Session 16.19: +7 for per-tool latency + error
+  metrics in `observability.py` (`record_tool_call`,
+  `tool_metrics_snapshot`, `reset_tool_metrics`) and a `GET /metrics/tools`
+  endpoint; cache wrapper in `tools_cache.py` now reports each invocation
+  (status=ok|error, cache_hit, ms, error class) so a tool served from cache
+  shows up with cache_hit=True and ~0ms; recent latency window per tool is
+  50 samples used for p50/p95; each call also emits a structured `tool_call`
+  app event for Log Analytics; Session 16.18: +10 for `tools_cache.py` read-through
   cache wrapping every read-only tool — keyed by `(user_id, tool_name,
   canonical_args)`, Cosmos `tool_cache` container when enabled else
   in-process LRU(256) with TTL (30 min default); stateful tools like

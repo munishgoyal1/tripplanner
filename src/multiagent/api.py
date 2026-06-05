@@ -562,6 +562,19 @@ async def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/metrics/tools")
+async def metrics_tools() -> dict:
+    """Return per-tool latency + error + cache-hit counters.
+
+    In-process only — accumulated for the lifetime of the current container.
+    Intended for live introspection during a session; long-horizon data lives
+    in Log Analytics via the structured ``tool_call`` events.
+    """
+    from multiagent.observability import tool_metrics_snapshot
+
+    return {"tools": tool_metrics_snapshot()}
+
+
 # ---------------------------------------------------------------------------
 # Static SPA — serve the built React frontend (frontend/dist) so a single
 # container/origin hosts both the API and the UI. Registered LAST so it never

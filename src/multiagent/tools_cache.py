@@ -220,17 +220,52 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
     tool_name = tool.name
 
     def cached_func(*args: Any, **kwargs: Any) -> Any:
+        # Local import keeps tools_cache importable in test contexts that
+        # haven't initialised logging yet.
+        from multiagent.observability import record_tool_call
+
         # Normalise tool args. LangChain calls the underlying ``func`` with
         # the parsed kwargs from args_schema, so positional args are rare.
         cache_args = dict(kwargs)
         if args:
             cache_args["__pos"] = list(args)
+
+        started = time.time()
+        user_id = get_user_id() or "local"
+
         hit = cache_lookup(tool_name, cache_args)
         if hit is not None:
+            record_tool_call(
+                tool_name,
+                duration_ms=(time.time() - started) * 1000,
+                status="ok",
+                cache_hit=True,
+                user_id=user_id,
+            )
             return hit
-        # Delegate to the original tool — its full invoke pipeline (args
-        # parsing, callbacks, error handling) stays intact.
-        result = original_invoke(kwargs if kwargs else (args[0] if args else {}))
+
+        try:
+            # Delegate to the original tool — its full invoke pipeline (args
+            # parsing, callbacks, error handling) stays intact.
+            result = original_invoke(kwargs if kwargs else (args[0] if args else {}))
+        except Exception as exc:
+            record_tool_call(
+                tool_name,
+                duration_ms=(time.time() - started) * 1000,
+                status="error",
+                cache_hit=False,
+                user_id=user_id,
+                error=type(exc).__name__,
+            )
+            raise
+
+        record_tool_call(
+            tool_name,
+            duration_ms=(time.time() - started) * 1000,
+            status="ok",
+            cache_hit=False,
+            user_id=user_id,
+        )
         cache_store(tool_name, cache_args, result)
         return result
 

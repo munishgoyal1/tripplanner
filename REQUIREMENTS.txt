@@ -844,3 +844,16 @@ TEST RESULTS: 219 tests pass.
 #   miss-then-hit, stateful bypass, TTL expiry, per-user isolation,
 #   coerce_result on dict/list, wrap dedupes, wrap skips stateful,
 #   LRU eviction. Total: 284.
+
+# Session 16.19 (2026-06-05): per-tool latency + error metrics (#7.2).
+# - observability.py exposes record_tool_call / tool_metrics_snapshot /
+#   reset_tool_metrics. Per-tool counters: calls, errors, cache_hits,
+#   error_rate, hit_rate, avg_ms, p50_ms, p95_ms (last 50 samples).
+# - tools_cache._build_cached_copy now reports each invocation. A cache
+#   hit shows cache_hit=True and ~0ms; a real call carries the real
+#   latency; an exception bubbles up but is recorded with status=error
+#   and the exception class name.
+# - GET /metrics/tools returns the in-process snapshot \u2014 quick live
+#   introspection during a session. Long-horizon data goes to Log
+#   Analytics via the structured 'tool_call' app event each call emits.
+# - +7 tests. Total: 291.

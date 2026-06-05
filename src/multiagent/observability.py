@@ -383,3 +383,113 @@ def audit_enabled_for_user_messages() -> bool:
     """Honor the ``AUDIT_USER_MESSAGES`` env switch. Off by default."""
     val = os.environ.get("AUDIT_USER_MESSAGES", "")
     return val.lower() in ("1", "true", "yes", "on")
+
+
+# ---------------------------------------------------------------------------
+# Per-tool metrics
+# ---------------------------------------------------------------------------
+#
+# We accumulate lightweight counters and a small recent-latency window for
+# every tool the agent invokes. The same wrapper that runs the cache lookup
+# in ``tools_cache.py`` reports a result here, so a tool that's served from
+# cache shows up with ``cache_hit=True`` and (near-) zero latency.
+#
+# This stays purely in-process — it's meant for instant `/metrics/tools`
+# introspection during a session and for emitting a structured `tool_call`
+# app event each time. Long-horizon aggregation is out of scope (that's
+# what Log Analytics is for, via the existing app_event stream).
+
+_METRICS_LOCK = threading.Lock()
+_TOOL_METRICS: dict[str, dict[str, Any]] = {}
+_RECENT_LATENCIES_WINDOW = 50  # keep last 50 latencies per tool for p50/p95
+
+
+def record_tool_call(
+    tool_name: str,
+    *,
+    duration_ms: float,
+    status: str,
+    cache_hit: bool = False,
+    user_id: str | None = None,
+    error: str | None = None,
+) -> None:
+    """Record a single tool invocation.
+
+    ``status`` is one of ``"ok"``, ``"error"``. ``cache_hit`` is True when the
+    result was served from ``tools_cache`` (so we can show hit-rate per tool).
+    ``error`` is the exception class name when status="error".
+
+    Emits a PII-safe ``tool_call`` app event as a side-effect — this is the
+    one place that fans out the metric to BOTH the in-memory aggregator
+    (for live introspection) and the structured log (for Log Analytics).
+    """
+    with _METRICS_LOCK:
+        m = _TOOL_METRICS.setdefault(
+            tool_name,
+            {
+                "calls": 0,
+                "errors": 0,
+                "cache_hits": 0,
+                "total_ms": 0.0,
+                "recent_ms": [],
+            },
+        )
+        m["calls"] += 1
+        if status == "error":
+            m["errors"] += 1
+        if cache_hit:
+            m["cache_hits"] += 1
+        # We still record latency on errors so a slow-failing tool surfaces.
+        m["total_ms"] += duration_ms
+        recent: list[float] = m["recent_ms"]
+        recent.append(duration_ms)
+        if len(recent) > _RECENT_LATENCIES_WINDOW:
+            del recent[: len(recent) - _RECENT_LATENCIES_WINDOW]
+
+    app_event(
+        "tool_call",
+        user_id=user_id,
+        tool=tool_name,
+        status=status,
+        ms=round(duration_ms, 2),
+        cache_hit=cache_hit,
+        **({"error": error} if error else {}),
+    )
+
+
+def _percentile(sorted_values: list[float], pct: float) -> float:
+    """Tiny nearest-rank percentile — good enough for a 50-sample window."""
+    if not sorted_values:
+        return 0.0
+    k = max(0, min(len(sorted_values) - 1, int(round(pct / 100.0 * (len(sorted_values) - 1)))))
+    return round(sorted_values[k], 2)
+
+
+def tool_metrics_snapshot() -> dict[str, dict[str, Any]]:
+    """Return a copy of the metrics table with derived stats per tool.
+
+    Each value carries: calls, errors, cache_hits, error_rate, hit_rate,
+    avg_ms (over all calls), p50_ms / p95_ms (over the recent window).
+    """
+    out: dict[str, dict[str, Any]] = {}
+    with _METRICS_LOCK:
+        for name, m in _TOOL_METRICS.items():
+            calls = m["calls"]
+            recent_sorted = sorted(m["recent_ms"])
+            out[name] = {
+                "calls": calls,
+                "errors": m["errors"],
+                "cache_hits": m["cache_hits"],
+                "error_rate": round(m["errors"] / calls, 3) if calls else 0.0,
+                "hit_rate": round(m["cache_hits"] / calls, 3) if calls else 0.0,
+                "avg_ms": round(m["total_ms"] / calls, 2) if calls else 0.0,
+                "p50_ms": _percentile(recent_sorted, 50),
+                "p95_ms": _percentile(recent_sorted, 95),
+            }
+    return out
+
+
+def reset_tool_metrics() -> None:
+    """Test hook: wipe accumulated metrics."""
+    with _METRICS_LOCK:
+        _TOOL_METRICS.clear()
