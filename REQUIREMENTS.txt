@@ -640,3 +640,27 @@ DOCS: README.md capability table, docs/CODEMAP.md tools listing,
 .github/copilot-instructions.md (tool count + new Weather family).
 
 TEST RESULTS: 200 tests pass.
+
+## Session 16.4 (2026-06-05) — Visa & entry-rules tool (#2.4)
+
+NEW TOOL: check_visa_requirements(passport_country, destination_country,
+                                  purpose="tourism", length_of_stay_days=0)
+  - Tavily-backed (advanced depth, 8 results). Bias toward official sources
+    by post-filter on URL substrings: iatatravelcentre.com, travel.state.gov,
+    gov.uk, canada.ca, smartraveller.gov.au, mea.gov.in, schengenvisainfo.com.
+  - Returns {summary, top 5 results, disclaimer}. Always emits the disclaimer
+    so the agent forwards "verify on official site" verbatim.
+
+AGENT WIRING:
+  - Added to trip_agent.py imports + TRIP_TOOLS (new "Visa & entry" group).
+  - STEP 4 of prompt instructs the agent to call this for any international
+    trip and ALWAYS link to the official source from the response.
+  - Tool count 29 → 30; family count 7 → 8.
+
+TESTS: 6 new in tests/test_visa.py
+  - _build_query (full + day-omitted), not-configured guard, missing-input guard,
+    structured envelope assertion (preferred-source ranking), error propagation.
+
+DOCS: README.md, docs/CODEMAP.md, .github/copilot-instructions.md.
+
+TEST RESULTS: 206 tests pass.

@@ -20,6 +20,7 @@ from multiagent.tools.hotel_search import search_hotels
 from multiagent.tools.routing import compute_route, optimize_day_route
 from multiagent.tools.place_hours import check_place_hours
 from multiagent.tools.weather import get_weather_forecast
+from multiagent.tools.visa import check_visa_requirements
 from multiagent.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
@@ -347,6 +348,11 @@ STEP 4 — BUILD ITINERARY
         29-31°C, rain 4/7 days → quick-dry rain jacket + sandals")
     If the source is "seasonal_estimate" (trip > 16 days out), label the
     weather section "typical for this season" rather than "forecast".
+  - Visa & entry rules: for any international trip call
+    check_visa_requirements(passport_country, destination_country, purpose,
+    days). Surface visa-required / visa-on-arrival / e-visa status, the
+    typical processing time, and ALWAYS the official-source link from the
+    response. Skip for purely domestic trips.
   - Which attraction tickets to pre-book
   - Local transport within the destination
   - Cost per day
@@ -539,6 +545,8 @@ TRIP_TOOLS = [
     optimize_day_route,
     # Weather + packing (Open-Meteo, no key)
     get_weather_forecast,
+    # Visa & entry rules (Tavily-backed, prefers .gov / IATA)
+    check_visa_requirements,
     # Fresh web content (Tavily)
     web_search,
     # Trip plan management

@@ -52,6 +52,7 @@ src/multiagent/
     place_hours.py        Opening-hours + closure check (catches "Louvre Tue")
     routing.py            Google Routes API v2 (travel time + day optimizer)
     weather.py            Open-Meteo forecast + archive (seasonal estimate)
+    visa.py               Tavily-backed visa & entry rules (prefers .gov / IATA)
     web_search.py         Tavily
     trip_planner.py       Trip lifecycle: create/get/update/finalize/execute/list
     user_preferences.py   Preferences CRUD (atomic write + tolerant load)
@@ -87,7 +88,7 @@ scripts/
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
   test.ps1            Legacy (Chainlit era) — do not use
-tests/                pytest (200 tests, ~2s)
+tests/                pytest (206 tests, ~2s)
 docs/
   CODEMAP.md          This file
   dev.md              Dev environment notes

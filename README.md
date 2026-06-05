@@ -76,6 +76,7 @@ is set, otherwise local JSON files are used.
 | `compute_route` | Real travel time + distance between an ordered list of stops | Google Routes |
 | `optimize_day_route` | Reorder a day's stops to minimize total travel time | Google Routes |
 | `get_weather_forecast` | Daily weather + seasonal estimate for trip dates | Open-Meteo |
+| `check_visa_requirements` | Visa/entry rules for passport → destination, with official-source links | Tavily |
 | `web_search` | Fresh travel content (recent guides, seasonal tips) | Tavily |
 | `create_trip_plan` | Initialize a new trip plan draft | Working |
 | `get_trip_plan` | View current plan with selections | Working |
