@@ -72,6 +72,8 @@ is set, otherwise local JSON files are used.
 | `search_places_with_reviews` | Hotels/attractions with real Google ratings & reviews | Google Places |
 | `get_place_reviews` | Detailed reviews & editorial summary for a place | Google Places |
 | `nearby_restaurants` | Top-rated restaurants by cuisine & dietary needs | Google Places |
+| `compute_route` | Real travel time + distance between an ordered list of stops | Google Routes |
+| `optimize_day_route` | Reorder a day's stops to minimize total travel time | Google Routes |
 | `web_search` | Fresh travel content (recent guides, seasonal tips) | Tavily |
 | `create_trip_plan` | Initialize a new trip plan draft | Working |
 | `get_trip_plan` | View current plan with selections | Working |

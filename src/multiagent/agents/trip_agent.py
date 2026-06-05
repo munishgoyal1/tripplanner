@@ -17,6 +17,7 @@ from multiagent.tools.google_places import (
     search_places_with_reviews,
 )
 from multiagent.tools.hotel_search import search_hotels
+from multiagent.tools.routing import compute_route, optimize_day_route
 from multiagent.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
@@ -327,7 +328,12 @@ STEP 4 — BUILD ITINERARY
   itinerary that includes:
   - Morning / afternoon / evening activities
   - Specific restaurant recommendations (matching dietary prefs)
-  - Travel time between spots
+  - Travel time between spots — call compute_route (Google Routes API) for any
+    day with 3+ stops so transitions show REAL minutes/km, e.g. "Hotel →
+    Louvre: 22m walk, 1.8 km". Don't guess.
+  - Use optimize_day_route when the user has a bag of attractions to pack
+    into one day and the visit order isn't fixed — it reshuffles intermediate
+    stops to minimize total travel time (first + last stay pinned).
   - Which attraction tickets to pre-book
   - Local transport within the destination
   - Cost per day
@@ -514,6 +520,9 @@ TRIP_TOOLS = [
     search_places_with_reviews,
     get_place_reviews,
     nearby_restaurants,
+    # Routing & travel time (Google Routes API)
+    compute_route,
+    optimize_day_route,
     # Fresh web content (Tavily)
     web_search,
     # Trip plan management

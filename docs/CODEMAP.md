@@ -49,6 +49,7 @@ src/multiagent/
     activities_search.py  Amadeus activities + POI
     amadeus_client.py     Shared Amadeus auth/HTTP
     google_places.py      Places API New (search/reviews/photos)
+    routing.py            Google Routes API v2 (travel time + day optimizer)
     web_search.py         Tavily
     trip_planner.py       Trip lifecycle: create/get/update/finalize/execute/list
     user_preferences.py   Preferences CRUD (atomic write + tolerant load)
@@ -84,7 +85,7 @@ scripts/
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
   test.ps1            Legacy (Chainlit era) — do not use
-tests/                pytest (167 tests, ~1.5s)
+tests/                pytest (179 tests, ~2s)
 docs/
   CODEMAP.md          This file
   dev.md              Dev environment notes

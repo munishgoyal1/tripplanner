@@ -528,3 +528,51 @@ WHAT SHIPPED:
 MECHANISM: every session now starts with CODEMAP + PRODUCT in scope (committed) and the two memory files auto-loaded. The Memory-maintenance table in copilot-instructions tells the next agent WHERE to write down new things so it doesn't get lost.
 
 NO CODE CHANGES, NO TEST RUN.
+
+
+=== 2026-06-05 — Session 16: Trip-planner improvement roadmap (Groups #2, #3, #5, #6, #7) ===
+
+USER ASK: pick 21 improvements across itinerary intelligence, memory, agent
+architecture, SPA UX, and reliability/observability. Implement them one milestone
+at a time, in that order. Commit + push after each milestone.
+
+Order (rolling — see /memories/session/improvement-roadmap.md):
+  #2.1 Routing + travel-time (DONE), #2.2 opening-hours, #2.3 weather+packing,
+  #2.4 visa/entry, #2.5 events.
+  #3.1 semantic recall, #3.2 family-aware suggestions+UI, #3.3 trip post-mortem.
+  #5.1 SSE tool-progress, #5.2 parallel tool calls, #5.3 critic, #5.4 trip diff.
+  #6.1 map view, #6.2 .ics export, #6.3 shareable links, #6.4 mobile sheet,
+  #6.5 voice input.
+  #7.1 tool cache, #7.2 OTel per-tool, #7.3 hallucination critic, #7.4 quota cap.
+
+=== 2026-06-05 — Session 16.1: Day-by-day routing & travel-time tool ===
+
+WHAT SHIPPED:
+- src/multiagent/tools/routing.py (NEW) — Google Routes API v2 wrapper.
+  Two @tool functions:
+    • compute_route(stops_json, mode) — total + per-leg duration/distance,
+      converts seconds → "1h 5m" and meters → "1.8 km" for the agent.
+      DRIVE mode auto-sets routingPreference=TRAFFIC_AWARE.
+    • optimize_day_route(stops_json, mode) — sets optimizeWaypointOrder=true,
+      pins first+last, reorders intermediates by optimizedIntermediateWaypointIndex.
+  Reuses GOOGLE_PLACES_API_KEY; enable "Routes API" on the same Cloud project.
+  Accepts stops as plain address strings, {place_id}, or {lat,lng}.
+
+- src/multiagent/agents/trip_agent.py — imported the two tools, added them to
+  TRIP_TOOLS (under new "Routing & travel time" group), and updated STEP 4 of
+  the system prompt to call compute_route for any day with 3+ stops and use
+  optimize_day_route when an attraction order isn't fixed.
+
+- tests/test_routing.py (NEW, 11 tests) — pure-helper coverage
+  (_seconds_to_human, _meters_to_human, _waypoint, _parse_stops) plus mocked-
+  httpx coverage for compute_route (walking, drive sets TRAFFIC_AWARE, not
+  configured, invalid JSON) and optimize_day_route (uses optimizedIntermediate
+  WaypointIndex, requires ≥3 stops, sends optimizeWaypointOrder=true).
+
+DOCS UPDATED (same commit):
+- README.md — added compute_route + optimize_day_route to capability table.
+- docs/CODEMAP.md — listed routing.py under tools/.
+- .github/copilot-instructions.md — tool count 25 → 27, added new
+  "Routing & travel time (2)" family, updated trip_agent.py file pointer.
+
+TEST RESULTS: 179 tests pass (12 new for routing; 1 unrelated Windows file-locking flake on first pass cleared on re-run).
