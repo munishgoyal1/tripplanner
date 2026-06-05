@@ -212,6 +212,12 @@ export async function deselectItem(kind: string, name: string): Promise<TripView
   return json.view as TripView;
 }
 
+/** Build the URL that downloads the active trip as an .ics calendar file. */
+export function tripIcsUrl(): string {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  return `${BASE}/trip/export.ics?${params.toString()}`;
+}
+
 export interface Preferences {
   display_name: string;
   home_city: string;

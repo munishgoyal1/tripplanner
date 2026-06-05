@@ -31,7 +31,7 @@ from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from pydantic import BaseModel
 
@@ -310,6 +310,25 @@ async def trip_deselect(req: SelectRequest) -> dict:
     ok = trip_planner.remove_selection(req.kind, req.name)
     trip = trip_planner.load_active_trip_dict()
     return {"ok": ok, "view": trip_view.build_view(trip, None)}
+
+
+@app.get("/trip/export.ics")
+async def trip_export_ics(user_id: str = "local") -> Response:
+    """Download the active trip as an iCalendar (.ics) file."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web.ics_export import build_ics
+
+    set_user_id(user_id)
+    plan = trip_planner.load_active_trip_dict()
+    body = build_ics(plan)
+    dest = ((plan or {}).get("destination") or "trip").lower()
+    safe = "".join(c if c.isalnum() else "-" for c in dest).strip("-") or "trip"
+    return Response(
+        content=body,
+        media_type="text/calendar",
+        headers={"Content-Disposition": f'attachment; filename="{safe}.ics"'},
+    )
 
 
 @app.get("/preferences")

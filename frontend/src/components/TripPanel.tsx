@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { tripIcsUrl } from "../api";
 import type { TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
 import Lightbox from "./Lightbox";
@@ -328,9 +329,20 @@ export default function TripPanel({
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">
               Your trip
             </p>
-            <h2 className="display mt-1 text-2xl font-semibold leading-tight">
-              {view.title}
-            </h2>
+            <div className="mt-1 flex items-start justify-between gap-3">
+              <h2 className="display text-2xl font-semibold leading-tight">
+                {view.title}
+              </h2>
+              <a
+                href={tripIcsUrl()}
+                download
+                title="Download .ics for your calendar"
+                className="pill mt-1 shrink-0 bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
+              >
+                <span>{"\uD83D\uDCC5"}</span>
+                <span>Add to calendar</span>
+              </a>
+            </div>
 
             <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-sm">
               {ov.origin && (

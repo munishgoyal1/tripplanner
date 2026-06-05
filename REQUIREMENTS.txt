@@ -759,3 +759,17 @@ TEST RESULTS: 219 tests pass.
 - uild_destination_overview() now returns a map_url field (empty string when no key configured — frontend hides the section).
 - Frontend: types.ts adds map_url?: string. DestinationOverview.tsx renders an iframe (h-64, lazy-loaded, no-referrer-when-downgrade) under a new "On the map" header.
 - Tests: +6 in test_destination_map.py (empty destination, no key, basic URL, highlight prepend, URL encoding, overview shape). Total 258.
+
+# Session 16.14 (2026-06-05): .ics calendar export (#6.2).
+# - New pure-Python web/ics_export.py: RFC 5545 VCALENDAR builder with
+#   line folding (75 octets, CRLF + space) and proper escaping (\, ; \n \\).
+# - Emits VEVENTs for: each selected flight (outbound on dep, return on ret),
+#   each hotel as a multi-day all-day event (DTSTART;VALUE=DATE, exclusive
+#   DTEND = check_out + 1 day), and each day_wise_itinerary entry.
+# - Stable UIDs derived from plan.created_at so calendar imports update
+#   existing events instead of duplicating on re-download.
+# - New GET /trip/export.ics endpoint serves text/calendar with a
+#   destination-aware filename (e.g. trip 'Paris' -> paris.ics).
+# - frontend api.ts: tripIcsUrl() helper.
+# - TripPanel hero: 'Add to calendar' pill links to the .ics download.
+# - +6 tests (tests/test_ics_export.py). Total: 264.
