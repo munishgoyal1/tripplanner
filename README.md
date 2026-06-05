@@ -65,6 +65,7 @@ is set, otherwise local JSON files are used.
 | `get_travel_preferences` | Load saved user/family preferences | Working |
 | `save_travel_preferences` | Update preferences from conversation | Working |
 | `record_past_trip` | Save trip to history with rating | Working |
+| `record_trip_postmortem` | Structured post-mortem (rating + what worked/didn't), feeds learned_notes | Working |
 | `search_flights` | Real flight search — airlines, times, stops, prices | Amadeus API |
 | `search_hotels` | Real hotel search — names, ratings, rooms, prices | Amadeus API |
 | `search_activities` | Sightseeing, tours, attraction tickets with prices | Amadeus API |

@@ -90,6 +90,7 @@ class TestLoadSave:
 from multiagent.agents.trip_agent import (
     get_travel_preferences,
     record_past_trip,
+    record_trip_postmortem,
     save_travel_preferences,
 )
 
@@ -127,6 +128,38 @@ class TestPreferenceTools:
         assert "Paris" in result
         prefs = load_preferences()
         assert len(prefs["past_trips"]) == 1
+
+    def test_record_trip_postmortem_updates_existing(self):
+        add_past_trip("Goa", "2026-01-10 to 2026-01-15", None, "")
+        result = record_trip_postmortem.invoke({
+            "destination": "Goa",
+            "rating": 4,
+            "what_worked": "beach hotel; private guide",
+            "what_didnt": "morning flight; airport hotel",
+        })
+        assert "Post-mortem" in result and "Goa" in result
+        prefs = load_preferences()
+        trip = next(t for t in prefs["past_trips"] if t["destination"] == "Goa")
+        assert trip["rating"] == 4
+        assert trip["what_worked"] == ["beach hotel", "private guide"]
+        assert trip["what_didnt"] == ["morning flight", "airport hotel"]
+        notes = " | ".join(n["note"] for n in prefs.get("learned_notes", []))
+        assert "Liked on Goa trip: beach hotel" in notes
+        assert "Disliked on Goa trip: morning flight" in notes
+
+    def test_record_trip_postmortem_appends_when_no_match(self):
+        result = record_trip_postmortem.invoke({
+            "destination": "Tokyo",
+            "rating": 5,
+            "what_worked": "ryokan stay",
+            "dates": "2025-04-01 to 2025-04-08",
+        })
+        assert "Tokyo" in result
+        prefs = load_preferences()
+        trip = next(t for t in prefs["past_trips"] if t["destination"] == "Tokyo")
+        assert trip["rating"] == 5
+        assert trip["dates"] == "2025-04-01 to 2025-04-08"
+        assert trip["what_worked"] == ["ryokan stay"]
 
 
 # ---------------------------------------------------------------------------

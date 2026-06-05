@@ -210,6 +210,59 @@ def add_past_trip(
     return prefs
 
 
+def update_past_trip_postmortem(
+    destination: str,
+    rating: int | None,
+    what_worked: list[str] | None,
+    what_didnt: list[str] | None,
+    dates: str = "",
+) -> dict[str, Any]:
+    """Attach a structured post-mortem to a past trip.
+
+    Matches the most recent past_trip whose destination is a case-insensitive
+    substring match. If no match, appends a new entry. Rating, what_worked,
+    and what_didnt are stored on the entry; non-empty lists are also surfaced
+    into learned_notes (source=stated) so future planning sessions can recall
+    them via memory_recall without re-reading the full trip log.
+    """
+    prefs = load_preferences()
+    trips = prefs.setdefault("past_trips", [])
+
+    target = None
+    dest_l = (destination or "").strip().lower()
+    if dest_l:
+        for trip in reversed(trips):
+            if dest_l in str(trip.get("destination", "")).lower():
+                target = trip
+                break
+    if target is None:
+        target = {"destination": destination, "dates": dates, "rating": None, "notes": ""}
+        trips.append(target)
+
+    if rating is not None:
+        target["rating"] = rating
+    if dates:
+        target["dates"] = dates
+    worked = [w.strip() for w in (what_worked or []) if isinstance(w, str) and w.strip()]
+    didnt = [d.strip() for d in (what_didnt or []) if isinstance(d, str) and d.strip()]
+    if worked:
+        target["what_worked"] = worked
+    if didnt:
+        target["what_didnt"] = didnt
+
+    save_preferences(prefs)
+
+    # Surface retrospective signals into learned_notes so memory_recall picks
+    # them up alongside other observations.
+    dest_label = destination or target.get("destination") or "this trip"
+    for w in worked:
+        add_learned_note(f"Liked on {dest_label} trip: {w}", source="stated")
+    for d in didnt:
+        add_learned_note(f"Disliked on {dest_label} trip: {d}", source="stated")
+
+    return load_preferences()
+
+
 def add_learned_note(note: str, source: str = "stated") -> dict[str, Any]:
     """Append a free-form observation about the user.
 

@@ -725,3 +725,10 @@ TEST RESULTS: 219 tests pass.
 - Surfaced as overview.family_pills in /trip/view JSON; rendered as accent chips above the counts row on the React TripPanel so the user can see what bias the agent is applying.
 - Frontend types.ts updated to mirror (family_pills?: string[]).
 - Tests: +4 in test_trip_view.py covering empty prefs, mixed family/diet/accessibility, teen bucket, and surfacing through build_view (total 223).
+
+[Session 16.8 - 2026-06-05] Milestone #3.3: Structured trip post-mortem.
+- Added user_preferences.update_past_trip_postmortem(destination, rating, what_worked, what_didnt, dates) — matches the most recent past_trip by case-insensitive substring on destination, attaches structured rating + bullet lists, appends a new entry when no match.
+- Each what_worked/what_didnt bullet is also fed into learned_notes via add_learned_note so memory_recall surfaces the lesson in future planning sessions.
+- Wrapped as @tool record_trip_postmortem(destination, rating, what_worked, what_didnt, dates) — semicolon-separated bullets. Wired into TRIP_TOOLS (10 preference/learning tools, 33 total).
+- Agent prompt STEP 7b nudges the model to call record_trip_postmortem whenever the user reports back on a completed trip.
+- Tests: +2 covering update of an existing past_trip (rating + bullets + learned_notes surfacing) and append-when-no-match path. 225 total.

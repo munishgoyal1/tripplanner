@@ -38,6 +38,7 @@ from multiagent.tools.user_preferences import (
     add_past_trip,
     add_trip_mention,
     load_preferences,
+    update_past_trip_postmortem,
     update_preferences,
     update_profile,
     upsert_family_member,
@@ -85,6 +86,47 @@ def record_past_trip(destination: str, dates: str, rating: int = 0, notes: str =
     add_past_trip(destination, dates, rating or None, notes)
     return f"Recorded trip to {destination} ({dates})."
 
+
+@tool
+def record_trip_postmortem(
+    destination: str,
+    rating: int = 0,
+    what_worked: str = "",
+    what_didnt: str = "",
+    dates: str = "",
+) -> str:
+    """Capture a structured post-mortem after the trip ends.
+
+    Use this AFTER execute_bookings (or any time the user reflects on a
+    completed trip). It updates the matching past_trip entry with a 1-5 rating
+    plus what_worked / what_didnt bullet lists, and also feeds each bullet
+    into learned_notes so future planning sessions can recall the lesson.
+
+    Args:
+        destination: City or region the trip was to.
+        rating: 1-5 (0 = leave unchanged).
+        what_worked: semicolon-separated bullets the user liked ("private guide; rooftop bar; late checkout").
+        what_didnt: semicolon-separated bullets the user disliked ("morning flight; airport hotel").
+        dates: optional override for the dates field on the past_trip entry.
+    """
+    worked = [s for s in (what_worked or "").split(";") if s.strip()]
+    didnt = [s for s in (what_didnt or "").split(";") if s.strip()]
+    update_past_trip_postmortem(
+        destination=destination,
+        rating=rating or None,
+        what_worked=worked,
+        what_didnt=didnt,
+        dates=dates,
+    )
+    summary = [f"Post-mortem recorded for {destination}."]
+    if rating:
+        summary.append(f"Rating: {rating}/5.")
+    if worked:
+        summary.append(f"Liked: {', '.join(worked)}.")
+    if didnt:
+        summary.append(f"Disliked: {', '.join(didnt)}.")
+    summary.append("Lessons saved to learned_notes for future trips.")
+    return " ".join(summary)
 
 @tool
 def remember_about_user(note: str, source: str = "stated") -> str:
@@ -390,6 +432,15 @@ STEP 7 — EXECUTE (on user command)
   3 activities — leisure trip with parents"). This is non-negotiable.
   The trip is saved to history automatically.
 
+STEP 7b — POST-TRIP REFLECTION (when user reports back)
+  When the user returns and shares feedback ("Goa was great, kids loved the
+  beach", "Paris hotel was disappointing", "next time book direct flights"),
+  call record_trip_postmortem(destination, rating=1-5, what_worked=...,
+  what_didnt=...) so the lesson is captured into BOTH past_trips AND
+  learned_notes. Semicolon-separate the bullets ("private guide; rooftop bar"
+  / "morning flight; airport hotel"). Future planning sessions will recall
+  these via memory_recall and bias suggestions accordingly.
+
 ═══════════════════════════════════════════════════════════════
 PREFERENCE DIMENSIONS YOU TRACK:
 ═══════════════════════════════════════════════════════════════
@@ -535,6 +586,7 @@ TRIP_TOOLS = [
     get_travel_preferences,
     save_travel_preferences,
     record_past_trip,
+    record_trip_postmortem,
     remember_about_user,
     # Continuous learning (extract during natural conversation)
     update_user_profile,

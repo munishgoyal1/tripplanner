@@ -90,9 +90,10 @@ Learns from user preferences and past trips.
   - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
   - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
-- Single trip planner agent with 32 tools across 10 families:
-  - Preferences & continuous learning (9):
-    - get_travel_preferences, save_travel_preferences, record_past_trip, remember_about_user
+- Single trip planner agent with 33 tools across 10 families:
+  - Preferences & continuous learning (10):
+    - get_travel_preferences, save_travel_preferences, record_past_trip,
+      record_trip_postmortem, remember_about_user
     - update_user_profile, add_family_member, add_user_interest, add_user_dislike,
       record_trip_mention (Cosmos-aware)
   - Duffel flight search (1): search_flights_duffel — PREFERRED primary flight provider
@@ -132,7 +133,8 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 223 tests all passing (Session 16.7: +4 for `trip_view.family_pills`
+- 225 tests all passing (Session 16.8: +2 for `record_trip_postmortem`
+  structured post-mortem; Session 16.7: +4 for `trip_view.family_pills`
   family-fit pills; Session 16.6: +8 for `tools/memory_recall.py` BM25-lite
   recall; Session 16.5: +5 for `tools/events.py` local events;
   Session 16.4: +6 for `tools/visa.py` visa & entry
