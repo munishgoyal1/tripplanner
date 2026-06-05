@@ -90,7 +90,7 @@ Learns from user preferences and past trips.
   - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
   - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
-- Single trip planner agent with 28 tools across 6 families:
+- Single trip planner agent with 29 tools across 7 families:
   - Preferences & continuous learning (9):
     - get_travel_preferences, save_travel_preferences, record_past_trip, remember_about_user
     - update_user_profile, add_family_member, add_user_interest, add_user_dislike,
@@ -102,6 +102,8 @@ Learns from user preferences and past trips.
     check_place_hours (regular+current opening hours, catches Tuesday-Louvre mistakes)
   - Routing & travel time (2): compute_route, optimize_day_route (Google Routes API v2,
     reuses GOOGLE_PLACES_API_KEY; enable "Routes API" on the same Cloud project)
+  - Weather (1): get_weather_forecast (Open-Meteo, no API key; forecast within
+    16-day horizon, seasonal archive proxy beyond)
   - Tavily web search (1): web_search
   - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips (Cosmos-aware)
 - Trip plan lifecycle: draft → finalized → booked (with execute command)
@@ -123,8 +125,9 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 190 tests all passing (Session 16.2: +11 for `tools/place_hours.py` opening-hours
-  check; Session 16.1: +12 for `tools/routing.py` Google Routes v2 wrapper;
+- 200 tests all passing (Session 16.3: +10 for `tools/weather.py` Open-Meteo
+  wrapper; Session 16.2: +11 for `tools/place_hours.py` opening-hours check;
+  Session 16.1: +12 for `tools/routing.py` Google Routes v2 wrapper;
   Session 13: 5 tests for the decoupled `trip_view` view-model; Session 10
   added 25 continuous-learning tests).
 - **Currency rule (Session 12)**: trip agent prompt CRITICAL RULE 8 picks ONE
@@ -170,7 +173,7 @@ Learns from user preferences and past trips.
 - `README.md` — architecture (local + hosted), setup, project structure
 - `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
 - `src/multiagent/graph.py` — single-agent tool loop (unchanged for hosted mode)
-- `src/multiagent/agents/trip_agent.py` — trip agent with 28 tools (incl. EXTRACTION CHECKLIST prompt)
+- `src/multiagent/agents/trip_agent.py` — trip agent with 29 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/multiagent/user_context.py` — per-request user_id ContextVar
 - `src/multiagent/web/oauth.py` — standalone Google OAuth (HMAC `mg_session` cookie)

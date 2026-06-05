@@ -607,3 +607,36 @@ DOCS: README.md capability table, docs/CODEMAP.md tools listing,
 .github/copilot-instructions.md (tool count + new family entry).
 
 TEST RESULTS: 190 tests pass.
+
+## Session 16.3 (2026-06-05) — Weather + packing tool (#2.3)
+
+NEW TOOL: get_weather_forecast(location, start_date, end_date)
+  - Backed by Open-Meteo (free, no API key).
+  - Geocode → forecast (within 16-day horizon) OR archive proxy (last year's
+    same dates) for trips farther out. Source labelled in the response so the
+    agent can hedge ("typical for this season" vs. "real forecast").
+  - Per-day: high_c, low_c, precip_mm, precip_probability_pct, weather_code
+    decoded to human text (Clear / Heavy rain / Snow / Thunderstorm …).
+  - WMO code map is the standard subset (0-99).
+  - For seasonal_estimate the daily entries get a `proxy_date` and have their
+    `date` relabelled to the actual trip date for downstream readability.
+
+AGENT WIRING:
+  - Added to trip_agent.py imports + TRIP_TOOLS (new "Weather + packing" group).
+  - STEP 4 of prompt now instructs the agent to call this once per trip and
+    use real numbers when swapping outdoor plans on rainy days and when
+    composing the packing list.
+  - Tool count 28 → 29; family count 6 → 7 (Weather is its own family).
+
+TESTS: 10 new in tests/test_weather.py
+  - Pure helpers: _wmo_text (known + unknown), _parse_date (good/bad),
+    _shift_year (Feb 29 fallback), _build_daily (pads missing fields).
+  - @tool coverage: invalid dates guard, end < start guard, geocode miss,
+    forecast path within 16 days (asserts archive NOT called), archive path
+    far out (asserts forecast NOT called + proxy_date relabelling),
+    HTTP failure surfaces clean error.
+
+DOCS: README.md capability table, docs/CODEMAP.md tools listing,
+.github/copilot-instructions.md (tool count + new Weather family).
+
+TEST RESULTS: 200 tests pass.

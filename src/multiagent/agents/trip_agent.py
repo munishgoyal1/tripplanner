@@ -19,6 +19,7 @@ from multiagent.tools.google_places import (
 from multiagent.tools.hotel_search import search_hotels
 from multiagent.tools.routing import compute_route, optimize_day_route
 from multiagent.tools.place_hours import check_place_hours
+from multiagent.tools.weather import get_weather_forecast
 from multiagent.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
@@ -339,6 +340,13 @@ STEP 4 — BUILD ITINERARY
     specific day & time slot, call check_place_hours(place_id, when_iso) —
     catches "Louvre on Tuesday" or "that bistro is closed Sunday lunch" type
     mistakes. Skip for hotels and open-air spots.
+  - Weather & packing: always call get_weather_forecast(destination, start, end)
+    once per trip. Use the per-day highs / lows / precipitation to:
+      • Swap outdoor plans for indoor on heavy-rain days
+      • Build the packing list with REAL numbers ("Goa Jul 12-18 → daily highs
+        29-31°C, rain 4/7 days → quick-dry rain jacket + sandals")
+    If the source is "seasonal_estimate" (trip > 16 days out), label the
+    weather section "typical for this season" rather than "forecast".
   - Which attraction tickets to pre-book
   - Local transport within the destination
   - Cost per day
@@ -529,6 +537,8 @@ TRIP_TOOLS = [
     # Routing & travel time (Google Routes API)
     compute_route,
     optimize_day_route,
+    # Weather + packing (Open-Meteo, no key)
+    get_weather_forecast,
     # Fresh web content (Tavily)
     web_search,
     # Trip plan management

@@ -75,6 +75,7 @@ is set, otherwise local JSON files are used.
 | `check_place_hours` | Is this attraction/restaurant open at the planned time? | Google Places |
 | `compute_route` | Real travel time + distance between an ordered list of stops | Google Routes |
 | `optimize_day_route` | Reorder a day's stops to minimize total travel time | Google Routes |
+| `get_weather_forecast` | Daily weather + seasonal estimate for trip dates | Open-Meteo |
 | `web_search` | Fresh travel content (recent guides, seasonal tips) | Tavily |
 | `create_trip_plan` | Initialize a new trip plan draft | Working |
 | `get_trip_plan` | View current plan with selections | Working |
