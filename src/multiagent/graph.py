@@ -49,7 +49,10 @@ def _get_llm() -> AzureChatOpenAI:
 # ---------------------------------------------------------------------------
 def trip_agent(state: AgentState) -> AgentState:
     """The trip planner agent — invokes LLM with tools bound."""
-    llm = _get_llm().bind_tools(TRIP_TOOLS)
+    # parallel_tool_calls=True asks the model to emit independent calls in a
+    # single turn so ToolNode can execute them concurrently — cuts the
+    # round-trip cost in half when we need flights AND hotels AND weather etc.
+    llm = _get_llm().bind_tools(TRIP_TOOLS, parallel_tool_calls=True)
     response = llm.invoke([build_trip_system_prompt()] + state["messages"])
     return {"messages": [response], "current_agent": "trip"}
 

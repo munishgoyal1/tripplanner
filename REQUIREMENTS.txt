@@ -738,3 +738,7 @@ TEST RESULTS: 219 tests pass.
 - New helper api._summarize_tool_input(raw, max_len) keeps the wire payload small while staying chatty — UI shows "running search_hotels(city=Paris, nights=5)..." instead of just the tool name.
 - Frontend api.ts StreamHandlers.onTool gained an extras param (args, duration_ms); ChatPanel persists a per-message tool_trace [{name, args, duration_ms}] and tooltips/inline-tags each tool chip with its duration.
 - Tests: +5 in test_sse_tool_summary.py covering None, dict, {"input":...} wrapper unwrap, truncation, and list values. Total 230.
+
+[Session 16.10 - 2026-06-05] Milestone #5.2: Explicit parallel tool calls.
+- graph.py trip_agent now calls bind_tools(TRIP_TOOLS, parallel_tool_calls=True) so the model emits independent calls in one turn and LangGraph's ToolNode dispatches them concurrently.
+- Tests: +3 in test_parallel_tools.py — three 300ms sleep-tools complete in <0.7s when fired in one AIMessage (proves parallel), single-call regression guard, and a source-level guard that fails if parallel_tool_calls=True is ever removed from trip_agent. Total 233.

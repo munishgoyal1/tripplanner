@@ -90,7 +90,7 @@ scripts/
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
   test.ps1            Legacy (Chainlit era) — do not use
-tests/                pytest (230 tests, ~2s)
+tests/                pytest (233 tests, ~5s)
 docs/
   CODEMAP.md          This file
   dev.md              Dev environment notes
