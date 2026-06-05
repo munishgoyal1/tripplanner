@@ -22,6 +22,7 @@ from multiagent.tools.place_hours import check_place_hours
 from multiagent.tools.weather import get_weather_forecast
 from multiagent.tools.visa import check_visa_requirements
 from multiagent.tools.events import find_local_events
+from multiagent.tools.memory_recall import recall_relevant_memory
 from multiagent.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
@@ -288,6 +289,12 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   If genuinely critical info is missing (e.g. trip budget for THIS trip), ask
   ONCE with a consolidated question. Otherwise: DON'T ASK, INFER + EXTRACT.
   Save answers/extractions immediately via the appropriate tool.
+
+  When the prefs blob is large or a specific concern surfaces ("does my dad
+  still need an elevator?", "did we like Goa last time?"), call
+  recall_relevant_memory(query) to surface the top 3 most relevant notes /
+  past mentions / family details — much cheaper than re-loading and re-reading
+  everything every turn.
 
 STEP 2 — UNDERSTAND THE REQUEST
   User says something like "plan a trip to Goa" or "we want to go somewhere warm".
@@ -556,6 +563,8 @@ TRIP_TOOLS = [
     check_visa_requirements,
     # Local events / festivals / public holidays (Tavily news)
     find_local_events,
+    # Semantic-ish recall over the user's persistent memory (BM25-lite, no API)
+    recall_relevant_memory,
     # Fresh web content (Tavily)
     web_search,
     # Trip plan management

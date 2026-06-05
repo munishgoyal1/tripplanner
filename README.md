@@ -78,6 +78,7 @@ is set, otherwise local JSON files are used.
 | `get_weather_forecast` | Daily weather + seasonal estimate for trip dates | Open-Meteo |
 | `check_visa_requirements` | Visa/entry rules for passport → destination, with official-source links | Tavily |
 | `find_local_events` | Festivals / parades / public holidays overlapping trip dates | Tavily |
+| `recall_relevant_memory` | Top-K relevant items from learned notes / past trips / family / about-me | BM25-lite (no API) |
 | `web_search` | Fresh travel content (recent guides, seasonal tips) | Tavily |
 | `create_trip_plan` | Initialize a new trip plan draft | Working |
 | `get_trip_plan` | View current plan with selections | Working |

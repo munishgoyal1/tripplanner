@@ -688,3 +688,34 @@ TESTS: 5 new in tests/test_events.py
 DOCS: README.md, docs/CODEMAP.md, .github/copilot-instructions.md.
 
 TEST RESULTS: 211 tests pass.
+
+## Session 16.6 (2026-06-05) — Semantic-ish memory recall (#3.1)
+
+NEW TOOL: recall_relevant_memory(query, top_k=3)
+  - Pure-Python BM25-lite (k1=1.5, b=0.75) over a flattened view of the
+    user's persistent prefs: learned_notes, past_trip_mentions, past_trips,
+    family_members, interests, dislikes, and each sentence of about_me.
+  - Tokenizer strips a small English stopword set and keeps alphanum +
+    apostrophe/hyphen.
+  - No external API call, no embedding deployment required. The corpus is
+    bounded by per-user memory size (~hundreds of items), where BM25 is
+    fast and accurate enough. The @tool surface is stable so we can swap in
+    Azure OpenAI embeddings later without prompt changes.
+  - Output JSON: {query, results:[{kind, text, score, payload}]}.
+
+AGENT WIRING:
+  - Imported into trip_agent.py; added to TRIP_TOOLS as a new "Memory recall"
+    group right before web_search.
+  - STEP 1 prompt extended: when prefs blob is large or a specific concern
+    surfaces, call recall_relevant_memory(query) instead of re-reading
+    everything every turn.
+  - Tool count 31 → 32; family count 9 → 10.
+
+TESTS: 8 new in tests/test_memory_recall.py
+  - Tokenizer stopword stripping, _collect_items source coverage, mobility
+    note recall, past-trip recall, about-me sentence recall, empty-query
+    guard, no-match returns empty list, top_k clamped to 10.
+
+DOCS: README.md, docs/CODEMAP.md, .github/copilot-instructions.md.
+
+TEST RESULTS: 219 tests pass.
