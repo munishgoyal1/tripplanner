@@ -753,3 +753,9 @@ TEST RESULTS: 219 tests pass.
 - New module tools/trip_diff.py: diff_plans(before, after) returns short bullets — destination/date/origin changes, single-swap detection for hotel/flight/activity, add/remove lists, total-cost delta with signed amount, status transitions.
 - update_trip_plan now returns "Trip plan updated. Status: <s>\nWhat changed:\n  • swapped hotel: 'A' → 'B'\n  • total cost: 50,000 → 75,000 (+25,000)" so the agent (and the user) immediately see what shifted instead of an opaque ack.
 - Tests: +9 in test_trip_diff.py. Total 252.
+
+[Session 16.13 - 2026-06-05] Milestone #6.1: Embedded Google Map in destination overview.
+- New 	rip_view.build_map_url(destination, highlights=None) returns a Google Maps Embed v1 "place" iframe URL keyed by GOOGLE_PLACES_API_KEY (reuses the same key). Highlight (top attraction) is prepended to the query so the map centers on a recognizable landmark when available.
+- uild_destination_overview() now returns a map_url field (empty string when no key configured — frontend hides the section).
+- Frontend: types.ts adds map_url?: string. DestinationOverview.tsx renders an iframe (h-64, lazy-loaded, no-referrer-when-downgrade) under a new "On the map" header.
+- Tests: +6 in test_destination_map.py (empty destination, no key, basic URL, highlight prepend, URL encoding, overview shape). Total 258.

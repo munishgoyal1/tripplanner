@@ -17,6 +17,7 @@ unconfigured.
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import quote
 
 from multiagent.tools import user_preferences
 from multiagent.web import places_cache
@@ -277,6 +278,36 @@ _MAX_OVERVIEW_ATTRACTIONS = 6
 _MAX_NEWS_ITEMS = 4
 
 
+def build_map_url(destination: str, highlights: list[str] | None = None) -> str:
+    """Return a Google Maps Embed iframe URL for ``destination``.
+
+    Returns an empty string when ``GOOGLE_PLACES_API_KEY`` is not configured —
+    the frontend simply hides the map in that case. Uses the Embed API "place"
+    mode keyed on a free-text query (destination + first highlight) which
+    needs no Place IDs and works for any city/country string.
+    """
+    destination = (destination or "").strip()
+    if not destination:
+        return ""
+    try:
+        from multiagent.config import get_settings
+
+        key = get_settings().google_places_api_key
+    except Exception:
+        key = ""
+    if not key:
+        return ""
+    query = destination
+    if highlights:
+        first = next((h for h in highlights if h), "")
+        if first:
+            query = f"{first}, {destination}"
+    return (
+        "https://www.google.com/maps/embed/v1/place"
+        f"?key={quote(key, safe='')}&q={quote(query, safe='')}"
+    )
+
+
 def build_destination_overview(
     destination: str, *, include_news: bool = True
 ) -> dict[str, Any]:
@@ -298,6 +329,7 @@ def build_destination_overview(
             "key_attractions": [],
             "reviews": [],
             "news": [],
+            "map_url": "",
         }
 
     attraction_names = places_cache.top_places(
@@ -355,6 +387,7 @@ def build_destination_overview(
         "key_attractions": key_attractions,
         "reviews": reviews[:_MAX_REVIEWS_PER_ITEM * 3],
         "news": news,
+        "map_url": build_map_url(destination, [a["name"] for a in key_attractions[:5]]),
     }
 
 

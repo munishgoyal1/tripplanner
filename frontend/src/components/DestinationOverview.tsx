@@ -247,6 +247,24 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
             </div>
           </div>
         )}
+
+        {data.map_url && (
+          <div>
+            <h4 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+              On the map
+            </h4>
+            <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-card">
+              <iframe
+                title={`Map of ${data.destination}`}
+                src={data.map_url}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="block h-64 w-full border-0"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <Lightbox

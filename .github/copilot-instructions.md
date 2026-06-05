@@ -133,7 +133,9 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 252 tests all passing (Session 16.12: +9 for `trip_diff` structural plan-diff
+- 258 tests all passing (Session 16.13: +6 for `build_map_url` Google Maps Embed
+  URL builder surfaced via `destination_overview.map_url` and rendered as an
+  iframe in `DestinationOverview.tsx`; Session 16.12: +9 for `trip_diff` structural plan-diff
   surfaced from `update_trip_plan`; Session 16.11: +10 for `finalize_critic` deterministic
   self-correction rules surfaced as a "Heads up" block in `finalize_trip`;
   Session 16.10: +3 for explicit `parallel_tool_calls=True`

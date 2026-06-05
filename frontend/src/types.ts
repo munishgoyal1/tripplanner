@@ -90,4 +90,5 @@ export interface DestinationOverview {
   key_attractions: KeyAttraction[];
   reviews: DestinationReview[];
   news: NewsItem[];
+  map_url?: string;
 }
