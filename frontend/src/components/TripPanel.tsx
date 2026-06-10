@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { shareActiveTrip, tripIcsUrl } from "../api";
-import type { TripItem, TripView } from "../types";
+import type { Budget, TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
 import Lightbox from "./Lightbox";
 
@@ -40,6 +40,65 @@ function Stars({ rating, count }: { rating: number | null; count: number | null 
       ★ {rating.toFixed(1)}
       {count != null && <span className="text-amber-500/80"> ({count})</span>}
     </span>
+  );
+}
+
+// Live budget meter for the hero: running spend, per-traveler split, and a
+// remaining-vs-target bar when the user gave the agent a budget. Styled for the
+// dark hero background.
+function BudgetMeter({ budget }: { budget: Budget }) {
+  const hasTarget = budget.target != null && budget.target > 0;
+  const pct = budget.pct_used ?? 0;
+  const over = budget.over_budget;
+  const barColor = over ? "bg-rose-400" : pct >= 80 ? "bg-amber-300" : "bg-emerald-400";
+  const money = (n: number) => `${budget.currency}${Math.round(n).toLocaleString()}`;
+  const segs: { icon: string; value: number }[] = [
+    { icon: "✈️", value: budget.breakdown.flights ?? 0 },
+    { icon: "🏨", value: budget.breakdown.hotels ?? 0 },
+    { icon: "🎯", value: budget.breakdown.activities ?? 0 },
+  ].filter((s) => s.value > 0);
+
+  return (
+    <div className="mt-4 rounded-2xl bg-white/10 p-3.5 ring-1 ring-white/10">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-[10px] uppercase tracking-wider text-white/50">Budget</span>
+        <span className="text-xs text-white/70">
+          {budget.per_traveler_display}
+          <span className="text-white/40"> / traveler</span>
+        </span>
+      </div>
+      <div className="mt-1 flex items-baseline gap-1.5">
+        <span className="text-lg font-semibold text-white">{budget.spent_display}</span>
+        {hasTarget && <span className="text-sm text-white/60">/ {budget.target_display}</span>}
+      </div>
+      {hasTarget && (
+        <>
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/15">
+            <div
+              className={`h-full rounded-full ${barColor} transition-all duration-500`}
+              style={{ width: `${Math.min(pct, 100)}%` }}
+            />
+          </div>
+          <div className="mt-1.5 flex items-center justify-between text-xs">
+            <span className={over ? "font-medium text-rose-200" : "text-white/70"}>
+              {over
+                ? `${budget.remaining_display} over budget`
+                : `${budget.remaining_display} left`}
+            </span>
+            <span className="text-white/50">{pct}% used</span>
+          </div>
+        </>
+      )}
+      {segs.length > 0 && (
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {segs.map((s) => (
+            <span key={s.icon} className="chip bg-white/10 text-white/80">
+              {s.icon} {money(s.value)}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -446,6 +505,8 @@ export default function TripPanel({
                 </span>
               )}
             </div>
+
+            {ov.budget && <BudgetMeter budget={ov.budget} />}
 
             {ov.family_pills && ov.family_pills.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-1.5">

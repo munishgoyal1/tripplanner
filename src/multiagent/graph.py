@@ -15,7 +15,7 @@ from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from multiagent.agents.trip_agent import TRIP_TOOLS, build_trip_system_prompt
+from multiagent.agents.trip_agent import TRIP_TOOLS, build_trip_system_prompt, select_tools
 from multiagent.config import get_settings
 from multiagent.tools_cache import wrap_tools_with_cache
 from multiagent.usage import record_usage
@@ -86,7 +86,10 @@ def trip_agent(state: AgentState) -> AgentState:
     # parallel_tool_calls=True asks the model to emit independent calls in a
     # single turn so ToolNode can execute them concurrently — cuts the
     # round-trip cost in half when we need flights AND hotels AND weather etc.
-    llm = _get_llm().bind_tools(TRIP_TOOLS, parallel_tool_calls=True)
+    # select_tools() binds only the relevant subset (heavy search tools are
+    # added only once planning is active) to trim per-turn prompt tokens.
+    tools = select_tools(state["messages"])
+    llm = _get_llm().bind_tools(tools, parallel_tool_calls=True)
     response = llm.invoke([build_trip_system_prompt()] + state["messages"])
     return {"messages": [response], "current_agent": "trip"}
 

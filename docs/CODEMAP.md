@@ -37,6 +37,7 @@ src/multiagent/
   cli.py              Local CLI entrypoint (no SPA)
   config.py           Pydantic Settings from .env
   graph.py            LangGraph StateGraph: agent ↔ tools loop
+                      (binds only select_tools(messages) per turn)
   observability.py    OpenTelemetry / Azure Monitor (best-effort)
   storage_cosmos.py   Cosmos DB persistence (lazy; on iff COSMOS_ENDPOINT set)
   user_context.py     ContextVar holding the current user_id per request
@@ -120,7 +121,13 @@ It exports:
 - `build_view(trip, focus) -> dict` — the JSON shape consumed by
   `GET /trip/view` and rendered by [TripPanel.tsx](../frontend/src/components/TripPanel.tsx).
   Merges selected items with deduped destination top-places so the panel never
-  collapses. Selected items get an `"In trip"` marker.
+  collapses. Selected items get an `"In trip"` marker. `overview.budget` is the
+  live budget meter (see `build_budget`).
+- `build_budget(trip) -> dict | None` — pure-aggregation budget meter: running
+  spend (prefers `total_cost`, falls back to per-item price sums), per-traveler
+  split, category breakdown, and remaining-vs-`budget` bar. Uses the plan's
+  sticky `currency` via `currency_symbol`. Returns `None` (panel hides it) when
+  there's no spend and no target.
 - `build_destination_overview(destination) -> dict` — hero photo, summary,
   attractions, reviews, Tavily news. Backed by `places_cache.py`.
 

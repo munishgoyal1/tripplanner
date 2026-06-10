@@ -895,3 +895,32 @@ TEST RESULTS: 219 tests pass.
 #   the SPA renders it without special-casing.
 # - New GET /usage?user_id=<id> returns the running bucket plus the cap.
 # - +15 tests. Total: 322.
+
+# Session 17 (2026-06-10): live budget meter + phase-based tool binding.
+# CUSTOMER VALUE — live budget meter:
+# - trip_view.build_budget(trip) is a pure-aggregation view-model: running
+#   spend (prefers agent-maintained total_cost, falls back to summing
+#   per-item prices), per-traveler split (headcount parsed from the
+#   travelers string), a by-category breakdown (flights/hotels/activities),
+#   and a remaining-vs-target bar when the user gave a budget.
+# - Sticky currency: trip carries an optional 'currency' (ISO code or
+#   symbol); trip_view.currency_symbol maps it (default INR). 'budget' and
+#   'currency' are now allowed update_trip_plan keys (+ create_trip_plan
+#   defaults). Prompt STEP 2 + RULE 8 tell the agent to persist both so the
+#   meter and every surface render the same figures.
+# - overview.budget is served by GET /trip/view; the React TripPanel renders
+#   a BudgetMeter card in the hero (progress bar greens/ambers/reds by
+#   pct_used, over-budget call-out, per-traveler split, category chips).
+# ENGINEERING — phase-based tool binding:
+# - trip_agent now exposes _CORE_TOOLS (preferences/learning/lifecycle, always
+#   bound) and _SEARCH_TOOLS (heavy flight/hotel/places/routing/weather/visa/
+#   events/web, bound only when planning is active). select_tools(messages)
+#   is called by graph.trip_agent so the ~15 large search schemas are no
+#   longer sent on greeting/preference turns — cuts per-turn prompt tokens
+#   (and cost against the monthly cap).
+# - _planning_active() trips on: an active trip with a destination, any prior
+#   planning/search tool call this exchange, or planning intent in the latest
+#   user message. Self-healing: if missed on the create_trip_plan turn, the
+#   graph loops back and re-selects with the trip now present. ToolNode still
+#   holds the full union so execution is never blocked.
+# - +23 tests (build_budget/currency/traveler parsing + select_tools). Total: 345.

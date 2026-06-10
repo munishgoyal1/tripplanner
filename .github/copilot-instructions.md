@@ -75,7 +75,18 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-06-02)
+## Current State (last updated 2026-06-10)
+- **Live budget meter (Session 17)**: `web/trip_view.build_budget(trip)` is a
+  pure-aggregation view-model (running spend, per-traveler split, category
+  breakdown, remaining-vs-target bar) surfaced as `overview.budget` from
+  `GET /trip/view` and rendered by a `BudgetMeter` card in `TripPanel.tsx`.
+  `budget` + `currency` (ISO code) are now `update_trip_plan` keys the agent
+  persists (prompt STEP 2 + RULE 8); `currency_symbol` maps the sticky code.
+- **Phase-based tool binding (Session 17)**: `trip_agent` splits tools into
+  `_CORE_TOOLS` (always bound) + `_SEARCH_TOOLS` (bound only when planning is
+  active); `select_tools(messages)` is called from `graph.trip_agent` so the
+  ~15 heavy search schemas aren't sent on greeting/preference turns. ToolNode
+  still holds the full union (`TRIP_TOOLS`) so execution is never blocked.
 - **Two run modes from one codebase:**
   - LOCAL: CLI (`cli.py`) or FastAPI (`api.py`) — persistence to `~/.multiagent/*.json`
   - HOSTED: React SPA (`frontend/`) served by FastAPI (`api.py`) — persistence to Azure Cosmos DB.

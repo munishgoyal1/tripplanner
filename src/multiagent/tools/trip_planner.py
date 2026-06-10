@@ -203,6 +203,8 @@ def create_trip_plan(
         "day_wise_itinerary": [],
         "cost_breakdown": {},
         "total_cost": 0,
+        "budget": 0,
+        "currency": "",
     }
     _save_active_trip(plan)
     return (
@@ -233,6 +235,11 @@ def update_trip_plan(updates_json: str) -> str:
     - day_wise_itinerary: list of day plans
     - cost_breakdown: dict of cost items
     - total_cost: number
+    - budget: number — the user's total budget for THIS trip (drives the live
+      budget meter in the UI; set it as soon as the user states a budget)
+    - currency: ISO code of the sticky display currency ("INR", "USD", "EUR",
+      ...) — set it once when you pick the plan's currency so every surface
+      (including the budget meter) shows the same symbol
     - notes: string
 
     Example: '{"selected_flights": [{"option": 1, "airline": "IndiGo", "price": 8500}]}'
@@ -249,7 +256,7 @@ def update_trip_plan(updates_json: str) -> str:
     allowed_keys = {
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
-        "origin",
+        "origin", "budget", "currency",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     for key, val in updates.items():

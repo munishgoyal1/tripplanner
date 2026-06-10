@@ -104,6 +104,84 @@ def test_fmt_money_default_rupee() -> None:
     assert trip_view.fmt_money(None) == "\u2014"
 
 
+# ---- budget meter ---------------------------------------------------------
+
+
+def test_build_budget_none_when_no_spend_or_target() -> None:
+    assert trip_view.build_budget(None) is None
+    assert trip_view.build_budget({"destination": "Goa"}) is None
+
+
+def test_build_budget_spent_without_target() -> None:
+    b = trip_view.build_budget(SAMPLE_TRIP)
+    assert b is not None
+    assert b["spent"] == 82000
+    assert b["currency"] == "\u20b9"
+    assert b["travelers"] == 2
+    assert b["per_traveler"] == 41000
+    assert b["target"] is None
+    assert b["pct_used"] is None
+    assert b["over_budget"] is False
+    # breakdown sums per-item prices for the categories that have them
+    assert b["breakdown"]["flights"] == 8500
+    assert b["breakdown"]["hotels"] == 12000
+    assert "activities" not in b["breakdown"]
+
+
+def test_build_budget_with_target_under() -> None:
+    trip = {**SAMPLE_TRIP, "budget": 100000, "total_cost": 80000}
+    b = trip_view.build_budget(trip)
+    assert b is not None
+    assert b["target"] == 100000
+    assert b["remaining"] == 20000
+    assert b["pct_used"] == 80
+    assert b["over_budget"] is False
+
+
+def test_build_budget_over_target() -> None:
+    trip = {**SAMPLE_TRIP, "budget": 60000, "total_cost": 82000}
+    b = trip_view.build_budget(trip)
+    assert b is not None
+    assert b["over_budget"] is True
+    assert b["remaining"] == -22000
+    assert b["remaining_display"] == "\u20b922,000"  # absolute value for display
+
+
+def test_build_budget_respects_currency() -> None:
+    trip = {**SAMPLE_TRIP, "currency": "USD", "total_cost": 3000}
+    b = trip_view.build_budget(trip)
+    assert b is not None
+    assert b["currency"] == "$"
+    assert b["spent_display"] == "$3,000"
+
+
+def test_build_budget_falls_back_to_item_sum() -> None:
+    trip = {
+        "destination": "Goa",
+        "travelers": "2 adults, 1 child (ages 5)",
+        "selected_flights": [{"price": "\u20b910,000"}],
+        "selected_hotels": [{"name": "X", "price": 5000}],
+        "selected_activities": [],
+        "total_cost": 0,
+    }
+    b = trip_view.build_budget(trip)
+    assert b is not None
+    assert b["spent"] == 15000
+    assert b["travelers"] == 3  # ages 5 not counted as a head
+
+
+def test_traveler_count_parsing() -> None:
+    assert trip_view.traveler_count("2 adults") == 2
+    assert trip_view.traveler_count("2 adults, 1 child (ages 5)") == 3
+    assert trip_view.traveler_count("") == 1
+    assert trip_view.traveler_count(4) == 4
+
+
+def test_overview_includes_budget() -> None:
+    view = trip_view.build_view({**SAMPLE_TRIP, "budget": 100000}, None)
+    assert view["overview"]["budget"]["target"] == 100000
+
+
 # ---- family_pills ---------------------------------------------------------
 
 

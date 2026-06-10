@@ -20,6 +20,22 @@ export interface TripItem {
   reviews: Review[];
 }
 
+export interface Budget {
+  currency: string;
+  spent: number;
+  spent_display: string;
+  travelers: number;
+  per_traveler: number;
+  per_traveler_display: string;
+  breakdown: { flights?: number; hotels?: number; activities?: number };
+  target: number | null;
+  target_display: string;
+  remaining: number | null;
+  remaining_display: string;
+  pct_used: number | null;
+  over_budget: boolean;
+}
+
 export interface TripOverview {
   destination: string;
   origin: string;
@@ -31,6 +47,7 @@ export interface TripOverview {
   counts: { flights: number; hotels: number; activities: number; days: number };
   total_cost: number | null;
   total_cost_display: string;
+  budget?: Budget | null;
   family_pills?: string[];
 }
 

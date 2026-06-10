@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import date, datetime, timedelta, timezone
 
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
 
 from multiagent.tools.activities_search import search_activities, search_points_of_interest
@@ -24,6 +25,7 @@ from multiagent.tools.visa import check_visa_requirements
 from multiagent.tools.events import find_local_events
 from multiagent.tools.memory_recall import recall_relevant_memory
 from multiagent.tools.trip_planner import (
+    _load_active_trip,
     create_trip_plan,
     execute_bookings,
     finalize_trip,
@@ -352,6 +354,10 @@ STEP 2 — UNDERSTAND THE REQUEST
     - If the user gives a year, use it. If they don't, assume {year} (or {next_year}
       if the implied month has already passed this year).
   Call create_trip_plan to initialize the plan.
+  If the user states a total budget for THIS trip ("keep it under 1.5 lakh",
+  "$3000 max"), persist it immediately:
+  update_trip_plan('{{"budget": 150000}}') so the live budget meter in the UI
+  can track spend against it. Keep total_cost updated as selections firm up.
 
 STEP 3 — PARALLEL SEARCH (do all at once)
   Call these tools in parallel based on preferences:
@@ -553,6 +559,8 @@ CRITICAL RULES:
    between turns. If a search API returns a different currency (e.g. Duffel in
    USD), convert to your chosen display currency and show that as the primary
    figure. State the chosen currency once up front so the user knows.
+   Persist it once via update_trip_plan('{{"currency": "USD"}}') (ISO code) so
+   every surface — including the budget meter — renders the same symbol.
 """
 
 
@@ -581,7 +589,15 @@ def build_trip_system_prompt(today: date | None = None) -> SystemMessage:
 # built at import time. Prefer build_trip_system_prompt() for live agents.
 TRIP_SYSTEM_PROMPT = build_trip_system_prompt()
 
-TRIP_TOOLS = [
+# ---------------------------------------------------------------------------
+# Tool groups — so the graph can bind only the relevant subset per turn.
+# Binding all schemas every call is a large fixed prompt-token tax; the heavy
+# search/enrichment tools are dead weight until there's a destination to plan.
+# ---------------------------------------------------------------------------
+
+# Always bound: cheap, fire on most turns (preference extraction, memory recall,
+# and the plan lifecycle the agent uses to bootstrap a trip).
+_CORE_TOOLS = [
     # Preferences
     get_travel_preferences,
     save_travel_preferences,
@@ -594,6 +610,21 @@ TRIP_TOOLS = [
     add_user_interest,
     add_user_dislike,
     record_trip_mention,
+    # Semantic-ish recall over the user's persistent memory (BM25-lite, no API)
+    recall_relevant_memory,
+    # Trip plan management
+    create_trip_plan,
+    get_trip_plan,
+    update_trip_plan,
+    finalize_trip,
+    execute_bookings,
+    list_past_trips,
+]
+
+# Heavy search / enrichment — only bound once planning is active (a destination
+# exists or the user asked to plan). Self-healing: if missed on the turn a plan
+# is created, the graph loops back and re-selects with the trip now present.
+_SEARCH_TOOLS = [
     # Flights — Duffel preferred, Amadeus kept as fallback (deprecating 2026-07-17)
     search_flights_duffel,
     search_flights,
@@ -615,15 +646,67 @@ TRIP_TOOLS = [
     check_visa_requirements,
     # Local events / festivals / public holidays (Tavily news)
     find_local_events,
-    # Semantic-ish recall over the user's persistent memory (BM25-lite, no API)
-    recall_relevant_memory,
     # Fresh web content (Tavily)
     web_search,
-    # Trip plan management
-    create_trip_plan,
-    get_trip_plan,
-    update_trip_plan,
-    finalize_trip,
-    execute_bookings,
-    list_past_trips,
 ]
+
+# Full union — kept for back-compat, tests, and the graph's ToolNode (which
+# must be able to EXECUTE any tool the model calls, regardless of what was
+# bound for schema purposes).
+TRIP_TOOLS = _CORE_TOOLS + _SEARCH_TOOLS
+
+# Tool calls that signal a planning session is under way.
+_PLANNING_TRIGGER_TOOLS = {
+    "create_trip_plan", "get_trip_plan", "update_trip_plan", "finalize_trip",
+    "execute_bookings",
+    "search_flights_duffel", "search_flights", "search_hotels",
+    "search_activities", "search_points_of_interest",
+    "search_places_with_reviews", "get_place_reviews", "nearby_restaurants",
+    "check_place_hours", "compute_route", "optimize_day_route",
+    "get_weather_forecast", "check_visa_requirements", "find_local_events",
+}
+
+_PLANNING_INTENT_RE = re.compile(
+    r"\b(plan|trip|travel|holiday|vacation|flight|flights|hotel|hotels|"
+    r"itinerar|visit|getaway|weekend|honeymoon|tour|fly|stay|book|"
+    r"days?\s+in|go\s+to)\b",
+    re.I,
+)
+
+
+def _planning_active(messages: list) -> bool:
+    """True when the heavy search tools should be bound this turn."""
+    # 1. An active trip with a destination already exists (covers cross-turn
+    #    sessions where the create_trip_plan call has scrolled out of history).
+    try:
+        trip = _load_active_trip()
+        if isinstance(trip, dict) and trip.get("destination"):
+            return True
+    except Exception:
+        pass
+    # 2. A planning/search tool was already called earlier in this exchange.
+    for m in messages:
+        for tc in (getattr(m, "tool_calls", None) or []):
+            name = tc.get("name") if isinstance(tc, dict) else getattr(tc, "name", None)
+            if name in _PLANNING_TRIGGER_TOOLS:
+                return True
+    # 3. The latest user message expresses planning intent.
+    for m in reversed(messages):
+        if isinstance(m, HumanMessage):
+            if _PLANNING_INTENT_RE.search(str(m.content or "")):
+                return True
+            break
+    return False
+
+
+def select_tools(messages: list) -> list:
+    """Return the tool subset to bind for this turn.
+
+    Core preference/lifecycle tools are always bound; the heavy search tools are
+    added only once a planning session is active — cutting per-turn prompt
+    tokens during greetings and preference gathering.
+    """
+    if _planning_active(messages):
+        return _CORE_TOOLS + _SEARCH_TOOLS
+    return list(_CORE_TOOLS)
+
