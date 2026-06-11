@@ -63,8 +63,9 @@ src/multiagent/
     about_me_extractor.py LLM extractor for the "About me" textbox in Settings
   web/
     oauth.py          Standalone Google OAuth, HMAC mg_session cookie
-    trip_view.py      PURE-PYTHON view-model (build_view, build_destination_overview)
-    places_cache.py   Google Places cache (ThreadPoolExecutor, 30-min TTL)
+    trip_view.py      PURE-PYTHON view-model (build_view, build_destination_overview,
+                      build_map_view — geocoded day-tagged pins + route bands)
+    places_cache.py   Google Places cache (ThreadPoolExecutor, 30-min TTL; surfaces lat/lng)
 frontend/
   index.html          Loads Google Fonts via <link> (NOT from CSS)
   vite.config.ts      Dev: proxies /api → :8000
@@ -72,7 +73,7 @@ frontend/
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
     main.tsx          React 19 root
-    App.tsx           Layout: chat ‖ resizable divider ‖ trip panel
+    App.tsx           Layout: chat ‖ resizable divider ‖ trip panel ‖ map (toggle)
     api.ts            All HTTP/SSE + auth glue + per-destination overview cache
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
@@ -80,6 +81,7 @@ frontend/
       ChatPanel.tsx        Sticky header, message bubbles, composer
       TripPanel.tsx        Hero summary + NavStrip + ItemCard
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
+      MapPanel.tsx         Interactive Google map: day-colored pins + route bands
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
 infra/
@@ -130,6 +132,15 @@ It exports:
   there's no spend and no target.
 - `build_destination_overview(destination) -> dict` — hero photo, summary,
   attractions, reviews, Tavily news. Backed by `places_cache.py`.
+- `build_map_view(trip) -> dict` — interactive-map view-model: geocoded pins
+  for selected hotels/activities + destination suggestions, each tagged with
+  its itinerary day (structured `stops` first, else prose `plan` match),
+  grouped into day-colored route bands, plus an arrival-airport pin and map
+  center. `enabled` mirrors whether `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
+  `GET /trip/map`; the browser key comes from `GET /maps/config`. Rendered by
+  [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
+  the Maps JavaScript API and draws geodesic per-day route lines client-side
+  (no billed Directions API).
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.

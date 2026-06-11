@@ -75,7 +75,22 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-06-10)
+## Current State (last updated 2026-06-11)
+- **Interactive trip map panel (Session 18)**: `web/trip_view.build_map_view(trip)`
+  is a pure-Python view-model returning geocoded pins (selected hotels/activities
+  + destination suggestions), each tagged with its itinerary day (structured
+  `stops` first, else prose `plan` match), grouped into day-colored route bands,
+  plus an arrival-airport pin + map center. Served by `GET /trip/map`; the
+  browser key comes from `GET /maps/config` (new `GOOGLE_MAPS_BROWSER_KEY` env
+  var — a SEPARATE referrer-restricted browser key with the Maps JavaScript API
+  enabled; the server-side `GOOGLE_PLACES_API_KEY` is never sent to the browser).
+  `frontend/src/components/MapPanel.tsx` lazily loads the Maps JS API (only when
+  the user opens the map column, to avoid billed loads), draws numbered
+  day-colored pins, geodesic per-day route lines (no billed Directions API),
+  day-filter chips, airport pin, and info windows. `App.tsx` has a "Show map"
+  toggle mounting the map as a third desktop column on demand. `places_cache`
+  now surfaces `lat`/`lng`. Trip-agent prompt STEP 4 asks for a per-day `stops`
+  list (prose fallback still works). Map hides itself when the key is unset.
 - **Live budget meter (Session 17)**: `web/trip_view.build_budget(trip)` is a
   pure-aggregation view-model (running spend, per-traveler split, category
   breakdown, remaining-vs-target bar) surfaced as `overview.budget` from

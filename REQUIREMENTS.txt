@@ -924,3 +924,43 @@ TEST RESULTS: 219 tests pass.
 #   graph loops back and re-selects with the trip now present. ToolNode still
 #   holds the full union so execution is never blocked.
 # - +23 tests (build_budget/currency/traveler parsing + select_tools). Total: 345.
+
+=== 2026-06-11 — Session 18: Interactive trip map panel ===
+
+USER REQUEST: "Add another panel containing the Place's map (Google map) showing
+transport/route and the sightseeing attractions pinned and highlighted to give a
+quick idea of the trip. Annotate the area and attractions with the Day number
+from the total itinerary days."
+
+DESIGN DECISIONS (confirmed with user):
+- Map technology: interactive Maps JavaScript API (not a static image).
+- Placement: new third column to the right of the trip panel, toggleable.
+- Pin scope: selected hotels+activities, suggested/top places, per-day route
+  lines between stops, and a flight-arrival airport pin.
+- Day mapping: structured per-day `stops` if present, else prose `plan` match.
+
+IMPLEMENTATION:
+- places_cache: lookups now request places.location; summaries carry lat/lng.
+- config: new GOOGLE_MAPS_BROWSER_KEY env var — MUST be a separate,
+  referrer-restricted browser key with the Maps JavaScript API enabled (the
+  server-side GOOGLE_PLACES_API_KEY is never exposed to the browser). Unset =>
+  map panel hides itself with setup guidance.
+- trip_view.build_map_view(trip): pure-Python view-model — geocoded pins
+  (selected vs suggested), each tagged with its itinerary day, grouped into
+  day-colored route bands, plus arrival-airport pin + map center.
+- api: GET /trip/map (view-model) + GET /maps/config (enabled + browser key).
+- frontend MapPanel.tsx: lazily loads the Maps JS API (only when the user opens
+  the map column, to avoid billed map loads), renders day-colored numbered
+  pins, geodesic per-day route lines (no billed Directions API), day-filter
+  chips, airport pin, and rich info windows (photo/rating/In-trip badge).
+- App.tsx: "Show map" toggle mounts the map as a third desktop column on
+  demand; refetches pins when the trip changes; open state persisted.
+- trip_agent prompt STEP 4: agent now asked to include a per-day `stops` list
+  in day_wise_itinerary so the map pins/routes each day precisely (prose
+  fallback still works).
+
+COST NOTE: dynamic Maps JS loads bill ~$7/1000 against the $200/mo Google
+credit; the map is lazy-mounted only when opened to keep this near zero.
+
+- +7 tests for build_map_view (coords, day matching, bands, airport,
+  structured stops, unscheduled fallback). Total: 367 passing.

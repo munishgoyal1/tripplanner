@@ -419,6 +419,13 @@ STEP 4 — BUILD ITINERARY
   - Local transport within the destination
   - Cost per day
 
+  When you write each day's entry in day_wise_itinerary, ALSO include a
+  "stops" list naming the specific places visited that day in order, e.g.
+  {{"day": 2, "plan": "...prose...", "stops": ["Taj Mahal", "Agra Fort"]}}.
+  The map panel uses this to pin and route each day precisely; the place names
+  should match the hotels/attractions you selected. (Prose-only days still work
+  but are matched less reliably.)
+
   Update the trip plan with update_trip_plan.
 
 STEP 5 — REFINE (1-2 rounds max)
