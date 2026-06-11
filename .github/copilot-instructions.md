@@ -162,8 +162,13 @@ Learns from user preferences and past trips.
   `hallucination_critic.py` deterministic fact-check on the agent's final
   reply — scans for cited prices (currency-symbol or ISO code),
   clock times (12h/24h), and URLs, then verifies each appears verbatim in
-  some tool message from the same turn; unverified claims become a
-  "Heads up — please double-check:" footer appended to the reply; wired
+  some tool message from the same turn. Price matching is format-aware
+  (Session 17.1): a price is grounded if it matches verbatim OR by numeric
+  magnitude (tool `INR 19500` == reply `₹19,500`), and `am/pm` spacing is
+  normalised. Unverified claims are logged as an `app_event`
+  (`hallucination_critic`, `claims=[...]`) — NOT shown to the user (the
+  old user-facing "Heads up" footer was removed Session 17.1 because RULE 8
+  currency conversion made it fire on nearly every price); wired
   into both `/chat` and `/chat/stream` (streaming endpoint captures tool
   outputs via `on_tool_end` events as a synthetic `ToolMessage` list);
   Session 16.19: +7 for per-tool latency + error
