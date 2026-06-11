@@ -964,3 +964,51 @@ credit; the map is lazy-mounted only when opened to keep this near zero.
 
 - +7 tests for build_map_view (coords, day matching, bands, airport,
   structured stops, unscheduled fallback). Total: 367 passing.
+
+=== 2026-06-11 — Session 19: Remember & resume saved trips ===
+
+USER REQUEST: "Retain a user's previous searches and the session summary and
+itinerary — save the Mumbai trip search, save the Vietnam one, etc. If there
+are multiple trip plannings for the same place, tag each with its date.
+If the trip is actually the same, keep it merged; if it's a different duration
+or different dates, keep it separate. As a user I don't want to restart from
+scratch every time I log in."
+
+DESIGN DECISIONS (confirmed with user):
+- Resume UX: BOTH a "My trips" switcher in the panel AND the agent reminds you
+  of saved trips when relevant.
+- When to save: as soon as planning starts (create_trip_plan), even an empty
+  draft.
+- Switching: whatever was active is auto-saved to history, then the chosen
+  trip becomes active — nothing is lost.
+
+IMPLEMENTATION:
+- Stable identity: trip_id = slug(destination)_<departure>_<return> (e.g.
+  mumbai_2026-07-10_2026-07-15). Same destination + same dates => same id =>
+  merge/resume; different dates/duration => different id => kept separate.
+  Dates can't change via update_trip_plan, so the id is stable after creation.
+- trip_planner._save_active_trip now stamps trip_id + updated_at and MIRRORS
+  every save into the trips collection (Cosmos trips/<id> or local
+  trips/<id>.json) — so in-progress drafts persist and are never lost.
+- create_trip_plan is now resume-or-create: if a saved trip with the computed
+  id exists it RESUMES it (keeps selections; updates origin/notes/travelers
+  only when newly provided) and returns a "Resumed your saved trip" message;
+  otherwise it creates a fresh draft.
+- execute_bookings no longer writes a separate timestamped archive (that
+  duplicated history); it marks the plan booked, saves (mirrors under trip_id),
+  records the past trip in preferences, and clears the active pointer.
+- New non-tool helpers for the SPA: list_saved_trips(), switch_active_trip(id),
+  delete_saved_trip(id). New agent tool resume_trip(destination|trip_id) so the
+  assistant can offer to continue a saved plan; prompt STEP 2 documents both
+  the auto-resume rule and resume_trip/list_past_trips.
+- API: GET /trips, POST /trips/switch {trip_id}, POST /trips/delete {trip_id}
+  (new TripIdRequest model; same set_user_id + asyncio.to_thread pattern).
+- Frontend: SavedTrip type; fetchSavedTrips/switchTrip/deleteTrip in api.ts; a
+  self-contained "My trips" TripSwitcher dropdown in TripPanel's header
+  (status badges, active highlight, per-trip delete ×) shown even on the empty
+  canvas so a returning user can resume immediately. App.tsx passes tripVersion
+  + onSwitched (clears focus + refresh).
+- +15 tests (trip_id stability, mirror-on-create, start-new-keeps-previous,
+  same-dates-resume, different-duration-separate, switch/delete, resume_trip
+  variants). Total: 382 passing.
+

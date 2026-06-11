@@ -76,6 +76,19 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-06-11)
+- **Remembered saved trips (Session 19)**: trips persist across logins and are
+  never lost. Every `trip_planner._save_active_trip` mirrors the plan into the
+  `trips` collection keyed by a stable `trip_id = slug(destination)_<dep>_<ret>`.
+  Same destination + same dates → same id → `create_trip_plan` RESUMES (keeps
+  selections); different dates/duration → different id → kept as a separate,
+  date-tagged trip. Non-tool helpers `list_saved_trips()` /
+  `switch_active_trip(id)` / `delete_saved_trip(id)` back a self-contained
+  "My trips" `TripSwitcher` dropdown in `TripPanel.tsx` (status badges, active
+  highlight, per-trip delete ×; shown even on the empty canvas). Endpoints:
+  `GET /trips`, `POST /trips/switch`, `POST /trips/delete` (`TripIdRequest`).
+  Agent tool `resume_trip(destination|trip_id)` + prompt STEP 2 let the
+  assistant offer to continue a saved plan. `execute_bookings` no longer writes
+  a separate timestamped archive (history is mirrored under `trip_id`).
 - **Interactive trip map panel (Session 18)**: `web/trip_view.build_map_view(trip)`
   is a pure-Python view-model returning geocoded pins (selected hotels/activities
   + destination suggestions), each tagged with its itinerary day (structured
@@ -116,7 +129,7 @@ Learns from user preferences and past trips.
   - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
   - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
-- Single trip planner agent with 33 tools across 10 families:
+- Single trip planner agent with 34 tools across 10 families:
   - Preferences & continuous learning (10):
     - get_travel_preferences, save_travel_preferences, record_past_trip,
       record_trip_postmortem, remember_about_user
@@ -139,7 +152,8 @@ Learns from user preferences and past trips.
     past_trip_mentions, past_trips, family_members, interests, about_me; no
     API call, instant)
   - Tavily web search (1): web_search
-  - Trip plan lifecycle (6): create/get/update/finalize/execute/list_past_trips (Cosmos-aware)
+  - Trip plan lifecycle (7): create/get/update/finalize/execute/list_past_trips
+    + resume_trip (resume a saved trip by destination or trip_id) (Cosmos-aware)
 - Trip plan lifecycle: draft → finalized → booked (with execute command)
 - Persistent user preferences — expanded continuous-learning schema (Session 10):
   - `profile` {display_name, home_city, home_country, age_band, occupation}
@@ -159,7 +173,10 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 322 tests all passing (Session 16.21: +15 for
+- 382 tests all passing (Session 19: +15 for remembered saved trips
+  — trip_id stability, mirror-on-create, start-new-keeps-previous,
+  same-dates-resume vs different-duration-separate, switch/delete,
+  resume_trip variants; Session 16.21: +15 for
   `usage.py` per-user monthly LLM cost cap — a LangChain
   `BaseCallbackHandler` attached to the Azure chat model in `graph.py`
   reads `LLMResult.llm_output['token_usage']` on every completion and

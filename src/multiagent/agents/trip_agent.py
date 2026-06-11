@@ -31,6 +31,7 @@ from multiagent.tools.trip_planner import (
     finalize_trip,
     get_trip_plan,
     list_past_trips,
+    resume_trip,
     update_trip_plan,
 )
 from multiagent.tools.user_preferences import (
@@ -354,6 +355,13 @@ STEP 2 — UNDERSTAND THE REQUEST
     - If the user gives a year, use it. If they don't, assume {year} (or {next_year}
       if the implied month has already passed this year).
   Call create_trip_plan to initialize the plan.
+  RESUMING SAVED TRIPS: trips are remembered across logins. If the user
+  references a place they planned before ("continue my Mumbai trip", "back to
+  the Vietnam plan") or asks what they were working on, call resume_trip
+  (by destination or trip_id) — or list_past_trips to show the options — so
+  they pick up where they left off instead of restarting. create_trip_plan
+  itself auto-resumes when the destination AND both dates match a saved trip;
+  different dates/duration are kept as a separate, date-tagged trip.
   If the user states a total budget for THIS trip ("keep it under 1.5 lakh",
   "$3000 max"), persist it immediately:
   update_trip_plan('{{"budget": 150000}}') so the live budget meter in the UI
@@ -626,6 +634,7 @@ _CORE_TOOLS = [
     finalize_trip,
     execute_bookings,
     list_past_trips,
+    resume_trip,
 ]
 
 # Heavy search / enrichment — only bound once planning is active (a destination
@@ -665,7 +674,7 @@ TRIP_TOOLS = _CORE_TOOLS + _SEARCH_TOOLS
 # Tool calls that signal a planning session is under way.
 _PLANNING_TRIGGER_TOOLS = {
     "create_trip_plan", "get_trip_plan", "update_trip_plan", "finalize_trip",
-    "execute_bookings",
+    "execute_bookings", "resume_trip", "list_past_trips",
     "search_flights_duffel", "search_flights", "search_hotels",
     "search_activities", "search_points_of_interest",
     "search_places_with_reviews", "get_place_reviews", "nearby_restaurants",

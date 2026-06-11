@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig } from "./types";
+import type { TripView, DestinationOverview, MapView, MapsConfig, SavedTrip } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
@@ -210,6 +210,36 @@ export async function deselectItem(kind: string, name: string): Promise<TripView
   });
   const json = await res.json();
   return json.view as TripView;
+}
+
+/** List the user's saved trips (the "My trips" switcher). */
+export async function fetchSavedTrips(): Promise<SavedTrip[]> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await fetch(`${BASE}/trips?${params.toString()}`);
+  const json = await res.json();
+  return (json.trips ?? []) as SavedTrip[];
+}
+
+/** Make a saved trip active (auto-saving whatever was active). */
+export async function switchTrip(tripId: string): Promise<TripView | null> {
+  const res = await fetch(`${BASE}/trips/switch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
+  });
+  const json = await res.json();
+  return json.ok ? (json.view as TripView) : null;
+}
+
+/** Delete a saved trip; returns the refreshed saved-trips list. */
+export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
+  const res = await fetch(`${BASE}/trips/delete`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
+  });
+  const json = await res.json();
+  return (json.trips ?? []) as SavedTrip[];
 }
 
 /** Build the URL that downloads the active trip as an .ics calendar file. */

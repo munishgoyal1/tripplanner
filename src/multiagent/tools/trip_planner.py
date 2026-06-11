@@ -11,6 +11,7 @@ trips live in the ``trips`` container (one doc per trip, queryable by user).
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,26 @@ _TRIP_HISTORY_DIR = _TRIPS_DIR / "trips"
 _COSMOS_USERS_CONTAINER = "users"
 _COSMOS_TRIPS_CONTAINER = "trips"
 _ACTIVE_TRIP_DOC_ID = "active_trip"
+
+
+def _slugify(text: str) -> str:
+    """Filesystem/Cosmos-safe slug for a destination name."""
+    slug = re.sub(r"[^a-z0-9]+", "_", (text or "").lower()).strip("_")
+    return slug or "trip"
+
+
+def _compute_trip_id(plan: dict[str, Any]) -> str:
+    """Stable id encoding destination + date range.
+
+    Two plannings for the SAME place over the SAME dates share an id (so they
+    merge/resume); a different duration or different dates yields a different id
+    (so they're kept as separate, date-tagged trips) — exactly the owner's rule.
+    """
+    slug = _slugify(str(plan.get("destination") or "trip"))
+    dep = (str(plan.get("departure_date") or "").strip()) or "nodate"
+    ret = (str(plan.get("return_date") or "").strip()) or "nodate"
+    return f"{slug}_{dep}_{ret}"
+
 
 
 def _resolve_active_trip_path() -> Path:
@@ -115,15 +136,128 @@ def remove_selection(kind: str, name: str) -> bool:
 
 
 def _save_active_trip(plan: dict[str, Any]) -> None:
+    # Stamp a stable id + freshness so the trip can live in history and be
+    # listed / resumed later. Every save mirrors to the trips collection so
+    # in-progress drafts are never lost when the user switches trips.
+    if not plan.get("trip_id"):
+        plan["trip_id"] = _compute_trip_id(plan)
+    plan["updated_at"] = datetime.now().isoformat()
+
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(
             _COSMOS_USERS_CONTAINER, get_user_id(), _ACTIVE_TRIP_DOC_ID, plan
         )
+    else:
+        _ensure_dirs()
+        _resolve_active_trip_path().write_text(
+            json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+    _mirror_to_history(plan)
+
+
+def _mirror_to_history(plan: dict[str, Any]) -> None:
+    """Persist the plan into the per-user trips collection under its trip_id."""
+    tid = plan.get("trip_id")
+    if not tid:
+        return
+    if storage_cosmos.is_enabled():
+        storage_cosmos.upsert_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), tid, plan)
         return
     _ensure_dirs()
-    _resolve_active_trip_path().write_text(
+    (_resolve_trip_history_dir() / f"{tid}.json").write_text(
         json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+
+
+def _load_history_trip(trip_id: str) -> dict[str, Any] | None:
+    """Load a single saved trip by its trip_id, or ``None``."""
+    if not trip_id:
+        return None
+    if storage_cosmos.is_enabled():
+        return storage_cosmos.read_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id)
+    path = _resolve_trip_history_dir() / f"{trip_id}.json"
+    if path.exists():
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return None
+    return None
+
+
+def _all_history_trips() -> list[dict[str, Any]]:
+    """Every saved trip for the current user (raw plan dicts)."""
+    if storage_cosmos.is_enabled():
+        return storage_cosmos.query_docs(_COSMOS_TRIPS_CONTAINER, get_user_id())
+    history_dir = _resolve_trip_history_dir()
+    history_dir.mkdir(parents=True, exist_ok=True)
+    out: list[dict[str, Any]] = []
+    for f in history_dir.glob("*.json"):
+        try:
+            out.append(json.loads(f.read_text(encoding="utf-8")))
+        except json.JSONDecodeError:
+            continue
+    return out
+
+
+def _trip_summary(plan: dict[str, Any], active_id: str | None) -> dict[str, Any]:
+    """Compact, UI-friendly descriptor for one saved trip."""
+    tid = plan.get("trip_id") or _compute_trip_id(plan)
+    return {
+        "trip_id": tid,
+        "destination": str(plan.get("destination") or ""),
+        "departure_date": str(plan.get("departure_date") or ""),
+        "return_date": str(plan.get("return_date") or ""),
+        "status": str(plan.get("status") or "draft"),
+        "total_cost": plan.get("total_cost") or 0,
+        "currency": str(plan.get("currency") or ""),
+        "counts": {
+            "flights": len(plan.get("selected_flights") or []),
+            "hotels": len(plan.get("selected_hotels") or []),
+            "activities": len(plan.get("selected_activities") or []),
+        },
+        "updated_at": str(plan.get("updated_at") or plan.get("created_at") or ""),
+        "is_active": bool(active_id) and tid == active_id,
+    }
+
+
+def list_saved_trips() -> list[dict[str, Any]]:
+    """All saved trips as compact descriptors, most-recently-updated first.
+
+    Non-tool: powers the SPA's "My trips" switcher and the resume flow.
+    """
+    active = _load_active_trip()
+    active_id = (active or {}).get("trip_id") if active else None
+    summaries = [_trip_summary(p, active_id) for p in _all_history_trips()]
+    summaries.sort(key=lambda t: t["updated_at"], reverse=True)
+    return summaries
+
+
+def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
+    """Make a saved trip the active one. Returns the plan, or ``None``.
+
+    The currently-active trip is already mirrored in history (every save does
+    so), so switching loses nothing. Non-tool: called by the panel / resume.
+    """
+    plan = _load_history_trip(trip_id)
+    if not plan:
+        return None
+    _save_active_trip(plan)
+    return plan
+
+
+def delete_saved_trip(trip_id: str) -> bool:
+    """Delete a saved trip; clears the active pointer if it was active."""
+    if not trip_id:
+        return False
+    active = _load_active_trip()
+    if storage_cosmos.is_enabled():
+        storage_cosmos.delete_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), trip_id)
+    else:
+        (_resolve_trip_history_dir() / f"{trip_id}.json").unlink(missing_ok=True)
+    if active and active.get("trip_id") == trip_id:
+        _delete_active_trip()
+    return True
+
 
 
 def _delete_active_trip() -> None:
@@ -133,24 +267,6 @@ def _delete_active_trip() -> None:
         )
         return
     _resolve_active_trip_path().unlink(missing_ok=True)
-
-
-def _archive_trip(plan: dict[str, Any]) -> str:
-    """Archive a finalized trip and return a human-readable handle."""
-    slug = plan.get("destination", "trip").lower().replace(" ", "_")
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    handle = f"{slug}_{ts}"
-
-    if storage_cosmos.is_enabled():
-        storage_cosmos.upsert_doc(
-            _COSMOS_TRIPS_CONTAINER, get_user_id(), handle, plan
-        )
-        return handle
-
-    _ensure_dirs()
-    path = _resolve_trip_history_dir() / f"{handle}.json"
-    path.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
-    return str(path)
 
 
 @tool
@@ -181,8 +297,42 @@ def create_trip_plan(
         if fam["elderly"]:
             travelers_summary += f", {fam['elderly']} elderly"
 
+    # Same destination + same dates -> resume the saved trip instead of wiping
+    # it, so the user never restarts from scratch. Different dates/duration get
+    # a distinct id and are kept as a separate, date-tagged trip.
+    trip_id = _compute_trip_id(
+        {
+            "destination": destination,
+            "departure_date": departure_date,
+            "return_date": return_date,
+        }
+    )
+    existing = _load_history_trip(trip_id)
+    if existing:
+        if origin:
+            existing["origin"] = origin
+        if notes:
+            existing["notes"] = notes
+        if travelers_summary:
+            existing["travelers"] = travelers_summary
+        existing["status"] = existing.get("status") or "draft"
+        _save_active_trip(existing)
+        counts = (
+            len(existing.get("selected_flights") or []),
+            len(existing.get("selected_hotels") or []),
+            len(existing.get("selected_activities") or []),
+        )
+        return (
+            f"Resumed your saved trip: {destination} "
+            f"({departure_date} to {return_date})\n"
+            f"So far: {counts[0]} flight(s), {counts[1]} hotel(s), "
+            f"{counts[2]} activity(ies) | Status: {existing['status'].upper()}\n"
+            f"Pick up where you left off — no need to restart."
+        )
+
     plan: dict[str, Any] = {
         "status": "draft",
+        "trip_id": trip_id,
         "created_at": datetime.now().isoformat(),
         "destination": destination,
         "origin": origin,
@@ -396,11 +546,10 @@ def execute_bookings() -> str:
                 results.append(f"    Book here: {link}")
         results.append("")
 
-    # Archive the trip
+    # Mark booked and persist to history (every save mirrors under trip_id).
     plan["status"] = "booked"
     plan["booked_at"] = datetime.now().isoformat()
-    archive_path = _archive_trip(plan)
-    results.append(f"Trip archived to: {archive_path}")
+    _save_active_trip(plan)
 
     # Record in preference history
     add_past_trip(
@@ -409,7 +558,7 @@ def execute_bookings() -> str:
         notes=plan.get("notes", ""),
     )
 
-    # Clear active trip
+    # Clear active pointer (the booked trip stays in your saved trips).
     _delete_active_trip()
 
     results.append("\n✅ All bookings executed! Trip saved to your history.")
@@ -449,3 +598,49 @@ def list_past_trips() -> str:
         cost = data.get("total_cost", 0)
         lines.append(f"  {t.stem}: {dest} ({dates}) — {status} — ₹{cost:,.0f}")
     return "\n".join(lines)
+
+
+@tool
+def resume_trip(destination: str = "", trip_id: str = "") -> str:
+    """Resume a previously saved trip so the user doesn't restart from scratch.
+
+    Match by ``trip_id`` (exact) or ``destination`` (most recently updated
+    match). With no arguments, lists the saved trips to choose from. The chosen
+    trip becomes the active plan; whatever was active is already saved.
+
+    Args:
+        destination: Place name to resume, e.g. 'Mumbai'.
+        trip_id: Exact saved-trip id (preferred when known).
+    """
+    saved = list_saved_trips()
+    if not saved:
+        return "You have no saved trips yet. Use create_trip_plan to start one."
+
+    match: dict[str, Any] | None = None
+    if trip_id:
+        match = next((t for t in saved if t["trip_id"] == trip_id), None)
+    if match is None and destination:
+        needle = destination.strip().lower()
+        match = next((t for t in saved if needle in t["destination"].lower()), None)
+
+    if match is None:
+        lines = ["Which saved trip would you like to resume?"]
+        for t in saved:
+            dates = f"{t['departure_date']} to {t['return_date']}"
+            lines.append(
+                f"  - {t['destination']} ({dates}) — {t['status']} [{t['trip_id']}]"
+            )
+        return "\n".join(lines)
+
+    if switch_active_trip(match["trip_id"]) is None:
+        return f"Could not load saved trip '{match['trip_id']}'."
+
+    c = match["counts"]
+    return (
+        f"Resumed {match['destination']} "
+        f"({match['departure_date']} to {match['return_date']}) — "
+        f"{match['status'].upper()}: {c['flights']} flight(s), "
+        f"{c['hotels']} hotel(s), {c['activities']} activity(ies). "
+        f"Continuing where you left off."
+    )
+

@@ -107,6 +107,11 @@ class SelectRequest(BaseModel):
     user_id: str = "local"
 
 
+class TripIdRequest(BaseModel):
+    trip_id: str
+    user_id: str = "local"
+
+
 class PreferencesRequest(BaseModel):
     user_id: str = "local"
     # Editable subset of the structured preferences. All optional — only
@@ -385,6 +390,45 @@ async def trip_deselect(req: SelectRequest) -> dict:
     ok = trip_planner.remove_selection(req.kind, req.name)
     trip = trip_planner.load_active_trip_dict()
     return {"ok": ok, "view": trip_view.build_view(trip, None)}
+
+
+@app.get("/trips")
+async def trips_list(user_id: str = "local") -> dict:
+    """All saved trips for the user (the SPA's 'My trips' switcher)."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+
+    set_user_id(user_id)
+    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+    return {"trips": trips}
+
+
+@app.post("/trips/switch")
+async def trips_switch(req: TripIdRequest) -> dict:
+    """Make a saved trip active (auto-saving whatever was active) and return
+    the refreshed trip-panel view."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(req.user_id)
+    plan = await asyncio.to_thread(trip_planner.switch_active_trip, req.trip_id)
+    if plan is None:
+        return {"ok": False, "error": "trip not found"}
+    return {"ok": True, "view": trip_view.build_view(plan, None)}
+
+
+@app.post("/trips/delete")
+async def trips_delete(req: TripIdRequest) -> dict:
+    """Delete a saved trip; returns the refreshed saved-trips list."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+
+    set_user_id(req.user_id)
+    await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
+    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+    return {"ok": True, "trips": trips}
+
 
 
 @app.get("/trip/export.ics")

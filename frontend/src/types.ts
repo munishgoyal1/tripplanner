@@ -155,3 +155,18 @@ export interface MapsConfig {
   enabled: boolean;
   key: string;
 }
+
+// ---- Saved trips (mirrors trip_planner.list_saved_trips) ------------------
+
+export interface SavedTrip {
+  trip_id: string;
+  destination: string;
+  departure_date: string;
+  return_date: string;
+  status: string;
+  total_cost: number;
+  currency: string;
+  counts: { flights: number; hotels: number; activities: number };
+  updated_at: string;
+  is_active: boolean;
+}

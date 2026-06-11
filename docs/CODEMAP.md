@@ -58,6 +58,7 @@ src/multiagent/
     memory_recall.py      BM25-lite recall over learned notes / past trips / family
     web_search.py         Tavily
     trip_planner.py       Trip lifecycle: create/get/update/finalize/execute/list
+                          + remembered saved trips (resume/switch/delete)
     user_preferences.py   Preferences CRUD (atomic write + tolerant load)
     preferences_merge.py  Additive merge used by api.py (no UI imports)
     about_me_extractor.py LLM extractor for the "About me" textbox in Settings
@@ -156,7 +157,17 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
   local JSON under `~/.multiagent/`.
 - Cosmos containers: `users` (one doc per user: `preferences`, `active_trip`)
-  and `trips` (archived/finalized trips).
+  and `trips` (every saved trip — drafts, finalized, and booked).
+- **Saved trips (Session 19)**: every `_save_active_trip` mirrors the plan into
+  the `trips` collection keyed by a stable `trip_id = slug(destination)_dep_ret`.
+  Same destination + same dates → same id → `create_trip_plan` RESUMES (keeps
+  selections) instead of overwriting; different dates/duration → different id →
+  kept as a separate, date-tagged trip. So no in-progress trip is ever lost
+  when the user starts another or logs back in. Non-tool helpers
+  `list_saved_trips()` / `switch_active_trip(id)` / `delete_saved_trip(id)`
+  power the SPA's "My trips" switcher (`GET /trips`, `POST /trips/switch`,
+  `POST /trips/delete`); the agent tool `resume_trip(destination|trip_id)` lets
+  the assistant offer to continue a saved plan.
 
 ## 7) Landmines (cycles already burned)
 

@@ -162,6 +162,8 @@ export default function App() {
     onStep: handleStep,
     onSelect: handleSelect,
     onDeselect: handleDeselect,
+    tripVersion,
+    onSwitched: handleClearFocus,
   };
 
   return (

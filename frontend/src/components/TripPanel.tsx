@@ -1,6 +1,12 @@
-import { useState } from "react";
-import { shareActiveTrip, tripIcsUrl } from "../api";
-import type { Budget, TripItem, TripView } from "../types";
+import { useEffect, useRef, useState } from "react";
+import {
+  deleteTrip,
+  fetchSavedTrips,
+  shareActiveTrip,
+  switchTrip,
+  tripIcsUrl,
+} from "../api";
+import type { Budget, SavedTrip, TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
 import Lightbox from "./Lightbox";
 
@@ -19,6 +25,8 @@ interface Props {
   onStep: (delta: number) => void;
   onSelect: (kind: string, name: string) => void;
   onDeselect: (kind: string, name: string) => void;
+  tripVersion: number;
+  onSwitched: () => void;
 }
 
 const ICONS: Record<string, string> = {
@@ -96,6 +104,123 @@ function BudgetMeter({ budget }: { budget: Budget }) {
               {s.icon} {money(s.value)}
             </span>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const STATUS_BADGE: Record<string, string> = {
+  draft: "bg-slate-100 text-slate-600",
+  finalized: "bg-emerald-50 text-emerald-700",
+  booked: "bg-brand/10 text-brand",
+};
+
+// "My trips" switcher: remembered trips persist across logins, so the user can
+// resume any saved plan instead of starting over. Self-contained — it fetches
+// its own list, re-fetching whenever the active trip changes (version token).
+function TripSwitcher({
+  version,
+  onSwitched,
+}: {
+  version: number;
+  onSwitched: () => void;
+}) {
+  const [trips, setTrips] = useState<SavedTrip[]>([]);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetchSavedTrips()
+      .then((t) => alive && setTrips(t))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [version]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  if (trips.length === 0) return null;
+
+  const onPick = async (tripId: string) => {
+    setOpen(false);
+    const v = await switchTrip(tripId);
+    if (v) onSwitched();
+  };
+
+  const onRemove = async (e: React.MouseEvent, tripId: string) => {
+    e.stopPropagation();
+    const remaining = await deleteTrip(tripId);
+    setTrips(remaining);
+    onSwitched();
+  };
+
+  const active = trips.find((t) => t.is_active);
+  const label = active ? active.destination || "Untitled" : "My trips";
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="pill bg-white text-ink ring-1 ring-slate-200 transition hover:bg-slate-50"
+        title="Switch between your saved trips"
+      >
+        <span>{"\uD83E\uDDF3"}</span>
+        <span className="max-w-[9rem] truncate">{label}</span>
+        <span className="text-slate-400">({trips.length})</span>
+        <span className="text-slate-400">▾</span>
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full z-30 mt-1.5 max-h-80 w-72 overflow-y-auto rounded-2xl bg-white p-1.5 shadow-pop ring-1 ring-slate-100">
+          {trips.map((t) => {
+            const dates =
+              t.departure_date && t.return_date
+                ? `${t.departure_date} → ${t.return_date}`
+                : t.departure_date || "dates TBD";
+            const badge = STATUS_BADGE[t.status] || STATUS_BADGE.draft;
+            return (
+              <button
+                key={t.trip_id}
+                type="button"
+                onClick={() => onPick(t.trip_id)}
+                className={`flex w-full items-start gap-2 rounded-xl px-2.5 py-2 text-left transition hover:bg-slate-50 ${
+                  t.is_active ? "bg-brand/5 ring-1 ring-brand/20" : ""
+                }`}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate text-sm font-medium text-ink">
+                      {t.destination || "Untitled trip"}
+                    </span>
+                    <span className={`chip ${badge}`}>{t.status}</span>
+                  </div>
+                  <div className="truncate text-xs text-muted">{dates}</div>
+                  <div className="mt-0.5 text-[11px] text-slate-400">
+                    {t.counts.flights}✈ · {t.counts.hotels}🏨 · {t.counts.activities}🎯
+                  </div>
+                </div>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => onRemove(e, t.trip_id)}
+                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
+                  title="Delete this saved trip"
+                >
+                  ✕
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -304,6 +429,8 @@ export default function TripPanel({
   onStep,
   onSelect,
   onDeselect,
+  tripVersion,
+  onSwitched,
 }: Props) {
   const [lb, setLb] = useState<{ photos: string[]; index: number; alt: string }>({
     photos: [],
@@ -340,18 +467,23 @@ export default function TripPanel({
   }
   if (!view || !view.has_trip) {
     return (
-      <div className="grid h-full place-items-center bg-surface p-8 text-center">
-        <div className="max-w-sm">
-          <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-3xl bg-white text-2xl shadow-card ring-1 ring-slate-100">
-            🌍
+      <div className="flex h-full flex-col bg-surface">
+        <div className="flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+          <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
+        </div>
+        <div className="grid flex-1 place-items-center p-8 text-center">
+          <div className="max-w-sm">
+            <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-3xl bg-white text-2xl shadow-card ring-1 ring-slate-100">
+              🌍
+            </div>
+            <p className="display text-base font-semibold text-ink">
+              Your trip canvas is empty
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              {view?.empty_message ||
+                "Tell the chat where and when you'd like to go — I'll fill this side with photos, ratings and details."}
+            </p>
           </div>
-          <p className="display text-base font-semibold text-ink">
-            Your trip canvas is empty
-          </p>
-          <p className="mt-1 text-sm text-muted">
-            {view?.empty_message ||
-              "Tell the chat where and when you'd like to go — I'll fill this side with photos, ratings and details."}
-          </p>
         </div>
       </div>
     );
@@ -363,6 +495,11 @@ export default function TripPanel({
 
   return (
     <div className="flex h-full flex-col bg-surface">
+      {!focused && (
+        <div className="sticky top-0 z-10 flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+          <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
+        </div>
+      )}
       {focused && (
         <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
           <button onClick={onClearFocus} className="btn-ghost">
