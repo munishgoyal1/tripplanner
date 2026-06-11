@@ -151,14 +151,13 @@ async def chat(req: ChatRequest) -> ChatResponse:
         if hasattr(msg, "content") and msg.content and msg.type == "ai":
             reply = msg.content
             break
-    # Hallucination critic: append a "Heads up" footer if the agent cited
-    # prices/times/URLs that don't appear in any tool message this turn.
-    from multiagent.hallucination_critic import critique, format_heads_up
+    # Hallucination critic: log unverified prices/times/URLs as telemetry only
+    # (internal QA signal — not surfaced to the user to avoid noisy footers).
+    from multiagent.hallucination_critic import critique
 
     issues = critique(reply, result.get("messages", []))
     if issues:
-        reply = reply + format_heads_up(issues)
-        app_event("hallucination_critic", issues=len(issues))
+        app_event("hallucination_critic", issues=len(issues), claims=issues)
     history.append(AIMessage(content=reply))
     _trim(req.user_id)
 
@@ -282,16 +281,13 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             return
 
         reply = "".join(reply_parts)
-        # Hallucination critic: append a "Heads up" footer when the agent
-        # cited prices/times/URLs that aren't in the captured tool outputs.
-        from multiagent.hallucination_critic import critique, format_heads_up
+        # Hallucination critic: log unverified prices/times/URLs as telemetry
+        # only (internal QA signal — not surfaced to the user).
+        from multiagent.hallucination_critic import critique
 
         issues = critique(reply, tool_outputs)
         if issues:
-            footer = format_heads_up(issues)
-            reply = reply + footer
-            yield _sse("token", {"text": footer})
-            app_event("hallucination_critic", issues=len(issues))
+            app_event("hallucination_critic", issues=len(issues), claims=issues)
         history.append(AIMessage(content=reply))
         _trim(req.user_id)
         app_event("api_chat_stream_done", reply_length=len(reply))

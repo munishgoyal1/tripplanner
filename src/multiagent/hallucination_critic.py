@@ -58,14 +58,41 @@ _TIME_RE = re.compile(
 _URL_RE = re.compile(r"https?://[^\s<>()\[\]\"']+", re.IGNORECASE)
 
 
+# Bare numbers in text: 245, 19,500, 1,200.50, 70000.
+_NUMBER_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
+
+
 def _normalise(text: str) -> str:
     """Lowercase + strip extra whitespace + drop common thousands separators."""
     out = text.lower()
     out = out.replace("\u00a0", " ")
     # Treat $ 42 same as $42 by collapsing the space.
     out = re.sub(r"([\$€£¥₹₩])\s+", r"\1", out)
+    # Treat "10:30 am" the same as "10:30am" so reformatted times still match.
+    out = re.sub(r"(\d)\s+([ap]m)\b", r"\1\2", out)
     out = re.sub(r"\s+", " ", out)
     return out.strip()
+
+
+def _numeric_value(text: str) -> str | None:
+    """Bare numeric magnitude of a price: ₹19,500 -> 19500, $1,200.50 -> 1200.50.
+
+    Strips currency symbols/codes and thousands separators so a price matches
+    regardless of formatting. Returns None when there are no digits.
+    """
+    digits = re.sub(r"[^0-9.]", "", text)
+    digits = digits.strip(".")
+    return digits or None
+
+
+def _evidence_numbers(evidence: str) -> set[str]:
+    """All numeric magnitudes present in the evidence, comma-stripped."""
+    out: set[str] = set()
+    for match in _NUMBER_RE.findall(evidence):
+        value = _numeric_value(match)
+        if value:
+            out.add(value)
+    return out
 
 
 def _extract_evidence(messages: Iterable[BaseMessage]) -> str:
@@ -117,6 +144,7 @@ def critique(final_text: str, messages: Iterable[BaseMessage]) -> list[str]:
         # to verify against — assume it's a conversational reply.
         return []
 
+    evidence_numbers = _evidence_numbers(evidence)
     issues: list[str] = []
     seen: set[str] = set()
 
@@ -126,7 +154,13 @@ def critique(final_text: str, messages: Iterable[BaseMessage]) -> list[str]:
         if key in seen:
             continue
         seen.add(key)
-        if not _claim_in_evidence(claim, evidence):
+        # A price is grounded if it appears verbatim OR its numeric magnitude
+        # matches an evidence number (handles ₹19,500 vs INR 19500 formatting).
+        value = _numeric_value(claim)
+        grounded = _claim_in_evidence(claim, evidence) or (
+            value is not None and value in evidence_numbers
+        )
+        if not grounded:
             issues.append(f"price {claim} was not found in any tool result")
 
     for match in _TIME_RE.findall(final_text):

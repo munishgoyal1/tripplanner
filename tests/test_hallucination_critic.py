@@ -50,6 +50,30 @@ def test_inr_amount_in_evidence_passes():
     assert critique("Taj Mahal Palace runs ₹18,500 a night.", msgs) == []
 
 
+def test_price_matches_across_currency_formatting():
+    # Agent reformats INR 19500 (tool output) as ₹19,500 — same magnitude,
+    # different symbol/grouping. Should be considered grounded.
+    msgs = _msgs("IndiGo DEL-GOI round trip: INR 19500")
+    assert critique("Flights are ₹19,500.", msgs) == []
+
+
+def test_plain_thousands_price_matches_grouped_reply():
+    msgs = _msgs("Hotel total INR 70000")
+    assert critique("The hotel is ₹70,000.", msgs) == []
+
+
+def test_unrelated_price_still_flagged_with_numeric_match():
+    msgs = _msgs("Hotel total INR 70000")
+    issues = critique("The hotel is ₹85,000.", msgs)
+    assert any("85,000" in i for i in issues)
+
+
+def test_time_ampm_spacing_normalised():
+    # Evidence "10:30 AM" vs reply "10:30am" — spacing shouldn't matter.
+    msgs = _msgs("Tour departs 10:30 AM daily")
+    assert critique("The tour leaves at 10:30am.", msgs) == []
+
+
 def test_time_in_evidence_passes():
     msgs = _msgs("Louvre opens 9:00 AM, closes 6:00 PM (Tue closed)")
     assert critique("Louvre opens at 9:00 AM.", msgs) == []
