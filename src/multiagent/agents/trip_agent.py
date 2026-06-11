@@ -449,6 +449,12 @@ STEP 4 — BUILD ITINERARY
 
   Update the trip plan with update_trip_plan.
 
+  IMPORTANT: presenting the day-by-day plan in chat is NOT enough — you MUST
+  also call update_trip_plan with the full day_wise_itinerary (structured stops
+  above) so the Itinerary panel renders it. Do this on the SAME turn you first
+  describe the plan, and re-send the updated day_wise_itinerary whenever the
+  user changes a day. An itinerary that exists only in chat will not show up.
+
 STEP 5 — REFINE (1-2 rounds max)
   Ask: "Does this look good, or would you like to adjust anything?"
   Handle changes efficiently. Don't re-search everything — just what changed.

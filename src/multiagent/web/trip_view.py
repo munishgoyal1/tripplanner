@@ -758,16 +758,31 @@ def _normalize_stop(
     return None
 
 
-def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
-    """Structured day-by-day itinerary view-model (frontend-agnostic).
+def _ordered_selected(trip: dict[str, Any] | None, key: str) -> list[str]:
+    """Display-cased selected names for a bucket, in selection order, deduped."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for it in (trip or {}).get(key) or []:
+        name = ""
+        if isinstance(it, dict):
+            name = str(it.get("name") or "").strip()
+        elif isinstance(it, str):
+            name = it.strip()
+        if name and name.lower() not in seen:
+            seen.add(name.lower())
+            out.append(name)
+    return out
 
-    Each day carries a title, prose summary, day color, and an ordered list of
-    structured stops. Every stop is cross-referenced against the trip's
-    selections (``selected``) and carries its own ``booked`` flag so the UI can
-    render booked checkmarks and make each stop clickable (to focus its photos
-    or its map pin). Pure / no network.
+
+def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
+    """Fallback itinerary when the agent never wrote a structured
+    ``day_wise_itinerary``: synthesize a single "Your picks so far" day from the
+    selected hotels + activities so the panel is never blank while a trip is
+    being assembled. Each item is a clickable, selected stop. Pure / no network.
     """
-    if not trip or not (trip.get("day_wise_itinerary") or []):
+    hotels = _ordered_selected(trip, "selected_hotels")
+    activities = _ordered_selected(trip, "selected_activities")
+    if not hotels and not activities:
         return {
             "has_itinerary": False,
             "destination": str((trip or {}).get("destination") or ""),
@@ -775,6 +790,49 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             "days": [],
             "stats": {"days": 0, "stops": 0, "booked": 0},
         }
+
+    color = _day_color(1)
+    stops: list[dict[str, Any]] = []
+    for name in hotels:
+        stops.append({
+            "name": name, "kind": "hotel", "time": "", "duration_min": None,
+            "note": "", "booked": False, "selected": True, "color": color,
+        })
+    for name in activities:
+        stops.append({
+            "name": name, "kind": "attraction", "time": "", "duration_min": None,
+            "note": "", "booked": False, "selected": True, "color": color,
+        })
+    day = {
+        "day": 1,
+        "date": "",
+        "title": "Your picks so far",
+        "summary": "Places you've selected. Ask the planner to lay out a "
+        "day-by-day itinerary to organize these into a schedule.",
+        "color": color,
+        "stops": stops,
+    }
+    return {
+        "has_itinerary": True,
+        "destination": str((trip or {}).get("destination") or ""),
+        "currency": currency_symbol(trip),
+        "days": [day],
+        "stats": {"days": 1, "stops": len(stops), "booked": 0},
+    }
+
+
+def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
+    """Structured day-by-day itinerary view-model (frontend-agnostic).
+
+    Each day carries a title, prose summary, day color, and an ordered list of
+    structured stops. Every stop is cross-referenced against the trip's
+    selections (``selected``) and carries its own ``booked`` flag so the UI can
+    render booked checkmarks and make each stop clickable (to focus its photos
+    or its map pin). When the agent never wrote a structured itinerary, falls
+    back to a single day synthesized from the selections. Pure / no network.
+    """
+    if not trip or not (trip.get("day_wise_itinerary") or []):
+        return _itinerary_from_selections(trip)
 
     hotels = _selected_names(trip, "hotel")
     activities = _selected_names(trip, "attraction")

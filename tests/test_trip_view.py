@@ -362,10 +362,34 @@ def test_map_view_selected_attraction_gets_fallback_day(_map_geo: None) -> None:
 # build_itinerary (pure, no network)
 # ---------------------------------------------------------------------------
 def test_itinerary_empty_when_no_days() -> None:
-    it = trip_view.build_itinerary({**SAMPLE_TRIP, "day_wise_itinerary": []})
+    it = trip_view.build_itinerary(
+        {
+            **SAMPLE_TRIP,
+            "day_wise_itinerary": [],
+            "selected_hotels": [],
+            "selected_activities": [],
+        }
+    )
     assert it["has_itinerary"] is False
     assert it["days"] == []
     assert it["stats"] == {"days": 0, "stops": 0, "booked": 0}
+
+
+def test_itinerary_falls_back_to_selections() -> None:
+    # No structured day_wise_itinerary, but the trip has selections — the panel
+    # should still render a single synthesized "Your picks so far" day.
+    it = trip_view.build_itinerary({**SAMPLE_TRIP, "day_wise_itinerary": []})
+    assert it["has_itinerary"] is True
+    assert it["stats"]["days"] == 1
+    day = it["days"][0]
+    assert day["title"] == "Your picks so far"
+    names = [s["name"] for s in day["stops"]]
+    assert "Taj Exotica Resort" in names
+    assert "Dudhsagar Falls Trek" in names
+    # hotel listed before attraction; both marked selected
+    assert day["stops"][0]["kind"] == "hotel"
+    assert all(s["selected"] for s in day["stops"])
+    assert it["stats"]["stops"] == len(day["stops"])
 
 
 def test_itinerary_structured_stops() -> None:
