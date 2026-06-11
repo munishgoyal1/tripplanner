@@ -27,6 +27,8 @@ interface Props {
   onDeselect: (kind: string, name: string) => void;
   tripVersion: number;
   onSwitched: () => void;
+  /** Hide the internal saved-trips switcher (RightRail renders it persistently). */
+  hideSwitcher?: boolean;
 }
 
 const ICONS: Record<string, string> = {
@@ -119,7 +121,7 @@ const STATUS_BADGE: Record<string, string> = {
 // "My trips" switcher: remembered trips persist across logins, so the user can
 // resume any saved plan instead of starting over. Self-contained — it fetches
 // its own list, re-fetching whenever the active trip changes (version token).
-function TripSwitcher({
+export function TripSwitcher({
   version,
   onSwitched,
 }: {
@@ -431,6 +433,7 @@ export default function TripPanel({
   onDeselect,
   tripVersion,
   onSwitched,
+  hideSwitcher = false,
 }: Props) {
   const [lb, setLb] = useState<{ photos: string[]; index: number; alt: string }>({
     photos: [],
@@ -468,9 +471,11 @@ export default function TripPanel({
   if (!view || !view.has_trip) {
     return (
       <div className="flex h-full flex-col bg-surface">
-        <div className="flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
-          <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
-        </div>
+        {!hideSwitcher && (
+          <div className="flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+            <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
+          </div>
+        )}
         <div className="grid flex-1 place-items-center p-8 text-center">
           <div className="max-w-sm">
             <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-3xl bg-white text-2xl shadow-card ring-1 ring-slate-100">
@@ -495,7 +500,7 @@ export default function TripPanel({
 
   return (
     <div className="flex h-full flex-col bg-surface">
-      {!focused && (
+      {!focused && !hideSwitcher && (
         <div className="sticky top-0 z-10 flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
         </div>

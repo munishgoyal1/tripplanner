@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import TripPanel from "./components/TripPanel";
-import RightRail, { type RailTab } from "./components/RightRail";
+import RightRail from "./components/RightRail";
 import { fetchTripView, selectItem, deselectItem } from "./api";
 import type { TripView } from "./types";
 
@@ -15,14 +15,12 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [focus, setFocus] = useState<NavRef | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
-  // Right-rail tabs: Itinerary · Map · Photos. The map mounts lazily inside
-  // RightRail (Google Maps JS bills per load).
-  const [activeTab, setActiveTab] = useState<RailTab>("photos");
+  // The map mounts lazily inside RightRail (Google Maps JS bills per load), so
+  // it's opt-in and, once opened, stays mounted alongside the other panels.
+  const [mapOpen, setMapOpen] = useState(false);
   // Name of the itinerary stop currently focused (highlights map pin + drives
-  // the Photos tab focus).
+  // the photos focus).
   const [stopFocusName, setStopFocusName] = useState<string | null>(null);
-  // Pick a sensible default tab once, from the first loaded view.
-  const autoTabbed = useRef(false);
   // Bumped whenever the trip view reloads so the map refetches its pins.
   const [tripVersion, setTripVersion] = useState(0);
   // Bumped only when a saved trip is switched, so ChatPanel reloads the right
@@ -32,7 +30,7 @@ export default function App() {
   // --- resizable split between chat and the trip/photos panel ---------------
   const [chatPct, setChatPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("multiagent_chat_pct"));
-    return saved >= 25 && saved <= 75 ? saved : 52;
+    return saved >= 25 && saved <= 75 ? saved : 36;
   });
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
@@ -100,16 +98,6 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Once the first view arrives, default to the Itinerary tab when a trip
-  // exists (the headline view); otherwise stay on Photos for browsing. Never
-  // override the user's later manual tab choice.
-  useEffect(() => {
-    if (!autoTabbed.current && view) {
-      autoTabbed.current = true;
-      setActiveTab(view.has_trip ? "itinerary" : "photos");
-    }
-  }, [view]);
-
   const handleFocus = async (kind: string, name: string) => {
     const f = { kind, name };
     setFocus(f);
@@ -159,18 +147,17 @@ export default function App() {
     if (!focus) setNavList(next.items.map((it) => ({ kind: it.kind, name: it.name })));
   };
 
-  // Clicking a place stop in the itinerary: focus it (loads its photos) and
-  // switch to the Photos tab.
+  // Clicking a place stop in the itinerary: focus it (loads its photos). The
+  // photos panel is always visible in the stacked rail, so no tab switch.
   const handleStopFocus = (kind: string, name: string) => {
     setStopFocusName(name);
-    setActiveTab("photos");
     handleFocus(kind, name);
   };
 
-  // The map pin button on a stop: jump to the Map tab focused on that stop.
+  // The map pin button on a stop: open the map (if closed) and focus the stop.
   const handleStopMap = (name: string) => {
     setStopFocusName(name);
-    setActiveTab("map");
+    setMapOpen(true);
   };
 
   // --- mobile bottom-sheet for the trip panel -------------------------------
@@ -204,12 +191,14 @@ export default function App() {
   };
 
   const railProps = {
-    activeTab,
-    onTab: setActiveTab,
     reloadToken: tripVersion,
     focusName: stopFocusName,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
+    tripVersion,
+    onSwitched: handleSwitched,
+    mapOpen,
+    onToggleMap: setMapOpen,
   };
 
   return (
@@ -230,7 +219,7 @@ export default function App() {
       </div>
 
       <aside className="hidden min-w-0 flex-1 md:flex">
-        <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} />} />
+        <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
       </aside>
 
       {/* Mobile-only: floating button + bottom-sheet for the trip panel. */}
@@ -279,7 +268,7 @@ export default function App() {
               <span className="w-10" aria-hidden />
             </div>
             <div className="min-h-0 flex-1">
-              <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} />} />
+              <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
             </div>
           </section>
         </>

@@ -1,13 +1,10 @@
 import type { ReactNode } from "react";
 import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
-
-export type RailTab = "itinerary" | "map" | "photos";
+import { TripSwitcher } from "./TripPanel";
 
 interface Props {
-  activeTab: RailTab;
-  onTab: (t: RailTab) => void;
-  /** The Photos tab content (the existing TripPanel). */
+  /** The Photos / overview content (the existing TripPanel). */
   photos: ReactNode;
   /** Bumped when the trip changes so map + itinerary refetch. */
   reloadToken: number;
@@ -15,55 +12,51 @@ interface Props {
   focusName: string | null;
   onStopFocus: (kind: string, name: string) => void;
   onStopMap: (name: string) => void;
+  /** Persistent saved-trips switcher (always visible). */
+  tripVersion: number;
+  onSwitched: () => void;
+  /** Map is lazy (Google Maps JS bills per load) — opt-in, stays mounted. */
+  mapOpen: boolean;
+  onToggleMap: (open: boolean) => void;
 }
 
-const TABS: { id: RailTab; label: string; icon: string }[] = [
-  { id: "itinerary", label: "Itinerary", icon: "\u{1F5D2}\uFE0F" },
-  { id: "map", label: "Map", icon: "\u{1F5FA}\uFE0F" },
-  { id: "photos", label: "Photos", icon: "\u{1F4F8}" },
-];
-
 export default function RightRail({
-  activeTab,
-  onTab,
   photos,
   reloadToken,
   focusName,
   onStopFocus,
   onStopMap,
+  tripVersion,
+  onSwitched,
+  mapOpen,
+  onToggleMap,
 }: Props) {
   return (
     <div className="flex h-full min-h-0 w-full flex-col bg-surface">
-      <div
-        role="tablist"
-        aria-label="Trip views"
-        className="flex items-center gap-1 border-b border-slate-100 bg-white/70 px-3 py-2 backdrop-blur"
-      >
-        {TABS.map((t) => {
-          const active = activeTab === t.id;
-          return (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={active}
-              type="button"
-              onClick={() => onTab(t.id)}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                active
-                  ? "bg-ink text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              <span aria-hidden>{t.icon}</span>
-              <span>{t.label}</span>
-            </button>
-          );
-        })}
+      {/* Persistent header: saved-trips switcher + map toggle. Always shown. */}
+      <div className="flex items-center gap-2 border-b border-slate-100 bg-white/70 px-3 py-2 backdrop-blur">
+        <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
+        <button
+          type="button"
+          onClick={() => onToggleMap(!mapOpen)}
+          aria-pressed={mapOpen}
+          className={`ml-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+            mapOpen
+              ? "bg-ink text-white shadow-sm"
+              : "text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100"
+          }`}
+          title={mapOpen ? "Hide map" : "Show map"}
+        >
+          <span aria-hidden>{"\u{1F5FA}\uFE0F"}</span>
+          <span>{mapOpen ? "Hide map" : "Map"}</span>
+        </button>
       </div>
 
+      {/* Stacked panels — all visible at once (no tab switching). Each keeps
+          its own scroll so long lists don't fight for space. */}
       <div className="flex min-h-0 flex-1 flex-col">
-        {/* Itinerary: always mounted (cheap) so its booked state stays warm. */}
-        <div className={activeTab === "itinerary" ? "flex min-h-0 flex-1" : "hidden"}>
+        {/* Itinerary — top region. */}
+        <section className="flex min-h-0 basis-2/5 flex-col border-b border-slate-100">
           <div className="min-h-0 w-full flex-1">
             <ItineraryPanel
               reloadToken={reloadToken}
@@ -72,21 +65,21 @@ export default function RightRail({
               onStopMap={onStopMap}
             />
           </div>
-        </div>
+        </section>
 
-        {/* Map: lazy — Google Maps JS bills per load, so only mount on demand. */}
-        {activeTab === "map" && (
-          <div className="flex min-h-0 flex-1">
+        {/* Map — lazy: only mounts once the user opens it, then stays mounted. */}
+        {mapOpen && (
+          <section className="flex h-72 min-h-0 flex-col border-b border-slate-100">
             <div className="min-h-0 w-full flex-1">
               <MapPanel reloadToken={reloadToken} focusName={focusName} />
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Photos: always mounted to preserve scroll + overview cache. */}
-        <div className={activeTab === "photos" ? "flex min-h-0 flex-1" : "hidden"}>
+        {/* Photos / overview — bottom region, takes remaining space. */}
+        <section className="flex min-h-0 flex-1 flex-col">
           <div className="min-h-0 w-full flex-1">{photos}</div>
-        </div>
+        </section>
       </div>
     </div>
   );
