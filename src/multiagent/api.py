@@ -126,6 +126,13 @@ class TripIdRequest(BaseModel):
     user_id: str = "local"
 
 
+class StopBookedRequest(BaseModel):
+    day: int
+    name: str
+    booked: bool
+    user_id: str = "local"
+
+
 class PreferencesRequest(BaseModel):
     user_id: str = "local"
     # Editable subset of the structured preferences. All optional — only
@@ -421,6 +428,33 @@ async def trip_deselect(req: SelectRequest) -> dict:
     ok = trip_planner.remove_selection(req.kind, req.name)
     trip = trip_planner.load_active_trip_dict()
     return {"ok": ok, "view": trip_view.build_view(trip, None)}
+
+
+@app.get("/trip/itinerary")
+async def trip_itinerary_endpoint(user_id: str = "local") -> dict:
+    """Structured day-by-day itinerary view-model (the Itinerary tab)."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(user_id)
+    trip = trip_planner.load_active_trip_dict()
+    return await asyncio.to_thread(trip_view.build_itinerary, trip)
+
+
+@app.post("/trip/stop/booked")
+async def trip_stop_booked(req: StopBookedRequest) -> dict:
+    """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(req.user_id)
+    ok = await asyncio.to_thread(
+        trip_planner.set_stop_booked, req.day, req.name, req.booked
+    )
+    trip = trip_planner.load_active_trip_dict()
+    return {"ok": ok, "itinerary": await asyncio.to_thread(trip_view.build_itinerary, trip)}
 
 
 @app.get("/trips")

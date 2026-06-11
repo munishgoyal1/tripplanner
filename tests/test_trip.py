@@ -171,6 +171,7 @@ from multiagent.tools.trip_planner import (
     finalize_trip,
     get_trip_plan,
     list_past_trips,
+    set_stop_booked,
     update_trip_plan,
 )
 
@@ -217,6 +218,47 @@ class TestTripPlanState:
         plan = json.loads(get_trip_plan.invoke({}))
         assert len(plan["selected_flights"]) == 1
         assert plan["total_cost"] == 8500
+
+    def test_set_stop_booked_toggles_flag(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Baga Beach", "kind": "attraction"}]},
+            ],
+        })})
+        assert set_stop_booked(1, "Baga Beach", True) is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"][0]["stops"][0]["booked"] is True
+        # toggling off persists too
+        assert set_stop_booked(1, "baga beach", False) is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"][0]["stops"][0]["booked"] is False
+
+    def test_set_stop_booked_normalizes_string_stop(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{"day": 1, "stops": ["Anjuna Market"]}],
+        })})
+        assert set_stop_booked(1, "Anjuna Market", True) is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        stop = plan["day_wise_itinerary"][0]["stops"][0]
+        assert stop == {"name": "Anjuna Market", "booked": True}
+
+    def test_set_stop_booked_unknown_returns_false(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        assert set_stop_booked(1, "Nowhere", True) is False
 
     def test_finalize_trip(self):
         create_trip_plan.invoke({

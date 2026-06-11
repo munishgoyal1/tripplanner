@@ -427,12 +427,25 @@ STEP 4 — BUILD ITINERARY
   - Local transport within the destination
   - Cost per day
 
-  When you write each day's entry in day_wise_itinerary, ALSO include a
-  "stops" list naming the specific places visited that day in order, e.g.
-  {{"day": 2, "plan": "...prose...", "stops": ["Taj Mahal", "Agra Fort"]}}.
-  The map panel uses this to pin and route each day precisely; the place names
-  should match the hotels/attractions you selected. (Prose-only days still work
-  but are matched less reliably.)
+  When you write each day's entry in day_wise_itinerary, give it this STRUCTURED
+  shape so the UI can pin, route, load photos for, and track booking of each
+  place precisely:
+    {{"day": 2, "date": "2026-01-12", "title": "Old Goa & beaches",
+      "summary": "short prose recap of the day",
+      "stops": [
+        {{"name": "Basilica of Bom Jesus", "kind": "attraction",
+          "time": "09:30", "duration_min": 90, "note": "go early, fewer crowds"}},
+        {{"name": "Taj Exotica Resort", "kind": "hotel"}}
+      ]}}
+  - "stops" is an ORDERED list of the specific places visited that day. Each
+    stop is an object with: name (REQUIRED, must match the hotels/attractions
+    you selected), kind (one of: hotel, attraction, meal, transport, flight,
+    other), and optionally time ("HH:MM"), duration_min (int), note (short).
+  - Keep a "summary" (prose) per day for readability; "title" is a short label.
+  - When a stop becomes actually booked (after execute_bookings), set its
+    "booked": true so the UI shows it checked off.
+  - Plain string stops (["Taj Mahal", "Agra Fort"]) still work but are matched
+    less reliably and carry no times — prefer the structured objects above.
 
   Update the trip plan with update_trip_plan.
 

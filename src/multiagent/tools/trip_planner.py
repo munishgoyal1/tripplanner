@@ -145,6 +145,44 @@ def remove_selection(kind: str, name: str) -> bool:
     return True
 
 
+def set_stop_booked(day: int, name: str, booked: bool) -> bool:
+    """Toggle a single itinerary stop's ``booked`` flag (UI helper).
+
+    Finds the day entry by its day number and the stop by name (case-
+    insensitive). String stops on that day are normalized to dicts so the flag
+    can be persisted. Returns ``True`` when the stop was found and updated.
+    Non-tool: called by the Itinerary panel's booked checkbox.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    itin = plan.get("day_wise_itinerary") or []
+    target = str(name or "").strip().lower()
+    if not target:
+        return False
+    for idx, entry in enumerate(itin):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        if day_num != day:
+            continue
+        stops = entry.get("stops")
+        if not isinstance(stops, list):
+            return False
+        for j, stop in enumerate(stops):
+            stop_name = stop.get("name") if isinstance(stop, dict) else stop
+            if str(stop_name or "").strip().lower() != target:
+                continue
+            if not isinstance(stop, dict):
+                stop = {"name": str(stop)}
+                stops[j] = stop
+            stop["booked"] = bool(booked)
+            _save_active_trip(plan)
+            return True
+    return False
+
+
 def _save_active_trip(plan: dict[str, Any]) -> None:
     # Stamp a stable id + freshness so the trip can live in history and be
     # listed / resumed later. Every save mirrors to the trips collection so

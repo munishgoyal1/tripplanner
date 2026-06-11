@@ -700,6 +700,123 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     }
 
 
+# ---------------------------------------------------------------------------
+# structured itinerary view-model (no network) — drives the Itinerary tab,
+# cross-references selections + per-stop booked flags so each stop is clickable
+# (focus its photos) and reflects what's booked.
+# ---------------------------------------------------------------------------
+
+# A stop's "kind" decides its chip + whether it can load place photos.
+_STOP_KINDS = {"hotel", "attraction", "flight", "meal", "transport", "other"}
+
+
+def _infer_stop_kind(name: str, hotels: set[str], activities: set[str]) -> str:
+    n = (name or "").strip().lower()
+    if n in hotels:
+        return "hotel"
+    if n in activities:
+        return "attraction"
+    return "attraction"
+
+
+def _normalize_stop(
+    raw: Any, hotels: set[str], activities: set[str]
+) -> dict[str, Any] | None:
+    """Turn a raw stop (str or dict) into the structured stop view-model."""
+    if isinstance(raw, str):
+        name = raw.strip()
+        if not name:
+            return None
+        kind = _infer_stop_kind(name, hotels, activities)
+        return {
+            "name": name,
+            "kind": kind,
+            "time": "",
+            "duration_min": None,
+            "note": "",
+            "booked": False,
+            "selected": name.lower() in (hotels if kind == "hotel" else activities),
+        }
+    if isinstance(raw, dict):
+        name = str(raw.get("name") or "").strip()
+        if not name:
+            return None
+        kind = str(raw.get("kind") or "").strip().lower()
+        if kind not in _STOP_KINDS:
+            kind = _infer_stop_kind(name, hotels, activities)
+        dur = raw.get("duration_min")
+        return {
+            "name": name,
+            "kind": kind,
+            "time": str(raw.get("time") or "").strip(),
+            "duration_min": dur if isinstance(dur, (int, float)) else None,
+            "note": str(raw.get("note") or "").strip(),
+            "booked": bool(raw.get("booked")),
+            "selected": name.lower()
+            in (hotels if kind == "hotel" else activities),
+        }
+    return None
+
+
+def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
+    """Structured day-by-day itinerary view-model (frontend-agnostic).
+
+    Each day carries a title, prose summary, day color, and an ordered list of
+    structured stops. Every stop is cross-referenced against the trip's
+    selections (``selected``) and carries its own ``booked`` flag so the UI can
+    render booked checkmarks and make each stop clickable (to focus its photos
+    or its map pin). Pure / no network.
+    """
+    if not trip or not (trip.get("day_wise_itinerary") or []):
+        return {
+            "has_itinerary": False,
+            "destination": str((trip or {}).get("destination") or ""),
+            "currency": currency_symbol(trip),
+            "days": [],
+            "stats": {"days": 0, "stops": 0, "booked": 0},
+        }
+
+    hotels = _selected_names(trip, "hotel")
+    activities = _selected_names(trip, "attraction")
+    itin = trip.get("day_wise_itinerary") or []
+
+    days: list[dict[str, Any]] = []
+    total_stops = 0
+    total_booked = 0
+    for idx, entry in enumerate(itin):
+        if not isinstance(entry, dict):
+            entry = {"plan": str(entry)}
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        stops = []
+        for raw in entry.get("stops") or []:
+            s = _normalize_stop(raw, hotels, activities)
+            if s:
+                s["color"] = _day_color(day_num)
+                stops.append(s)
+                total_stops += 1
+                if s["booked"]:
+                    total_booked += 1
+        days.append(
+            {
+                "day": day_num,
+                "date": str(entry.get("date") or "").strip(),
+                "title": str(entry.get("title") or "").strip() or f"Day {day_num}",
+                "summary": str(entry.get("summary") or entry.get("plan") or "").strip(),
+                "color": _day_color(day_num),
+                "stops": stops,
+            }
+        )
+
+    return {
+        "has_itinerary": True,
+        "destination": str(trip.get("destination") or ""),
+        "currency": currency_symbol(trip),
+        "days": days,
+        "stats": {"days": len(days), "stops": total_stops, "booked": total_booked},
+    }
+
+
 def build_destination_overview(
     destination: str, *, include_news: bool = True
 ) -> dict[str, Any]:

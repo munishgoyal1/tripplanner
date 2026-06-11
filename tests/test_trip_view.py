@@ -358,3 +358,80 @@ def test_map_view_selected_attraction_gets_fallback_day(_map_geo: None) -> None:
     assert by_name["Fort Aguada"]["day"] is None
 
 
+# ---------------------------------------------------------------------------
+# build_itinerary (pure, no network)
+# ---------------------------------------------------------------------------
+def test_itinerary_empty_when_no_days() -> None:
+    it = trip_view.build_itinerary({**SAMPLE_TRIP, "day_wise_itinerary": []})
+    assert it["has_itinerary"] is False
+    assert it["days"] == []
+    assert it["stats"] == {"days": 0, "stops": 0, "booked": 0}
+
+
+def test_itinerary_structured_stops() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "date": "2026-01-10",
+                "title": "Arrival",
+                "summary": "land and relax",
+                "stops": [
+                    {"name": "Taj Exotica Resort", "kind": "hotel", "booked": True},
+                    {
+                        "name": "Dudhsagar Falls Trek",
+                        "kind": "attraction",
+                        "time": "14:00",
+                        "duration_min": 120,
+                        "note": "carry water",
+                    },
+                ],
+            },
+            {"day": 2, "plan": "beach day", "stops": ["Dudhsagar Falls Trek"]},
+        ],
+    }
+    it = trip_view.build_itinerary(trip)
+    assert it["has_itinerary"] is True
+    assert it["stats"] == {"days": 2, "stops": 3, "booked": 1}
+
+    d1 = it["days"][0]
+    assert d1["title"] == "Arrival"
+    assert d1["date"] == "2026-01-10"
+    assert d1["summary"] == "land and relax"
+    hotel = d1["stops"][0]
+    assert hotel["kind"] == "hotel"
+    assert hotel["booked"] is True
+    assert hotel["selected"] is True  # cross-referenced with selected_hotels
+    act = d1["stops"][1]
+    assert act["time"] == "14:00"
+    assert act["duration_min"] == 120
+    assert act["note"] == "carry water"
+    assert act["selected"] is True
+    # day colors differ
+    assert it["days"][0]["color"] != it["days"][1]["color"]
+
+
+def test_itinerary_string_stops_normalize() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [{"day": 1, "stops": ["Some Random Cafe", ""]}],
+    }
+    it = trip_view.build_itinerary(trip)
+    stops = it["days"][0]["stops"]
+    assert len(stops) == 1  # blank dropped
+    s = stops[0]
+    assert s["name"] == "Some Random Cafe"
+    assert s["kind"] == "attraction"
+    assert s["booked"] is False
+    assert s["selected"] is False
+
+
+def test_itinerary_title_falls_back_to_day_number() -> None:
+    trip = {**SAMPLE_TRIP, "day_wise_itinerary": [{"day": 3, "plan": "x"}]}
+    it = trip_view.build_itinerary(trip)
+    assert it["days"][0]["title"] == "Day 3"
+    assert it["days"][0]["day"] == 3
+
+
+
