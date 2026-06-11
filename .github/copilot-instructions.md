@@ -75,7 +75,27 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-06-11)
+## Current State (last updated 2026-06-12)
+- **Structured itinerary + tabbed right rail (Session 21)**: the itinerary is
+  now data, not just prose. `web/trip_view.build_itinerary(trip)` returns
+  day-by-day `days[{day,date,title,summary,color,stops[...]}]` + `stats`, where
+  each stop has `name/kind/time/duration_min/note/booked/selected/color`
+  (`_normalize_stop`/`_infer_stop_kind` accept string OR dict stops).
+  `trip_planner.set_stop_booked(day,name,booked)` persists a per-stop booked
+  flag (normalizes string stops to dicts so it sticks). Endpoints:
+  `GET /trip/itinerary`, `POST /trip/stop/booked` (`StopBookedRequest`). Agent
+  prompt STEP 4 now asks for structured `stops` (prose still works) and to set
+  `"booked": true` after `execute_bookings`. Frontend: new `ItineraryPanel.tsx`
+  (clickable day timeline with a booked checkbox — optimistic toggle) and
+  `RightRail.tsx` (segmented **Itinerary · Map · Photos** tabs) REPLACE the old
+  standalone "Show map" 3rd column. Map mounts lazily inside the rail (Google
+  Maps bills per load); itinerary + photos stay mounted. Clicking a place stop
+  focuses the Photos tab; the 📍 button jumps to the Map tab (`MapPanel` got a
+  `focusName` prop that reveals the pin's day + opens its info window).
+  Incremental saves confirmed already working (per-turn `_save_chat` +
+  `update_trip_plan→_save_active_trip` mirror under `trip_id`).
+  Types: `Itinerary`/`ItineraryDay`/`ItineraryStop`; api: `fetchItinerary`,
+  `setStopBooked`. +7 backend tests → 398 passing; tsc clean.
 - **Persistent chat + day-clustered map (Session 20)**: the conversation +
   itinerary summary now survive a browser refresh AND follow saved-trip
   switches. Pure-Python `web/chat_store.py` persists the clean Human/AI text

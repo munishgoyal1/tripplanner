@@ -156,6 +156,36 @@ export interface MapsConfig {
   key: string;
 }
 
+// ---- Structured itinerary (mirrors build_itinerary) -----------------------
+
+export interface ItineraryStop {
+  name: string;
+  kind: string; // hotel | attraction | meal | transport | flight | other
+  time: string;
+  duration_min: number | null;
+  note: string;
+  booked: boolean;
+  selected: boolean;
+  color: string;
+}
+
+export interface ItineraryDay {
+  day: number;
+  date: string;
+  title: string;
+  summary: string;
+  color: string;
+  stops: ItineraryStop[];
+}
+
+export interface Itinerary {
+  has_itinerary: boolean;
+  destination: string;
+  currency: string;
+  days: ItineraryDay[];
+  stats: { days: number; stops: number; booked: number };
+}
+
 // ---- Saved trips (mirrors trip_planner.list_saved_trips) ------------------
 
 export interface SavedTrip {

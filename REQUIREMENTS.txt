@@ -1053,3 +1053,59 @@ IMPLEMENTATION — map:
 - +9 tests (8 chat_store, 1 fallback-day map). Total: 391 passing.
 
 
+=== Session 21 (2026-06-12): structured itinerary + tabbed right rail ===
+
+USER REQUEST (verbatim):
+- "if a user continues again with more chat and planning for an existing saved
+  trip - hope that you will save the incremental new updates also for future."
+- "Can you try at structuring the itnierary than leaving it a text prose alone,
+  so that parts of it can be referred and used, for example for map markings,
+  for hotel summary showings, for attraction detail loading etc. Then along with
+  this make the user interface also such that we can show the itinerary in some
+  user fireendlya nd clickable way where they can check which part is booked,
+  clicking updates the map and photos panels accoridngly."
+- "Also where will you show this new panel, alreadyy now multiple panels on one
+  page - can you suggest how to re-organize in line with modern latest UI
+  experiences and keeping it still simple always"
+
+DECISIONS:
+- Incremental saves already work — no change needed. Every chat turn is saved
+  via _save_chat() keyed by trip_id, and every plan edit (update_trip_plan ->
+  _save_active_trip) mirrors into the trips collection under the same trip_id,
+  so resuming a saved trip keeps appending updates.
+- Structure the itinerary as data (not prose): a day-by-day list of ordered
+  "stops", each with name/kind/time/duration/note + a persisted "booked" flag.
+  Prose summary + day title are kept alongside. Plain-string stops still work.
+- Re-organize the right rail as a single segmented-tab column — Itinerary ·
+  Map · Photos — replacing the separate "Show map" 3rd column toggle. Modern,
+  simple, one rail. Clicking a stop drives the other tabs (Photos focus + Map
+  pin highlight).
+
+IMPLEMENTATION — backend:
+- trip_view.build_itinerary(trip) -> structured view-model: days[{day,date,
+  title,summary,color,stops[{name,kind,time,duration_min,note,booked,selected,
+  color}]}] + stats{days,stops,booked}. _normalize_stop / _infer_stop_kind
+  turn string or dict stops into structured dicts.
+- trip_planner.set_stop_booked(day,name,booked) persists a stop's booked flag
+  (normalizes string stops to {"name":...} dicts so the flag sticks).
+- api.py: GET /trip/itinerary and POST /trip/stop/booked (StopBookedRequest).
+- trip_agent STEP 4 prompt now asks for structured stops (with example);
+  set "booked": true after execute_bookings.
+- +7 backend tests (4 build_itinerary, 3 set_stop_booked). Total: 398 passing.
+
+IMPLEMENTATION — frontend:
+- types.ts: Itinerary / ItineraryDay / ItineraryStop.
+- api.ts: fetchItinerary(), setStopBooked(day,name,booked).
+- ItineraryPanel.tsx: vertical day timeline of clickable stop cards with a
+  booked checkbox (optimistic toggle -> setStopBooked), kind icons, In-trip
+  pill, duration/note; place stops focus Photos, a 📍 button jumps to Map.
+- RightRail.tsx: segmented Itinerary · Map · Photos tabs. Map mounts lazily
+  (Google Maps bills per load); itinerary + photos stay mounted (hidden) to
+  keep state warm. Default tab = Itinerary when a trip exists, else Photos.
+- MapPanel.tsx: new focusName prop — reveals the pin's day, pans, opens its
+  info window.
+- App.tsx: dropped the standalone map column + "Show map" toggle; right rail
+  (desktop aside + mobile bottom-sheet) now renders RightRail. New stopFocus
+  handlers wire itinerary clicks to Photos/Map.
+
+

@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, SavedTrip } from "./types";
+import type { TripView, DestinationOverview, MapView, MapsConfig, SavedTrip, Itinerary } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
@@ -388,4 +388,26 @@ export async function fetchMapView(): Promise<MapView> {
   const params = new URLSearchParams({ user_id: getUserId() });
   const res = await fetch(`${BASE}/trip/map?${params.toString()}`);
   return res.json();
+}
+
+/** Structured day-by-day itinerary for the Itinerary tab. */
+export async function fetchItinerary(): Promise<Itinerary> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await fetch(`${BASE}/trip/itinerary?${params.toString()}`);
+  return res.json();
+}
+
+/** Toggle one itinerary stop's booked flag; returns the refreshed itinerary. */
+export async function setStopBooked(
+  day: number,
+  name: string,
+  booked: boolean
+): Promise<Itinerary> {
+  const res = await fetch(`${BASE}/trip/stop/booked`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ day, name, booked, user_id: getUserId() }),
+  });
+  const json = await res.json();
+  return json.itinerary as Itinerary;
 }

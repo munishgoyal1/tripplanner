@@ -65,7 +65,7 @@ src/multiagent/
   web/
     oauth.py          Standalone Google OAuth, HMAC mg_session cookie
     trip_view.py      PURE-PYTHON view-model (build_view, build_destination_overview,
-                      build_map_view — geocoded day-tagged pins + route bands)
+                      build_map_view, build_itinerary — structured day-by-day stops)
     chat_store.py     PURE-PYTHON per-trip chat transcript persistence
                       (Cosmos users/chat_<trip_id> or local chats/<trip_id>.json)
     places_cache.py   Google Places cache (ThreadPoolExecutor, 30-min TTL; surfaces lat/lng)
@@ -76,15 +76,19 @@ frontend/
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
     main.tsx          React 19 root
-    App.tsx           Layout: chat ‖ resizable divider ‖ trip panel ‖ map (toggle)
+    App.tsx           Layout: chat ‖ resizable divider ‖ tabbed right rail
+                      (Itinerary · Map · Photos)
     api.ts            All HTTP/SSE + auth glue + per-destination overview cache
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
       ChatPanel.tsx        Sticky header, message bubbles, composer
-      TripPanel.tsx        Hero summary + NavStrip + ItemCard
+      TripPanel.tsx        Hero summary + NavStrip + ItemCard (Photos tab)
+      RightRail.tsx        Segmented Itinerary · Map · Photos tab container
+      ItineraryPanel.tsx   Day timeline of clickable stops + booked checkbox
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
+                           (focusName prop highlights a stop's pin)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
 infra/
@@ -144,6 +148,15 @@ It exports:
   [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
   the Maps JavaScript API and draws geodesic per-day route lines client-side
   (no billed Directions API).
+- `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
+  `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
+  booked,selected,color}]}]` + `stats{days,stops,booked}`. `_normalize_stop` /
+  `_infer_stop_kind` turn string OR dict stops into structured dicts. Served by
+  `GET /trip/itinerary`; `trip_planner.set_stop_booked(day,name,booked)` (behind
+  `POST /trip/stop/booked`) persists a stop's booked flag (normalizing string
+  stops to dicts). Rendered by
+  [ItineraryPanel.tsx](../frontend/src/components/ItineraryPanel.tsx); clicking a
+  place stop focuses the Photos tab, the 📍 button focuses the Map tab.
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.

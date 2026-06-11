@@ -87,9 +87,11 @@ function dotIcon(color: string): string {
 interface Props {
   /** Bump to refetch the map after the trip changes. */
   reloadToken?: number;
+  /** When set, highlight the pin with this name (filter to its day, pan, open info). */
+  focusName?: string | null;
 }
 
-export default function MapPanel({ reloadToken = 0 }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,6 +102,7 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
   const mapRef = useRef<any>(null);
   const infoRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
+  const openInfoRef = useRef<((p: MapPin) => void) | null>(null); // latest draw's info opener
 
   // ---- data + config -------------------------------------------------------
   useEffect(() => {
@@ -294,11 +297,31 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
       infoRef.current.setPosition({ lat: p.lat, lng: p.lng });
       infoRef.current.open(map);
     }
+
+    openInfoRef.current = openInfo;
   }, [view, activeDay]);
 
   useEffect(() => {
     draw();
   }, [draw]);
+
+  // ---- focus a pin by name (driven from the itinerary tab) -----------------
+  useEffect(() => {
+    if (!focusName || !view || !mapRef.current) return;
+    const pin = view.pins.find(
+      (p) => p.name.toLowerCase() === focusName.toLowerCase()
+    );
+    if (!pin) return;
+    // Reveal the pin's day so it isn't filtered out, then pan + open its info.
+    if (pin.day && pin.day !== activeDay) setActiveDay(pin.day);
+    const t = setTimeout(() => {
+      mapRef.current?.panTo({ lat: pin.lat, lng: pin.lng });
+      openInfoRef.current?.(pin);
+    }, 0);
+    return () => clearTimeout(t);
+    // activeDay omitted: we set it here and don't want to re-trigger on it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusName, view]);
 
   // ---- render --------------------------------------------------------------
   // "Not configured" is a terminal state — no map will ever mount, so it's safe
