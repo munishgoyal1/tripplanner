@@ -109,3 +109,49 @@ export interface DestinationOverview {
   news: NewsItem[];
   map_url?: string;
 }
+
+// ---- Interactive map view-model (mirrors build_map_view) ------------------
+
+export interface MapPin {
+  id: string;
+  name: string;
+  kind: string; // hotel | attraction | airport
+  selected: boolean;
+  day: number | null;
+  lat: number;
+  lng: number;
+  rating: number | null;
+  address: string;
+  photo: string | null;
+}
+
+export interface MapDay {
+  day: number;
+  label: string;
+  color: string;
+  pin_ids: string[];
+}
+
+export interface MapAirport {
+  id: string;
+  name: string;
+  kind: string;
+  lat: number;
+  lng: number;
+}
+
+export interface MapView {
+  enabled: boolean;
+  destination: string;
+  center: { lat: number; lng: number } | null;
+  pins: MapPin[];
+  days: MapDay[];
+  unscheduled_pin_ids: string[];
+  airport: MapAirport | null;
+  empty_message: string | null;
+}
+
+export interface MapsConfig {
+  enabled: boolean;
+  key: string;
+}

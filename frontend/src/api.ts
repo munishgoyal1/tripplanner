@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview } from "./types";
+import type { TripView, DestinationOverview, MapView, MapsConfig } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
@@ -324,4 +324,28 @@ export async function fetchDestinationOverview(
     });
   overviewInflight.set(key, req);
   return req;
+}
+
+// ---------------------------------------------------------------------------
+// Interactive map. The browser Maps key is fetched once (it's static per
+// deployment) and cached for the page lifetime. The map view-model is fetched
+// on demand when the user opens the map panel.
+// ---------------------------------------------------------------------------
+let mapsConfigCache: MapsConfig | null = null;
+
+export async function fetchMapsConfig(): Promise<MapsConfig> {
+  if (mapsConfigCache) return mapsConfigCache;
+  try {
+    const res = await fetch(`${BASE}/maps/config`);
+    mapsConfigCache = (await res.json()) as MapsConfig;
+  } catch {
+    mapsConfigCache = { enabled: false, key: "" };
+  }
+  return mapsConfigCache;
+}
+
+export async function fetchMapView(): Promise<MapView> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await fetch(`${BASE}/trip/map?${params.toString()}`);
+  return res.json();
 }

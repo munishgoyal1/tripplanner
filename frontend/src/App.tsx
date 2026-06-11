@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import TripPanel from "./components/TripPanel";
+import MapPanel from "./components/MapPanel";
 import { fetchTripView, selectItem, deselectItem } from "./api";
 import type { TripView } from "./types";
 
@@ -14,6 +15,13 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [focus, setFocus] = useState<NavRef | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
+  // Lazily-mounted map column (Google Maps JS bills per load, so only mount on
+  // demand). Persist the open state so it survives reloads.
+  const [mapOpen, setMapOpen] = useState<boolean>(
+    () => localStorage.getItem("multiagent_map_open") === "1"
+  );
+  // Bumped whenever the trip view reloads so the map refetches its pins.
+  const [tripVersion, setTripVersion] = useState(0);
 
   // --- resizable split between chat and the trip/photos panel ---------------
   const [chatPct, setChatPct] = useState<number>(() => {
@@ -70,6 +78,7 @@ export default function App() {
       try {
         const v = await fetchTripView(f ?? undefined);
         setView(v);
+        setTripVersion((n) => n + 1);
         if (!f) {
           setNavList(v.items.map((it) => ({ kind: it.kind, name: it.name })));
         }
@@ -135,6 +144,14 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [mobileTripOpen]);
 
+  const toggleMap = useCallback(() => {
+    setMapOpen((o) => {
+      const next = !o;
+      localStorage.setItem("multiagent_map_open", next ? "1" : "0");
+      return next;
+    });
+  }, []);
+
   const tripPanelProps = {
     view,
     loading,
@@ -164,9 +181,31 @@ export default function App() {
         <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
       </div>
 
-      <aside className="hidden min-w-0 flex-1 md:block">
-        <TripPanel {...tripPanelProps} />
+      <aside className="hidden min-w-0 flex-1 md:flex">
+        <div className={`min-w-0 ${mapOpen ? "w-1/2" : "flex-1"}`}>
+          <TripPanel {...tripPanelProps} />
+        </div>
+        {mapOpen && (
+          <div className="min-w-0 w-1/2 border-l border-slate-100">
+            <MapPanel reloadToken={tripVersion} />
+          </div>
+        )}
       </aside>
+
+      {/* Desktop-only: toggle the interactive map column. */}
+      {isDesktop && view?.has_trip && (
+        <button
+          type="button"
+          onClick={toggleMap}
+          aria-pressed={mapOpen}
+          className={`fixed top-3 right-4 z-30 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium shadow-pop ring-1 ring-black/10 transition active:scale-95 ${
+            mapOpen ? "bg-brand text-white" : "bg-white text-ink hover:bg-slate-50"
+          }`}
+        >
+          <span aria-hidden>{"\uD83D\uDDFA\uFE0F"}</span>
+          <span>{mapOpen ? "Hide map" : "Show map"}</span>
+        </button>
+      )}
 
       {/* Mobile-only: floating button + bottom-sheet for the trip panel. */}
       {!isDesktop && view?.has_trip && !mobileTripOpen && (
