@@ -25,13 +25,18 @@ from langchain_core.messages import BaseMessage
 
 
 # Currency amount: $42, € 1,200.50, ₹3500, USD 99, INR 12345.
-# We keep it permissive so we catch anything the agent might write.
+# The digit core accepts either comma/period-grouped thousands (1,200.50) OR a
+# plain run of digits (70000) — without the plain-run branch, a bare number
+# like INR 70000 would truncate to INR 700 (\d{1,3} grabs the first 3 digits
+# then finds no group separator). We keep it permissive so we catch anything
+# the agent might write.
+_AMOUNT = r"\d{1,3}(?:[,\.]\d{3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?"
 _PRICE_RE = re.compile(
-    r"""(?ix)
+    rf"""(?ix)
     (?:
-      [\$€£¥₹₩]\s?\d{1,3}(?:[,\.]\d{3})*(?:\.\d{1,2})?
+      [\$€£¥₹₩]\s?(?:{_AMOUNT})
       |
-      (?:USD|EUR|GBP|INR|JPY|AED|SGD|AUD|CAD)\s?\d{1,3}(?:[,\.]\d{3})*(?:\.\d{1,2})?
+      (?:USD|EUR|GBP|INR|JPY|AED|SGD|AUD|CAD)\s?(?:{_AMOUNT})
     )
     """,
 )

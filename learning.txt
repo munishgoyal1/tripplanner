@@ -1,0 +1,106 @@
+================================================================================
+multiagent — frameworks in use and on deck
+Captured 2026-06-05
+================================================================================
+
+CURRENTLY IN USE
+----------------
+
+LangGraph
+  - The orchestration layer. src/multiagent/graph.py builds a StateGraph with
+    a `trip_agent` node + prebuilt `ToolNode`, compiled once into the
+    singleton `app_graph`.
+  - `app_graph.astream_events(version="v2")` drives the SSE streaming in
+    src/multiagent/api.py (`on_chat_model_stream`, `on_tool_start`,
+    `on_tool_end`).
+  - `parallel_tool_calls=True` on `bind_tools(...)` lets ToolNode execute
+    independent calls concurrently.
+
+LangChain core + langchain-openai
+  - Model + tool primitives. No LangChain AgentExecutor — LangGraph
+    supersedes it.
+  - `AzureChatOpenAI` (langchain-openai) for the LLM.
+  - `@tool` / `StructuredTool` for all 33 tools.
+  - `BaseMessage` / `AIMessage` / `HumanMessage` / `ToolMessage` for state.
+  - `BaseCallbackHandler` for the per-user LLM cost tracker (graph.py
+    `_UsageCallback` → multiagent.usage.record_usage).
+
+FastAPI + Uvicorn
+  - API server, SSE (`/chat/stream`), and SPA host. Single container, single
+    origin: `/api/*` for the API, everything else served from
+    `frontend/dist/`.
+
+React 19 + Vite + TypeScript + Tailwind
+  - Frontend in frontend/ (App.tsx, ChatPanel.tsx, TripPanel.tsx,
+    DestinationOverview.tsx, SettingsModal.tsx, Lightbox.tsx).
+  - Tailwind theme: coral brand + teal accent, Inter UI + Fraunces display.
+
+Pydantic v2
+  - Settings (multiagent.config.Settings) and tool args schemas.
+
+azure-cosmos (lazy-imported)
+  - Optional hosted storage. `storage_cosmos.is_enabled()` is the
+    feature-flag switch; local JSON files in `~/.multiagent/` otherwise.
+
+httpx
+  - Sync HTTP for every external tool (Duffel, Amadeus, Google Places,
+    Google Routes v2, Tavily, Open-Meteo).
+
+pytest
+  - 322 tests, ~5s wall-clock.
+
+NOT USING (deliberately)
+------------------------
+  - LangChain AgentExecutor / create_openai_tools_agent — LangGraph
+    replaces it.
+  - LangSmith — own observability (observability.app_event,
+    tool_metrics_snapshot, llm_usage, hallucination_critic events).
+  - LlamaIndex, Haystack, Semantic Kernel, Microsoft Agent Framework,
+    AutoGen, CrewAI — no driver to add a second framework today.
+
+
+CANDIDATES FOR THE NEAR FUTURE (ranked by likely payoff)
+--------------------------------------------------------
+
+1. LangGraph checkpointers
+   - `langgraph.checkpoint.sqlite` / `.postgres` (or a Cosmos adapter).
+   - Today chat history lives in an in-process dict in api.py and
+     `~/.multiagent/active_trip.json`. A checkpointer gives durable
+     per-thread state, time-travel, and resume — natural fit when we add
+     multi-turn long-running plans.
+
+2. LangGraph `interrupt()` / human-in-the-loop
+   - For confirm-before-book steps (Duffel orders, hotel holds).
+   - Lets the SPA show a "please confirm" gate without us re-implementing
+     pause/resume on top of the current loop.
+
+3. LangGraph subgraphs / multi-agent supervisor
+   - Only if/when the single trip agent's prompt + 33 tools gets too big.
+     Today one agent + 33 tools is still cheaper than a router.
+   - Revisit when we cross ~50 tools or add a distinct "booking" persona.
+
+4. OpenTelemetry
+   - `opentelemetry-instrumentation-fastapi` + a LangChain callback to
+     emit spans. Lets `tool_call` / `llm_usage` events flow to App
+     Insights / Log Analytics as proper traces instead of our hand-rolled
+     `app_event` JSON lines. Likely the next observability upgrade.
+
+5. Pydantic AI or Microsoft Agent Framework
+   - Only if we hit a real LangGraph limitation. No current driver.
+
+6. LangChain RAG primitives + a vector store
+   - pgvector-on-Cosmos or Azure AI Search.
+   - Triggered when `recall_relevant_memory` (BM25-lite in
+     tools/memory_recall.py) outgrows in-process. Today it's fast and
+     cheap, so not yet.
+
+7. Microsoft Foundry hosted agent
+   - Only if we ever want the agent to live outside our container with
+     managed evals + continuous monitoring. Out of scope while we're on a
+     single Azure Container Apps deployment.
+
+
+SHORT ANSWER
+------------
+LangGraph for orchestration, LangChain for primitives. Next likely
+additions: LangGraph checkpointers → `interrupt()` for booking → OpenTelemetry.
