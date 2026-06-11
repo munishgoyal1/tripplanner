@@ -111,6 +111,7 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
           fullscreenControl: true,
         });
         infoRef.current = new google.maps.InfoWindow();
+        draw();
       })
       .catch(() => {
         if (!cancelled) setError("Could not load Google Maps. Check the browser key.");
@@ -118,7 +119,20 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
     return () => {
       cancelled = true;
     };
+    // `draw` is intentionally omitted: it's called once here to paint the
+    // initial overlays, then the dedicated redraw effect keeps it in sync.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, view?.enabled, view?.center]);
+
+  // Drop the stale map instance if the component is torn down, so a remount
+  // (e.g. toggling "Show map") rebinds to a fresh container instead of an
+  // orphaned, detached node (which renders blank).
+  useEffect(() => {
+    return () => {
+      mapRef.current = null;
+      infoRef.current = null;
+    };
+  }, []);
 
   // ---- (re)draw markers + per-day route lines ------------------------------
   const draw = useCallback(() => {
@@ -240,9 +254,8 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
   }, [draw]);
 
   // ---- render --------------------------------------------------------------
-  if (loading) {
-    return <div className="grid h-full place-items-center text-sm text-slate-400">Loading map…</div>;
-  }
+  // "Not configured" is a terminal state — no map will ever mount, so it's safe
+  // to return early.
   if (view && !view.enabled) {
     return (
       <div className="grid h-full place-items-center p-6 text-center">
@@ -253,19 +266,21 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
       </div>
     );
   }
-  if (error) {
-    return <div className="grid h-full place-items-center p-6 text-center text-sm text-rose-500">{error}</div>;
-  }
-  if (view && view.pins.length === 0) {
-    return (
-      <div className="grid h-full place-items-center p-6 text-center text-sm text-slate-500">
-        {view.empty_message || "No mappable places yet."}
-      </div>
-    );
-  }
+
+  // For every other state (loading, error, empty, populated) we keep the map
+  // container mounted and layer status messages on top. Unmounting the <div>
+  // during a reload would orphan the live map instance and leave it blank.
+  const overlay =
+    error != null
+      ? { text: error, tone: "text-rose-500" }
+      : loading && !view
+        ? { text: "Loading map…", tone: "text-slate-400" }
+        : view && view.pins.length === 0
+          ? { text: view.empty_message || "No mappable places yet.", tone: "text-slate-500" }
+          : null;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       {/* Day filter chips */}
       {view && view.days.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-100 px-3 py-2">
@@ -302,7 +317,14 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
           ))}
         </div>
       )}
-      <div ref={mapEl} className="min-h-0 flex-1" />
+      <div className="relative min-h-0 flex-1">
+        <div ref={mapEl} className="h-full w-full" />
+        {overlay && (
+          <div className="absolute inset-0 grid place-items-center bg-white/85 p-6 text-center">
+            <div className={`max-w-xs text-sm ${overlay.tone}`}>{overlay.text}</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
