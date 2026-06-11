@@ -450,6 +450,210 @@ def build_map_url(destination: str, highlights: list[str] | None = None) -> str:
     )
 
 
+# Day-pin palette — distinct, reasonably color-blind-safe hues, cycled per day.
+_DAY_COLORS = (
+    "#e11d48",  # coral (brand)
+    "#0d9488",  # teal (accent)
+    "#2563eb",  # blue
+    "#d97706",  # amber
+    "#7c3aed",  # violet
+    "#db2777",  # pink
+    "#059669",  # emerald
+    "#0891b2",  # cyan
+)
+
+
+def _maps_browser_key() -> str:
+    try:
+        from multiagent.config import get_settings
+
+        return get_settings().google_maps_browser_key or ""
+    except Exception:
+        return ""
+
+
+def _day_color(day: int) -> str:
+    return _DAY_COLORS[(day - 1) % len(_DAY_COLORS)]
+
+
+def _day_for_place(name: str, itinerary: list[Any]) -> int | None:
+    """Return the 1-based day number a place belongs to, or ``None``.
+
+    "Both" strategy: prefer a structured ``stops`` list on a day entry; fall
+    back to scanning the free-form ``plan`` prose for the place name.
+    """
+    needle = (name or "").strip().lower()
+    if not needle:
+        return None
+    for idx, entry in enumerate(itinerary or []):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        stops = entry.get("stops")
+        if isinstance(stops, list):
+            for s in stops:
+                s_name = s.get("name") if isinstance(s, dict) else s
+                if s_name and needle in str(s_name).strip().lower():
+                    return day_num
+        plan_text = str(entry.get("plan") or "").lower()
+        if plan_text and needle in plan_text:
+            return day_num
+    return None
+
+
+def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
+    """Geocoded pins for selected items + destination top-places (suggestions)."""
+    itinerary = trip.get("day_wise_itinerary") or []
+    selected = {
+        "hotel": _selected_names(trip, "hotel"),
+        "attraction": _selected_names(trip, "attraction"),
+    }
+
+    # (kind, name) in display order: user picks first, then suggestions.
+    refs: list[tuple[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+
+    def _add(kind: str, name: str) -> None:
+        key = (kind, (name or "").strip().lower())
+        if name and key not in seen:
+            seen.add(key)
+            refs.append((kind, name))
+
+    for h in trip.get("selected_hotels") or []:
+        if isinstance(h, dict) and h.get("name"):
+            _add("hotel", str(h["name"]))
+    for a in trip.get("selected_activities") or []:
+        if isinstance(a, dict) and a.get("name"):
+            _add("attraction", str(a["name"]))
+    if destination:
+        for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
+            _add("hotel", name)
+        for name in places_cache.top_places(
+            destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
+        ):
+            _add("attraction", name)
+
+    places_cache.prefetch([n for _, n in refs], destination, max_photos=1)
+
+    pins: list[dict[str, Any]] = []
+    for i, (kind, name) in enumerate(refs):
+        info = places_cache.get_summary(name, destination) or {}
+        lat, lng = info.get("lat"), info.get("lng")
+        if lat is None or lng is None:
+            continue
+        photos = places_cache.get_photos(name, destination, max_photos=1)
+        is_sel = name.strip().lower() in selected.get(kind, set())
+        pins.append(
+            {
+                "id": f"p{i}",
+                "name": info.get("name") or name,
+                "kind": kind,
+                "selected": is_sel,
+                "day": _day_for_place(name, itinerary),
+                "lat": lat,
+                "lng": lng,
+                "rating": info.get("rating"),
+                "address": info.get("address") or "",
+                "photo": photos[0] if photos else None,
+            }
+        )
+    return pins
+
+
+def _airport_pin(destination: str) -> dict[str, Any] | None:
+    """A single 'arrival airport' pin for Day-1 context, if geocodable."""
+    if not destination:
+        return None
+    info = places_cache.get_summary(f"{destination} International Airport", destination)
+    if not info or info.get("lat") is None or info.get("lng") is None:
+        return None
+    return {
+        "id": "airport",
+        "name": info.get("name") or f"{destination} Airport",
+        "kind": "airport",
+        "lat": info["lat"],
+        "lng": info["lng"],
+    }
+
+
+def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
+    """Build the interactive-map view-model (frontend-agnostic).
+
+    Returns geocoded pins for the trip's hotels/activities (plus destination
+    suggestions), each tagged with the itinerary day it belongs to, grouped
+    into day-colored route bands. ``enabled`` reflects whether the browser
+    Maps key is configured; the frontend hides the panel when it is false.
+    Network use is limited to the (cached) Google Places lookups already used
+    by the trip panel — no Routes/Directions calls happen here (the frontend
+    draws per-day routes client-side).
+    """
+    key_configured = bool(_maps_browser_key())
+    destination = str((trip or {}).get("destination") or "").strip()
+    if not trip or not destination:
+        return {
+            "enabled": key_configured,
+            "destination": destination,
+            "center": None,
+            "pins": [],
+            "days": [],
+            "unscheduled_pin_ids": [],
+            "airport": None,
+            "empty_message": (
+                "Start planning a trip and your hotels, attractions and daily "
+                "routes will appear pinned on the map here."
+            ),
+        }
+
+    pins = _map_pins(trip, destination)
+    airport = _airport_pin(destination)
+
+    # Group pins by day, preserving insertion order within each day.
+    by_day: dict[int, list[str]] = {}
+    unscheduled: list[str] = []
+    for p in pins:
+        if p["day"]:
+            by_day.setdefault(p["day"], []).append(p["id"])
+        else:
+            unscheduled.append(p["id"])
+
+    days = [
+        {
+            "day": d,
+            "label": f"Day {d}",
+            "color": _day_color(d),
+            "pin_ids": by_day[d],
+        }
+        for d in sorted(by_day)
+    ]
+
+    # Map center: average of all pin coords (incl. airport) for an initial
+    # viewport; the frontend will fit bounds precisely.
+    coords = [(p["lat"], p["lng"]) for p in pins]
+    if airport:
+        coords.append((airport["lat"], airport["lng"]))
+    center = (
+        {"lat": sum(c[0] for c in coords) / len(coords),
+         "lng": sum(c[1] for c in coords) / len(coords)}
+        if coords
+        else None
+    )
+
+    return {
+        "enabled": key_configured,
+        "destination": destination,
+        "center": center,
+        "pins": pins,
+        "days": days,
+        "unscheduled_pin_ids": unscheduled,
+        "airport": airport,
+        "empty_message": None if pins else (
+            "No mappable places yet. Pick hotels and attractions and they'll "
+            "appear pinned by day on the map."
+        ),
+    }
+
+
 def build_destination_overview(
     destination: str, *, include_news: bool = True
 ) -> dict[str, Any]:

@@ -227,3 +227,111 @@ def test_family_pills_surfaced_in_view(monkeypatch: pytest.MonkeyPatch) -> None:
     view = trip_view.build_view(SAMPLE_TRIP, None)
     pills = view["overview"]["family_pills"]
     assert any("Kid-friendly" in p for p in pills)
+
+
+# ---- build_map_view -------------------------------------------------------
+
+
+@pytest.fixture
+def _map_geo(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Geocoded place lookups for the map view (lat/lng per known name)."""
+    coords = {
+        "Taj Exotica Resort": (15.04, 73.92),
+        "Dudhsagar Falls Trek": (15.31, 74.31),
+        "Grand Hyatt": (15.46, 73.83),
+        "ITC Grand": (15.50, 73.82),
+        "Fort Aguada": (15.49, 73.77),
+        "Dudhsagar": (15.31, 74.31),
+        "Goa International Airport": (15.38, 73.83),
+    }
+
+    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+        lat, lng = coords.get(name, (None, None))
+        return {"place_id": f"pid-{name}", "name": name, "rating": 4.4,
+                "address": f"{name}, {city}", "lat": lat, "lng": lng}
+
+    def fake_top(destination: str, kind: str, n: int = 4) -> list[str]:
+        base = {"hotel": ["Grand Hyatt", "ITC Grand"], "attraction": ["Fort Aguada", "Dudhsagar"]}
+        return base.get(kind, [])[:n]
+
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", fake_top)
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+
+
+def test_map_view_no_trip_disabled_when_no_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "")
+    mv = trip_view.build_map_view(None)
+    assert mv["enabled"] is False
+    assert mv["pins"] == []
+    assert mv["empty_message"]
+
+
+def test_map_view_pins_have_coords_and_days(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "plan": "Check in to Taj Exotica Resort, relax on the beach"},
+            {"day": 2, "plan": "Full-day Dudhsagar Falls Trek with packed lunch"},
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    assert mv["enabled"] is True
+    assert mv["center"] is not None
+    by_name = {p["name"]: p for p in mv["pins"]}
+    # every pin carries coordinates
+    assert all(p["lat"] is not None and p["lng"] is not None for p in mv["pins"])
+    # prose day-matching assigns the right days
+    assert by_name["Taj Exotica Resort"]["day"] == 1
+    assert by_name["Taj Exotica Resort"]["selected"] is True
+    assert by_name["Dudhsagar Falls Trek"]["day"] == 2
+    # suggestions are present but not selected
+    assert by_name["Grand Hyatt"]["selected"] is False
+
+
+def test_map_view_day_bands_and_airport(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "plan": "Taj Exotica Resort arrival"},
+            {"day": 2, "plan": "Dudhsagar Falls Trek"},
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    days = {d["day"]: d for d in mv["days"]}
+    assert set(days) == {1, 2}
+    assert days[1]["color"] != days[2]["color"]
+    assert days[1]["label"] == "Day 1"
+    # the selected hotel/activity land in their day bands
+    pin_ids = {p["name"]: p["id"] for p in mv["pins"]}
+    assert pin_ids["Taj Exotica Resort"] in days[1]["pin_ids"]
+    assert pin_ids["Dudhsagar Falls Trek"] in days[2]["pin_ids"]
+    assert mv["airport"] is not None
+    assert mv["airport"]["kind"] == "airport"
+
+
+def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:
+    # No prose mention, but a structured stops list assigns the day.
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "plan": "free day", "stops": [{"name": "Dudhsagar Falls Trek"}]},
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    by_name = {p["name"]: p for p in mv["pins"]}
+    assert by_name["Dudhsagar Falls Trek"]["day"] == 1
+
+
+def test_map_view_unscheduled_when_no_match(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [{"day": 1, "plan": "nothing relevant here"}],
+    }
+    mv = trip_view.build_map_view(trip)
+    sel = next(p for p in mv["pins"] if p["name"] == "Taj Exotica Resort")
+    assert sel["day"] is None
+    assert sel["id"] in mv["unscheduled_pin_ids"]
+

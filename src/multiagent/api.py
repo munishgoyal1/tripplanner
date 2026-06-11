@@ -312,6 +312,32 @@ async def trip_view_endpoint(
     return await asyncio.to_thread(trip_view.build_view, trip, focus)
 
 
+@app.get("/maps/config")
+async def maps_config_endpoint() -> dict:
+    """Expose whether the interactive map is enabled + its browser key.
+
+    The key is a referrer-restricted browser key (see ``config.py``); returning
+    it here is the standard pattern for the Maps JavaScript API. Empty key →
+    ``enabled: false`` and the SPA hides the map panel.
+    """
+    from multiagent.config import get_settings
+
+    key = get_settings().google_maps_browser_key or ""
+    return {"enabled": bool(key), "key": key}
+
+
+@app.get("/trip/map")
+async def trip_map_endpoint(user_id: str = "local") -> dict:
+    """Interactive-map view-model: geocoded, day-tagged pins + route bands."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import trip_view
+
+    set_user_id(user_id)
+    trip = trip_planner.load_active_trip_dict()
+    return await asyncio.to_thread(trip_view.build_map_view, trip)
+
+
 @app.get("/destination/overview")
 async def destination_overview_endpoint(
     destination: str = "", user_id: str = "local", news: bool = True

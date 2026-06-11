@@ -38,6 +38,13 @@ class Settings(BaseModel):
     # Free tier: $200/month credit
     google_places_api_key: str = os.getenv("GOOGLE_PLACES_API_KEY", "")
 
+    # Google Maps JavaScript API — browser-side key for the interactive trip
+    # map (pins, day routes). MUST be a SEPARATE key from google_places_api_key
+    # because it is exposed to the browser: lock it down with an HTTP-referrer
+    # restriction + restrict it to "Maps JavaScript API" + "Directions API" in
+    # the Cloud console. Leave empty to disable the map panel entirely.
+    google_maps_browser_key: str = os.getenv("GOOGLE_MAPS_BROWSER_KEY", "")
+
     # Tavily web search — fresh travel content beyond LLM training cutoff
     # Sign up free: https://tavily.com (1000 searches/month free)
     tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")

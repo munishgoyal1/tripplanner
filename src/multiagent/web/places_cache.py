@@ -66,7 +66,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
         "places.userRatingCount,places.photos,places.editorialSummary,"
-        "places.websiteUri"
+        "places.websiteUri,places.location"
     )
     try:
         resp = httpx.post(
@@ -84,6 +84,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
     if not places:
         return None
     p = places[0]
+    loc = p.get("location") or {}
     return {
         "place_id": p.get("id", ""),
         "name": p.get("displayName", {}).get("text", name),
@@ -92,6 +93,8 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         "review_count": p.get("userRatingCount"),
         "website": p.get("websiteUri", ""),
         "editorial_summary": p.get("editorialSummary", {}).get("text", ""),
+        "lat": loc.get("latitude"),
+        "lng": loc.get("longitude"),
         "photo_refs": [
             ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")
         ],
