@@ -128,6 +128,14 @@ export default function App() {
     await handleClearFocus();
   };
 
+  // Started a fresh planning chat: the active trip + general chat were cleared
+  // server-side; reload the (now empty) view and bump the chat transcript.
+  const handleNewTrip = async () => {
+    setChatReloadToken((n) => n + 1);
+    setStopFocusName(null);
+    await handleClearFocus();
+  };
+
   const focusIndex = focus
     ? navList.findIndex((n) => n.kind === focus.kind && n.name === focus.name)
     : -1;
@@ -210,7 +218,7 @@ export default function App() {
         className="flex w-full min-w-0 flex-col md:w-auto"
         style={isDesktop ? { flexBasis: `${chatPct}%` } : undefined}
       >
-        <ChatPanel onTurnComplete={() => refresh()} reloadToken={chatReloadToken} />
+        <ChatPanel onTurnComplete={() => refresh()} reloadToken={chatReloadToken} onNewTrip={handleNewTrip} />
       </section>
 
       <div

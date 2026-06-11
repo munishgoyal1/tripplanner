@@ -254,6 +254,15 @@ export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
   return (json.trips ?? []) as SavedTrip[];
 }
 
+/** Start a fresh planning chat: clear the active trip + general chat bucket. */
+export async function startNewTrip(): Promise<void> {
+  await fetch(`${BASE}/trip/new`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId() }),
+  });
+}
+
 /** Build the URL that downloads the active trip as an .ics calendar file. */
 export function tripIcsUrl(): string {
   const params = new URLSearchParams({ user_id: getUserId() });

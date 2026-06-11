@@ -307,6 +307,16 @@ def delete_saved_trip(trip_id: str) -> bool:
     return True
 
 
+def start_new_trip() -> None:
+    """Clear the active trip so the next conversation starts fresh.
+
+    Saved trips are left untouched (every save already mirrors them into the
+    trips collection), so this only drops the *active* pointer. After this,
+    ``active_trip_id()`` is ``None`` and a new chat lands in the general bucket
+    until the agent creates a plan. Non-tool: called by the "New trip" button.
+    """
+    _delete_active_trip()
+
 
 def _delete_active_trip() -> None:
     if storage_cosmos.is_enabled():

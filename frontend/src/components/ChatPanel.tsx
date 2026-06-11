@@ -7,6 +7,7 @@ import {
   isAnonymousUser,
   fetchAuthConfig,
   fetchChatHistory,
+  startNewTrip,
   syncAuth,
   loginWithGoogle,
   logoutGoogle,
@@ -19,6 +20,8 @@ interface Props {
   onTurnComplete: () => void;
   /** Bump to reload the persisted transcript (e.g. after switching trips). */
   reloadToken?: number;
+  /** Start a fresh planning chat (clears the active trip + general chat). */
+  onNewTrip?: () => void;
 }
 
 const GREETING: ChatMessage = {
@@ -26,7 +29,7 @@ const GREETING: ChatMessage = {
   text: "Hi! Tell me where and when you'd like to travel and I'll plan it.",
 };
 
-export default function ChatPanel({ onTurnComplete, reloadToken = 0 }: Props) {
+export default function ChatPanel({ onTurnComplete, reloadToken = 0, onNewTrip }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -133,6 +136,19 @@ export default function ChatPanel({ onTurnComplete, reloadToken = 0 }: Props) {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, activeTool]);
 
+  async function startFresh() {
+    if (busy) return;
+    try {
+      await startNewTrip();
+    } catch {
+      /* best-effort; still reset the UI */
+    }
+    setMessages([GREETING]);
+    setInput("");
+    setAttachments([]);
+    onNewTrip?.();
+  }
+
   async function send() {
     const text = input.trim();
     if ((!text && attachments.length === 0) || busy) return;
@@ -221,6 +237,18 @@ export default function ChatPanel({ onTurnComplete, reloadToken = 0 }: Props) {
           </div>
         </div>
         <div className="flex items-center gap-1">
+          <button
+            onClick={startFresh}
+            disabled={busy}
+            title="Start a new trip plan"
+            aria-label="Start a new trip plan"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink disabled:opacity-40"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span className="hidden sm:inline">New trip</span>
+          </button>
           <div className="relative">
             <button
               onClick={() => setShowAccount((s) => !s)}

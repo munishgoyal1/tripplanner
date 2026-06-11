@@ -126,6 +126,10 @@ class TripIdRequest(BaseModel):
     user_id: str = "local"
 
 
+class UserRequest(BaseModel):
+    user_id: str = "local"
+
+
 class StopBookedRequest(BaseModel):
     day: int
     name: str
@@ -303,6 +307,16 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                     yield _sse("tool", payload)
         except Exception as exc:  # surface a clean error to the client
             app_event("api_chat_stream_error", error=type(exc).__name__)
+            # Persist whatever we have so a tool side-effect during the turn
+            # (e.g. a freshly created trip) doesn't leave the conversation
+            # orphaned — otherwise the active trip exists with an empty chat
+            # that vanishes on refresh.
+            partial = "".join(reply_parts)
+            history.append(AIMessage(content=partial or "(interrupted)"))
+            try:
+                _save_chat(history_tid, history)
+            except Exception:
+                pass
             yield _sse("error", {"message": "The assistant hit an error. Please retry."})
             return
 
@@ -493,6 +507,20 @@ async def trips_delete(req: TripIdRequest) -> dict:
     await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
     trips = await asyncio.to_thread(trip_planner.list_saved_trips)
     return {"ok": True, "trips": trips}
+
+
+@app.post("/trip/new")
+async def trip_new(req: UserRequest) -> dict:
+    """Start a fresh planning chat: clear the active trip + the general chat
+    bucket so the next conversation begins clean. Saved trips are untouched."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web import chat_store
+
+    set_user_id(req.user_id)
+    await asyncio.to_thread(trip_planner.start_new_trip)
+    await asyncio.to_thread(chat_store.clear, None)
+    return {"ok": True}
 
 
 
