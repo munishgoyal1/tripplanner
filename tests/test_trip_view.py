@@ -31,10 +31,10 @@ SAMPLE_TRIP: dict[str, Any] = {
 
 @pytest.fixture(autouse=True)
 def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
-    def fake_photos(name: str, city: str, max_photos: int = 3) -> list[str]:
+    def fake_photos(name: str, city: str, max_photos: int = 3, **_kw: Any) -> list[str]:
         return [f"https://example.test/{name}/{i}.jpg" for i in range(min(max_photos, 2))]
 
-    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+    def fake_summary(name: str, city: str, **_kw: Any) -> dict[str, Any] | None:
         return {
             "place_id": f"pid-{name}",
             "name": name,

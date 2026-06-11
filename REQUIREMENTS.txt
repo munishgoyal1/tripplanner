@@ -1109,3 +1109,84 @@ IMPLEMENTATION — frontend:
   handlers wire itinerary clicks to Photos/Map.
 
 
+
+================================================================================
+SESSION 22 (2026-06-11) — Bug-fix pass on the Session 21 rail + 1-week cache
+================================================================================
+
+Five bugs reported against the tabbed right rail, plus two follow-ups.
+
+USER REQUESTS (verbatim):
+1. "mumbai itinerary chat text not saved - freshly discussed with planner.
+   Lost on refresh. Whereas 5 minute before another hong kong trip was
+   seemingly saved" + follow-up "I meant if i start a fresh new trip
+   discussion then it didnt get saved." + "Also give an option to start a new
+   trip planning chat".
+2. "The trip selector shows only on the photos panel, it disappears when maps
+   or itniterary is selected. may be take it outside somehwere and keep it
+   persistenly shown".
+3. "I dont like the switching between maps, itnerary, photos etc. keep them all
+   showing, split in some other way - may be reced the size of chat seciton to
+   70% ort something simialr." + clarification "i mean chat section from its
+   current one reduce by 30%".
+4. "can you cache the photos and places detial also with 1 week TTL, as that
+   doesnt change often, new htoels, attractions etc. should be refreshable and
+   add those also to cache everytime. - so everytime we dont incurr internet
+   call latencies".
+5. "itiniterary new panel is always emopty nowt showing anything".
+
+IMPLEMENTATION — bug 1 (fresh-trip chat loss) + New trip button:
+- api.py /chat/stream error path now appends the partial reply to history and
+  saves the chat BEFORE yielding the error SSE — a tool side-effect (e.g.
+  create_trip_plan flipping the active trip) can no longer orphan the chat.
+- New POST /trip/new (UserRequest) -> trip_planner.start_new_trip(): clears the
+  active-trip pointer (saved trips are untouched — already mirrored to `trips`)
+  and clears the active chat bucket.
+- frontend api.ts startNewTrip(); ChatPanel gains a "New trip" header button +
+  onNewTrip prop; App.handleNewTrip resets focus + bumps chatReloadToken.
+
+IMPLEMENTATION — bug 5 (empty itinerary panel):
+- Root cause: pre-existing trips have an EMPTY day_wise_itinerary (the agent
+  only wrote prose in chat, never persisted structured stops).
+- trip_view._itinerary_from_selections(trip): when no structured days exist but
+  hotels/activities are selected, synthesize a single "Your picks so far" day
+  (hotels as kind=hotel, activities as kind=attraction, all selected). Panel is
+  never blank when there are selections; has_itinerary stays False only when
+  there's truly nothing.
+- trip_agent STEP 4 prompt now insists: presenting the plan in chat is NOT
+  enough — MUST also call update_trip_plan with the full day_wise_itinerary.
+
+IMPLEMENTATION — bugs 2+3 (persistent selector + show all panels):
+- RightRail.tsx REWRITTEN — no tabs. Stacked column: persistent header with the
+  saved-trips TripSwitcher (left) + a Map toggle (right); body shows Itinerary
+  (top, basis-2/5) and Photos (bottom, flex-1) ALWAYS, plus an opt-in Map
+  section (h-72, lazy-mounted only when toggled — still bills per load).
+- TripSwitcher exported from TripPanel; TripPanel gains hideSwitcher to avoid a
+  duplicate switcher inside the Photos panel.
+- App.tsx: dropped RailTab/activeTab/autoTabbed, added mapOpen state; chat
+  default width reduced ~30% (52% -> 36%) to give the stacked rail more room.
+
+IMPLEMENTATION — bug 4 (1-week persisted places/photos cache):
+- web/places_cache.py is now a two-layer, split-TTL, persisted cache.
+  * _META_TTL_S = 7 days for place details, reviews, and top_places.
+  * _PHOTO_TTL_S = 50 min for signed photo URLs (Google expires them ~1h);
+    re-resolved on demand from the long-lived photo_refs.
+  * Durable L2: Cosmos `places_cache` container (partition `_shared`, single
+    doc id `cache` holding all entries) when enabled, else local
+    ~/.multiagent/places_cache/cache.json. Loaded once per process; entries
+    older than the 1-week TTL are dropped on load.
+  * _persist() STRIPS photo_urls/__photos_at__ before writing (never persist
+    expiring URLs). prefetch batches writes via _batched_persist() (one
+    trailing durable write instead of one per place).
+  * All public fns (get_photos/get_summary/prefetch/top_places) take
+    refresh=True to force a re-fetch and re-cache ("add those every time").
+  * Soft cap _MAX_ENTRIES=800 (evict oldest by __at__).
+- +8 tests in tests/test_places_cache.py (TTL, persist+reload, photo re-sign,
+  refresh, eviction). test_trip_view fakes updated to accept the new refresh
+  kwarg. Total: 407 passing; tsc clean.
+
+DESIGN NOTES:
+- No Redis — the existing Cosmos/local dual-store pattern (as in tools_cache.py)
+  is sufficient and adds no infra to a scale-to-zero free-credit deployment.
+- Signed photo URLs MUST keep a short TTL; only the stable place metadata gets
+  the 1-week TTL.

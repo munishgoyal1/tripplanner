@@ -68,7 +68,9 @@ src/multiagent/
                       build_map_view, build_itinerary — structured day-by-day stops)
     chat_store.py     PURE-PYTHON per-trip chat transcript persistence
                       (Cosmos users/chat_<trip_id> or local chats/<trip_id>.json)
-    places_cache.py   Google Places cache (ThreadPoolExecutor, 30-min TTL; surfaces lat/lng)
+    places_cache.py   Google Places cache (ThreadPoolExecutor; 1-week details TTL +
+                      50-min photo-URL TTL; persisted L2 — Cosmos places_cache or
+                      local cache.json — survives restarts; surfaces lat/lng)
 frontend/
   index.html          Loads Google Fonts via <link> (NOT from CSS)
   vite.config.ts      Dev: proxies /api → :8000
@@ -76,15 +78,16 @@ frontend/
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
     main.tsx          React 19 root
-    App.tsx           Layout: chat ‖ resizable divider ‖ tabbed right rail
-                      (Itinerary · Map · Photos)
+    App.tsx           Layout: chat (~36%) ‖ resizable divider ‖ stacked right rail
+                      (persistent TripSwitcher + Itinerary + Photos, opt-in Map)
     api.ts            All HTTP/SSE + auth glue + per-destination overview cache
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
-      ChatPanel.tsx        Sticky header, message bubbles, composer
-      TripPanel.tsx        Hero summary + NavStrip + ItemCard (Photos tab)
-      RightRail.tsx        Segmented Itinerary · Map · Photos tab container
+      ChatPanel.tsx        Sticky header (incl. "New trip" button), bubbles, composer
+      TripPanel.tsx        Hero summary + NavStrip + ItemCard; exports TripSwitcher
+      RightRail.tsx        Persistent TripSwitcher header + stacked Itinerary /
+                           Photos (always shown) + opt-in lazy Map section
       ItineraryPanel.tsx   Day timeline of clickable stops + booked checkbox
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
@@ -156,7 +159,10 @@ It exports:
   `POST /trip/stop/booked`) persists a stop's booked flag (normalizing string
   stops to dicts). Rendered by
   [ItineraryPanel.tsx](../frontend/src/components/ItineraryPanel.tsx); clicking a
-  place stop focuses the Photos tab, the 📍 button focuses the Map tab.
+  place stop focuses the Photos section, the 📍 button reveals it on the Map.
+  When a trip has no structured `day_wise_itinerary` yet,
+  `_itinerary_from_selections` synthesizes a single "Your picks so far" day from
+  the selected hotels/activities so the panel is never blank.
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
@@ -172,7 +178,16 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
   local JSON under `~/.multiagent/`.
 - Cosmos containers: `users` (one doc per user: `preferences`, `active_trip`)
-  and `trips` (every saved trip — drafts, finalized, and booked).
+  and `trips` (every saved trip — drafts, finalized, and booked). Also
+  `tool_cache` (read-through tool results) and `places_cache` (durable Google
+  Places cache — one shared doc, partition `_shared`).
+- **Places cache (Session 22)**: `places_cache.py` is a two-layer cache —
+  in-process dict (hot) + durable store (Cosmos `places_cache` or local
+  `~/.multiagent/places_cache/cache.json`). Place details/reviews/top-places
+  keep a 1-week TTL; signed photo URLs keep a 50-min TTL and are re-resolved
+  on demand from long-lived `photo_refs` (URLs are NEVER persisted). Public
+  fns take `refresh=True` to force re-fetch; `prefetch` batches the durable
+  write.
 - **Saved trips (Session 19)**: every `_save_active_trip` mirrors the plan into
   the `trips` collection keyed by a stable `trip_id = slug(destination)_dep_ret`.
   Same destination + same dates → same id → `create_trip_plan` RESUMES (keeps
@@ -183,6 +198,11 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   power the SPA's "My trips" switcher (`GET /trips`, `POST /trips/switch`,
   `POST /trips/delete`); the agent tool `resume_trip(destination|trip_id)` lets
   the assistant offer to continue a saved plan.
+- **Fresh trips (Session 22)**: `POST /trip/new` → `trip_planner.start_new_trip()`
+  clears the active-trip pointer (saved trips untouched, already mirrored to
+  `trips`) and resets the chat; the SPA exposes it via the ChatPanel "New trip"
+  button. `/chat/stream`'s error path now saves the partial transcript so a
+  tool side-effect (e.g. `create_trip_plan`) can never orphan the chat.
 
 ## 7) Landmines (cycles already burned)
 

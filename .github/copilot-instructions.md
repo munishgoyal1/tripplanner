@@ -75,7 +75,37 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-06-12)
+## Current State (last updated 2026-06-11)
+- **Rail rework + fresh-trip fixes + 1-week cache (Session 22)**: owner disliked
+  the Session-21 tabs, so `RightRail.tsx` was REWRITTEN with NO tabs — a
+  persistent header (saved-trips `TripSwitcher` left + Map toggle right) over a
+  stacked body: Itinerary (top, `basis-2/5`) and Photos (bottom, `flex-1`) are
+  ALWAYS visible, Map is an opt-in lazy section (still bills per load).
+  `TripSwitcher` is now exported from `TripPanel.tsx`; `TripPanel` gained a
+  `hideSwitcher` prop to avoid duplication. `App.tsx` dropped
+  `RailTab`/`activeTab`/`autoTabbed`, added `mapOpen` state, and reduced chat
+  default width ~30% (`chatPct` 52→36). Bug fixes shipped alongside: (1) fresh
+  chat loss — `/chat/stream`'s error path now saves the partial transcript so a
+  tool side-effect can't orphan the chat, plus `POST /trip/new` →
+  `trip_planner.start_new_trip()` (clears active pointer; saved trips untouched)
+  and a ChatPanel "New trip" button (`api.startNewTrip`). (5) empty itinerary —
+  `trip_view._itinerary_from_selections` synthesizes a "Your picks so far" day
+  from selections when `day_wise_itinerary` is empty; STEP 4 prompt now insists
+  the agent persist the structured itinerary via `update_trip_plan`. (4) 1-week
+  persisted places cache — see `web/places_cache.py` below. +8 cache tests →
+  407 passing; tsc clean.
+- **Split-TTL persisted places cache (Session 22)**: `web/places_cache.py` is a
+  two-layer cache (in-process dict hot L1 + durable L2). Place details, reviews,
+  and `top_places` use `_META_TTL_S = 7 days`; signed photo URLs use
+  `_PHOTO_TTL_S = 50 min` (Google expires them ~1h) and are re-resolved on
+  demand from the long-lived `photo_refs` (URLs are NEVER persisted). Durable
+  store: Cosmos `places_cache` container (partition `_shared`, one doc id
+  `cache` holding all entries) when enabled, else local
+  `~/.multiagent/places_cache/cache.json`; loaded once per process, 1-week-stale
+  entries dropped on load. `prefetch` batches writes (`_batched_persist`). All
+  public fns take `refresh=True` to force a re-fetch + re-cache. Soft cap
+  `_MAX_ENTRIES=800`. No Redis — reuses the existing Cosmos/local dual-store
+  pattern (no infra to provision on a scale-to-zero free-credit deployment).
 - **Structured itinerary + tabbed right rail (Session 21)**: the itinerary is
   now data, not just prose. `web/trip_view.build_itinerary(trip)` returns
   day-by-day `days[{day,date,title,summary,color,stops[...]}]` + `stats`, where
@@ -209,7 +239,9 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 391 tests all passing (Session 20: +9 for persistent per-trip chat
+- 407 tests all passing (Session 22: +8 for split-TTL persisted places cache
+  (`web/places_cache.py` — meta 1-week / photo-URL 50-min, durable L2, refresh);
+  Session 20: +9 for persistent per-trip chat
   (`web/chat_store.py`) + map fallback-day clustering; Session 19: +15 for remembered saved trips
   — trip_id stability, mirror-on-create, start-new-keeps-previous,
   same-dates-resume vs different-duration-separate, switch/delete,
@@ -287,8 +319,9 @@ Learns from user preferences and past trips.
 - **Right-rail trip panel (hosted mode)**: rendered by the React SPA
   (`frontend/src/components/TripPanel.tsx` + `DestinationOverview.tsx`),
   backed server-side by `web/places_cache.py` (Google Places photos/reviews,
-  parallel prefetch + 30-min TTL). The frontend additionally caches the
-  `/destination/overview` response in a module-level `Map` (same 30-min TTL)
+  parallel prefetch; 1-week details TTL + 50-min photo-URL TTL, persisted).
+  The frontend additionally caches the
+  `/destination/overview` response in a module-level `Map` (30-min TTL)
   and keeps the previous destination's card visible (dimmed) while a new one
   loads — switching Dubai → Paris no longer blanks the panel. When no
   hotels/activities are selected yet but a destination is known, the panel
