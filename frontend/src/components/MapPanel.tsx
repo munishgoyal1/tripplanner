@@ -46,6 +46,8 @@ function pinIcon(color: string, label: string): string {
 }
 
 const AIRPORT_COLOR = "#0f172a";
+const HOTEL_COLOR = "#334155"; // slate — distinct from the day palette
+const SUGGEST_COLOR = "#94a3b8";
 
 function airportIcon(): string {
   const svg = `
@@ -56,6 +58,31 @@ function airportIcon(): string {
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
+
+// Hotel/lodging pin — a lettered teardrop ("H") in slate so a place you're
+// staying reads differently from a day-numbered attraction.
+function hotelIcon(): string {
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
+  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
+        fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
+  <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"/>
+  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
+        font-weight="700" text-anchor="middle" fill="${HOTEL_COLOR}">H</text>
+</svg>`.trim();
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+// A small filled dot for un-scheduled "suggested" places — present but quiet
+// so it doesn't compete with the numbered day pins.
+function dotIcon(color: string): string {
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <circle cx="9" cy="9" r="6" fill="${color}" stroke="white" stroke-width="2"/>
+</svg>`.trim();
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 
 interface Props {
   /** Bump to refetch the map after the trip changes. */
@@ -146,7 +173,8 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
     const dayColor = new Map<number, string>();
     view.days.forEach((d) => dayColor.set(d.day, d.color));
 
-    const visible = (p: MapPin) => activeDay === null || p.day === activeDay;
+    const visible = (p: MapPin) =>
+      p.kind === "hotel" || activeDay === null || p.day === activeDay;
     const bounds = new google.maps.LatLngBounds();
     let any = false;
 
@@ -154,17 +182,36 @@ export default function MapPanel({ reloadToken = 0 }: Props) {
 
     for (const p of view.pins) {
       if (!visible(p)) continue;
-      const color = p.day ? dayColor.get(p.day) || "#64748b" : "#94a3b8";
+      // Choose a marker style: hotels get a slate "H" pin (always shown),
+      // day-scheduled places get a bold numbered teardrop in their day color,
+      // and un-scheduled suggestions get a quiet dot.
+      let icon: any;
+      if (p.kind === "hotel") {
+        icon = {
+          url: hotelIcon(),
+          scaledSize: new google.maps.Size(34, 44),
+          anchor: new google.maps.Point(17, 44),
+        };
+      } else if (p.day) {
+        const color = dayColor.get(p.day) || "#64748b";
+        icon = {
+          url: pinIcon(color, String(p.day)),
+          scaledSize: new google.maps.Size(34, 44),
+          anchor: new google.maps.Point(17, 44),
+        };
+      } else {
+        icon = {
+          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR),
+          scaledSize: new google.maps.Size(18, 18),
+          anchor: new google.maps.Point(9, 9),
+        };
+      }
       const marker = new google.maps.Marker({
         position: { lat: p.lat, lng: p.lng },
         map,
         title: p.name,
-        icon: {
-          url: pinIcon(color, p.day ? String(p.day) : "\u2022"),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
-        },
-        zIndex: p.selected ? 1000 : 500,
+        icon,
+        zIndex: p.selected ? 1000 : p.day ? 600 : 400,
       });
       marker.addListener("click", () => openInfo(p));
       overlaysRef.current.push(marker);

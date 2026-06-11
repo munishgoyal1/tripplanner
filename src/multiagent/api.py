@@ -75,20 +75,34 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
         request.scope["path"] = path[4:]
     return await call_next(request)
 
-# In-memory per-user chat history. Replace with Redis/Cosmos for multi-replica
-# hosting; fine for single-process dev and the personal-use footprint.
-_HISTORY: dict[str, list[BaseMessage]] = {}
-_MAX_HISTORY = 40
+# Per-user chat history is persisted per active trip via ``web.chat_store`` so
+# the conversation + itinerary summary survive a browser refresh and follow
+# saved-trip switches. These helpers wrap the load/save dance for both chat
+# endpoints (sync and streaming).
+def _load_chat() -> tuple[str | None, list[BaseMessage]]:
+    """Return (active_trip_id, message history) for the current user."""
+    from multiagent.tools.trip_planner import active_trip_id
+    from multiagent.web import chat_store
+
+    tid = active_trip_id()
+    return tid, chat_store.load(tid)
 
 
-def _history(user_id: str) -> list[BaseMessage]:
-    return _HISTORY.setdefault(user_id, [])
+def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> None:
+    """Persist the turn under the trip that's active *after* the turn.
 
+    If a trip was created during the turn (``None`` -> real id), the whole
+    pre-trip conversation migrates into the new trip's bucket and the general
+    bucket is cleared.
+    """
+    from multiagent.tools.trip_planner import active_trip_id
+    from multiagent.web import chat_store
 
-def _trim(user_id: str) -> None:
-    msgs = _HISTORY.get(user_id)
-    if msgs and len(msgs) > _MAX_HISTORY:
-        _HISTORY[user_id] = msgs[-_MAX_HISTORY:]
+    tid_after = active_trip_id()
+    target = tid_after if tid_after else tid_before
+    chat_store.save(target, history)
+    if tid_before is None and tid_after and tid_after != tid_before:
+        chat_store.clear(None)
 
 
 class ChatRequest(BaseModel):
@@ -147,7 +161,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
         app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
         return ChatResponse(reply=msg, agent="cap")
 
-    history = _history(req.user_id)
+    history_tid, history = _load_chat()
     history.append(HumanMessage(content=req.message))
     result = app_graph.invoke({"messages": history, "current_agent": ""})
 
@@ -164,7 +178,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
     if issues:
         app_event("hallucination_critic", issues=len(issues), claims=issues)
     history.append(AIMessage(content=reply))
-    _trim(req.user_id)
+    _save_chat(history_tid, history)
 
     app_event("api_chat_response", reply_length=len(reply))
     return ChatResponse(reply=reply, agent=result.get("current_agent", "unknown"))
@@ -230,7 +244,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 
         return StreamingResponse(_capped(), media_type="text/event-stream")
 
-    history = _history(req.user_id)
+    history_tid, history = _load_chat()
     history.append(HumanMessage(content=req.message))
 
     async def gen():
@@ -294,11 +308,28 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
         history.append(AIMessage(content=reply))
-        _trim(req.user_id)
+        _save_chat(history_tid, history)
         app_event("api_chat_stream_done", reply_length=len(reply))
         yield _sse("done", {"reply": reply, "agent": "trip"})
 
     return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+@app.get("/chat/history")
+async def chat_history(user_id: str = "local") -> dict:
+    """The persisted transcript for the user's *currently active* trip.
+
+    Lets the SPA restore the conversation + itinerary summary after a refresh,
+    and load the right conversation when the user switches saved trips.
+    """
+    from multiagent.user_context import set_user_id
+    from multiagent.tools.trip_planner import active_trip_id
+    from multiagent.web import chat_store
+
+    set_user_id(user_id)
+    tid = await asyncio.to_thread(active_trip_id)
+    rows = await asyncio.to_thread(chat_store.transcript, tid)
+    return {"messages": rows}
 
 
 @app.get("/trip/view")

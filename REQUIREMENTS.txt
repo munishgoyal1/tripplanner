@@ -1012,3 +1012,44 @@ IMPLEMENTATION:
   same-dates-resume, different-duration-separate, switch/delete, resume_trip
   variants). Total: 382 passing.
 
+=== 2026-06-11 — Session 20: Persistent chat + day-clustered map ===
+
+USER ISSUES:
+1. "It loses the chat texts and the summary itinerary on browser refresh
+   (photos/map stay cached), and also when switching between saved trips."
+2. "No day-wise marking on the map — it just shows itinerary attractions
+   highlighted separately with a light, hard-to-spot marker. I want day-wise
+   clustering and a route map."
+
+DECISIONS (confirmed with user):
+- Chat persistence: server-side, per trip (survives refresh AND follows
+  saved-trip switches; cross-device for logged-in users).
+- Map routing: keep the zero-cost design (no billed Directions API). Fix
+  day-clustering + markers instead of drawing real transit/road routes.
+
+IMPLEMENTATION — chat persistence:
+- New pure-Python web/chat_store.py persists the clean Human/AI text turns
+  (the same list the API keeps as LLM context) keyed by the active trip_id:
+  Cosmos users/chat_<trip_id> when enabled, else local chats/<trip_id>.json
+  (per-user subdir). A conversation before any trip lives in a "_general"
+  bucket and migrates into the trip's bucket once the trip is created.
+- trip_planner.active_trip_id() exposes the current trip id (non-tool).
+- api.py: replaced the in-memory _HISTORY with _load_chat()/_save_chat() in
+  both /chat and /chat/stream; new GET /chat/history returns the transcript
+  for the active trip.
+- Frontend: api.fetchChatHistory(); ChatPanel restores the transcript on
+  mount + when a saved trip is switched (new chatReloadToken bumped only on
+  switch so routine trip refreshes don't wipe the chat).
+
+IMPLEMENTATION — map:
+- trip_view: selected attractions the itinerary text didn't explicitly place
+  now get a fallback day (spread across the trip's days) so they show a bold,
+  numbered, day-colored pin and join a per-day route line. _trip_day_count()
+  derives the day count from the itinerary length or date span.
+- MapPanel: distinct marker styles — slate "H" pins for hotels (always shown,
+  ignore the day filter), bold numbered teardrops for day-scheduled places,
+  quiet dots for un-scheduled suggestions. Also fixed the map going blank on
+  trip reload (container stays mounted; stale map ref reset on unmount).
+- +9 tests (8 chat_store, 1 fallback-day map). Total: 391 passing.
+
+

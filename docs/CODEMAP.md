@@ -66,6 +66,8 @@ src/multiagent/
     oauth.py          Standalone Google OAuth, HMAC mg_session cookie
     trip_view.py      PURE-PYTHON view-model (build_view, build_destination_overview,
                       build_map_view — geocoded day-tagged pins + route bands)
+    chat_store.py     PURE-PYTHON per-trip chat transcript persistence
+                      (Cosmos users/chat_<trip_id> or local chats/<trip_id>.json)
     places_cache.py   Google Places cache (ThreadPoolExecutor, 30-min TTL; surfaces lat/lng)
 frontend/
   index.html          Loads Google Fonts via <link> (NOT from CSS)

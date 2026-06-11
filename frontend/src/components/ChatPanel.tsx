@@ -6,6 +6,7 @@ import {
   getDisplayName,
   isAnonymousUser,
   fetchAuthConfig,
+  fetchChatHistory,
   syncAuth,
   loginWithGoogle,
   logoutGoogle,
@@ -16,15 +17,17 @@ import SettingsModal from "./SettingsModal";
 
 interface Props {
   onTurnComplete: () => void;
+  /** Bump to reload the persisted transcript (e.g. after switching trips). */
+  reloadToken?: number;
 }
 
-export default function ChatPanel({ onTurnComplete }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      text: "Hi! Tell me where and when you'd like to travel and I'll plan it.",
-    },
-  ]);
+const GREETING: ChatMessage = {
+  role: "assistant",
+  text: "Hi! Tell me where and when you'd like to travel and I'll plan it.",
+};
+
+export default function ChatPanel({ onTurnComplete, reloadToken = 0 }: Props) {
+  const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
@@ -105,6 +108,26 @@ export default function ChatPanel({ onTurnComplete }: Props) {
     fetchAuthConfig().then((c) => setGoogleEnabled(c.google));
     syncAuth().then(setAuth);
   }, []);
+
+  // Restore the persisted transcript on mount and whenever the active trip
+  // changes (switching saved trips bumps `reloadToken`). Don't clobber an
+  // in-flight turn.
+  useEffect(() => {
+    if (busy) return;
+    let cancelled = false;
+    fetchChatHistory()
+      .then((rows) => {
+        if (cancelled) return;
+        setMessages(rows.length ? rows.map((r) => ({ role: r.role, text: r.text })) : [GREETING]);
+      })
+      .catch(() => {
+        /* keep whatever's on screen */
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reloadToken]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });

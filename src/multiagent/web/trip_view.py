@@ -502,6 +502,28 @@ def _day_for_place(name: str, itinerary: list[Any]) -> int | None:
     return None
 
 
+def _trip_day_count(trip: dict[str, Any]) -> int:
+    """Number of days in the trip, for fallback day-clustering on the map.
+
+    Prefers the structured itinerary length, then the date span, else 0.
+    """
+    itin = trip.get("day_wise_itinerary") or []
+    if itin:
+        return len(itin)
+    dep = str(trip.get("departure_date") or "").strip()
+    ret = str(trip.get("return_date") or "").strip()
+    try:
+        from datetime import date
+
+        nights = (date.fromisoformat(ret) - date.fromisoformat(dep)).days
+        if nights > 0:
+            return nights
+    except (ValueError, TypeError):
+        pass
+    return 0
+
+
+
 def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
     """Geocoded pins for selected items + destination top-places (suggestions)."""
     itinerary = trip.get("day_wise_itinerary") or []
@@ -558,7 +580,31 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 "photo": photos[0] if photos else None,
             }
         )
+
+    # Fallback day-clustering: any SELECTED attraction the itinerary text didn't
+    # explicitly place still deserves a day so it shows a bold, numbered marker
+    # and joins a per-day route line. Spread them evenly across the trip's days,
+    # continuing after whatever the itinerary already assigned.
+    day_count = _trip_day_count(trip)
+    if day_count > 0:
+        used_days = sorted({p["day"] for p in pins if p["day"]})
+        cursor = 0
+        for p in pins:
+            if p["kind"] != "attraction" or not p["selected"] or p["day"]:
+                continue
+            # Prefer days that have nothing assigned yet, then round-robin.
+            target = None
+            for d in range(1, day_count + 1):
+                if d not in used_days:
+                    target = d
+                    used_days.append(d)
+                    break
+            if target is None:
+                target = (cursor % day_count) + 1
+                cursor += 1
+            p["day"] = target
     return pins
+
 
 
 def _airport_pin(destination: str) -> dict[str, Any] | None:

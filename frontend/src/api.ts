@@ -179,6 +179,18 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
   }
 }
 
+/** Restore the persisted transcript for the user's currently active trip. */
+export async function fetchChatHistory(): Promise<{ role: "user" | "assistant"; text: string }[]> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  try {
+    const res = await fetch(`${BASE}/chat/history?${params.toString()}`);
+    const json = await res.json();
+    return (json.messages ?? []) as { role: "user" | "assistant"; text: string }[];
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchTripView(focus?: {
   kind: string;
   name: string;
@@ -246,9 +258,7 @@ export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
 export function tripIcsUrl(): string {
   const params = new URLSearchParams({ user_id: getUserId() });
   return `${BASE}/trip/export.ics?${params.toString()}`;
-}
-
-/**
+}/**
  * Mint a read-only share token for the active trip. Returns the absolute URL
  * (origin + path) that anyone can open without logging in. Throws on failure.
  */

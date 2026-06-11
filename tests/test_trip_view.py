@@ -335,3 +335,26 @@ def test_map_view_unscheduled_when_no_match(_map_geo: None) -> None:
     assert sel["day"] is None
     assert sel["id"] in mv["unscheduled_pin_ids"]
 
+
+def test_map_view_selected_attraction_gets_fallback_day(_map_geo: None) -> None:
+    # The itinerary doesn't mention the activity, but a SELECTED attraction
+    # should still be clustered into a day (so it shows a bold numbered pin and
+    # joins a route) rather than left as a quiet, dayless suggestion.
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "plan": "arrive"},
+            {"day": 2, "plan": "relax"},
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    by_name = {p["name"]: p for p in mv["pins"]}
+    activity = by_name["Dudhsagar Falls Trek"]
+    assert activity["selected"] is True
+    assert activity["day"] in {1, 2}
+    assert activity["id"] not in mv["unscheduled_pin_ids"]
+    # Un-selected suggestions stay dayless (quiet dots).
+    assert by_name["Fort Aguada"]["selected"] is False
+    assert by_name["Fort Aguada"]["day"] is None
+
+

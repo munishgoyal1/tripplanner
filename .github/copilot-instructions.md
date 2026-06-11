@@ -76,6 +76,22 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-06-11)
+- **Persistent chat + day-clustered map (Session 20)**: the conversation +
+  itinerary summary now survive a browser refresh AND follow saved-trip
+  switches. Pure-Python `web/chat_store.py` persists the clean Human/AI text
+  turns keyed by the active `trip_id` (Cosmos `users`/`chat_<trip_id>` or local
+  `chats/<trip_id>.json`); a pre-trip conversation lives in a `_general` bucket
+  and migrates into the trip's bucket on create. `trip_planner.active_trip_id()`
+  exposes the active id; `api.py` replaced in-memory `_HISTORY` with
+  `_load_chat()`/`_save_chat()` in `/chat` + `/chat/stream`, plus a new
+  `GET /chat/history`. Frontend `fetchChatHistory()` + `ChatPanel` restore the
+  transcript on mount and when a saved trip is switched (new `chatReloadToken`
+  bumped only on switch so routine refreshes don't wipe the chat). Map fixes:
+  selected attractions the itinerary text didn't place get a fallback day so
+  they show bold numbered day-colored pins + per-day route lines; distinct
+  marker styles (slate "H" hotel pins always shown, numbered day teardrops,
+  quiet suggestion dots); fixed the map going blank on trip reload (container
+  stays mounted, stale map ref reset on unmount).
 - **Remembered saved trips (Session 19)**: trips persist across logins and are
   never lost. Every `trip_planner._save_active_trip` mirrors the plan into the
   `trips` collection keyed by a stable `trip_id = slug(destination)_<dep>_<ret>`.
@@ -173,7 +189,8 @@ Learns from user preferences and past trips.
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
-- 382 tests all passing (Session 19: +15 for remembered saved trips
+- 391 tests all passing (Session 20: +9 for persistent per-trip chat
+  (`web/chat_store.py`) + map fallback-day clustering; Session 19: +15 for remembered saved trips
   — trip_id stability, mirror-on-create, start-new-keeps-previous,
   same-dates-resume vs different-duration-separate, switch/delete,
   resume_trip variants; Session 16.21: +15 for

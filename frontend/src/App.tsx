@@ -22,6 +22,9 @@ export default function App() {
   );
   // Bumped whenever the trip view reloads so the map refetches its pins.
   const [tripVersion, setTripVersion] = useState(0);
+  // Bumped only when a saved trip is switched, so ChatPanel reloads the right
+  // conversation (without wiping the chat on every routine trip refresh).
+  const [chatReloadToken, setChatReloadToken] = useState(0);
 
   // --- resizable split between chat and the trip/photos panel ---------------
   const [chatPct, setChatPct] = useState<number>(() => {
@@ -105,6 +108,12 @@ export default function App() {
     await refresh(null);
   };
 
+  // A saved-trip switch: reload both the trip view and the chat transcript.
+  const handleSwitched = async () => {
+    setChatReloadToken((n) => n + 1);
+    await handleClearFocus();
+  };
+
   const focusIndex = focus
     ? navList.findIndex((n) => n.kind === focus.kind && n.name === focus.name)
     : -1;
@@ -163,7 +172,7 @@ export default function App() {
     onSelect: handleSelect,
     onDeselect: handleDeselect,
     tripVersion,
-    onSwitched: handleClearFocus,
+    onSwitched: handleSwitched,
   };
 
   return (
@@ -172,7 +181,7 @@ export default function App() {
         className="flex w-full min-w-0 flex-col md:w-auto"
         style={isDesktop ? { flexBasis: `${chatPct}%` } : undefined}
       >
-        <ChatPanel onTurnComplete={() => refresh()} />
+        <ChatPanel onTurnComplete={() => refresh()} reloadToken={chatReloadToken} />
       </section>
 
       <div

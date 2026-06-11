@@ -92,6 +92,16 @@ def load_active_trip_dict() -> dict[str, Any] | None:
     return _load_active_trip()
 
 
+def active_trip_id() -> str | None:
+    """The current active trip's stable id, or ``None`` when none is active.
+
+    Non-tool: lets the API key the persisted chat transcript by trip so each
+    saved trip carries its own conversation.
+    """
+    active = _load_active_trip()
+    return (active or {}).get("trip_id") if active else None
+
+
 def add_selection(kind: str, item: dict[str, Any]) -> bool:
     """Add a hotel/attraction to the active trip's selections (UI helper).
 
