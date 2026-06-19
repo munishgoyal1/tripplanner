@@ -195,6 +195,25 @@ def clear_local_cache() -> None:
     _LOCAL_CACHE.clear()
 
 
+def clear_cache_for_user(user_id: str) -> int:
+    """Delete cached tool responses for a single user."""
+    deleted = 0
+    try:
+        from multiagent import storage_cosmos
+
+        if storage_cosmos.is_enabled():
+            return storage_cosmos.delete_docs("tool_cache", user_id)
+    except Exception:
+        pass
+
+    prefix = f"{user_id}|"
+    for key in list(_LOCAL_CACHE.keys()):
+        if key.startswith(prefix):
+            _LOCAL_CACHE.pop(key, None)
+            deleted += 1
+    return deleted
+
+
 def wrap_tools_with_cache(tools: list[BaseTool]) -> list[BaseTool]:
     """Return a parallel list of tools whose ``invoke`` is cache-aware.
 

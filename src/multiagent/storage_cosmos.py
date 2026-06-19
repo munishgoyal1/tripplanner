@@ -109,6 +109,37 @@ def query_docs(container: str, user_id: str) -> list[dict[str, Any]]:
     return [_strip_system_fields(i) for i in items]
 
 
+def delete_docs(container: str, user_id: str, id_prefix: str | None = None) -> int:
+    """Delete documents for one user, optionally filtering by id prefix.
+
+    Returns the number of delete attempts performed.
+    """
+    if id_prefix:
+        query = "SELECT c.id FROM c WHERE c.user_id = @uid AND STARTSWITH(c.id, @prefix)"
+        params = [
+            {"name": "@uid", "value": user_id},
+            {"name": "@prefix", "value": id_prefix},
+        ]
+    else:
+        query = "SELECT c.id FROM c WHERE c.user_id = @uid"
+        params = [{"name": "@uid", "value": user_id}]
+
+    items = _container(container).query_items(
+        query=query,
+        parameters=params,
+        partition_key=user_id,
+    )
+
+    deleted = 0
+    for row in items:
+        doc_id = row.get("id")
+        if not doc_id:
+            continue
+        delete_doc(container, user_id, str(doc_id))
+        deleted += 1
+    return deleted
+
+
 def reset_client_for_tests() -> None:
     """Test hook: drop cached client so tests can re-init with patched settings."""
     global _client, _database, _containers

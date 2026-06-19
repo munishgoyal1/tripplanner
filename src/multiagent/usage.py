@@ -199,3 +199,24 @@ def cap_message(usage: dict[str, Any]) -> str:
         "New requests will resume next month — your saved trips and "
         "preferences are untouched."
     )
+
+
+def clear_usage(user_id: str) -> int:
+    """Delete all usage buckets for ``user_id`` and return delete count."""
+    from multiagent import storage_cosmos
+
+    deleted = 0
+    if storage_cosmos.is_enabled():
+        try:
+            return storage_cosmos.delete_docs(_CONTAINER, user_id, id_prefix="usage_")
+        except Exception:
+            return 0
+
+    safe = user_id.replace("/", "_").replace("\\", "_")
+    for path in _local_dir().glob(f"{safe}_*.json"):
+        try:
+            path.unlink(missing_ok=True)
+            deleted += 1
+        except OSError:
+            continue
+    return deleted

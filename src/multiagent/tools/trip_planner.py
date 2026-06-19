@@ -307,6 +307,26 @@ def delete_saved_trip(trip_id: str) -> bool:
     return True
 
 
+def clear_all_trip_history() -> int:
+    """Delete all saved trips for the current user and clear active trip."""
+    if storage_cosmos.is_enabled():
+        deleted = storage_cosmos.delete_docs(_COSMOS_TRIPS_CONTAINER, get_user_id())
+        _delete_active_trip()
+        return deleted
+
+    deleted = 0
+    history_dir = _resolve_trip_history_dir()
+    history_dir.mkdir(parents=True, exist_ok=True)
+    for path in history_dir.glob("*.json"):
+        try:
+            path.unlink(missing_ok=True)
+            deleted += 1
+        except OSError:
+            continue
+    _delete_active_trip()
+    return deleted
+
+
 def start_new_trip() -> None:
     """Clear the active trip so the next conversation starts fresh.
 

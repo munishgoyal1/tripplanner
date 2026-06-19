@@ -120,3 +120,25 @@ def clear(trip_id: str | None) -> None:
         )
         return
     (_resolve_dir() / f"{_doc_id(trip_id)}.json").unlink(missing_ok=True)
+
+
+def clear_all() -> int:
+    """Delete every persisted chat transcript for the current user."""
+    if storage_cosmos.is_enabled():
+        return storage_cosmos.delete_docs(
+            _COSMOS_USERS_CONTAINER,
+            get_user_id(),
+            id_prefix="chat_",
+        )
+
+    deleted = 0
+    d = _resolve_dir()
+    if not d.exists():
+        return 0
+    for path in d.glob("chat_*.json"):
+        try:
+            path.unlink(missing_ok=True)
+            deleted += 1
+        except OSError:
+            continue
+    return deleted

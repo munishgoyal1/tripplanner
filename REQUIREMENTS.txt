@@ -1294,3 +1294,47 @@ TESTS:
 VALIDATION:
 - tests/test_trip_view.py: 30 passed
 - full pytest: 409 passed
+
+=== 2026-06-19 — Session 26: My Account privacy controls (GDPR-style) ===
+
+USER REQUIREMENT:
+- Add controls in "My Account" to let users:
+  1) delete their trip history,
+  2) edit preferences,
+  3) delete account data,
+  4) clear/delete all their data without deleting account identity.
+
+IMPLEMENTATION SHIPPED:
+- Backend privacy endpoint:
+  - `POST /account/privacy` with actions:
+    - `delete_trip_history`
+    - `clear_all_data`
+    - `delete_account`
+  - `clear_all_data` and `delete_account` require typed confirmation text: `DELETE`.
+- Data erasure helpers added:
+  - `storage_cosmos.delete_docs(container, user_id, id_prefix?)`
+  - `trip_planner.clear_all_trip_history()`
+  - `chat_store.clear_all()`
+  - `user_preferences.reset_preferences()`
+  - `usage.clear_usage(user_id)`
+  - `tools_cache.clear_cache_for_user(user_id)`
+- Frontend My Account controls added in account dropdown:
+  - Edit preferences
+  - Delete trip history
+  - Clear all my data (without deleting account identity)
+  - Delete account (app data delete + sign out)
+
+CHANGED FILES:
+- src/multiagent/api.py
+- src/multiagent/storage_cosmos.py
+- src/multiagent/tools/trip_planner.py
+- src/multiagent/tools/user_preferences.py
+- src/multiagent/web/chat_store.py
+- src/multiagent/usage.py
+- src/multiagent/tools_cache.py
+- frontend/src/api.ts
+- frontend/src/components/ChatPanel.tsx
+
+VALIDATION:
+- python -m compileall -q src/multiagent : clean
+- frontend build : clean

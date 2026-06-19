@@ -184,6 +184,13 @@ def save_preferences(prefs: dict[str, Any]) -> None:
     _write_json_file_atomic(_resolve_prefs_path(), prefs)
 
 
+def reset_preferences() -> dict[str, Any]:
+    """Reset preferences to the default schema and persist."""
+    fresh = json.loads(json.dumps(_DEFAULT_PREFS))
+    save_preferences(fresh)
+    return fresh
+
+
 def update_preferences(updates: dict[str, Any]) -> dict[str, Any]:
     """Deep-merge updates into existing preferences and save."""
     current = load_preferences()

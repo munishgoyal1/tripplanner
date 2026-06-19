@@ -325,6 +325,32 @@ export async function savePreferences(prefs: Preferences): Promise<SavePrefsResu
   return res.json();
 }
 
+export type PrivacyAction = "delete_trip_history" | "clear_all_data" | "delete_account";
+
+export interface PrivacyActionResult {
+  ok: boolean;
+  action: PrivacyAction;
+  deleted_trips: number;
+  deleted_chats: number;
+  deleted_usage: number;
+  deleted_cache: number;
+  preferences_reset: boolean;
+  message: string;
+  error?: string;
+}
+
+export async function runPrivacyAction(
+  action: PrivacyAction,
+  confirmText = "",
+): Promise<PrivacyActionResult> {
+  const res = await fetch(`${BASE}/account/privacy`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId(), action, confirm_text: confirmText }),
+  });
+  return res.json();
+}
+
 // ---------------------------------------------------------------------------
 // Destination overview — module-level cache so flipping between trips (e.g.
 // Dubai → Paris → Dubai) is instant after the first fetch and never shows an

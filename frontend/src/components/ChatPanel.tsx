@@ -11,6 +11,7 @@ import {
   syncAuth,
   loginWithGoogle,
   logoutGoogle,
+  runPrivacyAction,
   type AuthSession,
 } from "../api";
 import type { ChatMessage } from "../types";
@@ -46,6 +47,7 @@ export default function ChatPanel({
   const [nameInput, setNameInput] = useState(getDisplayName());
   const [googleEnabled, setGoogleEnabled] = useState(false);
   const [auth, setAuth] = useState<AuthSession>({ authenticated: false });
+  const [privacyBusy, setPrivacyBusy] = useState(false);
   const [attachments, setAttachments] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -244,6 +246,68 @@ export default function ChatPanel({
     });
   }
 
+  async function handleDeleteTripHistory() {
+    const ok = window.confirm(
+      "Delete all saved trips and related chat history for this account? This cannot be undone."
+    );
+    if (!ok) return;
+    setPrivacyBusy(true);
+    try {
+      const res = await runPrivacyAction("delete_trip_history");
+      if (!res.ok) {
+        window.alert(res.message || "Could not delete trip history.");
+        return;
+      }
+      await startFresh();
+      window.alert("Trip history deleted.");
+      setShowAccount(false);
+    } finally {
+      setPrivacyBusy(false);
+    }
+  }
+
+  async function handleClearAllData() {
+    const typed = window.prompt('Type DELETE to clear all your app data for this account.');
+    if ((typed || "").trim().toUpperCase() !== "DELETE") return;
+    setPrivacyBusy(true);
+    try {
+      const res = await runPrivacyAction("clear_all_data", typed || "");
+      if (!res.ok) {
+        window.alert(res.message || "Could not clear data.");
+        return;
+      }
+      await startFresh();
+      window.alert("All app data cleared for this account.");
+      setShowAccount(false);
+    } finally {
+      setPrivacyBusy(false);
+    }
+  }
+
+  async function handleDeleteAccountData() {
+    const typed = window.prompt(
+      'Type DELETE to delete this app account data. This clears all app data and signs you out.'
+    );
+    if ((typed || "").trim().toUpperCase() !== "DELETE") return;
+    setPrivacyBusy(true);
+    try {
+      const res = await runPrivacyAction("delete_account", typed || "");
+      if (!res.ok) {
+        window.alert(res.message || "Could not delete account data.");
+        return;
+      }
+      if (auth.authenticated) {
+        await logoutGoogle();
+      } else {
+        signOut();
+      }
+      window.alert("Account data deleted.");
+      window.location.reload();
+    } finally {
+      setPrivacyBusy(false);
+    }
+  }
+
   return (
     <div className="flex h-full flex-col bg-white">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/85 px-5 py-3 backdrop-blur">
@@ -317,6 +381,7 @@ export default function ChatPanel({
                         await logoutGoogle();
                         window.location.reload();
                       }}
+                      disabled={privacyBusy}
                       className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100"
                     >
                       Sign out
@@ -383,6 +448,48 @@ export default function ChatPanel({
                 </div>
                   </>
                 )}
+
+                <div className="my-3 h-px bg-slate-200" />
+
+                <button
+                  onClick={() => {
+                    setShowSettings(true);
+                    setShowAccount(false);
+                  }}
+                  disabled={privacyBusy}
+                  className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100"
+                >
+                  Edit preferences
+                </button>
+
+                <button
+                  onClick={handleDeleteTripHistory}
+                  disabled={privacyBusy}
+                  className="mb-2 w-full rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-left text-xs text-amber-800 hover:bg-amber-100 disabled:opacity-50"
+                >
+                  Delete trip history
+                </button>
+
+                <button
+                  onClick={handleClearAllData}
+                  disabled={privacyBusy}
+                  className="mb-2 w-full rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-left text-xs text-rose-800 hover:bg-rose-100 disabled:opacity-50"
+                >
+                  Clear all my data
+                </button>
+
+                <button
+                  onClick={handleDeleteAccountData}
+                  disabled={privacyBusy}
+                  className="w-full rounded-lg border border-rose-300 bg-rose-100 px-3 py-1.5 text-left text-xs font-medium text-rose-900 hover:bg-rose-200 disabled:opacity-50"
+                >
+                  Delete account
+                </button>
+
+                <p className="mt-2 text-[10px] text-slate-500">
+                  Privacy controls follow a GDPR-style model: access/edit, delete trip history,
+                  erase all app data, and account data deletion.
+                </p>
               </div>
             )}
           </div>

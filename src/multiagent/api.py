@@ -34,6 +34,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from pydantic import BaseModel
+from typing import Literal
 
 from multiagent import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from multiagent.observability import app_event, setup_logging
@@ -155,6 +156,13 @@ class PreferencesRequest(BaseModel):
     # Free-text "About me" blurb. When provided and changed, the backend runs
     # the LLM extractor and additively overlays the structured fields it finds.
     about_me: str | None = None
+
+
+class PrivacyActionRequest(BaseModel):
+    user_id: str = "local"
+    action: Literal["delete_trip_history", "clear_all_data", "delete_account"]
+    # For destructive actions we require explicit typed confirmation text.
+    confirm_text: str = ""
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -654,6 +662,70 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
     prefs_store.save_preferences(prefs)
     app_event("api_preferences_saved")
     return {"ok": True, "about_me_extracted": extracted_keys}
+
+
+@app.post("/account/privacy")
+async def account_privacy_action(req: PrivacyActionRequest) -> dict:
+    """Run user-requested privacy actions (GDPR-style controls).
+
+    Supported actions:
+    - ``delete_trip_history``: remove all saved/active trips and chat history.
+    - ``clear_all_data``: delete trips/chats + reset preferences + clear usage/cache.
+    - ``delete_account``: same as clear-all; identity provider account remains external.
+    """
+    from multiagent.tools import trip_planner
+    from multiagent.tools import user_preferences as prefs_store
+    from multiagent.usage import clear_usage
+    from multiagent.user_context import set_user_id
+    from multiagent.web import chat_store
+    import multiagent.tools_cache as tools_cache
+
+    set_user_id(req.user_id)
+
+    if req.action in {"clear_all_data", "delete_account"}:
+        if req.confirm_text.strip().upper() != "DELETE":
+            return {
+                "ok": False,
+                "error": "confirmation_required",
+                "message": "Type DELETE to confirm this action.",
+            }
+
+    deleted_trips = await asyncio.to_thread(trip_planner.clear_all_trip_history)
+    deleted_chats = await asyncio.to_thread(chat_store.clear_all)
+
+    deleted_usage = 0
+    deleted_cache = 0
+    reset_prefs = False
+
+    if req.action in {"clear_all_data", "delete_account"}:
+        await asyncio.to_thread(prefs_store.reset_preferences)
+        reset_prefs = True
+        deleted_usage = await asyncio.to_thread(clear_usage, req.user_id)
+        deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, req.user_id)
+
+    app_event(
+        "api_privacy_action",
+        action=req.action,
+        deleted_trips=deleted_trips,
+        deleted_chats=deleted_chats,
+        deleted_usage=deleted_usage,
+        deleted_cache=deleted_cache,
+    )
+
+    return {
+        "ok": True,
+        "action": req.action,
+        "deleted_trips": deleted_trips,
+        "deleted_chats": deleted_chats,
+        "deleted_usage": deleted_usage,
+        "deleted_cache": deleted_cache,
+        "preferences_reset": reset_prefs,
+        "message": (
+            "Trip history deleted."
+            if req.action == "delete_trip_history"
+            else "All app data cleared for this account."
+        ),
+    }
 
 
 # ---------------------------------------------------------------------------
