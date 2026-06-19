@@ -30,8 +30,8 @@
 - **Rollback (Emergencies)**: `./infra/rollback-prod.ps1` — reverts to previous revision without data loss
 
 Resource naming:
-- Canary RG: `rg-multiagent-trip-planner-canary` (app: `mgc-app-2wf5um7ulxycm`)
-- Prod RG: `rg-multiagent-trip-planner` (app: `multiagent-app-rb4t6btfs5x5m`)
+- Canary RG: `rg-multiagent-canary` (app: `canary-app-*`)
+- Prod RG: `rg-multiagent-prod` (app: `prod-app-*`)
 - Standardized naming roadmap: See `infra/DEPLOYMENT_PROCESS.md`
 
 ## Memory maintenance (KEEP CONTEXT FRESH — do this every session)

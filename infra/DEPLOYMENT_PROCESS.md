@@ -9,10 +9,10 @@
 ### Resources (per environment)
 | Component | Canary | Prod |
 |-----------|--------|------|
-| Container App | `multiagent-app-canary` | `multiagent-app-prod` |
-| Cosmos DB | `multiagent-cosmos-canary` | `multiagent-cosmos-prod` |
-| Container App Env | `multiagent-env-canary` | `multiagent-env-prod` |
-| Log Analytics | `multiagent-logs-canary` | `multiagent-logs-prod` |
+| Container App | `canary-app-*` | `prod-app-*` |
+| Cosmos DB | `canary-cosmos-*` | `prod-cosmos-*` |
+| Container App Env | `canary-env-*` | `prod-env-*` |
+| Log Analytics | `canary-logs-*` | `prod-logs-*` |
 | Email Service | `mes-multiagent-canary` | `mes-multiagent-prod` |
 | Communication Service | `acs-multiagent-canary` | `acs-multiagent-prod` |
 
@@ -31,8 +31,7 @@
 - Email endpoint verification
 
 **Canary apps live at:**
-- https://mgc-app-2wf5um7ulxycm.greensky-bff152b2.eastus2.azurecontainerapps.io (current)
-- https://multiagent-app-canary.{env}.azurecontainerapps.io (post-rename)
+- https://canary-app.{env}.azurecontainerapps.io (after cutover)
 
 ### 2. Promote to Production (Manual Approval Required)
 ```powershell
@@ -95,20 +94,19 @@ All prod deployments logged to `logs/deployments-prod.log`:
 
 ## Current Transition State
 
-**Production (active):**
+**Production (active until cutover):**
 - RG: `rg-multiagent-trip-planner`
 - App: `multiagent-app-rb4t6btfs5x5m`
 - Cosmos: `multiagent-cosmos-rb4t6btfs5x5m`
 - Email: `mes-multiagent-prod`, `acs-multiagent-prod` ✓
 
 **Canary (testing):**
-- RG: `rg-multiagent-trip-planner-canary`
-- App: `mgc-app-2wf5um7ulxycm`
-- Cosmos: `mgc-cosmos-2wf5um7ulxycm`
+- RG: `rg-multiagent-canary`
+- App: `canary-app-*`
+- Cosmos: `canary-cosmos-*`
 - Email: `mes-multiagent-canary`, `acs-multiagent-canary` ✓
 
 **Migration Plan (future):**
-- Rename prod RG → `rg-multiagent-prod` (or recreate)
-- Rename canary RG → `rg-multiagent-canary` (or recreate)
-- Align resource names with standard naming scheme
-- Scheduled for next major release to minimize disruption
+- Cut over canary to the new RG and prefix-based names first
+- After sign-off, promote the same naming scheme to production with approval
+- Leave legacy RGs in place until the new environments are stable

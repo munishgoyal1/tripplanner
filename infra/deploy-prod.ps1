@@ -22,9 +22,32 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Import-DotEnv {
+    param([string]$Path = ".env")
+
+    if (-not (Test-Path $Path)) {
+        return
+    }
+
+    Get-Content $Path | ForEach-Object {
+        if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
+            $name = $matches[1].Trim()
+            $value = $matches[2].Trim()
+
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name, 'Process'))) {
+                [Environment]::SetEnvironmentVariable($name, $value, 'Process')
+                Set-Item -Path "Env:$name" -Value $value
+            }
+        }
+    }
+}
+
+Import-DotEnv
+
 # Configuration
-$prodRG = "rg-multiagent-trip-planner"
-$prodApp = "multiagent-app-rb4t6btfs5x5m"
+$prodRG = "rg-multiagent-prod"
+$prodPrefix = "prod"
+$prodApp = "${prodPrefix}-app"
 $bicepFile = "infra/main.bicep"
 $bicepParams = "infra/main.bicepparam"
 
@@ -32,7 +55,7 @@ Write-Host "`n╔═════════════════════
 Write-Host "║  ⚠️  PRODUCTION DEPLOYMENT — APPROVAL GATE               ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
-Write-Host "Environment: PRODUCTION (rg-multiagent-trip-planner)"
+Write-Host "Environment: PRODUCTION (rg-multiagent-prod)"
 Write-Host "App: $prodApp"
 Write-Host "Image Tag: $ImageTag`n"
 
@@ -87,6 +110,7 @@ if (-not (Test-Path $bicepFile)) {
 if (-not (Test-Path $bicepParams)) {
     throw "Bicep params not found: $bicepParams"
 }
+az group create --name $prodRG --location eastus2 -o none
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
@@ -95,7 +119,7 @@ $validation = az deployment group validate `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=multiagent" "enableCosmosFreeTier=false" `
+    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=false" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep validation failed: $validation"
@@ -109,7 +133,7 @@ if ($DryRun) {
         --resource-group $prodRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=multiagent" "enableCosmosFreeTier=false" | Out-String
+        --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=false" | Out-String
     Write-Host "  ✓ Dry run completed`n"
     exit 0
 }
@@ -120,9 +144,10 @@ $deployment = az deployment group create `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=multiagent" "enableCosmosFreeTier=false" `
+    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=false" `
+    --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value}" `
-    --output json | ConvertFrom-Json
+    --output json 2>$null | ConvertFrom-Json
 
 if ($deployment.state -ne "Succeeded") {
     throw "Deployment failed: $($deployment.state)"
@@ -147,6 +172,7 @@ Write-Host "╚═════════════════════�
 
 Write-Host "App URL: https://$($deployment.containerAppUrl)"
 Write-Host "Environment: PRODUCTION"
+Write-Host "Resource Group: $prodRG"
 Write-Host "Image: ghcr.io/munishgoyal1/multiagent:$ImageTag`n"
 
 # Log deployment
@@ -154,7 +180,7 @@ $logDir = "logs"
 if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $approver = $env:USERNAME
-Add-Content "logs/deployments-prod.log" "[$timestamp] APPROVED by $approver | Image: ghcr.io/munishgoyal1/multiagent:$ImageTag | Status: SUCCESS"
+Add-Content "logs/deployments-prod.log" "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/multiagent:$ImageTag | Status: SUCCESS"
 
 Write-Host "✓ Logged to logs/deployments-prod.log"
 Write-Host "✓ All users can now access the production deployment`n"

@@ -15,28 +15,28 @@ Stays at ~₹0 when idle thanks to scale-to-zero.
 ## Environments & Naming
 
 ### Canary (Testing — No Approval Gate)
-- Resource Group: `rg-multiagent-trip-planner-canary` (transitioning to `rg-multiagent-canary`)
-- Container App: `mgc-app-2wf5um7ulxycm` (transitioning to `multiagent-app-canary`)
-- Cosmos DB: `mgc-cosmos-2wf5um7ulxycm` (transitioning to `multiagent-cosmos-canary`)
+- Resource Group: `rg-multiagent-canary`
+- Container App: `canary-app-*`
+- Cosmos DB: `canary-cosmos-*`
 - **Use for:** Feature testing, bug fixes, infrastructure changes, email verification
 - **Deployment:** `./infra/deploy-canary.ps1` (no approval required)
 
 ### Production (Live — Manual Approval Required)
-- Resource Group: `rg-multiagent-trip-planner` (transitioning to `rg-multiagent-prod`)
-- Container App: `multiagent-app-rb4t6btfs5x5m` (transitioning to `multiagent-app-prod`)
-- Cosmos DB: `multiagent-cosmos-rb4t6btfs5x5m` (transitioning to `multiagent-cosmos-prod`)
+- Resource Group: `rg-multiagent-prod`
+- Container App: `prod-app-*`
+- Cosmos DB: `prod-cosmos-*`
 - **Use for:** Tested, verified releases only
 - **Deployment:** `./infra/deploy-prod.ps1` (requires explicit approval: type `APPROVE_PROD_DEPLOYMENT`)
 
 ### Migration Path
-Transition to standardized naming in next major release. Current resources remain functional.
+Transition to standardized naming by redeploying canary first, then production after approval.
 
 ## Prerequisites
 
 - Azure subscription with the Cosmos DB Free Tier slot still available
 - Resource groups:
-  - `rg-multiagent-trip-planner` (production, eastus2)
-  - `rg-multiagent-trip-planner-canary` (canary, eastus2)
+  - `rg-multiagent-prod` (production, eastus2)
+  - `rg-multiagent-canary` (canary, eastus2)
 - Azure OpenAI deployed: `aoai-multiagent-mugoy` (gpt-4.1 primary; gpt-4o and gpt-5 also available)
 - Docker installed locally
 - GitHub Container Registry account for container images
@@ -110,9 +110,10 @@ $Env:CONTAINER_IMAGE        = "ghcr.io/munishgoyal1/multiagent:latest"
 
 # 3. Deploy.
 az deployment group create `
-  --resource-group rg-multiagent-trip-planner `
+  --resource-group rg-multiagent-canary `
   --template-file infra/main.bicep `
   --parameters infra/main.bicepparam `
+  --parameters namePrefix=canary-multiagent `
   --query "properties.outputs.containerAppUrl.value" -o tsv
 ```
 
@@ -127,6 +128,6 @@ Bicep (idempotent) or update just the container:
 ```powershell
 az containerapp update `
   --name <appName> `
-  --resource-group rg-multiagent-trip-planner `
+  --resource-group rg-multiagent-prod `
   --image ghcr.io/munishgoyal1/multiagent:latest
 ```
