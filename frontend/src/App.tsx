@@ -13,6 +13,34 @@ interface NavRef {
 }
 
 type DragType = "main" | "leftV" | "rightV" | null;
+type PaneId = "itinerary" | "chat" | "map" | "details";
+type SlotId = "leftTop" | "leftBottom" | "rightTop" | "rightBottom";
+
+type PaneVisibility = Record<PaneId, boolean>;
+type PaneSlots = Record<SlotId, PaneId>;
+
+const SLOT_ORDER: SlotId[] = ["leftTop", "leftBottom", "rightTop", "rightBottom"];
+
+const PANE_LABEL: Record<PaneId, string> = {
+  itinerary: "Itinerary",
+  chat: "Chat",
+  map: "Map",
+  details: "Details",
+};
+
+const DEFAULT_SLOTS: PaneSlots = {
+  leftTop: "itinerary",
+  leftBottom: "chat",
+  rightTop: "map",
+  rightBottom: "details",
+};
+
+const DEFAULT_HIDDEN: PaneVisibility = {
+  itinerary: false,
+  chat: false,
+  map: false,
+  details: false,
+};
 
 function clamp(v: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, v));
@@ -34,7 +62,6 @@ export default function App() {
   const [chatReloadToken, setChatReloadToken] = useState(0);
   const [chatTripId, setChatTripId] = useState<string | null>(null);
 
-  // Desktop split state: left/right + vertical splits inside each side.
   const [leftPct, setLeftPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("multiagent_left_pct"));
     return saved >= 30 && saved <= 70 ? saved : 50;
@@ -47,6 +74,10 @@ export default function App() {
     const saved = Number(localStorage.getItem("multiagent_right_top_pct"));
     return saved >= 15 && saved <= 85 ? saved : 50;
   });
+
+  const [paneBySlot, setPaneBySlot] = useState<PaneSlots>(DEFAULT_SLOTS);
+  const [hiddenPanes, setHiddenPanes] = useState<PaneVisibility>(DEFAULT_HIDDEN);
+  const [maximizedPane, setMaximizedPane] = useState<PaneId | null>(null);
 
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
@@ -70,19 +101,19 @@ export default function App() {
       if (dragType.current === "main" && rootRef.current) {
         const rect = rootRef.current.getBoundingClientRect();
         const pct = ((e.clientX - rect.left) / rect.width) * 100;
-        setLeftPct(clamp(pct, 30, 70));
+        setLeftPct(clamp(pct, 20, 80));
         return;
       }
       if (dragType.current === "leftV" && leftRef.current) {
         const rect = leftRef.current.getBoundingClientRect();
         const pct = ((e.clientY - rect.top) / rect.height) * 100;
-        setLeftTopPct(clamp(pct, 15, 85));
+        setLeftTopPct(clamp(pct, 10, 90));
         return;
       }
       if (dragType.current === "rightV" && rightRef.current) {
         const rect = rightRef.current.getBoundingClientRect();
         const pct = ((e.clientY - rect.top) / rect.height) * 100;
-        setRightTopPct(clamp(pct, 15, 85));
+        setRightTopPct(clamp(pct, 10, 90));
       }
     }
 
@@ -178,18 +209,59 @@ export default function App() {
     if (!focus) setNavList(next.items.map((it) => ({ kind: it.kind, name: it.name })));
   };
 
-  // Itinerary click: always show on map and in details section.
+  const revealPane = (pane: PaneId) => {
+    setHiddenPanes((prev) => ({ ...prev, [pane]: false }));
+  };
+
+  const hidePane = (pane: PaneId) => {
+    setHiddenPanes((prev) => ({ ...prev, [pane]: true }));
+    if (maximizedPane === pane) setMaximizedPane(null);
+  };
+
+  const toggleMaxPane = (pane: PaneId) => {
+    revealPane(pane);
+    setMaximizedPane((prev) => (prev === pane ? null : pane));
+  };
+
+  const slotForPane = (pane: PaneId): SlotId => {
+    const found = SLOT_ORDER.find((slot) => paneBySlot[slot] === pane);
+    return found ?? "leftTop";
+  };
+
+  const movePane = (pane: PaneId) => {
+    const from = slotForPane(pane);
+    const fromIndex = SLOT_ORDER.indexOf(from);
+    const to = SLOT_ORDER[(fromIndex + 1) % SLOT_ORDER.length];
+    setPaneBySlot((prev) => ({
+      ...prev,
+      [from]: prev[to],
+      [to]: prev[from],
+    }));
+  };
+
+  const resetPaneLayout = () => {
+    setPaneBySlot(DEFAULT_SLOTS);
+    setHiddenPanes(DEFAULT_HIDDEN);
+    setLeftPct(50);
+    setLeftTopPct(50);
+    setRightTopPct(50);
+    setMaximizedPane(null);
+  };
+
   const handleStopFocus = (kind: string, name: string) => {
     setStopFocusName(name);
+    revealPane("map");
+    revealPane("details");
     setMapOpen(true);
     if (isPlaceKind(kind)) {
       handleFocus(kind === "activity" ? "attraction" : kind, name);
     }
   };
 
-  // Map pin button from itinerary: open map and also load details when possible.
   const handleStopMap = (kind: string, name: string) => {
     setStopFocusName(name);
+    revealPane("map");
+    revealPane("details");
     setMapOpen(true);
     if (isPlaceKind(kind)) {
       handleFocus(kind === "activity" ? "attraction" : kind, name);
@@ -221,7 +293,99 @@ export default function App() {
     onToggleMap: setMapOpen,
   };
 
-  // Mobile keeps the existing compact flow.
+  const renderPaneBody = (pane: PaneId) => {
+    if (pane === "itinerary") {
+      return (
+        <ItineraryPanel
+          reloadToken={tripVersion}
+          focusName={stopFocusName}
+          onStopFocus={handleStopFocus}
+          onStopMap={handleStopMap}
+        />
+      );
+    }
+    if (pane === "chat") {
+      return (
+        <ChatPanel
+          onTurnComplete={() => refresh()}
+          reloadToken={chatReloadToken}
+          tripIdHint={chatTripId}
+          onNewTrip={handleNewTrip}
+        />
+      );
+    }
+    if (pane === "map") {
+      return <MapPanel reloadToken={tripVersion} focusName={stopFocusName} />;
+    }
+    return <TripPanel {...tripPanelProps} hideSwitcher />;
+  };
+
+  const renderPane = (pane: PaneId) => {
+    if (hiddenPanes[pane]) {
+      return (
+        <div className="grid h-full place-items-center rounded-2xl border border-dashed border-slate-200 bg-white/50 p-6 text-center">
+          <div>
+            <p className="text-sm font-medium text-slate-600">{PANE_LABEL[pane]} is hidden</p>
+            <button
+              type="button"
+              onClick={() => revealPane(pane)}
+              className="mt-3 rounded-full px-4 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <article className="flex h-full min-h-0 flex-col rounded-2xl border border-slate-200/70 bg-white/80 shadow-card">
+        <header className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{PANE_LABEL[pane]}</h3>
+          <button
+            type="button"
+            onClick={() => movePane(pane)}
+            className="ml-auto rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            title="Move pane"
+          >
+            Move
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleMaxPane(pane)}
+            className="rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            title={maximizedPane === pane ? "Restore" : "Maximize"}
+          >
+            {maximizedPane === pane ? "Restore" : "Max"}
+          </button>
+          <button
+            type="button"
+            onClick={() => hidePane(pane)}
+            className="rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            title="Hide pane"
+          >
+            Hide
+          </button>
+        </header>
+        <div className="min-h-0 flex-1">{renderPaneBody(pane)}</div>
+      </article>
+    );
+  };
+
+  const leftTopPane = paneBySlot.leftTop;
+  const leftBottomPane = paneBySlot.leftBottom;
+  const rightTopPane = paneBySlot.rightTop;
+  const rightBottomPane = paneBySlot.rightBottom;
+
+  const leftTopVisible = !hiddenPanes[leftTopPane];
+  const leftBottomVisible = !hiddenPanes[leftBottomPane];
+  const rightTopVisible = !hiddenPanes[rightTopPane];
+  const rightBottomVisible = !hiddenPanes[rightBottomPane];
+
+  const leftColumnVisible = leftTopVisible || leftBottomVisible;
+  const rightColumnVisible = rightTopVisible || rightBottomVisible;
+
+  const hiddenPaneList = (Object.keys(hiddenPanes) as PaneId[]).filter((pane) => hiddenPanes[pane]);
+
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
   useEffect(() => {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
@@ -229,135 +393,109 @@ export default function App() {
 
   return (
     <>
-      <div ref={rootRef} className="hidden h-screen bg-surface md:flex">
-        <section
-          ref={leftRef}
-          className="flex min-w-0 flex-col"
-          style={{ flexBasis: `${leftPct}%` }}
-        >
-          <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
-            <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-            <button
-              type="button"
-              onClick={() => setLeftTopPct((p) => (p > 70 ? 50 : 80))}
-              className="ml-auto rounded-full px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-              title="Maximize itinerary area"
-            >
-              Itinerary ⤢
-            </button>
-            <button
-              type="button"
-              onClick={() => setLeftTopPct((p) => (p < 30 ? 50 : 20))}
-              className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-              title="Maximize chat area"
-            >
-              Chat ⤢
-            </button>
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col">
-            <section
-              className="min-h-0 border-b border-slate-100"
-              style={{ flexBasis: `${leftTopPct}%` }}
-            >
-              <ItineraryPanel
-                reloadToken={tripVersion}
-                focusName={stopFocusName}
-                onStopFocus={handleStopFocus}
-                onStopMap={handleStopMap}
-              />
-            </section>
-
-            <div
-              onMouseDown={() => startDrag("leftV")}
-              title="Drag to resize itinerary/chat"
-              className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30"
-            >
-              <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+      <div className="hidden h-screen bg-surface md:flex md:flex-col">
+        <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
+          <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
+          <button
+            type="button"
+            onClick={resetPaneLayout}
+            className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            title="Reset pane layout"
+          >
+            Reset layout
+          </button>
+          {hiddenPaneList.length > 0 && (
+            <div className="ml-auto flex items-center gap-2">
+              <span className="text-xs font-medium text-slate-500">Hidden:</span>
+              {hiddenPaneList.map((pane) => (
+                <button
+                  key={pane}
+                  type="button"
+                  onClick={() => revealPane(pane)}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+                >
+                  Show {PANE_LABEL[pane]}
+                </button>
+              ))}
             </div>
-
-            <section className="min-h-0 flex-1">
-              <ChatPanel
-                onTurnComplete={() => refresh()}
-                reloadToken={chatReloadToken}
-                tripIdHint={chatTripId}
-                onNewTrip={handleNewTrip}
-              />
-            </section>
-          </div>
-        </section>
-
-        <div
-          onMouseDown={() => startDrag("main")}
-          title="Drag to resize left/right"
-          className="group relative w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-brand/30"
-        >
-          <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+          )}
         </div>
 
-        <aside ref={rightRef} className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Map & details
-            </span>
-            <button
-              type="button"
-              onClick={() => setMapOpen((o) => !o)}
-              className={`ml-auto rounded-full px-3 py-1 text-xs font-medium transition ${
-                mapOpen
-                  ? "bg-ink text-white"
-                  : "text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-              }`}
-              title={mapOpen ? "Hide map" : "Show map"}
-            >
-              {mapOpen ? "Hide map" : "Show map"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setRightTopPct((p) => (p > 70 ? 50 : 80))}
-              className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-              title="Maximize map"
-            >
-              Map ⤢
-            </button>
-            <button
-              type="button"
-              onClick={() => setRightTopPct((p) => (p < 30 ? 50 : 20))}
-              className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-              title="Maximize details"
-            >
-              Details ⤢
-            </button>
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col">
-            {mapOpen ? (
-              <>
+        <div ref={rootRef} className="flex min-h-0 flex-1 gap-2 p-2">
+          {maximizedPane ? (
+            <div className="min-h-0 flex-1">{renderPane(maximizedPane)}</div>
+          ) : (
+            <>
+              {leftColumnVisible && (
                 <section
-                  className="min-h-0 border-b border-slate-100"
-                  style={{ flexBasis: `${rightTopPct}%` }}
+                  ref={leftRef}
+                  className="flex min-w-0 flex-col gap-2"
+                  style={{ flexBasis: rightColumnVisible ? `${leftPct}%` : "100%" }}
                 >
-                  <MapPanel reloadToken={tripVersion} focusName={stopFocusName} />
+                  {leftTopVisible && leftBottomVisible ? (
+                    <>
+                      <section className="min-h-0" style={{ flexBasis: `${leftTopPct}%` }}>
+                        {renderPane(leftTopPane)}
+                      </section>
+                      <div
+                        onMouseDown={() => startDrag("leftV")}
+                        title="Drag to resize upper/lower left panes"
+                        className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30"
+                      >
+                        <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+                      </div>
+                      <section className="min-h-0 flex-1">{renderPane(leftBottomPane)}</section>
+                    </>
+                  ) : leftTopVisible ? (
+                    <section className="min-h-0 flex-1">{renderPane(leftTopPane)}</section>
+                  ) : (
+                    <section className="min-h-0 flex-1">{renderPane(leftBottomPane)}</section>
+                  )}
                 </section>
-                <div
-                  onMouseDown={() => startDrag("rightV")}
-                  title="Drag to resize map/details"
-                  className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30"
-                >
-                  <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
-                </div>
-              </>
-            ) : (
-              <section className="grid h-12 place-items-center border-b border-slate-100 text-xs text-slate-500">
-                Map hidden
-              </section>
-            )}
+              )}
 
-            <section className="min-h-0 flex-1">
-              <TripPanel {...tripPanelProps} hideSwitcher />
-            </section>
-          </div>
-        </aside>
+              {leftColumnVisible && rightColumnVisible && (
+                <div
+                  onMouseDown={() => startDrag("main")}
+                  title="Drag to resize left/right"
+                  className="group relative w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-brand/30"
+                >
+                  <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+                </div>
+              )}
+
+              {rightColumnVisible && (
+                <aside ref={rightRef} className="flex min-w-0 flex-1 flex-col gap-2">
+                  {rightTopVisible && rightBottomVisible ? (
+                    <>
+                      <section className="min-h-0" style={{ flexBasis: `${rightTopPct}%` }}>
+                        {renderPane(rightTopPane)}
+                      </section>
+                      <div
+                        onMouseDown={() => startDrag("rightV")}
+                        title="Drag to resize upper/lower right panes"
+                        className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30"
+                      >
+                        <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+                      </div>
+                      <section className="min-h-0 flex-1">{renderPane(rightBottomPane)}</section>
+                    </>
+                  ) : rightTopVisible ? (
+                    <section className="min-h-0 flex-1">{renderPane(rightTopPane)}</section>
+                  ) : (
+                    <section className="min-h-0 flex-1">{renderPane(rightBottomPane)}</section>
+                  )}
+                </aside>
+              )}
+
+              {!leftColumnVisible && !rightColumnVisible && (
+                <section className="grid min-h-0 flex-1 place-items-center rounded-2xl border border-dashed border-slate-200 bg-white/50 text-sm text-slate-500">
+                  All panes are hidden. Use the Show buttons in the top bar.
+                </section>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <section className="flex h-screen flex-col md:hidden">
@@ -375,7 +513,6 @@ export default function App() {
             aria-label="Open trip details"
             className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-pop ring-1 ring-black/10 transition active:scale-95"
           >
-            <span>{"\uD83E\uDDF3"}</span>
             <span>Trip details</span>
           </button>
         )}
@@ -402,7 +539,7 @@ export default function App() {
               aria-label="Close trip details"
               className="-ml-2 grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
             >
-              <span className="text-xl leading-none">×</span>
+              <span className="text-xl leading-none">x</span>
             </button>
             <div
               onClick={() => setMobileTripOpen(false)}
