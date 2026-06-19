@@ -17,7 +17,14 @@
 
 param(
     [string]$ImageTag = "latest",
-    [switch]$DryRun = $false
+    [switch]$DryRun = $false,
+    [string]$SubscriptionId = "",
+    [string]$ResourceGroup = "rg-tripplanner-prod",
+    [string]$NamePrefix = "prod",
+    [string]$Location = "eastus2",
+    [string]$BicepFile = "infra/main.bicep",
+    [string]$BicepParams = "infra/main.bicepparam",
+    [bool]$EnableCosmosFreeTier = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -45,18 +52,21 @@ function Import-DotEnv {
 Import-DotEnv
 
 # Configuration
-$prodRG = "rg-tripplanner-prod"
-$prodPrefix = "prod"
-$prodApp = "${prodPrefix}-app"
-$bicepFile = "infra/main.bicep"
-$bicepParams = "infra/main.bicepparam"
+$prodRG = $ResourceGroup
+$prodPrefix = $NamePrefix
+$bicepFile = $BicepFile
+$bicepParams = $BicepParams
+
+if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+    az account set --subscription $SubscriptionId
+}
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ⚠️  PRODUCTION DEPLOYMENT — APPROVAL GATE               ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
 Write-Host "Environment: PRODUCTION (rg-tripplanner-prod)"
-Write-Host "App: $prodApp"
+Write-Host "App Prefix: ${prodPrefix}-app-*"
 Write-Host "Image Tag: $ImageTag`n"
 
 # Display readiness checklist
@@ -110,7 +120,7 @@ if (-not (Test-Path $bicepFile)) {
 if (-not (Test-Path $bicepParams)) {
     throw "Bicep params not found: $bicepParams"
 }
-az group create --name $prodRG --location eastus2 -o none
+az group create --name $prodRG --location $Location -o none
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
@@ -119,7 +129,7 @@ $validation = az deployment group validate `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=false" `
+    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep validation failed: $validation"
@@ -133,7 +143,7 @@ if ($DryRun) {
         --resource-group $prodRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=false" | Out-String
+        --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" | Out-String
     Write-Host "  ✓ Dry run completed`n"
     exit 0
 }
@@ -144,9 +154,9 @@ $deployment = az deployment group create `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=false" `
+    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
     --only-show-errors `
-    --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value}" `
+    --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
     --output json 2>$null | ConvertFrom-Json
 
 if ($deployment.state -ne "Succeeded") {
@@ -158,7 +168,7 @@ Write-Host "  ✓ Infrastructure deployed`n"
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
 az containerapp update `
     --resource-group $prodRG `
-    --name $prodApp `
+    --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
     -o none
 Write-Host "  ✓ Image updated`n"
@@ -171,6 +181,7 @@ Write-Host "╚═════════════════════�
 Write-Host "App URL: https://$($deployment.containerAppUrl)"
 Write-Host "Environment: PRODUCTION"
 Write-Host "Resource Group: $prodRG"
+Write-Host "Container App: $($deployment.containerAppName)"
 Write-Host "Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag`n"
 
 # Log deployment

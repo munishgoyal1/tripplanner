@@ -13,7 +13,14 @@
 
 param(
     [string]$ImageTag = "latest",
-    [switch]$DryRun = $false
+    [switch]$DryRun = $false,
+    [string]$SubscriptionId = "",
+    [string]$ResourceGroup = "rg-tripplanner-canary",
+    [string]$NamePrefix = "canary",
+    [string]$Location = "eastus2",
+    [string]$BicepFile = "infra/main.bicep",
+    [string]$BicepParams = "infra/main.bicepparam",
+    [bool]$EnableCosmosFreeTier = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -41,11 +48,14 @@ function Import-DotEnv {
 Import-DotEnv
 
 # Configuration
-$canaryRG = "rg-tripplanner-canary"
-$canaryPrefix = "canary"
-$canaryApp = "${canaryPrefix}-app"
-$bicepFile = "infra/main.bicep"
-$bicepParams = "infra/main.bicepparam"
+$canaryRG = $ResourceGroup
+$canaryPrefix = $NamePrefix
+$bicepFile = $BicepFile
+$bicepParams = $BicepParams
+
+if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+    az account set --subscription $SubscriptionId
+}
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  🧪 CANARY DEPLOYMENT — No Approval Required             ║"
@@ -63,7 +73,7 @@ if (-not (Test-Path $bicepFile)) {
 if (-not (Test-Path $bicepParams)) {
     throw "Bicep params not found: $bicepParams"
 }
-az group create --name $canaryRG --location eastus2 -o none
+az group create --name $canaryRG --location $Location -o none
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
@@ -72,7 +82,7 @@ $validation = az deployment group validate `
     --resource-group $canaryRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=false" `
+    --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep validation failed: $validation"
@@ -86,7 +96,7 @@ if ($DryRun) {
         --resource-group $canaryRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=false" | Out-String
+        --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" | Out-String
     Write-Host "  ✓ Dry run completed`n"
     exit 0
 }
@@ -97,9 +107,9 @@ $deployment = az deployment group create `
     --resource-group $canaryRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=false" `
+    --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
     --only-show-errors `
-    --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value}" `
+    --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
     --output json 2>$null | ConvertFrom-Json
 
 if ($deployment.state -ne "Succeeded") {
@@ -111,7 +121,7 @@ Write-Host "  ✓ Infrastructure deployed`n"
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
 az containerapp update `
     --resource-group $canaryRG `
-    --name $canaryApp `
+    --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
     -o none
 Write-Host "  ✓ Image updated`n"
@@ -122,6 +132,7 @@ Write-Host "║  ✓ CANARY DEPLOYMENT COMPLETE                            ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
 Write-Host "App URL: https://$($deployment.containerAppUrl)"
+Write-Host "Container App: $($deployment.containerAppName)"
 Write-Host "Resource Group: $canaryRG"
 Write-Host "`nNext: Test the canary app, then use ./infra/deploy-prod.ps1 to promote"
 Write-Host "       if all tests pass and you're ready for production.`n"

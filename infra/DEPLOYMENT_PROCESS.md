@@ -13,14 +13,15 @@
 | Cosmos DB | `canary-cosmos-*` | `prod-cosmos-*` |
 | Container App Env | `canary-env-*` | `prod-env-*` |
 | Log Analytics | `canary-logs-*` | `prod-logs-*` |
-| Email Service | `mes-tripplanner-canary` | `mes-tripplanner-prod` |
-| Communication Service | `acs-tripplanner-canary` | `acs-tripplanner-prod` |
+| Azure OpenAI (script-provisioned) | `aoaicanary*` | `aoaiprod*` |
+
+Email/Communication services are optional and are not provisioned by `main.bicep`.
 
 ## Deployment Workflow
 
 ### 1. Deploy to Canary (No Approval Required)
 ```powershell
-./infra/deploy-canary.ps1
+./infra/deploy-canary.ps1 -SubscriptionId <sub-id>
 ```
 
 **Use this for:**
@@ -35,7 +36,12 @@
 
 ### 2. Promote to Production (Manual Approval Required)
 ```powershell
-./infra/deploy-prod.ps1
+./infra/deploy-prod.ps1 -SubscriptionId <sub-id>
+```
+
+### Optional: Full Fresh Bootstrap
+```powershell
+./infra/bootstrap-environments.ps1 -SubscriptionId <sub-id> -ImageTag v0.X.Y -ProvisionAoai
 ```
 
 **Requirements before running:**
@@ -94,20 +100,8 @@ All prod deployments logged to `logs/deployments-prod.log`:
 
 ## Current Transition State
 
-**Production (active until cutover):**
-- RG: `rg-tripplanner-trip-planner`
-- App: `tripplanner-app-rb4t6btfs5x5m`
-- Cosmos: `tripplanner-cosmos-rb4t6btfs5x5m`
-- Email: `mes-tripplanner-prod`, `acs-tripplanner-prod` ✓
+Current baseline uses standardized RGs + prefix names:
 
-**Canary (testing):**
-- RG: `rg-tripplanner-canary`
-- App: `canary-app-*`
-- Cosmos: `canary-cosmos-*`
-- Email: `mes-tripplanner-canary`, `acs-tripplanner-canary` ✓
-
-**Migration Plan (future):**
-- Cut over canary to the new RG and prefix-based names first
-- After sign-off, promote the same naming scheme to production with approval
-- Leave legacy RGs in place until the new environments are stable
+- Canary: `rg-tripplanner-canary`, `canary-*`
+- Production: `rg-tripplanner-prod`, `prod-*`
 

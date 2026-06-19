@@ -29,7 +29,7 @@ param azureOpenAiEndpoint string
 param azureOpenAiDeployment string = 'gpt-4o'
 
 @description('Azure OpenAI API version.')
-param azureOpenAiApiVersion string = '2024-12-01-preview'
+param azureOpenAiApiVersion string = '2024-10-21'
 
 @secure()
 @description('Azure OpenAI API key.')
@@ -308,6 +308,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
 
 output containerAppFqdn string = app.properties.configuration.ingress.fqdn
 output containerAppUrl string = 'https://${app.properties.configuration.ingress.fqdn}'
+output containerAppName string = app.name
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output cosmosAccountName string = cosmos.name
 output logAnalyticsId string = logs.id

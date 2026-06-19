@@ -33,11 +33,8 @@ Transition to standardized naming by redeploying canary first, then production a
 
 ## Prerequisites
 
-- Azure subscription with the Cosmos DB Free Tier slot still available
-- Resource groups:
-  - `rg-tripplanner-prod` (production, eastus2)
-  - `rg-tripplanner-canary` (canary, eastus2)
-- Azure OpenAI deployed: `aoai-tripplanner-mugoy` (gpt-4.1 primary; gpt-4o and gpt-5 also available)
+- Azure subscription with Cosmos DB Free Tier slot available (optional in this repo; defaults to disabled in canary/prod scripts)
+- Azure CLI logged in (`az login`)
 - Docker installed locally
 - GitHub Container Registry account for container images
 
@@ -49,6 +46,31 @@ Transition to standardized naming by redeploying canary first, then production a
 - `deploy-canary.ps1` — deploy/test new changes (no approval)
 - `deploy-prod.ps1` — promote to production (manual approval required)
 - `rollback-prod.ps1` — revert to previous stable revision if issues occur
+- `provision-aoai.ps1` — create/reuse Azure OpenAI account + deployment and print `.env` values
+- `bootstrap-environments.ps1` — one-command canary+prod bootstrap for a fresh subscription
+
+## Fresh Subscription Quick Start
+
+```powershell
+# 1) Build and push app image first
+$Env:CR_PAT = "<github_personal_access_token>"
+$Env:CR_PAT | docker login ghcr.io -u munishgoyal1 --password-stdin
+docker build -t ghcr.io/munishgoyal1/tripplanner:v0.X.Y .
+docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
+
+# 2) (Optional but recommended) Provision AOAI for canary+prod
+./infra/provision-aoai.ps1 -Environment canary -SubscriptionId <sub-id>
+./infra/provision-aoai.ps1 -Environment prod -SubscriptionId <sub-id> -SkuName GlobalStandard -Capacity 50
+
+# 3) Copy emitted AOAI endpoint/key/deployment into local .env
+
+# 4) Bootstrap both environments
+./infra/bootstrap-environments.ps1 -SubscriptionId <sub-id> -ImageTag v0.X.Y
+```
+
+Notes:
+- Deploy scripts are now parameterized, so you can target any subscription, region, RG, and name prefix.
+- Production deployment still enforces manual approval (`APPROVE_PROD_DEPLOYMENT`).
 
 ## Deploy flow
 
@@ -61,7 +83,7 @@ docker build -t ghcr.io/munishgoyal1/tripplanner:v0.X.Y .
 docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
 
 # 2. Deploy to canary (no approval needed)
-./infra/deploy-canary.ps1 -ImageTag v0.X.Y
+./infra/deploy-canary.ps1 -ImageTag v0.X.Y -SubscriptionId <sub-id>
 
 # 3. Test: https://mgc-app-2wf5um7ulxycm.greensky-bff152b2.eastus2.azurecontainerapps.io
 #    - Test chat, map, email endpoints
@@ -72,7 +94,7 @@ docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
 ### To Production (Approved Release)
 ```powershell
 # 1. Once canary is verified stable:
-./infra/deploy-prod.ps1 -ImageTag v0.X.Y
+./infra/deploy-prod.ps1 -ImageTag v0.X.Y -SubscriptionId <sub-id>
 
 # 2. When prompted, review the checklist and type:
 #    > APPROVE_PROD_DEPLOYMENT

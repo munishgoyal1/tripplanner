@@ -6,7 +6,7 @@ param namePrefix = 'tripplanner'
 // after the first docker push (see infra/README.md for the build & push flow).
 param containerImage = readEnvironmentVariable('CONTAINER_IMAGE', 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest')
 
-// Azure OpenAI — already provisioned out of band (resource aoai-tripplanner-mugoy).
+// Azure OpenAI — provide from .env (or generate via infra/provision-aoai.ps1).
 param azureOpenAiEndpoint = readEnvironmentVariable('AZURE_OPENAI_ENDPOINT', '')
 param azureOpenAiDeployment = readEnvironmentVariable('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o')
 param azureOpenAiApiVersion = readEnvironmentVariable('AZURE_OPENAI_API_VERSION', '2024-10-21')

@@ -11,10 +11,38 @@
   ./infra/rollback-prod.ps1
 #>
 
+param(
+  [string]$SubscriptionId = "",
+  [string]$ResourceGroup = "rg-tripplanner-prod",
+  [string]$AppName = "",
+  [string]$AppNamePrefix = "prod-app-"
+)
+
 $ErrorActionPreference = "Stop"
 
-$prodRG = "rg-tripplanner-trip-planner"
-$prodApp = "tripplanner-app-rb4t6btfs5x5m"
+if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+  az account set --subscription $SubscriptionId
+}
+
+$prodRG = $ResourceGroup
+
+if ([string]::IsNullOrWhiteSpace($AppName)) {
+  $matchedApps = az containerapp list `
+    --resource-group $prodRG `
+    --query "[?starts_with(name, '$AppNamePrefix')].name" `
+    --output tsv
+
+  $appNames = @($matchedApps -split "`n" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+  if ($appNames.Count -eq 0) {
+    throw "No Container App found in $prodRG with prefix '$AppNamePrefix'."
+  }
+  if ($appNames.Count -gt 1) {
+    throw "Multiple Container Apps match prefix '$AppNamePrefix' in $prodRG: $($appNames -join ', '). Pass -AppName explicitly."
+  }
+  $prodApp = $appNames[0]
+} else {
+  $prodApp = $AppName
+}
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ⚠️  PRODUCTION ROLLBACK                                  ║"
@@ -23,6 +51,8 @@ Write-Host "╚═════════════════════�
 Write-Host "This will revert production to the previous revision."
 Write-Host "Data and database are NOT affected — only the app code."
 Write-Host "Downtime: ~2-5 seconds`n"
+Write-Host "Target RG: $prodRG"
+Write-Host "Target App: $prodApp`n"
 
 $confirmation = Read-Host "Type ROLLBACK to confirm"
 if ($confirmation -ne "ROLLBACK") {
@@ -31,25 +61,22 @@ if ($confirmation -ne "ROLLBACK") {
 }
 
 Write-Host "`nFetching revision history...`n"
-$revisions = az containerapp revision list `
-    --resource-group $prodRG `
-    --name $prodApp `
-    --query "[0:2].{name:name, createdTime:properties.createdTime, active:properties.active}" `
-    --output table
+$revisionRows = az containerapp revision list `
+  --resource-group $prodRG `
+  --name $prodApp `
+  --query "[].{name:name, createdTime:properties.createdTime, active:properties.active}" `
+  --output json | ConvertFrom-Json
 
-Write-Host $revisions
-Write-Host "`n"
+$orderedRevisions = @($revisionRows | Sort-Object { $_.createdTime } -Descending)
+$currentRevision = ($orderedRevisions | Where-Object { $_.active } | Select-Object -First 1).name
+$previousRevision = ($orderedRevisions | Where-Object { $_.name -ne $currentRevision } | Select-Object -First 1).name
+
+if ($orderedRevisions.Count -gt 0) {
+  $orderedRevisions | Select-Object -First 2 | Format-Table name, createdTime, active | Out-Host
+  Write-Host "`n"
+}
 
 Write-Host "Rolling back to previous revision..."
-$currentRevision = az containerapp revision list `
-    --resource-group $prodRG `
-    --name $prodApp `
-    --query "[0].name" -o tsv
-
-$previousRevision = az containerapp revision list `
-    --resource-group $prodRG `
-    --name $prodApp `
-    --query "[1].name" -o tsv
 
 if ([string]::IsNullOrEmpty($previousRevision)) {
     Write-Error "No previous revision found. Cannot rollback."
