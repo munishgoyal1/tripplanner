@@ -48,6 +48,8 @@ Transition to standardized naming by redeploying canary first, then production a
 - `rollback-prod.ps1` — revert to previous stable revision if issues occur
 - `provision-aoai.ps1` — create/reuse Azure OpenAI account + deployment and print `.env` values
 - `bootstrap-environments.ps1` — one-command canary+prod bootstrap for a fresh subscription
+- `provision-local-cosmos.ps1` — create/reuse a dedicated local Cosmos account in `rg-tripplanner-local`
+- `check-local-cosmos.ps1` — print local Cosmos endpoint/key/account details
 
 ## Fresh Subscription Quick Start
 
@@ -71,6 +73,35 @@ docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
 Notes:
 - Deploy scripts are now parameterized, so you can target any subscription, region, RG, and name prefix.
 - Production deployment still enforces manual approval (`APPROVE_PROD_DEPLOYMENT`).
+
+## Local Isolated Data Environment
+
+Use this when you want local development data fully isolated from canary/prod:
+
+```powershell
+./infra/provision-local-cosmos.ps1 -SubscriptionId <sub-id>
+./infra/check-local-cosmos.ps1
+```
+
+Copy the emitted values into `.env`:
+
+```powershell
+COSMOS_ENDPOINT=<LOCAL_COSMOS_ENDPOINT>
+COSMOS_KEY=<LOCAL_COSMOS_KEY>
+COSMOS_DATABASE=tripplanner
+```
+
+## Cross-Environment Data Copy
+
+For restore/testing scenarios (prod -> canary/local, canary -> local):
+
+```powershell
+python scripts/cosmos_copy.py \
+  --src-endpoint <SRC_ENDPOINT> --src-key <SRC_KEY> --src-db tripplanner \
+  --dst-endpoint <DST_ENDPOINT> --dst-key <DST_KEY> --dst-db tripplanner
+```
+
+Default containers copied: `users`, `trips`, `audit_events`.
 
 ## Deploy flow
 
@@ -101,7 +132,7 @@ docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
 
 # 3. Deployment proceeds and is logged to logs/deployments-prod.log
 
-# 4. Monitor: az containerapp logs show -g rg-tripplanner-trip-planner -n tripplanner-app-rb4t6btfs5x5m
+# 4. Monitor: az containerapp logs show -g rg-tripplanner-prod -n <prod-app-name>
 ```
 
 ### If Issues in Production
