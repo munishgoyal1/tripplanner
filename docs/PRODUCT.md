@@ -65,8 +65,10 @@ If a redesign violates the above without a stated reason, push back.
   sense, optionally with home-currency equivalent in parens. Prices must
   not flip INR↔USD between sessions.
 - **Read-only views render instantly from cache.** Per-destination overview
-  has a 30-min TTL on both backend (`places_cache.py`) and frontend (`api.ts`
-  module Map). Background refresh, don't block paint.
+  uses split caching: backend place details/reviews keep a 1-week TTL while
+  signed photo URLs refresh at ~50 minutes (`places_cache.py`), and frontend
+  keeps a 30-min response cache in `api.ts` module Map. Background refresh,
+  don't block paint.
 - **Settings has an "About me" textbox** that runs an LLM extractor and
   **additively** merges into preferences. Never overwrite existing user data.
 

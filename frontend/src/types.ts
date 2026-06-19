@@ -130,6 +130,13 @@ export interface MapDay {
   label: string;
   color: string;
   pin_ids: string[];
+  route: {
+    distance_km: number;
+    duration_min: number;
+    mode: string;
+    distance_display: string;
+    duration_display: string;
+  };
 }
 
 export interface MapAirport {

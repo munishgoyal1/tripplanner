@@ -16,6 +16,7 @@ unconfigured.
 
 from __future__ import annotations
 
+import math
 import re
 from typing import Any
 from urllib.parse import quote
@@ -623,6 +624,68 @@ def _airport_pin(destination: str) -> dict[str, Any] | None:
     }
 
 
+def _haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
+    """Great-circle distance in km between two (lat, lng) points."""
+    lat1, lng1 = math.radians(a[0]), math.radians(a[1])
+    lat2, lng2 = math.radians(b[0]), math.radians(b[1])
+    dlat = lat2 - lat1
+    dlng = lng2 - lng1
+    h = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlng / 2) ** 2
+    )
+    return 6371.0 * 2 * math.asin(math.sqrt(h))
+
+
+def _route_stats_for_day(
+    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    """Estimate day route metrics from ordered pins.
+
+    We avoid billed routing calls in this view-model. Distances are straight-
+    line totals along the day path; durations are coarse estimates by likely
+    local transfer mode.
+    """
+    coords: list[tuple[float, float]] = []
+    for pid in pin_ids:
+        p = pin_by_id.get(pid)
+        if not p:
+            continue
+        lat, lng = p.get("lat"), p.get("lng")
+        if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
+            coords.append((float(lat), float(lng)))
+
+    if len(coords) < 2:
+        return {
+            "distance_km": 0.0,
+            "duration_min": 0,
+            "mode": "walk",
+            "distance_display": "0.0 km",
+            "duration_display": "0 min",
+        }
+
+    distance = 0.0
+    for i in range(1, len(coords)):
+        distance += _haversine_km(coords[i - 1], coords[i])
+
+    if distance <= 3:
+        mode, speed = "walk", 4.5
+    elif distance <= 20:
+        mode, speed = "local transit", 18.0
+    else:
+        mode, speed = "car transfer", 35.0
+
+    duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
+    distance_1 = round(distance, 1)
+    return {
+        "distance_km": distance_1,
+        "duration_min": duration_min,
+        "mode": mode,
+        "distance_display": f"{distance_1:.1f} km",
+        "duration_display": f"{duration_min} min",
+    }
+
+
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Build the interactive-map view-model (frontend-agnostic).
 
@@ -663,15 +726,19 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         else:
             unscheduled.append(p["id"])
 
-    days = [
-        {
-            "day": d,
-            "label": f"Day {d}",
-            "color": _day_color(d),
-            "pin_ids": by_day[d],
-        }
-        for d in sorted(by_day)
-    ]
+    pin_by_id = {p["id"]: p for p in pins}
+    days = []
+    for d in sorted(by_day):
+        ids = by_day[d]
+        days.append(
+            {
+                "day": d,
+                "label": f"Day {d}",
+                "color": _day_color(d),
+                "pin_ids": ids,
+                "route": _route_stats_for_day(ids, pin_by_id),
+            }
+        )
 
     # Map center: average of all pin coords (incl. airport) for an initial
     # viewport; the frontend will fit bounds precisely.

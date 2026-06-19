@@ -146,7 +146,10 @@ It exports:
   for selected hotels/activities + destination suggestions, each tagged with
   its itinerary day (structured `stops` first, else prose `plan` match),
   grouped into day-colored route bands, plus an arrival-airport pin and map
-  center. `enabled` mirrors whether `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
+  center. Each day now includes estimated route metrics
+  (`distance_km/duration_min/mode` plus display strings) derived from the day
+  path so the UI can show day-wise travel distance/time/mode without billed
+  Directions calls. `enabled` mirrors whether `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
   `GET /trip/map`; the browser key comes from `GET /maps/config`. Rendered by
   [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
   the Maps JavaScript API and draws geodesic per-day route lines client-side
@@ -225,7 +228,7 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 - **`tsconfig.tsbuildinfo`** is a build artifact (in `frontend/.gitignore`).
   If tsc behaves weirdly after big edits, delete it and re-run.
 
-## 8) Tests (322 passing)
+## 8) Tests (408 passing)
 
 - [tests/test_trip.py](../tests/test_trip.py) — trip lifecycle + selection.
 - [tests/test_trip_view.py](../tests/test_trip_view.py) — view-model shape.

@@ -75,7 +75,17 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-06-11)
+## Current State (last updated 2026-06-19)
+- **Requirements alignment + map route metrics (Session 23)**: reviewed the
+  updated `docs/Requirements.docx` and closed a concrete UX/functional gap:
+  day-wise circuits now surface travel distance/time/mode. `trip_view.build_map_view`
+  adds `days[].route = {distance_km,duration_min,mode,distance_display,duration_display}`
+  computed from ordered day pins using straight-line haversine totals plus
+  conservative local-transfer heuristics (walk/local transit/car transfer) to
+  avoid billed Directions API calls. `frontend/src/components/MapPanel.tsx`
+  now shows an active-day summary line: `Day N route: X km · Y min · mode`
+  (estimated). `frontend/src/types.ts` adds `MapDay.route`; tests updated in
+  `tests/test_trip_view.py`. 408 tests passing; tsc clean.
 - **Rail rework + fresh-trip fixes + 1-week cache (Session 22)**: owner disliked
   the Session-21 tabs, so `RightRail.tsx` was REWRITTEN with NO tabs — a
   persistent header (saved-trips `TripSwitcher` left + Map toggle right) over a

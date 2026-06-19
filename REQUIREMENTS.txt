@@ -1190,3 +1190,38 @@ DESIGN NOTES:
   is sufficient and adds no infra to a scale-to-zero free-credit deployment.
 - Signed photo URLs MUST keep a short TTL; only the stable place metadata gets
   the 1-week TTL.
+
+=== 2026-06-19 — Session 23: Requirement alignment pass (updated Requirements.docx) ===
+
+SOURCE OF TRUTH REVIEWED:
+- docs/Requirements.docx (updated by owner)
+
+MATCH STATUS vs updated requirements:
+- Google SSO login: already implemented (oauth.py + mg_session cookie).
+- Durable profile/preferences persistence: already implemented (Cosmos users + local fallback).
+- Editable user/family/travel preferences + free-text past trip memory: already implemented
+  (Settings About-me extraction + additive merge + record_trip_mention/past trips).
+- Plan/resume trips across sessions: already implemented (saved trips + switch + per-trip chat).
+- Day-wise itinerary with clickable places and right-side details: already implemented
+  (ItineraryPanel + TripPanel focus behavior).
+- Map with day-wise colored circuits: already implemented.
+- Flights/hotels/preferences-aware planning and preference collection over time: implemented.
+- Azure/Cosmos hosting constraints: implemented.
+- UX direction (Airbnb-style modern/fluid): implemented directionally.
+
+IMPROVEMENT SHIPPED THIS SESSION (to close a concrete gap):
+- Requirement asked to show travel time, distance, and mode for day-wise map circuits.
+- Implemented day-wise route estimates in map view-model and UI:
+  - backend `trip_view.build_map_view` now includes `day.route` with
+    `{distance_km, duration_min, mode, distance_display, duration_display}`.
+    Distances use straight-line haversine totals along the ordered day path;
+    duration uses a conservative local-transfer heuristic (walk/local transit/car transfer)
+    to avoid billed Directions API calls.
+  - frontend `MapPanel` now shows active-day route summary:
+    "Day N route: X km · Y min · <mode> (estimated)".
+  - types updated (`MapDay.route`) and tests added/updated.
+
+VALIDATION:
+- pytest: 408 passed
+- tsc --noEmit: clean
+

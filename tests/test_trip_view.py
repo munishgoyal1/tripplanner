@@ -304,12 +304,41 @@ def test_map_view_day_bands_and_airport(_map_geo: None) -> None:
     assert set(days) == {1, 2}
     assert days[1]["color"] != days[2]["color"]
     assert days[1]["label"] == "Day 1"
+    # each day includes route metrics (distance/time/mode)
+    assert "route" in days[1]
+    assert set(days[1]["route"]) == {
+        "distance_km",
+        "duration_min",
+        "mode",
+        "distance_display",
+        "duration_display",
+    }
     # the selected hotel/activity land in their day bands
     pin_ids = {p["name"]: p["id"] for p in mv["pins"]}
     assert pin_ids["Taj Exotica Resort"] in days[1]["pin_ids"]
     assert pin_ids["Dudhsagar Falls Trek"] in days[2]["pin_ids"]
     assert mv["airport"] is not None
     assert mv["airport"]["kind"] == "airport"
+
+
+def test_map_view_route_stats_for_multi_stop_day(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Taj Exotica Resort"},
+                    {"name": "Dudhsagar Falls Trek"},
+                ],
+            },
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    day1 = next(d for d in mv["days"] if d["day"] == 1)
+    assert day1["route"]["distance_km"] > 0
+    assert day1["route"]["duration_min"] > 0
+    assert day1["route"]["mode"] in {"walk", "local transit", "car transfer"}
 
 
 def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:

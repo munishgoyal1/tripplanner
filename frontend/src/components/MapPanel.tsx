@@ -348,43 +348,52 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
         : view && view.pins.length === 0
           ? { text: view.empty_message || "No mappable places yet.", tone: "text-slate-500" }
           : null;
+  const activeDayObj =
+    view && activeDay != null ? view.days.find((d) => d.day === activeDay) : null;
 
   return (
     <div className="relative flex h-full flex-col">
       {/* Day filter chips */}
       {view && view.days.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-100 px-3 py-2">
-          <button
-            type="button"
-            onClick={() => setActiveDay(null)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-              activeDay === null ? "bg-ink text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            All days
-          </button>
-          {view.days.map((d) => (
+        <div className="border-b border-slate-100 px-3 py-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
-              key={d.day}
               type="button"
-              onClick={() => setActiveDay(d.day)}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
-                activeDay === d.day ? "text-white" : "text-slate-700 hover:opacity-80"
+              onClick={() => setActiveDay(null)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                activeDay === null ? "bg-ink text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
-              style={
-                activeDay === d.day
-                  ? { backgroundColor: d.color }
-                  : { backgroundColor: `${d.color}22` }
-              }
             >
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: d.color }}
-                aria-hidden
-              />
-              {d.label}
+              All days
             </button>
-          ))}
+            {view.days.map((d) => (
+              <button
+                key={d.day}
+                type="button"
+                onClick={() => setActiveDay(d.day)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
+                  activeDay === d.day ? "text-white" : "text-slate-700 hover:opacity-80"
+                }`}
+                style={
+                  activeDay === d.day
+                    ? { backgroundColor: d.color }
+                    : { backgroundColor: `${d.color}22` }
+                }
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: d.color }}
+                  aria-hidden
+                />
+                {d.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-1 text-[11px] text-slate-500">
+            {activeDayObj
+              ? `${activeDayObj.label} route: ${activeDayObj.route.distance_display} · ${activeDayObj.route.duration_display} · ${activeDayObj.route.mode} (estimated)`
+              : "Select a day to view route distance, travel time, and mode."}
+          </div>
         </div>
       )}
       <div className="relative min-h-0 flex-1">
