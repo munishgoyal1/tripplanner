@@ -1,0 +1,23 @@
+"""Shared pytest fixtures.
+
+The app auto-enables the Cosmos backend whenever ``COSMOS_ENDPOINT`` is set
+(see ``storage_cosmos.is_enabled``). Local dev now points ``.env`` at an
+isolated local Cosmos account, which would otherwise make the suite read/write
+that shared live database instead of the per-test temp dirs each test sets up.
+
+Force Cosmos OFF by default for every test so storage stays hermetic and uses
+the monkeypatched local-JSON paths. Tests that specifically exercise the Cosmos
+dispatch branch (e.g. ``TestCosmosDispatch``) simply re-patch ``is_enabled`` to
+``True`` within the test, which overrides this default.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tripplanner import storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
