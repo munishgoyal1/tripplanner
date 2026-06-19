@@ -1,4 +1,4 @@
-"""Tests for the durable Google Places cache (multiagent.web.places_cache).
+"""Tests for the durable Google Places cache (tripplanner.web.places_cache).
 
 The cache keeps place details for a week (persisted across restarts) while
 re-resolving the short-lived signed photo URLs on demand. These tests mock the
