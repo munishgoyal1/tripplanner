@@ -1,7 +1,7 @@
 """Tests for the additive overlay that merges About-me extractions back
 into saved preferences without ever removing or overwriting prior data.
 
-These exercise the pure helpers in ``multiagent.tools.preferences_merge`` —
+These exercise the pure helpers in ``tripplanner.tools.preferences_merge`` —
 no frontend runtime, no LLM, no I/O.
 """
 
@@ -277,3 +277,4 @@ def test_extraction_does_not_mutate_input_prefs() -> None:
     snapshot = list(prefs["interests"])
     _additive_overlay_extracted(prefs, {"interests": ["mountains"]})
     assert prefs["interests"] == snapshot
+

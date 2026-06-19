@@ -1,4 +1,4 @@
-"""Tests for src/multiagent/observability.py -- PII redaction and the two
+"""Tests for src/tripplanner/observability.py -- PII redaction and the two
 log streams (app log + audit log)."""
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from tripplanner import observability as obs
 @pytest.fixture(autouse=True)
 def _isolate_audit_dir(tmp_path, monkeypatch):
     """Point the local audit sink at a temp dir so tests don't write to
-    ~/.multiagent/audit."""
+    ~/.tripplanner/audit."""
     fake_home = tmp_path / "home"
     fake_home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: fake_home)
@@ -195,7 +195,7 @@ def test_audit_event_writes_local_jsonl_with_full_content(monkeypatch):
         email="munish@example.com",
     )
 
-    audit_dir = Path.home() / ".multiagent" / "audit"
+    audit_dir = Path.home() / ".tripplanner" / "audit"
     files = list(audit_dir.glob("*.jsonl"))
     assert len(files) == 1
     lines = files[0].read_text(encoding="utf-8").strip().splitlines()
@@ -219,7 +219,7 @@ def test_audit_event_kinds_are_isolated_per_user(monkeypatch):
     obs.audit_event("session_start", user_id="a")
     obs.audit_event("session_start", user_id="b")
 
-    audit_dir = Path.home() / ".multiagent" / "audit"
+    audit_dir = Path.home() / ".tripplanner" / "audit"
     lines = list(audit_dir.glob("*.jsonl"))[0].read_text(encoding="utf-8").splitlines()
     parsed = [json.loads(line) for line in lines]
     assert {p["user_id"] for p in parsed} == {"a", "b"}
@@ -247,3 +247,5 @@ def test_audit_enabled_env_switch(monkeypatch, val, expected):
 def test_audit_enabled_default_off(monkeypatch):
     monkeypatch.delenv("AUDIT_USER_MESSAGES", raising=False)
     assert obs.audit_enabled_for_user_messages() is False
+
+

@@ -16,7 +16,7 @@ def _reset_state(monkeypatch):
     obs.reset_tool_metrics()
     tc.clear_local_cache()
     user_context.set_user_id("alice")
-    monkeypatch.setattr("multiagent.storage_cosmos.is_enabled", lambda: False)
+    monkeypatch.setattr("tripplanner.storage_cosmos.is_enabled", lambda: False)
     yield
     user_context.set_user_id("local")
     obs.reset_tool_metrics()
@@ -111,3 +111,4 @@ def test_metrics_endpoint_returns_snapshot():
     assert "tools" in data
     assert "foo" in data["tools"]
     assert data["tools"]["foo"]["calls"] == 1
+

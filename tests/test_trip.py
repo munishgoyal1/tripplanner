@@ -15,7 +15,7 @@ from tripplanner.tools.user_preferences import (
     update_preferences,
 )
 
-_TEST_DIR = Path.home() / ".multiagent_test"
+_TEST_DIR = Path.home() / ".tripplanner_test"
 _TEST_FILE = _TEST_DIR / "user_preferences.json"
 _TEST_ACTIVE_TRIP = _TEST_DIR / "active_trip.json"
 _TEST_TRIP_HISTORY = _TEST_DIR / "trips"
@@ -1229,3 +1229,4 @@ class TestSavedTrips:
     def test_resume_trip_no_saved_trips(self):
         result = resume_trip.invoke({"destination": "Mumbai"})
         assert "no saved trips" in result.lower()
+

@@ -10,7 +10,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from tripplanner.web import chat_store
 
-_TEST_CHATS = Path.home() / ".multiagent_chat_test" / "chats"
+_TEST_CHATS = Path.home() / ".tripplanner_chat_test" / "chats"
 
 
 @pytest.fixture(autouse=True)
@@ -84,3 +84,4 @@ def test_save_overwrites_with_latest() -> None:
     chat_store.save("t", [HumanMessage(content="first"), AIMessage(content="second")])
     rows = chat_store.transcript("t")
     assert [r["text"] for r in rows] == ["first", "second"]
+

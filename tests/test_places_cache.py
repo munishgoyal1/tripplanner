@@ -17,7 +17,7 @@ from tripplanner.web import places_cache as pc
 @pytest.fixture(autouse=True)
 def _isolate(monkeypatch, tmp_path):
     """Isolate the cache: tmp store dir, Cosmos off, deterministic network."""
-    monkeypatch.setenv("MULTIAGENT_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
     from tripplanner import storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
@@ -70,7 +70,7 @@ def test_meta_ttl_is_one_week():
 
 def test_persist_then_reload_restores_details(_isolate, tmp_path):
     pc.get_summary("Taj", "Goa")
-    # File written under the tmp MULTIAGENT_HOME.
+    # File written under the tmp TRIPPLANNER_HOME.
     assert pc._local_path().exists()
     # Simulate a fresh process: wipe in-memory + allow reload.
     pc.clear_cache()
@@ -147,3 +147,4 @@ def test_evict_keeps_under_cap(_isolate, monkeypatch):
     for i in range(6):
         pc.get_summary(f"Place{i}", "Goa")
     assert len(pc._CACHE) <= 3
+

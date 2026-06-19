@@ -1,4 +1,4 @@
-"""Tests for src/multiagent/usage.py — per-user monthly LLM cost cap."""
+"""Tests for src/tripplanner/usage.py — per-user monthly LLM cost cap."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from tripplanner import usage as usage_mod
 @pytest.fixture(autouse=True)
 def _isolated(tmp_path, monkeypatch):
     # Sandboxed local storage and a fresh env on every test.
-    monkeypatch.setenv("MULTIAGENT_HOME", str(tmp_path))
-    monkeypatch.setattr("multiagent.storage_cosmos.is_enabled", lambda: False)
+    monkeypatch.setenv("TRIPPLANNER_HOME", str(tmp_path))
+    monkeypatch.setattr("tripplanner.storage_cosmos.is_enabled", lambda: False)
     # Re-import to clear the module-level _DEFAULT_RATE cache (none currently,
     # but be safe if we add one later).
     importlib.reload(usage_mod)
@@ -155,4 +155,6 @@ def test_chat_endpoint_returns_cap_message_when_over(monkeypatch):
     body = resp.json()
     assert body["agent"] == "cap"
     assert "budget" in body["reply"].lower() or "reached" in body["reply"].lower()
+
+
 

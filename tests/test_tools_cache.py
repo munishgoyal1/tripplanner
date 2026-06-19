@@ -1,4 +1,4 @@
-"""Tests for the tool result cache (multiagent.tools_cache)."""
+"""Tests for the tool result cache (tripplanner.tools_cache)."""
 
 from __future__ import annotations
 
@@ -122,3 +122,4 @@ def test_local_cache_evicts_oldest_when_full(monkeypatch):
     assert tools_cache.cache_lookup("web_search", {"i": 1}) is None
     assert tools_cache.cache_lookup("web_search", {"i": 2}) == "v2"
     assert tools_cache.cache_lookup("web_search", {"i": 4}) == "v4"
+

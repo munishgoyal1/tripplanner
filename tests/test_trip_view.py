@@ -1,4 +1,4 @@
-"""Tests for the pure-Python trip view-model (``multiagent.web.trip_view``).
+"""Tests for the pure-Python trip view-model (``tripplanner.web.trip_view``).
 
 These run with NO UI context — proving the view-model is fully
 decoupled from the frontend. Places lookups are monkeypatched so we never

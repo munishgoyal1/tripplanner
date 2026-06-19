@@ -1,4 +1,4 @@
-"""Tests for src/multiagent/hallucination_critic.py."""
+"""Tests for src/tripplanner/hallucination_critic.py."""
 
 from __future__ import annotations
 
@@ -135,3 +135,4 @@ def test_critic_handles_list_content_in_tool_message():
         AIMessage(content=""),
     ]
     assert critique("Hotel is $245/night.", msgs) == []
+

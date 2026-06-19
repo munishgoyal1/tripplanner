@@ -14,9 +14,9 @@ from tripplanner.web import share
 @pytest.fixture(autouse=True)
 def _isolate_storage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Pin trip-planner files to a temp dir; restore user_id after each test."""
-    monkeypatch.setattr(trip_planner, "_TRIPS_DIR", tmp_path / ".multiagent")
-    monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", tmp_path / ".multiagent" / "active_trip.json")
-    monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", tmp_path / ".multiagent" / "trips")
+    monkeypatch.setattr(trip_planner, "_TRIPS_DIR", tmp_path / ".tripplanner")
+    monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", tmp_path / ".tripplanner" / "active_trip.json")
+    monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", tmp_path / ".tripplanner" / "trips")
     monkeypatch.setenv("WEB_SESSION_SECRET", "test-secret-pin")
     user_context.set_user_id("alice")
     yield
@@ -140,3 +140,4 @@ def test_resolve_strips_private_fields() -> None:
 def test_resolve_returns_none_for_unknown_trip() -> None:
     token = share.mint_token("alice", "2099-01-01T00:00:00")
     assert share.resolve(token) is None
+
