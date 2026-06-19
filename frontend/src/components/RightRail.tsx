@@ -11,7 +11,7 @@ interface Props {
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
   onStopFocus: (kind: string, name: string) => void;
-  onStopMap: (name: string) => void;
+  onStopMap: (kind: string, name: string) => void;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
   onSwitched: (tripId?: string) => void;

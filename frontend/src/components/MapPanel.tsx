@@ -175,6 +175,10 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
 
     const dayColor = new Map<number, string>();
     view.days.forEach((d) => dayColor.set(d.day, d.color));
+    const visitOrderByPinId = new Map<string, number>();
+    view.days.forEach((d) => {
+      d.pin_ids.forEach((id, idx) => visitOrderByPinId.set(id, idx + 1));
+    });
 
     const visible = (p: MapPin) =>
       p.kind === "hotel" || activeDay === null || p.day === activeDay;
@@ -189,16 +193,17 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
       // day-scheduled places get a bold numbered teardrop in their day color,
       // and un-scheduled suggestions get a quiet dot.
       let icon: any;
-      if (p.kind === "hotel") {
+      const visitOrder = visitOrderByPinId.get(p.id);
+      if (p.day && visitOrder) {
+        const color = dayColor.get(p.day) || "#64748b";
         icon = {
-          url: hotelIcon(),
+          url: pinIcon(color, String(visitOrder)),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
-      } else if (p.day) {
-        const color = dayColor.get(p.day) || "#64748b";
+      } else if (p.kind === "hotel") {
         icon = {
-          url: pinIcon(color, String(p.day)),
+          url: hotelIcon(),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
@@ -281,6 +286,9 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
       const dayTag = p.day
         ? `<span style="background:${dayColor.get(p.day) || "#64748b"};color:#fff;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600">Day ${p.day}</span>`
         : "";
+      const seqTag = p.day && visitOrderByPinId.get(p.id)
+        ? `<span style="background:#111827;color:#fff;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600">Stop ${visitOrderByPinId.get(p.id)}</span>`
+        : "";
       const rating = p.rating ? `<div style="color:#475569;font-size:12px">${"\u2605"} ${p.rating}</div>` : "";
       const photo = p.photo
         ? `<img src="${escapeAttr(p.photo)}" style="width:100%;height:96px;object-fit:cover;border-radius:8px;margin-bottom:6px"/>`
@@ -289,7 +297,7 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
         `<div style="max-width:220px;font-family:Inter,sans-serif">
            ${photo}
            <div style="font-weight:700;font-size:14px;margin-bottom:3px">${escapeHtml(p.name)}</div>
-           <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">${badge}${dayTag}</div>
+           <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">${badge}${dayTag}${seqTag}</div>
            ${rating}
            <div style="color:#64748b;font-size:11px;margin-top:2px">${escapeHtml(p.address || "")}</div>
          </div>`

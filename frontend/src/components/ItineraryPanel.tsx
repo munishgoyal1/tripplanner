@@ -7,8 +7,8 @@ interface Props {
   reloadToken?: number;
   /** Click a stop to focus it (loads its photos + highlights its map pin). */
   onStopFocus?: (kind: string, name: string) => void;
-  /** Jump to the map tab focused on a stop. */
-  onStopMap?: (name: string) => void;
+  /** Jump to the map focused on a stop (and optionally details). */
+  onStopMap?: (kind: string, name: string) => void;
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
 }
@@ -126,7 +126,7 @@ function DayCard({
   active: boolean;
   onToggleBooked: (day: number, name: string, next: boolean) => void;
   onFocus: (kind: string, name: string) => void;
-  onMap: (name: string) => void;
+  onMap: (kind: string, name: string) => void;
   focusName?: string | null;
 }) {
   return (
@@ -159,7 +159,7 @@ function DayCard({
               active={active && focusName?.toLowerCase() === stop.name.toLowerCase()}
               onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
               onFocus={() => onFocus(stop.kind, stop.name)}
-              onMap={() => onMap(stop.name)}
+              onMap={() => onMap(stop.kind, stop.name)}
             />
           ))}
         </ul>
@@ -258,7 +258,7 @@ export default function ItineraryPanel({
             focusName={focusName}
             onToggleBooked={handleToggleBooked}
             onFocus={(kind, name) => onStopFocus?.(kind, name)}
-            onMap={(name) => onStopMap?.(name)}
+            onMap={(kind, name) => onStopMap?.(kind, name)}
           />
         ))}
       </div>
