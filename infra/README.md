@@ -12,20 +12,85 @@ Cheapest viable footprint for global hosting:
 Estimated cost at low usage: well under your ₹10,000/mo Azure free credit.
 Stays at ~₹0 when idle thanks to scale-to-zero.
 
+## Environments & Naming
+
+### Canary (Testing — No Approval Gate)
+- Resource Group: `rg-multiagent-trip-planner-canary` (transitioning to `rg-multiagent-canary`)
+- Container App: `mgc-app-2wf5um7ulxycm` (transitioning to `multiagent-app-canary`)
+- Cosmos DB: `mgc-cosmos-2wf5um7ulxycm` (transitioning to `multiagent-cosmos-canary`)
+- **Use for:** Feature testing, bug fixes, infrastructure changes, email verification
+- **Deployment:** `./infra/deploy-canary.ps1` (no approval required)
+
+### Production (Live — Manual Approval Required)
+- Resource Group: `rg-multiagent-trip-planner` (transitioning to `rg-multiagent-prod`)
+- Container App: `multiagent-app-rb4t6btfs5x5m` (transitioning to `multiagent-app-prod`)
+- Cosmos DB: `multiagent-cosmos-rb4t6btfs5x5m` (transitioning to `multiagent-cosmos-prod`)
+- **Use for:** Tested, verified releases only
+- **Deployment:** `./infra/deploy-prod.ps1` (requires explicit approval: type `APPROVE_PROD_DEPLOYMENT`)
+
+### Migration Path
+Transition to standardized naming in next major release. Current resources remain functional.
+
 ## Prerequisites
 
 - Azure subscription with the Cosmos DB Free Tier slot still available
-- Existing resource group: `rg-multiagent-trip-planner` (eastus2)
+- Resource groups:
+  - `rg-multiagent-trip-planner` (production, eastus2)
+  - `rg-multiagent-trip-planner-canary` (canary, eastus2)
 - Azure OpenAI deployed: `aoai-multiagent-mugoy` (gpt-4.1 primary; gpt-4o and gpt-5 also available)
 - Docker installed locally
-- GitHub Container Registry account (or Docker Hub) for the image
+- GitHub Container Registry account for container images
 
 ## Local files
 
 - `main.bicep` — all resources at RG scope
-- `main.bicepparam` — pulls values from environment variables
+- `main.bicepparam` — environment variables for each deployment
+- `DEPLOYMENT_PROCESS.md` — detailed workflow, approval gates, and logging
+- `deploy-canary.ps1` — deploy/test new changes (no approval)
+- `deploy-prod.ps1` — promote to production (manual approval required)
+- `rollback-prod.ps1` — revert to previous stable revision if issues occur
 
 ## Deploy flow
+
+### To Canary (Testing)
+```powershell
+# 1. Build & push image
+$Env:CR_PAT = "<github_personal_access_token>"
+$Env:CR_PAT | docker login ghcr.io -u munishgoyal1 --password-stdin
+docker build -t ghcr.io/munishgoyal1/multiagent:v0.X.Y .
+docker push ghcr.io/munishgoyal1/multiagent:v0.X.Y
+
+# 2. Deploy to canary (no approval needed)
+./infra/deploy-canary.ps1 -ImageTag v0.X.Y
+
+# 3. Test: https://mgc-app-2wf5um7ulxycm.greensky-bff152b2.eastus2.azurecontainerapps.io
+#    - Test chat, map, email endpoints
+#    - Verify no logs errors
+#    - Run full test suite locally
+```
+
+### To Production (Approved Release)
+```powershell
+# 1. Once canary is verified stable:
+./infra/deploy-prod.ps1 -ImageTag v0.X.Y
+
+# 2. When prompted, review the checklist and type:
+#    > APPROVE_PROD_DEPLOYMENT
+
+# 3. Deployment proceeds and is logged to logs/deployments-prod.log
+
+# 4. Monitor: az containerapp logs show -g rg-multiagent-trip-planner -n multiagent-app-rb4t6btfs5x5m
+```
+
+### If Issues in Production
+```powershell
+./infra/rollback-prod.ps1
+# Type: ROLLBACK
+# App reverts to previous revision in ~2-5 seconds
+```
+
+### Manual Deploy (Alternative)
+If you prefer direct control:
 
 ```powershell
 # 1. Build & push the container image to a public registry.

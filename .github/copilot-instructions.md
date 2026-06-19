@@ -18,6 +18,22 @@
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
 
+## Deployment & Production Gates
+
+**CRITICAL: Never deploy to production without explicit user approval.**
+
+- **Canary (Testing)**: Deploy via `./infra/deploy-canary.ps1` — no approval gate, use for all testing
+- **Production (Live)**: Deploy via `./infra/deploy-prod.ps1` — requires manual approval via interactive prompt
+  - Script displays readiness checklist
+  - Requires you to type `APPROVE_PROD_DEPLOYMENT` (exact, case-sensitive)
+  - All prod deployments logged to `logs/deployments-prod.log` with timestamp and approver
+- **Rollback (Emergencies)**: `./infra/rollback-prod.ps1` — reverts to previous revision without data loss
+
+Resource naming:
+- Canary RG: `rg-multiagent-trip-planner-canary` (app: `mgc-app-2wf5um7ulxycm`)
+- Prod RG: `rg-multiagent-trip-planner` (app: `multiagent-app-rb4t6btfs5x5m`)
+- Standardized naming roadmap: See `infra/DEPLOYMENT_PROCESS.md`
+
 ## Memory maintenance (KEEP CONTEXT FRESH — do this every session)
 Whenever the owner teaches a new preference, taste, or requirement, update
 the right place IN THE SAME TURN so future sessions don't relearn it:
