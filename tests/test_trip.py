@@ -101,6 +101,31 @@ class TestLoadSave:
         assert prefs["past_trips"][0]["destination"] == "Goa"
         assert prefs["past_trips"][1]["rating"] == 3
 
+    def test_learned_notes_deduped_on_save(self):
+        prefs = load_preferences()
+        prefs["learned_notes"] = [
+            {"note": "Prefers aisle seats", "source": "stated", "at": "2026-01-01"},
+            {"note": "prefers aisle seats", "source": "inferred", "at": "2026-02-01"},
+        ]
+        save_preferences(prefs)
+        reloaded = load_preferences()
+        assert len(reloaded["learned_notes"]) == 1
+        assert reloaded["learned_notes"][0]["at"] == "2026-01-01"  # oldest kept
+
+    def test_learned_notes_capped(self):
+        from tripplanner.tools.user_preferences import _MAX_LEARNED_NOTES
+
+        prefs = load_preferences()
+        prefs["learned_notes"] = [
+            {"note": f"note {i}", "source": "stated", "at": "2026-01-01"}
+            for i in range(_MAX_LEARNED_NOTES + 25)
+        ]
+        save_preferences(prefs)
+        reloaded = load_preferences()
+        assert len(reloaded["learned_notes"]) == _MAX_LEARNED_NOTES
+        # most recent kept
+        assert reloaded["learned_notes"][-1]["note"] == f"note {_MAX_LEARNED_NOTES + 24}"
+
 
 # ---------------------------------------------------------------------------
 # Trip agent preference tools

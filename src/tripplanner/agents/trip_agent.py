@@ -56,6 +56,10 @@ from tripplanner.tools.web_search import web_search
 def get_travel_preferences() -> str:
     """Retrieve the user's saved travel preferences (family, style, budget, hotel, transport, food)."""
     prefs = load_preferences()
+    # behavior_signals is an internal counter store (search-behavior inference);
+    # never surface it to the agent — it's noise in the reasoning context.
+    prefs.pop("behavior_signals", None)
+    prefs.pop("_promoted_signals", None)
     return json.dumps(prefs, indent=2)
 
 

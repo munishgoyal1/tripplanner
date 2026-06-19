@@ -81,6 +81,11 @@ _DEFAULT_PREFS: dict[str, Any] = {
     # Examples: "prefers window seats", "scared of long bus rides",
     # "always travels with mother who needs an elevator".
     "learned_notes": [],
+    # Counters the system maintains from the user's SEARCH behavior (cabin
+    # class searched, hotel star floor, activity categories). Internal — used
+    # by search_learning to promote consistent signals into real preferences.
+    # Shape: {category: {value: count}}.
+    "behavior_signals": {},
     # User-authored free-text "About me" written via the ChatSettings panel.
     # Treated as the SOURCE OF TRUTH for whatever it covers: when the user
     # saves a new value the LLM extracts structured fields from it and
@@ -175,8 +180,36 @@ def load_preferences() -> dict[str, Any]:
     return json.loads(json.dumps(_DEFAULT_PREFS))
 
 
+# Soft cap on free-form learned_notes so the list can't bloat the prompt
+# unbounded over the life of an account. Oldest duplicates are folded out and,
+# if still over cap, the oldest entries are dropped (most recent kept).
+_MAX_LEARNED_NOTES = 200
+
+
+def _consolidate_learned_notes(notes: list[Any]) -> list[Any]:
+    """De-dupe learned notes (case-insensitive, keep oldest) and cap the list."""
+    if not isinstance(notes, list):
+        return []
+    deduped: list[Any] = []
+    seen: set[str] = set()
+    for entry in notes:
+        if not isinstance(entry, dict):
+            continue
+        key = (entry.get("note") or "").strip().lower()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        deduped.append(entry)
+    if len(deduped) > _MAX_LEARNED_NOTES:
+        deduped = deduped[-_MAX_LEARNED_NOTES:]
+    return deduped
+
+
 def save_preferences(prefs: dict[str, Any]) -> None:
     """Persist preferences (Cosmos when configured, else local JSON)."""
+    if isinstance(prefs.get("learned_notes"), list):
+        prefs["learned_notes"] = _consolidate_learned_notes(prefs["learned_notes"])
+
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(_COSMOS_CONTAINER, get_user_id(), _PREFS_DOC_ID, prefs)
         return

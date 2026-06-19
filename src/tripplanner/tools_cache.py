@@ -242,6 +242,11 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
         # Local import keeps tools_cache importable in test contexts that
         # haven't initialised logging yet.
         from tripplanner.observability import record_tool_call
+        from tripplanner.tools import search_learning
+
+        # Passively learn from search behavior (cabin class, hotel star floor,
+        # activity categories). Best-effort and a no-op for non-search tools.
+        search_learning.observe(tool_name, kwargs)
 
         # Normalise tool args. LangChain calls the underlying ``func`` with
         # the parsed kwargs from args_schema, so positional args are rare.
