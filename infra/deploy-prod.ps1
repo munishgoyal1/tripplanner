@@ -154,16 +154,14 @@ if ($deployment.state -ne "Succeeded") {
 }
 Write-Host "  ✓ Infrastructure deployed`n"
 
-# Step 5: Update image tag (if not 'latest')
-if ($ImageTag -ne "latest") {
-    Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
-    az containerapp update `
-        --resource-group $prodRG `
-        --name $prodApp `
-        --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
-        -o none
-    Write-Host "  ✓ Image updated`n"
-}
+# Step 5: Always set app image so deployments never stay on the hello-world default.
+Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
+az containerapp update `
+    --resource-group $prodRG `
+    --name $prodApp `
+    --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
+    -o none
+Write-Host "  ✓ Image updated`n"
 
 # Step 6: Output results
 Write-Host "╔═══════════════════════════════════════════════════════════╗"

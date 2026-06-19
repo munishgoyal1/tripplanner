@@ -31,12 +31,39 @@ param(
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
     [switch]$Watch,
-    [switch]$Logs
+    [switch]$Logs,
+    [switch]$NoCanaryData
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
+
+if (-not $FrontendOnly -and -not $NoCanaryData) {
+    try {
+        if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
+            throw "Azure CLI (az) not found"
+        }
+
+        $canaryRg = "rg-tripplanner-canary"
+        $cosmosName = az resource list -g $canaryRg --resource-type Microsoft.DocumentDB/databaseAccounts --query "[0].name" -o tsv
+        if (-not [string]::IsNullOrWhiteSpace($cosmosName)) {
+            $cosmosEndpoint = az cosmosdb show -g $canaryRg -n $cosmosName --query documentEndpoint -o tsv
+            $cosmosKey = az cosmosdb keys list -g $canaryRg -n $cosmosName --query primaryMasterKey -o tsv
+            if (-not [string]::IsNullOrWhiteSpace($cosmosEndpoint) -and -not [string]::IsNullOrWhiteSpace($cosmosKey)) {
+                $env:COSMOS_ENDPOINT = $cosmosEndpoint
+                $env:COSMOS_KEY = $cosmosKey
+                if ([string]::IsNullOrWhiteSpace($env:COSMOS_DATABASE)) {
+                    $env:COSMOS_DATABASE = "tripplanner"
+                }
+                Write-Host "Using canary Cosmos for local backend state ($cosmosName)." -ForegroundColor DarkGray
+            }
+        }
+    }
+    catch {
+        Write-Host "Could not auto-wire canary Cosmos ($($_.Exception.Message)); continuing with local storage." -ForegroundColor Yellow
+    }
+}
 
 if (-not $FrontendOnly) {
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
