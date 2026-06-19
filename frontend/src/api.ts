@@ -277,6 +277,7 @@ export function tripIcsUrl(): string {
 export interface ExportOptions {
   include_photos: boolean;
   include_map_circuit: boolean;
+  template: "minimal" | "detailed" | "family";
 }
 
 export function tripExportUrl(options: ExportOptions, autoPrint = false): string {
@@ -284,9 +285,18 @@ export function tripExportUrl(options: ExportOptions, autoPrint = false): string
     user_id: getUserId(),
     include_photos: options.include_photos ? "1" : "0",
     include_map_circuit: options.include_map_circuit ? "1" : "0",
+    template: options.template,
     auto_print: autoPrint ? "1" : "0",
   });
   return `${BASE}/trip/export/print?${params.toString()}`;
+}
+
+export function tripExportPdfUrl(options: ExportOptions): string {
+  const params = new URLSearchParams({
+    user_id: getUserId(),
+    template: options.template,
+  });
+  return `${BASE}/trip/export.pdf?${params.toString()}`;
 }
 
 export interface EmailExportResult {

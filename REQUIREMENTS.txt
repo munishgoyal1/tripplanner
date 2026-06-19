@@ -1339,6 +1339,41 @@ VALIDATION:
 - python -m compileall -q src/multiagent : clean
 - frontend build : clean
 
+=== 2026-06-19 — Session 28: Direct PDF + branded templates + Azure email provider ===
+
+USER REQUIREMENT:
+- Add both enhancements:
+  1) direct PDF download endpoint/button,
+  2) branded export templates,
+  and help configure email sending via Azure-native service to avoid external costs.
+
+IMPLEMENTATION SHIPPED:
+- Direct PDF export:
+  - New endpoint: `GET /trip/export.pdf?template=...`
+  - New backend renderer: `src/multiagent/web/itinerary_pdf.py`
+  - Uses server-side ReportLab when installed; returns setup guidance when missing.
+  - Frontend export modal now has `Download PDF`.
+- Branded templates:
+  - `minimal`, `detailed`, `family` template variants added to HTML export.
+  - Template selector added in Export modal and passed to print/pdf/email exports.
+- Azure-native email path:
+  - `POST /trip/export/email` now prefers Azure Communication Services Email
+    when env vars are configured:
+    - `AZURE_COMMUNICATION_CONNECTION_STRING`
+    - `AZURE_COMMUNICATION_EMAIL_SENDER`
+  - Falls back to SMTP if configured; then to `mailto:` draft fallback.
+
+CHANGED FILES:
+- src/multiagent/api.py
+- src/multiagent/web/itinerary_export.py
+- src/multiagent/web/itinerary_pdf.py
+- frontend/src/api.ts
+- frontend/src/components/TripPanel.tsx
+
+VALIDATION:
+- python -m compileall -q src/multiagent : clean
+- frontend build : clean
+
 === 2026-06-19 — Session 27: Itinerary export (PDF-ready + email) ===
 
 USER REQUIREMENT:

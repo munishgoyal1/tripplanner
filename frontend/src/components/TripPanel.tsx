@@ -5,6 +5,7 @@ import {
   fetchSavedTrips,
   shareActiveTrip,
   switchTrip,
+  tripExportPdfUrl,
   tripExportUrl,
   tripIcsUrl,
 } from "../api";
@@ -737,6 +738,7 @@ export default function TripPanel({
 function ExportModal({ onClose }: { onClose: () => void }) {
   const [includePhotos, setIncludePhotos] = useState(true);
   const [includeCircuit, setIncludeCircuit] = useState(true);
+  const [template, setTemplate] = useState<"minimal" | "detailed" | "family">("detailed");
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -744,6 +746,7 @@ function ExportModal({ onClose }: { onClose: () => void }) {
   const options = {
     include_photos: includePhotos,
     include_map_circuit: includeCircuit,
+    template,
   };
 
   const openPrintView = () => {
@@ -753,6 +756,11 @@ function ExportModal({ onClose }: { onClose: () => void }) {
 
   const openPreview = () => {
     const url = tripExportUrl(options, false);
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const downloadPdf = () => {
+    const url = tripExportPdfUrl(options);
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -802,6 +810,18 @@ function ExportModal({ onClose }: { onClose: () => void }) {
         </p>
 
         <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-slate-500">Template</span>
+            <select
+              value={template}
+              onChange={(e) => setTemplate(e.target.value as "minimal" | "detailed" | "family")}
+              className="input"
+            >
+              <option value="minimal">Minimal</option>
+              <option value="detailed">Detailed</option>
+              <option value="family">Family</option>
+            </select>
+          </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -826,6 +846,9 @@ function ExportModal({ onClose }: { onClose: () => void }) {
           </button>
           <button onClick={openPrintView} className="btn-primary">
             Print / Save PDF
+          </button>
+          <button onClick={downloadPdf} className="btn-ghost">
+            Download PDF
           </button>
         </div>
 

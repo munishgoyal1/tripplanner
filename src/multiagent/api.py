@@ -169,6 +169,7 @@ class ExportEmailRequest(BaseModel):
     email: str
     include_photos: bool = True
     include_map_circuit: bool = True
+    template: Literal["minimal", "detailed", "family"] = "detailed"
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -562,6 +563,7 @@ async def trip_export_print(
     user_id: str = "local",
     include_photos: str = "1",
     include_map_circuit: str = "1",
+    template: str = "detailed",
     auto_print: str = "0",
 ) -> Response:
     """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
@@ -575,9 +577,46 @@ async def trip_export_print(
         plan,
         include_photos=parse_export_bool(include_photos, default=True),
         include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+        template=template,
         auto_print=parse_export_bool(auto_print, default=False),
     )
     return Response(content=html, media_type="text/html; charset=utf-8")
+
+
+@app.get("/trip/export.pdf")
+async def trip_export_pdf(
+    user_id: str = "local",
+    template: str = "detailed",
+) -> Response:
+    """Return a downloadable itinerary PDF generated server-side."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+
+    set_user_id(user_id)
+    plan = trip_planner.load_active_trip_dict()
+    if not plan:
+        return JSONResponse({"error": "no active trip"}, status_code=404)
+
+    try:
+        from multiagent.web.itinerary_pdf import build_itinerary_pdf_bytes
+
+        pdf_bytes = build_itinerary_pdf_bytes(plan, template=template)
+    except ImportError:
+        return JSONResponse(
+            {
+                "error": "pdf_renderer_not_installed",
+                "message": "Install reportlab to enable direct PDF download.",
+            },
+            status_code=503,
+        )
+
+    dest = str(plan.get("destination") or "trip").strip().lower()
+    safe = "".join(c if c.isalnum() else "-" for c in dest).strip("-") or "trip"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{safe}-itinerary.pdf"'},
+    )
 
 
 @app.post("/trip/export/email")
@@ -605,6 +644,7 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
         plan,
         include_photos=bool(req.include_photos),
         include_map_circuit=bool(req.include_map_circuit),
+        template=req.template,
         auto_print=False,
     )
     destination = str(plan.get("destination") or "Trip")
@@ -618,6 +658,30 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
         "Open it in a browser and Print -> Save as PDF for a carry-along copy.\n"
         + (f"\nRead-only share link: {share_url}\n" if share_url else "")
     )
+
+    # Azure-first path: ACS Email (stays inside Azure cost/account boundary).
+    acs_conn = os.getenv("AZURE_COMMUNICATION_CONNECTION_STRING", "").strip()
+    acs_sender = os.getenv("AZURE_COMMUNICATION_EMAIL_SENDER", "").strip()
+    if acs_conn and acs_sender:
+        try:
+            from azure.communication.email import EmailClient
+
+            client = EmailClient.from_connection_string(acs_conn)
+            message = {
+                "senderAddress": acs_sender,
+                "recipients": {"to": [{"address": req.email}]},
+                "content": {
+                    "subject": subject,
+                    "plainText": plain,
+                    "html": html,
+                },
+            }
+            poller = client.begin_send(message)
+            poller.result()
+            app_event("api_trip_export_email_sent", destination=destination, provider="acs")
+            return {"ok": True, "message": f"Itinerary sent to {req.email}."}
+        except Exception as exc:
+            app_event("api_trip_export_email_error", error=type(exc).__name__, provider="acs")
 
     smtp_host = os.getenv("SMTP_HOST", "").strip()
     smtp_port = int(os.getenv("SMTP_PORT", "587") or "587")
