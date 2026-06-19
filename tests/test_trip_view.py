@@ -238,6 +238,9 @@ def _map_geo(monkeypatch: pytest.MonkeyPatch) -> None:
     coords = {
         "Taj Exotica Resort": (15.04, 73.92),
         "Dudhsagar Falls Trek": (15.31, 74.31),
+        "Gateway of India": (18.9218, 72.8347),
+        "Colaba Causeway": (18.9228, 72.8315),
+        "Marine Drive": (18.9440, 72.8238),
         "Grand Hyatt": (15.46, 73.83),
         "ITC Grand": (15.50, 73.82),
         "Fort Aguada": (15.49, 73.77),
@@ -385,6 +388,41 @@ def test_map_view_selected_attraction_gets_fallback_day(_map_geo: None) -> None:
     # Un-selected suggestions stay dayless (quiet dots).
     assert by_name["Fort Aguada"]["selected"] is False
     assert by_name["Fort Aguada"]["day"] is None
+
+
+def test_map_view_includes_all_structured_day_stops_in_order(_map_geo: None) -> None:
+    # Regression: map used to show only selected/suggested places, dropping
+    # extra itinerary stops and producing an incomplete day circuit.
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Mumbai",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Gateway of India", "kind": "attraction"},
+                    {"name": "Colaba Causeway", "kind": "attraction"},
+                    {"name": "Marine Drive", "kind": "attraction"},
+                ],
+            }
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    by_name = {p["name"]: p for p in mv["pins"]}
+
+    # Every structured stop appears as a pin on the right day.
+    for name in ("Gateway of India", "Colaba Causeway", "Marine Drive"):
+        assert name in by_name
+        assert by_name[name]["day"] == 1
+
+    # The day route includes all three stops in itinerary order.
+    day1 = next(d for d in mv["days"] if d["day"] == 1)
+    id_by_name = {p["name"]: p["id"] for p in mv["pins"]}
+    assert day1["pin_ids"][:3] == [
+        id_by_name["Gateway of India"],
+        id_by_name["Colaba Causeway"],
+        id_by_name["Marine Drive"],
+    ]
 
 
 # ---------------------------------------------------------------------------

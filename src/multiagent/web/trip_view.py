@@ -533,6 +533,11 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         "attraction": _selected_names(trip, "attraction"),
     }
 
+    # Structured itinerary stops are authoritative for what should appear on
+    # the map and in which order/day. Keep an explicit day map so duplicated
+    # names across sources don't lose their itinerary day assignment.
+    explicit_day_by_name: dict[str, int] = {}
+
     # (kind, name) in display order: user picks first, then suggestions.
     refs: list[tuple[str, str]] = []
     seen: set[tuple[str, str]] = set()
@@ -543,12 +548,47 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
             seen.add(key)
             refs.append((kind, name))
 
+    def _infer_kind_from_name(name: str) -> str:
+        n = (name or "").strip().lower()
+        if n in selected["hotel"]:
+            return "hotel"
+        if n in selected["attraction"]:
+            return "attraction"
+        return "attraction"
+
+    # 1) Structured itinerary stops first, preserving day/stop order so route
+    #    lines follow the actual itinerary sequence.
+    for idx, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        stops = entry.get("stops")
+        if not isinstance(stops, list):
+            continue
+        for s in stops:
+            if isinstance(s, dict):
+                name = str(s.get("name") or "").strip()
+                kind = str(s.get("kind") or "").strip().lower()
+            else:
+                name = str(s or "").strip()
+                kind = ""
+            if not name:
+                continue
+            if kind not in {"hotel", "attraction"}:
+                kind = _infer_kind_from_name(name)
+            _add(kind, name)
+            explicit_day_by_name.setdefault(name.lower(), day_num)
+
+    # 2) User selected places (ensure presence even if stops list is absent).
     for h in trip.get("selected_hotels") or []:
         if isinstance(h, dict) and h.get("name"):
             _add("hotel", str(h["name"]))
     for a in trip.get("selected_activities") or []:
         if isinstance(a, dict) and a.get("name"):
             _add("attraction", str(a["name"]))
+
+    # 3) Destination suggestions to fill context around the chosen items.
     if destination:
         for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
             _add("hotel", name)
@@ -573,7 +613,8 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 "name": info.get("name") or name,
                 "kind": kind,
                 "selected": is_sel,
-                "day": _day_for_place(name, itinerary),
+                "day": explicit_day_by_name.get(name.strip().lower())
+                or _day_for_place(name, itinerary),
                 "lat": lat,
                 "lng": lng,
                 "rating": info.get("rating"),

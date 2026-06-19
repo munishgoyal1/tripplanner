@@ -1264,3 +1264,33 @@ CHANGED FILES:
 VALIDATION:
 - pytest: 408 passed
 - tsc --noEmit: clean
+
+=== 2026-06-19 — Session 25: Fix incomplete Mumbai day-1 map pins/circuit ===
+
+USER ISSUE:
+- "for My mumbai trip for example only first 2 places from day1 are marked on Map, other places are not marked and the circuit is not properly shown"
+
+ROOT CAUSE:
+- `trip_view._map_pins` prioritized selected/suggested places, so itinerary
+  stops that were not in `selected_hotels` / `selected_activities` / top-places
+  were omitted from pins.
+- Day route (`days[].pin_ids`) is built from pin insertion order; with omitted
+  stops, the rendered circuit looked partial/incorrect.
+
+FIX SHIPPED:
+- `trip_view._map_pins` now includes structured itinerary `day_wise_itinerary[].stops`
+  FIRST (preserving day/stop order), then adds selected places, then suggestions.
+- Added explicit day mapping (`explicit_day_by_name`) so itinerary stop day
+  assignment is stable for map pins and route grouping.
+- Kind fallback for non-hotel/non-attraction stop kinds defaults via selected-name
+  inference (else attraction) so map-worthy stops still render.
+
+TESTS:
+- Extended map fixture coords in `tests/test_trip_view.py`.
+- Added regression test:
+  `test_map_view_includes_all_structured_day_stops_in_order`
+  verifies all structured day-1 stops are pinned and route order matches itinerary.
+
+VALIDATION:
+- tests/test_trip_view.py: 30 passed
+- full pytest: 409 passed
