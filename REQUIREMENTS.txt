@@ -1338,3 +1338,43 @@ CHANGED FILES:
 VALIDATION:
 - python -m compileall -q src/multiagent : clean
 - frontend build : clean
+
+=== 2026-06-19 — Session 27: Itinerary export (PDF-ready + email) ===
+
+USER REQUIREMENT:
+- Add an Export feature so users can choose what to include (e.g., photos vs.
+  simple day-wise itinerary with map circuit under each day), export in a
+  print-friendly PDF format, and optionally send it to email.
+
+IMPLEMENTATION SHIPPED:
+- New print-friendly export renderer:
+  - `src/multiagent/web/itinerary_export.py`
+  - Produces styled HTML for day-wise itinerary export with options:
+    - include photos
+    - include day-wise map circuit + route stats
+  - Browser print dialog support (`auto_print`) for Save-as-PDF flow.
+- New API endpoints:
+  - `GET /trip/export/print`
+    - query: `include_photos`, `include_map_circuit`, `auto_print`
+    - returns print-ready HTML (PDF via browser Print -> Save as PDF)
+  - `POST /trip/export/email`
+    - sends export via SMTP when configured
+    - fallback: returns `mailto:` draft URL when SMTP is not configured
+- Frontend export UX:
+  - `TripPanel` hero now has an `Export` action
+  - Export modal provides:
+    - Include photos toggle
+    - Include map circuit toggle
+    - Preview
+    - Print / Save PDF
+    - Send to email
+
+CHANGED FILES:
+- src/multiagent/web/itinerary_export.py
+- src/multiagent/api.py
+- frontend/src/api.ts
+- frontend/src/components/TripPanel.tsx
+
+VALIDATION:
+- python -m compileall -q src/multiagent : clean
+- frontend build : clean

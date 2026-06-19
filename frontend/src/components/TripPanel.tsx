@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   deleteTrip,
+  emailTripExport,
   fetchSavedTrips,
   shareActiveTrip,
   switchTrip,
+  tripExportUrl,
   tripIcsUrl,
 } from "../api";
 import type { Budget, SavedTrip, TripItem, TripView } from "../types";
@@ -445,6 +447,7 @@ export default function TripPanel({
   const [shareState, setShareState] = useState<{ url: string; copied: boolean } | null>(
     null,
   );
+  const [showExport, setShowExport] = useState(false);
   const onShare = async () => {
     try {
       const url = await shareActiveTrip();
@@ -554,6 +557,15 @@ export default function TripPanel({
               </h2>
               <div className="mt-1 flex shrink-0 flex-col items-end gap-1.5">
                 <div className="flex flex-wrap items-center justify-end gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowExport(true)}
+                    title="Export day-wise itinerary for PDF/print or email"
+                    className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
+                  >
+                    <span>{"\uD83D\uDCC4"}</span>
+                    <span>Export</span>
+                  </button>
                   <button
                     type="button"
                     onClick={onShare}
@@ -717,6 +729,126 @@ export default function TripPanel({
         onClose={() => setLb((s) => ({ ...s, index: -1 }))}
         onIndex={(i) => setLb((s) => ({ ...s, index: i }))}
       />
+      {showExport && <ExportModal onClose={() => setShowExport(false)} />}
+    </div>
+  );
+}
+
+function ExportModal({ onClose }: { onClose: () => void }) {
+  const [includePhotos, setIncludePhotos] = useState(true);
+  const [includeCircuit, setIncludeCircuit] = useState(true);
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const options = {
+    include_photos: includePhotos,
+    include_map_circuit: includeCircuit,
+  };
+
+  const openPrintView = () => {
+    const url = tripExportUrl(options, true);
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const openPreview = () => {
+    const url = tripExportUrl(options, false);
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const sendEmail = async () => {
+    if (!email.trim()) {
+      setStatus("Enter an email address first.");
+      return;
+    }
+    setBusy(true);
+    setStatus("");
+    try {
+      const res = await emailTripExport(email.trim(), options);
+      if (res.ok) {
+        setStatus(res.message || "Export sent.");
+        return;
+      }
+      if (res.mailto) {
+        window.location.href = res.mailto;
+        setStatus("Opened your mail client fallback.");
+      } else {
+        setStatus(res.message || "Could not send email.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-ink">Export itinerary</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-ink">
+            ✕
+          </button>
+        </div>
+
+        <p className="mb-4 text-sm text-slate-600">
+          Export a print-friendly day-wise itinerary. Use Print → Save as PDF for a
+          carry-along copy.
+        </p>
+
+        <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={includePhotos}
+              onChange={(e) => setIncludePhotos(e.target.checked)}
+            />
+            Include place photos
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={includeCircuit}
+              onChange={(e) => setIncludeCircuit(e.target.checked)}
+            />
+            Include day-wise map circuit and route stats
+          </label>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button onClick={openPreview} className="btn-ghost">
+            Preview
+          </button>
+          <button onClick={openPrintView} className="btn-primary">
+            Print / Save PDF
+          </button>
+        </div>
+
+        <div className="mt-5 border-t border-slate-200 pt-4">
+          <p className="mb-2 text-sm font-medium text-ink">Send to email</p>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              className="input"
+            />
+            <button onClick={sendEmail} disabled={busy} className="btn-primary whitespace-nowrap disabled:opacity-50">
+              {busy ? "Sending..." : "Send"}
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            If server email is not configured, your mail app will open with a prefilled draft.
+          </p>
+          {status && <p className="mt-2 text-xs text-slate-600">{status}</p>}
+        </div>
+      </div>
     </div>
   );
 }

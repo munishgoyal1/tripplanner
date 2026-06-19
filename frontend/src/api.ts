@@ -272,7 +272,48 @@ export async function startNewTrip(): Promise<void> {
 export function tripIcsUrl(): string {
   const params = new URLSearchParams({ user_id: getUserId() });
   return `${BASE}/trip/export.ics?${params.toString()}`;
-}/**
+}
+
+export interface ExportOptions {
+  include_photos: boolean;
+  include_map_circuit: boolean;
+}
+
+export function tripExportUrl(options: ExportOptions, autoPrint = false): string {
+  const params = new URLSearchParams({
+    user_id: getUserId(),
+    include_photos: options.include_photos ? "1" : "0",
+    include_map_circuit: options.include_map_circuit ? "1" : "0",
+    auto_print: autoPrint ? "1" : "0",
+  });
+  return `${BASE}/trip/export/print?${params.toString()}`;
+}
+
+export interface EmailExportResult {
+  ok: boolean;
+  message?: string;
+  error?: string;
+  mailto?: string;
+}
+
+export async function emailTripExport(
+  email: string,
+  options: ExportOptions,
+): Promise<EmailExportResult> {
+  const res = await fetch(`${BASE}/trip/export/email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: getUserId(),
+      email,
+      include_photos: options.include_photos,
+      include_map_circuit: options.include_map_circuit,
+    }),
+  });
+  return res.json();
+}
+
+/**
  * Mint a read-only share token for the active trip. Returns the absolute URL
  * (origin + path) that anyone can open without logging in. Throws on failure.
  */

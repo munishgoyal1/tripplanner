@@ -27,14 +27,13 @@ import asyncio
 import json
 import os
 import time
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from pydantic import BaseModel
-from typing import Literal
 
 from multiagent import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from multiagent.observability import app_event, setup_logging
@@ -163,6 +162,13 @@ class PrivacyActionRequest(BaseModel):
     action: Literal["delete_trip_history", "clear_all_data", "delete_account"]
     # For destructive actions we require explicit typed confirmation text.
     confirm_text: str = ""
+
+
+class ExportEmailRequest(BaseModel):
+    user_id: str = "local"
+    email: str
+    include_photos: bool = True
+    include_map_circuit: bool = True
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -549,6 +555,115 @@ async def trip_export_ics(user_id: str = "local") -> Response:
         media_type="text/calendar",
         headers={"Content-Disposition": f'attachment; filename="{safe}.ics"'},
     )
+
+
+@app.get("/trip/export/print")
+async def trip_export_print(
+    user_id: str = "local",
+    include_photos: str = "1",
+    include_map_circuit: str = "1",
+    auto_print: str = "0",
+) -> Response:
+    """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web.itinerary_export import build_export_html, parse_export_bool
+
+    set_user_id(user_id)
+    plan = trip_planner.load_active_trip_dict()
+    html = build_export_html(
+        plan,
+        include_photos=parse_export_bool(include_photos, default=True),
+        include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+        auto_print=parse_export_bool(auto_print, default=False),
+    )
+    return Response(content=html, media_type="text/html; charset=utf-8")
+
+
+@app.post("/trip/export/email")
+async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
+    """Send the itinerary export to an email address (SMTP when configured).
+
+    If SMTP is not configured, returns a `mailto:` fallback so the frontend can
+    open the user's mail client with a prefilled subject/body.
+    """
+    from email.message import EmailMessage
+    from urllib.parse import quote
+    import smtplib
+
+    from multiagent.tools import trip_planner
+    from multiagent.user_context import set_user_id
+    from multiagent.web.itinerary_export import build_export_html
+    from multiagent.web.share import mint_for_active_trip
+
+    set_user_id(req.user_id)
+    plan = trip_planner.load_active_trip_dict()
+    if not plan:
+        return {"ok": False, "error": "no_active_trip", "message": "No active trip to export."}
+
+    html = build_export_html(
+        plan,
+        include_photos=bool(req.include_photos),
+        include_map_circuit=bool(req.include_map_circuit),
+        auto_print=False,
+    )
+    destination = str(plan.get("destination") or "Trip")
+    subject = f"{destination} itinerary export"
+
+    # Share link in case the user wants to open the live plan online too.
+    token = mint_for_active_trip()
+    share_url = f"{str(request.base_url).rstrip('/')}/trip/shared/{token}" if token else ""
+    plain = (
+        f"Your trip itinerary export for {destination} is attached as HTML.\n"
+        "Open it in a browser and Print -> Save as PDF for a carry-along copy.\n"
+        + (f"\nRead-only share link: {share_url}\n" if share_url else "")
+    )
+
+    smtp_host = os.getenv("SMTP_HOST", "").strip()
+    smtp_port = int(os.getenv("SMTP_PORT", "587") or "587")
+    smtp_user = os.getenv("SMTP_USER", "").strip()
+    smtp_pass = os.getenv("SMTP_PASSWORD", "").strip()
+    smtp_from = os.getenv("SMTP_FROM", smtp_user or "").strip()
+    smtp_tls = os.getenv("SMTP_USE_TLS", "1").strip().lower() not in {"0", "false", "no"}
+
+    if not smtp_host or not smtp_from:
+        body = quote(
+            plain + ("\n(Email sending is not configured on this server.)"),
+            safe="",
+        )
+        return {
+            "ok": False,
+            "error": "email_not_configured",
+            "mailto": f"mailto:{quote(req.email, safe='')}?subject={quote(subject, safe='')}&body={body}",
+            "message": "SMTP is not configured; opened mail client fallback.",
+        }
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = smtp_from
+    msg["To"] = req.email
+    msg.set_content(plain)
+    msg.add_alternative(html, subtype="html")
+    msg.add_attachment(
+        html.encode("utf-8"),
+        maintype="text",
+        subtype="html",
+        filename="trip-itinerary.html",
+    )
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as smtp:
+            if smtp_tls:
+                smtp.starttls()
+            if smtp_user:
+                smtp.login(smtp_user, smtp_pass)
+            smtp.send_message(msg)
+    except Exception as exc:
+        app_event("api_trip_export_email_error", error=type(exc).__name__)
+        return {"ok": False, "error": "email_send_failed", "message": "Could not send email."}
+
+    app_event("api_trip_export_email_sent", destination=destination)
+    return {"ok": True, "message": f"Itinerary sent to {req.email}."}
 
 
 @app.post("/trip/share")
