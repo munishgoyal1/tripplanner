@@ -1,13 +1,12 @@
 name: Build & Deploy to Azure Container Apps
 
-# Triggers: every push to master + manual run
+# MANUAL ONLY. Image build + push + deploy no longer run on every commit so the
+# local commit/test loop stays fast. Trigger this from the Actions tab
+# ("Run workflow"), or build & ship locally with the one-click scripts:
+#   infra/push-image.ps1      (build + push image to GHCR)
+#   infra/deploy-canary.ps1   (deploy to canary)
+#   infra/deploy-prod.ps1     (deploy to prod, with approval gate)
 on:
-  push:
-    branches: [master]
-    paths-ignore:
-      - "**/*.md"
-      - "data/**"
-      - ".gitignore"
   workflow_dispatch:
 
 permissions:

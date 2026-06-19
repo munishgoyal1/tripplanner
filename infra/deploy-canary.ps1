@@ -13,6 +13,7 @@
 
 param(
     [string]$ImageTag = "latest",
+    [switch]$Build = $false,
     [switch]$DryRun = $false,
     [string]$SubscriptionId = "",
     [string]$ResourceGroup = "rg-tripplanner-canary",
@@ -64,6 +65,14 @@ Write-Host "╚═════════════════════�
 Write-Host "Environment: CANARY (rg-tripplanner-canary)"
 Write-Host "App: $canaryApp"
 Write-Host "Image Tag: $ImageTag`n"
+
+# Optional: build + push the image first (one-click full deploy).
+if ($Build) {
+    Write-Host "✓ Step 0: Building & pushing image (-Build)..."
+    & "$PSScriptRoot/push-image.ps1"
+    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
+    Write-Host "  ✓ Image ready`n"
+}
 
 # Step 1: Validate prerequisites
 Write-Host "✓ Step 1: Validating prerequisites..."
