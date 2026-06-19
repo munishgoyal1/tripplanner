@@ -6,6 +6,8 @@
 .DESCRIPTION
   Deploys the latest changes to the canary RG for testing before prod.
   No approval gate — use for all testing, bug fixes, and feature development.
+  Builds & pushes the image from current code first by default (pass -NoBuild
+  to deploy the existing :latest image as-is).
 
 .EXAMPLE
   ./infra/deploy-canary.ps1
@@ -13,7 +15,7 @@
 
 param(
     [string]$ImageTag = "latest",
-    [switch]$Build = $false,
+    [switch]$NoBuild = $false,
     [switch]$DryRun = $false,
     [string]$SubscriptionId = "",
     [string]$ResourceGroup = "rg-tripplanner-canary",
@@ -66,9 +68,10 @@ Write-Host "Environment: CANARY (rg-tripplanner-canary)"
 Write-Host "App: $canaryApp"
 Write-Host "Image Tag: $ImageTag`n"
 
-# Optional: build + push the image first (one-click full deploy).
-if ($Build) {
-    Write-Host "✓ Step 0: Building & pushing image (-Build)..."
+# Build + push the image from current code first (default for canary). Pass
+# -NoBuild to skip and deploy the existing :latest image as-is.
+if (-not $NoBuild) {
+    Write-Host "✓ Step 0: Building & pushing image from current code..."
     & "$PSScriptRoot/push-image.ps1"
     if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
     Write-Host "  ✓ Image ready`n"

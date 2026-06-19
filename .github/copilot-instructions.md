@@ -30,16 +30,18 @@ stays fast. Build & push only when explicitly asked.
   pushes to GHCR tagged with the git short SHA + `latest`. Needs a `docker login
   ghcr.io` session (or set `GHCR_TOKEN`/`CR_PAT` with `write:packages`).
 - **Canary (Testing)**: Deploy via `./infra/deploy-canary.ps1` — no approval gate,
-  use for all testing. Add `-Build` to build+push the image first (one-click full deploy).
+  use for all testing. **Builds & pushes the image from current code first by
+  default**, then deploys (one-click full deploy). Pass `-NoBuild` to deploy the
+  existing `:latest` image as-is.
 - **Production (Live)**: Deploy via `./infra/deploy-prod.ps1` — requires manual approval via interactive prompt
   - Script displays readiness checklist
   - Requires you to type `APPROVE_PROD_DEPLOYMENT` (exact, case-sensitive)
   - All prod deployments logged to `logs/deployments-prod.log` with timestamp and approver
-  - Supports `-Build` too (build+push before the approval gate's deploy step)
+  - Pass `-Build` to build+push before the approval gate's deploy step
 - **Rollback (Emergencies)**: `./infra/rollback-prod.ps1` — reverts to previous revision without data loss
 
-The deploy scripts only set the Container App to `ghcr.io/.../tripplanner:latest`;
-they do NOT build. Run `push-image.ps1` (or `deploy-*.ps1 -Build`) to ship new code.
+Canary builds new code by default; prod deploys the existing `:latest` unless
+`-Build` is passed. Run `push-image.ps1` to build/push independently.
 
 Resource naming:
 - Canary RG: `rg-tripplanner-canary` (app: `canary-app-*`)
