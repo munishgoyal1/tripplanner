@@ -105,6 +105,34 @@ def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> None:
         chat_store.clear(None)
 
 
+# Fire-and-forget passive-learning sweeps. Keep strong refs so the event loop
+# doesn't garbage-collect a running task before it finishes.
+_BG_TASKS: set[asyncio.Task] = set()
+
+
+def _schedule_learning_sweep(user_id: str, message: str) -> None:
+    """Run the post-turn passive-learning sweep without blocking the response.
+
+    The extractor makes a blocking LLM call, so it runs in a worker thread; the
+    user's ``user_id`` is re-bound inside the thread (ContextVars don't cross
+    threads). Best-effort — all failures are swallowed.
+    """
+    def _worker() -> None:
+        from tripplanner.tools import passive_learning
+        from tripplanner.user_context import set_user_id
+
+        set_user_id(user_id)
+        passive_learning.learn_from_message(message)
+
+    try:
+        task = asyncio.create_task(asyncio.to_thread(_worker))
+        _BG_TASKS.add(task)
+        task.add_done_callback(_BG_TASKS.discard)
+    except RuntimeError:
+        # No running loop (e.g. a sync test harness) — run inline best-effort.
+        _worker()
+
+
 class ChatRequest(BaseModel):
     message: str
     user_id: str = "local"
@@ -205,6 +233,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
         app_event("hallucination_critic", issues=len(issues), claims=issues)
     history.append(AIMessage(content=reply))
     _save_chat(history_tid, history)
+    _schedule_learning_sweep(req.user_id, req.message)
 
     app_event("api_chat_response", reply_length=len(reply))
     return ChatResponse(reply=reply, agent=result.get("current_agent", "unknown"))
@@ -345,6 +374,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
         history.append(AIMessage(content=reply))
         _save_chat(history_tid, history)
+        _schedule_learning_sweep(req.user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
         yield _sse("done", {"reply": reply, "agent": "trip"})
 

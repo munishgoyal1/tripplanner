@@ -192,9 +192,17 @@ def reset_preferences() -> dict[str, Any]:
 
 
 def update_preferences(updates: dict[str, Any]) -> dict[str, Any]:
-    """Deep-merge updates into existing preferences and save."""
+    """Deep-merge updates into existing preferences and save.
+
+    List fields in ``_ADDITIVE_LIST_PATHS`` (interests, dislikes, dietary,
+    cuisine likes/dislikes, hotel amenities/chains, accessibility needs) are
+    UNIONED with what's already saved instead of being replaced — so the agent
+    calling ``save_travel_preferences`` with e.g. ``{"food_preferences":
+    {"dietary": ["vegan"]}}`` can never wipe previously learned dietary needs.
+    All other leaves keep replace-wins semantics.
+    """
     current = load_preferences()
-    merged = _deep_merge(current, updates)
+    merged = _deep_merge_additive(current, updates)
     save_preferences(merged)
     return merged
 
@@ -483,6 +491,61 @@ def _deep_merge(base: dict, override: dict) -> dict:
     for key, val in override.items():
         if key in result and isinstance(result[key], dict) and isinstance(val, dict):
             result[key] = _deep_merge(result[key], val)
+        else:
+            result[key] = val
+    return result
+
+
+# Dotted paths whose list values are ADDITIVE (unioned) rather than replaced
+# when written via update_preferences / save_travel_preferences. Keeps the save
+# path consistent with the "always additive, never remove" rule the rest of the
+# learning system follows.
+_ADDITIVE_LIST_PATHS: frozenset[str] = frozenset({
+    "interests",
+    "dislikes",
+    "accessibility_needs",
+    "food_preferences.dietary",
+    "food_preferences.cuisine_likes",
+    "food_preferences.cuisine_dislikes",
+    "hotel_preferences.preferred_amenities",
+    "hotel_preferences.preferred_chains",
+})
+
+
+def _union_ci(existing: list[Any] | None, incoming: list[Any] | None) -> list[Any]:
+    """Append ``incoming`` to ``existing`` with case-insensitive dedupe for
+    strings (existing casing wins). Non-string items dedupe by value."""
+    out: list[Any] = []
+    seen: set[Any] = set()
+    for item in list(existing or []) + list(incoming or []):
+        if item is None:
+            continue
+        if isinstance(item, str):
+            s = item.strip()
+            if not s:
+                continue
+            key: Any = s.lower()
+        else:
+            s = item
+            key = repr(item)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(s)
+    return out
+
+
+def _deep_merge_additive(base: dict, override: dict, prefix: str = "") -> dict:
+    """Like ``_deep_merge`` but UNIONS list leaves at ``_ADDITIVE_LIST_PATHS``
+    instead of replacing them. Other leaves keep replace-wins semantics."""
+    result = base.copy()
+    for key, val in override.items():
+        path = f"{prefix}{key}"
+        cur = result.get(key)
+        if isinstance(cur, dict) and isinstance(val, dict):
+            result[key] = _deep_merge_additive(cur, val, prefix=f"{path}.")
+        elif path in _ADDITIVE_LIST_PATHS and isinstance(val, list):
+            result[key] = _union_ci(cur if isinstance(cur, list) else [], val)
         else:
             result[key] = val
     return result

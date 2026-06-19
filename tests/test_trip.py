@@ -75,6 +75,24 @@ class TestLoadSave:
         assert prefs["family"]["children"] == 2
         assert prefs["family"]["adults"] == 1  # untouched
 
+    def test_update_unions_additive_lists(self):
+        update_preferences({"food_preferences": {"dietary": ["vegetarian"]}})
+        update_preferences({"food_preferences": {"dietary": ["jain"]}})
+        prefs = load_preferences()
+        assert sorted(prefs["food_preferences"]["dietary"]) == ["jain", "vegetarian"]
+
+    def test_update_dedupes_additive_lists_case_insensitive(self):
+        update_preferences({"interests": ["Hiking"]})
+        update_preferences({"interests": ["hiking", "food"]})
+        prefs = load_preferences()
+        assert prefs["interests"] == ["Hiking", "food"]
+
+    def test_update_replaces_non_additive_lists(self):
+        update_preferences({"family": {"child_ages": [4, 8]}})
+        update_preferences({"family": {"child_ages": [10]}})
+        prefs = load_preferences()
+        assert prefs["family"]["child_ages"] == [10]  # replace, not union
+
     def test_add_past_trip(self):
         add_past_trip("Goa", "2025-12-20 to 2025-12-27", 5, "Amazing beaches")
         add_past_trip("Shimla", "2025-01-10 to 2025-01-15", 3, "Too crowded")
