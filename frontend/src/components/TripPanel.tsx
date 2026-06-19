@@ -164,6 +164,9 @@ export function TripSwitcher({
 
   const onRemove = async (e: React.MouseEvent, tripId: string) => {
     e.stopPropagation();
+    const t = trips.find((x) => x.trip_id === tripId);
+    const name = t?.destination || "this trip";
+    if (!window.confirm(`Delete ${name} and its chat history? This cannot be undone.`)) return;
     const remaining = await deleteTrip(tripId);
     setTrips(remaining);
     onSwitched();

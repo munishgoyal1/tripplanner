@@ -371,6 +371,16 @@ STEP 2 — UNDERSTAND THE REQUEST
   update_trip_plan('{{"budget": 150000}}') so the live budget meter in the UI
   can track spend against it. Keep total_cost updated as selections firm up.
 
+STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
+  The moment you know the destination and rough dates, present a first-draft
+  day-by-day itinerary built from your OWN travel knowledge plus the loaded
+  preferences/memory — BEFORE running the flight/hotel/activity searches.
+  Persist it with update_trip_plan so the UI shows it right away, and say
+  plainly it's a starting draft you'll refine with live prices and
+  availability. Then continue to STEP 3 to validate and enrich it with real
+  options. Never make the user wait for every tool to return before seeing a
+  first cut.
+
 STEP 3 — PARALLEL SEARCH (do all at once)
   Call these tools in parallel based on preferences:
   a) search_flights_duffel — PREFERRED flight search (Duffel API). Real airlines,

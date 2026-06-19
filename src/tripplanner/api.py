@@ -554,12 +554,16 @@ async def trips_switch(req: TripIdRequest) -> dict:
 
 @app.post("/trips/delete")
 async def trips_delete(req: TripIdRequest) -> dict:
-    """Delete a saved trip; returns the refreshed saved-trips list."""
+    """Delete a single saved trip AND its chat history; returns the refreshed
+    saved-trips list."""
     from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
+    from tripplanner.web import chat_store
 
     set_user_id(req.user_id)
     await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
+    # Also erase that trip's persisted conversation so no orphaned data lingers.
+    await asyncio.to_thread(chat_store.clear, req.trip_id)
     trips = await asyncio.to_thread(trip_planner.list_saved_trips)
     return {"ok": True, "trips": trips}
 

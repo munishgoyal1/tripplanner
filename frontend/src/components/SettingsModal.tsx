@@ -29,10 +29,25 @@ export default function SettingsModal({ onClose }: Props) {
   const [saving, setSaving] = useState(false);
   const [extracted, setExtracted] = useState<string[] | null>(null);
   const [regenerating, setRegenerating] = useState(false);
+  // Raw editable text for the comma-separated list fields. Kept separate from
+  // the parsed arrays so a trailing comma isn't stripped mid-typing — parsed
+  // into arrays only at save time.
+  const [listText, setListText] = useState({ dietary: "", interests: "", dislikes: "" });
+
+  function syncListText(p: Preferences) {
+    setListText({
+      dietary: commaList(p.dietary),
+      interests: commaList(p.interests),
+      dislikes: commaList(p.dislikes),
+    });
+  }
 
   useEffect(() => {
     fetchPreferences()
-      .then(setPrefs)
+      .then((p) => {
+        setPrefs(p);
+        syncListText(p);
+      })
       .catch(() => setPrefs(null));
   }, []);
 
@@ -44,12 +59,21 @@ export default function SettingsModal({ onClose }: Props) {
     if (!prefs) return;
     setSaving(true);
     try {
-      const result = await savePreferences(prefs);
+      const merged: Preferences = {
+        ...prefs,
+        dietary: parseList(listText.dietary),
+        interests: parseList(listText.interests),
+        dislikes: parseList(listText.dislikes),
+      };
+      setPrefs(merged);
+      const result = await savePreferences(merged);
       if (result.about_me_extracted && result.about_me_extracted.length > 0) {
         // Re-load so the form reflects the structured fields the LLM filled
         // in, and surface a confirmation instead of closing immediately.
         setExtracted(result.about_me_extracted);
-        setPrefs(await fetchPreferences());
+        const fresh = await fetchPreferences();
+        setPrefs(fresh);
+        syncListText(fresh);
       } else {
         onClose();
       }
@@ -235,22 +259,22 @@ export default function SettingsModal({ onClose }: Props) {
             <Field label="Dietary (comma-separated)">
               <input
                 className="input"
-                value={commaList(prefs.dietary)}
-                onChange={(e) => set("dietary", parseList(e.target.value))}
+                value={listText.dietary}
+                onChange={(e) => setListText((t) => ({ ...t, dietary: e.target.value }))}
               />
             </Field>
             <Field label="Interests (comma-separated)">
               <input
                 className="input"
-                value={commaList(prefs.interests)}
-                onChange={(e) => set("interests", parseList(e.target.value))}
+                value={listText.interests}
+                onChange={(e) => setListText((t) => ({ ...t, interests: e.target.value }))}
               />
             </Field>
             <Field label="Dislikes (comma-separated)">
               <input
                 className="input"
-                value={commaList(prefs.dislikes)}
-                onChange={(e) => set("dislikes", parseList(e.target.value))}
+                value={listText.dislikes}
+                onChange={(e) => setListText((t) => ({ ...t, dislikes: e.target.value }))}
               />
             </Field>
 
