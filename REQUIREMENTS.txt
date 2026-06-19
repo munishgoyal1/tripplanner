@@ -1225,3 +1225,42 @@ VALIDATION:
 - pytest: 408 passed
 - tsc --noEmit: clean
 
+
+=== 2026-06-19 — Session 24: Fix trip-switch chat desync + fast per-trip chat reload ===
+
+USER ISSUE:
+- "When selecting a draft or completed trip from dropdown the corresponding chat is not updating in chat section. Store all that state for a given trip and load it fast when user switches"
+
+ROOT CAUSE:
+- Chat reload was driven only by a token and fetched `/chat/history` by active trip
+  (server-side pointer). During rapid switch/re-render paths this could race and/or
+  return stale-by-URL responses.
+- The ChatPanel reload effect skipped while `busy`; if a switch happened during a turn,
+  the reload could be missed until another token bump.
+
+FIX SHIPPED:
+- Deterministic trip chat load:
+  - `GET /chat/history` now accepts optional `trip_id` and returns `{trip_id, messages}`.
+  - frontend `fetchChatHistory(tripId?)` sends `trip_id` when known and uses
+    `cache: "no-store"` to avoid stale GET caching.
+- Switch pipeline now carries selected trip id end-to-end:
+  - `TripSwitcher` emits `onSwitched(tripId)` after successful switch.
+  - `App` stores `chatTripId` and passes it to `ChatPanel` (`tripIdHint`).
+- Fast load on switch:
+  - `ChatPanel` keeps in-memory transcript cache keyed by trip id and renders cached
+    messages instantly on switch, then refreshes from backend.
+- Robust reload behavior:
+  - Chat reload effect now depends on `busy`; if switching happens while a turn is
+    in-flight, it reloads once `busy` becomes false.
+
+CHANGED FILES:
+- src/multiagent/api.py
+- frontend/src/api.ts
+- frontend/src/App.tsx
+- frontend/src/components/TripPanel.tsx
+- frontend/src/components/RightRail.tsx
+- frontend/src/components/ChatPanel.tsx
+
+VALIDATION:
+- pytest: 408 passed
+- tsc --noEmit: clean

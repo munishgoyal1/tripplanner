@@ -14,7 +14,7 @@ interface Props {
   onStopMap: (name: string) => void;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
-  onSwitched: () => void;
+  onSwitched: (tripId?: string) => void;
   /** Map is lazy (Google Maps JS bills per load) — opt-in, stays mounted. */
   mapOpen: boolean;
   onToggleMap: (open: boolean) => void;

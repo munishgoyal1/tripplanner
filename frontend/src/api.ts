@@ -179,11 +179,16 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
   }
 }
 
-/** Restore the persisted transcript for the user's currently active trip. */
-export async function fetchChatHistory(): Promise<{ role: "user" | "assistant"; text: string }[]> {
+/** Restore the persisted transcript for a trip (or the current active trip). */
+export async function fetchChatHistory(
+  tripId?: string
+): Promise<{ role: "user" | "assistant"; text: string }[]> {
   const params = new URLSearchParams({ user_id: getUserId() });
+  if (tripId) params.set("trip_id", tripId);
   try {
-    const res = await fetch(`${BASE}/chat/history?${params.toString()}`);
+    const res = await fetch(`${BASE}/chat/history?${params.toString()}`, {
+      cache: "no-store",
+    });
     const json = await res.json();
     return (json.messages ?? []) as { role: "user" | "assistant"; text: string }[];
   } catch {

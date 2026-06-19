@@ -26,6 +26,9 @@ export default function App() {
   // Bumped only when a saved trip is switched, so ChatPanel reloads the right
   // conversation (without wiping the chat on every routine trip refresh).
   const [chatReloadToken, setChatReloadToken] = useState(0);
+  // The currently selected trip id in the switcher. Passed to ChatPanel so it
+  // fetches that exact transcript (no race on "active trip" reads).
+  const [chatTripId, setChatTripId] = useState<string | null>(null);
 
   // --- resizable split between chat and the trip/photos panel ---------------
   const [chatPct, setChatPct] = useState<number>(() => {
@@ -110,8 +113,9 @@ export default function App() {
   };
 
   // A saved-trip switch: reload both the trip view and the chat transcript.
-  const handleSwitched = async () => {
+  const handleSwitched = async (tripId?: string) => {
     setChatReloadToken((n) => n + 1);
+    setChatTripId(tripId || null);
     setStopFocusName(null);
     await handleClearFocus();
   };
@@ -120,6 +124,7 @@ export default function App() {
   // server-side; reload the (now empty) view and bump the chat transcript.
   const handleNewTrip = async () => {
     setChatReloadToken((n) => n + 1);
+    setChatTripId(null);
     setStopFocusName(null);
     await handleClearFocus();
   };
@@ -207,7 +212,12 @@ export default function App() {
         className="flex w-full min-w-0 flex-col md:w-auto"
         style={isDesktop ? { flexBasis: `${chatPct}%` } : undefined}
       >
-        <ChatPanel onTurnComplete={() => refresh()} reloadToken={chatReloadToken} onNewTrip={handleNewTrip} />
+        <ChatPanel
+          onTurnComplete={() => refresh()}
+          reloadToken={chatReloadToken}
+          tripIdHint={chatTripId}
+          onNewTrip={handleNewTrip}
+        />
       </section>
 
       <div

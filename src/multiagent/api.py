@@ -337,7 +337,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 
 
 @app.get("/chat/history")
-async def chat_history(user_id: str = "local") -> dict:
+async def chat_history(user_id: str = "local", trip_id: str = "") -> dict:
     """The persisted transcript for the user's *currently active* trip.
 
     Lets the SPA restore the conversation + itinerary summary after a refresh,
@@ -348,9 +348,9 @@ async def chat_history(user_id: str = "local") -> dict:
     from multiagent.web import chat_store
 
     set_user_id(user_id)
-    tid = await asyncio.to_thread(active_trip_id)
+    tid = trip_id.strip() or await asyncio.to_thread(active_trip_id) or ""
     rows = await asyncio.to_thread(chat_store.transcript, tid)
-    return {"messages": rows}
+    return {"trip_id": tid, "messages": rows}
 
 
 @app.get("/trip/view")

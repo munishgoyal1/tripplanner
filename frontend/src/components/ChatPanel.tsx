@@ -20,6 +20,8 @@ interface Props {
   onTurnComplete: () => void;
   /** Bump to reload the persisted transcript (e.g. after switching trips). */
   reloadToken?: number;
+  /** Explicit trip id to load chat for (set during saved-trip switching). */
+  tripIdHint?: string | null;
   /** Start a fresh planning chat (clears the active trip + general chat). */
   onNewTrip?: () => void;
 }
@@ -29,7 +31,12 @@ const GREETING: ChatMessage = {
   text: "Hi! Tell me where and when you'd like to travel and I'll plan it.",
 };
 
-export default function ChatPanel({ onTurnComplete, reloadToken = 0, onNewTrip }: Props) {
+export default function ChatPanel({
+  onTurnComplete,
+  reloadToken = 0,
+  tripIdHint = null,
+  onNewTrip,
+}: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,6 +49,9 @@ export default function ChatPanel({ onTurnComplete, reloadToken = 0, onNewTrip }
   const [attachments, setAttachments] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
+
+  const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
 
   // --- mic dictation (Web Speech API, Chrome/Edge/Safari) -------------------
   // Feature-detected at runtime; no SpeechRecognition types in lib.dom yet,
@@ -113,15 +123,22 @@ export default function ChatPanel({ onTurnComplete, reloadToken = 0, onNewTrip }
   }, []);
 
   // Restore the persisted transcript on mount and whenever the active trip
-  // changes (switching saved trips bumps `reloadToken`). Don't clobber an
-  // in-flight turn.
+  // changes (switching saved trips bumps `reloadToken`).
   useEffect(() => {
     if (busy) return;
     let cancelled = false;
-    fetchChatHistory()
+    const cached = transcriptCacheRef.current.get(cacheKey);
+    if (cached) {
+      setMessages(cached);
+    } else {
+      setMessages([GREETING]);
+    }
+    fetchChatHistory(tripIdHint || undefined)
       .then((rows) => {
         if (cancelled) return;
-        setMessages(rows.length ? rows.map((r) => ({ role: r.role, text: r.text })) : [GREETING]);
+        const next = rows.length ? rows.map((r) => ({ role: r.role, text: r.text })) : [GREETING];
+        transcriptCacheRef.current.set(cacheKey, next);
+        setMessages(next);
       })
       .catch(() => {
         /* keep whatever's on screen */
@@ -130,7 +147,12 @@ export default function ChatPanel({ onTurnComplete, reloadToken = 0, onNewTrip }
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reloadToken]);
+  }, [reloadToken, tripIdHint, cacheKey, busy]);
+
+  // Keep a fast in-memory snapshot keyed by trip id for instant switches.
+  useEffect(() => {
+    transcriptCacheRef.current.set(cacheKey, messages);
+  }, [cacheKey, messages]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
