@@ -98,7 +98,7 @@ When you Ctrl+C the dev server, `test.ps1` auto-closes the watcher window.
 ## Observability
 
 Two completely separate log streams. Both are auto-wired from
-`multiagent.observability` and start with `setup_logging()` at the top of
+`tripplanner.observability` and start with `setup_logging()` at the top of
 each entrypoint (`web/app.py`, `api.py`, `cli.py`).
 
 ### Stream 1 — App log (sanitized, public-readable)
@@ -133,7 +133,7 @@ KQL example once the container is running on Azure:
 
 ```kql
 ContainerAppConsoleLogs_CL
-| where ContainerAppName_s startswith "multiagent-app-"
+| where ContainerAppName_s startswith "tripplanner-app-"
 | extend e = parse_json(Log_s)
 | where tostring(e.event_kind) == "tool_call"
 | summarize p95_ms = percentile(tolong(e.ms), 95), n = count()
@@ -148,7 +148,7 @@ review, dataset curation), there's a separate sink that **never** touches
 stdout:
 
 - **Local dev**: appended as JSON Lines to
-  `~/.multiagent/audit/<YYYY-MM-DD>.jsonl`.
+  `~/.tripplanner/audit/<YYYY-MM-DD>.jsonl`.
 - **Hosted**: written to the Cosmos DB container `audit_events` (partition
   key `/user_id`, `defaultTtl = 90 days` so PII auto-expires).
 
@@ -249,7 +249,7 @@ Should print `106 passed` (or higher) in ~1.5 seconds.
 
 | Mode | Preferences | Active trip | Archived trips |
 |---|---|---|---|
-| Local *(default)* | `~\.multiagent\users\<id>\preferences.json` | `~\.multiagent\users\<id>\active_trip.json` | `~\.multiagent\users\<id>\trips\` |
+| Local *(default)* | `~\.tripplanner\users\<id>\preferences.json` | `~\.tripplanner\users\<id>\active_trip.json` | `~\.tripplanner\users\<id>\trips\` |
 | `-Cosmos` *(prod)* | Cosmos `users` container | Cosmos `users/active_trip` doc | Cosmos `trips` container |
 
 Delete the local files to start fresh; the server will recreate them on the
@@ -261,11 +261,12 @@ next save.
 
 ```powershell
 # CLI mode (no browser)
-.\.venv\Scripts\python.exe -m multiagent.cli
+.\.venv\Scripts\python.exe -m tripplanner.cli
 
 # FastAPI mode (curl-friendly, no browser UI)
-.\.venv\Scripts\python.exe -m multiagent.api
+.\.venv\Scripts\python.exe -m tripplanner.api
 
 # Tail user's persisted prefs as JSON
-Get-Content "$env:USERPROFILE\.multiagent\users\guest-*\preferences.json" | ConvertFrom-Json
+Get-Content "$env:USERPROFILE\.tripplanner\users\guest-*\preferences.json" | ConvertFrom-Json
 ```
+

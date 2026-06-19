@@ -324,6 +324,7 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
     if (pin.day && pin.day !== activeDay) setActiveDay(pin.day);
     const t = setTimeout(() => {
       mapRef.current?.panTo({ lat: pin.lat, lng: pin.lng });
+      mapRef.current?.setZoom(15);
       openInfoRef.current?.(pin);
     }, 0);
     return () => clearTimeout(t);

@@ -1,4 +1,4 @@
-# Lockfile for the multiagent venv - exact, reproducible dependency set.
+# Lockfile for the tripplanner venv - exact, reproducible dependency set.
 # Generated from a known-good environment (langchain/langgraph 1.x majors).
 #
 # Reproduce this exact environment:
@@ -7,7 +7,7 @@
 #
 # Regenerate after intentionally changing deps in pyproject.toml:
 #     pip install -e .[dev,azure]
-#     pip freeze --exclude-editable | Where-Object { $_ -notmatch 'multiagent' } > requirements.lock
+#     pip freeze --exclude-editable | Where-Object { $_ -notmatch 'tripplanner' } > requirements.lock
 #
 aiofiles==25.1.0
 aiohappyeyeballs==2.6.2
@@ -177,3 +177,4 @@ wsproto==1.3.2
 xxhash==3.7.0
 yarl==1.24.2
 zstandard==0.25.0
+

@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from multiagent.tools import place_hours
+from tripplanner.tools import place_hours
 
 
 @pytest.fixture

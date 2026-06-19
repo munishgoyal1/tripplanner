@@ -1,4 +1,4 @@
-// Mirrors the Python view-model contract in src/multiagent/web/trip_view.py.
+// Mirrors the Python view-model contract in src/tripplanner/web/trip_view.py.
 // Keep these types in sync with build_view()'s output shape.
 
 export interface Review {
@@ -60,6 +60,7 @@ export interface TripView {
   empty_message: string;
   overview: TripOverview;
   items: TripItem[];
+  alerts?: string[];
 }
 
 export type ChatRole = "user" | "assistant";
@@ -207,3 +208,4 @@ export interface SavedTrip {
   updated_at: string;
   is_active: boolean;
 }
+

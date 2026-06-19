@@ -6,7 +6,7 @@ import importlib
 
 import pytest
 
-from multiagent import usage as usage_mod
+from tripplanner import usage as usage_mod
 
 
 @pytest.fixture(autouse=True)
@@ -126,7 +126,7 @@ def test_record_usage_zero_tokens_still_records_call():
 def test_usage_endpoint_returns_current_bucket(monkeypatch):
     from fastapi.testclient import TestClient
 
-    from multiagent.api import app
+    from tripplanner.api import app
 
     monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "5")
     usage_mod.record_usage("alice", model="gpt-4o", prompt_tokens=500, completion_tokens=500)
@@ -144,7 +144,7 @@ def test_usage_endpoint_returns_current_bucket(monkeypatch):
 def test_chat_endpoint_returns_cap_message_when_over(monkeypatch):
     from fastapi.testclient import TestClient
 
-    from multiagent.api import app
+    from tripplanner.api import app
 
     # Cap so low any prior call would trip it; record a small call first.
     monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "0.0001")

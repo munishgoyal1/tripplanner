@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from multiagent.web import trip_view
+from tripplanner.web import trip_view
 
 SAMPLE_TRIP: dict[str, Any] = {
     "status": "draft",

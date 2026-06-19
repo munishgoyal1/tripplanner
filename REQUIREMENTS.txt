@@ -1,4 +1,4 @@
-REQUIREMENTS LOG — multiagent personal assistant
+REQUIREMENTS LOG — tripplanner personal assistant
 =================================================
 This is a running log of all user requirements, decisions, and feature requests.
 Append new entries at the bottom with a date stamp.
@@ -6,7 +6,7 @@ Append new entries at the bottom with a date stamp.
 === 2026-05-28 — Session 1: Project bootstrap ===
 
 USER: munishgoyal1 (Munish Goyal)
-GITHUB: https://github.com/munishgoyal1/multiagent (private)
+GITHUB: https://github.com/munishgoyal1/tripplanner (private)
 AZURE ACCOUNT: munishgoyal1@gmail.com
 
 --- VISION ---
@@ -90,7 +90,7 @@ so any agent in any future session can reload context and continue work.
 --- REQUIREMENT ---
 Improve Trip Planner Agent to be preference-aware:
 - Suggested itineraries, transport, and hotel options based on saved/inferred user preferences
-- Persistent user preference memory (JSON file at ~/.multiagent/user_preferences.json)
+- Persistent user preference memory (JSON file at ~/.tripplanner/user_preferences.json)
 - Family configuration (adults, children with ages, elderly, pets)
 - Trip style tracking (leisure | balanced | packed_sightseeing | adventure)
 - Budget level, hotel preferences (stars, amenities, chains, room type)
@@ -101,13 +101,13 @@ Improve Trip Planner Agent to be preference-aware:
 
 --- IMPLEMENTATION ---
 New files:
-- src/multiagent/tools/user_preferences.py — persistent JSON-backed preference store
+- src/tripplanner/tools/user_preferences.py — persistent JSON-backed preference store
   Functions: load_preferences, save_preferences, update_preferences, add_past_trip
   Deep-merge logic so partial updates don't wipe existing data
 - tests/test_trip.py — 14 tests covering preferences store + all 6 trip tools
 
 Updated files:
-- src/multiagent/agents/trip_agent.py — fully rewritten with 6 tools:
+- src/tripplanner/agents/trip_agent.py — fully rewritten with 6 tools:
   1. get_travel_preferences — load saved prefs
   2. save_travel_preferences — update prefs from conversation
   3. record_past_trip — build trip history for learning
@@ -164,38 +164,38 @@ Data: data/whatsapp/, data/calls/
 google-api-python-client, google-auth-oauthlib, gkeepapi, twilio, pycryptodome
 
 --- NEW FILES ---
-1. src/multiagent/tools/amadeus_client.py
+1. src/tripplanner/tools/amadeus_client.py
    - Thin HTTP client for Amadeus Self-Service APIs
    - OAuth2 client_credentials token with 60s buffer cache
    - get(path, params) and post(path, body) methods
    - Uses httpx (already in deps)
 
-2. src/multiagent/tools/flight_search.py
+2. src/tripplanner/tools/flight_search.py
    - search_flights() — Amadeus Flight Offers Search API
    - resolve_iata() — maps ~80 city names to IATA codes (India + international)
    - _format_flights() — human-readable flight results with prices
 
-3. src/multiagent/tools/hotel_search.py
+3. src/tripplanner/tools/hotel_search.py
    - search_hotels() — two-step: Hotel List API → Hotel Offers API
    - Filters by star rating, max price, rooms needed
    - _format_hotels() — shows hotel name, rating, price per night
 
-4. src/multiagent/tools/activities_search.py
+4. src/tripplanner/tools/activities_search.py
    - search_activities() — Amadeus Tours & Activities API
    - search_points_of_interest() — Amadeus POI API
    - _CITY_COORDS — lat/lon for ~50 cities
    - _get_coords() — resolve city to coordinates
 
-5. src/multiagent/tools/trip_planner.py
+5. src/tripplanner/tools/trip_planner.py
    - Trip plan state manager with lifecycle: draft → finalized → booked
-   - Storage: ~/.multiagent/active_trip.json (active), ~/.multiagent/trips/ (archive)
+   - Storage: ~/.tripplanner/active_trip.json (active), ~/.tripplanner/trips/ (archive)
    - Tools: create_trip_plan, get_trip_plan, update_trip_plan, finalize_trip,
      execute_bookings, list_past_trips
 
 --- UPDATED FILES ---
-- src/multiagent/agents/trip_agent.py — rewritten with 14 tools + detailed system prompt
-- src/multiagent/graph.py — simplified single-agent loop (no router)
-- src/multiagent/config.py — removed Google/Twilio settings, added Amadeus settings
+- src/tripplanner/agents/trip_agent.py — rewritten with 14 tools + detailed system prompt
+- src/tripplanner/graph.py — simplified single-agent loop (no router)
+- src/tripplanner/config.py — removed Google/Twilio settings, added Amadeus settings
 - pyproject.toml — version 0.2.0, removed old deps, updated description
 - tests/test_trip.py — 26 tests covering prefs, plan state, flight/activity helpers
 - README.md — complete rewrite for trip-planner-only architecture
@@ -243,7 +243,7 @@ for non-affiliates. Added to roadmap.
 --- IMPLEMENTATION (Session 4) ---
 
 NEW FILES:
-1. src/multiagent/tools/google_places.py
+1. src/tripplanner/tools/google_places.py
    - is_configured() helper
    - search_places_with_reviews(query, city, max_results)
      POST /places:searchText with X-Goog-FieldMask
@@ -252,17 +252,17 @@ NEW FILES:
    - nearby_restaurants(city, cuisine, dietary, min_rating, max_results)
      Text search + client-side rating filter, sorted by popularity
 
-2. src/multiagent/tools/web_search.py
+2. src/tripplanner/tools/web_search.py
    - is_configured() helper
    - web_search(query, max_results, search_depth)
      POST https://api.tavily.com/search with include_answer=True
 
-CONFIG (src/multiagent/config.py):
+CONFIG (src/tripplanner/config.py):
 - Added google_places_api_key (env: GOOGLE_PLACES_API_KEY)
 - Added tavily_api_key (env: TAVILY_API_KEY)
 - Both default to empty; tools return friendly "not configured" when missing
 
-AGENT (src/multiagent/agents/trip_agent.py):
+AGENT (src/tripplanner/agents/trip_agent.py):
 - 14 tools → 18 tools
 - Imports search_places_with_reviews, get_place_reviews, nearby_restaurants,
   web_search
@@ -303,7 +303,7 @@ MOTIVATION:
   but switch primary flight searches to Duffel for now.
 - Tavily key added to .env (no other API changes from user side).
 
-DUFFEL INTEGRATION (src/multiagent/tools/duffel_flights.py — new file):
+DUFFEL INTEGRATION (src/tripplanner/tools/duffel_flights.py — new file):
 - @tool search_flights_duffel(origin, destination, departure_date, return_date,
   adults, children, infants, cabin_class, max_connections, max_results)
 - POST https://api.duffel.com/air/offer_requests with return_offers=true
@@ -313,11 +313,11 @@ DUFFEL INTEGRATION (src/multiagent/tools/duffel_flights.py — new file):
 - Friendly 'not configured' message with signup link when DUFFEL_API_KEY empty
 - Handles HTTPStatusError by parsing errors[].title/message from response body
 
-CONFIG (src/multiagent/config.py):
+CONFIG (src/tripplanner/config.py):
 - New setting: duffel_api_key from DUFFEL_API_KEY env var
 - Amadeus block re-commented as 'kept for future enterprise migration'
 
-AGENT WIRING (src/multiagent/agents/trip_agent.py):
+AGENT WIRING (src/tripplanner/agents/trip_agent.py):
 - Imports search_flights_duffel alongside search_flights
 - TRIP_TOOLS list grew from 18 → 19 tools (search_flights_duffel first)
 - System prompt STEP 3a updated: prefer Duffel, fall back to Amadeus only if
@@ -364,20 +364,20 @@ DECISIONS (5 scoping questions answered by user):
 5. Duffel: stay in test mode (no real bookings)
 
 ARCHITECTURE (hosted vs local):
-- LOCAL MODE (CLI + tests): preferences/trips stored in ~/.multiagent/*.json,
+- LOCAL MODE (CLI + tests): preferences/trips stored in ~/.tripplanner/*.json,
   user_id="local" (default ContextVar)
 - HOSTED MODE (Chainlit + Azure): same code, but storage_cosmos.is_enabled()
   flips dispatch to Azure Cosmos DB. user_id pulled from cl.user_session.get("id")
 - Same agent, same tools, same graph — only the persistence + entrypoint differ
 
 NEW FILES:
-- src/multiagent/user_context.py — ContextVar holding current user_id
+- src/tripplanner/user_context.py — ContextVar holding current user_id
   (get_user_id, set_user_id, is_default_user). Default = "local".
-- src/multiagent/storage_cosmos.py — optional Cosmos backend
+- src/tripplanner/storage_cosmos.py — optional Cosmos backend
   (is_enabled, read_doc, upsert_doc, delete_doc, query_docs, reset_client_for_tests).
   Lazy imports of azure-cosmos so the package is optional at runtime.
-- src/multiagent/web/__init__.py — package marker
-- src/multiagent/web/app.py — Chainlit chat app (on_chat_start, on_message)
+- src/tripplanner/web/__init__.py — package marker
+- src/tripplanner/web/app.py — Chainlit chat app (on_chat_start, on_message)
   Sets user_id from cl.user_session, invokes app_graph via asyncio.to_thread.
 - chainlit.md — welcome screen with sample prompts and public-beta notice
 - Dockerfile — python:3.12-slim, pip install ".[web]", runs chainlit on :8000
@@ -388,30 +388,30 @@ NEW FILES:
 - tests/test_trip.py: new TestCosmosDispatch (8 tests) + TestUserContext (2 tests)
 
 MODIFIED FILES:
-- src/multiagent/config.py — added cosmos_endpoint/cosmos_key/cosmos_connection_string
+- src/tripplanner/config.py — added cosmos_endpoint/cosmos_key/cosmos_connection_string
   /cosmos_database settings (all optional, read from env)
-- src/multiagent/tools/user_preferences.py — load/save dispatch to Cosmos when enabled
+- src/tripplanner/tools/user_preferences.py — load/save dispatch to Cosmos when enabled
   Module attrs _PREFS_DIR/_PREFS_FILE preserved so tests still monkeypatch.
-- src/multiagent/tools/trip_planner.py — _load/save/delete_active_trip + _archive_trip
+- src/tripplanner/tools/trip_planner.py — _load/save/delete_active_trip + _archive_trip
   + list_past_trips all dispatch to Cosmos when enabled
 - pyproject.toml — added azure-cosmos to main deps, new [web] extra with chainlit>=1.3
 
 INFRA CHOSEN (cheapest within ₹10K/mo Azure free credit):
 - Log Analytics workspace (PerGB2018, 30-day retention) — required by ACA, ~₹150-400/mo
 - Cosmos DB NoSQL (Free Tier ON: 1000 RU/s + 25 GB free, one per subscription)
-  - Database "multiagent" with provisioned 1000 RU/s shared by 2 containers
+  - Database "tripplanner" with provisioned 1000 RU/s shared by 2 containers
   - users container: /user_id PK, doc ids = "preferences" + "active_trip"
   - trips container: /user_id PK, doc per archived trip
 - Container Apps environment (Consumption plan, no fixed cost)
 - Container App: 0.5 CPU / 1 Gi memory, min=0/max=1 replicas, scales to zero
   External HTTP ingress on port 8000, secrets injected as env vars
-- Image source: GHCR public (ghcr.io/munishgoyal1/multiagent:latest) — NOT ACR
+- Image source: GHCR public (ghcr.io/munishgoyal1/tripplanner:latest) — NOT ACR
   (avoids ₹420/mo Basic SKU charge). Public image = no pull secret needed.
 
 DEPLOY FLOW (Phase B, requires user approval before az calls):
-1. docker build + push to ghcr.io/munishgoyal1/multiagent:latest (make public)
+1. docker build + push to ghcr.io/munishgoyal1/tripplanner:latest (make public)
 2. Export AOAI + Duffel + Google + Tavily keys + CONTAINER_IMAGE to shell env
-3. az deployment group create -g rg-multiagent-trip-planner
+3. az deployment group create -g rg-tripplanner-trip-planner
    -f infra/main.bicep -p infra/main.bicepparam
 4. Output URL = live chat. Test, then iterate via `az containerapp update --image`
 
@@ -457,18 +457,18 @@ D. UI polish — substantial Airbnb/TripAdvisor-inspired restyle, KEEPING the cu
    chat + right-panel layout.
 
 CHANGES (Part B — Chainlit removal + hosting rewire):
-- DELETED: src/multiagent/web/app.py, src/multiagent/web/sidebar.py,
+- DELETED: src/tripplanner/web/app.py, src/tripplanner/web/sidebar.py,
   public/elements/TripPanel.jsx, chainlit.md, tests/test_sidebar.py, scripts/dev.ps1.
 - pyproject.toml — removed the [web] extra (chainlit dependency gone).
 - Dockerfile — now multistage: stage 1 (node:20-slim) runs `npm ci` + `npm run build` to
   produce frontend/dist; stage 2 (python:3.12-slim) `pip install "."` (no [web]), copies the
-  SPA build to /app/frontend/dist, sets SPA_DIST_DIR, runs uvicorn multiagent.api:app on :8000.
-- src/multiagent/api.py — (1) added an `/api` prefix-strip middleware so the single-origin prod
+  SPA build to /app/frontend/dist, sets SPA_DIST_DIR, runs uvicorn tripplanner.api:app on :8000.
+- src/tripplanner/api.py — (1) added an `/api` prefix-strip middleware so the single-origin prod
   serving mirrors the dev Vite proxy; (2) at end of file, serves the SPA: mounts /assets and
   adds a catch-all that returns real files or index.html (registered LAST so API routes win);
   (3) the /trip/view and destination-overview endpoints offload the blocking Google Places work
   via asyncio.to_thread so they don't stall the event loop.
-- Identity — standalone Google OAuth lives in src/multiagent/web/oauth.py (HMAC-signed HttpOnly
+- Identity — standalone Google OAuth lives in src/tripplanner/web/oauth.py (HMAC-signed HttpOnly
   `mg_session` cookie, identifier `google-<sub>`). Secret env renamed CHAINLIT_AUTH_SECRET →
   WEB_SESSION_SECRET (old name still read as a fallback for back-compat). Guest fallback is a
   persistent `web-<uuid>` id in localStorage.
@@ -483,16 +483,16 @@ CHANGES (Part B — Chainlit removal + hosting rewire):
   the standalone Google OAuth flow.
 
 CHANGES (Part A backend + Part C):
-- src/multiagent/web/places_cache.py — parallelized the ~24 sequential Google Places HTTP calls
+- src/tripplanner/web/places_cache.py — parallelized the ~24 sequential Google Places HTTP calls
   via ThreadPoolExecutor (prefetch + _photo_uris) and added a 30-min TTL cache, so switching
   destinations no longer re-fetches everything serially.
-- src/multiagent/web/trip_view.py — `itinerary_items` now merges the user's selected items with
+- src/tripplanner/web/trip_view.py — `itinerary_items` now merges the user's selected items with
   the destination's deduped top places (selected first, capped), so selecting an item marks it
   "In trip" instead of collapsing the list.
 
 TEST RESULTS:
 - 167 tests pass (removed the obsolete sidebar tests; test_about_me_additive_merge repointed
-  to multiagent.tools.preferences_merge). `import multiagent.api` is clean.
+  to tripplanner.tools.preferences_merge). `import tripplanner.api` is clean.
 
 STILL TODO (this session, in progress):
 - Part A frontend caching (keep prior DestinationOverview visible while the new one loads).
@@ -523,7 +523,7 @@ WHAT SHIPPED:
 - docs/PRODUCT.md (NEW) — what/why + non-goals + owner taste (Airbnb/TripAdvisor magazine, coral brand, sticky suggestions, no-flicker switching, sticky currency, additive About-me merge) + owner working style + roadmap signals.
 - .github/copilot-instructions.md — added a 'Memory maintenance' table mapping each kind of change to the right file, plus a pointer to PRODUCT.md alongside CODEMAP.md.
 - /memories/preferences.md (user-wide) — added Communication style + Dev workflow + Active workspaces sections so the rules apply outside this repo too.
-- /memories/repo/multiagent.md (workspace-scoped) — added Memory-maintenance rule at the top, Owner taste signals + Owner working style sections at the bottom, plus pointer to PRODUCT.md.
+- /memories/repo/tripplanner.md (workspace-scoped) — added Memory-maintenance rule at the top, Owner taste signals + Owner working style sections at the bottom, plus pointer to PRODUCT.md.
 
 MECHANISM: every session now starts with CODEMAP + PRODUCT in scope (committed) and the two memory files auto-loaded. The Memory-maintenance table in copilot-instructions tells the next agent WHERE to write down new things so it doesn't get lost.
 
@@ -548,7 +548,7 @@ Order (rolling — see /memories/session/improvement-roadmap.md):
 === 2026-06-05 — Session 16.1: Day-by-day routing & travel-time tool ===
 
 WHAT SHIPPED:
-- src/multiagent/tools/routing.py (NEW) — Google Routes API v2 wrapper.
+- src/tripplanner/tools/routing.py (NEW) — Google Routes API v2 wrapper.
   Two @tool functions:
     • compute_route(stops_json, mode) — total + per-leg duration/distance,
       converts seconds → "1h 5m" and meters → "1.8 km" for the agent.
@@ -558,7 +558,7 @@ WHAT SHIPPED:
   Reuses GOOGLE_PLACES_API_KEY; enable "Routes API" on the same Cloud project.
   Accepts stops as plain address strings, {place_id}, or {lat,lng}.
 
-- src/multiagent/agents/trip_agent.py — imported the two tools, added them to
+- src/tripplanner/agents/trip_agent.py — imported the two tools, added them to
   TRIP_TOOLS (under new "Routing & travel time" group), and updated STEP 4 of
   the system prompt to call compute_route for any day with 3+ stops and use
   optimize_day_route when an attraction order isn't fixed.
@@ -821,7 +821,7 @@ TEST RESULTS: 219 tests pass.
 #   relies on a browser-only API).
 
 # Session 16.18 (2026-06-05): tool result caching (#7.1).
-# - New src/multiagent/tools_cache.py wraps every read-only tool with
+# - New src/tripplanner/tools_cache.py wraps every read-only tool with
 #   a read-through cache keyed by (user_id, tool_name, canonical_args).
 #   Canonical args use sort_keys JSON so equivalent dicts hash the same.
 #   Cache TTL default 30 minutes (long enough to dedup a session, short
@@ -859,7 +859,7 @@ TEST RESULTS: 219 tests pass.
 # - +7 tests. Total: 291.
 
 # Session 16.20 (2026-06-05): hallucination critic (#7.3).
-# - New src/multiagent/hallucination_critic.py does a deterministic
+# - New src/tripplanner/hallucination_critic.py does a deterministic
 #   fact-check of the agent's final reply. It extracts cited prices
 #   (currency symbols + ISO codes), clock times (12h/24h), and URLs,
 #   then verifies each appears verbatim in some tool message from the
@@ -875,7 +875,7 @@ TEST RESULTS: 219 tests pass.
 # - +16 tests. Total: 307.
 
 # Session 16.21 (2026-06-05): per-user monthly LLM cost cap (#7.4).
-# - New src/multiagent/usage.py tracks token usage per (user_id, YYYYMM)
+# - New src/tripplanner/usage.py tracks token usage per (user_id, YYYYMM)
 #   and refuses new turns once the running cost crosses
 #   MONTHLY_LLM_COST_CAP_USD (env, default \; <= 0 disables the cap).
 # - Tokens come from a LangChain BaseCallbackHandler attached to the
@@ -887,7 +887,7 @@ TEST RESULTS: 219 tests pass.
 #   fall back to a conservative default so the meter never lies.
 # - Persistence: Cosmos doc id usage_<YYYYMM> in the users container
 #   (PK /user_id) when storage_cosmos.is_enabled(), else
-#   ~/.multiagent/usage/<user_id>_<YYYYMM>.json (honours MULTIAGENT_HOME
+#   ~/.tripplanner/usage/<user_id>_<YYYYMM>.json (honours tripplanner_HOME
 #   for test isolation).
 # - /chat and /chat/stream call is_over_cap(user_id) first; when over,
 #   short-circuit with a polite refusal (agent='cap'). The stream
@@ -1173,7 +1173,7 @@ IMPLEMENTATION — bug 4 (1-week persisted places/photos cache):
     re-resolved on demand from the long-lived photo_refs.
   * Durable L2: Cosmos `places_cache` container (partition `_shared`, single
     doc id `cache` holding all entries) when enabled, else local
-    ~/.multiagent/places_cache/cache.json. Loaded once per process; entries
+    ~/.tripplanner/places_cache/cache.json. Loaded once per process; entries
     older than the 1-week TTL are dropped on load.
   * _persist() STRIPS photo_urls/__photos_at__ before writing (never persist
     expiring URLs). prefetch batches writes via _batched_persist() (one
@@ -1254,7 +1254,7 @@ FIX SHIPPED:
     in-flight, it reloads once `busy` becomes false.
 
 CHANGED FILES:
-- src/multiagent/api.py
+- src/tripplanner/api.py
 - frontend/src/api.ts
 - frontend/src/App.tsx
 - frontend/src/components/TripPanel.tsx
@@ -1325,18 +1325,18 @@ IMPLEMENTATION SHIPPED:
   - Delete account (app data delete + sign out)
 
 CHANGED FILES:
-- src/multiagent/api.py
-- src/multiagent/storage_cosmos.py
-- src/multiagent/tools/trip_planner.py
-- src/multiagent/tools/user_preferences.py
-- src/multiagent/web/chat_store.py
-- src/multiagent/usage.py
-- src/multiagent/tools_cache.py
+- src/tripplanner/api.py
+- src/tripplanner/storage_cosmos.py
+- src/tripplanner/tools/trip_planner.py
+- src/tripplanner/tools/user_preferences.py
+- src/tripplanner/web/chat_store.py
+- src/tripplanner/usage.py
+- src/tripplanner/tools_cache.py
 - frontend/src/api.ts
 - frontend/src/components/ChatPanel.tsx
 
 VALIDATION:
-- python -m compileall -q src/multiagent : clean
+- python -m compileall -q src/tripplanner : clean
 - frontend build : clean
 
 === 2026-06-19 — Session 28: Direct PDF + branded templates + Azure email provider ===
@@ -1350,7 +1350,7 @@ USER REQUIREMENT:
 IMPLEMENTATION SHIPPED:
 - Direct PDF export:
   - New endpoint: `GET /trip/export.pdf?template=...`
-  - New backend renderer: `src/multiagent/web/itinerary_pdf.py`
+  - New backend renderer: `src/tripplanner/web/itinerary_pdf.py`
   - Uses server-side ReportLab when installed; returns setup guidance when missing.
   - Frontend export modal now has `Download PDF`.
 - Branded templates:
@@ -1364,14 +1364,14 @@ IMPLEMENTATION SHIPPED:
   - Falls back to SMTP if configured; then to `mailto:` draft fallback.
 
 CHANGED FILES:
-- src/multiagent/api.py
-- src/multiagent/web/itinerary_export.py
-- src/multiagent/web/itinerary_pdf.py
+- src/tripplanner/api.py
+- src/tripplanner/web/itinerary_export.py
+- src/tripplanner/web/itinerary_pdf.py
 - frontend/src/api.ts
 - frontend/src/components/TripPanel.tsx
 
 VALIDATION:
-- python -m compileall -q src/multiagent : clean
+- python -m compileall -q src/tripplanner : clean
 - frontend build : clean
 
 === 2026-06-19 — Session 27: Itinerary export (PDF-ready + email) ===
@@ -1383,7 +1383,7 @@ USER REQUIREMENT:
 
 IMPLEMENTATION SHIPPED:
 - New print-friendly export renderer:
-  - `src/multiagent/web/itinerary_export.py`
+  - `src/tripplanner/web/itinerary_export.py`
   - Produces styled HTML for day-wise itinerary export with options:
     - include photos
     - include day-wise map circuit + route stats
@@ -1405,11 +1405,12 @@ IMPLEMENTATION SHIPPED:
     - Send to email
 
 CHANGED FILES:
-- src/multiagent/web/itinerary_export.py
-- src/multiagent/api.py
+- src/tripplanner/web/itinerary_export.py
+- src/tripplanner/api.py
 - frontend/src/api.ts
 - frontend/src/components/TripPanel.tsx
 
 VALIDATION:
-- python -m compileall -q src/multiagent : clean
+- python -m compileall -q src/tripplanner : clean
 - frontend build : clean
+

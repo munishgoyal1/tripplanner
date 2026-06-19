@@ -8,7 +8,7 @@ stubbed so these run offline and deterministically.
 
 from __future__ import annotations
 
-from multiagent.tools import preferences_merge
+from tripplanner.tools import preferences_merge
 
 
 def test_apply_about_me_stores_raw_and_extracts(monkeypatch) -> None:

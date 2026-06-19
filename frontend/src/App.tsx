@@ -63,15 +63,15 @@ export default function App() {
   const [chatTripId, setChatTripId] = useState<string | null>(null);
 
   const [leftPct, setLeftPct] = useState<number>(() => {
-    const saved = Number(localStorage.getItem("multiagent_left_pct"));
+    const saved = Number(localStorage.getItem("tripplanner_left_pct"));
     return saved >= 30 && saved <= 70 ? saved : 50;
   });
   const [leftTopPct, setLeftTopPct] = useState<number>(() => {
-    const saved = Number(localStorage.getItem("multiagent_left_top_pct"));
+    const saved = Number(localStorage.getItem("tripplanner_left_top_pct"));
     return saved >= 15 && saved <= 85 ? saved : 50;
   });
   const [rightTopPct, setRightTopPct] = useState<number>(() => {
-    const saved = Number(localStorage.getItem("multiagent_right_top_pct"));
+    const saved = Number(localStorage.getItem("tripplanner_right_top_pct"));
     return saved >= 15 && saved <= 85 ? saved : 50;
   });
 
@@ -122,9 +122,9 @@ export default function App() {
       dragType.current = null;
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
-      localStorage.setItem("multiagent_left_pct", String(Math.round(leftPct)));
-      localStorage.setItem("multiagent_left_top_pct", String(Math.round(leftTopPct)));
-      localStorage.setItem("multiagent_right_top_pct", String(Math.round(rightTopPct)));
+      localStorage.setItem("tripplanner_left_pct", String(Math.round(leftPct)));
+      localStorage.setItem("tripplanner_left_top_pct", String(Math.round(leftTopPct)));
+      localStorage.setItem("tripplanner_right_top_pct", String(Math.round(rightTopPct)));
     }
 
     window.addEventListener("mousemove", onMove);
@@ -199,14 +199,24 @@ export default function App() {
 
   const handleSelect = async (kind: string, name: string) => {
     const next = await selectItem(kind, name);
-    setView(focus ? await fetchTripView(focus) : next);
-    if (!focus) setNavList(next.items.map((it) => ({ kind: it.kind, name: it.name })));
+    if (focus) {
+      const refreshed = await fetchTripView(focus);
+      setView({ ...refreshed, alerts: next.alerts });
+    } else {
+      setView({ ...next.view, alerts: next.alerts });
+      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+    }
   };
 
   const handleDeselect = async (kind: string, name: string) => {
     const next = await deselectItem(kind, name);
-    setView(focus ? await fetchTripView(focus) : next);
-    if (!focus) setNavList(next.items.map((it) => ({ kind: it.kind, name: it.name })));
+    if (focus) {
+      const refreshed = await fetchTripView(focus);
+      setView({ ...refreshed, alerts: next.alerts });
+    } else {
+      setView({ ...next.view, alerts: next.alerts });
+      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+    }
   };
 
   const revealPane = (pane: PaneId) => {
@@ -556,3 +566,4 @@ export default function App() {
     </>
   );
 }
+

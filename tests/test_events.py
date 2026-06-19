@@ -6,7 +6,7 @@ import json
 
 import httpx
 
-from multiagent.tools import events
+from tripplanner.tools import events
 
 
 def test_build_query_includes_all_inputs():

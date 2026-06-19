@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
-from multiagent.agents import trip_agent
+from tripplanner.agents import trip_agent
 
 
 @pytest.fixture(autouse=True)

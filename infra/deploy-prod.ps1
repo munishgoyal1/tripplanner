@@ -45,7 +45,7 @@ function Import-DotEnv {
 Import-DotEnv
 
 # Configuration
-$prodRG = "rg-multiagent-prod"
+$prodRG = "rg-tripplanner-prod"
 $prodPrefix = "prod"
 $prodApp = "${prodPrefix}-app"
 $bicepFile = "infra/main.bicep"
@@ -55,7 +55,7 @@ Write-Host "`n╔═════════════════════
 Write-Host "║  ⚠️  PRODUCTION DEPLOYMENT — APPROVAL GATE               ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
-Write-Host "Environment: PRODUCTION (rg-multiagent-prod)"
+Write-Host "Environment: PRODUCTION (rg-tripplanner-prod)"
 Write-Host "App: $prodApp"
 Write-Host "Image Tag: $ImageTag`n"
 
@@ -160,7 +160,7 @@ if ($ImageTag -ne "latest") {
     az containerapp update `
         --resource-group $prodRG `
         --name $prodApp `
-        --image "ghcr.io/munishgoyal1/multiagent:$ImageTag" `
+        --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
         -o none
     Write-Host "  ✓ Image updated`n"
 }
@@ -173,14 +173,14 @@ Write-Host "╚═════════════════════�
 Write-Host "App URL: https://$($deployment.containerAppUrl)"
 Write-Host "Environment: PRODUCTION"
 Write-Host "Resource Group: $prodRG"
-Write-Host "Image: ghcr.io/munishgoyal1/multiagent:$ImageTag`n"
+Write-Host "Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag`n"
 
 # Log deployment
 $logDir = "logs"
 if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $approver = $env:USERNAME
-Add-Content "logs/deployments-prod.log" "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/multiagent:$ImageTag | Status: SUCCESS"
+Add-Content "logs/deployments-prod.log" "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | Status: SUCCESS"
 
 Write-Host "✓ Logged to logs/deployments-prod.log"
 Write-Host "✓ All users can now access the production deployment`n"
@@ -190,3 +190,4 @@ Write-Host "Next steps:"
 Write-Host "  1. Monitor production logs: az containerapp logs show -g $prodRG -n $prodApp"
 Write-Host "  2. Test critical flows (chat, map, email)"
 Write-Host "  3. If issues arise, run: ./infra/rollback-prod.ps1`n"
+

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from multiagent.hallucination_critic import (
+from tripplanner.hallucination_critic import (
     critique,
     format_heads_up,
 )

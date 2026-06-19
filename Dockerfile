@@ -13,7 +13,7 @@ FROM python:3.12-slim
 
 # Link this image to the source repo so GHCR auto-grants the repo's Actions
 # workflow push access (avoids `denied: write_package` on CI runs).
-LABEL org.opencontainers.image.source="https://github.com/munishgoyal1/multiagent"
+LABEL org.opencontainers.image.source="https://github.com/munishgoyal1/tripplanner"
 LABEL org.opencontainers.image.description="AI trip planner — React SPA + FastAPI + LangGraph"
 LABEL org.opencontainers.image.licenses="MIT"
 
@@ -36,4 +36,5 @@ COPY --from=frontend /web/dist ./frontend/dist
 EXPOSE 8000
 
 # Uvicorn serves both the API and the static SPA on one port.
-CMD ["uvicorn", "multiagent.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "tripplanner.api:app", "--host", "0.0.0.0", "--port", "8000"]
+

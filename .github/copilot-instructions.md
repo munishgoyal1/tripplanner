@@ -1,4 +1,4 @@
-# Copilot Instructions — multiagent
+# Copilot Instructions — tripplanner
 
 > **Read [docs/CODEMAP.md](../docs/CODEMAP.md) (where) and
 > [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste) FIRST.**
@@ -12,7 +12,7 @@
 - Batch independent tool calls into ONE turn. Only chain when an output is
   needed for the next input.
 - Trust this file + `docs/CODEMAP.md` + `docs/PRODUCT.md` +
-  `/memories/repo/multiagent.md`. Skip re-exploration on every task.
+  `/memories/repo/tripplanner.md`. Skip re-exploration on every task.
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
@@ -30,8 +30,8 @@
 - **Rollback (Emergencies)**: `./infra/rollback-prod.ps1` — reverts to previous revision without data loss
 
 Resource naming:
-- Canary RG: `rg-multiagent-canary` (app: `canary-app-*`)
-- Prod RG: `rg-multiagent-prod` (app: `prod-app-*`)
+- Canary RG: `rg-tripplanner-canary` (app: `canary-app-*`)
+- Prod RG: `rg-tripplanner-prod` (app: `prod-app-*`)
 - Standardized naming roadmap: See `infra/DEPLOYMENT_PROCESS.md`
 
 ## Memory maintenance (KEEP CONTEXT FRESH — do this every session)
@@ -41,7 +41,7 @@ the right place IN THE SAME TURN so future sessions don't relearn it:
 | What changed                                | Update                                |
 |---------------------------------------------|---------------------------------------|
 | Cross-project habit (terse, no servers, …)  | `/memories/preferences.md`            |
-| Repo-only gotcha / landmine                 | `/memories/repo/multiagent.md`        |
+| Repo-only gotcha / landmine                 | `/memories/repo/tripplanner.md`        |
 | Vision / scope / taste / design language    | `docs/PRODUCT.md` (commit)            |
 | File layout / commands / contracts          | `docs/CODEMAP.md` (commit)            |
 | New requirement / decision (with date)      | `REQUIREMENTS.txt` (commit)           |
@@ -67,10 +67,10 @@ Learns from user preferences and past trips.
 
 ## Codebase Conventions
 - Python 3.11+, typed with `from __future__ import annotations`
-- Single agent in `src/multiagent/agents/trip_agent.py`
+- Single agent in `src/tripplanner/agents/trip_agent.py`
 - Tools as `@tool`-decorated functions (langchain_core.tools)
 - Agent exports: `build_trip_system_prompt()` factory (injects today's date) and `TRIP_TOOLS` (list). `TRIP_SYSTEM_PROMPT` snapshot kept for back-compat.
-- API clients and search tools go in `src/multiagent/tools/`
+- API clients and search tools go in `src/tripplanner/tools/`
 - Config via Pydantic `Settings` from `.env` (see `config.py`)
 - Graph in `graph.py` — single-agent tool-calling loop
 - Tests in `tests/` — use pytest, no mocks for pure logic tests
@@ -127,7 +127,7 @@ Learns from user preferences and past trips.
   demand from the long-lived `photo_refs` (URLs are NEVER persisted). Durable
   store: Cosmos `places_cache` container (partition `_shared`, one doc id
   `cache` holding all entries) when enabled, else local
-  `~/.multiagent/places_cache/cache.json`; loaded once per process, 1-week-stale
+  `~/.tripplanner/places_cache/cache.json`; loaded once per process, 1-week-stale
   entries dropped on load. `prefetch` batches writes (`_batched_persist`). All
   public fns take `refresh=True` to force a re-fetch + re-cache. Soft cap
   `_MAX_ENTRIES=800`. No Redis — reuses the existing Cosmos/local dual-store
@@ -208,12 +208,12 @@ Learns from user preferences and past trips.
   ~15 heavy search schemas aren't sent on greeting/preference turns. ToolNode
   still holds the full union (`TRIP_TOOLS`) so execution is never blocked.
 - **Two run modes from one codebase:**
-  - LOCAL: CLI (`cli.py`) or FastAPI (`api.py`) — persistence to `~/.multiagent/*.json`
+  - LOCAL: CLI (`cli.py`) or FastAPI (`api.py`) — persistence to `~/.tripplanner/*.json`
   - HOSTED: React SPA (`frontend/`) served by FastAPI (`api.py`) — persistence to Azure Cosmos DB.
     In production the SAME FastAPI process serves the built SPA from `frontend/dist`
     at the root origin and the API under `/api` (single origin, one container).
   - Auto-dispatch via `storage_cosmos.is_enabled()` (True when `COSMOS_ENDPOINT` env var set)
-  - Per-user identity tracked via `multiagent.user_context.get_user_id()` (ContextVar, default `"local"`)
+  - Per-user identity tracked via `tripplanner.user_context.get_user_id()` (ContextVar, default `"local"`)
 - **Identity tracks (hosted mode)**:
   - OAuth login (Google) via standalone `web/oauth.py` → identifier `"google-<sub>"` (cross-device).
     Signed HttpOnly `mg_session` cookie (HMAC-SHA256 with `WEB_SESSION_SECRET`,
@@ -258,10 +258,10 @@ Learns from user preferences and past trips.
   - Legacy keys preserved: `family`, `trip_style`, `budget_level`,
     `hotel_preferences`, `transport_preferences`, `food_preferences`,
     `accessibility_needs`, `past_trips`
-  - Local: `~/.multiagent/user_preferences.json`
+  - Local: `~/.tripplanner/user_preferences.json`
   - Hosted: Cosmos DB `users` container, doc id `preferences`, PK `/user_id`
 - Trip state:
-  - Local: `~/.multiagent/active_trip.json`, archived in `~/.multiagent/trips/`
+  - Local: `~/.tripplanner/active_trip.json`, archived in `~/.tripplanner/trips/`
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
 - Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
   Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
@@ -280,7 +280,7 @@ Learns from user preferences and past trips.
   rate table (gpt-5/4.1/4.1-mini/4o/4o-mini/4/3.5) and added to a
   monthly bucket keyed `(user_id, YYYYMM)`; persisted to Cosmos doc id
   `usage_<YYYYMM>` in the `users` container when enabled, else to
-  `~/.multiagent/usage/<user_id>_<YYYYMM>.json`; both `/chat` and
+  `~/.tripplanner/usage/<user_id>_<YYYYMM>.json`; both `/chat` and
   `/chat/stream` run `is_over_cap(user_id)` first and short-circuit
   with a polite refusal (agent name `"cap"`) when the bucket meets or
   exceeds `MONTHLY_LLM_COST_CAP_USD` (env, default $20; `<= 0`
@@ -385,19 +385,20 @@ Learns from user preferences and past trips.
 - `REQUIREMENTS.txt` — full history of requirements and decisions (Session 6 = hosted mode)
 - `README.md` — architecture (local + hosted), setup, project structure
 - `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
-- `src/multiagent/graph.py` — single-agent tool loop (unchanged for hosted mode)
-- `src/multiagent/agents/trip_agent.py` — trip agent with 32 tools (incl. EXTRACTION CHECKLIST prompt)
-- `src/multiagent/storage_cosmos.py` — optional Cosmos backend (lazy import)
-- `src/multiagent/user_context.py` — per-request user_id ContextVar
-- `src/multiagent/web/oauth.py` — standalone Google OAuth (HMAC `mg_session` cookie)
-- `src/multiagent/web/trip_view.py` — pure-Python frontend-agnostic view-model
+- `src/tripplanner/graph.py` — single-agent tool loop (unchanged for hosted mode)
+- `src/tripplanner/agents/trip_agent.py` — trip agent with 32 tools (incl. EXTRACTION CHECKLIST prompt)
+- `src/tripplanner/storage_cosmos.py` — optional Cosmos backend (lazy import)
+- `src/tripplanner/user_context.py` — per-request user_id ContextVar
+- `src/tripplanner/web/oauth.py` — standalone Google OAuth (HMAC `mg_session` cookie)
+- `src/tripplanner/web/trip_view.py` — pure-Python frontend-agnostic view-model
   (`build_view`, `build_destination_overview` w/ Tavily news)
-- `src/multiagent/web/places_cache.py` — Google Places cache (parallel prefetch + TTL)
-- `src/multiagent/tools/preferences_merge.py` — shared About-me extract+additive-merge
+- `src/tripplanner/web/places_cache.py` — Google Places cache (parallel prefetch + TTL)
+- `src/tripplanner/tools/preferences_merge.py` — shared About-me extract+additive-merge
   (no UI imports; used by `api.py`)
 - `frontend/` — React 19 + Vite + TS SPA (the UI), served by FastAPI in prod;
   `App.tsx`, `ChatPanel.tsx`, `DestinationOverview.tsx` (reviews/photos/attractions/news),
   `SettingsModal.tsx` (About-me textbox + extractor), `TripPanel.tsx` (focus nav + item picker)
-- `src/multiagent/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
+- `src/tripplanner/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
 - `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier
+
 

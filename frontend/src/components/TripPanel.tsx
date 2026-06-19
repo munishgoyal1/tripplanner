@@ -700,6 +700,17 @@ export default function TripPanel({
           <DestinationOverview destination={ov.destination} onFocus={onFocus} />
         )}
 
+        {view.alerts && view.alerts.length > 0 && (
+          <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-100">
+            <div className="font-semibold">Trip update</div>
+            <ul className="mt-1 space-y-1">
+              {view.alerts.map((alert, index) => (
+                <li key={index}>{alert}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="space-y-4">
           {view.items.length === 0 ? (
             <p className="rounded-2xl bg-white px-3 py-6 text-center text-sm text-muted ring-1 ring-slate-100">

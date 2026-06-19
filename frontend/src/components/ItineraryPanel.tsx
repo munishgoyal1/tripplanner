@@ -129,15 +129,20 @@ function DayCard({
   onMap: (kind: string, name: string) => void;
   focusName?: string | null;
 }) {
+  const firstPlace = day.stops.find((stop) => stop.kind === "hotel" || stop.kind === "attraction");
   return (
     <section className="card p-4">
       <div className="flex items-center gap-3">
-        <span
-          className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white"
+        <button
+          type="button"
+          onClick={() => firstPlace && onMap(firstPlace.kind, firstPlace.name)}
+          className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition hover:scale-105 hover:shadow-sm disabled:cursor-default disabled:hover:scale-100"
           style={{ backgroundColor: day.color }}
+          disabled={!firstPlace}
+          title={firstPlace ? `Zoom map to Day ${day.day}` : "No mapped stops yet"}
         >
           {day.day}
-        </span>
+        </button>
         <div className="min-w-0">
           <h3 className="display truncate text-base font-semibold text-ink">
             {day.title}

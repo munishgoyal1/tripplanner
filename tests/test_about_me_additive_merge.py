@@ -7,7 +7,7 @@ no frontend runtime, no LLM, no I/O.
 
 from __future__ import annotations
 
-from multiagent.tools.preferences_merge import (
+from tripplanner.tools.preferences_merge import (
     additive_overlay_extracted as _additive_overlay_extracted,
     merge_family_member as _merge_family_member,
     union_keep_existing_case as _union_keep_existing_case,

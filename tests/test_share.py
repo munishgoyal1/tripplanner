@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from multiagent import user_context
-from multiagent.tools import trip_planner
-from multiagent.web import share
+from tripplanner import user_context
+from tripplanner.tools import trip_planner
+from tripplanner.web import share
 
 
 @pytest.fixture(autouse=True)
@@ -40,7 +40,7 @@ def _make_plan(**extra) -> dict:
 
 def _write_active(plan: dict) -> None:
     """Bypass the @tool by writing directly to the local-mode file."""
-    from multiagent.user_context import get_user_id
+    from tripplanner.user_context import get_user_id
 
     uid = get_user_id()
     user_dir = trip_planner._TRIPS_DIR / "users" / uid

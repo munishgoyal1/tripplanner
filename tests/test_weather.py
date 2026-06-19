@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from multiagent.tools import weather
+from tripplanner.tools import weather
 
 
 def _mk_response(payload):

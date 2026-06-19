@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
-from multiagent.web import chat_store
+from tripplanner.web import chat_store
 
 _TEST_CHATS = Path.home() / ".multiagent_chat_test" / "chats"
 

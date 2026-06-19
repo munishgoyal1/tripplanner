@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from multiagent.evals import SCENARIOS, evaluate_plan, format_result, scenario_by_id
+from tripplanner.evals import SCENARIOS, evaluate_plan, format_result, scenario_by_id
 
 
 def _family_dubai_plan() -> dict:

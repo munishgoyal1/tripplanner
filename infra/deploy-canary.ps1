@@ -41,7 +41,7 @@ function Import-DotEnv {
 Import-DotEnv
 
 # Configuration
-$canaryRG = "rg-multiagent-canary"
+$canaryRG = "rg-tripplanner-canary"
 $canaryPrefix = "canary"
 $canaryApp = "${canaryPrefix}-app"
 $bicepFile = "infra/main.bicep"
@@ -51,7 +51,7 @@ Write-Host "`n╔═════════════════════
 Write-Host "║  🧪 CANARY DEPLOYMENT — No Approval Required             ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
-Write-Host "Environment: CANARY (rg-multiagent-canary)"
+Write-Host "Environment: CANARY (rg-tripplanner-canary)"
 Write-Host "App: $canaryApp"
 Write-Host "Image Tag: $ImageTag`n"
 
@@ -113,7 +113,7 @@ if ($ImageTag -ne "latest") {
     az containerapp update `
         --resource-group $canaryRG `
         --name $canaryApp `
-        --image "ghcr.io/munishgoyal1/multiagent:$ImageTag" `
+        --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
         -o none
     Write-Host "  ✓ Image updated`n"
 }
@@ -132,5 +132,6 @@ Write-Host "       if all tests pass and you're ready for production.`n"
 $logDir = "logs"
 if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Add-Content "logs/deployments-canary.log" "[$timestamp] Deployed canary | RG: $canaryRG | Image: ghcr.io/munishgoyal1/multiagent:$ImageTag | By: $env:USERNAME"
+Add-Content "logs/deployments-canary.log" "[$timestamp] Deployed canary | RG: $canaryRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | By: $env:USERNAME"
 Write-Host "✓ Logged to logs/deployments-canary.log`n"
+

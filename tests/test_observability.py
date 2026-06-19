@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from multiagent import observability as obs
+from tripplanner import observability as obs
 
 
 @pytest.fixture(autouse=True)
@@ -184,7 +184,7 @@ def test_app_event_scrubs_pii_in_non_sensitive_field(capsys):
 def test_audit_event_writes_local_jsonl_with_full_content(monkeypatch):
     # Force the Cosmos path to report "not enabled" so we exercise the
     # local-file fallback.
-    from multiagent import storage_cosmos
+    from tripplanner import storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
 
@@ -212,7 +212,7 @@ def test_audit_event_writes_local_jsonl_with_full_content(monkeypatch):
 
 
 def test_audit_event_kinds_are_isolated_per_user(monkeypatch):
-    from multiagent import storage_cosmos
+    from tripplanner import storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
 

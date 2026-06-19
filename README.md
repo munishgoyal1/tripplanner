@@ -1,8 +1,8 @@
-# multiagent — AI Trip Planner
+# tripplanner — AI Trip Planner
 
 > **Owner**: Munish Goyal ([munishgoyal1](https://github.com/munishgoyal1))
 > **Azure account**: munishgoyal1@gmail.com
-> **Repo**: https://github.com/munishgoyal1/multiagent (private)
+> **Repo**: https://github.com/munishgoyal1/tripplanner (private)
 > **Status**: Active development — trip planner with real Amadeus API search
 
 An AI-powered trip planner that creates complete, bookable travel plans in
@@ -29,7 +29,7 @@ User ──► Rich CLI  or  FastAPI
       Tools   Tools     Search     Preferences
          │      │         │            │
          ▼      ▼         ▼            ▼
-      Duffel  Google   Tavily      ~/.multiagent/
+      Duffel  Google   Tavily      ~/.tripplanner/
       Amadeus Places   Search      *.json (local)
 ```
 
@@ -90,7 +90,7 @@ is set, otherwise local JSON files are used.
 
 ### User Preferences (persistent)
 
-Stored at `~/.multiagent/user_preferences.json`, tracks:
+Stored at `~/.tripplanner/user_preferences.json`, tracks:
 - **Family**: adults, children (ages), elderly, pets
 - **Trip style**: leisure | balanced | packed_sightseeing | adventure
 - **Budget**: budget | moderate | premium | luxury
@@ -129,8 +129,8 @@ Stored at `~/.multiagent/user_preferences.json`, tracks:
 ### Local CLI
 ```bash
 # Clone
-git clone https://github.com/munishgoyal1/multiagent.git
-cd multiagent
+git clone https://github.com/munishgoyal1/tripplanner.git
+cd tripplanner
 
 # Install with uv (recommended)
 uv sync --all-extras
@@ -143,10 +143,10 @@ cp .env.example .env
 # Edit .env with your keys (see Setup section below)
 
 # Run the assistant (CLI)
-uv run python -m multiagent.cli
+uv run python -m tripplanner.cli
 
 # Run the API server
-uv run uvicorn multiagent.api:app --reload
+uv run uvicorn tripplanner.api:app --reload
 ```
 
 ### Local hosted-UI preview (React SPA + FastAPI)
@@ -157,7 +157,7 @@ scripts\dev-spa.ps1
 #
 # Or run just the backend and have it serve a production SPA build:
 cd frontend; npm install; npm run build; cd ..
-uv run uvicorn multiagent.api:app --port 8000
+uv run uvicorn tripplanner.api:app --port 8000
 # open http://localhost:8000
 ```
 
@@ -182,7 +182,7 @@ Three speeds of feedback you actually have:
 | ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
 
 The local loop and the deployed app run **identical code**. Only persistence
-differs: leave `COSMOS_ENDPOINT` unset → `~/.multiagent/*.json`; set it →
+differs: leave `COSMOS_ENDPOINT` unset → `~/.tripplanner/*.json`; set it →
 Cosmos. Leave `WEB_SESSION_SECRET` unset → no login (guest-only). So the
 inner loop is essentially: edit code → save → tab to browser → refresh.
 
@@ -240,7 +240,7 @@ with Cosmos DB Free Tier (1000 RU/s + 25 GB free).
 ## Project Structure
 
 ```
-multiagent/
+tripplanner/
 ├── REQUIREMENTS.txt              # Running log of all requirements & decisions
 ├── .github/copilot-instructions.md  # Agent context for Copilot/AI sessions
 ├── pyproject.toml                # Dependencies & project config
@@ -255,9 +255,9 @@ multiagent/
 │   ├── main.bicepparam           # Pulls values from env vars
 │   └── README.md                 # Deploy walkthrough
 │
-├── src/multiagent/
+├── src/tripplanner/
 │   ├── __init__.py
-│   ├── __main__.py               # Entry: python -m multiagent
+│   ├── __main__.py               # Entry: python -m tripplanner
 │   ├── config.py                 # Pydantic Settings from .env (incl. Cosmos)
 │   ├── graph.py                  # LangGraph single-agent with tool loop
 │   ├── cli.py                    # Rich interactive CLI (local)
@@ -288,7 +288,7 @@ multiagent/
 ├── tests/
 │   └── test_trip.py              # 46 tests (prefs, planner, helpers, Cosmos dispatch)
 │
-└── ~/.multiagent/                # User data when running locally
+└── ~/.tripplanner/                # User data when running locally
     ├── user_preferences.json     # Preferences & past trip history
     ├── active_trip.json          # Current trip plan in progress
     └── trips/                    # Archived booked trips
@@ -332,11 +332,12 @@ uv run pytest -v
 If you're an AI agent picking up this project:
 1. Read `REQUIREMENTS.txt` for full history of decisions and requirements
 2. Read `.github/copilot-instructions.md` for codebase conventions
-3. The graph is in `src/multiagent/graph.py` — single-agent tool loop
-4. The agent is in `src/multiagent/agents/trip_agent.py`
-5. Tools/connectors are in `src/multiagent/tools/`
+3. The graph is in `src/tripplanner/graph.py` — single-agent tool loop
+4. The agent is in `src/tripplanner/agents/trip_agent.py`
+5. Tools/connectors are in `src/tripplanner/tools/`
 6. Always commit AND push after changes (user preference)
 
 ## License
 
 MIT
+

@@ -92,7 +92,7 @@ def test_trip_agent_binds_tools_with_parallel_flag() -> None:
     """Guard against silent removal of parallel_tool_calls=True in graph.py."""
     import inspect
 
-    from multiagent import graph as graph_mod
+    from tripplanner import graph as graph_mod
 
     src = inspect.getsource(graph_mod.trip_agent)
     assert "parallel_tool_calls=True" in src

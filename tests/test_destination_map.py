@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from multiagent.web.trip_view import build_destination_overview, build_map_url
+from tripplanner.web.trip_view import build_destination_overview, build_map_url
 
 
 def _patch_key(monkeypatch, value: str) -> None:
-    from multiagent import config
+    from tripplanner import config
 
     # The Settings model reads os.getenv at class-definition time, so the
     # cached instance attribute is what we have to override.
@@ -21,7 +21,7 @@ def _patch_key(monkeypatch, value: str) -> None:
 def configured_key(monkeypatch):
     _patch_key(monkeypatch, "fake-test-key")
     yield "fake-test-key"
-    from multiagent import config
+    from tripplanner import config
 
     config.get_settings.cache_clear()
 
@@ -30,7 +30,7 @@ def configured_key(monkeypatch):
 def no_key(monkeypatch):
     _patch_key(monkeypatch, "")
     yield
-    from multiagent import config
+    from tripplanner import config
 
     config.get_settings.cache_clear()
 

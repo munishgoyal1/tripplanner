@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from multiagent.tools.finalize_critic import critique
+from tripplanner.tools.finalize_critic import critique
 
 
 def _plan(**overrides):

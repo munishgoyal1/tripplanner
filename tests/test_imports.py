@@ -16,9 +16,9 @@ import pytest
 
 # Top-level app modules whose import exercises the whole dependency chain.
 APP_MODULES = [
-    "multiagent.api",
-    "multiagent.graph",
-    "multiagent.agents.trip_agent",
+    "tripplanner.api",
+    "tripplanner.graph",
+    "tripplanner.agents.trip_agent",
 ]
 
 # Critical third-party deps that must be present with a resolvable version.

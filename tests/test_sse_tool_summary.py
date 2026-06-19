@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from multiagent.api import _summarize_tool_input
+from tripplanner.api import _summarize_tool_input
 
 
 def test_summarize_none_is_empty() -> None:

@@ -6,7 +6,7 @@ Prints PASS / SKIP / FAIL for each provider without exposing secrets.
 
 from __future__ import annotations
 
-from multiagent.config import get_settings
+from tripplanner.config import get_settings
 
 
 def _line(label: str, status: str, detail: str = "") -> None:
@@ -38,7 +38,7 @@ def test_aoai() -> None:
 
 def test_tavily() -> None:
     print("\n=== Tavily Web Search ===")
-    from multiagent.tools.web_search import is_configured, web_search
+    from tripplanner.tools.web_search import is_configured, web_search
     if not is_configured():
         _line("Tavily search", "SKIP", "TAVILY_API_KEY not set")
         return
@@ -52,7 +52,7 @@ def test_tavily() -> None:
 
 def test_google_places() -> None:
     print("\n=== Google Places ===")
-    from multiagent.tools.google_places import (
+    from tripplanner.tools.google_places import (
         is_configured,
         search_places_with_reviews,
     )
@@ -71,7 +71,7 @@ def test_google_places() -> None:
 
 def test_duffel() -> None:
     print("\n=== Duffel Flights ===")
-    from multiagent.tools.duffel_flights import is_configured, search_flights_duffel
+    from tripplanner.tools.duffel_flights import is_configured, search_flights_duffel
     if not is_configured():
         _line("Duffel flights", "SKIP", "DUFFEL_API_KEY not set — sign up at https://app.duffel.com/sign-up")
         return
@@ -91,7 +91,7 @@ def test_duffel() -> None:
 
 def test_amadeus_deprecated() -> None:
     print("\n=== Amadeus (deprecated, fallback only) ===")
-    from multiagent.tools import amadeus_client
+    from tripplanner.tools import amadeus_client
     if not amadeus_client.is_configured():
         _line("Amadeus", "SKIP", "AMADEUS_* not set (kept for future enterprise migration)")
         return
@@ -106,3 +106,4 @@ if __name__ == "__main__":
     test_duffel()
     test_amadeus_deprecated()
     print("\nDone.")
+

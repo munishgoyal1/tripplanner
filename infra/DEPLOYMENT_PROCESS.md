@@ -3,8 +3,8 @@
 ## Environment Naming
 
 ### Resource Groups
-- **Canary (Testing)**: `rg-multiagent-canary`
-- **Production**: `rg-multiagent-prod`
+- **Canary (Testing)**: `rg-tripplanner-canary`
+- **Production**: `rg-tripplanner-prod`
 
 ### Resources (per environment)
 | Component | Canary | Prod |
@@ -13,8 +13,8 @@
 | Cosmos DB | `canary-cosmos-*` | `prod-cosmos-*` |
 | Container App Env | `canary-env-*` | `prod-env-*` |
 | Log Analytics | `canary-logs-*` | `prod-logs-*` |
-| Email Service | `mes-multiagent-canary` | `mes-multiagent-prod` |
-| Communication Service | `acs-multiagent-canary` | `acs-multiagent-prod` |
+| Email Service | `mes-tripplanner-canary` | `mes-tripplanner-prod` |
+| Communication Service | `acs-tripplanner-canary` | `acs-tripplanner-prod` |
 
 ## Deployment Workflow
 
@@ -88,25 +88,26 @@ Reverts prod to the previous stable revision without downtime.
 
 All prod deployments logged to `logs/deployments-prod.log`:
 ```
-[2026-06-19 14:32] Deployed by munishgoyal1@gmail.com | Image: ghcr.io/munishgoyal1/multiagent:v0.42.5 | Approval: APPROVED
-[2026-06-20 09:15] Deployed by munishgoyal1@gmail.com | Image: ghcr.io/munishgoyal1/multiagent:v0.43.0 | Approval: APPROVED
+[2026-06-19 14:32] Deployed by munishgoyal1@gmail.com | Image: ghcr.io/munishgoyal1/tripplanner:v0.42.5 | Approval: APPROVED
+[2026-06-20 09:15] Deployed by munishgoyal1@gmail.com | Image: ghcr.io/munishgoyal1/tripplanner:v0.43.0 | Approval: APPROVED
 ```
 
 ## Current Transition State
 
 **Production (active until cutover):**
-- RG: `rg-multiagent-trip-planner`
-- App: `multiagent-app-rb4t6btfs5x5m`
-- Cosmos: `multiagent-cosmos-rb4t6btfs5x5m`
-- Email: `mes-multiagent-prod`, `acs-multiagent-prod` ✓
+- RG: `rg-tripplanner-trip-planner`
+- App: `tripplanner-app-rb4t6btfs5x5m`
+- Cosmos: `tripplanner-cosmos-rb4t6btfs5x5m`
+- Email: `mes-tripplanner-prod`, `acs-tripplanner-prod` ✓
 
 **Canary (testing):**
-- RG: `rg-multiagent-canary`
+- RG: `rg-tripplanner-canary`
 - App: `canary-app-*`
 - Cosmos: `canary-cosmos-*`
-- Email: `mes-multiagent-canary`, `acs-multiagent-canary` ✓
+- Email: `mes-tripplanner-canary`, `acs-tripplanner-canary` ✓
 
 **Migration Plan (future):**
 - Cut over canary to the new RG and prefix-based names first
 - After sign-off, promote the same naming scheme to production with approval
 - Leave legacy RGs in place until the new environments are stable
+

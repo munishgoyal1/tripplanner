@@ -82,7 +82,7 @@ $Healers = @(
         Cooldown = 30
         Action   = {
             param($m)
-            $base = Join-Path $env:USERPROFILE ".multiagent"
+            $base = Join-Path $env:USERPROFILE ".tripplanner"
             if (-not (Test-Path $base)) { return }
             $candidates = @()
             $candidates += Get-ChildItem -Path $base -Recurse -Filter "preferences.json" -ErrorAction SilentlyContinue
@@ -260,3 +260,4 @@ Get-Content -Path $LogPath -Wait -Tail 0 -ErrorAction SilentlyContinue | ForEach
         }
     }
 }
+

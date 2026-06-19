@@ -5,7 +5,7 @@ const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 // Stable per-browser identity so trip state + chat history follow the user
 // across reloads. The backend keys conversation memory and trip storage by it.
 export function getUserId(): string {
-  const KEY = "multiagent_user_id";
+  const KEY = "tripplanner_user_id";
   let id = localStorage.getItem(KEY);
   if (!id) {
     id = `web-${crypto.randomUUID()}`;
@@ -29,18 +29,18 @@ export function signIn(name: string): string {
     trimmed.toLowerCase() === "local"
       ? "local"
       : `user-${trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`;
-  localStorage.setItem("multiagent_user_id", id);
-  localStorage.setItem("multiagent_display_name", trimmed);
+  localStorage.setItem("tripplanner_user_id", id);
+  localStorage.setItem("tripplanner_display_name", trimmed);
   return id;
 }
 
 export function signOut(): void {
-  localStorage.removeItem("multiagent_user_id");
-  localStorage.removeItem("multiagent_display_name");
+  localStorage.removeItem("tripplanner_user_id");
+  localStorage.removeItem("tripplanner_display_name");
 }
 
 export function getDisplayName(): string {
-  return localStorage.getItem("multiagent_display_name") || "";
+  return localStorage.getItem("tripplanner_display_name") || "";
 }
 
 // ---------------------------------------------------------------------------
@@ -75,9 +75,9 @@ export async function syncAuth(): Promise<AuthSession> {
     const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
     const session: AuthSession = await res.json();
     if (session.authenticated && session.user_id) {
-      localStorage.setItem("multiagent_user_id", session.user_id);
+      localStorage.setItem("tripplanner_user_id", session.user_id);
       if (session.display_name) {
-        localStorage.setItem("multiagent_display_name", session.display_name);
+        localStorage.setItem("tripplanner_display_name", session.display_name);
       }
     }
     return session;
@@ -209,24 +209,24 @@ export async function fetchTripView(focus?: {
   return res.json();
 }
 
-export async function selectItem(kind: string, name: string): Promise<TripView> {
+export async function selectItem(kind: string, name: string): Promise<{ view: TripView; alerts: string[] }> {
   const res = await fetch(`${BASE}/trip/select`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind, name, user_id: getUserId() }),
   });
   const json = await res.json();
-  return json.view as TripView;
+  return { view: json.view as TripView, alerts: (json.alerts ?? []) as string[] };
 }
 
-export async function deselectItem(kind: string, name: string): Promise<TripView> {
+export async function deselectItem(kind: string, name: string): Promise<{ view: TripView; alerts: string[] }> {
   const res = await fetch(`${BASE}/trip/deselect`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind, name, user_id: getUserId() }),
   });
   const json = await res.json();
-  return json.view as TripView;
+  return { view: json.view as TripView, alerts: (json.alerts ?? []) as string[] };
 }
 
 /** List the user's saved trips (the "My trips" switcher). */
@@ -502,3 +502,4 @@ export async function setStopBooked(
   const json = await res.json();
   return json.itinerary as Itinerary;
 }
+

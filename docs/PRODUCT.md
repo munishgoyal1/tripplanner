@@ -1,4 +1,4 @@
-# PRODUCT — multiagent trip planner
+# PRODUCT — tripplanner trip planner
 
 > The "what & why" companion to [CODEMAP.md](./CODEMAP.md) (the "where").
 > Keep this short, opinionated, and current. If a feature lands that
@@ -28,7 +28,7 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
 | Mode   | UI                     | Persistence              | When                  |
 |--------|------------------------|--------------------------|-----------------------|
-| LOCAL  | CLI (`cli.py`) or API  | `~/.multiagent/*.json`   | dev, hacking          |
+| LOCAL  | CLI (`cli.py`) or API  | `~/.tripplanner/*.json`   | dev, hacking          |
 | HOSTED | React SPA via FastAPI  | Cosmos DB (Free Tier)    | personal use on ACA   |
 
 One codebase, dispatcher in `storage_cosmos.is_enabled()`.
@@ -75,7 +75,7 @@ If a redesign violates the above without a stated reason, push back.
 ## 6) Owner taste — code & process
 
 - Python 3.11, typed (`from __future__ import annotations`). One file per
-  concern, flat layout under `src/multiagent/`. Tools = `@tool`-decorated
+  concern, flat layout under `src/tripplanner/`. Tools = `@tool`-decorated
   functions that return strings; the agent interprets.
 - No unnecessary comments. No docstrings on code I didn't touch.
 - Tests run in ~1.5s; keep them mock-free for pure logic. Run pytest once
@@ -118,3 +118,4 @@ ship a feature that demands a new "Non-goal" entry, add it. If a redesign
 changes the type/color/shape vocabulary, update §4. If a new run mode
 appears, add it to §3. Stale PRODUCT.md = wasted onboarding time for the
 next agent session.
+

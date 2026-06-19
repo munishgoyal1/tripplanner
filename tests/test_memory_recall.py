@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from multiagent.tools import memory_recall
+from tripplanner.tools import memory_recall
 
 
 _PREFS = {

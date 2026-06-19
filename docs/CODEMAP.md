@@ -1,4 +1,4 @@
-# CODEMAP — multiagent
+# CODEMAP — tripplanner
 
 > Drop-in orientation for any new agent session or human contributor.
 > If something here is wrong, fix it in the same commit as the code change.
@@ -32,7 +32,7 @@ dev and Cosmos DB in production. Auto-dispatch via `storage_cosmos.is_enabled()`
 ## 3) Top-level layout
 
 ```
-src/multiagent/
+src/tripplanner/
   api.py              FastAPI app — routes, SSE chat, /api prefix strip, SPA mount
   cli.py              Local CLI entrypoint (no SPA)
   config.py           Pydantic Settings from .env
@@ -127,7 +127,7 @@ one origin. In dev, Vite serves on :5173 and proxies `/api` to :8000.
 
 ## 5) View-model contract (decoupled from UI)
 
-`src/multiagent/web/trip_view.py` is **pure Python with zero UI imports**.
+`src/tripplanner/web/trip_view.py` is **pure Python with zero UI imports**.
 It exports:
 
 - `build_view(trip, focus) -> dict` — the JSON shape consumed by
@@ -179,14 +179,14 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   `CHAINLIT_AUTH_SECRET`).
 - Guest fallback: `"web-<uuid>"` (per-browser via localStorage).
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
-  local JSON under `~/.multiagent/`.
+  local JSON under `~/.tripplanner/`.
 - Cosmos containers: `users` (one doc per user: `preferences`, `active_trip`)
   and `trips` (every saved trip — drafts, finalized, and booked). Also
   `tool_cache` (read-through tool results) and `places_cache` (durable Google
   Places cache — one shared doc, partition `_shared`).
 - **Places cache (Session 22)**: `places_cache.py` is a two-layer cache —
   in-process dict (hot) + durable store (Cosmos `places_cache` or local
-  `~/.multiagent/places_cache/cache.json`). Place details/reviews/top-places
+  `~/.tripplanner/places_cache/cache.json`). Place details/reviews/top-places
   keep a 1-week TTL; signed photo URLs keep a 50-min TTL and are re-resolved
   on demand from long-lived `photo_refs` (URLs are NEVER persisted). Public
   fns take `refresh=True` to force re-fetch; `prefetch` batches the durable
@@ -249,3 +249,4 @@ All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 - Update `README.md` when architecture changes.
 - Update [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
   AND this CODEMAP whenever the structure shifts.
+

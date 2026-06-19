@@ -15,12 +15,12 @@ Two parallel identity tracks:
 | OAuth login | `google-<sub>`           | Cross-device, cross-browser (Cosmos DB)      |
 | Guest id    | `web-<uuid>`             | Same browser only (localStorage)             |
 
-Both flow into `multiagent.user_context.set_user_id`, so the agent's
+Both flow into `tripplanner.user_context.set_user_id`, so the agent's
 continuous-learning tools (`update_user_profile`, `add_family_member`, …)
 write to the right per-user document in Cosmos.
 
 The SPA talks to the FastAPI backend (`api.py`), which owns the OAuth flow in
-`src/multiagent/web/oauth.py` — stdlib + the existing `httpx`, no extra deps.
+`src/tripplanner/web/oauth.py` — stdlib + the existing `httpx`, no extra deps.
 It degrades gracefully: with the env vars unset, the **Sign in with Google**
 button is hidden and the SPA falls back to name / anonymous sign-in.
 
@@ -52,14 +52,14 @@ gh secret set CHAINLIT_AUTH_SECRET --body $secret   # reused as WEB_SESSION_SECR
 
 1. Go to <https://console.cloud.google.com/apis/credentials>.
 2. **Create credentials → OAuth client ID → Web application**.
-3. Name it `multiagent-trip-planner`.
+3. Name it `tripplanner-trip-planner`.
 4. **Authorized redirect URI** (exact match):
    ```
-   https://multiagent-app-<your-suffix>.<env>.eastus2.azurecontainerapps.io/api/auth/callback/google
+   https://tripplanner-app-<your-suffix>.<env>.eastus2.azurecontainerapps.io/api/auth/callback/google
    ```
    Find your FQDN with:
    ```powershell
-   az containerapp show -n multiagent-app-<suffix> -g rg-multiagent-trip-planner --query properties.configuration.ingress.fqdn -o tsv
+   az containerapp show -n tripplanner-app-<suffix> -g rg-tripplanner-trip-planner --query properties.configuration.ingress.fqdn -o tsv
    ```
 5. Copy the **Client ID** and **Client secret**, then store them as GitHub secrets:
    ```powershell
@@ -99,7 +99,7 @@ for purely local dev.
 
 # Google OAuth — configuration details
 
-The SPA's OAuth flow lives in `src/multiagent/web/oauth.py`. It uses the
+The SPA's OAuth flow lives in `src/tripplanner/web/oauth.py`. It uses the
 `google-<sub>` user id so a user who signs in with Google resolves to a stable
 identity, and their preferences and trips carry across devices.
 
@@ -151,4 +151,5 @@ WEB_ALLOWED_ORIGINS=https://your-spa.example.com
 ```
 When the SPA and API share an origin (e.g. served behind one Container App),
 no change is needed — requests are same-origin and CORS doesn't apply.
+
 

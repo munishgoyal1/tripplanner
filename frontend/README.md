@@ -1,7 +1,7 @@
 # Trip Planner — React SPA
 
 A standalone React single-page app for the AI trip planner. It talks to the
-FastAPI backend (`src/multiagent/api.py`) over HTTP + Server-Sent Events. This
+FastAPI backend (`src/tripplanner/api.py`) over HTTP + Server-Sent Events. This
 is the **only** UI and gives full control over the UX (routing, layout, mobile,
 maps, drag-drop, …).
 
@@ -35,7 +35,7 @@ Or manually:
 ```powershell
 # Terminal 1 — backend
 .venv\Scripts\Activate.ps1
-python -m uvicorn multiagent.api:app --reload --port 8000
+python -m uvicorn tripplanner.api:app --reload --port 8000
 
 # Terminal 2 — frontend
 cd frontend
@@ -67,3 +67,4 @@ origin for CORS.
 | `src/components/ChatPanel.tsx` | streaming chat (tokens + tool steps) |
 | `src/components/TripPanel.tsx` | trip view-model renderer (focus + add-to-trip) |
 | `src/App.tsx` | two-pane layout, focus/refresh wiring |
+

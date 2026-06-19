@@ -1,5 +1,5 @@
 ================================================================================
-multiagent — frameworks in use and on deck
+tripplanner — frameworks in use and on deck
 Captured 2026-06-05
 ================================================================================
 
@@ -7,11 +7,11 @@ CURRENTLY IN USE
 ----------------
 
 LangGraph
-  - The orchestration layer. src/multiagent/graph.py builds a StateGraph with
+  - The orchestration layer. src/tripplanner/graph.py builds a StateGraph with
     a `trip_agent` node + prebuilt `ToolNode`, compiled once into the
     singleton `app_graph`.
   - `app_graph.astream_events(version="v2")` drives the SSE streaming in
-    src/multiagent/api.py (`on_chat_model_stream`, `on_tool_start`,
+    src/tripplanner/api.py (`on_chat_model_stream`, `on_tool_start`,
     `on_tool_end`).
   - `parallel_tool_calls=True` on `bind_tools(...)` lets ToolNode execute
     independent calls concurrently.
@@ -23,7 +23,7 @@ LangChain core + langchain-openai
   - `@tool` / `StructuredTool` for all 33 tools.
   - `BaseMessage` / `AIMessage` / `HumanMessage` / `ToolMessage` for state.
   - `BaseCallbackHandler` for the per-user LLM cost tracker (graph.py
-    `_UsageCallback` → multiagent.usage.record_usage).
+    `_UsageCallback` → tripplanner.usage.record_usage).
 
 FastAPI + Uvicorn
   - API server, SSE (`/chat/stream`), and SPA host. Single container, single
@@ -36,11 +36,11 @@ React 19 + Vite + TypeScript + Tailwind
   - Tailwind theme: coral brand + teal accent, Inter UI + Fraunces display.
 
 Pydantic v2
-  - Settings (multiagent.config.Settings) and tool args schemas.
+  - Settings (tripplanner.config.Settings) and tool args schemas.
 
 azure-cosmos (lazy-imported)
   - Optional hosted storage. `storage_cosmos.is_enabled()` is the
-    feature-flag switch; local JSON files in `~/.multiagent/` otherwise.
+    feature-flag switch; local JSON files in `~/.tripplanner/` otherwise.
 
 httpx
   - Sync HTTP for every external tool (Duffel, Amadeus, Google Places,
@@ -65,7 +65,7 @@ CANDIDATES FOR THE NEAR FUTURE (ranked by likely payoff)
 1. LangGraph checkpointers
    - `langgraph.checkpoint.sqlite` / `.postgres` (or a Cosmos adapter).
    - Today chat history lives in an in-process dict in api.py and
-     `~/.multiagent/active_trip.json`. A checkpointer gives durable
+     `~/.tripplanner/active_trip.json`. A checkpointer gives durable
      per-thread state, time-travel, and resume — natural fit when we add
      multi-turn long-running plans.
 
@@ -104,3 +104,4 @@ SHORT ANSWER
 ------------
 LangGraph for orchestration, LangChain for primitives. Next likely
 additions: LangGraph checkpointers → `interrupt()` for booking → OpenTelemetry.
+

@@ -7,7 +7,7 @@ extractor never returns junk that could corrupt user prefs.
 
 from __future__ import annotations
 
-from multiagent.tools.about_me_extractor import _sanitize_extraction
+from tripplanner.tools.about_me_extractor import _sanitize_extraction
 
 
 def test_sanitize_basic_profile_fields() -> None:
@@ -127,7 +127,7 @@ def test_sanitize_boolean_prefer_direct_flights() -> None:
 
 def test_extract_about_me_empty_short_circuits(monkeypatch) -> None:
     """Empty input must not call the LLM."""
-    from multiagent.tools import about_me_extractor as mod
+    from tripplanner.tools import about_me_extractor as mod
 
     called = {"n": 0}
 

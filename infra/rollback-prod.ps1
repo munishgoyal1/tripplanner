@@ -13,8 +13,8 @@
 
 $ErrorActionPreference = "Stop"
 
-$prodRG = "rg-multiagent-trip-planner"
-$prodApp = "multiagent-app-rb4t6btfs5x5m"
+$prodRG = "rg-tripplanner-trip-planner"
+$prodApp = "tripplanner-app-rb4t6btfs5x5m"
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ⚠️  PRODUCTION ROLLBACK                                  ║"
@@ -70,3 +70,4 @@ if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
 Add-Content "logs/deployments-prod.log" "[$timestamp] ROLLBACK from $currentRevision to $previousRevision | By: $env:USERNAME"
 
 Write-Host "✓ Logged to logs/deployments-prod.log`n"
+

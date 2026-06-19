@@ -7,7 +7,7 @@ import json
 import httpx
 import pytest
 
-from multiagent.tools import visa
+from tripplanner.tools import visa
 
 
 # ---- pure helpers ---------------------------------------------------------

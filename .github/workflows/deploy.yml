@@ -17,8 +17,8 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/multiagent
-  RESOURCE_GROUP: rg-multiagent-trip-planner
+  IMAGE_NAME: ${{ github.repository_owner }}/tripplanner
+  RESOURCE_GROUP: rg-tripplanner-trip-planner
 
 jobs:
   deploy:
@@ -96,3 +96,4 @@ jobs:
           # Web session signing secret (reuses the existing CHAINLIT_AUTH_SECRET
           # GitHub secret value so no new secret needs to be created).
           WEB_SESSION_SECRET: ${{ secrets.CHAINLIT_AUTH_SECRET }}
+

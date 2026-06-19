@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from multiagent.tools.trip_diff import diff_plans, format_diff
+from tripplanner.tools.trip_diff import diff_plans, format_diff
 
 
 def _plan(**overrides):

@@ -7,7 +7,7 @@ import time
 import pytest
 from langchain_core.tools import tool
 
-from multiagent import tools_cache, user_context
+from tripplanner import tools_cache, user_context
 
 
 @pytest.fixture(autouse=True)
@@ -19,7 +19,7 @@ def _reset_state(monkeypatch):
     """
     tools_cache.clear_local_cache()
     user_context.set_user_id("alice")
-    from multiagent import storage_cosmos
+    from tripplanner import storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
     yield
@@ -54,7 +54,7 @@ def test_cache_expires_after_ttl():
     # Move clock forward past expiry.
     real_time = time.time
     later = real_time() + 5
-    import multiagent.tools_cache as tc
+    import tripplanner.tools_cache as tc
 
     tc.time.time = lambda: later  # type: ignore[assignment]
     try:

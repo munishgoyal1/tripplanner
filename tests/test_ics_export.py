@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from multiagent.web.ics_export import build_ics
+from tripplanner.web.ics_export import build_ics
 
 
 def _plan(**overrides):

@@ -15,14 +15,14 @@ Stays at ~₹0 when idle thanks to scale-to-zero.
 ## Environments & Naming
 
 ### Canary (Testing — No Approval Gate)
-- Resource Group: `rg-multiagent-canary`
+- Resource Group: `rg-tripplanner-canary`
 - Container App: `canary-app-*`
 - Cosmos DB: `canary-cosmos-*`
 - **Use for:** Feature testing, bug fixes, infrastructure changes, email verification
 - **Deployment:** `./infra/deploy-canary.ps1` (no approval required)
 
 ### Production (Live — Manual Approval Required)
-- Resource Group: `rg-multiagent-prod`
+- Resource Group: `rg-tripplanner-prod`
 - Container App: `prod-app-*`
 - Cosmos DB: `prod-cosmos-*`
 - **Use for:** Tested, verified releases only
@@ -35,9 +35,9 @@ Transition to standardized naming by redeploying canary first, then production a
 
 - Azure subscription with the Cosmos DB Free Tier slot still available
 - Resource groups:
-  - `rg-multiagent-prod` (production, eastus2)
-  - `rg-multiagent-canary` (canary, eastus2)
-- Azure OpenAI deployed: `aoai-multiagent-mugoy` (gpt-4.1 primary; gpt-4o and gpt-5 also available)
+  - `rg-tripplanner-prod` (production, eastus2)
+  - `rg-tripplanner-canary` (canary, eastus2)
+- Azure OpenAI deployed: `aoai-tripplanner-mugoy` (gpt-4.1 primary; gpt-4o and gpt-5 also available)
 - Docker installed locally
 - GitHub Container Registry account for container images
 
@@ -57,8 +57,8 @@ Transition to standardized naming by redeploying canary first, then production a
 # 1. Build & push image
 $Env:CR_PAT = "<github_personal_access_token>"
 $Env:CR_PAT | docker login ghcr.io -u munishgoyal1 --password-stdin
-docker build -t ghcr.io/munishgoyal1/multiagent:v0.X.Y .
-docker push ghcr.io/munishgoyal1/multiagent:v0.X.Y
+docker build -t ghcr.io/munishgoyal1/tripplanner:v0.X.Y .
+docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
 
 # 2. Deploy to canary (no approval needed)
 ./infra/deploy-canary.ps1 -ImageTag v0.X.Y
@@ -79,7 +79,7 @@ docker push ghcr.io/munishgoyal1/multiagent:v0.X.Y
 
 # 3. Deployment proceeds and is logged to logs/deployments-prod.log
 
-# 4. Monitor: az containerapp logs show -g rg-multiagent-trip-planner -n multiagent-app-rb4t6btfs5x5m
+# 4. Monitor: az containerapp logs show -g rg-tripplanner-trip-planner -n tripplanner-app-rb4t6btfs5x5m
 ```
 
 ### If Issues in Production
@@ -97,8 +97,8 @@ If you prefer direct control:
 #    GHCR (free for public repos):
 $Env:CR_PAT = "<github_personal_access_token>"
 $Env:CR_PAT | docker login ghcr.io -u munishgoyal1 --password-stdin
-docker build -t ghcr.io/munishgoyal1/multiagent:latest .
-docker push ghcr.io/munishgoyal1/multiagent:latest
+docker build -t ghcr.io/munishgoyal1/tripplanner:latest .
+docker push ghcr.io/munishgoyal1/tripplanner:latest
 
 # 2. Export secrets to the shell (they're never written to a file).
 $Env:AZURE_OPENAI_ENDPOINT  = "<from-portal>"
@@ -106,14 +106,14 @@ $Env:AZURE_OPENAI_API_KEY   = "<from-portal>"
 $Env:DUFFEL_API_KEY         = "<duffel_test_token>"
 $Env:GOOGLE_PLACES_API_KEY  = "<google-key>"
 $Env:TAVILY_API_KEY         = "<tavily-key>"
-$Env:CONTAINER_IMAGE        = "ghcr.io/munishgoyal1/multiagent:latest"
+$Env:CONTAINER_IMAGE        = "ghcr.io/munishgoyal1/tripplanner:latest"
 
 # 3. Deploy.
 az deployment group create `
-  --resource-group rg-multiagent-canary `
+  --resource-group rg-tripplanner-canary `
   --template-file infra/main.bicep `
   --parameters infra/main.bicepparam `
-  --parameters namePrefix=canary-multiagent `
+  --parameters namePrefix=canary-tripplanner `
   --query "properties.outputs.containerAppUrl.value" -o tsv
 ```
 
@@ -128,6 +128,7 @@ Bicep (idempotent) or update just the container:
 ```powershell
 az containerapp update `
   --name <appName> `
-  --resource-group rg-multiagent-prod `
-  --image ghcr.io/munishgoyal1/multiagent:latest
+  --resource-group rg-tripplanner-prod `
+  --image ghcr.io/munishgoyal1/tripplanner:latest
 ```
+

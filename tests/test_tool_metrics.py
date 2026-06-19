@@ -6,9 +6,9 @@ from __future__ import annotations
 import pytest
 from langchain_core.tools import tool
 
-from multiagent import observability as obs
-from multiagent import tools_cache as tc
-from multiagent import user_context
+from tripplanner import observability as obs
+from tripplanner import tools_cache as tc
+from tripplanner import user_context
 
 
 @pytest.fixture(autouse=True)
@@ -101,7 +101,7 @@ def test_cache_wrapper_records_error_status():
 def test_metrics_endpoint_returns_snapshot():
     from fastapi.testclient import TestClient
 
-    from multiagent.api import app
+    from tripplanner.api import app
 
     obs.record_tool_call("foo", duration_ms=42, status="ok")
     client = TestClient(app)

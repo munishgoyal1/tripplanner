@@ -11,14 +11,14 @@ import time
 
 import pytest
 
-from multiagent.web import places_cache as pc
+from tripplanner.web import places_cache as pc
 
 
 @pytest.fixture(autouse=True)
 def _isolate(monkeypatch, tmp_path):
     """Isolate the cache: tmp store dir, Cosmos off, deterministic network."""
     monkeypatch.setenv("MULTIAGENT_HOME", str(tmp_path))
-    from multiagent import storage_cosmos
+    from tripplanner import storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
     monkeypatch.setattr(pc, "is_configured", lambda: True)

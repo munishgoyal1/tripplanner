@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from multiagent.tools import routing
+from tripplanner.tools import routing
 
 
 # ---------------------------------------------------------------------------

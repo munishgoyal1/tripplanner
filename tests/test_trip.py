@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from multiagent.tools import user_preferences
-from multiagent.tools.user_preferences import (
+from tripplanner.tools import user_preferences
+from tripplanner.tools.user_preferences import (
     _deep_merge,
     add_past_trip,
     load_preferences,
@@ -28,7 +28,7 @@ def _isolate_prefs(monkeypatch):
     monkeypatch.setattr(user_preferences, "_PREFS_FILE", _TEST_FILE)
 
     # Also redirect trip_planner storage
-    from multiagent.tools import trip_planner
+    from tripplanner.tools import trip_planner
     monkeypatch.setattr(trip_planner, "_TRIPS_DIR", _TEST_DIR)
     monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", _TEST_ACTIVE_TRIP)
     monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", _TEST_TRIP_HISTORY)
@@ -87,7 +87,7 @@ class TestLoadSave:
 # ---------------------------------------------------------------------------
 # Trip agent preference tools
 # ---------------------------------------------------------------------------
-from multiagent.agents.trip_agent import (
+from tripplanner.agents.trip_agent import (
     get_travel_preferences,
     record_past_trip,
     record_trip_postmortem,
@@ -165,7 +165,7 @@ class TestPreferenceTools:
 # ---------------------------------------------------------------------------
 # Trip planner state management tools
 # ---------------------------------------------------------------------------
-from multiagent.tools.trip_planner import (
+from tripplanner.tools.trip_planner import (
     create_trip_plan,
     execute_bookings,
     finalize_trip,
@@ -342,7 +342,7 @@ class TestTripPlanState:
 # ---------------------------------------------------------------------------
 # Flight search helpers
 # ---------------------------------------------------------------------------
-from multiagent.tools.flight_search import resolve_iata
+from tripplanner.tools.flight_search import resolve_iata
 
 
 class TestFlightHelpers:
@@ -364,7 +364,7 @@ class TestFlightHelpers:
 # ---------------------------------------------------------------------------
 # Activity search helpers
 # ---------------------------------------------------------------------------
-from multiagent.tools.activities_search import _get_coords
+from tripplanner.tools.activities_search import _get_coords
 
 
 class TestActivityHelpers:
@@ -382,14 +382,14 @@ class TestActivityHelpers:
 # ---------------------------------------------------------------------------
 # Google Places + Web search helpers (no network — config checks only)
 # ---------------------------------------------------------------------------
-from multiagent.tools import google_places, web_search
-from multiagent.tools.google_places import (
+from tripplanner.tools import google_places, web_search
+from tripplanner.tools.google_places import (
     _format_place,
     _format_reviews,
     nearby_restaurants,
     search_places_with_reviews,
 )
-from multiagent.tools.web_search import web_search as web_search_tool
+from tripplanner.tools.web_search import web_search as web_search_tool
 
 
 class TestGooglePlacesHelpers:
@@ -431,7 +431,7 @@ class TestGooglePlacesHelpers:
         assert len(out[0]["text"]) == 300
 
     def test_not_configured_returns_friendly_message(self, monkeypatch):
-        from multiagent import config
+        from tripplanner import config
         monkeypatch.setattr(
             config, "get_settings",
             lambda: type("S", (), {"google_places_api_key": ""})(),
@@ -447,7 +447,7 @@ class TestGooglePlacesHelpers:
 
 class TestWebSearchHelpers:
     def test_not_configured_returns_friendly_message(self, monkeypatch):
-        from multiagent import config
+        from tripplanner import config
         monkeypatch.setattr(
             config, "get_settings",
             lambda: type("S", (), {"tavily_api_key": ""})(),
@@ -461,8 +461,8 @@ class TestWebSearchHelpers:
 # ---------------------------------------------------------------------------
 # Duffel flight search helpers (no network — formatting & config checks only)
 # ---------------------------------------------------------------------------
-from multiagent.tools import duffel_flights
-from multiagent.tools.duffel_flights import (
+from tripplanner.tools import duffel_flights
+from tripplanner.tools.duffel_flights import (
     _format_duration,
     _format_offers,
     _format_segment,
@@ -547,7 +547,7 @@ class TestDuffelHelpers:
         assert 0 <= cheap_pos < exp_pos
 
     def test_not_configured_returns_friendly_message(self, monkeypatch):
-        from multiagent import config
+        from tripplanner import config
         monkeypatch.setattr(
             config, "get_settings",
             lambda: type("S", (), {"duffel_api_key": ""})(),
@@ -567,8 +567,8 @@ class TestDuffelHelpers:
 # Cosmos DB dispatch (mocked — verifies preferences + trip_planner branch
 # correctly when storage_cosmos.is_enabled() returns True). No network.
 # ---------------------------------------------------------------------------
-from multiagent import storage_cosmos, user_context
-from multiagent.tools import trip_planner
+from tripplanner import storage_cosmos, user_context
+from tripplanner.tools import trip_planner
 
 
 class TestCosmosDispatch:
@@ -762,7 +762,7 @@ class TestUserContext:
 # ---------------------------------------------------------------------------
 from datetime import date, datetime, timedelta, timezone
 
-from multiagent.agents.trip_agent import TRIP_SYSTEM_PROMPT, build_trip_system_prompt
+from tripplanner.agents.trip_agent import TRIP_SYSTEM_PROMPT, build_trip_system_prompt
 
 
 class TestSystemPromptDateInjection:
@@ -814,8 +814,8 @@ class TestSystemPromptDateInjection:
 # ---------------------------------------------------------------------------
 # Passive learning — learned_notes + remember_about_user tool
 # ---------------------------------------------------------------------------
-from multiagent.agents.trip_agent import remember_about_user
-from multiagent.tools.user_preferences import add_learned_note
+from tripplanner.agents.trip_agent import remember_about_user
+from tripplanner.tools.user_preferences import add_learned_note
 
 
 class TestPassiveLearning:
@@ -901,14 +901,14 @@ class TestPassiveLearningPromptRules:
 # ---------------------------------------------------------------------------
 # Continuous learning — profile / family / interests / dislikes / trip_mentions
 # ---------------------------------------------------------------------------
-from multiagent.agents.trip_agent import (
+from tripplanner.agents.trip_agent import (
     add_family_member as tool_add_family_member,
     add_user_dislike as tool_add_user_dislike,
     add_user_interest as tool_add_user_interest,
     record_trip_mention as tool_record_trip_mention,
     update_user_profile as tool_update_user_profile,
 )
-from multiagent.tools.user_preferences import (
+from tripplanner.tools.user_preferences import (
     add_dislike,
     add_interest,
     add_trip_mention,
@@ -1103,7 +1103,7 @@ class TestExtractionPromptRules:
 # ---------------------------------------------------------------------------
 # Saved trips — remember, resume, switch, delete (Session 19)
 # ---------------------------------------------------------------------------
-from multiagent.tools.trip_planner import (
+from tripplanner.tools.trip_planner import (
     _compute_trip_id,
     delete_saved_trip,
     list_saved_trips,

@@ -46,7 +46,7 @@ if (-not $FrontendOnly) {
     }
     $py = Join-Path $repoRoot ".venv\Scripts\python.exe"
     if (-not (Test-Path $py)) { $py = "python" }
-    $uvicornArgs = @("-m", "uvicorn", "multiagent.api:app", "--port", "$ApiPort")
+    $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--port", "$ApiPort")
     if ($Watch) { $uvicornArgs += "--reload" }
     $backend = Start-Process -PassThru -NoNewWindow $py -ArgumentList $uvicornArgs
 }
@@ -77,3 +77,4 @@ elseif ($backend) {
     Write-Host "Backend running (PID $($backend.Id)). Press Ctrl+C to stop." -ForegroundColor Green
     Wait-Process -Id $backend.Id
 }
+

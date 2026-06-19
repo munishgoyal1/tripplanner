@@ -14,12 +14,12 @@
 //   - Log Analytics PAYG, 30-day retention
 
 @description('Prefix used for all resource names. Keep short.')
-param namePrefix string = 'multiagent'
+param namePrefix string = 'tripplanner'
 
 @description('Azure region for all resources.')
 param location string = resourceGroup().location
 
-@description('Container image reference, e.g. ghcr.io/<owner>/multiagent:latest')
+@description('Container image reference, e.g. ghcr.io/<owner>/tripplanner:latest')
 param containerImage string
 
 @description('Azure OpenAI endpoint (already provisioned out-of-band).')
@@ -67,7 +67,7 @@ param githubOauthClientSecret string = ''
 @description('Web session signing secret (random 32+ char string). REQUIRED to enable any OAuth or persistent guest cookies. Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))".')
 param webSessionSecret string = ''
 
-@description('Public HTTPS base URL the OAuth callback returns to (no trailing slash). Required when serving Sign in with Google through Container Apps ingress, which terminates TLS and forwards plain HTTP to the container, so request.base_url is http://. Example: https://multiagent-app-xxx.region.azurecontainerapps.io')
+@description('Public HTTPS base URL the OAuth callback returns to (no trailing slash). Required when serving Sign in with Google through Container Apps ingress, which terminates TLS and forwards plain HTTP to the container, so request.base_url is http://. Example: https://tripplanner-app-xxx.region.azurecontainerapps.io')
 param oauthRedirectBase string = ''
 
 @description('Enable Cosmos Free Tier (only one per subscription).')
@@ -91,7 +91,7 @@ var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
 var cosmosAccountName = toLower('${namePrefix}-cosmos-${suffix}')
-var cosmosDatabaseName = 'multiagent'
+var cosmosDatabaseName = 'tripplanner'
 
 // OAuth secrets are only attached when a value is supplied. Container Apps
 // rejects empty-string secret values, so we conditionally build the secrets
@@ -289,7 +289,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          name: 'multiagent'
+          name: 'tripplanner'
           image: containerImage
           resources: {
             cpu: json('0.5')
@@ -311,3 +311,4 @@ output containerAppUrl string = 'https://${app.properties.configuration.ingress.
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output cosmosAccountName string = cosmos.name
 output logAnalyticsId string = logs.id
+
