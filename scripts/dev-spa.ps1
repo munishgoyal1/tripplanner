@@ -46,9 +46,10 @@ if (-not $FrontendOnly) {
     }
     $py = Join-Path $repoRoot ".venv\Scripts\python.exe"
     if (-not (Test-Path $py)) { $py = "python" }
-    $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--port", "$ApiPort")
+    # src-layout project: make imports work even if pip install -e . was not run.
+    $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--app-dir", "src", "--port", "$ApiPort")
     if ($Watch) { $uvicornArgs += "--reload" }
-    $backend = Start-Process -PassThru -NoNewWindow $py -ArgumentList $uvicornArgs
+    $backend = Start-Process -PassThru -NoNewWindow -WorkingDirectory $repoRoot $py -ArgumentList $uvicornArgs
 }
 
 if (-not $BackendOnly) {
