@@ -213,3 +213,37 @@ class TestProfileSummary:
         prefs = load_preferences()
         assert prefs["profile_summary"] == ""
         assert prefs["profile_summary_updated_at"] is None
+
+    def test_planned_trips_are_a_signal(self, monkeypatch):
+        # A user who only ever said "plan a trip to Goa" has no explicit prefs,
+        # but the saved trip itself is durable substance worth summarizing.
+        prefs = load_preferences()
+        assert profile_summary._has_signal(prefs) is False
+
+        trip_planner.create_trip_plan.invoke(
+            {"destination": "Goa", "departure_date": "2026-01-10", "return_date": "2026-01-15"}
+        )
+        prefs = load_preferences()
+        assert profile_summary._has_signal(prefs) is True
+        planned = profile_summary._planned_trips()
+        assert any(t["destination"] == "Goa" for t in planned)
+
+    def test_new_trip_bumps_digest_and_regenerates(self, monkeypatch):
+        calls = {"n": 0}
+        monkeypatch.setattr(
+            profile_summary,
+            "regenerate",
+            lambda p: (calls.__setitem__("n", calls["n"] + 1) or "A traveller eyeing Goa."),
+        )
+        trip_planner.create_trip_plan.invoke(
+            {"destination": "Goa", "departure_date": "2026-01-10", "return_date": "2026-01-15"}
+        )
+        first = profile_summary.update_summary()
+        assert first == "A traveller eyeing Goa."
+        assert calls["n"] == 1
+        # Planning a second, different trip changes the digest -> regenerate runs.
+        trip_planner.create_trip_plan.invoke(
+            {"destination": "Jaipur", "departure_date": "2026-03-01", "return_date": "2026-03-05"}
+        )
+        profile_summary.update_summary()
+        assert calls["n"] == 2

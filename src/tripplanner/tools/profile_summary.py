@@ -52,7 +52,8 @@ You are given the user's saved data as JSON. Synthesize a single short paragraph
 (<= 120 words, no bullet lists, no headings) capturing the durable, planning-relevant
 truths: who they are and who they travel with, home base, budget/comfort level, the
 trip styles and interests they consistently show, hard constraints (dietary,
-accessibility), strong dislikes, and notable past-trip patterns.
+accessibility), strong dislikes, notable past-trip patterns, and the destinations
+they have been planning or have shown interest in (from ``planned_trips``).
 
 Rules:
 - Treat the user's own "about_me" text as the HIGHEST authority. If structured fields
@@ -66,9 +67,37 @@ Rules:
 Output: plain text only (no markdown, no JSON, no quotes)."""
 
 
+def _planned_trips() -> list[dict[str, Any]]:
+    """Compact list of the user's saved/planned trips (destination + dates +
+    status). These are a durable signal even when the user never stated explicit
+    preferences — planning trips to places is itself meaningful.
+    """
+    try:
+        from tripplanner.tools import trip_planner
+
+        trips = trip_planner.list_saved_trips()
+    except Exception:  # pragma: no cover - storage failure
+        return []
+    out: list[dict[str, Any]] = []
+    for t in trips[:12]:
+        dest = (t.get("destination") or "").strip()
+        if not dest:
+            continue
+        out.append(
+            {
+                "destination": dest,
+                "departure_date": t.get("departure_date") or "",
+                "return_date": t.get("return_date") or "",
+                "status": t.get("status") or "draft",
+            }
+        )
+    return out
+
+
 def _durable_digest(prefs: dict[str, Any]) -> str:
     """Stable hash of the durable signals the summary is built from."""
     snapshot = {k: prefs.get(k) for k in _DIGEST_KEYS}
+    snapshot["__planned__"] = _planned_trips()
     blob = json.dumps(snapshot, sort_keys=True, ensure_ascii=False, default=str)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
@@ -83,6 +112,8 @@ def _has_signal(prefs: dict[str, Any]) -> bool:
     for key in ("interests", "dislikes", "family_members", "learned_notes", "past_trips"):
         if prefs.get(key):
             return True
+    if _planned_trips():
+        return True
     return False
 
 
@@ -105,6 +136,9 @@ def regenerate(prefs: dict[str, Any]) -> str:
         return ""
 
     payload = {k: prefs.get(k) for k in _DIGEST_KEYS if prefs.get(k)}
+    planned = _planned_trips()
+    if planned:
+        payload["planned_trips"] = planned
     try:
         s = get_settings()
         llm = AzureChatOpenAI(

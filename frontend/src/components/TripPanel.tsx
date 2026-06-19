@@ -29,7 +29,7 @@ interface Props {
   onSelect: (kind: string, name: string) => void;
   onDeselect: (kind: string, name: string) => void;
   tripVersion: number;
-  onSwitched: (tripId?: string) => void;
+  onSwitched: (tripId?: string, view?: TripView | null) => void;
   /** Hide the internal saved-trips switcher (RightRail renders it persistently). */
   hideSwitcher?: boolean;
 }
@@ -129,7 +129,7 @@ export function TripSwitcher({
   onSwitched,
 }: {
   version: number;
-  onSwitched: (tripId?: string) => void;
+  onSwitched: (tripId?: string, view?: TripView | null) => void;
 }) {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [open, setOpen] = useState(false);
@@ -159,7 +159,7 @@ export function TripSwitcher({
   const onPick = async (tripId: string) => {
     setOpen(false);
     const v = await switchTrip(tripId);
-    if (v) onSwitched(tripId);
+    if (v) onSwitched(tripId, v);
   };
 
   const onRemove = async (e: React.MouseEvent, tripId: string) => {

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
 import { TripSwitcher } from "./TripPanel";
+import type { TripView } from "../types";
 
 interface Props {
   /** The Photos / overview content (the existing TripPanel). */
@@ -14,7 +15,7 @@ interface Props {
   onStopMap: (kind: string, name: string) => void;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
-  onSwitched: (tripId?: string) => void;
+  onSwitched: (tripId?: string, view?: TripView | null) => void;
   /** Map is lazy (Google Maps JS bills per load) — opt-in, stays mounted. */
   mapOpen: boolean;
   onToggleMap: (open: boolean) => void;

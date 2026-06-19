@@ -141,19 +141,23 @@ export default function App() {
     document.body.style.userSelect = "none";
   };
 
+  const applyView = useCallback((v: TripView, f: NavRef | null) => {
+    setView(v);
+    setTripVersion((n) => n + 1);
+    if (!f) setNavList(v.items.map((it) => ({ kind: it.kind, name: it.name })));
+  }, []);
+
   const refresh = useCallback(
     async (f: NavRef | null = focus) => {
       setLoading(true);
       try {
         const v = await fetchTripView(f ?? undefined);
-        setView(v);
-        setTripVersion((n) => n + 1);
-        if (!f) setNavList(v.items.map((it) => ({ kind: it.kind, name: it.name })));
+        applyView(v, f);
       } finally {
         setLoading(false);
       }
     },
-    [focus]
+    [focus, applyView]
   );
 
   useEffect(() => {
@@ -172,11 +176,18 @@ export default function App() {
     await refresh(null);
   };
 
-  const handleSwitched = async (tripId?: string) => {
+  const handleSwitched = async (tripId?: string, view?: TripView | null) => {
     setChatReloadToken((n) => n + 1);
     setChatTripId(tripId || null);
     setStopFocusName(null);
-    await handleClearFocus();
+    setFocus(null);
+    // The switcher already fetched the fresh view — reuse it instead of making
+    // the server rebuild the (cache-backed) view a second time.
+    if (view) {
+      applyView(view, null);
+    } else {
+      await handleClearFocus();
+    }
   };
 
   const handleNewTrip = async () => {
