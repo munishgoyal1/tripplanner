@@ -351,6 +351,35 @@ def active_trip_id() -> str | None:
     return (active or {}).get("trip_id") if active else None
 
 
+def add_trip_constraint(note: str) -> bool:
+    """Record a one-off, trip-scoped constraint on the active trip.
+
+    Non-tool helper used by the passive-learning sweep when the user states an
+    exception that applies to THIS trip only ("3-star is fine just this time").
+    Deduped case-insensitively. Returns ``True`` if a new constraint was added,
+    ``False`` if there's no active trip or it was a duplicate. Best-effort:
+    never raises.
+    """
+    note = (note or "").strip()
+    if not note:
+        return False
+    try:
+        plan = _load_active_trip()
+        if not plan:
+            return False
+        existing = plan.get("trip_constraints")
+        if not isinstance(existing, list):
+            existing = []
+        if any(str(c).strip().lower() == note.lower() for c in existing):
+            return False
+        existing.append(note)
+        plan["trip_constraints"] = existing
+        _save_active_trip(plan)
+        return True
+    except Exception:  # pragma: no cover - best-effort, storage failure
+        return False
+
+
 def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
     """Add a hotel/attraction to the active trip's selections (UI helper).
 
@@ -693,6 +722,9 @@ def create_trip_plan(
         "total_cost": 0,
         "budget": 0,
         "currency": "",
+        # One-off constraints/exceptions that apply to THIS trip only (e.g.
+        # "3-star is fine just this time"). They never leak into durable prefs.
+        "trip_constraints": [],
     }
     _save_active_trip(plan)
     return (
@@ -729,6 +761,10 @@ def update_trip_plan(updates_json: str) -> str:
       ...) — set it once when you pick the plan's currency so every surface
       (including the budget meter) shows the same symbol
     - notes: string
+    - trip_constraints: list of strings — one-off exceptions/constraints that
+      apply to THIS trip ONLY (e.g. "3-star hotel is fine just for this trip",
+      "OK with one connection this time"). Use this for anything the user says
+      is a one-time exception; NEVER save such one-offs to durable preferences.
 
     Example: '{"selected_flights": [{"option": 1, "airline": "IndiGo", "price": 8500}]}'
     """
@@ -744,7 +780,7 @@ def update_trip_plan(updates_json: str) -> str:
     allowed_keys = {
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
-        "origin", "budget", "currency",
+        "origin", "budget", "currency", "trip_constraints",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     for key, val in updates.items():

@@ -330,6 +330,11 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "total_cost_display": fmt_money(total, symbol),
         "budget": build_budget(trip),
         "family_pills": family_pills(prefs),
+        "constraints": [
+            str(c).strip()
+            for c in (trip.get("trip_constraints") or [])
+            if str(c).strip()
+        ],
     }
 
 

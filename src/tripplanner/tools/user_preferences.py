@@ -92,8 +92,16 @@ _DEFAULT_PREFS: dict[str, Any] = {
     # overwrites the corresponding individual fields (home_city, interests,
     # dietary, etc.). The raw text is also kept verbatim so the agent can
     # quote it back when reasoning.
-    "about_me": "",
-}
+    "about_me": "",    # SYSTEM-authored running summary of the user, synthesized by the LLM from
+    # all durable signals (about_me + structured prefs + interests/dislikes +
+    # family + learned_notes + past_trips). Distinct from "about_me" (which the
+    # user owns/edits): this is derived output the system maintains and the user
+    # may correct or reset. Regenerated only when durable facts change.
+    "profile_summary": "",
+    "profile_summary_updated_at": None,
+    # Cheap digest of the durable signals the last summary was built from — lets
+    # update_summary() skip the LLM call when nothing durable changed.
+    "profile_summary_digest": "",}
 
 
 def _resolve_prefs_path() -> Path:

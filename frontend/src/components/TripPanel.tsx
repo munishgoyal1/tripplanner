@@ -676,6 +676,21 @@ export default function TripPanel({
                 ))}
               </div>
             )}
+
+            {ov.constraints && ov.constraints.length > 0 && (
+              <div className="mt-3 rounded-2xl bg-white/10 px-3 py-2 ring-1 ring-white/15">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+                  Just for this trip
+                </p>
+                <ul className="mt-1 space-y-0.5">
+                  {ov.constraints.map((c) => (
+                    <li key={c} className="text-xs text-white/90">
+                      • {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
 

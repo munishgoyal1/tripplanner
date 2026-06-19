@@ -49,6 +49,7 @@ export interface TripOverview {
   total_cost_display: string;
   budget?: Budget | null;
   family_pills?: string[];
+  constraints?: string[];
 }
 
 export interface TripView {

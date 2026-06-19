@@ -44,6 +44,26 @@ _SIGNAL_RE = re.compile(
 
 _MIN_CHARS = 12
 
+# Trip-scoped cues: when present, the statement is a ONE-OFF exception for the
+# current trip, NOT a durable preference. Routing it to the active trip's
+# constraints prevents "3-star is fine just this time" from being learned as a
+# permanent "prefers 3-star hotels" preference.
+_TRIP_SCOPE_RE = re.compile(
+    r"\b("
+    r"just\s+(for\s+)?this\s+(trip|time|one)|"
+    r"this\s+trip\s+only|only\s+this\s+trip|"
+    r"this\s+time|for\s+now|for\s+this\s+one|on\s+this\s+one|"
+    r"make\s+an\s+exception|just\s+once|one[\s-]?off|"
+    r"only\s+for\s+(this|now)"
+    r")\b",
+    re.I,
+)
+
+
+def has_trip_scope_cue(text: str) -> bool:
+    """True when ``text`` frames a statement as a one-off, trip-only exception."""
+    return bool(_TRIP_SCOPE_RE.search(text or ""))
+
 
 def has_learnable_signal(text: str) -> bool:
     """True when ``text`` is worth running the (billed) extractor over."""
@@ -57,10 +77,22 @@ def learn_from_message(text: str) -> list[str]:
     """Extract durable prefs from one user message and overlay additively.
 
     Returns the list of top-level preference keys touched (empty on no-op or on
-    any failure). Never raises.
+    any failure). Trip-scoped one-offs ("just for this trip") are routed to the
+    active trip's constraints instead and return ``["trip_constraint"]`` (no
+    durable change). Never raises.
     """
     try:
         text = (text or "").strip()
+        # One-off exceptions go to the trip, never to durable preferences.
+        if has_trip_scope_cue(text):
+            try:
+                from tripplanner.tools import trip_planner
+
+                if trip_planner.add_trip_constraint(text):
+                    return ["trip_constraint"]
+            except Exception as exc:  # pragma: no cover - best-effort
+                log.warning("trip-scope constraint capture failed: %s", exc)
+            return []
         if not has_learnable_signal(text):
             return []
         extracted: dict[str, Any] = about_me_extractor.extract_about_me(text) or {}

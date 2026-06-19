@@ -354,6 +354,8 @@ export interface Preferences {
   interests: string[];
   dislikes: string[];
   about_me: string;
+  profile_summary: string;
+  profile_summary_updated_at?: string | null;
 }
 
 export async function fetchPreferences(): Promise<Preferences> {
@@ -374,6 +376,16 @@ export async function savePreferences(prefs: Preferences): Promise<SavePrefsResu
     body: JSON.stringify({ ...prefs, user_id: getUserId() }),
   });
   return res.json();
+}
+
+export async function regenerateProfileSummary(): Promise<string> {
+  const res = await fetch(`${BASE}/profile/summary/regenerate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ kind: "", name: "", user_id: getUserId() }),
+  });
+  const data = await res.json();
+  return (data && data.profile_summary) || "";
 }
 
 export type PrivacyAction = "delete_trip_history" | "clear_all_data" | "delete_account";

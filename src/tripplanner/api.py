@@ -118,11 +118,15 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
     threads). Best-effort — all failures are swallowed.
     """
     def _worker() -> None:
-        from tripplanner.tools import passive_learning
+        from tripplanner.tools import passive_learning, profile_summary
         from tripplanner.user_context import set_user_id
 
         set_user_id(user_id)
         passive_learning.learn_from_message(message)
+        # Refresh the system-authored profile summary. Gated internally by a
+        # durable-facts digest, so this is a no-op (no LLM call) when nothing
+        # durable changed — including trip-scoped one-offs.
+        profile_summary.update_summary()
 
     try:
         task = asyncio.create_task(asyncio.to_thread(_worker))
@@ -183,6 +187,9 @@ class PreferencesRequest(BaseModel):
     # Free-text "About me" blurb. When provided and changed, the backend runs
     # the LLM extractor and additively overlays the structured fields it finds.
     about_me: str | None = None
+    # System-authored profile summary. When provided, it's stored verbatim
+    # (user correction / reset via empty string); not the same as about_me.
+    profile_summary: str | None = None
 
 
 class PrivacyActionRequest(BaseModel):
@@ -819,6 +826,8 @@ async def get_preferences(user_id: str = "local") -> dict:
         "interests": list(prefs.get("interests") or []),
         "dislikes": list(prefs.get("dislikes") or []),
         "about_me": prefs.get("about_me") or "",
+        "profile_summary": prefs.get("profile_summary") or "",
+        "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
     }
 
 
@@ -872,9 +881,33 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
         prefs, extracted_keys = preferences_merge.apply_about_me(prefs, req.about_me)
 
     prefs_store.save_preferences(prefs)
+
+    # User-corrected / reset profile summary is stored verbatim (and stamps the
+    # current digest so the background sweep won't immediately overwrite it).
+    if req.profile_summary is not None:
+        from tripplanner.tools import profile_summary as profile_summary_mod
+
+        profile_summary_mod.set_summary(req.profile_summary)
+
     app_event("api_preferences_saved")
     return {"ok": True, "about_me_extracted": extracted_keys}
 
+
+@app.post("/profile/summary/regenerate")
+async def regenerate_profile_summary(req: SelectRequest) -> dict:
+    """Force a fresh LLM-authored profile summary for the user.
+
+    Re-uses ``SelectRequest`` only for ``user_id`` (``kind``/``name`` ignored).
+    Returns the new ``profile_summary`` (may be empty if there's nothing durable
+    to summarize or the model is unavailable).
+    """
+    from tripplanner.tools import profile_summary as profile_summary_mod
+    from tripplanner.user_context import set_user_id
+
+    set_user_id(req.user_id)
+    summary = profile_summary_mod.update_summary(force=True)
+    app_event("api_profile_summary_regenerated")
+    return {"ok": True, "profile_summary": summary}
 
 @app.post("/account/privacy")
 async def account_privacy_action(req: PrivacyActionRequest) -> dict:

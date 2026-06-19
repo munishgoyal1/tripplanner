@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchPreferences, savePreferences, type Preferences } from "../api";
+import {
+  fetchPreferences,
+  savePreferences,
+  regenerateProfileSummary,
+  type Preferences,
+} from "../api";
 
 interface Props {
   onClose: () => void;
@@ -23,6 +28,7 @@ export default function SettingsModal({ onClose }: Props) {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
   const [extracted, setExtracted] = useState<string[] | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
 
   useEffect(() => {
     fetchPreferences()
@@ -49,6 +55,17 @@ export default function SettingsModal({ onClose }: Props) {
       }
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function regenerate() {
+    if (!prefs) return;
+    setRegenerating(true);
+    try {
+      const summary = await regenerateProfileSummary();
+      setPrefs((p) => (p ? { ...p, profile_summary: summary } : p));
+    } finally {
+      setRegenerating(false);
     }
   }
 
@@ -92,6 +109,43 @@ export default function SettingsModal({ onClose }: Props) {
                 were added without removing anything you'd already set.
               </div>
             )}
+            <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
+              <div className="mb-1 flex items-center justify-between">
+                <span className="text-xs font-medium text-slate-500">
+                  What I've learned about you
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={regenerate}
+                    disabled={regenerating}
+                    className="text-xs font-medium text-brand hover:underline disabled:opacity-40"
+                  >
+                    {regenerating ? "Thinking…" : "Regenerate"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => set("profile_summary", "")}
+                    className="text-xs text-slate-400 hover:text-ink"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+              <textarea
+                className="input min-h-[80px] resize-y bg-white"
+                placeholder={
+                  "I keep a running summary of you here from our chats. It " +
+                  "updates itself in the background — edit or reset it any time."
+                }
+                value={prefs.profile_summary}
+                onChange={(e) => set("profile_summary", e.target.value)}
+              />
+              <p className="mt-1 text-[11px] text-slate-400">
+                This is my summary of you (distinct from “About me”, which is
+                yours). I refresh it after our conversations; your edits stick.
+              </p>
+            </div>
             <Field label="Display name">
               <input
                 className="input"
