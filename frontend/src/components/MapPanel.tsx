@@ -89,9 +89,13 @@ interface Props {
   reloadToken?: number;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
+  /** Add a place to the trip (from a pin's info window). */
+  onSelect?: (kind: string, name: string) => void;
+  /** Remove a place from the trip (from a pin's info window). */
+  onDeselect?: (kind: string, name: string) => void;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,6 +107,16 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
   const infoRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
   const openInfoRef = useRef<((p: MapPin) => void) | null>(null); // latest draw's info opener
+  // Latest add/remove callbacks + the pin whose info window is open, read by
+  // the InfoWindow's (raw-HTML) toggle button. Kept in refs so the one-time
+  // domready listener always sees current values without re-binding.
+  const cbRef = useRef<{
+    onSelect?: (kind: string, name: string) => void;
+    onDeselect?: (kind: string, name: string) => void;
+  }>({});
+  cbRef.current = { onSelect, onDeselect };
+  const openPinRef = useRef<MapPin | null>(null);
+  const confirmRef = useRef(false); // armed for a two-click remove
 
   // ---- data + config -------------------------------------------------------
   useEffect(() => {
@@ -141,6 +155,34 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
           fullscreenControl: true,
         });
         infoRef.current = new google.maps.InfoWindow();
+        // Wire the info-window's in-HTML add/remove button once. The handler
+        // reads the open pin + latest callbacks from refs. Removal is a
+        // two-click confirm so a stray tap can't drop a place.
+        google.maps.event.addListener(infoRef.current, "domready", () => {
+          const btn = document.getElementById("gm-trip-toggle");
+          if (!btn) return;
+          (btn as HTMLButtonElement).onclick = () => {
+            const p = openPinRef.current;
+            if (!p) return;
+            const cb = cbRef.current;
+            if (p.selected) {
+              if (!confirmRef.current) {
+                confirmRef.current = true;
+                btn.textContent = "Click again to remove";
+                (btn as HTMLButtonElement).style.background = "#e11d48";
+                (btn as HTMLButtonElement).style.color = "#fff";
+                setTimeout(() => {
+                  confirmRef.current = false;
+                }, 3000);
+                return;
+              }
+              confirmRef.current = false;
+              cb.onDeselect?.(p.kind, p.name);
+            } else {
+              cb.onSelect?.(p.kind, p.name);
+            }
+          };
+        });
         draw();
       })
       .catch(() => {
@@ -280,6 +322,8 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
 
     function openInfo(p: MapPin) {
       if (!infoRef.current) return;
+      openPinRef.current = p;
+      confirmRef.current = false;
       const badge = p.selected
         ? `<span style="background:#e11d48;color:#fff;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600">In trip</span>`
         : `<span style="background:#f1f5f9;color:#475569;border-radius:9999px;padding:1px 8px;font-size:11px">Suggested</span>`;
@@ -293,6 +337,16 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
       const photo = p.photo
         ? `<img src="${escapeAttr(p.photo)}" style="width:100%;height:96px;object-fit:cover;border-radius:8px;margin-bottom:6px"/>`
         : "";
+      // Add/remove control. Hotels and attractions can be toggled; other pins
+      // (airport) can't. Selected → rose "Remove", else brand "+ Add to trip".
+      const togglable = p.kind === "hotel" || p.kind === "attraction";
+      const toggleBtn = togglable
+        ? `<button id="gm-trip-toggle" style="margin-top:8px;width:100%;border:none;border-radius:9999px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;${
+            p.selected
+              ? "background:#fff1f2;color:#be123c;box-shadow:inset 0 0 0 1px #fecdd3"
+              : "background:#e11d48;color:#fff"
+          }">${p.selected ? "\u2715 Remove from trip" : "+ Add to trip"}</button>`
+        : "";
       infoRef.current.setContent(
         `<div style="max-width:220px;font-family:Inter,sans-serif">
            ${photo}
@@ -300,6 +354,7 @@ export default function MapPanel({ reloadToken = 0, focusName }: Props) {
            <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">${badge}${dayTag}${seqTag}</div>
            ${rating}
            <div style="color:#64748b;font-size:11px;margin-top:2px">${escapeHtml(p.address || "")}</div>
+           ${toggleBtn}
          </div>`
       );
       infoRef.current.setPosition({ lat: p.lat, lng: p.lng });

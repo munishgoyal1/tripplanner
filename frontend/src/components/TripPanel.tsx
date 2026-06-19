@@ -253,6 +253,14 @@ function ItemCard({
   const icon = ICONS[item.kind] ?? "\u{1F4CD}";
   const photos = item.photos;
   const heroHeight = focused ? "h-72" : "h-52";
+  // Two-step remove: the first click arms, a second confirms. Auto-disarms
+  // after a moment so a stray click never drops a place from the trip.
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  useEffect(() => {
+    if (!confirmRemove) return;
+    const t = setTimeout(() => setConfirmRemove(false), 3000);
+    return () => clearTimeout(t);
+  }, [confirmRemove]);
   return (
     <article className="card card-hover group">
       {photos.length > 0 ? (
@@ -351,12 +359,33 @@ function ItemCard({
           {isSelectable(item.kind) &&
             (item.selected ? (
               <button
-                onClick={() => onDeselect(item.kind, item.name)}
-                title="Remove this from your saved trip picks"
-                className="group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-rose-50 hover:text-rose-700 hover:ring-rose-200"
+                onClick={() => {
+                  if (confirmRemove) {
+                    setConfirmRemove(false);
+                    onDeselect(item.kind, item.name);
+                  } else {
+                    setConfirmRemove(true);
+                  }
+                }}
+                title={
+                  confirmRemove
+                    ? "Click again to remove this from your trip"
+                    : "Remove this from your trip"
+                }
+                className={
+                  confirmRemove
+                    ? "inline-flex items-center justify-center gap-1.5 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white ring-1 ring-rose-600 transition"
+                    : "group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-rose-50 hover:text-rose-700 hover:ring-rose-200"
+                }
               >
-                <span className="group-hover/btn:hidden">✓ Saved</span>
-                <span className="hidden group-hover/btn:inline">✕ Remove</span>
+                {confirmRemove ? (
+                  <span>Click again to remove</span>
+                ) : (
+                  <>
+                    <span className="group-hover/btn:hidden">✓ In trip</span>
+                    <span className="hidden group-hover/btn:inline">✕ Remove</span>
+                  </>
+                )}
               </button>
             ) : (
               <button

@@ -136,7 +136,27 @@ def _make_stop(name: str, kind: str, summary: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _day_stats(day: dict[str, Any], destination: str) -> dict[str, Any]:
+def _style_caps(plan: dict[str, Any] | None) -> tuple[int, int, float]:
+    """Per-day fullness caps tuned to the trip's style.
+
+    A trip tagged ``relaxed``/``leisure`` should feel unhurried, so it packs
+    fewer stops and less driving per day before the rebalancer trims a
+    low-value stop; a ``packed`` style tolerates more. Returns
+    ``(max_stops, max_duration_min, max_distance_km)``.
+    """
+    style = str((plan or {}).get("trip_style") or "").strip().lower()
+    if style in {"relaxed", "leisure"}:
+        return (4, 300, 14.0)
+    if style in {"packed", "packed_sightseeing", "adventure", "adventurous"}:
+        return (6, 420, 22.0)
+    return (_MAX_DAY_STOPS, _MAX_DAY_DURATION_MIN, _MAX_DAY_DISTANCE_KM)
+
+
+def _day_stats(
+    day: dict[str, Any],
+    destination: str,
+    caps: tuple[int, int, float] | None = None,
+) -> dict[str, Any]:
     stops = day.get("stops") if isinstance(day.get("stops"), list) else []
     coords: list[tuple[float, float]] = []
     selected_attractions = 0
@@ -167,13 +187,18 @@ def _day_stats(day: dict[str, Any], destination: str) -> dict[str, Any]:
     for idx in range(1, len(coords)):
         route_km += _haversine_km(coords[idx - 1], coords[idx])
 
+    max_stops, max_duration, max_km = caps or (
+        _MAX_DAY_STOPS,
+        _MAX_DAY_DURATION_MIN,
+        _MAX_DAY_DISTANCE_KM,
+    )
     return {
         "count": len(stops),
         "selected_attractions": selected_attractions,
         "booked": booked,
         "duration_min": duration,
         "route_km": route_km,
-        "packed": len(stops) >= _MAX_DAY_STOPS or duration >= _MAX_DAY_DURATION_MIN or route_km >= _MAX_DAY_DISTANCE_KM,
+        "packed": len(stops) >= max_stops or duration >= max_duration or route_km >= max_km,
     }
 
 
@@ -243,7 +268,7 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
     if not isinstance(day, dict):
         return alerts
     destination = str(plan.get("destination") or "")
-    stats = _day_stats(day, destination)
+    stats = _day_stats(day, destination, _style_caps(plan))
     if not stats["packed"]:
         return alerts
     removal = _remove_candidate(day, destination, new_name)
@@ -419,18 +444,23 @@ def remove_selection(kind: str, name: str) -> bool:
     bucket = plan.get(key) or []
     target = str(name or "").strip().lower()
     kept = [x for x in bucket if str(x.get("name") or "").strip().lower() != target]
-    if len(kept) == len(bucket):
-        return True
-    plan[key] = kept
+    changed = len(kept) != len(bucket)
+    if changed:
+        plan[key] = kept
+    # Also strip the place from the day-by-day itinerary. A place can live in
+    # the itinerary without being in the selected bucket (the agent placed it
+    # directly), so do this even when the bucket was unchanged.
     itinerary = plan.get("day_wise_itinerary") or []
     for day in itinerary:
         if not isinstance(day, dict):
             continue
         stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-        day["stops"] = [
-            s for s in stops if _stop_name(s).strip().lower() != target
-        ]
-    _save_active_trip(plan)
+        pruned = [s for s in stops if _stop_name(s).strip().lower() != target]
+        if len(pruned) != len(stops):
+            day["stops"] = pruned
+            changed = True
+    if changed:
+        _save_active_trip(plan)
     return True
 
 

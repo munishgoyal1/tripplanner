@@ -206,6 +206,8 @@ export default function App() {
       setView({ ...next.view, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
     }
+    // Refresh the map + itinerary panes, which are keyed on tripVersion.
+    setTripVersion((n) => n + 1);
   };
 
   const handleDeselect = async (kind: string, name: string) => {
@@ -217,6 +219,7 @@ export default function App() {
       setView({ ...next.view, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
     }
+    setTripVersion((n) => n + 1);
   };
 
   const revealPane = (pane: PaneId) => {
@@ -325,7 +328,14 @@ export default function App() {
       );
     }
     if (pane === "map") {
-      return <MapPanel reloadToken={tripVersion} focusName={stopFocusName} />;
+      return (
+        <MapPanel
+          reloadToken={tripVersion}
+          focusName={stopFocusName}
+          onSelect={handleSelect}
+          onDeselect={handleDeselect}
+        />
+      );
     }
     return <TripPanel {...tripPanelProps} hideSwitcher />;
   };

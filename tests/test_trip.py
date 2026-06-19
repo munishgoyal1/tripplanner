@@ -214,6 +214,7 @@ from tripplanner.tools.trip_planner import (
     finalize_trip,
     get_trip_plan,
     list_past_trips,
+    remove_selection,
     set_stop_booked,
     update_trip_plan,
 )
@@ -280,6 +281,23 @@ class TestTripPlanState:
         assert set_stop_booked(1, "baga beach", False) is True
         plan = json.loads(get_trip_plan.invoke({}))
         assert plan["day_wise_itinerary"][0]["stops"][0]["booked"] is False
+
+    def test_remove_selection_drops_itinerary_only_place(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        # Place a stop directly in the itinerary WITHOUT adding it to a
+        # selected_* bucket (mimics the agent weaving it into the plan).
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Fort Aguada", "kind": "attraction"}]},
+            ],
+        })})
+        assert remove_selection("attraction", "Fort Aguada") is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"][0]["stops"] == []
 
     def test_set_stop_booked_normalizes_string_stop(self):
         create_trip_plan.invoke({

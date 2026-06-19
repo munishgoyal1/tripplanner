@@ -299,6 +299,31 @@ def _selected_names(trip: dict[str, Any] | None, kind: str) -> set[str]:
     return out
 
 
+def _itinerary_names(trip: dict[str, Any] | None) -> set[str]:
+    """Lowercased names of every place already woven into the day-by-day
+    itinerary. A place can be part of the itinerary without sitting in the
+    ``selected_*`` buckets (e.g. the agent placed it directly), and the UI
+    should treat those as already in the trip — showing "Remove", not "Add".
+    """
+    if not trip:
+        return set()
+    out: set[str] = set()
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        stops = day.get("stops")
+        if not isinstance(stops, list):
+            continue
+        for s in stops:
+            if isinstance(s, dict):
+                name = str(s.get("name") or "").strip()
+            else:
+                name = str(s or "").strip()
+            if name:
+                out.add(name.lower())
+    return out
+
+
 # ---------------------------------------------------------------------------
 # view-model assembly (may hit Places for photos/reviews)
 # ---------------------------------------------------------------------------
@@ -339,7 +364,10 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
 
 
 def _build_item(
-    ref: dict[str, str], destination: str, selected_names: dict[str, set[str]]
+    ref: dict[str, str],
+    destination: str,
+    selected_names: dict[str, set[str]],
+    itinerary_names: set[str] | None = None,
 ) -> dict[str, Any]:
     name = ref["name"]
     kind = ref.get("kind", "place")
@@ -354,10 +382,12 @@ def _build_item(
         for r in (info.get("reviews") or [])[:_MAX_REVIEWS_PER_ITEM]
         if (r.get("text") or "").strip()
     ]
+    key = name.strip().lower()
+    selected = key in selected_names.get(kind, set()) or key in (itinerary_names or set())
     return {
         "kind": kind,
         "name": info.get("name") or name,
-        "selected": name.strip().lower() in selected_names.get(kind, set()),
+        "selected": selected,
         "rating": info.get("rating"),
         "review_count": info.get("review_count"),
         "address": info.get("address") or "",
@@ -401,10 +431,13 @@ def build_view(
         "hotel": _selected_names(trip, "hotel"),
         "attraction": _selected_names(trip, "attraction"),
     }
+    itinerary_names = _itinerary_names(trip)
     places_cache.prefetch(
         [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
     )
-    items = [_build_item(ref, destination, selected_names) for ref in refs]
+    items = [
+        _build_item(ref, destination, selected_names, itinerary_names) for ref in refs
+    ]
 
     title = f"\u2708\ufe0f {destination}" if destination else "Trip planner"
     if focus and focus.get("name"):
@@ -537,6 +570,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         "hotel": _selected_names(trip, "hotel"),
         "attraction": _selected_names(trip, "attraction"),
     }
+    itinerary_names = _itinerary_names(trip)
 
     # Structured itinerary stops are authoritative for what should appear on
     # the map and in which order/day. Keep an explicit day map so duplicated
@@ -611,7 +645,10 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         if lat is None or lng is None:
             continue
         photos = places_cache.get_photos(name, destination, max_photos=1)
-        is_sel = name.strip().lower() in selected.get(kind, set())
+        is_sel = (
+            name.strip().lower() in selected.get(kind, set())
+            or name.strip().lower() in itinerary_names
+        )
         pins.append(
             {
                 "id": f"p{i}",

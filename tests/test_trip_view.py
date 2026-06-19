@@ -79,6 +79,23 @@ def test_build_view_overview_and_items() -> None:
     assert hotel["reviews"]
 
 
+def test_itinerary_only_place_reads_as_in_trip() -> None:
+    """A place woven into the day-by-day itinerary but absent from the selected
+    buckets should still surface as ``selected`` so the panel shows Remove."""
+    trip = {
+        "status": "draft",
+        "destination": "Goa",
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Fort Aguada", "kind": "attraction"}]}
+        ],
+    }
+    view = trip_view.build_view(trip, None)
+    fort = next(i for i in view["items"] if i["name"] == "Fort Aguada")
+    assert fort["selected"] is True
+
+
 def test_fallback_uses_destination_highlights() -> None:
     trip = {"status": "draft", "destination": "Goa", "selected_hotels": [], "selected_activities": []}
     view = trip_view.build_view(trip, None)
