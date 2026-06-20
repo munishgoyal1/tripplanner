@@ -853,7 +853,7 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
 
 
 @app.post("/trip/share")
-async def trip_share(req: SelectRequest) -> dict:
+async def trip_share(req: SelectRequest, request: Request) -> dict:
     """Mint an opaque read-only share token for the active trip.
 
     Re-using ``SelectRequest`` only for its ``user_id`` field — ``kind``/``name``
@@ -866,20 +866,21 @@ async def trip_share(req: SelectRequest) -> dict:
     token = mint_for_active_trip()
     if not token:
         return {"error": "no active trip to share"}
-    return {"token": token, "url": f"/trip/shared/{token}"}
+    base = str(request.base_url).rstrip("/")
+    return {"token": token, "url": f"{base}/trip/shared/{token}"}
 
 
 @app.get("/trip/shared/{token}")
-async def trip_shared_view(token: str) -> dict:
-    """Public read-only view of a shared trip plan. No auth required."""
-    from tripplanner.web.share import resolve
+async def trip_shared_view(token: str) -> Response:
+    """Public read-only HTML snapshot of a shared trip plan."""
+    from tripplanner.web.share import render_public_html
 
-    plan = resolve(token)
-    if plan is None:
+    html = render_public_html(token)
+    if html is None:
         return JSONResponse(
             {"error": "invalid or expired share link"}, status_code=404
         )
-    return {"plan": plan}
+    return Response(content=html, media_type="text/html; charset=utf-8")
 
 
 @app.get("/preferences")

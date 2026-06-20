@@ -367,8 +367,7 @@ export async function shareActiveTrip(): Promise<string> {
   if (json.error || !json.token) {
     throw new Error(json.error || "could not mint share link");
   }
-  // The API returns a path; turn it into an absolute, copy-friendly URL.
-  return `${window.location.origin}${json.url}`;
+  return String(json.url || "");
 }
 
 export interface Preferences {

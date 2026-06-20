@@ -1143,7 +1143,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         try:
             coords = places_cache.place_coords(name, destination)
             if coords:
-                place_coords_map[name] = coords
+                place_coords_map[name.strip().lower()] = coords
         except Exception:
             pass
 
@@ -1163,7 +1163,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 s["color"] = _day_color(day_num)
                 stops.append(s)
                 # Accumulate coords for route stats.
-                coords = place_coords_map.get(s["name"])
+                coords = place_coords_map.get(str(s["name"] or "").strip().lower())
                 if coords:
                     day_coords.append(coords)
                 total_stops += 1

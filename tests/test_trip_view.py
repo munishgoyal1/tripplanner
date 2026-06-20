@@ -31,6 +31,14 @@ SAMPLE_TRIP: dict[str, Any] = {
 
 @pytest.fixture(autouse=True)
 def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    coords = {
+        "taj exotica resort": (15.04, 73.92),
+        "dudhsagar falls trek": (15.31, 74.31),
+        "aguada fort": (15.498, 73.773),
+        "calangute beach": (15.5439, 73.7553),
+        "basilica of bom jesus": (15.5009, 73.9110),
+    }
+
     def fake_photos(name: str, city: str, max_photos: int = 3, **_kw: Any) -> list[str]:
         return [f"https://example.test/{name}/{i}.jpg" for i in range(min(max_photos, 2))]
 
@@ -49,8 +57,12 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
         base = {"hotel": ["Grand Hyatt", "ITC Grand"], "attraction": ["Fort Aguada", "Dudhsagar"]}
         return base.get(kind, [])[:n]
 
+    def fake_coords(name: str, city: str = "") -> tuple[float, float] | None:
+        return coords.get(str(name).strip().lower())
+
     monkeypatch.setattr(trip_view.places_cache, "get_photos", fake_photos)
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "place_coords", fake_coords)
     monkeypatch.setattr(trip_view.places_cache, "top_places", fake_top)
     monkeypatch.setattr(trip_view.user_preferences, "load_preferences", lambda: {})
 
@@ -552,6 +564,8 @@ def test_itinerary_structured_stops() -> None:
     assert act["duration_min"] == 120
     assert act["note"] == "carry water"
     assert act["selected"] is True
+    assert d1["route"] is not None
+    assert d1["route"]["distance_display"]
     # day colors differ
     assert it["days"][0]["color"] != it["days"][1]["color"]
 

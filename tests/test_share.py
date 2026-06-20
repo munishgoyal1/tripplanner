@@ -1,4 +1,4 @@
-"""Tests for read-only share-link tokens (#6.3)."""
+"""Tests for persistent shared trip snapshots."""
 
 from __future__ import annotations
 
@@ -50,48 +50,21 @@ def _write_active(plan: dict) -> None:
     )
 
 
-def test_mint_and_verify_roundtrip() -> None:
-    token = share.mint_token("alice", "2026-09-15T08:00:00")
-    payload = share.verify_token(token)
-    assert payload == {"u": "alice", "c": "2026-09-15T08:00:00"}
-
-
 def test_token_is_idempotent() -> None:
-    """Same (owner, trip) -> same token, so share links are stable."""
-    t1 = share.mint_token("alice", "2026-09-15T08:00:00")
-    t2 = share.mint_token("alice", "2026-09-15T08:00:00")
+    """Sharing the same unchanged snapshot yields the same token."""
+    plan = _make_plan()
+    _write_active(plan)
+    t1 = share.mint_for_active_trip()
+    t2 = share.mint_for_active_trip()
     assert t1 == t2
 
 
-def test_token_is_unguessable_per_owner() -> None:
-    t_alice = share.mint_token("alice", "2026-09-15T08:00:00")
-    t_bob = share.mint_token("bob", "2026-09-15T08:00:00")
-    assert t_alice != t_bob
-
-
-def test_verify_rejects_tampered_token() -> None:
-    token = share.mint_token("alice", "2026-09-15T08:00:00")
-    head, body, sig = token.split(".")
-    # Flip a byte in the signature.
-    bad_sig = sig[:-2] + ("aa" if sig[-2:] != "aa" else "bb")
-    assert share.verify_token(f"{head}.{body}.{bad_sig}") is None
-
-
-def test_verify_rejects_secret_rotation() -> None:
-    token = share.mint_token("alice", "2026-09-15T08:00:00")
-    import os
-
-    os.environ["WEB_SESSION_SECRET"] = "rotated-secret"
-    try:
-        assert share.verify_token(token) is None
-    finally:
-        os.environ["WEB_SESSION_SECRET"] = "test-secret-pin"
-
-
-def test_verify_rejects_garbage() -> None:
-    assert share.verify_token("") is None
-    assert share.verify_token("not.a.token.at.all") is None
-    assert share.verify_token("v1.notbase64!!.also-not") is None
+def test_new_snapshot_after_plan_changes() -> None:
+    _write_active(_make_plan())
+    t1 = share.mint_for_active_trip()
+    _write_active(_make_plan(summary="updated summary"))
+    t2 = share.mint_for_active_trip()
+    assert t1 != t2
 
 
 def test_mint_for_active_trip_returns_none_without_plan() -> None:
@@ -105,8 +78,9 @@ def test_resolve_active_trip() -> None:
     assert token is not None
     resolved = share.resolve(token)
     assert resolved is not None
-    assert resolved["destination"] == "Lisbon"
-    assert resolved["day_wise_itinerary"][0]["plan"] == "Tram 28 ride"
+    assert resolved["plan"]["destination"] == "Lisbon"
+    assert resolved["plan"]["day_wise_itinerary"][0]["plan"] == "Tram 28 ride"
+    assert "<html>" in resolved["html"].lower()
 
 
 def test_resolve_strips_private_fields() -> None:
@@ -114,9 +88,10 @@ def test_resolve_strips_private_fields() -> None:
     _write_active(plan)
     token = share.mint_for_active_trip()
     resolved = share.resolve(token)
-    assert "agent_scratchpad" not in resolved
+    public = resolved["plan"]
+    assert "agent_scratchpad" not in public
     # And only public keys are present:
-    for key in resolved:
+    for key in public:
         assert key in {
             "destination",
             "origin",
@@ -131,13 +106,24 @@ def test_resolve_strips_private_fields() -> None:
             "selected_activities",
             "day_wise_itinerary",
             "estimated_total_cost",
+            "total_cost",
             "currency",
             "notes",
             "summary",
+            "created_at",
+            "updated_at",
         }
 
 
 def test_resolve_returns_none_for_unknown_trip() -> None:
-    token = share.mint_token("alice", "2099-01-01T00:00:00")
-    assert share.resolve(token) is None
+    assert share.resolve("s1_missing") is None
+
+
+def test_snapshot_survives_live_trip_changes() -> None:
+    _write_active(_make_plan(summary="first"))
+    token = share.mint_for_active_trip()
+    _write_active(_make_plan(summary="second"))
+    resolved = share.resolve(token)
+    assert resolved is not None
+    assert resolved["plan"].get("summary") == "first"
 
