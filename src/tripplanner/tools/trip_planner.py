@@ -136,6 +136,61 @@ def _make_stop(name: str, kind: str, summary: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _parse_hhmm(value: str) -> int | None:
+    text = str(value or "").strip()
+    m = re.match(r"^(\d{1,2}):(\d{2})$", text)
+    if not m:
+        return None
+    hh = int(m.group(1))
+    mm = int(m.group(2))
+    if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+        return None
+    return hh * 60 + mm
+
+
+def _fmt_hhmm(minutes: int) -> str:
+    m = max(0, min(minutes, 23 * 60 + 59))
+    return f"{m // 60:02d}:{m % 60:02d}"
+
+
+def _infer_stop_time(stops: list[Any], insert_at: int, kind: str) -> str:
+    """Infer a sensible HH:MM slot for a new stop when time is missing.
+
+    Uses neighboring timed stops when available (midpoint), otherwise offsets
+    from nearest known neighbor; falls back to a stable day anchor.
+    """
+    prev_time: int | None = None
+    next_time: int | None = None
+
+    for i in range(insert_at - 1, -1, -1):
+        raw = stops[i]
+        if isinstance(raw, dict):
+            t = _parse_hhmm(str(raw.get("time") or ""))
+            if t is not None:
+                prev_time = t
+                break
+
+    for i in range(insert_at, len(stops)):
+        raw = stops[i]
+        if isinstance(raw, dict):
+            t = _parse_hhmm(str(raw.get("time") or ""))
+            if t is not None:
+                next_time = t
+                break
+
+    if prev_time is not None and next_time is not None and next_time > prev_time:
+        return _fmt_hhmm((prev_time + next_time) // 2)
+    if prev_time is not None:
+        return _fmt_hhmm(min(prev_time + 120, 22 * 60))
+    if next_time is not None:
+        return _fmt_hhmm(max(next_time - 120, 8 * 60))
+
+    # Stable defaults when no context exists.
+    if kind == "hotel":
+        return "15:00"
+    return "11:00"
+
+
 def _style_caps(plan: dict[str, Any] | None) -> tuple[int, int, float]:
     """Per-day fullness caps tuned to the trip's style.
 
@@ -344,6 +399,10 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
         stops.append(stop)
     else:
         stops.insert(insert_at, stop)
+
+    if not str(stop.get("time") or "").strip():
+        stop["time"] = _infer_stop_time(stops, insert_at, stop_kind)
+
     alerts.append(f"I placed {name} on Day {best_idx + 1} in stop {insert_at + 1}.")
     alerts.extend(_rebalance_day(plan, best_idx, name, stop_kind))
     return alerts

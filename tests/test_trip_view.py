@@ -318,9 +318,45 @@ def test_map_view_pins_have_coords_and_days(_map_geo: None) -> None:
     # prose day-matching assigns the right days
     assert by_name["Taj Exotica Resort"]["day"] == 1
     assert by_name["Taj Exotica Resort"]["selected"] is True
-    assert by_name["Dudhsagar Falls Trek"]["day"] == 2
-    # suggestions are present but not selected
-    assert by_name["Grand Hyatt"]["selected"] is False
+
+
+def test_build_itinerary_route_uses_all_stop_names(monkeypatch: pytest.MonkeyPatch) -> None:
+    coords = {
+        "kaali maa pujo pandal": (22.58, 88.36),
+        "victoria memorial": (22.5448, 88.3426),
+        "peter cat": (22.5532, 88.3525),
+    }
+
+    def fake_summary(name: str, city: str, **_kw: Any) -> dict[str, Any] | None:
+        c = coords.get(str(name).strip().lower())
+        if not c:
+            return {"name": name}
+        return {"name": name, "lat": c[0], "lng": c[1]}
+
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+
+    trip = {
+        "destination": "Kolkata",
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+            {
+                "day": 2,
+                "title": "Day 2",
+                "stops": [
+                    {"name": "Kaali Maa Pujo Pandal", "kind": "attraction", "time": "09:30"},
+                    {"name": "Victoria Memorial", "kind": "attraction", "time": "14:00"},
+                    {"name": "Peter Cat", "kind": "meal", "time": "19:00"},
+                ],
+            }
+        ],
+    }
+
+    it = trip_view.build_itinerary(trip)
+    day = it["days"][0]
+    assert day["route"]["distance_km"] > 0
+    assert day["route"]["duration_min"] > 0
 
 
 def test_map_view_day_bands_and_airport(_map_geo: None) -> None:

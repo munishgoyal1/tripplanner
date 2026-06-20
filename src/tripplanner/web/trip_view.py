@@ -973,6 +973,18 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     lat, lng = info.get("lat"), info.get("lng")
     if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
         return (float(lat), float(lng))
+
+    # Retry without parenthetical qualifiers ("Place (Area)") which often
+    # reduce match quality in text search.
+    plain = re.sub(r"\s*\([^)]*\)", "", str(name or "")).strip()
+    if plain and plain.lower() != str(name or "").strip().lower():
+        try:
+            info2 = places_cache.get_summary(plain, destination) or {}
+        except Exception:  # noqa: BLE001
+            return None
+        lat2, lng2 = info2.get("lat"), info2.get("lng")
+        if isinstance(lat2, (int, float)) and isinstance(lng2, (int, float)):
+            return (float(lat2), float(lng2))
     return None
 
 
@@ -1138,14 +1150,25 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     itin = trip.get("day_wise_itinerary") or []
 
     # Pre-load all place coords so we can calculate route stats per day.
+    # Use EVERY itinerary stop name, not just selected buckets, so added meals,
+    # markets, and non-selected places still contribute to route metrics.
     place_coords_map: dict[str, tuple[float, float]] = {}
-    for name in list(hotels) + list(activities):
-        try:
-            coords = places_cache.place_coords(name, destination)
-            if coords:
-                place_coords_map[name.strip().lower()] = coords
-        except Exception:
-            pass
+    stop_names: set[str] = set(list(hotels) + list(activities))
+    for entry in itin:
+        if not isinstance(entry, dict):
+            continue
+        for raw in entry.get("stops") or []:
+            if isinstance(raw, dict):
+                name = str(raw.get("name") or "").strip()
+            else:
+                name = str(raw or "").strip()
+            if name:
+                stop_names.add(name)
+
+    for name in stop_names:
+        coords = _place_coords(name, destination)
+        if coords:
+            place_coords_map[name.strip().lower()] = coords
 
     days: list[dict[str, Any]] = []
     total_stops = 0

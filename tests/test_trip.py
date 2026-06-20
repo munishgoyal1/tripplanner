@@ -323,6 +323,34 @@ class TestTripPlanState:
         })
         assert set_stop_booked(1, "Nowhere", True) is False
 
+    def test_add_selection_infers_time_between_neighbor_stops(self):
+        from tripplanner.tools.trip_planner import add_selection
+
+        create_trip_plan.invoke({
+            "destination": "Kolkata",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Kaali Maa Pujo Pandal", "kind": "attraction", "time": "09:30"},
+                        {"name": "Peter Cat", "kind": "meal", "time": "19:00"},
+                    ],
+                }
+            ]
+        })})
+
+        res = add_selection("attraction", {"name": "Victoria Memorial"})
+        assert res["ok"] is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        stops = plan["day_wise_itinerary"][0]["stops"]
+        vm = next(s for s in stops if str(s.get("name")) == "Victoria Memorial")
+        assert vm.get("time") != ""
+        assert vm.get("time") is not None
+
     def test_add_hotel_stay_updates_range(self):
         create_trip_plan.invoke({
             "destination": "Goa",
