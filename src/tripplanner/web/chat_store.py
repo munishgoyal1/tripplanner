@@ -113,6 +113,52 @@ def save(trip_id: str | None, messages: list[BaseMessage]) -> None:
     )
 
 
+def persist_turn(
+    tid_before: str | None,
+    tid_after: str | None,
+    history: list[BaseMessage],
+    carryover_text: str = "",
+) -> str | None:
+    """Persist one chat turn, handling a mid-chat destination switch.
+
+    ``history`` is the full message list the turn ran with (prior transcript +
+    this turn's Human + AI messages). Returns the bucket id actually written.
+
+    Cases:
+    - **No trip change** (``tid_after == tid_before``) or no trip yet: save the
+      whole ``history`` under the active bucket — the existing behaviour.
+    - **First trip created** (``tid_before is None`` → real id): migrate the whole
+      pre-trip conversation into the new trip's bucket and clear ``_general``.
+    - **Destination switch** between two real trips (Mexico → Kashmir): the prior
+      trip's bucket already holds everything up to this turn, so leave it intact.
+      The new trip gets ONLY this turn (the switch Human + AI), optionally seeded
+      with a visible ``carryover_text`` note at the top when it's a brand-new
+      bucket. Resuming an already-chatted trip just appends this turn to it.
+    """
+    if tid_after is None or tid_after == tid_before:
+        target = tid_after if tid_after is not None else tid_before
+        save(target, history)
+        return target
+
+    if tid_before is None:
+        save(tid_after, history)
+        clear(None)
+        return tid_after
+
+    # Switch between two distinct, real trips.
+    last_turn = history[-2:]
+    existing_new = _read_rows(tid_after)
+    if existing_new:
+        save(tid_after, _deserialize(existing_new) + last_turn)
+    else:
+        seed: list[BaseMessage] = []
+        if carryover_text.strip():
+            seed.append(AIMessage(content=carryover_text.strip()))
+        seed.extend(last_turn)
+        save(tid_after, seed)
+    return tid_after
+
+
 def clear(trip_id: str | None) -> None:
     if storage_cosmos.is_enabled():
         storage_cosmos.delete_doc(

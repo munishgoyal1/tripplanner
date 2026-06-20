@@ -197,6 +197,23 @@ export default function App() {
     await handleClearFocus();
   };
 
+  // After every chat turn: refresh the trip panel, and detect a mid-chat
+  // destination switch (the agent created a NEW trip → server returns a new
+  // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
+  // transcript replaces the previous trip's conversation.
+  const handleTurnComplete = (tripId?: string) => {
+    refresh();
+    if (!tripId) return;
+    if (chatTripId && tripId !== chatTripId) {
+      setChatTripId(tripId);
+      setChatReloadToken((n) => n + 1);
+    } else if (!chatTripId) {
+      // First trip created from the general chat — keep the transcript, just
+      // start tracking the new id so the next switch is detected.
+      setChatTripId(tripId);
+    }
+  };
+
   const focusIndex = focus
     ? navList.findIndex((n) => n.kind === focus.kind && n.name === focus.name)
     : -1;
@@ -331,7 +348,7 @@ export default function App() {
     if (pane === "chat") {
       return (
         <ChatPanel
-          onTurnComplete={() => refresh()}
+          onTurnComplete={handleTurnComplete}
           reloadToken={chatReloadToken}
           tripIdHint={chatTripId}
           onNewTrip={handleNewTrip}
@@ -531,7 +548,7 @@ export default function App() {
 
       <section className="flex h-screen flex-col md:hidden">
         <ChatPanel
-          onTurnComplete={() => refresh()}
+          onTurnComplete={handleTurnComplete}
           reloadToken={chatReloadToken}
           tripIdHint={chatTripId}
           onNewTrip={handleNewTrip}

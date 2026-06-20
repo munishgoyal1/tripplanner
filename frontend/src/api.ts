@@ -108,7 +108,7 @@ export interface ToolEventExtras {
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
-  onDone: (reply: string) => void;
+  onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
 }
 
@@ -171,7 +171,7 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
       });
       break;
     case "done":
-      h.onDone(data.reply ?? "");
+      h.onDone(data.reply ?? "", typeof data.trip_id === "string" ? data.trip_id : undefined);
       break;
     case "error":
       h.onError(data.message ?? "Unknown error.");

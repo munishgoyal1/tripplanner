@@ -88,21 +88,35 @@ def _load_chat() -> tuple[str | None, list[BaseMessage]]:
     return tid, chat_store.load(tid)
 
 
-def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> None:
+def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> str | None:
     """Persist the turn under the trip that's active *after* the turn.
 
-    If a trip was created during the turn (``None`` -> real id), the whole
-    pre-trip conversation migrates into the new trip's bucket and the general
-    bucket is cleared.
+    Handles three transitions (see ``chat_store.persist_turn``): no change,
+    first-trip creation (migrate the pre-trip conversation), and a mid-chat
+    destination switch (Mexico → Kashmir) where the new trip starts a fresh
+    chat seeded with a distilled carryover note. Returns the active trip id.
     """
+    from tripplanner.tools import trip_planner
     from tripplanner.tools.trip_planner import active_trip_id
-    from tripplanner.web import chat_store
+    from tripplanner.web import chat_carryover, chat_store
 
     tid_after = active_trip_id()
-    target = tid_after if tid_after else tid_before
-    chat_store.save(target, history)
-    if tid_before is None and tid_after and tid_after != tid_before:
-        chat_store.clear(None)
+
+    carryover = ""
+    is_switch = (
+        tid_before is not None
+        and tid_after is not None
+        and tid_after != tid_before
+    )
+    if is_switch and not chat_store.transcript(tid_after) and len(history) >= 2:
+        # Brand-new destination chat: distil portable context from the prior
+        # conversation so the fresh chat isn't cold. Best-effort (LLM).
+        prev_dest = trip_planner.saved_trip_destination(tid_before or "")
+        active = trip_planner.load_active_trip_dict() or {}
+        new_dest = str(active.get("destination") or "")
+        carryover = chat_carryover.distill(history[:-2], prev_dest, new_dest)
+
+    return chat_store.persist_turn(tid_before, tid_after, history, carryover)
 
 
 # Fire-and-forget passive-learning sweeps. Keep strong refs so the event loop
@@ -145,6 +159,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     agent: str
+    trip_id: str | None = None
 
 
 class SelectRequest(BaseModel):
@@ -239,11 +254,13 @@ async def chat(req: ChatRequest) -> ChatResponse:
     if issues:
         app_event("hallucination_critic", issues=len(issues), claims=issues)
     history.append(AIMessage(content=reply))
-    _save_chat(history_tid, history)
+    tid_after = _save_chat(history_tid, history)
     _schedule_learning_sweep(req.user_id, req.message)
 
     app_event("api_chat_response", reply_length=len(reply))
-    return ChatResponse(reply=reply, agent=result.get("current_agent", "unknown"))
+    return ChatResponse(
+        reply=reply, agent=result.get("current_agent", "unknown"), trip_id=tid_after
+    )
 
 
 def _sse(event: str, data: dict[str, Any]) -> str:
@@ -380,10 +397,10 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
         history.append(AIMessage(content=reply))
-        _save_chat(history_tid, history)
+        tid_after = _save_chat(history_tid, history)
         _schedule_learning_sweep(req.user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
-        yield _sse("done", {"reply": reply, "agent": "trip"})
+        yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
     return StreamingResponse(gen(), media_type="text/event-stream")
 

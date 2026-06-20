@@ -18,7 +18,7 @@ import type { ChatMessage } from "../types";
 import SettingsModal from "./SettingsModal";
 
 interface Props {
-  onTurnComplete: () => void;
+  onTurnComplete: (tripId?: string) => void;
   /** Bump to reload the persisted transcript (e.g. after switching trips). */
   reloadToken?: number;
   /** Explicit trip id to load chat for (set during saved-trip switching). */
@@ -220,7 +220,7 @@ export default function ChatPanel({
           setActiveTool(null);
         }
       },
-      onDone: () => {
+      onDone: (_reply, tripId) => {
         setActiveTool(null);
         setMessages((m) => {
           const copy = [...m];
@@ -232,7 +232,7 @@ export default function ChatPanel({
           return copy;
         });
         setBusy(false);
-        onTurnComplete();
+        onTurnComplete(tripId);
       },
       onError: (msg) => {
         setActiveTool(null);

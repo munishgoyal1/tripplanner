@@ -599,6 +599,13 @@ def list_saved_trips() -> list[dict[str, Any]]:
     return summaries
 
 
+def saved_trip_destination(trip_id: str) -> str:
+    """Destination name of a saved trip, or ``""``. Non-tool helper for chat
+    carryover phrasing when the user switches plans mid-conversation."""
+    plan = _load_history_trip(trip_id)
+    return str((plan or {}).get("destination") or "") if plan else ""
+
+
 def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
     """Make a saved trip the active one. Returns the plan, or ``None``.
 
