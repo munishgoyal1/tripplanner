@@ -70,19 +70,51 @@ export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri
 
 // Reads the session cookie. If authenticated, mirrors the identity into
 // localStorage so the rest of the app picks it up transparently.
-export async function syncAuth(): Promise<AuthSession> {
+// Returns both the session AND the guest_id that was active BEFORE the mirror
+// (so callers can offer to migrate guest data when a sign-in just occurred).
+export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string }> {
   try {
     const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
     const session: AuthSession = await res.json();
     if (session.authenticated && session.user_id) {
+      const prevId = localStorage.getItem("tripplanner_user_id") ?? "";
+      const guestId = prevId.startsWith("web-") ? prevId : undefined;
       localStorage.setItem("tripplanner_user_id", session.user_id);
       if (session.display_name) {
         localStorage.setItem("tripplanner_display_name", session.display_name);
       }
+      return { ...session, prev_guest_id: guestId };
     }
     return session;
   } catch {
     return { authenticated: false };
+  }
+}
+
+/** Ask the server how much data a guest (web-*) account has. */
+export async function fetchGuestDataSummary(guestId: string): Promise<{ has_data: boolean; trip_count: number }> {
+  try {
+    const res = await fetch(`${BASE}/account/guest-data-summary?user_id=${encodeURIComponent(guestId)}`);
+    return res.json();
+  } catch {
+    return { has_data: false, trip_count: 0 };
+  }
+}
+
+/** Migrate trips and preferences from a guest identity into the authenticated account. */
+export async function migrateGuestData(
+  authUserId: string,
+  guestId: string
+): Promise<{ ok: boolean; copied_trips: number; copied_prefs: boolean }> {
+  try {
+    const res = await fetch(`${BASE}/account/migrate-guest`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: authUserId, guest_id: guestId }),
+    });
+    return res.json();
+  } catch {
+    return { ok: false, copied_trips: 0, copied_prefs: false };
   }
 }
 

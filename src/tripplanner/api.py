@@ -215,6 +215,11 @@ class PrivacyActionRequest(BaseModel):
     confirm_text: str = ""
 
 
+class GuestMigrateRequest(BaseModel):
+    user_id: str  # the authenticated identity to migrate INTO
+    guest_id: str  # the guest web-<uuid> identity to migrate FROM
+
+
 class ExportEmailRequest(BaseModel):
     user_id: str = "local"
     email: str
@@ -1081,6 +1086,104 @@ async def account_privacy_action(req: PrivacyActionRequest) -> dict:
             else "All app data cleared for this account."
         ),
     }
+
+
+@app.post("/account/migrate-guest")
+async def account_migrate_guest(req: GuestMigrateRequest) -> dict:
+    """Copy trips and preferences from a guest (web-*) identity into an
+    authenticated account.
+
+    Called once after Google OAuth sign-in when the browser had existing guest
+    data. Safe to call multiple times — already-migrated trips are skipped.
+    Returns {ok, copied_trips, skipped_trips, copied_prefs}.
+    """
+    from tripplanner.tools import trip_planner, user_preferences as prefs_store
+    from tripplanner.user_context import set_user_id
+    from tripplanner.web import chat_store
+
+    guest_id = (req.guest_id or "").strip()
+    auth_id = (req.user_id or "").strip()
+    if not guest_id.startswith("web-") or not auth_id:
+        return {"ok": False, "error": "invalid_ids"}
+
+    # ── 1. Copy saved trips from guest into authenticated user ──────────────
+    set_user_id(guest_id)
+    guest_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+
+    set_user_id(auth_id)
+    auth_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+    auth_trip_ids = {t["trip_id"] for t in auth_trips}
+
+    copied_trips = 0
+    skipped_trips = 0
+    for summary in guest_trips:
+        tid = summary.get("trip_id")
+        if not tid or tid in auth_trip_ids:
+            skipped_trips += 1
+            continue
+        # Load the full plan from the guest store.
+        set_user_id(guest_id)
+        full_plan = await asyncio.to_thread(trip_planner._load_history_trip, tid)
+        if not full_plan:
+            skipped_trips += 1
+            continue
+        # Write it into the authenticated user's store.
+        set_user_id(auth_id)
+        await asyncio.to_thread(trip_planner._mirror_to_history, full_plan)
+        copied_trips += 1
+
+    # ── 2. Copy preferences if the authenticated user has none yet ──────────
+    set_user_id(auth_id)
+    auth_prefs = prefs_store.load_preferences()
+    copied_prefs = False
+    if not auth_prefs.get("about_me") and not auth_prefs.get("interests"):
+        set_user_id(guest_id)
+        guest_prefs = prefs_store.load_preferences()
+        if guest_prefs.get("about_me") or guest_prefs.get("interests"):
+            set_user_id(auth_id)
+            prefs_store.save_preferences(guest_prefs)
+            copied_prefs = True
+
+    # ── 3. Copy the active trip (if guest has one and auth user has none) ───
+    set_user_id(guest_id)
+    guest_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+    set_user_id(auth_id)
+    auth_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+    if guest_active and not auth_active:
+        await asyncio.to_thread(trip_planner._save_active_trip, guest_active)
+
+    app_event(
+        "api_guest_migrate",
+        copied_trips=copied_trips,
+        skipped_trips=skipped_trips,
+        copied_prefs=copied_prefs,
+    )
+    return {
+        "ok": True,
+        "copied_trips": copied_trips,
+        "skipped_trips": skipped_trips,
+        "copied_prefs": copied_prefs,
+    }
+
+
+@app.get("/account/guest-data-summary")
+async def account_guest_data_summary(user_id: str) -> dict:
+    """How much data does a guest (web-*) account have?
+
+    Called by the frontend after OAuth login to decide whether to offer
+    the guest-import banner.
+    """
+    from tripplanner.tools import trip_planner
+    from tripplanner.user_context import set_user_id
+
+    guest_id = (user_id or "").strip()
+    if not guest_id.startswith("web-"):
+        return {"has_data": False, "trip_count": 0}
+    set_user_id(guest_id)
+    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+    active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+    count = len(trips) + (1 if active and not trips else 0)
+    return {"has_data": count > 0, "trip_count": count}
 
 
 # ---------------------------------------------------------------------------

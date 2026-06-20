@@ -12,6 +12,9 @@ import {
   loginWithGoogle,
   logoutGoogle,
   runPrivacyAction,
+  fetchGuestDataSummary,
+  migrateGuestData,
+  getUserId,
   type AuthSession,
 } from "../api";
 import type { ChatMessage } from "../types";
@@ -49,6 +52,9 @@ export default function ChatPanel({
   const [auth, setAuth] = useState<AuthSession>({ authenticated: false });
   const [privacyBusy, setPrivacyBusy] = useState(false);
   const [attachments, setAttachments] = useState<string[]>([]);
+  // Guest-import banner: set when sign-in just occurred and the old guest account had data.
+  const [guestBanner, setGuestBanner] = useState<{ guestId: string; tripCount: number } | null>(null);
+  const [guestMigrating, setGuestMigrating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
@@ -121,7 +127,19 @@ export default function ChatPanel({
   // session (the cookie mirrors its identity into localStorage via syncAuth).
   useEffect(() => {
     fetchAuthConfig().then((c) => setGoogleEnabled(c.google));
-    syncAuth().then(setAuth);
+    syncAuth().then((session) => {
+      setAuth(session);
+      // If we just obtained an authenticated session and the previous id was a
+      // guest web-* identity, check whether that guest had any data worth importing.
+      const prevGuestId = session.prev_guest_id;
+      if (session.authenticated && session.user_id && prevGuestId) {
+        fetchGuestDataSummary(prevGuestId).then((summary) => {
+          if (summary.has_data) {
+            setGuestBanner({ guestId: prevGuestId, tripCount: summary.trip_count });
+          }
+        });
+      }
+    });
   }, []);
 
   // Restore the persisted transcript on mount and whenever the active trip
@@ -508,6 +526,50 @@ export default function ChatPanel({
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto bg-surface px-5 py-5">
+        {/* Guest-import banner: shown once after OAuth sign-in when guest had data */}
+        {guestBanner && (
+          <div className="flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm shadow-card">
+            <span className="mt-0.5 text-sky-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </span>
+            <div className="flex-1">
+              <p className="font-medium text-sky-900">
+                You have {guestBanner.tripCount} trip{guestBanner.tripCount !== 1 ? "s" : ""} from your guest session.
+              </p>
+              <p className="mt-0.5 text-xs text-sky-700">
+                Import them into your account so they're available across devices.
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  disabled={guestMigrating}
+                  onClick={async () => {
+                    setGuestMigrating(true);
+                    const authId = getUserId();
+                    await migrateGuestData(authId, guestBanner.guestId);
+                    setGuestBanner(null);
+                    setGuestMigrating(false);
+                    // Reload so the trip switcher picks up newly migrated trips.
+                    window.location.reload();
+                  }}
+                  className="rounded-full bg-sky-600 px-3 py-1 text-xs font-medium text-white hover:bg-sky-700 disabled:opacity-50"
+                >
+                  {guestMigrating ? "Importing…" : "Import my trips"}
+                </button>
+                <button
+                  disabled={guestMigrating}
+                  onClick={() => setGuestBanner(null)}
+                  className="rounded-full px-3 py-1 text-xs text-sky-700 hover:bg-sky-100"
+                >
+                  No thanks
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {messages.map((m, i) => (
           <div
             key={i}
