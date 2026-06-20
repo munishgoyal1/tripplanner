@@ -1134,15 +1134,16 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
 
     hotels = _selected_names(trip, "hotel")
     activities = _selected_names(trip, "attraction")
+    destination = str((trip or {}).get("destination") or "")
     itin = trip.get("day_wise_itinerary") or []
 
     # Pre-load all place coords so we can calculate route stats per day.
-    place_coords: dict[str, tuple[float, float]] = {}
+    place_coords_map: dict[str, tuple[float, float]] = {}
     for name in list(hotels) + list(activities):
         try:
-            coords = places_cache.place_coords(name)
+            coords = places_cache.place_coords(name, destination)
             if coords:
-                place_coords[name] = coords
+                place_coords_map[name] = coords
         except Exception:
             pass
 
@@ -1162,7 +1163,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 s["color"] = _day_color(day_num)
                 stops.append(s)
                 # Accumulate coords for route stats.
-                coords = place_coords.get(s["name"].lower())
+                coords = place_coords_map.get(s["name"])
                 if coords:
                     day_coords.append(coords)
                 total_stops += 1

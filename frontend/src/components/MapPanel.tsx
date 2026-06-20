@@ -392,9 +392,13 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
   // (b) a follow-up redraw that would otherwise reset the zoom via fitBounds.
   useEffect(() => {
     if (!focusName || !view) return;
-    const pin = view.pins.find(
+    let pin = view.pins.find(
       (p) => p.name.toLowerCase() === focusName.toLowerCase()
     );
+    // Check airport if not found in pins
+    if (!pin && view.airport && view.airport.name.toLowerCase() === focusName.toLowerCase()) {
+      pin = view.airport;
+    }
     if (!pin) return;
     pendingFocusRef.current = pin;
     // Reveal the pin's day so it isn't filtered out. Changing activeDay

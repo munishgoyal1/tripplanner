@@ -358,6 +358,16 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
     return info
 
 
+def place_coords(name: str, city: str = "") -> tuple[float, float] | None:
+    """Return cached (lat, lng) for a place, or None if not found or not configured."""
+    if not is_configured():
+        return None
+    info = _ensure(name, city, refresh=False)
+    if info and info.get("lat") and info.get("lng"):
+        return (info["lat"], info["lng"])
+    return None
+
+
 def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False) -> list[str]:
     """Return the names of the top ``n`` hotels/attractions in ``destination``.
 
