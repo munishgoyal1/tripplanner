@@ -115,14 +115,23 @@ if ($DryRun) {
 
 # Step 4: Deploy
 Write-Host "✓ Step 3: Deploying to CANARY..."
-$deployment = az deployment group create `
+$rawDeploy = az deployment group create `
     --resource-group $canaryRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
     --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
     --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
-    --output json 2>$null | ConvertFrom-Json
+    --output json 2>$null | Out-String
+
+# az may prepend non-JSON info lines (e.g. "Bicep CLI is already installed...")
+# to stdout, so isolate the JSON object before parsing.
+$jsonStart = $rawDeploy.IndexOf('{')
+$jsonEnd = $rawDeploy.LastIndexOf('}')
+if ($jsonStart -lt 0 -or $jsonEnd -lt $jsonStart) {
+    throw "Deployment did not return JSON. Raw output:`n$rawDeploy"
+}
+$deployment = $rawDeploy.Substring($jsonStart, $jsonEnd - $jsonStart + 1) | ConvertFrom-Json
 
 if ($deployment.state -ne "Succeeded") {
     throw "Deployment failed: $($deployment.state)"
