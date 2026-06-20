@@ -29,10 +29,10 @@ const PANE_LABEL: Record<PaneId, string> = {
 };
 
 const DEFAULT_SLOTS: PaneSlots = {
-  leftTop: "itinerary",
-  leftBottom: "chat",
-  rightTop: "map",
-  rightBottom: "details",
+  leftTop: "map",
+  leftBottom: "itinerary",
+  rightTop: "details",
+  rightBottom: "chat",
 };
 
 const DEFAULT_HIDDEN: PaneVisibility = {
@@ -68,15 +68,18 @@ export default function App() {
 
   const [leftPct, setLeftPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_left_pct"));
-    return saved >= 25 && saved <= 75 ? saved : 34;
+    // Layout C: left column (map+itinerary) ~62%, right column (details+chat) ~38%
+    return saved >= 25 && saved <= 75 ? saved : 62;
   });
   const [leftTopPct, setLeftTopPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_left_top_pct"));
-    return saved >= 15 && saved <= 85 ? saved : 62;
+    // Map occupies ~65% of left height; itinerary gets ~35%
+    return saved >= 15 && saved <= 85 ? saved : 65;
   });
   const [rightTopPct, setRightTopPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_right_top_pct"));
-    return saved >= 15 && saved <= 85 ? saved : 58;
+    // Details occupies ~78% of right height; chat strip gets ~22%
+    return saved >= 15 && saved <= 85 ? saved : 78;
   });
 
   const [paneBySlot, setPaneBySlot] = useState<PaneSlots>(DEFAULT_SLOTS);
@@ -356,9 +359,9 @@ export default function App() {
   const resetPaneLayout = () => {
     setPaneBySlot(DEFAULT_SLOTS);
     setHiddenPanes(DEFAULT_HIDDEN);
-    setLeftPct(34);
-    setLeftTopPct(62);
-    setRightTopPct(58);
+    setLeftPct(62);
+    setLeftTopPct(65);
+    setRightTopPct(78);
     setMaximizedPane(null);
   };
 
@@ -522,6 +525,9 @@ export default function App() {
     <>
       <div className="hidden min-h-screen bg-surface md:flex md:flex-col">
         <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
+          <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-200">
+            Layout C: Compact canvas
+          </span>
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
           <button
             type="button"
