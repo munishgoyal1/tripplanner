@@ -224,6 +224,27 @@ with Cosmos DB Free Tier (1000 RU/s + 25 GB free).
    Use `https://api.amadeus.com` for production (real bookings).
    Free tier: 2,000 API calls/month.
 
+### Email export (optional)
+`Send to email` only works when you configure an actual mail transport. Two supported options:
+
+1. Azure Communication Services Email
+   ```
+   AZURE_COMMUNICATION_CONNECTION_STRING=endpoint=https://...;accesskey=...
+   AZURE_COMMUNICATION_EMAIL_SENDER=DoNotReply@YOUR_DOMAIN.azurecomm.net
+   ```
+
+2. SMTP
+   ```
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-user
+   SMTP_PASSWORD=your-password-or-app-password
+   SMTP_FROM=your-from-address
+   SMTP_USE_TLS=1
+   ```
+
+If neither is set, the app falls back to opening a local `mailto:` draft.
+
 ### Google Places API (recommended — adds real ratings & reviews)
 1. Go to [console.cloud.google.com](https://console.cloud.google.com)
 2. Create/select a project → enable **Places API (New)**
