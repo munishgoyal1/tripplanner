@@ -296,8 +296,12 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
         infoRef.current.open(map);
       });
       overlaysRef.current.push(marker);
-      bounds.extend({ lat: a.lat, lng: a.lng });
-      any = true;
+      // Only include airport in bounds when viewing all days (for context);
+      // when a specific day is selected, omit it so fitBounds zooms to day pins only.
+      if (activeDay === null) {
+        bounds.extend({ lat: a.lat, lng: a.lng });
+        any = true;
+      }
     }
 
     // Geodesic route lines connecting each day's stops in order. (Straight
