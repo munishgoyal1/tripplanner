@@ -117,6 +117,10 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
   cbRef.current = { onSelect, onDeselect };
   const openPinRef = useRef<MapPin | null>(null);
   const confirmRef = useRef(false); // armed for a two-click remove
+  // A pin the itinerary asked us to zoom into. Applied inside draw() so a
+  // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
+  // re-running fitBounds. Survives the async map init.
+  const pendingFocusRef = useRef<MapPin | null>(null);
 
   // ---- data + config -------------------------------------------------------
   useEffect(() => {
@@ -316,7 +320,16 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
       overlaysRef.current.push(line);
     }
 
-    if (any && !bounds.isEmpty()) {
+    // If the itinerary asked to focus a pin, zoom into it instead of fitting
+    // all bounds — and do it here so a redraw can't undo the zoom.
+    const focus = pendingFocusRef.current;
+    if (focus) {
+      map.panTo({ lat: focus.lat, lng: focus.lng });
+      map.setZoom(15);
+      pendingFocusRef.current = null;
+      // openInfo is hoisted (function declaration) below in this scope.
+      openInfo(focus);
+    } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
 
@@ -369,21 +382,25 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
   }, [draw]);
 
   // ---- focus a pin by name (driven from the itinerary tab) -----------------
+  // We stash the target pin in pendingFocusRef and let draw() apply the
+  // pan+zoom. That makes the focus robust to (a) a lazy map mount where
+  // mapRef.current isn't ready yet — the init's draw() will pick it up — and
+  // (b) a follow-up redraw that would otherwise reset the zoom via fitBounds.
   useEffect(() => {
-    if (!focusName || !view || !mapRef.current) return;
+    if (!focusName || !view) return;
     const pin = view.pins.find(
       (p) => p.name.toLowerCase() === focusName.toLowerCase()
     );
     if (!pin) return;
-    // Reveal the pin's day so it isn't filtered out, then pan + open its info.
-    if (pin.day && pin.day !== activeDay) setActiveDay(pin.day);
-    const t = setTimeout(() => {
-      mapRef.current?.panTo({ lat: pin.lat, lng: pin.lng });
-      mapRef.current?.setZoom(15);
-      openInfoRef.current?.(pin);
-    }, 0);
-    return () => clearTimeout(t);
-    // activeDay omitted: we set it here and don't want to re-trigger on it.
+    pendingFocusRef.current = pin;
+    // Reveal the pin's day so it isn't filtered out. Changing activeDay
+    // recreates draw and triggers the redraw effect (which applies the focus);
+    // if the day is already active, redraw explicitly.
+    if (pin.day && pin.day !== activeDay) {
+      setActiveDay(pin.day);
+    } else {
+      draw();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusName, view]);
 

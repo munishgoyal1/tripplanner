@@ -106,6 +106,23 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-06-19)
+- **Intelligent v1 itinerary + map zoom fix (Session 24)**: two canary bugs
+  closed. (1) The itinerary panel no longer shows a flat "Your picks so far"
+  dump when the agent forgets to persist `day_wise_itinerary` — 
+  `trip_view._itinerary_from_selections` now SYNTHESIZES an intelligent
+  multi-day v1: selected attractions are proximity-ordered (nearest-neighbor
+  from the hotel via cached `places_cache` coords, `_haversine_km`) then split
+  into contiguous, day-sized clusters across `_trip_day_count` days (never more
+  days than attractions, so no empty days), hotel anchors Day 1, each day titled
+  `Day N · <primary place>`. Degrades to selection order when Places isn't
+  configured. New helpers `_place_coords`, `_nearest_neighbor_order`,
+  `_split_contiguous`. (2) Clicking an itinerary stop now actually zooms the
+  map: `MapPanel.tsx` stashes the target in `pendingFocusRef` and applies the
+  `panTo`+`setZoom(15)`+`openInfo` INSIDE `draw()` (instead of `fitBounds`), so
+  a lazy map mount or follow-up redraw can't undo the zoom; the focus effect is
+  no longer gated on `mapRef.current` being ready. +1 test
+  (`test_itinerary_synthesizes_multiple_days`) → 463 passing; tsc clean.
+
 - **Requirements alignment + map route metrics (Session 23)**: reviewed the
   updated `docs/Requirements.docx` and closed a concrete UX/functional gap:
   day-wise circuits now surface travel distance/time/mode. `trip_view.build_map_view`

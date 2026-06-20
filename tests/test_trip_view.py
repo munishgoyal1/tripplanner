@@ -461,12 +461,12 @@ def test_itinerary_empty_when_no_days() -> None:
 
 def test_itinerary_falls_back_to_selections() -> None:
     # No structured day_wise_itinerary, but the trip has selections — the panel
-    # should still render a single synthesized "Your picks so far" day.
+    # should still render an intelligent first-draft itinerary from selections.
     it = trip_view.build_itinerary({**SAMPLE_TRIP, "day_wise_itinerary": []})
     assert it["has_itinerary"] is True
+    # 1 attraction over a 5-night trip → a single day (we never emit empty days).
     assert it["stats"]["days"] == 1
     day = it["days"][0]
-    assert day["title"] == "Your picks so far"
     names = [s["name"] for s in day["stops"]]
     assert "Taj Exotica Resort" in names
     assert "Dudhsagar Falls Trek" in names
@@ -474,6 +474,42 @@ def test_itinerary_falls_back_to_selections() -> None:
     assert day["stops"][0]["kind"] == "hotel"
     assert all(s["selected"] for s in day["stops"])
     assert it["stats"]["stops"] == len(day["stops"])
+
+
+def test_itinerary_synthesizes_multiple_days() -> None:
+    # Several selected attractions over a multi-night trip should be spread
+    # across multiple day clusters (not dumped into one flat day).
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [],
+        "selected_activities": [
+            {"name": "Aguada Fort"},
+            {"name": "Calangute Beach"},
+            {"name": "Basilica of Bom Jesus"},
+            {"name": "Dudhsagar Falls Trek"},
+        ],
+    }
+    it = trip_view.build_itinerary(trip)
+    assert it["has_itinerary"] is True
+    assert it["stats"]["days"] >= 2
+    # every selected attraction appears exactly once across the days
+    placed = [
+        s["name"]
+        for d in it["days"]
+        for s in d["stops"]
+        if s["kind"] == "attraction"
+    ]
+    assert sorted(placed) == [
+        "Aguada Fort",
+        "Basilica of Bom Jesus",
+        "Calangute Beach",
+        "Dudhsagar Falls Trek",
+    ]
+    # the hotel anchors only the first day
+    assert it["days"][0]["stops"][0]["kind"] == "hotel"
+    assert all(
+        s["kind"] != "hotel" for d in it["days"][1:] for s in d["stops"]
+    )
 
 
 def test_itinerary_structured_stops() -> None:

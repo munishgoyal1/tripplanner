@@ -924,50 +924,144 @@ def _ordered_selected(trip: dict[str, Any] | None, key: str) -> list[str]:
     return out
 
 
+def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
+    """Look up a place's (lat, lng) from the cache. Network-but-cached; returns
+    ``None`` when Places isn't configured or the place can't be resolved."""
+    if not name or not destination or not places_cache.is_configured():
+        return None
+    try:
+        info = places_cache.get_summary(name, destination) or {}
+    except Exception:  # noqa: BLE001 — never let geocoding break the itinerary
+        return None
+    lat, lng = info.get("lat"), info.get("lng")
+    if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
+        return (float(lat), float(lng))
+    return None
+
+
+def _nearest_neighbor_order(
+    names: list[str],
+    coords: dict[str, tuple[float, float]],
+    start: tuple[float, float] | None,
+) -> list[str]:
+    """Greedy nearest-neighbor ordering so consecutive stops are geographically
+    close. Names without coordinates keep their original relative order and are
+    appended after the geo-ordered ones."""
+    placed = [n for n in names if n in coords]
+    unplaced = [n for n in names if n not in coords]
+    if not placed:
+        return list(names)
+    ordered: list[str] = []
+    remaining = placed[:]
+    cur = start
+    if cur is None:
+        cur = coords[remaining[0]]
+        ordered.append(remaining.pop(0))
+    while remaining:
+        nxt = min(remaining, key=lambda n: _haversine_km(cur, coords[n]))
+        remaining.remove(nxt)
+        ordered.append(nxt)
+        cur = coords[nxt]
+    ordered.extend(unplaced)
+    return ordered
+
+
+def _split_contiguous(items: list[str], n: int) -> list[list[str]]:
+    """Split a list into ``n`` contiguous, near-even chunks (front-loaded).
+
+    Contiguous (not round-robin) so each chunk stays a geographically coherent
+    cluster when ``items`` is already nearest-neighbor ordered."""
+    n = max(1, min(n, len(items))) if items else 1
+    k, m = divmod(len(items), n)
+    chunks: list[list[str]] = []
+    start = 0
+    for i in range(n):
+        size = k + (1 if i < m else 0)
+        chunks.append(items[start : start + size])
+        start += size
+    return chunks
+
+
 def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
-    """Fallback itinerary when the agent never wrote a structured
-    ``day_wise_itinerary``: synthesize a single "Your picks so far" day from the
-    selected hotels + activities so the panel is never blank while a trip is
-    being assembled. Each item is a clickable, selected stop. Pure / no network.
+    """Synthesize an intelligent multi-day v1 itinerary when the agent never
+    wrote a structured ``day_wise_itinerary`` — so the panel is never blank and
+    the user gets a real, editable first draft on the first go.
+
+    Selected attractions are ordered by geographic proximity (nearest-neighbor
+    from the hotel) and split into contiguous, day-sized clusters across the
+    trip's length, with the hotel anchoring Day 1. The user can then ask the
+    planner to refine times, meals, and pacing. Network-but-cached for coords;
+    degrades to selection order when Places isn't configured.
     """
     hotels = _ordered_selected(trip, "selected_hotels")
     activities = _ordered_selected(trip, "selected_activities")
+    destination = str((trip or {}).get("destination") or "")
     if not hotels and not activities:
         return {
             "has_itinerary": False,
-            "destination": str((trip or {}).get("destination") or ""),
+            "destination": destination,
             "currency": currency_symbol(trip),
             "days": [],
             "stats": {"days": 0, "stops": 0, "booked": 0},
         }
 
-    color = _day_color(1)
-    stops: list[dict[str, Any]] = []
-    for name in hotels:
-        stops.append({
-            "name": name, "kind": "hotel", "time": "", "duration_min": None,
-            "note": "", "booked": False, "selected": True, "color": color,
-        })
+    anchor = hotels[0] if hotels else None
+
+    # Geographic ordering of the attractions (cached coord lookups).
+    coords: dict[str, tuple[float, float]] = {}
     for name in activities:
-        stops.append({
-            "name": name, "kind": "attraction", "time": "", "duration_min": None,
-            "note": "", "booked": False, "selected": True, "color": color,
+        c = _place_coords(name, destination)
+        if c:
+            coords[name] = c
+    start = _place_coords(anchor, destination) if anchor else None
+    ordered = _nearest_neighbor_order(activities, coords, start)
+
+    # How many days to spread across: the trip length, but never more days than
+    # we have attractions to fill (so we don't emit empty days).
+    trip_days = _trip_day_count(trip or {})
+    if ordered:
+        n_days = min(trip_days or len(ordered), len(ordered))
+    else:
+        n_days = 1
+    n_days = max(1, n_days)
+    chunks = _split_contiguous(ordered, n_days)
+
+    days: list[dict[str, Any]] = []
+    total_stops = 0
+    for i, chunk in enumerate(chunks, start=1):
+        color = _day_color(i)
+        stops: list[dict[str, Any]] = []
+        if i == 1 and hotels:
+            for hname in hotels:
+                stops.append({
+                    "name": hname, "kind": "hotel", "time": "", "duration_min": None,
+                    "note": "Your base", "booked": False, "selected": True, "color": color,
+                })
+        for name in chunk:
+            stops.append({
+                "name": name, "kind": "attraction", "time": "", "duration_min": None,
+                "note": "", "booked": False, "selected": True, "color": color,
+            })
+        if not stops:
+            continue
+        primary = chunk[0] if chunk else (anchor or f"Day {i}")
+        days.append({
+            "day": i,
+            "date": "",
+            "title": f"Day {i} · {primary}" if len(chunks) > 1 else primary,
+            "summary": "Suggested first-draft plan grouped by area — ask the "
+            "planner to fine-tune times, meals, and pacing.",
+            "color": color,
+            "stops": stops,
         })
-    day = {
-        "day": 1,
-        "date": "",
-        "title": "Your picks so far",
-        "summary": "Places you've selected. Ask the planner to lay out a "
-        "day-by-day itinerary to organize these into a schedule.",
-        "color": color,
-        "stops": stops,
-    }
+        total_stops += len(stops)
+
     return {
         "has_itinerary": True,
-        "destination": str((trip or {}).get("destination") or ""),
+        "destination": destination,
         "currency": currency_symbol(trip),
-        "days": [day],
-        "stats": {"days": 1, "stops": len(stops), "booked": 0},
+        "days": days,
+        "stats": {"days": len(days), "stops": total_stops, "booked": 0},
     }
 
 
@@ -979,7 +1073,8 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     selections (``selected``) and carries its own ``booked`` flag so the UI can
     render booked checkmarks and make each stop clickable (to focus its photos
     or its map pin). When the agent never wrote a structured itinerary, falls
-    back to a single day synthesized from the selections. Pure / no network.
+    back to an intelligent multi-day plan synthesized from the selections
+    (proximity-clustered; network-but-cached for coordinates).
     """
     if not trip or not (trip.get("day_wise_itinerary") or []):
         return _itinerary_from_selections(trip)
