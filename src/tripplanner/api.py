@@ -767,23 +767,29 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     if not plan:
         return {"ok": False, "error": "no_active_trip", "message": "No active trip to export."}
 
+    # Share / continue-planning link.
+    token = mint_for_active_trip()
+    share_url = f"{str(request.base_url).rstrip('/')}/trip/shared/{token}" if token else ""
+
     html = build_export_html(
         plan,
         include_photos=bool(req.include_photos),
         include_map_circuit=bool(req.include_map_circuit),
         template=req.template,
         auto_print=False,
+        share_url=share_url,
     )
     destination = str(plan.get("destination") or "Trip")
     subject = f"{destination} itinerary export"
 
-    # Share link in case the user wants to open the live plan online too.
-    token = mint_for_active_trip()
-    share_url = f"{str(request.base_url).rstrip('/')}/trip/shared/{token}" if token else ""
     plain = (
-        f"Your trip itinerary export for {destination} is attached as HTML.\n"
-        "Open it in a browser and Print -> Save as PDF for a carry-along copy.\n"
-        + (f"\nRead-only share link: {share_url}\n" if share_url else "")
+        f"Your trip itinerary for {destination} is attached as HTML.\n"
+        "Open it in a browser and Print → Save as PDF for a carry-along copy.\n"
+        + (
+            f"\nContinue planning or share this trip:\n{share_url}\n"
+            if share_url
+            else ""
+        )
     )
 
     # Azure-first path: ACS Email (stays inside Azure cost/account boundary).
