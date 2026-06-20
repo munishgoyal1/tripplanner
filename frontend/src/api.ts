@@ -347,6 +347,7 @@ export async function emailTripExport(
       email,
       include_photos: options.include_photos,
       include_map_circuit: options.include_map_circuit,
+      template: options.template,
     }),
   });
   return res.json();

@@ -800,6 +800,7 @@ function ExportModal({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
+  const [mailtoHref, setMailtoHref] = useState("");
 
   const options = {
     include_photos: includePhotos,
@@ -851,6 +852,7 @@ function ExportModal({ onClose }: { onClose: () => void }) {
     }
     setBusy(true);
     setStatus("");
+    setMailtoHref("");
     try {
       const res = await emailTripExport(email.trim(), options);
       if (res.ok) {
@@ -858,8 +860,13 @@ function ExportModal({ onClose }: { onClose: () => void }) {
         return;
       }
       if (res.mailto) {
+        setMailtoHref(res.mailto);
         window.location.href = res.mailto;
-        setStatus("Opened your mail client fallback.");
+        if (res.error === "email_not_configured") {
+          setStatus("Direct email sending is not configured on this server. Tried opening your mail app instead.");
+        } else {
+          setStatus("Opened your mail client fallback.");
+        }
       } else {
         setStatus(res.message || "Could not send email.");
       }
@@ -950,6 +957,11 @@ function ExportModal({ onClose }: { onClose: () => void }) {
             If server email is not configured, your mail app will open with a prefilled draft.
           </p>
           {status && <p className="mt-2 text-xs text-slate-600">{status}</p>}
+          {mailtoHref && (
+            <p className="mt-2 text-xs text-slate-600">
+              If nothing opened, <a href={mailtoHref} className="text-brand underline underline-offset-2">open the mail draft directly</a>.
+            </p>
+          )}
         </div>
       </div>
     </div>
