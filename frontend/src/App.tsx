@@ -4,7 +4,7 @@ import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
 import TripPanel, { TripSwitcher } from "./components/TripPanel";
 import RightRail from "./components/RightRail";
-import { fetchTripView, selectItem, deselectItem } from "./api";
+import { fetchTripView, importSharedTrip, selectItem, deselectItem } from "./api";
 import type { TripView } from "./types";
 
 interface NavRef {
@@ -168,6 +168,32 @@ export default function App() {
     refresh(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("share");
+    if (!token) return;
+    let cancelled = false;
+    setLoading(true);
+    importSharedTrip(token)
+      .then((v) => {
+        if (cancelled) return;
+        applyView(v, null);
+        setFocus(null);
+        setStopFocusName(null);
+        setTripVersion((n) => n + 1);
+        setChatReloadToken((n) => n + 1);
+        setChatTripId(null);
+        const next = new URL(window.location.href);
+        next.searchParams.delete("share");
+        window.history.replaceState({}, "", next.toString());
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [applyView]);
 
   const handleFocus = async (kind: string, name: string) => {
     const f = { kind, name };

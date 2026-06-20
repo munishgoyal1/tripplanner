@@ -871,16 +871,43 @@ async def trip_share(req: SelectRequest, request: Request) -> dict:
 
 
 @app.get("/trip/shared/{token}")
-async def trip_shared_view(token: str) -> Response:
+async def trip_shared_view(token: str, request: Request) -> Response:
     """Public read-only HTML snapshot of a shared trip plan."""
     from tripplanner.web.share import render_public_html
 
-    html = render_public_html(token)
+    base = str(request.base_url).rstrip("/")
+    html = render_public_html(token, current_origin=base)
     if html is None:
         return JSONResponse(
             {"error": "invalid or expired share link"}, status_code=404
         )
     return Response(content=html, media_type="text/html; charset=utf-8")
+
+
+@app.get("/trip/shared/{token}.json")
+async def trip_shared_json(token: str) -> dict:
+    """Public JSON payload for a shared snapshot."""
+    from tripplanner.web.share import resolve
+
+    snapshot = resolve(token)
+    if snapshot is None:
+        return JSONResponse({"error": "invalid or expired share link"}, status_code=404)
+    return snapshot
+
+
+@app.post("/trip/shared/{token}/import")
+async def trip_shared_import(token: str, req: UserRequest) -> dict:
+    """Import a shared snapshot into the caller's own editable trip space."""
+    from tripplanner.tools import trip_planner
+    from tripplanner.user_context import set_user_id
+    from tripplanner.web import share, trip_view
+
+    snapshot = share.resolve(token)
+    if snapshot is None:
+        return JSONResponse({"error": "invalid or expired share link"}, status_code=404)
+    set_user_id(req.user_id)
+    imported = trip_planner.import_shared_trip_snapshot(snapshot.get("plan") or {})
+    return {"ok": True, "view": trip_view.build_view(imported, None)}
 
 
 @app.get("/preferences")

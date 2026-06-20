@@ -664,6 +664,24 @@ def start_new_trip() -> None:
     _delete_active_trip()
 
 
+def import_shared_trip_snapshot(plan: dict[str, Any]) -> dict[str, Any]:
+    """Persist a shared snapshot as the current user's active editable trip.
+
+    The imported copy becomes a normal saved trip for the viewer. We preserve
+    the shared selections/itinerary, but stamp fresh ownership metadata so it
+    lives independently of the original owner's plan.
+    """
+    imported = json.loads(json.dumps(plan or {}))
+    imported.pop("trip_id", None)
+    imported["created_at"] = datetime.now().isoformat()
+    imported["updated_at"] = imported["created_at"]
+    imported["status"] = str(imported.get("status") or "draft")
+    imported["imported_from_share"] = True
+    imported["trip_id"] = _compute_trip_id(imported)
+    _save_active_trip(imported)
+    return imported
+
+
 def _delete_active_trip() -> None:
     if storage_cosmos.is_enabled():
         storage_cosmos.delete_doc(

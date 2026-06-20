@@ -370,6 +370,19 @@ export async function shareActiveTrip(): Promise<string> {
   return String(json.url || "");
 }
 
+export async function importSharedTrip(token: string): Promise<TripView> {
+  const res = await fetch(`${BASE.replace(/\/api$/, "")}/trip/shared/${encodeURIComponent(token)}/import`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId() }),
+  });
+  const json = await res.json();
+  if (!res.ok || json.error || !json.view) {
+    throw new Error(json.error || "could not import shared trip");
+  }
+  return json.view as TripView;
+}
+
 export interface Preferences {
   display_name: string;
   home_city: string;

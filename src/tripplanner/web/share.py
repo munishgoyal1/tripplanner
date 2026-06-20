@@ -139,7 +139,7 @@ def resolve(token: str) -> dict[str, Any] | None:
     return _load_snapshot(token)
 
 
-def render_public_html(token: str) -> str | None:
+def render_public_html(token: str, current_origin: str = "") -> str | None:
     """Return a self-contained public HTML page for the shared snapshot."""
     snapshot = resolve(token)
     if not snapshot:
@@ -147,10 +147,19 @@ def render_public_html(token: str) -> str | None:
     html = str(snapshot.get("html") or "")
     if not html:
         return None
+    continue_href = "/?share=" + token
+    if os.environ.get("VITE_DEV_SERVER_URL"):
+        continue_href = os.environ["VITE_DEV_SERVER_URL"].rstrip("/") + "/?share=" + token
+    elif "localhost:8000" in current_origin or "127.0.0.1:8000" in current_origin:
+        continue_href = "http://localhost:5173/?share=" + token
+    elif current_origin:
+        continue_href = current_origin.rstrip("/") + "/?share=" + token
+
     banner = (
         "<section style='margin-bottom:16px;padding:12px 14px;border:1px solid #e2e8f0;"
         "border-radius:12px;background:#fff7ed;color:#9a3412;font:14px/1.4 Inter,Segoe UI,sans-serif'>"
         "<strong>Shared snapshot.</strong> This view shows the trip details as they looked when the link was shared."
+        f"<div style='margin-top:10px'><a href='{continue_href}' style='display:inline-block;padding:8px 12px;border-radius:999px;background:#e11d48;color:#fff;text-decoration:none;font-weight:600'>Continue exploring this trip</a></div>"
         "</section>"
     )
     return html.replace("<div class='wrap'>", "<div class='wrap'>" + banner, 1)

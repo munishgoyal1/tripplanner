@@ -127,3 +127,20 @@ def test_snapshot_survives_live_trip_changes() -> None:
     assert resolved is not None
     assert resolved["plan"].get("summary") == "first"
 
+
+def test_import_shared_snapshot_creates_active_trip_for_viewer() -> None:
+    _write_active(_make_plan(summary="family copy"))
+    token = share.mint_for_active_trip()
+    snapshot = share.resolve(token)
+    assert snapshot is not None
+
+    user_context.set_user_id("bob")
+    imported = trip_planner.import_shared_trip_snapshot(snapshot["plan"])
+    active = trip_planner.load_active_trip_dict()
+
+    assert active is not None
+    assert imported["destination"] == "Lisbon"
+    assert active["summary"] == "family copy"
+    assert active["imported_from_share"] is True
+    assert active["trip_id"] == imported["trip_id"]
+
