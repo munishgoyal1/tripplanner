@@ -187,13 +187,17 @@ export default function App() {
         next.searchParams.delete("share");
         window.history.replaceState({}, "", next.toString());
       })
+      .catch(() => {
+        if (cancelled) return;
+        refresh(null);
+      })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, [applyView]);
+  }, [applyView, refresh]);
 
   const handleFocus = async (kind: string, name: string) => {
     const f = { kind, name };

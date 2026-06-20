@@ -371,7 +371,7 @@ export async function shareActiveTrip(): Promise<string> {
 }
 
 export async function importSharedTrip(token: string): Promise<TripView> {
-  const res = await fetch(`${BASE.replace(/\/api$/, "")}/trip/shared/${encodeURIComponent(token)}/import`, {
+  const res = await fetch(`${BASE}/trip/shared/${encodeURIComponent(token)}/import`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId() }),
