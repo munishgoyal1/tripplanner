@@ -57,7 +57,12 @@ export default function ChatPanel({
   const [guestMigrating, setGuestMigrating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
+  // Set to true immediately after a Google sign-in where the previous identity
+  // was a guest web-* id. The transcript effect reads this and skips loading
+  // the (now-irrelevant) guest chat, keeping the screen at GREETING + banner.
+  const freshSignInRef = useRef(false);
 
   const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
 
@@ -133,6 +138,11 @@ export default function ChatPanel({
       // guest web-* identity, check whether that guest had any data worth importing.
       const prevGuestId = session.prev_guest_id;
       if (session.authenticated && session.user_id && prevGuestId) {
+        // Mark a fresh sign-in so the transcript effect skips loading old guest
+        // messages — the user should see a clean slate + the import banner.
+        freshSignInRef.current = true;
+        setMessages([GREETING]);
+        transcriptCacheRef.current.clear();
         fetchGuestDataSummary(prevGuestId).then((summary) => {
           if (summary.has_data) {
             setGuestBanner({ guestId: prevGuestId, tripCount: summary.trip_count });
@@ -146,6 +156,12 @@ export default function ChatPanel({
   // changes (switching saved trips bumps `reloadToken`).
   useEffect(() => {
     if (busy) return;
+    // Skip transcript reload on a fresh sign-in from guest mode — the user
+    // should see a clean GREETING + the import banner, not old guest messages.
+    if (freshSignInRef.current) {
+      freshSignInRef.current = false;
+      return;
+    }
     let cancelled = false;
     const cached = transcriptCacheRef.current.get(cacheKey);
     if (cached) {
@@ -177,6 +193,13 @@ export default function ChatPanel({
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, activeTool]);
+
+  // When the import banner appears, scroll to the top so it's immediately visible.
+  useEffect(() => {
+    if (guestBanner) {
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [guestBanner]);
 
   async function startFresh() {
     if (busy) return;
@@ -528,7 +551,7 @@ export default function ChatPanel({
       <div className="flex-1 space-y-4 overflow-y-auto bg-surface px-5 py-5">
         {/* Guest-import banner: shown once after OAuth sign-in when guest had data */}
         {guestBanner && (
-          <div className="flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm shadow-card">
+          <div ref={topRef} className="flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm shadow-card">
             <span className="mt-0.5 text-sky-600">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
