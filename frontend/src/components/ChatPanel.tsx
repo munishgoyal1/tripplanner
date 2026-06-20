@@ -28,6 +28,8 @@ interface Props {
   tripIdHint?: string | null;
   /** Start a fresh planning chat (clears the active trip + general chat). */
   onNewTrip?: () => void;
+  /** Called after a successful guest-data import so the App can refresh trip panel. */
+  onImported?: () => void;
 }
 
 const GREETING: ChatMessage = {
@@ -40,6 +42,7 @@ export default function ChatPanel({
   reloadToken = 0,
   tripIdHint = null,
   onNewTrip,
+  onImported,
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -55,6 +58,9 @@ export default function ChatPanel({
   // Guest-import banner: set when sign-in just occurred and the old guest account had data.
   const [guestBanner, setGuestBanner] = useState<{ guestId: string; tripCount: number } | null>(null);
   const [guestMigrating, setGuestMigrating] = useState(false);
+    // Becomes true once syncAuth resolves so the transcript effect doesn't
+    // race against it and load old guest messages before we know the auth state.
+    const [authChecked, setAuthChecked] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -149,12 +155,18 @@ export default function ChatPanel({
           }
         });
       }
+      // Always set authChecked LAST so the transcript effect only fires after
+      // freshSignInRef is already in the correct state.
+      setAuthChecked(true);
     });
   }, []);
 
   // Restore the persisted transcript on mount and whenever the active trip
   // changes (switching saved trips bumps `reloadToken`).
+  // Gate on authChecked: don't run until syncAuth has resolved so that
+  // freshSignInRef is already set and we never flash old guest messages.
   useEffect(() => {
+    if (!authChecked) return;
     if (busy) return;
     // Skip transcript reload on a fresh sign-in from guest mode — the user
     // should see a clean GREETING + the import banner, not old guest messages.
@@ -183,7 +195,7 @@ export default function ChatPanel({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reloadToken, tripIdHint, cacheKey, busy]);
+  }, [authChecked, reloadToken, tripIdHint, cacheKey, busy]);
 
   // Keep a fast in-memory snapshot keyed by trip id for instant switches.
   useEffect(() => {
@@ -575,8 +587,18 @@ export default function ChatPanel({
                     await migrateGuestData(authId, guestBanner.guestId);
                     setGuestBanner(null);
                     setGuestMigrating(false);
-                    // Reload so the trip switcher picks up newly migrated trips.
-                    window.location.reload();
+                    // Clear in-memory cache so the next transcript load
+                    // fetches the freshly migrated chat from the server.
+                    transcriptCacheRef.current.clear();
+                    // Notify App to refresh the trip panel and trip switcher.
+                    onImported?.();
+                    // Load the migrated chat transcript in-place.
+                    fetchChatHistory(tripIdHint || undefined).then((rows) => {
+                      const next = rows.length
+                        ? rows.map((r) => ({ role: r.role, text: r.text }))
+                        : [GREETING];
+                      setMessages(next);
+                    });
                   }}
                   className="rounded-full bg-sky-600 px-3 py-1 text-xs font-medium text-white hover:bg-sky-700 disabled:opacity-50"
                 >
@@ -584,7 +606,17 @@ export default function ChatPanel({
                 </button>
                 <button
                   disabled={guestMigrating}
-                  onClick={() => setGuestBanner(null)}
+                  onClick={() => {
+                    setGuestBanner(null);
+                    // Load the authenticated user's own chat (empty is fine — start fresh).
+                    transcriptCacheRef.current.clear();
+                    fetchChatHistory(tripIdHint || undefined).then((rows) => {
+                      const next = rows.length
+                        ? rows.map((r) => ({ role: r.role, text: r.text }))
+                        : [GREETING];
+                      setMessages(next);
+                    });
+                  }}
                   className="rounded-full px-3 py-1 text-xs text-sky-700 hover:bg-sky-100"
                 >
                   No thanks

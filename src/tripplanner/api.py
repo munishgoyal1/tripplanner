@@ -1155,20 +1155,38 @@ async def account_migrate_guest(req: GuestMigrateRequest) -> dict:
     guest_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
     set_user_id(auth_id)
     auth_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+    copied_chat = False
     if guest_active and not auth_active:
         await asyncio.to_thread(trip_planner._save_active_trip, guest_active)
+
+    # ── 4. Copy the active trip's chat so the conversation isn't lost ───────
+    guest_active_id = (guest_active or {}).get("trip_id")
+    auth_active_id = (auth_active or {}).get("trip_id")
+    # Copy only if we just imported the active trip (auth had none before).
+    if guest_active_id and not auth_active:
+        set_user_id(guest_id)
+        guest_msgs = await asyncio.to_thread(chat_store.load, guest_active_id)
+        if not guest_msgs:
+            # Fall back to the general bucket (pre-trip conversation).
+            guest_msgs = await asyncio.to_thread(chat_store.load, None)
+        if guest_msgs:
+            set_user_id(auth_id)
+            await asyncio.to_thread(chat_store.save, guest_active_id, guest_msgs)
+            copied_chat = True
 
     app_event(
         "api_guest_migrate",
         copied_trips=copied_trips,
         skipped_trips=skipped_trips,
         copied_prefs=copied_prefs,
+        copied_chat=copied_chat,
     )
     return {
         "ok": True,
         "copied_trips": copied_trips,
         "skipped_trips": skipped_trips,
         "copied_prefs": copied_prefs,
+        "copied_chat": copied_chat,
     }
 
 

@@ -23,10 +23,20 @@ Two storage backends, picked at call time:
   * In-process dict (everywhere else — CLI, tests, offline). Bounded LRU of
     256 entries per process, also TTL-aware.
 
-The cache is keyed by ``user_id`` so two users hitting the same Tavily query
-don't share rows (their personalisation may differ — currency, language,
-trip context). For non-personalised calls this is slightly wasteful but
-isolation is more important than dedup across tenants.
+Cache scoping
+-------------
+Most tools return the same result for the same args regardless of who calls
+them (weather for Goa is the same for every user). These are keyed ONLY by
+``(tool_name, args)`` and stored under the shared user_id ``_global_`` so the
+result is reused across all users/sessions.
+
+A small set of tools whose output IS user-specific (preference reads, trip
+reads) remain keyed by ``(user_id, tool_name, args)``.
+
+The practical effect: a guest browsing Goa in the morning and another user
+(or the same guest in a new session) asking about Goa later in the day will
+get instant cached responses for places, weather, visa and events — no extra
+API quota consumed.
 """
 
 from __future__ import annotations
@@ -63,6 +73,33 @@ _STATEFUL_TOOLS: frozenset[str] = frozenset(
     }
 )
 
+# Tools whose output is purely public/destination-scoped and does NOT vary by
+# user identity. Their cache entries are shared under a single synthetic
+# user_id ("_global_") so every user benefits from a warm cache after the
+# first caller looks up the same destination.
+_GLOBAL_TOOLS: frozenset[str] = frozenset(
+    {
+        # Google Places — place details, reviews, hours, nearby restaurants
+        "search_places_with_reviews",
+        "get_place_reviews",
+        "nearby_restaurants",
+        "check_place_hours",
+        # Weather — public forecast data
+        "get_weather_forecast",
+        # Visa / entry rules — same rules for the same passport+destination
+        "check_visa_requirements",
+        # Local events — same events regardless of who's asking
+        "find_local_events",
+        # General web search — destination guides, tips
+        "web_search",
+        # Points of interest, activities, hotels — same inventory per city
+        "search_points_of_interest",
+        "search_activities",
+        "search_hotels",
+    }
+)
+
+_GLOBAL_USER_ID = "_global_"
 
 # Default TTL is 30 minutes — long enough to dedup within a session, short
 # enough that flight prices / hours don't go stale.
@@ -152,7 +189,8 @@ def cache_lookup(tool_name: str, args: dict[str, Any] | None) -> str | None:
     """Return a cached result, or ``None`` on miss / stateful tool."""
     if tool_name in _STATEFUL_TOOLS:
         return None
-    user_id = get_user_id() or "local"
+    # Global tools share a single cache partition across all users.
+    user_id = _GLOBAL_USER_ID if tool_name in _GLOBAL_TOOLS else (get_user_id() or "local")
     key = _cache_key(tool_name, args)
     # Prefer Cosmos when available so cache survives container restarts.
     try:
@@ -175,7 +213,8 @@ def cache_store(
     """Store ``result`` for ``(tool_name, args)``; no-op for stateful tools."""
     if tool_name in _STATEFUL_TOOLS:
         return
-    user_id = get_user_id() or "local"
+    # Global tools share a single cache partition across all users.
+    user_id = _GLOBAL_USER_ID if tool_name in _GLOBAL_TOOLS else (get_user_id() or "local")
     key = _cache_key(tool_name, args)
     value = _coerce_result(result)
     try:

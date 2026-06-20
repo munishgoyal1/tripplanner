@@ -230,6 +230,13 @@ export default function App() {
     setStopFocusName(null);
     await handleClearFocus();
   };
+  const handleImported = async () => {
+    setTripVersion((n) => n + 1);
+    setChatReloadToken((n) => n + 1);
+    setChatTripId(null);
+    setStopFocusName(null);
+    await handleClearFocus();
+  };
 
   // After every chat turn: refresh the trip panel, and detect a mid-chat
   // destination switch (the agent created a NEW trip → server returns a new
@@ -386,6 +393,7 @@ export default function App() {
           reloadToken={chatReloadToken}
           tripIdHint={chatTripId}
           onNewTrip={handleNewTrip}
+          onImported={handleImported}
         />
       );
     }
@@ -586,6 +594,7 @@ export default function App() {
           reloadToken={chatReloadToken}
           tripIdHint={chatTripId}
           onNewTrip={handleNewTrip}
+          onImported={handleImported}
         />
 
         {view?.has_trip && !mobileTripOpen && (
