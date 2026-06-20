@@ -241,14 +241,35 @@ export async function fetchTripView(focus?: {
   return res.json();
 }
 
-export async function selectItem(kind: string, name: string): Promise<{ view: TripView; alerts: string[] }> {
+export interface SelectItemOptions {
+  start_day?: number;
+  end_day?: number;
+  replace_stay?: boolean;
+}
+
+export interface SelectionPlacement {
+  day: number;
+  stop: number;
+  name: string;
+}
+
+export async function selectItem(
+  kind: string,
+  name: string,
+  options?: SelectItemOptions
+): Promise<{ view: TripView; alerts: string[]; placement?: SelectionPlacement | null; placements?: SelectionPlacement[] }> {
   const res = await fetch(`${BASE}/trip/select`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ kind, name, user_id: getUserId() }),
+    body: JSON.stringify({ kind, name, user_id: getUserId(), ...(options || {}) }),
   });
   const json = await res.json();
-  return { view: json.view as TripView, alerts: (json.alerts ?? []) as string[] };
+  return {
+    view: json.view as TripView,
+    alerts: (json.alerts ?? []) as string[],
+    placement: (json.placement ?? null) as SelectionPlacement | null,
+    placements: (json.placements ?? []) as SelectionPlacement[],
+  };
 }
 
 export async function deselectItem(kind: string, name: string): Promise<{ view: TripView; alerts: string[] }> {

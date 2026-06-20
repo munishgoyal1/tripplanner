@@ -167,6 +167,9 @@ class SelectRequest(BaseModel):
     kind: str
     name: str
     user_id: str = "local"
+    start_day: int | None = None
+    end_day: int | None = None
+    replace_stay: bool = True
 
 
 class TripIdRequest(BaseModel):
@@ -561,12 +564,26 @@ async def trip_select(req: SelectRequest) -> dict:
     from tripplanner.web import trip_view
 
     set_user_id(req.user_id)
-    result = trip_planner.add_selection(req.kind, {"name": req.name})
+    if req.kind == "hotel" and (req.start_day is not None or req.end_day is not None):
+        result = trip_planner.add_hotel_stay(
+            req.name,
+            start_day=req.start_day,
+            end_day=req.end_day,
+            replace_existing=req.replace_stay,
+        )
+    else:
+        result = trip_planner.add_selection(req.kind, {"name": req.name})
     trip = result.get("trip") or trip_planner.load_active_trip_dict()
     view = trip_view.build_view(trip, None)
     if result.get("alerts"):
         view["alerts"] = result["alerts"]
-    return {"ok": result.get("ok", False), "alerts": result.get("alerts", []), "view": view}
+    return {
+        "ok": result.get("ok", False),
+        "alerts": result.get("alerts", []),
+        "view": view,
+        "placement": result.get("placement"),
+        "placements": result.get("placements", []),
+    }
 
 
 @app.post("/trip/deselect")

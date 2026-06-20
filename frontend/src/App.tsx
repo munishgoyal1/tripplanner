@@ -4,7 +4,7 @@ import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
 import TripPanel, { TripSwitcher } from "./components/TripPanel";
 import RightRail from "./components/RightRail";
-import { fetchTripView, importSharedTrip, selectItem, deselectItem } from "./api";
+import { fetchTripView, importSharedTrip, selectItem, deselectItem, type SelectItemOptions } from "./api";
 import type { TripView } from "./types";
 
 interface NavRef {
@@ -64,6 +64,7 @@ export default function App() {
   const [tripVersion, setTripVersion] = useState(0);
   const [chatReloadToken, setChatReloadToken] = useState(0);
   const [chatTripId, setChatTripId] = useState<string | null>(null);
+  const [itineraryJump, setItineraryJump] = useState<{ day: number; name: string; token: number } | null>(null);
 
   const [leftPct, setLeftPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_left_pct"));
@@ -266,14 +267,18 @@ export default function App() {
     handleFocus(navList[next].kind, navList[next].name);
   };
 
-  const handleSelect = async (kind: string, name: string) => {
-    const next = await selectItem(kind, name);
+  const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
+    const next = await selectItem(kind, name, options);
     if (focus) {
       const refreshed = await fetchTripView(focus);
       setView({ ...refreshed, alerts: next.alerts });
     } else {
       setView({ ...next.view, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+    }
+    const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
+    if (placement?.day && placement?.name) {
+      setItineraryJump({ day: placement.day, name: placement.name, token: Date.now() });
     }
     // Refresh the map + itinerary panes, which are keyed on tripVersion.
     setTripVersion((n) => n + 1);
@@ -381,6 +386,7 @@ export default function App() {
         <ItineraryPanel
           reloadToken={tripVersion}
           focusName={stopFocusName}
+          jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
         />

@@ -8,6 +8,7 @@ import {
   switchTrip,
   tripExportUrl,
   tripIcsUrl,
+  type SelectItemOptions,
 } from "../api";
 import type { Budget, SavedTrip, TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
@@ -26,7 +27,7 @@ interface Props {
   onFocus: (kind: string, name: string) => void;
   onClearFocus: () => void;
   onStep: (delta: number) => void;
-  onSelect: (kind: string, name: string) => void;
+  onSelect: (kind: string, name: string, options?: SelectItemOptions) => void;
   onDeselect: (kind: string, name: string) => void;
   tripVersion: number;
   onSwitched: (tripId?: string, view?: TripView | null) => void;
@@ -240,6 +241,7 @@ function ItemCard({
   focused,
   onFocus,
   onSelect,
+  onHotelStay,
   onDeselect,
   onOpenPhoto,
 }: {
@@ -247,6 +249,7 @@ function ItemCard({
   focused: boolean;
   onFocus: (kind: string, name: string) => void;
   onSelect: (kind: string, name: string) => void;
+  onHotelStay: (name: string) => void;
   onDeselect: (kind: string, name: string) => void;
   onOpenPhoto: (photos: string[], index: number, alt: string) => void;
 }) {
@@ -389,11 +392,13 @@ function ItemCard({
               </button>
             ) : (
               <button
-                onClick={() => onSelect(item.kind, item.name)}
+                onClick={() =>
+                  item.kind === "hotel" ? onHotelStay(item.name) : onSelect(item.kind, item.name)
+                }
                 title="Save this to your trip so the agent keeps it in the plan"
                 className="btn-primary px-4 py-1.5 text-xs"
               >
-                + Add to trip
+                {item.kind === "hotel" ? "+ Add stay" : "+ Add to trip"}
               </button>
             ))}
 
@@ -481,6 +486,7 @@ export default function TripPanel({
     null,
   );
   const [showExport, setShowExport] = useState(false);
+  const [pendingHotel, setPendingHotel] = useState<string | null>(null);
   const onShare = async () => {
     try {
       const url = await shareActiveTrip();
@@ -531,6 +537,7 @@ export default function TripPanel({
   }
 
   const ov = view.overview;
+  const itineraryDays = Math.max(ov.counts.days || 0, 1);
   const focused = !!view.focus;
   const total = navList.length;
 
@@ -773,6 +780,7 @@ export default function TripPanel({
                 focused={focused}
                 onFocus={onFocus}
                 onSelect={onSelect}
+                onHotelStay={(name) => setPendingHotel(name)}
                 onDeselect={onDeselect}
                 onOpenPhoto={openPhoto}
               />
@@ -788,7 +796,91 @@ export default function TripPanel({
         onClose={() => setLb((s) => ({ ...s, index: -1 }))}
         onIndex={(i) => setLb((s) => ({ ...s, index: i }))}
       />
+      {pendingHotel && (
+        <HotelStayModal
+          hotelName={pendingHotel}
+          maxDay={itineraryDays}
+          onClose={() => setPendingHotel(null)}
+          onApply={(start, end, replace) => {
+            onSelect("hotel", pendingHotel, {
+              start_day: start,
+              end_day: end,
+              replace_stay: replace,
+            });
+            setPendingHotel(null);
+          }}
+        />
+      )}
       {showExport && <ExportModal onClose={() => setShowExport(false)} />}
+    </div>
+  );
+}
+
+function HotelStayModal({
+  hotelName,
+  maxDay,
+  onClose,
+  onApply,
+}: {
+  hotelName: string;
+  maxDay: number;
+  onClose: () => void;
+  onApply: (startDay: number, endDay: number, replaceExisting: boolean) => void;
+}) {
+  const [startDay, setStartDay] = useState(1);
+  const [endDay, setEndDay] = useState(maxDay);
+  const [replace, setReplace] = useState(true);
+
+  useEffect(() => {
+    setStartDay(1);
+    setEndDay(maxDay);
+  }, [maxDay, hotelName]);
+
+  const start = Math.min(startDay, endDay);
+  const end = Math.max(startDay, endDay);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-ink">Add hotel stay</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-ink">✕</button>
+        </div>
+        <p className="text-sm text-slate-600">
+          Set where <span className="font-medium text-ink">{hotelName}</span> should apply in your itinerary.
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <label className="text-sm">
+            <span className="mb-1 block text-xs font-medium text-slate-500">From day</span>
+            <select className="input" value={startDay} onChange={(e) => setStartDay(Number(e.target.value))}>
+              {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>Day {d}</option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm">
+            <span className="mb-1 block text-xs font-medium text-slate-500">To day</span>
+            <select className="input" value={endDay} onChange={(e) => setEndDay(Number(e.target.value))}>
+              {Array.from({ length: maxDay }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>Day {d}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+          <input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} />
+          Replace any existing hotel stop in that range
+        </label>
+        <div className="mt-5 flex justify-end gap-2">
+          <button onClick={onClose} className="btn-ghost">Cancel</button>
+          <button onClick={() => onApply(start, end, replace)} className="btn-primary">
+            Apply to Day {start}{start !== end ? `-${end}` : ""}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

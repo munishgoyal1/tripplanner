@@ -209,6 +209,8 @@ class TestPreferenceTools:
 # Trip planner state management tools
 # ---------------------------------------------------------------------------
 from tripplanner.tools.trip_planner import (
+    add_hotel_stay,
+    add_selection,
     create_trip_plan,
     execute_bookings,
     finalize_trip,
@@ -320,6 +322,57 @@ class TestTripPlanState:
             "return_date": "2026-07-05",
         })
         assert set_stop_booked(1, "Nowhere", True) is False
+
+    def test_add_hotel_stay_updates_range(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Old Stay", "kind": "hotel"}, {"name": "Fort Aguada", "kind": "attraction"}]},
+                {"day": 2, "stops": [{"name": "Old Stay", "kind": "hotel"}, {"name": "Baga Beach", "kind": "attraction"}]},
+                {"day": 3, "stops": [{"name": "Candolim", "kind": "attraction"}]},
+            ],
+        })})
+
+        result = add_hotel_stay("Taj Goa", start_day=2, end_day=3, replace_existing=True)
+        assert result["ok"] is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        day2 = plan["day_wise_itinerary"][1]["stops"]
+        day3 = plan["day_wise_itinerary"][2]["stops"]
+        assert day2[0]["name"] == "Taj Goa"
+        assert day2[0]["kind"] == "hotel"
+        assert day3[0]["name"] == "Taj Goa"
+        assert day3[0]["kind"] == "hotel"
+
+    def test_add_second_hotel_spreads_instead_of_refreshing_first(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Hotel One", "kind": "hotel"}, {"name": "Baga Beach", "kind": "attraction"}]},
+                {"day": 2, "stops": [{"name": "Anjuna Market", "kind": "attraction"}]},
+            ],
+        })})
+
+        add_selection("hotel", {"name": "Hotel One"})
+        add_selection("hotel", {"name": "Hotel Two"})
+        plan = json.loads(get_trip_plan.invoke({}))
+        day1_names = [
+            (s.get("name") if isinstance(s, dict) else str(s))
+            for s in plan["day_wise_itinerary"][0]["stops"]
+        ]
+        day2_names = [
+            (s.get("name") if isinstance(s, dict) else str(s))
+            for s in plan["day_wise_itinerary"][1]["stops"]
+        ]
+        assert "Hotel One" in day1_names
+        assert "Hotel Two" in day2_names
 
     def test_finalize_trip(self):
         create_trip_plan.invoke({

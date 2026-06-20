@@ -11,6 +11,8 @@ interface Props {
   onStopMap?: (kind: string, name: string) => void;
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
+  /** Programmatic jump target after add-to-trip actions. */
+  jumpTo?: { day: number; name: string; token: number } | null;
 }
 
 const KIND_ICON: Record<string, string> = {
@@ -30,12 +32,16 @@ function canFocus(kind: string): boolean {
 function StopRow({
   stop,
   active,
+  jumpActive,
+  rowId,
   onToggleBooked,
   onFocus,
   onMap,
 }: {
   stop: ItineraryStop;
   active: boolean;
+  jumpActive: boolean;
+  rowId: string;
   onToggleBooked: (next: boolean) => void;
   onFocus: () => void;
   onMap: () => void;
@@ -43,8 +49,13 @@ function StopRow({
   const focusable = canFocus(stop.kind);
   return (
     <li
+      id={rowId}
       className={`group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition ${
-        active ? "bg-brand/5 ring-1 ring-brand/20" : "hover:bg-slate-50"
+        jumpActive
+          ? "bg-amber-50 ring-2 ring-amber-300"
+          : active
+            ? "bg-brand/5 ring-1 ring-brand/20"
+            : "hover:bg-slate-50"
       }`}
     >
       <button
@@ -121,6 +132,8 @@ function DayCard({
   onFocus,
   onMap,
   focusName,
+  jumpTo,
+  jumpToken,
 }: {
   day: ItineraryDay;
   active: boolean;
@@ -128,6 +141,8 @@ function DayCard({
   onFocus: (kind: string, name: string) => void;
   onMap: (kind: string, name: string) => void;
   focusName?: string | null;
+  jumpTo?: { day: number; name: string } | null;
+  jumpToken: number;
 }) {
   const firstPlace = day.stops.find((stop) => stop.kind === "hotel" || stop.kind === "attraction");
   return (
@@ -165,14 +180,26 @@ function DayCard({
       {day.stops.length > 0 && (
         <ul className="mt-3 space-y-1">
           {day.stops.map((stop, i) => (
+            (() => {
+              const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+              const jumpActive =
+                jumpToken > 0 &&
+                !!jumpTo &&
+                jumpTo.day === day.day &&
+                jumpTo.name.toLowerCase() === stop.name.toLowerCase();
+              return (
             <StopRow
               key={`${stop.name}-${i}`}
               stop={stop}
               active={active && focusName?.toLowerCase() === stop.name.toLowerCase()}
+              jumpActive={jumpActive}
+              rowId={rowId}
               onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
               onFocus={() => onFocus(stop.kind, stop.name)}
               onMap={() => onMap(stop.kind, stop.name)}
             />
+              );
+            })()
           ))}
         </ul>
       )}
@@ -185,9 +212,11 @@ export default function ItineraryPanel({
   onStopFocus,
   onStopMap,
   focusName,
+  jumpTo,
 }: Props) {
   const [it, setIt] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -230,6 +259,21 @@ export default function ItineraryPanel({
     []
   );
 
+  useEffect(() => {
+    if (!jumpTo || !it?.has_itinerary) return;
+    const rowId = `it-stop-${jumpTo.day}-${jumpTo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(rowId);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setFlashTarget(jumpTo);
+      window.setTimeout(() => {
+        setFlashTarget((prev) => (prev && prev.token === jumpTo.token ? null : prev));
+      }, 2200);
+    }, 90);
+    return () => window.clearTimeout(t);
+  }, [jumpTo, it?.has_itinerary]);
+
   if (loading && !it) {
     return (
       <div className="grid h-full place-items-center p-6 text-sm text-slate-400">
@@ -268,6 +312,8 @@ export default function ItineraryPanel({
             day={day}
             active
             focusName={focusName}
+            jumpTo={jumpTo ? { day: jumpTo.day, name: jumpTo.name } : null}
+            jumpToken={flashTarget?.token || 0}
             onToggleBooked={handleToggleBooked}
             onFocus={(kind, name) => onStopFocus?.(kind, name)}
             onMap={(kind, name) => onStopMap?.(kind, name)}

@@ -295,6 +295,7 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
 
 
 def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str]:
+    placement: dict[str, Any] | None = None
     alerts: list[str] = []
     destination = str(plan.get("destination") or "")
     itinerary = plan.get("day_wise_itinerary") or []
@@ -316,7 +317,9 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
         if not stop_names:
             score -= 30
         if kind == "hotel":
-            score -= 10 if any(_stop_kind(s) == "hotel" for s in stops if isinstance(s, dict)) else 0
+            # Prefer days that do NOT already have a hotel stop; multiple
+            # hotel adds should spread across the stay, not pile onto one day.
+            score += 45 if any(_stop_kind(s) == "hotel" for s in stops if isinstance(s, dict)) else 0
         if best_score is None or score < best_score:
             best_score = score
             best_idx = idx
@@ -344,6 +347,114 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
     alerts.append(f"I placed {name} on Day {best_idx + 1} in stop {insert_at + 1}.")
     alerts.extend(_rebalance_day(plan, best_idx, name, stop_kind))
     return alerts
+
+
+def _day_entry_and_stops(itinerary: list[Any], day_num: int) -> tuple[dict[str, Any] | None, list[Any]]:
+    if day_num <= 0:
+        return None, []
+    for idx, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        current = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        if current != day_num:
+            continue
+        stops = entry.get("stops")
+        if not isinstance(stops, list):
+            stops = []
+            entry["stops"] = stops
+        return entry, stops
+    return None, []
+
+
+def add_hotel_stay(
+    name: str,
+    start_day: int | None = None,
+    end_day: int | None = None,
+    replace_existing: bool = True,
+) -> dict[str, Any]:
+    """Add/adjust a hotel as a stay-range change instead of a single stop.
+
+    Non-tool helper for the UI: applies the same hotel across a day range,
+    updating each day's hotel stop coherently.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "alerts": ["No active trip to update."]}
+
+    hotel_name = str(name or "").strip()
+    if not hotel_name:
+        return {"ok": False, "alerts": ["No hotel name was provided."]}
+
+    bucket = plan.setdefault("selected_hotels", [])
+    if not any(str(x.get("name") or "").strip().lower() == hotel_name.lower() for x in bucket):
+        bucket.append({"name": hotel_name})
+
+    itinerary = plan.get("day_wise_itinerary") or []
+    if not itinerary:
+        _save_active_trip(plan)
+        return {
+            "ok": True,
+            "alerts": [
+                f"Added {hotel_name}. Once your day-by-day itinerary is structured, you can assign stay dates."
+            ],
+            "trip": plan,
+            "placement": None,
+        }
+
+    total_days = max(1, len(itinerary))
+    start = int(start_day) if isinstance(start_day, int) and start_day > 0 else 1
+    end = int(end_day) if isinstance(end_day, int) and end_day > 0 else total_days
+    start = max(1, min(start, total_days))
+    end = max(1, min(end, total_days))
+    if end < start:
+        start, end = end, start
+
+    destination = str(plan.get("destination") or "")
+    summary = _summary_for_place(hotel_name, destination)
+    hotel_stop = _make_stop(hotel_name, "hotel", summary)
+
+    placements: list[dict[str, Any]] = []
+    for day in range(start, end + 1):
+        _, stops = _day_entry_and_stops(itinerary, day)
+        if not stops:
+            stops.append(dict(hotel_stop))
+            placements.append({"day": day, "stop": 1, "name": hotel_name})
+            continue
+
+        existing_idx = next(
+            (
+                idx
+                for idx, raw in enumerate(stops)
+                if _stop_kind(raw) == "hotel"
+            ),
+            None,
+        )
+        if existing_idx is not None:
+            existing_name = _stop_name(stops[existing_idx])
+            if existing_name.lower() == hotel_name.lower() or replace_existing:
+                stops[existing_idx] = dict(hotel_stop)
+                placements.append({"day": day, "stop": existing_idx + 1, "name": hotel_name})
+                continue
+
+        # Make hotel the day anchor at stop 1 when no replace target exists.
+        stops.insert(0, dict(hotel_stop))
+        placements.append({"day": day, "stop": 1, "name": hotel_name})
+
+    first = placements[0] if placements else None
+    _save_active_trip(plan)
+
+    if start == end:
+        date_label = f"Day {start}"
+    else:
+        date_label = f"Days {start}-{end}"
+    return {
+        "ok": True,
+        "alerts": [f"Updated stay: {hotel_name} for {date_label}."],
+        "trip": plan,
+        "placement": first,
+        "placements": placements,
+    }
 
 
 def _load_active_trip() -> dict[str, Any] | None:
@@ -424,10 +535,14 @@ def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
         return {"ok": True, "alerts": [f"{name} is already in your trip."]}
     bucket.append(item)
     alerts = [f"Added {name} to your trip."]
+    placement: dict[str, Any] | None = None
     if _is_place_kind(kind):
         alerts.extend(_place_selected_stop(plan, kind, name))
+        m = re.search(r"Day\s+(\d+)\D+stop\s+(\d+)", " ".join(alerts), re.I)
+        if m:
+            placement = {"day": int(m.group(1)), "stop": int(m.group(2)), "name": name}
     _save_active_trip(plan)
-    return {"ok": True, "alerts": alerts, "trip": plan}
+    return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 
 
 def remove_selection(kind: str, name: str) -> bool:
