@@ -474,6 +474,7 @@ def add_hotel_stay(
     hotel_stop = _make_stop(hotel_name, "hotel", summary)
 
     placements: list[dict[str, Any]] = []
+    replaced_old_names: set[str] = set()
     for day in range(start, end + 1):
         _, stops = _day_entry_and_stops(itinerary, day)
         if not stops:
@@ -492,6 +493,8 @@ def add_hotel_stay(
         if existing_idx is not None:
             existing_name = _stop_name(stops[existing_idx])
             if existing_name.lower() == hotel_name.lower() or replace_existing:
+                if existing_name and existing_name.lower() != hotel_name.lower():
+                    replaced_old_names.add(existing_name.lower())
                 stops[existing_idx] = dict(hotel_stop)
                 placements.append({"day": day, "stop": existing_idx + 1, "name": hotel_name})
                 continue
@@ -499,6 +502,44 @@ def add_hotel_stay(
         # Make hotel the day anchor at stop 1 when no replace target exists.
         stops.insert(0, dict(hotel_stop))
         placements.append({"day": day, "stop": 1, "name": hotel_name})
+
+    # Keep selected_hotels aligned with the edited itinerary: if a previous
+    # stay was replaced in-range and no longer appears in any day's hotel stop,
+    # drop it so map/details don't keep showing the old hotel as selected.
+    if replaced_old_names:
+        still_used_hotels: set[str] = set()
+        for day_entry in itinerary:
+            if not isinstance(day_entry, dict):
+                continue
+            stops = day_entry.get("stops")
+            if not isinstance(stops, list):
+                continue
+            for raw in stops:
+                if _stop_kind(raw) != "hotel":
+                    continue
+                n = _stop_name(raw).lower()
+                if n:
+                    still_used_hotels.add(n)
+
+        cleaned: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for item in bucket:
+            if not isinstance(item, dict):
+                continue
+            nm = str(item.get("name") or "").strip()
+            if not nm:
+                continue
+            key = nm.lower()
+            if key in seen:
+                continue
+            if key in replaced_old_names and key not in still_used_hotels and key != hotel_name.lower():
+                continue
+            cleaned.append(item)
+            seen.add(key)
+
+        if hotel_name.lower() not in seen:
+            cleaned.append({"name": hotel_name})
+        plan["selected_hotels"] = cleaned
 
     first = placements[0] if placements else None
     _save_active_trip(plan)

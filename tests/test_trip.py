@@ -301,6 +301,24 @@ class TestTripPlanState:
         plan = json.loads(get_trip_plan.invoke({}))
         assert plan["day_wise_itinerary"][0]["stops"] == []
 
+    def test_remove_selection_clears_selected_bucket_and_itinerary(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [{"name": "Fort Aguada"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Fort Aguada", "kind": "attraction"}]},
+            ],
+        })})
+
+        assert remove_selection("attraction", "Fort Aguada") is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["selected_activities"] == []
+        assert plan["day_wise_itinerary"][0]["stops"] == []
+
     def test_set_stop_booked_normalizes_string_stop(self):
         create_trip_plan.invoke({
             "destination": "Goa",
@@ -374,6 +392,27 @@ class TestTripPlanState:
         assert day2[0]["kind"] == "hotel"
         assert day3[0]["name"] == "Taj Goa"
         assert day3[0]["kind"] == "hotel"
+
+    def test_add_hotel_stay_replacement_prunes_old_selected_hotel(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "ITC Goa"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "ITC Goa", "kind": "hotel"}]},
+                {"day": 2, "stops": [{"name": "ITC Goa", "kind": "hotel"}]},
+            ],
+        })})
+
+        result = add_hotel_stay("Hyatt Goa", start_day=1, end_day=2, replace_existing=True)
+        assert result["ok"] is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        selected = [str(h.get("name") or "") for h in plan.get("selected_hotels") or [] if isinstance(h, dict)]
+        assert "Hyatt Goa" in selected
+        assert "ITC Goa" not in selected
 
     def test_add_second_hotel_spreads_instead_of_refreshing_first(self):
         create_trip_plan.invoke({
