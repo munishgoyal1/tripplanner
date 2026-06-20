@@ -107,22 +107,14 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null); // null = all days
+  const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [newStopName, setNewStopName] = useState("");
+  const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel">("attraction");
 
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
-  const infoRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
-  const openInfoRef = useRef<((p: MapPin) => void) | null>(null); // latest draw's info opener
-  // Latest add/remove callbacks + the pin whose info window is open, read by
-  // the InfoWindow's (raw-HTML) toggle button. Kept in refs so the one-time
-  // domready listener always sees current values without re-binding.
-  const cbRef = useRef<{
-    onSelect?: (kind: string, name: string) => void;
-    onDeselect?: (kind: string, name: string) => void;
-  }>({});
-  cbRef.current = { onSelect, onDeselect };
-  const openPinRef = useRef<MapPin | null>(null);
-  const confirmRef = useRef(false); // armed for a two-click remove
   // A pin the itinerary asked us to zoom into. Applied inside draw() so a
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
@@ -168,35 +160,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
           streetViewControl: false,
           fullscreenControl: true,
         });
-        infoRef.current = new google.maps.InfoWindow();
-        // Wire the info-window's in-HTML add/remove button once. The handler
-        // reads the open pin + latest callbacks from refs. Removal is a
-        // two-click confirm so a stray tap can't drop a place.
-        google.maps.event.addListener(infoRef.current, "domready", () => {
-          const btn = document.getElementById("gm-trip-toggle");
-          if (!btn) return;
-          (btn as HTMLButtonElement).onclick = () => {
-            const p = openPinRef.current;
-            if (!p) return;
-            const cb = cbRef.current;
-            if (p.selected) {
-              if (!confirmRef.current) {
-                confirmRef.current = true;
-                btn.textContent = "Click again to remove";
-                (btn as HTMLButtonElement).style.background = "#e11d48";
-                (btn as HTMLButtonElement).style.color = "#fff";
-                setTimeout(() => {
-                  confirmRef.current = false;
-                }, 3000);
-                return;
-              }
-              confirmRef.current = false;
-              cb.onDeselect?.(p.kind, p.name);
-            } else {
-              cb.onSelect?.(p.kind, p.name);
-            }
-          };
-        });
         draw();
       })
       .catch(() => {
@@ -216,7 +179,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
   useEffect(() => {
     return () => {
       mapRef.current = null;
-      infoRef.current = null;
     };
   }, []);
 
@@ -281,7 +243,8 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
         if (p.kind === "hotel" || p.kind === "attraction") {
           onPinFocus?.(p.kind, p.name);
         }
-        openInfo(p);
+        setSelectedPin(p);
+        setConfirmRemove(false);
       });
       overlaysRef.current.push(marker);
       bounds.extend({ lat: p.lat, lng: p.lng });
@@ -303,12 +266,8 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
         zIndex: 200,
       });
       marker.addListener("click", () => {
-        if (!infoRef.current) return;
-        infoRef.current.setContent(
-          `<div style="font:600 13px Inter,sans-serif">${"\u2708 "}${escapeHtml(a.name)}</div>`
-        );
-        infoRef.current.setPosition({ lat: a.lat, lng: a.lng });
-        infoRef.current.open(map);
+        setSelectedPin(a);
+        setConfirmRemove(false);
       });
       overlaysRef.current.push(marker);
       // Only include airport in bounds when viewing all days (for context);
@@ -347,63 +306,13 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
       map.setZoom(15);
       pendingFocusRef.current = null;
       if (isAirportTarget(focus)) {
-        if (infoRef.current) {
-          infoRef.current.setContent(
-            `<div style="font:600 13px Inter,sans-serif">${"\u2708 "}${escapeHtml(focus.name)}</div>`
-          );
-          infoRef.current.setPosition({ lat: focus.lat, lng: focus.lng });
-          infoRef.current.open(map);
-        }
+        setSelectedPin(focus);
       } else {
-        // openInfo is hoisted (function declaration) below in this scope.
-        openInfo(focus);
+        setSelectedPin(focus);
       }
     } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
-
-    function openInfo(p: MapPin) {
-      if (!infoRef.current) return;
-      openPinRef.current = p;
-      confirmRef.current = false;
-      const badge = p.selected
-        ? `<span style="background:#e11d48;color:#fff;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600">In trip</span>`
-        : `<span style="background:#f1f5f9;color:#475569;border-radius:9999px;padding:1px 8px;font-size:11px">Suggested</span>`;
-      const dayTag = p.day
-        ? `<span style="background:${dayColor.get(p.day) || "#64748b"};color:#fff;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600">Day ${p.day}</span>`
-        : "";
-      const seqTag = p.day && visitOrderByPinId.get(p.id)
-        ? `<span style="background:#111827;color:#fff;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600">Stop ${visitOrderByPinId.get(p.id)}</span>`
-        : "";
-      const rating = p.rating ? `<div style="color:#475569;font-size:12px">${"\u2605"} ${p.rating}</div>` : "";
-      const photo = p.photo
-        ? `<img src="${escapeAttr(p.photo)}" style="width:100%;height:96px;object-fit:cover;border-radius:8px;margin-bottom:6px"/>`
-        : "";
-      // Add/remove control. Hotels and attractions can be toggled; other pins
-      // (airport) can't. Selected → rose "Remove", else brand "+ Add to trip".
-      const togglable = p.kind === "hotel" || p.kind === "attraction";
-      const toggleBtn = togglable
-        ? `<button id="gm-trip-toggle" style="margin-top:8px;width:100%;border:none;border-radius:9999px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;${
-            p.selected
-              ? "background:#fff1f2;color:#be123c;box-shadow:inset 0 0 0 1px #fecdd3"
-              : "background:#e11d48;color:#fff"
-          }">${p.selected ? "\u2715 Remove from trip" : "+ Add to trip"}</button>`
-        : "";
-      infoRef.current.setContent(
-        `<div style="max-width:220px;font-family:Inter,sans-serif">
-           ${photo}
-           <div style="font-weight:700;font-size:14px;margin-bottom:3px">${escapeHtml(p.name)}</div>
-           <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">${badge}${dayTag}${seqTag}</div>
-           ${rating}
-           <div style="color:#64748b;font-size:11px;margin-top:2px">${escapeHtml(p.address || "")}</div>
-           ${toggleBtn}
-         </div>`
-      );
-      infoRef.current.setPosition({ lat: p.lat, lng: p.lng });
-      infoRef.current.open(map);
-    }
-
-    openInfoRef.current = openInfo;
   }, [view, activeDay, onPinFocus]);
 
   useEffect(() => {
@@ -438,6 +347,36 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusName, view]);
 
+  useEffect(() => {
+    setConfirmRemove(false);
+  }, [selectedPin?.id]);
+
+  const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
+    return !!p && !isAirportTarget(p);
+  };
+
+  const handleAddStop = () => {
+    const name = newStopName.trim();
+    if (!name) return;
+    onSelect?.(newStopKind, name);
+    onPinFocus?.(newStopKind, name);
+    setNewStopName("");
+  };
+
+  const handleToggleSelected = () => {
+    if (!isPlacePin(selectedPin)) return;
+    if (selectedPin.selected) {
+      if (!confirmRemove) {
+        setConfirmRemove(true);
+        return;
+      }
+      setConfirmRemove(false);
+      onDeselect?.(selectedPin.kind, selectedPin.name);
+      return;
+    }
+    onSelect?.(selectedPin.kind, selectedPin.name);
+  };
+
   // ---- render --------------------------------------------------------------
   // "Not configured" is a terminal state — no map will ever mount, so it's safe
   // to return early.
@@ -468,6 +407,38 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
 
   return (
     <div className="relative flex h-full flex-col">
+      <div className="border-b border-slate-100 px-3 py-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={newStopKind}
+            onChange={(e) => setNewStopKind((e.target.value as "attraction" | "hotel") || "attraction")}
+            className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600"
+            title="Choose stop type"
+          >
+            <option value="attraction">Attraction</option>
+            <option value="hotel">Hotel</option>
+          </select>
+          <input
+            type="text"
+            value={newStopName}
+            onChange={(e) => setNewStopName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAddStop();
+            }}
+            className="min-w-[9rem] flex-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400"
+            placeholder="Add stop from map…"
+            title="Type a place name to add directly to trip"
+          />
+          <button
+            type="button"
+            onClick={handleAddStop}
+            disabled={!newStopName.trim()}
+            className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Add stop
+          </button>
+        </div>
+      </div>
       {/* Day filter chips */}
       {view && view.days.length > 0 && (
         <div className="border-b border-slate-100 px-3 py-2">
@@ -513,6 +484,68 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
       )}
       <div className="relative min-h-0 flex-1">
         <div ref={mapEl} className="h-full w-full" />
+        {selectedPin && (
+          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
+            {isPlacePin(selectedPin) && selectedPin.photo && (
+              <img
+                src={selectedPin.photo}
+                alt={selectedPin.name}
+                className="mb-2 h-24 w-full rounded-xl object-cover"
+              />
+            )}
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-ink">{selectedPin.name}</p>
+                {isPlacePin(selectedPin) && selectedPin.rating ? (
+                  <p className="text-xs text-slate-500">★ {selectedPin.rating}</p>
+                ) : null}
+                {isPlacePin(selectedPin) && selectedPin.address ? (
+                  <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-500">{selectedPin.address}</p>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPin(null)}
+                className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            {isPlacePin(selectedPin) ? (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onPinFocus?.(selectedPin.kind, selectedPin.name)}
+                  className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
+                  title="Open this place in details section"
+                >
+                  Open details
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleSelected}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                    selectedPin.selected
+                      ? confirmRemove
+                        ? "bg-rose-600 text-white"
+                        : "bg-rose-50 text-rose-700 ring-1 ring-rose-200"
+                      : "bg-brand text-white"
+                  }`}
+                >
+                  {selectedPin.selected
+                    ? confirmRemove
+                      ? "Click again to remove"
+                      : "Remove from trip"
+                    : "+ Add to trip"}
+                </button>
+              </div>
+            ) : (
+              <p className="mt-2 text-xs text-slate-500">Arrival airport context pin</p>
+            )}
+          </aside>
+        )}
         {overlay && (
           <div className="absolute inset-0 grid place-items-center bg-white/85 p-6 text-center">
             <div className={`max-w-xs text-sm ${overlay.tone}`}>{overlay.text}</div>
@@ -521,14 +554,4 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
       </div>
     </div>
   );
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string)
-  );
-}
-
-function escapeAttr(s: string): string {
-  return s.replace(/"/g, "&quot;");
 }

@@ -52,6 +52,10 @@ function StopRow({
 }) {
   const focusable = canFocus(stop.kind);
   const removable = !!onRemove && focusable;
+  const noteText = (stop.note || "").trim();
+  const insightText = (stop.insight || "").trim();
+  const showNote = !!noteText && noteText.toLowerCase() !== insightText.toLowerCase();
+  const showInsight = !!insightText;
   const handleRowClick = () => {
     if (focusable) {
       onFocus();
@@ -132,13 +136,13 @@ function StopRow({
             {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
           </div>
         )}
-        {(stop.concern || stop.note || stop.insight) && (
+        {(stop.concern || showNote || showInsight) && (
           <div className="mt-1 space-y-0.5">
             {stop.concern && (
               <p className="text-xs font-medium text-rose-700">{stop.concern}</p>
             )}
-            {stop.note && <p className="text-xs text-slate-500">{stop.note}</p>}
-            {stop.insight && <p className="text-xs text-slate-600">{stop.insight}</p>}
+            {showNote && <p className="text-xs text-slate-500">{noteText}</p>}
+            {showInsight && <p className="text-xs text-slate-600">{insightText}</p>}
           </div>
         )}
       </div>

@@ -122,8 +122,9 @@ def test_fallback_uses_destination_highlights() -> None:
 def test_focus_zooms_single_item() -> None:
     view = trip_view.build_view(SAMPLE_TRIP, {"kind": "hotel", "name": "Taj Exotica Resort"})
     assert view["is_fallback"] is False
-    assert len(view["items"]) == 1
+    assert len(view["items"]) >= 1
     assert view["items"][0]["name"] == "Taj Exotica Resort"
+    assert any(i["name"] != "Taj Exotica Resort" for i in view["items"])  # keeps alternatives visible
     assert view["title"].endswith("Taj Exotica Resort")
 
 

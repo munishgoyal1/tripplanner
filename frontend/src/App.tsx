@@ -68,15 +68,15 @@ export default function App() {
 
   const [leftPct, setLeftPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_left_pct"));
-    return saved >= 30 && saved <= 70 ? saved : 50;
+    return saved >= 25 && saved <= 75 ? saved : 34;
   });
   const [leftTopPct, setLeftTopPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_left_top_pct"));
-    return saved >= 15 && saved <= 85 ? saved : 50;
+    return saved >= 15 && saved <= 85 ? saved : 62;
   });
   const [rightTopPct, setRightTopPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_right_top_pct"));
-    return saved >= 15 && saved <= 85 ? saved : 50;
+    return saved >= 15 && saved <= 85 ? saved : 58;
   });
 
   const [paneBySlot, setPaneBySlot] = useState<PaneSlots>(DEFAULT_SLOTS);
@@ -356,9 +356,9 @@ export default function App() {
   const resetPaneLayout = () => {
     setPaneBySlot(DEFAULT_SLOTS);
     setHiddenPanes(DEFAULT_HIDDEN);
-    setLeftPct(50);
-    setLeftTopPct(50);
-    setRightTopPct(50);
+    setLeftPct(34);
+    setLeftTopPct(62);
+    setRightTopPct(58);
     setMaximizedPane(null);
   };
 
@@ -520,7 +520,7 @@ export default function App() {
 
   return (
     <>
-      <div className="hidden h-screen bg-surface md:flex md:flex-col">
+      <div className="hidden min-h-screen bg-surface md:flex md:flex-col">
         <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
           <button
@@ -548,7 +548,7 @@ export default function App() {
           )}
         </div>
 
-        <div ref={rootRef} className="flex min-h-0 flex-1 gap-2 p-2">
+        <div ref={rootRef} className="flex min-h-[calc(100vh-56px)] flex-1 gap-2 overflow-y-auto p-2">
           {maximizedPane ? (
             <div className="min-h-0 flex-1">{renderPane(maximizedPane)}</div>
           ) : (

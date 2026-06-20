@@ -25,11 +25,11 @@ from urllib.parse import quote
 from tripplanner.tools import user_preferences
 from tripplanner.web import places_cache
 
-_MAX_GALLERY_ITEMS = 6
+_MAX_GALLERY_ITEMS = 10
 _MAX_PHOTOS_PER_ITEM = 3
 _MAX_REVIEWS_PER_ITEM = 2
 _FALLBACK_HOTELS = 2
-_FALLBACK_ATTRACTIONS = 4
+_FALLBACK_ATTRACTIONS = 8
 
 # ISO code → display symbol. Anything not listed is shown verbatim (already a
 # symbol, or an exotic code we just print as-is).
@@ -254,13 +254,13 @@ def itinerary_items(
 ) -> list[dict[str, str]]:
     """Return ``[{kind, name}, ...]`` for the things to show.
 
-    Focused → just that one item. Otherwise the user's selected hotels and
-    activities come first, followed by the destination's top hotels &
+    User's selected hotels and activities come first, followed by the destination's top hotels &
     attractions that aren't already selected — so adding something to the trip
     never hides the rest of the places you can still browse.
+
+    When focused, keep the broader list but move the focused place to the top
+    so the details pane can still surface alternatives for quick edits.
     """
-    if focus and focus.get("name"):
-        return [{"kind": focus.get("kind", "place"), "name": focus["name"]}]
     if not trip:
         return []
 
@@ -286,6 +286,16 @@ def itinerary_items(
             _add("hotel", name)
         for name in places_cache.top_places(destination, "attraction", n=_FALLBACK_ATTRACTIONS):
             _add("attraction", name)
+
+    if focus and focus.get("name"):
+        fk = str(focus.get("kind") or "attraction").strip().lower() or "attraction"
+        fn = str(focus.get("name") or "").strip()
+        if fn:
+            # Ensure focus target exists and appears first.
+            _add(fk, fn)
+            key = (fk, fn.lower())
+            items.sort(key=lambda it: 0 if (it["kind"], it["name"].strip().lower()) == key else 1)
+
     return items
 
 
