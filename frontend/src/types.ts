@@ -185,6 +185,13 @@ export interface ItineraryDay {
   summary: string;
   color: string;
   stops: ItineraryStop[];
+  route?: {
+    distance_km: number;
+    duration_min: number;
+    mode: string;
+    distance_display: string;
+    duration_display: string;
+  };
 }
 
 export interface Itinerary {

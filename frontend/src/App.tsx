@@ -56,7 +56,10 @@ export default function App() {
   const [focus, setFocus] = useState<NavRef | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
 
-  const [mapOpen, setMapOpen] = useState(true);
+  const [mapOpen, setMapOpen] = useState<boolean>(() => {
+    const saved = localStorage.getItem("tripplanner_map_open");
+    return saved ? JSON.parse(saved) : true;
+  });
   const [stopFocusName, setStopFocusName] = useState<string | null>(null);
   const [tripVersion, setTripVersion] = useState(0);
   const [chatReloadToken, setChatReloadToken] = useState(0);
@@ -125,6 +128,7 @@ export default function App() {
       localStorage.setItem("tripplanner_left_pct", String(Math.round(leftPct)));
       localStorage.setItem("tripplanner_left_top_pct", String(Math.round(leftTopPct)));
       localStorage.setItem("tripplanner_right_top_pct", String(Math.round(rightTopPct)));
+      localStorage.setItem("tripplanner_map_open", JSON.stringify(mapOpen));
     }
 
     window.addEventListener("mousemove", onMove);
@@ -133,7 +137,7 @@ export default function App() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     };
-  }, [leftPct, leftTopPct, rightTopPct]);
+  }, [leftPct, leftTopPct, rightTopPct, mapOpen]);
 
   const startDrag = (type: DragType) => {
     dragType.current = type;

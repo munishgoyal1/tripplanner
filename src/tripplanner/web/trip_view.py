@@ -769,6 +769,43 @@ def _route_stats_for_day(
     }
 
 
+def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
+    """Estimate day route metrics from an ordered list of (lat, lng) tuples.
+
+    Same logic as _route_stats_for_day, but takes pre-computed coordinates
+    instead of pin_ids. Used by build_itinerary to calculate per-day routes.
+    """
+    if len(coords) < 2:
+        return {
+            "distance_km": 0.0,
+            "duration_min": 0,
+            "mode": "walk",
+            "distance_display": "0.0 km",
+            "duration_display": "0 min",
+        }
+
+    distance = 0.0
+    for i in range(1, len(coords)):
+        distance += _haversine_km(coords[i - 1], coords[i])
+
+    if distance <= 3:
+        mode, speed = "walk", 4.5
+    elif distance <= 20:
+        mode, speed = "local transit", 18.0
+    else:
+        mode, speed = "car transfer", 35.0
+
+    duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
+    distance_1 = round(distance, 1)
+    return {
+        "distance_km": distance_1,
+        "duration_min": duration_min,
+        "mode": mode,
+        "distance_display": f"{distance_1:.1f} km",
+        "duration_display": f"{duration_min} min",
+    }
+
+
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Build the interactive-map view-model (frontend-agnostic).
 
@@ -1031,20 +1068,35 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
     for i, chunk in enumerate(chunks, start=1):
         color = _day_color(i)
         stops: list[dict[str, Any]] = []
+        day_coords: list[tuple[float, float]] = []
+        
         if i == 1 and hotels:
             for hname in hotels:
                 stops.append({
                     "name": hname, "kind": "hotel", "time": "", "duration_min": None,
                     "note": "Your base", "booked": False, "selected": True, "color": color,
                 })
+                # Add hotel coords to day route.
+                c = coords.get(hname) or _place_coords(hname, destination)
+                if c:
+                    day_coords.append(c)
+        
         for name in chunk:
             stops.append({
                 "name": name, "kind": "attraction", "time": "", "duration_min": None,
                 "note": "", "booked": False, "selected": True, "color": color,
             })
+            # Add attraction coords to day route.
+            c = coords.get(name)
+            if c:
+                day_coords.append(c)
+        
         if not stops:
             continue
+        
         primary = chunk[0] if chunk else (anchor or f"Day {i}")
+        route = _route_stats_for_day_coords(day_coords)
+        
         days.append({
             "day": i,
             "date": "",
@@ -1053,6 +1105,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             "planner to fine-tune times, meals, and pacing.",
             "color": color,
             "stops": stops,
+            "route": route,
         })
         total_stops += len(stops)
 
@@ -1083,6 +1136,16 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     activities = _selected_names(trip, "attraction")
     itin = trip.get("day_wise_itinerary") or []
 
+    # Pre-load all place coords so we can calculate route stats per day.
+    place_coords: dict[str, tuple[float, float]] = {}
+    for name in list(hotels) + list(activities):
+        try:
+            coords = places_cache.place_coords(name)
+            if coords:
+                place_coords[name] = coords
+        except Exception:
+            pass
+
     days: list[dict[str, Any]] = []
     total_stops = 0
     total_booked = 0
@@ -1092,14 +1155,23 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         raw_day = entry.get("day")
         day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
         stops = []
+        day_coords: list[tuple[float, float]] = []
         for raw in entry.get("stops") or []:
             s = _normalize_stop(raw, hotels, activities)
             if s:
                 s["color"] = _day_color(day_num)
                 stops.append(s)
+                # Accumulate coords for route stats.
+                coords = place_coords.get(s["name"].lower())
+                if coords:
+                    day_coords.append(coords)
                 total_stops += 1
                 if s["booked"]:
                     total_booked += 1
+        
+        # Calculate route stats for the day.
+        route = _route_stats_for_day_coords(day_coords)
+        
         days.append(
             {
                 "day": day_num,
@@ -1108,6 +1180,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "summary": str(entry.get("summary") or entry.get("plan") or "").strip(),
                 "color": _day_color(day_num),
                 "stops": stops,
+                "route": route,
             }
         )
 

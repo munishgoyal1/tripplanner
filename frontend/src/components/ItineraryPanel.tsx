@@ -147,7 +147,14 @@ function DayCard({
           <h3 className="display truncate text-base font-semibold text-ink">
             {day.title}
           </h3>
-          {day.date && <p className="text-xs text-slate-400">{day.date}</p>}
+          <div className="flex flex-wrap items-center gap-2">
+            {day.date && <p className="text-xs text-slate-400">{day.date}</p>}
+            {day.route && (
+              <p className="text-xs text-slate-500">
+                · {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
