@@ -256,6 +256,30 @@ export default function SettingsModal({ onClose }: Props) {
               />
               <span>Prefer direct flights</span>
             </label>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <p className="mb-2 text-xs font-medium text-slate-500">
+                Planning style
+              </p>
+              <label className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={prefs.planning_mode !== "interactive"}
+                  onChange={(e) =>
+                    set("planning_mode", e.target.checked ? "direct" : "interactive")
+                  }
+                />
+                <span>
+                  <span className="font-medium text-ink">Jump straight to a full plan</span>
+                  <br />
+                  <span className="text-slate-500 text-[11px]">
+                    When checked (default), the agent skips clarifying questions and
+                    delivers a complete itinerary with real flights, hotels and prices in
+                    one go. Uncheck if you prefer the agent to ask first before searching.
+                  </span>
+                </span>
+              </label>
+            </div>
             <Field label="Dietary (comma-separated)">
               <input
                 className="input"

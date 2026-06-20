@@ -356,6 +356,8 @@ export interface Preferences {
   about_me: string;
   profile_summary: string;
   profile_summary_updated_at?: string | null;
+  /** "direct" = jump straight to full plan (default); "interactive" = agent may ask questions first */
+  planning_mode: "direct" | "interactive";
 }
 
 export async function fetchPreferences(): Promise<Preferences> {

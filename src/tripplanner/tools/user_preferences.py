@@ -99,6 +99,11 @@ _DEFAULT_PREFS: dict[str, Any] = {
     # may correct or reset. Regenerated only when durable facts change.
     "profile_summary": "",
     "profile_summary_updated_at": None,
+    # How the agent handles a new trip request. "direct" (default) means jump
+    # straight to a full plan + searches without stopping to ask clarifying
+    # questions first. "interactive" means the agent may pause to ask for any
+    # missing info it can't confidently infer (dates, companion count, budget).
+    "planning_mode": "direct",
     # Cheap digest of the durable signals the last summary was built from — lets
     # update_summary() skip the LLM call when nothing durable changed.
     "profile_summary_digest": "",}
