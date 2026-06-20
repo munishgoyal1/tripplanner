@@ -57,6 +57,7 @@ function StopRow({
       onFocus();
     }
   };
+  const hasConcern = !!stop.concern;
   return (
     <li
       id={rowId}
@@ -70,7 +71,7 @@ function StopRow({
             : focusable
               ? "cursor-pointer hover:bg-slate-50"
               : "hover:bg-slate-50"
-      }`}
+                  } ${hasConcern ? "ring-1 ring-rose-200 bg-rose-50/60" : ""}`}
     >
       <button
         type="button"
@@ -117,7 +118,7 @@ function StopRow({
             {stop.name}
           </button>
         </div>
-        {(stop.note || stop.duration_min || stop.selected) && (
+        {(stop.duration_min || stop.selected || stop.cost_display || stop.opening_hours) && (
           <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
             {stop.selected && (
               <span className="pill bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
@@ -127,7 +128,17 @@ function StopRow({
             {stop.duration_min ? (
               <span className="chip">{Math.round(stop.duration_min)} min</span>
             ) : null}
-            {stop.note && <span className="text-xs text-slate-500">{stop.note}</span>}
+            {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
+            {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
+          </div>
+        )}
+        {(stop.concern || stop.note || stop.insight) && (
+          <div className="mt-1 space-y-0.5">
+            {stop.concern && (
+              <p className="text-xs font-medium text-rose-700">{stop.concern}</p>
+            )}
+            {stop.note && <p className="text-xs text-slate-500">{stop.note}</p>}
+            {stop.insight && <p className="text-xs text-slate-600">{stop.insight}</p>}
           </div>
         )}
       </div>
@@ -214,6 +225,9 @@ function DayCard({
               </p>
             )}
           </div>
+          {day.reachability && (
+            <p className="mt-1 text-xs text-slate-500">{day.reachability}</p>
+          )}
         </div>
       </div>
 

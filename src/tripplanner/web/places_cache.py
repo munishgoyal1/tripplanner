@@ -55,6 +55,7 @@ _COSMOS_DOC_ID = "cache"
 _CACHE: dict[str, dict[str, Any]] = {}
 _loaded = False
 _suppress_persist = 0  # >0 while a batch is in flight (one write at the end)
+_persist_retry_after = 0.0
 
 
 def _local_path() -> Path:
@@ -102,6 +103,7 @@ def _persist() -> None:
     Signed photo URLs are dropped before persisting — they expire within ~1h,
     so re-resolving from the long-lived ``photo_refs`` on reload is correct.
     """
+    global _persist_retry_after
     if _suppress_persist:
         return
     snapshot: dict[str, Any] = {}
@@ -109,17 +111,29 @@ def _persist() -> None:
         snapshot[k] = {
             kk: vv for kk, vv in v.items() if kk not in ("photo_urls", "__photos_at__")
         }
+    now = time.time()
     try:
         from tripplanner import storage_cosmos
 
-        if storage_cosmos.is_enabled():
-            storage_cosmos.upsert_doc(
-                _COSMOS_CONTAINER,
-                _COSMOS_PARTITION,
-                _COSMOS_DOC_ID,
-                {"entries": snapshot},
-            )
-            return
+        if storage_cosmos.is_enabled() and now >= _persist_retry_after:
+            try:
+                storage_cosmos.upsert_doc(
+                    _COSMOS_CONTAINER,
+                    _COSMOS_PARTITION,
+                    _COSMOS_DOC_ID,
+                    {"entries": snapshot},
+                )
+                return
+            except Exception as exc:  # noqa: BLE001
+                status_code = getattr(exc, "status_code", None)
+                if status_code == 429:
+                    # Cosmos throttled us. Keep the cache warm locally and
+                    # pause Cosmos retries for a short window so a burst of
+                    # photo/detail warming doesn't spam warnings.
+                    _persist_retry_after = now + 5 * 60
+                else:
+                    log.warning("places_cache cosmos persist failed: %s", exc)
+                # Fall through to local persistence either way.
     except Exception as exc:  # noqa: BLE001
         log.warning("places_cache cosmos persist failed: %s", exc)
     try:
@@ -183,8 +197,10 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         return None
     field_mask = (
         "places.id,places.displayName,places.formattedAddress,places.rating,"
-        "places.userRatingCount,places.photos,places.editorialSummary,"
-        "places.websiteUri,places.location"
+        "places.userRatingCount,places.priceLevel,places.photos,"
+        "places.editorialSummary,places.websiteUri,places.location,"
+        "places.currentOpeningHours.openNow,"
+        "places.regularOpeningHours.weekdayDescriptions"
     )
     try:
         resp = httpx.post(
@@ -209,8 +225,13 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         "address": p.get("formattedAddress", ""),
         "rating": p.get("rating"),
         "review_count": p.get("userRatingCount"),
+        "price_level": p.get("priceLevel"),
         "website": p.get("websiteUri", ""),
         "editorial_summary": p.get("editorialSummary", {}).get("text", ""),
+        "open_now": (p.get("currentOpeningHours") or {}).get("openNow"),
+        "weekday_descriptions": (p.get("regularOpeningHours") or {}).get(
+            "weekdayDescriptions", []
+        ),
         "lat": loc.get("latitude"),
         "lng": loc.get("longitude"),
         "photo_refs": [

@@ -176,6 +176,10 @@ export interface ItineraryStop {
   booked: boolean;
   selected: boolean;
   color: string;
+  opening_hours?: string;
+  cost_display?: string;
+  insight?: string;
+  concern?: string;
 }
 
 export interface ItineraryDay {
@@ -185,6 +189,7 @@ export interface ItineraryDay {
   summary: string;
   color: string;
   stops: ItineraryStop[];
+  reachability?: string;
   route?: {
     distance_km: number;
     duration_min: number;

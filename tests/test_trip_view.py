@@ -621,6 +621,61 @@ def test_itinerary_string_stops_normalize() -> None:
     assert s["selected"] is False
 
 
+def test_itinerary_enriches_stop_metadata(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_summary(name: str, city: str, **_kw: Any) -> dict[str, Any] | None:
+        lower = str(name).strip().lower()
+        if lower == "taj exotica resort":
+            return {
+                "name": name,
+                "editorial_summary": "Beachfront luxury stay with easy access to South Goa.",
+                "price_level": "PRICE_LEVEL_EXPENSIVE",
+                "open_now": True,
+                "weekday_descriptions": ["Monday: Open 24 hours"],
+            }
+        if lower == "dudhsagar falls trek":
+            return {
+                "name": name,
+                "editorial_summary": "Iconic waterfall trail with scenic viewpoints.",
+                "price_level": "PRICE_LEVEL_MODERATE",
+                "open_now": False,
+                "weekday_descriptions": ["Monday: Closed", "Tuesday: 8:00 AM-5:00 PM"],
+            }
+        return {"name": name}
+
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "date": "2026-01-12",  # Monday
+                "stops": [
+                    {"name": "Taj Exotica Resort", "kind": "hotel", "booked": True},
+                    {"name": "Dudhsagar Falls Trek", "kind": "attraction", "time": "14:00"},
+                ],
+            }
+        ],
+    }
+
+    it = trip_view.build_itinerary(trip)
+    hotel = it["days"][0]["stops"][0]
+    trek = it["days"][0]["stops"][1]
+
+    assert hotel["cost_display"] == "\u20b912,000"
+    assert hotel["opening_hours"].startswith("Monday:")
+    assert hotel["insight"]
+    assert hotel["duration_min"] > 0
+
+    assert trek["cost_display"] == "Mid-range"
+    assert trek["opening_hours"].startswith("Monday:")
+    assert "Likely closed" in trek["concern"]
+    assert trek["insight"]
+
+    assert it["days"][0]["reachability"]
+
+
 def test_itinerary_title_falls_back_to_day_number() -> None:
     trip = {**SAMPLE_TRIP, "day_wise_itinerary": [{"day": 3, "plan": "x"}]}
     it = trip_view.build_itinerary(trip)

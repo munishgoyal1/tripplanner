@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import math
 import re
+from datetime import date
 from typing import Any
 from urllib.parse import quote
 
@@ -895,6 +896,20 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 
 # A stop's "kind" decides its chip + whether it can load place photos.
 _STOP_KINDS = {"hotel", "attraction", "flight", "meal", "transport", "other"}
+_DEFAULT_STOP_DURATION_MIN = {
+    "hotel": 45,
+    "attraction": 120,
+    "meal": 60,
+    "transport": 30,
+    "flight": 90,
+    "other": 60,
+}
+_PRICE_LEVEL_HINT = {
+    "PRICE_LEVEL_INEXPENSIVE": "Budget",
+    "PRICE_LEVEL_MODERATE": "Mid-range",
+    "PRICE_LEVEL_EXPENSIVE": "Premium",
+    "PRICE_LEVEL_VERY_EXPENSIVE": "Luxury",
+}
 
 
 def _infer_stop_kind(name: str, hotels: set[str], activities: set[str]) -> str:
@@ -923,6 +938,10 @@ def _normalize_stop(
             "note": "",
             "booked": False,
             "selected": name.lower() in (hotels if kind == "hotel" else activities),
+            "opening_hours": "",
+            "cost_display": "",
+            "insight": "",
+            "concern": "",
         }
     if isinstance(raw, dict):
         name = str(raw.get("name") or "").strip()
@@ -941,8 +960,129 @@ def _normalize_stop(
             "booked": bool(raw.get("booked")),
             "selected": name.lower()
             in (hotels if kind == "hotel" else activities),
+            "opening_hours": str(raw.get("opening_hours") or "").strip(),
+            "cost_display": str(raw.get("cost_display") or "").strip(),
+            "insight": str(raw.get("insight") or "").strip(),
+            "concern": str(raw.get("concern") or "").strip(),
         }
     return None
+
+
+def _selected_price_map(trip: dict[str, Any] | None) -> dict[str, float]:
+    out: dict[str, float] = {}
+    for key in ("selected_hotels", "selected_activities"):
+        for item in (trip or {}).get(key) or []:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or "").strip().lower()
+            if not name:
+                continue
+            for price_key in _PRICE_KEYS:
+                if price_key not in item:
+                    continue
+                value = _to_number(item.get(price_key))
+                if value > 0:
+                    out[name] = value
+                    break
+    return out
+
+
+def _first_sentence(text: Any) -> str:
+    s = str(text or "").strip()
+    if not s:
+        return ""
+    parts = re.split(r"(?<=[.!?])\s+", s)
+    return parts[0][:180].strip()
+
+
+def _weekday_name(day_iso: str) -> str:
+    text = str(day_iso or "").strip()
+    if not text:
+        return ""
+    try:
+        return date.fromisoformat(text).strftime("%A")
+    except ValueError:
+        return ""
+
+
+def _opening_hint(summary: dict[str, Any], day_iso: str) -> tuple[str, str]:
+    weekday_lines = summary.get("weekday_descriptions") or []
+    open_now = summary.get("open_now")
+    day_name = _weekday_name(day_iso)
+
+    matched = ""
+    if day_name and isinstance(weekday_lines, list):
+        prefix = day_name.lower() + ":"
+        for line in weekday_lines:
+            text = str(line or "").strip()
+            if text.lower().startswith(prefix):
+                matched = text
+                break
+
+    opening = matched
+    if not opening and open_now is True:
+        opening = "Open now"
+    elif not opening and open_now is False:
+        opening = "May be closed now"
+
+    concern = ""
+    if matched and "closed" in matched.lower() and day_name:
+        concern = f"Likely closed on {day_name}; review day assignment."
+    elif open_now is False:
+        concern = "Check opening hours before visiting."
+    return opening, concern
+
+
+def _cost_hint(kind: str, summary: dict[str, Any], selected_price: float, symbol: str) -> str:
+    if selected_price > 0:
+        return fmt_money(selected_price, symbol)
+
+    level = str(summary.get("price_level") or "").strip().upper()
+    if level in _PRICE_LEVEL_HINT:
+        return _PRICE_LEVEL_HINT[level]
+
+    if kind == "meal":
+        return f"{symbol}500-1,500 pp (est.)"
+    if kind == "attraction":
+        return f"{symbol}300-1,200 tickets (est.)"
+    if kind == "hotel":
+        return f"{symbol}6,000-15,000 / night (est.)"
+    return ""
+
+
+def _duration_hint(kind: str, duration_min: Any) -> int:
+    if isinstance(duration_min, (int, float)) and duration_min > 0:
+        return int(round(float(duration_min)))
+    return _DEFAULT_STOP_DURATION_MIN.get(kind, 60)
+
+
+def _insight_hint(name: str, kind: str, summary: dict[str, Any]) -> str:
+    text = _first_sentence(summary.get("editorial_summary"))
+    if text:
+        return text
+    if kind == "hotel":
+        return f"{name} is a practical base for nearby sights."
+    if kind == "meal":
+        return f"{name} is a convenient meal break near your route."
+    return f"{name} is a popular stop to include in this day circuit."
+
+
+def _reachability_hint(stops: list[dict[str, Any]], route: dict[str, Any]) -> str:
+    names = [str(s.get("name") or "").strip() for s in stops if str(s.get("name") or "").strip()]
+    if len(names) < 2:
+        return ""
+
+    first = names[0]
+    second = names[1]
+    mode = str(route.get("mode") or "").strip().lower()
+    if mode == "walk":
+        return f"Start at {first}, then walk to {second}; most stops are in a compact area."
+    if mode == "local transit":
+        return (
+            f"Start from {first}, take a short cab to {second}, and use metro/local transit "
+            "for the remaining hops."
+        )
+    return f"Hire a cab from {first} to {second}, then continue the day circuit by taxi."
 
 
 def _ordered_selected(trip: dict[str, Any] | None, key: str) -> list[str]:
@@ -1055,6 +1195,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
         }
 
     anchor = hotels[0] if hotels else None
+    symbol = currency_symbol(trip)
 
     # Geographic ordering of the attractions (cached coord lookups).
     coords: dict[str, tuple[float, float]] = {}
@@ -1084,9 +1225,15 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
         
         if i == 1 and hotels:
             for hname in hotels:
+                summary = places_cache.get_summary(hname, destination) or {}
+                opening, concern = _opening_hint(summary, "")
                 stops.append({
                     "name": hname, "kind": "hotel", "time": "", "duration_min": None,
                     "note": "Your base", "booked": False, "selected": True, "color": color,
+                    "opening_hours": opening,
+                    "cost_display": _cost_hint("hotel", summary, 0.0, symbol),
+                    "insight": _insight_hint(hname, "hotel", summary),
+                    "concern": concern,
                 })
                 # Add hotel coords to day route.
                 c = coords.get(hname) or _place_coords(hname, destination)
@@ -1094,9 +1241,15 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
                     day_coords.append(c)
         
         for name in chunk:
+            summary = places_cache.get_summary(name, destination) or {}
+            opening, concern = _opening_hint(summary, "")
             stops.append({
                 "name": name, "kind": "attraction", "time": "", "duration_min": None,
                 "note": "", "booked": False, "selected": True, "color": color,
+                "opening_hours": opening,
+                "cost_display": _cost_hint("attraction", summary, 0.0, symbol),
+                "insight": _insight_hint(name, "attraction", summary),
+                "concern": concern,
             })
             # Add attraction coords to day route.
             c = coords.get(name)
@@ -1118,6 +1271,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             "color": color,
             "stops": stops,
             "route": route,
+            "reachability": _reachability_hint(stops, route),
         })
         total_stops += len(stops)
 
@@ -1147,6 +1301,8 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     hotels = _selected_names(trip, "hotel")
     activities = _selected_names(trip, "attraction")
     destination = str((trip or {}).get("destination") or "")
+    symbol = currency_symbol(trip)
+    selected_prices = _selected_price_map(trip)
     itin = trip.get("day_wise_itinerary") or []
 
     # Pre-load all place coords so we can calculate route stats per day.
@@ -1183,6 +1339,21 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         for raw in entry.get("stops") or []:
             s = _normalize_stop(raw, hotels, activities)
             if s:
+                summary = places_cache.get_summary(s["name"], destination) or {}
+                opening, concern = _opening_hint(summary, str(entry.get("date") or ""))
+                s["duration_min"] = _duration_hint(s["kind"], s.get("duration_min"))
+                if not s.get("opening_hours"):
+                    s["opening_hours"] = opening
+                if not s.get("concern"):
+                    s["concern"] = concern
+                s["cost_display"] = s.get("cost_display") or _cost_hint(
+                    s["kind"],
+                    summary,
+                    selected_prices.get(str(s["name"]).strip().lower(), 0.0),
+                    symbol,
+                )
+                if not s.get("insight"):
+                    s["insight"] = _insight_hint(s["name"], s["kind"], summary)
                 s["color"] = _day_color(day_num)
                 stops.append(s)
                 # Accumulate coords for route stats.
@@ -1205,6 +1376,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "color": _day_color(day_num),
                 "stops": stops,
                 "route": route,
+                "reachability": _reachability_hint(stops, route),
             }
         )
 
