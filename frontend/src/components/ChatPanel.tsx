@@ -155,6 +155,9 @@ export default function ChatPanel({
           }
         });
       }
+      if (session.authenticated && session.user_id && session.prev_user_id !== session.user_id) {
+        window.dispatchEvent(new Event("tripplanner:identity-changed"));
+      }
       // Always set authChecked LAST so the transcript effect only fires after
       // freshSignInRef is already in the correct state.
       setAuthChecked(true);

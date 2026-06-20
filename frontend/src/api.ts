@@ -70,9 +70,10 @@ export async function fetchAuthConfig(): Promise<{ google: boolean; redirect_uri
 
 // Reads the session cookie. If authenticated, mirrors the identity into
 // localStorage so the rest of the app picks it up transparently.
-// Returns both the session AND the guest_id that was active BEFORE the mirror
-// (so callers can offer to migrate guest data when a sign-in just occurred).
-export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string }> {
+// Returns both the session and the identity that was active BEFORE the mirror
+// (so callers can offer to migrate guest data or reset stale UI state when a
+// sign-in just occurred).
+export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string; prev_user_id?: string }> {
   try {
     const res = await fetch(`${BASE}/auth/me`, { credentials: "include" });
     const session: AuthSession = await res.json();
@@ -83,7 +84,7 @@ export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string
       if (session.display_name) {
         localStorage.setItem("tripplanner_display_name", session.display_name);
       }
-      return { ...session, prev_guest_id: guestId };
+      return { ...session, prev_guest_id: guestId, prev_user_id: prevId || undefined };
     }
     return session;
   } catch {

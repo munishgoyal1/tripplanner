@@ -13,6 +13,8 @@ interface Props {
   focusName?: string | null;
   /** Programmatic jump target after add-to-trip actions. */
   jumpTo?: { day: number; name: string; token: number } | null;
+  /** Remove a stop from the itinerary / trip. */
+  onStopRemove?: (kind: string, name: string) => void;
 }
 
 const KIND_ICON: Record<string, string> = {
@@ -37,6 +39,7 @@ function StopRow({
   onToggleBooked,
   onFocus,
   onMap,
+  onRemove,
 }: {
   stop: ItineraryStop;
   active: boolean;
@@ -45,17 +48,27 @@ function StopRow({
   onToggleBooked: (next: boolean) => void;
   onFocus: () => void;
   onMap: () => void;
+  onRemove?: () => void;
 }) {
   const focusable = canFocus(stop.kind);
+  const removable = !!onRemove && focusable;
+  const handleRowClick = () => {
+    if (focusable) {
+      onFocus();
+    }
+  };
   return (
     <li
       id={rowId}
+      onClick={handleRowClick}
       className={`group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition ${
         jumpActive
           ? "bg-amber-50 ring-2 ring-amber-300"
           : active
             ? "bg-brand/5 ring-1 ring-brand/20"
-            : "hover:bg-slate-50"
+            : focusable
+              ? "cursor-pointer hover:bg-slate-50"
+              : "hover:bg-slate-50"
       }`}
     >
       <button
@@ -63,7 +76,10 @@ function StopRow({
         role="checkbox"
         aria-checked={stop.booked}
         aria-label={stop.booked ? "Mark not booked" : "Mark booked"}
-        onClick={() => onToggleBooked(!stop.booked)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleBooked(!stop.booked);
+        }}
         className={`mt-0.5 grid h-5 w-5 flex-shrink-0 place-items-center rounded-md border transition ${
           stop.booked
             ? "border-emerald-500 bg-emerald-500 text-white"
@@ -83,7 +99,10 @@ function StopRow({
           <button
             type="button"
             disabled={!focusable}
-            onClick={onFocus}
+            onClick={(e) => {
+              e.stopPropagation();
+              onFocus();
+            }}
             className={`truncate text-left text-sm font-semibold ${
               focusable
                 ? "text-ink hover:text-brand"
@@ -112,15 +131,37 @@ function StopRow({
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={onMap}
-        aria-label={`Show ${stop.name} on the map`}
-        className="mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full text-slate-400 opacity-0 transition hover:bg-white hover:text-brand group-hover:opacity-100"
-        title="Show on map"
-      >
-        <span aria-hidden>{"\u{1F4CD}"}</span>
-      </button>
+      <div className="mt-0.5 flex flex-shrink-0 flex-col items-end gap-1">
+        {removable && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove?.();
+            }}
+            className={`rounded-full px-3 py-1 text-[11px] font-medium transition ring-1 ${
+              stop.kind === "hotel"
+                ? "bg-rose-50 text-rose-700 ring-rose-100 hover:bg-rose-100"
+                : "bg-slate-50 text-slate-600 ring-slate-200 hover:bg-slate-100"
+            }`}
+            title={stop.kind === "hotel" ? "Remove stay from itinerary" : "Remove from itinerary"}
+          >
+            {stop.kind === "hotel" ? "Remove stay" : "Remove"}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onMap();
+          }}
+          aria-label={`Show ${stop.name} on the map`}
+          className="grid h-7 w-7 place-items-center rounded-full text-slate-400 transition hover:bg-white hover:text-brand"
+          title="Show on map"
+        >
+          <span aria-hidden>{"\u{1F4CD}"}</span>
+        </button>
+      </div>
     </li>
   );
 }
@@ -134,6 +175,7 @@ function DayCard({
   focusName,
   jumpTo,
   jumpToken,
+  onRemove,
 }: {
   day: ItineraryDay;
   active: boolean;
@@ -143,6 +185,7 @@ function DayCard({
   focusName?: string | null;
   jumpTo?: { day: number; name: string } | null;
   jumpToken: number;
+  onRemove?: (kind: string, name: string) => void;
 }) {
   const firstPlace = day.stops.find((stop) => stop.kind === "hotel" || stop.kind === "attraction");
   return (
@@ -197,6 +240,7 @@ function DayCard({
               onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
               onFocus={() => onFocus(stop.kind, stop.name)}
               onMap={() => onMap(stop.kind, stop.name)}
+              onRemove={onRemove ? () => onRemove(stop.kind, stop.name) : undefined}
             />
               );
             })()
@@ -213,6 +257,7 @@ export default function ItineraryPanel({
   onStopMap,
   focusName,
   jumpTo,
+  onStopRemove,
 }: Props) {
   const [it, setIt] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -221,9 +266,13 @@ export default function ItineraryPanel({
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setIt(null);
     fetchItinerary()
       .then((data) => {
         if (!cancelled) setIt(data);
+      })
+      .catch(() => {
+        if (!cancelled) setIt(null);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -262,17 +311,33 @@ export default function ItineraryPanel({
   useEffect(() => {
     if (!jumpTo || !it?.has_itinerary) return;
     const rowId = `it-stop-${jumpTo.day}-${jumpTo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-    const t = window.setTimeout(() => {
+    let cancelled = false;
+    let attempts = 0;
+    let flashTimer: number | undefined;
+
+    const tryScroll = () => {
+      if (cancelled) return;
       const el = document.getElementById(rowId);
-      if (!el) return;
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      setFlashTarget(jumpTo);
-      window.setTimeout(() => {
-        setFlashTarget((prev) => (prev && prev.token === jumpTo.token ? null : prev));
-      }, 2200);
-    }, 90);
-    return () => window.clearTimeout(t);
-  }, [jumpTo, it?.has_itinerary]);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setFlashTarget(jumpTo);
+        flashTimer = window.setTimeout(() => {
+          setFlashTarget((prev) => (prev && prev.token === jumpTo.token ? null : prev));
+        }, 2200);
+        return;
+      }
+      if (attempts++ < 8) {
+        window.setTimeout(tryScroll, 90);
+      }
+    };
+
+    const startTimer = window.setTimeout(tryScroll, 30);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(startTimer);
+      if (flashTimer) window.clearTimeout(flashTimer);
+    };
+  }, [jumpTo?.token, jumpTo?.day, jumpTo?.name, it]);
 
   if (loading && !it) {
     return (
@@ -317,6 +382,7 @@ export default function ItineraryPanel({
             onToggleBooked={handleToggleBooked}
             onFocus={(kind, name) => onStopFocus?.(kind, name)}
             onMap={(kind, name) => onStopMap?.(kind, name)}
+            onRemove={onStopRemove}
           />
         ))}
       </div>

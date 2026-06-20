@@ -170,6 +170,24 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleIdentityChanged = useCallback(async () => {
+    setView(null);
+    setLoading(true);
+    setFocus(null);
+    setStopFocusName(null);
+    setItineraryJump(null);
+    setTripVersion((n) => n + 1);
+    await refresh(null);
+  }, [refresh]);
+
+  useEffect(() => {
+    const onIdentityChanged = () => {
+      void handleIdentityChanged();
+    };
+    window.addEventListener("tripplanner:identity-changed", onIdentityChanged);
+    return () => window.removeEventListener("tripplanner:identity-changed", onIdentityChanged);
+  }, [handleIdentityChanged]);
+
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get("share");
     if (!token) return;
@@ -296,6 +314,12 @@ export default function App() {
     setTripVersion((n) => n + 1);
   };
 
+  const handleStopRemove = async (kind: string, name: string) => {
+    await handleDeselect(kind, name);
+    setStopFocusName(null);
+    setItineraryJump(null);
+  };
+
   const revealPane = (pane: PaneId) => {
     setHiddenPanes((prev) => ({ ...prev, [pane]: false }));
   };
@@ -389,6 +413,7 @@ export default function App() {
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
+          onStopRemove={handleStopRemove}
         />
       );
     }

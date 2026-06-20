@@ -132,13 +132,17 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
     (async () => {
       setLoading(true);
       setError(null);
+      setView(null);
       try {
         const [cfg, mv] = await Promise.all([fetchMapsConfig(), fetchMapView()]);
         if (cancelled) return;
         setView(mv);
         setKey(cfg.enabled ? cfg.key : null);
       } catch {
-        if (!cancelled) setError("Could not load the map.");
+        if (!cancelled) {
+          setView(null);
+          setError("Could not load the map.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
