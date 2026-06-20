@@ -19,6 +19,9 @@
 #   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
+#   scripts\dev-spa.ps1 -UseCanaryData # point local backend at the CANARY Cosmos
+#                                       # (default: ISOLATED local Cosmos from .env,
+#                                       #  so local + canary trip data never mix)
 #
 # First-time setup:
 #   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev]"
@@ -32,14 +35,26 @@ param(
     [switch]$FrontendOnly,
     [switch]$Watch,
     [switch]$Logs,
-    [switch]$NoCanaryData
+    [switch]$UseCanaryData
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
-if (-not $FrontendOnly -and -not $NoCanaryData) {
+# By default the local backend uses the ISOLATED local Cosmos configured in
+# .env (COSMOS_ENDPOINT=localcosmos...), so local dev never mixes trip/chat data
+# with the canary deployment. Pass -UseCanaryData to deliberately share the
+# canary store. Clear any stale process-level overrides so .env wins via
+# load_dotenv() (which does NOT override existing env vars).
+if (-not $UseCanaryData) {
+    foreach ($v in 'COSMOS_ENDPOINT', 'COSMOS_KEY', 'COSMOS_DATABASE') {
+        Remove-Item "Env:$v" -ErrorAction SilentlyContinue
+    }
+    Write-Host "Using ISOLATED local Cosmos from .env (pass -UseCanaryData to share canary store)." -ForegroundColor DarkGray
+}
+
+if (-not $FrontendOnly -and $UseCanaryData) {
     try {
         if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
             throw "Azure CLI (az) not found"

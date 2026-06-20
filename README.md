@@ -171,13 +171,15 @@ scripts\dev-spa.ps1                 # backend on :8000 + Vite on :5173
 scripts\dev-spa.ps1 -Watch          # enable live reload for both
 scripts\dev-spa.ps1 -BackendOnly    # just the API
 scripts\dev-spa.ps1 -FrontendOnly   # just Vite
-scripts\dev-spa.ps1 -NoCanaryData   # force local JSON storage instead of canary Cosmos
+scripts\dev-spa.ps1 -UseCanaryData  # share the canary Cosmos instead of local
 ```
 
-By default, `scripts\dev-spa.ps1` auto-wires local backend state to the
-canary Cosmos account (`rg-tripplanner-canary`) when Azure CLI access is
-available. This keeps local testing aligned with canary data while still
-running the app locally. Use `-NoCanaryData` to opt out.
+By default, `scripts\dev-spa.ps1` uses the **isolated local Cosmos** configured
+in `.env` (`COSMOS_ENDPOINT=localcosmos...`), so local dev never mixes trip or
+chat data with the canary deployment. Pass `-UseCanaryData` to deliberately
+point the local backend at the canary Cosmos account (`rg-tripplanner-canary`)
+when you want local testing aligned with canary data.
+
 
 Three speeds of feedback you actually have:
 
