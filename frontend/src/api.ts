@@ -299,6 +299,35 @@ export function tripExportPdfUrl(options: ExportOptions): string {
   return `${BASE}/trip/export.pdf?${params.toString()}`;
 }
 
+export type PdfExportResult =
+  | { ok: true; blob: Blob; filename: string }
+  | { ok: false; error?: string; message: string };
+
+export async function downloadTripPdf(options: ExportOptions): Promise<PdfExportResult> {
+  const res = await fetch(tripExportPdfUrl(options));
+  const contentType = res.headers.get("content-type") || "";
+  if (res.ok && contentType.includes("application/pdf")) {
+    const disposition = res.headers.get("content-disposition") || "";
+    const match = disposition.match(/filename="?([^";]+)"?/i);
+    return {
+      ok: true,
+      blob: await res.blob(),
+      filename: match?.[1] || "trip-itinerary.pdf",
+    };
+  }
+
+  let error = "pdf_export_failed";
+  let message = "Could not generate the PDF.";
+  try {
+    const data = (await res.json()) as { error?: string; message?: string };
+    error = data.error || error;
+    message = data.message || message;
+  } catch {
+    // Keep the generic fallback if the server responded with non-JSON text.
+  }
+  return { ok: false, error, message };
+}
+
 export interface EmailExportResult {
   ok: boolean;
   message?: string;

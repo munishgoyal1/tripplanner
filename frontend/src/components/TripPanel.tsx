@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   deleteTrip,
+  downloadTripPdf,
   emailTripExport,
   fetchSavedTrips,
   shareActiveTrip,
   switchTrip,
-  tripExportPdfUrl,
   tripExportUrl,
   tripIcsUrl,
 } from "../api";
@@ -817,9 +817,31 @@ function ExportModal({ onClose }: { onClose: () => void }) {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const downloadPdf = () => {
-    const url = tripExportPdfUrl(options);
-    window.open(url, "_blank", "noopener,noreferrer");
+  const downloadPdf = async () => {
+    setBusy(true);
+    setStatus("");
+    try {
+      const res = await downloadTripPdf(options);
+      if (!res.ok) {
+        if (res.error === "pdf_renderer_not_installed") {
+          setStatus("Direct PDF download is not available yet on this server. Opening the print view instead.");
+          openPrintView();
+          return;
+        }
+        setStatus(res.message || "Could not generate the PDF.");
+        return;
+      }
+      const href = URL.createObjectURL(res.blob);
+      const link = document.createElement("a");
+      link.href = href;
+      link.download = res.filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(href);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const sendEmail = async () => {
@@ -905,8 +927,8 @@ function ExportModal({ onClose }: { onClose: () => void }) {
           <button onClick={openPrintView} className="btn-primary">
             Print / Save PDF
           </button>
-          <button onClick={downloadPdf} className="btn-ghost">
-            Download PDF
+          <button onClick={downloadPdf} disabled={busy} className="btn-ghost disabled:opacity-50">
+            {busy ? "Preparing PDF..." : "Download PDF"}
           </button>
         </div>
 

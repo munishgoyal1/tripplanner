@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchMapView, fetchMapsConfig } from "../api";
-import type { MapView, MapPin } from "../types";
+import type { MapAirport, MapView, MapPin } from "../types";
 
 // Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
 // `any` for the map objects. The browser key is referrer-restricted server-side.
@@ -83,6 +83,10 @@ function dotIcon(color: string): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
+  return pin.id === "airport";
+}
+
 
 interface Props {
   /** Bump to refetch the map after the trip changes. */
@@ -120,7 +124,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
   // A pin the itinerary asked us to zoom into. Applied inside draw() so a
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
-  const pendingFocusRef = useRef<MapPin | null>(null);
+  const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
 
   // ---- data + config -------------------------------------------------------
   useEffect(() => {
@@ -331,8 +335,18 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
       map.panTo({ lat: focus.lat, lng: focus.lng });
       map.setZoom(15);
       pendingFocusRef.current = null;
-      // openInfo is hoisted (function declaration) below in this scope.
-      openInfo(focus);
+      if (isAirportTarget(focus)) {
+        if (infoRef.current) {
+          infoRef.current.setContent(
+            `<div style="font:600 13px Inter,sans-serif">${"\u2708 "}${escapeHtml(focus.name)}</div>`
+          );
+          infoRef.current.setPosition({ lat: focus.lat, lng: focus.lng });
+          infoRef.current.open(map);
+        }
+      } else {
+        // openInfo is hoisted (function declaration) below in this scope.
+        openInfo(focus);
+      }
     } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
@@ -392,20 +406,21 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
   // (b) a follow-up redraw that would otherwise reset the zoom via fitBounds.
   useEffect(() => {
     if (!focusName || !view) return;
-    let pin = view.pins.find(
+    let target: MapPin | MapAirport | undefined = view.pins.find(
       (p) => p.name.toLowerCase() === focusName.toLowerCase()
     );
     // Check airport if not found in pins
-    if (!pin && view.airport && view.airport.name.toLowerCase() === focusName.toLowerCase()) {
-      pin = view.airport;
+    if (!target && view.airport && view.airport.name.toLowerCase() === focusName.toLowerCase()) {
+      target = view.airport;
     }
-    if (!pin) return;
-    pendingFocusRef.current = pin;
+    if (!target) return;
+    pendingFocusRef.current = target;
     // Reveal the pin's day so it isn't filtered out. Changing activeDay
     // recreates draw and triggers the redraw effect (which applies the focus);
     // if the day is already active, redraw explicitly.
-    if (pin.day && pin.day !== activeDay) {
-      setActiveDay(pin.day);
+    const day = "day" in target ? target.day : null;
+    if (day && day !== activeDay) {
+      setActiveDay(day);
     } else {
       draw();
     }

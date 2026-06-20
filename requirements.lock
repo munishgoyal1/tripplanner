@@ -130,6 +130,7 @@ orjson==3.11.9
 ormsgpack==1.12.2
 packaging==26.2
 pathspec==1.1.1
+pillow==12.2.0
 pluggy==1.6.0
 propcache==0.5.2
 protobuf==6.33.6
@@ -149,6 +150,7 @@ pywin32==311
 PyYAML==6.0.3
 referencing==0.37.0
 regex==2026.5.9
+reportlab==5.0.0
 requests==2.34.2
 requests-toolbelt==1.0.0
 rich==15.0.0
