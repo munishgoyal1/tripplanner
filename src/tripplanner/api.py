@@ -26,6 +26,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 import time
 from typing import Any, Literal
 
@@ -297,6 +298,59 @@ def _summarize_tool_input(raw: Any, max_len: int = 160) -> str:
     return text
 
 
+# ---------------------------------------------------------------------------
+# Itinerary safety net — direct parse + persist when agent skips the tool call
+# ---------------------------------------------------------------------------
+_DAY_HDR = re.compile(
+    r"(?:^|\n)\s*(?:#{1,3}\s*|\*{1,2})?[Dd]ay\s+(\d+)"
+    r"(?:\s*[-\u2013\u2014:·]\s*([^\n\*]{0,80}))?",
+)
+_BOLD = re.compile(r"\*\*([^\*\n]{3,60})\*\*")
+
+
+def _auto_persist_itinerary(reply: str) -> None:
+    """If the agent's reply describes a multi-day itinerary but never called
+    update_trip_plan, parse a minimal structure and persist it directly so the
+    Itinerary panel is never left blank.
+
+    Deliberately lenient — only requires 2+ day headers.  The agent's richer
+    structured call (when it behaves) will overwrite this with better data.
+    """
+    matches = list(_DAY_HDR.finditer(reply))
+    if len(matches) < 2:
+        return  # not a day-wise reply
+
+    from tripplanner.tools.trip_planner import update_trip_plan as _utp
+
+    days: list[dict[str, Any]] = []
+    for i, m in enumerate(matches):
+        day_num = int(m.group(1))
+        raw_title = (m.group(2) or "").strip().strip("*_ ")
+        title = raw_title[:80] if raw_title else f"Day {day_num}"
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(reply)
+        chunk = reply[start:end].strip()
+        # Collect bolded place names as stops (agent usually bolds them)
+        stop_names = _BOLD.findall(chunk)
+        stops = [
+            {"name": n.strip(), "kind": "attraction"}
+            for n in dict.fromkeys(stop_names)  # dedup, preserve order
+            if n.strip()
+        ][:6]
+        days.append({
+            "day": day_num,
+            "date": "",
+            "title": title,
+            "summary": chunk[:250].replace("\n", " "),
+            "stops": stops,
+        })
+
+    try:
+        _utp(json.dumps({"day_wise_itinerary": days}))
+    except Exception:
+        pass  # best-effort; never crash the response path
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest) -> StreamingResponse:
     """Stream the agent turn as Server-Sent Events.
@@ -332,6 +386,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         # Capture tool message outputs so we can fact-check the agent's final
         # reply against them (hallucination critic).
         tool_outputs: list[ToolMessage] = []
+        tool_names_called: set[str] = set()  # track which tools fired this turn
         try:
             async for ev in app_graph.astream_events(
                 {"messages": history, "current_agent": ""}, version="v2"
@@ -348,6 +403,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                         yield _sse("token", {"text": text})
                 elif kind == "on_tool_start":
                     tool_starts[run_id] = time.monotonic()
+                    tool_names_called.add(name)
                     args_preview = _summarize_tool_input(data.get("input"))
                     yield _sse("tool", {
                         "name": name,
@@ -397,6 +453,11 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
         history.append(AIMessage(content=reply))
+        # Safety net: if the agent described a day-wise itinerary but never
+        # called update_trip_plan, parse the reply and persist it directly so
+        # the Itinerary panel is never left blank.
+        if "update_trip_plan" not in tool_names_called:
+            await asyncio.to_thread(_auto_persist_itinerary, reply)
         tid_after = _save_chat(history_tid, history)
         _schedule_learning_sweep(req.user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
