@@ -93,13 +93,15 @@ interface Props {
   reloadToken?: number;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
+  /** User clicked a pin and wants other sections synced to that place. */
+  onPinFocus?: (kind: string, name: string) => void;
   /** Add a place to the trip (from a pin's info window). */
   onSelect?: (kind: string, name: string) => void;
   /** Remove a place from the trip (from a pin's info window). */
   onDeselect?: (kind: string, name: string) => void;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -275,7 +277,12 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
         icon,
         zIndex: p.selected ? 1000 : p.day ? 600 : 400,
       });
-      marker.addListener("click", () => openInfo(p));
+      marker.addListener("click", () => {
+        if (p.kind === "hotel" || p.kind === "attraction") {
+          onPinFocus?.(p.kind, p.name);
+        }
+        openInfo(p);
+      });
       overlaysRef.current.push(marker);
       bounds.extend({ lat: p.lat, lng: p.lng });
       any = true;
@@ -397,7 +404,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onSelect, onDesel
     }
 
     openInfoRef.current = openInfo;
-  }, [view, activeDay]);
+  }, [view, activeDay, onPinFocus]);
 
   useEffect(() => {
     draw();

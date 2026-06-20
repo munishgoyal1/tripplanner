@@ -60,6 +60,7 @@ function StopRow({
   return (
     <li
       id={rowId}
+      data-stop-name={stop.name.toLowerCase()}
       onClick={handleRowClick}
       className={`group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition ${
         jumpActive
@@ -338,6 +339,16 @@ export default function ItineraryPanel({
       if (flashTimer) window.clearTimeout(flashTimer);
     };
   }, [jumpTo?.token, jumpTo?.day, jumpTo?.name, it]);
+
+  useEffect(() => {
+    if (!focusName || !it?.has_itinerary) return;
+    const target = focusName.trim().toLowerCase();
+    if (!target) return;
+    const rows = Array.from(document.querySelectorAll<HTMLElement>("[data-stop-name]"));
+    const row = rows.find((el) => (el.dataset.stopName || "").toLowerCase() === target);
+    if (!row) return;
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [focusName, it]);
 
   if (loading && !it) {
     return (

@@ -221,6 +221,9 @@ export default function App() {
   const handleFocus = async (kind: string, name: string) => {
     const f = { kind, name };
     setFocus(f);
+    if (isPlaceKind(kind)) {
+      setStopFocusName(name);
+    }
     await refresh(f);
   };
 
@@ -398,6 +401,8 @@ export default function App() {
     focusName: stopFocusName,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
+    onSelect: handleSelect,
+    onDeselect: handleDeselect,
     tripVersion,
     onSwitched: handleSwitched,
     mapOpen,
@@ -433,6 +438,7 @@ export default function App() {
         <MapPanel
           reloadToken={tripVersion}
           focusName={stopFocusName}
+          onPinFocus={handleStopFocus}
           onSelect={handleSelect}
           onDeselect={handleDeselect}
         />

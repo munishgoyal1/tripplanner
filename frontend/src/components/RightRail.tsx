@@ -13,6 +13,8 @@ interface Props {
   focusName: string | null;
   onStopFocus: (kind: string, name: string) => void;
   onStopMap: (kind: string, name: string) => void;
+  onSelect?: (kind: string, name: string) => void;
+  onDeselect?: (kind: string, name: string) => void;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
   onSwitched: (tripId?: string, view?: TripView | null) => void;
@@ -27,6 +29,8 @@ export default function RightRail({
   focusName,
   onStopFocus,
   onStopMap,
+  onSelect,
+  onDeselect,
   tripVersion,
   onSwitched,
   mapOpen,
@@ -72,7 +76,13 @@ export default function RightRail({
         {mapOpen && (
           <section className="flex h-72 min-h-0 flex-col border-b border-slate-100">
             <div className="min-h-0 w-full flex-1">
-              <MapPanel reloadToken={reloadToken} focusName={focusName} />
+              <MapPanel
+                reloadToken={reloadToken}
+                focusName={focusName}
+                onPinFocus={onStopFocus}
+                onSelect={onSelect}
+                onDeselect={onDeselect}
+              />
             </div>
           </section>
         )}
