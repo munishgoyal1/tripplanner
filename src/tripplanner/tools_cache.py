@@ -12,8 +12,9 @@ This module wraps every read-only tool so that:
   3. On miss we run the tool, store the result, then return it.
 
 Stateful tools — anything that *writes* to user prefs or trip state, or that
-finalises/executes a trip — are listed in ``_STATEFUL_TOOLS`` and are always
-passed through untouched.
+finalises/executes a trip — are listed in ``_STATEFUL_TOOLS``. They bypass
+read-through caching and trigger invalidation of user-scoped cache entries
+after a successful write.
 
 Two storage backends, picked at call time:
 
@@ -45,6 +46,7 @@ import hashlib
 import json
 import time
 from collections import OrderedDict
+from dataclasses import dataclass
 from typing import Any
 
 from langchain_core.tools import BaseTool
@@ -52,7 +54,7 @@ from langchain_core.tools import BaseTool
 from tripplanner.user_context import get_user_id
 
 
-# Tools that mutate persistent state — never cache, always pass through.
+# Tools that mutate persistent state — never read/write cache directly.
 _STATEFUL_TOOLS: frozenset[str] = frozenset(
     {
         # trip plan lifecycle
@@ -60,6 +62,7 @@ _STATEFUL_TOOLS: frozenset[str] = frozenset(
         "update_trip_plan",
         "finalize_trip",
         "execute_trip",
+        "resume_trip",
         # user preferences (writes)
         "save_travel_preferences",
         "record_past_trip",
@@ -73,57 +76,120 @@ _STATEFUL_TOOLS: frozenset[str] = frozenset(
     }
 )
 
-# Tools whose output is purely public/destination-scoped and does NOT vary by
-# user identity. Their cache entries are shared under a single synthetic
-# user_id ("_global_") so every user benefits from a warm cache after the
-# first caller looks up the same destination.
-_GLOBAL_TOOLS: frozenset[str] = frozenset(
-    {
-        # Google Places — place details, reviews, hours, nearby restaurants
-        "search_places_with_reviews",
-        "get_place_reviews",
-        "nearby_restaurants",
-        "check_place_hours",
-        # Weather — public forecast data
-        "get_weather_forecast",
-        # Visa / entry rules — same rules for the same passport+destination
-        "check_visa_requirements",
-        # Local events — same events regardless of who's asking
-        "find_local_events",
-        # General web search — destination guides, tips
-        "web_search",
-        # Points of interest, activities, hotels — same inventory per city
-        "search_points_of_interest",
-        "search_activities",
-        "search_hotels",
-    }
-)
-
 _GLOBAL_USER_ID = "_global_"
 
 # Default TTL is 30 minutes — long enough to dedup within a session, short
 # enough that flight prices / hours don't go stale.
 _DEFAULT_TTL_SECONDS = 30 * 60
 
+_USER_SCOPE = "user"
+_GLOBAL_SCOPE = "global"
+
+
+@dataclass(frozen=True)
+class CachePolicy:
+    scope: str
+    ttl_seconds: int
+
+
+# String-valued args on these keys are lower-cased before hashing for global
+# tools. This improves hit-rate for semantically equivalent calls where only
+# casing differs ("Paris" vs "paris").
+_LOWERCASE_KEYS: frozenset[str] = frozenset(
+    {
+        "city",
+        "country",
+        "destination",
+        "destination_city",
+        "from_city",
+        "iata_code",
+        "origin",
+        "origin_city",
+        "query",
+        "to_city",
+    }
+)
+
+# Tool-level caching policy: which scope to use and how long a hit remains
+# valid. Global means reusable across all users; user means isolated per user.
+_CACHE_POLICIES: dict[str, CachePolicy] = {
+    # User-specific, frequently read and frequently refreshed.
+    "get_travel_preferences": CachePolicy(scope=_USER_SCOPE, ttl_seconds=5 * 60),
+    "get_trip_plan": CachePolicy(scope=_USER_SCOPE, ttl_seconds=45),
+    "list_past_trips": CachePolicy(scope=_USER_SCOPE, ttl_seconds=2 * 60),
+    "recall_relevant_memory": CachePolicy(scope=_USER_SCOPE, ttl_seconds=60),
+
+    # Highly volatile inventory/pricing/search.
+    "search_flights_duffel": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
+    "search_flights": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
+    "search_hotels": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "search_points_of_interest": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "search_places_with_reviews": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "nearby_restaurants": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "web_search": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+
+    # Public data that changes less frequently.
+    "get_place_reviews": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=6 * 60 * 60),
+    "check_place_hours": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=2 * 60 * 60),
+    "get_weather_forecast": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=90 * 60),
+    "check_visa_requirements": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=12 * 60 * 60),
+    "find_local_events": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=2 * 60 * 60),
+    "compute_route": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=6 * 60 * 60),
+    "optimize_day_route": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=6 * 60 * 60),
+}
+
 # Per-process LRU when Cosmos is unavailable.
 _LOCAL_CACHE: "OrderedDict[str, tuple[float, str]]" = OrderedDict()
 _LOCAL_MAX = 256
 
 
-def _canonical_args(args: dict[str, Any] | None) -> str:
-    """Stable JSON of args so equivalent calls hash the same."""
-    return json.dumps(args or {}, sort_keys=True, default=str)
+def _normalize_cache_value(value: Any, *, scope: str, key_name: str = "") -> Any:
+    """Normalize args so semantically equivalent calls share cache keys."""
+    if isinstance(value, str):
+        text = " ".join(value.strip().split())
+        if scope == _GLOBAL_SCOPE and key_name in _LOWERCASE_KEYS:
+            return text.lower()
+        return text
+    if isinstance(value, dict):
+        return {
+            str(k): _normalize_cache_value(v, scope=scope, key_name=str(k).lower())
+            for k, v in value.items()
+        }
+    if isinstance(value, list):
+        return [_normalize_cache_value(v, scope=scope, key_name=key_name) for v in value]
+    if isinstance(value, tuple):
+        return [_normalize_cache_value(v, scope=scope, key_name=key_name) for v in value]
+    return value
 
 
-def _cache_key(tool_name: str, args: dict[str, Any] | None) -> str:
+def _canonical_args(args: dict[str, Any] | None, *, scope: str) -> str:
+    """Stable JSON of normalized args so equivalent calls hash the same."""
+    normal = _normalize_cache_value(args or {}, scope=scope)
+    return json.dumps(normal, sort_keys=True, default=str)
+
+
+def _cache_key(tool_name: str, args: dict[str, Any] | None, *, scope: str) -> str:
     """Short, filesystem-safe hash for ``(tool_name, args)``.
 
     We include the tool name in the digest to avoid any chance of a
     cross-tool collision; the doc id then doubles as a debug label.
     """
-    blob = f"{tool_name}|{_canonical_args(args)}".encode("utf-8")
+    blob = f"{tool_name}|{_canonical_args(args, scope=scope)}".encode("utf-8")
     digest = hashlib.sha256(blob).hexdigest()[:32]
     return f"{tool_name}-{digest}"
+
+
+def _resolve_policy(tool_name: str) -> CachePolicy | None:
+    if tool_name in _STATEFUL_TOOLS:
+        return None
+    return _CACHE_POLICIES.get(tool_name, CachePolicy(scope=_USER_SCOPE, ttl_seconds=_DEFAULT_TTL_SECONDS))
+
+
+def _resolve_user_partition(scope: str, user_id: str) -> str:
+    if scope == _GLOBAL_SCOPE:
+        return _GLOBAL_USER_ID
+    return f"user:{user_id or 'local'}"
 
 
 def _coerce_result(result: Any) -> str:
@@ -187,46 +253,49 @@ def _local_set(user_id: str, key: str, value: str, ttl: int) -> None:
 
 def cache_lookup(tool_name: str, args: dict[str, Any] | None) -> str | None:
     """Return a cached result, or ``None`` on miss / stateful tool."""
-    if tool_name in _STATEFUL_TOOLS:
+    policy = _resolve_policy(tool_name)
+    if policy is None:
         return None
-    # Global tools share a single cache partition across all users.
-    user_id = _GLOBAL_USER_ID if tool_name in _GLOBAL_TOOLS else (get_user_id() or "local")
-    key = _cache_key(tool_name, args)
+    user_id = get_user_id() or "local"
+    partition = _resolve_user_partition(policy.scope, user_id)
+    key = _cache_key(tool_name, args, scope=policy.scope)
     # Prefer Cosmos when available so cache survives container restarts.
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            return _cosmos_get(user_id, key)
+            return _cosmos_get(partition, key)
     except Exception:
         # Cosmos can fail (network, perm); fall back to local cache.
         pass
-    return _local_get(user_id, key)
+    return _local_get(partition, key)
 
 
 def cache_store(
     tool_name: str,
     args: dict[str, Any] | None,
     result: Any,
-    ttl: int = _DEFAULT_TTL_SECONDS,
+    ttl: int | None = None,
 ) -> None:
     """Store ``result`` for ``(tool_name, args)``; no-op for stateful tools."""
-    if tool_name in _STATEFUL_TOOLS:
+    policy = _resolve_policy(tool_name)
+    if policy is None:
         return
-    # Global tools share a single cache partition across all users.
-    user_id = _GLOBAL_USER_ID if tool_name in _GLOBAL_TOOLS else (get_user_id() or "local")
-    key = _cache_key(tool_name, args)
+    user_id = get_user_id() or "local"
+    partition = _resolve_user_partition(policy.scope, user_id)
+    key = _cache_key(tool_name, args, scope=policy.scope)
     value = _coerce_result(result)
+    ttl_seconds = ttl if ttl is not None else policy.ttl_seconds
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            _cosmos_set(user_id, key, value, ttl)
+            _cosmos_set(partition, key, value, ttl_seconds)
             return
     except Exception:
         # Fall through to local cache on any Cosmos failure.
         pass
-    _local_set(user_id, key, value, ttl)
+    _local_set(partition, key, value, ttl_seconds)
 
 
 def clear_local_cache() -> None:
@@ -236,21 +305,27 @@ def clear_local_cache() -> None:
 
 def clear_cache_for_user(user_id: str) -> int:
     """Delete cached tool responses for a single user."""
+    scoped_user = _resolve_user_partition(_USER_SCOPE, user_id)
     deleted = 0
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled():
-            return storage_cosmos.delete_docs("tool_cache", user_id)
+            return storage_cosmos.delete_docs("tool_cache", scoped_user)
     except Exception:
         pass
 
-    prefix = f"{user_id}|"
+    prefix = f"{scoped_user}|"
     for key in list(_LOCAL_CACHE.keys()):
         if key.startswith(prefix):
             _LOCAL_CACHE.pop(key, None)
             deleted += 1
     return deleted
+
+
+def _invalidate_user_scoped_cache(user_id: str) -> None:
+    """Invalidate user-scoped entries after stateful tool writes."""
+    clear_cache_for_user(user_id or "local")
 
 
 def wrap_tools_with_cache(tools: list[BaseTool]) -> list[BaseTool]:
@@ -265,9 +340,6 @@ def wrap_tools_with_cache(tools: list[BaseTool]) -> list[BaseTool]:
 
     wrapped: list[BaseTool] = []
     for tool in tools:
-        if tool.name in _STATEFUL_TOOLS:
-            wrapped.append(tool)
-            continue
         wrapped.append(_build_cached_copy(tool, StructuredTool))
     return wrapped
 
@@ -276,6 +348,7 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
     """Return a new StructuredTool that wraps ``tool`` with cache lookup."""
     original_invoke = tool.invoke
     tool_name = tool.name
+    policy = _resolve_policy(tool_name)
 
     def cached_func(*args: Any, **kwargs: Any) -> Any:
         # Local import keeps tools_cache importable in test contexts that
@@ -295,6 +368,7 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
 
         started = time.time()
         user_id = get_user_id() or "local"
+        cache_scope = policy.scope if policy else "stateful"
 
         hit = cache_lookup(tool_name, cache_args)
         if hit is not None:
@@ -304,6 +378,7 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
                 status="ok",
                 cache_hit=True,
                 user_id=user_id,
+                cache_scope=cache_scope,
             )
             return hit
 
@@ -318,6 +393,7 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
                 status="error",
                 cache_hit=False,
                 user_id=user_id,
+                cache_scope=cache_scope,
                 error=type(exc).__name__,
             )
             raise
@@ -328,8 +404,13 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
             status="ok",
             cache_hit=False,
             user_id=user_id,
+            cache_scope=cache_scope,
         )
-        cache_store(tool_name, cache_args, result)
+        if policy is None:
+            _invalidate_user_scoped_cache(user_id)
+            return result
+
+        cache_store(tool_name, cache_args, result, ttl=policy.ttl_seconds)
         return result
 
     return StructuredTool.from_function(

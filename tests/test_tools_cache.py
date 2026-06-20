@@ -28,8 +28,8 @@ def _reset_state(monkeypatch):
 
 
 def test_canonical_args_stable_across_key_order():
-    a = tools_cache._cache_key("web_search", {"query": "paris", "limit": 5})
-    b = tools_cache._cache_key("web_search", {"limit": 5, "query": "paris"})
+    a = tools_cache._cache_key("web_search", {"query": "paris", "limit": 5}, scope="global")
+    b = tools_cache._cache_key("web_search", {"limit": 5, "query": "paris"}, scope="global")
     assert a == b
 
 
@@ -64,11 +64,22 @@ def test_cache_expires_after_ttl():
 
 
 def test_cache_isolates_users():
-    tools_cache.cache_store("web_search", {"q": "x"}, "alice-result")
+    tools_cache.cache_store("get_trip_plan", {}, "alice-plan")
     user_context.set_user_id("bob")
-    assert tools_cache.cache_lookup("web_search", {"q": "x"}) is None
+    assert tools_cache.cache_lookup("get_trip_plan", {}) is None
     user_context.set_user_id("alice")
-    assert tools_cache.cache_lookup("web_search", {"q": "x"}) == "alice-result"
+    assert tools_cache.cache_lookup("get_trip_plan", {}) == "alice-plan"
+
+
+def test_global_cache_shares_across_users():
+    tools_cache.cache_store("web_search", {"query": "paris"}, "global-hit")
+    user_context.set_user_id("bob")
+    assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "global-hit"
+
+
+def test_global_cache_key_normalizes_case_and_whitespace():
+    tools_cache.cache_store("web_search", {"query": "  Paris  "}, "normalized")
+    assert tools_cache.cache_lookup("web_search", {"query": "paris"}) == "normalized"
 
 
 def test_coerce_result_handles_dict_and_list():
@@ -111,6 +122,20 @@ def test_wrap_tools_skips_stateful_tools_entirely():
     wrapped.invoke({"payload": "a"})
     wrapped.invoke({"payload": "a"})
     assert calls["n"] == 2  # No dedup for state-mutating calls.
+
+
+def test_stateful_tool_invalidates_user_cache_entries():
+    tools_cache.cache_store("get_trip_plan", {}, "stale")
+    assert tools_cache.cache_lookup("get_trip_plan", {}) == "stale"
+
+    @tool
+    def update_trip_plan(payload: str) -> str:
+        """Pretend write tool that should invalidate user scoped cache."""
+        return f"updated:{payload}"
+
+    [wrapped] = tools_cache.wrap_tools_with_cache([update_trip_plan])
+    assert wrapped.invoke({"payload": "x"}) == "updated:x"
+    assert tools_cache.cache_lookup("get_trip_plan", {}) is None
 
 
 def test_local_cache_evicts_oldest_when_full(monkeypatch):

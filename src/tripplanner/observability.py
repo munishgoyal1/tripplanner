@@ -410,6 +410,7 @@ def record_tool_call(
     duration_ms: float,
     status: str,
     cache_hit: bool = False,
+    cache_scope: str | None = None,
     user_id: str | None = None,
     error: str | None = None,
 ) -> None:
@@ -417,6 +418,7 @@ def record_tool_call(
 
     ``status`` is one of ``"ok"``, ``"error"``. ``cache_hit`` is True when the
     result was served from ``tools_cache`` (so we can show hit-rate per tool).
+    ``cache_scope`` is ``"global"`` or ``"user"`` when available.
     ``error`` is the exception class name when status="error".
 
     Emits a PII-safe ``tool_call`` app event as a side-effect — this is the
@@ -453,6 +455,7 @@ def record_tool_call(
         status=status,
         ms=round(duration_ms, 2),
         cache_hit=cache_hit,
+        **({"cache_scope": cache_scope} if cache_scope else {}),
         **({"error": error} if error else {}),
     )
 
