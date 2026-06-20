@@ -44,6 +44,10 @@ param duffelApiKey string
 param googlePlacesApiKey string = ''
 
 @secure()
+@description('Google Maps browser key (referrer-restricted, Maps JavaScript API enabled). Sent to the browser to render the interactive trip map. Separate from googlePlacesApiKey.')
+param googleMapsBrowserKey string = ''
+
+@secure()
 @description('Tavily web-search API key.')
 param tavilyApiKey string = ''
 
@@ -129,6 +133,7 @@ var baseEnv = [
   { name: 'DUFFEL_API_KEY', secretRef: 'duffel-api-key' }
   { name: 'GOOGLE_PLACES_API_KEY', secretRef: 'google-places-api-key' }
   { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
+  { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }
   { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
   { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
   { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }

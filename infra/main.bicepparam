@@ -14,6 +14,7 @@ param azureOpenAiApiKey = readEnvironmentVariable('AZURE_OPENAI_API_KEY', '')
 
 param duffelApiKey = readEnvironmentVariable('DUFFEL_API_KEY', '')
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
+param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')
 
 // OAuth (all optional). Leaving WEB_SESSION_SECRET unset disables login
