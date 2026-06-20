@@ -224,6 +224,17 @@ function DayCard({
                 · {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
               </p>
             )}
+            {day.google_maps_url && (
+              <a
+                href={day.google_maps_url}
+                target="_blank"
+                rel="noreferrer"
+                className="chip text-brand hover:bg-brand/5"
+                title={`Open Day ${day.day} route in Google Maps`}
+              >
+                Open route ↗
+              </a>
+            )}
           </div>
           {day.reachability && (
             <p className="mt-1 text-xs text-slate-500">{day.reachability}</p>

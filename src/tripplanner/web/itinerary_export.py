@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from html import escape
 from typing import Any
+from urllib.parse import quote
 
 from tripplanner.web import places_cache, trip_view
 
@@ -14,6 +15,64 @@ def _e(value: Any) -> str:
 
 def _yes(v: Any) -> bool:
     return str(v).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _route_points(
+  pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
+) -> list[tuple[float, float]]:
+  out: list[tuple[float, float]] = []
+  for pid in pin_ids:
+    p = pin_by_id.get(pid) or {}
+    lat = p.get("lat")
+    lng = p.get("lng")
+    if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
+      out.append((float(lat), float(lng)))
+  return out
+
+
+def _route_snippet_svg(coords: list[tuple[float, float]]) -> str:
+  if len(coords) < 2:
+    return ""
+  width, height, pad = 220.0, 116.0, 12.0
+  lats = [c[0] for c in coords]
+  lngs = [c[1] for c in coords]
+  min_lat, max_lat = min(lats), max(lats)
+  min_lng, max_lng = min(lngs), max(lngs)
+  lat_span = max(max_lat - min_lat, 1e-6)
+  lng_span = max(max_lng - min_lng, 1e-6)
+
+  def _xy(lat: float, lng: float) -> tuple[float, float]:
+    x = pad + ((lng - min_lng) / lng_span) * (width - 2 * pad)
+    y = pad + ((max_lat - lat) / lat_span) * (height - 2 * pad)
+    return (round(x, 2), round(y, 2))
+
+  points = [_xy(lat, lng) for lat, lng in coords]
+  poly = " ".join(f"{x},{y}" for x, y in points)
+  nodes = []
+  for i, (x, y) in enumerate(points, start=1):
+    nodes.append(
+      f"<circle cx='{x}' cy='{y}' r='5.5' fill='#0d9488' stroke='white' stroke-width='1.5' />"
+    )
+    nodes.append(
+      f"<text x='{x}' y='{y + 3.2}' text-anchor='middle' fill='white' font-size='7' font-weight='700'>{i}</text>"
+    )
+
+  return (
+    f"<svg viewBox='0 0 {int(width)} {int(height)}' class='route-svg' xmlns='http://www.w3.org/2000/svg'>"
+    "<rect x='0' y='0' width='100%' height='100%' rx='10' fill='#f8fafc' stroke='#bae6fd' />"
+    f"<polyline points='{poly}' fill='none' stroke='#0369a1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' />"
+    + "".join(nodes)
+    + "</svg>"
+  )
+
+
+def _qr_image_url(value: str) -> str:
+  if not value:
+    return ""
+  return (
+    "https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=2&data="
+    + quote(value, safe="")
+  )
 
 
 def build_export_html(
@@ -50,6 +109,7 @@ def build_export_html(
     for day in itinerary.get("days") or []:
         day_num = int(day.get("day") or 0)
         route = route_by_day.get(day_num) if include_map_circuit else None
+        maps_url = str(day.get("google_maps_url") or "")
 
         stops_html = []
         for idx, stop in enumerate(day.get("stops") or [], start=1):
@@ -96,11 +156,29 @@ def build_export_html(
             if pin_names:
                 circuit = " -> ".join(_e(n) for n in pin_names)
                 stats = route.get("route") or {}
+            snippet = _route_snippet_svg(
+              _route_points(route.get("pin_ids") or [], pin_by_id)
+            )
+            maps_link_html = (
+              f"<a class='maps-link' href='{_e(maps_url)}' target='_blank' rel='noreferrer'>"
+              "Open this day route in Google Maps ↗</a>"
+              if maps_url
+              else ""
+            )
+            qr_html = (
+              "<div class='qr-wrap'><img class='qr' src='"
+              + _e(_qr_image_url(maps_url))
+              + "' alt='QR for day map route' /><div class='qr-cap'>Scan route</div></div>"
+              if maps_url
+              else ""
+            )
                 circuit_html = (
                     "<div class='circuit'>"
                     "<div class='circuit-title'>Daily map circuit</div>"
+              f"{snippet}"
                     f"<div class='circuit-line'>{circuit}</div>"
                     f"<div class='circuit-stats'>{_e(stats.get('distance_display') or '')} · {_e(stats.get('duration_display') or '')} · {_e(stats.get('mode') or '')}</div>"
+              f"<div class='circuit-actions'>{maps_link_html}{qr_html}</div>"
                     "</div>"
                 )
 
@@ -184,8 +262,15 @@ def build_export_html(
     .summary {{ margin:10px 0 8px; color:#334155; }}
     .circuit {{ margin:8px 0 10px; background:{circuit_bg}; border:1px solid #bae6fd; border-radius:10px; padding:10px; }}
     .circuit-title {{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#0c4a6e; }}
+    .route-svg {{ margin-top:8px; width:100%; max-width:330px; height:auto; }}
     .circuit-line {{ margin-top:5px; font-size:14px; color:#0f172a; }}
     .circuit-stats {{ margin-top:5px; font-size:12px; color:#0369a1; }}
+    .circuit-actions {{ margin-top:8px; display:flex; align-items:center; gap:10px; }}
+    .maps-link {{ color:#0f766e; font-size:12px; font-weight:600; text-decoration:none; }}
+    .maps-link:hover {{ text-decoration:underline; }}
+    .qr-wrap {{ display:flex; align-items:center; gap:6px; margin-left:auto; }}
+    .qr {{ width:54px; height:54px; border-radius:8px; border:1px solid #bae6fd; background:#fff; }}
+    .qr-cap {{ color:#0369a1; font-size:11px; }}
     .stops {{ margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:10px; }}
     .stop {{ display:flex; gap:12px; justify-content:space-between; border:1px solid var(--line); border-radius:10px; padding:10px; background:var(--soft); }}
     .stop-main {{ min-width:0; flex:1; }}

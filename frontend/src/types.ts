@@ -190,6 +190,7 @@ export interface ItineraryDay {
   color: string;
   stops: ItineraryStop[];
   reachability?: string;
+  google_maps_url?: string;
   route?: {
     distance_km: number;
     duration_min: number;

@@ -1085,6 +1085,54 @@ def _reachability_hint(stops: list[dict[str, Any]], route: dict[str, Any]) -> st
     return f"Hire a cab from {first} to {second}, then continue the day circuit by taxi."
 
 
+def _google_travel_mode(route_mode: str) -> str:
+    mode = str(route_mode or "").strip().lower()
+    if mode == "walk":
+        return "walking"
+    if mode == "local transit":
+        return "transit"
+    return "driving"
+
+
+def _google_maps_day_url(
+    destination: str,
+    stops: list[dict[str, Any]],
+    route_mode: str,
+) -> str:
+    names: list[str] = []
+    seen: set[str] = set()
+    for stop in stops:
+        name = str(stop.get("name") or "").strip()
+        if not name:
+            continue
+        key = name.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        names.append(name)
+
+    if not names:
+        return ""
+
+    if len(names) == 1:
+        query = f"{names[0]}, {destination}".strip().strip(",")
+        return "https://www.google.com/maps/search/?api=1&query=" + quote(query, safe="")
+
+    origin = f"{names[0]}, {destination}".strip().strip(",")
+    dest = f"{names[-1]}, {destination}".strip().strip(",")
+    url = (
+        "https://www.google.com/maps/dir/?api=1"
+        f"&origin={quote(origin, safe='')}"
+        f"&destination={quote(dest, safe='')}"
+        f"&travelmode={quote(_google_travel_mode(route_mode), safe='')}"
+    )
+    waypoints = names[1:-1][:8]
+    if waypoints:
+        waypoint_text = "|".join(f"{w}, {destination}".strip().strip(",") for w in waypoints)
+        url += f"&waypoints={quote(waypoint_text, safe='')}"
+    return url
+
+
 def _ordered_selected(trip: dict[str, Any] | None, key: str) -> list[str]:
     """Display-cased selected names for a bucket, in selection order, deduped."""
     out: list[str] = []
@@ -1272,6 +1320,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             "stops": stops,
             "route": route,
             "reachability": _reachability_hint(stops, route),
+            "google_maps_url": _google_maps_day_url(destination, stops, route.get("mode", "")),
         })
         total_stops += len(stops)
 
@@ -1377,6 +1426,9 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "stops": stops,
                 "route": route,
                 "reachability": _reachability_hint(stops, route),
+                "google_maps_url": _google_maps_day_url(
+                    destination, stops, route.get("mode", "")
+                ),
             }
         )
 

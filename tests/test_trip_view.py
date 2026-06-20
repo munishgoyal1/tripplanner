@@ -522,6 +522,7 @@ def test_itinerary_falls_back_to_selections() -> None:
     assert day["stops"][0]["kind"] == "hotel"
     assert all(s["selected"] for s in day["stops"])
     assert it["stats"]["stops"] == len(day["stops"])
+    assert "google.com/maps" in day["google_maps_url"]
 
 
 def test_itinerary_synthesizes_multiple_days() -> None:
@@ -602,6 +603,7 @@ def test_itinerary_structured_stops() -> None:
     assert act["selected"] is True
     assert d1["route"] is not None
     assert d1["route"]["distance_display"]
+    assert "google.com/maps" in d1["google_maps_url"]
     # day colors differ
     assert it["days"][0]["color"] != it["days"][1]["color"]
 
