@@ -291,18 +291,19 @@ export default function ItineraryPanel({
 }: Props) {
   const [it, setIt] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setIt(null);
+    setError(null);
     fetchItinerary()
       .then((data) => {
         if (!cancelled) setIt(data);
       })
       .catch(() => {
-        if (!cancelled) setIt(null);
+        if (!cancelled) setError("Could not refresh the itinerary.");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -314,6 +315,7 @@ export default function ItineraryPanel({
 
   const handleToggleBooked = useCallback(
     async (day: number, name: string, next: boolean) => {
+      const previous = it;
       // Optimistic update so the checkbox feels instant.
       setIt((prev) =>
         prev
@@ -332,10 +334,16 @@ export default function ItineraryPanel({
             }
           : prev
       );
-      const fresh = await setStopBooked(day, name, next);
-      setIt(fresh);
+      try {
+        const fresh = await setStopBooked(day, name, next);
+        setIt(fresh);
+        setError(null);
+      } catch {
+        setIt(previous);
+        setError("Could not update the booking status.");
+      }
     },
-    []
+    [it]
   );
 
   useEffect(() => {
@@ -401,6 +409,11 @@ export default function ItineraryPanel({
   const { stats } = it;
   return (
     <div className="h-full overflow-y-auto px-4 py-4">
+      {error && (
+        <div role="status" className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100">
+          {error}
+        </div>
+      )}
       <header className="mb-3 flex items-center justify-between">
         <h2 className="display text-lg font-semibold text-ink">
           {it.destination ? `${it.destination} itinerary` : "Itinerary"}

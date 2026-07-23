@@ -152,14 +152,24 @@ export async function streamChat(message: string, h: StreamHandlers): Promise<vo
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message, user_id: getUserId() }),
   });
+  if (!res.ok) {
+    let message = `Chat request failed (${res.status}).`;
+    try {
+      const data = (await res.json()) as { detail?: string; message?: string };
+      message = data.message || data.detail || message;
+    } catch {
+      // Keep the status-based fallback for non-JSON responses.
+    }
+    throw new Error(message);
+  }
   if (!res.body) {
-    h.onError("No response stream from server.");
-    return;
+    throw new Error("No response stream from server.");
   }
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let terminalEvent = false;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -172,8 +182,17 @@ export async function streamChat(message: string, h: StreamHandlers): Promise<vo
     for (const frame of frames) {
       const ev = parseFrame(frame);
       if (!ev) continue;
+      if (ev.event === "done" || ev.event === "error") terminalEvent = true;
       dispatch(ev.event, ev.data, h);
     }
+  }
+  const finalFrame = parseFrame(buffer);
+  if (finalFrame) {
+    if (finalFrame.event === "done" || finalFrame.event === "error") terminalEvent = true;
+    dispatch(finalFrame.event, finalFrame.data, h);
+  }
+  if (!terminalEvent) {
+    throw new Error("The response stream ended before the reply completed.");
   }
 }
 
@@ -232,13 +251,14 @@ export async function fetchChatHistory(
 export async function fetchTripView(focus?: {
   kind: string;
   name: string;
-}): Promise<TripView> {
+}, signal?: AbortSignal): Promise<TripView> {
   const params = new URLSearchParams({ user_id: getUserId() });
   if (focus?.name) {
     params.set("focus_kind", focus.kind);
     params.set("focus_name", focus.name);
   }
-  const res = await fetch(`${BASE}/trip/view?${params.toString()}`);
+  const res = await fetch(`${BASE}/trip/view?${params.toString()}`, { signal });
+  if (!res.ok) throw new Error(`Could not load the trip (${res.status}).`);
   return res.json();
 }
 
@@ -588,6 +608,7 @@ export async function fetchMapsConfig(): Promise<MapsConfig> {
 export async function fetchMapView(): Promise<MapView> {
   const params = new URLSearchParams({ user_id: getUserId() });
   const res = await fetch(`${BASE}/trip/map?${params.toString()}`);
+  if (!res.ok) throw new Error(`Could not load the map (${res.status}).`);
   return res.json();
 }
 
@@ -595,6 +616,7 @@ export async function fetchMapView(): Promise<MapView> {
 export async function fetchItinerary(): Promise<Itinerary> {
   const params = new URLSearchParams({ user_id: getUserId() });
   const res = await fetch(`${BASE}/trip/itinerary?${params.toString()}`);
+  if (!res.ok) throw new Error(`Could not load the itinerary (${res.status}).`);
   return res.json();
 }
 
@@ -609,6 +631,7 @@ export async function setStopBooked(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ day, name, booked, user_id: getUserId() }),
   });
+  if (!res.ok) throw new Error(`Could not update the stop (${res.status}).`);
   const json = await res.json();
   return json.itinerary as Itinerary;
 }

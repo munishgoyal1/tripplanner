@@ -94,6 +94,8 @@ export default function App() {
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const dragType = useRef<DragType>(null);
+  const refreshGeneration = useRef(0);
+  const refreshController = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -157,12 +159,21 @@ export default function App() {
 
   const refresh = useCallback(
     async (f: NavRef | null = focus) => {
+      const generation = ++refreshGeneration.current;
+      refreshController.current?.abort();
+      const controller = new AbortController();
+      refreshController.current = controller;
       setLoading(true);
       try {
-        const v = await fetchTripView(f ?? undefined);
+        const v = await fetchTripView(f ?? undefined, controller.signal);
+        if (generation !== refreshGeneration.current) return;
         applyView(v, f);
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          console.error("Could not refresh trip view", error);
+        }
       } finally {
-        setLoading(false);
+        if (generation === refreshGeneration.current) setLoading(false);
       }
     },
     [focus, applyView]
@@ -170,6 +181,7 @@ export default function App() {
 
   useEffect(() => {
     refresh(null);
+    return () => refreshController.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -294,8 +306,7 @@ export default function App() {
   const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
     const next = await selectItem(kind, name, options);
     if (focus) {
-      const refreshed = await fetchTripView(focus);
-      setView({ ...refreshed, alerts: next.alerts });
+      await refresh(focus);
     } else {
       setView({ ...next.view, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
@@ -311,8 +322,7 @@ export default function App() {
   const handleDeselect = async (kind: string, name: string) => {
     const next = await deselectItem(kind, name);
     if (focus) {
-      const refreshed = await fetchTripView(focus);
-      setView({ ...refreshed, alerts: next.alerts });
+      await refresh(focus);
     } else {
       setView({ ...next.view, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
@@ -321,7 +331,16 @@ export default function App() {
   };
 
   const handleStopRemove = async (kind: string, name: string) => {
-    await handleDeselect(kind, name);
+    const removesFocus = focus?.name.toLowerCase() === name.toLowerCase();
+    if (removesFocus) {
+      setFocus(null);
+      const next = await deselectItem(kind, name);
+      setView({ ...next.view, alerts: next.alerts });
+      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+      setTripVersion((n) => n + 1);
+    } else {
+      await handleDeselect(kind, name);
+    }
     setStopFocusName(null);
     setItineraryJump(null);
   };
@@ -521,9 +540,8 @@ export default function App() {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
   }, [isDesktop, mobileTripOpen]);
 
-  return (
-    <>
-      <div className="hidden min-h-screen bg-surface md:flex md:flex-col">
+  return isDesktop ? (
+      <div className="flex min-h-screen flex-col bg-surface">
         <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
           <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-200">
             Layout C: Compact canvas
@@ -629,9 +647,9 @@ export default function App() {
             </>
           )}
         </div>
-      </div>
-
-      <section className="flex h-screen flex-col md:hidden">
+        </div>
+      ) : (
+        <section className="flex h-screen flex-col">
         <ChatPanel
           onTurnComplete={handleTurnComplete}
           reloadToken={chatReloadToken}
@@ -687,7 +705,6 @@ export default function App() {
           </div>
         </section>
       </section>
-    </>
   );
 }
 

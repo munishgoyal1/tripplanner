@@ -126,7 +126,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
     (async () => {
       setLoading(true);
       setError(null);
-      setView(null);
       try {
         const [cfg, mv] = await Promise.all([fetchMapsConfig(), fetchMapView()]);
         if (cancelled) return;
@@ -134,7 +133,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
         setKey(cfg.enabled ? cfg.key : null);
       } catch {
         if (!cancelled) {
-          setView(null);
           setError("Could not load the map.");
         }
       } finally {
@@ -145,6 +143,20 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
       cancelled = true;
     };
   }, [reloadToken]);
+
+  useEffect(() => {
+    if (!view) return;
+    setActiveDay((day) =>
+      day != null && !view.days.some((candidate) => candidate.day === day) ? null : day
+    );
+    setSelectedPin((pin) => {
+      if (!pin) return null;
+      if (pin.id === "airport") {
+        return view.airport?.id === pin.id ? view.airport : null;
+      }
+      return view.pins.find((candidate) => candidate.id === pin.id) ?? null;
+    });
+  }, [view]);
 
   // ---- init the map once the script + container + key are ready ------------
   useEffect(() => {

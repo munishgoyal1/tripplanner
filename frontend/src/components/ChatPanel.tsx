@@ -249,8 +249,10 @@ export default function ChatPanel({
 
     const usedTools = new Set<string>();
     const toolTrace: { name: string; args?: string; duration_ms?: number }[] = [];
-    await streamChat(outgoing, {
-      onToken: (t) =>
+    let handledError = false;
+    try {
+      await streamChat(outgoing, {
+        onToken: (t) =>
         setMessages((m) => {
           const copy = [...m];
           copy[copy.length - 1] = {
@@ -290,16 +292,32 @@ export default function ChatPanel({
         setBusy(false);
         onTurnComplete(tripId);
       },
-      onError: (msg) => {
+        onError: (msg) => {
+          handledError = true;
+          setActiveTool(null);
+          setMessages((m) => {
+            const copy = [...m];
+            copy[copy.length - 1] = { role: "assistant", text: `Warning: ${msg}` };
+            return copy;
+          });
+        },
+      });
+    } catch (error) {
+      if (!handledError) {
         setActiveTool(null);
         setMessages((m) => {
           const copy = [...m];
-          copy[copy.length - 1] = { role: "assistant", text: `⚠️ ${msg}` };
+          copy[copy.length - 1] = {
+            role: "assistant",
+            text: `Warning: ${error instanceof Error ? error.message : "The chat request failed."}`,
+          };
           return copy;
         });
-        setBusy(false);
-      },
-    });
+      }
+    } finally {
+      setActiveTool(null);
+      setBusy(false);
+    }
   }
 
   async function handleDeleteTripHistory() {
