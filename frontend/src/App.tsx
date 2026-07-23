@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
@@ -6,6 +6,7 @@ import TripPanel, { TripSwitcher } from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { fetchTripView, importSharedTrip, selectItem, deselectItem, type SelectItemOptions } from "./api";
 import type { TripView } from "./types";
+import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
 interface NavRef {
   kind: string;
@@ -34,19 +35,19 @@ export default function App() {
   const [view, setView] = useState<TripView | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [focus, setFocus] = useState<NavRef | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
+  const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
+  const focus = workspace.activePlace;
+  const stopFocusName = workspace.activePlace?.name ?? null;
+  const tripVersion = workspace.tripRevision;
+  const chatReloadToken = workspace.chatRevision;
+  const chatTripId = workspace.tripId;
+  const itineraryJump = workspace.itineraryJump;
 
   const [mapOpen, setMapOpen] = useState<boolean>(() => {
     const saved = localStorage.getItem("tripplanner_map_open");
     return saved ? JSON.parse(saved) : true;
   });
-  const [stopFocusName, setStopFocusName] = useState<string | null>(null);
-  const [tripVersion, setTripVersion] = useState(0);
-  const [chatReloadToken, setChatReloadToken] = useState(0);
-  const [chatTripId, setChatTripId] = useState<string | null>(null);
-  const [itineraryJump, setItineraryJump] = useState<{ day: number; name: string; token: number } | null>(null);
-
   const [leftPct, setLeftPct] = useState<number>(() => {
     const saved = Number(localStorage.getItem("tripplanner_left_pct"));
     // Layout C: left column (map+itinerary) ~62%, right column (details+chat) ~38%
@@ -146,7 +147,6 @@ export default function App() {
 
   const applyView = useCallback((v: TripView, f: NavRef | null) => {
     setView(v);
-    setTripVersion((n) => n + 1);
     if (!f) setNavList(v.items.map((it) => ({ kind: it.kind, name: it.name })));
   }, []);
 
@@ -183,10 +183,7 @@ export default function App() {
   const handleIdentityChanged = useCallback(async () => {
     setView(null);
     setLoading(true);
-    setFocus(null);
-    setStopFocusName(null);
-    setItineraryJump(null);
-    setTripVersion((n) => n + 1);
+    dispatchWorkspace({ type: "identity-changed" });
     await refresh(null);
   }, [refresh]);
 
@@ -207,11 +204,7 @@ export default function App() {
       .then((v) => {
         if (cancelled) return;
         applyView(v, null);
-        setFocus(null);
-        setStopFocusName(null);
-        setTripVersion((n) => n + 1);
-        setChatReloadToken((n) => n + 1);
-        setChatTripId(null);
+        dispatchWorkspace({ type: "trip-changed" });
         const next = new URL(window.location.href);
         next.searchParams.delete("share");
         window.history.replaceState({}, "", next.toString());
@@ -230,23 +223,17 @@ export default function App() {
 
   const handleFocus = async (kind: string, name: string) => {
     const f = { kind, name };
-    setFocus(f);
-    if (isPlaceKind(kind)) {
-      setStopFocusName(name);
-    }
+    dispatchWorkspace({ type: "focus", place: f });
     await refresh(f);
   };
 
   const handleClearFocus = async () => {
-    setFocus(null);
+    dispatchWorkspace({ type: "focus", place: null });
     await refresh(null);
   };
 
   const handleSwitched = async (tripId?: string, view?: TripView | null) => {
-    setChatReloadToken((n) => n + 1);
-    setChatTripId(tripId || null);
-    setStopFocusName(null);
-    setFocus(null);
+    dispatchWorkspace({ type: "trip-changed", tripId });
     // The switcher already fetched the fresh view — reuse it instead of making
     // the server rebuild the (cache-backed) view a second time.
     if (view) {
@@ -257,17 +244,12 @@ export default function App() {
   };
 
   const handleNewTrip = async () => {
-    setChatReloadToken((n) => n + 1);
-    setChatTripId(null);
-    setStopFocusName(null);
-    await handleClearFocus();
+    dispatchWorkspace({ type: "trip-changed" });
+    await refresh(null);
   };
   const handleImported = async () => {
-    setTripVersion((n) => n + 1);
-    setChatReloadToken((n) => n + 1);
-    setChatTripId(null);
-    setStopFocusName(null);
-    await handleClearFocus();
+    dispatchWorkspace({ type: "trip-changed" });
+    await refresh(null);
   };
 
   // After every chat turn: refresh the trip panel, and detect a mid-chat
@@ -277,14 +259,7 @@ export default function App() {
   const handleTurnComplete = (tripId?: string) => {
     refresh();
     if (!tripId) return;
-    if (chatTripId && tripId !== chatTripId) {
-      setChatTripId(tripId);
-      setChatReloadToken((n) => n + 1);
-    } else if (!chatTripId) {
-      // First trip created from the general chat — keep the transcript, just
-      // start tracking the new id so the next switch is detected.
-      setChatTripId(tripId);
-    }
+    dispatchWorkspace({ type: "chat-trip-observed", tripId });
   };
 
   const focusIndex = focus
@@ -310,9 +285,12 @@ export default function App() {
       }
       const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
       if (placement?.day && placement?.name) {
-        setItineraryJump({ day: placement.day, name: placement.name, token: Date.now() });
+        dispatchWorkspace({
+          type: "jump",
+          target: { day: placement.day, name: placement.name, token: Date.now() },
+        });
       }
-      setTripVersion((n) => n + 1);
+      dispatchWorkspace({ type: "trip-content-changed" });
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not add the place.");
     }
@@ -328,7 +306,7 @@ export default function App() {
         setView({ ...next.view, alerts: next.alerts });
         setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       }
-      setTripVersion((n) => n + 1);
+      dispatchWorkspace({ type: "trip-content-changed" });
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not remove the place.");
     }
@@ -337,12 +315,12 @@ export default function App() {
   const handleStopRemove = async (kind: string, name: string) => {
     const removesFocus = focus?.name.toLowerCase() === name.toLowerCase();
     if (removesFocus) {
-      setFocus(null);
+      dispatchWorkspace({ type: "focus", place: null });
       try {
         const next = await deselectItem(kind, name);
         setView({ ...next.view, alerts: next.alerts });
         setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-        setTripVersion((n) => n + 1);
+        dispatchWorkspace({ type: "trip-content-changed" });
       } catch (error) {
         setActionError(error instanceof Error ? error.message : "Could not remove the place.");
         return;
@@ -350,8 +328,8 @@ export default function App() {
     } else {
       await handleDeselect(kind, name);
     }
-    setStopFocusName(null);
-    setItineraryJump(null);
+    dispatchWorkspace({ type: "focus", place: null });
+    dispatchWorkspace({ type: "jump", target: null });
   };
 
   const toggleMaxPane = (pane: PaneId) => {
@@ -359,7 +337,6 @@ export default function App() {
   };
 
   const handleStopFocus = (kind: string, name: string) => {
-    setStopFocusName(name);
     setMapOpen(true);
     if (isPlaceKind(kind)) {
       handleFocus(kind === "activity" ? "attraction" : kind, name);
@@ -367,7 +344,6 @@ export default function App() {
   };
 
   const handleStopMap = (kind: string, name: string) => {
-    setStopFocusName(name);
     setMapOpen(true);
     if (isPlaceKind(kind)) {
       handleFocus(kind === "activity" ? "attraction" : kind, name);
