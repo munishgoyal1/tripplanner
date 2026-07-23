@@ -284,6 +284,7 @@ export async function selectItem(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind, name, user_id: getUserId(), ...(options || {}) }),
   });
+  if (!res.ok) throw new Error(`Could not add the place (${res.status}).`);
   const json = await res.json();
   return {
     view: json.view as TripView,
@@ -299,6 +300,7 @@ export async function deselectItem(kind: string, name: string): Promise<{ view: 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind, name, user_id: getUserId() }),
   });
+  if (!res.ok) throw new Error(`Could not remove the place (${res.status}).`);
   const json = await res.json();
   return { view: json.view as TripView, alerts: (json.alerts ?? []) as string[] };
 }

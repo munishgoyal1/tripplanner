@@ -53,6 +53,7 @@ function isPlaceKind(kind: string): boolean {
 export default function App() {
   const [view, setView] = useState<TripView | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [focus, setFocus] = useState<NavRef | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
 
@@ -168,9 +169,11 @@ export default function App() {
         const v = await fetchTripView(f ?? undefined, controller.signal);
         if (generation !== refreshGeneration.current) return;
         applyView(v, f);
+        setActionError(null);
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           console.error("Could not refresh trip view", error);
+          setActionError("Could not refresh the trip. Your previous view is still available.");
         }
       } finally {
         if (generation === refreshGeneration.current) setLoading(false);
@@ -304,40 +307,54 @@ export default function App() {
   };
 
   const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
-    const next = await selectItem(kind, name, options);
-    if (focus) {
-      await refresh(focus);
-    } else {
-      setView({ ...next.view, alerts: next.alerts });
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+    try {
+      setActionError(null);
+      const next = await selectItem(kind, name, options);
+      if (focus) {
+        await refresh(focus);
+      } else {
+        setView({ ...next.view, alerts: next.alerts });
+        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+      }
+      const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
+      if (placement?.day && placement?.name) {
+        setItineraryJump({ day: placement.day, name: placement.name, token: Date.now() });
+      }
+      setTripVersion((n) => n + 1);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not add the place.");
     }
-    const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
-    if (placement?.day && placement?.name) {
-      setItineraryJump({ day: placement.day, name: placement.name, token: Date.now() });
-    }
-    // Refresh the map + itinerary panes, which are keyed on tripVersion.
-    setTripVersion((n) => n + 1);
   };
 
   const handleDeselect = async (kind: string, name: string) => {
-    const next = await deselectItem(kind, name);
-    if (focus) {
-      await refresh(focus);
-    } else {
-      setView({ ...next.view, alerts: next.alerts });
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+    try {
+      setActionError(null);
+      const next = await deselectItem(kind, name);
+      if (focus) {
+        await refresh(focus);
+      } else {
+        setView({ ...next.view, alerts: next.alerts });
+        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+      }
+      setTripVersion((n) => n + 1);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not remove the place.");
     }
-    setTripVersion((n) => n + 1);
   };
 
   const handleStopRemove = async (kind: string, name: string) => {
     const removesFocus = focus?.name.toLowerCase() === name.toLowerCase();
     if (removesFocus) {
       setFocus(null);
-      const next = await deselectItem(kind, name);
-      setView({ ...next.view, alerts: next.alerts });
-      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      setTripVersion((n) => n + 1);
+      try {
+        const next = await deselectItem(kind, name);
+        setView({ ...next.view, alerts: next.alerts });
+        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+        setTripVersion((n) => n + 1);
+      } catch (error) {
+        setActionError(error instanceof Error ? error.message : "Could not remove the place.");
+        return;
+      }
     } else {
       await handleDeselect(kind, name);
     }
@@ -540,7 +557,18 @@ export default function App() {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
   }, [isDesktop, mobileTripOpen]);
 
-  return isDesktop ? (
+  const errorBanner = actionError ? (
+    <div role="alert" className="fixed left-1/2 top-3 z-[70] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-xl bg-rose-50 px-4 py-2 text-sm text-rose-800 shadow-pop ring-1 ring-rose-200">
+      <span>{actionError}</span>
+      <button type="button" onClick={() => setActionError(null)} className="font-semibold" aria-label="Dismiss error">
+        x
+      </button>
+    </div>
+  ) : null;
+
+  return <>
+    {errorBanner}
+    {isDesktop ? (
       <div className="flex min-h-screen flex-col bg-surface">
         <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
           <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-200">
@@ -648,7 +676,7 @@ export default function App() {
           )}
         </div>
         </div>
-      ) : (
+        ) : (
         <section className="flex h-screen flex-col">
         <ChatPanel
           onTurnComplete={handleTurnComplete}
@@ -705,6 +733,7 @@ export default function App() {
           </div>
         </section>
       </section>
-  );
+    )}
+  </>;
 }
 

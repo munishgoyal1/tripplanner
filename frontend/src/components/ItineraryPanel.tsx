@@ -292,6 +292,7 @@ export default function ItineraryPanel({
   const [it, setIt] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
 
   useEffect(() => {
@@ -311,7 +312,7 @@ export default function ItineraryPanel({
     return () => {
       cancelled = true;
     };
-  }, [reloadToken]);
+  }, [reloadToken, retryToken]);
 
   const handleToggleBooked = useCallback(
     async (day: number, name: string, next: boolean) => {
@@ -411,7 +412,10 @@ export default function ItineraryPanel({
     <div className="h-full overflow-y-auto px-4 py-4">
       {error && (
         <div role="status" className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100">
-          {error}
+          {error}{" "}
+          <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="font-semibold underline">
+            Retry
+          </button>
         </div>
       )}
       <header className="mb-3 flex items-center justify-between">
@@ -419,8 +423,7 @@ export default function ItineraryPanel({
           {it.destination ? `${it.destination} itinerary` : "Itinerary"}
         </h2>
         <span className="chip">
-          {stats.days} {stats.days === 1 ? "day" : "days"} · {stats.booked}/{stats.stops}{" "}
-          booked
+          {loading ? "Refreshing… · " : ""}{stats.days} {stats.days === 1 ? "day" : "days"} · {stats.booked}/{stats.stops} booked
         </span>
       </header>
       <div className="space-y-3 pb-6">

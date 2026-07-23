@@ -111,6 +111,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [newStopName, setNewStopName] = useState("");
   const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel">("attraction");
+  const [retryToken, setRetryToken] = useState(0);
 
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -142,7 +143,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
     return () => {
       cancelled = true;
     };
-  }, [reloadToken]);
+  }, [reloadToken, retryToken]);
 
   useEffect(() => {
     if (!view) return;
@@ -407,7 +408,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
   // container mounted and layer status messages on top. Unmounting the <div>
   // during a reload would orphan the live map instance and leave it blank.
   const overlay =
-    error != null
+    error != null && !view
       ? { text: error, tone: "text-rose-500" }
       : loading && !view
         ? { text: "Loading map…", tone: "text-slate-400" }
@@ -419,6 +420,16 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
 
   return (
     <div className="relative flex h-full flex-col">
+      {(loading && view || error && view) && (
+        <div className="absolute left-1/2 top-3 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs text-slate-600 shadow-card ring-1 ring-slate-200">
+          <span>{error || "Refreshing map…"}</span>
+          {error && (
+            <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="font-semibold text-brand">
+              Retry
+            </button>
+          )}
+        </div>
+      )}
       <div className="border-b border-slate-100 px-3 py-2">
         <div className="flex flex-wrap items-center gap-2">
           <select

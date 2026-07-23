@@ -8,6 +8,9 @@
 #   * FastAPI on :8000 (uvicorn) -- /chat/stream, /trip/view, /trip/select
 #   * Vite dev server on :5173; /api is proxied to :8000
 #
+# If a previous dev run left uvicorn holding :8000, the script will stop that
+# stale tripplanner backend before starting a new one.
+#
 # Hot reload is OFF by default (matches the no-auto-reload preference):
 #   * Frontend changes  -> refresh the browser (Ctrl+R) to pick them up.
 #   * Backend changes   -> Ctrl+C and rerun this script.
@@ -31,6 +34,7 @@
 [CmdletBinding()]
 param(
     [int]$ApiPort = 8000,
+    [int]$FrontendPort = 5173,
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
     [switch]$Watch,
@@ -41,6 +45,52 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
+
+function Stop-StaleTripplannerBackend {
+    param(
+        [int]$Port
+    )
+
+    $listener = $null
+    try {
+        $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+    } catch {
+        $listener = $null
+    }
+
+    if (-not $listener) {
+        return
+    }
+
+    $proc = $null
+    try {
+        $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue
+    } catch {
+        $proc = $null
+    }
+
+    $procName = if ($proc) { $proc.Name } else { "PID $($listener.OwningProcess)" }
+    $commandLine = if ($proc -and $proc.CommandLine) { $proc.CommandLine } else { "" }
+    $isTripplannerBackend = $commandLine -match 'tripplanner\.api:app' -or $commandLine -match 'uvicorn\s+tripplanner\.api:app'
+
+    if (-not $isTripplannerBackend) {
+        throw "Port $Port is already in use by $procName. Stop that process or use -ApiPort <port>."
+    }
+
+    Write-Host "Stopping stale tripplanner backend on :$Port ..." -ForegroundColor Yellow
+    Stop-Process -Id $listener.OwningProcess -Force -ErrorAction Stop
+
+    $remaining = $null
+    try {
+        $remaining = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+    } catch {
+        $remaining = $null
+    }
+
+    if ($remaining) {
+        throw "Stopped PID $($listener.OwningProcess), but port $Port is still busy. Try closing the leftover process manually."
+    }
+}
 
 # By default the local backend uses the ISOLATED local Cosmos configured in
 # .env (COSMOS_ENDPOINT=localcosmos...), so local dev never mixes trip/chat data
@@ -81,6 +131,7 @@ if (-not $FrontendOnly -and $UseCanaryData) {
 }
 
 if (-not $FrontendOnly) {
+    Stop-StaleTripplannerBackend -Port $ApiPort
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
     if ($Logs) {
         $env:LOG_LEVEL = "DEBUG"
@@ -101,10 +152,11 @@ if (-not $BackendOnly) {
         npm install
         Pop-Location
     }
-    Write-Host "Starting Vite dev server on :5173 ..." -ForegroundColor Cyan
+    Write-Host "Starting Vite dev server on :$FrontendPort ..." -ForegroundColor Cyan
     Push-Location frontend
     try {
         $env:VITE_API_TARGET = "http://localhost:$ApiPort"
+        $env:VITE_PORT = "$FrontendPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
         npm run dev
     }
