@@ -1,3 +1,4 @@
+import { Clock3, ExternalLink, MapPin, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop } from "../types";
@@ -81,7 +82,7 @@ function StopRow({
         type="button"
         role="checkbox"
         aria-checked={stop.booked}
-        aria-label={stop.booked ? "Mark not booked" : "Mark booked"}
+        aria-label={`${stop.name}: ${stop.booked ? "Mark not booked" : "Mark booked"}`}
         onClick={(e) => {
           e.stopPropagation();
           onToggleBooked(!stop.booked);
@@ -155,14 +156,15 @@ function StopRow({
               e.stopPropagation();
               onRemove?.();
             }}
-            className={`rounded-full px-3 py-1 text-[11px] font-medium transition ring-1 ${
+            aria-label={stop.kind === "hotel" ? `Remove ${stop.name} stay` : `Remove ${stop.name} from itinerary`}
+            className={`grid h-7 w-7 place-items-center rounded-full transition ring-1 ${
               stop.kind === "hotel"
                 ? "bg-rose-50 text-rose-700 ring-rose-100 hover:bg-rose-100"
                 : "bg-slate-50 text-slate-600 ring-slate-200 hover:bg-slate-100"
             }`}
             title={stop.kind === "hotel" ? "Remove stay from itinerary" : "Remove from itinerary"}
           >
-            {stop.kind === "hotel" ? "Remove stay" : "Remove"}
+            <Trash2 size={13} aria-hidden />
           </button>
         )}
         <button
@@ -175,7 +177,7 @@ function StopRow({
           className="grid h-7 w-7 place-items-center rounded-full text-slate-400 transition hover:bg-white hover:text-brand"
           title="Show on map"
         >
-          <span aria-hidden>{"\u{1F4CD}"}</span>
+          <MapPin size={15} aria-hidden />
         </button>
       </div>
     </li>
@@ -204,6 +206,12 @@ function DayCard({
   onRemove?: (kind: string, name: string) => void;
 }) {
   const firstPlace = day.stops.find((stop) => stop.kind === "hotel" || stop.kind === "attraction");
+  const plannedMinutes = day.stops.reduce((total, stop) => total + (stop.duration_min || 0), 0);
+  const plannedDuration = plannedMinutes > 0
+    ? plannedMinutes >= 60
+      ? `${Math.floor(plannedMinutes / 60)}h${plannedMinutes % 60 ? ` ${plannedMinutes % 60}m` : ""}`
+      : `${plannedMinutes}m`
+    : null;
   return (
     <section className="card p-4">
       <div className="flex items-center gap-3">
@@ -221,22 +229,28 @@ function DayCard({
           <h3 className="display truncate text-base font-semibold text-ink">
             {day.title}
           </h3>
-          <div className="flex flex-wrap items-center gap-2">
-            {day.date && <p className="text-xs text-slate-400">{day.date}</p>}
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500">
+            {day.date && <span>{day.date}</span>}
+            <span>{day.stops.length} {day.stops.length === 1 ? "stop" : "stops"}</span>
+            {plannedDuration && (
+              <span className="inline-flex items-center gap-1">
+                <Clock3 size={12} aria-hidden /> {plannedDuration} planned
+              </span>
+            )}
             {day.route && (
-              <p className="text-xs text-slate-500">
-                · {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
-              </p>
+              <span className="inline-flex items-center gap-1">
+                <MapPin size={12} aria-hidden /> {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
+              </span>
             )}
             {day.google_maps_url && (
               <a
                 href={day.google_maps_url}
                 target="_blank"
                 rel="noreferrer"
-                className="chip text-brand hover:bg-brand/5"
+                className="inline-flex items-center gap-1 font-medium text-brand hover:text-brand/80"
                 title={`Open Day ${day.day} route in Google Maps`}
               >
-                Open route ↗
+                <ExternalLink size={12} aria-hidden /> Open route
               </a>
             )}
           </div>

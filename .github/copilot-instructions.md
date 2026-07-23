@@ -118,6 +118,17 @@ Learns from user preferences and past trips.
   termination and responsive mount isolation; Playwright has mocked desktop +
   mobile smoke projects. `dev-spa.ps1` now rejects occupied frontend ports
   instead of silently moving Vite to another port.
+- **Frontend completion pass (Session 26)**: `workspaceState.ts` now owns trip
+  identity/revision, chat revision, active place, and itinerary jump state;
+  focus-only detail requests no longer reload map/itinerary/saved trips and
+  reducer/App regressions lock that boundary. `TripSwitcher.tsx` and
+  `ExportModal.tsx` were extracted from the oversized `TripPanel.tsx`; Lucide
+  icons now cover familiar actions. Itinerary day headers show stops, planned
+  duration, route metrics, and Maps handoff; booking controls have stop-specific
+  accessible names. User-facing API calls reject non-2xx responses and saved
+  trips expose recovery states. Frontend validation: 14 Vitest/RTL tests,
+  production build, and both Playwright desktop/mobile projects pass using the
+  installed stable Chrome channel.
 - **Intelligent v1 itinerary + map zoom fix (Session 24)**: two canary bugs
   closed. (1) The itinerary panel no longer shows a flat "Your picks so far"
   dump when the agent forgets to persist `day_wise_itinerary` — 

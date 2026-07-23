@@ -8,8 +8,8 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], channel: "chrome" } },
+    { name: "mobile", use: { ...devices["Pixel 7"], channel: "chrome" } },
   ],
   webServer: {
     command: "npm run dev -- --host 127.0.0.1 --port 4173",

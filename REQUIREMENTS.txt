@@ -1433,3 +1433,22 @@ VALIDATION:
 - python -m compileall -q src/tripplanner : clean
 - frontend build : clean
 
+=== 2026-07-23 — Session 26: Frontend roadmap completion ===
+
+REQUIREMENT:
+- Complete the remaining reliability, frontend coverage, and UI-polish work.
+
+IMPLEMENTED:
+- Centralized trip identity/revision, chat revision, active place, and itinerary
+  jump state in a reducer. Focus-only detail changes no longer reload trip data.
+- Extracted saved-trip and export concerns from TripPanel into dedicated files.
+- Added consistent Lucide action icons and compact itinerary day metadata.
+- Normalized non-2xx API handling and exposed saved-trip retry/error states.
+- Added reducer, App reload-boundary, itinerary metadata/rollback, and API tests.
+- Configured Playwright to use installed stable Chrome for desktop and Pixel 7.
+
+VALIDATION:
+- 14 Vitest/React Testing Library tests: passing
+- Production frontend build: passing
+- Playwright desktop + mobile smoke projects: 2 passing
+

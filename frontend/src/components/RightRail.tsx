@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
-import { TripSwitcher } from "./TripPanel";
+import TripSwitcher from "./TripSwitcher";
 import type { TripView } from "../types";
 
 interface Props {

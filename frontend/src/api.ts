@@ -2,6 +2,10 @@ import type { TripView, DestinationOverview, MapView, MapsConfig, SavedTrip, Iti
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
+function ensureOk(response: Response, action: string): void {
+  if (!response.ok) throw new Error(`${action} (${response.status}).`);
+}
+
 // Stable per-browser identity so trip state + chat history follow the user
 // across reloads. The backend keys conversation memory and trip storage by it.
 export function getUserId(): string {
@@ -241,6 +245,7 @@ export async function fetchChatHistory(
     const res = await fetch(`${BASE}/chat/history?${params.toString()}`, {
       cache: "no-store",
     });
+    ensureOk(res, "Could not load chat history");
     const json = await res.json();
     return (json.messages ?? []) as { role: "user" | "assistant"; text: string }[];
   } catch {
@@ -309,6 +314,7 @@ export async function deselectItem(kind: string, name: string): Promise<{ view: 
 export async function fetchSavedTrips(): Promise<SavedTrip[]> {
   const params = new URLSearchParams({ user_id: getUserId() });
   const res = await fetch(`${BASE}/trips?${params.toString()}`);
+  ensureOk(res, "Could not load saved trips");
   const json = await res.json();
   return (json.trips ?? []) as SavedTrip[];
 }
@@ -320,6 +326,7 @@ export async function switchTrip(tripId: string): Promise<TripView | null> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
   });
+  ensureOk(res, "Could not switch trips");
   const json = await res.json();
   return json.ok ? (json.view as TripView) : null;
 }
@@ -331,17 +338,19 @@ export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
   });
+  ensureOk(res, "Could not delete the trip");
   const json = await res.json();
   return (json.trips ?? []) as SavedTrip[];
 }
 
 /** Start a fresh planning chat: clear the active trip + general chat bucket. */
 export async function startNewTrip(): Promise<void> {
-  await fetch(`${BASE}/trip/new`, {
+  const res = await fetch(`${BASE}/trip/new`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId() }),
   });
+  ensureOk(res, "Could not start a new trip");
 }
 
 /** Build the URL that downloads the active trip as an .ics calendar file. */
@@ -426,6 +435,7 @@ export async function emailTripExport(
       template: options.template,
     }),
   });
+  ensureOk(res, "Could not email the itinerary");
   return res.json();
 }
 
@@ -439,6 +449,7 @@ export async function shareActiveTrip(): Promise<string> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId(), kind: "share", name: "share" }),
   });
+  ensureOk(res, "Could not share the trip");
   const json = await res.json();
   if (json.error || !json.token) {
     throw new Error(json.error || "could not mint share link");
@@ -481,6 +492,7 @@ export interface Preferences {
 export async function fetchPreferences(): Promise<Preferences> {
   const params = new URLSearchParams({ user_id: getUserId() });
   const res = await fetch(`${BASE}/preferences?${params.toString()}`);
+  ensureOk(res, "Could not load preferences");
   return res.json();
 }
 
@@ -495,6 +507,7 @@ export async function savePreferences(prefs: Preferences): Promise<SavePrefsResu
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...prefs, user_id: getUserId() }),
   });
+  ensureOk(res, "Could not save preferences");
   return res.json();
 }
 
@@ -504,6 +517,7 @@ export async function regenerateProfileSummary(): Promise<string> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind: "", name: "", user_id: getUserId() }),
   });
+  ensureOk(res, "Could not regenerate the profile summary");
   const data = await res.json();
   return (data && data.profile_summary) || "";
 }
@@ -531,6 +545,7 @@ export async function runPrivacyAction(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId(), action, confirm_text: confirmText }),
   });
+  ensureOk(res, "Could not complete the privacy action");
   return res.json();
 }
 
@@ -575,7 +590,10 @@ export async function fetchDestinationOverview(
   const params = new URLSearchParams({ user_id: getUserId(), news: String(news) });
   if (destination) params.set("destination", destination);
   const req = fetch(`${BASE}/destination/overview?${params.toString()}`)
-    .then((res) => res.json() as Promise<DestinationOverview>)
+    .then((res) => {
+      ensureOk(res, "Could not load destination details");
+      return res.json() as Promise<DestinationOverview>;
+    })
     .then((data) => {
       overviewCache.set(key, { at: Date.now(), data });
       overviewInflight.delete(key);

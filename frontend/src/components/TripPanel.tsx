@@ -1,24 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, CalendarPlus, ChevronLeft, ChevronRight, FileDown, Link2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
-  deleteTrip,
-  downloadTripPdf,
-  emailTripExport,
-  fetchSavedTrips,
   shareActiveTrip,
-  switchTrip,
-  tripExportUrl,
   tripIcsUrl,
   type SelectItemOptions,
 } from "../api";
-import type { Budget, SavedTrip, TripItem, TripView } from "../types";
+import type { Budget, TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
+import ExportModal from "./ExportModal";
 import Lightbox from "./Lightbox";
+import TripSwitcher from "./TripSwitcher";
 
 interface NavRef {
   kind: string;
   name: string;
 }
-
 interface Props {
   view: TripView | null;
   loading: boolean;
@@ -115,124 +111,6 @@ function BudgetMeter({ budget }: { budget: Budget }) {
     </div>
   );
 }
-
-const STATUS_BADGE: Record<string, string> = {
-  draft: "bg-slate-100 text-slate-600",
-  finalized: "bg-emerald-50 text-emerald-700",
-  booked: "bg-brand/10 text-brand",
-};
-
-// "My trips" switcher: remembered trips persist across logins, so the user can
-// resume any saved plan instead of starting over. Self-contained — it fetches
-// its own list, re-fetching whenever the active trip changes (version token).
-export function TripSwitcher({
-  version,
-  onSwitched,
-}: {
-  version: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
-}) {
-  const [trips, setTrips] = useState<SavedTrip[]>([]);
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let alive = true;
-    fetchSavedTrips()
-      .then((t) => alive && setTrips(t))
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, [version]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [open]);
-
-  if (trips.length === 0) return null;
-
-  const onPick = async (tripId: string) => {
-    setOpen(false);
-    const v = await switchTrip(tripId);
-    if (v) onSwitched(tripId, v);
-  };
-
-  const onRemove = async (tripId: string) => {
-    const t = trips.find((x) => x.trip_id === tripId);
-    const name = t?.destination || "this trip";
-    if (!window.confirm(`Delete ${name} and its chat history? This cannot be undone.`)) return;
-    const remaining = await deleteTrip(tripId);
-    setTrips(remaining);
-    onSwitched();
-  };
-
-  const active = trips.find((t) => t.is_active);
-  const label = active ? active.destination || "Untitled" : "My trips";
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="pill bg-white text-ink ring-1 ring-slate-200 transition hover:bg-slate-50"
-        title="Switch between your saved trips"
-      >
-        <span>{"\uD83E\uDDF3"}</span>
-        <span className="max-w-[9rem] truncate">{label}</span>
-        <span className="text-slate-400">({trips.length})</span>
-        <span className="text-slate-400">▾</span>
-      </button>
-      {open && (
-        <div className="absolute left-0 top-full z-30 mt-1.5 max-h-80 w-72 overflow-y-auto rounded-2xl bg-white p-1.5 shadow-pop ring-1 ring-slate-100">
-          {trips.map((t) => {
-            const dates =
-              t.departure_date && t.return_date
-                ? `${t.departure_date} → ${t.return_date}`
-                : t.departure_date || "dates TBD";
-            const badge = STATUS_BADGE[t.status] || STATUS_BADGE.draft;
-            return (
-              <div
-                key={t.trip_id}
-                className={`flex w-full items-start gap-2 rounded-xl px-2.5 py-2 text-left transition hover:bg-slate-50 ${
-                  t.is_active ? "bg-brand/5 ring-1 ring-brand/20" : ""
-                }`}
-              >
-                <button type="button" onClick={() => onPick(t.trip_id)} className="min-w-0 flex-1 text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate text-sm font-medium text-ink">
-                      {t.destination || "Untitled trip"}
-                    </span>
-                    <span className={`chip ${badge}`}>{t.status}</span>
-                  </div>
-                  <div className="truncate text-xs text-muted">{dates}</div>
-                  <div className="mt-0.5 text-[11px] text-slate-400">
-                    {t.counts.flights}✈ · {t.counts.hotels}🏨 · {t.counts.activities}🎯
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onRemove(t.trip_id)}
-                  aria-label={`Delete ${t.destination || "untitled trip"}`}
-                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
-                  title="Delete this saved trip"
-                >
-                  ✕
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function ItemCard({
   item,
   focused,
@@ -548,7 +426,7 @@ export default function TripPanel({
       {focused && (
         <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
           <button onClick={onClearFocus} className="btn-ghost">
-            ← Whole trip
+            <ArrowLeft size={15} aria-hidden /> Whole trip
           </button>
           {total > 1 && (
             <div className="ml-auto flex items-center gap-1.5">
@@ -557,7 +435,7 @@ export default function TripPanel({
                 className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
                 title="Previous"
               >
-                ‹
+                <ChevronLeft size={17} aria-hidden />
               </button>
               <span className="text-xs font-medium text-muted">
                 {focusIndex >= 0 ? focusIndex + 1 : "–"} / {total}
@@ -567,7 +445,7 @@ export default function TripPanel({
                 className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
                 title="Next"
               >
-                ›
+                <ChevronRight size={17} aria-hidden />
               </button>
             </div>
           )}
@@ -600,7 +478,7 @@ export default function TripPanel({
                     title="Export day-wise itinerary for PDF/print or email"
                     className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
                   >
-                    <span>{"\uD83D\uDCC4"}</span>
+                    <FileDown size={14} aria-hidden />
                     <span>Export</span>
                   </button>
                   <button
@@ -609,7 +487,7 @@ export default function TripPanel({
                     title="Get a read-only share link anyone can open"
                     className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
                   >
-                    <span>{"\uD83D\uDD17"}</span>
+                    <Link2 size={14} aria-hidden />
                     <span>Share</span>
                   </button>
                   <a
@@ -618,7 +496,7 @@ export default function TripPanel({
                     title="Download .ics for your calendar"
                     className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
                   >
-                    <span>{"\uD83D\uDCC5"}</span>
+                    <CalendarPlus size={14} aria-hidden />
                     <span>Add to calendar</span>
                   </a>
                 </div>
@@ -882,177 +760,3 @@ function HotelStayModal({
   );
 }
 
-function ExportModal({ onClose }: { onClose: () => void }) {
-  const [includePhotos, setIncludePhotos] = useState(true);
-  const [includeCircuit, setIncludeCircuit] = useState(true);
-  const [template, setTemplate] = useState<"minimal" | "detailed" | "family">("detailed");
-  const [email, setEmail] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState("");
-  const [mailtoHref, setMailtoHref] = useState("");
-
-  const options = {
-    include_photos: includePhotos,
-    include_map_circuit: includeCircuit,
-    template,
-  };
-
-  const openPrintView = () => {
-    const url = tripExportUrl(options, true);
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const openPreview = () => {
-    const url = tripExportUrl(options, false);
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const downloadPdf = async () => {
-    setBusy(true);
-    setStatus("");
-    try {
-      const res = await downloadTripPdf(options);
-      if (!res.ok) {
-        if (res.error === "pdf_renderer_not_installed") {
-          setStatus("Direct PDF download is not available yet on this server. Opening the print view instead.");
-          openPrintView();
-          return;
-        }
-        setStatus(res.message || "Could not generate the PDF.");
-        return;
-      }
-      const href = URL.createObjectURL(res.blob);
-      const link = document.createElement("a");
-      link.href = href;
-      link.download = res.filename;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(href);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const sendEmail = async () => {
-    if (!email.trim()) {
-      setStatus("Enter an email address first.");
-      return;
-    }
-    setBusy(true);
-    setStatus("");
-    setMailtoHref("");
-    try {
-      const res = await emailTripExport(email.trim(), options);
-      if (res.ok) {
-        setStatus(res.message || "Export sent.");
-        return;
-      }
-      if (res.mailto) {
-        setMailtoHref(res.mailto);
-        window.location.href = res.mailto;
-        if (res.error === "email_not_configured") {
-          setStatus("Direct email sending is not configured on this server. Tried opening your mail app instead.");
-        } else {
-          setStatus("Opened your mail client fallback.");
-        }
-      } else {
-        setStatus(res.message || "Could not send email.");
-      }
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink">Export itinerary</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-ink">
-            ✕
-          </button>
-        </div>
-
-        <p className="mb-4 text-sm text-slate-600">
-          Export a print-friendly day-wise itinerary. Use Print → Save as PDF for a
-          carry-along copy.
-        </p>
-
-        <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-slate-500">Template</span>
-            <select
-              value={template}
-              onChange={(e) => setTemplate(e.target.value as "minimal" | "detailed" | "family")}
-              className="input"
-            >
-              <option value="minimal">Minimal</option>
-              <option value="detailed">Detailed</option>
-              <option value="family">Family</option>
-            </select>
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={includePhotos}
-              onChange={(e) => setIncludePhotos(e.target.checked)}
-            />
-            Include place photos
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={includeCircuit}
-              onChange={(e) => setIncludeCircuit(e.target.checked)}
-            />
-            Include day-wise map circuit and route stats
-          </label>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button onClick={openPreview} className="btn-ghost">
-            Preview
-          </button>
-          <button onClick={openPrintView} className="btn-primary">
-            Print / Save PDF
-          </button>
-          <button onClick={downloadPdf} disabled={busy} className="btn-ghost disabled:opacity-50">
-            {busy ? "Preparing PDF..." : "Download PDF"}
-          </button>
-        </div>
-
-        <div className="mt-5 border-t border-slate-200 pt-4">
-          <p className="mb-2 text-sm font-medium text-ink">Send to email</p>
-          <div className="flex gap-2">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              className="input"
-            />
-            <button onClick={sendEmail} disabled={busy} className="btn-primary whitespace-nowrap disabled:opacity-50">
-              {busy ? "Sending..." : "Send"}
-            </button>
-          </div>
-          <p className="mt-2 text-xs text-slate-500">
-            If server email is not configured, your mail app will open with a prefilled draft.
-          </p>
-          {status && <p className="mt-2 text-xs text-slate-600">{status}</p>}
-          {mailtoHref && (
-            <p className="mt-2 text-xs text-slate-600">
-              If nothing opened, <a href={mailtoHref} className="text-brand underline underline-offset-2">open the mail draft directly</a>.
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -48,7 +48,9 @@ vi.mock("./components/MapPanel", () => ({
 }));
 vi.mock("./components/TripPanel", () => ({
   default: () => <div data-testid="trip-panel" />,
-  TripSwitcher: () => <div data-testid="trip-switcher" />,
+}));
+vi.mock("./components/TripSwitcher", () => ({
+  default: () => <div data-testid="trip-switcher" />,
 }));
 vi.mock("./components/RightRail", () => ({
   default: () => <div data-testid="right-rail" />,

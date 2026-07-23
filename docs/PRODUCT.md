@@ -57,6 +57,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Reliability**: only the active responsive shell mounts. Focus/view requests
   cancel stale predecessors, interrupted chat streams recover the composer,
   and map/itinerary refreshes retain prior data with visible retry states.
+  One workspace reducer owns trip identity/revision and active place state, so
+  focus-only navigation never triggers unrelated panel reloads.
+- **Itinerary scanning**: each day header shows stop count, planned duration,
+  route distance/time/mode, and a direct Maps handoff before the stop details.
 
 If a redesign violates the above without a stated reason, push back.
 

@@ -25,6 +25,8 @@ dev and Cosmos DB in production. Auto-dispatch via `storage_cosmos.is_enabled()`
 | Tests            | `.\.venv\Scripts\python.exe -m pytest -q`                  |
 | Type-check SPA   | `cd frontend; npx tsc --noEmit`                            |
 | Build SPA        | `cd frontend; npm run build`                               |
+| Frontend tests   | `cd frontend; npm test -- --run`                            |
+| Browser smoke    | `cd frontend; npm run test:e2e`                             |
 | Deploy           | See [infra/README.md](../infra/README.md)                  |
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
@@ -83,20 +85,26 @@ frontend/
               pane maximize, request cancellation, shared place focus.
               Mobile: chat + on-demand trip-details sheet. Only the
               active responsive shell mounts.
+    workspaceState.ts Canonical reducer for trip identity/revision, active place,
+              chat reload, and itinerary jump state
     api.ts            All HTTP/SSE + auth glue + per-destination overview cache
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
       ChatPanel.tsx        Sticky header (incl. "New trip" button), bubbles, composer
-      TripPanel.tsx        Hero summary + NavStrip + ItemCard; exports TripSwitcher
+      TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards
+      TripSwitcher.tsx     Persistent saved-trip switch/delete control
+      ExportModal.tsx      Print/PDF/email export options and handoff
       RightRail.tsx        Mobile trip-details sheet: TripSwitcher + stacked
                itinerary/photos + opt-in lazy map
-      ItineraryPanel.tsx   Day timeline of clickable stops + booked checkbox
+      ItineraryPanel.tsx   Compact day summary + clickable stops + booked checkbox
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (focusName prop highlights a stop's pin)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
+  playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
+  vitest.config.ts         jsdom unit/component test configuration
 infra/
   main.bicep          ACA + Cosmos Free Tier + Log Analytics
   main.bicepparam     Default param values (keep API version aligned)

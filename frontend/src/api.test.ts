@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { streamChat, type StreamHandlers } from "./api";
+import { fetchSavedTrips, streamChat, type StreamHandlers } from "./api";
 
 function streamResponse(frames: string[], status = 200): Response {
   const encoder = new TextEncoder();
@@ -71,5 +71,17 @@ describe("streamChat", () => {
     );
 
     await expect(streamChat("plan a trip", handlers())).rejects.toThrow("Service unavailable");
+  });
+});
+
+describe("saved-trip API", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("rejects non-success list responses", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("unavailable", { status: 503 })));
+
+    await expect(fetchSavedTrips()).rejects.toThrow("Could not load saved trips (503)");
   });
 });
