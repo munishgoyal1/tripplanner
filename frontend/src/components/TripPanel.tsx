@@ -163,8 +163,7 @@ export function TripSwitcher({
     if (v) onSwitched(tripId, v);
   };
 
-  const onRemove = async (e: React.MouseEvent, tripId: string) => {
-    e.stopPropagation();
+  const onRemove = async (tripId: string) => {
     const t = trips.find((x) => x.trip_id === tripId);
     const name = t?.destination || "this trip";
     if (!window.confirm(`Delete ${name} and its chat history? This cannot be undone.`)) return;
@@ -198,15 +197,13 @@ export function TripSwitcher({
                 : t.departure_date || "dates TBD";
             const badge = STATUS_BADGE[t.status] || STATUS_BADGE.draft;
             return (
-              <button
+              <div
                 key={t.trip_id}
-                type="button"
-                onClick={() => onPick(t.trip_id)}
                 className={`flex w-full items-start gap-2 rounded-xl px-2.5 py-2 text-left transition hover:bg-slate-50 ${
                   t.is_active ? "bg-brand/5 ring-1 ring-brand/20" : ""
                 }`}
               >
-                <div className="min-w-0 flex-1">
+                <button type="button" onClick={() => onPick(t.trip_id)} className="min-w-0 flex-1 text-left">
                   <div className="flex items-center gap-1.5">
                     <span className="truncate text-sm font-medium text-ink">
                       {t.destination || "Untitled trip"}
@@ -217,17 +214,17 @@ export function TripSwitcher({
                   <div className="mt-0.5 text-[11px] text-slate-400">
                     {t.counts.flights}✈ · {t.counts.hotels}🏨 · {t.counts.activities}🎯
                   </div>
-                </div>
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => onRemove(e, t.trip_id)}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onRemove(t.trip_id)}
+                  aria-label={`Delete ${t.destination || "untitled trip"}`}
                   className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
                   title="Delete this saved trip"
                 >
                   ✕
-                </span>
-              </button>
+                </button>
+              </div>
             );
           })}
         </div>

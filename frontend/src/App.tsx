@@ -14,32 +14,12 @@ interface NavRef {
 
 type DragType = "main" | "leftV" | "rightV" | null;
 type PaneId = "itinerary" | "chat" | "map" | "details";
-type SlotId = "leftTop" | "leftBottom" | "rightTop" | "rightBottom";
-
-type PaneVisibility = Record<PaneId, boolean>;
-type PaneSlots = Record<SlotId, PaneId>;
-
-const SLOT_ORDER: SlotId[] = ["leftTop", "leftBottom", "rightTop", "rightBottom"];
 
 const PANE_LABEL: Record<PaneId, string> = {
   itinerary: "Itinerary",
   chat: "Chat",
   map: "Map",
   details: "Details",
-};
-
-const DEFAULT_SLOTS: PaneSlots = {
-  leftTop: "map",
-  leftBottom: "itinerary",
-  rightTop: "details",
-  rightBottom: "chat",
-};
-
-const DEFAULT_HIDDEN: PaneVisibility = {
-  itinerary: false,
-  chat: false,
-  map: false,
-  details: false,
 };
 
 function clamp(v: number, min: number, max: number): number {
@@ -83,8 +63,6 @@ export default function App() {
     return saved >= 15 && saved <= 85 ? saved : 78;
   });
 
-  const [paneBySlot, setPaneBySlot] = useState<PaneSlots>(DEFAULT_SLOTS);
-  const [hiddenPanes, setHiddenPanes] = useState<PaneVisibility>(DEFAULT_HIDDEN);
   const [maximizedPane, setMaximizedPane] = useState<PaneId | null>(null);
 
   const [isDesktop, setIsDesktop] = useState(
@@ -150,6 +128,20 @@ export default function App() {
     dragType.current = type;
     document.body.style.cursor = type === "main" ? "col-resize" : "row-resize";
     document.body.style.userSelect = "none";
+  };
+
+  const resizeWithKeyboard = (type: Exclude<DragType, null>, key: string) => {
+    const delta = key === "ArrowRight" || key === "ArrowDown" ? 3 : -3;
+    if (type === "main" && (key === "ArrowLeft" || key === "ArrowRight")) {
+      setLeftPct((value) => clamp(value + delta, 20, 80));
+    } else if (type === "leftV" && (key === "ArrowUp" || key === "ArrowDown")) {
+      setLeftTopPct((value) => clamp(value + delta, 10, 90));
+    } else if (type === "rightV" && (key === "ArrowUp" || key === "ArrowDown")) {
+      setRightTopPct((value) => clamp(value + delta, 10, 90));
+    } else {
+      return false;
+    }
+    return true;
   };
 
   const applyView = useCallback((v: TripView, f: NavRef | null) => {
@@ -362,49 +354,12 @@ export default function App() {
     setItineraryJump(null);
   };
 
-  const revealPane = (pane: PaneId) => {
-    setHiddenPanes((prev) => ({ ...prev, [pane]: false }));
-  };
-
-  const hidePane = (pane: PaneId) => {
-    setHiddenPanes((prev) => ({ ...prev, [pane]: true }));
-    if (maximizedPane === pane) setMaximizedPane(null);
-  };
-
   const toggleMaxPane = (pane: PaneId) => {
-    revealPane(pane);
     setMaximizedPane((prev) => (prev === pane ? null : pane));
-  };
-
-  const slotForPane = (pane: PaneId): SlotId => {
-    const found = SLOT_ORDER.find((slot) => paneBySlot[slot] === pane);
-    return found ?? "leftTop";
-  };
-
-  const movePane = (pane: PaneId) => {
-    const from = slotForPane(pane);
-    const fromIndex = SLOT_ORDER.indexOf(from);
-    const to = SLOT_ORDER[(fromIndex + 1) % SLOT_ORDER.length];
-    setPaneBySlot((prev) => ({
-      ...prev,
-      [from]: prev[to],
-      [to]: prev[from],
-    }));
-  };
-
-  const resetPaneLayout = () => {
-    setPaneBySlot(DEFAULT_SLOTS);
-    setHiddenPanes(DEFAULT_HIDDEN);
-    setLeftPct(62);
-    setLeftTopPct(65);
-    setRightTopPct(78);
-    setMaximizedPane(null);
   };
 
   const handleStopFocus = (kind: string, name: string) => {
     setStopFocusName(name);
-    revealPane("map");
-    revealPane("details");
     setMapOpen(true);
     if (isPlaceKind(kind)) {
       handleFocus(kind === "activity" ? "attraction" : kind, name);
@@ -413,8 +368,6 @@ export default function App() {
 
   const handleStopMap = (kind: string, name: string) => {
     setStopFocusName(name);
-    revealPane("map");
-    revealPane("details");
     setMapOpen(true);
     if (isPlaceKind(kind)) {
       handleFocus(kind === "activity" ? "attraction" : kind, name);
@@ -487,70 +440,23 @@ export default function App() {
   };
 
   const renderPane = (pane: PaneId) => {
-    if (hiddenPanes[pane]) {
-      return (
-        <div className="grid h-full place-items-center rounded-2xl border border-dashed border-slate-200 bg-white/50 p-6 text-center">
-          <div>
-            <p className="text-sm font-medium text-slate-600">{PANE_LABEL[pane]} is hidden</p>
-            <button
-              type="button"
-              onClick={() => revealPane(pane)}
-              className="mt-3 rounded-full px-4 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-            >
-              Show
-            </button>
-          </div>
-        </div>
-      );
-    }
     return (
       <article className="flex h-full min-h-0 flex-col rounded-2xl border border-slate-200/70 bg-white/80 shadow-card">
         <header className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{PANE_LABEL[pane]}</h3>
           <button
             type="button"
-            onClick={() => movePane(pane)}
-            className="ml-auto rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-            title="Move pane"
-          >
-            Move
-          </button>
-          <button
-            type="button"
             onClick={() => toggleMaxPane(pane)}
-            className="rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            className="ml-auto rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
             title={maximizedPane === pane ? "Restore" : "Maximize"}
           >
             {maximizedPane === pane ? "Restore" : "Max"}
-          </button>
-          <button
-            type="button"
-            onClick={() => hidePane(pane)}
-            className="rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-            title="Hide pane"
-          >
-            Hide
           </button>
         </header>
         <div className="min-h-0 flex-1">{renderPaneBody(pane)}</div>
       </article>
     );
   };
-
-  const leftTopPane = paneBySlot.leftTop;
-  const leftBottomPane = paneBySlot.leftBottom;
-  const rightTopPane = paneBySlot.rightTop;
-  const rightBottomPane = paneBySlot.rightBottom;
-
-  const leftTopVisible = !hiddenPanes[leftTopPane];
-  const leftBottomVisible = !hiddenPanes[leftBottomPane];
-  const rightTopVisible = !hiddenPanes[rightTopPane];
-  const rightBottomVisible = !hiddenPanes[rightBottomPane];
-
-  const leftColumnVisible = leftTopVisible || leftBottomVisible;
-  const rightColumnVisible = rightTopVisible || rightBottomVisible;
-
-  const hiddenPaneList = (Object.keys(hiddenPanes) as PaneId[]).filter((pane) => hiddenPanes[pane]);
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
   useEffect(() => {
@@ -571,33 +477,8 @@ export default function App() {
     {isDesktop ? (
       <div className="flex min-h-screen flex-col bg-surface">
         <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
-          <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-200">
-            Layout C: Compact canvas
-          </span>
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-          <button
-            type="button"
-            onClick={resetPaneLayout}
-            className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-            title="Reset pane layout"
-          >
-            Reset layout
-          </button>
-          {hiddenPaneList.length > 0 && (
-            <div className="ml-auto flex items-center gap-2">
-              <span className="text-xs font-medium text-slate-500">Hidden:</span>
-              {hiddenPaneList.map((pane) => (
-                <button
-                  key={pane}
-                  type="button"
-                  onClick={() => revealPane(pane)}
-                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-                >
-                  Show {PANE_LABEL[pane]}
-                </button>
-              ))}
-            </div>
-          )}
+          <span className="ml-auto text-xs font-medium text-slate-400">Trip workspace</span>
         </div>
 
         <div ref={rootRef} className="flex min-h-[calc(100vh-56px)] flex-1 gap-2 overflow-y-auto p-2">
@@ -605,73 +486,65 @@ export default function App() {
             <div className="min-h-0 flex-1">{renderPane(maximizedPane)}</div>
           ) : (
             <>
-              {leftColumnVisible && (
-                <section
-                  ref={leftRef}
-                  className="flex min-w-0 flex-col gap-2"
-                  style={{ flexBasis: rightColumnVisible ? `${leftPct}%` : "100%" }}
-                >
-                  {leftTopVisible && leftBottomVisible ? (
-                    <>
-                      <section className="min-h-0" style={{ flexBasis: `${leftTopPct}%` }}>
-                        {renderPane(leftTopPane)}
-                      </section>
-                      <div
-                        onMouseDown={() => startDrag("leftV")}
-                        title="Drag to resize upper/lower left panes"
-                        className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30"
-                      >
-                        <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
-                      </div>
-                      <section className="min-h-0 flex-1">{renderPane(leftBottomPane)}</section>
-                    </>
-                  ) : leftTopVisible ? (
-                    <section className="min-h-0 flex-1">{renderPane(leftTopPane)}</section>
-                  ) : (
-                    <section className="min-h-0 flex-1">{renderPane(leftBottomPane)}</section>
-                  )}
+              <section ref={leftRef} className="flex min-w-0 flex-col gap-2" style={{ flexBasis: `${leftPct}%` }}>
+                <section className="min-h-0" style={{ flexBasis: `${leftTopPct}%` }}>
+                  {renderPane("map")}
                 </section>
-              )}
-
-              {leftColumnVisible && rightColumnVisible && (
                 <div
-                  onMouseDown={() => startDrag("main")}
-                  title="Drag to resize left/right"
-                  className="group relative w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-brand/30"
+                  role="separator"
+                  tabIndex={0}
+                  aria-label="Resize map and itinerary"
+                  aria-orientation="horizontal"
+                  aria-valuenow={Math.round(leftTopPct)}
+                  onMouseDown={() => startDrag("leftV")}
+                  onKeyDown={(event) => {
+                    if (resizeWithKeyboard("leftV", event.key)) event.preventDefault();
+                  }}
+                  title="Drag or use arrow keys to resize map and itinerary"
+                  className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30 focus:bg-brand/30 focus:outline-none"
                 >
-                  <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+                  <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
                 </div>
-              )}
+                <section className="min-h-0 flex-1">{renderPane("itinerary")}</section>
+              </section>
 
-              {rightColumnVisible && (
-                <aside ref={rightRef} className="flex min-w-0 flex-1 flex-col gap-2">
-                  {rightTopVisible && rightBottomVisible ? (
-                    <>
-                      <section className="min-h-0" style={{ flexBasis: `${rightTopPct}%` }}>
-                        {renderPane(rightTopPane)}
-                      </section>
-                      <div
-                        onMouseDown={() => startDrag("rightV")}
-                        title="Drag to resize upper/lower right panes"
-                        className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30"
-                      >
-                        <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
-                      </div>
-                      <section className="min-h-0 flex-1">{renderPane(rightBottomPane)}</section>
-                    </>
-                  ) : rightTopVisible ? (
-                    <section className="min-h-0 flex-1">{renderPane(rightTopPane)}</section>
-                  ) : (
-                    <section className="min-h-0 flex-1">{renderPane(rightBottomPane)}</section>
-                  )}
-                </aside>
-              )}
+              <div
+                role="separator"
+                tabIndex={0}
+                aria-label="Resize trip canvas and details"
+                aria-orientation="vertical"
+                aria-valuenow={Math.round(leftPct)}
+                onMouseDown={() => startDrag("main")}
+                onKeyDown={(event) => {
+                  if (resizeWithKeyboard("main", event.key)) event.preventDefault();
+                }}
+                title="Drag or use arrow keys to resize trip canvas and details"
+                className="group relative w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-brand/30 focus:bg-brand/30 focus:outline-none"
+              >
+                <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+              </div>
 
-              {!leftColumnVisible && !rightColumnVisible && (
-                <section className="grid min-h-0 flex-1 place-items-center rounded-2xl border border-dashed border-slate-200 bg-white/50 text-sm text-slate-500">
-                  All panes are hidden. Use the Show buttons in the top bar.
+              <aside ref={rightRef} className="flex min-w-0 flex-1 flex-col gap-2">
+                <section className="min-h-0" style={{ flexBasis: `${rightTopPct}%` }}>
+                  {renderPane("details")}
                 </section>
-              )}
+                <div
+                  role="separator"
+                  tabIndex={0}
+                  aria-label="Resize details and chat"
+                  aria-orientation="horizontal"
+                  aria-valuenow={Math.round(rightTopPct)}
+                  onMouseDown={() => startDrag("rightV")}
+                  onKeyDown={(event) => {
+                    if (resizeWithKeyboard("rightV", event.key)) event.preventDefault();
+                  }}
+                  title="Drag or use arrow keys to resize details and chat"
+                  className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30 focus:bg-brand/30 focus:outline-none"
+                >
+                  <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
+                </div>
+                <section className="min-h-0 flex-1">{renderPane("chat")}</section>
+              </aside>
             </>
           )}
         </div>

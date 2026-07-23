@@ -38,8 +38,10 @@ One codebase, dispatcher in `storage_cosmos.is_enabled()`.
 Reference points: **Airbnb** and **TripAdvisor** (magazine-style travel
 browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 
-- **Layout**: left chat | resizable divider | right trip panel. Sticky
-  toolbars top + bottom of the chat, sticky focus toolbar on the panel.
+- **Layout**: desktop uses a map-first trip canvas (map above itinerary) with
+  a details rail (place details above chat). The three dividers are mouse- and
+  keyboard-resizable; panes can be maximized but do not expose dashboard-style
+  move/hide controls. Mobile mounts chat plus an on-demand trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
   active state; teal `accent` for secondary surfaces; ink/muted/surface
   neutrals everywhere else. No rainbow.
@@ -52,6 +54,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Motion**: subtle hover-lift, 300ms cross-fades on data switches. NO
   blanking the panel while data loads — keep prior content dimmed (`stale`
   opacity-70) and swap when ready.
+- **Reliability**: only the active responsive shell mounts. Focus/view requests
+  cancel stale predecessors, interrupted chat streams recover the composer,
+  and map/itinerary refreshes retain prior data with visible retry states.
 
 If a redesign violates the above without a stated reason, push back.
 

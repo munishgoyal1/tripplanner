@@ -105,7 +105,19 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-06-19)
+## Current State (last updated 2026-07-23)
+- **Frontend reliability + selected Layout C (Session 25)**: desktop now uses
+  a fixed map-over-itinerary canvas beside details-over-chat, with quiet pane
+  headers, maximize, and mouse/keyboard-accessible resize separators. Mobile
+  mounts chat plus the existing on-demand trip-details sheet; desktop and
+  mobile trees are conditionally mounted so duplicate API/chat/map effects
+  cannot run. Trip view requests cancel stale predecessors, map/itinerary keep
+  prior content during refresh with retry states, map-local selection/day state
+  reconciles to fresh data, removing a focused stop clears Details, and chat
+  always exits busy state after HTTP/SSE interruption. Vitest/RTL covers SSE
+  termination and responsive mount isolation; Playwright has mocked desktop +
+  mobile smoke projects. `dev-spa.ps1` now rejects occupied frontend ports
+  instead of silently moving Vite to another port.
 - **Intelligent v1 itinerary + map zoom fix (Session 24)**: two canary bugs
   closed. (1) The itinerary panel no longer shows a flat "Your picks so far"
   dump when the agent forgets to persist `day_wise_itinerary` — 

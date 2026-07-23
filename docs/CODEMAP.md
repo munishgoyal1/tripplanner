@@ -77,17 +77,20 @@ frontend/
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
-    main.tsx          React 19 root
-    App.tsx           Layout: chat (~36%) ‖ resizable divider ‖ stacked right rail
-                      (persistent TripSwitcher + Itinerary + Photos, opt-in Map)
+    main.tsx          React 18 root
+    App.tsx           Responsive workspace owner. Desktop: map over itinerary
+              (~62%) beside details over chat; keyboard/mouse dividers,
+              pane maximize, request cancellation, shared place focus.
+              Mobile: chat + on-demand trip-details sheet. Only the
+              active responsive shell mounts.
     api.ts            All HTTP/SSE + auth glue + per-destination overview cache
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
       ChatPanel.tsx        Sticky header (incl. "New trip" button), bubbles, composer
       TripPanel.tsx        Hero summary + NavStrip + ItemCard; exports TripSwitcher
-      RightRail.tsx        Persistent TripSwitcher header + stacked Itinerary /
-                           Photos (always shown) + opt-in lazy Map section
+      RightRail.tsx        Mobile trip-details sheet: TripSwitcher + stacked
+               itinerary/photos + opt-in lazy map
       ItineraryPanel.tsx   Day timeline of clickable stops + booked checkbox
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands

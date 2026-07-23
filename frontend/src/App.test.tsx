@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 const { emptyView } = vi.hoisted(() => ({ emptyView: {
@@ -77,5 +77,15 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
+  });
+
+  it("resizes the desktop canvas with arrow keys", () => {
+    setDesktop(true);
+    render(<App />);
+    const separator = screen.getByRole("separator", { name: "Resize trip canvas and details" });
+
+    expect(separator).toHaveAttribute("aria-valuenow", "62");
+    fireEvent.keyDown(separator, { key: "ArrowRight" });
+    expect(separator).toHaveAttribute("aria-valuenow", "65");
   });
 });

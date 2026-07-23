@@ -1339,6 +1339,25 @@ VALIDATION:
 - python -m compileall -q src/tripplanner : clean
 - frontend build : clean
 
+=== 2026-07-23 — Session 25: Frontend reliability and Layout C decision ===
+
+REQUIREMENT:
+- Implement the prioritized UI/bug roadmap after the repository and product review.
+- Correctness first: mount one responsive shell, prevent stale focus responses,
+  recover interrupted chat streams, reconcile map state, and preserve content
+  during refresh.
+- Add visible retry/error states and frontend regression coverage.
+- Use Layout C as the working direction, but remove experiment/debug chrome and
+  dashboard-style pane move/hide controls. Keep resize and maximize interactions
+  accessible by mouse and keyboard.
+
+IMPLEMENTED:
+- Abort/generation-guarded trip view refreshes and robust SSE terminal handling.
+- Stale-while-refresh map/itinerary behavior with retry and mutation rollback.
+- Vitest/React Testing Library unit tests plus mocked Playwright viewport smoke tests.
+- Explicit strict Vite frontend port handling in scripts/dev-spa.ps1.
+- Fixed map-first desktop workspace and separate mobile trip-details sheet.
+
 === 2026-06-19 — Session 28: Direct PDF + branded templates + Azure email provider ===
 
 USER REQUIREMENT:
