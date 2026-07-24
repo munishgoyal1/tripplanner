@@ -1,3 +1,4 @@
+import { Maximize2, MessageCircle, Minimize2, PanelRight, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ItineraryPanel from "./components/ItineraryPanel";
@@ -14,19 +15,7 @@ interface NavRef {
   name: string;
 }
 
-type DragType = "main" | "leftV" | "rightV" | null;
-type PaneId = "itinerary" | "chat" | "map" | "details";
-
-const PANE_LABEL: Record<PaneId, string> = {
-  itinerary: "Itinerary",
-  chat: "Chat",
-  map: "Map",
-  details: "Details",
-};
-
-function clamp(v: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, v));
-}
+type CanvasPane = "itinerary" | "map";
 
 function isPlaceKind(kind: string): boolean {
   return kind === "hotel" || kind === "attraction" || kind === "activity";
@@ -49,32 +38,17 @@ export default function App() {
     const saved = localStorage.getItem("tripplanner_map_open");
     return saved ? JSON.parse(saved) : true;
   });
-  const [leftPct, setLeftPct] = useState<number>(() => {
-    const saved = Number(localStorage.getItem("tripplanner_left_pct"));
-    // Layout C: left column (map+itinerary) ~62%, right column (details+chat) ~38%
-    return saved >= 25 && saved <= 75 ? saved : 62;
-  });
-  const [leftTopPct, setLeftTopPct] = useState<number>(() => {
-    const saved = Number(localStorage.getItem("tripplanner_left_top_pct"));
-    // Map occupies ~65% of left height; itinerary gets ~35%
-    return saved >= 15 && saved <= 85 ? saved : 65;
-  });
-  const [rightTopPct, setRightTopPct] = useState<number>(() => {
-    const saved = Number(localStorage.getItem("tripplanner_right_top_pct"));
-    // Details occupies ~78% of right height; chat strip gets ~22%
-    return saved >= 15 && saved <= 85 ? saved : 78;
-  });
-
-  const [maximizedPane, setMaximizedPane] = useState<PaneId | null>(null);
+  const [maximizedPane, setMaximizedPane] = useState<CanvasPane | null>(null);
+  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(true);
 
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
   );
+  const [isWideDesktop, setIsWideDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1200px)").matches
+  );
 
-  const rootRef = useRef<HTMLDivElement>(null);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const rightRef = useRef<HTMLDivElement>(null);
-  const dragType = useRef<DragType>(null);
   const refreshGeneration = useRef(0);
   const refreshController = useRef<AbortController | null>(null);
 
@@ -86,65 +60,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    function onMove(e: MouseEvent) {
-      if (!dragType.current) return;
-      if (dragType.current === "main" && rootRef.current) {
-        const rect = rootRef.current.getBoundingClientRect();
-        const pct = ((e.clientX - rect.left) / rect.width) * 100;
-        setLeftPct(clamp(pct, 20, 80));
-        return;
-      }
-      if (dragType.current === "leftV" && leftRef.current) {
-        const rect = leftRef.current.getBoundingClientRect();
-        const pct = ((e.clientY - rect.top) / rect.height) * 100;
-        setLeftTopPct(clamp(pct, 10, 90));
-        return;
-      }
-      if (dragType.current === "rightV" && rightRef.current) {
-        const rect = rightRef.current.getBoundingClientRect();
-        const pct = ((e.clientY - rect.top) / rect.height) * 100;
-        setRightTopPct(clamp(pct, 10, 90));
-      }
-    }
-
-    function onUp() {
-      if (!dragType.current) return;
-      dragType.current = null;
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-      localStorage.setItem("tripplanner_left_pct", String(Math.round(leftPct)));
-      localStorage.setItem("tripplanner_left_top_pct", String(Math.round(leftTopPct)));
-      localStorage.setItem("tripplanner_right_top_pct", String(Math.round(rightTopPct)));
-      localStorage.setItem("tripplanner_map_open", JSON.stringify(mapOpen));
-    }
-
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
+    const mq = window.matchMedia("(min-width: 1200px)");
+    const onChange = (e: MediaQueryListEvent) => setIsWideDesktop(e.matches);
+    mq.addEventListener("change", onChange);
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
+      mq.removeEventListener("change", onChange);
     };
-  }, [leftPct, leftTopPct, rightTopPct, mapOpen]);
-
-  const startDrag = (type: DragType) => {
-    dragType.current = type;
-    document.body.style.cursor = type === "main" ? "col-resize" : "row-resize";
-    document.body.style.userSelect = "none";
-  };
-
-  const resizeWithKeyboard = (type: Exclude<DragType, null>, key: string) => {
-    const delta = key === "ArrowRight" || key === "ArrowDown" ? 3 : -3;
-    if (type === "main" && (key === "ArrowLeft" || key === "ArrowRight")) {
-      setLeftPct((value) => clamp(value + delta, 20, 80));
-    } else if (type === "leftV" && (key === "ArrowUp" || key === "ArrowDown")) {
-      setLeftTopPct((value) => clamp(value + delta, 10, 90));
-    } else if (type === "rightV" && (key === "ArrowUp" || key === "ArrowDown")) {
-      setRightTopPct((value) => clamp(value + delta, 10, 90));
-    } else {
-      return false;
-    }
-    return true;
-  };
+  }, []);
 
   const applyView = useCallback((v: TripView, f: NavRef | null) => {
     setView(v);
@@ -225,6 +147,7 @@ export default function App() {
   const handleFocus = async (kind: string, name: string) => {
     const f = { kind, name };
     dispatchWorkspace({ type: "focus", place: f });
+    if (isDesktop) setInspectorOpen(true);
     await refresh(f);
   };
 
@@ -333,7 +256,7 @@ export default function App() {
     dispatchWorkspace({ type: "jump", target: null });
   };
 
-  const toggleMaxPane = (pane: PaneId) => {
+  const toggleMaxPane = (pane: CanvasPane) => {
     setMaximizedPane((prev) => (prev === pane ? null : pane));
   };
 
@@ -378,7 +301,7 @@ export default function App() {
     onToggleMap: setMapOpen,
   };
 
-  const renderPaneBody = (pane: PaneId) => {
+  const renderCanvasBody = (pane: CanvasPane) => {
     if (pane === "itinerary") {
       return (
         <ItineraryPanel
@@ -391,49 +314,104 @@ export default function App() {
         />
       );
     }
-    if (pane === "chat") {
-      return (
-        <ChatPanel
-          onTurnComplete={handleTurnComplete}
-          reloadToken={chatReloadToken}
-          tripIdHint={chatTripId}
-          onNewTrip={handleNewTrip}
-          onImported={handleImported}
-        />
-      );
-    }
-    if (pane === "map") {
-      return (
-        <MapPanel
-          reloadToken={tripVersion}
-          focusName={stopFocusName}
-          onPinFocus={handleStopFocus}
-          onSelect={handleSelect}
-          onDeselect={handleDeselect}
-        />
-      );
-    }
-    return <TripPanel {...tripPanelProps} hideSwitcher />;
+    return (
+      <MapPanel
+        reloadToken={tripVersion}
+        focusName={stopFocusName}
+        onPinFocus={handleStopFocus}
+        onSelect={handleSelect}
+        onDeselect={handleDeselect}
+      />
+    );
   };
 
-  const renderPane = (pane: PaneId) => {
+  const renderCanvasPane = (pane: CanvasPane) => {
+    const label = pane === "itinerary" ? "Itinerary" : "Map";
     return (
-      <article className="flex h-full min-h-0 flex-col rounded-2xl border border-slate-200/70 bg-white/80 shadow-card">
-        <header className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{PANE_LABEL[pane]}</h3>
+      <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
+        <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 px-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
           <button
             type="button"
             onClick={() => toggleMaxPane(pane)}
-            className="ml-auto rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
+            aria-label={maximizedPane === pane ? `Restore ${label}` : `Maximize ${label}`}
             title={maximizedPane === pane ? "Restore" : "Maximize"}
           >
-            {maximizedPane === pane ? "Restore" : "Max"}
+            {maximizedPane === pane ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
           </button>
         </header>
-        <div className="min-h-0 flex-1">{renderPaneBody(pane)}</div>
+        <div className="min-h-0 flex-1">{renderCanvasBody(pane)}</div>
       </article>
     );
   };
+
+  const inspector = (
+    <div className={!inspectorOpen || maximizedPane ? "hidden" : "contents"}>
+      <aside
+        data-testid="context-inspector"
+        className={`flex min-h-0 flex-col overflow-hidden bg-surface ${
+          isWideDesktop
+            ? "h-full rounded-2xl border border-slate-200/70 shadow-card"
+            : "absolute inset-y-2 right-2 z-40 w-[min(25rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
+        }`}
+      >
+      <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {focus ? "Place details" : "Trip details"}
+        </h2>
+        {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
+        <button
+          type="button"
+          onClick={() => setInspectorOpen(false)}
+          className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
+          aria-label="Close details inspector"
+        >
+          <X size={15} aria-hidden />
+        </button>
+      </header>
+      <div className="min-h-0 flex-1">
+        <TripPanel {...tripPanelProps} hideSwitcher />
+      </div>
+        <section
+          className={`relative z-10 shrink-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] transition-[height] duration-300 ${
+            chatOpen ? (view?.has_trip ? "h-[44%] min-h-72" : "h-[62%] min-h-80") : "h-12"
+          }`}
+        >
+          <div className={`relative h-full ${chatOpen ? "visible" : "invisible"}`}>
+            <ChatPanel
+              onTurnComplete={handleTurnComplete}
+              reloadToken={chatReloadToken}
+              tripIdHint={chatTripId}
+              onNewTrip={handleNewTrip}
+              onImported={handleImported}
+            />
+          </div>
+          {chatOpen ? (
+            <button
+              type="button"
+              onClick={() => setChatOpen(false)}
+              className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
+              aria-label="Collapse assistant"
+              title="Collapse assistant"
+            >
+              <Minimize2 size={15} aria-hidden />
+            </button>
+          ) : (
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+              className="absolute inset-0 flex h-full w-full items-center gap-2 px-4 text-sm font-semibold text-ink hover:bg-slate-50"
+          >
+            <MessageCircle size={17} className="text-brand" aria-hidden />
+            Ask the trip assistant
+            <span className="ml-auto text-xs font-normal text-slate-400">Expand</span>
+          </button>
+          )}
+        </section>
+      </aside>
+    </div>
+  );
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
   useEffect(() => {
@@ -452,80 +430,47 @@ export default function App() {
   return <>
     {errorBanner}
     {isDesktop ? (
-      <div className="flex min-h-screen flex-col bg-surface">
-        <div className="flex items-center gap-2 border-b border-slate-100 bg-white/85 px-3 py-2 backdrop-blur">
+      <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
+        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-100 bg-white/90 px-3 backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-          <span className="ml-auto text-xs font-medium text-slate-400">Trip workspace</span>
-        </div>
-
-        <div ref={rootRef} className="flex min-h-[calc(100vh-56px)] flex-1 gap-2 overflow-y-auto p-2">
-          {maximizedPane ? (
-            <div className="min-h-0 flex-1">{renderPane(maximizedPane)}</div>
-          ) : (
-            <>
-              <section ref={leftRef} className="flex min-w-0 flex-col gap-2" style={{ flexBasis: `${leftPct}%` }}>
-                <section className="min-h-0" style={{ flexBasis: `${leftTopPct}%` }}>
-                  {renderPane("map")}
-                </section>
-                <div
-                  role="separator"
-                  tabIndex={0}
-                  aria-label="Resize map and itinerary"
-                  aria-orientation="horizontal"
-                  aria-valuenow={Math.round(leftTopPct)}
-                  onMouseDown={() => startDrag("leftV")}
-                  onKeyDown={(event) => {
-                    if (resizeWithKeyboard("leftV", event.key)) event.preventDefault();
-                  }}
-                  title="Drag or use arrow keys to resize map and itinerary"
-                  className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30 focus:bg-brand/30 focus:outline-none"
-                >
-                  <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
-                </div>
-                <section className="min-h-0 flex-1">{renderPane("itinerary")}</section>
-              </section>
-
-              <div
-                role="separator"
-                tabIndex={0}
-                aria-label="Resize trip canvas and details"
-                aria-orientation="vertical"
-                aria-valuenow={Math.round(leftPct)}
-                onMouseDown={() => startDrag("main")}
-                onKeyDown={(event) => {
-                  if (resizeWithKeyboard("main", event.key)) event.preventDefault();
-                }}
-                title="Drag or use arrow keys to resize trip canvas and details"
-                className="group relative w-1.5 cursor-col-resize bg-transparent transition-colors hover:bg-brand/30 focus:bg-brand/30 focus:outline-none"
-              >
-                <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
-              </div>
-
-              <aside ref={rightRef} className="flex min-w-0 flex-1 flex-col gap-2">
-                <section className="min-h-0" style={{ flexBasis: `${rightTopPct}%` }}>
-                  {renderPane("details")}
-                </section>
-                <div
-                  role="separator"
-                  tabIndex={0}
-                  aria-label="Resize details and chat"
-                  aria-orientation="horizontal"
-                  aria-valuenow={Math.round(rightTopPct)}
-                  onMouseDown={() => startDrag("rightV")}
-                  onKeyDown={(event) => {
-                    if (resizeWithKeyboard("rightV", event.key)) event.preventDefault();
-                  }}
-                  title="Drag or use arrow keys to resize details and chat"
-                  className="group relative h-1.5 cursor-row-resize bg-transparent transition-colors hover:bg-brand/30 focus:bg-brand/30 focus:outline-none"
-                >
-                  <span className="absolute left-1/2 top-1/2 h-1 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 group-hover:bg-brand/60" />
-                </div>
-                <section className="min-h-0 flex-1">{renderPane("chat")}</section>
-              </aside>
-            </>
+          {view?.overview.destination && (
+            <div className="min-w-0 border-l border-slate-200 pl-3">
+              <p className="truncate text-sm font-semibold text-ink">{view.overview.destination}</p>
+              <p className="truncate text-[11px] text-slate-500">
+                {[view.overview.departure_date, view.overview.return_date].filter(Boolean).join(" - ")}
+              </p>
+            </div>
           )}
-        </div>
-        </div>
+          {!inspectorOpen && !maximizedPane && (
+            <button
+              type="button"
+              onClick={() => setInspectorOpen(true)}
+              className="btn-ghost ml-auto"
+            >
+              <PanelRight size={15} aria-hidden /> Details
+            </button>
+          )}
+          <span className={`${inspectorOpen ? "ml-auto" : ""} text-xs font-medium text-slate-400`}>Spatial planner</span>
+        </header>
+
+        <main
+          className={`relative grid min-h-0 flex-1 gap-2 overflow-hidden p-2 ${
+            maximizedPane
+              ? "grid-cols-1"
+              : isWideDesktop && inspectorOpen
+                ? "grid-cols-[minmax(19rem,23rem)_minmax(0,1fr)_minmax(21rem,26rem)]"
+                : "grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)]"
+          }`}
+        >
+          <section className={`min-h-0 min-w-0 ${maximizedPane === "map" ? "hidden" : ""}`}>
+            {renderCanvasPane("itinerary")}
+          </section>
+          <section className={`min-h-0 min-w-0 ${maximizedPane === "itinerary" ? "hidden" : ""}`}>
+            {renderCanvasPane("map")}
+          </section>
+          {inspector}
+        </main>
+      </div>
         ) : (
         <section className="flex h-screen flex-col">
         <ChatPanel

@@ -58,4 +58,14 @@ test("mounts exactly one chat workspace", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Trip Planner" })).toHaveCount(1);
+
+  const desktop = await page.evaluate(() => window.matchMedia("(min-width: 768px)").matches);
+  if (desktop) {
+    await expect(page.getByRole("heading", { name: "Itinerary" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Map" })).toBeVisible();
+    await expect(page.getByTestId("context-inspector")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight)).toBe(true);
+  } else {
+    await expect(page.getByTestId("context-inspector")).toHaveCount(0);
+  }
 });

@@ -1452,3 +1452,29 @@ VALIDATION:
 - Production frontend build: passing
 - Playwright desktop + mobile smoke projects: 2 passing
 
+=== 2026-07-23 — Session 27: No-scroll spatial workspace (Layout D) ===
+
+REQUIREMENT:
+- Replace Layout C because its map-over-itinerary stack requires page scrolling:
+  clicking an itinerary place can leave the synchronized map outside the viewport.
+- Restore the useful single-screen quality with a modern planning workspace, even
+  if the composition is radically different.
+
+IMPLEMENTED:
+- Desktop now uses a fixed `100dvh` spatial planner: itinerary left, persistent
+  dominant map center, and contextual trip/place inspector right.
+- Chat is a collapsible inspector dock. Chat, map, and inspector stay mounted while
+  visually collapsed or while a canvas pane is maximized, preserving local state
+  and Google Maps lifecycle.
+- Removed all three resize separators, pointer/keyboard resize handlers, percentage
+  state, and related localStorage settings.
+- At 768-1199px, details become an overlay inspector so itinerary and map retain
+  useful width. Mobile remains chat-first with its on-demand trip-details sheet.
+- Added component and browser regressions for simultaneous desktop surfaces, no
+  separators, persistent chat mounting, responsive isolation, and no page scroll.
+
+VALIDATION:
+- 15 Vitest/React Testing Library tests: passing
+- Production frontend build: passing
+- Playwright desktop + mobile smoke projects: 2 passing
+

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 const { emptyView, fetchTripViewMock } = vi.hoisted(() => ({
@@ -89,14 +89,30 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
   });
 
-  it("resizes the desktop canvas with arrow keys", () => {
+  it("keeps itinerary, map, and details together without resize separators", async () => {
     setDesktop(true);
     render(<App />);
-    const separator = screen.getByRole("separator", { name: "Resize trip canvas and details" });
 
-    expect(separator).toHaveAttribute("aria-valuenow", "62");
-    fireEvent.keyDown(separator, { key: "ArrowRight" });
-    expect(separator).toHaveAttribute("aria-valuenow", "65");
+    await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("map-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("trip-panel")).toBeInTheDocument();
+    expect(screen.queryAllByRole("separator")).toHaveLength(0);
+  });
+
+  it("keeps one chat mounted while its dock and inspector are collapsed", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
+    fireEvent.click(screen.getByRole("button", { name: "Collapse assistant" }));
+    expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: /Ask the trip assistant/ })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Close details inspector" }));
+    expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: /Details/ }));
+    expect(within(screen.getByTestId("context-inspector")).getByTestId("chat-panel")).toBeInTheDocument();
   });
 
   it("does not reload itinerary data for focus-only navigation", async () => {

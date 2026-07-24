@@ -38,10 +38,13 @@ One codebase, dispatcher in `storage_cosmos.is_enabled()`.
 Reference points: **Airbnb** and **TripAdvisor** (magazine-style travel
 browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 
-- **Layout**: desktop uses a map-first trip canvas (map above itinerary) with
-  a details rail (place details above chat). The three dividers are mouse- and
-  keyboard-resizable; panes can be maximized but do not expose dashboard-style
-  move/hide controls. Mobile mounts chat plus an on-demand trip-details sheet.
+- **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
+  persistent dominant map center, and a contextual details inspector right.
+  Chat is a collapsible dock inside the inspector and stays mounted while
+  hidden. Only panes scroll; the page never does. Map and itinerary can be
+  maximized, but there are no dashboard-style resize/move controls. On narrower
+  desktops the inspector overlays the map on demand. Mobile mounts chat plus an
+  on-demand trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
   active state; teal `accent` for secondary surfaces; ink/muted/surface
   neutrals everywhere else. No rainbow.

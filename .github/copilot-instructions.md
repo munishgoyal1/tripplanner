@@ -106,18 +106,23 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-23)
-- **Frontend reliability + selected Layout C (Session 25)**: desktop now uses
-  a fixed map-over-itinerary canvas beside details-over-chat, with quiet pane
-  headers, maximize, and mouse/keyboard-accessible resize separators. Mobile
-  mounts chat plus the existing on-demand trip-details sheet; desktop and
-  mobile trees are conditionally mounted so duplicate API/chat/map effects
-  cannot run. Trip view requests cancel stale predecessors, map/itinerary keep
-  prior content during refresh with retry states, map-local selection/day state
-  reconciles to fresh data, removing a focused stop clears Details, and chat
-  always exits busy state after HTTP/SSE interruption. Vitest/RTL covers SSE
-  termination and responsive mount isolation; Playwright has mocked desktop +
-  mobile smoke projects. `dev-spa.ps1` now rejects occupied frontend ports
-  instead of silently moving Vite to another port.
+- **No-scroll spatial workspace, Layout D (Session 27)**: desktop is now a
+  fixed `100dvh` planner with itinerary left, a persistent dominant map center,
+  and a contextual details inspector right. Chat is a collapsible dock inside
+  the inspector; map, inspector, and chat remain mounted through collapse and
+  maximize transitions so map/chat state survives. The old three resize
+  separators and percentage/localStorage machinery are gone. At 768-1199px the
+  inspector overlays the canvas instead of squeezing it; mobile keeps chat plus
+  the on-demand trip-details sheet. Only panes scroll, so an itinerary click
+  never sends the map out of view. Frontend validation: 15 Vitest/RTL tests,
+  production build, and Playwright desktop/mobile projects pass.
+- **Frontend reliability foundation (Session 25)**: desktop and mobile trees
+  are conditionally mounted so duplicate API/chat/map effects cannot run. Trip
+  view requests cancel stale predecessors, map/itinerary keep prior content
+  during refresh with retry states, map-local selection/day state reconciles to
+  fresh data, removing a focused stop clears Details, and chat always exits busy
+  state after HTTP/SSE interruption. `dev-spa.ps1` rejects occupied frontend
+  ports instead of silently moving Vite to another port.
 - **Frontend completion pass (Session 26)**: `workspaceState.ts` now owns trip
   identity/revision, chat revision, active place, and itinerary jump state;
   focus-only detail requests no longer reload map/itinerary/saved trips and
