@@ -270,6 +270,7 @@ export async function fetchTripView(focus?: {
 export interface SelectItemOptions {
   start_day?: number;
   end_day?: number;
+  day?: number;
   replace_stay?: boolean;
 }
 

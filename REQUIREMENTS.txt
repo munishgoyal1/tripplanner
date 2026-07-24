@@ -1716,3 +1716,23 @@ VALIDATION:
 - Frontend: 25 tests passing; production build passing.
 - New persistence/storage modules and tests: Ruff passing.
 
+=== 2026-07-24 — Session 37: Map place discovery and exact-day additions ===
+
+REQUIREMENT:
+- Turn the Map's manual place-name field into a useful place discovery flow.
+- Let users browse/search Google map places and choose the itinerary day when
+  adding a newly found stop.
+
+IMPLEMENTED:
+- Added viewport-biased Google Places autocomplete while retaining manual text
+  entry as a fallback.
+- Clicking a labeled native Google POI now selects it as the add-stop candidate.
+- Added Best day plus explicit itinerary-day targeting. Selecting a Map day also
+  seeds the add target; explicit placement is not undone by automatic reflow.
+- Google lodging POIs persist as hotels and restaurant POIs as meal stops.
+
+VALIDATION:
+- Backend: 502 passing; only the known corrupted local `websockets` package
+  metadata check fails.
+- Frontend: 27 tests passing; production build passing.
+

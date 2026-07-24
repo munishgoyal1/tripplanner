@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { placeNameMatches } from "./MapPanel";
+import { kindForGooglePlace, optionsForStopDay, placeNameMatches } from "./MapPanel";
 
 describe("placeNameMatches", () => {
   it("matches exact and canonicalized restaurant names", () => {
@@ -11,5 +11,20 @@ describe("placeNameMatches", () => {
   it("does not match unrelated restaurants or empty names", () => {
     expect(placeNameMatches("Peter Cat", "Mocambo")).toBe(false);
     expect(placeNameMatches("", "Peter Cat")).toBe(false);
+  });
+});
+
+describe("map stop selection", () => {
+  it("infers hotel stops from Google place types", () => {
+    expect(kindForGooglePlace(["lodging", "point_of_interest"])).toBe("hotel");
+    expect(kindForGooglePlace(["restaurant", "food"])).toBe("meal");
+    expect(kindForGooglePlace(["museum", "tourist_attraction"])).toBe("attraction");
+    expect(kindForGooglePlace(undefined)).toBe("attraction");
+  });
+
+  it("passes an explicit day only when selected", () => {
+    expect(optionsForStopDay("auto")).toBeUndefined();
+    expect(optionsForStopDay("2")).toEqual({ day: 2 });
+    expect(optionsForStopDay("0")).toBeUndefined();
   });
 });

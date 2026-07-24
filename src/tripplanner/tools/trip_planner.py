@@ -96,11 +96,15 @@ def _ensure_dirs() -> None:
 
 
 def _is_place_kind(kind: str) -> bool:
-    return kind in {"hotel", "attraction"}
+    return kind in {"hotel", "attraction", "meal"}
 
 
 def _canonical_place_kind(kind: str) -> str:
-    return "hotel" if kind == "hotel" else "attraction"
+    if kind == "hotel":
+        return "hotel"
+    if kind in {"meal", "restaurant"}:
+        return "meal"
+    return "attraction"
 
 
 def _summary_for_place(name: str, destination: str) -> dict[str, Any]:
@@ -394,8 +398,9 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
     return alerts
 
 
-def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str]:
-    placement: dict[str, Any] | None = None
+def _place_selected_stop(
+    plan: dict[str, Any], kind: str, name: str, preferred_day: int | None = None
+) -> list[str]:
     alerts: list[str] = []
     destination = str(plan.get("destination") or "")
     itinerary = plan.get("day_wise_itinerary") or []
@@ -420,24 +425,34 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
             alerts.append(f"{name} is already on Day {day_index + 1}; I refreshed its details.")
             return alerts
 
-    best_idx = 0
-    best_score: float | None = None
-    for idx, day in enumerate(itinerary):
-        if not isinstance(day, dict):
-            continue
-        stats = _day_stats(day, destination)
-        stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-        stop_names = [n for n in (_stop_name(s) for s in stops) if n]
-        score = stats["route_km"] * 2.5 + stats["count"] * 18 + stats["duration_min"] * 0.35
-        if not stop_names:
-            score -= 30
-        if kind == "hotel":
-            # Prefer days that do NOT already have a hotel stop; multiple
-            # hotel adds should spread across the stay, not pile onto one day.
-            score += 45 if any(_stop_kind(s) == "hotel" for s in stops if isinstance(s, dict)) else 0
-        if best_score is None or score < best_score:
-            best_score = score
-            best_idx = idx
+    best_idx = next(
+        (
+            idx
+            for idx, day in enumerate(itinerary)
+            if preferred_day is not None
+            and isinstance(day, dict)
+            and int(day.get("day") or idx + 1) == preferred_day
+        ),
+        0,
+    )
+    if preferred_day is None:
+        best_score: float | None = None
+        for idx, day in enumerate(itinerary):
+            if not isinstance(day, dict):
+                continue
+            stats = _day_stats(day, destination)
+            stops = day.get("stops") if isinstance(day.get("stops"), list) else []
+            stop_names = [n for n in (_stop_name(s) for s in stops) if n]
+            score = stats["route_km"] * 2.5 + stats["count"] * 18 + stats["duration_min"] * 0.35
+            if not stop_names:
+                score -= 30
+            if kind == "hotel":
+                score += 45 if any(
+                    _stop_kind(s) == "hotel" for s in stops if isinstance(s, dict)
+                ) else 0
+            if best_score is None or score < best_score:
+                best_score = score
+                best_idx = idx
 
     day = itinerary[best_idx]
     stops = day.setdefault("stops", []) if isinstance(day, dict) else []
@@ -762,10 +777,12 @@ def add_trip_constraint(note: str) -> bool:
 
 
 @_serialized_mutation
-def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
-    """Add a hotel/attraction to the active trip's selections (UI helper).
+def add_selection(
+    kind: str, item: dict[str, Any], preferred_day: int | None = None
+) -> dict[str, Any]:
+    """Add a hotel, attraction, or meal to the active trip's selections (UI helper).
 
-    ``kind`` is ``"hotel"`` or ``"attraction"``. Deduped by name. Returns a
+    ``kind`` is ``"hotel"``, ``"attraction"``, or ``"meal"``. Deduped by name. Returns a
     result dict with ``ok``, ``alerts`` and the updated ``trip`` snapshot.
     Non-tool: called by the panel's "Add to trip" button, not the LLM.
     """
@@ -783,18 +800,19 @@ def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
     alerts = [f"Added {name} to your trip."]
     placement: dict[str, Any] | None = None
     if _is_place_kind(kind):
-        alerts.extend(_place_selected_stop(plan, kind, name))
+        alerts.extend(_place_selected_stop(plan, kind, name, preferred_day))
         m = re.search(r"Day\s+(\d+)\D+stop\s+(\d+)", " ".join(alerts), re.I)
         if m:
             placement = {"day": int(m.group(1)), "stop": int(m.group(2)), "name": name}
-        if _reflow_unbooked_attractions(plan):
+        if preferred_day is None and _reflow_unbooked_attractions(plan):
             alerts.append("Rebalanced unbooked itinerary stops around the updated trip.")
         canonical_kind = _canonical_place_kind(kind)
         if canonical_kind == "attraction":
             itinerary = plan.get("day_wise_itinerary") or []
             for day_index in range(len(itinerary)):
                 alerts.extend(_rebalance_day(plan, day_index, name, canonical_kind))
-            _reflow_unbooked_attractions(plan)
+            if preferred_day is None:
+                _reflow_unbooked_attractions(plan)
     _save_active_trip(plan)
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 

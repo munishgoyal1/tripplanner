@@ -426,6 +426,55 @@ class TestTripPlanState:
         assert vm.get("time") != ""
         assert vm.get("time") is not None
 
+    def test_add_selection_keeps_explicit_itinerary_day(self, monkeypatch):
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            lambda name, _destination: {
+                "North Stay": {"lat": 15.60, "lng": 73.75},
+                "South Stay": {"lat": 15.20, "lng": 74.00},
+                "North Market": {"lat": 15.59, "lng": 73.76},
+            }.get(name, {}),
+        )
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "North Stay", "kind": "hotel"}]},
+                {"day": 2, "stops": [{"name": "South Stay", "kind": "hotel"}]},
+            ],
+        })})
+
+        result = add_selection(
+            "attraction", {"name": "North Market"}, preferred_day=2
+        )
+
+        assert result["placement"] == {"day": 2, "stop": 2, "name": "North Market"}
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert [stop["name"] for stop in plan["day_wise_itinerary"][0]["stops"]] == [
+            "North Stay"
+        ]
+        assert [stop["name"] for stop in plan["day_wise_itinerary"][1]["stops"]] == [
+            "South Stay",
+            "North Market",
+        ]
+
+    def test_add_selection_places_restaurant_as_meal(self):
+        create_trip_plan.invoke({
+            "destination": "Paris",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-20",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{"day": 1, "stops": []}],
+        })})
+
+        result = add_selection("meal", {"name": "Le Comptoir"}, preferred_day=1)
+
+        assert result["trip"]["day_wise_itinerary"][0]["stops"][0]["kind"] == "meal"
+
     def test_add_hotel_stay_updates_range(self):
         create_trip_plan.invoke({
             "destination": "Goa",

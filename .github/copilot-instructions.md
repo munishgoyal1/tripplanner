@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Map place discovery and exact-day additions (Session 37)**: the map loads
+  the Google Places library for viewport-biased autocomplete and captures
+  labeled native POI clicks as stop candidates. The stop picker targets Best day
+  or an explicit itinerary day; explicit placement bypasses automatic cross-day
+  reflow. Google lodging POIs become hotels, restaurant POIs become meal stops,
+  and manual text entry remains available when Places suggestions are absent.
 - **Persistence and async reliability (Session 36)**: local active-trip,
   history, chat, and Places-cache writes use atomic temporary-file replacement
   with bounded Windows lock retry. Same-process trip mutations serialize per

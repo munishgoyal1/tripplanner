@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchMapView, fetchMapsConfig } from "../api";
+import { Plus } from "lucide-react";
+import { fetchMapView, fetchMapsConfig, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
 
 // Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
@@ -14,14 +15,17 @@ declare global {
 let loaderPromise: Promise<any> | null = null;
 
 function loadGoogleMaps(key: string): Promise<any> {
-  if (window.google?.maps) return Promise.resolve(window.google);
+  if (window.google?.maps?.places) return Promise.resolve(window.google);
+  if (window.google?.maps?.importLibrary) {
+    return window.google.maps.importLibrary("places").then(() => window.google);
+  }
   if (loaderPromise) return loaderPromise;
   loaderPromise = new Promise((resolve, reject) => {
     window.__gmapsReady__ = () => resolve(window.google);
     const s = document.createElement("script");
     s.src =
       `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` +
-      `&callback=__gmapsReady__&v=weekly`;
+      `&callback=__gmapsReady__&libraries=places&loading=async&v=weekly`;
     s.async = true;
     s.onerror = () => {
       loaderPromise = null;
@@ -96,6 +100,17 @@ export function placeNameMatches(candidate: string, focusName: string): boolean 
     || normalizedFocus.includes(normalizedCandidate);
 }
 
+export function kindForGooglePlace(types: string[] | undefined): "attraction" | "hotel" | "meal" {
+  if (types?.some((type) => type === "lodging" || type === "hotel")) return "hotel";
+  if (types?.some((type) => type === "restaurant" || type === "meal_takeaway")) return "meal";
+  return "attraction";
+}
+
+export function optionsForStopDay(day: string): SelectItemOptions | undefined {
+  const parsed = Number(day);
+  return day !== "auto" && Number.isInteger(parsed) && parsed > 0 ? { day: parsed } : undefined;
+}
+
 
 interface Props {
   /** Bump to refetch the map after the trip changes. */
@@ -107,7 +122,7 @@ interface Props {
   /** User selected a day filter and wants the itinerary synced to that day. */
   onDayFocus?: (day: number, place?: MapPin) => void;
   /** Add a place to the trip (from a pin's info window). */
-  onSelect?: (kind: string, name: string) => void;
+  onSelect?: (kind: string, name: string, options?: SelectItemOptions) => void;
   /** Remove a place from the trip (from a pin's info window). */
   onDeselect?: (kind: string, name: string) => void;
 }
@@ -121,16 +136,32 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [newStopName, setNewStopName] = useState("");
-  const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel">("attraction");
+  const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
+  const [newStopDay, setNewStopDay] = useState("auto");
   const [retryToken, setRetryToken] = useState(0);
 
   const mapEl = useRef<HTMLDivElement>(null);
+  const stopInputRef = useRef<HTMLInputElement>(null);
   const mapRef = useRef<any>(null);
+  const autocompleteRef = useRef<any>(null);
+  const autocompleteListenerRef = useRef<any>(null);
+  const mapClickListenerRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
   // A pin the itinerary asked us to zoom into. Applied inside draw() so a
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
+
+  const populateStopFromGooglePlace = useCallback(
+    (place: any) => {
+      const name = String(place?.name || "").trim();
+      if (!name) return;
+      setNewStopName(name);
+      setNewStopKind(kindForGooglePlace(place.types));
+      stopInputRef.current?.focus();
+    },
+    []
+  );
 
   // ---- data + config -------------------------------------------------------
   useEffect(() => {
@@ -185,7 +216,34 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
+          clickableIcons: true,
         });
+        if (stopInputRef.current && google.maps.places?.Autocomplete) {
+          const autocomplete = new google.maps.places.Autocomplete(stopInputRef.current, {
+            fields: ["name", "types"],
+            strictBounds: false,
+          });
+          autocomplete.bindTo("bounds", mapRef.current);
+          autocompleteRef.current = autocomplete;
+          autocompleteListenerRef.current = autocomplete.addListener("place_changed", () => {
+            populateStopFromGooglePlace(autocomplete.getPlace());
+          });
+        }
+        if (google.maps.places?.PlacesService) {
+          const placesService = new google.maps.places.PlacesService(mapRef.current);
+          mapClickListenerRef.current = mapRef.current.addListener("click", (event: any) => {
+            if (!event.placeId) return;
+            event.stop?.();
+            placesService.getDetails(
+              { placeId: event.placeId, fields: ["name", "types"] },
+              (place: any, status: string) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                  populateStopFromGooglePlace(place);
+                }
+              }
+            );
+          });
+        }
         draw();
       })
       .catch(() => {
@@ -197,13 +255,19 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     // `draw` is intentionally omitted: it's called once here to paint the
     // initial overlays, then the dedicated redraw effect keeps it in sync.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, view?.enabled, view?.center]);
+  }, [key, view?.enabled, view?.center, populateStopFromGooglePlace]);
 
   // Drop the stale map instance if the component is torn down, so a remount
   // (e.g. toggling "Show map") rebinds to a fresh container instead of an
   // orphaned, detached node (which renders blank).
   useEffect(() => {
     return () => {
+      autocompleteListenerRef.current?.remove();
+      autocompleteRef.current?.unbindAll?.();
+      mapClickListenerRef.current?.remove();
+      autocompleteListenerRef.current = null;
+      autocompleteRef.current = null;
+      mapClickListenerRef.current = null;
       mapRef.current = null;
     };
   }, []);
@@ -397,8 +461,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   const handleAddStop = () => {
     const name = newStopName.trim();
     if (!name) return;
-    onSelect?.(newStopKind, name);
-    onPinFocus?.(newStopKind, name);
+    onSelect?.(newStopKind, name, optionsForStopDay(newStopDay));
     setNewStopName("");
   };
 
@@ -413,7 +476,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       onDeselect?.(selectedPin.kind, selectedPin.name);
       return;
     }
-    onSelect?.(selectedPin.kind, selectedPin.name);
+    onSelect?.(selectedPin.kind, selectedPin.name, optionsForStopDay(newStopDay));
   };
 
   // ---- render --------------------------------------------------------------
@@ -466,8 +529,10 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
           >
             <option value="attraction">Attraction</option>
             <option value="hotel">Hotel</option>
+            <option value="meal">Restaurant</option>
           </select>
           <input
+            ref={stopInputRef}
             type="text"
             value={newStopName}
             onChange={(e) => setNewStopName(e.target.value)}
@@ -475,15 +540,30 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
               if (e.key === "Enter") handleAddStop();
             }}
             className="min-w-[9rem] flex-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400"
-            placeholder="Add stop from map…"
-            title="Type a place name to add directly to trip"
+            placeholder="Search places on this map…"
+            title="Search Google Maps places near the current map view"
           />
+          {view && view.days.length > 0 && (
+            <select
+              value={newStopDay}
+              onChange={(event) => setNewStopDay(event.target.value)}
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
+              title="Choose which itinerary day receives this stop"
+              aria-label="Add stop to day"
+            >
+              <option value="auto">Best day</option>
+              {view.days.map((day) => (
+                <option key={day.day} value={day.day}>Day {day.day}</option>
+              ))}
+            </select>
+          )}
           <button
             type="button"
             onClick={handleAddStop}
             disabled={!newStopName.trim()}
-            className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
+            <Plus className="h-3.5 w-3.5" aria-hidden />
             Add stop
           </button>
         </div>
@@ -494,7 +574,10 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
-              onClick={() => setActiveDay(null)}
+              onClick={() => {
+                setActiveDay(null);
+                setNewStopDay("auto");
+              }}
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 activeDay === null ? "bg-ink text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
@@ -507,6 +590,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
                 type="button"
                 onClick={() => {
                   setActiveDay(d.day);
+                  setNewStopDay(String(d.day));
                   const dayPins = d.pin_ids
                     .map((id) => view.pins.find((pin) => pin.id === id))
                     .filter((pin): pin is MapPin => !!pin);

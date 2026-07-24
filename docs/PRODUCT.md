@@ -81,6 +81,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   `TBD` meal placeholders. Each day circuit starts at the selected stay,
   includes every geocoded structured stop in itinerary order, and returns to the
   stay at night; repeated places remain part of every day that references them.
+  The Map stop picker searches Google Places within the current map context and
+  also accepts labeled POIs clicked directly on the map. A user can choose the
+  exact itinerary day before adding; that explicit choice takes precedence over
+  automatic cross-day rebalancing. Restaurant POIs persist as meal stops.
 - **Common commands**: itinerary export belongs in the desktop command bar and
   supports photo-rich preview, print/save PDF, direct PDF, and email. The account
   control visibly distinguishes a signed-in identity from a local guest.

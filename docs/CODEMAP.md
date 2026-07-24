@@ -114,7 +114,8 @@ frontend/
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (place focus highlights pins; day focus jumps itinerary
-                           and sends a representative place to Details)
+                           and sends a representative place to Details; Places
+                           autocomplete/native POI clicks add stops to a chosen day)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
@@ -185,9 +186,12 @@ It exports:
   `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
   `GET /trip/map`; the browser key comes from `GET /maps/config`. Rendered by
   [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
-  the Maps JavaScript API and draws geodesic per-day route lines client-side
-  (no billed Directions API). Structured restaurant/meal stops retain their
-  place kind, dedupe by name, and join ordered day circuits.
+  the Maps JavaScript API with the Places library and draws geodesic per-day
+  route lines client-side (no billed Directions API). Its viewport-biased
+  autocomplete and native labeled-POI clicks feed `POST /trip/select`; an
+  optional `day` keeps the new stop on the selected itinerary day. Structured
+  restaurant/meal stops retain their place kind, dedupe by name, and join
+  ordered day circuits.
 - `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
   `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
   booked,selected,color}]}]` + `stats{days,stops,booked}`. `_normalize_stop` /
