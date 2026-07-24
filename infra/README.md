@@ -86,24 +86,26 @@ Notes:
 
 ## Local Development Data Backend
 
-Local SPA development defaults to the shared Azure account's isolated
-`tripplanner-local` database. Configure the backend in the root `.env`:
+Local SPA development defaults to the isolated Docker Cosmos Emulator. To
+explicitly use the shared Azure account's `tripplanner-local` database, set:
 
 ```dotenv
 COSMOS_DEV_BACKEND=azure
 ```
 
 Azure mode resolves the shared account endpoint/key through the signed-in Azure
-CLI at startup and never persists credentials. To use the isolated emulator:
+CLI at startup and never persists credentials. The equivalent one-run override is:
 
 ```powershell
-./scripts/dev-spa.ps1 -CosmosBackend emulator
+./scripts/dev-spa.ps1 -CosmosBackend azure
 ```
 
 The emulator path performs the startup/readiness check and sets the loopback
 endpoint, well-known key, `tripplanner-local`, and `COSMOS_EMULATOR=1` only for
-its backend process. The Azure `tripplanner-local` database has 400 RU/s shared
-throughput; with canary and production, total account provisioned throughput is
+its backend process. Cosmos DB does not permit 200 RU/s manual throughput for a
+shared-throughput database; the minimum is 400 RU/s. The Azure local database
+is not deployed yet, so canary and production remain at 800 RU/s total. If the
+400-RU/s local database is deployed, total provisioned throughput becomes
 1,200 RU/s, 200 RU/s above the lifetime free-tier throughput allowance.
 
 ## Cross-Environment Data Copy

@@ -56,10 +56,10 @@ throughput and unused ACRs are.
 
 ### Local development
 
-- Default to an isolated `tripplanner-local` database in the shared Azure data
-  account, selected by `COSMOS_DEV_BACKEND=azure`.
-- Retain the official Linux-based Azure Cosmos DB Emulator vNext image as the
-  `COSMOS_DEV_BACKEND=emulator` option through repository-owned Docker Compose.
+- Default to the official Linux-based Azure Cosmos DB Emulator vNext image
+  through repository-owned Docker Compose.
+- Keep the shared Azure data account's isolated `tripplanner-local` database as
+  an explicit `COSMOS_DEV_BACKEND=azure` option only.
 - Use the NoSQL gateway endpoint at `https://localhost:8081`, readiness endpoint
   at `http://localhost:8080/ready`, and Data Explorer at
   `https://localhost:1234`.
@@ -84,7 +84,8 @@ throughput and unused ACRs are.
   - `tripplanner-prod`: fixed shared throughput of 400 RU/s.
 - The combined 1,200 RU/s exceeds the account's 1,000 RU/s lifetime free-tier
   provisioned-throughput allowance by 200 RU/s. This is an intentional tradeoff
-  for local/canary/prod database isolation and introduces a small Azure charge.
+  if Azure local persistence is deployed. Until then, the deployed canary and
+  production databases remain at 800 RU/s total.
 - Provision the same containers in each database with partition key `/user_id`:
   `users`, `trips`, `places_cache`, `shared_trips`, `tool_cache`, and
   `audit_events`. Configure `audit_events` default TTL to 7,776,000 seconds.
@@ -97,7 +98,8 @@ throughput and unused ACRs are.
 ### Why 400 RU/s
 
 400 RU/s is the minimum fixed provisioned throughput for a shared-throughput
-database. It cannot be reduced further in provisioned mode. Serverless is an
+database; 200 RU/s is not a valid configuration. It cannot be reduced further
+in provisioned mode. Serverless is an
 account-level capability and cannot be mixed into this provisioned-throughput
 account. Three isolated databases therefore require 1,200 RU/s total.
 

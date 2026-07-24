@@ -4,7 +4,20 @@ import pytest
 from azure.cosmos.exceptions import CosmosHttpResponseError
 
 from tripplanner import storage_cosmos
+from tripplanner.config import Settings
 from tripplanner.storage_cosmos import _client_options
+
+
+def test_cosmos_dev_backend_defaults_to_emulator(monkeypatch) -> None:
+    monkeypatch.delenv("COSMOS_DEV_BACKEND", raising=False)
+
+    assert Settings().cosmos_dev_backend == "emulator"
+
+
+def test_cosmos_dev_backend_allows_explicit_azure(monkeypatch) -> None:
+    monkeypatch.setenv("COSMOS_DEV_BACKEND", "azure")
+
+    assert Settings().cosmos_dev_backend == "azure"
 
 
 def test_emulator_uses_gateway_and_relaxes_tls_for_loopback() -> None:
@@ -36,7 +49,10 @@ def test_emulator_tls_warning_filter_is_limited_to_loopback_urllib3(monkeypatch)
 
     assert captured == {
         "action": "ignore",
-        "message": r"Unverified HTTPS request is being made to host '(?:localhost|127\.0\.0\.1|::1)'\.",
+        "message": (
+            r"Unverified HTTPS request is being made to host "
+            r"'(?:localhost|127\.0\.0\.1|::1)'\."
+        ),
         "category": storage_cosmos.InsecureRequestWarning,
         "module": r"urllib3\.connectionpool",
     }

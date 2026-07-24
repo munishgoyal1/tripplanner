@@ -106,14 +106,19 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Emulator-first local persistence (Session 44)**: local SPA development now
+  defaults to the Docker Cosmos Emulator. Azure `tripplanner-local` requires
+  explicit `COSMOS_DEV_BACKEND=azure` or `-CosmosBackend azure`. Cosmos shared
+  database throughput cannot be 200 RU/s; 400 RU/s is the minimum. The Azure
+  local database remains prepared in IaC but undeployed.
 - **Map-rich consistent exports (Session 43)**: preview, print, direct PDF, and
   email share the photo/map options. Enabled exports embed Google static day
   maps and include hotel, attraction, and restaurant photos plus address,
   rating, notes, time, and booking status. Direct PDF no longer drops the media
   toggles; route diagrams remain the fallback when Static Maps is unavailable.
 - **Configurable local Cosmos backend, prepared only (Session 42)**:
-  `COSMOS_DEV_BACKEND=azure|emulator` defaults to Azure `tripplanner-local`;
-  emulator remains explicit and canary remains a separate override. Bicep adds
+  `COSMOS_DEV_BACKEND=azure|emulator` supports Azure `tripplanner-local` and
+  the emulator while canary remains a separate override. Bicep adds
   the undeployed 400-RU/s local database, taking planned shared throughput to
   1,200 RU/s (200 above free tier). Deployment requires separate approval.
 - **Authoritative Map day placement (Session 41)**: explicit Map additions move

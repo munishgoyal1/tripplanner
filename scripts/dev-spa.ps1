@@ -22,12 +22,12 @@
 #   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
-#   scripts\dev-spa.ps1 -CosmosBackend emulator # isolated Docker emulator
+#   scripts\dev-spa.ps1 -CosmosBackend azure # explicit Azure local database
 #   scripts\dev-spa.ps1 -UseCanaryData # explicitly use hosted canary data
 #
 # Cosmos backend precedence: -CosmosBackend, COSMOS_DEV_BACKEND environment,
-# .env COSMOS_DEV_BACKEND, then the default "azure". Azure mode uses the
-# isolated tripplanner-local database in the shared data account.
+# .env COSMOS_DEV_BACKEND, then the default "emulator". Azure mode explicitly
+# uses the isolated tripplanner-local database in the shared data account.
 #
 # First-time setup:
 #   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev]"
@@ -75,7 +75,7 @@ $configuredCosmosBackend = if ($PSBoundParameters.ContainsKey("CosmosBackend")) 
     $env:COSMOS_DEV_BACKEND.Trim().ToLowerInvariant()
 } else {
     $dotEnvBackend = Get-DotEnvValue -Name "COSMOS_DEV_BACKEND"
-    if ([string]::IsNullOrWhiteSpace($dotEnvBackend)) { "azure" } else { $dotEnvBackend.Trim().ToLowerInvariant() }
+    if ([string]::IsNullOrWhiteSpace($dotEnvBackend)) { "emulator" } else { $dotEnvBackend.Trim().ToLowerInvariant() }
 }
 if ($configuredCosmosBackend -notin @("azure", "emulator")) {
     throw "COSMOS_DEV_BACKEND must be 'azure' or 'emulator'; got '$configuredCosmosBackend'."

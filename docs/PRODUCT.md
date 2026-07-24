@@ -26,8 +26,8 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
 ## 3) Run modes
 
-- **LOCAL**: CLI or React SPA/API; isolated Azure `tripplanner-local` database
-  by default, with the Cosmos Emulator as a config option and JSON fallback for
+- **LOCAL**: CLI or React SPA/API; isolated Cosmos Emulator by default, with
+  Azure `tripplanner-local` as an explicit config option and JSON fallback for
   an unconfigured CLI.
 - **HOSTED**: React SPA via FastAPI on Container Apps; shared free-tier Cosmos
   account with isolated environment databases.

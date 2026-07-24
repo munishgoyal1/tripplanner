@@ -6,7 +6,7 @@ import os
 from functools import lru_cache
 
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
@@ -58,7 +58,9 @@ class Settings(BaseModel):
     cosmos_connection_string: str = os.getenv("COSMOS_CONNECTION_STRING", "")
     cosmos_database: str = os.getenv("COSMOS_DATABASE", "tripplanner")
     cosmos_emulator: bool = os.getenv("COSMOS_EMULATOR", "").strip() == "1"
-    cosmos_dev_backend: str = os.getenv("COSMOS_DEV_BACKEND", "azure").strip().lower()
+    cosmos_dev_backend: str = Field(
+        default_factory=lambda: os.getenv("COSMOS_DEV_BACKEND", "emulator").strip().lower()
+    )
 
     # General
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

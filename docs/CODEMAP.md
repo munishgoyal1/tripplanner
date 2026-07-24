@@ -26,7 +26,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
-- Local Cosmos backend: `COSMOS_DEV_BACKEND=azure|emulator` (default `azure`)
+- Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
 - Cosmos emulator check: `.\infra\start-cosmos-emulator.ps1`
 - Deploy: see [infra/README.md](../infra/README.md)
 

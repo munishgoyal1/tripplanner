@@ -1885,3 +1885,26 @@ VALIDATION:
   metadata check fails.
 - Frontend: 32 tests passing; production build passing.
 
+=== 2026-07-24 — Session 44: Emulator-default local persistence ===
+
+REQUIREMENT:
+- Default every clean local SPA run to the Cosmos Emulator. Use Azure
+  `tripplanner-local` only when explicitly requested through configuration or a
+  command parameter.
+- Investigate whether canary can use 200 RU/s so local can use 400 RU/s while
+  staying within the 1,000-RU/s free-tier allowance.
+
+DECISION:
+- A Cosmos shared-throughput database has a 400-RU/s minimum in manual
+  provisioned mode; 200 RU/s is not valid. Canary and production therefore use
+  the minimum 400 RU/s each. The optional Azure local database would raise the
+  total from 800 to 1,200 RU/s when deployed.
+- Keep the Azure local database prepared but undeployed. Emulator-first local
+  development avoids that added provisioned-throughput cost by default.
+
+IMPLEMENTED:
+- Changed the selector fallback and `.env.example` to `emulator`.
+- `COSMOS_DEV_BACKEND=azure` and `-CosmosBackend azure` are explicit Azure
+  local opt-ins. `-UseCanaryData` remains a separate explicit override.
+- Added regression tests for emulator default and explicit Azure selection.
+
