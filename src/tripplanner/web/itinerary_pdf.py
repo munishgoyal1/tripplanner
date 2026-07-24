@@ -2,13 +2,23 @@
 
 from __future__ import annotations
 
+import base64
+from html import escape
 from io import BytesIO
 from typing import Any
 
-from tripplanner.web import trip_view
+import requests
+
+from tripplanner.web import itinerary_export, places_cache, trip_view
 
 
-def build_itinerary_pdf_bytes(trip: dict[str, Any] | None, *, template: str = "detailed") -> bytes:
+def build_itinerary_pdf_bytes(
+    trip: dict[str, Any] | None,
+    *,
+    template: str = "detailed",
+    include_photos: bool = True,
+    include_map_circuit: bool = True,
+) -> bytes:
     """Build a PDF bytes payload for the active itinerary.
 
     Uses reportlab when available. Caller should catch ImportError and return
@@ -18,9 +28,25 @@ def build_itinerary_pdf_bytes(trip: dict[str, Any] | None, *, template: str = "d
     from reportlab.lib.units import mm
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.utils import ImageReader
     from reportlab.graphics.barcode.qr import QrCodeWidget
     from reportlab.graphics.shapes import Circle, Drawing, PolyLine, String
-    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+    from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
+    def _image_from_source(source: str, width: float, height: float) -> Image | None:
+        try:
+            if source.startswith("data:image/") and ";base64," in source:
+                raw = base64.b64decode(source.split(";base64,", 1)[1])
+            else:
+                response = requests.get(source, timeout=12)
+                response.raise_for_status()
+                raw = response.content
+            ImageReader(BytesIO(raw)).getSize()
+            image = Image(BytesIO(raw), width=width, height=height)
+            image.hAlign = "LEFT"
+            return image
+        except (OSError, ValueError, requests.RequestException):
+            return None
 
     def _route_coords(pin_ids: list[str]) -> list[tuple[float, float]]:
         out: list[tuple[float, float]] = []
@@ -87,7 +113,7 @@ def build_itinerary_pdf_bytes(trip: dict[str, Any] | None, *, template: str = "d
 
     destination = str(trip.get("destination") or "Trip")
     itinerary = trip_view.build_itinerary(trip)
-    map_vm = trip_view.build_map_view(trip)
+    map_vm = trip_view.build_map_view(trip) if include_map_circuit else {"days": [], "pins": []}
     route_by_day = {int(d.get("day") or 0): d for d in (map_vm.get("days") or [])}
     pin_by_id = {p.get("id"): p for p in (map_vm.get("pins") or [])}
 
@@ -108,7 +134,7 @@ def build_itinerary_pdf_bytes(trip: dict[str, Any] | None, *, template: str = "d
         if day.get("summary"):
             story.append(Paragraph(str(day.get("summary")), body))
 
-        route = route_by_day.get(day_num)
+        route = route_by_day.get(day_num) if include_map_circuit else None
         maps_url = str(day.get("google_maps_url") or "")
         if route:
             stats = route.get("route") or {}
@@ -121,8 +147,15 @@ def build_itinerary_pdf_bytes(trip: dict[str, Any] | None, *, template: str = "d
                 f"Route stats: {stats.get('distance_display') or ''} · {stats.get('duration_display') or ''} · {stats.get('mode') or ''}",
                 body,
             ))
+            map_source = itinerary_export._static_map_data_uri(
+                route.get("pin_ids") or [], pin_by_id
+            )
+            map_image = _image_from_source(map_source, 170 * mm, 85 * mm) if map_source else None
             mini_map = _route_drawing(_route_coords(route.get("pin_ids") or []))
-            if mini_map is not None:
+            if map_image is not None:
+                story.append(Spacer(1, 4))
+                story.append(map_image)
+            elif mini_map is not None:
                 story.append(Spacer(1, 4))
                 story.append(mini_map)
 
@@ -135,14 +168,36 @@ def build_itinerary_pdf_bytes(trip: dict[str, Any] | None, *, template: str = "d
                 story.append(qr_img)
                 story.append(Paragraph("Scan to open this day route in Google Maps.", body))
 
-        rows = [["#", "Stop", "Type", "Time", "Status"]]
+        rows = [["#", "Place details", "Type / time", "Status", "Photo"]]
         for i, stop in enumerate(day.get("stops") or [], start=1):
+            name = str(stop.get("name") or "")
+            kind = str(stop.get("kind") or "")
+            place = (
+                places_cache.get_summary(name, destination) or {}
+                if name and kind in {"hotel", "attraction", "meal", "restaurant"}
+                else {}
+            )
+            details = [f"<b>{escape(name)}</b>"]
+            address = str(place.get("address") or "")
+            rating = place.get("rating")
+            note = str(stop.get("note") or "")
+            if address:
+                details.append(escape(address))
+            if isinstance(rating, (int, float)):
+                details.append(f"Rating {rating:g}")
+            if note:
+                details.append(escape(note))
+            photo = None
+            if include_photos and name and kind in {"hotel", "attraction", "meal", "restaurant"}:
+                photos = places_cache.get_photos(name, destination, max_photos=1)
+                if photos:
+                    photo = _image_from_source(photos[0], 34 * mm, 23 * mm)
             rows.append([
                 str(i),
-                str(stop.get("name") or ""),
-                str(stop.get("kind") or "").title(),
-                str(stop.get("time") or ""),
+                Paragraph("<br/>".join(details), body),
+                f"{kind.title()} {str(stop.get('time') or '')}".strip(),
                 "Booked" if stop.get("booked") else "Pending",
+                photo or "",
             ])
         if len(rows) > 1:
             t = Table(rows, repeatRows=1)

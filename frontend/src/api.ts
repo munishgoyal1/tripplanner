@@ -384,6 +384,8 @@ export function tripExportPdfUrl(options: ExportOptions): string {
   const params = new URLSearchParams({
     user_id: getUserId(),
     template: options.template,
+    include_photos: options.include_photos ? "1" : "0",
+    include_map_circuit: options.include_map_circuit ? "1" : "0",
   });
   return `${BASE}/trip/export.pdf?${params.toString()}`;
 }

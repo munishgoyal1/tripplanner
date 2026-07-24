@@ -251,6 +251,13 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
 
 If neither is set, the app falls back to opening a local `mailto:` draft.
 
+### Map-rich itinerary export
+
+Preview, Print / Save PDF, direct PDF, and email exports can include embedded
+day route maps plus place photos and details. The server-side
+`GOOGLE_PLACES_API_KEY` must allow both Places API (New) and Maps Static API;
+the export falls back to the labeled route circuit when Static Maps is unavailable.
+
 ### Google Places API (recommended — adds real ratings & reviews)
 1. Go to [console.cloud.google.com](https://console.cloud.google.com)
 2. Create/select a project → enable **Places API (New)**

@@ -76,8 +76,9 @@ src/tripplanner/
     places_cache.py   Synchronized Google Places cache (ThreadPoolExecutor;
               1-week details TTL + 50-min photo-URL TTL; persisted L2)
     trip_operations.py  Synchronous load/mutate/render operations offloaded by api.py
-    itinerary_export.py  Print-ready HTML export with optional photos, daily route
-              diagrams/links/QR codes, and minimal/detailed/family themes
+    itinerary_export.py  Print-ready HTML export with place photos/details, embedded
+          Google static route maps (circuit fallback), links/QR codes, and themes
+    itinerary_pdf.py     Direct PDF renderer honoring the same photo/map choices
 frontend/
   index.html          Loads Google Fonts via <link> (NOT from CSS)
   vite.config.ts      Dev: proxies /api → :8000

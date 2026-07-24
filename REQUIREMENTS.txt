@@ -1859,3 +1859,29 @@ DEPLOYMENT PENDING:
 - Run updated Azure validation/what-if and obtain explicit deployment approval
   before creating `tripplanner-local`. Until then, use emulator mode locally.
 
+=== 2026-07-24 — Session 43: Map-rich consistent itinerary exports ===
+
+REQUIREMENT:
+- Exported itineraries must include useful map visuals, place images, and place
+  details instead of showing only straight route-circuit lines.
+
+BUG FOUND:
+- HTML exports excluded restaurant photos and used only a coordinate schematic.
+- Direct PDF never loaded place photos or notes and discarded both export media
+  checkboxes because its URL sent only the template.
+
+IMPLEMENTED:
+- Preview, print, and email now embed a Google static day map when available,
+  with the labeled route diagram retained as an offline/API fallback.
+- Hotel, attraction, and restaurant stops include photos, address, rating,
+  itinerary note, time, and booking status.
+- Direct PDF now embeds the same map/place media and honors both export toggles.
+- Image failures degrade to text/circuit output rather than failing the export.
+
+VALIDATION:
+- Configured local server key returned an embedded Google static map image.
+- Export/share regressions: 10 passing; direct PDF image decoding covered.
+- Backend: 510 passing; only the known corrupted local `websockets` package
+  metadata check fails.
+- Frontend: 32 tests passing; production build passing.
+

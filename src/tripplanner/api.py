@@ -706,6 +706,8 @@ async def trip_export_print(
 async def trip_export_pdf(
     user_id: str = "local",
     template: str = "detailed",
+    include_photos: str = "1",
+    include_map_circuit: str = "1",
 ) -> Response:
     """Return a downloadable itinerary PDF generated server-side."""
     from tripplanner.tools import trip_planner
@@ -717,9 +719,15 @@ async def trip_export_pdf(
         return JSONResponse({"error": "no active trip"}, status_code=404)
 
     try:
+        from tripplanner.web.itinerary_export import parse_export_bool
         from tripplanner.web.itinerary_pdf import build_itinerary_pdf_bytes
 
-        pdf_bytes = build_itinerary_pdf_bytes(plan, template=template)
+        pdf_bytes = build_itinerary_pdf_bytes(
+            plan,
+            template=template,
+            include_photos=parse_export_bool(include_photos, default=True),
+            include_map_circuit=parse_export_bool(include_map_circuit, default=True),
+        )
     except ImportError:
         return JSONResponse(
             {

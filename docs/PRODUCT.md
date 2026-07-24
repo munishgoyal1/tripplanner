@@ -90,8 +90,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   the trip unchanged and offers available days, Best day, or unbook-and-retry;
   the Map retains the user's place/day inputs. Restaurant POIs persist as meal stops.
 - **Common commands**: itinerary export belongs in the desktop command bar and
-  supports photo-rich preview, print/save PDF, direct PDF, and email. The account
-  control visibly distinguishes a signed-in identity from a local guest.
+  supports photo-rich preview, print/save PDF, direct PDF, and email. Enabled
+  exports include embedded day route maps plus place photos, address/rating,
+  itinerary notes, time, and booking status; every output path honors the same
+  media toggles. The account control visibly distinguishes a signed-in identity
+  from a local guest.
 - **Mutation coherence**: adding/removing a place or changing the stay refreshes
   the complete itinerary, not only one card. Unbooked attractions redistribute
   around the current hotel anchors using geographic proximity and balanced day

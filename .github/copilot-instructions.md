@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Map-rich consistent exports (Session 43)**: preview, print, direct PDF, and
+  email share the photo/map options. Enabled exports embed Google static day
+  maps and include hotel, attraction, and restaurant photos plus address,
+  rating, notes, time, and booking status. Direct PDF no longer drops the media
+  toggles; route diagrams remain the fallback when Static Maps is unavailable.
 - **Configurable local Cosmos backend, prepared only (Session 42)**:
   `COSMOS_DEV_BACKEND=azure|emulator` defaults to Azure `tripplanner-local`;
   emulator remains explicit and canary remains a separate override. Bicep adds

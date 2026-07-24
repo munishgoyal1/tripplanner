@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import base64
 from html import escape
+import os
 from typing import Any
 from urllib.parse import quote
+
+import requests
 
 from tripplanner.web import places_cache, trip_view
 
@@ -75,6 +79,51 @@ def _qr_image_url(value: str) -> str:
   )
 
 
+def _static_map_data_uri(
+    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
+  ) -> str:
+    key = os.getenv("GOOGLE_PLACES_API_KEY", "").strip()
+    points = [pin_by_id.get(pin_id) or {} for pin_id in pin_ids]
+    coords = [
+      (float(point["lat"]), float(point["lng"]))
+      for point in points
+      if isinstance(point.get("lat"), (int, float))
+      and isinstance(point.get("lng"), (int, float))
+    ]
+    if not key or len(coords) < 2:
+      return ""
+
+    path = "color:0x0369a1ff|weight:4|" + "|".join(
+      f"{lat:.6f},{lng:.6f}" for lat, lng in coords
+    )
+    markers = [
+      f"color:0x0d9488|label:{min(index, 9)}|{lat:.6f},{lng:.6f}"
+      for index, (lat, lng) in enumerate(coords, start=1)
+    ]
+    params: list[tuple[str, str]] = [
+      ("size", "640x320"),
+      ("scale", "2"),
+      ("maptype", "roadmap"),
+      ("path", path),
+      *(("markers", marker) for marker in markers),
+      ("key", key),
+    ]
+    try:
+      response = requests.get(
+        "https://maps.googleapis.com/maps/api/staticmap",
+        params=params,
+        timeout=12,
+      )
+      response.raise_for_status()
+      content_type = response.headers.get("content-type", "image/png").split(";", 1)[0]
+      if not content_type.startswith("image/"):
+        return ""
+      encoded = base64.b64encode(response.content).decode("ascii")
+      return f"data:{content_type};base64,{encoded}"
+    except requests.RequestException:
+      return ""
+
+
 def build_export_html(
     trip: dict[str, Any] | None,
     *,
@@ -119,7 +168,17 @@ def build_export_html(
             note = str(stop.get("note") or "")
             booked = "Booked" if stop.get("booked") else "Pending"
             photo_html = ""
-            if include_photos and kind in {"hotel", "attraction"} and name:
+            place_meta_html = ""
+            if name and kind in {"hotel", "attraction", "meal", "restaurant"}:
+              place = places_cache.get_summary(name, destination) or {}
+              address = str(place.get("address") or "")
+              rating = place.get("rating")
+              details = [address] if address else []
+              if isinstance(rating, (int, float)):
+                details.append(f"Rating {rating:g}")
+              if details:
+                place_meta_html = f"<div class='place-meta'>{_e(' · '.join(details))}</div>"
+            if include_photos and kind in {"hotel", "attraction", "meal", "restaurant"} and name:
                 photos = places_cache.get_photos(name, destination, max_photos=1)
                 if photos:
                     photo_html = (
@@ -131,6 +190,7 @@ def build_export_html(
                   <div class='stop-main'>
                     <div class='stop-line'><span class='ord'>{ord}</span><span class='name'>{name}</span></div>
                     <div class='meta'>{kind}{time_sep}{time} · {booked}</div>
+                        {place_meta}
                     {note_html}
                   </div>
                   {photo}
@@ -143,6 +203,7 @@ def build_export_html(
                     time=_e(time),
                     booked=_e(booked),
                     note_html=(f"<div class='note'>{_e(note)}</div>" if note else ""),
+                    place_meta=place_meta_html,
                     photo=photo_html,
                 )
             )
@@ -158,6 +219,12 @@ def build_export_html(
                 stats = route.get("route") or {}
                 snippet = _route_snippet_svg(
                     _route_points(route.get("pin_ids") or [], pin_by_id)
+                )
+                static_map = _static_map_data_uri(route.get("pin_ids") or [], pin_by_id)
+                map_visual = (
+                  f"<img class='route-map' src='{static_map}' alt='Day {day_num} route map' />"
+                  if static_map
+                  else snippet
                 )
                 maps_link_html = (
                     f"<a class='maps-link' href='{_e(maps_url)}' target='_blank' rel='noreferrer'>"
@@ -179,7 +246,7 @@ def build_export_html(
                 circuit_html = (
                     "<div class='circuit'>"
                     "<div class='circuit-title'>Daily map circuit</div>"
-                    f"{snippet}"
+                    f"{map_visual}"
                     f"<div class='circuit-line'>{circuit}</div>"
                   f"<div class='circuit-stats'>{stats_html}</div>"
                     f"<div class='circuit-actions'>{maps_link_html}{qr_html}</div>"
@@ -267,6 +334,7 @@ def build_export_html(
     .circuit {{ margin:8px 0 10px; background:{circuit_bg}; border:1px solid #bae6fd; border-radius:10px; padding:10px; }}
     .circuit-title {{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#0c4a6e; }}
     .route-svg {{ margin-top:8px; width:100%; max-width:330px; height:auto; }}
+    .route-map {{ display:block; margin-top:8px; width:100%; max-width:640px; height:auto; border-radius:10px; border:1px solid #bae6fd; }}
     .circuit-line {{ margin-top:5px; font-size:14px; color:#0f172a; }}
     .circuit-stats {{ margin-top:5px; font-size:12px; color:#0369a1; }}
     .circuit-actions {{ margin-top:8px; display:flex; align-items:center; gap:10px; }}
@@ -283,6 +351,7 @@ def build_export_html(
     .name {{ font-weight:700; }}
     .meta {{ margin-top:4px; color:var(--muted); font-size:12px; }}
     .note {{ margin-top:6px; color:#334155; font-size:13px; }}
+    .place-meta {{ margin-top:5px; color:#475569; font-size:12px; }}
     .stop-photo-wrap {{ width:120px; flex-shrink:0; }}
     .stop-photo {{ width:120px; height:84px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }}
     .foot {{ margin-top:18px; color:var(--muted); font-size:12px; }}

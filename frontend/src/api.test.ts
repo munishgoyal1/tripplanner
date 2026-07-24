@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchSavedTrips, streamChat, type StreamHandlers } from "./api";
+import { fetchSavedTrips, streamChat, tripExportPdfUrl, type StreamHandlers } from "./api";
 
 function streamResponse(frames: string[], status = 200): Response {
   const encoder = new TextEncoder();
@@ -83,5 +83,22 @@ describe("saved-trip API", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("unavailable", { status: 503 })));
 
     await expect(fetchSavedTrips()).rejects.toThrow("Could not load saved trips (503)");
+  });
+});
+
+describe("PDF export URL", () => {
+  it("forwards photo and map choices", () => {
+    const url = new URL(
+      tripExportPdfUrl({
+        include_photos: false,
+        include_map_circuit: true,
+        template: "family",
+      }),
+      "https://trip.example",
+    );
+
+    expect(url.searchParams.get("include_photos")).toBe("0");
+    expect(url.searchParams.get("include_map_circuit")).toBe("1");
+    expect(url.searchParams.get("template")).toBe("family");
   });
 });
