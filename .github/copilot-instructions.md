@@ -94,7 +94,7 @@ Learns from user preferences and past trips.
 ## Key Architecture
 - `graph.py`: LangGraph StateGraph with agent → tools → agent loop → END
 - No router — single trip agent handles everything
-- Agent: system prompt + 14 tools, bound via `bind_tools()`
+- Agent: system prompt + phase-selected tools, bound via `bind_tools()`
 - Two entrypoints: CLI (`cli.py`) and FastAPI (`api.py`)
 
 ## Working Preferences (from user)
@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Cross-flow reliability cleanup (Session 35)**: automatic itinerary fallback
+  invokes the LangChain tool through `.invoke`, chat-created trip switches clear
+  stale place/day focus before refreshing, and failed New trip requests preserve
+  the current transcript. The filename-only attachment affordance is removed
+  until actual upload/content extraction exists. Canonical docs avoid volatile
+  tool/test counts and align booking terminology with verified handoffs.
 - **Concrete restaurant itinerary stops (Session 34)**: restaurant search is a
   completion gate, not optional enrichment. Substantial days must persist named,
   preference-matched restaurants instead of `TBD` meals. `update_trip_plan`

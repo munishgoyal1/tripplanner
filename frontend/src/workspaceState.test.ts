@@ -38,7 +38,12 @@ describe("workspaceReducer", () => {
   });
 
   it("keeps the general transcript when the first trip is created", () => {
-    const first = workspaceReducer(initialWorkspaceState, {
+    const focused = {
+      ...initialWorkspaceState,
+      activePlace: { kind: "attraction", name: "Louvre Museum" },
+      itineraryJump: { day: 2, name: "Louvre Museum", token: 1 },
+    };
+    const first = workspaceReducer(focused, {
       type: "chat-trip-observed",
       tripId: "paris-1",
     });
@@ -48,6 +53,8 @@ describe("workspaceReducer", () => {
     });
 
     expect(first.chatRevision).toBe(0);
+    expect(first.activePlace).toBeNull();
+    expect(first.itineraryJump).toBeNull();
     expect(switched.chatRevision).toBe(1);
   });
 });

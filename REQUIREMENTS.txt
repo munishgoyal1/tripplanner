@@ -1560,6 +1560,32 @@ VALIDATION:
 - Playwright not run because its configuration starts a dev server; component
   regressions and production compilation cover this milestone without starting one.
 
+=== 2026-07-24 — Session 35: Cross-flow reliability cleanup ===
+
+REQUIREMENT:
+- Audit the entire codebase and core user flows for additional optimizations and
+  implement clear, low-risk reliability improvements without broad redesign.
+
+IMPLEMENTED:
+- Fixed automatic itinerary fallback to invoke `update_trip_plan` through the
+  LangChain tool API instead of silently failing by calling a BaseTool directly.
+- Chat-created trip changes now clear stale place/day focus and refresh the new
+  trip without carrying a place from the previous destination.
+- Failed New trip requests preserve the current transcript and show the error
+  instead of presenting a false fresh-trip state.
+- Removed the attachment button because it transmitted filenames only, not file
+  content; real uploads remain a separate feature requiring extraction/privacy design.
+- Removed volatile tool/test counts and stale booking/React terminology from the
+  canonical product and code map documentation.
+
+VALIDATION:
+- Focused fallback tests: 6 passing.
+- Focused workspace reducer tests: 4 passing.
+- Frontend suite: 25 passing; production build passing.
+- Backend suite: 492 passing. Two environment failures remain: corrupted
+  `websockets` package version metadata and a Windows lock on the test active-trip
+  JSON while the development stack is running.
+
 === 2026-07-24 — Session 33: Popover, pane maximize, and complete map circuits ===
 
 REQUIREMENT:

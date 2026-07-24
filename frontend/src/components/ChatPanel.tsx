@@ -58,14 +58,12 @@ export default function ChatPanel({
   const [googleEnabled, setGoogleEnabled] = useState(false);
   const [auth, setAuth] = useState<AuthSession>({ authenticated: false });
   const [privacyBusy, setPrivacyBusy] = useState(false);
-  const [attachments, setAttachments] = useState<string[]>([]);
   // Guest-import banner: set when sign-in just occurred and the old guest account had data.
   const [guestBanner, setGuestBanner] = useState<{ guestId: string; tripCount: number } | null>(null);
   const [guestMigrating, setGuestMigrating] = useState(false);
     // Becomes true once syncAuth resolves so the transcript effect doesn't
     // race against it and load old guest messages before we know the auth state.
     const [authChecked, setAuthChecked] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
@@ -252,26 +250,27 @@ export default function ChatPanel({
     if (busy) return;
     try {
       await startNewTrip();
-    } catch {
-      /* best-effort; still reset the UI */
+    } catch (error) {
+      setMessages((messages) => [
+        ...messages,
+        {
+          role: "assistant",
+          text: error instanceof Error ? error.message : "Could not start a new trip. Please try again.",
+        },
+      ]);
+      return;
     }
     setMessages([GREETING]);
     setInput("");
-    setAttachments([]);
     onNewTrip?.();
   }
 
   async function send() {
     const text = input.trim();
-    if ((!text && attachments.length === 0) || busy) return;
+    if (!text || busy) return;
     if (listening) stopListening();
-    const note =
-      attachments.length > 0
-        ? `\n\n[attached: ${attachments.join(", ")}]`
-        : "";
-    const outgoing = (text + note).trim();
+    const outgoing = text;
     setInput("");
-    setAttachments([]);
     setBusy(true);
     setMessages((m) => [
       ...m,
@@ -743,47 +742,7 @@ export default function ChatPanel({
       </div>
 
       <div className="border-t border-slate-100 bg-white p-4">
-        {attachments.length > 0 && (
-          <div className="mb-2 flex flex-wrap gap-1">
-            {attachments.map((name, i) => (
-              <span
-                key={i}
-                className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600"
-              >
-                📎 {name}
-                <button
-                  onClick={() => setAttachments((a) => a.filter((_, j) => j !== i))}
-                  className="text-slate-400 hover:text-ink"
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
         <div className="flex items-end gap-2">
-          <input
-            ref={fileRef}
-            type="file"
-            multiple
-            className="hidden"
-            onChange={(e) => {
-              const names = Array.from(e.target.files ?? []).map((f) => f.name);
-              if (names.length) setAttachments((a) => [...a, ...names]);
-              e.target.value = "";
-            }}
-          />
-          <button
-            onClick={() => fileRef.current?.click()}
-            disabled={busy}
-            title="Attach a file"
-            aria-label="Attach a file"
-            className="rounded-full p-2.5 text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink disabled:opacity-40"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-            </svg>
-          </button>
           {micSupported && (
             <button
               onClick={toggleListening}
@@ -821,7 +780,7 @@ export default function ChatPanel({
           />
           <button
             onClick={send}
-            disabled={busy || (!input.trim() && attachments.length === 0)}
+            disabled={busy || !input.trim()}
             className="btn-primary px-5"
           >
             Send

@@ -6,7 +6,7 @@
 
 ## 1) One-paragraph summary
 
-AI-powered trip planner. Single LangGraph trip agent with 25 tools (flights,
+AI-powered trip planner. Single LangGraph trip agent with phase-selected tools (flights,
 hotels, activities, places, web, plan lifecycle, user preferences). One FastAPI
 process (`api.py`) does double duty: serves the API and hosts the built React
 SPA from [frontend/dist](../frontend) at the root. Persistence is the local
@@ -17,25 +17,23 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 
 ## 2) Run / validate (copy-paste)
 
-| Goal             | Command                                                    |
-|------------------|------------------------------------------------------------|
-| Run full stack   | `.\scripts\dev-spa.ps1`                                    |
-| Backend only     | `.\scripts\dev-spa.ps1 -BackendOnly`                       |
-| Frontend only    | `.\scripts\dev-spa.ps1 -FrontendOnly`                      |
-| Verbose backend  | `.\scripts\dev-spa.ps1 -Logs`                              |
-| Tests            | `.\.venv\Scripts\python.exe -m pytest -q`                  |
-| Type-check SPA   | `cd frontend; npx tsc --noEmit`                            |
-| Build SPA        | `cd frontend; npm run build`                               |
-| Frontend tests   | `cd frontend; npm test -- --run`                            |
-| Browser smoke    | `cd frontend; npm run test:e2e`                             |
-| Start/check Cosmos emulator | `.\infra\start-cosmos-emulator.ps1`           |
-| Deploy           | See [infra/README.md](../infra/README.md)                  |
+- Full stack: `.\scripts\dev-spa.ps1`
+- Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
+- Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
+- Verbose backend: `.\scripts\dev-spa.ps1 -Logs`
+- Backend tests: `.\.venv\Scripts\python.exe -m pytest -q`
+- SPA type check: `cd frontend; npx tsc --noEmit`
+- SPA build: `cd frontend; npm run build`
+- Frontend tests: `cd frontend; npm test -- --run`
+- Browser smoke: `cd frontend; npm run test:e2e`
+- Cosmos emulator: `.\infra\start-cosmos-emulator.ps1`
+- Deploy: see [infra/README.md](../infra/README.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
 
 ## 3) Top-level layout
 
-```
+```text
 src/tripplanner/
   api.py              FastAPI app — routes, SSE chat, /api prefix strip, SPA mount
   cli.py              Local CLI entrypoint (no SPA)
@@ -84,7 +82,7 @@ frontend/
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
-    main.tsx          React 18 root
+    main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
           right dock with independently hidden mounted Details/Assistant; no
@@ -135,7 +133,7 @@ scripts/
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
   test.ps1            Legacy (Chainlit era) — do not use
-tests/                pytest (322 tests, ~5s)
+tests/                pytest suite
 docs/
   CODEMAP.md          This file
   dev.md              Dev environment notes
@@ -144,7 +142,7 @@ docs/
 
 ## 4) Request flow (hosted mode)
 
-```
+```text
 Browser (frontend/dist)
   └─ fetch /api/chat/stream  ──▶  FastAPI _strip_api_prefix middleware
                                      ──▶ app.post("/chat/stream")  (api.py)
@@ -270,7 +268,7 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 - **`tsconfig.tsbuildinfo`** is a build artifact (in `frontend/.gitignore`).
   If tsc behaves weirdly after big edits, delete it and re-run.
 
-## 8) Tests (408 passing)
+## 8) Tests
 
 - [tests/test_trip.py](../tests/test_trip.py) — trip lifecycle + selection.
 - [tests/test_trip_view.py](../tests/test_trip_view.py) — view-model shape.

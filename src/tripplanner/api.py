@@ -354,7 +354,7 @@ def _auto_persist_itinerary(reply: str) -> None:
         })
 
     try:
-        _utp(json.dumps({"day_wise_itinerary": days}))
+        _utp.invoke({"updates_json": json.dumps({"day_wise_itinerary": days})})
     except Exception:
         pass  # best-effort; never crash the response path
 

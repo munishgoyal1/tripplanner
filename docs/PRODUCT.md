@@ -9,7 +9,7 @@
 A personal AI trip planner that produces a **complete, bookable** trip — not
 a list of suggestions. Real flights (Duffel), real hotels & activities
 (Amadeus), real ratings & reviews (Google Places), fresh travel content
-(Tavily). Single LangGraph agent with 25 tools. Learns from preferences and
+(Tavily). A single LangGraph agent uses a phase-selected tool set. It learns from preferences and
 past trips and remembers them across devices.
 
 **Target user**: the owner (Munish). One-person product. Optimize for *his*
@@ -18,7 +18,7 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 ## 2) Non-goals (resist scope creep)
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
-- ❌ Booking automation beyond `execute_trip` (we link out; we don't card-charge).
+- ❌ Automated purchasing or card charging (booking remains a verified handoff).
 - ❌ Mobile app. The SPA must work great on a desktop browser first.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
@@ -26,10 +26,10 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
 ## 3) Run modes
 
-| Mode   | UI                     | Persistence              | When                  |
-|--------|------------------------|--------------------------|-----------------------|
-| LOCAL  | CLI or React SPA/API   | Cosmos Emulator (SPA script); JSON fallback | dev |
-| HOSTED | React SPA via FastAPI  | Shared free-tier Cosmos, isolated databases | ACA |
+- **LOCAL**: CLI or React SPA/API; Cosmos Emulator for SPA development with
+  JSON fallback for an unconfigured CLI.
+- **HOSTED**: React SPA via FastAPI on Container Apps; shared free-tier Cosmos
+  account with isolated environment databases.
 
 One codebase, dispatcher in `storage_cosmos.is_enabled()`.
 
@@ -146,7 +146,7 @@ If a redesign violates the above without a stated reason, push back.
   `learned_notes` / `past_trip_mentions` / `interests` / `dislikes` richer.
 - The trip panel is the showroom. Anything that makes it feel more like an
   Airbnb listing page (photos, ratings, reviews, attractions) is on-brand.
-- Booking handoffs (Duffel `execute_trip`) are a future direction; the
+- Booking handoffs through verified provider actions are a future direction; the
   current "finalize → manual booking" loop is fine for now.
 
 ## 9) When this file goes out of date

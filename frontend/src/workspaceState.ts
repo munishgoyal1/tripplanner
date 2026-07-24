@@ -57,6 +57,8 @@ export function workspaceReducer(
         ...state,
         tripId: action.tripId,
         chatRevision: state.tripId ? state.chatRevision + 1 : state.chatRevision,
+        activePlace: null,
+        itineraryJump: null,
       };
     case "jump":
       return { ...state, itineraryJump: action.target };

@@ -296,9 +296,9 @@ export default function App() {
   // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
   // transcript replaces the previous trip's conversation.
   const handleTurnComplete = (tripId?: string) => {
-    refresh();
-    if (!tripId) return;
-    dispatchWorkspace({ type: "chat-trip-observed", tripId });
+    const tripChanged = Boolean(tripId && tripId !== chatTripId);
+    refresh(tripChanged ? null : focus);
+    if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
   };
 
   const focusIndex = focus
