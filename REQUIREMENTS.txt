@@ -1501,3 +1501,31 @@ VALIDATION:
 - Production frontend build: passing
 - Playwright desktop + mobile smoke projects: 2 passing
 
+=== 2026-07-24 — Session 29: Workspace controls and coherent itinerary mutations ===
+
+REQUIREMENT:
+- Keep the saved-trip dropdown above the itinerary instead of clipping/hiding it.
+- Consolidate global controls and useful trip status in the top row.
+- Recalculate the complete itinerary coherently after hotel replacement and
+  place add/remove actions.
+
+IMPLEMENTED:
+- Added a compact workspace command/status bar with saved-trip selection, New
+  trip, Details/Assistant controls, lifecycle, completeness, cost, loading, and
+  latest mutation outcome.
+- Raised the top-row stacking context and added a browser topmost-element check
+  for the saved-trip dropdown.
+- Added deterministic itinerary reflow after hotel and attraction mutations.
+  Unbooked attractions redistribute around current hotels by proximity and
+  balanced day load; booked attractions, hotels, and non-place stops stay fixed.
+- Prevented duplicate hotel stops by refreshing existing itinerary placement.
+- Added backend and frontend regressions for mutation coherence and status.
+
+VALIDATION:
+- Focused trip-state suite: 126 passing
+- Frontend Vitest/React Testing Library: 17 passing
+- Production frontend build: passing
+- Playwright desktop + mobile smoke projects: 2 passing
+- Full backend: 468 passing, 7 unrelated share tests blocked by the pre-existing
+  indentation error in src/tripplanner/web/itinerary_export.py
+

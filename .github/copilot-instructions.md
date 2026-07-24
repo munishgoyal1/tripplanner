@@ -105,7 +105,17 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-23)
+## Current State (last updated 2026-07-24)
+- **Workspace controls + coherent itinerary mutations (Session 29)**: the
+  desktop top row is now a compact command/status bar with saved-trip selection,
+  New trip, Details/Assistant visibility, lifecycle, trip completeness, cost,
+  loading state, and latest mutation outcome. Its dropdown has an explicit
+  workspace-level stacking contract and browser regression. Hotel/place add or
+  remove actions now reflow all unbooked attractions around current hotel
+  anchors by proximity and balanced load; booked attractions, hotels, and
+  non-place stops remain fixed. Duplicate itinerary hotels are refreshed in
+  place rather than inserted again. Validation: 126 focused trip tests, 17
+  frontend tests, production build, and desktop/mobile Playwright pass.
 - **No-scroll spatial workspace, Layout D (Session 27)**: desktop is now a
   fixed `100dvh` planner with itinerary left, a persistent dominant map center,
   and a contextual details inspector right. Chat is a collapsible dock inside

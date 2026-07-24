@@ -31,6 +31,7 @@ vi.mock("./api", () => ({
   importSharedTrip: vi.fn(),
   selectItem: vi.fn(),
   deselectItem: vi.fn(),
+  startNewTrip: vi.fn(),
 }));
 
 vi.mock("./components/ChatPanel", () => ({
@@ -111,6 +112,8 @@ describe("App responsive workspace", () => {
     fireEvent.keyDown(screen.getByRole("separator", { name: "Resize map and details" }), { key: "ArrowLeft" });
     expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "33");
     expect(localStorage.getItem("tripplanner_inspector_pct")).toBe("33");
+    expect(screen.getByRole("navigation", { name: "Workspace controls" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
 
   it("keeps one chat mounted while its dock and inspector are collapsed", async () => {
@@ -155,5 +158,27 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Louvre Museum"));
     expect(fetchTripViewMock.mock.calls[1][0]).toEqual({ kind: "attraction", name: "Louvre Museum" });
     expect(screen.getByText("Louvre Museum")).toBeInTheDocument();
+  });
+
+  it("surfaces lifecycle and completeness status in the workspace command bar", async () => {
+    fetchTripViewMock.mockResolvedValue({
+      ...emptyView,
+      has_trip: true,
+      title: "Goa escape",
+      destination: "Goa",
+      overview: {
+        ...emptyView.overview,
+        destination: "Goa",
+        status: "finalized",
+        counts: { flights: 1, hotels: 1, activities: 4, days: 3 },
+        total_cost_display: "₹45,000",
+      },
+    });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByText("finalized")).toBeInTheDocument());
+    expect(screen.getByText("3d · 1 stay · 4 places")).toBeInTheDocument();
+    expect(screen.getByText("₹45,000")).toBeInTheDocument();
   });
 });

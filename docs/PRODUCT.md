@@ -40,6 +40,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
+  A compact top command bar owns saved-trip selection, global workspace
+  controls, lifecycle/completeness status, total cost, and the latest mutation
+  outcome. Its saved-trip menu must overlay every planner pane.
   Chat is a collapsible dock inside the inspector and stays mounted while
   hidden. Only panes scroll; the page never does. Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
@@ -66,6 +69,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
   Clicking a place stop focuses both its map pin and its contextual Details view.
+- **Mutation coherence**: adding/removing a place or changing the stay refreshes
+  the complete itinerary, not only one card. Unbooked attractions redistribute
+  around the current hotel anchors using geographic proximity and balanced day
+  load; booked attractions, hotels, and non-place stops stay fixed.
 
 If a redesign violates the above without a stated reason, push back.
 

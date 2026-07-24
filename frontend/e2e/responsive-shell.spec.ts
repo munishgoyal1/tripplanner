@@ -49,7 +49,22 @@ test.beforeEach(async ({ page }) => {
         days: [],
         stats: { days: 0, stops: 0, booked: 0 },
       };
-    } else if (path.endsWith("/trips")) body = { trips: [] };
+    } else if (path.endsWith("/trips")) {
+      body = {
+        trips: [{
+          trip_id: "goa_2026-07-01_2026-07-05",
+          destination: "Goa",
+          departure_date: "2026-07-01",
+          return_date: "2026-07-05",
+          status: "draft",
+          total_cost: 0,
+          currency: "INR",
+          counts: { flights: 1, hotels: 1, activities: 3 },
+          updated_at: "2026-07-24T00:00:00",
+          is_active: true,
+        }],
+      };
+    }
     await route.fulfill({ json: body });
   });
 });
@@ -67,6 +82,14 @@ test("mounts exactly one chat workspace", async ({ page }) => {
     await expect(page.getByRole("separator", { name: "Resize itinerary and map" })).toBeVisible();
     await expect(page.getByRole("separator", { name: "Resize map and details" })).toBeVisible();
     await expect(page.getByRole("separator", { name: "Resize details and chat" })).toBeVisible();
+    await page.getByRole("button", { name: /Goa.*1/ }).click();
+    const menu = page.getByTestId("saved-trips-menu");
+    await expect(menu).toBeVisible();
+    expect(await menu.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const topmost = document.elementFromPoint(rect.left + rect.width / 2, rect.top + 12);
+      return topmost === element || element.contains(topmost);
+    })).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight)).toBe(true);
   } else {
     await expect(page.getByTestId("context-inspector")).toHaveCount(0);

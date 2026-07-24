@@ -596,7 +596,8 @@ async def trip_deselect(req: SelectRequest) -> dict:
     set_user_id(req.user_id)
     ok = trip_planner.remove_selection(req.kind, req.name)
     trip = trip_planner.load_active_trip_dict()
-    return {"ok": ok, "view": trip_view.build_view(trip, None)}
+    alerts = [f"Removed {req.name} and refreshed the itinerary."] if ok else []
+    return {"ok": ok, "alerts": alerts, "view": trip_view.build_view(trip, None)}
 
 
 @app.get("/trip/itinerary")

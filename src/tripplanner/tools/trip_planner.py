@@ -360,6 +360,21 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
         )
         return alerts
 
+    summary = _summary_for_place(name, destination)
+    stop_kind = _canonical_place_kind(kind)
+    stop = _make_stop(name, stop_kind, summary)
+    for day_index, day in enumerate(itinerary):
+        stops = day.get("stops") if isinstance(day, dict) and isinstance(day.get("stops"), list) else []
+        for stop_index, raw in enumerate(stops):
+            if _stop_name(raw).lower() != name.lower():
+                continue
+            if isinstance(raw, dict):
+                raw.update(stop)
+            else:
+                stops[stop_index] = stop
+            alerts.append(f"{name} is already on Day {day_index + 1}; I refreshed its details.")
+            return alerts
+
     best_idx = 0
     best_score: float | None = None
     for idx, day in enumerate(itinerary):
@@ -381,18 +396,6 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
 
     day = itinerary[best_idx]
     stops = day.setdefault("stops", []) if isinstance(day, dict) else []
-    summary = _summary_for_place(name, destination)
-    stop_kind = _stop_kind(kind)
-    stop = _make_stop(name, stop_kind, summary)
-
-    for idx, raw in enumerate(stops):
-        if _stop_name(raw).lower() == name.lower():
-            if isinstance(raw, dict):
-                raw.update(stop)
-            else:
-                stops[idx] = stop
-            alerts.append(f"{name} is already on Day {best_idx + 1}; I refreshed its details.")
-            return alerts
 
     insert_at = _closest_insert_index(stops, name, destination)
     if insert_at >= len(stops):
@@ -404,7 +407,6 @@ def _place_selected_stop(plan: dict[str, Any], kind: str, name: str) -> list[str
         stop["time"] = _infer_stop_time(stops, insert_at, stop_kind)
 
     alerts.append(f"I placed {name} on Day {best_idx + 1} in stop {insert_at + 1}.")
-    alerts.extend(_rebalance_day(plan, best_idx, name, stop_kind))
     return alerts
 
 
@@ -424,6 +426,97 @@ def _day_entry_and_stops(itinerary: list[Any], day_num: int) -> tuple[dict[str, 
             entry["stops"] = stops
         return entry, stops
     return None, []
+
+
+def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
+    """Regroup mutable place stops around the current per-day hotel anchors."""
+    itinerary = plan.get("day_wise_itinerary") or []
+    days = [day for day in itinerary if isinstance(day, dict)]
+    if not days:
+        return False
+
+    destination = str(plan.get("destination") or "")
+    movable: list[tuple[int, Any]] = []
+    fixed_by_day: list[list[Any]] = []
+    anchors: list[tuple[float, float] | None] = []
+    for day_index, day in enumerate(days):
+        fixed: list[Any] = []
+        anchor: tuple[float, float] | None = None
+        raw_stops = day.get("stops")
+        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
+        for stop in stops:
+            kind = _stop_kind(stop)
+            booked = isinstance(stop, dict) and bool(stop.get("booked"))
+            if kind == "attraction" and not booked:
+                movable.append((day_index, stop))
+                continue
+            fixed.append(stop)
+            if kind == "hotel" and anchor is None:
+                anchor = _coords_from_summary(
+                    _summary_for_place(_stop_name(stop), destination)
+                )
+        fixed_by_day.append(fixed)
+        anchors.append(anchor)
+
+    if not movable:
+        return False
+
+    stop_coords = {
+        id(stop): _coords_from_summary(_summary_for_place(_stop_name(stop), destination))
+        for _, stop in movable
+    }
+    assignments: list[list[Any]] = [[] for _ in days]
+    target_sizes = [len(movable) // len(days) for _ in days]
+    for index in range(len(movable) % len(days)):
+        target_sizes[index] += 1
+
+    for original_day, stop in movable:
+        coords = stop_coords[id(stop)]
+        available = [index for index, size in enumerate(target_sizes) if len(assignments[index]) < size]
+        if not available:
+            available = list(range(len(days)))
+
+        def score(day_index: int) -> tuple[float, int, int]:
+            anchor = anchors[day_index]
+            if coords and anchor:
+                distance = _haversine_km(coords, anchor)
+            else:
+                distance = abs(day_index - original_day) * 5.0
+            return (distance, len(assignments[day_index]), day_index)
+
+        assignments[min(available, key=score)].append(stop)
+
+    changed = False
+    for day_index, day in enumerate(days):
+        ordered: list[Any] = []
+        remaining = assignments[day_index][:]
+        current = anchors[day_index]
+        while remaining:
+            with_coords = [stop for stop in remaining if stop_coords[id(stop)] is not None]
+            if current is None or not with_coords:
+                ordered.extend(remaining)
+                break
+            next_stop = min(
+                with_coords,
+                key=lambda stop: _haversine_km(current, stop_coords[id(stop)]),  # type: ignore[arg-type]
+            )
+            remaining.remove(next_stop)
+            ordered.append(next_stop)
+            current = stop_coords[id(next_stop)]
+
+        fixed = fixed_by_day[day_index]
+        insert_at = max(
+            (index + 1 for index, stop in enumerate(fixed) if _stop_kind(stop) == "hotel"),
+            default=len(fixed),
+        )
+        next_stops = fixed[:insert_at] + ordered + fixed[insert_at:]
+        previous_names = [_stop_name(stop) for stop in day.get("stops") or []]
+        next_names = [_stop_name(stop) for stop in next_stops]
+        if previous_names != next_names:
+            changed = True
+        day["stops"] = next_stops
+
+    return changed
 
 
 def add_hotel_stay(
@@ -541,6 +634,8 @@ def add_hotel_stay(
             cleaned.append({"name": hotel_name})
         plan["selected_hotels"] = cleaned
 
+    reflowed = _reflow_unbooked_attractions(plan)
+
     first = placements[0] if placements else None
     _save_active_trip(plan)
 
@@ -548,9 +643,12 @@ def add_hotel_stay(
         date_label = f"Day {start}"
     else:
         date_label = f"Days {start}-{end}"
+    alerts = [f"Updated stay: {hotel_name} for {date_label}."]
+    if reflowed:
+        alerts.append("Rebalanced unbooked itinerary stops around the updated stay.")
     return {
         "ok": True,
-        "alerts": [f"Updated stay: {hotel_name} for {date_label}."],
+        "alerts": alerts,
         "trip": plan,
         "placement": first,
         "placements": placements,
@@ -641,6 +739,14 @@ def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
         m = re.search(r"Day\s+(\d+)\D+stop\s+(\d+)", " ".join(alerts), re.I)
         if m:
             placement = {"day": int(m.group(1)), "stop": int(m.group(2)), "name": name}
+        if _reflow_unbooked_attractions(plan):
+            alerts.append("Rebalanced unbooked itinerary stops around the updated trip.")
+        canonical_kind = _canonical_place_kind(kind)
+        if canonical_kind == "attraction":
+            itinerary = plan.get("day_wise_itinerary") or []
+            for day_index in range(len(itinerary)):
+                alerts.extend(_rebalance_day(plan, day_index, name, canonical_kind))
+            _reflow_unbooked_attractions(plan)
     _save_active_trip(plan)
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 
@@ -675,6 +781,7 @@ def remove_selection(kind: str, name: str) -> bool:
             day["stops"] = pruned
             changed = True
     if changed:
+        _reflow_unbooked_attractions(plan)
         _save_active_trip(plan)
     return True
 

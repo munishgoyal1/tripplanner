@@ -1,4 +1,4 @@
-import { Maximize2, MessageCircle, Minimize2, PanelRight, X } from "lucide-react";
+import { Maximize2, MessageCircle, Minimize2, PanelRight, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ItineraryPanel from "./components/ItineraryPanel";
@@ -6,7 +6,7 @@ import MapPanel from "./components/MapPanel";
 import TripPanel from "./components/TripPanel";
 import TripSwitcher from "./components/TripSwitcher";
 import RightRail from "./components/RightRail";
-import { fetchTripView, importSharedTrip, selectItem, deselectItem, type SelectItemOptions } from "./api";
+import { fetchTripView, importSharedTrip, selectItem, deselectItem, startNewTrip, type SelectItemOptions } from "./api";
 import type { TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
@@ -262,6 +262,17 @@ export default function App() {
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
   };
+  const handleStartNewTrip = async () => {
+    try {
+      setActionError(null);
+      await startNewTrip();
+      await handleNewTrip();
+      setInspectorOpen(true);
+      setChatOpen(true);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not start a new trip.");
+    }
+  };
   const handleImported = async () => {
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
@@ -294,6 +305,7 @@ export default function App() {
       const next = await selectItem(kind, name, options);
       if (focus) {
         await refresh(focus);
+        setView((current) => current ? { ...current, alerts: next.alerts } : current);
       } else {
         setView({ ...next.view, alerts: next.alerts });
         setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
@@ -317,6 +329,7 @@ export default function App() {
       const next = await deselectItem(kind, name);
       if (focus) {
         await refresh(focus);
+        setView((current) => current ? { ...current, alerts: next.alerts } : current);
       } else {
         setView({ ...next.view, alerts: next.alerts });
         setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
@@ -533,31 +546,80 @@ export default function App() {
       </button>
     </div>
   ) : null;
+  const latestStatus = view?.alerts?.[view.alerts.length - 1];
+  const statusTone = view?.overview.status === "booked"
+    ? "bg-brand/10 text-brand ring-brand/20"
+    : view?.overview.status === "finalized"
+      ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+      : "bg-slate-100 text-slate-600 ring-slate-200";
 
   return <>
     {errorBanner}
     {isDesktop ? (
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
-        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-slate-100 bg-white/90 px-3 backdrop-blur">
+        <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-slate-100 bg-white/95 px-3 shadow-sm backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
           {view?.overview.destination && (
-            <div className="min-w-0 border-l border-slate-200 pl-3">
+            <div className="hidden min-w-0 border-l border-slate-200 pl-3 lg:block">
               <p className="truncate text-sm font-semibold text-ink">{view.overview.destination}</p>
               <p className="truncate text-[11px] text-slate-500">
                 {[view.overview.departure_date, view.overview.return_date].filter(Boolean).join(" - ")}
               </p>
             </div>
           )}
-          {!inspectorOpen && !maximizedPane && (
+          {view?.has_trip && (
+            <div className="hidden items-center gap-1.5 xl:flex">
+              <span className={`chip capitalize ring-1 ${statusTone}`}>{view.overview.status}</span>
+              <span className="chip bg-white text-slate-600 ring-1 ring-slate-200">
+                {view.overview.counts.days}d · {view.overview.counts.hotels} stay · {view.overview.counts.activities} places
+              </span>
+              {view.overview.total_cost_display && (
+                <span className="chip bg-white font-semibold text-ink ring-1 ring-slate-200">
+                  {view.overview.total_cost_display}
+                </span>
+              )}
+            </div>
+          )}
+          <div className="ml-auto min-w-0" aria-live="polite">
+            {latestStatus ? (
+              <p className="max-w-72 truncate text-xs font-medium text-emerald-700" title={latestStatus}>
+                {latestStatus}
+              </p>
+            ) : loading ? (
+              <p className="text-xs text-slate-400">Refreshing trip…</p>
+            ) : null}
+          </div>
+          <nav className="flex shrink-0 items-center gap-1" aria-label="Workspace controls">
             <button
               type="button"
-              onClick={() => setInspectorOpen(true)}
-              className="btn-ghost ml-auto"
+              onClick={handleStartNewTrip}
+              className="btn-ghost"
+              title="Start a new trip"
             >
-              <PanelRight size={15} aria-hidden /> Details
+              <Plus size={15} aria-hidden /> <span className="hidden xl:inline">New trip</span>
             </button>
-          )}
-          <span className={`${inspectorOpen ? "ml-auto" : ""} text-xs font-medium text-slate-400`}>Spatial planner</span>
+            <button
+              type="button"
+              onClick={() => setInspectorOpen((open) => !open)}
+              className={`btn-ghost ${inspectorOpen ? "bg-slate-100 text-ink" : ""}`}
+              aria-pressed={inspectorOpen}
+              title="Show or hide trip details"
+            >
+              <PanelRight size={15} aria-hidden /> <span className="hidden xl:inline">Details</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setInspectorOpen(true);
+                setChatOpen((open) => !open);
+              }}
+              className={`btn-ghost ${inspectorOpen && chatOpen ? "bg-slate-100 text-ink" : ""}`}
+              aria-pressed={inspectorOpen && chatOpen}
+              title="Show or collapse the trip assistant"
+            >
+              <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
+            </button>
+          </nav>
         </header>
 
         <main

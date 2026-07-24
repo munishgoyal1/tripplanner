@@ -83,7 +83,9 @@ frontend/
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
               details inspector right, and mounted collapsible chat dock; no
-              page scroll. Persistent mouse/keyboard separators resize all
+          page scroll. Top command/status bar owns saved-trip selection,
+          New trip, pane visibility, lifecycle/completeness, cost, and the
+          latest mutation result. Persistent mouse/keyboard separators resize all
               desktop pane splits. Map/itinerary maximize, request cancellation,
               shared map/details place focus. Mobile: chat + on-demand trip-details
               sheet. Only the active responsive shell mounts.
@@ -95,7 +97,8 @@ frontend/
     components/
       ChatPanel.tsx        Sticky header (incl. "New trip" button), bubbles, composer
       TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards
-      TripSwitcher.tsx     Persistent saved-trip switch/delete control
+      TripSwitcher.tsx     Persistent saved-trip switch/delete control; dropdown
+               overlays all workspace panes
       ExportModal.tsx      Print/PDF/email export options and handoff
       RightRail.tsx        Mobile trip-details sheet: TripSwitcher + stacked
                itinerary/photos + opt-in lazy map
@@ -179,6 +182,13 @@ It exports:
   When a trip has no structured `day_wise_itinerary` yet,
   `_itinerary_from_selections` synthesizes a single "Your picks so far" day from
   the selected hotels/activities so the panel is never blank.
+
+UI add/remove actions call `trip_planner.add_selection` / `remove_selection`.
+Every hotel or attraction mutation runs `_reflow_unbooked_attractions`: hotel
+anchors, booked attractions, and non-place stops remain fixed while unbooked
+attractions are reassigned by proximity and balanced day load. The API returns
+the resulting alert so `App.tsx` can show the latest mutation outcome in the
+workspace command bar while refreshing the full trip view.
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.

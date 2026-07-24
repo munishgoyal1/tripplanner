@@ -80,7 +80,7 @@ export default function TripSwitcher({
   const label = active ? active.destination || "Untitled" : "My trips";
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative z-[70] shrink-0">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -94,7 +94,7 @@ export default function TripSwitcher({
         <ChevronDown size={14} aria-hidden />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-30 mt-1.5 max-h-80 w-72 overflow-y-auto rounded-2xl bg-white p-1.5 shadow-pop ring-1 ring-slate-100">
+        <div data-testid="saved-trips-menu" className="absolute left-0 top-full z-[80] mt-1.5 max-h-80 w-72 overflow-y-auto rounded-2xl bg-white p-1.5 shadow-pop ring-1 ring-slate-100">
           {trips.map((trip) => {
             const dates =
               trip.departure_date && trip.return_date

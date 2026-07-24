@@ -414,6 +414,116 @@ class TestTripPlanState:
         assert "Hyatt Goa" in selected
         assert "ITC Goa" not in selected
 
+    def test_hotel_replacement_reflows_unbooked_attractions_by_proximity(self, monkeypatch):
+        coords = {
+            "North Stay": {"lat": 15.60, "lng": 73.75},
+            "South Stay": {"lat": 15.20, "lng": 74.00},
+            "North Beach": {"lat": 15.59, "lng": 73.76},
+            "South Fort": {"lat": 15.21, "lng": 73.99},
+        }
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            lambda name, _destination: coords.get(name, {}),
+        )
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-03",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [
+                    {"name": "North Stay", "kind": "hotel"},
+                    {"name": "South Fort", "kind": "attraction"},
+                ]},
+                {"day": 2, "stops": [
+                    {"name": "South Stay", "kind": "hotel"},
+                    {"name": "North Beach", "kind": "attraction"},
+                ]},
+            ],
+        })})
+
+        result = add_hotel_stay("North Stay", start_day=1, end_day=1, replace_existing=True)
+        assert result["ok"] is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        day1 = [_stop["name"] for _stop in plan["day_wise_itinerary"][0]["stops"]]
+        day2 = [_stop["name"] for _stop in plan["day_wise_itinerary"][1]["stops"]]
+        assert day1 == ["North Stay", "North Beach"]
+        assert day2 == ["South Stay", "South Fort"]
+
+    def test_itinerary_reflow_keeps_booked_attraction_on_its_day(self, monkeypatch):
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            lambda *_args: {"lat": 15.5, "lng": 73.8},
+        )
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-03",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Stay", "kind": "hotel"}]},
+                {"day": 2, "stops": [
+                    {"name": "Booked Tour", "kind": "attraction", "booked": True},
+                    {"name": "Flexible Stop", "kind": "attraction"},
+                ]},
+            ],
+        })})
+
+        add_hotel_stay("New Stay", start_day=1, end_day=2, replace_existing=True)
+        plan = json.loads(get_trip_plan.invoke({}))
+        day2 = plan["day_wise_itinerary"][1]["stops"]
+        assert any(stop.get("name") == "Booked Tour" and stop.get("booked") for stop in day2)
+
+    def test_attraction_add_and_remove_reflow_all_days(self, monkeypatch):
+        coords = {
+            "North Stay": {"lat": 15.60, "lng": 73.75},
+            "South Stay": {"lat": 15.20, "lng": 74.00},
+            "North Beach": {"lat": 15.59, "lng": 73.76},
+            "North Market": {"lat": 15.58, "lng": 73.77},
+            "South Fort": {"lat": 15.21, "lng": 73.99},
+        }
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            lambda name, _destination: coords.get(name, {}),
+        )
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-03",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [
+                {"name": "North Beach"},
+                {"name": "South Fort"},
+            ],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [
+                    {"name": "North Stay", "kind": "hotel"},
+                    {"name": "South Fort", "kind": "attraction"},
+                ]},
+                {"day": 2, "stops": [
+                    {"name": "South Stay", "kind": "hotel"},
+                    {"name": "North Beach", "kind": "attraction"},
+                ]},
+            ],
+        })})
+
+        add_selection("attraction", {"name": "North Market"})
+        plan = json.loads(get_trip_plan.invoke({}))
+        day1_names = [_stop["name"] for _stop in plan["day_wise_itinerary"][0]["stops"]]
+        day2_names = [_stop["name"] for _stop in plan["day_wise_itinerary"][1]["stops"]]
+        assert day1_names == ["North Stay", "North Beach", "North Market"]
+        assert day2_names == ["South Stay", "South Fort"]
+
+        assert remove_selection("attraction", "North Beach") is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        day1_names = [_stop["name"] for _stop in plan["day_wise_itinerary"][0]["stops"]]
+        day2_names = [_stop["name"] for _stop in plan["day_wise_itinerary"][1]["stops"]]
+        assert day1_names == ["North Stay", "North Market"]
+        assert day2_names == ["South Stay", "South Fort"]
+
     def test_add_second_hotel_spreads_instead_of_refreshing_first(self):
         create_trip_plan.invoke({
             "destination": "Goa",
