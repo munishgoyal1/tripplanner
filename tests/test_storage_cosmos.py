@@ -23,6 +23,25 @@ def test_hosted_client_keeps_sdk_security_defaults() -> None:
     assert _client_options("https://tripplanner.documents.azure.com", emulator=False) == {}
 
 
+def test_emulator_tls_warning_filter_is_limited_to_loopback_urllib3(monkeypatch) -> None:
+    captured = {}
+
+    def capture_filter(action, **kwargs):
+        captured["action"] = action
+        captured.update(kwargs)
+
+    monkeypatch.setattr(storage_cosmos.warnings, "filterwarnings", capture_filter)
+
+    storage_cosmos._suppress_emulator_tls_warning()
+
+    assert captured == {
+        "action": "ignore",
+        "message": r"Unverified HTTPS request is being made to host '(?:localhost|127\.0\.0\.1|::1)'\.",
+        "category": storage_cosmos.InsecureRequestWarning,
+        "module": r"urllib3\.connectionpool",
+    }
+
+
 def test_versioned_read_keeps_etag_out_of_application_body(monkeypatch) -> None:
     class FakeContainer:
         def read_item(self, *, item, partition_key):

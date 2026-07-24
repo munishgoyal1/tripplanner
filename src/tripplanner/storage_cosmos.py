@@ -15,9 +15,12 @@ Designed for the Cosmos Free Tier (1000 RU/s, 25 GB free per subscription).
 from __future__ import annotations
 
 import copy
+import warnings
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlparse
+
+from urllib3.exceptions import InsecureRequestWarning
 
 from tripplanner.config import get_settings
 
@@ -49,6 +52,15 @@ def _client_options(endpoint: str, emulator: bool) -> dict[str, Any]:
     return {"connection_mode": "Gateway", "connection_verify": False}
 
 
+def _suppress_emulator_tls_warning() -> None:
+    warnings.filterwarnings(
+        "ignore",
+        message=r"Unverified HTTPS request is being made to host '(?:localhost|127\.0\.0\.1|::1)'\.",
+        category=InsecureRequestWarning,
+        module=r"urllib3\.connectionpool",
+    )
+
+
 def is_enabled() -> bool:
     """True when the Cosmos backend is configured. Cheap (no network)."""
     s = get_settings()
@@ -65,6 +77,8 @@ def _client_singleton():
 
     s = get_settings()
     client_options = _client_options(s.cosmos_endpoint, s.cosmos_emulator)
+    if s.cosmos_emulator:
+        _suppress_emulator_tls_warning()
     if s.cosmos_connection_string:
         _client = CosmosClient.from_connection_string(
             s.cosmos_connection_string, **client_options
