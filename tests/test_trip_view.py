@@ -80,6 +80,7 @@ def test_build_view_overview_and_items() -> None:
     assert view["has_trip"] is True
     assert view["destination"] == "Goa"
     assert view["is_fallback"] is False
+    assert view["available_days"] == [1, 2]
     o = view["overview"]
     assert o["counts"] == {"flights": 1, "hotels": 1, "activities": 1, "days": 2}
     assert o["total_cost_display"] == "\u20b982,000"
@@ -314,6 +315,7 @@ def test_map_view_pins_have_coords_and_days(_map_geo: None) -> None:
     }
     mv = trip_view.build_map_view(trip)
     assert mv["enabled"] is True
+    assert mv["available_days"] == [1, 2]
     assert mv["center"] is not None
     by_name = {p["name"]: p for p in mv["pins"]}
     # every pin carries coordinates

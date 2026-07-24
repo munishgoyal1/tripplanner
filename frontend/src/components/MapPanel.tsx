@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
+import PlaceTripActions from "./PlaceTripActions";
 
 // Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
 // `any` for the map objects. The browser key is referrer-restricted server-side.
@@ -142,8 +143,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   const [error, setError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null); // null = all days
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
-  const [removeMenuOpen, setRemoveMenuOpen] = useState(false);
-  const [removing, setRemoving] = useState(false);
   const [newStopName, setNewStopName] = useState("");
   const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
   const [newStopDay, setNewStopDay] = useState("auto");
@@ -359,7 +358,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
           onPinFocus?.(p.kind, p.name, occurrence?.day, occurrence?.stop);
         }
         setSelectedPin(p);
-        setRemoveMenuOpen(false);
       });
       overlaysRef.current.push(marker);
       bounds.extend({ lat: p.lat, lng: p.lng });
@@ -382,7 +380,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       });
       marker.addListener("click", () => {
         setSelectedPin(a);
-        setRemoveMenuOpen(false);
       });
       overlaysRef.current.push(marker);
       // Only include airport in bounds when viewing all days (for context);
@@ -463,11 +460,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusName, view]);
 
-  useEffect(() => {
-    setRemoveMenuOpen(false);
-    setRemoving(false);
-  }, [selectedPin?.id]);
-
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
     return !!p && !isAirportTarget(p);
   };
@@ -488,12 +480,8 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     }
   };
 
-  const handleToggleSelected = async () => {
+  const handleAddSelected = async () => {
     if (!isPlacePin(selectedPin)) return;
-    if (selectedPin.selected) {
-      setRemoveMenuOpen((open) => !open);
-      return;
-    }
     setAddingStop(true);
     try {
       await onSelect?.(
@@ -503,17 +491,6 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       );
     } finally {
       setAddingStop(false);
-    }
-  };
-
-  const removeSelected = async (options: DeselectItemOptions) => {
-    if (!isPlacePin(selectedPin)) return;
-    setRemoving(true);
-    try {
-      await onDeselect?.(selectedPin.kind, selectedPin.name, options);
-      setRemoveMenuOpen(false);
-    } finally {
-      setRemoving(false);
     }
   };
 
@@ -711,66 +688,26 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
                 >
                   Open details
                 </button>
-                <div className="relative">
+                {selectedPin.selected ? (
+                  <PlaceTripActions
+                    kind={selectedPin.kind}
+                    name={selectedPin.name}
+                    occurrences={selectedPin.occurrences}
+                    availableDays={view?.available_days ?? []}
+                    preferredDay={activeDay ?? selectedPin.day}
+                    onMove={onSelect ?? (() => {})}
+                    onRemove={onDeselect ?? (() => {})}
+                  />
+                ) : (
                   <button
                     type="button"
-                    onClick={handleToggleSelected}
-                    disabled={removing}
-                    aria-expanded={selectedPin.selected ? removeMenuOpen : undefined}
-                    aria-haspopup={selectedPin.selected ? "menu" : undefined}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                      selectedPin.selected
-                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                        : "bg-brand text-white"
-                    }`}
+                    onClick={handleAddSelected}
+                    disabled={addingStop}
+                    className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
                   >
-                    {removing ? "Removing…" : selectedPin.selected ? "✓ In trip" : "+ Add to trip"}
+                    {addingStop ? "Adding…" : "+ Add to trip"}
                   </button>
-                  {selectedPin.selected && removeMenuOpen && (
-                    <div
-                      role="menu"
-                      className="absolute right-0 top-full z-30 mt-2 w-60 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-pop"
-                    >
-                      {[...selectedPin.occurrences]
-                        .sort((left, right) => {
-                          const preferredDay = activeDay ?? selectedPin.day;
-                          if (left.day === preferredDay) return -1;
-                          if (right.day === preferredDay) return 1;
-                          return left.day - right.day || left.stop - right.stop;
-                        })
-                        .map((occurrence, index) => (
-                          <button
-                            key={`${occurrence.day}:${occurrence.stop}`}
-                            type="button"
-                            role="menuitem"
-                            disabled={removing}
-                            onClick={() => void removeSelected({
-                              day: occurrence.day,
-                              stop: occurrence.stop,
-                              all_occurrences: false,
-                            })}
-                            className="block w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                          >
-                            {index === 0 && occurrence.day === (activeDay ?? selectedPin.day)
-                              ? "Remove this occurrence"
-                              : `Remove from Day ${occurrence.day}`}
-                            <span className="mt-0.5 block text-[11px] text-slate-400">
-                              Day {occurrence.day}{occurrence.time ? ` · ${occurrence.time}` : ""}
-                            </span>
-                          </button>
-                        ))}
-                      <button
-                        type="button"
-                        role="menuitem"
-                        disabled={removing}
-                        onClick={() => void removeSelected({ all_occurrences: true })}
-                        className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
-                      >
-                        <Trash2 size={13} aria-hidden /> Remove everywhere
-                      </button>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             ) : (
               <p className="mt-2 text-xs text-slate-500">Arrival airport context pin</p>

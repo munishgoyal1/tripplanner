@@ -271,6 +271,8 @@ export interface SelectItemOptions {
   start_day?: number;
   end_day?: number;
   day?: number;
+  source_day?: number;
+  source_stop?: number;
   replace_stay?: boolean;
 }
 

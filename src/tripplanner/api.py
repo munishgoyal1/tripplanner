@@ -170,6 +170,8 @@ class SelectRequest(BaseModel):
     start_day: int | None = None
     end_day: int | None = None
     day: int | None = None
+    source_day: int | None = None
+    source_stop: int | None = None
     replace_stay: bool = True
 
 
@@ -578,6 +580,8 @@ async def trip_select(req: SelectRequest) -> dict:
         start_day=req.start_day,
         end_day=req.end_day,
         day=req.day,
+        source_day=req.source_day,
+        source_stop=req.source_stop,
         replace_stay=req.replace_stay,
     )
 

@@ -25,6 +25,8 @@ def select(
     start_day: int | None = None,
     end_day: int | None = None,
     day: int | None = None,
+    source_day: int | None = None,
+    source_stop: int | None = None,
     replace_stay: bool = False,
 ) -> dict[str, Any]:
     if kind == "hotel" and (start_day is not None or end_day is not None):
@@ -35,7 +37,13 @@ def select(
             replace_existing=replace_stay,
         )
     else:
-        result = trip_planner.add_selection(kind, {"name": name}, preferred_day=day)
+        result = trip_planner.add_selection(
+            kind,
+            {"name": name},
+            preferred_day=day,
+            source_day=source_day,
+            source_stop=source_stop,
+        )
     trip = result.get("trip") or trip_planner.load_active_trip_dict()
     focus_kind = "hotel" if kind == "hotel" else "attraction"
     view = trip_view.build_view(trip, {"kind": focus_kind, "name": name})

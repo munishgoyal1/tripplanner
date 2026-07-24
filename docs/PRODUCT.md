@@ -92,7 +92,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   automatic cross-day rebalancing, including when the place already exists on
   another day. A genuinely unavailable day or booked-occurrence conflict leaves
   the trip unchanged and offers available days, Best day, or unbook-and-retry;
-  the Map retains the user's place/day inputs. Restaurant POIs persist as meal stops.
+  the Map retains the user's place/day inputs. After adding a non-hotel place,
+  both Details and Map show its current day and let the user move it to any
+  authoritative itinerary day. Restaurant POIs persist as meal stops.
 - **Common commands**: itinerary export belongs in the desktop command bar and
   supports photo-rich preview, print/save PDF, direct PDF, and email. Enabled
   exports include embedded day route maps plus place photos, address/rating,
@@ -109,10 +111,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   that changed place focused in Details, with the opposite action immediately
   available so the decision is easy to reverse. Repeated itinerary places are
   occurrence-aware: a row action removes that exact day/stop, while Details and
-  Map expose an in-context menu for one occurrence or every occurrence. This
-  choice never depends on Assistant being visible. Every visible In trip pill
-  is actionable: a single occurrence removes directly, while repeated places
-  open the occurrence choices.
+  Map use the same selected-place control for day moves and removal. The normal
+  single occurrence shows its current day, offers Change day, and removes
+  directly. Rare repeated places expose each visit separately plus Remove
+  everywhere; a visit cannot move onto a day already containing that place.
+  Hotels retain stay-range semantics instead of attraction-style single-day
+  moves. These choices never depend on Assistant being visible.
 - **Mutation status**: the latest update sits near the trip identity in a
   flexible command-bar region. Routine add/remove/reflow messages stay concise;
   the region wraps when space is tight instead of clipping the update.

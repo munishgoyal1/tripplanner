@@ -106,6 +106,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Consistent place actions + Change day (Session 48)**: Details and Map use
+  one shared selected-place control. Normal non-hotel places show their current
+  day and can move to an authoritative itinerary day using exact source
+  occurrence identity; removal remains direct. Rare repeated visits are managed
+  individually or everywhere and cannot collide on one day. Hotels retain
+  stay-range semantics. Validation: 518 backend tests, 39 frontend tests, and
+  production build pass.
 - **iOS-first mobile goal (Session 47)**: mobile is now an explicit product POC,
   beginning with an iPhone-testable React Native/Expo app and Android next. The
   mobile clients reuse the authoritative FastAPI/LangGraph backend, persistence,

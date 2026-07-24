@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarPlus, ChevronDown, ChevronLeft, ChevronRight, FileDown, Link2, Trash2 } from "lucide-react";
+import { ArrowLeft, CalendarPlus, ChevronLeft, ChevronRight, FileDown, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   shareActiveTrip,
@@ -10,6 +10,7 @@ import type { Budget, TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
 import ExportModal from "./ExportModal";
 import Lightbox from "./Lightbox";
+import PlaceTripActions from "./PlaceTripActions";
 import TripSwitcher from "./TripSwitcher";
 
 interface NavRef {
@@ -129,12 +130,17 @@ function ItemCard({
   onHotelStay,
   onDeselect,
   focusContext,
+  availableDays,
   onOpenPhoto,
 }: {
   item: TripItem;
   focused: boolean;
   onFocus: (kind: string, name: string) => void;
-  onSelect: (kind: string, name: string) => void | Promise<boolean>;
+  onSelect: (
+    kind: string,
+    name: string,
+    options?: SelectItemOptions,
+  ) => void | Promise<boolean>;
   onHotelStay: (name: string) => void;
   onDeselect: (
     kind: string,
@@ -142,37 +148,12 @@ function ItemCard({
     options?: DeselectItemOptions,
   ) => void | Promise<boolean>;
   focusContext?: { day?: number; stop?: number } | null;
+  availableDays: number[];
   onOpenPhoto: (photos: string[], index: number, alt: string) => void;
 }) {
   const icon = ICONS[item.kind] ?? "\u{1F4CD}";
   const photos = item.photos;
   const heroHeight = focused ? "h-72" : "h-52";
-  const [removeMenuOpen, setRemoveMenuOpen] = useState(false);
-  const [removingKey, setRemovingKey] = useState<string | null>(null);
-  const contextOccurrence = item.occurrences.find(
-    (occurrence) =>
-      occurrence.day === focusContext?.day &&
-      (focusContext?.stop == null || occurrence.stop === focusContext.stop),
-  );
-  const orderedOccurrences = contextOccurrence
-    ? [contextOccurrence, ...item.occurrences.filter((occurrence) => occurrence !== contextOccurrence)]
-    : item.occurrences;
-  const remove = async (options: DeselectItemOptions, key: string) => {
-    setRemovingKey(key);
-    try {
-      await onDeselect(item.kind, item.name, options);
-      setRemoveMenuOpen(false);
-    } finally {
-      setRemovingKey(null);
-    }
-  };
-  const onInTripClick = () => {
-    if (item.occurrences.length <= 1) {
-      void remove({ all_occurrences: true }, "all");
-      return;
-    }
-    setRemoveMenuOpen((open) => !open);
-  };
   return (
     <article className="card card-hover group">
       {photos.length > 0 ? (
@@ -190,18 +171,6 @@ function ItemCard({
             {icon}
             <span className="capitalize">{item.kind === "attraction" ? "activity" : item.kind}</span>
           </span>
-
-          {item.selected && (
-            <button
-              type="button"
-              disabled={removingKey != null}
-              onClick={onInTripClick}
-              aria-label={`Remove ${item.name} from trip`}
-              className="pill absolute right-3 top-3 bg-emerald-500/95 text-white shadow-sm backdrop-blur transition hover:bg-emerald-600 disabled:opacity-60"
-            >
-              ✓ In trip
-            </button>
-          )}
 
           {photos.length > 1 && (
             <button
@@ -276,61 +245,15 @@ function ItemCard({
 
           {isSelectable(item.kind) &&
             (item.selected ? (
-              <div className="relative">
-                <button
-                  type="button"
-                  disabled={removingKey != null}
-                  onClick={onInTripClick}
-                  aria-expanded={removeMenuOpen}
-                  aria-haspopup="menu"
-                  className="inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-emerald-100"
-                >
-                  ✓ In trip <ChevronDown size={13} aria-hidden />
-                </button>
-                {removeMenuOpen && (
-                  <div
-                    role="menu"
-                    className="absolute bottom-full left-0 z-30 mb-2 w-64 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-pop"
-                  >
-                    {orderedOccurrences.map((occurrence) => {
-                      const key = `${occurrence.day}:${occurrence.stop}`;
-                      const isContext = occurrence === contextOccurrence;
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          role="menuitem"
-                          disabled={removingKey != null}
-                          onClick={() => void remove({
-                            day: occurrence.day,
-                            stop: occurrence.stop,
-                            all_occurrences: false,
-                          }, key)}
-                          className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                        >
-                          <span>
-                            {isContext ? "Remove this occurrence" : `Remove from Day ${occurrence.day}`}
-                            <span className="mt-0.5 block text-[11px] text-slate-400">
-                              Day {occurrence.day}{occurrence.time ? ` · ${occurrence.time}` : ""}
-                            </span>
-                          </span>
-                          {removingKey === key && <span>Removing…</span>}
-                        </button>
-                      );
-                    })}
-                    <button
-                      type="button"
-                      role="menuitem"
-                      disabled={removingKey != null}
-                      onClick={() => void remove({ all_occurrences: true }, "all")}
-                      className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
-                    >
-                      <Trash2 size={13} aria-hidden />
-                      {removingKey === "all" ? "Removing…" : "Remove everywhere"}
-                    </button>
-                  </div>
-                )}
-              </div>
+              <PlaceTripActions
+                kind={item.kind}
+                name={item.name}
+                occurrences={item.occurrences}
+                availableDays={availableDays}
+                preferredDay={focusContext?.day}
+                onMove={onSelect}
+                onRemove={onDeselect}
+              />
             ) : (
               <button
                 onClick={() =>
@@ -725,6 +648,7 @@ export default function TripPanel({
                 onHotelStay={(name) => setPendingHotel(name)}
                 onDeselect={onDeselect}
                 focusContext={focusContext}
+                availableDays={view.available_days}
                 onOpenPhoto={openPhoto}
               />
             ))

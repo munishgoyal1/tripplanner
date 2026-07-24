@@ -557,6 +557,65 @@ class TestTripPlanState:
         assert result["placement"]["day"] == 1
         assert result["trip"]["day_wise_itinerary"][1]["stops"] == []
 
+    def test_explicit_day_moves_only_requested_repeated_occurrence(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-22",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [{"name": "North Market"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "North Market", "kind": "attraction"}]},
+                {"day": 2, "stops": [{"name": "North Market", "kind": "attraction"}]},
+                {"day": 3, "stops": []},
+            ],
+        })})
+
+        result = add_selection(
+            "attraction",
+            {"name": "North Market"},
+            preferred_day=3,
+            source_day=2,
+            source_stop=1,
+        )
+
+        assert result["ok"] is True
+        assert result["placement"]["day"] == 3
+        assert result["trip"]["day_wise_itinerary"][0]["stops"][0]["name"] == "North Market"
+        assert result["trip"]["day_wise_itinerary"][1]["stops"] == []
+        assert result["trip"]["day_wise_itinerary"][2]["stops"][0]["name"] == "North Market"
+
+    def test_explicit_day_rejects_repeated_occurrence_collision(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-22",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [{"name": "North Market"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "North Market", "kind": "attraction"}]},
+                {"day": 2, "stops": [{"name": "North Market", "kind": "attraction"}]},
+            ],
+        })})
+
+        result = add_selection(
+            "attraction",
+            {"name": "North Market"},
+            preferred_day=1,
+            source_day=2,
+            source_stop=1,
+        )
+
+        assert result["ok"] is False
+        assert result["alerts"] == ["North Market is already on Day 1. Choose a different day."]
+        assert [
+            stop["name"]
+            for day in result["trip"]["day_wise_itinerary"]
+            for stop in day["stops"]
+        ] == ["North Market", "North Market"]
+
     def test_explicit_unavailable_day_returns_alternatives_without_saving(self):
         create_trip_plan.invoke({
             "destination": "Goa",

@@ -399,7 +399,12 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
 
 
 def _place_selected_stop(
-    plan: dict[str, Any], kind: str, name: str, preferred_day: int | None = None
+    plan: dict[str, Any],
+    kind: str,
+    name: str,
+    preferred_day: int | None = None,
+    source_day: int | None = None,
+    source_stop: int | None = None,
 ) -> tuple[list[str], dict[str, Any] | None, bool]:
     alerts: list[str] = []
     destination = str(plan.get("destination") or "")
@@ -438,13 +443,25 @@ def _place_selected_stop(
     existing: tuple[int, int, Any] | None = None
     for day_index, day in enumerate(itinerary):
         stops = day.get("stops") if isinstance(day, dict) and isinstance(day.get("stops"), list) else []
+        logical_day = int(day.get("day") or day_index + 1) if isinstance(day, dict) else day_index + 1
         for stop_index, raw in enumerate(stops):
             if _stop_name(raw).lower() != name.lower():
+                continue
+            if source_day is not None and logical_day != source_day:
+                continue
+            if source_stop is not None and stop_index + 1 != source_stop:
                 continue
             existing = (day_index, stop_index, raw)
             break
         if existing:
             break
+
+    if (source_day is not None or source_stop is not None) and existing is None:
+        return (
+            [f"That {name} occurrence changed before it could be moved. Refresh and choose it again."],
+            None,
+            False,
+        )
 
     if existing:
         existing_day_idx, existing_stop_idx, raw = existing
@@ -470,6 +487,18 @@ def _place_selected_stop(
                 [
                     f"{name} is booked on Day {existing_day_num}, so I did not move it to Day {preferred_day}. Keep Day {existing_day_num}, or unbook it and choose Day {preferred_day} again."
                 ],
+                None,
+                False,
+            )
+        target_day = itinerary[requested_idx]
+        target_stops = (
+            target_day.get("stops")
+            if isinstance(target_day, dict) and isinstance(target_day.get("stops"), list)
+            else []
+        )
+        if any(_stop_name(candidate).lower() == name.lower() for candidate in target_stops):
+            return (
+                [f"{name} is already on Day {preferred_day}. Choose a different day."],
                 None,
                 False,
             )
@@ -829,7 +858,11 @@ def add_trip_constraint(note: str) -> bool:
 
 @_serialized_mutation
 def add_selection(
-    kind: str, item: dict[str, Any], preferred_day: int | None = None
+    kind: str,
+    item: dict[str, Any],
+    preferred_day: int | None = None,
+    source_day: int | None = None,
+    source_stop: int | None = None,
 ) -> dict[str, Any]:
     """Add a hotel, attraction, or meal to the active trip's selections (UI helper).
 
@@ -858,7 +891,7 @@ def add_selection(
     placement: dict[str, Any] | None = None
     if _is_place_kind(kind):
         placement_alerts, placement, placed = _place_selected_stop(
-            plan, kind, name, preferred_day
+            plan, kind, name, preferred_day, source_day, source_stop
         )
         if not placed:
             return {"ok": False, "alerts": placement_alerts, "trip": plan, "placement": None}

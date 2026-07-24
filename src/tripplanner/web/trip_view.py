@@ -474,6 +474,7 @@ def build_view(
                 "reviews."
             ),
             "overview": None,
+            "available_days": [],
             "items": [],
         }
 
@@ -511,6 +512,11 @@ def build_view(
         "is_fallback": fallback,
         "empty_message": None,
         "overview": _build_overview(trip),
+        "available_days": [
+            int(day.get("day") or index + 1)
+            for index, day in enumerate(trip.get("day_wise_itinerary") or [])
+            if isinstance(day, dict)
+        ],
         "items": items,
     }
 
@@ -889,6 +895,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             "center": None,
             "pins": [],
             "days": [],
+            "available_days": [],
             "unscheduled_pin_ids": [],
             "airport": None,
             "empty_message": (
@@ -977,6 +984,11 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         "center": center,
         "pins": pins,
         "days": days,
+        "available_days": [
+            int(day.get("day") or index + 1)
+            for index, day in enumerate(trip.get("day_wise_itinerary") or [])
+            if isinstance(day, dict)
+        ],
         "unscheduled_pin_ids": unscheduled,
         "airport": airport,
         "empty_message": None if pins else (

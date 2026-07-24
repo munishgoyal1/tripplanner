@@ -110,7 +110,9 @@ frontend/
       ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
                mobile header owns launchers, desktop top row triggers them
       TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards;
-           every visible In trip control removes directly or opens occurrence choices
+         selected places use the shared day-move/remove actions
+       PlaceTripActions.tsx Shared Map/Details selected-place control: current day,
+          authoritative day move, exact/remove-everywhere occurrence actions
       TripSwitcher.tsx     Persistent saved-trip switch/delete control; dropdown
                overlays all workspace panes
       ExportModal.tsx      Print/PDF/email export options and handoff
@@ -122,7 +124,8 @@ frontend/
                            (place focus highlights pins; day focus jumps itinerary
                            and sends a representative place to Details; Places
                            autocomplete/native POI clicks add stops to an authoritative
-                           chosen day; rejected choices retain inputs for retry)
+                           chosen day; selected pins use PlaceTripActions;
+                           rejected choices retain inputs for retry)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
@@ -217,9 +220,13 @@ Mutation responses include an authoritative focused `TripView`; `App.tsx`
 applies it directly so Details cannot retain stale selection state. Each place
 item/pin exposes itinerary occurrences (`day`, one-based `stop`, `time`). An
 Itinerary row removes that exact occurrence without global reflow; the selected
-bucket remains while another occurrence exists. Details and Map also expose
-`Remove everywhere`, which clears the selection and all matching stops before
-normal reflow. The API alert is shown in the workspace command bar.
+bucket remains while another occurrence exists. Details and Map share
+`PlaceTripActions`: a normal non-hotel occurrence shows its current day and can
+move using source occurrence identity; repeated visits can move or remove
+individually and expose `Remove everywhere`. Both trip and map view models carry
+the exact structured `available_days`, including empty days. A repeated visit
+cannot move onto a day already containing that place. Hotels keep stay-range
+semantics. The API alert is shown in the workspace command bar.
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.

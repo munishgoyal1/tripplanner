@@ -65,6 +65,7 @@ describe("map stop selection", () => {
           duration_display: "0 min",
         },
       }],
+      available_days: [1],
       unscheduled_pin_ids: [],
       airport: null,
       empty_message: "No places yet.",

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { TripView } from "../types";
 import TripPanel from "./TripPanel";
@@ -10,6 +10,7 @@ const view: TripView = {
   focus: { kind: "attraction", name: "Eiffel Tower" },
   is_fallback: false,
   empty_message: "",
+  available_days: [1, 2, 3],
   alerts: [],
   overview: {
     destination: "Paris",
@@ -42,7 +43,7 @@ const view: TripView = {
 };
 
 describe("TripPanel place removal", () => {
-  it("removes a single-occurrence place from the prominent In trip control", async () => {
+  it("removes a single-occurrence place from the shared action control", async () => {
     const onDeselect = vi.fn().mockResolvedValue(true);
     render(
       <TripPanel
@@ -73,6 +74,42 @@ describe("TripPanel place removal", () => {
     ));
   });
 
+  it("moves a normal place to another day using its exact occurrence", async () => {
+    const onSelect = vi.fn().mockResolvedValue(true);
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          items: [{
+            ...view.items[0],
+            occurrences: [{ day: 1, stop: 2, time: "10:00" }],
+          }],
+        }}
+        loading={false}
+        navList={[{ kind: "attraction", name: "Eiffel Tower" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={onSelect}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Change Eiffel Tower day" }), {
+      target: { value: "2" },
+    });
+
+    await waitFor(() => expect(onSelect).toHaveBeenCalledWith(
+      "attraction",
+      "Eiffel Tower",
+      { day: 2, source_day: 1, source_stop: 2 },
+    ));
+  });
+
   it("prioritizes the focused occurrence and offers remove everywhere", async () => {
     const onDeselect = vi.fn().mockResolvedValue(true);
     render(
@@ -94,10 +131,15 @@ describe("TripPanel place removal", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: /In trip/ }));
-    expect(screen.getByRole("menuitem", { name: /Remove this occurrence.*Day 3/ })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "Remove everywhere" })).toBeInTheDocument();
+    const dayThreeSelect = screen.getByRole("combobox", {
+      name: "Change Eiffel Tower visit on Day 3",
+    });
+    expect(within(dayThreeSelect).queryByRole("option", { name: "Day 1" })).not.toBeInTheDocument();
+    expect(within(dayThreeSelect).getByRole("option", { name: "Day 2" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove Eiffel Tower from Day 3" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove everywhere" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("menuitem", { name: /Remove this occurrence.*Day 3/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove Eiffel Tower from Day 3" }));
     await waitFor(() => expect(onDeselect).toHaveBeenCalledWith(
       "attraction",
       "Eiffel Tower",

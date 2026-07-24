@@ -1974,3 +1974,28 @@ DECISION:
 STATUS:
 - Product scope and architecture direction approved; implementation not started.
 
+=== 2026-07-24 — Session 48: Consistent place actions and Change day ===
+
+REQUIREMENT:
+- Keep equivalent place actions consistent across Details and Map because they
+  are the same trip mutation presented in different panes.
+- Let the user change a selected non-hotel place's itinerary day instead of
+  only choosing a day while adding it.
+- Optimize for the normal rule that a non-hotel place appears once, while
+  safely handling legacy or exceptional repeated occurrences.
+
+IMPLEMENTED:
+- Added one shared `PlaceTripActions` control used by Details and Map. A normal
+  selected place displays its current day, offers every authoritative itinerary
+  day as a move target, and has a direct removal action.
+- Moves carry source day/stop identity and apply the authoritative mutation
+  response immediately, preserving the existing fast synchronized update.
+- Rare repeated visits expose per-occurrence move/remove actions plus Remove
+  everywhere. Occupied days are hidden in the UI and rejected by the backend,
+  so a move cannot create another same-place visit on that day.
+- Hotels keep stay-range semantics and do not expose attraction-style day moves.
+
+VALIDATION:
+- Backend: 518 tests passing.
+- Frontend: 39 tests passing; TypeScript check and production build passing.
+

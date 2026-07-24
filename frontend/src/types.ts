@@ -67,6 +67,7 @@ export interface TripView {
   is_fallback: boolean;
   empty_message: string;
   overview: TripOverview | null;
+  available_days: number[];
   items: TripItem[];
   alerts?: string[];
 }
@@ -163,6 +164,7 @@ export interface MapView {
   center: { lat: number; lng: number } | null;
   pins: MapPin[];
   days: MapDay[];
+  available_days: number[];
   unscheduled_pin_ids: string[];
   airport: MapAirport | null;
   empty_message: string | null;
