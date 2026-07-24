@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Reversible place changes + visible status (Session 40)**: add/remove keeps
+  the changed place focused in Details and removal immediately exposes the Add
+  reversal while refreshing that same focus. The top update moved left into a
+  flexible two-line region with compact routine messages. Validation: 30
+  frontend tests, TypeScript check, and production build pass.
 - **Robust place removal (Session 39)**: successful removal responses invalidate
   older in-flight trip reads, and duplicate same-place removals coalesce.
   Details, Map, and Itinerary share the guarded mutation path and expose a

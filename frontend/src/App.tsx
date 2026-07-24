@@ -37,6 +37,16 @@ function focusKind(kind: string): string {
   return kind === "hotel" ? "hotel" : "attraction";
 }
 
+function compactStatus(status?: string): string | undefined {
+  if (!status) return undefined;
+  const added = status.match(/^Added (.+) to your trip\.$/i);
+  if (added) return `Added ${added[1]}.`;
+  const removed = status.match(/^Removed (.+) and refreshed the itinerary\.$/i);
+  if (removed) return `Removed ${removed[1]}.`;
+  if (/^Rebalanced .*itinerary/i.test(status)) return "Itinerary refreshed.";
+  return status.length > 90 ? `${status.slice(0, 87).trimEnd()}...` : status;
+}
+
 export default function App() {
   const [view, setView] = useState<TripView | null>(null);
   const [loading, setLoading] = useState(true);
@@ -176,16 +186,6 @@ export default function App() {
     setView(v);
     if (!f) setNavList(v.items.map((it) => ({ kind: it.kind, name: it.name })));
   }, []);
-
-  const applyMutationView = useCallback(
-    (v: TripView, f: NavRef | null) => {
-      ++refreshGeneration.current;
-      refreshController.current?.abort();
-      setLoading(false);
-      applyView(v, f);
-    },
-    [applyView]
-  );
 
   const refresh = useCallback(
     async (f: NavRef | null = focus) => {
@@ -329,6 +329,9 @@ export default function App() {
       const next = await selectItem(kind, name, options);
       const nextKind = focusKind(kind);
       dispatchWorkspace({ type: "focus", place: { kind: nextKind, name } });
+      ++refreshGeneration.current;
+      refreshController.current?.abort();
+      setLoading(false);
       setView({ ...next.view, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
@@ -351,16 +354,35 @@ export default function App() {
     try {
       setActionError(null);
       const next = await deselectItem(kind, name);
-      const removesFocus = focus?.kind === focusKind(kind)
-        && focus.name.toLowerCase() === name.toLowerCase();
-      if (removesFocus) {
-        dispatchWorkspace({ type: "focus", place: null });
-        dispatchWorkspace({ type: "jump", target: null });
-      }
-      applyMutationView({ ...next.view, alerts: next.alerts }, null);
+      const retainedFocus = { kind: focusKind(kind), name };
+      dispatchWorkspace({ type: "focus", place: retainedFocus });
+      ++refreshGeneration.current;
+      refreshController.current?.abort();
+      setLoading(false);
+      setView((current) => {
+        const currentItems = current?.items ?? [];
+        const hasFocusedItem = currentItems.some((item) =>
+          item.kind === retainedFocus.kind
+          && item.name.toLowerCase() === name.toLowerCase()
+        );
+        if (!current || !hasFocusedItem) {
+          return { ...next.view, focus: retainedFocus, alerts: next.alerts };
+        }
+        return {
+          ...current,
+          focus: retainedFocus,
+          alerts: next.alerts,
+          items: currentItems.map((item) =>
+            item.kind === retainedFocus.kind
+              && item.name.toLowerCase() === name.toLowerCase()
+              ? { ...item, selected: false }
+              : item
+          ),
+        };
+      });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       dispatchWorkspace({ type: "trip-content-changed" });
-      if (!removesFocus && focus) void refresh(focus);
+      void refresh(retainedFocus);
       return true;
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not remove the place.");
@@ -371,9 +393,7 @@ export default function App() {
   };
 
   const handleStopRemove = async (kind: string, name: string) => {
-    if (!(await handleDeselect(kind, name))) return;
-    dispatchWorkspace({ type: "focus", place: null });
-    dispatchWorkspace({ type: "jump", target: null });
+    await handleDeselect(kind, name);
   };
 
   const toggleMaxPane = (pane: WorkspacePane) => {
@@ -599,7 +619,7 @@ export default function App() {
       </button>
     </div>
   ) : null;
-  const latestStatus = view?.alerts?.[view.alerts.length - 1];
+  const latestStatus = compactStatus(view?.alerts?.[0]);
   const statusTone = view?.overview?.status === "booked"
     ? "bg-brand/10 text-brand ring-brand/20"
     : view?.overview?.status === "finalized"
@@ -621,6 +641,15 @@ export default function App() {
               </p>
             </div>
           )}
+          <div className="mr-auto min-w-32 flex-1" aria-live="polite" role="status">
+            {latestStatus ? (
+              <p className="line-clamp-2 whitespace-normal text-xs font-medium leading-tight text-emerald-700" title={latestStatus}>
+                {latestStatus}
+              </p>
+            ) : loading ? (
+              <p className="text-xs text-slate-400">Refreshing trip…</p>
+            ) : null}
+          </div>
           {view?.has_trip && view.overview && (
             <div className="hidden items-center gap-1.5 xl:flex">
               <span className={`chip capitalize ring-1 ${statusTone}`}>{view.overview.status}</span>
@@ -634,15 +663,6 @@ export default function App() {
               )}
             </div>
           )}
-          <div className="ml-auto min-w-0" aria-live="polite">
-            {latestStatus ? (
-              <p className="max-w-72 truncate text-xs font-medium text-emerald-700" title={latestStatus}>
-                {latestStatus}
-              </p>
-            ) : loading ? (
-              <p className="text-xs text-slate-400">Refreshing trip…</p>
-            ) : null}
-          </div>
           <nav className="flex shrink-0 items-center gap-1" aria-label="Workspace controls">
             <button
               type="button"

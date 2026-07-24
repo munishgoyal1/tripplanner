@@ -1779,3 +1779,26 @@ VALIDATION:
 - Frontend: 29 tests passing.
 - TypeScript check and production build passing.
 
+=== 2026-07-24 — Session 40: Reversible place changes and visible status ===
+
+REQUIREMENT:
+- Adding or removing a place from Details must keep that place focused so the
+  user can immediately reverse the decision. Do not navigate to another place.
+- Give the top-row update status more room, move it left, allow wrapping when
+  needed, and keep routine update text to roughly one line.
+
+IMPLEMENTED:
+- Add and remove mutations invalidate older reads and retain the changed place
+  as the active Details focus. Removal optimistically flips the focused card to
+  its Add state while refreshing that same focused place from the server.
+- Itinerary removal no longer clears shared place focus after the mutation.
+- Moved the live update directly after trip identity into a flexible region.
+  It can wrap to two lines instead of truncating, while standard add/remove and
+  reflow messages are compacted to short action summaries.
+- Added regressions for retained removal focus under a stale-response race and
+  for concise wrapping status placement. Existing add-focus coverage remains.
+
+VALIDATION:
+- Frontend: 30 tests passing.
+- TypeScript check and production build passing.
+
