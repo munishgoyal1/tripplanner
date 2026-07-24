@@ -115,6 +115,16 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
   });
 
+  it("keeps the desktop shell mounted when the backend returns no trip", async () => {
+    fetchTripViewMock.mockResolvedValue({ ...emptyView, overview: null });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(1));
+    expect(screen.getByTestId("chat-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("trip-switcher")).toBeInTheDocument();
+  });
+
   it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {
     setDesktop(true);
     render(<App />);

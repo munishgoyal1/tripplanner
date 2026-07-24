@@ -385,7 +385,7 @@ export default function TripPanel({
       </div>
     );
   }
-  if (!view || !view.has_trip) {
+  if (!view || !view.has_trip || !view.overview) {
     return (
       <div className="flex h-full flex-col bg-surface">
         {!hideSwitcher && (

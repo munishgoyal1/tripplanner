@@ -59,7 +59,7 @@ export interface TripView {
   focus: { kind: string; name: string } | null;
   is_fallback: boolean;
   empty_message: string;
-  overview: TripOverview;
+  overview: TripOverview | null;
   items: TripItem[];
   alerts?: string[];
 }
