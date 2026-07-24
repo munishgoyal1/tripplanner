@@ -1560,3 +1560,34 @@ VALIDATION:
 - Playwright not run because its configuration starts a dev server; component
   regressions and production compilation cover this milestone without starting one.
 
+=== 2026-07-24 — Session 31: Independent right dock and common export ===
+
+REQUIREMENT:
+- Hide Details and Assistant independently with consistent controls; hiding
+  Details must not take Assistant with it.
+- Keep Details synchronized with place/day selection from itinerary and Map.
+- Indicate signed-in versus guest state on the desktop profile control.
+- Put photo-rich PDF/print/email itinerary export in the common top controls.
+- Identify and address nearby performance/functionality defects.
+
+IMPLEMENTED:
+- Details and Assistant are mounted sibling sections in one right dock. Matching
+  EyeOff controls hide each independently, and the remaining section fills the
+  dock; top-row toggles restore either section without coupling their state.
+- Map day chips pass a representative day place into shared focus while retaining
+  the itinerary jump. Removing the active item now clears stale Details focus.
+- Added a top-row Export command backed by the existing photo, route-circuit,
+  preview, print/save PDF, direct PDF, and email flow.
+- Added green signed-in and gray guest status dots plus descriptive account labels.
+- Repaired the malformed route-circuit HTML exporter branch that blocked share
+  and export imports; added deterministic route/Maps-link/QR/SVG coverage.
+
+VALIDATION:
+- Frontend Vitest/React Testing Library: 22 passing
+- Production frontend build: passing
+- Full backend: 477 passing (the prior 7 share/export failures are fixed)
+- Focused Python non-line-length lint rules: passing; the export renderer retains
+  pre-existing E501 findings in its embedded HTML/CSS template.
+- Playwright not run because its configuration starts a dev server; component
+  regressions and production compilation cover this milestone without starting one.
+

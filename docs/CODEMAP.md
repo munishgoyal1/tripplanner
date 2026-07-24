@@ -73,6 +73,8 @@ src/tripplanner/
     places_cache.py   Google Places cache (ThreadPoolExecutor; 1-week details TTL +
                       50-min photo-URL TTL; persisted L2 — Cosmos places_cache or
                       local cache.json — survives restarts; surfaces lat/lng)
+    itinerary_export.py  Print-ready HTML export with optional photos, daily route
+              diagrams/links/QR codes, and minimal/detailed/family themes
 frontend/
   index.html          Loads Google Fonts via <link> (NOT from CSS)
   vite.config.ts      Dev: proxies /api → :8000
@@ -82,11 +84,12 @@ frontend/
     main.tsx          React 18 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-              details inspector right, and mounted collapsible chat dock; no
+          right dock with independently hidden mounted Details/Assistant; no
           page scroll. Top command/status bar owns saved-trip selection,
-          New trip, pane visibility, lifecycle/completeness, cost, and the
-          latest mutation result; desktop account/preferences launch here too.
-          Shared place/day focus synchronizes itinerary, map, and details.
+        New trip, pane visibility, export, lifecycle/completeness, cost, and
+        latest mutation result; desktop account/preferences and login status
+        live here too. Shared place/day focus synchronizes itinerary, map,
+        and details.
           Persistent mouse/keyboard separators resize all
               desktop pane splits. Map/itinerary maximize, request cancellation,
               shared map/details place focus. Mobile: chat + on-demand trip-details
@@ -108,7 +111,8 @@ frontend/
       ItineraryPanel.tsx   Compact day summary + clickable stops + booked checkbox
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
-                           (place focus highlights pins; day focus jumps itinerary)
+                           (place focus highlights pins; day focus jumps itinerary
+                           and sends a representative place to Details)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects

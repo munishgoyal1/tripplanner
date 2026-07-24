@@ -156,29 +156,33 @@ def build_export_html(
             if pin_names:
                 circuit = " -> ".join(_e(n) for n in pin_names)
                 stats = route.get("route") or {}
-            snippet = _route_snippet_svg(
-              _route_points(route.get("pin_ids") or [], pin_by_id)
-            )
-            maps_link_html = (
-              f"<a class='maps-link' href='{_e(maps_url)}' target='_blank' rel='noreferrer'>"
-              "Open this day route in Google Maps ↗</a>"
-              if maps_url
-              else ""
-            )
-            qr_html = (
-              "<div class='qr-wrap'><img class='qr' src='"
-              + _e(_qr_image_url(maps_url))
-              + "' alt='QR for day map route' /><div class='qr-cap'>Scan route</div></div>"
-              if maps_url
-              else ""
-            )
+                snippet = _route_snippet_svg(
+                    _route_points(route.get("pin_ids") or [], pin_by_id)
+                )
+                maps_link_html = (
+                    f"<a class='maps-link' href='{_e(maps_url)}' target='_blank' rel='noreferrer'>"
+                    "Open this day route in Google Maps ↗</a>"
+                    if maps_url
+                    else ""
+                )
+                qr_html = (
+                    "<div class='qr-wrap'><img class='qr' src='"
+                    + _e(_qr_image_url(maps_url))
+                    + "' alt='QR for day map route' /><div class='qr-cap'>Scan route</div></div>"
+                    if maps_url
+                    else ""
+                )
+                stats_html = " · ".join(
+                  _e(stats.get(key) or "")
+                  for key in ("distance_display", "duration_display", "mode")
+                )
                 circuit_html = (
                     "<div class='circuit'>"
                     "<div class='circuit-title'>Daily map circuit</div>"
-              f"{snippet}"
+                    f"{snippet}"
                     f"<div class='circuit-line'>{circuit}</div>"
-                    f"<div class='circuit-stats'>{_e(stats.get('distance_display') or '')} · {_e(stats.get('duration_display') or '')} · {_e(stats.get('mode') or '')}</div>"
-              f"<div class='circuit-actions'>{maps_link_html}{qr_html}</div>"
+                  f"<div class='circuit-stats'>{stats_html}</div>"
+                    f"<div class='circuit-actions'>{maps_link_html}{qr_html}</div>"
                     "</div>"
                 )
 

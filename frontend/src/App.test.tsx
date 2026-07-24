@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock, isAnonymousUserMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   selectItemMock: vi.fn(),
+  isAnonymousUserMock: vi.fn(() => true),
   emptyView: {
   has_trip: false,
   title: "",
@@ -33,6 +34,8 @@ vi.mock("./api", () => ({
   selectItem: selectItemMock,
   deselectItem: vi.fn(),
   startNewTrip: vi.fn(),
+  isAnonymousUser: isAnonymousUserMock,
+  getDisplayName: vi.fn(() => "Munish"),
 }));
 
 vi.mock("./components/ChatPanel", () => ({
@@ -53,10 +56,10 @@ vi.mock("./components/ItineraryPanel", () => ({
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus, onDayFocus, focusName }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number) => void; focusName?: string | null }) => (
+  default: ({ onPinFocus, onDayFocus, focusName }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null }) => (
     <div data-testid="map-panel" data-focus-name={focusName ?? ""}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
-      <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
+      <button type="button" onClick={() => onDayFocus?.(2, { kind: "attraction", name: "Eiffel Tower" })}>Focus Day 2</button>
     </div>
   ),
 }));
@@ -72,6 +75,9 @@ vi.mock("./components/TripSwitcher", () => ({
 }));
 vi.mock("./components/RightRail", () => ({
   default: () => <div data-testid="right-rail" />,
+}));
+vi.mock("./components/ExportModal", () => ({
+  default: () => <div role="dialog" aria-label="Export itinerary dialog" />,
 }));
 
 function setDesktop(matches: boolean) {
@@ -96,6 +102,7 @@ describe("App responsive workspace", () => {
     window.history.replaceState({}, "", "/");
     fetchTripViewMock.mockReset().mockResolvedValue(emptyView);
     selectItemMock.mockReset();
+    isAnonymousUserMock.mockReset().mockReturnValue(true);
   });
 
   it.each([
@@ -127,19 +134,21 @@ describe("App responsive workspace", () => {
     expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
 
-  it("keeps one chat mounted while its dock and inspector are collapsed", async () => {
+  it("hides Details and Assistant independently while keeping both mounted", async () => {
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
-    fireEvent.click(screen.getByRole("button", { name: "Collapse assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByRole("button", { name: /Ask the trip assistant/ })).toBeInTheDocument();
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
-    fireEvent.click(screen.getByRole("button", { name: "Close details inspector" }));
+    fireEvent.click(screen.getByTitle("Show or hide trip details"));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: /Details/ }));
-    expect(within(screen.getByTestId("context-inspector")).getByTestId("chat-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
   it("does not reload itinerary data for focus-only navigation", async () => {
@@ -155,6 +164,9 @@ describe("App responsive workspace", () => {
   });
 
   it("syncs a map day filter to the matching itinerary day", async () => {
+    fetchTripViewMock
+      .mockResolvedValueOnce(emptyView)
+      .mockResolvedValueOnce({ ...emptyView, focus: { kind: "attraction", name: "Eiffel Tower" } });
     setDesktop(true);
     render(<App />);
 
@@ -162,6 +174,7 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Focus Day 2" }));
 
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower"));
   });
 
   it("focuses a place added from details without rebuilding the trip view", async () => {
@@ -195,10 +208,31 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByTitle("Show or hide map"));
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Close details inspector" }));
-    expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
+    fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
+    expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("context-inspector").parentElement).not.toHaveClass("hidden");
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
+  });
+
+  it("shows guest identity status and opens export from the common bar", async () => {
+    fetchTripViewMock.mockResolvedValue({ ...emptyView, has_trip: true });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guest - sign in" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Export itinerary" }));
+    expect(screen.getByRole("dialog", { name: "Export itinerary dialog" })).toBeInTheDocument();
+  });
+
+  it("updates the profile status when identity changes", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guest - sign in" })).toBeInTheDocument());
+    isAnonymousUserMock.mockReturnValue(false);
+    fireEvent(window, new Event("tripplanner:identity-changed"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Signed in as Munish" })).toBeInTheDocument());
   });
 
   it("loads itinerary place focus into both the map state and details pane", async () => {

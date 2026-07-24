@@ -106,6 +106,14 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Independent right dock + common export (Session 31)**: Details and Assistant
+  are mounted sibling sections with matching hide controls; hiding either leaves
+  the other visible and lets it fill the dock. Map day chips now focus a primary
+  day place in Details as well as scrolling the itinerary. The desktop command
+  bar exposes photo/PDF/email export and shows green signed-in or gray guest
+  account status. Removing the active place clears stale focus. The malformed
+  route-circuit branch in `web/itinerary_export.py` is repaired and covered.
+  Validation: 22 frontend tests, production build, and all 477 backend tests pass.
 - **Cross-pane focus + recoverable workspace (Session 30)**: Map day chips now
   scroll the itinerary to the matching day; adding a place from Details focuses
   its updated itinerary row and map pin using the mutation response (no redundant

@@ -44,9 +44,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   controls (including account/preferences), lifecycle/completeness status,
   total cost, and the latest mutation outcome. Its saved-trip menu must overlay
   every planner pane. Itinerary, Map, Details, and Assistant have obvious,
-  symmetric show/hide controls.
-  Chat is a collapsible dock inside the inspector and stays mounted while
-  hidden. Only panes scroll; the page never does. Accessible drag/keyboard
+  symmetric show/hide controls. Details and Assistant are independent sections
+  in the right dock: either can fill it while the other is hidden, and both stay
+  mounted so their state survives. Only panes scroll; the page never does.
+  Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
   sizes persist locally. Map and itinerary can be maximized. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
@@ -72,8 +73,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
   Clicking a place stop focuses both its map pin and its contextual Details view.
-  Selecting a Map day scrolls the itinerary to that day. Restaurants are place
-  stops too: they join day circuits and support the same focus behavior.
+  Selecting a Map day scrolls the itinerary to that day and focuses its primary
+  place in Details. Restaurants are place stops too: they join day circuits and
+  support the same focus behavior.
+- **Common commands**: itinerary export belongs in the desktop command bar and
+  supports photo-rich preview, print/save PDF, direct PDF, and email. The account
+  control visibly distinguishes a signed-in identity from a local guest.
 - **Mutation coherence**: adding/removing a place or changing the stay refreshes
   the complete itinerary, not only one card. Unbooked attractions redistribute
   around the current hotel anchors using geographic proximity and balanced day

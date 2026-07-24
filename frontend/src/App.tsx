@@ -1,12 +1,13 @@
-import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound, X } from "lucide-react";
+import { EyeOff, FileDown, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
+import ExportModal from "./components/ExportModal";
 import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
 import TripPanel from "./components/TripPanel";
 import TripSwitcher from "./components/TripSwitcher";
 import RightRail from "./components/RightRail";
-import { fetchTripView, importSharedTrip, selectItem, deselectItem, startNewTrip, type SelectItemOptions } from "./api";
+import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type SelectItemOptions } from "./api";
 import type { TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
@@ -56,6 +57,9 @@ export default function App() {
   const [itineraryOpen, setItineraryOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
+  const [showExport, setShowExport] = useState(false);
+  const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
+  const dockOpen = inspectorOpen || chatOpen;
   const [itineraryPct, setItineraryPct] = useState(() =>
     storedPercent("tripplanner_itinerary_pct", 24, 18, 38)
   );
@@ -200,6 +204,7 @@ export default function App() {
   }, []);
 
   const handleIdentityChanged = useCallback(async () => {
+    setSignedIn(!isAnonymousUser());
     setView(null);
     setLoading(true);
     dispatchWorkspace({ type: "identity-changed" });
@@ -329,7 +334,14 @@ export default function App() {
     try {
       setActionError(null);
       const next = await deselectItem(kind, name);
-      if (focus) {
+      const removesFocus = focus?.kind === focusKind(kind)
+        && focus.name.toLowerCase() === name.toLowerCase();
+      if (removesFocus) {
+        dispatchWorkspace({ type: "focus", place: null });
+        dispatchWorkspace({ type: "jump", target: null });
+        setView({ ...next.view, alerts: next.alerts });
+        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
+      } else if (focus) {
         await refresh(focus);
         setView((current) => current ? { ...current, alerts: next.alerts } : current);
       } else {
@@ -432,7 +444,10 @@ export default function App() {
         reloadToken={tripVersion}
         focusName={stopFocusName}
         onPinFocus={handleStopFocus}
-        onDayFocus={(day) => dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } })}
+        onDayFocus={(day, place) => {
+          dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
+          if (place) void handleFocus(focusKind(place.kind), place.name);
+        }}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
       />
@@ -471,7 +486,7 @@ export default function App() {
   };
 
   const inspector = (
-    <div className={!inspectorOpen || maximizedPane ? "hidden" : "contents"}>
+    <div className={!dockOpen || maximizedPane ? "hidden" : "contents"}>
       <aside
         ref={inspectorRef}
         data-testid="context-inspector"
@@ -481,24 +496,27 @@ export default function App() {
             : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
         }`}
       >
-      <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {focus ? "Place details" : "Trip details"}
-        </h2>
-        {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
-        <button
-          type="button"
-          onClick={() => setInspectorOpen(false)}
-          className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
-          aria-label="Close details inspector"
-        >
-          <X size={15} aria-hidden />
-        </button>
-      </header>
-      <div className="min-h-0 flex-1">
-        <TripPanel {...tripPanelProps} hideSwitcher />
-      </div>
-        {chatOpen && (
+        <section className={`min-h-0 flex-col ${inspectorOpen ? "flex" : "hidden"} ${chatOpen ? "flex-1" : "h-full"}`}>
+          <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {focus ? "Place details" : "Trip details"}
+            </h2>
+            {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
+            <button
+              type="button"
+              onClick={() => setInspectorOpen(false)}
+              className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
+              aria-label="Hide Details"
+              title="Hide Details"
+            >
+              <EyeOff size={15} aria-hidden />
+            </button>
+          </header>
+          <div className="min-h-0 flex-1">
+            <TripPanel {...tripPanelProps} hideSwitcher />
+          </div>
+        </section>
+        {inspectorOpen && chatOpen && (
           <div
             role="separator"
             tabIndex={0}
@@ -515,10 +533,10 @@ export default function App() {
           </div>
         )}
         <section
-          className="relative z-10 shrink-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] transition-[height] duration-300"
-          style={{ height: chatOpen ? `${chatPct}%` : "3rem" }}
+          className={`relative z-10 min-h-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] ${chatOpen ? "flex flex-col" : "hidden"} ${inspectorOpen ? "shrink-0" : "h-full flex-1"}`}
+          style={{ height: inspectorOpen ? `${chatPct}%` : "100%" }}
         >
-          <div className={`relative h-full ${chatOpen ? "visible" : "invisible"}`}>
+          <div className="relative min-h-0 flex-1">
             <ChatPanel
               onTurnComplete={handleTurnComplete}
               reloadToken={chatReloadToken}
@@ -528,27 +546,15 @@ export default function App() {
               hideGlobalControls
             />
           </div>
-          {chatOpen ? (
-            <button
-              type="button"
-              onClick={() => setChatOpen(false)}
-              className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-              aria-label="Collapse assistant"
-              title="Collapse assistant"
-            >
-              <Minimize2 size={15} aria-hidden />
-            </button>
-          ) : (
           <button
             type="button"
-            onClick={() => setChatOpen(true)}
-              className="absolute inset-0 flex h-full w-full items-center gap-2 px-4 text-sm font-semibold text-ink hover:bg-slate-50"
+            onClick={() => setChatOpen(false)}
+            className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
+            aria-label="Hide Assistant"
+            title="Hide Assistant"
           >
-            <MessageCircle size={17} className="text-brand" aria-hidden />
-            Ask the trip assistant
-            <span className="ml-auto text-xs font-normal text-slate-400">Expand</span>
+            <EyeOff size={15} aria-hidden />
           </button>
-          )}
         </section>
       </aside>
     </div>
@@ -576,6 +582,7 @@ export default function App() {
 
   return <>
     {errorBanner}
+    {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
         <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-slate-100 bg-white/95 px-3 shadow-sm backdrop-blur">
@@ -648,24 +655,34 @@ export default function App() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                setInspectorOpen(true);
-                setChatOpen((open) => !open);
-              }}
-              className={`btn-ghost ${inspectorOpen && chatOpen ? "bg-slate-100 text-ink" : ""}`}
-              aria-pressed={inspectorOpen && chatOpen}
-              title="Show or collapse the trip assistant"
+              onClick={() => setChatOpen((open) => !open)}
+              className={`btn-ghost ${chatOpen ? "bg-slate-100 text-ink" : ""}`}
+              aria-pressed={chatOpen}
+              title="Show or hide the trip assistant"
             >
               <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
             </button>
             <button
               type="button"
+              onClick={() => setShowExport(true)}
+              disabled={!view?.has_trip}
+              className="btn-ghost disabled:opacity-40"
+              title="Export itinerary with photos, PDF, print, or email"
+              aria-label="Export itinerary"
+            >
+              <FileDown size={15} aria-hidden /> <span className="hidden 2xl:inline">Export</span>
+            </button>
+            <button
+              type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
               className="btn-ghost"
-              title="Account and sign in"
-              aria-label="Account and sign in"
+              title={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in to sync trips"}
+              aria-label={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in"}
             >
-              <UserRound size={15} aria-hidden />
+              <span className="relative">
+                <UserRound size={15} aria-hidden />
+                <span className={`absolute -bottom-1 -right-1 h-2 w-2 rounded-full ring-2 ring-white ${signedIn ? "bg-emerald-500" : "bg-slate-400"}`} aria-hidden />
+              </span>
             </button>
             <button
               type="button"
@@ -686,10 +703,10 @@ export default function App() {
             gridTemplateColumns: maximizedPane
               ? "minmax(0, 1fr)"
               : !itineraryOpen || !mapOpen
-                ? isWideDesktop && inspectorOpen
+                ? isWideDesktop && dockOpen
                   ? `minmax(0, ${100 - inspectorPct}fr) 0.375rem minmax(0, ${inspectorPct}fr)`
                   : "minmax(0, 1fr)"
-              : isWideDesktop && inspectorOpen
+              : isWideDesktop && dockOpen
                 ? `${itineraryPct}fr 0.375rem ${100 - itineraryPct - inspectorPct}fr 0.375rem ${inspectorPct}fr`
                 : `${itineraryPct}fr 0.375rem ${100 - itineraryPct}fr`,
           }}
@@ -716,7 +733,7 @@ export default function App() {
           <section className={`min-h-0 min-w-0 ${!mapOpen || maximizedPane === "itinerary" ? "hidden" : ""}`}>
             {renderCanvasPane("map")}
           </section>
-          {!maximizedPane && isWideDesktop && inspectorOpen && (itineraryOpen || mapOpen) && (
+          {!maximizedPane && isWideDesktop && dockOpen && (itineraryOpen || mapOpen) && (
             <div
               role="separator"
               tabIndex={0}
