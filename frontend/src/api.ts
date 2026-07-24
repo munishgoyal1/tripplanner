@@ -292,6 +292,9 @@ export async function selectItem(
   });
   if (!res.ok) throw new Error(`Could not add the place (${res.status}).`);
   const json = await res.json();
+  if (json.ok === false) {
+    throw new Error(json.alerts?.[0] || "Could not add the place to that day.");
+  }
   return {
     view: json.view as TripView,
     alerts: (json.alerts ?? []) as string[],

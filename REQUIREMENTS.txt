@@ -1802,3 +1802,31 @@ VALIDATION:
 - Frontend: 30 tests passing.
 - TypeScript check and production build passing.
 
+=== 2026-07-24 — Session 41: Authoritative Map day placement ===
+
+REQUIREMENT:
+- A stop added from Map to an explicitly selected itinerary day must always use
+  that day. Only reject when the choice is genuinely unavailable or conflicts
+  with a booked occurrence; explain why and offer actionable alternatives.
+
+BUG FOUND:
+- Explicit placement was ignored when the place already existed in the
+  itinerary or selected bucket. An unavailable requested day also silently
+  fell back to the first itinerary entry.
+
+IMPLEMENTED:
+- Explicit placement now returns structured placement success instead of
+  inferring it from alert text. Existing unbooked occurrences move to the
+  chosen day, including places already selected in the trip.
+- Explicit additions no longer run automatic cross-day or capacity reflow, so
+  the chosen stop cannot be silently moved or displaced after placement.
+- Missing days and booked-occurrence conflicts reject without altering the
+  trip and return available-day/Best day or unbook-and-retry options.
+- The API client surfaces that message. Map keeps the entered place and chosen
+  day after rejection, displays an Adding state while pending, and clears the
+  place only after confirmed placement.
+
+VALIDATION:
+- Backend: 510 passing; one unrelated Starlette TestClient deprecation warning.
+- Frontend: 31 tests passing; production build passing.
+

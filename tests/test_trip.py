@@ -475,6 +475,84 @@ class TestTripPlanState:
 
         assert result["trip"]["day_wise_itinerary"][0]["stops"][0]["kind"] == "meal"
 
+    def test_explicit_day_moves_existing_unbooked_stop(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": []},
+                {"day": 2, "stops": [{"name": "North Market", "kind": "attraction"}]},
+            ],
+        })})
+
+        result = add_selection("attraction", {"name": "North Market"}, preferred_day=1)
+
+        assert result["ok"] is True
+        assert result["placement"] == {"day": 1, "stop": 1, "name": "North Market"}
+        assert result["trip"]["day_wise_itinerary"][0]["stops"][0]["name"] == "North Market"
+        assert result["trip"]["day_wise_itinerary"][1]["stops"] == []
+
+    def test_explicit_day_repositions_already_selected_stop(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [{"name": "North Market"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": []},
+                {"day": 2, "stops": [{"name": "North Market", "kind": "attraction"}]},
+            ],
+        })})
+
+        result = add_selection("attraction", {"name": "North Market"}, preferred_day=1)
+
+        assert result["ok"] is True
+        assert result["placement"]["day"] == 1
+        assert result["trip"]["day_wise_itinerary"][1]["stops"] == []
+
+    def test_explicit_unavailable_day_returns_alternatives_without_saving(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{"day": 2, "stops": []}, {"day": 3, "stops": []}],
+        })})
+
+        result = add_selection("attraction", {"name": "North Market"}, preferred_day=1)
+
+        assert result["ok"] is False
+        assert "Choose Day 2, Day 3, or Best day" in result["alerts"][0]
+        assert result["trip"].get("selected_activities") == []
+
+    def test_explicit_day_does_not_move_booked_stop(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 1, "stops": []},
+                {"day": 2, "stops": [
+                    {"name": "North Market", "kind": "attraction", "booked": True}
+                ]},
+            ],
+        })})
+
+        result = add_selection("attraction", {"name": "North Market"}, preferred_day=1)
+
+        assert result["ok"] is False
+        assert "booked on Day 2" in result["alerts"][0]
+        assert "unbook it and choose Day 1 again" in result["alerts"][0]
+        assert result["trip"]["day_wise_itinerary"][1]["stops"][0]["booked"] is True
+
     def test_add_hotel_stay_updates_range(self):
         create_trip_plan.invoke({
             "destination": "Goa",

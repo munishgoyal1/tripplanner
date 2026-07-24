@@ -84,7 +84,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   The Map stop picker searches Google Places within the current map context and
   also accepts labeled POIs clicked directly on the map. A user can choose the
   exact itinerary day before adding; that explicit choice takes precedence over
-  automatic cross-day rebalancing. Restaurant POIs persist as meal stops.
+  automatic cross-day rebalancing, including when the place already exists on
+  another day. A genuinely unavailable day or booked-occurrence conflict leaves
+  the trip unchanged and offers available days, Best day, or unbook-and-retry;
+  the Map retains the user's place/day inputs. Restaurant POIs persist as meal stops.
 - **Common commands**: itinerary export belongs in the desktop command bar and
   supports photo-rich preview, print/save PDF, direct PDF, and email. The account
   control visibly distinguishes a signed-in identity from a local guest.

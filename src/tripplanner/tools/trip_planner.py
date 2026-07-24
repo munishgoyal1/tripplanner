@@ -400,41 +400,86 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
 
 def _place_selected_stop(
     plan: dict[str, Any], kind: str, name: str, preferred_day: int | None = None
-) -> list[str]:
+) -> tuple[list[str], dict[str, Any] | None, bool]:
     alerts: list[str] = []
     destination = str(plan.get("destination") or "")
     itinerary = plan.get("day_wise_itinerary") or []
     if not itinerary:
+        if preferred_day is not None:
+            return (
+                [
+                    f"Day {preferred_day} is not available yet because the itinerary has no structured days. Choose Best day, or create the day-by-day itinerary first."
+                ],
+                None,
+                False,
+            )
         alerts.append(
             f"{name} was saved. Your assistant will slot it into a day-by-day plan once the itinerary is structured."
         )
-        return alerts
+        return alerts, None, True
 
     summary = _summary_for_place(name, destination)
     stop_kind = _canonical_place_kind(kind)
     stop = _make_stop(name, stop_kind, summary)
+    requested_idx: int | None = None
+    available_days: list[int] = []
+    for idx, day in enumerate(itinerary):
+        if not isinstance(day, dict):
+            continue
+        logical_day = int(day.get("day") or idx + 1)
+        available_days.append(logical_day)
+        if preferred_day == logical_day:
+            requested_idx = idx
+    if preferred_day is not None and requested_idx is None:
+        choices = ", ".join(f"Day {day}" for day in available_days)
+        alternative = f" Choose {choices}, or Best day." if choices else " Choose Best day."
+        return [f"Day {preferred_day} is not available.{alternative}"], None, False
+
+    existing: tuple[int, int, Any] | None = None
     for day_index, day in enumerate(itinerary):
         stops = day.get("stops") if isinstance(day, dict) and isinstance(day.get("stops"), list) else []
         for stop_index, raw in enumerate(stops):
             if _stop_name(raw).lower() != name.lower():
                 continue
+            existing = (day_index, stop_index, raw)
+            break
+        if existing:
+            break
+
+    if existing:
+        existing_day_idx, existing_stop_idx, raw = existing
+        existing_day = itinerary[existing_day_idx]
+        existing_day_num = int(existing_day.get("day") or existing_day_idx + 1)
+        if requested_idx is None or requested_idx == existing_day_idx:
+            existing_stops = existing_day.get("stops") or []
             if isinstance(raw, dict):
                 raw.update(stop)
             else:
-                stops[stop_index] = stop
-            alerts.append(f"{name} is already on Day {day_index + 1}; I refreshed its details.")
-            return alerts
+                existing_stops[existing_stop_idx] = stop
+            placement = {
+                "day": existing_day_num,
+                "stop": existing_stop_idx + 1,
+                "name": name,
+            }
+            alerts.append(
+                f"{name} is already on Day {existing_day_num}; I refreshed its details."
+            )
+            return alerts, placement, True
+        if isinstance(raw, dict) and raw.get("booked"):
+            return (
+                [
+                    f"{name} is booked on Day {existing_day_num}, so I did not move it to Day {preferred_day}. Keep Day {existing_day_num}, or unbook it and choose Day {preferred_day} again."
+                ],
+                None,
+                False,
+            )
+        existing_stops = existing_day.get("stops") or []
+        existing_stops.pop(existing_stop_idx)
+        if isinstance(raw, dict):
+            raw.update(stop)
+            stop = raw
 
-    best_idx = next(
-        (
-            idx
-            for idx, day in enumerate(itinerary)
-            if preferred_day is not None
-            and isinstance(day, dict)
-            and int(day.get("day") or idx + 1) == preferred_day
-        ),
-        0,
-    )
+    best_idx = requested_idx or 0
     if preferred_day is None:
         best_score: float | None = None
         for idx, day in enumerate(itinerary):
@@ -466,8 +511,14 @@ def _place_selected_stop(
     if not str(stop.get("time") or "").strip():
         stop["time"] = _infer_stop_time(stops, insert_at, stop_kind)
 
-    alerts.append(f"I placed {name} on Day {best_idx + 1} in stop {insert_at + 1}.")
-    return alerts
+    placed_day = int(day.get("day") or best_idx + 1)
+    action = "moved" if existing else "placed"
+    alerts.append(f"I {action} {name} to Day {placed_day} in stop {insert_at + 1}.")
+    return (
+        alerts,
+        {"day": placed_day, "stop": insert_at + 1, "name": name},
+        True,
+    )
 
 
 def _day_entry_and_stops(itinerary: list[Any], day_num: int) -> tuple[dict[str, Any] | None, list[Any]]:
@@ -794,25 +845,36 @@ def add_selection(
     name = str(item.get("name") or "").strip()
     if not name:
         return {"ok": False, "alerts": ["No place name was provided."]}
-    if any(str(x.get("name") or "").strip().lower() == name.lower() for x in bucket):
+    already_selected = any(
+        str(x.get("name") or "").strip().lower() == name.lower() for x in bucket
+    )
+    if already_selected and preferred_day is None:
         return {"ok": True, "alerts": [f"{name} is already in your trip."]}
-    bucket.append(item)
-    alerts = [f"Added {name} to your trip."]
+    alerts = [
+        f"Updated {name} in your trip."
+        if already_selected
+        else f"Added {name} to your trip."
+    ]
     placement: dict[str, Any] | None = None
     if _is_place_kind(kind):
-        alerts.extend(_place_selected_stop(plan, kind, name, preferred_day))
-        m = re.search(r"Day\s+(\d+)\D+stop\s+(\d+)", " ".join(alerts), re.I)
-        if m:
-            placement = {"day": int(m.group(1)), "stop": int(m.group(2)), "name": name}
+        placement_alerts, placement, placed = _place_selected_stop(
+            plan, kind, name, preferred_day
+        )
+        if not placed:
+            return {"ok": False, "alerts": placement_alerts, "trip": plan, "placement": None}
+        alerts.extend(placement_alerts)
+        if not already_selected:
+            bucket.append(item)
         if preferred_day is None and _reflow_unbooked_attractions(plan):
             alerts.append("Rebalanced unbooked itinerary stops around the updated trip.")
         canonical_kind = _canonical_place_kind(kind)
-        if canonical_kind == "attraction":
+        if canonical_kind == "attraction" and preferred_day is None:
             itinerary = plan.get("day_wise_itinerary") or []
             for day_index in range(len(itinerary)):
                 alerts.extend(_rebalance_day(plan, day_index, name, canonical_kind))
-            if preferred_day is None:
-                _reflow_unbooked_attractions(plan)
+            _reflow_unbooked_attractions(plan)
+    elif not already_selected:
+        bucket.append(item)
     _save_active_trip(plan)
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 

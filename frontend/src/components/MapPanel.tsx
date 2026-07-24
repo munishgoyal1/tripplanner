@@ -122,7 +122,11 @@ interface Props {
   /** User selected a day filter and wants the itinerary synced to that day. */
   onDayFocus?: (day: number, place?: MapPin) => void;
   /** Add a place to the trip (from a pin's info window). */
-  onSelect?: (kind: string, name: string, options?: SelectItemOptions) => void;
+  onSelect?: (
+    kind: string,
+    name: string,
+    options?: SelectItemOptions,
+  ) => void | Promise<boolean>;
   /** Remove a place from the trip (from a pin's info window). */
   onDeselect?: (kind: string, name: string) => void | Promise<boolean>;
 }
@@ -139,6 +143,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   const [newStopName, setNewStopName] = useState("");
   const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
   const [newStopDay, setNewStopDay] = useState("auto");
+  const [addingStop, setAddingStop] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
 
   const mapEl = useRef<HTMLDivElement>(null);
@@ -460,11 +465,20 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     return !!p && !isAirportTarget(p);
   };
 
-  const handleAddStop = () => {
+  const handleAddStop = async () => {
     const name = newStopName.trim();
     if (!name) return;
-    onSelect?.(newStopKind, name, optionsForStopDay(newStopDay));
-    setNewStopName("");
+    setAddingStop(true);
+    try {
+      const added = await onSelect?.(
+        newStopKind,
+        name,
+        optionsForStopDay(newStopDay),
+      );
+      if (added !== false) setNewStopName("");
+    } finally {
+      setAddingStop(false);
+    }
   };
 
   const handleToggleSelected = async () => {
@@ -483,7 +497,16 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       }
       return;
     }
-    onSelect?.(selectedPin.kind, selectedPin.name, optionsForStopDay(newStopDay));
+    setAddingStop(true);
+    try {
+      await onSelect?.(
+        selectedPin.kind,
+        selectedPin.name,
+        optionsForStopDay(newStopDay),
+      );
+    } finally {
+      setAddingStop(false);
+    }
   };
 
   // ---- render --------------------------------------------------------------
@@ -544,7 +567,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
             value={newStopName}
             onChange={(e) => setNewStopName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleAddStop();
+              if (e.key === "Enter") void handleAddStop();
             }}
             className="min-w-[9rem] flex-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400"
             placeholder="Search places on this map…"
@@ -567,11 +590,11 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
           <button
             type="button"
             onClick={handleAddStop}
-            disabled={!newStopName.trim()}
+            disabled={!newStopName.trim() || addingStop}
             className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden />
-            Add stop
+            {addingStop ? "Adding…" : "Add stop"}
           </button>
         </div>
       </div>

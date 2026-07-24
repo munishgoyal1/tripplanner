@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Authoritative Map day placement (Session 41)**: explicit Map additions move
+  existing unbooked occurrences to the chosen day and bypass automatic reflow.
+  Missing days and booked conflicts reject unchanged with actionable choices;
+  Map retains place/day inputs for retry. Validation: 510 backend tests, 31
+  frontend tests, and production build pass.
 - **Reversible place changes + visible status (Session 40)**: add/remove keeps
   the changed place focused in Details and removal immediately exposes the Add
   reversal while refreshing that same focus. The top update moved left into a

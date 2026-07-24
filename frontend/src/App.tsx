@@ -342,8 +342,10 @@ export default function App() {
         });
       }
       dispatchWorkspace({ type: "trip-content-changed" });
+      return true;
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not add the place.");
+      return false;
     }
   };
 

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
 import TripSwitcher from "./TripSwitcher";
+import type { SelectItemOptions } from "../api";
 import type { TripView } from "../types";
 
 interface Props {
@@ -13,7 +14,11 @@ interface Props {
   focusName: string | null;
   onStopFocus: (kind: string, name: string) => void;
   onStopMap: (kind: string, name: string) => void;
-  onSelect?: (kind: string, name: string) => void;
+  onSelect?: (
+    kind: string,
+    name: string,
+    options?: SelectItemOptions,
+  ) => void | Promise<boolean>;
   onDeselect?: (kind: string, name: string) => void;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;

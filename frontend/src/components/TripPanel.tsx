@@ -23,7 +23,11 @@ interface Props {
   onFocus: (kind: string, name: string) => void;
   onClearFocus: () => void;
   onStep: (delta: number) => void;
-  onSelect: (kind: string, name: string, options?: SelectItemOptions) => void;
+  onSelect: (
+    kind: string,
+    name: string,
+    options?: SelectItemOptions,
+  ) => void | Promise<boolean>;
   onDeselect: (kind: string, name: string) => void | Promise<boolean>;
   tripVersion: number;
   onSwitched: (tripId?: string, view?: TripView | null) => void;
@@ -123,7 +127,7 @@ function ItemCard({
   item: TripItem;
   focused: boolean;
   onFocus: (kind: string, name: string) => void;
-  onSelect: (kind: string, name: string) => void;
+  onSelect: (kind: string, name: string) => void | Promise<boolean>;
   onHotelStay: (name: string) => void;
   onDeselect: (kind: string, name: string) => void | Promise<boolean>;
   onOpenPhoto: (photos: string[], index: number, alt: string) => void;

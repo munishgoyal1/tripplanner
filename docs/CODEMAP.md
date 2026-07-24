@@ -117,7 +117,8 @@ frontend/
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (place focus highlights pins; day focus jumps itinerary
                            and sends a representative place to Details; Places
-                           autocomplete/native POI clicks add stops to a chosen day)
+                           autocomplete/native POI clicks add stops to an authoritative
+                           chosen day; rejected choices retain inputs for retry)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
