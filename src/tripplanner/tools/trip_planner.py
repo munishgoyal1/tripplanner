@@ -35,6 +35,11 @@ _ACTIVE_TRIP_DOC_ID = "active_trip"
 _MAX_DAY_STOPS = 5
 _MAX_DAY_DISTANCE_KM = 18.0
 _MAX_DAY_DURATION_MIN = 360
+_MEAL_PLACEHOLDER_RE = re.compile(
+    r"\b(tbd|to be decided|restaurant option|restaurant recommendation|"
+    r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
+    re.I,
+)
 
 
 def _slugify(text: str) -> str:
@@ -117,9 +122,35 @@ def _stop_name(raw: Any) -> str:
 def _stop_kind(raw: Any, default_kind: str = "attraction") -> str:
     if isinstance(raw, dict):
         kind = str(raw.get("kind") or "").strip().lower()
+        if kind == "restaurant":
+            return "meal"
         if kind in {"hotel", "attraction", "meal", "transport", "flight", "other"}:
             return kind
     return _canonical_place_kind(default_kind)
+
+
+def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
+    warnings: list[str] = []
+    if not isinstance(itinerary, list):
+        return warnings
+    for index, day in enumerate(itinerary):
+        if not isinstance(day, dict):
+            continue
+        day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
+        raw_stops = day.get("stops")
+        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
+        place_count = sum(1 for stop in stops if _stop_kind(stop) == "attraction")
+        meal_stops = [stop for stop in stops if _stop_kind(stop) == "meal"]
+        placeholders = [
+            _stop_name(stop)
+            for stop in meal_stops
+            if not _stop_name(stop) or _MEAL_PLACEHOLDER_RE.search(_stop_name(stop))
+        ]
+        if placeholders:
+            warnings.append(f"Day {day_num} has a meal placeholder instead of a named restaurant.")
+        elif place_count >= 2 and not meal_stops:
+            warnings.append(f"Day {day_num} has multiple activities but no named restaurant stop.")
+    return warnings
 
 
 def _make_stop(name: str, kind: str, summary: dict[str, Any]) -> dict[str, Any]:
@@ -1165,12 +1196,21 @@ def update_trip_plan(updates_json: str) -> str:
             plan[key] = val
 
     _save_active_trip(plan)
+    restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
+    warning_text = ""
+    if restaurant_warnings:
+        warning_text = (
+            "\nRestaurant planning incomplete: "
+            + " ".join(restaurant_warnings)
+            + " Call nearby_restaurants, choose preference-matched options, and update "
+            "day_wise_itinerary with concrete restaurant names before finishing."
+        )
     bullets = diff_plans(before, plan)
     if not bullets:
-        return f"Trip plan updated (no material changes). Status: {plan['status']}"
+        return f"Trip plan updated (no material changes). Status: {plan['status']}{warning_text}"
     return (
         f"Trip plan updated. Status: {plan['status']}\n"
-        f"What changed:\n{format_diff(bullets)}"
+        f"What changed:\n{format_diff(bullets)}{warning_text}"
     )
 
 

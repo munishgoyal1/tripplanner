@@ -440,6 +440,13 @@ STEP 4 — BUILD ITINERARY
   itinerary that includes:
   - Morning / afternoon / evening activities
   - Specific restaurant recommendations (matching dietary prefs)
+  - RESTAURANT COMPLETION GATE: after nearby_restaurants returns, choose concrete
+    named restaurants and persist them as kind "meal" stops in
+    day_wise_itinerary. Never leave "TBD", "Lunch stop", "Dinner stop", or a
+    generic restaurant placeholder. Every day with 2+ activities needs at least
+    one named restaurant unless the user explicitly asks to leave meals open.
+    If update_trip_plan reports "Restaurant planning incomplete", correct the
+    itinerary and call update_trip_plan again before writing the final reply.
   - Travel time between spots — call compute_route (Google Routes API) for any
     day with 3+ stops so transitions show REAL minutes/km, e.g. "Hotel →
     Louvre: 22m walk, 1.8 km". Don't guess.

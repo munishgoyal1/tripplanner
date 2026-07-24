@@ -151,6 +151,23 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
+  it("maximizes and restores Details and Assistant independently", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Maximize Details" }));
+    expect(screen.getByRole("button", { name: "Restore Details" })).toBeInTheDocument();
+    expect(screen.getByTestId("map-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
+
+    fireEvent.click(screen.getByRole("button", { name: "Restore Details" }));
+    fireEvent.click(screen.getByRole("button", { name: "Maximize Assistant" }));
+    expect(screen.getByRole("button", { name: "Restore Assistant" })).toBeInTheDocument();
+    expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
+  });
+
   it("does not reload itinerary data for focus-only navigation", async () => {
     setDesktop(true);
     render(<App />);

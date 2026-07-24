@@ -423,7 +423,7 @@ def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:
     assert by_name["Dudhsagar Falls Trek"]["day"] == 1
 
 
-def test_map_view_unscheduled_when_no_match(_map_geo: None) -> None:
+def test_map_view_selected_stay_anchors_route_when_no_match(_map_geo: None) -> None:
     trip = {
         **SAMPLE_TRIP,
         "day_wise_itinerary": [{"day": 1, "plan": "nothing relevant here"}],
@@ -431,7 +431,9 @@ def test_map_view_unscheduled_when_no_match(_map_geo: None) -> None:
     mv = trip_view.build_map_view(trip)
     sel = next(p for p in mv["pins"] if p["name"] == "Taj Exotica Resort")
     assert sel["day"] is None
-    assert sel["id"] in mv["unscheduled_pin_ids"]
+    day1 = next(day for day in mv["days"] if day["day"] == 1)
+    assert day1["pin_ids"][0] == day1["pin_ids"][-1] == sel["id"]
+    assert sel["id"] not in mv["unscheduled_pin_ids"]
 
 
 def test_map_view_selected_attraction_gets_fallback_day(_map_geo: None) -> None:
@@ -481,14 +483,44 @@ def test_map_view_includes_all_structured_day_stops_in_order(_map_geo: None) -> 
         assert name in by_name
         assert by_name[name]["day"] == 1
 
-    # The day route includes all three stops in itinerary order.
+    # The day route includes all three stops in itinerary order and returns
+    # to the selected hotel for a complete daily circuit.
     day1 = next(d for d in mv["days"] if d["day"] == 1)
     id_by_name = {p["name"]: p["id"] for p in mv["pins"]}
-    assert day1["pin_ids"][:3] == [
+    assert day1["pin_ids"][1:4] == [
         id_by_name["Gateway of India"],
         id_by_name["Colaba Causeway"],
         id_by_name["Marine Drive"],
     ]
+    assert day1["pin_ids"][0] == id_by_name["Taj Exotica Resort"]
+    assert day1["pin_ids"][-1] == id_by_name["Taj Exotica Resort"]
+
+
+def test_map_view_reuses_places_across_complete_day_circuits(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Fort Aguada", "kind": "attraction"}]},
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Fort Aguada", "kind": "attraction"},
+                    {"name": "Dudhsagar Falls Trek", "kind": "attraction"},
+                ],
+            },
+        ],
+    }
+
+    mv = trip_view.build_map_view(trip)
+    id_by_name = {p["name"]: p["id"] for p in mv["pins"]}
+    days = {day["day"]: day for day in mv["days"]}
+    hotel_id = id_by_name["Taj Exotica Resort"]
+
+    assert id_by_name["Fort Aguada"] in days[1]["pin_ids"]
+    assert id_by_name["Fort Aguada"] in days[2]["pin_ids"]
+    assert days[1]["pin_ids"][0] == days[1]["pin_ids"][-1] == hotel_id
+    assert days[2]["pin_ids"][0] == days[2]["pin_ids"][-1] == hotel_id
+    assert days[2]["route"]["distance_km"] > 0
 
 
 def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:

@@ -848,19 +848,53 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     pins = _map_pins(trip, destination)
     airport = _airport_pin(destination)
 
-    # Group pins by day, preserving insertion order within each day.
+    pin_by_name = {str(p["name"]).strip().lower(): p for p in pins}
+
+    def _pin_for_stop(name: Any) -> dict[str, Any] | None:
+        needle = str(name or "").strip().lower()
+        if not needle:
+            return None
+        exact = pin_by_name.get(needle)
+        if exact:
+            return exact
+        return next(
+            (pin for candidate, pin in pin_by_name.items() if needle in candidate or candidate in needle),
+            None,
+        )
+
+    # Structured days are authoritative and may reuse the same place on
+    # multiple days. A pin has one primary day for display, while day routes
+    # can reference it wherever the itinerary includes it.
     by_day: dict[int, list[str]] = {}
+    for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
+        if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
+            continue
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        for stop in entry["stops"]:
+            name = stop.get("name") if isinstance(stop, dict) else stop
+            pin = _pin_for_stop(name)
+            if pin and pin["id"] not in by_day.setdefault(day_num, []):
+                by_day[day_num].append(pin["id"])
+
     unscheduled: list[str] = []
     for p in pins:
         if p["day"]:
-            by_day.setdefault(p["day"], []).append(p["id"])
+            day_ids = by_day.setdefault(p["day"], [])
+            if p["id"] not in day_ids:
+                day_ids.append(p["id"])
         else:
             unscheduled.append(p["id"])
 
     pin_by_id = {p["id"]: p for p in pins}
+    stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
     days = []
     for d in sorted(by_day):
         ids = by_day[d]
+        day_stay = next((pid for pid in ids if pin_by_id[pid]["kind"] == "hotel"), None)
+        stay_id = day_stay or (stay_ids[0] if stay_ids else None)
+        if stay_id:
+            ids = [stay_id, *(pid for pid in ids if pid != stay_id), stay_id]
         days.append(
             {
                 "day": d,
@@ -870,6 +904,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "route": _route_stats_for_day(ids, pin_by_id),
             }
         )
+    scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
+    unscheduled = [pin_id for pin_id in unscheduled if pin_id not in scheduled_ids]
 
     # Map center: average of all pin coords (incl. airport) for an initial
     # viewport; the frontend will fit bounds precisely.

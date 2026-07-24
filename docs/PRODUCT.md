@@ -49,7 +49,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   mounted so their state survives. Only panes scroll; the page never does.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
-  sizes persist locally. Map and itinerary can be maximized. On narrower desktops
+  sizes persist locally. Itinerary, Map, Details, and Assistant can each be
+  maximized and restored. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
   trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
@@ -75,7 +76,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Clicking a place stop focuses both its map pin and its contextual Details view.
   Selecting a Map day scrolls the itinerary to that day and focuses its primary
   place in Details. Restaurants are place stops too: they join day circuits and
-  support the same focus behavior.
+  support the same focus behavior. Substantial planning days use concrete,
+  preference-matched restaurant names from search results, never generic or
+  `TBD` meal placeholders. Each day circuit starts at the selected stay,
+  includes every geocoded structured stop in itinerary order, and returns to the
+  stay at night; repeated places remain part of every day that references them.
 - **Common commands**: itinerary export belongs in the desktop command bar and
   supports photo-rich preview, print/save PDF, direct PDF, and email. The account
   control visibly distinguishes a signed-in identity from a local guest.
@@ -102,6 +107,8 @@ If a redesign violates the above without a stated reason, push back.
   don't block paint.
 - **Settings has an "About me" textbox** that runs an LLM extractor and
   **additively** merges into preferences. Never overwrite existing user data.
+- **Account details behave like a popover.** The account control toggles it;
+  clicking elsewhere or pressing Escape dismisses it.
 
 ## 6) Owner taste — code & process
 

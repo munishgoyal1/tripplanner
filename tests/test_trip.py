@@ -265,6 +265,63 @@ class TestTripPlanState:
         assert len(plan["selected_flights"]) == 1
         assert plan["total_cost"] == 8500
 
+    def test_update_trip_plan_warns_about_restaurant_placeholders(self):
+        create_trip_plan.invoke({
+            "destination": "Kolkata",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Victoria Memorial", "kind": "attraction"},
+                    {"name": "Indian Museum", "kind": "attraction"},
+                    {"name": "Dinner TBD", "kind": "meal"},
+                ],
+            }],
+        })})
+
+        assert "Restaurant planning incomplete" in result
+        assert "nearby_restaurants" in result
+
+    def test_update_trip_plan_accepts_named_restaurants(self):
+        create_trip_plan.invoke({
+            "destination": "Kolkata",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Victoria Memorial", "kind": "attraction"},
+                    {"name": "Indian Museum", "kind": "attraction"},
+                    {"name": "Peter Cat", "kind": "restaurant"},
+                ],
+            }],
+        })})
+
+        assert "Restaurant planning incomplete" not in result
+
+    def test_update_trip_plan_warns_when_full_day_has_no_restaurant(self):
+        create_trip_plan.invoke({
+            "destination": "Kolkata",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Victoria Memorial", "kind": "attraction"},
+                    {"name": "Indian Museum", "kind": "attraction"},
+                ],
+            }],
+        })})
+
+        assert "Day 1 has multiple activities but no named restaurant stop" in result
+
     def test_set_stop_booked_toggles_flag(self):
         create_trip_plan.invoke({
             "destination": "Goa",

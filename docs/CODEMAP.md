@@ -62,7 +62,8 @@ src/tripplanner/
     memory_recall.py      BM25-lite recall over learned notes / past trips / family
     web_search.py         Tavily
     trip_planner.py       Trip lifecycle: create/get/update/finalize/execute/list
-                          + remembered saved trips (resume/switch/delete)
+                          + remembered saved trips (resume/switch/delete); warns
+                          the agent when restaurant itinerary planning is incomplete
     user_preferences.py   Preferences CRUD (atomic write + tolerant load)
     preferences_merge.py  Additive merge used by api.py (no UI imports)
     about_me_extractor.py LLM extractor for the "About me" textbox in Settings
@@ -93,7 +94,7 @@ frontend/
         live here too. Shared place/day focus synchronizes itinerary, map,
         and details.
           Persistent mouse/keyboard separators resize all
-              desktop pane splits. Map/itinerary maximize, request cancellation,
+              desktop pane splits. Four-pane maximize/restore, request cancellation,
               shared map/details place focus. Mobile: chat + on-demand trip-details
               sheet. Only the active responsive shell mounts.
     workspaceState.ts Canonical reducer for trip identity/revision, active place,
@@ -180,7 +181,9 @@ It exports:
   center. Each day now includes estimated route metrics
   (`distance_km/duration_min/mode` plus display strings) derived from the day
   path so the UI can show day-wise travel distance/time/mode without billed
-  Directions calls. `enabled` mirrors whether `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
+  Directions calls. Structured places can participate in multiple day bands,
+  and each band closes from/to the selected hotel. `enabled` mirrors whether
+  `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
   `GET /trip/map`; the browser key comes from `GET /maps/config`. Rendered by
   [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
   the Maps JavaScript API and draws geodesic per-day route lines client-side

@@ -87,6 +87,15 @@ function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
   return pin.id === "airport";
 }
 
+export function placeNameMatches(candidate: string, focusName: string): boolean {
+  const normalizedCandidate = candidate.trim().toLowerCase();
+  const normalizedFocus = focusName.trim().toLowerCase();
+  if (!normalizedCandidate || !normalizedFocus) return false;
+  return normalizedCandidate === normalizedFocus
+    || normalizedCandidate.includes(normalizedFocus)
+    || normalizedFocus.includes(normalizedCandidate);
+}
+
 
 interface Props {
   /** Bump to refetch the map after the trip changes. */
@@ -212,11 +221,22 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     view.days.forEach((d) => dayColor.set(d.day, d.color));
     const visitOrderByPinId = new Map<string, number>();
     view.days.forEach((d) => {
-      d.pin_ids.forEach((id, idx) => visitOrderByPinId.set(id, idx + 1));
+      let visitOrder = 0;
+      d.pin_ids.forEach((id) => {
+        const pin = view.pins.find((candidate) => candidate.id === id);
+        if (pin?.kind === "hotel") return;
+        visitOrder += 1;
+        if (!visitOrderByPinId.has(id)) visitOrderByPinId.set(id, visitOrder);
+      });
     });
 
+    const activeDayPinIds = new Set(
+      activeDay === null
+        ? []
+        : view.days.find((day) => day.day === activeDay)?.pin_ids ?? []
+    );
     const visible = (p: MapPin) =>
-      p.kind === "hotel" || activeDay === null || p.day === activeDay;
+      p.kind === "hotel" || activeDay === null || activeDayPinIds.has(p.id);
     const bounds = new google.maps.LatLngBounds();
     let any = false;
 
@@ -229,16 +249,17 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       // and un-scheduled suggestions get a quiet dot.
       let icon: any;
       const visitOrder = visitOrderByPinId.get(p.id);
-      if (p.day && visitOrder) {
-        const color = dayColor.get(p.day) || "#64748b";
+      const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
+      if (p.kind === "hotel") {
         icon = {
-          url: pinIcon(color, String(visitOrder)),
+          url: hotelIcon(),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
-      } else if (p.kind === "hotel") {
+      } else if (markerDay && visitOrder) {
+        const color = dayColor.get(markerDay) || "#64748b";
         icon = {
-          url: hotelIcon(),
+          url: pinIcon(color, String(visitOrder)),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
@@ -343,11 +364,12 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   // (b) a follow-up redraw that would otherwise reset the zoom via fitBounds.
   useEffect(() => {
     if (!focusName || !view) return;
-    let target: MapPin | MapAirport | undefined = view.pins.find(
-      (p) => p.name.toLowerCase() === focusName.toLowerCase()
+    const normalizedFocus = focusName.trim().toLowerCase();
+    let target: MapPin | MapAirport | undefined = view.pins.find((p) =>
+      placeNameMatches(p.name, focusName)
     );
     // Check airport if not found in pins
-    if (!target && view.airport && view.airport.name.toLowerCase() === focusName.toLowerCase()) {
+    if (!target && view.airport && view.airport.name.trim().toLowerCase() === normalizedFocus) {
       target = view.airport;
     }
     if (!target) return;

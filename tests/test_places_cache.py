@@ -148,3 +148,24 @@ def test_evict_keeps_under_cap(_isolate, monkeypatch):
         pc.get_summary(f"Place{i}", "Goa")
     assert len(pc._CACHE) <= 3
 
+
+def test_persist_throttling_falls_back_to_local(_isolate, monkeypatch):
+    from tripplanner import storage_cosmos
+
+    class FakeThrottle(Exception):
+        status_code = 429
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(storage_cosmos, "upsert_doc", lambda *args, **kwargs: (_ for _ in ()).throw(FakeThrottle("throttled")))
+    warnings: list[str] = []
+    monkeypatch.setattr(pc.log, "warning", lambda msg, *args: warnings.append(msg % args if args else msg))
+
+    pc._CACHE[pc._key("Throttle Place", "Goa")] = {"__at__": time.time(), "name": "Throttle Place"}
+    pc._persist_retry_after = 0.0
+
+    pc._persist()
+
+    assert pc._local_path().exists()
+    assert warnings == []
+    assert pc._persist_retry_after > time.time()
+

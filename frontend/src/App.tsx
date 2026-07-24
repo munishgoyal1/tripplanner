@@ -17,6 +17,7 @@ interface NavRef {
 }
 
 type CanvasPane = "itinerary" | "map";
+type WorkspacePane = CanvasPane | "details" | "assistant";
 type ResizeTarget = "itinerary" | "inspector" | "chat" | null;
 
 function clamp(value: number, min: number, max: number): number {
@@ -53,13 +54,15 @@ export default function App() {
     const saved = localStorage.getItem("tripplanner_map_open");
     return saved ? JSON.parse(saved) : true;
   });
-  const [maximizedPane, setMaximizedPane] = useState<CanvasPane | null>(null);
+  const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
   const [itineraryOpen, setItineraryOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
   const [showExport, setShowExport] = useState(false);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
   const dockOpen = inspectorOpen || chatOpen;
+  const canvasMaximized = maximizedPane === "itinerary" || maximizedPane === "map";
+  const dockMaximized = maximizedPane === "details" || maximizedPane === "assistant";
   const [itineraryPct, setItineraryPct] = useState(() =>
     storedPercent("tripplanner_itinerary_pct", 24, 18, 38)
   );
@@ -374,7 +377,7 @@ export default function App() {
     dispatchWorkspace({ type: "jump", target: null });
   };
 
-  const toggleMaxPane = (pane: CanvasPane) => {
+  const toggleMaxPane = (pane: WorkspacePane) => {
     setMaximizedPane((prev) => (prev === pane ? null : pane));
   };
 
@@ -382,6 +385,12 @@ export default function App() {
     if (!open && ((pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen))) return;
     if (pane === "itinerary") setItineraryOpen(open);
     else setMapOpen(open);
+    if (!open && maximizedPane === pane) setMaximizedPane(null);
+  };
+
+  const setDockPaneOpen = (pane: "details" | "assistant", open: boolean) => {
+    if (pane === "details") setInspectorOpen(open);
+    else setChatOpen(open);
     if (!open && maximizedPane === pane) setMaximizedPane(null);
   };
 
@@ -486,17 +495,17 @@ export default function App() {
   };
 
   const inspector = (
-    <div className={!dockOpen || maximizedPane ? "hidden" : "contents"}>
+    <div className={!dockOpen || canvasMaximized ? "hidden" : "contents"}>
       <aside
         ref={inspectorRef}
         data-testid="context-inspector"
         className={`flex min-h-0 flex-col overflow-hidden bg-surface ${
-          isWideDesktop
+          isWideDesktop || dockMaximized
             ? "h-full rounded-2xl border border-slate-200/70 shadow-card"
             : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
         }`}
       >
-        <section className={`min-h-0 flex-col ${inspectorOpen ? "flex" : "hidden"} ${chatOpen ? "flex-1" : "h-full"}`}>
+        <section className={`min-h-0 flex-col ${inspectorOpen && maximizedPane !== "assistant" ? "flex" : "hidden"} ${chatOpen && !dockMaximized ? "flex-1" : "h-full"}`}>
           <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {focus ? "Place details" : "Trip details"}
@@ -504,19 +513,28 @@ export default function App() {
             {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
             <button
               type="button"
-              onClick={() => setInspectorOpen(false)}
+              onClick={() => setDockPaneOpen("details", false)}
               className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
               aria-label="Hide Details"
               title="Hide Details"
             >
               <EyeOff size={15} aria-hidden />
             </button>
+            <button
+              type="button"
+              onClick={() => toggleMaxPane("details")}
+              className="grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
+              aria-label={maximizedPane === "details" ? "Restore Details" : "Maximize Details"}
+              title={maximizedPane === "details" ? "Restore" : "Maximize"}
+            >
+              {maximizedPane === "details" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
+            </button>
           </header>
           <div className="min-h-0 flex-1">
             <TripPanel {...tripPanelProps} hideSwitcher />
           </div>
         </section>
-        {inspectorOpen && chatOpen && (
+        {inspectorOpen && chatOpen && !dockMaximized && (
           <div
             role="separator"
             tabIndex={0}
@@ -533,8 +551,8 @@ export default function App() {
           </div>
         )}
         <section
-          className={`relative z-10 min-h-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] ${chatOpen ? "flex flex-col" : "hidden"} ${inspectorOpen ? "shrink-0" : "h-full flex-1"}`}
-          style={{ height: inspectorOpen ? `${chatPct}%` : "100%" }}
+          className={`relative z-10 min-h-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] ${chatOpen && maximizedPane !== "details" ? "flex flex-col" : "hidden"} ${inspectorOpen && !dockMaximized ? "shrink-0" : "h-full flex-1"}`}
+          style={{ height: inspectorOpen && !dockMaximized ? `${chatPct}%` : "100%" }}
         >
           <div className="relative min-h-0 flex-1">
             <ChatPanel
@@ -548,12 +566,21 @@ export default function App() {
           </div>
           <button
             type="button"
-            onClick={() => setChatOpen(false)}
+            onClick={() => setDockPaneOpen("assistant", false)}
             className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
             aria-label="Hide Assistant"
             title="Hide Assistant"
           >
             <EyeOff size={15} aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleMaxPane("assistant")}
+            className="absolute right-12 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
+            aria-label={maximizedPane === "assistant" ? "Restore Assistant" : "Maximize Assistant"}
+            title={maximizedPane === "assistant" ? "Restore" : "Maximize"}
+          >
+            {maximizedPane === "assistant" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
           </button>
         </section>
       </aside>
@@ -646,7 +673,7 @@ export default function App() {
             </button>
             <button
               type="button"
-              onClick={() => setInspectorOpen((open) => !open)}
+              onClick={() => setDockPaneOpen("details", !inspectorOpen)}
               className={`btn-ghost ${inspectorOpen ? "bg-slate-100 text-ink" : ""}`}
               aria-pressed={inspectorOpen}
               title="Show or hide trip details"
@@ -655,7 +682,7 @@ export default function App() {
             </button>
             <button
               type="button"
-              onClick={() => setChatOpen((open) => !open)}
+              onClick={() => setDockPaneOpen("assistant", !chatOpen)}
               className={`btn-ghost ${chatOpen ? "bg-slate-100 text-ink" : ""}`}
               aria-pressed={chatOpen}
               title="Show or hide the trip assistant"
@@ -711,7 +738,7 @@ export default function App() {
                 : `${itineraryPct}fr 0.375rem ${100 - itineraryPct}fr`,
           }}
         >
-          <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane === "map" ? "hidden" : ""}`}>
+          <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>
             {renderCanvasPane("itinerary")}
           </section>
           {!maximizedPane && itineraryOpen && mapOpen && (
@@ -730,7 +757,7 @@ export default function App() {
               <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/60" />
             </div>
           )}
-          <section className={`min-h-0 min-w-0 ${!mapOpen || maximizedPane === "itinerary" ? "hidden" : ""}`}>
+          <section className={`min-h-0 min-w-0 ${!mapOpen || maximizedPane && maximizedPane !== "map" ? "hidden" : ""}`}>
             {renderCanvasPane("map")}
           </section>
           {!maximizedPane && isWideDesktop && dockOpen && (itineraryOpen || mapOpen) && (

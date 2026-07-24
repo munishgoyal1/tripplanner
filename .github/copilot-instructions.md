@@ -106,14 +106,30 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Concrete restaurant itinerary stops (Session 34)**: restaurant search is a
+  completion gate, not optional enrichment. Substantial days must persist named,
+  preference-matched restaurants instead of `TBD` meals. `update_trip_plan`
+  reports placeholders or meal-free multi-activity days so the agent can call
+  `nearby_restaurants` and resubmit; `restaurant` kinds normalize to `meal`.
+- **Popover, pane maximize, and complete map circuits (Session 33)**: the account
+  popover toggles from the profile control and dismisses on outside click/Escape.
+  Details and Assistant now maximize/restore like Itinerary and Map while all
+  panes stay mounted. Map day chips still focus the first non-hotel place. Day
+  routes use every structured occurrence (including places repeated across
+  days) and close each circuit from/to the selected hotel; active-day filtering
+  follows route membership so referenced pins do not disappear.
+  Map focus tolerates Google-canonicalized restaurant/place names, so itinerary
+  restaurant clicks still open the matching map tile.
 - **Portable low-cost Cosmos architecture (Session 32, repository implementation)**:
   local SPA development uses the official Dockerized Cosmos DB Emulator with
   loopback-only TLS relaxation. Hosted IaC now separates a shared lifetime
   free-tier data account (`rg-tripplanner-data`) from app environments, with
   isolated `tripplanner-canary` and `tripplanner-prod` databases at 400 RU/s
   each. Migration performs exact six-container verification; throughput and
-  cleanup scripts are guarded. Live Azure creation/cutover/deletion remains
-  separately approval-gated in `.azure/deployment-plan.md`.
+  cleanup scripts are guarded. Live canary/prod data migration and cutover are
+  complete. The local legacy account is deleted; direct Azure inventory still
+  shows the legacy canary/prod accounts despite explicit owner approval and an
+  attempted deletion. See `.azure/deployment-plan.md`.
 - **Independent right dock + common export (Session 31)**: Details and Assistant
   are mounted sibling sections with matching hide controls; hiding either leaves
   the other visible and lets it fill the dock. Map day chips now focus a primary

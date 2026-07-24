@@ -1,6 +1,8 @@
 # Azure Deployment Plan
 
-Status: Repository implementation complete; Azure mutation approval pending
+Status: Migration and cutover complete; legacy cleanup partial. Local Cosmos is
+deleted, but legacy canary and prod accounts still exist despite the approved
+deletion attempt.
 Last updated: 2026-07-24
 
 ## 1. Objective And Constraints
@@ -254,14 +256,25 @@ Repository proof recorded on 2026-07-24:
 
 ## 8. Validation Proof
 
-Not yet executed. Populate this section with command, timestamp, subscription,
-result summary, and any warnings before deployment.
+Validated at `2026-07-24T09:09:04Z` against subscription
+`2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b` and tenant
+`d889d6d8-feaa-4837-937f-ddb9007ba8ef`:
+
+- `az bicep build --file infra/data-stack.bicep --stdout`: passed.
+- Azure context and provider preflight: intended subscription/tenant confirmed;
+  `Microsoft.DocumentDB` and `Microsoft.App` registered.
+- Lifetime free-tier preflight: zero existing free-tier Cosmos accounts.
+- `az deployment sub validate`: passed for `infra/data-stack.bicep` and
+  `infra/data.bicepparam`.
+- `./infra/deploy-data.ps1 -DryRun`: 16 creations and no updates or deletions:
+  one data resource group, one free-tier account, two 400-RU/s databases, and
+  six `/user_id` containers per database. Audit TTL is 7,776,000 seconds.
 
 ## 9. Approval Gates
 
-Approval requested now covers repository implementation only. It does not
-authorize Azure resource creation, throughput changes, data cutover, production
-deployment, or deletion.
+On 2026-07-24, the owner approved live Cosmos resource creation, throughput
+changes, and canary migration after confirming the local emulator works. This
+approval does not authorize production cutover or resource deletion.
 
 Later gates:
 
@@ -270,3 +283,29 @@ Later gates:
 3. Enter `APPROVE_PROD_DEPLOYMENT` for production cutover.
 4. Separately approve deletion of named old Cosmos accounts and ACRs after the
    rollback window.
+
+## 10. Execution Record (2026-07-24)
+
+Completed in one session after the owner explicitly approved all remaining
+steps, including an immediate deletion that waives the 7-day rollback window:
+
+- **Migration script fix:** `scripts/cosmos_copy.py` now enumerates source
+  containers and skips any missing on the source (legacy canary/prod have five
+  containers, not six — no `shared_trips`), so copies no longer fail.
+- **Canary data copy:** legacy `canary-cosmos-zcebxnuakdwnu/tripplanner` → shared
+  `tripplanner-data-qftmtl5pavmcu/tripplanner-canary`; 76 items copied and
+  point-read verified (users 10, trips 7, places_cache 1, tool_cache 58,
+  audit_events 0).
+- **Prod data copy:** legacy `prod-cosmos-f3ddjudq2rdt4/tripplanner` → shared
+  `tripplanner-prod`; 26 items copied and verified (users 4, trips 1,
+  places_cache 1, tool_cache 20, audit_events 0).
+- **Cutover (surgical, not full redeploy):** to avoid blanking API-key secrets
+  from an incomplete local `.env`, both container apps were cut over by updating
+  only the `cosmos-key` secret plus the `COSMOS_ENDPOINT` and `COSMOS_DATABASE`
+  env vars. Canary → `tripplanner-canary`, prod → `tripplanner-prod`; both
+  `GET /api/health` returned `{"status":"ok"}` on the new revision.
+- **Legacy deletion:** owner accepted the loss of the rollback window and
+  approved all three deletions. `localcosmos2cgsfp` was deleted. A direct Azure
+  Resource Graph check afterward found `canary-cosmos-zcebxnuakdwnu` and
+  `prod-cosmos-f3ddjudq2rdt4` still present in `Succeeded` state alongside the
+  shared account. Those two deletions remain outstanding.

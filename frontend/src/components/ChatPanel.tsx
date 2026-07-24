@@ -68,6 +68,7 @@ export default function ChatPanel({
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
   // Set to true immediately after a Google sign-in where the previous identity
   // was a guest web-* id. The transcript effect reads this and skips loading
@@ -75,7 +76,7 @@ export default function ChatPanel({
   const freshSignInRef = useRef(false);
 
   useEffect(() => {
-    const openAccount = () => setShowAccount(true);
+    const openAccount = () => setShowAccount((open) => !open);
     const openSettings = () => setShowSettings(true);
     window.addEventListener("tripplanner:open-account", openAccount);
     window.addEventListener("tripplanner:open-settings", openSettings);
@@ -84,6 +85,22 @@ export default function ChatPanel({
       window.removeEventListener("tripplanner:open-settings", openSettings);
     };
   }, []);
+
+  useEffect(() => {
+    if (!showAccount) return;
+    const dismissAccount = (event: PointerEvent) => {
+      if (!accountRef.current?.contains(event.target as Node)) setShowAccount(false);
+    };
+    const dismissOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowAccount(false);
+    };
+    document.addEventListener("pointerdown", dismissAccount);
+    window.addEventListener("keydown", dismissOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", dismissAccount);
+      window.removeEventListener("keydown", dismissOnEscape);
+    };
+  }, [showAccount]);
 
   const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
 
@@ -444,7 +461,7 @@ export default function ChatPanel({
               </span>
             </button>}
             {showAccount && createPortal(
-              <div className="fixed right-3 top-14 z-[100] w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
+              <div ref={accountRef} className="fixed right-3 top-14 z-[100] w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
                 {auth.authenticated ? (
                   <>
                     <div className="mb-2 flex items-center gap-2">

@@ -167,6 +167,14 @@ def copy_cosmos(
     src_database = _client(source).get_database_client(source.database)
     dst_database = _client(target).get_database_client(target.database)
 
+    existing_source = {
+        container["id"] for container in src_database.list_containers()
+    }
+    skipped = [name for name in containers if name not in existing_source]
+    for name in skipped:
+        print(f"Container {name}: skipped (absent on source database)")
+    containers = [name for name in containers if name in existing_source]
+
     total = 0
     for name in containers:
         src_container = src_database.get_container_client(name)

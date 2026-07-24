@@ -1560,6 +1560,54 @@ VALIDATION:
 - Playwright not run because its configuration starts a dev server; component
   regressions and production compilation cover this milestone without starting one.
 
+=== 2026-07-24 — Session 33: Popover, pane maximize, and complete map circuits ===
+
+REQUIREMENT:
+- Clicking the profile icon again must hide account details; clicking elsewhere
+  must also dismiss them.
+- Details and Assistant need maximize/restore controls matching Map.
+- A Map day selection should continue focusing the first attraction rather than
+  the hotel.
+- Day map circuits must include every place and visibly return to the hotel at
+  night.
+
+IMPLEMENTED:
+- Account events now toggle the account popover; outside click and Escape close it.
+- The workspace's existing maximize state now covers Itinerary, Map, Details,
+  and Assistant while preserving mounted pane state.
+- Day-chip focus continues to prefer the first non-hotel route pin.
+- Structured stops authoritatively populate every day route, including a place
+  reused on multiple days. Active-day filtering follows that membership. Each
+  day route is normalized to selected hotel -> ordered places -> selected hotel,
+  and route distance/time includes the return leg.
+- Added focused regressions for dock maximize/restore, repeated-place membership,
+  and hotel-closed daily circuits.
+
+REGRESSION FIXES:
+- Account outside-click dismissal now listens on `pointerdown`, so the desktop
+  profile click that opens the portal cannot also close it in the same click.
+- Map focus now matches normalized canonical place names by exact or containment
+  comparison. Clicking an itinerary restaurant therefore opens its map tile even
+  when Google returns a longer branch/canonical name.
+
+=== 2026-07-24 — Session 34: Concrete restaurant itinerary stops ===
+
+REQUIREMENT:
+- Automatically search for and recommend preference-matched restaurants, then
+  add concrete restaurant names to the itinerary instead of `TBD` meal stops.
+
+IMPLEMENTED:
+- The trip-agent completion gate requires `nearby_restaurants` results to be
+  selected and persisted as named meal stops on substantial planning days.
+- `update_trip_plan` reports incomplete restaurant planning when a meal is a
+  placeholder or a day with multiple activities has no named restaurant, giving
+  the agent deterministic feedback to search and resubmit before replying.
+- Backend stop parsing normalizes `restaurant` to `meal` so either structured
+  kind participates in completion checks and survives itinerary processing.
+
+VALIDATION:
+- Focused trip-plan restaurant regressions: 3 passing.
+
 === 2026-07-24 — Session 32: Long-term Cosmos cost optimization ===
 
 REQUIREMENT:
