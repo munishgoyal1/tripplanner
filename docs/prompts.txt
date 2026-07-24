@@ -1,0 +1,8 @@
+clickign on profile icon works, but click on it again doesnt remove the profile detrails banner that appeared. Also clicking on any othjer place outside of that banner  etc. should remove/hide it back.
+
+Make the chat and detail panel alkso have maximize option jus tlike mnap to keep experience consistent.
+
+so clickign on day i think automatically assumes the first attraction fo that day to focus (instead of hotel stay) which is good and right behaviour. 
+
+Some of the day;'s map circuit is buggy, palces are missing on map and ciurcuit is incomplete. even show the final loop completion let's say back to the hotel after all places , travbeller will go back to hotel at ngith, right ?
+
