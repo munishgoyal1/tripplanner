@@ -106,6 +106,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Reliable switches + Details actions (Session 46)**: saved-trip switching
+  aborts and invalidates older Details reads before applying the new view, so
+  old places cannot return. Every visible In trip pill is actionable: direct
+  removal for one occurrence, contextual choices for repeated places.
 - **Occurrence-aware place mutations (Session 45)**: add/remove applies the
   authoritative focused server view across Details, Itinerary, and Map.
   Repeated places carry day/stop/time identity; row removal targets one exact

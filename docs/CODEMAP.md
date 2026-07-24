@@ -98,7 +98,8 @@ frontend/
               desktop pane splits. Four-pane maximize/restore, request cancellation,
               mutation responses supersede older reads, same-place removal
               coalescing, retained add/remove Details focus, concise wrapping
-              command-bar status, shared map/details place focus. Mobile: chat + on-demand trip-details
+              command-bar status, trip switches invalidate older Details reads,
+              shared map/details place focus. Mobile: chat + on-demand trip-details
               sheet. Only the active responsive shell mounts.
     workspaceState.ts Canonical reducer for trip identity/revision, active place,
               chat reload, and itinerary jump state
@@ -108,7 +109,8 @@ frontend/
     components/
       ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
                mobile header owns launchers, desktop top row triggers them
-      TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards
+      TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards;
+           every visible In trip control removes directly or opens occurrence choices
       TripSwitcher.tsx     Persistent saved-trip switch/delete control; dropdown
                overlays all workspace panes
       ExportModal.tsx      Print/PDF/email export options and handoff

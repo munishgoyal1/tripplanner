@@ -71,7 +71,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   and map/itinerary refreshes retain prior data with visible retry states.
   One workspace reducer owns trip identity/revision and active place state, so
   focus-only navigation never triggers unrelated panel reloads. Stale trip,
-  map, and itinerary requests abort during rapid changes.
+  map, itinerary, and Details requests abort during rapid changes and saved-trip
+  switches; an old trip response must never overwrite the selected trip.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
   Clicking a place stop focuses both its map pin and its contextual Details view.
@@ -106,7 +107,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   available so the decision is easy to reverse. Repeated itinerary places are
   occurrence-aware: a row action removes that exact day/stop, while Details and
   Map expose an in-context menu for one occurrence or every occurrence. This
-  choice never depends on Assistant being visible.
+  choice never depends on Assistant being visible. Every visible In trip pill
+  is actionable: a single occurrence removes directly, while repeated places
+  open the occurrence choices.
 - **Mutation status**: the latest update sits near the trip identity in a
   flexible command-bar region. Routine add/remove/reflow messages stay concise;
   the region wraps when space is tight instead of clipping the update.

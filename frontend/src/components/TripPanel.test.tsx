@@ -42,6 +42,37 @@ const view: TripView = {
 };
 
 describe("TripPanel place removal", () => {
+  it("removes a single-occurrence place from the prominent In trip control", async () => {
+    const onDeselect = vi.fn().mockResolvedValue(true);
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          items: [{ ...view.items[0], photos: ["photo.jpg"], occurrences: [] }],
+        }}
+        loading={false}
+        navList={[{ kind: "attraction", name: "Eiffel Tower" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={onDeselect}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove Eiffel Tower from trip" }));
+
+    await waitFor(() => expect(onDeselect).toHaveBeenCalledWith(
+      "attraction",
+      "Eiffel Tower",
+      { all_occurrences: true },
+    ));
+  });
+
   it("prioritizes the focused occurrence and offers remove everywhere", async () => {
     const onDeselect = vi.fn().mockResolvedValue(true);
     render(

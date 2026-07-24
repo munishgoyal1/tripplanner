@@ -166,6 +166,13 @@ function ItemCard({
       setRemovingKey(null);
     }
   };
+  const onInTripClick = () => {
+    if (item.occurrences.length <= 1) {
+      void remove({ all_occurrences: true }, "all");
+      return;
+    }
+    setRemoveMenuOpen((open) => !open);
+  };
   return (
     <article className="card card-hover group">
       {photos.length > 0 ? (
@@ -185,9 +192,15 @@ function ItemCard({
           </span>
 
           {item.selected && (
-            <span className="pill absolute right-3 top-3 bg-emerald-500/95 text-white shadow-sm backdrop-blur">
+            <button
+              type="button"
+              disabled={removingKey != null}
+              onClick={onInTripClick}
+              aria-label={`Remove ${item.name} from trip`}
+              className="pill absolute right-3 top-3 bg-emerald-500/95 text-white shadow-sm backdrop-blur transition hover:bg-emerald-600 disabled:opacity-60"
+            >
               ✓ In trip
-            </span>
+            </button>
           )}
 
           {photos.length > 1 && (
@@ -267,7 +280,7 @@ function ItemCard({
                 <button
                   type="button"
                   disabled={removingKey != null}
-                  onClick={() => setRemoveMenuOpen((open) => !open)}
+                  onClick={onInTripClick}
                   aria-expanded={removeMenuOpen}
                   aria-haspopup="menu"
                   className="inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-emerald-100"

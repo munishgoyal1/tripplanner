@@ -73,7 +73,22 @@ vi.mock("./components/TripPanel", () => ({
   ),
 }));
 vi.mock("./components/TripSwitcher", () => ({
-  default: () => <div data-testid="trip-switcher" />,
+  default: ({ onSwitched }: { onSwitched: (tripId: string, view: unknown) => void }) => (
+    <div data-testid="trip-switcher">
+      <button
+        type="button"
+        onClick={() => onSwitched("rome-trip", {
+          ...emptyView,
+          has_trip: true,
+          title: "Rome",
+          destination: "Rome",
+          items: [{ name: "Colosseum", kind: "attraction", selected: true }],
+        })}
+      >
+        Switch to Rome
+      </button>
+    </div>
+  ),
 }));
 vi.mock("./components/RightRail", () => ({
   default: () => <div data-testid="right-rail" />,
@@ -184,6 +199,34 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "true"));
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower");
+  });
+
+  it("does not let an older details refresh overwrite a switched trip", async () => {
+    let resolveOldRefresh!: (value: unknown) => void;
+    const parisView = {
+      ...emptyView,
+      has_trip: true,
+      title: "Paris",
+      destination: "Paris",
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
+    };
+    fetchTripViewMock
+      .mockResolvedValueOnce(parisView)
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        resolveOldRefresh = resolve;
+      }));
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower"));
+    fireEvent.click(screen.getByRole("button", { name: "Focus pin" }));
+    fireEvent.click(screen.getByRole("button", { name: "Switch to Rome" }));
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Colosseum"));
+    resolveOldRefresh(parisView);
+    await Promise.resolve();
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Colosseum");
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
   });
 
   it("shows a concise wrapping update near the trip identity", async () => {

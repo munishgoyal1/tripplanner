@@ -1933,3 +1933,20 @@ VALIDATION:
   metadata check fails.
 - Frontend: 36 tests passing; TypeScript check and production build passing.
 
+=== 2026-07-24 — Session 46: Reliable trip switching and Details actions ===
+
+BUGS:
+- Switching a saved trip could leave old-trip places in Details indefinitely
+  when an earlier focus refresh resolved after the switch response.
+- The prominent In trip pill over a Details photo looked actionable but was a
+  non-interactive element; selected places could appear impossible to remove.
+
+IMPLEMENTED:
+- Saved-trip switching now advances the refresh generation and aborts the old
+  request before applying the switcher's authoritative view.
+- Both visible In trip controls share one action. Places with zero or one known
+  occurrence remove directly; repeated places retain the contextual occurrence
+  menu plus Remove everywhere.
+- Added regressions for stale pre-switch responses and the prominent Details
+  control.
+

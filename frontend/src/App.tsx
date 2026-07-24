@@ -274,6 +274,9 @@ export default function App() {
   };
 
   const handleSwitched = async (tripId?: string, view?: TripView | null) => {
+    ++refreshGeneration.current;
+    refreshController.current?.abort();
+    setLoading(false);
     dispatchWorkspace({ type: "trip-changed", tripId });
     // The switcher already fetched the fresh view — reuse it instead of making
     // the server rebuild the (cache-backed) view a second time.
