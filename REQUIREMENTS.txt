@@ -1830,3 +1830,32 @@ VALIDATION:
 - Backend: 510 passing; one unrelated Starlette TestClient deprecation warning.
 - Frontend: 31 tests passing; production build passing.
 
+=== 2026-07-24 — Session 42: Configurable local Cosmos backend (prepared) ===
+
+REQUIREMENT:
+- Allow local SPA development to choose between the Docker Cosmos Emulator and
+  an isolated Azure local-development database in the existing shared account.
+- Default to Azure for now; preserve an easy emulator switch for future cost
+  control. Create the corresponding database in the shared data resource group.
+
+DECISION:
+- Owner selected code/config preparation only for this milestone. Do not create
+  Azure resources yet.
+- A third 400-RU/s database raises total shared-account throughput from 800 to
+  1,200 RU/s, 200 RU/s above the 1,000-RU/s lifetime free-tier allowance.
+
+IMPLEMENTED:
+- Added `tripplanner-local` to shared-account Bicep with the same six containers
+  and 400 RU/s shared database throughput. This IaC is not yet deployed.
+- Added `COSMOS_DEV_BACKEND=azure|emulator`, default `azure`. Selection
+  precedence is command parameter, process environment, root `.env`, default.
+- Azure mode resolves endpoint/key through signed-in Azure CLI, uses only
+  `tripplanner-local`, and fails clearly if the database is not deployed. It
+  never writes credentials to files. Emulator mode retains loopback-only TLS
+  relaxation and Docker startup/readiness behavior.
+- Kept `-UseCanaryData` as an explicit advanced override, never a fallback.
+
+DEPLOYMENT PENDING:
+- Run updated Azure validation/what-if and obtain explicit deployment approval
+  before creating `tripplanner-local`. Until then, use emulator mode locally.
+

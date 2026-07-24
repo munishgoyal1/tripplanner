@@ -26,7 +26,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
-- Cosmos emulator: `.\infra\start-cosmos-emulator.ps1`
+- Local Cosmos backend: `COSMOS_DEV_BACKEND=azure|emulator` (default `azure`)
+- Cosmos emulator check: `.\infra\start-cosmos-emulator.ps1`
 - Deploy: see [infra/README.md](../infra/README.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
@@ -37,7 +38,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 src/tripplanner/
   api.py              FastAPI app — routes, SSE chat, /api prefix strip, SPA mount
   cli.py              Local CLI entrypoint (no SPA)
-  config.py           Pydantic Settings from .env
+  config.py           Pydantic Settings from .env, including local Cosmos backend choice
   graph.py            LangGraph StateGraph: agent ↔ tools loop
                       (binds only select_tools(messages) per turn)
   observability.py    OpenTelemetry / Azure Monitor (best-effort)

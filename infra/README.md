@@ -84,19 +84,27 @@ Notes:
 - Deploy scripts are now parameterized, so you can target any subscription, region, RG, and name prefix.
 - Production deployment still enforces manual approval (`APPROVE_PROD_DEPLOYMENT`).
 
-## Local Isolated Data Environment
+## Local Development Data Backend
 
-Use this when you want local development data fully isolated from canary/prod:
+Local SPA development defaults to the shared Azure account's isolated
+`tripplanner-local` database. Configure the backend in the root `.env`:
 
-```powershell
-./infra/start-cosmos-emulator.ps1
-./infra/check-local-cosmos.ps1
+```dotenv
+COSMOS_DEV_BACKEND=azure
 ```
 
-`scripts/dev-spa.ps1` performs this startup/readiness check and sets the local
-endpoint, well-known key, `tripplanner-local`, and `COSMOS_EMULATOR=1` for its
-backend process. It never reads hosted Cosmos coordinates from `.env` in the
-default path.
+Azure mode resolves the shared account endpoint/key through the signed-in Azure
+CLI at startup and never persists credentials. To use the isolated emulator:
+
+```powershell
+./scripts/dev-spa.ps1 -CosmosBackend emulator
+```
+
+The emulator path performs the startup/readiness check and sets the loopback
+endpoint, well-known key, `tripplanner-local`, and `COSMOS_EMULATOR=1` only for
+its backend process. The Azure `tripplanner-local` database has 400 RU/s shared
+throughput; with canary and production, total account provisioned throughput is
+1,200 RU/s, 200 RU/s above the lifetime free-tier throughput allowance.
 
 ## Cross-Environment Data Copy
 

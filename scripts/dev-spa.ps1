@@ -22,8 +22,12 @@
 #   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
+#   scripts\dev-spa.ps1 -CosmosBackend emulator # isolated Docker emulator
 #   scripts\dev-spa.ps1 -UseCanaryData # explicitly use hosted canary data
-#                                       # (default: local Cosmos DB Emulator)
+#
+# Cosmos backend precedence: -CosmosBackend, COSMOS_DEV_BACKEND environment,
+# .env COSMOS_DEV_BACKEND, then the default "azure". Azure mode uses the
+# isolated tripplanner-local database in the shared data account.
 #
 # First-time setup:
 #   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev]"
@@ -38,12 +42,47 @@ param(
     [switch]$FrontendOnly,
     [switch]$Watch,
     [switch]$Logs,
+    [ValidateSet("azure", "emulator")]
+    [string]$CosmosBackend,
     [switch]$UseCanaryData
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
+
+function Get-DotEnvValue {
+    param(
+        [string]$Name
+    )
+
+    $envPath = Join-Path $repoRoot ".env"
+    if (-not (Test-Path $envPath)) {
+        return $null
+    }
+    $match = Get-Content $envPath | Where-Object {
+        $_ -match "^\s*$([regex]::Escape($Name))\s*="
+    } | Select-Object -Last 1
+    if (-not $match) {
+        return $null
+    }
+    return (($match -split "=", 2)[1].Trim()).Trim('"').Trim("'")
+}
+
+$configuredCosmosBackend = if ($PSBoundParameters.ContainsKey("CosmosBackend")) {
+    $CosmosBackend
+} elseif (-not [string]::IsNullOrWhiteSpace($env:COSMOS_DEV_BACKEND)) {
+    $env:COSMOS_DEV_BACKEND.Trim().ToLowerInvariant()
+} else {
+    $dotEnvBackend = Get-DotEnvValue -Name "COSMOS_DEV_BACKEND"
+    if ([string]::IsNullOrWhiteSpace($dotEnvBackend)) { "azure" } else { $dotEnvBackend.Trim().ToLowerInvariant() }
+}
+if ($configuredCosmosBackend -notin @("azure", "emulator")) {
+    throw "COSMOS_DEV_BACKEND must be 'azure' or 'emulator'; got '$configuredCosmosBackend'."
+}
+if ($UseCanaryData -and $PSBoundParameters.ContainsKey("CosmosBackend") -and $CosmosBackend -eq "emulator") {
+    throw "-UseCanaryData cannot be combined with -CosmosBackend emulator."
+}
 
 function Stop-StaleTripplannerBackend {
     param(
@@ -91,7 +130,7 @@ function Stop-StaleTripplannerBackend {
     }
 }
 
-if (-not $FrontendOnly -and -not $UseCanaryData) {
+if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -eq "emulator") {
     & "$repoRoot\infra\start-cosmos-emulator.ps1"
     if ($LASTEXITCODE -ne 0) {
         throw "Cosmos DB Emulator startup failed."
@@ -101,12 +140,12 @@ if (-not $FrontendOnly -and -not $UseCanaryData) {
     $env:COSMOS_KEY = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
     $env:COSMOS_DATABASE = "tripplanner-local"
     $env:COSMOS_EMULATOR = "1"
-    Write-Host "Using isolated local Cosmos DB Emulator (pass -UseCanaryData for hosted canary)." -ForegroundColor DarkGray
+    Write-Host "Using isolated local Cosmos DB Emulator." -ForegroundColor DarkGray
 }
 
-if (-not $FrontendOnly -and $UseCanaryData) {
+if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "azure")) {
     if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
-        throw "Azure CLI (az) not found; cannot use hosted canary data."
+        throw "Azure CLI (az) not found; use -CosmosBackend emulator or install/sign in to Azure CLI."
     }
 
     $cosmosRg = if ($env:COSMOS_RESOURCE_GROUP) { $env:COSMOS_RESOURCE_GROUP } else { "rg-tripplanner-data" }
@@ -118,22 +157,23 @@ if (-not $FrontendOnly -and $UseCanaryData) {
         $accounts[0]
     }
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($cosmosName)) {
-        throw "No shared Cosmos account found in $cosmosRg; refusing ambiguous -UseCanaryData startup."
+        throw "No shared Cosmos account found in $cosmosRg; refusing ambiguous Azure Cosmos startup."
     }
     $cosmosEndpoint = az cosmosdb show -g $cosmosRg -n $cosmosName --query documentEndpoint -o tsv
     $cosmosKey = az cosmosdb keys list -g $cosmosRg -n $cosmosName --query primaryMasterKey -o tsv
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($cosmosEndpoint) -or [string]::IsNullOrWhiteSpace($cosmosKey)) {
-        throw "Could not resolve hosted canary Cosmos credentials; refusing ambiguous startup."
+        throw "Could not resolve Azure Cosmos credentials; refusing ambiguous startup."
     }
-    az cosmosdb sql database show -g $cosmosRg -a $cosmosName -n tripplanner-canary -o none
+    $cosmosDatabase = if ($UseCanaryData) { "tripplanner-canary" } else { "tripplanner-local" }
+    az cosmosdb sql database show -g $cosmosRg -a $cosmosName -n $cosmosDatabase -o none
     if ($LASTEXITCODE -ne 0) {
-        throw "Required database tripplanner-canary does not exist; refusing hosted startup."
+        throw "Required database $cosmosDatabase does not exist. Deploy infra/data-stack.bicep first, or use -CosmosBackend emulator."
     }
     $env:COSMOS_ENDPOINT = $cosmosEndpoint
     $env:COSMOS_KEY = $cosmosKey
-    $env:COSMOS_DATABASE = "tripplanner-canary"
+    $env:COSMOS_DATABASE = $cosmosDatabase
     Remove-Item Env:COSMOS_EMULATOR -ErrorAction SilentlyContinue
-    Write-Host "Using canary Cosmos for local backend state ($cosmosName)." -ForegroundColor DarkGray
+    Write-Host "Using Azure Cosmos database $cosmosDatabase ($cosmosName)." -ForegroundColor DarkGray
 }
 
 if (-not $FrontendOnly) {

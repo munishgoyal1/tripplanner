@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Configurable local Cosmos backend, prepared only (Session 42)**:
+  `COSMOS_DEV_BACKEND=azure|emulator` defaults to Azure `tripplanner-local`;
+  emulator remains explicit and canary remains a separate override. Bicep adds
+  the undeployed 400-RU/s local database, taking planned shared throughput to
+  1,200 RU/s (200 above free tier). Deployment requires separate approval.
 - **Authoritative Map day placement (Session 41)**: explicit Map additions move
   existing unbooked occurrences to the chosen day and bypass automatic reflow.
   Missing days and booked conflicts reject unchanged with actionable choices;

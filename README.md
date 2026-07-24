@@ -175,14 +175,17 @@ scripts\dev-spa.ps1                 # backend on :8000 + Vite on :5173
 scripts\dev-spa.ps1 -Watch          # enable live reload for both
 scripts\dev-spa.ps1 -BackendOnly    # just the API
 scripts\dev-spa.ps1 -FrontendOnly   # just Vite
-scripts\dev-spa.ps1 -UseCanaryData  # share the canary Cosmos instead of local
+scripts\dev-spa.ps1 -CosmosBackend emulator # use isolated Docker Cosmos
+scripts\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
 ```
 
-By default, `scripts\dev-spa.ps1` starts the official Dockerized **Cosmos DB
-Emulator** and uses its isolated `tripplanner-local` database. Docker Desktop
-must be running; emulator data persists in a named Docker volume. Pass
-`-UseCanaryData` to deliberately point the local backend at the hosted shared
-account's `tripplanner-canary` database.
+By default, `scripts\dev-spa.ps1` uses the shared Azure Cosmos account's
+isolated `tripplanner-local` database. Azure CLI must be installed and signed
+in; credentials are resolved at startup and never written to `.env`. Set
+`COSMOS_DEV_BACKEND=emulator` in `.env` or pass `-CosmosBackend emulator` to
+use the official Dockerized **Cosmos DB Emulator** instead. Emulator data
+persists in a named Docker volume. `-UseCanaryData` remains an explicit
+advanced override for hosted canary data.
 
 
 Three speeds of feedback you actually have:

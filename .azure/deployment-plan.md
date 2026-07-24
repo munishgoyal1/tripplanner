@@ -1,8 +1,8 @@
 # Azure Deployment Plan
 
-Status: Migration and cutover complete; legacy cleanup partial. Local Cosmos is
-deleted, but legacy canary and prod accounts still exist despite the approved
-deletion attempt.
+Status: Migration and cutover complete; Azure local-development database change
+prepared but not deployed; legacy cleanup partial. Local legacy Cosmos is deleted,
+but legacy canary and prod accounts still exist despite the approved deletion attempt.
 Last updated: 2026-07-24
 
 ## 1. Objective And Constraints
@@ -54,10 +54,12 @@ throughput and unused ACRs are.
 
 ## 3. Target Architecture
 
-### Local
+### Local development
 
-- Run the official Linux-based Azure Cosmos DB Emulator vNext image through a
-  repository-owned Docker Compose file.
+- Default to an isolated `tripplanner-local` database in the shared Azure data
+  account, selected by `COSMOS_DEV_BACKEND=azure`.
+- Retain the official Linux-based Azure Cosmos DB Emulator vNext image as the
+  `COSMOS_DEV_BACKEND=emulator` option through repository-owned Docker Compose.
 - Use the NoSQL gateway endpoint at `https://localhost:8081`, readiness endpoint
   at `http://localhost:8080/ready`, and Data Explorer at
   `https://localhost:1234`.
@@ -65,8 +67,10 @@ throughput and unused ACRs are.
 - Configure the Python SDK for gateway mode and disable certificate validation
   only when the endpoint is explicitly localhost/loopback and the local
   emulator flag is enabled. Hosted endpoints always retain TLS validation.
-- Make `scripts/dev-spa.ps1` start/check the emulator and explicitly set the
-  local endpoint, well-known emulator key, and `tripplanner-local` database.
+- Make `scripts/dev-spa.ps1` resolve Azure account credentials at runtime and
+  verify `tripplanner-local` exists in Azure mode; never persist credentials.
+  Emulator mode starts/checks Docker and explicitly sets the loopback endpoint,
+  well-known emulator key, and `tripplanner-local` database.
 - Keep an explicit opt-in switch for using canary data, with a warning and no
   silent fallback from a failed emulator to local JSON or cloud Cosmos.
 
@@ -74,12 +78,13 @@ throughput and unused ACRs are.
 
 - Create one new Cosmos DB for NoSQL account in a dedicated
   `rg-tripplanner-data` resource group with lifetime free tier enabled.
-- Create two databases in that account:
+- Create three databases in that account:
+  - `tripplanner-local`: fixed shared throughput of 400 RU/s.
   - `tripplanner-canary`: fixed shared throughput of 400 RU/s.
   - `tripplanner-prod`: fixed shared throughput of 400 RU/s.
-- The combined 800 RU/s remains within the account's 1,000 RU/s lifetime
-  free-tier provisioned-throughput allowance, subject to the subscription's
-  one-free-tier-account eligibility and 25-GB storage allowance.
+- The combined 1,200 RU/s exceeds the account's 1,000 RU/s lifetime free-tier
+  provisioned-throughput allowance by 200 RU/s. This is an intentional tradeoff
+  for local/canary/prod database isolation and introduces a small Azure charge.
 - Provision the same containers in each database with partition key `/user_id`:
   `users`, `trips`, `places_cache`, `shared_trips`, `tool_cache`, and
   `audit_events`. Configure `audit_events` default TTL to 7,776,000 seconds.
@@ -92,10 +97,9 @@ throughput and unused ACRs are.
 ### Why 400 RU/s
 
 400 RU/s is the minimum fixed provisioned throughput for a shared-throughput
-database. It cannot be reduced further in provisioned mode. Serverless can
-reduce cost for near-zero usage but cannot use the lifetime free-tier discount;
-for this workload, two 400-RU/s databases in one eligible free-tier account are
-both cheaper and more predictable.
+database. It cannot be reduced further in provisioned mode. Serverless is an
+account-level capability and cannot be mixed into this provisioned-throughput
+account. Three isolated databases therefore require 1,200 RU/s total.
 
 ## 4. Repository Changes
 
@@ -189,19 +193,22 @@ the rollback window and explicit cleanup approval are complete.
 1. **Repository implementation (complete):** IaC modules/parameters, emulator
   workflow, SDK configuration, migration/cleanup scripts, tests, and
   documentation are implemented. Final validation and commit/push are pending.
-2. **Azure preflight:** Confirm subscription context, free-tier eligibility,
+2. **Azure local database (prepared, not deployed):** validate and deploy the
+  third `tripplanner-local` database and six containers only after explicit
+  deployment approval. Confirm the expected 200-RU/s billable overage.
+3. **Azure preflight:** Confirm subscription context, free-tier eligibility,
    provider registration, naming availability, permissions, Bicep validation,
    and `what-if`. Record evidence in this plan. No resource mutation.
-3. **Immediate cost floor:** With explicit Azure-change approval, lower all old
+4. **Immediate cost floor:** With explicit Azure-change approval, lower all old
    Cosmos databases to 400 RU/s. Verify throughput after update.
-4. **Shared data plane:** Create `rg-tripplanner-data`, the new eligible
+5. **Shared data plane:** Create `rg-tripplanner-data`, the new eligible
    free-tier account, databases, and containers. Confirm `enableFreeTier=true`
    and total provisioned throughput of 800 RU/s.
-5. **Canary migration:** Copy, verify, cut over, smoke test, and monitor canary.
+6. **Canary migration:** Copy, verify, cut over, smoke test, and monitor canary.
    Commit/push any operational documentation updates.
-6. **Production migration:** Require `APPROVE_PROD_DEPLOYMENT`, take a final
+7. **Production migration:** Require `APPROVE_PROD_DEPLOYMENT`, take a final
    copy, verify, cut over, smoke test, and monitor production.
-7. **Deferred destructive cleanup:** After at least seven stable days, show the
+8. **Deferred destructive cleanup:** After at least seven stable days, show the
    exact old Cosmos accounts and ACRs with dependency checks and projected
    savings. Delete only after a separate explicit approval. Preserve all other
    resources and resource groups.
