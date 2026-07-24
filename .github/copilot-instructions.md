@@ -106,6 +106,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Persistence and async reliability (Session 36)**: local active-trip,
+  history, chat, and Places-cache writes use atomic temporary-file replacement
+  with bounded Windows lock retry. Same-process trip mutations serialize per
+  user. Cosmos exposes opt-in versioned reads and conditional replacements while
+  existing mutations retain their public shapes. Places cache state/load/write
+  ordering is synchronized without locking Google HTTP. Blocking trip API work
+  runs as complete worker-thread operations through `web/trip_operations.py`.
 - **Cross-flow reliability cleanup (Session 35)**: automatic itinerary fallback
   invokes the LangChain tool through `.invoke`, chat-created trip switches clear
   stale place/day focus before refreshing, and failed New trip requests preserve

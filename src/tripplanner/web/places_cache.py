@@ -26,11 +26,13 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
 import httpx
 
 from tripplanner.config import get_settings
+from tripplanner.json_store import atomic_write_json
 from tripplanner.tools.google_places import _BASE, is_configured
 
 log = logging.getLogger(__name__)
@@ -51,8 +53,11 @@ _COSMOS_CONTAINER = "places_cache"
 _COSMOS_PARTITION = "_shared"  # places are global, not per-user
 _COSMOS_DOC_ID = "cache"
 
-# Process-wide cache (shared across FastAPI requests; safe under the GIL).
+# Process-wide cache shared across FastAPI request and prefetch threads.
 _CACHE: dict[str, dict[str, Any]] = {}
+_CACHE_LOCK = RLock()
+_LOAD_LOCK = RLock()
+_PERSIST_LOCK = RLock()
 _loaded = False
 _suppress_persist = 0  # >0 while a batch is in flight (one write at the end)
 _persist_retry_after = 0.0
@@ -64,11 +69,16 @@ def _local_path() -> Path:
 
 
 def _load() -> None:
+    with _LOAD_LOCK:
+        _load_once()
+
+
+def _load_once() -> None:
     """Populate ``_CACHE`` from the durable store once per process."""
     global _loaded
-    if _loaded:
-        return
-    _loaded = True
+    with _CACHE_LOCK:
+        if _loaded:
+            return
     raw: Any = None
     try:
         from tripplanner import storage_cosmos
@@ -90,32 +100,46 @@ def _load() -> None:
             log.warning("places_cache local load failed: %s", exc)
             raw = None
     if not isinstance(raw, dict):
+        with _CACHE_LOCK:
+            _loaded = True
         return
     now = time.time()
-    for k, v in raw.items():
-        if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < _META_TTL_S:
-            _CACHE[k] = v
+    with _CACHE_LOCK:
+        for k, v in raw.items():
+            if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < _META_TTL_S:
+                _CACHE[k] = v
+        _loaded = True
 
 
 def _persist() -> None:
+    with _PERSIST_LOCK:
+        _persist_snapshot()
+
+
+def _persist_snapshot() -> None:
     """Write ``_CACHE`` to the durable store. Best-effort; never raises.
 
     Signed photo URLs are dropped before persisting — they expire within ~1h,
     so re-resolving from the long-lived ``photo_refs`` on reload is correct.
     """
     global _persist_retry_after
-    if _suppress_persist:
-        return
-    snapshot: dict[str, Any] = {}
-    for k, v in _CACHE.items():
-        snapshot[k] = {
-            kk: vv for kk, vv in v.items() if kk not in ("photo_urls", "__photos_at__")
+    with _CACHE_LOCK:
+        if _suppress_persist:
+            return
+        snapshot = {
+            k: {
+                kk: vv
+                for kk, vv in v.items()
+                if kk not in ("photo_urls", "__photos_at__")
+            }
+            for k, v in _CACHE.items()
         }
+        retry_after = _persist_retry_after
     now = time.time()
     try:
         from tripplanner import storage_cosmos
 
-        if storage_cosmos.is_enabled() and now >= _persist_retry_after:
+        if storage_cosmos.is_enabled() and now >= retry_after:
             try:
                 storage_cosmos.upsert_doc(
                     _COSMOS_CONTAINER,
@@ -130,7 +154,8 @@ def _persist() -> None:
                     # Cosmos throttled us. Keep the cache warm locally and
                     # pause Cosmos retries for a short window so a burst of
                     # photo/detail warming doesn't spam warnings.
-                    _persist_retry_after = now + 5 * 60
+                    with _CACHE_LOCK:
+                        _persist_retry_after = now + 5 * 60
                 else:
                     log.warning("places_cache cosmos persist failed: %s", exc)
                 # Fall through to local persistence either way.
@@ -138,8 +163,7 @@ def _persist() -> None:
         log.warning("places_cache cosmos persist failed: %s", exc)
     try:
         p = _local_path()
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps({"entries": snapshot}), encoding="utf-8")
+        atomic_write_json(p, {"entries": snapshot})
     except Exception as exc:  # noqa: BLE001
         log.warning("places_cache local persist failed: %s", exc)
 
@@ -152,21 +176,25 @@ def _batched_persist():
     rewrite the whole durable doc. Batch them into a single trailing write.
     """
     global _suppress_persist
-    _suppress_persist += 1
+    with _CACHE_LOCK:
+        _suppress_persist += 1
     try:
         yield
     finally:
-        _suppress_persist -= 1
-    if _suppress_persist == 0:
+        with _CACHE_LOCK:
+            _suppress_persist -= 1
+            should_persist = _suppress_persist == 0
+    if should_persist:
         _persist()
 
 
 def _evict_if_needed() -> None:
-    if len(_CACHE) <= _MAX_ENTRIES:
-        return
-    ordered = sorted(_CACHE.items(), key=lambda kv: kv[1].get("__at__", 0.0))
-    for k, _ in ordered[: len(_CACHE) - _MAX_ENTRIES]:
-        _CACHE.pop(k, None)
+    with _CACHE_LOCK:
+        if len(_CACHE) <= _MAX_ENTRIES:
+            return
+        ordered = sorted(_CACHE.items(), key=lambda kv: kv[1].get("__at__", 0.0))
+        for k, _ in ordered[: len(_CACHE) - _MAX_ENTRIES]:
+            _CACHE.pop(k, None)
 
 
 def _cache() -> dict[str, dict[str, Any]]:
@@ -314,13 +342,15 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     within the TTL window. Pass ``refresh=True`` to force a re-fetch."""
     cache = _cache()
     k = _key(name, city)
-    entry = cache.get(k)
-    if not refresh and _fresh(entry):
-        return entry  # type: ignore[return-value]
+    with _CACHE_LOCK:
+        entry = cache.get(k)
+        if not refresh and _fresh(entry):
+            return entry  # type: ignore[return-value]
     info = _lookup_place(name, city) or {}
     info["__at__"] = time.time()
-    cache[k] = info
-    _evict_if_needed()
+    with _CACHE_LOCK:
+        cache[k] = info
+        _evict_if_needed()
     _persist()
     return info
 
@@ -332,11 +362,18 @@ def get_photos(
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return []
-    stale = (time.time() - info.get("__photos_at__", 0.0)) >= _PHOTO_TTL_S
-    if refresh or "photo_urls" not in info or stale:
-        info["photo_urls"] = _photo_uris((info.get("photo_refs") or [])[:max_photos])
+    with _CACHE_LOCK:
+        stale = (time.time() - info.get("__photos_at__", 0.0)) >= _PHOTO_TTL_S
+        needs_photos = refresh or "photo_urls" not in info or stale
+        refs = list((info.get("photo_refs") or [])[:max_photos])
+        current = list(info.get("photo_urls") or [])
+    if not needs_photos:
+        return current
+    photo_urls = _photo_uris(refs)
+    with _CACHE_LOCK:
+        info["photo_urls"] = photo_urls
         info["__photos_at__"] = time.time()
-    return info.get("photo_urls") or []
+    return photo_urls
 
 
 def prefetch(
@@ -373,8 +410,13 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
     info = _ensure(name, city, refresh=refresh)
     if not info:
         return None
-    if refresh or "reviews" not in info:
-        info["reviews"] = _fetch_reviews(info.get("place_id", ""))
+    with _CACHE_LOCK:
+        needs_reviews = refresh or "reviews" not in info
+        place_id = info.get("place_id", "")
+    if needs_reviews:
+        reviews = _fetch_reviews(place_id)
+        with _CACHE_LOCK:
+            info["reviews"] = reviews
         _persist()
     return info
 
@@ -401,9 +443,10 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         return []
     cache = _cache()
     ck = f"__top__|{kind}|{destination.strip().lower()}"
-    entry = cache.get(ck)
-    if not refresh and _fresh(entry):
-        return entry.get("names", [])  # type: ignore[union-attr]
+    with _CACHE_LOCK:
+        entry = cache.get(ck)
+        if not refresh and _fresh(entry):
+            return entry.get("names", [])  # type: ignore[union-attr]
 
     query = (
         f"best hotels in {destination}"
@@ -426,8 +469,9 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
     except httpx.HTTPError as exc:
         log.warning("top_places lookup failed for %s: %s", destination, exc)
 
-    cache[ck] = {"names": names, "__at__": time.time()}
-    _evict_if_needed()
+    with _CACHE_LOCK:
+        cache[ck] = {"names": names, "__at__": time.time()}
+        _evict_if_needed()
     _persist()
     return names
 
@@ -435,6 +479,7 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
 def clear_cache() -> None:
     """Drop every cached entry. Useful for tests."""
     global _loaded
-    _CACHE.clear()
-    _loaded = False
+    with _CACHE_LOCK:
+        _CACHE.clear()
+        _loaded = False
 

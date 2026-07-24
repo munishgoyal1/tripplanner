@@ -20,7 +20,7 @@ User ──► Rich CLI  or  FastAPI
                   │
                   ▼
           ┌──────────────┐
-          │  Trip Agent  │  (GPT-4.1 + 19 tools)
+          │  Trip Agent  │  (GPT-4.1)
           └──────┬───────┘
                  │
          ┌───────┼────────┬──────────┐
@@ -57,7 +57,10 @@ Single-agent LangGraph graph with a tool-calling loop. The agent calls search
 tools (Duffel primary, Amadeus fallback), manages a trip plan through draft →
 finalized → booked lifecycle, and persists user preferences. Storage dispatch
 is automatic: `storage_cosmos.is_enabled()` returns True iff `COSMOS_ENDPOINT`
-is set, otherwise local JSON files are used.
+is set, otherwise local JSON files are used. Local trip, history, chat, and
+Places-cache writes use atomic replacement. FastAPI runs complete blocking
+trip load/mutate/render operations in worker threads so they do not stall the
+async request loop.
 
 ## Capabilities
 
@@ -296,16 +299,18 @@ tripplanner/
 │   ├── cli.py                    # Rich interactive CLI (local)
 │   ├── api.py                    # FastAPI server: /api endpoints + serves the SPA
 │   ├── user_context.py           # ContextVar holding current user_id
-│   ├── storage_cosmos.py         # Optional Cosmos backend (lazy import)
+│   ├── json_store.py             # Atomic local JSON persistence
+│   ├── storage_cosmos.py         # Cosmos backend + conditional write primitive
 │   │
 │   ├── web/
 │   │   ├── __init__.py
 │   │   ├── trip_view.py          # Pure-Python view-model (frontend-agnostic)
-│   │   ├── places_cache.py       # Google Places cache (photos/reviews)
+│   │   ├── places_cache.py       # Synchronized Google Places cache
+│   │   ├── trip_operations.py    # Blocking trip operations used by async routes
 │   │   └── oauth.py              # Standalone Google OAuth (HMAC session cookie)
 │   │
 │   ├── agents/
-│   │   └── trip_agent.py         # Trip planner (19 tools, preference-aware)
+│   │   └── trip_agent.py         # Preference-aware trip planner
 │   │
 │   └── tools/
 │       ├── duffel_flights.py     # Duffel flight search (PRIMARY)

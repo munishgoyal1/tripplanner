@@ -13,12 +13,15 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime
+from functools import wraps
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
 from langchain_core.tools import tool
 
 from tripplanner import storage_cosmos
+from tripplanner.json_store import atomic_write_json
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
 from tripplanner.tools.trip_diff import diff_plans, format_diff
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
@@ -35,11 +38,22 @@ _ACTIVE_TRIP_DOC_ID = "active_trip"
 _MAX_DAY_STOPS = 5
 _MAX_DAY_DISTANCE_KM = 18.0
 _MAX_DAY_DURATION_MIN = 360
+_MUTATION_LOCKS = tuple(RLock() for _ in range(64))
 _MEAL_PLACEHOLDER_RE = re.compile(
     r"\b(tbd|to be decided|restaurant option|restaurant recommendation|"
     r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
     re.I,
 )
+
+
+def _serialized_mutation(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        lock = _MUTATION_LOCKS[hash(get_user_id()) % len(_MUTATION_LOCKS)]
+        with lock:
+            return func(*args, **kwargs)
+
+    return wrapped
 
 
 def _slugify(text: str) -> str:
@@ -550,6 +564,7 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
     return changed
 
 
+@_serialized_mutation
 def add_hotel_stay(
     name: str,
     start_day: int | None = None,
@@ -716,6 +731,7 @@ def active_trip_id() -> str | None:
     return (active or {}).get("trip_id") if active else None
 
 
+@_serialized_mutation
 def add_trip_constraint(note: str) -> bool:
     """Record a one-off, trip-scoped constraint on the active trip.
 
@@ -745,6 +761,7 @@ def add_trip_constraint(note: str) -> bool:
         return False
 
 
+@_serialized_mutation
 def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
     """Add a hotel/attraction to the active trip's selections (UI helper).
 
@@ -782,6 +799,7 @@ def add_selection(kind: str, item: dict[str, Any]) -> dict[str, Any]:
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 
 
+@_serialized_mutation
 def remove_selection(kind: str, name: str) -> bool:
     """Remove a previously-added hotel/attraction from the active trip (UI helper).
 
@@ -817,6 +835,7 @@ def remove_selection(kind: str, name: str) -> bool:
     return True
 
 
+@_serialized_mutation
 def set_stop_booked(day: int, name: str, booked: bool) -> bool:
     """Toggle a single itinerary stop's ``booked`` flag (UI helper).
 
@@ -869,9 +888,7 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
         )
     else:
         _ensure_dirs()
-        _resolve_active_trip_path().write_text(
-            json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+        atomic_write_json(_resolve_active_trip_path(), plan, indent=2)
     _mirror_to_history(plan)
 
 
@@ -884,9 +901,7 @@ def _mirror_to_history(plan: dict[str, Any]) -> None:
         storage_cosmos.upsert_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), tid, plan)
         return
     _ensure_dirs()
-    (_resolve_trip_history_dir() / f"{tid}.json").write_text(
-        json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    atomic_write_json(_resolve_trip_history_dir() / f"{tid}.json", plan, indent=2)
 
 
 def _load_history_trip(trip_id: str) -> dict[str, Any] | None:
@@ -959,6 +974,7 @@ def saved_trip_destination(trip_id: str) -> str:
     return str((plan or {}).get("destination") or "") if plan else ""
 
 
+@_serialized_mutation
 def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
     """Make a saved trip the active one. Returns the plan, or ``None``.
 
@@ -972,6 +988,7 @@ def switch_active_trip(trip_id: str) -> dict[str, Any] | None:
     return plan
 
 
+@_serialized_mutation
 def delete_saved_trip(trip_id: str) -> bool:
     """Delete a saved trip; clears the active pointer if it was active."""
     if not trip_id:
@@ -986,6 +1003,7 @@ def delete_saved_trip(trip_id: str) -> bool:
     return True
 
 
+@_serialized_mutation
 def clear_all_trip_history() -> int:
     """Delete all saved trips for the current user and clear active trip."""
     if storage_cosmos.is_enabled():
@@ -1006,6 +1024,7 @@ def clear_all_trip_history() -> int:
     return deleted
 
 
+@_serialized_mutation
 def start_new_trip() -> None:
     """Clear the active trip so the next conversation starts fresh.
 
@@ -1017,6 +1036,7 @@ def start_new_trip() -> None:
     _delete_active_trip()
 
 
+@_serialized_mutation
 def import_shared_trip_snapshot(plan: dict[str, Any]) -> dict[str, Any]:
     """Persist a shared snapshot as the current user's active editable trip.
 
@@ -1045,6 +1065,7 @@ def _delete_active_trip() -> None:
 
 
 @tool
+@_serialized_mutation
 def create_trip_plan(
     destination: str,
     departure_date: str,
@@ -1153,6 +1174,7 @@ def get_trip_plan() -> str:
 
 
 @tool
+@_serialized_mutation
 def update_trip_plan(updates_json: str) -> str:
     """Update the active trip plan with selected flights, hotels, activities, or itinerary.
 
@@ -1215,6 +1237,7 @@ def update_trip_plan(updates_json: str) -> str:
 
 
 @tool
+@_serialized_mutation
 def finalize_trip() -> str:
     """Finalize the current trip plan — lock it and show the complete summary with costs.
 
@@ -1294,6 +1317,7 @@ def finalize_trip() -> str:
 
 
 @tool
+@_serialized_mutation
 def execute_bookings() -> str:
     """Execute all bookings for the finalized trip plan.
 
@@ -1392,6 +1416,7 @@ def list_past_trips() -> str:
 
 
 @tool
+@_serialized_mutation
 def resume_trip(destination: str = "", trip_id: str = "") -> str:
     """Resume a previously saved trip so the user doesn't restart from scratch.
 

@@ -246,9 +246,11 @@ async def chat(req: ChatRequest) -> ChatResponse:
         app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
         return ChatResponse(reply=msg, agent="cap")
 
-    history_tid, history = _load_chat()
+    history_tid, history = await asyncio.to_thread(_load_chat)
     history.append(HumanMessage(content=req.message))
-    result = app_graph.invoke({"messages": history, "current_agent": ""})
+    result = await asyncio.to_thread(
+        app_graph.invoke, {"messages": history, "current_agent": ""}
+    )
 
     reply = ""
     for msg in reversed(result["messages"]):
@@ -263,7 +265,7 @@ async def chat(req: ChatRequest) -> ChatResponse:
     if issues:
         app_event("hallucination_critic", issues=len(issues), claims=issues)
     history.append(AIMessage(content=reply))
-    tid_after = _save_chat(history_tid, history)
+    tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
     _schedule_learning_sweep(req.user_id, req.message)
 
     app_event("api_chat_response", reply_length=len(reply))
@@ -385,7 +387,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 
         return StreamingResponse(_capped(), media_type="text/event-stream")
 
-    history_tid, history = _load_chat()
+    history_tid, history = await asyncio.to_thread(_load_chat)
     history.append(HumanMessage(content=req.message))
 
     async def gen():
@@ -466,7 +468,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         # the Itinerary panel is never left blank.
         if "update_trip_plan" not in tool_names_called:
             await asyncio.to_thread(_auto_persist_itinerary, reply)
-        tid_after = _save_chat(history_tid, history)
+        tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
         _schedule_learning_sweep(req.user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
@@ -497,14 +499,12 @@ async def trip_view_endpoint(
 ) -> dict:
     """Frontend-agnostic trip-panel view-model. ``focus_kind``/``focus_name``
     optionally zoom one item."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(user_id)
-    trip = trip_planner.load_active_trip_dict()
     focus = {"kind": focus_kind, "name": focus_name} if focus_name else None
-    return await asyncio.to_thread(trip_view.build_view, trip, focus)
+    return await asyncio.to_thread(trip_operations.build_view, focus)
 
 
 @app.get("/maps/config")
@@ -524,13 +524,11 @@ async def maps_config_endpoint() -> dict:
 @app.get("/trip/map")
 async def trip_map_endpoint(user_id: str = "local") -> dict:
     """Interactive-map view-model: geocoded, day-tagged pins + route bands."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(user_id)
-    trip = trip_planner.load_active_trip_dict()
-    return await asyncio.to_thread(trip_view.build_map_view, trip)
+    return await asyncio.to_thread(trip_operations.build_map)
 
 
 @app.get("/destination/overview")
@@ -559,73 +557,50 @@ async def destination_overview_endpoint(
 @app.post("/trip/select")
 async def trip_select(req: SelectRequest) -> dict:
     """Add a hotel/attraction to the active trip (the SPA's 'Add to trip')."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(req.user_id)
-    if req.kind == "hotel" and (req.start_day is not None or req.end_day is not None):
-        result = trip_planner.add_hotel_stay(
-            req.name,
-            start_day=req.start_day,
-            end_day=req.end_day,
-            replace_existing=req.replace_stay,
-        )
-    else:
-        result = trip_planner.add_selection(req.kind, {"name": req.name})
-    trip = result.get("trip") or trip_planner.load_active_trip_dict()
-    focus_kind = "hotel" if req.kind == "hotel" else "attraction"
-    view = trip_view.build_view(trip, {"kind": focus_kind, "name": req.name})
-    if result.get("alerts"):
-        view["alerts"] = result["alerts"]
-    return {
-        "ok": result.get("ok", False),
-        "alerts": result.get("alerts", []),
-        "view": view,
-        "placement": result.get("placement"),
-        "placements": result.get("placements", []),
-    }
+    return await asyncio.to_thread(
+        trip_operations.select,
+        req.kind,
+        req.name,
+        start_day=req.start_day,
+        end_day=req.end_day,
+        replace_stay=req.replace_stay,
+    )
 
 
 @app.post("/trip/deselect")
 async def trip_deselect(req: SelectRequest) -> dict:
     """Remove a hotel/attraction from the active trip (the SPA's 'Remove')."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(req.user_id)
-    ok = trip_planner.remove_selection(req.kind, req.name)
-    trip = trip_planner.load_active_trip_dict()
-    alerts = [f"Removed {req.name} and refreshed the itinerary."] if ok else []
-    return {"ok": ok, "alerts": alerts, "view": trip_view.build_view(trip, None)}
+    return await asyncio.to_thread(trip_operations.deselect, req.kind, req.name)
 
 
 @app.get("/trip/itinerary")
 async def trip_itinerary_endpoint(user_id: str = "local") -> dict:
     """Structured day-by-day itinerary view-model (the Itinerary tab)."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(user_id)
-    trip = trip_planner.load_active_trip_dict()
-    return await asyncio.to_thread(trip_view.build_itinerary, trip)
+    return await asyncio.to_thread(trip_operations.build_itinerary)
 
 
 @app.post("/trip/stop/booked")
 async def trip_stop_booked(req: StopBookedRequest) -> dict:
     """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(req.user_id)
-    ok = await asyncio.to_thread(
-        trip_planner.set_stop_booked, req.day, req.name, req.booked
+    return await asyncio.to_thread(
+        trip_operations.set_stop_booked, req.day, req.name, req.booked
     )
-    trip = trip_planner.load_active_trip_dict()
-    return {"ok": ok, "itinerary": await asyncio.to_thread(trip_view.build_itinerary, trip)}
 
 
 @app.get("/trips")
@@ -643,15 +618,11 @@ async def trips_list(user_id: str = "local") -> dict:
 async def trips_switch(req: TripIdRequest) -> dict:
     """Make a saved trip active (auto-saving whatever was active) and return
     the refreshed trip-panel view."""
-    from tripplanner.tools import trip_planner
     from tripplanner.user_context import set_user_id
-    from tripplanner.web import trip_view
+    from tripplanner.web import trip_operations
 
     set_user_id(req.user_id)
-    plan = await asyncio.to_thread(trip_planner.switch_active_trip, req.trip_id)
-    if plan is None:
-        return {"ok": False, "error": "trip not found"}
-    return {"ok": True, "view": trip_view.build_view(plan, None)}
+    return await asyncio.to_thread(trip_operations.switch_trip, req.trip_id)
 
 
 @app.post("/trips/delete")

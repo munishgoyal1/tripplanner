@@ -23,6 +23,7 @@ from typing import Any
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 from tripplanner import storage_cosmos
+from tripplanner.json_store import atomic_write_json
 from tripplanner.user_context import get_user_id
 
 _CHATS_DIR = Path.home() / ".tripplanner" / "chats"
@@ -107,10 +108,7 @@ def save(trip_id: str | None, messages: list[BaseMessage]) -> None:
         )
         return
     d = _resolve_dir()
-    d.mkdir(parents=True, exist_ok=True)
-    (d / f"{_doc_id(trip_id)}.json").write_text(
-        json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    atomic_write_json(d / f"{_doc_id(trip_id)}.json", body, indent=2)
 
 
 def persist_turn(

@@ -41,7 +41,8 @@ src/tripplanner/
   graph.py            LangGraph StateGraph: agent ↔ tools loop
                       (binds only select_tools(messages) per turn)
   observability.py    OpenTelemetry / Azure Monitor (best-effort)
-  storage_cosmos.py   Cosmos DB persistence (lazy; on iff COSMOS_ENDPOINT set)
+  json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
+  storage_cosmos.py   Cosmos persistence + opt-in conditional replacement primitive
   user_context.py     ContextVar holding the current user_id per request
   agents/
     trip_agent.py     Single trip-planning agent — system prompt + 25 @tools
@@ -71,9 +72,9 @@ src/tripplanner/
                       build_map_view, build_itinerary — structured day-by-day stops)
     chat_store.py     PURE-PYTHON per-trip chat transcript persistence
                       (Cosmos users/chat_<trip_id> or local chats/<trip_id>.json)
-    places_cache.py   Google Places cache (ThreadPoolExecutor; 1-week details TTL +
-                      50-min photo-URL TTL; persisted L2 — Cosmos places_cache or
-                      local cache.json — survives restarts; surfaces lat/lng)
+    places_cache.py   Synchronized Google Places cache (ThreadPoolExecutor;
+              1-week details TTL + 50-min photo-URL TTL; persisted L2)
+    trip_operations.py  Synchronous load/mutate/render operations offloaded by api.py
     itinerary_export.py  Print-ready HTML export with optional photos, daily route
               diagrams/links/QR codes, and minimal/detailed/family themes
 frontend/
@@ -219,7 +220,11 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   `CHAINLIT_AUTH_SECRET`).
 - Guest fallback: `"web-<uuid>"` (per-browser via localStorage).
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
-  local JSON under `~/.tripplanner/`.
+  local JSON under `~/.tripplanner/`. Trip/history/chat/cache writes use
+  `json_store.atomic_write_json` so interruption cannot leave partial JSON.
+- Trip mutations are serialized per user inside one process. Cosmos also exposes
+  `read_doc_versioned` + `replace_doc_if_version` for future cross-replica
+  optimistic concurrency; current mutation flows retain unconditional upserts.
 - Cosmos containers: `users` (one doc per user: `preferences`, `active_trip`)
   and `trips` (every saved trip — drafts, finalized, and booked). Also
   `tool_cache` (read-through tool results) and `places_cache` (durable Google
@@ -230,7 +235,8 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   keep a 1-week TTL; signed photo URLs keep a 50-min TTL and are re-resolved
   on demand from long-lived `photo_refs` (URLs are NEVER persisted). Public
   fns take `refresh=True` to force re-fetch; `prefetch` batches the durable
-  write.
+  write. Cache state, one-time load, and durable snapshot ordering are separately
+  synchronized; Google HTTP calls never hold the cache-state lock.
 - **Saved trips (Session 19)**: every `_save_active_trip` mirrors the plan into
   the `trips` collection keyed by a stable `trip_id = slug(destination)_dep_ret`.
   Same destination + same dates → same id → `create_trip_plan` RESUMES (keeps

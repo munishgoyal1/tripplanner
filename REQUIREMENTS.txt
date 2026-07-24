@@ -1688,3 +1688,31 @@ VALIDATION:
 - Playwright not run because its configuration starts a dev server; component
   regressions and production compilation cover this milestone without starting one.
 
+=== 2026-07-24 — Session 36: Persistence and async reliability ===
+
+REQUIREMENT:
+- Implement the low-risk codebase audit items for persistence reliability,
+  blocking async paths, shared cache synchronization, and module boundaries.
+- Do not change identity authorization or booking semantics in this milestone.
+
+IMPLEMENTED:
+- Added shared atomic JSON persistence for active trips, trip history, chat, and
+  the local Places cache. Replacement retries only brief Windows sharing locks
+  and always cleans temporary files.
+- Serialized complete trip mutations per user within a process to prevent local
+  read-modify-write races without changing tool or API signatures.
+- Added opt-in Cosmos versioned reads and conditional replacement with a stable
+  conflict exception. Existing application reads still strip all Cosmos metadata;
+  wiring retry/merge policy across replicas remains a separate change.
+- Moved complete blocking trip load/mutate/render operations off the FastAPI event
+  loop through the focused `web/trip_operations.py` compatibility facade.
+- Synchronized Places cache state, one-time loading, and durable write ordering.
+  Network calls remain outside the cache-state lock.
+
+VALIDATION:
+- Backend: 500 passing; only the known corrupted local `websockets` package
+  metadata check fails.
+- Places concurrency suite passed five consecutive runs.
+- Frontend: 25 tests passing; production build passing.
+- New persistence/storage modules and tests: Ruff passing.
+

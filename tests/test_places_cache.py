@@ -8,6 +8,7 @@ network layer so they're deterministic and never touch Google or Cosmos.
 from __future__ import annotations
 
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -168,4 +169,19 @@ def test_persist_throttling_falls_back_to_local(_isolate, monkeypatch):
     assert pc._local_path().exists()
     assert warnings == []
     assert pc._persist_retry_after > time.time()
+
+
+def test_concurrent_cache_updates_and_snapshots_remain_valid(_isolate):
+    names = [f"Place {index}" for index in range(40)]
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        summaries = list(executor.map(lambda name: pc.get_summary(name, "Goa"), names))
+
+    assert all(summary and summary["place_id"] for summary in summaries)
+    assert len(pc._CACHE) == len(names)
+
+    import json
+
+    persisted = json.loads(pc._local_path().read_text(encoding="utf-8"))
+    assert set(persisted["entries"]) == {pc._key(name, "Goa") for name in names}
 

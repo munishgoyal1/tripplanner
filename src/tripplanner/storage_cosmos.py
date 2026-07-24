@@ -15,6 +15,7 @@ Designed for the Cosmos Free Tier (1000 RU/s, 25 GB free per subscription).
 from __future__ import annotations
 
 import copy
+from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlparse
 
@@ -25,6 +26,16 @@ _COSMOS_SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 _client: Any | None = None
 _database: Any | None = None
 _containers: dict[str, Any] = {}
+
+
+class WriteConflictError(RuntimeError):
+    """The document changed after it was read."""
+
+
+@dataclass(frozen=True)
+class VersionedDocument:
+    body: dict[str, Any]
+    version: str
 
 
 def _client_options(endpoint: str, emulator: bool) -> dict[str, Any]:
@@ -98,12 +109,57 @@ def read_doc(container: str, user_id: str, doc_id: str) -> dict[str, Any] | None
     return _strip_system_fields(item)
 
 
+def read_doc_versioned(
+    container: str, user_id: str, doc_id: str
+) -> VersionedDocument | None:
+    """Point read retaining an opaque version for a conditional replacement."""
+    from azure.cosmos.exceptions import CosmosResourceNotFoundError
+
+    try:
+        item = _container(container).read_item(item=doc_id, partition_key=user_id)
+    except CosmosResourceNotFoundError:
+        return None
+    return VersionedDocument(
+        body=_strip_system_fields(item),
+        version=str(item.get("_etag") or ""),
+    )
+
+
 def upsert_doc(container: str, user_id: str, doc_id: str, body: dict[str, Any]) -> None:
     """Upsert a document under (user_id, doc_id)."""
     payload = copy.deepcopy(body)
     payload["id"] = doc_id
     payload["user_id"] = user_id
     _container(container).upsert_item(body=payload)
+
+
+def replace_doc_if_version(
+    container: str,
+    user_id: str,
+    doc_id: str,
+    body: dict[str, Any],
+    version: str,
+) -> None:
+    """Replace a document only if its opaque version still matches."""
+    from azure.core import MatchConditions
+    from azure.cosmos.exceptions import CosmosHttpResponseError
+
+    payload = copy.deepcopy(body)
+    payload["id"] = doc_id
+    payload["user_id"] = user_id
+    try:
+        _container(container).replace_item(
+            item=doc_id,
+            body=payload,
+            etag=version,
+            match_condition=MatchConditions.IfNotModified,
+        )
+    except CosmosHttpResponseError as exc:
+        if exc.status_code == 412:
+            raise WriteConflictError(
+                f"{container}/{doc_id} changed before it could be saved"
+            ) from exc
+        raise
 
 
 def delete_doc(container: str, user_id: str, doc_id: str) -> None:
