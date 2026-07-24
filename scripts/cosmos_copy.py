@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import shutil
 import subprocess
 import time
 from collections.abc import Iterable
@@ -79,6 +81,23 @@ def _items_by_key(
     }
 
 
+def _equivalent_values(source: Any, target: Any) -> bool:
+    if isinstance(source, bool) or isinstance(target, bool):
+        return source is target
+    if isinstance(source, (int, float)) and isinstance(target, (int, float)):
+        return math.isclose(source, target, rel_tol=1e-15, abs_tol=1e-12)
+    if isinstance(source, dict) and isinstance(target, dict):
+        return source.keys() == target.keys() and all(
+            _equivalent_values(source[key], target[key]) for key in source
+        )
+    if isinstance(source, list) and isinstance(target, list):
+        return len(source) == len(target) and all(
+            _equivalent_values(source_value, target_value)
+            for source_value, target_value in zip(source, target, strict=True)
+        )
+    return source == target
+
+
 def copy_container(
     src_container: Any, dst_container: Any, container_name: str, *, dry_run: bool = False
 ) -> int:
@@ -112,7 +131,7 @@ def verify_container(src_container: Any, dst_container: Any, container_name: str
             expiry_changed = abs(source_expiry - target_expiry) > 5
         else:
             expiry_changed = source_expiry != target_expiry
-        if source_body != target_body or expiry_changed:
+        if not _equivalent_values(source_body, target_body) or expiry_changed:
             mismatched.append(key)
     mismatched.sort()
 
@@ -163,8 +182,11 @@ def copy_cosmos(
 
 
 def _az_output(*arguments: str) -> str:
+    azure_cli = shutil.which("az")
+    if not azure_cli:
+        raise RuntimeError("Azure CLI executable not found on PATH.")
     result = subprocess.run(
-        ["az", *arguments, "--only-show-errors", "-o", "tsv"],
+        [azure_cli, *arguments, "--only-show-errors", "-o", "tsv"],
         check=True,
         capture_output=True,
         text=True,

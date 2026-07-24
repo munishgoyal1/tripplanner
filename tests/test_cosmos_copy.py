@@ -50,6 +50,25 @@ def test_verify_rejects_changed_documents() -> None:
         verify_container(source, target, "users")
 
 
+def test_verify_accepts_cosmos_float_round_trip_drift() -> None:
+    source = FakeContainer(
+        [{"id": "one", "user_id": "u1", "coords": {"lat": 15.587015300000001}}]
+    )
+    target = FakeContainer(
+        [{"id": "one", "user_id": "u1", "coords": {"lat": 15.5870153}}]
+    )
+
+    assert verify_container(source, target, "places_cache") == 1
+
+
+def test_verify_rejects_meaningful_float_change() -> None:
+    source = FakeContainer([{"id": "one", "user_id": "u1", "lat": 15.5870153}])
+    target = FakeContainer([{"id": "one", "user_id": "u1", "lat": 15.5871153}])
+
+    with pytest.raises(RuntimeError, match="mismatched=1"):
+        verify_container(source, target, "places_cache")
+
+
 def test_dry_run_does_not_write() -> None:
     source = FakeContainer([{"id": "one", "user_id": "u1"}])
     target = FakeContainer([])
