@@ -22,9 +22,8 @@
 #   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
 #   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
-#   scripts\dev-spa.ps1 -UseCanaryData # point local backend at the CANARY Cosmos
-#                                       # (default: ISOLATED local Cosmos from .env,
-#                                       #  so local + canary trip data never mix)
+#   scripts\dev-spa.ps1 -UseCanaryData # explicitly use hosted canary data
+#                                       # (default: local Cosmos DB Emulator)
 #
 # First-time setup:
 #   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev]"
@@ -92,42 +91,49 @@ function Stop-StaleTripplannerBackend {
     }
 }
 
-# By default the local backend uses the ISOLATED local Cosmos configured in
-# .env (COSMOS_ENDPOINT=localcosmos...), so local dev never mixes trip/chat data
-# with the canary deployment. Pass -UseCanaryData to deliberately share the
-# canary store. Clear any stale process-level overrides so .env wins via
-# load_dotenv() (which does NOT override existing env vars).
-if (-not $UseCanaryData) {
-    foreach ($v in 'COSMOS_ENDPOINT', 'COSMOS_KEY', 'COSMOS_DATABASE') {
-        Remove-Item "Env:$v" -ErrorAction SilentlyContinue
+if (-not $FrontendOnly -and -not $UseCanaryData) {
+    & "$repoRoot\infra\start-cosmos-emulator.ps1"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Cosmos DB Emulator startup failed."
     }
-    Write-Host "Using ISOLATED local Cosmos from .env (pass -UseCanaryData to share canary store)." -ForegroundColor DarkGray
+
+    $env:COSMOS_ENDPOINT = "https://localhost:8081"
+    $env:COSMOS_KEY = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+    $env:COSMOS_DATABASE = "tripplanner-local"
+    $env:COSMOS_EMULATOR = "1"
+    Write-Host "Using isolated local Cosmos DB Emulator (pass -UseCanaryData for hosted canary)." -ForegroundColor DarkGray
 }
 
 if (-not $FrontendOnly -and $UseCanaryData) {
-    try {
-        if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
-            throw "Azure CLI (az) not found"
-        }
+    if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
+        throw "Azure CLI (az) not found; cannot use hosted canary data."
+    }
 
-        $canaryRg = "rg-tripplanner-canary"
-        $cosmosName = az resource list -g $canaryRg --resource-type Microsoft.DocumentDB/databaseAccounts --query "[0].name" -o tsv
-        if (-not [string]::IsNullOrWhiteSpace($cosmosName)) {
-            $cosmosEndpoint = az cosmosdb show -g $canaryRg -n $cosmosName --query documentEndpoint -o tsv
-            $cosmosKey = az cosmosdb keys list -g $canaryRg -n $cosmosName --query primaryMasterKey -o tsv
-            if (-not [string]::IsNullOrWhiteSpace($cosmosEndpoint) -and -not [string]::IsNullOrWhiteSpace($cosmosKey)) {
-                $env:COSMOS_ENDPOINT = $cosmosEndpoint
-                $env:COSMOS_KEY = $cosmosKey
-                if ([string]::IsNullOrWhiteSpace($env:COSMOS_DATABASE)) {
-                    $env:COSMOS_DATABASE = "tripplanner"
-                }
-                Write-Host "Using canary Cosmos for local backend state ($cosmosName)." -ForegroundColor DarkGray
-            }
+    $cosmosRg = if ($env:COSMOS_RESOURCE_GROUP) { $env:COSMOS_RESOURCE_GROUP } else { "rg-tripplanner-data" }
+    $cosmosName = if ($env:COSMOS_ACCOUNT_NAME) { $env:COSMOS_ACCOUNT_NAME } else {
+        $accounts = @(az resource list -g $cosmosRg --resource-type Microsoft.DocumentDB/databaseAccounts --query "[].name" -o tsv)
+        if ($accounts.Count -ne 1) {
+            throw "Expected exactly one Cosmos account in $cosmosRg; found $($accounts.Count). Set COSMOS_ACCOUNT_NAME explicitly."
         }
+        $accounts[0]
     }
-    catch {
-        Write-Host "Could not auto-wire canary Cosmos ($($_.Exception.Message)); continuing with local storage." -ForegroundColor Yellow
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($cosmosName)) {
+        throw "No shared Cosmos account found in $cosmosRg; refusing ambiguous -UseCanaryData startup."
     }
+    $cosmosEndpoint = az cosmosdb show -g $cosmosRg -n $cosmosName --query documentEndpoint -o tsv
+    $cosmosKey = az cosmosdb keys list -g $cosmosRg -n $cosmosName --query primaryMasterKey -o tsv
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($cosmosEndpoint) -or [string]::IsNullOrWhiteSpace($cosmosKey)) {
+        throw "Could not resolve hosted canary Cosmos credentials; refusing ambiguous startup."
+    }
+    az cosmosdb sql database show -g $cosmosRg -a $cosmosName -n tripplanner-canary -o none
+    if ($LASTEXITCODE -ne 0) {
+        throw "Required database tripplanner-canary does not exist; refusing hosted startup."
+    }
+    $env:COSMOS_ENDPOINT = $cosmosEndpoint
+    $env:COSMOS_KEY = $cosmosKey
+    $env:COSMOS_DATABASE = "tripplanner-canary"
+    Remove-Item Env:COSMOS_EMULATOR -ErrorAction SilentlyContinue
+    Write-Host "Using canary Cosmos for local backend state ($cosmosName)." -ForegroundColor DarkGray
 }
 
 if (-not $FrontendOnly) {

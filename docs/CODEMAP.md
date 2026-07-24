@@ -9,8 +9,9 @@
 AI-powered trip planner. Single LangGraph trip agent with 25 tools (flights,
 hotels, activities, places, web, plan lifecycle, user preferences). One FastAPI
 process (`api.py`) does double duty: serves the API and hosts the built React
-SPA from [frontend/dist](../frontend) at the root. Persistence is local JSON in
-dev and Cosmos DB in production. Auto-dispatch via `storage_cosmos.is_enabled()`
+SPA from [frontend/dist](../frontend) at the root. Persistence is the local
+Cosmos DB Emulator in SPA development, local JSON for an unconfigured CLI, and
+a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `storage_cosmos.is_enabled()`
 (true when `COSMOS_ENDPOINT` is set). Identity is per-request through
 `user_context.get_user_id()` (ContextVar, default `"local"`).
 
@@ -27,6 +28,7 @@ dev and Cosmos DB in production. Auto-dispatch via `storage_cosmos.is_enabled()`
 | Build SPA        | `cd frontend; npm run build`                               |
 | Frontend tests   | `cd frontend; npm test -- --run`                            |
 | Browser smoke    | `cd frontend; npm run test:e2e`                             |
+| Start/check Cosmos emulator | `.\infra\start-cosmos-emulator.ps1`           |
 | Deploy           | See [infra/README.md](../infra/README.md)                  |
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
@@ -118,11 +120,17 @@ frontend/
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
   vitest.config.ts         jsdom unit/component test configuration
 infra/
-  main.bicep          ACA + Cosmos Free Tier + Log Analytics
-  main.bicepparam     Default param values (keep API version aligned)
+  data-stack.bicep    Subscription orchestration for shared data RG/account
+  data.bicep          Shared free-tier Cosmos data plane
+  modules/cosmos-data.bicep  Two 400-RU/s databases + runtime containers
+  main.bicep          ACA + Log Analytics; references existing shared Cosmos
+  canary.bicepparam   Canary app parameters (`tripplanner-canary` database)
+  prod.bicepparam     Production app parameters (`tripplanner-prod` database)
+  cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
-  dev-spa.ps1         THE dev entrypoint (use this)
+  dev-spa.ps1         THE dev entrypoint; starts/uses local Cosmos Emulator
+  cosmos_copy.py      Copy + exact verification across Cosmos databases
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
   test.ps1            Legacy (Chainlit era) — do not use

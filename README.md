@@ -44,7 +44,8 @@ Browser ──► *.azurecontainerapps.io ──► React SPA (served by FastAPI
                                         Azure Cosmos DB
                                         (per-user docs,
                                          /user_id partition,
-                                         Free Tier 1000 RU/s)
+                                         shared Free Tier,
+                                         isolated databases)
 ```
 
 The React single-page app (`frontend/`) is the only UI. In production the same
@@ -174,11 +175,11 @@ scripts\dev-spa.ps1 -FrontendOnly   # just Vite
 scripts\dev-spa.ps1 -UseCanaryData  # share the canary Cosmos instead of local
 ```
 
-By default, `scripts\dev-spa.ps1` uses the **isolated local Cosmos** configured
-in `.env` (`COSMOS_ENDPOINT=localcosmos...`), so local dev never mixes trip or
-chat data with the canary deployment. Pass `-UseCanaryData` to deliberately
-point the local backend at the canary Cosmos account (`rg-tripplanner-canary`)
-when you want local testing aligned with canary data.
+By default, `scripts\dev-spa.ps1` starts the official Dockerized **Cosmos DB
+Emulator** and uses its isolated `tripplanner-local` database. Docker Desktop
+must be running; emulator data persists in a named Docker volume. Pass
+`-UseCanaryData` to deliberately point the local backend at the hosted shared
+account's `tripplanner-canary` database.
 
 
 Three speeds of feedback you actually have:
@@ -189,16 +190,15 @@ Three speeds of feedback you actually have:
 | ~3 sec reload | `scripts\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
 | ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
 
-The local loop and the deployed app run **identical code**. Only persistence
-differs: leave `COSMOS_ENDPOINT` unset → `~/.tripplanner/*.json`; set it →
-Cosmos. Leave `WEB_SESSION_SECRET` unset → no login (guest-only). So the
-inner loop is essentially: edit code → save → tab to browser → refresh.
+The local loop and deployed app run **identical code**. The dev script sets the
+emulator endpoint explicitly, while hosted Container Apps use environment-
+specific databases in the shared account. Leave `COSMOS_ENDPOINT` unset when
+running the CLI directly to retain the local JSON fallback.
 
 ### Deploy to Azure (hosted, multi-user, Cosmos-backed)
-See [infra/README.md](infra/README.md) for the full deploy walkthrough
-(GHCR push + `az deployment group create`). Designed to stay inside the
-₹10,000/mo Azure free credit by combining Container Apps scale-to-zero
-with Cosmos DB Free Tier (1000 RU/s + 25 GB free).
+See [infra/README.md](infra/README.md) for the full deploy walkthrough. One
+lifetime free-tier account hosts separate 400-RU/s canary and production
+databases (800 RU/s total), while Container Apps remain scale-to-zero.
 
 ## Setup
 
@@ -280,8 +280,12 @@ tripplanner/
 │   └── dist/                     # Production build, served by FastAPI in prod
 │
 ├── infra/
-│   ├── main.bicep                # RG-scope IaC (ACA + Cosmos + Log Analytics)
-│   ├── main.bicepparam           # Pulls values from env vars
+│   ├── data-stack.bicep          # Subscription-scope shared data bootstrap
+│   ├── data.bicep                # Free-tier Cosmos account + databases
+│   ├── main.bicep                # RG-scope IaC (ACA + Log Analytics)
+│   ├── canary.bicepparam         # Canary app + database binding
+│   ├── prod.bicepparam           # Production app + database binding
+│   ├── cosmos-emulator.compose.yml  # Portable local persistence
 │   └── README.md                 # Deploy walkthrough
 │
 ├── src/tripplanner/

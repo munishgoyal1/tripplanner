@@ -19,7 +19,8 @@ param(
     [string]$Location = "eastus2",
     [string]$ImageTag = "latest",
     [switch]$ProvisionAoai = $false,
-    [switch]$DeployCanaryOnly = $false
+    [switch]$DeployCanaryOnly = $false,
+    [string]$CosmosAccountName = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -57,13 +58,26 @@ if ($ProvisionAoai) {
     Write-Host "If AOAI account names differ, copy emitted values into .env before deploy scripts continue.\n"
 }
 
+./infra/deploy-data.ps1 `
+  -SubscriptionId $SubscriptionId `
+  -Location $Location `
+  -AccountName $CosmosAccountName
+
+if ([string]::IsNullOrWhiteSpace($CosmosAccountName)) {
+  $cosmosAccounts = @(az cosmosdb list -g rg-tripplanner-data --query "[].name" -o tsv)
+  if ($cosmosAccounts.Count -ne 1) {
+    throw "Expected exactly one Cosmos account in rg-tripplanner-data; found $($cosmosAccounts.Count). Pass -CosmosAccountName explicitly."
+  }
+  $CosmosAccountName = $cosmosAccounts[0]
+}
+
 ./infra/deploy-canary.ps1 `
     -ImageTag $ImageTag `
     -SubscriptionId $SubscriptionId `
     -ResourceGroup rg-tripplanner-canary `
     -NamePrefix canary `
     -Location $Location `
-    -EnableCosmosFreeTier:$false
+    -CosmosAccountName $CosmosAccountName
 
 if (-not $DeployCanaryOnly) {
     ./infra/deploy-prod.ps1 `
@@ -72,7 +86,7 @@ if (-not $DeployCanaryOnly) {
         -ResourceGroup rg-tripplanner-prod `
         -NamePrefix prod `
         -Location $Location `
-        -EnableCosmosFreeTier:$false
+        -CosmosAccountName $CosmosAccountName
 }
 
 Write-Host "\nBootstrap complete."

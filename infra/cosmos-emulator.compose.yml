@@ -1,0 +1,21 @@
+services:
+  cosmos:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-latest
+    container_name: tripplanner-cosmos
+    command: ["--protocol", "https"]
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:1234:1234"
+    volumes:
+      - tripplanner-cosmos-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  tripplanner-cosmos-data:

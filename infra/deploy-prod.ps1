@@ -24,8 +24,9 @@ param(
     [string]$NamePrefix = "prod",
     [string]$Location = "eastus2",
     [string]$BicepFile = "infra/main.bicep",
-    [string]$BicepParams = "infra/main.bicepparam",
-    [bool]$EnableCosmosFreeTier = $false
+    [string]$BicepParams = "infra/prod.bicepparam",
+    [string]$CosmosResourceGroup = "rg-tripplanner-data",
+    [string]$CosmosAccountName = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -113,14 +114,6 @@ if ($approval -ne "APPROVE_PROD_DEPLOYMENT") {
 
 Write-Host "`n✓ Approval confirmed. Proceeding with production deployment...`n"
 
-# Optional: build + push the image first (one-click full deploy).
-if ($Build) {
-    Write-Host "✓ Step 0: Building & pushing image (-Build)..."
-    & "$PSScriptRoot/push-image.ps1"
-    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
-    Write-Host "  ✓ Image ready`n"
-}
-
 # Step 1: Validate prerequisites
 Write-Host "✓ Step 1: Validating prerequisites..."
 if (-not (Test-Path $bicepFile)) {
@@ -129,7 +122,31 @@ if (-not (Test-Path $bicepFile)) {
 if (-not (Test-Path $bicepParams)) {
     throw "Bicep params not found: $bicepParams"
 }
-az group create --name $prodRG --location $Location -o none
+if ([string]::IsNullOrWhiteSpace($CosmosAccountName)) {
+    $cosmosAccounts = @(az cosmosdb list -g $CosmosResourceGroup --query "[].name" -o tsv)
+    if ($cosmosAccounts.Count -ne 1) {
+        throw "Expected exactly one shared Cosmos account in $CosmosResourceGroup; found $($cosmosAccounts.Count). Pass -CosmosAccountName explicitly."
+    }
+    $CosmosAccountName = $cosmosAccounts[0]
+}
+if ([string]::IsNullOrWhiteSpace($CosmosAccountName)) {
+    throw "No shared Cosmos account found in $CosmosResourceGroup. Run ./infra/deploy-data.ps1 after approval."
+}
+az cosmosdb show -g $CosmosResourceGroup -n $CosmosAccountName -o none
+if ($LASTEXITCODE -ne 0) {
+    throw "Shared Cosmos account $CosmosAccountName is not accessible."
+}
+az cosmosdb sql database show -g $CosmosResourceGroup -a $CosmosAccountName -n tripplanner-prod -o none
+if ($LASTEXITCODE -ne 0) {
+    throw "Required database tripplanner-prod does not exist in $CosmosAccountName."
+}
+$resourceGroupExists = az group exists --name $prodRG | ConvertFrom-Json
+if ($DryRun -and -not $resourceGroupExists) {
+    throw "Dry run cannot target missing resource group $prodRG without creating it. Create the group separately after approval, then rerun."
+}
+if (-not $resourceGroupExists) {
+    az group create --name $prodRG --location $Location -o none
+}
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
@@ -138,7 +155,7 @@ $validation = az deployment group validate `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep validation failed: $validation"
@@ -152,9 +169,17 @@ if ($DryRun) {
         --resource-group $prodRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" | Out-String
+        --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" | Out-String
     Write-Host "  ✓ Dry run completed`n"
     exit 0
+}
+
+# Optional: build + push only after all no-change paths have exited.
+if ($Build) {
+    Write-Host "✓ Step 0: Building & pushing image (-Build)..."
+    & "$PSScriptRoot/push-image.ps1"
+    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
+    Write-Host "  ✓ Image ready`n"
 }
 
 # Step 4: Deploy
@@ -163,7 +188,7 @@ $rawDeploy = az deployment group create `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
     --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
     --output json 2>$null | Out-String
@@ -189,6 +214,9 @@ az containerapp update `
     --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
     -o none
+if ($LASTEXITCODE -ne 0) {
+    throw "Container App image update failed."
+}
 Write-Host "  ✓ Image updated`n"
 
 # Step 6: Output results

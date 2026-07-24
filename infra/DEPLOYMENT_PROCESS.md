@@ -6,18 +6,30 @@
 - **Canary (Testing)**: `rg-tripplanner-canary`
 - **Production**: `rg-tripplanner-prod`
 
-### Resources (per environment)
+### Resources
 | Component | Canary | Prod |
 |-----------|--------|------|
 | Container App | `canary-app-*` | `prod-app-*` |
-| Cosmos DB | `canary-cosmos-*` | `prod-cosmos-*` |
+| Cosmos DB | Shared account / `tripplanner-canary` | Shared account / `tripplanner-prod` |
 | Container App Env | `canary-env-*` | `prod-env-*` |
 | Log Analytics | `canary-logs-*` | `prod-logs-*` |
 | Azure OpenAI (script-provisioned) | `aoaicanary*` | `aoaiprod*` |
 
 Email/Communication services are optional and are not provisioned by `main.bicep`.
+The shared account lives in `rg-tripplanner-data`; `data-stack.bicep` owns it,
+while `main.bicep` can only reference it as an existing resource.
 
 ## Deployment Workflow
+
+### 0. Provision Shared Data (Explicit Azure Change)
+```powershell
+./infra/deploy-data.ps1 -SubscriptionId <sub-id> -DryRun
+./infra/deploy-data.ps1 -SubscriptionId <sub-id>
+```
+
+The script refuses to create a second free-tier account when the subscription
+already has a different one. Creation, migration, cutover, and cleanup follow
+the separate approvals in `.azure/deployment-plan.md`.
 
 ### 1. Deploy to Canary (No Approval Required)
 ```powershell

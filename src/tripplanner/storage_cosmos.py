@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import copy
 from typing import Any
+from urllib.parse import urlparse
 
 from tripplanner.config import get_settings
 
@@ -24,6 +25,17 @@ _COSMOS_SYSTEM_FIELDS = {"_rid", "_self", "_etag", "_attachments", "_ts"}
 _client: Any | None = None
 _database: Any | None = None
 _containers: dict[str, Any] = {}
+
+
+def _client_options(endpoint: str, emulator: bool) -> dict[str, Any]:
+    if not emulator:
+        return {}
+
+    hostname = urlparse(endpoint).hostname
+    if hostname not in {"localhost", "127.0.0.1", "::1"}:
+        raise ValueError("COSMOS_EMULATOR=1 requires a loopback COSMOS_ENDPOINT")
+
+    return {"connection_mode": "Gateway", "connection_verify": False}
 
 
 def is_enabled() -> bool:
@@ -41,10 +53,15 @@ def _client_singleton():
     from azure.cosmos import CosmosClient  # imported lazily
 
     s = get_settings()
+    client_options = _client_options(s.cosmos_endpoint, s.cosmos_emulator)
     if s.cosmos_connection_string:
-        _client = CosmosClient.from_connection_string(s.cosmos_connection_string)
+        _client = CosmosClient.from_connection_string(
+            s.cosmos_connection_string, **client_options
+        )
     else:
-        _client = CosmosClient(s.cosmos_endpoint, credential=s.cosmos_key)
+        _client = CosmosClient(
+            s.cosmos_endpoint, credential=s.cosmos_key, **client_options
+        )
     _database = _client.create_database_if_not_exists(id=s.cosmos_database)
     return _client
 

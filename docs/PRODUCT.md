@@ -28,8 +28,8 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
 | Mode   | UI                     | Persistence              | When                  |
 |--------|------------------------|--------------------------|-----------------------|
-| LOCAL  | CLI (`cli.py`) or API  | `~/.tripplanner/*.json`   | dev, hacking          |
-| HOSTED | React SPA via FastAPI  | Cosmos DB (Free Tier)    | personal use on ACA   |
+| LOCAL  | CLI or React SPA/API   | Cosmos Emulator (SPA script); JSON fallback | dev |
+| HOSTED | React SPA via FastAPI  | Shared free-tier Cosmos, isolated databases | ACA |
 
 One codebase, dispatcher in `storage_cosmos.is_enabled()`.
 

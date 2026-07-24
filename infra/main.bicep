@@ -2,13 +2,11 @@
 //
 // Provisioned resources:
 //   1. Log Analytics workspace (required by Container Apps)
-//   2. Cosmos DB account (NoSQL API, Free Tier ON, single region)
-//   3. Cosmos database + 3 containers (users, trips, audit_events) partitioned by /user_id
-//   4. Container Apps managed environment (Consumption plan)
-//   5. Container App with public ingress on port 8000 (FastAPI serves the SPA)
+//   2. Container Apps managed environment (Consumption plan)
+//   3. Container App with public ingress on port 8000 (FastAPI serves the SPA)
 //
 // Cost-keepers:
-//   - Cosmos Free Tier: first 1000 RU/s + 25 GB free per subscription, forever
+//   - Cosmos lives in the shared data resource group provisioned by data.bicep
 //   - Container Apps Consumption: 180k vCPU-sec + 2M requests / month free
 //   - Container App scales to zero (minReplicas = 0) — no charge when idle
 //   - Log Analytics PAYG, 30-day retention
@@ -74,8 +72,14 @@ param webSessionSecret string = ''
 @description('Public HTTPS base URL the OAuth callback returns to (no trailing slash). Required when serving Sign in with Google through Container Apps ingress, which terminates TLS and forwards plain HTTP to the container, so request.base_url is http://. Example: https://tripplanner-app-xxx.region.azurecontainerapps.io')
 param oauthRedirectBase string = ''
 
-@description('Enable Cosmos Free Tier (only one per subscription).')
-param enableCosmosFreeTier bool = true
+@description('Name of the existing shared Cosmos DB account.')
+param cosmosAccountName string
+
+@description('Resource group containing the shared Cosmos DB account.')
+param cosmosResourceGroupName string = 'rg-tripplanner-data'
+
+@description('Environment-specific database in the shared Cosmos DB account.')
+param cosmosDatabaseName string
 
 @description('Min container replicas. 0 = scale to zero when idle.')
 @minValue(0)
@@ -94,8 +98,6 @@ var suffix = uniqueString(resourceGroup().id)
 var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
-var cosmosAccountName = toLower('${namePrefix}-cosmos-${suffix}')
-var cosmosDatabaseName = 'tripplanner'
 
 // OAuth secrets are only attached when a value is supplied. Container Apps
 // rejects empty-string secret values, so we conditionally build the secrets
@@ -158,103 +160,9 @@ resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
-resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
+resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' existing = {
+  scope: resourceGroup(cosmosResourceGroupName)
   name: cosmosAccountName
-  location: location
-  kind: 'GlobalDocumentDB'
-  properties: {
-    databaseAccountOfferType: 'Standard'
-    enableFreeTier: enableCosmosFreeTier
-    consistencyPolicy: {
-      defaultConsistencyLevel: 'Session'
-    }
-    locations: [
-      {
-        locationName: location
-        failoverPriority: 0
-        isZoneRedundant: false
-      }
-    ]
-    publicNetworkAccess: 'Enabled'
-    disableLocalAuth: false
-  }
-}
-
-// Database carries shared throughput so both containers fit inside the free 1000 RU/s.
-resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = {
-  parent: cosmos
-  name: cosmosDatabaseName
-  properties: {
-    resource: {
-      id: cosmosDatabaseName
-    }
-    options: {
-      throughput: 1000
-    }
-  }
-}
-
-resource usersContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
-  parent: cosmosDb
-  name: 'users'
-  properties: {
-    resource: {
-      id: 'users'
-      partitionKey: {
-        paths: [
-          '/user_id'
-        ]
-        kind: 'Hash'
-      }
-      indexingPolicy: {
-        indexingMode: 'consistent'
-        automatic: true
-      }
-    }
-  }
-}
-
-resource tripsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
-  parent: cosmosDb
-  name: 'trips'
-  properties: {
-    resource: {
-      id: 'trips'
-      partitionKey: {
-        paths: [
-          '/user_id'
-        ]
-        kind: 'Hash'
-      }
-      indexingPolicy: {
-        indexingMode: 'consistent'
-        automatic: true
-      }
-    }
-  }
-}
-
-// Restricted audit sink for raw user-message content + identity events.
-// PII auto-expires after 90 days (defaultTtl 7,776,000 s).
-resource auditContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
-  parent: cosmosDb
-  name: 'audit_events'
-  properties: {
-    resource: {
-      id: 'audit_events'
-      partitionKey: {
-        paths: [
-          '/user_id'
-        ]
-        kind: 'Hash'
-      }
-      defaultTtl: 7776000
-      indexingPolicy: {
-        indexingMode: 'consistent'
-        automatic: true
-      }
-    }
-  }
 }
 
 resource env 'Microsoft.App/managedEnvironments@2024-03-01' = {

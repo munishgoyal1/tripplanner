@@ -57,6 +57,7 @@ class Settings(BaseModel):
     cosmos_key: str = os.getenv("COSMOS_KEY", "")
     cosmos_connection_string: str = os.getenv("COSMOS_CONNECTION_STRING", "")
     cosmos_database: str = os.getenv("COSMOS_DATABASE", "tripplanner")
+    cosmos_emulator: bool = os.getenv("COSMOS_EMULATOR", "").strip() == "1"
 
     # General
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

@@ -22,8 +22,9 @@ param(
     [string]$NamePrefix = "canary",
     [string]$Location = "eastus2",
     [string]$BicepFile = "infra/main.bicep",
-    [string]$BicepParams = "infra/main.bicepparam",
-    [bool]$EnableCosmosFreeTier = $false
+    [string]$BicepParams = "infra/canary.bicepparam",
+    [string]$CosmosResourceGroup = "rg-tripplanner-data",
+    [string]$CosmosAccountName = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -65,17 +66,8 @@ Write-Host "║  🧪 CANARY DEPLOYMENT — No Approval Required             ║
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
 Write-Host "Environment: CANARY (rg-tripplanner-canary)"
-Write-Host "App: $canaryApp"
+Write-Host "App Prefix: ${canaryPrefix}-app-*"
 Write-Host "Image Tag: $ImageTag`n"
-
-# Build + push the image from current code first (default for canary). Pass
-# -NoBuild to skip and deploy the existing :latest image as-is.
-if (-not $NoBuild) {
-    Write-Host "✓ Step 0: Building & pushing image from current code..."
-    & "$PSScriptRoot/push-image.ps1"
-    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
-    Write-Host "  ✓ Image ready`n"
-}
 
 # Step 1: Validate prerequisites
 Write-Host "✓ Step 1: Validating prerequisites..."
@@ -85,7 +77,31 @@ if (-not (Test-Path $bicepFile)) {
 if (-not (Test-Path $bicepParams)) {
     throw "Bicep params not found: $bicepParams"
 }
-az group create --name $canaryRG --location $Location -o none
+if ([string]::IsNullOrWhiteSpace($CosmosAccountName)) {
+    $cosmosAccounts = @(az cosmosdb list -g $CosmosResourceGroup --query "[].name" -o tsv)
+    if ($cosmosAccounts.Count -ne 1) {
+        throw "Expected exactly one shared Cosmos account in $CosmosResourceGroup; found $($cosmosAccounts.Count). Pass -CosmosAccountName explicitly."
+    }
+    $CosmosAccountName = $cosmosAccounts[0]
+}
+if ([string]::IsNullOrWhiteSpace($CosmosAccountName)) {
+    throw "No shared Cosmos account found in $CosmosResourceGroup. Run ./infra/deploy-data.ps1 after approval."
+}
+az cosmosdb show -g $CosmosResourceGroup -n $CosmosAccountName -o none
+if ($LASTEXITCODE -ne 0) {
+    throw "Shared Cosmos account $CosmosAccountName is not accessible."
+}
+az cosmosdb sql database show -g $CosmosResourceGroup -a $CosmosAccountName -n tripplanner-canary -o none
+if ($LASTEXITCODE -ne 0) {
+    throw "Required database tripplanner-canary does not exist in $CosmosAccountName."
+}
+$resourceGroupExists = az group exists --name $canaryRG | ConvertFrom-Json
+if ($DryRun -and -not $resourceGroupExists) {
+    throw "Dry run cannot target missing resource group $canaryRG without creating it. Create the group separately after approval, then rerun."
+}
+if (-not $resourceGroupExists) {
+    az group create --name $canaryRG --location $Location -o none
+}
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
@@ -94,7 +110,7 @@ $validation = az deployment group validate `
     --resource-group $canaryRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
+    --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep validation failed: $validation"
@@ -108,9 +124,17 @@ if ($DryRun) {
         --resource-group $canaryRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" | Out-String
+        --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" | Out-String
     Write-Host "  ✓ Dry run completed`n"
     exit 0
+}
+
+# Build + push only after all no-change paths have exited.
+if (-not $NoBuild) {
+    Write-Host "✓ Step 0: Building & pushing image from current code..."
+    & "$PSScriptRoot/push-image.ps1"
+    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
+    Write-Host "  ✓ Image ready`n"
 }
 
 # Step 4: Deploy
@@ -119,7 +143,7 @@ $rawDeploy = az deployment group create `
     --resource-group $canaryRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$canaryPrefix" "enableCosmosFreeTier=$EnableCosmosFreeTier" `
+    --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
     --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
     --output json 2>$null | Out-String
@@ -145,6 +169,9 @@ az containerapp update `
     --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
     -o none
+if ($LASTEXITCODE -ne 0) {
+    throw "Container App image update failed."
+}
 Write-Host "  ✓ Image updated`n"
 
 # Step 6: Output results

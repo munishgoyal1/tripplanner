@@ -5,7 +5,7 @@ Cheapest viable footprint for global hosting:
 | Resource | Purpose | Free tier? |
 |---|---|---|
 | Log Analytics workspace | Required by Container Apps | First 5 GB/mo free |
-| Cosmos DB (NoSQL) | Persist preferences + trips | **1000 RU/s + 25 GB free** (one per subscription) |
+| Cosmos DB (NoSQL) | Shared account; isolated canary/prod databases | **1000 RU/s + 25 GB free** (one per subscription) |
 | Container Apps environment | Hosting fabric | n/a (env itself is free) |
 | Container App | React SPA + FastAPI agent | **180k vCPU-sec + 2M req/mo free**, scales to zero |
 
@@ -14,17 +14,22 @@ Stays at ~₹0 when idle thanks to scale-to-zero.
 
 ## Environments & Naming
 
+### Shared Data Plane
+- Resource Group: `rg-tripplanner-data`
+- Cosmos DB: one lifetime free-tier account
+- Databases: `tripplanner-canary` and `tripplanner-prod`, 400 RU/s shared throughput each
+
 ### Canary (Testing — No Approval Gate)
 - Resource Group: `rg-tripplanner-canary`
 - Container App: `canary-app-*`
-- Cosmos DB: `canary-cosmos-*`
+- Cosmos database: `tripplanner-canary` in the shared account
 - **Use for:** Feature testing, bug fixes, infrastructure changes, email verification
 - **Deployment:** `./infra/deploy-canary.ps1` (no approval required)
 
 ### Production (Live — Manual Approval Required)
 - Resource Group: `rg-tripplanner-prod`
 - Container App: `prod-app-*`
-- Cosmos DB: `prod-cosmos-*`
+- Cosmos database: `tripplanner-prod` in the shared account
 - **Use for:** Tested, verified releases only
 - **Deployment:** `./infra/deploy-prod.ps1` (requires explicit approval: type `APPROVE_PROD_DEPLOYMENT`)
 
@@ -33,23 +38,28 @@ Transition to standardized naming by redeploying canary first, then production a
 
 ## Prerequisites
 
-- Azure subscription with Cosmos DB Free Tier slot available (optional in this repo; defaults to disabled in canary/prod scripts)
+- Azure subscription with its one Cosmos DB lifetime free-tier slot available
 - Azure CLI logged in (`az login`)
 - Docker installed locally
 - GitHub Container Registry account for container images
 
 ## Local files
 
-- `main.bicep` — all resources at RG scope
-- `main.bicepparam` — environment variables for each deployment
+- `data-stack.bicep` + `data.bicep` — shared data RG/account/databases
+- `modules/cosmos-data.bicep` — reusable Cosmos account/database/container module
+- `main.bicep` — app environment resources; references existing shared Cosmos
+- `canary.bicepparam` / `prod.bicepparam` — isolated hosted database bindings
+- `cosmos-emulator.compose.yml` — official local emulator with persistent volume
 - `DEPLOYMENT_PROCESS.md` — detailed workflow, approval gates, and logging
 - `deploy-canary.ps1` — deploy/test new changes (no approval)
 - `deploy-prod.ps1` — promote to production (manual approval required)
 - `rollback-prod.ps1` — revert to previous stable revision if issues occur
 - `provision-aoai.ps1` — create/reuse Azure OpenAI account + deployment and print `.env` values
 - `bootstrap-environments.ps1` — one-command canary+prod bootstrap for a fresh subscription
-- `provision-local-cosmos.ps1` — create/reuse a dedicated local Cosmos account in `rg-tripplanner-local`
-- `check-local-cosmos.ps1` — print local Cosmos endpoint/key/account details
+- `deploy-data.ps1` — validate/what-if/deploy the shared free-tier data plane
+- `start-cosmos-emulator.ps1` — start or readiness-check local Cosmos
+- `set-cosmos-throughput.ps1` — idempotently reduce an old database to 400 RU/s
+- `cleanup-obsolete-resources.ps1` — dependency-checked, approval-gated cleanup
 
 ## Fresh Subscription Quick Start
 
@@ -66,7 +76,7 @@ docker push ghcr.io/munishgoyal1/tripplanner:v0.X.Y
 
 # 3) Copy emitted AOAI endpoint/key/deployment into local .env
 
-# 4) Bootstrap both environments
+# 4) Bootstrap shared data plus both environments
 ./infra/bootstrap-environments.ps1 -SubscriptionId <sub-id> -ImageTag v0.X.Y
 ```
 
@@ -79,29 +89,49 @@ Notes:
 Use this when you want local development data fully isolated from canary/prod:
 
 ```powershell
-./infra/provision-local-cosmos.ps1 -SubscriptionId <sub-id>
+./infra/start-cosmos-emulator.ps1
 ./infra/check-local-cosmos.ps1
 ```
 
-Copy the emitted values into `.env`:
-
-```powershell
-COSMOS_ENDPOINT=<LOCAL_COSMOS_ENDPOINT>
-COSMOS_KEY=<LOCAL_COSMOS_KEY>
-COSMOS_DATABASE=tripplanner
-```
+`scripts/dev-spa.ps1` performs this startup/readiness check and sets the local
+endpoint, well-known key, `tripplanner-local`, and `COSMOS_EMULATOR=1` for its
+backend process. It never reads hosted Cosmos coordinates from `.env` in the
+default path.
 
 ## Cross-Environment Data Copy
 
 For restore/testing scenarios (prod -> canary/local, canary -> local):
 
 ```powershell
-python scripts/cosmos_copy.py \
-  --src-endpoint <SRC_ENDPOINT> --src-key <SRC_KEY> --src-db tripplanner \
-  --dst-endpoint <DST_ENDPOINT> --dst-key <DST_KEY> --dst-db tripplanner
+python scripts/cosmos_copy.py `
+  --src-resource-group <OLD_RG> --src-account <OLD_ACCOUNT> --src-db tripplanner `
+  --dst-resource-group rg-tripplanner-data --dst-account <SHARED_ACCOUNT> `
+  --dst-db tripplanner-canary --dry-run
 ```
 
-Default containers copied: `users`, `trips`, `audit_events`.
+Remove `--dry-run` during the maintenance window. The utility copies and then
+exactly verifies `users`, `trips`, `places_cache`, `shared_trips`, `tool_cache`,
+and `audit_events`; credentials are obtained from Azure CLI and are not written
+to files or command history.
+
+Immediate old-account cost reduction remains an explicit Azure change:
+
+```powershell
+./infra/set-cosmos-throughput.ps1 `
+  -ResourceGroup <OLD_RG> -AccountName <OLD_ACCOUNT> -DatabaseName tripplanner `
+  -DryRun
+# Remove -DryRun only after approval; type APPROVE_COSMOS_400_RU when prompted.
+```
+
+Deferred cleanup requires the recorded cutover date, enforces seven full days,
+rejects the shared data resource group, and checks all Container App references:
+
+```powershell
+./infra/cleanup-obsolete-resources.ps1 `
+  -CosmosAccounts <OLD_RG>/<OLD_ACCOUNT> `
+  -ContainerRegistries <OLD_RG>/<OLD_ACR> `
+  -CutoverDate 2026-07-24T12:00:00Z -InventoryOnly
+```
 
 ## Deploy flow
 
@@ -162,11 +192,12 @@ $Env:TAVILY_API_KEY         = "<tavily-key>"
 $Env:CONTAINER_IMAGE        = "ghcr.io/munishgoyal1/tripplanner:latest"
 
 # 3. Deploy.
+$Env:COSMOS_ACCOUNT_NAME = az cosmosdb list -g rg-tripplanner-data --query "[0].name" -o tsv
 az deployment group create `
   --resource-group rg-tripplanner-canary `
   --template-file infra/main.bicep `
-  --parameters infra/main.bicepparam `
-  --parameters namePrefix=canary-tripplanner `
+  --parameters infra/canary.bicepparam `
+  --parameters cosmosAccountName=$Env:COSMOS_ACCOUNT_NAME `
   --query "properties.outputs.containerAppUrl.value" -o tsv
 ```
 

@@ -1,6 +1,6 @@
 # Azure Deployment Plan
 
-Status: Awaiting implementation approval
+Status: Repository implementation complete; Azure mutation approval pending
 Last updated: 2026-07-24
 
 ## 1. Objective And Constraints
@@ -130,7 +130,7 @@ both cheaper and more predictable.
   bodies, and audit TTL fields where present.
 - The migration script takes source and target account/database arguments,
   obtains credentials from Azure CLI at runtime, never stores keys in files,
-  and supports `-WhatIf` and verification-only modes.
+  and supports `--dry-run` and `--verify-only` modes.
 - Verification compares document counts per container and point-reads every
   copied `(user_id, id)` pair. Any mismatch blocks cutover.
 - Update canary/prod deployment scripts to deploy app infrastructure against
@@ -184,9 +184,9 @@ the rollback window and explicit cleanup approval are complete.
 
 ## 6. Planned Execution Milestones
 
-1. **Repository implementation:** IaC modules/parameters, emulator workflow,
-   SDK configuration, migration/cleanup scripts, tests, and documentation.
-   Validate locally, then commit and push.
+1. **Repository implementation (complete):** IaC modules/parameters, emulator
+  workflow, SDK configuration, migration/cleanup scripts, tests, and
+  documentation are implemented. Final validation and commit/push are pending.
 2. **Azure preflight:** Confirm subscription context, free-tier eligibility,
    provider registration, naming availability, permissions, Bicep validation,
    and `what-if`. Record evidence in this plan. No resource mutation.
@@ -216,6 +216,17 @@ the rollback window and explicit cleanup approval are complete.
 - Frontend tests/build only if frontend files change.
 - Confirm no credentials, generated emulator data, migration exports, or user
   documents are tracked by Git.
+
+Repository proof recorded on 2026-07-24:
+
+- Shared data, app, module, and parameter Bicep compilation: passing.
+- Changed PowerShell parser validation: passing.
+- Focused storage/emulator/migration tests: 10 passing, including remaining
+  audit TTL preservation.
+- Full backend suite: 486 passing; one environment-only failure because the
+  installed `websockets` distribution reports `Version=None` metadata.
+- Ruff, Docker Compose config, PowerShell parsing, whitespace, stale-reference,
+  and credential-pattern checks: passing.
 
 ### Azure preflight validation
 

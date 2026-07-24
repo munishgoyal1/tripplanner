@@ -1560,6 +1560,29 @@ VALIDATION:
 - Playwright not run because its configuration starts a dev server; component
   regressions and production compilation cover this milestone without starting one.
 
+=== 2026-07-24 — Session 32: Long-term Cosmos cost optimization ===
+
+REQUIREMENT:
+- Complete the long-term Azure cost optimizations now, not a temporary patch.
+- Use the Cosmos DB Emulator for local development.
+- Reduce fixed hosted throughput to 400 RU/s (the provisioned minimum).
+- Create a new hosted account if required so non-production can use lifetime
+  free tier, while preserving production isolation and all existing data.
+- Keep infrastructure self-contained in Bicep/repository scripts so a fresh
+  clone works across machines and IDEs.
+
+DECISION:
+- One new lifetime free-tier hosted Cosmos account owns separate
+  `tripplanner-canary` and `tripplanner-prod` databases at 400 RU/s each. Their
+  combined 800 RU/s fits inside the 1000-RU/s account allowance.
+- Local SPA development uses the official Dockerized Cosmos DB Emulator;
+  unconfigured direct CLI usage retains the JSON fallback.
+- Data copy covers and exactly verifies all six runtime containers before
+  cutover. Old accounts remain available for a seven-day rollback window.
+- Production cutover and old Cosmos/ACR deletion remain explicit, separate
+  approval gates. Never delete `rg-tripplanner-local` because it also contains
+  the local Azure OpenAI resource.
+
 === 2026-07-24 — Session 31: Independent right dock and common export ===
 
 REQUIREMENT:

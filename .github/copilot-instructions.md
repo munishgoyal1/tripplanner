@@ -106,6 +106,14 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Portable low-cost Cosmos architecture (Session 32, repository implementation)**:
+  local SPA development uses the official Dockerized Cosmos DB Emulator with
+  loopback-only TLS relaxation. Hosted IaC now separates a shared lifetime
+  free-tier data account (`rg-tripplanner-data`) from app environments, with
+  isolated `tripplanner-canary` and `tripplanner-prod` databases at 400 RU/s
+  each. Migration performs exact six-container verification; throughput and
+  cleanup scripts are guarded. Live Azure creation/cutover/deletion remains
+  separately approval-gated in `.azure/deployment-plan.md`.
 - **Independent right dock + common export (Session 31)**: Details and Assistant
   are mounted sibling sections with matching hide controls; hiding either leaves
   the other visible and lets it fill the dock. Map day chips now focus a primary
@@ -352,8 +360,10 @@ Learns from user preferences and past trips.
 - Trip state:
   - Local: `~/.tripplanner/active_trip.json`, archived in `~/.tripplanner/trips/`
   - Hosted: Cosmos DB `users`/`active_trip` (active) + `trips` container (archive)
-- Azure infra (Bicep): Container Apps (scale-to-zero) + Cosmos DB (Free Tier 1000 RU/s) +
-  Log Analytics. Image hosted on GHCR public. Target footprint ≤ ₹10K/mo free credit.
+- Azure infra (Bicep): Container Apps (scale-to-zero) + one shared Cosmos DB
+  lifetime free-tier account with canary/prod databases at 400 RU/s each + Log
+  Analytics. Local uses the Cosmos Emulator. Image hosted on public GHCR.
+  Target footprint ≤ ₹10K/mo free credit.
 - 407 tests all passing (Session 22: +8 for split-TTL persisted places cache
   (`web/places_cache.py` — meta 1-week / photo-URL 50-min, durable L2, refresh);
   Session 20: +9 for persistent per-trip chat
@@ -488,6 +498,7 @@ Learns from user preferences and past trips.
   `App.tsx`, `ChatPanel.tsx`, `DestinationOverview.tsx` (reviews/photos/attractions/news),
   `SettingsModal.tsx` (About-me textbox + extractor), `TripPanel.tsx` (focus nav + item picker)
 - `src/tripplanner/tools/` — Duffel (primary flights), Amadeus, Google Places, Tavily, plan state, preferences
-- `infra/main.bicep` + `infra/main.bicepparam` — IaC for ACA + Cosmos Free Tier
+- `infra/data-stack.bicep` + `infra/data.bicep` — shared free-tier Cosmos data plane
+- `infra/main.bicep` + environment `.bicepparam` files — ACA + existing Cosmos binding
 
 
