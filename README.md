@@ -48,10 +48,11 @@ Browser ──► *.azurecontainerapps.io ──► React SPA (served by FastAPI
                                          isolated databases)
 ```
 
-The React single-page app (`frontend/`) is the only UI. In production the same
-FastAPI process (`api.py`) serves the built SPA from `frontend/dist` and the
-`/api/*` endpoints on one port, so there is a single origin and no separate web
-server.
+The product has a React SPA (`frontend/`) and native Expo client (`mobile/`).
+Both consume contracts, transport, SSE parsing, and workspace state from
+`packages/tripplanner-client/`. In production the FastAPI process (`api.py`)
+serves the built SPA from `frontend/dist` and the `/api/*` endpoints on one
+port. The iPhone app calls the same hosted endpoints directly.
 
 Single-agent LangGraph graph with a tool-calling loop. The agent calls search
 tools (Duffel primary, Amadeus fallback), manages a trip plan through draft →
@@ -164,6 +165,18 @@ cd frontend; npm install; npm run build; cd ..
 uv run uvicorn tripplanner.api:app --port 8000
 # open http://localhost:8000
 ```
+
+### iPhone app (Expo Go)
+```powershell
+cd mobile
+npm install
+npx expo start --tunnel
+```
+
+Scan the QR code with an iPhone running Expo Go. The production API is the
+default; set `EXPO_PUBLIC_API_BASE_URL` to a reachable canary or development
+URL to override it. See [mobile/README.md](mobile/README.md) for EAS build and
+App Store submission steps.
 
 ### Fast dev loop (recommended — sub-second iteration)
 

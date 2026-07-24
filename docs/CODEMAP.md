@@ -26,6 +26,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
+- iPhone via Expo Go: `cd mobile; npx expo start --tunnel`
+- Mobile checks: `cd mobile; npx tsc --noEmit; npm run lint; npm exec --yes expo-doctor`
+- iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
 - Cosmos emulator check: `.\infra\start-cosmos-emulator.ps1`
 - Deploy: see [infra/README.md](../infra/README.md)
@@ -130,6 +133,15 @@ frontend/
       Lightbox.tsx         Full-screen photo viewer
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
   vitest.config.ts         jsdom unit/component test configuration
+packages/tripplanner-client/
+  src/types.ts             Shared TripView/Itinerary/Map/saved-trip contracts
+  src/client.ts            Fetch, mutation, and SSE transport for web + native
+  src/workspace-state.ts   Platform-neutral trip revision/focus reducer
+mobile/
+  app/                     Expo Router screens: Trips, Plan, Map, Assistant, Details
+  providers/trip-provider.tsx  Authoritative native data/revision owner
+  lib/tripplanner.ts       Hosted API selection + Keychain-backed mobile identity
+  eas.json                 Development, preview, and App Store build profiles
 infra/
   data-stack.bicep    Subscription orchestration for shared data RG/account
   data.bicep          Shared free-tier Cosmos data plane
@@ -155,8 +167,9 @@ docs/
 ## 4) Request flow (hosted mode)
 
 ```text
-Browser (frontend/dist)
-  └─ fetch /api/chat/stream  ──▶  FastAPI _strip_api_prefix middleware
+Browser (frontend/dist) or native iPhone app
+  └─ @tripplanner/client ──▶ /api/chat/stream, trip, map, itinerary endpoints
+                              └─▶ FastAPI _strip_api_prefix middleware
                                      ──▶ app.post("/chat/stream")  (api.py)
                                             ──▶ graph.py: agent ↔ tools loop
                                                   ──▶ tools/* (Duffel, Places, …)

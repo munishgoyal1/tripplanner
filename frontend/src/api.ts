@@ -1,4 +1,10 @@
 import type { TripView, DestinationOverview, MapView, MapsConfig, SavedTrip, Itinerary } from "./types";
+import {
+  TripplannerClient,
+  type DeselectItemOptions,
+  type SelectItemOptions,
+  type SelectionPlacement,
+} from "@tripplanner/client";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
@@ -17,6 +23,8 @@ export function getUserId(): string {
   }
   return id;
 }
+
+const sharedClient = new TripplannerClient(BASE, getUserId);
 
 // Whether the current identity is the anonymous, per-browser one (vs. a name
 // the user explicitly signed in with). Used to show "Sign in" vs the name.
@@ -239,15 +247,8 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
 export async function fetchChatHistory(
   tripId?: string
 ): Promise<{ role: "user" | "assistant"; text: string }[]> {
-  const params = new URLSearchParams({ user_id: getUserId() });
-  if (tripId) params.set("trip_id", tripId);
   try {
-    const res = await fetch(`${BASE}/chat/history?${params.toString()}`, {
-      cache: "no-store",
-    });
-    ensureOk(res, "Could not load chat history");
-    const json = await res.json();
-    return (json.messages ?? []) as { role: "user" | "assistant"; text: string }[];
+    return await sharedClient.fetchChatHistory(tripId);
   } catch {
     return [];
   }
@@ -257,58 +258,17 @@ export async function fetchTripView(focus?: {
   kind: string;
   name: string;
 }, signal?: AbortSignal): Promise<TripView> {
-  const params = new URLSearchParams({ user_id: getUserId() });
-  if (focus?.name) {
-    params.set("focus_kind", focus.kind);
-    params.set("focus_name", focus.name);
-  }
-  const res = await fetch(`${BASE}/trip/view?${params.toString()}`, { signal });
-  if (!res.ok) throw new Error(`Could not load the trip (${res.status}).`);
-  return res.json();
+  return sharedClient.fetchTripView(focus, signal);
 }
 
-export interface SelectItemOptions {
-  start_day?: number;
-  end_day?: number;
-  day?: number;
-  source_day?: number;
-  source_stop?: number;
-  replace_stay?: boolean;
-}
-
-export interface SelectionPlacement {
-  day: number;
-  stop: number;
-  name: string;
-}
-
-export interface DeselectItemOptions {
-  day?: number;
-  stop?: number;
-  all_occurrences?: boolean;
-}
+export type { DeselectItemOptions, SelectItemOptions, SelectionPlacement };
 
 export async function selectItem(
   kind: string,
   name: string,
   options?: SelectItemOptions
 ): Promise<{ view: TripView; alerts: string[]; placement?: SelectionPlacement | null; placements?: SelectionPlacement[] }> {
-  const res = await fetch(`${BASE}/trip/select`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ kind, name, user_id: getUserId(), ...(options || {}) }),
-  });
-  if (!res.ok) throw new Error(`Could not add the place (${res.status}).`);
-  const json = await res.json();
-  if (json.ok === false) {
-    throw new Error(json.alerts?.[0] || "Could not add the place to that day.");
-  }
-  return {
-    view: json.view as TripView,
-    alerts: (json.alerts ?? []) as string[],
-    placement: (json.placement ?? null) as SelectionPlacement | null,
-    placements: (json.placements ?? []) as SelectionPlacement[],
-  };
+  return sharedClient.selectItem(kind, name, options);
 }
 
 export async function deselectItem(
@@ -316,35 +276,17 @@ export async function deselectItem(
   name: string,
   options?: DeselectItemOptions,
 ): Promise<{ view: TripView; alerts: string[] }> {
-  const res = await fetch(`${BASE}/trip/deselect`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ kind, name, user_id: getUserId(), ...(options || {}) }),
-  });
-  if (!res.ok) throw new Error(`Could not remove the place (${res.status}).`);
-  const json = await res.json();
-  return { view: json.view as TripView, alerts: (json.alerts ?? []) as string[] };
+  return sharedClient.deselectItem(kind, name, options);
 }
 
 /** List the user's saved trips (the "My trips" switcher). */
 export async function fetchSavedTrips(): Promise<SavedTrip[]> {
-  const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/trips?${params.toString()}`);
-  ensureOk(res, "Could not load saved trips");
-  const json = await res.json();
-  return (json.trips ?? []) as SavedTrip[];
+  return sharedClient.fetchSavedTrips();
 }
 
 /** Make a saved trip active (auto-saving whatever was active). */
 export async function switchTrip(tripId: string): Promise<TripView | null> {
-  const res = await fetch(`${BASE}/trips/switch`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
-  });
-  ensureOk(res, "Could not switch trips");
-  const json = await res.json();
-  return json.ok ? (json.view as TripView) : null;
+  return sharedClient.switchTrip(tripId);
 }
 
 /** Delete a saved trip; returns the refreshed saved-trips list. */
@@ -361,12 +303,7 @@ export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
 
 /** Start a fresh planning chat: clear the active trip + general chat bucket. */
 export async function startNewTrip(): Promise<void> {
-  const res = await fetch(`${BASE}/trip/new`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user_id: getUserId() }),
-  });
-  ensureOk(res, "Could not start a new trip");
+  return sharedClient.startNewTrip();
 }
 
 /** Build the URL that downloads the active trip as an .ics calendar file. */
@@ -644,18 +581,12 @@ export async function fetchMapsConfig(): Promise<MapsConfig> {
 }
 
 export async function fetchMapView(signal?: AbortSignal): Promise<MapView> {
-  const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/trip/map?${params.toString()}`, { signal });
-  if (!res.ok) throw new Error(`Could not load the map (${res.status}).`);
-  return res.json();
+  return sharedClient.fetchMapView(signal);
 }
 
 /** Structured day-by-day itinerary for the Itinerary tab. */
 export async function fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {
-  const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/trip/itinerary?${params.toString()}`, { signal });
-  if (!res.ok) throw new Error(`Could not load the itinerary (${res.status}).`);
-  return res.json();
+  return sharedClient.fetchItinerary(signal);
 }
 
 /** Toggle one itinerary stop's booked flag; returns the refreshed itinerary. */
@@ -664,13 +595,6 @@ export async function setStopBooked(
   name: string,
   booked: boolean
 ): Promise<Itinerary> {
-  const res = await fetch(`${BASE}/trip/stop/booked`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ day, name, booked, user_id: getUserId() }),
-  });
-  if (!res.ok) throw new Error(`Could not update the stop (${res.status}).`);
-  const json = await res.json();
-  return json.itinerary as Itinerary;
+  return sharedClient.setStopBooked(day, name, booked);
 }
 

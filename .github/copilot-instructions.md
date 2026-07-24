@@ -106,6 +106,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Native iPhone app (Session 49)**: Expo SDK 54/React Native app under
+  `mobile/` provides Trips, Plan, Apple Maps, Assistant, and occurrence-aware
+  Details. `packages/tripplanner-client/` is the shared, dependency-free source
+  of JSON contracts, trip/map/itinerary transport, SSE parsing, mutations, and
+  workspace state for both web and native. Mobile identity is Keychain-backed;
+  EAS profiles cover device, preview, and App Store builds. Submission remains
+  an explicit owner approval gate.
 - **Consistent place actions + Change day (Session 48)**: Details and Map use
   one shared selected-place control. Normal non-hotel places show their current
   day and can move to an authoritative itinerary day using exact source

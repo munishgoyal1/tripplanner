@@ -1972,7 +1972,28 @@ DECISION:
   the desktop four-pane layout.
 
 STATUS:
-- Product scope and architecture direction approved; implementation not started.
+- Product scope and architecture direction approved; implementation completed
+  in Session 48.
+
+=== 2026-07-24 — Session 49: Native iPhone application ===
+
+USER REQUEST: Create the iOS app in a standard, robust way, minimize duplicate
+form-factor code, keep future changes fast, and publish it to the App Store.
+
+IMPLEMENTED:
+- Expo SDK 54 + React Native + Expo Router native app under mobile/.
+- Native Trips, Plan, Map, Assistant, and occurrence-aware Details flows.
+- Keychain-backed mobile guest identity and environment-selectable API base.
+- Shared @tripplanner/client package owns frontend/mobile JSON contracts,
+  trip/map/itinerary transport, mutation semantics, SSE parsing, and workspace state.
+- EAS development, preview, and production build/submit profiles; iOS bundle id
+  com.munishgoyal1.tripplanner.
+
+PUBLICATION GATE:
+- App Store submission is not automatic. It requires owner approval, Expo and
+  Apple Developer authentication, an App Store Connect record, privacy metadata,
+  screenshots, agreements, and review details. Never publish without explicit
+  approval at the submission step.
 
 === 2026-07-24 — Session 48: Consistent place actions and Change day ===
 

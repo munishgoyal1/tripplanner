@@ -34,8 +34,15 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
   an unconfigured CLI.
 - **HOSTED**: React SPA via FastAPI on Container Apps; shared free-tier Cosmos
   account with isolated environment databases.
+- **iPHONE**: Expo/React Native client using the hosted FastAPI contracts;
+  native tabs, sheets, Keychain identity, and Apple Maps own phone ergonomics.
 
 One codebase, dispatcher in `storage_cosmos.is_enabled()`.
+
+Cross-form-factor rules live in `packages/tripplanner-client`: JSON contracts,
+trip mutations, SSE parsing, and workspace revisions are shared. Platform code
+must stay limited to presentation and device adapters. Android should reuse
+this mobile shell rather than fork product logic.
 
 ## 4) Owner taste — the look & feel
 
