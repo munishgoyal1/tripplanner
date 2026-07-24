@@ -110,12 +110,13 @@ Learns from user preferences and past trips.
   fixed `100dvh` planner with itinerary left, a persistent dominant map center,
   and a contextual details inspector right. Chat is a collapsible dock inside
   the inspector; map, inspector, and chat remain mounted through collapse and
-  maximize transitions so map/chat state survives. The old three resize
-  separators and percentage/localStorage machinery are gone. At 768-1199px the
-  inspector overlays the canvas instead of squeezing it; mobile keeps chat plus
-  the on-demand trip-details sheet. Only panes scroll, so an itinerary click
-  never sends the map out of view. Frontend validation: 15 Vitest/RTL tests,
-  production build, and Playwright desktop/mobile projects pass.
+  maximize transitions so map/chat state survives. Session 28 restored focused
+  mouse/keyboard separators for itinerary/map, map/inspector, and details/chat;
+  sizes persist locally and the inspector defaults wider at 31%. At 768-1199px
+  the inspector overlays the canvas instead of squeezing it; mobile keeps chat
+  plus the on-demand trip-details sheet. Only panes scroll, and itinerary place
+  clicks focus both the map and contextual Details. Frontend validation: 16
+  Vitest/RTL tests, production build, and Playwright desktop/mobile projects pass.
 - **Frontend reliability foundation (Session 25)**: desktop and mobile trees
   are conditionally mounted so duplicate API/chat/map effects cannot run. Trip
   view requests cancel stale predecessors, map/itinerary keep prior content

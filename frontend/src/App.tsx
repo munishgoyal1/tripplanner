@@ -16,6 +16,16 @@ interface NavRef {
 }
 
 type CanvasPane = "itinerary" | "map";
+type ResizeTarget = "itinerary" | "inspector" | "chat" | null;
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function storedPercent(key: string, fallback: number, min: number, max: number): number {
+  const value = Number(localStorage.getItem(key));
+  return Number.isFinite(value) && value >= min && value <= max ? value : fallback;
+}
 
 function isPlaceKind(kind: string): boolean {
   return kind === "hotel" || kind === "attraction" || kind === "activity";
@@ -41,6 +51,15 @@ export default function App() {
   const [maximizedPane, setMaximizedPane] = useState<CanvasPane | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
+  const [itineraryPct, setItineraryPct] = useState(() =>
+    storedPercent("tripplanner_itinerary_pct", 24, 18, 38)
+  );
+  const [inspectorPct, setInspectorPct] = useState(() =>
+    storedPercent("tripplanner_inspector_pct", 31, 24, 40)
+  );
+  const [chatPct, setChatPct] = useState(() =>
+    storedPercent("tripplanner_chat_pct", 46, 30, 65)
+  );
 
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
@@ -51,6 +70,9 @@ export default function App() {
 
   const refreshGeneration = useRef(0);
   const refreshController = useRef<AbortController | null>(null);
+  const workspaceRef = useRef<HTMLElement>(null);
+  const inspectorRef = useRef<HTMLElement>(null);
+  const resizeTarget = useRef<ResizeTarget>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -67,6 +89,75 @@ export default function App() {
       mq.removeEventListener("change", onChange);
     };
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("tripplanner_itinerary_pct", String(Math.round(itineraryPct)));
+    localStorage.setItem("tripplanner_inspector_pct", String(Math.round(inspectorPct)));
+    localStorage.setItem("tripplanner_chat_pct", String(Math.round(chatPct)));
+  }, [chatPct, inspectorPct, itineraryPct]);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      const target = resizeTarget.current;
+      if (!target) return;
+
+      if (target === "chat" && inspectorRef.current) {
+        const rect = inspectorRef.current.getBoundingClientRect();
+        setChatPct(clamp(((rect.bottom - event.clientY) / rect.height) * 100, 30, 65));
+        return;
+      }
+
+      if (!workspaceRef.current) return;
+      const rect = workspaceRef.current.getBoundingClientRect();
+      if (target === "itinerary") {
+        const next = ((event.clientX - rect.left) / rect.width) * 100;
+        setItineraryPct(clamp(next, 18, 100 - inspectorPct - 30));
+      } else {
+        const next = ((rect.right - event.clientX) / rect.width) * 100;
+        setInspectorPct(clamp(next, 24, Math.min(40, 100 - itineraryPct - 30)));
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (!resizeTarget.current) return;
+      resizeTarget.current = null;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [chatPct, inspectorPct, itineraryPct]);
+
+  const startResize = (target: Exclude<ResizeTarget, null>) => {
+    resizeTarget.current = target;
+    document.body.style.cursor = target === "chat" ? "row-resize" : "col-resize";
+    document.body.style.userSelect = "none";
+  };
+
+  const resizeWithKeyboard = (
+    target: Exclude<ResizeTarget, null>,
+    key: string
+  ): boolean => {
+    const growing = key === "ArrowRight" || key === "ArrowDown";
+    const delta = growing ? 2 : -2;
+    if (target === "itinerary" && (key === "ArrowLeft" || key === "ArrowRight")) {
+      setItineraryPct((value) => clamp(value + delta, 18, 100 - inspectorPct - 30));
+    } else if (target === "inspector" && (key === "ArrowLeft" || key === "ArrowRight")) {
+      setInspectorPct((value) =>
+        clamp(value + (growing ? -2 : 2), 24, Math.min(40, 100 - itineraryPct - 30))
+      );
+    } else if (target === "chat" && (key === "ArrowUp" || key === "ArrowDown")) {
+      setChatPct((value) => clamp(value + (key === "ArrowUp" ? 2 : -2), 30, 65));
+    } else {
+      return false;
+    }
+    return true;
+  };
 
   const applyView = useCallback((v: TripView, f: NavRef | null) => {
     setView(v);
@@ -260,17 +351,17 @@ export default function App() {
     setMaximizedPane((prev) => (prev === pane ? null : pane));
   };
 
-  const handleStopFocus = (kind: string, name: string) => {
+  const handleStopFocus = async (kind: string, name: string) => {
     setMapOpen(true);
     if (isPlaceKind(kind)) {
-      handleFocus(kind === "activity" ? "attraction" : kind, name);
+      await handleFocus(kind === "activity" ? "attraction" : kind, name);
     }
   };
 
-  const handleStopMap = (kind: string, name: string) => {
+  const handleStopMap = async (kind: string, name: string) => {
     setMapOpen(true);
     if (isPlaceKind(kind)) {
-      handleFocus(kind === "activity" ? "attraction" : kind, name);
+      await handleFocus(kind === "activity" ? "attraction" : kind, name);
     }
   };
 
@@ -349,11 +440,12 @@ export default function App() {
   const inspector = (
     <div className={!inspectorOpen || maximizedPane ? "hidden" : "contents"}>
       <aside
+        ref={inspectorRef}
         data-testid="context-inspector"
         className={`flex min-h-0 flex-col overflow-hidden bg-surface ${
           isWideDesktop
             ? "h-full rounded-2xl border border-slate-200/70 shadow-card"
-            : "absolute inset-y-2 right-2 z-40 w-[min(25rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
+            : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
         }`}
       >
       <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
@@ -373,10 +465,25 @@ export default function App() {
       <div className="min-h-0 flex-1">
         <TripPanel {...tripPanelProps} hideSwitcher />
       </div>
+        {chatOpen && (
+          <div
+            role="separator"
+            tabIndex={0}
+            aria-label="Resize details and chat"
+            aria-orientation="horizontal"
+            aria-valuenow={Math.round(chatPct)}
+            onMouseDown={() => startResize("chat")}
+            onKeyDown={(event) => {
+              if (resizeWithKeyboard("chat", event.key)) event.preventDefault();
+            }}
+            className="group relative z-20 h-1.5 shrink-0 cursor-row-resize bg-transparent hover:bg-brand/20 focus:bg-brand/20 focus:outline-none"
+          >
+            <span className="absolute left-1/2 top-1/2 h-1 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/60" />
+          </div>
+        )}
         <section
-          className={`relative z-10 shrink-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] transition-[height] duration-300 ${
-            chatOpen ? (view?.has_trip ? "h-[44%] min-h-72" : "h-[62%] min-h-80") : "h-12"
-          }`}
+          className="relative z-10 shrink-0 overflow-hidden border-t border-slate-200 bg-white shadow-[0_-12px_30px_rgba(15,23,42,0.08)] transition-[height] duration-300"
+          style={{ height: chatOpen ? `${chatPct}%` : "3rem" }}
         >
           <div className={`relative h-full ${chatOpen ? "visible" : "invisible"}`}>
             <ChatPanel
@@ -454,20 +561,54 @@ export default function App() {
         </header>
 
         <main
-          className={`relative grid min-h-0 flex-1 gap-2 overflow-hidden p-2 ${
-            maximizedPane
-              ? "grid-cols-1"
+          ref={workspaceRef}
+          className="relative grid min-h-0 flex-1 overflow-hidden p-2"
+          style={{
+            gridTemplateColumns: maximizedPane
+              ? "minmax(0, 1fr)"
               : isWideDesktop && inspectorOpen
-                ? "grid-cols-[minmax(19rem,23rem)_minmax(0,1fr)_minmax(21rem,26rem)]"
-                : "grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)]"
-          }`}
+                ? `${itineraryPct}fr 0.375rem ${100 - itineraryPct - inspectorPct}fr 0.375rem ${inspectorPct}fr`
+                : `${itineraryPct}fr 0.375rem ${100 - itineraryPct}fr`,
+          }}
         >
           <section className={`min-h-0 min-w-0 ${maximizedPane === "map" ? "hidden" : ""}`}>
             {renderCanvasPane("itinerary")}
           </section>
+          {!maximizedPane && (
+            <div
+              role="separator"
+              tabIndex={0}
+              aria-label="Resize itinerary and map"
+              aria-orientation="vertical"
+              aria-valuenow={Math.round(itineraryPct)}
+              onMouseDown={() => startResize("itinerary")}
+              onKeyDown={(event) => {
+                if (resizeWithKeyboard("itinerary", event.key)) event.preventDefault();
+              }}
+              className="group relative cursor-col-resize bg-transparent hover:bg-brand/20 focus:bg-brand/20 focus:outline-none"
+            >
+              <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/60" />
+            </div>
+          )}
           <section className={`min-h-0 min-w-0 ${maximizedPane === "itinerary" ? "hidden" : ""}`}>
             {renderCanvasPane("map")}
           </section>
+          {!maximizedPane && isWideDesktop && inspectorOpen && (
+            <div
+              role="separator"
+              tabIndex={0}
+              aria-label="Resize map and details"
+              aria-orientation="vertical"
+              aria-valuenow={Math.round(inspectorPct)}
+              onMouseDown={() => startResize("inspector")}
+              onKeyDown={(event) => {
+                if (resizeWithKeyboard("inspector", event.key)) event.preventDefault();
+              }}
+              className="group relative cursor-col-resize bg-transparent hover:bg-brand/20 focus:bg-brand/20 focus:outline-none"
+            >
+              <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/60" />
+            </div>
+          )}
           {inspector}
         </main>
       </div>

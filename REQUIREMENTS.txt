@@ -1478,3 +1478,26 @@ VALIDATION:
 - Production frontend build: passing
 - Playwright desktop + mobile smoke projects: 2 passing
 
+=== 2026-07-24 — Session 28: Spatial workspace sizing and focus refinement ===
+
+REQUIREMENT:
+- Restore pane size adjustment controls removed by Layout D.
+- Clicking an itinerary place must focus its contextual Details view as well as
+  its map pin.
+- Make the default Details/chat pane slightly wider.
+
+IMPLEMENTED:
+- Restored mouse-drag and keyboard-accessible separators for itinerary/map,
+  map/inspector, and the vertical details/chat split. Sizes persist in localStorage.
+- Set the wide-desktop inspector default to 31% and increased the overlay inspector
+  from 25rem to 27rem.
+- Itinerary place focus now explicitly awaits the shared focused TripView refresh,
+  keeping map focus, active-row state, inspector visibility, and Details content in sync.
+- Added App regressions for separator defaults/keyboard resizing and itinerary-to-
+  Details focus propagation.
+
+VALIDATION:
+- 16 Vitest/React Testing Library tests: passing
+- Production frontend build: passing
+- Playwright desktop + mobile smoke projects: 2 passing
+

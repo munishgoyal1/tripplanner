@@ -82,10 +82,11 @@ frontend/
     main.tsx          React 18 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-          details inspector right, and mounted collapsible chat dock; no
-          page scroll or resize dividers. Map/itinerary maximize, request
-          cancellation, shared place focus. Mobile: chat + on-demand
-          trip-details sheet. Only the active responsive shell mounts.
+              details inspector right, and mounted collapsible chat dock; no
+              page scroll. Persistent mouse/keyboard separators resize all
+              desktop pane splits. Map/itinerary maximize, request cancellation,
+              shared map/details place focus. Mobile: chat + on-demand trip-details
+              sheet. Only the active responsive shell mounts.
     workspaceState.ts Canonical reducer for trip identity/revision, active place,
               chat reload, and itinerary jump state
     api.ts            All HTTP/SSE + auth glue + per-destination overview cache

@@ -37,8 +37,13 @@ vi.mock("./components/ChatPanel", () => ({
   default: () => <div data-testid="chat-panel" />,
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken }: { reloadToken: number }) => (
-    <div data-testid="itinerary-panel" data-reload-token={reloadToken} />
+  default: ({ reloadToken, onStopFocus }: { reloadToken: number; onStopFocus: (kind: string, name: string) => void }) => (
+    <button
+      type="button"
+      data-testid="itinerary-panel"
+      data-reload-token={reloadToken}
+      onClick={() => onStopFocus("attraction", "Louvre Museum")}
+    />
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
@@ -47,7 +52,9 @@ vi.mock("./components/MapPanel", () => ({
   ),
 }));
 vi.mock("./components/TripPanel", () => ({
-  default: () => <div data-testid="trip-panel" />,
+  default: ({ view }: { view: { focus?: { name?: string } | null } | null }) => (
+    <div data-testid="trip-panel" data-focus-name={view?.focus?.name ?? ""} />
+  ),
 }));
 vi.mock("./components/TripSwitcher", () => ({
   default: () => <div data-testid="trip-switcher" />,
@@ -89,7 +96,7 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
   });
 
-  it("keeps itinerary, map, and details together without resize separators", async () => {
+  it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {
     setDesktop(true);
     render(<App />);
 
@@ -97,7 +104,13 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
     expect(screen.getByTestId("trip-panel")).toBeInTheDocument();
-    expect(screen.queryAllByRole("separator")).toHaveLength(0);
+    expect(screen.getByRole("separator", { name: "Resize itinerary and map" })).toHaveAttribute("aria-valuenow", "24");
+    expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "31");
+    expect(screen.getByRole("separator", { name: "Resize details and chat" })).toHaveAttribute("aria-valuenow", "46");
+
+    fireEvent.keyDown(screen.getByRole("separator", { name: "Resize map and details" }), { key: "ArrowLeft" });
+    expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "33");
+    expect(localStorage.getItem("tripplanner_inspector_pct")).toBe("33");
   });
 
   it("keeps one chat mounted while its dock and inspector are collapsed", async () => {
@@ -125,5 +138,22 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(2));
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
+  });
+
+  it("loads itinerary place focus into both the map state and details pane", async () => {
+    const focusedView = {
+      ...emptyView,
+      focus: { kind: "attraction", name: "Louvre Museum" },
+    };
+    fetchTripViewMock.mockResolvedValueOnce(emptyView).mockResolvedValueOnce(focusedView);
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByTestId("itinerary-panel"));
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Louvre Museum"));
+    expect(fetchTripViewMock.mock.calls[1][0]).toEqual({ kind: "attraction", name: "Louvre Museum" });
+    expect(screen.getByText("Louvre Museum")).toBeInTheDocument();
   });
 });

@@ -41,10 +41,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   Chat is a collapsible dock inside the inspector and stays mounted while
-  hidden. Only panes scroll; the page never does. Map and itinerary can be
-  maximized, but there are no dashboard-style resize/move controls. On narrower
-  desktops the inspector overlays the map on demand. Mobile mounts chat plus an
-  on-demand trip-details sheet.
+  hidden. Only panes scroll; the page never does. Accessible drag/keyboard
+  separators resize itinerary, map, inspector, and the details/chat split, and
+  sizes persist locally. Map and itinerary can be maximized. On narrower desktops
+  the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
+  trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
   active state; teal `accent` for secondary surfaces; ink/muted/surface
   neutrals everywhere else. No rainbow.
@@ -64,6 +65,7 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   focus-only navigation never triggers unrelated panel reloads.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
+  Clicking a place stop focuses both its map pin and its contextual Details view.
 
 If a redesign violates the above without a stated reason, push back.
 
