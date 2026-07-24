@@ -12,6 +12,10 @@ a list of suggestions. Real flights (Duffel), real hotels & activities
 (Tavily). A single LangGraph agent uses a phase-selected tool set. It learns from preferences and
 past trips and remembers them across devices.
 
+The product also serves as an end-to-end multi-form-factor proof of concept:
+the same planner capabilities should feel native on web, iPhone, and later
+Android without duplicating the agent, travel logic, or persistence model.
+
 **Target user**: the owner (Munish). One-person product. Optimize for *his*
 flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
@@ -19,7 +23,6 @@ flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
 - ❌ Automated purchasing or card charging (booking remains a verified handoff).
-- ❌ Mobile app. The SPA must work great on a desktop browser first.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
 - ❌ Generic chatbot vibes. This is a planner, not a friend-bot.
@@ -165,8 +168,18 @@ If a redesign violates the above without a stated reason, push back.
 - Read in 50–200 line chunks; parallelize independent file reads.
 - Validate (tsc + pytest + build) ONCE at end of milestone.
 
-## 8) Roadmap signals (loose, not commitments)
+## 8) Product goals and roadmap signals
 
+- **Mobile is now a committed product goal.** Build an iOS-first native POC for
+  hands-on iPhone testing, then extend the same mobile application to Android.
+  Prefer React Native with Expo so iOS and Android share one TypeScript mobile
+  application while the existing FastAPI/LangGraph backend remains authoritative.
+  Reuse API contracts, state transitions, mutation semantics, identity, saved
+  trips, chat, and view-model data; implement navigation, maps, secure storage,
+  sharing, and presentation through platform adapters rather than a WebView.
+- Mobile should reinterpret the planner for a phone, not squeeze the desktop
+  four-pane workspace into a small screen. Preserve behavioral parity through
+  native Plan, Map, Details, Assistant, Trips, and Settings experiences.
 - Continuous learning is the moat. Every chat should leave the
   `learned_notes` / `past_trip_mentions` / `interests` / `dislikes` richer.
 - The trip panel is the showroom. Anything that makes it feel more like an

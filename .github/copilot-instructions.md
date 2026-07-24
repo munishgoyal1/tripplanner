@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **iOS-first mobile goal (Session 47)**: mobile is now an explicit product POC,
+  beginning with an iPhone-testable React Native/Expo app and Android next. The
+  mobile clients reuse the authoritative FastAPI/LangGraph backend, persistence,
+  API/view contracts, and mutation semantics; native adapters own phone layout,
+  navigation, maps, secure auth storage, deep links, sharing, and lifecycle.
 - **Reliable switches + Details actions (Session 46)**: saved-trip switching
   aborts and invalidates older Details reads before applying the new view, so
   old places cannot return. Every visible In trip pill is actionable: direct

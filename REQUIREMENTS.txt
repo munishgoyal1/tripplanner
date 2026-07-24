@@ -1950,3 +1950,27 @@ IMPLEMENTED:
 - Added regressions for stale pre-switch responses and the prominent Details
   control.
 
+=== 2026-07-24 — Session 47: iOS-first mobile product goal ===
+
+REQUIREMENT:
+- Promote mobile applications from a non-goal to a product goal so tripplanner
+  demonstrates a full end-to-end product across different form factors.
+- Start with iOS because the owner has an iPhone for hands-on testing; follow
+  with Android after the shared mobile foundation is proven.
+
+DECISION:
+- Use an iOS-first React Native/Expo application, designed from the start to
+  support Android from the same mobile TypeScript codebase.
+- Keep FastAPI, LangGraph, travel tools, persistence, trip rules, and pure view
+  models authoritative and shared. Extract reusable TypeScript API contracts,
+  transport, and state logic where practical.
+- Use native mobile presentation and platform adapters for navigation, maps,
+  secure identity storage, OAuth/deep links, sharing, and lifecycle recovery.
+  Do not ship the web SPA inside a WebView as the primary mobile architecture.
+- The phone UX will preserve product behavior while using mobile-native Plan,
+  Map, Details, Assistant, Trips, and Settings surfaces rather than reproducing
+  the desktop four-pane layout.
+
+STATUS:
+- Product scope and architecture direction approved; implementation not started.
+
