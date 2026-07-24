@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Robust place removal (Session 39)**: successful removal responses invalidate
+  older in-flight trip reads, and duplicate same-place removals coalesce.
+  Details, Map, and Itinerary share the guarded mutation path and expose a
+  disabled pending state; Details cards use stable place keys. Validation: 29
+  frontend tests, TypeScript check, and production build pass.
 - **Cold trip-pane performance (Session 38)**: simultaneous cache misses for the
   same place/top-places query are coalesced. Itinerary and map warm metadata in
   parallel without review requests, and complete structured itineraries no

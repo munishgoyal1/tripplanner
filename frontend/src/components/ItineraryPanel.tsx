@@ -1,4 +1,4 @@
-import { Clock3, ExternalLink, MapPin, Trash2 } from "lucide-react";
+import { Clock3, ExternalLink, Loader2, MapPin, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop } from "../types";
@@ -15,7 +15,7 @@ interface Props {
   /** Programmatic jump target after add-to-trip actions. */
   jumpTo?: { day: number; name?: string; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
-  onStopRemove?: (kind: string, name: string) => void;
+  onStopRemove?: (kind: string, name: string) => void | Promise<void>;
 }
 
 const KIND_ICON: Record<string, string> = {
@@ -49,10 +49,11 @@ function StopRow({
   onToggleBooked: (next: boolean) => void;
   onFocus: () => void;
   onMap: () => void;
-  onRemove?: () => void;
+  onRemove?: () => void | Promise<void>;
 }) {
   const focusable = canFocus(stop.kind);
   const removable = !!onRemove && focusable;
+  const [removing, setRemoving] = useState(false);
   const noteText = (stop.note || "").trim();
   const insightText = (stop.insight || "").trim();
   const showNote = !!noteText && noteText.toLowerCase() !== insightText.toLowerCase();
@@ -152,9 +153,15 @@ function StopRow({
         {removable && (
           <button
             type="button"
-            onClick={(e) => {
+            disabled={removing}
+            onClick={async (e) => {
               e.stopPropagation();
-              onRemove?.();
+              setRemoving(true);
+              try {
+                await onRemove?.();
+              } finally {
+                setRemoving(false);
+              }
             }}
             aria-label={stop.kind === "hotel" ? `Remove ${stop.name} stay` : `Remove ${stop.name} from itinerary`}
             className={`grid h-7 w-7 place-items-center rounded-full transition ring-1 ${
@@ -164,7 +171,7 @@ function StopRow({
             }`}
             title={stop.kind === "hotel" ? "Remove stay from itinerary" : "Remove from itinerary"}
           >
-            <Trash2 size={13} aria-hidden />
+            {removing ? <Loader2 size={13} className="animate-spin" aria-hidden /> : <Trash2 size={13} aria-hidden />}
           </button>
         )}
         <button

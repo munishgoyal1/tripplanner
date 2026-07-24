@@ -94,7 +94,8 @@ frontend/
         and details.
           Persistent mouse/keyboard separators resize all
               desktop pane splits. Four-pane maximize/restore, request cancellation,
-              shared map/details place focus. Mobile: chat + on-demand trip-details
+              mutation responses supersede older reads, same-place removal
+              coalescing, shared map/details place focus. Mobile: chat + on-demand trip-details
               sheet. Only the active responsive shell mounts.
     workspaceState.ts Canonical reducer for trip identity/revision, active place,
               chat reload, and itinerary jump state

@@ -124,7 +124,7 @@ interface Props {
   /** Add a place to the trip (from a pin's info window). */
   onSelect?: (kind: string, name: string, options?: SelectItemOptions) => void;
   /** Remove a place from the trip (from a pin's info window). */
-  onDeselect?: (kind: string, name: string) => void;
+  onDeselect?: (kind: string, name: string) => void | Promise<boolean>;
 }
 
 export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
@@ -135,6 +135,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   const [activeDay, setActiveDay] = useState<number | null>(null); // null = all days
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
   const [confirmRemove, setConfirmRemove] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const [newStopName, setNewStopName] = useState("");
   const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
   const [newStopDay, setNewStopDay] = useState("auto");
@@ -452,6 +453,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
 
   useEffect(() => {
     setConfirmRemove(false);
+    setRemoving(false);
   }, [selectedPin?.id]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
@@ -465,7 +467,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     setNewStopName("");
   };
 
-  const handleToggleSelected = () => {
+  const handleToggleSelected = async () => {
     if (!isPlacePin(selectedPin)) return;
     if (selectedPin.selected) {
       if (!confirmRemove) {
@@ -473,7 +475,12 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
         return;
       }
       setConfirmRemove(false);
-      onDeselect?.(selectedPin.kind, selectedPin.name);
+      setRemoving(true);
+      try {
+        await onDeselect?.(selectedPin.kind, selectedPin.name);
+      } finally {
+        setRemoving(false);
+      }
       return;
     }
     onSelect?.(selectedPin.kind, selectedPin.name, optionsForStopDay(newStopDay));
@@ -666,6 +673,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
                 <button
                   type="button"
                   onClick={handleToggleSelected}
+                  disabled={removing}
                   className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                     selectedPin.selected
                       ? confirmRemove
@@ -674,7 +682,9 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
                       : "bg-brand text-white"
                   }`}
                 >
-                  {selectedPin.selected
+                  {removing
+                    ? "Removing…"
+                    : selectedPin.selected
                     ? confirmRemove
                       ? "Click again to remove"
                       : "Remove from trip"

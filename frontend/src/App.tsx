@@ -82,6 +82,7 @@ export default function App() {
 
   const refreshGeneration = useRef(0);
   const refreshController = useRef<AbortController | null>(null);
+  const pendingDeselects = useRef(new Set<string>());
   const workspaceRef = useRef<HTMLElement>(null);
   const inspectorRef = useRef<HTMLElement>(null);
   const resizeTarget = useRef<ResizeTarget>(null);
@@ -175,6 +176,16 @@ export default function App() {
     setView(v);
     if (!f) setNavList(v.items.map((it) => ({ kind: it.kind, name: it.name })));
   }, []);
+
+  const applyMutationView = useCallback(
+    (v: TripView, f: NavRef | null) => {
+      ++refreshGeneration.current;
+      refreshController.current?.abort();
+      setLoading(false);
+      applyView(v, f);
+    },
+    [applyView]
+  );
 
   const refresh = useCallback(
     async (f: NavRef | null = focus) => {
@@ -334,6 +345,9 @@ export default function App() {
   };
 
   const handleDeselect = async (kind: string, name: string) => {
+    const mutationKey = `${focusKind(kind)}:${name.trim().toLowerCase()}`;
+    if (pendingDeselects.current.has(mutationKey)) return false;
+    pendingDeselects.current.add(mutationKey);
     try {
       setActionError(null);
       const next = await deselectItem(kind, name);
@@ -342,37 +356,22 @@ export default function App() {
       if (removesFocus) {
         dispatchWorkspace({ type: "focus", place: null });
         dispatchWorkspace({ type: "jump", target: null });
-        setView({ ...next.view, alerts: next.alerts });
-        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      } else if (focus) {
-        await refresh(focus);
-        setView((current) => current ? { ...current, alerts: next.alerts } : current);
-      } else {
-        setView({ ...next.view, alerts: next.alerts });
-        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       }
+      applyMutationView({ ...next.view, alerts: next.alerts }, null);
+      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       dispatchWorkspace({ type: "trip-content-changed" });
+      if (!removesFocus && focus) void refresh(focus);
+      return true;
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not remove the place.");
+      return false;
+    } finally {
+      pendingDeselects.current.delete(mutationKey);
     }
   };
 
   const handleStopRemove = async (kind: string, name: string) => {
-    const removesFocus = focus?.name.toLowerCase() === name.toLowerCase();
-    if (removesFocus) {
-      dispatchWorkspace({ type: "focus", place: null });
-      try {
-        const next = await deselectItem(kind, name);
-        setView({ ...next.view, alerts: next.alerts });
-        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-        dispatchWorkspace({ type: "trip-content-changed" });
-      } catch (error) {
-        setActionError(error instanceof Error ? error.message : "Could not remove the place.");
-        return;
-      }
-    } else {
-      await handleDeselect(kind, name);
-    }
+    if (!(await handleDeselect(kind, name))) return;
     dispatchWorkspace({ type: "focus", place: null });
     dispatchWorkspace({ type: "jump", target: null });
   };

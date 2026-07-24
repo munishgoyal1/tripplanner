@@ -92,6 +92,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   the complete itinerary, not only one card. Unbooked attractions redistribute
   around the current hotel anchors using geographic proximity and balanced day
   load; booked attractions, hotels, and non-place stops stay fixed.
+  Successful mutations always supersede older in-flight reads. Repeated clicks
+  for the same removal coalesce, and every removal surface shows a disabled
+  pending state until the mutation completes.
 
 If a redesign violates the above without a stated reason, push back.
 

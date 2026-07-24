@@ -1,9 +1,10 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock, isAnonymousUserMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   selectItemMock: vi.fn(),
+  deselectItemMock: vi.fn(),
   isAnonymousUserMock: vi.fn(() => true),
   emptyView: {
   has_trip: false,
@@ -32,7 +33,7 @@ vi.mock("./api", () => ({
   fetchTripView: fetchTripViewMock,
   importSharedTrip: vi.fn(),
   selectItem: selectItemMock,
-  deselectItem: vi.fn(),
+  deselectItem: deselectItemMock,
   startNewTrip: vi.fn(),
   isAnonymousUser: isAnonymousUserMock,
   getDisplayName: vi.fn(() => "Munish"),
@@ -64,9 +65,10 @@ vi.mock("./components/MapPanel", () => ({
   ),
 }));
 vi.mock("./components/TripPanel", () => ({
-  default: ({ view, onSelect }: { view: { focus?: { name?: string } | null } | null; onSelect?: (kind: string, name: string) => void }) => (
-    <div data-testid="trip-panel" data-focus-name={view?.focus?.name ?? ""}>
+  default: ({ view, onSelect, onDeselect }: { view: { focus?: { name?: string } | null; items?: { name: string }[] } | null; onSelect?: (kind: string, name: string) => void; onDeselect?: (kind: string, name: string) => void }) => (
+    <div data-testid="trip-panel" data-focus-name={view?.focus?.name ?? ""} data-items={(view?.items ?? []).map((item) => item.name).join(",")}>
       <button type="button" onClick={() => onSelect?.("attraction", "Eiffel Tower")}>Add Eiffel Tower</button>
+      <button type="button" onClick={() => onDeselect?.("attraction", "Eiffel Tower")}>Remove Eiffel Tower</button>
     </div>
   ),
 }));
@@ -102,6 +104,7 @@ describe("App responsive workspace", () => {
     window.history.replaceState({}, "", "/");
     fetchTripViewMock.mockReset().mockResolvedValue(emptyView);
     selectItemMock.mockReset();
+    deselectItemMock.mockReset();
     isAnonymousUserMock.mockReset().mockReturnValue(true);
   });
 
@@ -123,6 +126,35 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(1));
     expect(screen.getByTestId("chat-panel")).toBeInTheDocument();
     expect(screen.getByTestId("trip-switcher")).toBeInTheDocument();
+  });
+
+  it("keeps a successful removal when an older refresh resolves later", async () => {
+    let resolveStaleRefresh!: (value: unknown) => void;
+    const selectedView = {
+      ...emptyView,
+      has_trip: true,
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
+    };
+    const removedView = { ...selectedView, items: [] };
+    fetchTripViewMock
+      .mockResolvedValueOnce(selectedView)
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        resolveStaleRefresh = resolve;
+      }));
+    deselectItemMock.mockResolvedValue({ view: removedView, alerts: ["Removed Eiffel Tower."] });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower"));
+    fireEvent.click(screen.getByRole("button", { name: "Focus pin" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove Eiffel Tower" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove Eiffel Tower" }));
+
+    await waitFor(() => expect(deselectItemMock).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", ""));
+    resolveStaleRefresh(selectedView);
+    await Promise.resolve();
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "");
   });
 
   it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {

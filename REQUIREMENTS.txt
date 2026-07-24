@@ -1756,3 +1756,26 @@ VALIDATION:
 - Focused Places/view-model suite: 48 passing.
 - Backend: 506 passing; one unrelated Starlette TestClient deprecation warning.
 
+=== 2026-07-24 — Session 39: Robust place removal ===
+
+REQUIREMENT:
+- Removing a place must work reliably after the intentional two-click
+  confirmation; users should not need repeated attempts because of click or
+  response timing.
+
+IMPLEMENTED:
+- Successful mutation views now invalidate and abort older trip-view reads, so
+  a late pre-removal response cannot repaint a removed place.
+- Same-place removals are coalesced while pending, and itinerary removal uses
+  the same guarded App mutation path as Map and Details.
+- Details, Map, and Itinerary controls disable and show a removing state until
+  completion. Details cards use stable place keys so confirmation state cannot
+  move when results reorder.
+- Added an App regression that resolves a stale pre-removal read after the
+  successful mutation and verifies the removed item stays absent and only one
+  deselect request is sent.
+
+VALIDATION:
+- Frontend: 29 tests passing.
+- TypeScript check and production build passing.
+

@@ -24,7 +24,7 @@ interface Props {
   onClearFocus: () => void;
   onStep: (delta: number) => void;
   onSelect: (kind: string, name: string, options?: SelectItemOptions) => void;
-  onDeselect: (kind: string, name: string) => void;
+  onDeselect: (kind: string, name: string) => void | Promise<boolean>;
   tripVersion: number;
   onSwitched: (tripId?: string, view?: TripView | null) => void;
   /** Hide the internal saved-trips switcher (RightRail renders it persistently). */
@@ -125,7 +125,7 @@ function ItemCard({
   onFocus: (kind: string, name: string) => void;
   onSelect: (kind: string, name: string) => void;
   onHotelStay: (name: string) => void;
-  onDeselect: (kind: string, name: string) => void;
+  onDeselect: (kind: string, name: string) => void | Promise<boolean>;
   onOpenPhoto: (photos: string[], index: number, alt: string) => void;
 }) {
   const icon = ICONS[item.kind] ?? "\u{1F4CD}";
@@ -134,6 +134,7 @@ function ItemCard({
   // Two-step remove: the first click arms, a second confirms. Auto-disarms
   // after a moment so a stray click never drops a place from the trip.
   const [confirmRemove, setConfirmRemove] = useState(false);
+  const [removing, setRemoving] = useState(false);
   useEffect(() => {
     if (!confirmRemove) return;
     const t = setTimeout(() => setConfirmRemove(false), 3000);
@@ -237,10 +238,16 @@ function ItemCard({
           {isSelectable(item.kind) &&
             (item.selected ? (
               <button
-                onClick={() => {
+                disabled={removing}
+                onClick={async () => {
                   if (confirmRemove) {
                     setConfirmRemove(false);
-                    onDeselect(item.kind, item.name);
+                    setRemoving(true);
+                    try {
+                      await onDeselect(item.kind, item.name);
+                    } finally {
+                      setRemoving(false);
+                    }
                   } else {
                     setConfirmRemove(true);
                   }
@@ -251,12 +258,16 @@ function ItemCard({
                     : "Remove this from your trip"
                 }
                 className={
-                  confirmRemove
+                  removing
+                    ? "inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200"
+                    : confirmRemove
                     ? "inline-flex items-center justify-center gap-1.5 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white ring-1 ring-rose-600 transition"
                     : "group/btn inline-flex items-center justify-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-rose-50 hover:text-rose-700 hover:ring-rose-200"
                 }
               >
-                {confirmRemove ? (
+                {removing ? (
+                  <span>Removing…</span>
+                ) : confirmRemove ? (
                   <span>Click again to remove</span>
                 ) : (
                   <>
@@ -648,9 +659,9 @@ export default function TripPanel({
                 : "No hotels or activities saved yet. Ask the agent for options, then add the ones you like."}
             </p>
           ) : (
-            view.items.map((it, i) => (
+            view.items.map((it) => (
               <ItemCard
-                key={i}
+                key={`${it.kind}:${it.name.toLowerCase()}`}
                 item={it}
                 focused={focused}
                 onFocus={onFocus}
