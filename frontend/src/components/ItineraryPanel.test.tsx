@@ -90,4 +90,18 @@ describe("ItineraryPanel", () => {
     await waitFor(() => expect(checkbox).toHaveAttribute("aria-checked", "false"));
     expect(screen.getByRole("status")).toHaveTextContent("Could not update the booking status.");
   });
+
+  it("removes the exact itinerary occurrence", async () => {
+    const onStopRemove = vi.fn().mockResolvedValue(undefined);
+    render(<ItineraryPanel onStopRemove={onStopRemove} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Remove Seine cruise from itinerary" }));
+
+    await waitFor(() => expect(onStopRemove).toHaveBeenCalledWith(
+      "attraction",
+      "Seine cruise",
+      1,
+      2,
+    ));
+  });
 });

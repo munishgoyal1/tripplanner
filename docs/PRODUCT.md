@@ -103,7 +103,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   for the same removal coalesce, and every removal surface shows a disabled
   pending state until the mutation completes. Adding or removing a place keeps
   that changed place focused in Details, with the opposite action immediately
-  available so the decision is easy to reverse.
+  available so the decision is easy to reverse. Repeated itinerary places are
+  occurrence-aware: a row action removes that exact day/stop, while Details and
+  Map expose an in-context menu for one occurrence or every occurrence. This
+  choice never depends on Assistant being visible.
 - **Mutation status**: the latest update sits near the trip identity in a
   flexible command-bar region. Routine add/remove/reflow messages stay concise;
   the region wraps when space is tight instead of clipping the update.

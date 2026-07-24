@@ -211,11 +211,13 @@ It exports:
   the selected hotels/activities so the panel is never blank.
 
 UI add/remove actions call `trip_planner.add_selection` / `remove_selection`.
-Every hotel or attraction mutation runs `_reflow_unbooked_attractions`: hotel
-anchors, booked attractions, and non-place stops remain fixed while unbooked
-attractions are reassigned by proximity and balanced day load. The API returns
-the resulting alert so `App.tsx` can show the latest mutation outcome in the
-workspace command bar while refreshing the full trip view.
+Mutation responses include an authoritative focused `TripView`; `App.tsx`
+applies it directly so Details cannot retain stale selection state. Each place
+item/pin exposes itinerary occurrences (`day`, one-based `stop`, `time`). An
+Itinerary row removes that exact occurrence without global reflow; the selected
+bucket remains while another occurrence exists. Details and Map also expose
+`Remove everywhere`, which clears the selection and all matching stops before
+normal reflow. The API alert is shown in the workspace command bar.
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.

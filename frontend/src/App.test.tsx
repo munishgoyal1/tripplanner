@@ -135,7 +135,6 @@ describe("App responsive workspace", () => {
       has_trip: true,
       items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
     };
-    const removedView = { ...selectedView, items: [] };
     const focusedRemovedView = {
       ...selectedView,
       focus: { kind: "attraction", name: "Eiffel Tower" },
@@ -147,7 +146,7 @@ describe("App responsive workspace", () => {
         resolveStaleRefresh = resolve;
       }))
       .mockResolvedValueOnce(focusedRemovedView);
-    deselectItemMock.mockResolvedValue({ view: removedView, alerts: ["Removed Eiffel Tower."] });
+    deselectItemMock.mockResolvedValue({ view: focusedRemovedView, alerts: ["Removed Eiffel Tower."] });
     setDesktop(true);
     render(<App />);
 
@@ -162,6 +161,29 @@ describe("App responsive workspace", () => {
     await Promise.resolve();
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower");
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "false");
+  });
+
+  it("applies the authoritative selected view immediately after add", async () => {
+    const unselectedView = {
+      ...emptyView,
+      has_trip: true,
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: false }],
+    };
+    const selectedView = {
+      ...unselectedView,
+      focus: { kind: "attraction", name: "Eiffel Tower" },
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
+    };
+    fetchTripViewMock.mockResolvedValue(unselectedView);
+    selectItemMock.mockResolvedValue({ view: selectedView, alerts: ["Added Eiffel Tower."] });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "false"));
+    fireEvent.click(screen.getByRole("button", { name: "Add Eiffel Tower" }));
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "true"));
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower");
   });
 
   it("shows a concise wrapping update near the trip identity", async () => {

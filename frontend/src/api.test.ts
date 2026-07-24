@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchSavedTrips, streamChat, tripExportPdfUrl, type StreamHandlers } from "./api";
+import { deselectItem, fetchSavedTrips, streamChat, tripExportPdfUrl, type StreamHandlers } from "./api";
 
 function streamResponse(frames: string[], status = 200): Response {
   const encoder = new TextEncoder();
@@ -100,5 +100,30 @@ describe("PDF export URL", () => {
     expect(url.searchParams.get("include_photos")).toBe("0");
     expect(url.searchParams.get("include_map_circuit")).toBe("1");
     expect(url.searchParams.get("template")).toBe("family");
+  });
+});
+
+describe("place removal", () => {
+  it("sends exact occurrence context", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      view: { items: [] },
+      alerts: ["Removed Eiffel Tower from Day 2."],
+    }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await deselectItem("attraction", "Eiffel Tower", {
+      day: 2,
+      stop: 3,
+      all_occurrences: false,
+    });
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(JSON.parse(String(init.body))).toMatchObject({
+      kind: "attraction",
+      name: "Eiffel Tower",
+      day: 2,
+      stop: 3,
+      all_occurrences: false,
+    });
   });
 });

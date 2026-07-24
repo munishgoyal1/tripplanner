@@ -880,7 +880,14 @@ def add_selection(
 
 
 @_serialized_mutation
-def remove_selection(kind: str, name: str) -> bool:
+def remove_selection(
+    kind: str,
+    name: str,
+    *,
+    day: int | None = None,
+    stop: int | None = None,
+    all_occurrences: bool = True,
+) -> bool:
     """Remove a previously-added hotel/attraction from the active trip (UI helper).
 
     The reverse of :func:`add_selection`. Matched case-insensitively by name.
@@ -890,9 +897,53 @@ def remove_selection(kind: str, name: str) -> bool:
     plan = _load_active_trip()
     if not plan:
         return False
+    target = str(name or "").strip().lower()
+    if not target:
+        return False
     key = "selected_hotels" if kind == "hotel" else "selected_activities"
     bucket = plan.get(key) or []
-    target = str(name or "").strip().lower()
+    itinerary = plan.get("day_wise_itinerary") or []
+
+    if not all_occurrences and day is not None:
+        removed = False
+        for day_index, entry in enumerate(itinerary):
+            if not isinstance(entry, dict):
+                continue
+            raw_day = entry.get("day")
+            day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else day_index + 1
+            if day_num != day:
+                continue
+            raw_stops = entry.get("stops")
+            stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
+            if stop is not None and 0 < stop <= len(stops):
+                candidate_index = stop - 1
+                if _stop_name(stops[candidate_index]).strip().lower() == target:
+                    stops.pop(candidate_index)
+                    removed = True
+            if not removed:
+                for candidate_index, candidate in enumerate(stops):
+                    if _stop_name(candidate).strip().lower() == target:
+                        stops.pop(candidate_index)
+                        removed = True
+                        break
+            break
+        if not removed:
+            return False
+        still_present = any(
+            _stop_name(candidate).strip().lower() == target
+            for entry in itinerary
+            if isinstance(entry, dict)
+            for candidate in (entry.get("stops") or [])
+        )
+        if not still_present:
+            plan[key] = [
+                item
+                for item in bucket
+                if str(item.get("name") or "").strip().lower() != target
+            ]
+        _save_active_trip(plan)
+        return True
+
     kept = [x for x in bucket if str(x.get("name") or "").strip().lower() != target]
     changed = len(kept) != len(bucket)
     if changed:
@@ -900,11 +951,11 @@ def remove_selection(kind: str, name: str) -> bool:
     # Also strip the place from the day-by-day itinerary. A place can live in
     # the itinerary without being in the selected bucket (the agent placed it
     # directly), so do this even when the bucket was unchanged.
-    itinerary = plan.get("day_wise_itinerary") or []
     for day in itinerary:
         if not isinstance(day, dict):
             continue
-        stops = day.get("stops") if isinstance(day.get("stops"), list) else []
+        raw_stops = day.get("stops")
+        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
         pruned = [s for s in stops if _stop_name(s).strip().lower() != target]
         if len(pruned) != len(stops):
             day["stops"] = pruned

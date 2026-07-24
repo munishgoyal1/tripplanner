@@ -50,10 +50,33 @@ def select(
     }
 
 
-def deselect(kind: str, name: str) -> dict[str, Any]:
-    ok = trip_planner.remove_selection(kind, name)
-    alerts = [f"Removed {name} and refreshed the itinerary."] if ok else []
-    return {"ok": ok, "alerts": alerts, "view": build_view()}
+def deselect(
+    kind: str,
+    name: str,
+    *,
+    day: int | None = None,
+    stop: int | None = None,
+    all_occurrences: bool = True,
+) -> dict[str, Any]:
+    ok = trip_planner.remove_selection(
+        kind,
+        name,
+        day=day,
+        stop=stop,
+        all_occurrences=all_occurrences,
+    )
+    if not ok:
+        alerts: list[str] = []
+    elif all_occurrences:
+        alerts = [f"Removed all occurrences of {name} and refreshed the itinerary."]
+    else:
+        alerts = [f"Removed {name} from Day {day}."]
+    focus_kind = "hotel" if kind == "hotel" else "attraction"
+    return {
+        "ok": ok,
+        "alerts": alerts,
+        "view": build_view({"kind": focus_kind, "name": name}),
+    }
 
 
 def set_stop_booked(day: int, name: str, booked: bool) -> dict[str, Any]:

@@ -173,6 +173,15 @@ class SelectRequest(BaseModel):
     replace_stay: bool = True
 
 
+class DeselectRequest(BaseModel):
+    kind: str
+    name: str
+    user_id: str = "local"
+    day: int | None = None
+    stop: int | None = None
+    all_occurrences: bool = True
+
+
 class TripIdRequest(BaseModel):
     trip_id: str
     user_id: str = "local"
@@ -574,13 +583,20 @@ async def trip_select(req: SelectRequest) -> dict:
 
 
 @app.post("/trip/deselect")
-async def trip_deselect(req: SelectRequest) -> dict:
+async def trip_deselect(req: DeselectRequest) -> dict:
     """Remove a hotel/attraction from the active trip (the SPA's 'Remove')."""
     from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
     set_user_id(req.user_id)
-    return await asyncio.to_thread(trip_operations.deselect, req.kind, req.name)
+    return await asyncio.to_thread(
+        trip_operations.deselect,
+        req.kind,
+        req.name,
+        day=req.day,
+        stop=req.stop,
+        all_occurrences=req.all_occurrences,
+    )
 
 
 @app.get("/trip/itinerary")

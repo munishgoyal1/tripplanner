@@ -395,6 +395,7 @@ def _build_item(
     destination: str,
     selected_names: dict[str, set[str]],
     itinerary_names: set[str] | None = None,
+    occurrences: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     name = ref["name"]
     kind = ref.get("kind", "place")
@@ -422,7 +423,32 @@ def _build_item(
         "website": info.get("website") or "",
         "photos": photos,
         "reviews": reviews,
+        "occurrences": occurrences or [],
     }
+
+
+def _place_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any]]:
+    target = name.strip().lower()
+    occurrences: list[dict[str, Any]] = []
+    for day_index, entry in enumerate(trip.get("day_wise_itinerary") or []):
+        if not isinstance(entry, dict):
+            continue
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else day_index + 1
+        for stop_index, raw_stop in enumerate(entry.get("stops") or []):
+            stop_name = raw_stop.get("name") if isinstance(raw_stop, dict) else raw_stop
+            if str(stop_name or "").strip().lower() != target:
+                continue
+            occurrences.append(
+                {
+                    "day": day_num,
+                    "stop": stop_index + 1,
+                    "time": str(raw_stop.get("time") or "").strip()
+                    if isinstance(raw_stop, dict)
+                    else "",
+                }
+            )
+    return occurrences
 
 
 def build_view(
@@ -463,7 +489,14 @@ def build_view(
         [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
     )
     items = [
-        _build_item(ref, destination, selected_names, itinerary_names) for ref in refs
+        _build_item(
+            ref,
+            destination,
+            selected_names,
+            itinerary_names,
+            _place_occurrences(trip, ref["name"]),
+        )
+        for ref in refs
     ]
 
     title = f"\u2708\ufe0f {destination}" if destination else "Trip planner"
@@ -691,6 +724,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 "rating": info.get("rating"),
                 "address": info.get("address") or "",
                 "photo": photos[0] if photos else None,
+                "occurrences": _place_occurrences(trip, name),
             }
         )
 

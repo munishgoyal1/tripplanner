@@ -280,6 +280,12 @@ export interface SelectionPlacement {
   name: string;
 }
 
+export interface DeselectItemOptions {
+  day?: number;
+  stop?: number;
+  all_occurrences?: boolean;
+}
+
 export async function selectItem(
   kind: string,
   name: string,
@@ -303,11 +309,15 @@ export async function selectItem(
   };
 }
 
-export async function deselectItem(kind: string, name: string): Promise<{ view: TripView; alerts: string[] }> {
+export async function deselectItem(
+  kind: string,
+  name: string,
+  options?: DeselectItemOptions,
+): Promise<{ view: TripView; alerts: string[] }> {
   const res = await fetch(`${BASE}/trip/deselect`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ kind, name, user_id: getUserId() }),
+    body: JSON.stringify({ kind, name, user_id: getUserId(), ...(options || {}) }),
   });
   if (!res.ok) throw new Error(`Could not remove the place (${res.status}).`);
   const json = await res.json();

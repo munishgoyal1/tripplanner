@@ -7,6 +7,12 @@ export interface Review {
   author: string;
 }
 
+export interface PlaceOccurrence {
+  day: number;
+  stop: number;
+  time: string;
+}
+
 export interface TripItem {
   kind: string;
   name: string;
@@ -18,6 +24,7 @@ export interface TripItem {
   website: string;
   photos: string[];
   reviews: Review[];
+  occurrences: PlaceOccurrence[];
 }
 
 export interface Budget {
@@ -125,6 +132,7 @@ export interface MapPin {
   rating: number | null;
   address: string;
   photo: string | null;
+  occurrences: PlaceOccurrence[];
 }
 
 export interface MapDay {

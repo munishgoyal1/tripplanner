@@ -7,15 +7,15 @@ interface Props {
   /** Bump to refetch the itinerary after the trip changes. */
   reloadToken?: number;
   /** Click a stop to focus it (loads its photos + highlights its map pin). */
-  onStopFocus?: (kind: string, name: string) => void;
+  onStopFocus?: (kind: string, name: string, day: number, stop: number) => void;
   /** Jump to the map focused on a stop (and optionally details). */
-  onStopMap?: (kind: string, name: string) => void;
+  onStopMap?: (kind: string, name: string, day: number, stop: number) => void;
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
   /** Programmatic jump target after add-to-trip actions. */
   jumpTo?: { day: number; name?: string; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
-  onStopRemove?: (kind: string, name: string) => void | Promise<void>;
+  onStopRemove?: (kind: string, name: string, day: number, stop: number) => void | Promise<void>;
 }
 
 const KIND_ICON: Record<string, string> = {
@@ -205,14 +205,17 @@ function DayCard({
   day: ItineraryDay;
   active: boolean;
   onToggleBooked: (day: number, name: string, next: boolean) => void;
-  onFocus: (kind: string, name: string) => void;
-  onMap: (kind: string, name: string) => void;
+  onFocus: (kind: string, name: string, day: number, stop: number) => void;
+  onMap: (kind: string, name: string, day: number, stop: number) => void;
   focusName?: string | null;
   jumpTo?: { day: number; name?: string } | null;
   jumpToken: number;
-  onRemove?: (kind: string, name: string) => void;
+  onRemove?: (kind: string, name: string, day: number, stop: number) => void;
 }) {
-  const firstPlace = day.stops.find((stop) => stop.kind === "hotel" || stop.kind === "attraction");
+  const firstPlaceIndex = day.stops.findIndex(
+    (stop) => stop.kind === "hotel" || stop.kind === "attraction",
+  );
+  const firstPlace = day.stops[firstPlaceIndex];
   const plannedMinutes = day.stops.reduce((total, stop) => total + (stop.duration_min || 0), 0);
   const plannedDuration = plannedMinutes > 0
     ? plannedMinutes >= 60
@@ -224,7 +227,12 @@ function DayCard({
       <div className="flex items-center gap-3">
         <button
           type="button"
-          onClick={() => firstPlace && onMap(firstPlace.kind, firstPlace.name)}
+          onClick={() => firstPlace && onMap(
+            firstPlace.kind,
+            firstPlace.name,
+            day.day,
+            firstPlaceIndex + 1,
+          )}
           className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition hover:scale-105 hover:shadow-sm disabled:cursor-default disabled:hover:scale-100"
           style={{ backgroundColor: day.color }}
           disabled={!firstPlace}
@@ -290,9 +298,9 @@ function DayCard({
               jumpActive={jumpActive}
               rowId={rowId}
               onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
-              onFocus={() => onFocus(stop.kind, stop.name)}
-              onMap={() => onMap(stop.kind, stop.name)}
-              onRemove={onRemove ? () => onRemove(stop.kind, stop.name) : undefined}
+              onFocus={() => onFocus(stop.kind, stop.name, day.day, i + 1)}
+              onMap={() => onMap(stop.kind, stop.name, day.day, i + 1)}
+              onRemove={onRemove ? () => onRemove(stop.kind, stop.name, day.day, i + 1) : undefined}
             />
               );
             })()
@@ -464,8 +472,8 @@ export default function ItineraryPanel({
             jumpTo={jumpTo ? { day: jumpTo.day, name: jumpTo.name } : null}
             jumpToken={flashTarget?.token || 0}
             onToggleBooked={handleToggleBooked}
-            onFocus={(kind, name) => onStopFocus?.(kind, name)}
-            onMap={(kind, name) => onStopMap?.(kind, name)}
+            onFocus={(kind, name, focusDay, stop) => onStopFocus?.(kind, name, focusDay, stop)}
+            onMap={(kind, name, mapDay, stop) => onStopMap?.(kind, name, mapDay, stop)}
             onRemove={onStopRemove}
           />
         ))}

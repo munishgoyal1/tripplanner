@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
 import TripSwitcher from "./TripSwitcher";
-import type { SelectItemOptions } from "../api";
+import type { DeselectItemOptions, SelectItemOptions } from "../api";
 import type { TripView } from "../types";
 
 interface Props {
@@ -12,14 +12,18 @@ interface Props {
   reloadToken: number;
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
-  onStopFocus: (kind: string, name: string) => void;
-  onStopMap: (kind: string, name: string) => void;
+  onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
+  onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
   onSelect?: (
     kind: string,
     name: string,
     options?: SelectItemOptions,
   ) => void | Promise<boolean>;
-  onDeselect?: (kind: string, name: string) => void;
+  onDeselect?: (
+    kind: string,
+    name: string,
+    options?: DeselectItemOptions,
+  ) => void | Promise<boolean>;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
   onSwitched: (tripId?: string, view?: TripView | null) => void;
@@ -73,6 +77,13 @@ export default function RightRail({
               focusName={focusName}
               onStopFocus={onStopFocus}
               onStopMap={onStopMap}
+              onStopRemove={onDeselect
+                ? async (kind, name, day, stop) => { await onDeselect(kind, name, {
+                    day,
+                    stop,
+                    all_occurrences: false,
+                  }); }
+                : undefined}
             />
           </div>
         </section>

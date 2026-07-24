@@ -1908,3 +1908,28 @@ IMPLEMENTED:
   local opt-ins. `-UseCanaryData` remains a separate explicit override.
 - Added regression tests for emulator default and explicit Azure selection.
 
+=== 2026-07-24 — Session 45: Coherent occurrence-aware place mutations ===
+
+REQUIREMENT:
+- Add to trip must immediately display In trip in Details and stay synchronized
+  with Itinerary and Map.
+- If a place appears multiple times, remove the occurrence matching the active
+  day/row context by default, and provide an obvious way to remove it entirely.
+- The choice must remain available when Assistant is hidden or minimized.
+
+IMPLEMENTED:
+- Mutation responses now supply the authoritative focused view; App replaces
+  stale Details state and invalidates older in-flight reads.
+- Place view models expose each itinerary occurrence by day, one-based stop,
+  and time. Itinerary row deletion sends that exact identity.
+- Details and Map use compact in-pane menus with contextual occurrence actions
+  and a separated Remove everywhere command. Mobile uses the same contract.
+- Removing one occurrence preserves selection while another remains and avoids
+  global reflow that could reinsert it. Removing the last or every occurrence
+  clears the selected bucket and all matching itinerary structures.
+
+VALIDATION:
+- Backend: 515 passing; only the known corrupted local `websockets` package
+  metadata check fails.
+- Frontend: 36 tests passing; TypeScript check and production build passing.
+

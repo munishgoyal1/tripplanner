@@ -7,13 +7,15 @@ import MapPanel from "./components/MapPanel";
 import TripPanel from "./components/TripPanel";
 import TripSwitcher from "./components/TripSwitcher";
 import RightRail from "./components/RightRail";
-import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type SelectItemOptions } from "./api";
+import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import type { TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
 interface NavRef {
   kind: string;
   name: string;
+  day?: number;
+  stop?: number;
 }
 
 type CanvasPane = "itinerary" | "map";
@@ -259,8 +261,8 @@ export default function App() {
     };
   }, [applyView, refresh]);
 
-  const handleFocus = async (kind: string, name: string) => {
-    const f = { kind, name };
+  const handleFocus = async (kind: string, name: string, context?: DeselectItemOptions) => {
+    const f = { kind, name, day: context?.day, stop: context?.stop };
     dispatchWorkspace({ type: "focus", place: f });
     if (isDesktop) setInspectorOpen(true);
     await refresh(f);
@@ -349,42 +351,35 @@ export default function App() {
     }
   };
 
-  const handleDeselect = async (kind: string, name: string) => {
-    const mutationKey = `${focusKind(kind)}:${name.trim().toLowerCase()}`;
+  const handleDeselect = async (
+    kind: string,
+    name: string,
+    options: DeselectItemOptions = { all_occurrences: true },
+  ) => {
+    const mutationKey = [
+      focusKind(kind),
+      name.trim().toLowerCase(),
+      options.all_occurrences === false ? options.day ?? "day" : "all",
+      options.stop ?? "stop",
+    ].join(":");
     if (pendingDeselects.current.has(mutationKey)) return false;
     pendingDeselects.current.add(mutationKey);
     try {
       setActionError(null);
-      const next = await deselectItem(kind, name);
-      const retainedFocus = { kind: focusKind(kind), name };
+      const next = await deselectItem(kind, name, options);
+      const retainedFocus = {
+        kind: focusKind(kind),
+        name,
+        day: options.all_occurrences === false ? options.day : undefined,
+        stop: options.all_occurrences === false ? options.stop : undefined,
+      };
       dispatchWorkspace({ type: "focus", place: retainedFocus });
       ++refreshGeneration.current;
       refreshController.current?.abort();
       setLoading(false);
-      setView((current) => {
-        const currentItems = current?.items ?? [];
-        const hasFocusedItem = currentItems.some((item) =>
-          item.kind === retainedFocus.kind
-          && item.name.toLowerCase() === name.toLowerCase()
-        );
-        if (!current || !hasFocusedItem) {
-          return { ...next.view, focus: retainedFocus, alerts: next.alerts };
-        }
-        return {
-          ...current,
-          focus: retainedFocus,
-          alerts: next.alerts,
-          items: currentItems.map((item) =>
-            item.kind === retainedFocus.kind
-              && item.name.toLowerCase() === name.toLowerCase()
-              ? { ...item, selected: false }
-              : item
-          ),
-        };
-      });
+      setView({ ...next.view, focus: retainedFocus, alerts: next.alerts });
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       dispatchWorkspace({ type: "trip-content-changed" });
-      void refresh(retainedFocus);
       return true;
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not remove the place.");
@@ -394,8 +389,8 @@ export default function App() {
     }
   };
 
-  const handleStopRemove = async (kind: string, name: string) => {
-    await handleDeselect(kind, name);
+  const handleStopRemove = async (kind: string, name: string, day: number, stop: number) => {
+    await handleDeselect(kind, name, { day, stop, all_occurrences: false });
   };
 
   const toggleMaxPane = (pane: WorkspacePane) => {
@@ -415,17 +410,17 @@ export default function App() {
     if (!open && maximizedPane === pane) setMaximizedPane(null);
   };
 
-  const handleStopFocus = async (kind: string, name: string) => {
+  const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
     if (isPlaceKind(kind)) {
-      await handleFocus(focusKind(kind), name);
+      await handleFocus(focusKind(kind), name, { day, stop });
     }
   };
 
-  const handleStopMap = async (kind: string, name: string) => {
+  const handleStopMap = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
     if (isPlaceKind(kind)) {
-      await handleFocus(focusKind(kind), name);
+      await handleFocus(focusKind(kind), name, { day, stop });
     }
   };
 
@@ -439,6 +434,7 @@ export default function App() {
     onStep: handleStep,
     onSelect: handleSelect,
     onDeselect: handleDeselect,
+    focusContext: focus,
     tripVersion,
     onSwitched: handleSwitched,
   };

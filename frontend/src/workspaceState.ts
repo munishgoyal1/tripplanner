@@ -1,6 +1,8 @@
 export interface ActivePlace {
   kind: string;
   name: string;
+  day?: number;
+  stop?: number;
 }
 
 export interface ItineraryJump {

@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Occurrence-aware place mutations (Session 45)**: add/remove applies the
+  authoritative focused server view across Details, Itinerary, and Map.
+  Repeated places carry day/stop/time identity; row removal targets one exact
+  occurrence, while Details and Map offer contextual occurrence choices plus
+  Remove everywhere without relying on Assistant visibility. Validation: 515
+  backend tests, 36 frontend tests, TypeScript check, and production build pass.
 - **Emulator-first local persistence (Session 44)**: local SPA development now
   defaults to the Docker Cosmos Emulator. Azure `tripplanner-local` requires
   explicit `COSMOS_DEV_BACKEND=azure` or `-CosmosBackend azure`. Cosmos shared

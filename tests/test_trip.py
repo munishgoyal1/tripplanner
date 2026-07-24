@@ -376,6 +376,48 @@ class TestTripPlanState:
         assert plan["selected_activities"] == []
         assert plan["day_wise_itinerary"][0]["stops"] == []
 
+    def test_remove_selection_removes_only_requested_occurrence(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [{"name": "Fort Aguada"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Fort Aguada", "kind": "attraction", "time": "10:00"}]},
+                {"day": 2, "stops": [{"name": "Fort Aguada", "kind": "attraction", "time": "16:00"}]},
+            ],
+        })})
+
+        assert remove_selection(
+            "attraction", "Fort Aguada", day=2, stop=1, all_occurrences=False
+        ) is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["day_wise_itinerary"][0]["stops"][0]["time"] == "10:00"
+        assert plan["day_wise_itinerary"][1]["stops"] == []
+        assert plan["selected_activities"] == [{"name": "Fort Aguada"}]
+
+    def test_remove_selection_last_occurrence_clears_selected_bucket(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_activities": [{"name": "Fort Aguada"}],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [{"name": "Fort Aguada", "kind": "attraction"}]},
+            ],
+        })})
+
+        assert remove_selection(
+            "attraction", "Fort Aguada", day=1, stop=1, all_occurrences=False
+        ) is True
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["selected_activities"] == []
+        assert plan["day_wise_itinerary"][0]["stops"] == []
+
     def test_set_stop_booked_normalizes_string_stop(self):
         create_trip_plan.invoke({
             "destination": "Goa",

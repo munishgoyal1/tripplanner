@@ -663,6 +663,28 @@ def test_itinerary_synthesizes_multiple_days() -> None:
     )
 
 
+def test_place_views_expose_each_itinerary_occurrence(monkeypatch) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Dudhsagar Falls Trek", "time": "09:00"}]},
+            {"day": 3, "stops": [{"name": "Dudhsagar Falls Trek", "time": "14:00"}]},
+        ],
+    }
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", lambda *args, **kwargs: {})
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *args, **kwargs: [])
+
+    view = trip_view.build_view(
+        trip, {"kind": "attraction", "name": "Dudhsagar Falls Trek"}
+    )
+
+    assert view["items"][0]["occurrences"] == [
+        {"day": 1, "stop": 1, "time": "09:00"},
+        {"day": 3, "stop": 1, "time": "14:00"},
+    ]
+
+
 def test_itinerary_structured_stops() -> None:
     trip = {
         **SAMPLE_TRIP,
