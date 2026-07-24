@@ -26,7 +26,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
-- iPhone via Expo Go: `cd mobile; npx expo start --tunnel`
+- iPhone via Expo Go: `cd mobile; npm run iphone` (LAN port 8082)
+- iPhone testing runbook: [docs/ios-testing.md](ios-testing.md)
 - Mobile checks: `cd mobile; npx tsc --noEmit; npm run lint; npm exec --yes expo-doctor`
 - iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
@@ -161,6 +162,7 @@ tests/                pytest suite
 docs/
   CODEMAP.md          This file
   dev.md              Dev environment notes
+  ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   setup-oauth.md      OAuth setup walkthrough
 ```
 

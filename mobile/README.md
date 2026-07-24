@@ -6,19 +6,23 @@ navigation, Keychain identity, maps, sheets, and phone layout.
 
 ## Run on iPhone
 
+The maintained setup, smoke-test, troubleshooting, EAS preview, and TestFlight
+instructions live in [`docs/ios-testing.md`](../docs/ios-testing.md).
+
 Install Expo Go from the App Store, then from this directory:
 
 ```powershell
 npm install
-npx expo start --tunnel
+npm run iphone
 ```
 
-Scan the QR code with the iPhone Camera. The app uses the production API by
-default. Override it for a reachable development or canary API before starting:
+This starts LAN mode on port 8082 because the local Docker Cosmos Emulator uses
+8081. Scan the QR code with the iPhone Camera. The app uses the production API
+by default. Override it for a reachable development or canary API before starting:
 
 ```powershell
 $env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
-npx expo start --tunnel
+npm run iphone
 ```
 
 `localhost` is the phone itself and cannot reach the PC backend. Use a LAN IP,

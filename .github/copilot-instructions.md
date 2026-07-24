@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Repeatable iPhone testing (Session 50)**: `docs/ios-testing.md` is the
+  maintained Expo Go, EAS preview, and TestFlight runbook. Physical-device
+  testing defaults to LAN port 8082 because Docker can occupy 8081; ngrok is an
+  optional fallback and may be blocked by the current network. Mobile checks
+  remain TypeScript, Expo lint, and Expo Doctor. Production submission still
+  requires explicit owner approval.
 - **Native iPhone app (Session 49)**: Expo SDK 54/React Native app under
   `mobile/` provides Trips, Plan, Apple Maps, Assistant, and occurrence-aware
   Details. `packages/tripplanner-client/` is the shared, dependency-free source

@@ -2020,3 +2020,15 @@ VALIDATION:
 - Backend: 518 tests passing.
 - Frontend: 39 tests passing; TypeScript check and production build passing.
 
+=== 2026-07-24 — Session 50: Repeatable iPhone testing workflow ===
+
+- Maintain a standalone iPhone testing runbook so future developers can repeat
+  Expo Go, EAS preview, and TestFlight setup without reconstructing prior sessions.
+- Expo Go is the first device-testing gate; use a private signed EAS preview and
+  TestFlight before App Store production.
+- Record prerequisites, backend selection, smoke checks, recurring recovery
+  steps, security boundaries, and handoff expectations in the runbook.
+- Default physical-iPhone Expo Go testing to LAN port 8082 because the local
+  Docker Cosmos Emulator can occupy 8081; retain ngrok tunnel as a fallback.
+- Never submit to App Store production without explicit owner approval.
+
