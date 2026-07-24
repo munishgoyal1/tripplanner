@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
+  selectItemMock: vi.fn(),
   emptyView: {
   has_trip: false,
   title: "",
@@ -29,32 +30,41 @@ const { emptyView, fetchTripViewMock } = vi.hoisted(() => ({
 vi.mock("./api", () => ({
   fetchTripView: fetchTripViewMock,
   importSharedTrip: vi.fn(),
-  selectItem: vi.fn(),
+  selectItem: selectItemMock,
   deselectItem: vi.fn(),
   startNewTrip: vi.fn(),
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: () => <div data-testid="chat-panel" />,
+  default: ({ hideGlobalControls }: { hideGlobalControls?: boolean }) => (
+    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} />
+  ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus }: { reloadToken: number; onStopFocus: (kind: string, name: string) => void }) => (
+  default: ({ reloadToken, onStopFocus, jumpTo }: { reloadToken: number; onStopFocus: (kind: string, name: string) => void; jumpTo?: { day: number; name?: string } | null }) => (
     <button
       type="button"
       data-testid="itinerary-panel"
       data-reload-token={reloadToken}
+      data-jump-day={jumpTo?.day ?? ""}
+      data-jump-name={jumpTo?.name ?? ""}
       onClick={() => onStopFocus("attraction", "Louvre Museum")}
     />
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus }: { onPinFocus: (kind: string, name: string) => void }) => (
-    <button type="button" data-testid="map-panel" onClick={() => onPinFocus("attraction", "Louvre Museum")} />
+  default: ({ onPinFocus, onDayFocus, focusName }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number) => void; focusName?: string | null }) => (
+    <div data-testid="map-panel" data-focus-name={focusName ?? ""}>
+      <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
+      <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
+    </div>
   ),
 }));
 vi.mock("./components/TripPanel", () => ({
-  default: ({ view }: { view: { focus?: { name?: string } | null } | null }) => (
-    <div data-testid="trip-panel" data-focus-name={view?.focus?.name ?? ""} />
+  default: ({ view, onSelect }: { view: { focus?: { name?: string } | null } | null; onSelect?: (kind: string, name: string) => void }) => (
+    <div data-testid="trip-panel" data-focus-name={view?.focus?.name ?? ""}>
+      <button type="button" onClick={() => onSelect?.("attraction", "Eiffel Tower")}>Add Eiffel Tower</button>
+    </div>
   ),
 }));
 vi.mock("./components/TripSwitcher", () => ({
@@ -85,6 +95,7 @@ describe("App responsive workspace", () => {
     localStorage.clear();
     window.history.replaceState({}, "", "/");
     fetchTripViewMock.mockReset().mockResolvedValue(emptyView);
+    selectItemMock.mockReset();
   });
 
   it.each([
@@ -137,10 +148,57 @@ describe("App responsive workspace", () => {
     const itinerary = screen.getByTestId("itinerary-panel");
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
 
-    fireEvent.click(screen.getByTestId("map-panel"));
+    fireEvent.click(screen.getByRole("button", { name: "Focus pin" }));
 
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(2));
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
+  });
+
+  it("syncs a map day filter to the matching itinerary day", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2" }));
+
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
+  });
+
+  it("focuses a place added from details without rebuilding the trip view", async () => {
+    selectItemMock.mockResolvedValue({
+      view: { ...emptyView, focus: { kind: "attraction", name: "Eiffel Tower" } },
+      alerts: ["Added Eiffel Tower to your trip."],
+      placement: { day: 2, stop: 3, name: "Eiffel Tower" },
+      placements: [],
+    });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Add Eiffel Tower" }));
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower"));
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-name", "Eiffel Tower");
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps obvious recovery controls for every desktop pane", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-global-controls-hidden", "true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Map" }));
+    expect(screen.getByTestId("map-panel").closest("section")).toHaveClass("hidden");
+    fireEvent.click(screen.getByTitle("Show or hide map"));
+    expect(screen.getByTestId("map-panel")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Close details inspector" }));
+    expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
+    fireEvent.click(screen.getByTitle("Show or hide trip details"));
+    expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });
 
   it("loads itinerary place focus into both the map state and details pane", async () => {

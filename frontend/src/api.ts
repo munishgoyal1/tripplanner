@@ -625,17 +625,17 @@ export async function fetchMapsConfig(): Promise<MapsConfig> {
   return mapsConfigCache;
 }
 
-export async function fetchMapView(): Promise<MapView> {
+export async function fetchMapView(signal?: AbortSignal): Promise<MapView> {
   const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/trip/map?${params.toString()}`);
+  const res = await fetch(`${BASE}/trip/map?${params.toString()}`, { signal });
   if (!res.ok) throw new Error(`Could not load the map (${res.status}).`);
   return res.json();
 }
 
 /** Structured day-by-day itinerary for the Itinerary tab. */
-export async function fetchItinerary(): Promise<Itinerary> {
+export async function fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {
   const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/trip/itinerary?${params.toString()}`);
+  const res = await fetch(`${BASE}/trip/itinerary?${params.toString()}`, { signal });
   if (!res.ok) throw new Error(`Could not load the itinerary (${res.status}).`);
   return res.json();
 }

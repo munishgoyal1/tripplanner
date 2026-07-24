@@ -5,7 +5,7 @@ export interface ActivePlace {
 
 export interface ItineraryJump {
   day: number;
-  name: string;
+  name?: string;
   token: number;
 }
 

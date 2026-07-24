@@ -574,7 +574,8 @@ async def trip_select(req: SelectRequest) -> dict:
     else:
         result = trip_planner.add_selection(req.kind, {"name": req.name})
     trip = result.get("trip") or trip_planner.load_active_trip_dict()
-    view = trip_view.build_view(trip, None)
+    focus_kind = "hotel" if req.kind == "hotel" else "attraction"
+    view = trip_view.build_view(trip, {"kind": focus_kind, "name": req.name})
     if result.get("alerts"):
         view["alerts"] = result["alerts"]
     return {

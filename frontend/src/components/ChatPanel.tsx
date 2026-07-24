@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   streamChat,
   signIn,
@@ -30,6 +31,8 @@ interface Props {
   onNewTrip?: () => void;
   /** Called after a successful guest-data import so the App can refresh trip panel. */
   onImported?: () => void;
+  /** Desktop owns global New trip/account/settings controls in its command bar. */
+  hideGlobalControls?: boolean;
 }
 
 const GREETING: ChatMessage = {
@@ -43,6 +46,7 @@ export default function ChatPanel({
   tripIdHint = null,
   onNewTrip,
   onImported,
+  hideGlobalControls = false,
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -69,6 +73,17 @@ export default function ChatPanel({
   // was a guest web-* id. The transcript effect reads this and skips loading
   // the (now-irrelevant) guest chat, keeping the screen at GREETING + banner.
   const freshSignInRef = useRef(false);
+
+  useEffect(() => {
+    const openAccount = () => setShowAccount(true);
+    const openSettings = () => setShowSettings(true);
+    window.addEventListener("tripplanner:open-account", openAccount);
+    window.addEventListener("tripplanner:open-settings", openSettings);
+    return () => {
+      window.removeEventListener("tripplanner:open-account", openAccount);
+      window.removeEventListener("tripplanner:open-settings", openSettings);
+    };
+  }, []);
 
   const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
 
@@ -397,7 +412,7 @@ export default function ChatPanel({
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <button
+          {!hideGlobalControls && <button
             onClick={startFresh}
             disabled={busy}
             title="Start a new trip plan"
@@ -408,9 +423,9 @@ export default function ChatPanel({
               <path d="M12 5v14M5 12h14" />
             </svg>
             <span className="hidden sm:inline">New trip</span>
-          </button>
+          </button>}
           <div className="relative">
-            <button
+            {!hideGlobalControls && <button
               onClick={() => setShowAccount((s) => !s)}
               title="Account"
               aria-label="Account"
@@ -427,9 +442,9 @@ export default function ChatPanel({
                   ? "Sign in"
                   : getDisplayName() || "Account"}
               </span>
-            </button>
-            {showAccount && (
-              <div className="absolute right-0 z-20 mt-1 w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
+            </button>}
+            {showAccount && createPortal(
+              <div className="fixed right-3 top-14 z-[100] w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
                 {auth.authenticated ? (
                   <>
                     <div className="mb-2 flex items-center gap-2">
@@ -564,10 +579,11 @@ export default function ChatPanel({
                   Privacy controls follow a GDPR-style model: access/edit, delete trip history,
                   erase all app data, and account data deletion.
                 </p>
-              </div>
+              </div>,
+              document.body,
             )}
           </div>
-          <button
+          {!hideGlobalControls && <button
             onClick={() => setShowSettings(true)}
             title="Travel preferences"
             aria-label="Travel preferences"
@@ -577,7 +593,7 @@ export default function ChatPanel({
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
-          </button>
+          </button>}
         </div>
       </header>
 
@@ -796,7 +812,10 @@ export default function ChatPanel({
         </div>
       </div>
 
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showSettings && createPortal(
+        <SettingsModal onClose={() => setShowSettings(false)} />,
+        document.body,
+      )}
     </div>
   );
 }

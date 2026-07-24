@@ -1529,3 +1529,34 @@ VALIDATION:
 - Full backend: 468 passing, 7 unrelated share tests blocked by the pre-existing
   indentation error in src/tripplanner/web/itinerary_export.py
 
+=== 2026-07-24 — Session 30: Cross-pane focus and workspace recovery ===
+
+REQUIREMENT:
+- Synchronize Map day selection with itinerary day focus.
+- Focus newly added places in the refreshed itinerary and Map.
+- Include restaurants in map circuits with the same place interactions.
+- Centralize desktop New trip/account/settings controls and make every pane
+  straightforward to hide and restore.
+- Improve responsiveness and add frontend/backend regression coverage.
+
+IMPLEMENTED:
+- Lifted Map day selection into shared workspace jump state so the itinerary
+  smoothly scrolls to the corresponding day card.
+- Selection responses now return the newly focused TripView; Details adds update
+  shared place focus and itinerary placement without a second TripView request.
+- Structured meal/restaurant stops retain their kind, dedupe by place name, join
+  ordered day route circuits, and focus through Map/Itinerary like attractions.
+- Desktop account/preferences launch from the top row; duplicate chat-header
+  launchers are mobile-only. Added explicit Itinerary, Map, Details, and Assistant
+  visibility/recovery controls while preserving mounted state.
+- Map and itinerary requests now abort stale predecessors during rapid updates.
+
+VALIDATION:
+- Frontend Vitest/React Testing Library: 20 passing
+- Production frontend build: passing
+- Focused trip-state/view suite: 161 passing
+- Full backend: 469 passing, 7 unrelated share tests blocked by the pre-existing
+  indentation error in src/tripplanner/web/itinerary_export.py
+- Playwright not run because its configuration starts a dev server; component
+  regressions and production compilation cover this milestone without starting one.
+

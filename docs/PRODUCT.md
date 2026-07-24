@@ -41,8 +41,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
-  controls, lifecycle/completeness status, total cost, and the latest mutation
-  outcome. Its saved-trip menu must overlay every planner pane.
+  controls (including account/preferences), lifecycle/completeness status,
+  total cost, and the latest mutation outcome. Its saved-trip menu must overlay
+  every planner pane. Itinerary, Map, Details, and Assistant have obvious,
+  symmetric show/hide controls.
   Chat is a collapsible dock inside the inspector and stays mounted while
   hidden. Only panes scroll; the page never does. Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
@@ -65,10 +67,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   cancel stale predecessors, interrupted chat streams recover the composer,
   and map/itinerary refreshes retain prior data with visible retry states.
   One workspace reducer owns trip identity/revision and active place state, so
-  focus-only navigation never triggers unrelated panel reloads.
+  focus-only navigation never triggers unrelated panel reloads. Stale trip,
+  map, and itinerary requests abort during rapid changes.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
   Clicking a place stop focuses both its map pin and its contextual Details view.
+  Selecting a Map day scrolls the itinerary to that day. Restaurants are place
+  stops too: they join day circuits and support the same focus behavior.
 - **Mutation coherence**: adding/removing a place or changing the stay refreshes
   the complete itinerary, not only one card. Unbooked attractions redistribute
   around the current hotel anchors using geographic proximity and balanced day

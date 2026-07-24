@@ -13,7 +13,7 @@ interface Props {
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
   /** Programmatic jump target after add-to-trip actions. */
-  jumpTo?: { day: number; name: string; token: number } | null;
+  jumpTo?: { day: number; name?: string; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
   onStopRemove?: (kind: string, name: string) => void;
 }
@@ -29,7 +29,7 @@ const KIND_ICON: Record<string, string> = {
 
 // A place stop can load photos; meals/transport/flights are informational.
 function canFocus(kind: string): boolean {
-  return kind === "hotel" || kind === "attraction";
+  return ["hotel", "attraction", "meal", "restaurant"].includes(kind);
 }
 
 function StopRow({
@@ -201,7 +201,7 @@ function DayCard({
   onFocus: (kind: string, name: string) => void;
   onMap: (kind: string, name: string) => void;
   focusName?: string | null;
-  jumpTo?: { day: number; name: string } | null;
+  jumpTo?: { day: number; name?: string } | null;
   jumpToken: number;
   onRemove?: (kind: string, name: string) => void;
 }) {
@@ -213,7 +213,7 @@ function DayCard({
       : `${plannedMinutes}m`
     : null;
   return (
-    <section className="card p-4">
+    <section id={`it-day-${day.day}`} className="card p-4">
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -273,6 +273,7 @@ function DayCard({
                 jumpToken > 0 &&
                 !!jumpTo &&
                 jumpTo.day === day.day &&
+                !!jumpTo.name &&
                 jumpTo.name.toLowerCase() === stop.name.toLowerCase();
               return (
             <StopRow
@@ -311,9 +312,10 @@ export default function ItineraryPanel({
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
-    fetchItinerary()
+    fetchItinerary(controller.signal)
       .then((data) => {
         if (!cancelled) setIt(data);
       })
@@ -325,6 +327,7 @@ export default function ItineraryPanel({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [reloadToken, retryToken]);
 
@@ -363,20 +366,24 @@ export default function ItineraryPanel({
 
   useEffect(() => {
     if (!jumpTo || !it?.has_itinerary) return;
-    const rowId = `it-stop-${jumpTo.day}-${jumpTo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const targetId = jumpTo.name
+      ? `it-stop-${jumpTo.day}-${jumpTo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
+      : `it-day-${jumpTo.day}`;
     let cancelled = false;
     let attempts = 0;
     let flashTimer: number | undefined;
 
     const tryScroll = () => {
       if (cancelled) return;
-      const el = document.getElementById(rowId);
+      const el = document.getElementById(targetId);
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
-        setFlashTarget(jumpTo);
-        flashTimer = window.setTimeout(() => {
-          setFlashTarget((prev) => (prev && prev.token === jumpTo.token ? null : prev));
-        }, 2200);
+        if (jumpTo.name) {
+          setFlashTarget({ day: jumpTo.day, name: jumpTo.name, token: jumpTo.token });
+          flashTimer = window.setTimeout(() => {
+            setFlashTarget((prev) => (prev && prev.token === jumpTo.token ? null : prev));
+          }, 2200);
+        }
         return;
       }
       if (attempts++ < 8) {

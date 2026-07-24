@@ -590,10 +590,10 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
 
     # (kind, name) in display order: user picks first, then suggestions.
     refs: list[tuple[str, str]] = []
-    seen: set[tuple[str, str]] = set()
+    seen: set[str] = set()
 
     def _add(kind: str, name: str) -> None:
-        key = (kind, (name or "").strip().lower())
+        key = (name or "").strip().lower()
         if name and key not in seen:
             seen.add(key)
             refs.append((kind, name))
@@ -625,7 +625,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 kind = ""
             if not name:
                 continue
-            if kind not in {"hotel", "attraction"}:
+            if kind not in {"hotel", "attraction", "meal", "restaurant"}:
                 kind = _infer_kind_from_name(name)
             _add(kind, name)
             explicit_day_by_name.setdefault(name.lower(), day_num)
@@ -905,7 +905,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 # A stop's "kind" decides its chip + whether it can load place photos.
-_STOP_KINDS = {"hotel", "attraction", "flight", "meal", "transport", "other"}
+_STOP_KINDS = {"hotel", "attraction", "flight", "meal", "restaurant", "transport", "other"}
 _DEFAULT_STOP_DURATION_MIN = {
     "hotel": 45,
     "attraction": 120,

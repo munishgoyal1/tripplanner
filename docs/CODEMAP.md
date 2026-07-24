@@ -85,7 +85,9 @@ frontend/
               details inspector right, and mounted collapsible chat dock; no
           page scroll. Top command/status bar owns saved-trip selection,
           New trip, pane visibility, lifecycle/completeness, cost, and the
-          latest mutation result. Persistent mouse/keyboard separators resize all
+          latest mutation result; desktop account/preferences launch here too.
+          Shared place/day focus synchronizes itinerary, map, and details.
+          Persistent mouse/keyboard separators resize all
               desktop pane splits. Map/itinerary maximize, request cancellation,
               shared map/details place focus. Mobile: chat + on-demand trip-details
               sheet. Only the active responsive shell mounts.
@@ -95,7 +97,8 @@ frontend/
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
-      ChatPanel.tsx        Sticky header (incl. "New trip" button), bubbles, composer
+      ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
+               mobile header owns launchers, desktop top row triggers them
       TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards
       TripSwitcher.tsx     Persistent saved-trip switch/delete control; dropdown
                overlays all workspace panes
@@ -105,7 +108,7 @@ frontend/
       ItineraryPanel.tsx   Compact day summary + clickable stops + booked checkbox
       DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
-                           (focusName prop highlights a stop's pin)
+                           (place focus highlights pins; day focus jumps itinerary)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
@@ -169,7 +172,8 @@ It exports:
   `GET /trip/map`; the browser key comes from `GET /maps/config`. Rendered by
   [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
   the Maps JavaScript API and draws geodesic per-day route lines client-side
-  (no billed Directions API).
+  (no billed Directions API). Structured restaurant/meal stops retain their
+  place kind, dedupe by name, and join ordered day circuits.
 - `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
   `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
   booked,selected,color}]}]` + `stats{days,stops,booked}`. `_normalize_stop` /

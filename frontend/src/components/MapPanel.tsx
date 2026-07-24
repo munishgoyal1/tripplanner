@@ -95,13 +95,15 @@ interface Props {
   focusName?: string | null;
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string) => void;
+  /** User selected a day filter and wants the itinerary synced to that day. */
+  onDayFocus?: (day: number) => void;
   /** Add a place to the trip (from a pin's info window). */
   onSelect?: (kind: string, name: string) => void;
   /** Remove a place from the trip (from a pin's info window). */
   onDeselect?: (kind: string, name: string) => void;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -124,16 +126,17 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
   // ---- data + config -------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const [cfg, mv] = await Promise.all([fetchMapsConfig(), fetchMapView()]);
+        const [cfg, mv] = await Promise.all([fetchMapsConfig(), fetchMapView(controller.signal)]);
         if (cancelled) return;
         setView(mv);
         setKey(cfg.enabled ? cfg.key : null);
-      } catch {
-        if (!cancelled) {
+      } catch (requestError) {
+        if (!cancelled && !(requestError instanceof DOMException && requestError.name === "AbortError")) {
           setError("Could not load the map.");
         }
       } finally {
@@ -142,6 +145,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
     })();
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [reloadToken, retryToken]);
 
@@ -253,7 +257,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
         zIndex: p.selected ? 1000 : p.day ? 600 : 400,
       });
       marker.addListener("click", () => {
-        if (p.kind === "hotel" || p.kind === "attraction") {
+        if (["hotel", "attraction", "meal", "restaurant"].includes(p.kind)) {
           onPinFocus?.(p.kind, p.name);
         }
         setSelectedPin(p);
@@ -479,7 +483,10 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onSel
               <button
                 key={d.day}
                 type="button"
-                onClick={() => setActiveDay(d.day)}
+                onClick={() => {
+                  setActiveDay(d.day);
+                  onDayFocus?.(d.day);
+                }}
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                   activeDay === d.day ? "text-white" : "text-slate-700 hover:opacity-80"
                 }`}

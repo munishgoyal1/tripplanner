@@ -106,6 +106,17 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Cross-pane focus + recoverable workspace (Session 30)**: Map day chips now
+  scroll the itinerary to the matching day; adding a place from Details focuses
+  its updated itinerary row and map pin using the mutation response (no redundant
+  TripView rebuild). Structured restaurants/meals remain map pins inside ordered
+  day circuits and focus like other places. Desktop New trip, account, and
+  preferences launch from the common top row; duplicate chat-header controls are
+  mobile-only. Itinerary, Map, Details, and Assistant have explicit show/hide
+  recovery controls while stateful panes remain mounted. Stale map/itinerary
+  requests abort during rapid updates. Validation: 20 frontend tests, production
+  build, and 161 focused backend tests pass; full backend baseline is 469 passing
+  with the same 7 unrelated share/export failures.
 - **Workspace controls + coherent itinerary mutations (Session 29)**: the
   desktop top row is now a compact command/status bar with saved-trip selection,
   New trip, Details/Assistant visibility, lifecycle, trip completeness, cost,

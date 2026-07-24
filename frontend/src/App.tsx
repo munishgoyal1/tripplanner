@@ -1,4 +1,4 @@
-import { Maximize2, MessageCircle, Minimize2, PanelRight, Plus, X } from "lucide-react";
+import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ItineraryPanel from "./components/ItineraryPanel";
@@ -28,7 +28,11 @@ function storedPercent(key: string, fallback: number, min: number, max: number):
 }
 
 function isPlaceKind(kind: string): boolean {
-  return kind === "hotel" || kind === "attraction" || kind === "activity";
+  return ["hotel", "attraction", "activity", "meal", "restaurant"].includes(kind);
+}
+
+function focusKind(kind: string): string {
+  return kind === "hotel" ? "hotel" : "attraction";
 }
 
 export default function App() {
@@ -49,6 +53,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : true;
   });
   const [maximizedPane, setMaximizedPane] = useState<CanvasPane | null>(null);
+  const [itineraryOpen, setItineraryOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
   const [itineraryPct, setItineraryPct] = useState(() =>
@@ -303,13 +308,10 @@ export default function App() {
     try {
       setActionError(null);
       const next = await selectItem(kind, name, options);
-      if (focus) {
-        await refresh(focus);
-        setView((current) => current ? { ...current, alerts: next.alerts } : current);
-      } else {
-        setView({ ...next.view, alerts: next.alerts });
-        setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
-      }
+      const nextKind = focusKind(kind);
+      dispatchWorkspace({ type: "focus", place: { kind: nextKind, name } });
+      setView({ ...next.view, alerts: next.alerts });
+      setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
       if (placement?.day && placement?.name) {
         dispatchWorkspace({
@@ -364,17 +366,24 @@ export default function App() {
     setMaximizedPane((prev) => (prev === pane ? null : pane));
   };
 
+  const setCanvasOpen = (pane: CanvasPane, open: boolean) => {
+    if (!open && ((pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen))) return;
+    if (pane === "itinerary") setItineraryOpen(open);
+    else setMapOpen(open);
+    if (!open && maximizedPane === pane) setMaximizedPane(null);
+  };
+
   const handleStopFocus = async (kind: string, name: string) => {
     setMapOpen(true);
     if (isPlaceKind(kind)) {
-      await handleFocus(kind === "activity" ? "attraction" : kind, name);
+      await handleFocus(focusKind(kind), name);
     }
   };
 
   const handleStopMap = async (kind: string, name: string) => {
     setMapOpen(true);
     if (isPlaceKind(kind)) {
-      await handleFocus(kind === "activity" ? "attraction" : kind, name);
+      await handleFocus(focusKind(kind), name);
     }
   };
 
@@ -423,6 +432,7 @@ export default function App() {
         reloadToken={tripVersion}
         focusName={stopFocusName}
         onPinFocus={handleStopFocus}
+        onDayFocus={(day) => dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } })}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
       />
@@ -437,8 +447,18 @@ export default function App() {
           <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
           <button
             type="button"
+            onClick={() => setCanvasOpen(pane, false)}
+            className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink disabled:opacity-30"
+            aria-label={`Hide ${label}`}
+            title={`Hide ${label}`}
+            disabled={(pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen)}
+          >
+            <EyeOff size={15} aria-hidden />
+          </button>
+          <button
+            type="button"
             onClick={() => toggleMaxPane(pane)}
-            className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
+            className="grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
             aria-label={maximizedPane === pane ? `Restore ${label}` : `Maximize ${label}`}
             title={maximizedPane === pane ? "Restore" : "Maximize"}
           >
@@ -505,6 +525,7 @@ export default function App() {
               tripIdHint={chatTripId}
               onNewTrip={handleNewTrip}
               onImported={handleImported}
+              hideGlobalControls
             />
           </div>
           {chatOpen ? (
@@ -600,6 +621,24 @@ export default function App() {
             </button>
             <button
               type="button"
+              onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
+              className={`btn-ghost ${itineraryOpen ? "bg-slate-100 text-ink" : ""}`}
+              aria-pressed={itineraryOpen}
+              title="Show or hide itinerary"
+            >
+              <PanelLeft size={15} aria-hidden /> <span className="hidden 2xl:inline">Itinerary</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCanvasOpen("map", !mapOpen)}
+              className={`btn-ghost ${mapOpen ? "bg-slate-100 text-ink" : ""}`}
+              aria-pressed={mapOpen}
+              title="Show or hide map"
+            >
+              <Map size={15} aria-hidden /> <span className="hidden 2xl:inline">Map</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setInspectorOpen((open) => !open)}
               className={`btn-ghost ${inspectorOpen ? "bg-slate-100 text-ink" : ""}`}
               aria-pressed={inspectorOpen}
@@ -619,6 +658,24 @@ export default function App() {
             >
               <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
             </button>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
+              className="btn-ghost"
+              title="Account and sign in"
+              aria-label="Account and sign in"
+            >
+              <UserRound size={15} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("tripplanner:open-settings"))}
+              className="btn-ghost"
+              title="Travel preferences"
+              aria-label="Travel preferences"
+            >
+              <Settings size={15} aria-hidden />
+            </button>
           </nav>
         </header>
 
@@ -628,15 +685,19 @@ export default function App() {
           style={{
             gridTemplateColumns: maximizedPane
               ? "minmax(0, 1fr)"
+              : !itineraryOpen || !mapOpen
+                ? isWideDesktop && inspectorOpen
+                  ? `minmax(0, ${100 - inspectorPct}fr) 0.375rem minmax(0, ${inspectorPct}fr)`
+                  : "minmax(0, 1fr)"
               : isWideDesktop && inspectorOpen
                 ? `${itineraryPct}fr 0.375rem ${100 - itineraryPct - inspectorPct}fr 0.375rem ${inspectorPct}fr`
                 : `${itineraryPct}fr 0.375rem ${100 - itineraryPct}fr`,
           }}
         >
-          <section className={`min-h-0 min-w-0 ${maximizedPane === "map" ? "hidden" : ""}`}>
+          <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane === "map" ? "hidden" : ""}`}>
             {renderCanvasPane("itinerary")}
           </section>
-          {!maximizedPane && (
+          {!maximizedPane && itineraryOpen && mapOpen && (
             <div
               role="separator"
               tabIndex={0}
@@ -652,10 +713,10 @@ export default function App() {
               <span className="absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300 group-hover:bg-brand/60" />
             </div>
           )}
-          <section className={`min-h-0 min-w-0 ${maximizedPane === "itinerary" ? "hidden" : ""}`}>
+          <section className={`min-h-0 min-w-0 ${!mapOpen || maximizedPane === "itinerary" ? "hidden" : ""}`}>
             {renderCanvasPane("map")}
           </section>
-          {!maximizedPane && isWideDesktop && inspectorOpen && (
+          {!maximizedPane && isWideDesktop && inspectorOpen && (itineraryOpen || mapOpen) && (
             <div
               role="separator"
               tabIndex={0}

@@ -491,6 +491,28 @@ def test_map_view_includes_all_structured_day_stops_in_order(_map_geo: None) -> 
     ]
 
 
+def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Taj Exotica Resort", "kind": "hotel"},
+                    {"name": "Dudhsagar Falls Trek", "kind": "attraction"},
+                    {"name": "Fort Aguada", "kind": "meal"},
+                ],
+            }
+        ],
+    }
+    mv = trip_view.build_map_view(trip)
+    by_name = {pin["name"]: pin for pin in mv["pins"]}
+    restaurant = by_name["Fort Aguada"]
+    assert restaurant["kind"] == "meal"
+    day1 = next(day for day in mv["days"] if day["day"] == 1)
+    assert restaurant["id"] in day1["pin_ids"]
+
+
 # ---------------------------------------------------------------------------
 # build_itinerary (pure, no network)
 # ---------------------------------------------------------------------------
