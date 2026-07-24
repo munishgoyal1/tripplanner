@@ -62,6 +62,7 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(trip_view.places_cache, "get_photos", fake_photos)
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
     monkeypatch.setattr(trip_view.places_cache, "place_coords", fake_coords)
     monkeypatch.setattr(trip_view.places_cache, "top_places", fake_top)
     monkeypatch.setattr(trip_view.user_preferences, "load_preferences", lambda: {})
@@ -288,6 +289,7 @@ def _map_geo(monkeypatch: pytest.MonkeyPatch) -> None:
         return base.get(kind, [])[:n]
 
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
     monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
     monkeypatch.setattr(trip_view.places_cache, "top_places", fake_top)
     monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
@@ -336,6 +338,7 @@ def test_build_itinerary_route_uses_all_stop_names(monkeypatch: pytest.MonkeyPat
 
     monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
 
     trip = {
         "destination": "Kolkata",
@@ -358,6 +361,50 @@ def test_build_itinerary_route_uses_all_stop_names(monkeypatch: pytest.MonkeyPat
     day = it["days"][0]
     assert day["route"]["distance_km"] > 0
     assert day["route"]["duration_min"] > 0
+
+
+def test_build_itinerary_prefetches_stop_details_without_reviews(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[set[str], str, int, bool]] = []
+
+    def fake_prefetch(
+        names: list[str], city: str, *, max_photos: int, with_reviews: bool
+    ) -> None:
+        calls.append((set(names), city, max_photos, with_reviews))
+
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", fake_prefetch)
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {"name": name, "lat": 1.0, "lng": 2.0},
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_summary",
+        lambda *args, **kwargs: pytest.fail("itinerary should not fetch reviews"),
+    )
+
+    result = trip_view.build_itinerary(
+        {
+            "destination": "Goa",
+            "selected_hotels": [{"name": "Hotel A"}],
+            "selected_activities": [],
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Hotel A", "kind": "hotel"},
+                        {"name": "Fort Aguada", "kind": "attraction"},
+                    ],
+                }
+            ],
+        }
+    )
+
+    assert result["stats"]["stops"] == 2
+    assert calls == [({"Hotel A", "Fort Aguada"}, "Goa", 0, False)]
 
 
 def test_map_view_day_bands_and_airport(_map_geo: None) -> None:
@@ -701,6 +748,7 @@ def test_itinerary_enriches_stop_metadata(monkeypatch: pytest.MonkeyPatch) -> No
 
     monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
     monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
 
     trip = {
         **SAMPLE_TRIP,

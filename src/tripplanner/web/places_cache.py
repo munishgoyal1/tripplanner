@@ -56,6 +56,7 @@ _COSMOS_DOC_ID = "cache"
 # Process-wide cache shared across FastAPI request and prefetch threads.
 _CACHE: dict[str, dict[str, Any]] = {}
 _CACHE_LOCK = RLock()
+_KEY_LOCKS = tuple(RLock() for _ in range(64))
 _LOAD_LOCK = RLock()
 _PERSIST_LOCK = RLock()
 _loaded = False
@@ -211,6 +212,10 @@ def _key(name: str, city: str) -> str:
     return f"{(name or '').strip().lower()}|{(city or '').strip().lower()}"
 
 
+def _key_lock(key: str) -> RLock:
+    return _KEY_LOCKS[hash(key) % len(_KEY_LOCKS)]
+
+
 def _headers(field_mask: str) -> dict[str, str]:
     return {
         "Content-Type": "application/json",
@@ -342,17 +347,18 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     within the TTL window. Pass ``refresh=True`` to force a re-fetch."""
     cache = _cache()
     k = _key(name, city)
-    with _CACHE_LOCK:
-        entry = cache.get(k)
-        if not refresh and _fresh(entry):
-            return entry  # type: ignore[return-value]
-    info = _lookup_place(name, city) or {}
-    info["__at__"] = time.time()
-    with _CACHE_LOCK:
-        cache[k] = info
-        _evict_if_needed()
-    _persist()
-    return info
+    with _key_lock(k):
+        with _CACHE_LOCK:
+            entry = cache.get(k)
+            if not refresh and _fresh(entry):
+                return entry  # type: ignore[return-value]
+        info = _lookup_place(name, city) or {}
+        info["__at__"] = time.time()
+        with _CACHE_LOCK:
+            cache[k] = info
+            _evict_if_needed()
+        _persist()
+        return info
 
 
 def get_photos(
@@ -398,7 +404,10 @@ def prefetch(
     def _one(name: str) -> None:
         if with_reviews:
             get_summary(name, city, refresh=refresh)  # populates lookup + reviews
-        get_photos(name, city, max_photos=max_photos, refresh=refresh)  # + photos
+        else:
+            get_details(name, city, refresh=refresh)
+        if max_photos > 0:
+            get_photos(name, city, max_photos=max_photos, refresh=refresh)
 
     with _batched_persist():
         with ThreadPoolExecutor(max_workers=min(_MAX_WORKERS, len(todo))) as ex:
@@ -419,6 +428,11 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
             info["reviews"] = reviews
         _persist()
     return info
+
+
+def get_details(name: str, city: str, *, refresh: bool = False) -> dict[str, Any] | None:
+    """Return place metadata without the extra reviews request."""
+    return _ensure(name, city, refresh=refresh) or None
 
 
 def place_coords(name: str, city: str = "") -> tuple[float, float] | None:
@@ -443,37 +457,38 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         return []
     cache = _cache()
     ck = f"__top__|{kind}|{destination.strip().lower()}"
-    with _CACHE_LOCK:
-        entry = cache.get(ck)
-        if not refresh and _fresh(entry):
-            return entry.get("names", [])  # type: ignore[union-attr]
+    with _key_lock(ck):
+        with _CACHE_LOCK:
+            entry = cache.get(ck)
+            if not refresh and _fresh(entry):
+                return entry.get("names", [])  # type: ignore[union-attr]
 
-    query = (
-        f"best hotels in {destination}"
-        if kind == "hotel"
-        else f"top tourist attractions in {destination}"
-    )
-    names: list[str] = []
-    try:
-        resp = httpx.post(
-            f"{_BASE}/places:searchText",
-            headers=_headers("places.displayName,places.rating"),
-            json={"textQuery": query, "pageSize": max(n, 1)},
-            timeout=_HTTP_TIMEOUT_S,
+        query = (
+            f"best hotels in {destination}"
+            if kind == "hotel"
+            else f"top tourist attractions in {destination}"
         )
-        resp.raise_for_status()
-        for p in (resp.json().get("places") or [])[:n]:
-            name = p.get("displayName", {}).get("text")
-            if name:
-                names.append(name)
-    except httpx.HTTPError as exc:
-        log.warning("top_places lookup failed for %s: %s", destination, exc)
+        names: list[str] = []
+        try:
+            resp = httpx.post(
+                f"{_BASE}/places:searchText",
+                headers=_headers("places.displayName,places.rating"),
+                json={"textQuery": query, "pageSize": max(n, 1)},
+                timeout=_HTTP_TIMEOUT_S,
+            )
+            resp.raise_for_status()
+            for p in (resp.json().get("places") or [])[:n]:
+                name = p.get("displayName", {}).get("text")
+                if name:
+                    names.append(name)
+        except httpx.HTTPError as exc:
+            log.warning("top_places lookup failed for %s: %s", destination, exc)
 
-    with _CACHE_LOCK:
-        cache[ck] = {"names": names, "__at__": time.time()}
-        _evict_if_needed()
-    _persist()
-    return names
+        with _CACHE_LOCK:
+            cache[ck] = {"names": names, "__at__": time.time()}
+            _evict_if_needed()
+        _persist()
+        return names
 
 
 def clear_cache() -> None:

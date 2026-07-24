@@ -280,11 +280,27 @@ def itinerary_items(
         if isinstance(a, dict) and a.get("name"):
             _add("attraction", str(a["name"]))
 
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        for stop in day.get("stops") or []:
+            if isinstance(stop, dict):
+                name = str(stop.get("name") or "").strip()
+                kind = str(stop.get("kind") or "attraction").strip().lower()
+            else:
+                name = str(stop or "").strip()
+                kind = "attraction"
+            if name:
+                _add(kind or "attraction", name)
+
     destination = str(trip.get("destination") or "").strip()
-    if destination:
+    if destination and len(items) < _MAX_GALLERY_ITEMS:
         for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
             _add("hotel", name)
-        for name in places_cache.top_places(destination, "attraction", n=_FALLBACK_ATTRACTIONS):
+        remaining = max(0, _MAX_GALLERY_ITEMS - len(items))
+        for name in places_cache.top_places(
+            destination, "attraction", n=min(_FALLBACK_ATTRACTIONS, remaining)
+        ):
             _add("attraction", name)
 
     if focus and focus.get("name"):
@@ -639,7 +655,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
             _add("attraction", str(a["name"]))
 
     # 3) Destination suggestions to fill context around the chosen items.
-    if destination:
+    if destination and len(refs) < 3:
         for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
             _add("hotel", name)
         for name in places_cache.top_places(
@@ -647,11 +663,13 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         ):
             _add("attraction", name)
 
-    places_cache.prefetch([n for _, n in refs], destination, max_photos=1)
+    places_cache.prefetch(
+        [n for _, n in refs], destination, max_photos=1, with_reviews=False
+    )
 
     pins: list[dict[str, Any]] = []
     for i, (kind, name) in enumerate(refs):
-        info = places_cache.get_summary(name, destination) or {}
+        info = places_cache.get_details(name, destination) or {}
         lat, lng = info.get("lat"), info.get("lng")
         if lat is None or lng is None:
             continue
@@ -706,7 +724,7 @@ def _airport_pin(destination: str) -> dict[str, Any] | None:
     """A single 'arrival airport' pin for Day-1 context, if geocodable."""
     if not destination:
         return None
-    info = places_cache.get_summary(f"{destination} International Airport", destination)
+    info = places_cache.get_details(f"{destination} International Airport", destination)
     if not info or info.get("lat") is None or info.get("lng") is None:
         return None
     return {
@@ -1201,7 +1219,7 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     if not name or not destination or not places_cache.is_configured():
         return None
     try:
-        info = places_cache.get_summary(name, destination) or {}
+        info = places_cache.get_details(name, destination) or {}
     except Exception:  # noqa: BLE001 — never let geocoding break the itinerary
         return None
     lat, lng = info.get("lat"), info.get("lng")
@@ -1213,7 +1231,7 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     plain = re.sub(r"\s*\([^)]*\)", "", str(name or "")).strip()
     if plain and plain.lower() != str(name or "").strip().lower():
         try:
-            info2 = places_cache.get_summary(plain, destination) or {}
+            info2 = places_cache.get_details(plain, destination) or {}
         except Exception:  # noqa: BLE001
             return None
         lat2, lng2 = info2.get("lat"), info2.get("lng")
@@ -1291,6 +1309,10 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
     anchor = hotels[0] if hotels else None
     symbol = currency_symbol(trip)
 
+    places_cache.prefetch(
+        [*hotels, *activities], destination, max_photos=0, with_reviews=False
+    )
+
     # Geographic ordering of the attractions (cached coord lookups).
     coords: dict[str, tuple[float, float]] = {}
     for name in activities:
@@ -1319,7 +1341,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
         
         if i == 1 and hotels:
             for hname in hotels:
-                summary = places_cache.get_summary(hname, destination) or {}
+                summary = places_cache.get_details(hname, destination) or {}
                 opening, concern = _opening_hint(summary, "")
                 stops.append({
                     "name": hname, "kind": "hotel", "time": "", "duration_min": None,
@@ -1335,7 +1357,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
                     day_coords.append(c)
         
         for name in chunk:
-            summary = places_cache.get_summary(name, destination) or {}
+            summary = places_cache.get_details(name, destination) or {}
             opening, concern = _opening_hint(summary, "")
             stops.append({
                 "name": name, "kind": "attraction", "time": "", "duration_min": None,
@@ -1404,7 +1426,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     # Use EVERY itinerary stop name, not just selected buckets, so added meals,
     # markets, and non-selected places still contribute to route metrics.
     place_coords_map: dict[str, tuple[float, float]] = {}
-    stop_names: set[str] = set(list(hotels) + list(activities))
+    stop_names = {name.lower(): name for name in [*hotels, *activities]}
     for entry in itin:
         if not isinstance(entry, dict):
             continue
@@ -1414,9 +1436,12 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             else:
                 name = str(raw or "").strip()
             if name:
-                stop_names.add(name)
+                stop_names[name.lower()] = name
 
-    for name in stop_names:
+    places_cache.prefetch(
+        list(stop_names.values()), destination, max_photos=0, with_reviews=False
+    )
+    for name in stop_names.values():
         coords = _place_coords(name, destination)
         if coords:
             place_coords_map[name.strip().lower()] = coords
@@ -1434,7 +1459,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         for raw in entry.get("stops") or []:
             s = _normalize_stop(raw, hotels, activities)
             if s:
-                summary = places_cache.get_summary(s["name"], destination) or {}
+                summary = places_cache.get_details(s["name"], destination) or {}
                 opening, concern = _opening_hint(summary, str(entry.get("date") or ""))
                 s["duration_min"] = _duration_hint(s["kind"], s.get("duration_min"))
                 if not s.get("opening_hours"):

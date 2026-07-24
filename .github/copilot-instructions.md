@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-24)
+- **Cold trip-pane performance (Session 38)**: simultaneous cache misses for the
+  same place/top-places query are coalesced. Itinerary and map warm metadata in
+  parallel without review requests, and complete structured itineraries no
+  longer expand the map with unrelated destination suggestions. Sparse views
+  and the trip-details gallery retain destination suggestions. Validation: 48
+  focused Places/view-model tests and all 506 backend tests pass.
 - **Map place discovery and exact-day additions (Session 37)**: the map loads
   the Google Places library for viewport-biased autocomplete and captures
   labeled native POI clicks as stop candidates. The stop picker targets Best day

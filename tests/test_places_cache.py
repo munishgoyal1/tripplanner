@@ -185,3 +185,21 @@ def test_concurrent_cache_updates_and_snapshots_remain_valid(_isolate):
     persisted = json.loads(pc._local_path().read_text(encoding="utf-8"))
     assert set(persisted["entries"]) == {pc._key(name, "Goa") for name in names}
 
+
+def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
+    original_lookup = pc._lookup_place
+
+    def slow_lookup(name: str, city: str):
+        time.sleep(0.05)
+        return original_lookup(name, city)
+
+    monkeypatch.setattr(pc, "_lookup_place", slow_lookup)
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        summaries = list(
+            executor.map(lambda _: pc.get_details("Taj", "Goa"), range(8))
+        )
+
+    assert all(summary and summary["place_id"] == "id-Taj" for summary in summaries)
+    assert _isolate["lookup"] == 1
+

@@ -240,7 +240,10 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   on demand from long-lived `photo_refs` (URLs are NEVER persisted). Public
   fns take `refresh=True` to force re-fetch; `prefetch` batches the durable
   write. Cache state, one-time load, and durable snapshot ordering are separately
-  synchronized; Google HTTP calls never hold the cache-state lock.
+  synchronized; Google HTTP calls never hold the cache-state lock. Same-key cold
+  misses are coalesced across callers. `get_details` exposes metadata without
+  fetching reviews; map/itinerary use details-only parallel warming and reserve
+  destination suggestion expansion for sparse structured content.
 - **Saved trips (Session 19)**: every `_save_active_trip` mirrors the plan into
   the `trips` collection keyed by a stable `trip_id = slug(destination)_dep_ret`.
   Same destination + same dates → same id → `create_trip_plan` RESUMES (keeps

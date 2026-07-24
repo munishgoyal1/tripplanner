@@ -1736,3 +1736,23 @@ VALIDATION:
   metadata check fails.
 - Frontend: 27 tests passing; production build passing.
 
+=== 2026-07-24 — Session 38: Cold trip-pane performance ===
+
+REQUIREMENT:
+- Make the first local load of itinerary and map data responsive when the
+  durable Places cache is empty, without removing gallery suggestions.
+
+IMPLEMENTED:
+- Coalesced simultaneous cold requests for the same place or top-places query,
+  so independently loading panes share one Google lookup.
+- Itinerary and map now warm place metadata concurrently without fetching
+  reviews they do not render. Photo warming remains limited to map needs.
+- Structured itinerary stops are included directly in gallery/map candidates;
+  complete itineraries no longer trigger unrelated map suggestion expansion.
+  Sparse views still receive destination suggestions, and the trip-details
+  gallery retains its established suggestion behavior.
+
+VALIDATION:
+- Focused Places/view-model suite: 48 passing.
+- Backend: 506 passing; one unrelated Starlette TestClient deprecation warning.
+
