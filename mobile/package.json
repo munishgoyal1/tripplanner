@@ -6,9 +6,9 @@
     "start": "expo start",
     "iphone": "expo start --lan --port 8082",
     "iphone:tunnel": "expo start --tunnel --port 8082",
-    "android": "expo start --android",
+    "android": "expo start --lan --port 8082",
+    "android:tunnel": "expo start --tunnel --port 8082",
     "ios": "expo start --ios",
-    "web": "expo start --web",
     "lint": "expo lint"
   },
   "dependencies": {

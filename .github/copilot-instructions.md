@@ -105,7 +105,13 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-24)
+## Current State (last updated 2026-07-25)
+- **Native Android app (Session 51)**: the Expo/React Native mobile shell now
+  explicitly supports Android with package `com.munishgoyal1.tripplanner`,
+  Material icon mappings, Google Maps via `react-native-maps`, secure identity,
+  LAN Expo Go testing on port 8082, and a maintained `docs/android-testing.md`
+  runbook. Android reuses all shared client/state/backend behavior. Standalone
+  EAS maps need a restricted Android Maps key before preview/Play testing.
 - **Repeatable iPhone testing (Session 50)**: `docs/ios-testing.md` is the
   maintained Expo Go, EAS preview, and TestFlight runbook. Physical-device
   testing defaults to LAN port 8082 because Docker can occupy 8081; ngrok is an

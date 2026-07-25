@@ -1,8 +1,24 @@
-# Tripplanner for iPhone
+# Tripplanner mobile
 
 Native React Native client built with Expo SDK 54 and Expo Router. It reuses
 the authoritative FastAPI backend and `@tripplanner/client`; native code owns
-navigation, Keychain identity, maps, sheets, and phone layout.
+navigation, secure device identity, maps, sheets, and phone layout on iOS and
+Android.
+
+## Run on Android
+
+The maintained setup, smoke-test, troubleshooting, EAS preview, and Google Play
+instructions live in [`docs/android-testing.md`](../docs/android-testing.md).
+
+Install Expo Go from Google Play, then from this directory:
+
+```powershell
+npm install
+npm run android
+```
+
+This starts LAN mode on port 8082. Scan the QR code from Expo Go. The same
+`EXPO_PUBLIC_API_BASE_URL` override described below applies to Android.
 
 ## Run on iPhone
 
@@ -35,21 +51,23 @@ npx tsc --noEmit
 npm run lint
 npm exec --yes expo-doctor
 npx expo export --platform ios
+npx expo export --platform android
 ```
 
-## EAS and App Store
+## EAS and stores
 
-The bundle identifier is `com.munishgoyal1.tripplanner`. `eas.json` provides
-development, internal preview, and production profiles. From Windows, EAS can
-build and submit iOS in the cloud:
+The iOS bundle identifier and Android package are both
+`com.munishgoyal1.tripplanner`. `eas.json` provides development, internal
+preview, and production profiles. From Windows, EAS builds both platforms in
+the cloud:
 
 ```powershell
 npm exec --yes eas-cli login
 npm exec --yes eas-cli build --platform ios --profile production
-npm exec --yes eas-cli submit --platform ios --profile production
+npm exec --yes eas-cli build --platform android --profile production
 ```
 
-Building requires an Expo account and active Apple Developer membership.
-Submission also requires the App Store Connect app record, agreements,
-privacy details, screenshots, and review metadata. Never submit without the
-owner's explicit publication approval.
+Store distribution requires the corresponding Apple Developer or Google Play
+Console account, app record, agreements, privacy details, screenshots, and
+review metadata. Follow the platform runbooks and never submit production
+without the owner's explicit publication approval.

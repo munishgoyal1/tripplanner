@@ -28,6 +28,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Browser smoke: `cd frontend; npm run test:e2e`
 - iPhone via Expo Go: `cd mobile; npm run iphone` (LAN port 8082)
 - iPhone testing runbook: [docs/ios-testing.md](ios-testing.md)
+- Android via Expo Go: `cd mobile; npm run android` (LAN port 8082)
+- Android testing runbook: [docs/android-testing.md](android-testing.md)
 - Mobile checks: `cd mobile; npx tsc --noEmit; npm run lint; npm exec --yes expo-doctor`
 - iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
@@ -139,7 +141,7 @@ packages/tripplanner-client/
   src/client.ts            Fetch, mutation, and SSE transport for web + native
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
-  app/                     Expo Router screens: Trips, Plan, Map, Assistant, Details
+  app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant, Details
   providers/trip-provider.tsx  Authoritative native data/revision owner
   lib/tripplanner.ts       Hosted API selection + Keychain-backed mobile identity
   eas.json                 Development, preview, and App Store build profiles
@@ -160,6 +162,7 @@ scripts/
   test.ps1            Legacy (Chainlit era) — do not use
 tests/                pytest suite
 docs/
+  android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
   dev.md              Dev environment notes
   ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff

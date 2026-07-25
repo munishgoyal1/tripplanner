@@ -2032,3 +2032,16 @@ VALIDATION:
   Docker Cosmos Emulator can occupy 8081; retain ngrok tunnel as a fallback.
 - Never submit to App Store production without explicit owner approval.
 
+=== 2026-07-25 — Session 51: Native Android device support ===
+
+- Promote Android from a future target to a tested mobile platform now that the
+  owner has a physical Android phone.
+- Reuse the Expo/React Native mobile shell, shared client, backend, contracts,
+  state, and product behavior; do not fork Android product logic.
+- Add stable Android package metadata, physical-device Expo Go commands, an
+  Android Hermes bundle gate, and a maintained Android testing runbook.
+- Test Expo Go first. EAS preview and Google Play internal testing follow after
+  the device smoke test; production publication requires explicit approval.
+- Standalone Android map builds require a restricted Google Maps Android key and
+  signing-certificate SHA-1 before EAS preview or Play testing; Expo Go does not.
+
