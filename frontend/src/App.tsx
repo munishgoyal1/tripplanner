@@ -268,8 +268,18 @@ export default function App() {
 
   const handleFocus = async (kind: string, name: string, context?: DeselectItemOptions) => {
     const f = { kind, name, day: context?.day, stop: context?.stop };
+    setCircuitFocus({ day: 0, token: 0 });
     dispatchWorkspace({ type: "focus", place: f });
     setMapFocusToken((token) => token + 1);
+    setView((current) => {
+      if (!current) return current;
+      const index = current.items.findIndex((item) =>
+        item.kind === kind && item.name.trim().toLowerCase() === name.trim().toLowerCase()
+      );
+      if (index < 0) return current;
+      const items = [current.items[index], ...current.items.filter((_, itemIndex) => itemIndex !== index)];
+      return { ...current, focus: f, items };
+    });
     if (isDesktop) setInspectorOpen(true);
     await refresh(f);
   };

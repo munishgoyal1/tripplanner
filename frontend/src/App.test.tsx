@@ -357,6 +357,40 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-circuit-token", "0");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
     expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeDayFocus);
+
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2 hotel" }));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Goa Marriott");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-token", "0");
+  });
+
+  it("shows an already-loaded focused place before its refresh completes", async () => {
+    const initialView = {
+      ...emptyView,
+      has_trip: true,
+      focus: { kind: "attraction", name: "Eiffel Tower" },
+      items: [
+        { kind: "attraction", name: "Eiffel Tower", selected: true },
+        { kind: "attraction", name: "Louvre Museum", selected: true },
+      ],
+    };
+    fetchTripViewMock
+      .mockResolvedValueOnce(initialView)
+      .mockImplementationOnce(() => new Promise(() => {}));
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute(
+      "data-focus-name",
+      "Eiffel Tower",
+    ));
+    fireEvent.click(screen.getByTestId("itinerary-panel"));
+
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Louvre Museum");
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute(
+      "data-items",
+      "Louvre Museum,Eiffel Tower",
+    );
   });
 
   it("focuses a place added from details without rebuilding the trip view", async () => {

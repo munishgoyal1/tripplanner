@@ -107,7 +107,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   stays at the standard 34x44 circuit geometry and keeps its day color and white
   border; only its center/label contrast inverts and its stacking rises. Changing
   selection immediately restores the previous marker and focuses only the latest
-  one. Repeated clicks refocus the same stop after manual map-day changes.
+  one. Exact-stop and aggregate circuit focus are mutually exclusive, including
+  through map remounts and slow Details enrichment. Already-loaded Details switch
+  immediately; fresh Places data fills in afterward. Marker numbers come from
+  authoritative itinerary occurrences even if route pin order drifts, and shorter
+  itinerary names still match provider-expanded map names. Repeated clicks refocus
+  the same stop after manual map-day changes.
   The complete day header is also clickable: it clears any prior exact-place
   selection, filters the map to that day, and fits the complete route circuit
   in view. Place-row clicks remain exact-place

@@ -141,6 +141,7 @@ frontend/
                            (occurrence-aware place focus highlights the exact day;
                            one marker at a time gets number-only contrast at fixed
                            34x44 geometry, with focus-only updates applied in place;
+                           exact-stop and aggregate-circuit modes cancel each other;
                            repeated focus requests reapply after manual filtering;
                            itinerary day focus fits every pin in that circuit;
                            day focus jumps itinerary

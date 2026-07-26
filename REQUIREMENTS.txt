@@ -2245,3 +2245,16 @@ VALIDATION:
 - Restore the local five-day Goa plan from its persisted transcript after a
   sparse full-plan rewrite left Days 4 and 5 with only hotel anchors.
 
+=== 2026-07-26 — Session 67: Immediate mutually exclusive map focus ===
+
+- Exact-stop focus and aggregate day-circuit focus are mutually exclusive
+  workspace modes. Starting either action must synchronously invalidate the
+  other mode so stale focus cannot return after a map redraw, remount, or slow
+  Details response.
+- Rapid stop-to-stop clicks must update the itinerary badge, map marker/day,
+  and already-loaded Details item immediately. Places-backed enrichment may
+  finish afterward but cannot leave the previous place visibly selected.
+- Map marker numbers must follow authoritative itinerary occurrence order even
+  when route pin ordering differs. Provider-expanded names such as "Mapusa
+  Municipal Market" must resolve from the itinerary's shorter "Mapusa Market".
+

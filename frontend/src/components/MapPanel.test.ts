@@ -13,6 +13,7 @@ import {
   pinMatchesFocus,
   placeNameMatches,
   syncPinMarkerFocus,
+  visitOrdersForDay,
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
@@ -39,6 +40,7 @@ describe("placeNameMatches", () => {
       "Britto’s Bar & Restaurant – Authentic Goan Family Kitchen",
       "Britto's Bar & Restaurant",
     )).toBe(true);
+    expect(placeNameMatches("Mapusa Municipal Market", "Mapusa Market")).toBe(true);
   });
 
   it("does not match unrelated restaurants or empty names", () => {
@@ -48,6 +50,35 @@ describe("placeNameMatches", () => {
 });
 
 describe("map stop selection", () => {
+  it("numbers pins by itinerary occurrence when route pin order drifts", () => {
+    const pin = (id: string, name: string, stop: number) => ({
+      id,
+      name,
+      kind: "attraction",
+      selected: true,
+      day: 2,
+      lat: 15 + stop,
+      lng: 73 + stop,
+      rating: null,
+      address: "Goa",
+      photo: null,
+      occurrences: [{ day: 2, stop, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Goa",
+      center: null,
+      pins: [pin("fort", "Fort Aguada", 2), pin("mapusa", "Mapusa Market", 3), pin("chapora", "Chapora Fort", 4)],
+      days: [{ day: 2, label: "Day 2", color: "#e11d48", pin_ids: ["fort", "chapora", "mapusa"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } }],
+      available_days: [2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(visitOrdersForDay(view, 2))).toEqual({ fort: 1, mapusa: 2, chapora: 3 });
+  });
+
   it("uses the requested occurrence day for a repeated hotel", () => {
     const hotel = {
       id: "p0",

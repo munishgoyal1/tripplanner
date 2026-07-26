@@ -120,13 +120,27 @@ export function placeNameMatches(candidate: string, focusName: string): boolean 
   if (!normalizedCandidate || !normalizedFocus) return false;
   return normalizedCandidate === normalizedFocus
     || normalizedCandidate.includes(normalizedFocus)
-    || normalizedFocus.includes(normalizedCandidate);
+    || normalizedFocus.includes(normalizedCandidate)
+    || normalizedFocus.split(" ").every((token) => normalizedCandidate.split(" ").includes(token));
 }
 
 export function focusedDayForPin(pin: MapPin, focusDay?: number): number | null {
   return focusDay && pin.occurrences.some((occurrence) => occurrence.day === focusDay)
     ? focusDay
     : pin.day;
+}
+
+export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string, number> {
+  const day = view.days.find((candidate) => candidate.day === dayNumber);
+  const pins = (day?.pin_ids ?? [])
+    .map((id) => view.pins.find((candidate) => candidate.id === id))
+    .filter((pin): pin is MapPin => !!pin && pin.kind !== "hotel");
+  const ordered = [...new Map(pins.map((pin) => [pin.id, pin])).values()].sort((left, right) => {
+    const leftStop = left.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
+    const rightStop = right.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
+    return (leftStop ?? Number.MAX_SAFE_INTEGER) - (rightStop ?? Number.MAX_SAFE_INTEGER);
+  });
+  return new Map(ordered.map((pin, index) => [pin.id, index + 1]));
 }
 
 export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
@@ -425,12 +439,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       ? view.days
       : view.days.filter((day) => day.day === activeDay);
     orderDays.forEach((d) => {
-      let visitOrder = 0;
-      d.pin_ids.forEach((id) => {
-        const pin = view.pins.find((candidate) => candidate.id === id);
-        if (pin?.kind === "hotel") return;
-        visitOrder += 1;
-        if (!visitOrderByPinId.has(id)) visitOrderByPinId.set(id, visitOrder);
+      visitOrdersForDay(view, d.day).forEach((order, id) => {
+        if (!visitOrderByPinId.has(id)) visitOrderByPinId.set(id, order);
       });
     });
 
@@ -637,6 +647,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       syncPinMarkerFocus(pinMarkersRef.current);
       return;
     }
+    pendingCircuitFocusRef.current = null;
     const normalizedFocus = focusName.trim().toLowerCase();
     let target: MapPin | MapAirport | undefined = view.pins.find((p) =>
       placeNameMatches(p.name, focusName)

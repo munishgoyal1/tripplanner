@@ -106,6 +106,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Immediate mutually exclusive map focus (Session 67)**: exact-stop clicks
+  clear stale aggregate circuit state, while day-header clicks clear exact
+  focus. MapPanel also cancels queued circuit work before pin focus. Loaded
+  Details items reorder immediately instead of waiting for Places enrichment;
+  marker numbering follows authoritative itinerary occurrences rather than
+  route pin order, and provider-expanded place names still match. Live rapid-
+  click checks switch map number/day/Details within one paint.
 - **Aggregate circuit focus + complete days (Session 66)**: itinerary day-header
   clicks clear stale exact-stop focus before fitting the full map circuit.
   `update_trip_plan` now flags ordinary hotel-only days while exempting genuine
