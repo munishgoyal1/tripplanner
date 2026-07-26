@@ -88,6 +88,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   route distance/time/mode, and a direct Maps handoff before the stop details.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
+  Each mapped destination row also shows a quiet estimated distance/time from
+  the previous stop. The selected map day labels each route segment at its
+  midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
   Clicking a place stop focuses both its map pin and its contextual Details view.
   Selecting a Map day scrolls the itinerary to that day and focuses its primary
   place in Details. Restaurants are place stops too: they join day circuits and

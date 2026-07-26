@@ -456,7 +456,9 @@ def test_map_view_route_stats_for_multi_stop_day(_map_geo: None) -> None:
     day1 = next(d for d in mv["days"] if d["day"] == 1)
     assert day1["route"]["distance_km"] > 0
     assert day1["route"]["duration_min"] > 0
-    assert day1["route"]["mode"] in {"walk", "local transit", "car transfer"}
+    assert day1["route"]["mode"] in {
+        "walk", "local transit", "car transfer", "mixed local travel"
+    }
 
 
 def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:
@@ -570,6 +572,13 @@ def test_map_view_reuses_places_across_complete_day_circuits(_map_geo: None) -> 
     assert days[1]["pin_ids"][0] == days[1]["pin_ids"][-1] == hotel_id
     assert days[2]["pin_ids"][0] == days[2]["pin_ids"][-1] == hotel_id
     assert days[2]["route"]["distance_km"] > 0
+    assert len(days[2]["legs"]) == len(days[2]["pin_ids"]) - 1
+    assert days[2]["legs"][0]["distance_km"] > 0
+    assert days[2]["route"]["duration_min"] == sum(
+        leg["duration_min"] for leg in days[2]["legs"]
+    )
+    if days[2]["route"]["duration_min"] >= 60:
+        assert "hr" in days[2]["route"]["duration_display"]
 
 
 def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:
@@ -748,7 +757,7 @@ def test_place_views_expose_each_itinerary_occurrence(monkeypatch) -> None:
     ]
 
 
-def test_itinerary_structured_stops() -> None:
+def test_itinerary_structured_stops(_map_geo: None) -> None:
     trip = {
         **SAMPLE_TRIP,
         "day_wise_itinerary": [
@@ -790,6 +799,8 @@ def test_itinerary_structured_stops() -> None:
     assert act["selected"] is True
     assert d1["route"] is not None
     assert d1["route"]["distance_display"]
+    assert d1["stops"][1]["travel_from_previous"]["distance_display"]
+    assert d1["stops"][1]["travel_from_previous"]["duration_display"]
     assert "google.com/maps" in d1["google_maps_url"]
     # day colors differ
     assert it["days"][0]["color"] != it["days"][1]["color"]

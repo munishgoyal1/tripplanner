@@ -98,18 +98,26 @@ export interface MapPin {
   occurrences: PlaceOccurrence[];
 }
 
+export interface RouteMetrics {
+  distance_km: number;
+  duration_min: number;
+  mode: string;
+  distance_display: string;
+  duration_display: string;
+}
+
+export interface MapLeg extends RouteMetrics {
+  from_pin_id: string;
+  to_pin_id: string;
+}
+
 export interface MapDay {
   day: number;
   label: string;
   color: string;
   pin_ids: string[];
-  route: {
-    distance_km: number;
-    duration_min: number;
-    mode: string;
-    distance_display: string;
-    duration_display: string;
-  };
+  route: RouteMetrics;
+  legs?: MapLeg[];
 }
 
 export interface MapAirport {
@@ -145,6 +153,7 @@ export interface ItineraryStop {
   cost_display?: string;
   insight?: string;
   concern?: string;
+  travel_from_previous?: RouteMetrics;
 }
 
 export interface ItineraryDay {

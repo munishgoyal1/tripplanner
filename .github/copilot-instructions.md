@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Per-leg route context (Session 56)**: the map view exposes estimated
+  `legs[]` for each consecutive pin pair, and itinerary stops expose the same
+  estimate as `travel_from_previous`. Itinerary rows show quiet distance/time
+  connectors; selected-day map circuits show compact midpoint labels, while
+  all-days mode remains uncluttered.
 - **Matching itinerary/map sequence (Session 55)**: itinerary place rows show
   restrained day-colored markers matching the map circuit: `H` for hotel
   endpoints and `1, 2, 3...` for attractions and named restaurants. Transport

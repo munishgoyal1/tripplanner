@@ -50,6 +50,21 @@ function pinIcon(color: string, label: string): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {
+  return `${leg.distance_display} · ${leg.duration_display}`;
+}
+
+function routeLegIcon(label: string, color: string): string {
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="26" viewBox="0 0 112 26">
+  <rect x="1" y="1" width="110" height="24" rx="12" fill="white" fill-opacity="0.94"
+        stroke="${color}" stroke-opacity="0.35"/>
+  <text x="56" y="17" font-family="Inter,Arial,sans-serif" font-size="10"
+        font-weight="600" text-anchor="middle" fill="#475569">${label}</text>
+</svg>`.trim();
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 const AIRPORT_COLOR = "#0f172a";
 const HOTEL_COLOR = "#334155"; // slate — distinct from the day palette
 const SUGGEST_COLOR = "#94a3b8";
@@ -408,6 +423,31 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
         map,
       });
       overlaysRef.current.push(line);
+
+      if (activeDay === d.day) {
+        for (const leg of d.legs ?? []) {
+          const start = pinById.get(leg.from_pin_id);
+          const end = pinById.get(leg.to_pin_id);
+          if (!start || !end) continue;
+          const label = formatLegLabel(leg);
+          const marker = new google.maps.Marker({
+            position: {
+              lat: (start.lat + end.lat) / 2,
+              lng: (start.lng + end.lng) / 2,
+            },
+            map,
+            clickable: false,
+            title: `${label} · ${leg.mode}`,
+            icon: {
+              url: routeLegIcon(label, d.color),
+              scaledSize: new google.maps.Size(112, 26),
+              anchor: new google.maps.Point(56, 13),
+            },
+            zIndex: 500,
+          });
+          overlaysRef.current.push(marker);
+        }
+      }
     }
 
     // If the itinerary asked to focus a pin, zoom into it instead of fitting

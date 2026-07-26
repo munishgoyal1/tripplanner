@@ -208,8 +208,9 @@ It exports:
   grouped into day-colored route bands, plus an arrival-airport pin and map
   center. Each day now includes estimated route metrics
   (`distance_km/duration_min/mode` plus display strings) derived from the day
-  path so the UI can show day-wise travel distance/time/mode without billed
-  Directions calls. Structured places can participate in multiple day bands,
+  path plus `legs[]` with the same metrics for each consecutive pin pair, so
+  the UI can show day and segment travel estimates without billed Directions
+  calls. Structured places can participate in multiple day bands,
   and each band closes from/to the selected hotel. `enabled` mirrors whether
   `GOOGLE_MAPS_BROWSER_KEY` is set. Served by
   `GET /trip/map`; the browser key comes from `GET /maps/config`. Rendered by
@@ -222,7 +223,8 @@ It exports:
   ordered day circuits.
 - `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
   `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
-  booked,selected,color}]}]` + `stats{days,stops,booked}`. `_normalize_stop` /
+  booked,selected,color,travel_from_previous?}]}]` +
+  `stats{days,stops,booked}`. `_normalize_stop` /
   `_infer_stop_kind` turn string OR dict stops into structured dicts. Served by
   `GET /trip/itinerary`; `trip_planner.set_stop_booked(day,name,booked)` (behind
   `POST /trip/stop/booked`) persists a stop's booked flag (normalizing string

@@ -807,19 +807,10 @@ def _route_stats_for_day(
         if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
             coords.append((float(lat), float(lng)))
 
-    if len(coords) < 2:
-        return {
-            "distance_km": 0.0,
-            "duration_min": 0,
-            "mode": "walk",
-            "distance_display": "0.0 km",
-            "duration_display": "0 min",
-        }
+    return _route_stats_for_coords(coords)
 
-    distance = 0.0
-    for i in range(1, len(coords)):
-        distance += _haversine_km(coords[i - 1], coords[i])
 
+def _route_stats_for_distance(distance: float) -> dict[str, Any]:
     if distance <= 3:
         mode, speed = "walk", 4.5
     elif distance <= 20:
@@ -834,8 +825,56 @@ def _route_stats_for_day(
         "duration_min": duration_min,
         "mode": mode,
         "distance_display": f"{distance_1:.1f} km",
-        "duration_display": f"{duration_min} min",
+        "duration_display": _route_duration_display(duration_min),
     }
+
+
+def _route_duration_display(duration_min: int) -> str:
+    if duration_min < 60:
+        return f"{duration_min} min"
+    hours, minutes = divmod(duration_min, 60)
+    return f"{hours} hr" + (f" {minutes} min" if minutes else "")
+
+
+def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
+    legs = [
+        _route_stats_for_distance(_haversine_km(coords[i - 1], coords[i]))
+        for i in range(1, len(coords))
+    ]
+    if not legs:
+        return _route_stats_for_distance(0.0)
+    distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
+    duration = sum(int(leg["duration_min"]) for leg in legs)
+    modes = list(dict.fromkeys(str(leg["mode"]) for leg in legs))
+    mode = modes[0] if len(modes) == 1 else "mixed local travel"
+    return {
+        "distance_km": distance,
+        "duration_min": duration,
+        "mode": mode,
+        "distance_display": f"{distance:.1f} km",
+        "duration_display": _route_duration_display(duration),
+    }
+
+
+def _route_legs_for_day(
+    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
+) -> list[dict[str, Any]]:
+    legs: list[dict[str, Any]] = []
+    for from_id, to_id in zip(pin_ids, pin_ids[1:]):
+        start = pin_by_id.get(from_id) or {}
+        end = pin_by_id.get(to_id) or {}
+        start_coords = (start.get("lat"), start.get("lng"))
+        end_coords = (end.get("lat"), end.get("lng"))
+        if not all(isinstance(value, (int, float)) for value in (*start_coords, *end_coords)):
+            continue
+        metrics = _route_stats_for_distance(
+            _haversine_km(
+                (float(start_coords[0]), float(start_coords[1])),
+                (float(end_coords[0]), float(end_coords[1])),
+            )
+        )
+        legs.append({"from_pin_id": from_id, "to_pin_id": to_id, **metrics})
+    return legs
 
 
 def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
@@ -844,35 +883,7 @@ def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, 
     Same logic as _route_stats_for_day, but takes pre-computed coordinates
     instead of pin_ids. Used by build_itinerary to calculate per-day routes.
     """
-    if len(coords) < 2:
-        return {
-            "distance_km": 0.0,
-            "duration_min": 0,
-            "mode": "walk",
-            "distance_display": "0.0 km",
-            "duration_display": "0 min",
-        }
-
-    distance = 0.0
-    for i in range(1, len(coords)):
-        distance += _haversine_km(coords[i - 1], coords[i])
-
-    if distance <= 3:
-        mode, speed = "walk", 4.5
-    elif distance <= 20:
-        mode, speed = "local transit", 18.0
-    else:
-        mode, speed = "car transfer", 35.0
-
-    duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
-    distance_1 = round(distance, 1)
-    return {
-        "distance_km": distance_1,
-        "duration_min": duration_min,
-        "mode": mode,
-        "distance_display": f"{distance_1:.1f} km",
-        "duration_display": f"{duration_min} min",
-    }
+    return _route_stats_for_coords(coords)
 
 
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
@@ -961,6 +972,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "color": _day_color(d),
                 "pin_ids": ids,
                 "route": _route_stats_for_day(ids, pin_by_id),
+                "legs": _route_legs_for_day(ids, pin_by_id),
             }
         )
     scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
@@ -1598,10 +1610,16 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             current_hotel = str(rendered_hotels[-1].get("name") or current_hotel)
 
         day_coords = []
+        previous_coords: tuple[float, float] | None = None
         for stop in stops:
             coords = place_coords_map.get(str(stop.get("name") or "").strip().lower())
             if coords:
+                if previous_coords:
+                    stop["travel_from_previous"] = _route_stats_for_distance(
+                        _haversine_km(previous_coords, coords)
+                    )
                 day_coords.append(coords)
+                previous_coords = coords
         total_stops += len(stops)
 
         # Calculate route stats for the day.

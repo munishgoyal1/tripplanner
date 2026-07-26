@@ -54,6 +54,13 @@ const itinerary: Itinerary = {
           booked: false,
           selected: true,
           color: "#e11d48",
+          travel_from_previous: {
+            distance_km: 2.1,
+            duration_min: 28,
+            mode: "walk",
+            distance_display: "2.1 km",
+            duration_display: "28 min",
+          },
         },
       ],
     },
@@ -79,6 +86,7 @@ describe("ItineraryPanel", () => {
     );
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
+    expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
   });
 
   it("matches map ordering for hotel endpoints and place stops", async () => {

@@ -2083,3 +2083,14 @@ VALIDATION:
 - Keep transport and flight rows unnumbered because they are not map place
   markers.
 
+=== 2026-07-26 — Session 56: Per-leg distance and time ===
+
+- Show subtle estimated distance and travel time between consecutive mapped
+  stops in both the itinerary and map circuit.
+- On itinerary rows, place the estimate above the destination stop as travel
+  from the previous mapped stop while retaining the whole-day route total.
+- On the map, place compact labels at segment midpoints only for the selected
+  day; keep all-days mode uncluttered and retain its day-selection guidance.
+- Derive both surfaces from one backend leg-metrics contract using the existing
+  no-billed-Directions straight-line heuristic.
+

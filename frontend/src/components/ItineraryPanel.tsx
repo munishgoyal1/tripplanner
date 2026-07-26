@@ -1,4 +1,4 @@
-import { Clock3, ExternalLink, Loader2, MapPin, Trash2 } from "lucide-react";
+import { Clock3, ExternalLink, Loader2, MapPin, Route, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop } from "../types";
@@ -100,6 +100,18 @@ function StopRow({
       </button>
 
       <div className="min-w-0 flex-1">
+        {stop.travel_from_previous && (
+          <div
+            aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
+            className="mb-1 flex items-center gap-1 text-[10px] font-medium text-slate-400"
+            title={`${stop.travel_from_previous.mode} estimate`}
+          >
+            <Route size={11} aria-hidden />
+            <span>{stop.travel_from_previous.distance_display}</span>
+            <span aria-hidden>·</span>
+            <span>{stop.travel_from_previous.duration_display}</span>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           {mapLabel && (
             <span

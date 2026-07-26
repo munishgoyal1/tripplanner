@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { kindForGooglePlace, optionsForStopDay, placeNameMatches } from "./MapPanel";
+import { formatLegLabel, kindForGooglePlace, optionsForStopDay, placeNameMatches } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
 const { fetchMapsConfigMock, fetchMapViewMock } = vi.hoisted(() => ({
@@ -32,6 +32,11 @@ describe("placeNameMatches", () => {
 });
 
 describe("map stop selection", () => {
+  it("formats compact map leg labels", () => {
+    expect(formatLegLabel({ distance_display: "4.6 km", duration_display: "15 min" }))
+      .toBe("4.6 km · 15 min");
+  });
+
   it("infers hotel stops from Google place types", () => {
     expect(kindForGooglePlace(["lodging", "point_of_interest"])).toBe("hotel");
     expect(kindForGooglePlace(["restaurant", "food"])).toBe("meal");
