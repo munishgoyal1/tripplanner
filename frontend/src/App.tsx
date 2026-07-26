@@ -444,6 +444,7 @@ export default function App() {
   };
 
   const railProps = {
+    overview: view?.overview ?? null,
     reloadToken: tripVersion,
     focusName: stopFocusName,
     onStopFocus: handleStopFocus,
@@ -460,6 +461,7 @@ export default function App() {
     if (pane === "itinerary") {
       return (
         <ItineraryPanel
+          overview={view?.overview}
           reloadToken={tripVersion}
           focusName={stopFocusName}
           jumpTo={itineraryJump}
@@ -529,7 +531,7 @@ export default function App() {
         <section className={`min-h-0 flex-col ${inspectorOpen && maximizedPane !== "assistant" ? "flex" : "hidden"} ${chatOpen && !dockMaximized ? "flex-1" : "h-full"}`}>
           <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {focus ? "Place details" : "Trip details"}
+              {focus ? "Place details" : "Destination guide"}
             </h2>
             {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
             <button
@@ -622,12 +624,6 @@ export default function App() {
     </div>
   ) : null;
   const latestStatus = compactStatus(view?.alerts?.[0]);
-  const statusTone = view?.overview?.status === "booked"
-    ? "bg-brand/10 text-brand ring-brand/20"
-    : view?.overview?.status === "finalized"
-      ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-      : "bg-slate-100 text-slate-600 ring-slate-200";
-
   return <>
     {errorBanner}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
@@ -635,14 +631,6 @@ export default function App() {
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
         <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-slate-100 bg-white/95 px-3 shadow-sm backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-          {view?.overview?.destination && (
-            <div className="hidden min-w-0 border-l border-slate-200 pl-3 lg:block">
-              <p className="truncate text-sm font-semibold text-ink">{view.overview.destination}</p>
-              <p className="truncate text-[11px] text-slate-500">
-                {[view.overview.departure_date, view.overview.return_date].filter(Boolean).join(" - ")}
-              </p>
-            </div>
-          )}
           <div className="mr-auto min-w-32 flex-1" aria-live="polite" role="status">
             {latestStatus ? (
               <p className="line-clamp-2 whitespace-normal text-xs font-medium leading-tight text-emerald-700" title={latestStatus}>
@@ -652,19 +640,6 @@ export default function App() {
               <p className="text-xs text-slate-400">Refreshing trip…</p>
             ) : null}
           </div>
-          {view?.has_trip && view.overview && (
-            <div className="hidden items-center gap-1.5 xl:flex">
-              <span className={`chip capitalize ring-1 ${statusTone}`}>{view.overview.status}</span>
-              <span className="chip bg-white text-slate-600 ring-1 ring-slate-200">
-                {view.overview.counts.days}d · {view.overview.counts.hotels} stay · {view.overview.counts.activities} places
-              </span>
-              {view.overview.total_cost_display && (
-                <span className="chip bg-white font-semibold text-ink ring-1 ring-slate-200">
-                  {view.overview.total_cost_display}
-                </span>
-              )}
-            </div>
-          )}
           <nav className="flex shrink-0 items-center gap-1" aria-label="Workspace controls">
             <button
               type="button"

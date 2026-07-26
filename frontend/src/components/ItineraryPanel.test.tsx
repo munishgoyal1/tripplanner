@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Itinerary } from "../types";
+import type { Itinerary, TripOverview } from "../types";
 import ItineraryPanel from "./ItineraryPanel";
 
 const { fetchItineraryMock, setStopBookedMock } = vi.hoisted(() => ({
@@ -67,6 +67,20 @@ const itinerary: Itinerary = {
   ],
 };
 
+const overview: TripOverview = {
+  destination: "Paris",
+  origin: "Delhi",
+  departure_date: "2026-09-12",
+  return_date: "2026-09-16",
+  travelers: 2,
+  status: "finalized",
+  notes: "",
+  counts: { flights: 1, hotels: 1, activities: 4, days: 5 },
+  total_cost: 45000,
+  total_cost_display: "₹45,000",
+  constraints: ["Vegetarian meals"],
+};
+
 describe("ItineraryPanel", () => {
   beforeEach(() => {
     fetchItineraryMock.mockReset().mockResolvedValue(itinerary);
@@ -87,6 +101,18 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
+  });
+
+  it("uses the itinerary entry point for the authoritative trip snapshot", async () => {
+    render(<ItineraryPanel overview={overview} />);
+
+    const snapshot = await screen.findByRole("region", { name: "Trip snapshot" });
+    expect(snapshot).toHaveTextContent("Paris");
+    expect(screen.getByLabelText("5 days")).toBeInTheDocument();
+    expect(screen.getByLabelText("4 places")).toBeInTheDocument();
+    expect(snapshot).toHaveTextContent("₹45,000");
+    expect(snapshot).toHaveTextContent("0/2 stops booked");
+    expect(snapshot).toHaveTextContent("Vegetarian meals");
   });
 
   it("matches map ordering for hotel endpoints and place stops", async () => {

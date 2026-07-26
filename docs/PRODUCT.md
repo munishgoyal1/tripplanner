@@ -53,8 +53,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Layout**: desktop is a fixed-height spatial planner: itinerary left, a
   persistent dominant map center, and a contextual details inspector right.
   A compact top command bar owns saved-trip selection, global workspace
-  controls (including account/preferences), lifecycle/completeness status,
-  total cost, and the latest mutation outcome. Its saved-trip menu must overlay
+  controls (including account/preferences), and the latest mutation outcome.
+  The itinerary begins with the one authoritative trip snapshot: destination,
+  dates, travelers, lifecycle, unique counts, booking progress, cost/budget,
+  trip fit, and constraints. Its saved-trip menu must overlay
   every planner pane. Itinerary, Map, Details, and Assistant have obvious,
   symmetric show/hide controls. Details and Assistant are independent sections
   in the right dock: either can fill it while the other is hidden, and both stay
@@ -70,10 +72,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   neutrals everywhere else. No rainbow.
 - **Type**: Inter for UI; Fraunces for display headings. Fonts loaded via
   `<link>` in `frontend/index.html` (NOT from CSS — PostCSS rejects late `@import`).
-- **Shape**: generous radii (`rounded-2xl`, `rounded-3xl`, `rounded-4xl`),
-  `shadow-card` / `shadow-pop`, ring-1 hairlines, gradient hero on the trip panel.
-- **Density**: airy. Whitespace > squeezing more in. One clear primary action
-  per card. Pills for status, ribbons for "In trip".
+- **Shape**: use radii and elevation only where an object is genuinely framed
+  or floating. The itinerary snapshot and destination guide are full-width
+  bands inside their panes, not decorative cards nested inside cards.
+- **Density**: information-rich but ordered. The itinerary snapshot should pack
+  the trip's decision-making facts into a scan-friendly hierarchy. Whole-trip
+  place browsing uses compact media rows; rich galleries and reviews belong to
+  the focused-place view. One clear primary action per item.
 - **Motion**: subtle hover-lift, 300ms cross-fades on data switches. NO
   blanking the panel while data loads — keep prior content dimmed (`stale`
   opacity-70) and swap when ready.
@@ -115,10 +120,17 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   itinerary notes, time, and booking status; every output path honors the same
   media toggles. The account control visibly distinguishes a signed-in identity
   from a local guest.
-- **Authoritative counts**: command-bar and Details place counts include unique
+- **Authoritative counts**: trip place counts include unique
   structured itinerary attractions and named meal/restaurant stops, even when
   the agent did not mirror them into `selected_activities`. Repeated visits,
-  hotel endpoints, flights, and transport do not inflate the place count.
+  hotel endpoints, flights, and transport do not inflate the place count. The
+  itinerary snapshot is their visible owner; other panes consume the same
+  `TripOverview` contract only when the context truly requires those facts.
+- **Details is contextual**: whole-trip Details is a clean destination guide
+  followed by one compact authoritative place collection. It does not repeat
+  the trip snapshot, attraction grids, or embedded map. Selecting a place turns
+  it into the richer place inspector with gallery, reviews, website, and the
+  shared trip actions.
 - **Mutation coherence**: adding/removing a place or changing the stay refreshes
   the complete itinerary, not only one card. Unbooked attractions redistribute
   around the current hotel anchors using geographic proximity and balanced day

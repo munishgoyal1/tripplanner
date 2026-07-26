@@ -6,6 +6,7 @@ import type { DeselectItemOptions, SelectItemOptions } from "../api";
 import type { TripView } from "../types";
 
 interface Props {
+  overview: TripView["overview"];
   /** The Photos / overview content (the existing TripPanel). */
   photos: ReactNode;
   /** Bumped when the trip changes so map + itinerary refetch. */
@@ -33,6 +34,7 @@ interface Props {
 }
 
 export default function RightRail({
+  overview,
   photos,
   reloadToken,
   focusName,
@@ -73,6 +75,7 @@ export default function RightRail({
         <section className="flex min-h-0 basis-2/5 flex-col border-b border-slate-100">
           <div className="min-h-0 w-full flex-1">
             <ItineraryPanel
+              overview={overview}
               reloadToken={reloadToken}
               focusName={focusName}
               onStopFocus={onStopFocus}

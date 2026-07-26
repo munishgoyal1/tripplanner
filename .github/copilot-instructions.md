@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Itinerary-owned snapshot + contextual Details (Session 58)**: one shared
+  `TripSnapshot` at the top of web itinerary owns dates, travelers, lifecycle,
+  authoritative counts, booking progress, cost/budget, fit, and constraints on
+  desktop and mobile. The top bar is command/status only. Whole-trip Details is
+  a white destination guide plus dense place rows; focused Details retains the
+  rich place inspector. Duplicate attraction and embedded-map surfaces are gone.
 - **Centralized trip actions + authoritative counts (Session 57)**: Export,
   Share, and Add to calendar live in one compact common-bar menu instead of the
   Details hero. Workspace and Details place counts include unique structured

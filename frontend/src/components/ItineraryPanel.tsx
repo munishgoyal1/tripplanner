@@ -1,9 +1,11 @@
 import { Clock3, ExternalLink, Loader2, MapPin, Route, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
-import type { Itinerary, ItineraryDay, ItineraryStop } from "../types";
+import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../types";
+import TripSnapshot from "./TripSnapshot";
 
 interface Props {
+  overview?: TripOverview | null;
   /** Bump to refetch the itinerary after the trip changes. */
   reloadToken?: number;
   /** Click a stop to focus it (loads its photos + highlights its map pin). */
@@ -343,6 +345,7 @@ function DayCard({
 }
 
 export default function ItineraryPanel({
+  overview,
   reloadToken = 0,
   onStopFocus,
   onStopMap,
@@ -457,18 +460,24 @@ export default function ItineraryPanel({
 
   if (loading && !it) {
     return (
-      <div className="grid h-full place-items-center p-6 text-sm text-slate-400">
-        Loading itinerary…
+      <div className="h-full overflow-y-auto bg-white">
+        {overview && <TripSnapshot overview={overview} />}
+        <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
+          Loading itinerary…
+        </div>
       </div>
     );
   }
 
   if (!it || !it.has_itinerary) {
     return (
-      <div className="grid h-full place-items-center p-6 text-center">
-        <div className="max-w-xs text-sm text-slate-500">
-          No day-by-day plan yet. Once the assistant builds your itinerary, each
-          day's stops will appear here — check them off as you book.
+      <div className="h-full overflow-y-auto bg-white">
+        {overview && <TripSnapshot overview={overview} />}
+        <div className="grid min-h-48 place-items-center p-6 text-center">
+          <div className="max-w-xs text-sm text-slate-500">
+            No day-by-day plan yet. Once the assistant builds your itinerary, each
+            day's stops will appear here — check them off as you book.
+          </div>
         </div>
       </div>
     );
@@ -476,24 +485,26 @@ export default function ItineraryPanel({
 
   const { stats } = it;
   return (
-    <div className="h-full overflow-y-auto px-4 py-4">
-      {error && (
-        <div role="status" className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100">
-          {error}{" "}
-          <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="font-semibold underline">
-            Retry
-          </button>
-        </div>
-      )}
-      <header className="mb-3 flex items-center justify-between">
-        <h2 className="display text-lg font-semibold text-ink">
-          {it.destination ? `${it.destination} itinerary` : "Itinerary"}
-        </h2>
-        <span className="chip">
-          {loading ? "Refreshing… · " : ""}{stats.days} {stats.days === 1 ? "day" : "days"} · {stats.booked}/{stats.stops} booked
-        </span>
-      </header>
-      <div className="space-y-3 pb-6">
+    <div className="h-full overflow-y-auto bg-white">
+      {overview && <TripSnapshot overview={overview} booked={stats.booked} stops={stats.stops} />}
+      <div className="px-4 py-4">
+        {error && (
+          <div role="status" className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100">
+            {error}{" "}
+            <button type="button" onClick={() => setRetryToken((token) => token + 1)} className="font-semibold underline">
+              Retry
+            </button>
+          </div>
+        )}
+        <header className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-xs font-semibold uppercase text-slate-500">Day by day</h2>
+          {!overview && (
+            <span className="chip">
+              {loading ? "Refreshing… · " : ""}{stats.days} {stats.days === 1 ? "day" : "days"} · {stats.booked}/{stats.stops} booked
+            </span>
+          )}
+        </header>
+        <div className="space-y-3 pb-6">
         {it.days.map((day) => (
           <DayCard
             key={day.day}
@@ -508,6 +519,7 @@ export default function ItineraryPanel({
             onRemove={onStopRemove}
           />
         ))}
+        </div>
       </div>
     </div>
   );

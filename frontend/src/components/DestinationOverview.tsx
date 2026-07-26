@@ -5,15 +5,14 @@ import Lightbox from "./Lightbox";
 
 interface Props {
   destination: string;
-  onFocus: (kind: string, name: string) => void;
 }
 
 // "About the place" — an immersive hero gallery, a quick vibe summary distilled
-// from reviews & history, key attractions, traveler quotes and fresh good news.
+// from reviews and history, traveler quotes, and fresh good news.
 // We seed from the module cache so flipping between previously-loaded places
-// (e.g. Dubai → Paris → Dubai) is instant, and we KEEP the prior card visible
+// (e.g. Dubai → Paris → Dubai) is instant, and we keep the prior content visible
 // while the new destination loads so the panel never blanks out mid-switch.
-export default function DestinationOverview({ destination, onFocus }: Props) {
+export default function DestinationOverview({ destination }: Props) {
   const [data, setData] = useState<Overview | null>(() =>
     destination ? getCachedOverview(destination) : null,
   );
@@ -65,7 +64,7 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
 
   const hasContent =
     data.photos.length > 0 ||
-    data.key_attractions.length > 0 ||
+    !!data.summary ||
     data.reviews.length > 0 ||
     data.news.length > 0;
   if (!hasContent) return null;
@@ -74,7 +73,7 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
 
   return (
     <div
-      className={`card transition-opacity duration-300 ${
+      className={`border-b border-slate-100 transition-opacity duration-300 ${
         stale ? "opacity-70" : "opacity-100"
       }`}
     >
@@ -89,7 +88,7 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
             <img
               src={hero}
               alt={data.destination}
-              className="h-64 w-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+              className="h-52 w-full object-cover transition-transform duration-700 hover:scale-[1.03]"
             />
           </button>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-5">
@@ -123,7 +122,7 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
         </div>
       )}
 
-      <div className="space-y-5 p-5">
+      <div className="space-y-4 p-4">
         {!hero && (
           <h3 className="display text-lg font-semibold text-ink">
             About {data.destination}
@@ -147,56 +146,10 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
                 <img
                   src={p}
                   alt={data.destination}
-                  className="h-24 w-32 object-cover transition-transform duration-300 hover:scale-110"
+                  className="h-20 w-28 object-cover transition-transform duration-300 hover:scale-110"
                 />
               </button>
             ))}
-          </div>
-        )}
-
-        {data.key_attractions.length > 0 && (
-          <div>
-            <div className="mb-2.5 flex items-baseline justify-between">
-              <h4 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
-                Top attractions
-              </h4>
-              <span className="text-[11px] text-muted">tap for details</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              {data.key_attractions.map((a, i) => (
-                <button
-                  key={i}
-                  onClick={() => onFocus("attraction", a.name)}
-                  title="See photos, reviews and details"
-                  className="group flex items-center gap-3 overflow-hidden rounded-2xl bg-white p-2 text-left ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:shadow-card hover:ring-brand/40"
-                >
-                  {a.photo ? (
-                    <img
-                      src={a.photo}
-                      alt={a.name}
-                      className="h-14 w-14 flex-shrink-0 rounded-xl object-cover"
-                    />
-                  ) : (
-                    <span className="grid h-14 w-14 flex-shrink-0 place-items-center rounded-xl bg-slate-100 text-lg">
-                      📍
-                    </span>
-                  )}
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-ink group-hover:text-brand">
-                      {a.name}
-                    </span>
-                    {a.rating != null && (
-                      <span className="text-xs font-medium text-amber-600">
-                        ★ {a.rating.toFixed(1)}
-                        {a.review_count != null && (
-                          <span className="text-slate-400"> ({a.review_count})</span>
-                        )}
-                      </span>
-                    )}
-                  </span>
-                </button>
-              ))}
-            </div>
           </div>
         )}
 
@@ -205,11 +158,11 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
             <h4 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
               What travelers say
             </h4>
-            <div className="space-y-2">
-              {data.reviews.slice(0, 4).map((r, i) => (
+            <div className="space-y-3">
+              {data.reviews.slice(0, 2).map((r, i) => (
                 <blockquote
                   key={i}
-                  className="rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-2.5"
+                  className="border-l-2 border-slate-200 pl-3"
                 >
                   <p className="text-xs italic text-slate-600">“{r.text}”</p>
                   <footer className="mt-1 text-[11px] text-muted">
@@ -248,23 +201,6 @@ export default function DestinationOverview({ destination, onFocus }: Props) {
           </div>
         )}
 
-        {data.map_url && (
-          <div>
-            <h4 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
-              On the map
-            </h4>
-            <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-card">
-              <iframe
-                title={`Map of ${data.destination}`}
-                src={data.map_url}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="block h-64 w-full border-0"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       <Lightbox

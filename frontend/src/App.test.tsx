@@ -48,13 +48,16 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, jumpTo }: { reloadToken: number; onStopFocus: (kind: string, name: string) => void; jumpTo?: { day: number; name?: string } | null }) => (
+  default: ({ reloadToken, onStopFocus, jumpTo, overview }: { reloadToken: number; onStopFocus: (kind: string, name: string) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null }) => (
     <button
       type="button"
       data-testid="itinerary-panel"
       data-reload-token={reloadToken}
       data-jump-day={jumpTo?.day ?? ""}
       data-jump-name={jumpTo?.name ?? ""}
+      data-overview-status={overview?.status ?? ""}
+      data-overview-counts={overview ? `${overview.counts.days}d · ${overview.counts.hotels} stay · ${overview.counts.activities} places` : ""}
+      data-overview-cost={overview?.total_cost_display ?? ""}
       onClick={() => onStopFocus("attraction", "Louvre Museum")}
     />
   ),
@@ -417,7 +420,7 @@ describe("App responsive workspace", () => {
     expect(screen.getByText("Louvre Museum")).toBeInTheDocument();
   });
 
-  it("surfaces lifecycle and completeness status in the workspace command bar", async () => {
+  it("passes lifecycle and completeness data to the itinerary snapshot", async () => {
     fetchTripViewMock.mockResolvedValue({
       ...emptyView,
       has_trip: true,
@@ -434,8 +437,10 @@ describe("App responsive workspace", () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByText("finalized")).toBeInTheDocument());
-    expect(screen.getByText("3d · 1 stay · 4 places")).toBeInTheDocument();
-    expect(screen.getByText("₹45,000")).toBeInTheDocument();
+    const itineraryPanel = await screen.findByTestId("itinerary-panel");
+    expect(itineraryPanel).toHaveAttribute("data-overview-status", "finalized");
+    expect(itineraryPanel).toHaveAttribute("data-overview-counts", "3d · 1 stay · 4 places");
+    expect(itineraryPanel).toHaveAttribute("data-overview-cost", "₹45,000");
+    expect(screen.queryByText("3d · 1 stay · 4 places")).not.toBeInTheDocument();
   });
 });

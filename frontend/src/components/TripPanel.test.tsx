@@ -43,6 +43,42 @@ const view: TripView = {
 };
 
 describe("TripPanel place removal", () => {
+  it("keeps alternatives compact when one place is focused", () => {
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          items: [
+            view.items[0],
+            {
+              ...view.items[0],
+              name: "Louvre Museum",
+              reviews: [{ rating: 5, text: "Alternative review", author: "A traveler" }],
+            },
+          ],
+        }}
+        loading={false}
+        navList={[
+          { kind: "attraction", name: "Eiffel Tower" },
+          { kind: "attraction", name: "Louvre Museum" },
+        ]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByText("More places")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Louvre Museum" })).toBeInTheDocument();
+    expect(screen.queryByText("Alternative review")).not.toBeInTheDocument();
+  });
+
   it("removes a single-occurrence place from the shared action control", async () => {
     const onDeselect = vi.fn().mockResolvedValue(true);
     render(

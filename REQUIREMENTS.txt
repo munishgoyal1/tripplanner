@@ -2105,3 +2105,21 @@ VALIDATION:
   when `selected_activities` is empty. Exclude repeated visits, hotel circuit
   endpoints, flights, and transport from that place count.
 
+=== 2026-07-26 — Session 58: Itinerary-owned snapshot and contextual Details ===
+
+- Make the trip overview a high-information, scan-friendly entry point at the
+  top of the itinerary pane rather than a generic hero card in Details.
+- Use one shared `TripSnapshot` presentation on desktop and mobile for dates,
+  travelers, lifecycle, authoritative counts, booking progress, cost/budget,
+  trip fit, and constraints. Keep it visible while itinerary data loads or
+  before day planning exists.
+- Remove duplicate summary facts from the command bar and Details. The command
+  bar owns commands and live mutation status; Details owns destination/place
+  context.
+- Flatten whole-trip Details onto a clean white surface: one editorial
+  destination briefing and one compact place collection. Do not repeat an
+  attraction grid or embedded map where the place list and persistent map are
+  already authoritative.
+- Preserve rich photos, reviews, website, and trip actions when a specific
+  place is focused.
+

@@ -96,7 +96,7 @@ frontend/
           planner with itinerary left, persistent map center, contextual
           right dock with independently hidden mounted Details/Assistant; no
           page scroll. Top command/status bar owns saved-trip selection,
-        New trip, pane visibility, grouped trip actions, lifecycle/completeness, cost, and
+        New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
         live here too. Shared place/day focus synchronizes itinerary, map,
         and details.
@@ -115,8 +115,11 @@ frontend/
     components/
       ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
                mobile header owns launchers, desktop top row triggers them
-      TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards;
-         selected places use the shared day-move/remove actions
+      TripPanel.tsx        Contextual destination/place inspector: whole-trip
+        destination guide + compact place rows, or rich focused-place details;
+        selected places use the shared day-move/remove actions
+      TripSnapshot.tsx     Single authoritative trip-summary presentation used
+        at the itinerary entry point on desktop and mobile
       TripActionsMenu.tsx  Common-bar Export/Share/Calendar popover and share feedback
        PlaceTripActions.tsx Shared Map/Details selected-place control: current day,
           authoritative day move, exact/remove-everywhere occurrence actions
@@ -125,8 +128,9 @@ frontend/
       ExportModal.tsx      Print/PDF/email export options and handoff
       RightRail.tsx        Mobile trip-details sheet: TripSwitcher + stacked
                itinerary/photos + opt-in lazy map
-      ItineraryPanel.tsx   Compact day summary + clickable stops + booked checkbox
-      DestinationOverview.tsx  Hero photo + summary + attractions + reviews + news
+      ItineraryPanel.tsx   TripSnapshot + compact day summaries + clickable stops
+               + booked checkbox
+      DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (place focus highlights pins; day focus jumps itinerary
                            and sends a representative place to Details; Places
