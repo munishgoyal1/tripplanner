@@ -2258,3 +2258,12 @@ VALIDATION:
   when route pin ordering differs. Provider-expanded names such as "Mapusa
   Municipal Market" must resolve from the itinerary's shorter "Mapusa Market".
 
+=== 2026-07-26 — Session 68: Clean local SPA restart ===
+
+- Before starting Docker, Cosmos, or the backend, `scripts/dev-spa.ps1` must
+  detect and stop a previous Vite listener on the requested frontend port when
+  that listener belongs to this repository.
+- The cleanup must not terminate an unrelated process. If another application
+  owns the frontend port, fail explicitly and retain the `-FrontendPort` escape
+  hatch. Backend-only runs must not touch the frontend listener.
+

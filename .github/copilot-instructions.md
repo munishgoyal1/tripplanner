@@ -106,6 +106,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Clean local SPA restart (Session 68)**: `scripts/dev-spa.ps1` now stops a
+  previous Vite listener only when its Node command belongs to this repository,
+  before Docker/Cosmos/backend startup. Unrelated frontend-port owners still
+  fail explicitly, and backend-only runs leave the frontend untouched.
 - **Immediate mutually exclusive map focus (Session 67)**: exact-stop clicks
   clear stale aggregate circuit state, while day-header clicks clear exact
   focus. MapPanel also cancels queued circuit work before pin focus. Loaded

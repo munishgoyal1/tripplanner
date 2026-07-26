@@ -8,8 +8,9 @@
 #   * FastAPI on :8000 (uvicorn) -- /chat/stream, /trip/view, /trip/select
 #   * Vite dev server on :5173; /api is proxied to :8000
 #
-# If a previous dev run left uvicorn holding :8000, the script will stop that
-# stale tripplanner backend before starting a new one.
+# If a previous dev run left Vite holding :5173 or uvicorn holding :8000, the
+# script stops that stale tripplanner process before starting a new one. It
+# refuses to terminate an unrelated process using either port.
 #
 # Hot reload is OFF by default (matches the no-auto-reload preference):
 #   * Frontend changes  -> refresh the browser (Ctrl+R) to pick them up.
@@ -130,6 +131,60 @@ function Stop-StaleTripplannerBackend {
     if ($remaining) {
         throw "Stopped PID $($listener.OwningProcess), but port $Port is still busy. Try closing the leftover process manually."
     }
+}
+
+function Stop-StaleTripplannerFrontend {
+    param(
+        [int]$Port
+    )
+
+    $listener = $null
+    try {
+        $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+    } catch {
+        $listener = $null
+    }
+
+    if (-not $listener) {
+        return
+    }
+
+    $proc = $null
+    try {
+        $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue
+    } catch {
+        $proc = $null
+    }
+
+    $procName = if ($proc) { $proc.Name } else { "PID $($listener.OwningProcess)" }
+    $commandLine = if ($proc -and $proc.CommandLine) { $proc.CommandLine } else { "" }
+    $frontendPath = [regex]::Escape((Join-Path $repoRoot "frontend"))
+    $isTripplannerFrontend = $procName -ieq "node.exe" `
+        -and $commandLine -match '(?i)[\\/]vite[\\/]bin[\\/]vite\.js' `
+        -and $commandLine -match "(?i)$frontendPath"
+
+    if (-not $isTripplannerFrontend) {
+        throw "Port $Port is already in use by $procName. Stop that process or use -FrontendPort <port>."
+    }
+
+    Write-Host "Stopping stale tripplanner frontend on :$Port ..." -ForegroundColor Yellow
+    Stop-Process -Id $listener.OwningProcess -Force -ErrorAction Stop
+    Wait-Process -Id $listener.OwningProcess -Timeout 5 -ErrorAction SilentlyContinue
+
+    $remaining = $null
+    try {
+        $remaining = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+    } catch {
+        $remaining = $null
+    }
+
+    if ($remaining) {
+        throw "Stopped PID $($listener.OwningProcess), but port $Port is still busy. Try closing the leftover process manually."
+    }
+}
+
+if (-not $BackendOnly) {
+    Stop-StaleTripplannerFrontend -Port $FrontendPort
 }
 
 if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -eq "emulator") {

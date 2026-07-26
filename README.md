@@ -205,6 +205,9 @@ scripts\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
 By default, `scripts\dev-spa.ps1` launches Docker Desktop when needed, starts
 the official Dockerized **Cosmos DB Emulator**, and uses its isolated
 `tripplanner-local` database. Emulator data persists in a named Docker volume.
+Rerunning the script first replaces a previous Vite process from this repository
+on the requested frontend port. It refuses to stop unrelated port owners; use
+`-FrontendPort <port>` when another application legitimately needs that port.
 Docker Desktop must already be installed; startup waits up to two minutes for
 its daemon and reports a clear error without resetting emulator data. Set
 `COSMOS_DEV_BACKEND=azure` in `.env` or pass `-CosmosBackend azure` to explicitly

@@ -175,7 +175,8 @@ infra/
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
-  dev-spa.ps1         THE dev entrypoint; starts/uses local Cosmos Emulator
+  dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
+                      listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Copy + exact verification across Cosmos databases
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Smoke check
