@@ -106,22 +106,28 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Exact map focus regression repair (Session 63)**: changing itinerary
+  selection updates existing same-day marker icons immediately, restores the
+  previous marker, and leaves exactly one current map number. Circuit/hotel
+  markers remain 34x44 with their normal day color and white border; focus only
+  inverts the center/label and raises stacking. Focus-driven redraws are one-shot,
+  so callback rerenders and manual day filtering cannot undo or hijack zoom 15.
 - **Mutation impact review + stronger focus (Session 62)**: direct add/move/
   remove/stay responses report the final authoritative day after reflow. A fast
   deterministic impact gate stays quiet for routine edits and offers Review
   with planner / Keep as is for crowded, travel-heavy, empty, or meal-incomplete
   days. Review opens a transcript-safe proposal-only Assistant turn that cannot
   mutate before explicit approval: graph binding/execution is read-only and API
-  fallback persistence/learning is disabled. Focused map markers now use
-  stronger size, stacking, and inverted number contrast.
+  fallback persistence/learning is disabled. Focused map markers use elevated
+  stacking and inverted number contrast.
 - **Aggregate day focus + responsive chat (Session 61)**: the whole itinerary
   day header focuses its first non-stay mapped place across itinerary, Map, and
   Details. Global mutation status lives only in the command bar. Chat emits and
   renders thinking/tool/review/save phases with elapsed time, anti-buffered SSE,
   and animation-frame token paints. The measured model decision remains GPT-4.1.
 - **Exact stop-to-circuit focus (Session 60)**: clicking a mapped itinerary
-  place fills only that exact day/stop `H` or number, subtly enlarges/rings the
-  matching map marker, and reapplies the day filter on repeated clicks. Repeated
+  place fills only that exact day/stop `H` or number, highlights the matching
+  fixed-size map number, and reapplies the day filter on repeated clicks. Repeated
   hotel scrolling uses occurrence identity instead of the first name match.
 - **Occurrence-safe map inspection (Session 59)**: itinerary-to-map focus keeps
   the exact day for repeated places, Google-canonical punctuation still resolves

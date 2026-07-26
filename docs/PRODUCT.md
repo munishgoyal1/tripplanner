@@ -104,9 +104,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
   Clicking a place stop focuses both its map pin and its contextual Details view.
   The exact itinerary `H` or number becomes current, and the matching map marker
-  grows, rises above the circuit, and inverts its center/label contrast so it
-  can be found quickly without obscuring the circuit. Repeated clicks refocus the same
-  stop after manual map-day changes.
+  stays at the standard 34x44 circuit geometry and keeps its day color and white
+  border; only its center/label contrast inverts and its stacking rises. Changing
+  selection immediately restores the previous marker and focuses only the latest
+  one. Repeated clicks refocus the same stop after manual map-day changes.
   The complete day header is also clickable: it focuses the first mapped
   non-stay place for that day (or the hotel when no other place exists) and
   synchronizes the map tile, circuit, exact itinerary row, and Details.

@@ -137,7 +137,8 @@ frontend/
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;
-                           focused marker scales/rings above its day circuit and
+                           one marker at a time gets number-only contrast at fixed
+                           34x44 geometry, with focus-only updates applied in place;
                            repeated focus requests reapply after manual filtering;
                            day focus jumps itinerary
                            and sends a representative place to Details; Places

@@ -42,7 +42,7 @@ export function pinIcon(color: string, label: string, focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${color}" stroke="${focused ? "#0f172a" : "white"}" stroke-width="${focused ? 3 : 2}"/>
+      fill="${color}" stroke="white" stroke-width="2"/>
     <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
       stroke="white" stroke-width="${focused ? 2 : 0}"/>
   <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="14"
@@ -86,8 +86,8 @@ export function hotelIcon(focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${HOTEL_COLOR}" stroke="${focused ? "#e11d48" : "white"}" stroke-width="${focused ? 3 : 2}"/>
-    <circle cx="17" cy="16" r="11" fill="${focused ? "#e11d48" : "white"}" fill-opacity="0.97"
+        fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
+    <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
       stroke="white" stroke-width="${focused ? 2 : 0}"/>
   <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
         font-weight="700" text-anchor="middle" fill="${focused ? "white" : HOTEL_COLOR}">H</text>
@@ -132,6 +132,26 @@ export function focusedDayForPin(pin: MapPin, focusDay?: number): number | null 
 export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
   if (!focusName || !placeNameMatches(pin.name, focusName)) return false;
   return focusDay == null || pin.occurrences.some((occurrence) => occurrence.day === focusDay);
+}
+
+interface PinMarkerEntry {
+  pin: MapPin;
+  marker: any;
+  normalIcon: any;
+  focusedIcon: any;
+  baseZIndex: number;
+}
+
+export function syncPinMarkerFocus(
+  entries: PinMarkerEntry[],
+  focusName?: string | null,
+  focusDay?: number,
+): void {
+  entries.forEach(({ pin, marker, normalIcon, focusedIcon, baseZIndex }) => {
+    const focused = pinMatchesFocus(pin, focusName, focusDay);
+    marker.setIcon(focused ? focusedIcon : normalIcon);
+    marker.setZIndex(focused ? 1400 : baseZIndex);
+  });
 }
 
 export function kindForGooglePlace(types: string[] | undefined): "attraction" | "hotel" | "meal" {
@@ -222,6 +242,9 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   const autocompleteListenerRef = useRef<any>(null);
   const mapClickListenerRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
+  const pinMarkersRef = useRef<PinMarkerEntry[]>([]);
+  const focusRef = useRef({ name: focusName, day: focusDay });
+  focusRef.current = { name: focusName, day: focusDay };
   // A pin the itinerary asked us to zoom into. Applied inside draw() so a
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
@@ -367,6 +390,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
 
     overlaysRef.current.forEach((o) => o.setMap(null));
     overlaysRef.current = [];
+    pinMarkersRef.current = [];
 
     const dayColor = new Map<number, string>();
     view.days.forEach((d) => dayColor.set(d.day, d.color));
@@ -395,42 +419,45 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     let any = false;
 
     const pinById = new Map(view.pins.map((p) => [p.id, p] as const));
+    const currentFocus = focusRef.current;
 
     for (const p of view.pins) {
       if (!visible(p)) continue;
       // Choose a marker style: hotels get a slate "H" pin (always shown),
       // day-scheduled places get a bold numbered teardrop in their day color,
       // and un-scheduled suggestions get a quiet dot.
-      let icon: any;
-      const focused = pinMatchesFocus(p, focusName, focusDay);
+      const focused = pinMatchesFocus(p, currentFocus.name, currentFocus.day);
       const visitOrder = visitOrderByPinId.get(p.id);
       const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
-      if (p.kind === "hotel") {
-        icon = {
-          url: hotelIcon(focused),
-          scaledSize: new google.maps.Size(focused ? 44 : 34, focused ? 57 : 44),
-          anchor: new google.maps.Point(focused ? 22 : 17, focused ? 57 : 44),
+      const iconFor = (isFocused: boolean) => {
+        if (p.kind === "hotel") return {
+          url: hotelIcon(isFocused),
+          scaledSize: new google.maps.Size(34, 44),
+          anchor: new google.maps.Point(17, 44),
         };
-      } else if (markerDay && visitOrder) {
-        const color = dayColor.get(markerDay) || "#64748b";
-        icon = {
-          url: pinIcon(color, String(visitOrder), focused),
-          scaledSize: new google.maps.Size(focused ? 44 : 34, focused ? 57 : 44),
-          anchor: new google.maps.Point(focused ? 22 : 17, focused ? 57 : 44),
+        if (markerDay && visitOrder) {
+          const color = dayColor.get(markerDay) || "#64748b";
+          return {
+            url: pinIcon(color, String(visitOrder), isFocused),
+            scaledSize: new google.maps.Size(34, 44),
+            anchor: new google.maps.Point(17, 44),
+          };
+        }
+        return {
+          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR, isFocused),
+          scaledSize: new google.maps.Size(isFocused ? 24 : 18, isFocused ? 24 : 18),
+          anchor: new google.maps.Point(isFocused ? 12 : 9, isFocused ? 12 : 9),
         };
-      } else {
-        icon = {
-          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR, focused),
-          scaledSize: new google.maps.Size(focused ? 24 : 18, focused ? 24 : 18),
-          anchor: new google.maps.Point(focused ? 12 : 9, focused ? 12 : 9),
-        };
-      }
+      };
+      const normalIcon = iconFor(false);
+      const focusedIcon = iconFor(true);
+      const baseZIndex = p.selected ? 1000 : p.day ? 600 : 400;
       const marker = new google.maps.Marker({
         position: { lat: p.lat, lng: p.lng },
         map,
         title: p.name,
-        icon,
-        zIndex: focused ? 1400 : p.selected ? 1000 : p.day ? 600 : 400,
+        icon: focused ? focusedIcon : normalIcon,
+        zIndex: focused ? 1400 : baseZIndex,
       });
       marker.addListener("click", () => {
         setCandidatePin(null);
@@ -438,10 +465,11 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           const occurrence = p.occurrences.find(
             (candidate) => candidate.day === (activeDay ?? p.day),
           ) ?? p.occurrences[0];
-          onPinFocus?.(p.kind, p.name, occurrence?.day, occurrence?.stop);
+          onPinFocusRef.current?.(p.kind, p.name, occurrence?.day, occurrence?.stop);
         }
         setSelectedPin(p);
       });
+      pinMarkersRef.current.push({ pin: p, marker, normalIcon, focusedIcon, baseZIndex });
       overlaysRef.current.push(marker);
       bounds.extend({ lat: p.lat, lng: p.lng });
       any = true;
@@ -461,7 +489,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       });
       marker.addListener("click", () => {
         setSelectedPin(candidatePin);
-        onPinFocus?.(candidatePin.kind, candidatePin.name);
+        onPinFocusRef.current?.(candidatePin.kind, candidatePin.name);
       });
       overlaysRef.current.push(marker);
       bounds.extend({ lat: candidatePin.lat, lng: candidatePin.lng });
@@ -554,19 +582,21 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
-  }, [view, activeDay, candidatePin, focusName, focusDay, onPinFocus]);
+  }, [view, activeDay, candidatePin]);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
   // ---- focus a pin by name (driven from the itinerary tab) -----------------
-  // We stash the target pin in pendingFocusRef and let draw() apply the
-  // pan+zoom. That makes the focus robust to (a) a lazy map mount where
-  // mapRef.current isn't ready yet — the init's draw() will pick it up — and
-  // (b) a follow-up redraw that would otherwise reset the zoom via fitBounds.
+  // Same-day changes update existing marker icons immediately. If the target
+  // is filtered out, changing activeDay lets draw() reveal and focus it.
   useEffect(() => {
-    if (!focusName || !view) return;
+    if (!view) return;
+    if (!focusName) {
+      syncPinMarkerFocus(pinMarkersRef.current);
+      return;
+    }
     const normalizedFocus = focusName.trim().toLowerCase();
     let target: MapPin | MapAirport | undefined = view.pins.find((p) =>
       placeNameMatches(p.name, focusName)
@@ -576,17 +606,24 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       target = view.airport;
     }
     if (!target) return;
-    setCandidatePin(null);
     pendingFocusRef.current = target;
+    const clearingCandidate = candidatePin !== null;
+    setCandidatePin(null);
     // Reveal the pin's day so it isn't filtered out. Changing activeDay
-    // recreates draw and triggers the redraw effect (which applies the focus);
-    // if the day is already active, redraw explicitly.
+    // recreates draw and triggers the redraw effect. draw() resolves the
+    // current requested target itself, so fitBounds can never race ahead of
+    // installing a same-day pending focus.
     const day = "day" in target ? focusedDayForPin(target, focusDay) : null;
     if (day && day !== activeDay) {
       setActiveDay(day);
-    } else {
-      draw();
+      return;
     }
+    syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay);
+    const map = mapRef.current;
+    map?.panTo({ lat: target.lat, lng: target.lng });
+    map?.setZoom(15);
+    setSelectedPin(target);
+    if (map && !clearingCandidate) pendingFocusRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusName, focusDay, focusToken, view]);
 

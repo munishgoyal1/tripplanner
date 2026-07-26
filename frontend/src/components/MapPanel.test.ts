@@ -10,6 +10,7 @@ import {
   pinIcon,
   pinMatchesFocus,
   placeNameMatches,
+  syncPinMarkerFocus,
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
@@ -103,10 +104,55 @@ describe("map stop selection", () => {
     expect(optionsForStopDay("0")).toBeUndefined();
   });
 
-  it("inverts the focused circuit number for stronger map contrast", () => {
-    const svg = decodeURIComponent(pinIcon("#2563eb", "2", true).split(",")[1]);
-    expect(svg).toContain('fill="#0f172a"');
-    expect(svg).toContain('fill="white">2</text>');
+  it("changes only the focused circuit number contrast", () => {
+    const normal = decodeURIComponent(pinIcon("#2563eb", "2", false).split(",")[1]);
+    const focused = decodeURIComponent(pinIcon("#2563eb", "2", true).split(",")[1]);
+    expect(normal).toContain('fill="white" fill-opacity="0.97"');
+    expect(focused).toContain('fill="#0f172a" fill-opacity="0.97"');
+    expect(focused).toContain('fill="white">2</text>');
+    expect(focused).toContain('fill="#2563eb" stroke="white" stroke-width="2"');
+  });
+
+  it("switches focus between existing markers without leaving the previous marker selected", () => {
+    const beachMarker = { setIcon: vi.fn(), setZIndex: vi.fn() };
+    const restaurantMarker = { setIcon: vi.fn(), setZIndex: vi.fn() };
+    const pin = (name: string, stop: number) => ({
+      id: `p${stop}`,
+      name,
+      kind: "attraction",
+      selected: true,
+      day: 1,
+      lat: 15 + stop,
+      lng: 73 + stop,
+      rating: null,
+      address: "Goa",
+      photo: null,
+      occurrences: [{ day: 1, stop, time: "" }],
+    });
+    const entries = [
+      {
+        pin: pin("Betalbatim Beach", 1),
+        marker: beachMarker,
+        normalIcon: "beach-normal",
+        focusedIcon: "beach-focused",
+        baseZIndex: 600,
+      },
+      {
+        pin: pin("Britto's Bar & Restaurant", 2),
+        marker: restaurantMarker,
+        normalIcon: "restaurant-normal",
+        focusedIcon: "restaurant-focused",
+        baseZIndex: 600,
+      },
+    ];
+
+    syncPinMarkerFocus(entries, "Betalbatim Beach", 1);
+    syncPinMarkerFocus(entries, "Britto's Bar & Restaurant", 1);
+
+    expect(beachMarker.setIcon).toHaveBeenLastCalledWith("beach-normal");
+    expect(beachMarker.setZIndex).toHaveBeenLastCalledWith(600);
+    expect(restaurantMarker.setIcon).toHaveBeenLastCalledWith("restaurant-focused");
+    expect(restaurantMarker.setZIndex).toHaveBeenLastCalledWith(1400);
   });
 
   it("keeps the place and day when explicit placement is rejected", async () => {

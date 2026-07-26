@@ -2194,3 +2194,15 @@ VALIDATION:
 - Planner-review escalation must wait for persisted chat restoration, so an
   initial load or trip switch cannot erase the newly requested conversation.
 
+=== 2026-07-26 — Session 63: Restore exact map focus behavior ===
+
+- Selecting a different itinerary place must immediately clear the previous map
+  marker's focused treatment and apply it only to the latest exact place/day.
+- Keep circuit and hotel markers at their standard 34x44 geometry. Preserve the
+  marker's day color and white border; focus changes only the center/label
+  contrast and stacking, without enlarging or adding a stronger outer ring.
+- Same-day focus changes must update existing marker icons in place and pan the
+  map to the latest place at zoom 15. Focus-driven day reveals and lazy map
+  initialization may redraw once, but later parent renders or manual map-day
+  changes must not reset or hijack the viewport.
+
