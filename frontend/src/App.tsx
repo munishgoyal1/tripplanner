@@ -59,6 +59,7 @@ export default function App() {
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
   const [mapFocusToken, setMapFocusToken] = useState(0);
+  const [circuitFocus, setCircuitFocus] = useState({ day: 0, token: 0 });
   const focus = workspace.activePlace;
   const stopFocusName = workspace.activePlace?.name ?? null;
   const tripVersion = workspace.tripRevision;
@@ -443,6 +444,11 @@ export default function App() {
     }
   };
 
+  const handleDayMap = (day: number) => {
+    setMapOpen(true);
+    setCircuitFocus({ day, token: Date.now() });
+  };
+
   const tripPanelProps = {
     view,
     loading,
@@ -465,8 +471,11 @@ export default function App() {
     focusDay: focus?.day,
     focusStop: focus?.stop,
     focusToken: mapFocusToken,
+    circuitFocusDay: circuitFocus.day || undefined,
+    circuitFocusToken: circuitFocus.token,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
+    onDayMap: handleDayMap,
     onSelect: handleSelect,
     onDeselect: handleDeselect,
     tripVersion,
@@ -487,6 +496,7 @@ export default function App() {
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
+          onDayMap={handleDayMap}
           onStopRemove={handleStopRemove}
         />
       );
@@ -497,6 +507,8 @@ export default function App() {
         focusName={stopFocusName}
         focusDay={focus?.day}
         focusToken={mapFocusToken}
+        circuitFocusDay={circuitFocus.day || undefined}
+        circuitFocusToken={circuitFocus.token}
         onPinFocus={handleStopFocus}
         onDayFocus={(day, place) => {
           dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });

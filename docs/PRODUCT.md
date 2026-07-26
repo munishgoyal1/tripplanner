@@ -108,9 +108,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   border; only its center/label contrast inverts and its stacking rises. Changing
   selection immediately restores the previous marker and focuses only the latest
   one. Repeated clicks refocus the same stop after manual map-day changes.
-  The complete day header is also clickable: it focuses the first mapped
-  non-stay place for that day (or the hotel when no other place exists) and
-  synchronizes the map tile, circuit, exact itinerary row, and Details.
+  The complete day header is also clickable: it filters the map to that day and
+  fits the complete route circuit in view. Place-row clicks remain exact-place
+  actions: they synchronize the map number, itinerary row, and Details, then
+  pan to zoom 15 while that behavior is evaluated through real usage.
   Focus retains the exact itinerary occurrence, so clicking a repeated hotel on
   Day 2 highlights and scrolls to that row and keeps the map on Day 2 rather
   than jumping to its first stay day. Google-
@@ -129,7 +130,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   inspector while merely populating Add stop; inspection never mutates the trip.
   A user can then choose the exact itinerary day before adding; that explicit choice takes precedence over
   automatic cross-day rebalancing, including when the place already exists on
-  another day. A genuinely unavailable day or booked-occurrence conflict leaves
+  another day. The temporary map place tile exposes its own `Best day` / exact
+  day selector beside Add to trip instead of relying on the toolbar's hidden
+  selection. A genuinely unavailable day or booked-occurrence conflict leaves
   the trip unchanged and offers available days, Best day, or unbook-and-retry;
   the Map retains the user's place/day inputs. After adding a non-hotel place,
   both Details and Map show its current day and let the user move it to any

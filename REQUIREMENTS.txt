@@ -2206,3 +2206,17 @@ VALIDATION:
   initialization may redraw once, but later parent renders or manual map-day
   changes must not reset or hijack the viewport.
 
+=== 2026-07-26 — Session 64: Map placement and circuit-level focus ===
+
+- A newly inspected Google place on the map must expose `Best day` plus every
+  available itinerary day directly in its temporary place tile before Add to
+  trip. The chosen value uses the same authoritative placement contract as the
+  map's Add stop toolbar; rejected placement retains the user's selection.
+- Clicking an itinerary day header is a circuit-level action, not a place-level
+  action. Open the map, select that day, and fit every mapped pin in the day
+  circuit with suitable padding. Do not route the click through a representative
+  stop or zoom 15 to one place.
+- Keep current place-level behavior for now: clicking an itinerary place or map
+  pin focuses that exact occurrence and pans to zoom 15. Record this as an
+  observation in `docs/DEFERRED_DECISIONS.md`; do not change it proactively.
+

@@ -106,6 +106,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Map placement + circuit-level focus (Session 64)**: temporary Google map
+  place tiles expose Best day / exact-day selection beside Add to trip. Clicking
+  an itinerary day header now fits the complete day circuit instead of routing
+  through one representative place; desktop and mobile share a repeatable
+  circuit-focus token. Exact-place clicks intentionally retain zoom 15 for now,
+  with the usage decision recorded in `docs/DEFERRED_DECISIONS.md`.
 - **Exact map focus regression repair (Session 63)**: changing itinerary
   selection updates existing same-day marker icons immediately, restores the
   previous marker, and leaves exactly one current map number. Circuit/hotel

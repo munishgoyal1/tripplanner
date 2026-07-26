@@ -192,6 +192,23 @@ export function optionsForStopDay(day: string): SelectItemOptions | undefined {
   return day !== "auto" && Number.isInteger(parsed) && parsed > 0 ? { day: parsed } : undefined;
 }
 
+export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: number): boolean {
+  const day = view.days.find((candidate) => candidate.day === dayNumber);
+  if (!day) return false;
+  const pins = day.pin_ids
+    .map((id) => view.pins.find((pin) => pin.id === id))
+    .filter((pin): pin is MapPin => !!pin);
+  if (pins.length === 0) return false;
+  const bounds = new google.maps.LatLngBounds();
+  pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
+  map.fitBounds(bounds, 64);
+  return true;
+}
+
+export function capCircuitZoom(map: any): void {
+  if ((map.getZoom() ?? 0) > 14) map.setZoom(14);
+}
+
 
 interface Props {
   /** Bump to refetch the map after the trip changes. */
@@ -202,6 +219,10 @@ interface Props {
   focusDay?: number;
   /** Changes for every focus request, including repeated clicks on the same stop. */
   focusToken?: number;
+  /** Itinerary day whose complete circuit should be framed. */
+  circuitFocusDay?: number;
+  /** Changes for every circuit framing request, including repeated clicks. */
+  circuitFocusToken?: number;
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
@@ -220,7 +241,7 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -241,6 +262,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   const autocompleteRef = useRef<any>(null);
   const autocompleteListenerRef = useRef<any>(null);
   const mapClickListenerRef = useRef<any>(null);
+  const circuitZoomTimerRef = useRef<number | null>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
   const pinMarkersRef = useRef<PinMarkerEntry[]>([]);
   const focusRef = useRef({ name: focusName, day: focusDay });
@@ -249,6 +271,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
+  const pendingCircuitFocusRef = useRef<number | null>(null);
 
   useEffect(() => {
     onPinFocusRef.current = onPinFocus;
@@ -378,6 +401,9 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       autocompleteListenerRef.current = null;
       autocompleteRef.current = null;
       mapClickListenerRef.current = null;
+      if (circuitZoomTimerRef.current !== null) {
+        window.clearTimeout(circuitZoomTimerRef.current);
+      }
       mapRef.current = null;
     };
   }, []);
@@ -569,6 +595,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
 
     // If the itinerary asked to focus a pin, zoom into it instead of fitting
     // all bounds — and do it here so a redraw can't undo the zoom.
+    const circuitDay = pendingCircuitFocusRef.current;
     const focus = pendingFocusRef.current;
     if (focus) {
       map.panTo({ lat: focus.lat, lng: focus.lng });
@@ -579,6 +606,15 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       } else {
         setSelectedPin(focus);
       }
+    } else if (circuitDay && fitDayCircuit(google, map, view, circuitDay)) {
+      pendingCircuitFocusRef.current = null;
+      if (circuitZoomTimerRef.current !== null) {
+        window.clearTimeout(circuitZoomTimerRef.current);
+      }
+      circuitZoomTimerRef.current = window.setTimeout(() => {
+        capCircuitZoom(map);
+        circuitZoomTimerRef.current = null;
+      }, 1200);
     } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
@@ -593,6 +629,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   // is filtered out, changing activeDay lets draw() reveal and focus it.
   useEffect(() => {
     if (!view) return;
+    if (circuitZoomTimerRef.current !== null) {
+      window.clearTimeout(circuitZoomTimerRef.current);
+      circuitZoomTimerRef.current = null;
+    }
     if (!focusName) {
       syncPinMarkerFocus(pinMarkersRef.current);
       return;
@@ -626,6 +666,29 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     if (map && !clearingCandidate) pendingFocusRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusName, focusDay, focusToken, view]);
+
+  useEffect(() => {
+    if (!view || !circuitFocusDay || circuitFocusToken === 0) return;
+    pendingFocusRef.current = null;
+    pendingCircuitFocusRef.current = circuitFocusDay;
+    if (activeDay !== circuitFocusDay) {
+      setActiveDay(circuitFocusDay);
+      return;
+    }
+
+    const google = window.google;
+    const map = mapRef.current;
+    if (!google || !map) return;
+    if (!fitDayCircuit(google, map, view, circuitFocusDay)) return;
+    pendingCircuitFocusRef.current = null;
+    if (circuitZoomTimerRef.current !== null) {
+      window.clearTimeout(circuitZoomTimerRef.current);
+    }
+    circuitZoomTimerRef.current = window.setTimeout(() => {
+      capCircuitZoom(map);
+      circuitZoomTimerRef.current = null;
+    }, 1200);
+  }, [activeDay, circuitFocusDay, circuitFocusToken, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
     return !!p && !isAirportTarget(p);
@@ -757,6 +820,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
             <button
               type="button"
               onClick={() => {
+                if (circuitZoomTimerRef.current !== null) {
+                  window.clearTimeout(circuitZoomTimerRef.current);
+                  circuitZoomTimerRef.current = null;
+                }
                 setActiveDay(null);
                 setNewStopDay("auto");
               }}
@@ -771,6 +838,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                 key={d.day}
                 type="button"
                 onClick={() => {
+                  if (circuitZoomTimerRef.current !== null) {
+                    window.clearTimeout(circuitZoomTimerRef.current);
+                    circuitZoomTimerRef.current = null;
+                  }
                   setActiveDay(d.day);
                   setNewStopDay(String(d.day));
                   const dayPins = d.pin_ids
@@ -866,14 +937,30 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                     onRemove={onDeselect ?? (() => {})}
                   />
                 ) : (
-                  <button
-                    type="button"
-                    onClick={handleAddSelected}
-                    disabled={addingStop}
-                    className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-                  >
-                    {addingStop ? "Adding…" : "+ Add to trip"}
-                  </button>
+                  <>
+                    {view && view.days.length > 0 && (
+                      <select
+                        value={newStopDay}
+                        onChange={(event) => setNewStopDay(event.target.value)}
+                        aria-label={`Add ${selectedPin.name} to day`}
+                        className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 disabled:opacity-50"
+                        disabled={addingStop}
+                      >
+                        <option value="auto">Best day</option>
+                        {view.days.map((day) => (
+                          <option key={day.day} value={day.day}>Day {day.day}</option>
+                        ))}
+                      </select>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleAddSelected}
+                      disabled={addingStop}
+                      className="rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                    >
+                      {addingStop ? "Adding…" : "+ Add to trip"}
+                    </button>
+                  </>
                 )}
               </div>
             ) : (

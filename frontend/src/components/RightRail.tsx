@@ -17,8 +17,11 @@ interface Props {
   focusDay?: number;
   focusStop?: number;
   focusToken?: number;
+  circuitFocusDay?: number;
+  circuitFocusToken?: number;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
+  onDayMap: (day: number) => void;
   onSelect?: (
     kind: string,
     name: string,
@@ -45,8 +48,11 @@ export default function RightRail({
   focusDay,
   focusStop,
   focusToken,
+  circuitFocusDay,
+  circuitFocusToken,
   onStopFocus,
   onStopMap,
+  onDayMap,
   onSelect,
   onDeselect,
   tripVersion,
@@ -89,6 +95,7 @@ export default function RightRail({
               focusStop={focusStop}
               onStopFocus={onStopFocus}
               onStopMap={onStopMap}
+              onDayMap={onDayMap}
               onStopRemove={onDeselect
                 ? async (kind, name, day, stop) => { await onDeselect(kind, name, {
                     day,
@@ -109,6 +116,8 @@ export default function RightRail({
                 focusName={focusName}
                 focusDay={focusDay}
                 focusToken={focusToken}
+                circuitFocusDay={circuitFocusDay}
+                circuitFocusToken={circuitFocusToken}
                 onPinFocus={onStopFocus}
                 onSelect={onSelect}
                 onDeselect={onDeselect}

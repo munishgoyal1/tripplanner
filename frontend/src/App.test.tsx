@@ -48,7 +48,7 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, jumpTo, overview, focusDay, focusStop }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number }) => (
+  default: ({ reloadToken, onStopFocus, onDayMap, jumpTo, overview, focusDay, focusStop }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayMap?: (day: number) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number }) => (
     <div>
       <button
         type="button"
@@ -66,12 +66,13 @@ vi.mock("./components/ItineraryPanel", () => ({
       <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
         Focus Day 2 hotel
       </button>
+      <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
     </div>
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus, onDayFocus, focusName, focusDay, focusToken }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null; focusDay?: number; focusToken?: number }) => (
-    <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0}>
+  default: ({ onPinFocus, onDayFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+    <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onDayFocus?.(2, { kind: "attraction", name: "Eiffel Tower" })}>Focus Day 2</button>
     </div>
@@ -340,6 +341,19 @@ describe("App responsive workspace", () => {
 
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower"));
+  });
+
+  it("frames an itinerary day circuit without converting it into place focus", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Show complete Day 3 circuit" }));
+
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "3");
+    expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-circuit-token", "0");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(1);
   });
 
   it("focuses a place added from details without rebuilding the trip view", async () => {

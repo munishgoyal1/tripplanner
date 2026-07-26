@@ -12,6 +12,8 @@ interface Props {
   onStopFocus?: (kind: string, name: string, day: number, stop: number) => void;
   /** Jump to the map focused on a stop (and optionally details). */
   onStopMap?: (kind: string, name: string, day: number, stop: number) => void;
+  /** Show the complete route circuit for one itinerary day. */
+  onDayMap?: (day: number) => void;
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
   /** Exact focused occurrence for places repeated across days or within a circuit. */
@@ -236,6 +238,7 @@ function DayCard({
   onToggleBooked,
   onFocus,
   onMap,
+  onDayMap,
   focusName,
   focusDay,
   focusStop,
@@ -248,6 +251,7 @@ function DayCard({
   onToggleBooked: (day: number, name: string, next: boolean) => void;
   onFocus: (kind: string, name: string, day: number, stop: number) => void;
   onMap: (kind: string, name: string, day: number, stop: number) => void;
+  onDayMap: (day: number) => void;
   focusName?: string | null;
   focusDay?: number;
   focusStop?: number;
@@ -255,18 +259,6 @@ function DayCard({
   jumpToken: number;
   onRemove?: (kind: string, name: string, day: number, stop: number) => void;
 }) {
-  const firstNonStayIndex = day.stops.findIndex(
-    (stop) => ["attraction", "meal", "restaurant"].includes(stop.kind),
-  );
-  const firstPlaceIndex = firstNonStayIndex >= 0
-    ? firstNonStayIndex
-    : day.stops.findIndex((stop) => stop.kind === "hotel");
-  const firstPlace = day.stops[firstPlaceIndex];
-  const focusAggregateDay = () => {
-    if (firstPlace) {
-      onMap(firstPlace.kind, firstPlace.name, day.day, firstPlaceIndex + 1);
-    }
-  };
   let visitOrder = 0;
   const mapLabels = day.stops.map((stop) => {
     if (stop.kind === "hotel") return "H";
@@ -283,9 +275,9 @@ function DayCard({
   return (
     <section id={`it-day-${day.day}`} className="card p-4">
       <div
-        onClick={focusAggregateDay}
-        className={firstPlace ? "group/day flex cursor-pointer items-center gap-3" : "flex items-center gap-3"}
-        title={firstPlace ? `Focus Day ${day.day} on ${firstPlace.name}` : undefined}
+        onClick={() => onDayMap(day.day)}
+        className="group/day flex cursor-pointer items-center gap-3"
+        title={`Show complete Day ${day.day} circuit on map`}
       >
         <span
           className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition hover:scale-105 hover:shadow-sm disabled:cursor-default disabled:hover:scale-100"
@@ -379,6 +371,7 @@ export default function ItineraryPanel({
   reloadToken = 0,
   onStopFocus,
   onStopMap,
+  onDayMap,
   focusName,
   focusDay,
   focusStop,
@@ -554,6 +547,7 @@ export default function ItineraryPanel({
             onToggleBooked={handleToggleBooked}
             onFocus={(kind, name, focusDay, stop) => onStopFocus?.(kind, name, focusDay, stop)}
             onMap={(kind, name, mapDay, stop) => onStopMap?.(kind, name, mapDay, stop)}
+            onDayMap={(mapDay) => onDayMap?.(mapDay)}
             onRemove={onStopRemove}
           />
         ))}

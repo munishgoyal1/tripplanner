@@ -1,8 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
+  capCircuitZoom,
   focusedDayForPin,
+  fitDayCircuit,
   formatLegLabel,
   kindForGooglePlace,
   mapPinFromGooglePlace,
@@ -89,6 +91,112 @@ describe("map stop selection", () => {
   it("formats compact map leg labels", () => {
     expect(formatLegLabel({ distance_display: "4.6 km", duration_display: "15 min" }))
       .toBe("4.6 km · 15 min");
+  });
+
+  it("fits every pin in the requested day circuit", () => {
+    const extend = vi.fn();
+    const bounds = { extend };
+    const fitBounds = vi.fn();
+    const google = { maps: { LatLngBounds: vi.fn(function () { return bounds; }) } };
+    const view = {
+      enabled: true,
+      destination: "Goa",
+      center: null,
+      pins: [
+        { id: "hotel", name: "Hotel", kind: "hotel", selected: true, day: 2, lat: 15.1, lng: 73.1, rating: null, address: "", photo: null, occurrences: [] },
+        { id: "beach", name: "Beach", kind: "attraction", selected: true, day: 2, lat: 15.2, lng: 73.2, rating: null, address: "", photo: null, occurrences: [] },
+      ],
+      days: [{ day: 2, label: "Day 2", color: "#e11d48", pin_ids: ["hotel", "beach", "hotel"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } }],
+      available_days: [2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(fitDayCircuit(google, { fitBounds }, view, 2)).toBe(true);
+    expect(extend).toHaveBeenCalledWith({ lat: 15.1, lng: 73.1 });
+    expect(extend).toHaveBeenCalledWith({ lat: 15.2, lng: 73.2 });
+    expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("keeps circuit framing after the active-day redraw", async () => {
+    const fitBounds = vi.fn();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds,
+      getZoom: vi.fn(() => 11),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function () { return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() }; }),
+        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            points,
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Goa",
+      center: { lat: 15.2, lng: 73.2 },
+      pins: [
+        { id: "day-1-hotel", name: "North Hotel", kind: "hotel", selected: true, day: 1, lat: 16, lng: 74, rating: null, address: "", photo: null, occurrences: [{ day: 1, stop: 1, time: "" }] },
+        { id: "day-2-hotel", name: "South Hotel", kind: "hotel", selected: true, day: 2, lat: 15.1, lng: 73.1, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 1, time: "" }] },
+        { id: "day-2-beach", name: "South Beach", kind: "attraction", selected: true, day: 2, lat: 15.2, lng: 73.2, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 2, time: "" }] },
+      ],
+      days: [
+        { day: 1, label: "Day 1", color: "#e11d48", pin_ids: ["day-1-hotel"], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: ["day-2-hotel", "day-2-beach", "day-2-hotel"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
+      ],
+      available_days: [1, 2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel, {
+      circuitFocusDay: 2,
+      circuitFocusToken: 1,
+    }));
+
+    await waitFor(() => expect(fitBounds).toHaveBeenCalled());
+    await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
+      { lat: 15.1, lng: 73.1 },
+      { lat: 15.2, lng: 73.2 },
+      { lat: 15.1, lng: 73.1 },
+    ]));
+    rendered.unmount();
+    delete window.google;
+  });
+
+  it("caps a tight circuit without tightening an already wider view", () => {
+    const tightSetZoom = vi.fn();
+    capCircuitZoom({ getZoom: () => 16, setZoom: tightSetZoom });
+    expect(tightSetZoom).toHaveBeenCalledWith(14);
+
+    const wideSetZoom = vi.fn();
+    capCircuitZoom({ getZoom: () => 11, setZoom: wideSetZoom });
+    expect(wideSetZoom).not.toHaveBeenCalled();
   });
 
   it("infers hotel stops from Google place types", () => {
@@ -196,5 +304,77 @@ describe("map stop selection", () => {
     ));
     expect(input).toHaveValue("North Market");
     expect(day).toHaveValue("1");
+  });
+
+  it("chooses Best day or an explicit day from a new Google place tile", async () => {
+    let placeChanged: (() => void) | undefined;
+    const googlePlace = {
+      place_id: "dudhsagar-1",
+      name: "Dudhsagar Falls",
+      types: ["tourist_attraction"],
+      geometry: { location: { lat: () => 15.3144, lng: () => 74.3143 } },
+      formatted_address: "Sonauli, Goa",
+      rating: 4.6,
+    };
+    const autocomplete = {
+      bindTo: vi.fn(),
+      getPlace: vi.fn(() => googlePlace),
+      addListener: vi.fn((_event: string, callback: () => void) => {
+        placeChanged = callback;
+        return { remove: vi.fn() };
+      }),
+      unbindAll: vi.fn(),
+    };
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds: vi.fn(),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function () { return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() }; }),
+        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () { return { extend: vi.fn(), isEmpty: vi.fn(() => false) }; }),
+        places: { Autocomplete: vi.fn(function () { return autocomplete; }) },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Goa",
+      center: { lat: 15.3, lng: 74.1 },
+      pins: [],
+      days: [
+        { day: 1, label: "Day 1", color: "#e11d48", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+      ],
+      available_days: [1, 2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "No places yet.",
+    });
+    const onSelect = vi.fn().mockResolvedValue(true);
+    const rendered = render(createElement(MapPanel, { onSelect }));
+
+    await waitFor(() => expect(placeChanged).toBeTypeOf("function"));
+    act(() => placeChanged?.());
+
+    const day = await screen.findByRole("combobox", { name: "Add Dudhsagar Falls to day" });
+    expect(day).toHaveValue("auto");
+    expect(day).toHaveTextContent("Best day");
+    fireEvent.change(day, { target: { value: "2" } });
+    fireEvent.click(screen.getByRole("button", { name: "+ Add to trip" }));
+
+    await waitFor(() => expect(onSelect).toHaveBeenCalledWith(
+      "attraction",
+      "Dudhsagar Falls",
+      { day: 2 },
+    ));
+    rendered.unmount();
+    delete window.google;
   });
 });

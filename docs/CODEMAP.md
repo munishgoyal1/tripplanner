@@ -132,14 +132,15 @@ frontend/
                itinerary/photos + opt-in lazy map
       ItineraryPanel.tsx   TripSnapshot + compact day summaries + clickable stops
            + booked checkbox; exact day/stop identity owns active-row scroll
-         and the filled current `H`/number marker; aggregate day-header click
-         focuses the first mapped non-stay place
+         and the filled current `H`/number marker; day-header click frames the
+         complete map circuit without converting it into exact-place focus
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;
                            one marker at a time gets number-only contrast at fixed
                            34x44 geometry, with focus-only updates applied in place;
                            repeated focus requests reapply after manual filtering;
+                           itinerary day focus fits every pin in that circuit;
                            day focus jumps itinerary
                            and sends a representative place to Details; Places
                            autocomplete/native POI clicks create a real-coordinate
@@ -183,6 +184,7 @@ docs/
   dev.md              Dev environment notes
   ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   setup-oauth.md      OAuth setup walkthrough
+  DEFERRED_DECISIONS.md  Usage experiments and future choices awaiting owner alignment
 ```
 
 ## 4) Request flow (hosted mode)
