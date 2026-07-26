@@ -974,10 +974,19 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             unscheduled.append(p["id"])
 
     pin_by_id = {p["id"]: p for p in pins}
+
+    def _occurrence_stop(pin_id: str, day: int) -> int:
+        pin = pin_by_id[pin_id]
+        occurrence = next(
+            (item for item in pin.get("occurrences") or [] if item.get("day") == day),
+            None,
+        )
+        return int(occurrence.get("stop")) if occurrence and occurrence.get("stop") else 10_000
+
     stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
     days = []
     for d in sorted(by_day):
-        ids = by_day[d]
+        ids = sorted(by_day[d], key=lambda pin_id: _occurrence_stop(pin_id, d))
         day_stay = next((pid for pid in ids if pin_by_id[pid]["kind"] == "hotel"), None)
         stay_id = day_stay or (stay_ids[0] if stay_ids else None)
         if stay_id:

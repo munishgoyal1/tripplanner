@@ -254,6 +254,68 @@ def _fmt_hhmm(minutes: int) -> str:
     return f"{m // 60:02d}:{m % 60:02d}"
 
 
+def _itinerary_time_errors(itinerary: Any) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(itinerary, list):
+        return errors
+    for day_index, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        day = entry.get("day") if isinstance(entry.get("day"), int) else day_index + 1
+        stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
+        previous_time: int | None = None
+        previous_duration: int | None = None
+        previous_name = ""
+        for stop in stops:
+            if _stop_kind(stop) in {"hotel", "flight", "transport"} or not isinstance(stop, dict):
+                continue
+            value = str(stop.get("time") or "").strip()
+            if not value:
+                continue
+            current_time = _parse_hhmm(value)
+            name = _stop_name(stop) or "unnamed stop"
+            if current_time is None:
+                errors.append(f"Day {day} has an invalid time '{value}' for {name}; use HH:MM.")
+                continue
+            minimum_time = previous_time
+            if minimum_time is not None and previous_duration is not None:
+                minimum_time += previous_duration + 30
+            if minimum_time is not None and current_time < minimum_time:
+                errors.append(
+                    f"Day {day} is not chronological: {name} at {value} must be after "
+                    f"{previous_name} at {_fmt_hhmm(previous_time)}"
+                    + (
+                        f" and its visit/transfer time (not before {_fmt_hhmm(minimum_time)})."
+                        if previous_duration is not None
+                        else "."
+                    )
+                )
+            previous_time = current_time
+            duration = stop.get("duration_min")
+            previous_duration = (
+                max(15, int(duration)) if isinstance(duration, (int, float)) else None
+            )
+            previous_name = name
+    return errors
+
+
+def _retime_stops_in_order(stops: list[Any]) -> None:
+    previous_end: int | None = None
+    for stop in stops:
+        if not isinstance(stop, dict):
+            continue
+        current = _parse_hhmm(str(stop.get("time") or ""))
+        if current is None:
+            current = previous_end + 30 if previous_end is not None else 9 * 60
+        elif previous_end is not None:
+            current = max(current, previous_end + 30)
+        stop["time"] = _fmt_hhmm(current)
+        duration = stop.get("duration_min")
+        previous_end = current + (
+            max(15, int(duration)) if isinstance(duration, (int, float)) else 90
+        )
+
+
 def _infer_stop_time(stops: list[Any], insert_at: int, kind: str) -> str:
     """Infer a sensible HH:MM slot for a new stop when time is missing.
 
@@ -774,11 +836,19 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
             current = stop_coords[id(next_stop)]
 
         fixed = fixed_by_day[day_index]
-        insert_at = max(
-            (index + 1 for index, stop in enumerate(fixed) if _stop_kind(stop) == "hotel"),
-            default=len(fixed),
-        )
-        next_stops = fixed[:insert_at] + ordered + fixed[insert_at:]
+        hotels = [stop for stop in fixed if _stop_kind(stop) == "hotel"]
+        fixed_middle = [stop for stop in fixed if _stop_kind(stop) != "hotel"]
+        middle = ordered + fixed_middle
+        if middle and all(
+            isinstance(stop, dict)
+            and _parse_hhmm(str(stop.get("time") or "")) is not None
+            for stop in middle
+        ):
+            middle.sort(key=lambda stop: _parse_hhmm(str(stop.get("time") or "")) or 0)
+        _retime_stops_in_order(middle)
+        next_stops = ([hotels[0]] if hotels else []) + middle
+        if len(hotels) > 1:
+            next_stops.append(hotels[-1])
         previous_names = [_stop_name(stop) for stop in day.get("stops") or []]
         next_names = [_stop_name(stop) for stop in next_stops]
         if previous_names != next_names:
@@ -1499,6 +1569,15 @@ def update_trip_plan(updates_json: str) -> str:
         updates = json.loads(updates_json)
     except json.JSONDecodeError:
         return "Error: invalid JSON."
+
+    if "day_wise_itinerary" in updates:
+        time_errors = _itinerary_time_errors(updates.get("day_wise_itinerary"))
+        if time_errors:
+            return (
+                "Error: itinerary times must increase in circuit order. "
+                + " ".join(time_errors)
+                + " Resubmit the full corrected day_wise_itinerary."
+            )
 
     allowed_keys = {
         "selected_flights", "selected_hotels", "selected_activities",

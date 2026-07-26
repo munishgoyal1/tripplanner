@@ -504,6 +504,12 @@ STEP 4 — BUILD ITINERARY
     stop is an object with: name (REQUIRED, must match the hotels/attractions
     you selected), kind (one of: hotel, attraction, meal, transport, flight,
     other), and optionally time ("HH:MM"), duration_min (int), note (short).
+  - Visit times MUST strictly increase in the same order as the stops array and
+    leave enough room for each stop's duration plus travel to the next place.
+    Never give two visits the same time. After optimize_day_route or any route
+    change, recompute every affected time before calling update_trip_plan. If
+    update_trip_plan rejects itinerary chronology, resubmit the full corrected
+    day_wise_itinerary before replying.
   - Every ordinary sightseeing day MUST start at that night's hotel and end at
     the same hotel. For a stay-transfer day, start at the old hotel and end at
     the new hotel. Do not add a hotel return after an overnight flight, train,

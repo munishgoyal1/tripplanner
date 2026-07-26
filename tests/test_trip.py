@@ -395,6 +395,84 @@ class TestTripPlanState:
 
         assert "no planned places beyond the hotel" not in result
 
+    def test_update_trip_plan_rejects_duplicate_or_backwards_visit_times_atomically(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        original = [{
+            "day": 1,
+            "stops": [
+                {"name": "Fort Aguada", "kind": "attraction", "time": "09:00"},
+                {"name": "Anjuna Beach", "kind": "attraction", "time": "11:00"},
+            ],
+        }]
+        update_trip_plan.invoke({"updates_json": json.dumps({"day_wise_itinerary": original})})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Cavelossim Beach", "kind": "attraction", "time": "10:00"},
+                    {"name": "Basilica of Bom Jesus", "kind": "attraction", "time": "10:00"},
+                    {"name": "Colva Beach", "kind": "attraction", "time": "09:30"},
+                ],
+            }],
+        })})
+
+        assert "times must increase in circuit order" in result
+        assert "Basilica of Bom Jesus" in result
+        assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == original
+
+        tight_result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Cavelossim Beach",
+                        "kind": "attraction",
+                        "time": "10:00",
+                        "duration_min": 90,
+                    },
+                    {"name": "Colva Beach", "kind": "attraction", "time": "11:00"},
+                ],
+            }],
+        })})
+
+        assert "not before 12:00" in tight_result
+        assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == original
+
+    def test_reflow_orders_fully_timed_stops_and_repairs_time_collisions(self, monkeypatch):
+        from tripplanner.tools import trip_planner
+
+        monkeypatch.setattr(
+            "tripplanner.tools.trip_planner.places_cache.get_summary",
+            lambda _name, _destination: {"lat": 15.3, "lng": 73.9},
+        )
+        plan = {
+            "destination": "Goa",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Holiday Inn", "kind": "hotel"},
+                    {"name": "Dinner", "kind": "meal", "time": "18:30", "duration_min": 60},
+                    {"name": "Cavelossim Beach", "kind": "attraction", "time": "10:00", "duration_min": 90},
+                    {"name": "Basilica", "kind": "attraction", "time": "10:00", "duration_min": 75},
+                    {"name": "Colva Beach", "kind": "attraction", "time": "16:30", "duration_min": 90},
+                    {"name": "Holiday Inn", "kind": "hotel"},
+                ],
+            }],
+        }
+
+        assert trip_planner._reflow_unbooked_attractions(plan) is True
+        stops = plan["day_wise_itinerary"][0]["stops"]
+        assert [stop["name"] for stop in stops] == [
+            "Holiday Inn", "Cavelossim Beach", "Basilica", "Colva Beach", "Dinner", "Holiday Inn",
+        ]
+        times = [trip_planner._parse_hhmm(stop.get("time", "")) for stop in stops[1:-1]]
+        assert all(left is not None and right is not None and left < right for left, right in zip(times, times[1:]))
+
     def test_set_stop_booked_toggles_flag(self):
         create_trip_plan.invoke({
             "destination": "Goa",

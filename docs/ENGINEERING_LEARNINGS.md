@@ -20,3 +20,26 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   current row, Details context, desktop wiring, and mobile wiring.
 - Prefer shared App/workspace handlers over parallel component-local semantics.
   Local state may render the action, but it must not redefine what the action means.
+
+## 2026-07-26 - Itinerary Chronology Is One Contract
+
+- Persisted stop-array order, displayed visit times, itinerary numbering, and map
+  circuit order are four views of the same schedule. Validate them together.
+- Route optimization or cross-day reflow invalidates old time slots. Reorder meals
+  and visits coherently, then recompute times with duration and transfer buffers;
+  never preserve stale times on moved stops.
+- Reject model-authored duplicate or backwards visit times atomically. A warning
+  after saving is too late because every downstream view will faithfully render
+  contradictory source data.
+- Provider-canonical place names may not match itinerary text. Route completion
+  must use authoritative occurrence day/stop identity, not global pin insertion
+  order, so name enrichment cannot reorder a circuit.
+
+## 2026-07-26 - Persisted Services Need Runtime-State Recovery
+
+- A persisted database volume can retain process locks after an abrupt container
+  stop even when its data is healthy. Readiness must distinguish stale runtime
+  state from corrupt data instead of waiting repeatedly or resetting the volume.
+- PostgreSQL lock cleanup is safe only after proving no server process exists.
+  Remove the complete runtime lock set, restart once, and preserve all database
+  files; never turn automatic local startup into automatic data deletion.

@@ -102,6 +102,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Each mapped destination row also shows a quiet estimated distance/time from
   the previous stop. The selected map day labels each route segment at its
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
+  Visit times strictly increase in circuit order and leave room for the stated
+  duration plus travel. Route optimization/reflow always retimes affected stops;
+  duplicate or backwards schedules are invalid source data, not a display concern.
   Clicking a place stop focuses both its map pin and its contextual Details view.
   The exact itinerary `H` or number becomes current, and the matching map marker
   stays at the standard 34x44 circuit geometry and keeps its day color and white

@@ -575,6 +575,54 @@ def test_map_view_includes_all_structured_day_stops_in_order(_map_geo: None) -> 
     assert day1["pin_ids"][-1] == id_by_name["Taj Exotica Resort"]
 
 
+def test_map_view_uses_occurrence_order_for_provider_expanded_names(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider_names = {
+        "Taj Exotica Resort": "Taj Exotica Resort",
+        "Mapusa Market": "Mapusa Municipal Market",
+        "Fontainhas Latin Quarter": "Bairro das Fontainhas old quarter",
+        "The Fisherman's Wharf Panjim": "The Fisherman's Wharf Panjim",
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": provider_names.get(name, name),
+            "rating": 4.4,
+            "address": f"{name}, {city}",
+            "lat": 15.0 + len(name) / 100,
+            "lng": 73.9 + len(name) / 100,
+        },
+    )
+    trip = {
+        "destination": "Goa",
+        "selected_hotels": [{"name": "Taj Exotica Resort"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Taj Exotica Resort", "kind": "hotel"},
+                {"name": "Mapusa Market", "kind": "attraction", "time": "10:00"},
+                {"name": "Fontainhas Latin Quarter", "kind": "attraction", "time": "13:00"},
+                {"name": "The Fisherman's Wharf Panjim", "kind": "meal", "time": "17:30"},
+                {"name": "Taj Exotica Resort", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    route_names = [names_by_id[pin_id] for pin_id in view["days"][0]["pin_ids"]]
+
+    assert route_names[1:4] == [
+        "Mapusa Municipal Market",
+        "Bairro das Fontainhas old quarter",
+        "The Fisherman's Wharf Panjim",
+    ]
+
+
 def test_map_view_reuses_places_across_complete_day_circuits(_map_geo: None) -> None:
     trip = {
         **SAMPLE_TRIP,

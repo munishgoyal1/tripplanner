@@ -2279,3 +2279,26 @@ VALIDATION:
   learning log. Record reusable interaction and design lessons there rather than
   changing the owner's existing `learning.txt`.
 
+=== 2026-07-26 — Session 70: Chronological itinerary circuits ===
+
+- Non-hotel visit times must be valid `HH:MM`, strictly increase in persisted
+  stop/circuit order, and include practical visit/transfer spacing. Duplicate or
+  backwards model-authored schedules must be rejected before any plan save.
+- Geographic reflow must not leave meals before morning attractions or retain
+  stale times after moving stops. Fully timed days follow chronology; mixed data
+  preserves optimized attraction order and receives a fresh monotonic schedule.
+- Map routes must use authoritative occurrence stop order when Google expands a
+  place name and direct itinerary-name matching fails.
+- Repair the persisted Goa plan and mirrored saved trip to coherent daily
+  schedules, including Day 1: Cavelossim 09:00, Colva 11:30, Basilica 14:30,
+  and Brian's 18:30.
+
+=== 2026-07-26 — Session 71: Reliable persisted Cosmos restart ===
+
+- `dev-spa.ps1` must not wait for the full timeout whenever an abrupt Docker or
+  container stop leaves PostgreSQL runtime locks in the persisted emulator.
+- The emulator launcher may remove `postmaster.pid` and Unix socket locks only
+  when no PostgreSQL process is running, then restart the same container once.
+- Automatic recovery must preserve the named Cosmos data volume. It must never
+  reset local trip data as a startup repair.
+

@@ -108,6 +108,16 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Reliable persisted Cosmos restart (Session 71)**: local startup detects the
+  vNext emulator's stale PostgreSQL PID/Unix-socket locks after abrupt Docker
+  stops, removes them only when no server process exists, and restarts once.
+  The named data volume is never reset; abrupt-stop recovery retains trip data.
+- **Chronological itinerary circuits (Session 70)**: model-authored duplicate or
+  backwards visit times are rejected before persistence. Attraction reflow now
+  places fully timed meals/visits chronologically and retimes collisions while
+  preserving geographic order for mixed untimed data. Map routes sort by
+  authoritative occurrence stop when provider-expanded names do not directly
+  match itinerary text. The active/saved Goa plan was repaired across all days.
 - **Cross-surface selection consistency (Session 69)**: exact-place selection
   clears stale jump highlights, concern text no longer tints whole stop cards,
   and Map day chips use the same aggregate circuit action as itinerary day

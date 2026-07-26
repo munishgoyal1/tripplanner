@@ -34,7 +34,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
 - Cosmos emulator check: `.\infra\start-cosmos-emulator.ps1` (launches installed
-  Docker Desktop when its daemon is stopped; never resets persisted data)
+  Docker Desktop when its daemon is stopped; repairs stale PostgreSQL runtime
+  locks only when no server process exists; never resets persisted data)
 - Deploy: see [infra/README.md](../infra/README.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
