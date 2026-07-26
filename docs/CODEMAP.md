@@ -162,9 +162,11 @@ packages/tripplanner-client/
                            for web + native
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
-  app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant, Details
+  app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant,
+                           Details, and Account/preferences
   providers/trip-provider.tsx  Authoritative native data/revision owner
-  lib/tripplanner.ts       Hosted API selection + Keychain-backed mobile identity
+  lib/tripplanner.ts       Hosted API selection + Keychain-backed identity and
+                           native Google OAuth session handoff
   eas.json                 Development, preview, and App Store build profiles
 infra/
   data-stack.bicep    Subscription orchestration for shared data RG/account
@@ -297,7 +299,9 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   Default `"local"` (CLI). Hosted mode sets it from the OAuth/guest cookie.
 - OAuth (Google): `"google-<sub>"` (cross-device). Signed HttpOnly `mg_session`
   cookie, HMAC-SHA256 with `WEB_SESSION_SECRET` (back-compat fallback
-  `CHAINLIT_AUTH_SECRET`).
+  `CHAINLIT_AUTH_SECRET`). Native clients start the same browser OAuth flow with
+  an `exp://` or `tripplanner://` return URL; the callback deep-links a signed
+  session token that `/auth/mobile/session` verifies before secure storage.
 - Guest fallback: `"web-<uuid>"` (per-browser via localStorage).
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
   local JSON under `~/.tripplanner/`. Trip/history/chat/cache writes use

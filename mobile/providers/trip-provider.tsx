@@ -16,7 +16,13 @@ import {
   useState,
 } from 'react';
 
-import { tripplannerClient } from '@/lib/tripplanner';
+import {
+  getMobileAccount,
+  loginWithGoogle,
+  logoutMobile,
+  tripplannerClient,
+  type MobileAccount,
+} from '@/lib/tripplanner';
 
 interface TripContextValue {
   view: TripView | null;
@@ -28,6 +34,7 @@ interface TripContextValue {
   sending: boolean;
   error: string | null;
   revision: number;
+  account: MobileAccount | null;
   refresh: () => Promise<void>;
   switchTrip: (tripId: string) => Promise<void>;
   startNewTrip: () => Promise<void>;
@@ -39,6 +46,8 @@ interface TripContextValue {
   ) => Promise<void>;
   addPlace: (kind: string, name: string) => Promise<void>;
   setBooked: (day: number, name: string, booked: boolean) => Promise<void>;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
@@ -57,23 +66,30 @@ export function TripProvider({ children }: PropsWithChildren) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [revision, bumpRevision] = useReducer((value: number) => value + 1, 0);
+  const [account, setAccount] = useState<MobileAccount | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [nextView, nextItinerary, nextMap, nextTrips, history] = await Promise.all([
+      const results = await Promise.allSettled([
         tripplannerClient.fetchTripView(),
         tripplannerClient.fetchItinerary(),
         tripplannerClient.fetchMapView(),
         tripplannerClient.fetchSavedTrips(),
         tripplannerClient.fetchChatHistory(),
       ]);
-      setView(nextView);
-      setItinerary(nextItinerary);
-      setMap(nextMap);
-      setTrips(nextTrips);
-      setMessages(history);
+      const [nextView, nextItinerary, nextMap, nextTrips, history] = results;
+      if (nextView.status === 'fulfilled') setView(nextView.value);
+      if (nextItinerary.status === 'fulfilled') setItinerary(nextItinerary.value);
+      if (nextMap.status === 'fulfilled') setMap(nextMap.value);
+      if (nextTrips.status === 'fulfilled') setTrips(nextTrips.value);
+      if (history.status === 'fulfilled') setMessages(history.value);
+      const failed = results.filter((result) => result.status === 'rejected');
+      if (failed.length === results.length) throw failed[0].reason;
+      if (failed.length) {
+        setError(`${failed.length} section${failed.length === 1 ? '' : 's'} could not refresh.`);
+      }
       bumpRevision();
     } catch (caught) {
       setError(errorMessage(caught));
@@ -83,7 +99,31 @@ export function TripProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
+    void getMobileAccount().then(setAccount);
     void refresh();
+  }, [refresh]);
+
+  const signIn = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setAccount(await loginWithGoogle());
+      await refresh();
+    } catch (caught) {
+      setError(errorMessage(caught));
+      setLoading(false);
+    }
+  }, [refresh]);
+
+  const signOut = useCallback(async () => {
+    await logoutMobile();
+    setAccount(null);
+    setView(null);
+    setItinerary(null);
+    setMap(null);
+    setTrips([]);
+    setMessages([]);
+    await refresh();
   }, [refresh]);
 
   const switchTrip = useCallback(async (tripId: string) => {
@@ -126,7 +166,12 @@ export function TripProvider({ children }: PropsWithChildren) {
           });
         },
         onTool: () => undefined,
-        onDone: () => undefined,
+        onDone: (reply) => {
+          if (!streamed && reply) {
+            streamed = reply;
+            setMessages((current) => [...current, { role: 'assistant', text: reply }]);
+          }
+        },
         onError: (messageText) => {
           throw new Error(messageText);
         },
@@ -183,6 +228,7 @@ export function TripProvider({ children }: PropsWithChildren) {
       sending,
       error,
       revision,
+      account,
       refresh,
       switchTrip,
       startNewTrip,
@@ -190,6 +236,8 @@ export function TripProvider({ children }: PropsWithChildren) {
       removePlace,
       addPlace,
       setBooked,
+      signIn,
+      signOut,
     }}>
       {children}
     </TripContext.Provider>

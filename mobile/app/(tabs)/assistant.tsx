@@ -6,7 +6,7 @@ import { palette } from '@/constants/tripplanner-theme';
 import { useTrip } from '@/providers/trip-provider';
 
 export default function AssistantScreen() {
-  const { messages, sendMessage, sending, view } = useTrip();
+  const { error, messages, refresh, sendMessage, sending, view } = useTrip();
   const [draft, setDraft] = useState('');
   const submit = () => {
     const message = draft.trim();
@@ -19,6 +19,7 @@ export default function AssistantScreen() {
     <SafeAreaView edges={['top']} style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={82} style={styles.keyboard}>
         <View style={styles.header}><Text style={styles.title}>Assistant</Text><Text style={styles.subtitle}>{view?.destination || 'Plan a complete trip'}</Text></View>
+        {error ? <Pressable onPress={() => void refresh()} style={styles.error}><Text style={styles.errorText}>{error} Tap to retry.</Text></Pressable> : null}
         <FlatList
           data={messages}
           keyExtractor={(_, index) => String(index)}
@@ -50,6 +51,8 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 18, paddingVertical: 14, borderBottomColor: palette.line, borderBottomWidth: 1 },
   title: { color: palette.ink, fontFamily: 'Georgia', fontSize: 28, fontWeight: '700' },
   subtitle: { color: palette.muted, fontSize: 12, marginTop: 2 },
+  error: { marginHorizontal: 14, marginTop: 10, borderRadius: 8, borderWidth: 1, borderColor: '#FED7AA', backgroundColor: '#FFF7ED', padding: 10 },
+  errorText: { color: palette.warning, fontSize: 12, lineHeight: 17 },
   messages: { flexGrow: 1, padding: 16, gap: 12, justifyContent: 'flex-end' },
   empty: { color: palette.muted, textAlign: 'center', lineHeight: 22, paddingHorizontal: 30, marginBottom: 80 },
   bubble: { maxWidth: '88%', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 11 },

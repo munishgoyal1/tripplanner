@@ -43,7 +43,9 @@ One codebase, dispatcher in `storage_cosmos.is_enabled()`.
 Cross-form-factor rules live in `packages/tripplanner-client`: JSON contracts,
 trip mutations, SSE parsing, and workspace revisions are shared. Platform code
 must stay limited to presentation and device adapters. iPhone and Android reuse
-this mobile shell rather than forking product logic.
+this mobile shell rather than forking product logic. Native Google sign-in must
+resolve to the same stable `google-<sub>` identity as the web app so saved trips,
+preferences, and chat history remain continuous across devices.
 
 ## 4) Owner taste — the look & feel
 
@@ -264,7 +266,9 @@ If a redesign violates the above without a stated reason, push back.
   sharing, and presentation through platform adapters rather than a WebView.
 - Mobile should reinterpret the planner for a phone, not squeeze the desktop
   four-pane workspace into a small screen. Preserve behavioral parity through
-  native Plan, Map, Details, Assistant, Trips, and Settings experiences.
+  native Plan, Map, Details, Assistant, Trips, and Account experiences. Account
+  owns Google sign-in/out, preference editing, data refresh, and API diagnostics;
+  network failures must be visible at the action surface rather than silent.
 - Continuous learning is the moat. Every chat should leave the
   `learned_notes` / `past_trip_mentions` / `interests` / `dislikes` richer.
 - The trip panel is the showroom. Anything that makes it feel more like an

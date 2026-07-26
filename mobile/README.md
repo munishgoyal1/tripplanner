@@ -44,6 +44,15 @@ npm run iphone
 `localhost` is the phone itself and cannot reach the PC backend. Use a LAN IP,
 tunnel, or hosted canary URL for physical-device testing.
 
+## Account and existing trips
+
+Use the Account tab to sign in with the same Google account as the web app.
+The native OAuth handoff stores the signed session in SecureStore and reuses
+the web identity, so saved trips, active trip, chat, and preferences are shared.
+The selected backend must include `/auth/mobile/session`; an older production
+deployment can run the app as a local mobile profile but cannot complete native
+Google sign-in until those backend changes are deployed.
+
 ## Validate
 
 ```powershell

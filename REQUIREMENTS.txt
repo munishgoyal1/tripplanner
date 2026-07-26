@@ -2308,3 +2308,16 @@ VALIDATION:
   start of that day's card so its day-level title, metrics, and summary are in
   focus. It must not center the full card and land midway through stop rows.
 
+=== 2026-07-26 — Session 73: Functional Android account and Assistant ===
+
+- Android must support Google sign-in and reuse the web app's stable
+  `google-<sub>` identity so existing saved trips, active trip, preferences,
+  and chat history load on the phone instead of an isolated mobile profile.
+- Provide a native Account surface for sign-in/out, data refresh, preference
+  editing, and the active API target.
+- Independent mobile data sections must refresh partially: one failed endpoint
+  cannot hide successful trip, itinerary, map, saved-trip, or chat responses.
+- Assistant streaming must tolerate CRLF SSE framing and use the terminal done
+  reply when token events are buffered. Request failures must be visible and
+  retryable in the Assistant instead of appearing as a dead send action.
+

@@ -29,6 +29,7 @@ import os
 import re
 import time
 from typing import Any, Literal
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -1284,6 +1285,24 @@ async def auth_me(request: Request) -> dict:
     return {"authenticated": True, **session}
 
 
+@app.get("/auth/mobile/session")
+async def auth_mobile_session(token: str = "") -> Response:
+    """Validate a signed OAuth session returned to the native app."""
+    session = oauth.read_session(token)
+    if not session:
+        return JSONResponse({"authenticated": False}, status_code=401)
+    return JSONResponse({"authenticated": True, **session})
+
+
+def _mobile_auth_redirect(target: str, token: str) -> str | None:
+    parsed = urlsplit(target)
+    if parsed.scheme not in {"tripplanner", "exp"}:
+        return None
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query["session"] = token
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(query), parsed.fragment))
+
+
 @app.get("/auth/login/google")
 async def auth_login_google(request: Request, redirect: str = "/") -> RedirectResponse:
     """Kick off the authorization-code flow → redirect the browser to Google."""
@@ -1346,7 +1365,7 @@ async def auth_callback_google(
     token = oauth.make_session_token(
         identifier, profile.get("name", ""), profile.get("email", ""), profile.get("picture", "")
     )
-    res = RedirectResponse(post_login or "/", status_code=302)
+    res = RedirectResponse(_mobile_auth_redirect(post_login, token) or post_login or "/", status_code=302)
     res.delete_cookie("mg_oauth_state", path="/")
     res.set_cookie(
         oauth.SESSION_COOKIE,

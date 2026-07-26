@@ -20,6 +20,7 @@ const MAPPING = {
   'list.bullet.rectangle': 'view-list',
   'map.fill': 'map',
   'bubble.left.and.bubble.right.fill': 'forum',
+  'person.crop.circle.fill': 'account-circle',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
 } as IconMapping;

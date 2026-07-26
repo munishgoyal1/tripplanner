@@ -32,6 +32,10 @@ function parseFrame(frame: string): { event: string; data: Record<string, unknow
   }
 }
 
+function splitFrames(buffer: string): string[] {
+  return buffer.replace(/\r\n/g, "\n").split("\n\n");
+}
+
 function dispatchFrame(event: string, data: Record<string, unknown>, handlers: StreamHandlers): void {
   if (event === "token") handlers.onToken(typeof data.text === "string" ? data.text : "");
   if (event === "tool") {
@@ -204,7 +208,7 @@ export class TripplannerClient {
     const stream = response.body as ReadableStream<Uint8Array> | null;
     if (!stream?.getReader) {
       let terminalEvent = false;
-      for (const rawFrame of (await response.text()).split("\n\n")) {
+      for (const rawFrame of splitFrames(await response.text())) {
         const frame = parseFrame(rawFrame);
         if (!frame) continue;
         if (frame.event === "done" || frame.event === "error") terminalEvent = true;
@@ -222,7 +226,7 @@ export class TripplannerClient {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      const frames = buffer.split("\n\n");
+      const frames = splitFrames(buffer);
       buffer = frames.pop() ?? "";
       for (const rawFrame of frames) {
         const frame = parseFrame(rawFrame);

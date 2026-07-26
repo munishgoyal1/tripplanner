@@ -43,6 +43,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={25} name="bubble.left.and.bubble.right.fill" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: 'Account',
+          tabBarIcon: ({ color }) => <IconSymbol size={25} name="person.crop.circle.fill" color={color} />,
+        }}
+      />
     </Tabs>
   );
 }

@@ -108,6 +108,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Android account/data parity (Session 73)**: the Expo app now uses native
+  browser Google OAuth to adopt the same `google-<sub>` identity as web, exposes
+  Account sign-in/out, refresh, preferences, and API diagnostics, tolerates
+  partial refresh failures and CRLF/buffered SSE, and shows retryable Assistant
+  errors. Production still needs an explicitly approved deployment before its
+  native OAuth endpoints can be exercised against existing production data.
 - **Map day-to-summary navigation (Session 72)**: selecting a Map day keeps
   aggregate circuit focus and scrolls Itinerary to the start of that day's
   title, metrics, and summary instead of centering the full stop list.
