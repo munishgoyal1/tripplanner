@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, SavedTrip, Itinerary } from "./types";
+import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary } from "./types";
 import {
   TripplannerClient,
   type DeselectItemOptions,
@@ -159,11 +159,19 @@ export interface StreamHandlers {
 }
 
 // POST /chat/stream and parse the Server-Sent Events stream incrementally.
-export async function streamChat(message: string, h: StreamHandlers): Promise<void> {
+export async function streamChat(
+  message: string,
+  h: StreamHandlers,
+  options: { proposalOnly?: boolean } = {},
+): Promise<void> {
   const res = await fetch(`${BASE}/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, user_id: getUserId() }),
+    body: JSON.stringify({
+      message,
+      user_id: getUserId(),
+      proposal_only: options.proposalOnly ?? false,
+    }),
   });
   if (!res.ok) {
     let message = `Chat request failed (${res.status}).`;
@@ -273,7 +281,7 @@ export async function selectItem(
   kind: string,
   name: string,
   options?: SelectItemOptions
-): Promise<{ view: TripView; alerts: string[]; placement?: SelectionPlacement | null; placements?: SelectionPlacement[] }> {
+): Promise<{ view: TripView; alerts: string[]; placement?: SelectionPlacement | null; placements?: SelectionPlacement[]; planner_review?: PlannerReview | null }> {
   return sharedClient.selectItem(kind, name, options);
 }
 
@@ -281,7 +289,7 @@ export async function deselectItem(
   kind: string,
   name: string,
   options?: DeselectItemOptions,
-): Promise<{ view: TripView; alerts: string[] }> {
+): Promise<{ view: TripView; alerts: string[]; planner_review?: PlannerReview | null }> {
   return sharedClient.deselectItem(kind, name, options);
 }
 

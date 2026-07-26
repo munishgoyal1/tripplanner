@@ -106,6 +106,14 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Mutation impact review + stronger focus (Session 62)**: direct add/move/
+  remove/stay responses report the final authoritative day after reflow. A fast
+  deterministic impact gate stays quiet for routine edits and offers Review
+  with planner / Keep as is for crowded, travel-heavy, empty, or meal-incomplete
+  days. Review opens a transcript-safe proposal-only Assistant turn that cannot
+  mutate before explicit approval: graph binding/execution is read-only and API
+  fallback persistence/learning is disabled. Focused map markers now use
+  stronger size, stacking, and inverted number contrast.
 - **Aggregate day focus + responsive chat (Session 61)**: the whole itinerary
   day header focuses its first non-stay mapped place across itinerary, Map, and
   Details. Global mutation status lives only in the command bar. Chat emits and

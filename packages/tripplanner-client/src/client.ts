@@ -2,10 +2,12 @@ import type {
   DeselectItemOptions,
   Itinerary,
   MapView,
+  PlannerReview,
   SavedTrip,
   SelectItemOptions,
   SelectionPlacement,
   StreamHandlers,
+  StreamOptions,
   TripView,
 } from "./types";
 
@@ -141,6 +143,7 @@ export class TripplannerClient {
     alerts: string[];
     placement?: SelectionPlacement | null;
     placements?: SelectionPlacement[];
+    planner_review?: PlannerReview | null;
   }> {
     const response = await this.post("/trip/select", { kind, name, ...options });
     ensureOk(response, "Could not add the place");
@@ -150,6 +153,7 @@ export class TripplannerClient {
       alerts?: string[];
       placement?: SelectionPlacement | null;
       placements?: SelectionPlacement[];
+      planner_review?: PlannerReview | null;
     };
     if (data.ok === false) throw new Error(data.alerts?.[0] || "Could not add the place.");
     return {
@@ -157,6 +161,7 @@ export class TripplannerClient {
       alerts: data.alerts ?? [],
       placement: data.placement,
       placements: data.placements ?? [],
+      planner_review: data.planner_review,
     };
   }
 
@@ -164,11 +169,19 @@ export class TripplannerClient {
     kind: string,
     name: string,
     options: DeselectItemOptions = {},
-  ): Promise<{ view: TripView; alerts: string[] }> {
+  ): Promise<{ view: TripView; alerts: string[]; planner_review?: PlannerReview | null }> {
     const response = await this.post("/trip/deselect", { kind, name, ...options });
     ensureOk(response, "Could not remove the place");
-    const data = (await response.json()) as { view: TripView; alerts?: string[] };
-    return { view: data.view, alerts: data.alerts ?? [] };
+    const data = (await response.json()) as {
+      view: TripView;
+      alerts?: string[];
+      planner_review?: PlannerReview | null;
+    };
+    return {
+      view: data.view,
+      alerts: data.alerts ?? [],
+      planner_review: data.planner_review,
+    };
   }
 
   async setStopBooked(day: number, name: string, booked: boolean): Promise<Itinerary> {
@@ -178,8 +191,15 @@ export class TripplannerClient {
     return data.itinerary;
   }
 
-  async streamChat(message: string, handlers: StreamHandlers): Promise<void> {
-    const response = await this.post("/chat/stream", { message });
+  async streamChat(
+    message: string,
+    handlers: StreamHandlers,
+    options: StreamOptions = {},
+  ): Promise<void> {
+    const response = await this.post("/chat/stream", {
+      message,
+      proposal_only: options.proposalOnly ?? false,
+    });
     ensureOk(response, "Chat request failed");
     const stream = response.body as ReadableStream<Uint8Array> | null;
     if (!stream?.getReader) {

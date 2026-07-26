@@ -15,7 +15,12 @@ from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
-from tripplanner.agents.trip_agent import TRIP_TOOLS, build_trip_system_prompt, select_tools
+from tripplanner.agents.trip_agent import (
+    TRIP_TOOLS,
+    build_trip_system_prompt,
+    proposal_tools,
+    select_tools,
+)
 from tripplanner.config import get_settings
 from tripplanner.tools_cache import wrap_tools_with_cache
 from tripplanner.usage import record_usage
@@ -28,6 +33,7 @@ from tripplanner.user_context import get_user_id
 class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], operator.add]
     current_agent: str
+    proposal_only: bool
 
 
 # ---------------------------------------------------------------------------
@@ -88,9 +94,17 @@ def trip_agent(state: AgentState) -> AgentState:
     # round-trip cost in half when we need flights AND hotels AND weather etc.
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
-    tools = select_tools(state["messages"])
+    proposal_only = bool(state.get("proposal_only"))
+    tools = select_tools(state["messages"], proposal_only=proposal_only)
     llm = _get_llm().bind_tools(tools, parallel_tool_calls=True)
-    response = llm.invoke([build_trip_system_prompt()] + state["messages"])
+    instructions = [build_trip_system_prompt()]
+    if proposal_only:
+        instructions.append(SystemMessage(content=(
+            "PROPOSAL-ONLY REVIEW: analyze the itinerary and offer concise numbered options. "
+            "Do not create, update, finalize, book, resume, or otherwise mutate trip or user data. "
+            "Ask the user to approve an option before any later mutation turn."
+        )))
+    response = llm.invoke(instructions + state["messages"])
     return {"messages": [response], "current_agent": "trip"}
 
 
@@ -103,13 +117,14 @@ def trip_agent(state: AgentState) -> AgentState:
 # every turn for the same query.
 _CACHED_TOOLS = wrap_tools_with_cache(list(TRIP_TOOLS))
 tool_node = ToolNode(_CACHED_TOOLS)
+proposal_tool_node = ToolNode(proposal_tools(_CACHED_TOOLS))
 
 
 def _should_continue(state: AgentState) -> str:
     """Route: if last message has tool calls → tools, else → end."""
     last = state["messages"][-1]
     if hasattr(last, "tool_calls") and last.tool_calls:
-        return "tools"
+        return "proposal_tools" if state.get("proposal_only") else "tools"
     return "end"
 
 
@@ -121,14 +136,20 @@ def build_graph() -> StateGraph:
 
     graph.add_node("trip_agent", trip_agent)
     graph.add_node("tools", tool_node)
+    graph.add_node("proposal_tools", proposal_tool_node)
 
     graph.set_entry_point("trip_agent")
 
     # Agent → tools or end
-    graph.add_conditional_edges("trip_agent", _should_continue, {"tools": "tools", "end": END})
+    graph.add_conditional_edges(
+        "trip_agent",
+        _should_continue,
+        {"tools": "tools", "proposal_tools": "proposal_tools", "end": END},
+    )
 
     # Tools → back to agent (for multi-step tool calling)
     graph.add_edge("tools", "trip_agent")
+    graph.add_edge("proposal_tools", "trip_agent")
 
     return graph.compile()
 

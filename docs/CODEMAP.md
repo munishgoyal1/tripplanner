@@ -267,6 +267,17 @@ individually and expose `Remove everywhere`. Both trip and map view models carry
 the exact structured `available_days`, including empty days. A repeated visit
 cannot move onto a day already containing that place. Hotels keep stay-range
 semantics. The API alert is shown in the workspace command bar.
+`trip_operations` canonicalizes placement against the final persisted itinerary
+after any reflow, so its primary alert names the exact affected day. It also
+returns an optional shared `PlannerReview` from
+`trip_planner.assess_itinerary_change`: a deterministic impact gate for crowded
+or travel-heavy days, empty days after removal, and missing named meals. `App`
+shows `Review with planner` / `Keep as is`; review opens `ChatPanel` with a
+proposal-only request after transcript restoration completes, and the agent
+must wait for explicit approval before applying an option. `ChatRequest` carries
+`proposal_only`; `graph.py` then binds a read-only subset and routes calls through
+a separate read-only `ToolNode`, while `api.py` suppresses itinerary fallback
+persistence and passive learning for that synthetic review turn.
 
 If you change the shape, update tests in [tests/test_trip_view.py](../tests/test_trip_view.py)
 AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.

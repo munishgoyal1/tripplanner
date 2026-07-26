@@ -49,6 +49,21 @@ describe("streamChat", () => {
     expect(events.onDone).toHaveBeenCalledWith("Hello", "trip-1");
   });
 
+  it("marks planner review turns as proposal-only", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      streamResponse(['event: done\ndata: {"reply":"Three options"}\n\n']),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await streamChat("Review Day 3", handlers(), { proposalOnly: true });
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(JSON.parse(String(init.body))).toMatchObject({
+      message: "Review Day 3",
+      proposal_only: true,
+    });
+  });
+
   it("rejects when the stream ends without a terminal event", async () => {
     vi.stubGlobal(
       "fetch",

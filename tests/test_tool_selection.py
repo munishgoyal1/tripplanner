@@ -68,3 +68,18 @@ def test_active_trip_without_destination_stays_core(
     monkeypatch.setattr(trip_agent, "_load_active_trip", lambda: {"destination": ""})
     tools = trip_agent.select_tools([HumanMessage(content="thanks!")])
     assert _names(tools) == _names(trip_agent._CORE_TOOLS)
+
+
+def test_proposal_only_binds_no_mutating_tools(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(trip_agent, "_load_active_trip", lambda: {"destination": "Goa"})
+
+    tools = trip_agent.select_tools(
+        [HumanMessage(content="review my crowded Day 3")],
+        proposal_only=True,
+    )
+
+    assert "get_trip_plan" in _names(tools)
+    assert "compute_route" in _names(tools)
+    assert not (_names(tools) & trip_agent._MUTATING_TOOL_NAMES)

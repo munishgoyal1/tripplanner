@@ -155,6 +155,7 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
 class ChatRequest(BaseModel):
     message: str
     user_id: str = "local"
+    proposal_only: bool = False
 
 
 class ChatResponse(BaseModel):
@@ -261,7 +262,12 @@ async def chat(req: ChatRequest) -> ChatResponse:
     history_tid, history = await asyncio.to_thread(_load_chat)
     history.append(HumanMessage(content=req.message))
     result = await asyncio.to_thread(
-        app_graph.invoke, {"messages": history, "current_agent": ""}
+        app_graph.invoke,
+        {
+            "messages": history,
+            "current_agent": "",
+            "proposal_only": req.proposal_only,
+        },
     )
 
     reply = ""
@@ -278,7 +284,8 @@ async def chat(req: ChatRequest) -> ChatResponse:
         app_event("hallucination_critic", issues=len(issues), claims=issues)
     history.append(AIMessage(content=reply))
     tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
-    _schedule_learning_sweep(req.user_id, req.message)
+    if not req.proposal_only:
+        _schedule_learning_sweep(req.user_id, req.message)
 
     app_event("api_chat_response", reply_length=len(reply))
     return ChatResponse(
@@ -416,7 +423,12 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         yield _sse("progress", {"stage": "thinking"})
         try:
             async for ev in app_graph.astream_events(
-                {"messages": history, "current_agent": ""}, version="v2"
+                {
+                    "messages": history,
+                    "current_agent": "",
+                    "proposal_only": req.proposal_only,
+                },
+                version="v2",
             ):
                 kind = ev.get("event")
                 name = ev.get("name", "")
@@ -485,10 +497,11 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         # Safety net: if the agent described a day-wise itinerary but never
         # called update_trip_plan, parse the reply and persist it directly so
         # the Itinerary panel is never left blank.
-        if "update_trip_plan" not in tool_names_called:
+        if not req.proposal_only and "update_trip_plan" not in tool_names_called:
             await asyncio.to_thread(_auto_persist_itinerary, reply)
         tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
-        _schedule_learning_sweep(req.user_id, req.message)
+        if not req.proposal_only:
+            _schedule_learning_sweep(req.user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 

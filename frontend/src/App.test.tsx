@@ -43,8 +43,8 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls }: { hideGlobalControls?: boolean }) => (
-    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} />
+  default: ({ hideGlobalControls, assistantRequest }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null }) => (
+    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} />
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
@@ -256,7 +256,7 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     const status = await screen.findByRole("status");
-    expect(status).toHaveClass("mr-auto", "flex-1");
+    expect(status.parentElement).toHaveClass("mr-auto", "flex-1");
     expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass(
       "line-clamp-2",
       "whitespace-normal",
@@ -359,6 +359,32 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-name", "Eiffel Tower");
     expect(fetchTripViewMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("offers planner review for a material mutation and respects keep or review", async () => {
+    selectItemMock.mockResolvedValue({
+      view: { ...emptyView, has_trip: true, focus: { kind: "attraction", name: "Eiffel Tower" } },
+      alerts: ["Added Eiffel Tower to Day 3."],
+      placement: { day: 3, stop: 6, name: "Eiffel Tower" },
+      planner_review: {
+        severity: "warning",
+        day: 3,
+        summary: "Day 3 may feel crowded: 5 planned places.",
+        prompt: "Review Day 3 without changing it until I approve.",
+      },
+    });
+    setDesktop(true);
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Add Eiffel Tower" }));
+
+    expect(await screen.findByText(/Added Eiffel Tower to Day 3.*may feel crowded/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Review with planner" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute(
+      "data-assistant-request",
+      "Review Day 3 without changing it until I approve.",
+    );
+    expect(screen.queryByRole("button", { name: "Keep as is" })).not.toBeInTheDocument();
   });
 
   it("keeps obvious recovery controls for every desktop pane", async () => {

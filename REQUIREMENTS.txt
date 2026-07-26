@@ -2171,3 +2171,26 @@ VALIDATION:
 - Prevent SSE proxy buffering and batch token paints to one browser animation
   frame so visible progress arrives promptly without excessive React renders.
 
+=== 2026-07-26 — Session 62: Mutation impact review and stronger map focus ===
+
+- Mutation notifications must describe the final authoritative outcome, such
+  as `Added Fort Aguada to Day 3`, instead of only saying that a place was
+  added. Derive the day after automatic reflow so the message cannot go stale.
+- Make the exact focused map marker more visually distinct than scale alone:
+  increase it slightly, keep it above the circuit, and invert the center/number
+  contrast while preserving the day's route color.
+- Direct place/stay mutations must remain fast and deterministic. After add,
+  move, remove, or stay changes, inspect the resulting itinerary for material
+  crowding, excessive travel, empty days, and substantial days without a named
+  meal. Do not interrupt routine changes with unnecessary prompts.
+- A material concern must keep the user's valid change applied and offer two
+  explicit choices in the command bar: `Review with planner` and `Keep as is`.
+  Review starts a real Assistant conversation with the exact mutation context
+  and up to three practical options. The agent must propose only and wait for
+  explicit user approval before applying any itinerary mutation. Enforce this
+  with read-only tool binding/execution and disabled fallback persistence, not
+  prompt wording alone. `Keep as is` dismisses the concern without changing the
+  itinerary.
+- Planner-review escalation must wait for persisted chat restoration, so an
+  initial load or trip switch cannot erase the newly requested conversation.
+

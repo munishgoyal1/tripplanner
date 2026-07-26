@@ -541,6 +541,66 @@ class TestTripPlanState:
             "North Market",
         ]
 
+    def test_crowded_explicit_day_offers_review_without_moving_choice(self):
+        from tripplanner.tools.trip_planner import assess_itinerary_change
+
+        plan = {
+            "destination": "Goa",
+            "day_wise_itinerary": [{
+                "day": 3,
+                "stops": [
+                    {"name": "Stay", "kind": "hotel"},
+                    {"name": "Fort", "kind": "attraction", "duration_min": 90},
+                    {"name": "Beach", "kind": "attraction", "duration_min": 90},
+                    {"name": "Market", "kind": "attraction", "duration_min": 90},
+                    {"name": "Museum", "kind": "attraction", "duration_min": 90},
+                    {"name": "Dinner", "kind": "meal", "duration_min": 90},
+                    {"name": "Stay", "kind": "hotel"},
+                ],
+            }],
+        }
+
+        review = assess_itinerary_change(
+            plan,
+            action="added",
+            name="Museum",
+            days=[3],
+        )
+
+        assert review is not None
+        assert review["day"] == 3
+        assert review["summary"].startswith("Day 3 may feel crowded")
+        assert "Do not change the itinerary" in review["prompt"]
+        assert [stop["name"] for stop in plan["day_wise_itinerary"][0]["stops"]][4] == "Museum"
+
+    def test_direct_add_reports_exact_day_and_material_review(self):
+        from tripplanner.web import trip_operations
+
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 3,
+                "stops": [
+                    {"name": "Stay", "kind": "hotel"},
+                    {"name": "Fort", "kind": "attraction"},
+                    {"name": "Beach", "kind": "attraction"},
+                    {"name": "Market", "kind": "attraction"},
+                    {"name": "Dinner", "kind": "meal"},
+                    {"name": "Stay", "kind": "hotel"},
+                ],
+            }],
+        })})
+
+        result = trip_operations.select("attraction", "Museum", day=3)
+
+        assert result["alerts"][0] == "Added Museum to Day 3."
+        assert result["placement"]["day"] == 3
+        assert result["planner_review"]["day"] == 3
+
     def test_add_selection_places_restaurant_as_meal(self):
         create_trip_plan.invoke({
             "destination": "Paris",

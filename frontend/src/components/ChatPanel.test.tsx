@@ -51,4 +51,26 @@ describe("ChatPanel progress", () => {
     expect(screen.getByText(/Checking places and reviews/)).toBeInTheDocument();
     expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
   });
+
+  it("starts an approved planner review as a proposal-only assistant turn", async () => {
+    streamChatMock.mockImplementation((_message: string, handlers: StreamHandlers) => {
+      handlers.onDone("I can suggest three options.", "goa-trip");
+      return Promise.resolve();
+    });
+    const prompt = "Review Day 3. Do not change it until I approve an option.";
+
+    render(
+      <ChatPanel
+        onTurnComplete={vi.fn()}
+        assistantRequest={{ id: 1, message: prompt, proposalOnly: true }}
+      />,
+    );
+
+    await waitFor(() => expect(streamChatMock).toHaveBeenCalledWith(
+      prompt,
+      expect.any(Object),
+      { proposalOnly: true },
+    ));
+    expect(screen.getByText(prompt)).toBeInTheDocument();
+  });
 });

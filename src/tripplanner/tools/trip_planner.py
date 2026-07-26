@@ -340,6 +340,83 @@ def _day_stats(
     }
 
 
+def assess_itinerary_change(
+    plan: dict[str, Any],
+    *,
+    action: str,
+    name: str,
+    days: list[int] | None = None,
+) -> dict[str, Any] | None:
+    """Return a material post-mutation concern that merits planner review."""
+    itinerary = plan.get("day_wise_itinerary") or []
+    destination = str(plan.get("destination") or "")
+    max_stops, max_duration, max_km = _style_caps(plan)
+    requested_days = set(days or [])
+    concerns: list[tuple[int, int, str]] = []
+
+    for day_index, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        day = int(entry.get("day") or day_index + 1)
+        if requested_days and day not in requested_days:
+            continue
+        stops = entry.get("stops") if isinstance(entry.get("stops"), list) else []
+        planned = [
+            stop for stop in stops
+            if _stop_kind(stop) in {"attraction", "meal", "restaurant", "other"}
+        ]
+        planned_duration = sum(
+            int(stop.get("duration_min"))
+            if isinstance(stop, dict) and isinstance(stop.get("duration_min"), (int, float))
+            else 90
+            for stop in planned
+        )
+        attraction_count = sum(_stop_kind(stop) in {"attraction", "other"} for stop in planned)
+        has_meal = any(_stop_kind(stop) in {"meal", "restaurant"} for stop in planned)
+        stats = _day_stats(entry, destination, (99, max_duration, max_km))
+        planned_cap = max(2, max_stops - 1)
+        reasons: list[str] = []
+        severity = 0
+        if len(planned) > planned_cap:
+            reasons.append(f"{len(planned)} planned places")
+            severity += 3
+        if planned_duration > max_duration:
+            hours = planned_duration / 60
+            reasons.append(f"about {hours:.1f} hours of planned stops")
+            severity += 2
+        if stats["route_km"] > max_km:
+            reasons.append(f"roughly {stats['route_km']:.0f} km between stops")
+            severity += 2
+        if action == "removed" and not planned:
+            reasons.append("no non-stay places remaining")
+            severity += 3
+        elif attraction_count >= 3 and not has_meal:
+            reasons.append("no named meal stop")
+            severity += 1
+        if reasons:
+            concerns.append((severity, day, ", ".join(reasons)))
+
+    if not concerns:
+        return None
+
+    _, day, reason = max(concerns, key=lambda item: (item[0], -item[1]))
+    if "no non-stay places" in reason:
+        summary = f"Day {day} is now empty apart from the stay."
+    else:
+        summary = f"Day {day} may feel crowded: {reason}."
+    prompt = (
+        f"Review my recent itinerary change: I {action} {name}. {summary} "
+        "Explain the most important trade-off and propose up to three practical options. "
+        "Do not change the itinerary or call any mutation tool until I explicitly approve an option."
+    )
+    return {
+        "severity": "warning",
+        "day": day,
+        "summary": summary,
+        "prompt": prompt,
+    }
+
+
 def _closest_insert_index(stops: list[Any], name: str, destination: str) -> int:
     coords = _coords_from_summary(_summary_for_place(name, destination))
     if not coords:

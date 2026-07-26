@@ -7,6 +7,7 @@ import {
   kindForGooglePlace,
   mapPinFromGooglePlace,
   optionsForStopDay,
+  pinIcon,
   pinMatchesFocus,
   placeNameMatches,
 } from "./MapPanel";
@@ -100,6 +101,12 @@ describe("map stop selection", () => {
     expect(optionsForStopDay("auto")).toBeUndefined();
     expect(optionsForStopDay("2")).toEqual({ day: 2 });
     expect(optionsForStopDay("0")).toBeUndefined();
+  });
+
+  it("inverts the focused circuit number for stronger map contrast", () => {
+    const svg = decodeURIComponent(pinIcon("#2563eb", "2", true).split(",")[1]);
+    expect(svg).toContain('fill="#0f172a"');
+    expect(svg).toContain('fill="white">2</text>');
   });
 
   it("keeps the place and day when explicit placement is rejected", async () => {

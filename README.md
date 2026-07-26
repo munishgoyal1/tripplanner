@@ -63,6 +63,16 @@ Places-cache writes use atomic replacement. FastAPI runs complete blocking
 trip load/mutate/render operations in worker threads so they do not stall the
 async request loop.
 
+Direct itinerary edits use a two-speed planner-review contract. The mutation is
+applied immediately and returns its final authoritative day after any reflow. A
+deterministic impact check stays silent for routine edits but returns a shared
+`PlannerReview` when the result is materially crowded, travel-heavy, empty, or
+missing a meal. The SPA then lets the user keep the valid change or start a
+proposal-only Assistant turn; no AI rearrangement occurs without explicit
+approval. Proposal mode is enforced in the graph with read-only tool binding
+and execution, and the API disables itinerary fallback persistence and passive
+learning for that turn.
+
 ## Capabilities
 
 | Tool | Description | Status |

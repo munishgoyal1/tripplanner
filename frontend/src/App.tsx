@@ -9,7 +9,7 @@ import TripSwitcher from "./components/TripSwitcher";
 import TripActionsMenu from "./components/TripActionsMenu";
 import RightRail from "./components/RightRail";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
-import type { TripView } from "./types";
+import type { PlannerReview, TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
 interface NavRef {
@@ -54,6 +54,8 @@ export default function App() {
   const [view, setView] = useState<TripView | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
+  const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
   const [mapFocusToken, setMapFocusToken] = useState(0);
@@ -280,6 +282,7 @@ export default function App() {
     ++refreshGeneration.current;
     refreshController.current?.abort();
     setLoading(false);
+    setPlannerReview(null);
     dispatchWorkspace({ type: "trip-changed", tripId });
     // The switcher already fetched the fresh view — reuse it instead of making
     // the server rebuild the (cache-backed) view a second time.
@@ -341,6 +344,7 @@ export default function App() {
       refreshController.current?.abort();
       setLoading(false);
       setView({ ...next.view, alerts: next.alerts });
+      setPlannerReview(next.planner_review ?? null);
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       const placement = next.placement || (next.placements && next.placements.length > 0 ? next.placements[0] : null);
       if (placement?.day && placement?.name) {
@@ -384,6 +388,7 @@ export default function App() {
       refreshController.current?.abort();
       setLoading(false);
       setView({ ...next.view, focus: retainedFocus, alerts: next.alerts });
+      setPlannerReview(next.planner_review ?? null);
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       dispatchWorkspace({ type: "trip-content-changed" });
       return true;
@@ -397,6 +402,14 @@ export default function App() {
 
   const handleStopRemove = async (kind: string, name: string, day: number, stop: number) => {
     await handleDeselect(kind, name, { day, stop, all_occurrences: false });
+  };
+
+  const reviewWithPlanner = () => {
+    if (!plannerReview) return;
+    setInspectorOpen(true);
+    setChatOpen(true);
+    setAssistantRequest({ id: Date.now(), message: plannerReview.prompt, proposalOnly: true });
+    setPlannerReview(null);
   };
 
   const toggleMaxPane = (pane: WorkspacePane) => {
@@ -594,6 +607,7 @@ export default function App() {
               onNewTrip={handleNewTrip}
               onImported={handleImported}
               hideGlobalControls
+              assistantRequest={assistantRequest}
             />
           </div>
           <button
@@ -633,6 +647,9 @@ export default function App() {
     </div>
   ) : null;
   const latestStatus = compactStatus(view?.alerts?.[0]);
+  const visibleStatus = plannerReview
+    ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
+    : latestStatus;
   return <>
     {errorBanner}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
@@ -640,14 +657,26 @@ export default function App() {
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
         <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-slate-100 bg-white/95 px-3 shadow-sm backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-          <div className="mr-auto min-w-32 flex-1" aria-live="polite" role="status">
-            {latestStatus ? (
-              <p className="line-clamp-2 whitespace-normal text-xs font-medium leading-tight text-emerald-700" title={latestStatus}>
-                {latestStatus}
+          <div className="mr-auto flex min-w-32 flex-1 items-center gap-2">
+            <div className="min-w-0 flex-1" aria-live="polite" role="status">
+            {visibleStatus ? (
+              <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${plannerReview ? "text-amber-800" : "text-emerald-700"}`} title={visibleStatus}>
+                {visibleStatus}
               </p>
             ) : loading ? (
               <p className="text-xs text-slate-400">Refreshing trip…</p>
             ) : null}
+            </div>
+            {plannerReview && (
+              <div className="flex shrink-0 items-center gap-1" aria-label="Planner review choices">
+                <button type="button" onClick={reviewWithPlanner} className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-200">
+                  Review with planner
+                </button>
+                <button type="button" onClick={() => setPlannerReview(null)} className="rounded-md px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100">
+                  Keep as is
+                </button>
+              </div>
+            )}
           </div>
           <nav className="flex shrink-0 items-center gap-1" aria-label="Workspace controls">
             <button

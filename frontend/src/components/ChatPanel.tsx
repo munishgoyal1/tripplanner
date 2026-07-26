@@ -33,6 +33,8 @@ interface Props {
   onImported?: () => void;
   /** Desktop owns global New trip/account/settings controls in its command bar. */
   hideGlobalControls?: boolean;
+  /** A user-approved command-bar escalation into a real Assistant turn. */
+  assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
 }
 
 const GREETING: ChatMessage = {
@@ -68,6 +70,7 @@ export default function ChatPanel({
   onNewTrip,
   onImported,
   hideGlobalControls = false,
+  assistantRequest = null,
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -87,6 +90,7 @@ export default function ChatPanel({
     // Becomes true once syncAuth resolves so the transcript effect doesn't
     // race against it and load old guest messages before we know the auth state.
     const [authChecked, setAuthChecked] = useState(false);
+  const [transcriptReady, setTranscriptReady] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
@@ -95,6 +99,14 @@ export default function ChatPanel({
   // was a guest web-* id. The transcript effect reads this and skips loading
   // the (now-irrelevant) guest chat, keeping the screen at GREETING + banner.
   const freshSignInRef = useRef(false);
+  const handledAssistantRequestRef = useRef(0);
+  const sendRequestedMessageRef = useRef<(message: string, proposalOnly?: boolean) => void>(() => {});
+
+  useEffect(() => {
+    if (!assistantRequest || busy || !transcriptReady || handledAssistantRequestRef.current === assistantRequest.id) return;
+    handledAssistantRequestRef.current = assistantRequest.id;
+    sendRequestedMessageRef.current(assistantRequest.message, assistantRequest.proposalOnly);
+  }, [assistantRequest, busy, transcriptReady]);
 
   useEffect(() => {
     if (!progress) {
@@ -239,9 +251,11 @@ export default function ChatPanel({
     // should see a clean GREETING + the import banner, not old guest messages.
     if (freshSignInRef.current) {
       freshSignInRef.current = false;
+      setTranscriptReady(true);
       return;
     }
     let cancelled = false;
+    setTranscriptReady(false);
     const cached = transcriptCacheRef.current.get(cacheKey);
     if (cached) {
       setMessages(cached);
@@ -257,6 +271,9 @@ export default function ChatPanel({
       })
       .catch(() => {
         /* keep whatever's on screen */
+      })
+      .finally(() => {
+        if (!cancelled) setTranscriptReady(true);
       });
     return () => {
       cancelled = true;
@@ -299,11 +316,9 @@ export default function ChatPanel({
     onNewTrip?.();
   }
 
-  async function send() {
-    const text = input.trim();
-    if (!text || busy) return;
+  async function sendMessage(outgoing: string, proposalOnly = false) {
+    if (!outgoing.trim() || busy) return;
     if (listening) stopListening();
-    const outgoing = text;
     setInput("");
     setBusy(true);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
@@ -390,7 +405,7 @@ export default function ChatPanel({
             return copy;
           });
         },
-      });
+      }, { proposalOnly });
     } catch (error) {
       if (!handledError) {
         pendingTokens = "";
@@ -414,6 +429,14 @@ export default function ChatPanel({
       flushTokens();
       setBusy(false);
     }
+  }
+
+  sendRequestedMessageRef.current = (message, proposalOnly) => {
+    void sendMessage(message, proposalOnly);
+  };
+
+  function send() {
+    void sendMessage(input.trim());
   }
 
   async function handleDeleteTripHistory() {

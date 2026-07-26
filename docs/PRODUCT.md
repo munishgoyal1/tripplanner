@@ -104,8 +104,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
   Clicking a place stop focuses both its map pin and its contextual Details view.
   The exact itinerary `H` or number becomes current, and the matching map marker
-  grows slightly with a stronger inner ring and higher stacking so it can be
-  found quickly without obscuring the circuit. Repeated clicks refocus the same
+  grows, rises above the circuit, and inverts its center/label contrast so it
+  can be found quickly without obscuring the circuit. Repeated clicks refocus the same
   stop after manual map-day changes.
   The complete day header is also clickable: it focuses the first mapped
   non-stay place for that day (or the hotel when no other place exists) and
@@ -169,8 +169,21 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   moves. These choices never depend on Assistant being visible.
 - **Mutation status**: the latest update sits near the trip identity in a
   flexible command-bar region. Routine add/remove/reflow messages stay concise;
-  the region wraps when space is tight instead of clipping the update. This is
-  the only global mutation-notification surface; Details does not repeat it.
+  the region names the final authoritative day when known and wraps when space
+  is tight instead of clipping the update. This is the only global mutation-
+  notification surface; Details does not repeat it.
+- **Planner review**: structural UI mutations remain immediate and deterministic.
+  After each add, move, removal, or stay change, a fast impact gate inspects the
+  final persisted itinerary for material crowding, excessive travel, empty
+  days, and substantial days without a named meal. Quiet changes require no
+  extra interaction. A flagged change stays applied and exposes `Review with
+  planner` plus `Keep as is` beside the command-bar outcome. Review starts a
+  real Assistant turn with the exact concern and requires proposal-only options;
+  that turn binds and executes read-only tools only, disables itinerary auto-
+  persistence and passive learning, and cannot mutate the trip until the user
+  explicitly approves one in a later turn.
+  This gives the user conversational judgment without slowing every edit or
+  silently overriding an explicit day choice.
 
 If a redesign violates the above without a stated reason, push back.
 

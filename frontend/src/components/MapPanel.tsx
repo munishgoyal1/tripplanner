@@ -38,15 +38,15 @@ function loadGoogleMaps(key: string): Promise<any> {
 }
 
 // Teardrop pin as an SVG data URL, tinted per day, with a number label baked in.
-function pinIcon(color: string, label: string, focused = false): string {
+export function pinIcon(color: string, label: string, focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${color}" stroke="white" stroke-width="2"/>
-    <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"
-      stroke="${focused ? color : "white"}" stroke-width="${focused ? 2 : 0}"/>
+        fill="${color}" stroke="${focused ? "#0f172a" : "white"}" stroke-width="${focused ? 3 : 2}"/>
+    <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
+      stroke="white" stroke-width="${focused ? 2 : 0}"/>
   <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="14"
-        font-weight="700" text-anchor="middle" fill="${color}">${label}</text>
+        font-weight="700" text-anchor="middle" fill="${focused ? "white" : color}">${label}</text>
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -82,15 +82,15 @@ function airportIcon(): string {
 
 // Hotel/lodging pin — a lettered teardrop ("H") in slate so a place you're
 // staying reads differently from a day-numbered attraction.
-function hotelIcon(focused = false): string {
+export function hotelIcon(focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
-    <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"
-      stroke="${focused ? HOTEL_COLOR : "white"}" stroke-width="${focused ? 2 : 0}"/>
+        fill="${HOTEL_COLOR}" stroke="${focused ? "#e11d48" : "white"}" stroke-width="${focused ? 3 : 2}"/>
+    <circle cx="17" cy="16" r="11" fill="${focused ? "#e11d48" : "white"}" fill-opacity="0.97"
+      stroke="white" stroke-width="${focused ? 2 : 0}"/>
   <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
-        font-weight="700" text-anchor="middle" fill="${HOTEL_COLOR}">H</text>
+        font-weight="700" text-anchor="middle" fill="${focused ? "white" : HOTEL_COLOR}">H</text>
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -408,15 +408,15 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       if (p.kind === "hotel") {
         icon = {
           url: hotelIcon(focused),
-          scaledSize: new google.maps.Size(focused ? 40 : 34, focused ? 52 : 44),
-          anchor: new google.maps.Point(focused ? 20 : 17, focused ? 52 : 44),
+          scaledSize: new google.maps.Size(focused ? 44 : 34, focused ? 57 : 44),
+          anchor: new google.maps.Point(focused ? 22 : 17, focused ? 57 : 44),
         };
       } else if (markerDay && visitOrder) {
         const color = dayColor.get(markerDay) || "#64748b";
         icon = {
           url: pinIcon(color, String(visitOrder), focused),
-          scaledSize: new google.maps.Size(focused ? 40 : 34, focused ? 52 : 44),
-          anchor: new google.maps.Point(focused ? 20 : 17, focused ? 52 : 44),
+          scaledSize: new google.maps.Size(focused ? 44 : 34, focused ? 57 : 44),
+          anchor: new google.maps.Point(focused ? 22 : 17, focused ? 57 : 44),
         };
       } else {
         icon = {

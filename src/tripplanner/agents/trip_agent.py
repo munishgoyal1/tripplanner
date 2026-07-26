@@ -779,6 +779,27 @@ _SEARCH_TOOLS = [
 # bound for schema purposes).
 TRIP_TOOLS = _CORE_TOOLS + _SEARCH_TOOLS
 
+_MUTATING_TOOL_NAMES = {
+  "create_trip_plan",
+  "update_trip_plan",
+  "finalize_trip",
+  "execute_bookings",
+  "resume_trip",
+  "save_travel_preferences",
+  "record_past_trip",
+  "record_trip_postmortem",
+  "remember_about_user",
+  "update_user_profile",
+  "add_family_member",
+  "add_user_interest",
+  "add_user_dislike",
+  "record_trip_mention",
+}
+
+
+def proposal_tools(tools: list) -> list:
+  return [tool for tool in tools if tool.name not in _MUTATING_TOOL_NAMES]
+
 # Tool calls that signal a planning session is under way.
 _PLANNING_TRIGGER_TOOLS = {
     "create_trip_plan", "get_trip_plan", "update_trip_plan", "finalize_trip",
@@ -823,14 +844,13 @@ def _planning_active(messages: list) -> bool:
     return False
 
 
-def select_tools(messages: list) -> list:
+def select_tools(messages: list, *, proposal_only: bool = False) -> list:
     """Return the tool subset to bind for this turn.
 
     Core preference/lifecycle tools are always bound; the heavy search tools are
     added only once a planning session is active — cutting per-turn prompt
     tokens during greetings and preference gathering.
     """
-    if _planning_active(messages):
-        return _CORE_TOOLS + _SEARCH_TOOLS
-    return list(_CORE_TOOLS)
+    tools = _CORE_TOOLS + _SEARCH_TOOLS if _planning_active(messages) else list(_CORE_TOOLS)
+    return proposal_tools(tools) if proposal_only else tools
 

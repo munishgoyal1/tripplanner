@@ -204,6 +204,13 @@ export interface SelectionPlacement {
   name: string;
 }
 
+export interface PlannerReview {
+  severity: "warning";
+  day: number;
+  summary: string;
+  prompt: string;
+}
+
 export interface DeselectItemOptions {
   day?: number;
   stop?: number;
@@ -221,4 +228,8 @@ export interface StreamHandlers {
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
+}
+
+export interface StreamOptions {
+  proposalOnly?: boolean;
 }
