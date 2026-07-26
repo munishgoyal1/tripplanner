@@ -2329,3 +2329,10 @@ VALIDATION:
 - The behavior must be identical in the desktop canvas and responsive/mobile
   right rail.
 
+=== 2026-07-26 — Session 75: Itinerary day-summary focus parity ===
+
+- Clicking a day-level summary in the Itinerary pane must perform the same
+  aggregate action as clicking that day in Map: clear exact-place focus, show
+  and fit the complete day circuit, and align that day summary at the start of
+  the Itinerary pane.
+

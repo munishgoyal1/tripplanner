@@ -136,7 +136,8 @@ frontend/
       ItineraryPanel.tsx   TripSnapshot + compact day summaries + clickable stops
            + booked checkbox; exact day/stop identity owns active-row scroll
          and the filled current `H`/number marker; day-header click frames the
-         complete map circuit without converting it into exact-place focus
+         complete map circuit and aligns its day summary without converting it
+         into exact-place focus
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;

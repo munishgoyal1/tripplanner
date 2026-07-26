@@ -108,6 +108,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Itinerary day-summary focus parity (Session 75)**: itinerary day-summary
+  clicks and Map day chips now use one App-owned aggregate handler that clears
+  exact focus, fits the full day circuit, and aligns the summary at the top of
+  the Itinerary pane.
 - **All-days map summary navigation (Session 74)**: Map All days clears exact
   place and single-day circuit focus, displays every circuit, and scrolls the
   Itinerary pane to its trip-level summary on desktop and responsive layouts.

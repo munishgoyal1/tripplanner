@@ -454,15 +454,11 @@ export default function App() {
     }
   };
 
-  const handleDayMap = (day: number) => {
+  const handleDayFocus = (day: number) => {
     setMapOpen(true);
     dispatchWorkspace({ type: "focus", place: null });
     setView((current) => current ? { ...current, focus: null } : current);
     setCircuitFocus({ day, token: Date.now() });
-  };
-
-  const handleMapDayFocus = (day: number) => {
-    handleDayMap(day);
     dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
   };
 
@@ -500,8 +496,8 @@ export default function App() {
     itineraryJump,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
-    onDayMap: handleDayMap,
-    onMapDayFocus: handleMapDayFocus,
+    onDayMap: handleDayFocus,
+    onMapDayFocus: handleDayFocus,
     onMapAllDaysFocus: handleMapAllDaysFocus,
     onSelect: handleSelect,
     onDeselect: handleDeselect,
@@ -523,7 +519,7 @@ export default function App() {
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
-          onDayMap={handleDayMap}
+          onDayMap={handleDayFocus}
           onStopRemove={handleStopRemove}
         />
       );
@@ -537,7 +533,7 @@ export default function App() {
         circuitFocusDay={circuitFocus.day || undefined}
         circuitFocusToken={circuitFocus.token}
         onPinFocus={handleStopFocus}
-        onDayFocus={handleMapDayFocus}
+        onDayFocus={handleDayFocus}
         onAllDaysFocus={handleMapAllDaysFocus}
         onSelect={handleSelect}
         onDeselect={handleDeselect}

@@ -380,6 +380,7 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "3");
     expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-circuit-token", "0");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "3");
     expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeDayFocus);
 
     fireEvent.click(screen.getByRole("button", { name: "Focus Day 2 hotel" }));
