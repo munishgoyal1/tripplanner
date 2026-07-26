@@ -223,9 +223,9 @@ Learns from user preferences and past trips.
   isolated `tripplanner-canary` and `tripplanner-prod` databases at 400 RU/s
   each. Migration performs exact six-container verification; throughput and
   cleanup scripts are guarded. Live canary/prod data migration and cutover are
-  complete. The local legacy account is deleted; direct Azure inventory still
-  shows the legacy canary/prod accounts despite explicit owner approval and an
-  attempted deletion. See `.azure/deployment-plan.md`.
+  complete. All three legacy accounts are deleted. Direct Azure inventory on
+  2026-07-26 verified only the shared free-tier account, both 400-RU/s
+  databases, and healthy canary/prod apps. See `.azure/deployment-plan.md`.
 - **Independent right dock + common export (Session 31)**: Details and Assistant
   are mounted sibling sections with matching hide controls; hiding either leaves
   the other visible and lets it fill the dock. Map day chips now focus a primary

@@ -314,7 +314,10 @@ steps, including an immediate deletion that waives the 7-day rollback window:
   env vars. Canary → `tripplanner-canary`, prod → `tripplanner-prod`; both
   `GET /api/health` returned `{"status":"ok"}` on the new revision.
 - **Legacy deletion:** owner accepted the loss of the rollback window and
-  approved all three deletions. `localcosmos2cgsfp` was deleted. A direct Azure
-  Resource Graph check afterward found `canary-cosmos-zcebxnuakdwnu` and
-  `prod-cosmos-f3ddjudq2rdt4` still present in `Succeeded` state alongside the
-  shared account. Those two deletions remain outstanding.
+  approved all three deletions. `localcosmos2cgsfp` and
+  `canary-cosmos-zcebxnuakdwnu` were deleted. On 2026-07-26, direct inventory
+  found the unused non-free-tier `prod-cosmos-f3ddjudq2rdt4` account still
+  provisioning 400 RU/s; both apps were verified against the shared account
+  before it was deleted. Final inventory contains only the free-tier
+  `tripplanner-data-qftmtl5pavmcu` account with `tripplanner-canary` and
+  `tripplanner-prod` at 400 RU/s each. Both app health endpoints returned `ok`.
