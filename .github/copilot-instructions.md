@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Concrete default hotels (Session 53)**: placeholder accommodation labels
+  such as `Hotel (TBD)` are filtered out of `selected_hotels` and reported as
+  incomplete planning. Unless the user asks to compare first, the agent must
+  search, review-verify, and persist its strongest preference-matched real
+  hotel in the same turn, replacing placeholder itinerary stops.
 - **Hotel-anchored daily itineraries (Session 52)**: every ordinary itinerary
   day renders and is prompted as a circuit from the applicable hotel back to
   that hotel. Explicit old-stay/new-stay transfer days retain distinct

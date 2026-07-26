@@ -44,6 +44,11 @@ _MEAL_PLACEHOLDER_RE = re.compile(
     r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
     re.I,
 )
+_HOTEL_PLACEHOLDER_RE = re.compile(
+    r"\b(tbd|to be decided|hotel option|hotel recommendation|"
+    r"accommodation option|accommodation recommendation)\b",
+    re.I,
+)
 
 
 def _serialized_mutation(func):
@@ -168,6 +173,35 @@ def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
             warnings.append(f"Day {day_num} has a meal placeholder instead of a named restaurant.")
         elif place_count >= 2 and not meal_stops:
             warnings.append(f"Day {day_num} has multiple activities but no named restaurant stop.")
+    return warnings
+
+
+def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
+    warnings: list[str] = []
+    hotels = plan.get("selected_hotels")
+    if isinstance(hotels, list) and not hotels:
+        warnings.append("No concrete hotel is selected.")
+
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return warnings
+    placeholder_days: list[str] = []
+    for index, day in enumerate(itinerary):
+        if not isinstance(day, dict):
+            continue
+        raw_stops = day.get("stops")
+        stops = raw_stops if isinstance(raw_stops, list) else []
+        if any(
+            _stop_kind(stop) == "hotel"
+            and _HOTEL_PLACEHOLDER_RE.search(_stop_name(stop))
+            for stop in stops
+        ):
+            day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
+            placeholder_days.append(str(day_num))
+    if placeholder_days:
+        warnings.append(
+            f"Hotel placeholders remain on Day(s) {', '.join(placeholder_days)}."
+        )
     return warnings
 
 
@@ -1379,10 +1413,17 @@ def update_trip_plan(updates_json: str) -> str:
     before = json.loads(json.dumps(plan))  # deep copy for diff
     for key, val in updates.items():
         if key in allowed_keys:
+            if key == "selected_hotels" and isinstance(val, list):
+                val = [
+                    hotel
+                    for hotel in val
+                    if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(hotel))
+                ]
             plan[key] = val
 
     _save_active_trip(plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
+    hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
     if restaurant_warnings:
         warning_text = (
@@ -1390,6 +1431,14 @@ def update_trip_plan(updates_json: str) -> str:
             + " ".join(restaurant_warnings)
             + " Call nearby_restaurants, choose preference-matched options, and update "
             "day_wise_itinerary with concrete restaurant names before finishing."
+        )
+    if hotel_warnings:
+        warning_text += (
+            "\nHotel planning incomplete: "
+            + " ".join(hotel_warnings)
+            + " Call search_hotels, choose the best preference-matched real option by "
+            "default, verify it with search_places_with_reviews, and replace every hotel "
+            "placeholder before finishing."
         )
     bullets = diff_plans(before, plan)
     if not bullets:

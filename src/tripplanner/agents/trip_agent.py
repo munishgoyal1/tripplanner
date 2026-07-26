@@ -426,6 +426,14 @@ STEP 3 — PARALLEL SEARCH (do all at once)
   f) web_search — fresh travel guides, recent reviews, seasonal advice when
      structured APIs don't cover it (e.g. "is Goa safe in monsoon?")
 
+    HOTEL COMPLETION GATE: unless the user explicitly asks to compare hotel
+    options before choosing, select the strongest preference-matched real hotel
+    from the search results as the default in this same turn. Persist it in
+    selected_hotels and replace every placeholder hotel in day_wise_itinerary.
+    Never persist "Hotel (TBD)", a generic accommodation label, or an invented
+    hotel price as a selected hotel. If update_trip_plan reports "Hotel planning
+    incomplete", search, choose, verify, and update again before the final reply.
+
   Present results in a clean summary:
   ┌──────────────────────────────────────────────┐
   │ ✈️ FLIGHTS: top 3-5 options                  │

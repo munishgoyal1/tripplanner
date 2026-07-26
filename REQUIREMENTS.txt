@@ -2055,3 +2055,13 @@ VALIDATION:
 - Apply the rule to existing structured plans at view time and require future
   agent-generated structured itineraries to persist the same circuit.
 
+=== 2026-07-26 — Session 53: Concrete default hotel selection ===
+
+- A generic hotel label such as "Hotel (TBD)" is not a selected hotel and must
+  not carry an invented price in the trip plan.
+- After hotel search and review verification, automatically select and persist
+  the strongest preference-matched real option unless the user explicitly asks
+  to compare options before choosing.
+- Treat placeholder hotels as an incomplete planning state and require the
+  agent to replace every placeholder before completing its response.
+

@@ -265,6 +265,44 @@ class TestTripPlanState:
         assert len(plan["selected_flights"]) == 1
         assert plan["total_cost"] == 8500
 
+    def test_update_trip_plan_rejects_placeholder_hotel_selection(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "Hotel (TBD)", "price": 15000}],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["selected_hotels"] == []
+        assert "Hotel planning incomplete" in result
+        assert "search_hotels" in result
+
+    def test_update_trip_plan_accepts_concrete_hotel_selection(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "DoubleTree by Hilton Goa - Panaji"}],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{
+                    "name": "DoubleTree by Hilton Goa - Panaji",
+                    "kind": "hotel",
+                }],
+            }],
+        })})
+
+        assert "Hotel planning incomplete" not in result
+
     def test_update_trip_plan_warns_about_restaurant_placeholders(self):
         create_trip_plan.invoke({
             "destination": "Kolkata",
