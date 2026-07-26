@@ -1,4 +1,4 @@
-import { EyeOff, FileDown, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound } from "lucide-react";
+import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ExportModal from "./components/ExportModal";
@@ -6,6 +6,7 @@ import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
 import TripPanel from "./components/TripPanel";
 import TripSwitcher from "./components/TripSwitcher";
+import TripActionsMenu from "./components/TripActionsMenu";
 import RightRail from "./components/RightRail";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import type { TripView } from "./types";
@@ -709,16 +710,10 @@ export default function App() {
             >
               <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
             </button>
-            <button
-              type="button"
-              onClick={() => setShowExport(true)}
+            <TripActionsMenu
               disabled={!view?.has_trip}
-              className="btn-ghost disabled:opacity-40"
-              title="Export itinerary with photos, PDF, print, or email"
-              aria-label="Export itinerary"
-            >
-              <FileDown size={15} aria-hidden /> <span className="hidden 2xl:inline">Export</span>
-            </button>
+              onExport={() => setShowExport(true)}
+            />
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}

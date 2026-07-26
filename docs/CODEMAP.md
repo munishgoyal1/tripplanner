@@ -96,7 +96,7 @@ frontend/
           planner with itinerary left, persistent map center, contextual
           right dock with independently hidden mounted Details/Assistant; no
           page scroll. Top command/status bar owns saved-trip selection,
-        New trip, pane visibility, export, lifecycle/completeness, cost, and
+        New trip, pane visibility, grouped trip actions, lifecycle/completeness, cost, and
         latest mutation result; desktop account/preferences and login status
         live here too. Shared place/day focus synchronizes itinerary, map,
         and details.
@@ -117,6 +117,7 @@ frontend/
                mobile header owns launchers, desktop top row triggers them
       TripPanel.tsx        Hero summary + NavStrip + recommendation ItemCards;
          selected places use the shared day-move/remove actions
+      TripActionsMenu.tsx  Common-bar Export/Share/Calendar popover and share feedback
        PlaceTripActions.tsx Shared Map/Details selected-place control: current day,
           authoritative day move, exact/remove-everywhere occurrence actions
       TripSwitcher.tsx     Persistent saved-trip switch/delete control; dropdown

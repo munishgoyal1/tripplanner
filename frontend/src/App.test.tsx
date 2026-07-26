@@ -1,11 +1,12 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock, shareActiveTripMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   selectItemMock: vi.fn(),
   deselectItemMock: vi.fn(),
   isAnonymousUserMock: vi.fn(() => true),
+  shareActiveTripMock: vi.fn(),
   emptyView: {
   has_trip: false,
   title: "",
@@ -35,6 +36,8 @@ vi.mock("./api", () => ({
   selectItem: selectItemMock,
   deselectItem: deselectItemMock,
   startNewTrip: vi.fn(),
+  shareActiveTrip: shareActiveTripMock,
+  tripIcsUrl: vi.fn(() => "/api/trip/export.ics"),
   isAnonymousUser: isAnonymousUserMock,
   getDisplayName: vi.fn(() => "Munish"),
 }));
@@ -118,6 +121,11 @@ describe("App responsive workspace", () => {
     localStorage.clear();
     window.history.replaceState({}, "", "/");
     fetchTripViewMock.mockReset().mockResolvedValue(emptyView);
+    shareActiveTripMock.mockReset().mockResolvedValue("https://example.com/shared-trip");
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
     selectItemMock.mockReset();
     deselectItemMock.mockReset();
     isAnonymousUserMock.mockReset().mockReturnValue(true);
@@ -362,13 +370,23 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });
 
-  it("shows guest identity status and opens export from the common bar", async () => {
+  it("groups export, share, and calendar actions in the common bar", async () => {
     fetchTripViewMock.mockResolvedValue({ ...emptyView, has_trip: true });
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Guest - sign in" })).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "Export itinerary" }));
+    fireEvent.click(screen.getByRole("button", { name: "Trip actions" }));
+    expect(screen.getByRole("menuitem", { name: /Share trip/ })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /Add to calendar/ })).toHaveAttribute(
+      "href",
+      "/api/trip/export.ics",
+    );
+    fireEvent.click(screen.getByRole("menuitem", { name: /Share trip/ }));
+    await waitFor(() => expect(screen.getByText("Link copied")).toBeInTheDocument());
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://example.com/shared-trip");
+
+    fireEvent.click(screen.getByRole("menuitem", { name: /Export itinerary/ }));
     expect(screen.getByRole("dialog", { name: "Export itinerary dialog" })).toBeInTheDocument();
   });
 

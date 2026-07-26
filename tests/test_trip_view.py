@@ -93,6 +93,34 @@ def test_build_view_overview_and_items() -> None:
     assert hotel["reviews"]
 
 
+def test_overview_counts_unique_itinerary_places() -> None:
+    trip = {
+        "selected_flights": [],
+        "selected_hotels": [{"name": "Hotel A"}],
+        "selected_activities": [{"name": "Fort Aguada"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel A", "kind": "hotel"},
+                    {"name": "Fort Aguada", "kind": "attraction"},
+                    {"name": "Britto's", "kind": "meal"},
+                    {"name": "Taxi", "kind": "transport"},
+                    {"name": "Hotel A", "kind": "hotel"},
+                ],
+            },
+            {"day": 2, "stops": [{"name": "Fort Aguada", "kind": "attraction"}]},
+        ],
+    }
+
+    assert trip_view._build_overview(trip)["counts"] == {
+        "flights": 0,
+        "hotels": 1,
+        "activities": 2,
+        "days": 2,
+    }
+
+
 def test_itinerary_only_place_reads_as_in_trip() -> None:
     """A place woven into the day-by-day itinerary but absent from the selected
     buckets should still surface as ``selected`` so the panel shows Remove."""

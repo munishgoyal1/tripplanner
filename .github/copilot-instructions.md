@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Centralized trip actions + authoritative counts (Session 57)**: Export,
+  Share, and Add to calendar live in one compact common-bar menu instead of the
+  Details hero. Workspace and Details place counts include unique structured
+  attractions and named meals/restaurants while excluding repeats, hotels,
+  flights, and transport.
 - **Per-leg route context (Session 56)**: the map view exposes estimated
   `legs[]` for each consecutive pin pair, and itinerary stops expose the same
   estimate as `travel_from_previous`. Itinerary rows show quiet distance/time

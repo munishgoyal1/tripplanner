@@ -2094,3 +2094,14 @@ VALIDATION:
 - Derive both surfaces from one backend leg-metrics contract using the existing
   no-billed-Directions straight-line heuristic.
 
+=== 2026-07-26 — Session 57: Centralized trip actions and accurate place counts ===
+
+- Move Export, Share, and Add to calendar out of the Details pane into one
+  compact, mature Trip actions menu in the common top command row.
+- Keep the command row uncrowded while preserving photo/PDF/email export,
+  read-only share-link copying, and calendar download.
+- Show accurate place counts in both the common row and Details by counting
+  unique authoritative itinerary attractions and named meals/restaurants even
+  when `selected_activities` is empty. Exclude repeated visits, hotel circuit
+  endpoints, flights, and transport from that place count.
+

@@ -1,14 +1,8 @@
-import { ArrowLeft, CalendarPlus, ChevronLeft, ChevronRight, FileDown, Link2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-  shareActiveTrip,
-  tripIcsUrl,
-  type DeselectItemOptions,
-  type SelectItemOptions,
-} from "../api";
+import { type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { Budget, TripItem, TripView } from "../types";
 import DestinationOverview from "./DestinationOverview";
-import ExportModal from "./ExportModal";
 import Lightbox from "./Lightbox";
 import PlaceTripActions from "./PlaceTripActions";
 import TripSwitcher from "./TripSwitcher";
@@ -347,26 +341,7 @@ export default function TripPanel({
   });
   const openPhoto = (photos: string[], index: number, alt: string) =>
     setLb({ photos, index, alt });
-  const [shareState, setShareState] = useState<{ url: string; copied: boolean } | null>(
-    null,
-  );
-  const [showExport, setShowExport] = useState(false);
   const [pendingHotel, setPendingHotel] = useState<string | null>(null);
-  const onShare = async () => {
-    try {
-      const url = await shareActiveTrip();
-      let copied = false;
-      try {
-        await navigator.clipboard.writeText(url);
-        copied = true;
-      } catch {
-        // Clipboard may be blocked (non-HTTPS, permissions) — still show the URL.
-      }
-      setShareState({ url, copied });
-    } catch (err) {
-      setShareState({ url: String((err as Error).message || err), copied: false });
-    }
-  };
 
   if (loading && !view) {
     return (
@@ -456,48 +431,10 @@ export default function TripPanel({
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">
               Your trip
             </p>
-            <div className="mt-1 flex items-start justify-between gap-3">
+            <div className="mt-1">
               <h2 className="display text-2xl font-semibold leading-tight">
                 {view.title}
               </h2>
-              <div className="mt-1 flex shrink-0 flex-col items-end gap-1.5">
-                <div className="flex flex-wrap items-center justify-end gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setShowExport(true)}
-                    title="Export day-wise itinerary for PDF/print or email"
-                    className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
-                  >
-                    <FileDown size={14} aria-hidden />
-                    <span>Export</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={onShare}
-                    title="Get a read-only share link anyone can open"
-                    className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
-                  >
-                    <Link2 size={14} aria-hidden />
-                    <span>Share</span>
-                  </button>
-                  <a
-                    href={tripIcsUrl()}
-                    download
-                    title="Download .ics for your calendar"
-                    className="pill bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20"
-                  >
-                    <CalendarPlus size={14} aria-hidden />
-                    <span>Add to calendar</span>
-                  </a>
-                </div>
-                {shareState && (
-                  <div className="max-w-[18rem] truncate rounded-xl bg-white/10 px-2.5 py-1 text-[10px] text-white/85 ring-1 ring-white/20">
-                    {shareState.copied
-                      ? "Link copied to clipboard"
-                      : shareState.url}
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2 text-sm">
@@ -551,7 +488,7 @@ export default function TripPanel({
                 🏨 {ov.counts.hotels} hotels
               </span>
               <span className="chip bg-white/10 text-white/90">
-                🎯 {ov.counts.activities} activities
+                🎯 {ov.counts.activities} places
               </span>
               {ov.counts.days > 0 && (
                 <span className="chip bg-white/10 text-white/90">
@@ -678,7 +615,6 @@ export default function TripPanel({
           }}
         />
       )}
-      {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     </div>
   );
 }

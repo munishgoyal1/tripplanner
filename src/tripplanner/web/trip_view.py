@@ -351,6 +351,23 @@ def _itinerary_names(trip: dict[str, Any] | None) -> set[str]:
     return out
 
 
+def _planned_place_names(trip: dict[str, Any]) -> set[str]:
+    names = _selected_names(trip, "attraction")
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        for stop in day.get("stops") or []:
+            if isinstance(stop, dict):
+                kind = str(stop.get("kind") or "attraction").strip().lower()
+                name = str(stop.get("name") or "").strip()
+            else:
+                kind = "attraction"
+                name = str(stop or "").strip()
+            if kind in {"attraction", "activity", "meal", "restaurant"} and name:
+                names.add(name.lower())
+    return names
+
+
 # ---------------------------------------------------------------------------
 # view-model assembly (may hit Places for photos/reviews)
 # ---------------------------------------------------------------------------
@@ -360,7 +377,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     counts = {
         "flights": len(trip.get("selected_flights") or []),
         "hotels": len(trip.get("selected_hotels") or []),
-        "activities": len(trip.get("selected_activities") or []),
+        "activities": len(_planned_place_names(trip)),
         "days": len(trip.get("day_wise_itinerary") or []),
     }
     total = trip.get("total_cost")

@@ -108,12 +108,17 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   the Map retains the user's place/day inputs. After adding a non-hotel place,
   both Details and Map show its current day and let the user move it to any
   authoritative itinerary day. Restaurant POIs persist as meal stops.
-- **Common commands**: itinerary export belongs in the desktop command bar and
-  supports photo-rich preview, print/save PDF, direct PDF, and email. Enabled
+- **Common commands**: trip-wide Export, Share, and Add to calendar actions
+  belong in one compact menu in the common command bar, not scattered through
+  Details. Export supports photo-rich preview, print/save PDF, direct PDF, and email. Enabled
   exports include embedded day route maps plus place photos, address/rating,
   itinerary notes, time, and booking status; every output path honors the same
   media toggles. The account control visibly distinguishes a signed-in identity
   from a local guest.
+- **Authoritative counts**: command-bar and Details place counts include unique
+  structured itinerary attractions and named meal/restaurant stops, even when
+  the agent did not mirror them into `selected_activities`. Repeated visits,
+  hotel endpoints, flights, and transport do not inflate the place count.
 - **Mutation coherence**: adding/removing a place or changing the stay refreshes
   the complete itinerary, not only one card. Unbooked attractions redistribute
   around the current hotel anchors using geographic proximity and balanced day
