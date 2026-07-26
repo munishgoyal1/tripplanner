@@ -76,7 +76,6 @@ function StopRow({
       onFocus();
     }
   };
-  const hasConcern = !!stop.concern;
   return (
     <li
       id={rowId}
@@ -92,7 +91,7 @@ function StopRow({
             : focusable
               ? "cursor-pointer hover:bg-slate-50"
               : "hover:bg-slate-50"
-                  } ${hasConcern ? "ring-1 ring-rose-200 bg-rose-50/60" : ""}`}
+                  }`}
     >
       <button
         type="button"
@@ -475,6 +474,7 @@ export default function ItineraryPanel({
 
   useEffect(() => {
     if (!focusName || !it?.has_itinerary) return;
+    setFlashTarget(null);
     const target = focusName.trim().toLowerCase();
     if (!target) return;
     const rows = Array.from(document.querySelectorAll<HTMLElement>("[data-stop-name]"));

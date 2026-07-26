@@ -194,6 +194,30 @@ describe("ItineraryPanel", () => {
     expect(scrollIntoViewMock.mock.instances[0]).toBe(dayTwoRow);
   });
 
+  it("does not style concern rows as selected cards", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: itinerary.days[0].stops.map((stop) => ({
+          ...stop,
+          concern: "Check opening hours before visiting.",
+        })),
+      }],
+    });
+
+    render(<ItineraryPanel focusName="Louvre Museum" focusDay={1} focusStop={1} />);
+
+    await screen.findByText("Museums and river");
+    const louvre = document.querySelector('[data-stop-name="louvre museum"]');
+    const cruise = document.querySelector('[data-stop-name="seine cruise"]');
+    expect(louvre).toHaveClass("bg-brand/5");
+    expect(cruise).not.toHaveClass("bg-brand/5");
+    expect(cruise).not.toHaveClass("bg-rose-50/60");
+    expect(cruise).not.toHaveClass("ring-rose-200");
+    expect(screen.getAllByText("Check opening hours before visiting.")).toHaveLength(2);
+  });
+
   it("rolls back an optimistic booking update when persistence fails", async () => {
     setStopBookedMock.mockRejectedValue(new Error("offline"));
     render(<ItineraryPanel />);

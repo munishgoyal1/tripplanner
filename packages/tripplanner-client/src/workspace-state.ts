@@ -41,7 +41,7 @@ export function workspaceReducer(
 ): WorkspaceState {
   switch (action.type) {
     case "focus":
-      return { ...state, activePlace: action.place };
+      return { ...state, activePlace: action.place, itineraryJump: null };
     case "trip-content-changed":
       return { ...state, tripRevision: state.tripRevision + 1 };
     case "trip-changed":

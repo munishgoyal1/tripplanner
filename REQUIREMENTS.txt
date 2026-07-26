@@ -2267,3 +2267,15 @@ VALIDATION:
   owns the frontend port, fail explicitly and retain the `-FrontendPort` escape
   hatch. Backend-only runs must not touch the frontend listener.
 
+=== 2026-07-26 — Session 69: Cross-surface selection consistency ===
+
+- Only one exact itinerary occurrence may look selected at a time. Concern,
+  booking, and trip-membership styling must not resemble persistent selection;
+  warning text remains visible without tinting every concerned stop card.
+- Clicking a Map day chip must perform the same aggregate action as clicking the
+  corresponding itinerary day header: clear exact-place focus, activate the day,
+  fit the complete circuit, and avoid selecting a representative place in Details.
+- Maintain `docs/ENGINEERING_LEARNINGS.md` as the joint architectural/domain
+  learning log. Record reusable interaction and design lessons there rather than
+  changing the owner's existing `learning.txt`.
+

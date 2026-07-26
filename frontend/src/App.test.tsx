@@ -71,10 +71,10 @@ vi.mock("./components/ItineraryPanel", () => ({
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus, onDayFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+  default: ({ onPinFocus, onDayFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number) => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
-      <button type="button" onClick={() => onDayFocus?.(2, { kind: "attraction", name: "Eiffel Tower" })}>Focus Day 2</button>
+      <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
     </div>
   ),
 }));
@@ -329,18 +329,25 @@ describe("App responsive workspace", () => {
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
   });
 
-  it("syncs a map day filter to the matching itinerary day", async () => {
-    fetchTripViewMock
-      .mockResolvedValueOnce(emptyView)
-      .mockResolvedValueOnce({ ...emptyView, focus: { kind: "attraction", name: "Eiffel Tower" } });
+  it("gives a map day chip the same aggregate circuit focus as an itinerary day header", async () => {
+    fetchTripViewMock.mockResolvedValue({
+      ...emptyView,
+      has_trip: true,
+      focus: { kind: "attraction", name: "Eiffel Tower", day: 1, stop: 2 },
+      items: [{ kind: "attraction", name: "Eiffel Tower", selected: true }],
+    });
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument());
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower");
     fireEvent.click(screen.getByRole("button", { name: "Focus Day 2" }));
 
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
-    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "2");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(1);
   });
 
   it("frames an itinerary day circuit without converting it into place focus", async () => {

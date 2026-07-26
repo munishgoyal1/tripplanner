@@ -240,7 +240,7 @@ interface Props {
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
-  onDayFocus?: (day: number, place?: MapPin) => void;
+  onDayFocus?: (day: number) => void;
   /** Add a place to the trip (from a pin's info window). */
   onSelect?: (
     kind: string,
@@ -855,11 +855,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                   }
                   setActiveDay(d.day);
                   setNewStopDay(String(d.day));
-                  const dayPins = d.pin_ids
-                    .map((id) => view.pins.find((pin) => pin.id === id))
-                    .filter((pin): pin is MapPin => !!pin);
-                  const place = dayPins.find((pin) => pin.kind !== "hotel") ?? dayPins[0];
-                  onDayFocus?.(d.day, place);
+                  onDayFocus?.(d.day);
                 }}
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                   activeDay === d.day ? "text-white" : "text-slate-700 hover:opacity-80"

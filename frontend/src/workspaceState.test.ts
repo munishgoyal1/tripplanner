@@ -13,6 +13,20 @@ describe("workspaceReducer", () => {
     expect(next.chatRevision).toBe(0);
   });
 
+  it("clears a stale itinerary jump when exact focus changes", () => {
+    const state = {
+      ...initialWorkspaceState,
+      itineraryJump: { day: 1, name: "Louvre Museum", token: 1 },
+    };
+    const next = workspaceReducer(state, {
+      type: "focus",
+      place: { kind: "attraction", name: "Seine cruise", day: 1, stop: 2 },
+    });
+
+    expect(next.itineraryJump).toBeNull();
+    expect(next.activePlace?.name).toBe("Seine cruise");
+  });
+
   it("advances only trip content revision for a mutation", () => {
     const next = workspaceReducer(initialWorkspaceState, { type: "trip-content-changed" });
 

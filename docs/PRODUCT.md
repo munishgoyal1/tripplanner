@@ -123,8 +123,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   than jumping to its first stay day. Google-
   canonical punctuation differences must not prevent an itinerary restaurant
   from resolving to its existing map pin and inspection tile.
-  Selecting a Map day scrolls the itinerary to that day and focuses its primary
-  place in Details. Restaurants are place stops too: they join day circuits and
+  Selecting a Map day scrolls the itinerary to that day and performs the same
+  aggregate full-circuit focus as its itinerary day header, without inventing a
+  representative Details selection. Restaurants are place stops too: they join day circuits and
   support the same focus behavior. Substantial planning days use concrete,
   preference-matched restaurant names from search results, never generic or
   `TBD` meal placeholders. Ordinary days cannot be hotel-only: each needs a

@@ -457,7 +457,13 @@ export default function App() {
   const handleDayMap = (day: number) => {
     setMapOpen(true);
     dispatchWorkspace({ type: "focus", place: null });
+    setView((current) => current ? { ...current, focus: null } : current);
     setCircuitFocus({ day, token: Date.now() });
+  };
+
+  const handleMapDayFocus = (day: number) => {
+    handleDayMap(day);
+    dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
   };
 
   const tripPanelProps = {
@@ -487,6 +493,7 @@ export default function App() {
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
     onDayMap: handleDayMap,
+    onMapDayFocus: handleMapDayFocus,
     onSelect: handleSelect,
     onDeselect: handleDeselect,
     tripVersion,
@@ -521,10 +528,7 @@ export default function App() {
         circuitFocusDay={circuitFocus.day || undefined}
         circuitFocusToken={circuitFocus.token}
         onPinFocus={handleStopFocus}
-        onDayFocus={(day, place) => {
-          dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
-          if (place) void handleFocus(focusKind(place.kind), place.name);
-        }}
+        onDayFocus={handleMapDayFocus}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
       />

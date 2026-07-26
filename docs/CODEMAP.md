@@ -185,6 +185,7 @@ tests/                pytest suite
 docs/
   android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
+  ENGINEERING_LEARNINGS.md  Joint architectural/domain lessons for future work
   dev.md              Dev environment notes
   ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   setup-oauth.md      OAuth setup walkthrough

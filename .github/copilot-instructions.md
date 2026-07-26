@@ -1,7 +1,9 @@
 # Copilot Instructions — tripplanner
 
 > **Read [docs/CODEMAP.md](../docs/CODEMAP.md) (where) and
-> [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste) FIRST.**
+> [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste) FIRST. Consult
+> [docs/ENGINEERING_LEARNINGS.md](../docs/ENGINEERING_LEARNINGS.md) for durable
+> cross-feature lessons before changing interaction behavior.
 > They are the canonical, committed sources of truth and are kept up to date
 > with the code. Use them instead of grepping the repo to "rediscover"
 > structure or owner intent on every task.
@@ -106,6 +108,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Cross-surface selection consistency (Session 69)**: exact-place selection
+  clears stale jump highlights, concern text no longer tints whole stop cards,
+  and Map day chips use the same aggregate circuit action as itinerary day
+  headers on desktop and mobile. Reusable lessons now live in the separate
+  `docs/ENGINEERING_LEARNINGS.md`; the owner's `learning.txt` is untouched.
 - **Clean local SPA restart (Session 68)**: `scripts/dev-spa.ps1` now stops a
   previous Vite listener only when its Node command belongs to this repository,
   before Docker/Cosmos/backend startup. Unrelated frontend-port owners still
