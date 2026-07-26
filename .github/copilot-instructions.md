@@ -225,7 +225,9 @@ Learns from user preferences and past trips.
   cleanup scripts are guarded. Live canary/prod data migration and cutover are
   complete. All three legacy accounts are deleted. Direct Azure inventory on
   2026-07-26 verified only the shared free-tier account, both 400-RU/s
-  databases, and healthy canary/prod apps. See `.azure/deployment-plan.md`.
+  databases, and healthy canary/prod apps. Both obsolete Basic ACRs and the
+  unreferenced zero-deployment Foundry account/project are also deleted; apps
+  continue to use GHCR. See `.azure/deployment-plan.md`.
 - **Independent right dock + common export (Session 31)**: Details and Assistant
   are mounted sibling sections with matching hide controls; hiding either leaves
   the other visible and lets it fill the dock. Map day chips now focus a primary

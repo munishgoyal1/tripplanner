@@ -321,3 +321,11 @@ steps, including an immediate deletion that waives the 7-day rollback window:
   before it was deleted. Final inventory contains only the free-tier
   `tripplanner-data-qftmtl5pavmcu` account with `tripplanner-canary` and
   `tripplanner-prod` at 400 RU/s each. Both app health endpoints returned `ok`.
+- **Remaining obsolete-resource cleanup:** after explicit owner approval on
+  2026-07-26, `canarytp32780` and `prodtp15831` were deleted after verifying
+  both apps use GHCR and do not configure an ACR. The zero-deployment,
+  unreferenced `foundry-trip-planner-resource/foundry-trip-planner` project and
+  its parent AI Services account were also deleted. The deployed local,
+  canary, and production OpenAI accounts were retained, as were canary
+  Communication Services/Email because the canary app actively configures it.
+  Final app health checks returned `ok`.
