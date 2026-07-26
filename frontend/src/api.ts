@@ -153,6 +153,7 @@ export interface ToolEventExtras {
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
+  onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
 }
@@ -233,6 +234,11 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
         args: typeof data.args === "string" ? data.args : undefined,
         duration_ms: typeof data.duration_ms === "number" ? data.duration_ms : undefined,
       });
+      break;
+    case "progress":
+      if (["thinking", "reviewing", "saving"].includes(data.stage)) {
+        h.onProgress?.(data.stage);
+      }
       break;
     case "done":
       h.onDone(data.reply ?? "", typeof data.trip_id === "string" ? data.trip_id : undefined);

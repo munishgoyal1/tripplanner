@@ -218,6 +218,7 @@ export interface ToolEventExtras {
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
+  onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
 }

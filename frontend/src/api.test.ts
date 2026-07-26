@@ -18,6 +18,7 @@ function handlers(): StreamHandlers {
   return {
     onToken: vi.fn(),
     onTool: vi.fn(),
+    onProgress: vi.fn(),
     onDone: vi.fn(),
     onError: vi.fn(),
   };
@@ -33,6 +34,7 @@ describe("streamChat", () => {
       "fetch",
       vi.fn().mockResolvedValue(
         streamResponse([
+          'event: progress\ndata: {"stage":"thinking"}\n\n',
           'event: token\ndata: {"text":"Hello"}\n\n',
           'event: done\ndata: {"reply":"Hello","trip_id":"trip-1"}\n\n',
         ]),
@@ -43,6 +45,7 @@ describe("streamChat", () => {
     await streamChat("plan a trip", events);
 
     expect(events.onToken).toHaveBeenCalledWith("Hello");
+    expect(events.onProgress).toHaveBeenCalledWith("thinking");
     expect(events.onDone).toHaveBeenCalledWith("Hello", "trip-1");
   });
 

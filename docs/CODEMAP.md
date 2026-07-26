@@ -114,7 +114,9 @@ frontend/
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
       ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
-               mobile header owns launchers, desktop top row triggers them
+           immediate thinking/tool/review/save progress with elapsed time;
+           animation-frame token batching; mobile header owns launchers,
+           desktop top row triggers them
       TripPanel.tsx        Contextual destination/place inspector: whole-trip
         destination guide + compact place rows, or rich focused-place details;
         selected places use the shared day-move/remove actions
@@ -130,7 +132,8 @@ frontend/
                itinerary/photos + opt-in lazy map
       ItineraryPanel.tsx   TripSnapshot + compact day summaries + clickable stops
            + booked checkbox; exact day/stop identity owns active-row scroll
-           and the filled current `H`/number marker
+         and the filled current `H`/number marker; aggregate day-header click
+         focuses the first mapped non-stay place
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;
@@ -147,8 +150,10 @@ frontend/
   playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
   vitest.config.ts         jsdom unit/component test configuration
 packages/tripplanner-client/
-  src/types.ts             Shared TripView/Itinerary/Map/saved-trip contracts
-  src/client.ts            Fetch, mutation, and SSE transport for web + native
+  src/types.ts             Shared TripView/Itinerary/Map/saved-trip contracts,
+                           including optional SSE progress phases
+  src/client.ts            Fetch, mutation, and token/tool/progress SSE transport
+                           for web + native
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
   app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant, Details

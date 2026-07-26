@@ -40,6 +40,27 @@ const GREETING: ChatMessage = {
   text: "Hi! Tell me where and when you'd like to travel and I'll plan it.",
 };
 
+const PROGRESS_LABELS = {
+  thinking: "Thinking through your request",
+  reviewing: "Reviewing the results",
+  saving: "Saving your trip updates",
+} as const;
+
+function toolProgressLabel(name: string): string {
+  if (/flight/i.test(name)) return "Searching live flights";
+  if (/hotel/i.test(name)) return "Searching hotels";
+  if (/restaurant/i.test(name)) return "Finding restaurants";
+  if (/place|review|activit/i.test(name)) return "Checking places and reviews";
+  if (/route|optimi/i.test(name)) return "Working out routes";
+  if (/weather/i.test(name)) return "Checking the weather";
+  if (/visa/i.test(name)) return "Checking entry requirements";
+  if (/event/i.test(name)) return "Finding local events";
+  if (/preference|memory|profile/i.test(name)) return "Reviewing your preferences";
+  if (/update|create|finalize|plan/i.test(name)) return "Updating your itinerary";
+  if (/web_search/i.test(name)) return "Researching current information";
+  return "Working on your trip";
+}
+
 export default function ChatPanel({
   onTurnComplete,
   reloadToken = 0,
@@ -52,6 +73,8 @@ export default function ChatPanel({
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
+  const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
+  const [progressSeconds, setProgressSeconds] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [nameInput, setNameInput] = useState(getDisplayName());
@@ -72,6 +95,17 @@ export default function ChatPanel({
   // was a guest web-* id. The transcript effect reads this and skips loading
   // the (now-irrelevant) guest chat, keeping the screen at GREETING + banner.
   const freshSignInRef = useRef(false);
+
+  useEffect(() => {
+    if (!progress) {
+      setProgressSeconds(0);
+      return;
+    }
+    const update = () => setProgressSeconds(Math.floor((Date.now() - progress.startedAt) / 1000));
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [progress]);
 
   useEffect(() => {
     const openAccount = () => setShowAccount((open) => !open);
@@ -272,6 +306,7 @@ export default function ChatPanel({
     const outgoing = text;
     setInput("");
     setBusy(true);
+    setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
     setMessages((m) => [
       ...m,
       { role: "user", text: outgoing },
@@ -280,23 +315,39 @@ export default function ChatPanel({
 
     const usedTools = new Set<string>();
     const toolTrace: { name: string; args?: string; duration_ms?: number }[] = [];
+    let pendingTokens = "";
+    let tokenFrame: number | null = null;
+    const flushTokens = () => {
+      tokenFrame = null;
+      if (!pendingTokens) return;
+      const text = pendingTokens;
+      pendingTokens = "";
+      setMessages((m) => {
+        const copy = [...m];
+        copy[copy.length - 1] = {
+          ...copy[copy.length - 1],
+          text: copy[copy.length - 1].text + text,
+        };
+        return copy;
+      });
+    };
     let handledError = false;
     try {
       await streamChat(outgoing, {
-        onToken: (t) =>
-        setMessages((m) => {
-          const copy = [...m];
-          copy[copy.length - 1] = {
-            ...copy[copy.length - 1],
-            text: copy[copy.length - 1].text + t,
-          };
-          return copy;
-        }),
+        onToken: (text) => {
+          setProgress(null);
+          pendingTokens += text;
+          if (tokenFrame == null) tokenFrame = window.requestAnimationFrame(flushTokens);
+        },
+      onProgress: (stage) => {
+        setProgress({ label: PROGRESS_LABELS[stage], startedAt: Date.now() });
+      },
       onTool: (name, phase, extras) => {
         if (phase === "start") {
           usedTools.add(name);
           toolTrace.push({ name, args: extras?.args });
           setActiveTool({ name, args: extras?.args });
+          setProgress({ label: toolProgressLabel(name), startedAt: Date.now() });
         } else {
           // Attach the duration to the most recent matching start entry that
           // doesn't already have one.
@@ -310,7 +361,10 @@ export default function ChatPanel({
         }
       },
       onDone: (_reply, tripId) => {
+        if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
+        flushTokens();
         setActiveTool(null);
+        setProgress(null);
         setMessages((m) => {
           const copy = [...m];
           copy[copy.length - 1] = {
@@ -325,7 +379,11 @@ export default function ChatPanel({
       },
         onError: (msg) => {
           handledError = true;
+          pendingTokens = "";
+          if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
+          tokenFrame = null;
           setActiveTool(null);
+          setProgress(null);
           setMessages((m) => {
             const copy = [...m];
             copy[copy.length - 1] = { role: "assistant", text: `Warning: ${msg}` };
@@ -335,7 +393,11 @@ export default function ChatPanel({
       });
     } catch (error) {
       if (!handledError) {
+        pendingTokens = "";
+        if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
+        tokenFrame = null;
         setActiveTool(null);
+        setProgress(null);
         setMessages((m) => {
           const copy = [...m];
           copy[copy.length - 1] = {
@@ -347,6 +409,9 @@ export default function ChatPanel({
       }
     } finally {
       setActiveTool(null);
+      setProgress(null);
+      if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
+      flushTokens();
       setBusy(false);
     }
   }
@@ -726,15 +791,12 @@ export default function ChatPanel({
             </div>
           </div>
         ))}
-        {activeTool && (
+        {busy && progress && (
           <div className="flex items-center gap-2 text-xs text-muted">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
             <span>
-              running <span className="font-medium text-ink">{activeTool.name}</span>
-              {activeTool.args ? (
-                <span className="text-muted/80">({activeTool.args})</span>
-              ) : null}
-              …
+              <span className="font-medium text-ink">{progress.label}</span>
+              {progressSeconds >= 2 ? ` · ${progressSeconds}s` : ""}…
             </span>
           </div>
         )}

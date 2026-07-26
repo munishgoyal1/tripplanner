@@ -255,10 +255,18 @@ function DayCard({
   jumpToken: number;
   onRemove?: (kind: string, name: string, day: number, stop: number) => void;
 }) {
-  const firstPlaceIndex = day.stops.findIndex(
-    (stop) => stop.kind === "hotel" || stop.kind === "attraction",
+  const firstNonStayIndex = day.stops.findIndex(
+    (stop) => ["attraction", "meal", "restaurant"].includes(stop.kind),
   );
+  const firstPlaceIndex = firstNonStayIndex >= 0
+    ? firstNonStayIndex
+    : day.stops.findIndex((stop) => stop.kind === "hotel");
   const firstPlace = day.stops[firstPlaceIndex];
+  const focusAggregateDay = () => {
+    if (firstPlace) {
+      onMap(firstPlace.kind, firstPlace.name, day.day, firstPlaceIndex + 1);
+    }
+  };
   let visitOrder = 0;
   const mapLabels = day.stops.map((stop) => {
     if (stop.kind === "hotel") return "H";
@@ -274,22 +282,18 @@ function DayCard({
     : null;
   return (
     <section id={`it-day-${day.day}`} className="card p-4">
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => firstPlace && onMap(
-            firstPlace.kind,
-            firstPlace.name,
-            day.day,
-            firstPlaceIndex + 1,
-          )}
+      <div
+        onClick={focusAggregateDay}
+        className={firstPlace ? "group/day flex cursor-pointer items-center gap-3" : "flex items-center gap-3"}
+        title={firstPlace ? `Focus Day ${day.day} on ${firstPlace.name}` : undefined}
+      >
+        <span
           className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition hover:scale-105 hover:shadow-sm disabled:cursor-default disabled:hover:scale-100"
           style={{ backgroundColor: day.color }}
-          disabled={!firstPlace}
-          title={firstPlace ? `Zoom map to Day ${day.day}` : "No mapped stops yet"}
+          aria-hidden
         >
           {day.day}
-        </button>
+        </span>
         <div className="min-w-0">
           <h3 className="display truncate text-base font-semibold text-ink">
             {day.title}
@@ -312,6 +316,7 @@ function DayCard({
                 href={day.google_maps_url}
                 target="_blank"
                 rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
                 className="inline-flex items-center gap-1 font-medium text-brand hover:text-brand/80"
                 title={`Open Day ${day.day} route in Google Maps`}
               >

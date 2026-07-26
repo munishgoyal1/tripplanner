@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Aggregate day focus + responsive chat (Session 61)**: the whole itinerary
+  day header focuses its first non-stay mapped place across itinerary, Map, and
+  Details. Global mutation status lives only in the command bar. Chat emits and
+  renders thinking/tool/review/save phases with elapsed time, anti-buffered SSE,
+  and animation-frame token paints. The measured model decision remains GPT-4.1.
 - **Exact stop-to-circuit focus (Session 60)**: clicking a mapped itinerary
   place fills only that exact day/stop `H` or number, subtly enlarges/rings the
   matching map marker, and reapplies the day filter on repeated clicks. Repeated

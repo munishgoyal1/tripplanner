@@ -145,6 +145,28 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
   });
 
+  it("focuses the first non-stay place when the day header is clicked", async () => {
+    const onStopMap = vi.fn();
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 3, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel onStopMap={onStopMap} />);
+
+    fireEvent.click(await screen.findByTitle("Focus Day 1 on Louvre Museum"));
+    expect(onStopMap).toHaveBeenCalledTimes(1);
+    expect(onStopMap).toHaveBeenCalledWith("attraction", "Louvre Museum", 1, 2);
+  });
+
   it("highlights only the exact focused occurrence of a repeated hotel", async () => {
     const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
     fetchItineraryMock.mockResolvedValue({

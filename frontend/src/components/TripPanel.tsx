@@ -333,17 +333,6 @@ export default function TripPanel({
           <DestinationOverview destination={ov.destination} />
         )}
 
-        {view.alerts && view.alerts.length > 0 && (
-          <div className="mx-4 mt-4 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
-            <div className="font-semibold">Trip update</div>
-            <ul className="mt-1 space-y-1">
-              {view.alerts.map((alert, index) => (
-                <li key={index}>{alert}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
         <section className="border-t border-slate-100 px-4 py-4">
           {!focused && (
             <div className="mb-1">

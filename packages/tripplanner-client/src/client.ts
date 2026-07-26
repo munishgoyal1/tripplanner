@@ -42,6 +42,12 @@ function dispatchFrame(event: string, data: Record<string, unknown>, handlers: S
       },
     );
   }
+  if (event === "progress" && handlers.onProgress) {
+    const stage = data.stage;
+    if (stage === "thinking" || stage === "reviewing" || stage === "saving") {
+      handlers.onProgress(stage);
+    }
+  }
   if (event === "done") {
     handlers.onDone(
       typeof data.reply === "string" ? data.reply : "",

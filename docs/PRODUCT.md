@@ -89,6 +89,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   focus-only navigation never triggers unrelated panel reloads. Stale trip,
   map, itinerary, and Details requests abort during rapid changes and saved-trip
   switches; an old trip response must never overwrite the selected trip.
+- **Assistant responsiveness**: a submitted turn immediately shows a concise
+  thinking state, then friendly work phases for live searches, reviewing, and
+  saving. Work lasting at least two seconds shows elapsed time. Internal tool
+  names and raw arguments stay out of the primary experience; streamed answer
+  text replaces progress as soon as it arrives. GPT-4.1 remains the planning
+  model unless measured quality failures justify a slower or costlier model.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
@@ -101,6 +107,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   grows slightly with a stronger inner ring and higher stacking so it can be
   found quickly without obscuring the circuit. Repeated clicks refocus the same
   stop after manual map-day changes.
+  The complete day header is also clickable: it focuses the first mapped
+  non-stay place for that day (or the hotel when no other place exists) and
+  synchronizes the map tile, circuit, exact itinerary row, and Details.
   Focus retains the exact itinerary occurrence, so clicking a repeated hotel on
   Day 2 highlights and scrolls to that row and keeps the map on Day 2 rather
   than jumping to its first stay day. Google-
@@ -160,7 +169,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   moves. These choices never depend on Assistant being visible.
 - **Mutation status**: the latest update sits near the trip identity in a
   flexible command-bar region. Routine add/remove/reflow messages stay concise;
-  the region wraps when space is tight instead of clipping the update.
+  the region wraps when space is tight instead of clipping the update. This is
+  the only global mutation-notification surface; Details does not repeat it.
 
 If a redesign violates the above without a stated reason, push back.
 

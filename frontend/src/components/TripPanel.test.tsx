@@ -43,6 +43,28 @@ const view: TripView = {
 };
 
 describe("TripPanel place removal", () => {
+  it("does not duplicate command-bar trip updates in Details", () => {
+    render(
+      <TripPanel
+        view={{ ...view, alerts: ["Itinerary refreshed."] }}
+        loading={false}
+        navList={[{ kind: "attraction", name: "Eiffel Tower" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.queryByText("Trip update")).not.toBeInTheDocument();
+    expect(screen.queryByText("Itinerary refreshed.")).not.toBeInTheDocument();
+  });
+
   it("keeps alternatives compact when one place is focused", () => {
     render(
       <TripPanel

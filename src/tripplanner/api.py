@@ -397,7 +397,11 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             yield _sse("token", {"text": msg})
             yield _sse("done", {"reply": msg, "agent": "cap"})
 
-        return StreamingResponse(_capped(), media_type="text/event-stream")
+        return StreamingResponse(
+            _capped(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
     history_tid, history = await asyncio.to_thread(_load_chat)
     history.append(HumanMessage(content=req.message))
@@ -409,6 +413,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         # reply against them (hallucination critic).
         tool_outputs: list[ToolMessage] = []
         tool_names_called: set[str] = set()  # track which tools fired this turn
+        yield _sse("progress", {"stage": "thinking"})
         try:
             async for ev in app_graph.astream_events(
                 {"messages": history, "current_agent": ""}, version="v2"
@@ -451,6 +456,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
                                     ToolMessage(content=content, tool_call_id=name)
                                 )
                     yield _sse("tool", payload)
+                    yield _sse("progress", {"stage": "reviewing"})
         except Exception as exc:  # surface a clean error to the client
             app_event("api_chat_stream_error", error=type(exc).__name__)
             # Persist whatever we have so a tool side-effect during the turn
@@ -467,6 +473,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             return
 
         reply = "".join(reply_parts)
+        yield _sse("progress", {"stage": "saving"})
         # Hallucination critic: log unverified prices/times/URLs as telemetry
         # only (internal QA signal — not surfaced to the user).
         from tripplanner.hallucination_critic import critique
@@ -485,7 +492,11 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         app_event("api_chat_stream_done", reply_length=len(reply))
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
-    return StreamingResponse(gen(), media_type="text/event-stream")
+    return StreamingResponse(
+        gen(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.get("/chat/history")

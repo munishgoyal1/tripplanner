@@ -2151,3 +2151,23 @@ VALIDATION:
 - When a day is selected, derive map marker numbers from that day's circuit so
   they continue to match the itinerary sequence.
 
+=== 2026-07-26 — Session 61: Day focus, single status, and responsive chat ===
+
+- Make the complete itinerary day header clickable as an aggregate day action.
+  Focus the first mapped non-stay attraction or named restaurant on that day,
+  falling back to the hotel only when no non-stay place exists. Synchronize the
+  exact itinerary row, map day/pin/tile, and contextual Details.
+- Show planner and itinerary mutation notifications in one scalable location:
+  the common command bar's polite live-status region. Do not repeat the same
+  `Trip update` alert at the top of Details.
+- Keep the active GPT-4.1 chat deployment. Do not move to a larger/slower model
+  without measured quality failures; the current latency is orchestration and
+  model-round-trip dominated, while measured travel tools are mostly under two
+  seconds and already use parallel calls plus read-through caching.
+- Never leave a submitted chat turn visually silent. Show concise progressive
+  phases for thinking, friendly tool work, reviewing results, and saving trip
+  updates, with elapsed time for work longer than two seconds. Continue normal
+  token streaming without exposing internal tool names or verbose arguments.
+- Prevent SSE proxy buffering and batch token paints to one browser animation
+  frame so visible progress arrives promptly without excessive React renders.
+
