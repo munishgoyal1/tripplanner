@@ -176,6 +176,24 @@ def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
     return warnings
 
 
+def _empty_itinerary_day_warnings(itinerary: Any) -> list[str]:
+    warnings: list[str] = []
+    if not isinstance(itinerary, list):
+        return warnings
+    for index, day in enumerate(itinerary):
+        if not isinstance(day, dict):
+            continue
+        day_num = day.get("day") if isinstance(day.get("day"), int) else index + 1
+        raw_stops = day.get("stops")
+        stops: list[Any] = raw_stops if isinstance(raw_stops, list) else []
+        kinds = {_stop_kind(stop) for stop in stops}
+        if not kinds.intersection({"attraction", "meal"}) and not kinds.intersection(
+            {"flight", "transport"}
+        ):
+            warnings.append(f"Day {day_num} has no planned places beyond the hotel.")
+    return warnings
+
+
 def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     warnings: list[str] = []
     hotels = plan.get("selected_hotels")
@@ -1500,6 +1518,7 @@ def update_trip_plan(updates_json: str) -> str:
 
     _save_active_trip(plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
+    empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
     if restaurant_warnings:
@@ -1508,6 +1527,13 @@ def update_trip_plan(updates_json: str) -> str:
             + " ".join(restaurant_warnings)
             + " Call nearby_restaurants, choose preference-matched options, and update "
             "day_wise_itinerary with concrete restaurant names before finishing."
+        )
+    if empty_day_warnings:
+        warning_text += (
+            "\nItinerary planning incomplete: "
+            + " ".join(empty_day_warnings)
+            + " Restore concrete attractions or named restaurants on those days and "
+            "resubmit the full day_wise_itinerary before finishing."
         )
     if hotel_warnings:
         warning_text += (

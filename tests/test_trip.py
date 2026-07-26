@@ -360,6 +360,41 @@ class TestTripPlanState:
 
         assert "Day 1 has multiple activities but no named restaurant stop" in result
 
+    def test_update_trip_plan_warns_about_hotel_only_days(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "Holiday Inn Resort Goa"}],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Holiday Inn Resort Goa", "kind": "hotel"},
+                    {"name": "Holiday Inn Resort Goa", "kind": "hotel"},
+                ],
+            }],
+        })})
+
+        assert "Itinerary planning incomplete" in result
+        assert "Day 1 has no planned places beyond the hotel" in result
+
+    def test_update_trip_plan_accepts_transport_only_travel_day(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Overnight train to Goa", "kind": "transport"}],
+            }],
+        })})
+
+        assert "no planned places beyond the hotel" not in result
+
     def test_set_stop_booked_toggles_flag(self):
         create_trip_plan.invoke({
             "destination": "Goa",

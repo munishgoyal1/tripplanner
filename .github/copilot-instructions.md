@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Aggregate circuit focus + complete days (Session 66)**: itinerary day-header
+  clicks clear stale exact-stop focus before fitting the full map circuit.
+  `update_trip_plan` now flags ordinary hotel-only days while exempting genuine
+  flight/transport travel days. The local five-day Goa trip was restored from
+  its persisted transcript with populated, closed hotel circuits on every day.
 - **Automatic local Docker startup (Session 65)**: the default local
   `scripts/dev-spa.ps1` path launches an installed Docker Desktop when its daemon
   is stopped, waits up to two minutes, then starts the Cosmos Emulator. Azure,

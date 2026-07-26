@@ -446,6 +446,7 @@ export default function App() {
 
   const handleDayMap = (day: number) => {
     setMapOpen(true);
+    dispatchWorkspace({ type: "focus", place: null });
     setCircuitFocus({ day, token: Date.now() });
   };
 

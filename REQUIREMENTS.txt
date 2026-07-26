@@ -2231,3 +2231,17 @@ VALIDATION:
   must remain explicit errors. Never delete or reset the persisted emulator data
   volume as an automatic recovery action.
 
+=== 2026-07-26 — Session 66: Aggregate circuit focus and complete itinerary days ===
+
+- Clicking an itinerary day header must clear any prior exact stop/occurrence
+  focus before selecting and fitting that day's complete map circuit. A stale
+  exact-place focus must never win during map mount, redraw, or day switching.
+- Every ordinary structured itinerary day must contain at least one concrete
+  attraction or named restaurant in addition to its hotel circuit. Hotel-only
+  days are an incomplete plan and `update_trip_plan` must return an actionable
+  warning so the agent resubmits the complete itinerary.
+- Genuine flight/transport-only travel days remain valid and must not trigger
+  the hotel-only completion warning.
+- Restore the local five-day Goa plan from its persisted transcript after a
+  sparse full-plan rewrite left Days 4 and 5 with only hotel anchors.
+

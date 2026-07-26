@@ -70,7 +70,8 @@ src/tripplanner/
     web_search.py         Tavily
     trip_planner.py       Trip lifecycle: create/get/update/finalize/execute/list
                           + remembered saved trips (resume/switch/delete); warns
-                          the agent when restaurant itinerary planning is incomplete
+                          the agent when restaurant planning or ordinary
+                          hotel-only itinerary days are incomplete
     user_preferences.py   Preferences CRUD (atomic write + tolerant load)
     preferences_merge.py  Additive merge used by api.py (no UI imports)
     about_me_extractor.py LLM extractor for the "About me" textbox in Settings

@@ -348,12 +348,15 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2 hotel" }));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Goa Marriott");
+    const fetchesBeforeDayFocus = fetchTripViewMock.mock.calls.length;
     fireEvent.click(screen.getByRole("button", { name: "Show complete Day 3 circuit" }));
 
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "3");
     expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-circuit-token", "0");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
-    expect(fetchTripViewMock).toHaveBeenCalledTimes(1);
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeDayFocus);
   });
 
   it("focuses a place added from details without rebuilding the trip view", async () => {

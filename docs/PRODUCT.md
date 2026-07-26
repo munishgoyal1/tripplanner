@@ -108,8 +108,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   border; only its center/label contrast inverts and its stacking rises. Changing
   selection immediately restores the previous marker and focuses only the latest
   one. Repeated clicks refocus the same stop after manual map-day changes.
-  The complete day header is also clickable: it filters the map to that day and
-  fits the complete route circuit in view. Place-row clicks remain exact-place
+  The complete day header is also clickable: it clears any prior exact-place
+  selection, filters the map to that day, and fits the complete route circuit
+  in view. Place-row clicks remain exact-place
   actions: they synchronize the map number, itinerary row, and Details, then
   pan to zoom 15 while that behavior is evaluated through real usage.
   Focus retains the exact itinerary occurrence, so clicking a repeated hotel on
@@ -121,7 +122,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   place in Details. Restaurants are place stops too: they join day circuits and
   support the same focus behavior. Substantial planning days use concrete,
   preference-matched restaurant names from search results, never generic or
-  `TBD` meal placeholders. Each day circuit starts at the selected stay,
+  `TBD` meal placeholders. Ordinary days cannot be hotel-only: each needs a
+  concrete attraction or named restaurant, while genuine flight/transport-only
+  travel days remain valid. Each day circuit starts at the selected stay,
   includes every geocoded structured stop in itinerary order, and returns to the
   stay at night; repeated places remain part of every day that references them.
   The Map stop picker searches Google Places within the current map context and
