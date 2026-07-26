@@ -105,7 +105,13 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-25)
+## Current State (last updated 2026-07-26)
+- **Hotel-anchored daily itineraries (Session 52)**: every ordinary itinerary
+  day renders and is prompted as a circuit from the applicable hotel back to
+  that hotel. Explicit old-stay/new-stay transfer days retain distinct
+  endpoints, and overnight flight/train/bus days are not forced back to a
+  hotel. Existing structured plans are repaired at view time; synthesized and
+  future agent-generated plans follow the same rule.
 - **Native Android app (Session 51)**: the Expo/React Native mobile shell now
   explicitly supports Android with package `com.munishgoyal1.tripplanner`,
   Material icon mappings, Google Maps via `react-native-maps`, secure identity,

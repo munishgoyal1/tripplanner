@@ -2045,3 +2045,13 @@ VALIDATION:
 - Standalone Android map builds require a restricted Google Maps Android key and
   signing-certificate SHA-1 before EAS preview or Play testing; Expo Go does not.
 
+=== 2026-07-26 — Session 52: Hotel-anchored daily itineraries ===
+
+- Include the applicable hotel in every ordinary itinerary day as both the
+  starting point and ending point.
+- On a stay-transfer day, start at the old hotel and end at the new hotel.
+- Do not force a hotel return when the day ends in overnight travel or another
+  explicitly planned overnight endpoint.
+- Apply the rule to existing structured plans at view time and require future
+  agent-generated structured itineraries to persist the same circuit.
+

@@ -1329,6 +1329,21 @@ def _split_contiguous(items: list[str], n: int) -> list[list[str]]:
     return chunks
 
 
+def _is_overnight_travel_day(entry: dict[str, Any]) -> bool:
+    text_parts = [entry.get("title"), entry.get("summary"), entry.get("plan")]
+    for raw in entry.get("stops") or []:
+        if not isinstance(raw, dict):
+            continue
+        kind = str(raw.get("kind") or "").strip().lower()
+        if kind in {"flight", "transport"}:
+            text_parts.extend((raw.get("name"), raw.get("note")))
+    text = " ".join(str(part or "") for part in text_parts).lower()
+    return any(
+        marker in text
+        for marker in ("overnight", "night train", "night bus", "sleeper", "red-eye", "red eye")
+    )
+
+
 def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
     """Synthesize an intelligent multi-day v1 itinerary when the agent never
     wrote a structured ``day_wise_itinerary`` — so the panel is never blank and
@@ -1384,9 +1399,10 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
         color = _day_color(i)
         stops: list[dict[str, Any]] = []
         day_coords: list[tuple[float, float]] = []
-        
-        if i == 1 and hotels:
-            for hname in hotels:
+        hotel_coords: tuple[float, float] | None = None
+
+        if anchor:
+            for hname in [anchor]:
                 summary = places_cache.get_details(hname, destination) or {}
                 opening, concern = _opening_hint(summary, "")
                 stops.append({
@@ -1400,8 +1416,9 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
                 # Add hotel coords to day route.
                 c = coords.get(hname) or _place_coords(hname, destination)
                 if c:
+                    hotel_coords = c
                     day_coords.append(c)
-        
+
         for name in chunk:
             summary = places_cache.get_details(name, destination) or {}
             opening, concern = _opening_hint(summary, "")
@@ -1417,13 +1434,22 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             c = coords.get(name)
             if c:
                 day_coords.append(c)
-        
+
+        if anchor:
+            hotel_start = stops[0]
+            hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
+            hotel_return = dict(hotel_start)
+            hotel_return["note"] = "Return to your stay"
+            stops.append(hotel_return)
+            if hotel_coords:
+                day_coords.append(hotel_coords)
+
         if not stops:
             continue
-        
+
         primary = chunk[0] if chunk else (anchor or f"Day {i}")
         route = _route_stats_for_day_coords(day_coords)
-        
+
         days.append({
             "day": i,
             "date": "",
@@ -1462,6 +1488,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         return _itinerary_from_selections(trip)
 
     hotels = _selected_names(trip, "hotel")
+    ordered_hotels = _ordered_selected(trip, "selected_hotels")
     activities = _selected_names(trip, "attraction")
     destination = str((trip or {}).get("destination") or "")
     symbol = currency_symbol(trip)
@@ -1495,6 +1522,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     days: list[dict[str, Any]] = []
     total_stops = 0
     total_booked = 0
+    current_hotel = ordered_hotels[0] if ordered_hotels else ""
     for idx, entry in enumerate(itin):
         if not isinstance(entry, dict):
             entry = {"plan": str(entry)}
@@ -1526,13 +1554,59 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 coords = place_coords_map.get(str(s["name"] or "").strip().lower())
                 if coords:
                     day_coords.append(coords)
-                total_stops += 1
                 if s["booked"]:
                     total_booked += 1
-        
+
+        hotel_stops = [stop for stop in stops if stop["kind"] == "hotel"]
+        distinct_hotels = {
+            str(stop.get("name") or "").strip().lower() for stop in hotel_stops
+        }
+        if not _is_overnight_travel_day(entry) and len(distinct_hotels) < 2:
+            anchor = hotel_stops[0] if hotel_stops else None
+            if anchor is None and current_hotel:
+                anchor = _normalize_stop(
+                    {"name": current_hotel, "kind": "hotel"}, hotels, activities
+                )
+                if anchor:
+                    summary = places_cache.get_details(anchor["name"], destination) or {}
+                    opening, concern = _opening_hint(
+                        summary, str(entry.get("date") or "")
+                    )
+                    anchor["duration_min"] = _duration_hint("hotel", None)
+                    anchor["opening_hours"] = opening
+                    anchor["concern"] = concern
+                    anchor["cost_display"] = _cost_hint(
+                        "hotel",
+                        summary,
+                        selected_prices.get(anchor["name"].strip().lower(), 0.0),
+                        symbol,
+                    )
+                    anchor["insight"] = _insight_hint(
+                        anchor["name"], "hotel", summary
+                    )
+                    anchor["color"] = _day_color(day_num)
+            if anchor:
+                middle = [stop for stop in stops if stop["kind"] != "hotel"]
+                hotel_start = dict(anchor)
+                hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
+                hotel_return = dict(anchor)
+                hotel_return["note"] = "Return to your stay"
+                stops = [hotel_start, *middle, hotel_return]
+
+        rendered_hotels = [stop for stop in stops if stop["kind"] == "hotel"]
+        if rendered_hotels:
+            current_hotel = str(rendered_hotels[-1].get("name") or current_hotel)
+
+        day_coords = []
+        for stop in stops:
+            coords = place_coords_map.get(str(stop.get("name") or "").strip().lower())
+            if coords:
+                day_coords.append(coords)
+        total_stops += len(stops)
+
         # Calculate route stats for the day.
         route = _route_stats_for_day_coords(day_coords)
-        
+
         days.append(
             {
                 "day": day_num,

@@ -405,7 +405,7 @@ def test_build_itinerary_prefetches_stop_details_without_reviews(
         }
     )
 
-    assert result["stats"]["stops"] == 2
+    assert result["stats"]["stops"] == 3
     assert calls == [({"Hotel A", "Fort Aguada"}, "Goa", 0, False)]
 
 
@@ -658,11 +658,72 @@ def test_itinerary_synthesizes_multiple_days() -> None:
         "Calangute Beach",
         "Dudhsagar Falls Trek",
     ]
-    # the hotel anchors only the first day
-    assert it["days"][0]["stops"][0]["kind"] == "hotel"
-    assert all(
-        s["kind"] != "hotel" for d in it["days"][1:] for s in d["stops"]
-    )
+    # Every ordinary day starts and returns to the selected stay.
+    assert all(d["stops"][0]["kind"] == "hotel" for d in it["days"])
+    assert all(d["stops"][-1]["kind"] == "hotel" for d in it["days"])
+
+
+def test_structured_itinerary_adds_selected_hotel_as_daily_circuit_anchor() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {"day": 1, "stops": [{"name": "Aguada Fort", "kind": "attraction"}]},
+            {"day": 2, "stops": [{"name": "Calangute Beach", "kind": "attraction"}]},
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    for day in itinerary["days"]:
+        assert [stop["name"] for stop in day["stops"]] == [
+            "Taj Exotica Resort",
+            day["stops"][1]["name"],
+            "Taj Exotica Resort",
+        ]
+        assert day["stops"][0]["note"] == "Start from your stay"
+        assert day["stops"][-1]["note"] == "Return to your stay"
+
+
+def test_structured_itinerary_preserves_overnight_travel_without_hotel_anchor() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "title": "Overnight train to Goa",
+                "stops": [{"name": "Konkan sleeper", "kind": "transport"}],
+            }
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    assert [stop["kind"] for stop in itinerary["days"][0]["stops"]] == ["transport"]
+
+
+def test_structured_itinerary_preserves_explicit_hotel_transition() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_hotels": [{"name": "North Goa Stay"}, {"name": "South Goa Stay"}],
+        "day_wise_itinerary": [
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "North Goa Stay", "kind": "hotel"},
+                    {"name": "Old Goa", "kind": "attraction"},
+                    {"name": "South Goa Stay", "kind": "hotel"},
+                ],
+            }
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    assert [stop["name"] for stop in itinerary["days"][0]["stops"]] == [
+        "North Goa Stay",
+        "Old Goa",
+        "South Goa Stay",
+    ]
 
 
 def test_place_views_expose_each_itinerary_occurrence(monkeypatch) -> None:
@@ -712,7 +773,7 @@ def test_itinerary_structured_stops() -> None:
     }
     it = trip_view.build_itinerary(trip)
     assert it["has_itinerary"] is True
-    assert it["stats"] == {"days": 2, "stops": 3, "booked": 1}
+    assert it["stats"] == {"days": 2, "stops": 6, "booked": 1}
 
     d1 = it["days"][0]
     assert d1["title"] == "Arrival"
@@ -741,8 +802,8 @@ def test_itinerary_string_stops_normalize() -> None:
     }
     it = trip_view.build_itinerary(trip)
     stops = it["days"][0]["stops"]
-    assert len(stops) == 1  # blank dropped
-    s = stops[0]
+    assert len(stops) == 3  # blank dropped; hotel anchors the daily circuit
+    s = stops[1]
     assert s["name"] == "Some Random Cafe"
     assert s["kind"] == "attraction"
     assert s["booked"] is False

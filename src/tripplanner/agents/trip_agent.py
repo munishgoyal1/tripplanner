@@ -485,14 +485,21 @@ STEP 4 — BUILD ITINERARY
     {{"day": 2, "date": "2026-01-12", "title": "Old Goa & beaches",
       "summary": "short prose recap of the day",
       "stops": [
+        {{"name": "Taj Exotica Resort", "kind": "hotel",
+          "note": "start from the hotel"}},
         {{"name": "Basilica of Bom Jesus", "kind": "attraction",
           "time": "09:30", "duration_min": 90, "note": "go early, fewer crowds"}},
-        {{"name": "Taj Exotica Resort", "kind": "hotel"}}
+        {{"name": "Taj Exotica Resort", "kind": "hotel",
+          "note": "return to the hotel"}}
       ]}}
   - "stops" is an ORDERED list of the specific places visited that day. Each
     stop is an object with: name (REQUIRED, must match the hotels/attractions
     you selected), kind (one of: hotel, attraction, meal, transport, flight,
     other), and optionally time ("HH:MM"), duration_min (int), note (short).
+  - Every ordinary sightseeing day MUST start at that night's hotel and end at
+    the same hotel. For a stay-transfer day, start at the old hotel and end at
+    the new hotel. Do not add a hotel return after an overnight flight, train,
+    or bus; preserve the actual overnight endpoint instead.
   - Keep a "summary" (prose) per day for readability; "title" is a short label.
   - When a stop becomes actually booked (after execute_bookings), set its
     "booked": true so the UI shows it checked off.
