@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Occurrence-safe map inspection (Session 59)**: itinerary-to-map focus keeps
+  the exact day for repeated places, Google-canonical punctuation still resolves
+  named itinerary pins such as Britto's, and native/autocomplete Google POIs
+  become temporary real-coordinate map tiles plus contextual Details before any
+  explicit Add stop mutation.
 - **Itinerary-owned snapshot + contextual Details (Session 58)**: one shared
   `TripSnapshot` at the top of web itinerary owns dates, travelers, lifecycle,
   authoritative counts, booking progress, cost/budget, fit, and constraints on

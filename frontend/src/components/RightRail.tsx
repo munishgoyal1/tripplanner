@@ -13,6 +13,8 @@ interface Props {
   reloadToken: number;
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
+  /** Exact itinerary day when the focused place occurs more than once. */
+  focusDay?: number;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
   onSelect?: (
@@ -38,6 +40,7 @@ export default function RightRail({
   photos,
   reloadToken,
   focusName,
+  focusDay,
   onStopFocus,
   onStopMap,
   onSelect,
@@ -98,6 +101,7 @@ export default function RightRail({
               <MapPanel
                 reloadToken={reloadToken}
                 focusName={focusName}
+                focusDay={focusDay}
                 onPinFocus={onStopFocus}
                 onSelect={onSelect}
                 onDeselect={onDeselect}

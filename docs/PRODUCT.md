@@ -97,6 +97,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   the previous stop. The selected map day labels each route segment at its
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
   Clicking a place stop focuses both its map pin and its contextual Details view.
+  Focus retains the exact itinerary occurrence, so clicking a repeated hotel on
+  Day 2 keeps the map on Day 2 rather than jumping to its first stay day. Google-
+  canonical punctuation differences must not prevent an itinerary restaurant
+  from resolving to its existing map pin and inspection tile.
   Selecting a Map day scrolls the itinerary to that day and focuses its primary
   place in Details. Restaurants are place stops too: they join day circuits and
   support the same focus behavior. Substantial planning days use concrete,
@@ -105,8 +109,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   includes every geocoded structured stop in itinerary order, and returns to the
   stay at night; repeated places remain part of every day that references them.
   The Map stop picker searches Google Places within the current map context and
-  also accepts labeled POIs clicked directly on the map. A user can choose the
-  exact itinerary day before adding; that explicit choice takes precedence over
+  also accepts labeled POIs clicked directly on the map. Selecting any named POI
+  first opens a temporary real-coordinate map tile and the contextual Details
+  inspector while merely populating Add stop; inspection never mutates the trip.
+  A user can then choose the exact itinerary day before adding; that explicit choice takes precedence over
   automatic cross-day rebalancing, including when the place already exists on
   another day. A genuinely unavailable day or booked-occurrence conflict leaves
   the trip unchanged and offers available days, Best day, or unbook-and-retry;

@@ -132,10 +132,12 @@ frontend/
                + booked checkbox
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
-                           (place focus highlights pins; day focus jumps itinerary
+                           (occurrence-aware place focus highlights the exact day;
+                           day focus jumps itinerary
                            and sends a representative place to Details; Places
-                           autocomplete/native POI clicks add stops to an authoritative
-                           chosen day; selected pins use PlaceTripActions;
+                           autocomplete/native POI clicks create a real-coordinate
+                           inspection tile and sync Details before optional add to an
+                           authoritative chosen day; selected pins use PlaceTripActions;
                            rejected choices retain inputs for retry)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
@@ -222,10 +224,14 @@ It exports:
   [MapPanel.tsx](../frontend/src/components/MapPanel.tsx), which lazily loads
   the Maps JavaScript API with the Places library and draws geodesic per-day
   route lines client-side (no billed Directions API). Its viewport-biased
-  autocomplete and native labeled-POI clicks feed `POST /trip/select`; an
-  optional `day` keeps the new stop on the selected itinerary day. Structured
-  restaurant/meal stops retain their place kind, dedupe by name, and join
-  ordered day circuits.
+  autocomplete and native labeled-POI clicks first create a temporary pin from
+  Google-provided geometry and sync that candidate to Details. They populate
+  the add-stop controls but do not call `POST /trip/select` until the user
+  explicitly adds the place; an optional `day` keeps that new stop on the
+  selected itinerary day. Place focus normalizes Google-canonical punctuation
+  and uses the requested itinerary occurrence day, so repeated hotel endpoints
+  do not jump to their first day. Structured restaurant/meal stops retain their
+  place kind, dedupe by name, and join ordered day circuits.
 - `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
   `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
   booked,selected,color,travel_from_previous?}]}]` +

@@ -2123,3 +2123,18 @@ VALIDATION:
 - Preserve rich photos, reviews, website, and trip actions when a specific
   place is focused.
 
+=== 2026-07-26 — Session 59: Exact map focus and inspect-before-add POIs ===
+
+- Preserve itinerary occurrence identity when focusing the map. Clicking a
+  repeated hotel on Day 2 must keep Day 2 active instead of selecting the same
+  hotel's first occurrence on Day 1.
+- Resolve itinerary places against Google-canonical map names despite harmless
+  punctuation differences, so named restaurants such as Britto's open their
+  existing map pin and information tile.
+- Treat any named Google map point consistently, including restaurants,
+  activities, and stays: clicking it must populate Add stop, open a temporary
+  map tile using real Google geometry, and load contextual Details before the
+  user decides whether to add it.
+- Inspecting a map point must not mutate the itinerary. Add it only after the
+  user explicitly confirms Add stop or Add to trip.
+

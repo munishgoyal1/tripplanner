@@ -108,18 +108,56 @@ function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
 }
 
 export function placeNameMatches(candidate: string, focusName: string): boolean {
-  const normalizedCandidate = candidate.trim().toLowerCase();
-  const normalizedFocus = focusName.trim().toLowerCase();
+  const normalize = (value: string) => value
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+  const normalizedCandidate = normalize(candidate);
+  const normalizedFocus = normalize(focusName);
   if (!normalizedCandidate || !normalizedFocus) return false;
   return normalizedCandidate === normalizedFocus
     || normalizedCandidate.includes(normalizedFocus)
     || normalizedFocus.includes(normalizedCandidate);
 }
 
+export function focusedDayForPin(pin: MapPin, focusDay?: number): number | null {
+  return focusDay && pin.occurrences.some((occurrence) => occurrence.day === focusDay)
+    ? focusDay
+    : pin.day;
+}
+
 export function kindForGooglePlace(types: string[] | undefined): "attraction" | "hotel" | "meal" {
   if (types?.some((type) => type === "lodging" || type === "hotel")) return "hotel";
   if (types?.some((type) => type === "restaurant" || type === "meal_takeaway")) return "meal";
   return "attraction";
+}
+
+export function mapPinFromGooglePlace(place: any): MapPin | null {
+  const name = String(place?.name || "").trim();
+  const location = place?.geometry?.location;
+  const lat = typeof location?.lat === "function" ? location.lat() : location?.lat;
+  const lng = typeof location?.lng === "function" ? location.lng() : location?.lng;
+  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  let photo: string | null = null;
+  try {
+    photo = place.photos?.[0]?.getUrl?.({ maxWidth: 800 }) ?? null;
+  } catch {
+    photo = null;
+  }
+  return {
+    id: `candidate:${String(place.place_id || name).trim().toLowerCase()}`,
+    name,
+    kind: kindForGooglePlace(place.types),
+    selected: false,
+    day: null,
+    lat,
+    lng,
+    rating: typeof place.rating === "number" ? place.rating : null,
+    address: String(place.formatted_address || ""),
+    photo,
+    occurrences: [],
+  };
 }
 
 export function optionsForStopDay(day: string): SelectItemOptions | undefined {
@@ -133,6 +171,8 @@ interface Props {
   reloadToken?: number;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
+  /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
+  focusDay?: number;
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
@@ -151,13 +191,14 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null); // null = all days
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
+  const [candidatePin, setCandidatePin] = useState<MapPin | null>(null);
   const [newStopName, setNewStopName] = useState("");
   const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
   const [newStopDay, setNewStopDay] = useState("auto");
@@ -166,6 +207,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
 
   const mapEl = useRef<HTMLDivElement>(null);
   const stopInputRef = useRef<HTMLInputElement>(null);
+  const onPinFocusRef = useRef(onPinFocus);
   const mapRef = useRef<any>(null);
   const autocompleteRef = useRef<any>(null);
   const autocompleteListenerRef = useRef<any>(null);
@@ -176,12 +218,20 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
 
+  useEffect(() => {
+    onPinFocusRef.current = onPinFocus;
+  }, [onPinFocus]);
+
   const populateStopFromGooglePlace = useCallback(
     (place: any) => {
-      const name = String(place?.name || "").trim();
-      if (!name) return;
-      setNewStopName(name);
-      setNewStopKind(kindForGooglePlace(place.types));
+      const candidate = mapPinFromGooglePlace(place);
+      if (!candidate) return;
+      setNewStopName(candidate.name);
+      setNewStopKind(candidate.kind as "attraction" | "hotel" | "meal");
+      setCandidatePin(candidate);
+      setSelectedPin(candidate);
+      pendingFocusRef.current = candidate;
+      onPinFocusRef.current?.(candidate.kind, candidate.name);
       stopInputRef.current?.focus();
     },
     []
@@ -220,6 +270,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     );
     setSelectedPin((pin) => {
       if (!pin) return null;
+      if (pin.id.startsWith("candidate:")) return pin;
       if (pin.id === "airport") {
         return view.airport?.id === pin.id ? view.airport : null;
       }
@@ -244,7 +295,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
         });
         if (stopInputRef.current && google.maps.places?.Autocomplete) {
           const autocomplete = new google.maps.places.Autocomplete(stopInputRef.current, {
-            fields: ["name", "types"],
+            fields: ["place_id", "name", "types", "geometry", "formatted_address", "rating", "photos"],
             strictBounds: false,
           });
           autocomplete.bindTo("bounds", mapRef.current);
@@ -259,7 +310,10 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
             if (!event.placeId) return;
             event.stop?.();
             placesService.getDetails(
-              { placeId: event.placeId, fields: ["name", "types"] },
+              {
+                placeId: event.placeId,
+                fields: ["place_id", "name", "types", "geometry", "formatted_address", "rating", "photos"],
+              },
               (place: any, status: string) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                   populateStopFromGooglePlace(place);
@@ -366,6 +420,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
         zIndex: p.selected ? 1000 : p.day ? 600 : 400,
       });
       marker.addListener("click", () => {
+        setCandidatePin(null);
         if (["hotel", "attraction", "meal", "restaurant"].includes(p.kind)) {
           const occurrence = p.occurrences.find(
             (candidate) => candidate.day === (activeDay ?? p.day),
@@ -376,6 +431,27 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       });
       overlaysRef.current.push(marker);
       bounds.extend({ lat: p.lat, lng: p.lng });
+      any = true;
+    }
+
+    if (candidatePin) {
+      const marker = new google.maps.Marker({
+        position: { lat: candidatePin.lat, lng: candidatePin.lng },
+        map,
+        title: candidatePin.name,
+        icon: {
+          url: dotIcon("#e11d48"),
+          scaledSize: new google.maps.Size(24, 24),
+          anchor: new google.maps.Point(12, 12),
+        },
+        zIndex: 1200,
+      });
+      marker.addListener("click", () => {
+        setSelectedPin(candidatePin);
+        onPinFocus?.(candidatePin.kind, candidatePin.name);
+      });
+      overlaysRef.current.push(marker);
+      bounds.extend({ lat: candidatePin.lat, lng: candidatePin.lng });
       any = true;
     }
 
@@ -465,7 +541,7 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
     } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
-  }, [view, activeDay, onPinFocus]);
+  }, [view, activeDay, candidatePin, onPinFocus]);
 
   useEffect(() => {
     draw();
@@ -487,18 +563,19 @@ export default function MapPanel({ reloadToken = 0, focusName, onPinFocus, onDay
       target = view.airport;
     }
     if (!target) return;
+    setCandidatePin(null);
     pendingFocusRef.current = target;
     // Reveal the pin's day so it isn't filtered out. Changing activeDay
     // recreates draw and triggers the redraw effect (which applies the focus);
     // if the day is already active, redraw explicitly.
-    const day = "day" in target ? target.day : null;
+    const day = "day" in target ? focusedDayForPin(target, focusDay) : null;
     if (day && day !== activeDay) {
       setActiveDay(day);
     } else {
       draw();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusName, view]);
+  }, [focusName, focusDay, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
     return !!p && !isAirportTarget(p);

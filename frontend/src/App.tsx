@@ -447,6 +447,7 @@ export default function App() {
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
     focusName: stopFocusName,
+    focusDay: focus?.day,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
     onSelect: handleSelect,
@@ -475,6 +476,7 @@ export default function App() {
       <MapPanel
         reloadToken={tripVersion}
         focusName={stopFocusName}
+        focusDay={focus?.day}
         onPinFocus={handleStopFocus}
         onDayFocus={(day, place) => {
           dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });

@@ -48,23 +48,28 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, jumpTo, overview }: { reloadToken: number; onStopFocus: (kind: string, name: string) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null }) => (
-    <button
-      type="button"
-      data-testid="itinerary-panel"
-      data-reload-token={reloadToken}
-      data-jump-day={jumpTo?.day ?? ""}
-      data-jump-name={jumpTo?.name ?? ""}
-      data-overview-status={overview?.status ?? ""}
-      data-overview-counts={overview ? `${overview.counts.days}d · ${overview.counts.hotels} stay · ${overview.counts.activities} places` : ""}
-      data-overview-cost={overview?.total_cost_display ?? ""}
-      onClick={() => onStopFocus("attraction", "Louvre Museum")}
-    />
+  default: ({ reloadToken, onStopFocus, jumpTo, overview }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null }) => (
+    <div>
+      <button
+        type="button"
+        data-testid="itinerary-panel"
+        data-reload-token={reloadToken}
+        data-jump-day={jumpTo?.day ?? ""}
+        data-jump-name={jumpTo?.name ?? ""}
+        data-overview-status={overview?.status ?? ""}
+        data-overview-counts={overview ? `${overview.counts.days}d · ${overview.counts.hotels} stay · ${overview.counts.activities} places` : ""}
+        data-overview-cost={overview?.total_cost_display ?? ""}
+        onClick={() => onStopFocus("attraction", "Louvre Museum")}
+      />
+      <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
+        Focus Day 2 hotel
+      </button>
+    </div>
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus, onDayFocus, focusName }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null }) => (
-    <div data-testid="map-panel" data-focus-name={focusName ?? ""}>
+  default: ({ onPinFocus, onDayFocus, focusName, focusDay }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null; focusDay?: number }) => (
+    <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onDayFocus?.(2, { kind: "attraction", name: "Eiffel Tower" })}>Focus Day 2</button>
     </div>
@@ -418,6 +423,28 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Louvre Museum"));
     expect(fetchTripViewMock.mock.calls[1][0]).toEqual({ kind: "attraction", name: "Louvre Museum" });
     expect(screen.getByText("Louvre Museum")).toBeInTheDocument();
+  });
+
+  it("preserves the itinerary day when focusing a repeated hotel", async () => {
+    const focusedView = {
+      ...emptyView,
+      focus: { kind: "hotel", name: "Goa Marriott", day: 2, stop: 1 },
+    };
+    fetchTripViewMock.mockResolvedValueOnce(emptyView).mockResolvedValueOnce(focusedView);
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2 hotel" }));
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Goa Marriott"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "2");
+    expect(fetchTripViewMock.mock.calls[1][0]).toEqual({
+      kind: "hotel",
+      name: "Goa Marriott",
+      day: 2,
+      stop: 1,
+    });
   });
 
   it("passes lifecycle and completeness data to the itinerary snapshot", async () => {
