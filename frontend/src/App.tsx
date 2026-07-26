@@ -324,12 +324,13 @@ export default function App() {
     await refresh(null);
   };
 
-  // After every chat turn: refresh the trip panel, and detect a mid-chat
+  // After every chat turn: refresh every trip pane, and detect a mid-chat
   // destination switch (the agent created a NEW trip → server returns a new
   // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
   // transcript replaces the previous trip's conversation.
   const handleTurnComplete = (tripId?: string) => {
     const tripChanged = Boolean(tripId && tripId !== chatTripId);
+    dispatchWorkspace({ type: "trip-content-changed" });
     refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
   };

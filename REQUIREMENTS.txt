@@ -2336,3 +2336,10 @@ VALIDATION:
   and fit the complete day circuit, and align that day summary at the start of
   the Itinerary pane.
 
+=== 2026-07-26 — Session 76: Immediate new-trip pane population ===
+
+- When a planning chat turn completes, Details, Itinerary, and Map must refresh
+  concurrently from the newly persisted trip. Map and Itinerary must not wait
+  for a later mutation, trip switch, or unrelated refresh before showing the
+  new plan.
+

@@ -24,6 +24,10 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   current row, Details context, desktop wiring, and mobile wiring.
 - Prefer shared App/workspace handlers over parallel component-local semantics.
   Local state may render the action, but it must not redefine what the action means.
+- A completed agent turn is a trip-content invalidation boundary. Refreshing
+  Details directly is insufficient when Map and Itinerary subscribe to a shared
+  revision token; advance that token in the same owner-level completion handler
+  so all mounted panes request the persisted plan concurrently.
 
 ## 2026-07-26 - Itinerary Chronology Is One Contract
 

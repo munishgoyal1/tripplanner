@@ -108,7 +108,8 @@ frontend/
               mutation responses supersede older reads, same-place removal
               coalescing, retained add/remove Details focus, concise wrapping
               command-bar status, trip switches invalidate older Details reads,
-              shared map/details place focus. Mobile: chat + on-demand trip-details
+              completed chat turns invalidate all trip panes together, shared
+              map/details place focus. Mobile: chat + on-demand trip-details
               sheet. Only the active responsive shell mounts.
     workspaceState.ts Canonical reducer for trip identity/revision, active place,
               chat reload, and itinerary jump state

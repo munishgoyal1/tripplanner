@@ -108,6 +108,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Immediate new-trip pane population (Session 76)**: completed planning turns
+  now advance the shared trip revision while refreshing Details, so Itinerary
+  and Map fetch the newly persisted plan concurrently instead of waiting for a
+  later action. The Pune/Khandala case exposed the missed invalidation.
 - **Itinerary day-summary focus parity (Session 75)**: itinerary day-summary
   clicks and Map day chips now use one App-owned aggregate handler that clears
   exact focus, fits the full day circuit, and aligns the summary at the top of

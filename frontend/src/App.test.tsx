@@ -43,8 +43,10 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null }) => (
-    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} />
+  default: ({ hideGlobalControls, assistantRequest, onTurnComplete }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; onTurnComplete?: (tripId?: string) => void }) => (
+    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""}>
+      <button type="button" onClick={() => onTurnComplete?.("khandala-pune-1")}>Complete planning turn</button>
+    </div>
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
@@ -72,8 +74,8 @@ vi.mock("./components/ItineraryPanel", () => ({
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
-    <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0}>
+  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+    <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
       <button type="button" onClick={() => onAllDaysFocus?.()}>Focus All days</button>
@@ -329,6 +331,19 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(2));
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
+  });
+
+  it("refreshes itinerary and map as soon as a planning turn completes", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "0");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-reload-token", "0");
+
+    fireEvent.click(screen.getByRole("button", { name: "Complete planning turn" }));
+
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "1");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-reload-token", "1");
   });
 
   it("gives a map day chip the same aggregate circuit focus as an itinerary day header", async () => {
