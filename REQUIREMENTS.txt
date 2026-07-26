@@ -2302,3 +2302,9 @@ VALIDATION:
 - Automatic recovery must preserve the named Cosmos data volume. It must never
   reset local trip data as a startup repair.
 
+=== 2026-07-26 — Session 72: Map day navigates to itinerary day summary ===
+
+- Clicking a day chip in the Map pane must scroll the Itinerary pane to the
+  start of that day's card so its day-level title, metrics, and summary are in
+  focus. It must not center the full card and land midway through stop rows.
+

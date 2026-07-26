@@ -450,7 +450,10 @@ export default function ItineraryPanel({
       if (cancelled) return;
       const el = document.getElementById(targetId);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: jumpTo.name ? "center" : "start",
+        });
         if (jumpTo.name) {
           setFlashTarget({ day: jumpTo.day, name: jumpTo.name, token: jumpTo.token });
           flashTimer = window.setTimeout(() => {

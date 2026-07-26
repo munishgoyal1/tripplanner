@@ -194,6 +194,24 @@ describe("ItineraryPanel", () => {
     expect(scrollIntoViewMock.mock.instances[0]).toBe(dayTwoRow);
   });
 
+  it("scrolls a map day jump to the start of the itinerary day summary", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 2, stops: 4, booked: 0 },
+      days: [
+        { ...itinerary.days[0], day: 1, title: "Day 1" },
+        { ...itinerary.days[0], day: 2, title: "Day 2" },
+      ],
+    });
+
+    render(<ItineraryPanel jumpTo={{ day: 2, token: 17 }} />);
+
+    await screen.findByText("Day 2");
+    await waitFor(() => expect(scrollIntoViewMock).toHaveBeenCalled());
+    expect(scrollIntoViewMock.mock.instances[0]).toBe(document.getElementById("it-day-2"));
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+  });
+
   it("does not style concern rows as selected cards", async () => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,

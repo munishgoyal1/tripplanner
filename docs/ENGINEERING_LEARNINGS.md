@@ -8,7 +8,8 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
 - One conceptual action must have one owner-level behavior across every surface.
   A day click in Itinerary and a day click in Map both mean aggregate day-circuit
-  focus: clear exact-place selection, activate that day, and fit the full route.
+  focus: clear exact-place selection, activate that day, fit the full route, and
+  place the itinerary at the start of the day-level summary.
 - Exact-place focus and aggregate day focus are mutually exclusive modes. Do not
   let a component invent a representative-place side effect for a day-level action.
 - Selection styling must be exclusive and visually distinct from status styling.

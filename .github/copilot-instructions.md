@@ -108,6 +108,9 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Map day-to-summary navigation (Session 72)**: selecting a Map day keeps
+  aggregate circuit focus and scrolls Itinerary to the start of that day's
+  title, metrics, and summary instead of centering the full stop list.
 - **Reliable persisted Cosmos restart (Session 71)**: local startup detects the
   vNext emulator's stale PostgreSQL PID/Unix-socket locks after abrupt Docker
   stops, removes them only when no server process exists, and restarts once.
