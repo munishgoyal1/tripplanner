@@ -5,11 +5,9 @@ export interface ActivePlace {
   stop?: number;
 }
 
-export interface ItineraryJump {
-  day: number;
-  name?: string;
-  token: number;
-}
+export type ItineraryJump =
+  | { day: number; name?: string; token: number }
+  | { summary: true; token: number };
 
 export interface WorkspaceState {
   tripId: string | null;

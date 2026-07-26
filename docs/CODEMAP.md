@@ -146,7 +146,8 @@ frontend/
                            repeated focus requests reapply after manual filtering;
                            itinerary day focus fits every pin in that circuit;
                            day focus jumps itinerary
-                           and sends a representative place to Details; Places
+                           while All days fits every circuit and returns the
+                           itinerary to its trip summary; Places
                            autocomplete/native POI clicks create a real-coordinate
                            inspection tile and sync Details before optional add to an
                            authoritative chosen day; selected pins use PlaceTripActions;

@@ -2321,3 +2321,11 @@ VALIDATION:
   reply when token events are buffered. Request failures must be visible and
   retryable in the Assistant instead of appearing as a dead send action.
 
+=== 2026-07-26 — Session 74: All-days map summary navigation ===
+
+- Clicking All days in the Map pane must clear exact-place and single-day
+  circuit focus, display every day circuit, and scroll the Itinerary pane to
+  the trip-level summary at its top.
+- The behavior must be identical in the desktop canvas and responsive/mobile
+  right rail.
+

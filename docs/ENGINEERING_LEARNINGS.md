@@ -10,6 +10,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   A day click in Itinerary and a day click in Map both mean aggregate day-circuit
   focus: clear exact-place selection, activate that day, fit the full route, and
   place the itinerary at the start of the day-level summary.
+- An all-days map action is aggregate trip focus: clear exact-place and
+  single-day circuit state, fit every circuit, and place the itinerary at its
+  trip-level summary. Model this as an explicit summary target, not a fake Day 0.
 - Exact-place focus and aggregate day focus are mutually exclusive modes. Do not
   let a component invent a representative-place side effect for a day-level action.
 - Selection styling must be exclusive and visually distinct from status styling.

@@ -1,5 +1,5 @@
 import { Clock3, ExternalLink, Loader2, MapPin, Route, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../types";
 import TripSnapshot from "./TripSnapshot";
@@ -20,7 +20,7 @@ interface Props {
   focusDay?: number;
   focusStop?: number;
   /** Programmatic jump target after add-to-trip actions. */
-  jumpTo?: { day: number; name?: string; token: number } | null;
+  jumpTo?: { day: number; name?: string; token: number } | { summary: true; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
   onStopRemove?: (kind: string, name: string, day: number, stop: number) => void | Promise<void>;
 }
@@ -382,6 +382,7 @@ export default function ItineraryPanel({
   const [error, setError] = useState<string | null>(null);
   const [retryToken, setRetryToken] = useState(0);
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -439,6 +440,11 @@ export default function ItineraryPanel({
 
   useEffect(() => {
     if (!jumpTo || !it?.has_itinerary) return;
+    if ("summary" in jumpTo) {
+      scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+      setFlashTarget(null);
+      return;
+    }
     const targetId = jumpTo.name
       ? `it-stop-${jumpTo.day}-${jumpTo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
       : `it-day-${jumpTo.day}`;
@@ -473,7 +479,7 @@ export default function ItineraryPanel({
       window.clearTimeout(startTimer);
       if (flashTimer) window.clearTimeout(flashTimer);
     };
-  }, [jumpTo?.token, jumpTo?.day, jumpTo?.name, it]);
+  }, [jumpTo, it]);
 
   useEffect(() => {
     if (!focusName || !it?.has_itinerary) return;
@@ -492,7 +498,7 @@ export default function ItineraryPanel({
 
   if (loading && !it) {
     return (
-      <div className="h-full overflow-y-auto bg-white">
+      <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
         {overview && <TripSnapshot overview={overview} />}
         <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
           Loading itinerary…
@@ -503,7 +509,7 @@ export default function ItineraryPanel({
 
   if (!it || !it.has_itinerary) {
     return (
-      <div className="h-full overflow-y-auto bg-white">
+      <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
         {overview && <TripSnapshot overview={overview} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
           <div className="max-w-xs text-sm text-slate-500">
@@ -517,7 +523,7 @@ export default function ItineraryPanel({
 
   const { stats } = it;
   return (
-    <div className="h-full overflow-y-auto bg-white">
+    <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
       {overview && <TripSnapshot overview={overview} booked={stats.booked} stops={stats.stops} />}
       <div className="px-4 py-4">
         {error && (
@@ -545,7 +551,7 @@ export default function ItineraryPanel({
             focusName={focusName}
             focusDay={focusDay}
             focusStop={focusStop}
-            jumpTo={jumpTo ? { day: jumpTo.day, name: jumpTo.name } : null}
+            jumpTo={jumpTo && "day" in jumpTo ? { day: jumpTo.day, name: jumpTo.name } : null}
             jumpToken={flashTarget?.token || 0}
             onToggleBooked={handleToggleBooked}
             onFocus={(kind, name, focusDay, stop) => onStopFocus?.(kind, name, focusDay, stop)}

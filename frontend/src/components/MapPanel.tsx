@@ -241,6 +241,8 @@ interface Props {
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
   onDayFocus?: (day: number) => void;
+  /** User selected all circuits and wants the itinerary synced to its summary. */
+  onAllDaysFocus?: () => void;
   /** Add a place to the trip (from a pin's info window). */
   onSelect?: (
     kind: string,
@@ -255,7 +257,7 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -835,8 +837,12 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                   window.clearTimeout(circuitZoomTimerRef.current);
                   circuitZoomTimerRef.current = null;
                 }
+                pendingFocusRef.current = null;
+                pendingCircuitFocusRef.current = null;
                 setActiveDay(null);
+                setSelectedPin(null);
                 setNewStopDay("auto");
+                onAllDaysFocus?.();
               }}
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 activeDay === null ? "bg-ink text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"

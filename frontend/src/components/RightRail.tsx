@@ -4,6 +4,7 @@ import MapPanel from "./MapPanel";
 import TripSwitcher from "./TripSwitcher";
 import type { DeselectItemOptions, SelectItemOptions } from "../api";
 import type { TripView } from "../types";
+import type { ItineraryJump } from "../workspaceState";
 
 interface Props {
   overview: TripView["overview"];
@@ -19,10 +20,12 @@ interface Props {
   focusToken?: number;
   circuitFocusDay?: number;
   circuitFocusToken?: number;
+  itineraryJump: ItineraryJump | null;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
   onDayMap: (day: number) => void;
   onMapDayFocus: (day: number) => void;
+  onMapAllDaysFocus: () => void;
   onSelect?: (
     kind: string,
     name: string,
@@ -51,10 +54,12 @@ export default function RightRail({
   focusToken,
   circuitFocusDay,
   circuitFocusToken,
+  itineraryJump,
   onStopFocus,
   onStopMap,
   onDayMap,
   onMapDayFocus,
+  onMapAllDaysFocus,
   onSelect,
   onDeselect,
   tripVersion,
@@ -95,6 +100,7 @@ export default function RightRail({
               focusName={focusName}
               focusDay={focusDay}
               focusStop={focusStop}
+              jumpTo={itineraryJump}
               onStopFocus={onStopFocus}
               onStopMap={onStopMap}
               onDayMap={onDayMap}
@@ -122,6 +128,7 @@ export default function RightRail({
                 circuitFocusToken={circuitFocusToken}
                 onPinFocus={onStopFocus}
                 onDayFocus={onMapDayFocus}
+                onAllDaysFocus={onMapAllDaysFocus}
                 onSelect={onSelect}
                 onDeselect={onDeselect}
               />

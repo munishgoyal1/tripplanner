@@ -212,6 +212,16 @@ describe("ItineraryPanel", () => {
     expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
   });
 
+  it("scrolls an all-days map jump to the trip summary at the top", async () => {
+    const scrollTo = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollTo", { configurable: true, value: scrollTo });
+
+    render(<ItineraryPanel jumpTo={{ summary: true, token: 18 }} />);
+
+    await screen.findByText("Museums and river");
+    await waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "smooth" }));
+  });
+
   it("does not style concern rows as selected cards", async () => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,

@@ -466,6 +466,13 @@ export default function App() {
     dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
   };
 
+  const handleMapAllDaysFocus = () => {
+    dispatchWorkspace({ type: "focus", place: null });
+    setView((current) => current ? { ...current, focus: null } : current);
+    setCircuitFocus({ day: 0, token: Date.now() });
+    dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
+  };
+
   const tripPanelProps = {
     view,
     loading,
@@ -490,10 +497,12 @@ export default function App() {
     focusToken: mapFocusToken,
     circuitFocusDay: circuitFocus.day || undefined,
     circuitFocusToken: circuitFocus.token,
+    itineraryJump,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
     onDayMap: handleDayMap,
     onMapDayFocus: handleMapDayFocus,
+    onMapAllDaysFocus: handleMapAllDaysFocus,
     onSelect: handleSelect,
     onDeselect: handleDeselect,
     tripVersion,
@@ -529,6 +538,7 @@ export default function App() {
         circuitFocusToken={circuitFocus.token}
         onPinFocus={handleStopFocus}
         onDayFocus={handleMapDayFocus}
+        onAllDaysFocus={handleMapAllDaysFocus}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
       />

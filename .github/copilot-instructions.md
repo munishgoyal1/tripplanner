@@ -108,6 +108,9 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **All-days map summary navigation (Session 74)**: Map All days clears exact
+  place and single-day circuit focus, displays every circuit, and scrolls the
+  Itinerary pane to its trip-level summary on desktop and responsive layouts.
 - **Android account/data parity (Session 73)**: the Expo app now uses native
   browser Google OAuth to adopt the same `google-<sub>` identity as web, exposes
   Account sign-in/out, refresh, preferences, and API diagnostics, tolerates
