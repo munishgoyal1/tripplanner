@@ -15,6 +15,8 @@ interface Props {
   focusName: string | null;
   /** Exact itinerary day when the focused place occurs more than once. */
   focusDay?: number;
+  focusStop?: number;
+  focusToken?: number;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
   onSelect?: (
@@ -41,6 +43,8 @@ export default function RightRail({
   reloadToken,
   focusName,
   focusDay,
+  focusStop,
+  focusToken,
   onStopFocus,
   onStopMap,
   onSelect,
@@ -81,6 +85,8 @@ export default function RightRail({
               overview={overview}
               reloadToken={reloadToken}
               focusName={focusName}
+              focusDay={focusDay}
+              focusStop={focusStop}
               onStopFocus={onStopFocus}
               onStopMap={onStopMap}
               onStopRemove={onDeselect
@@ -102,6 +108,7 @@ export default function RightRail({
                 reloadToken={reloadToken}
                 focusName={focusName}
                 focusDay={focusDay}
+                focusToken={focusToken}
                 onPinFocus={onStopFocus}
                 onSelect={onSelect}
                 onDeselect={onDeselect}

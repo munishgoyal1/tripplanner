@@ -2138,3 +2138,16 @@ VALIDATION:
 - Inspecting a map point must not mutate the itinerary. Add it only after the
   user explicitly confirms Add stop or Add to trip.
 
+=== 2026-07-26 — Session 60: Exact stop-to-circuit highlighting ===
+
+- Clicking any mapped itinerary place must make its `H` or numbered sequence
+  marker visibly current in the itinerary and subtly emphasize the matching
+  marker on the map, so the stop can be found quickly on a busy circuit.
+- Match repeated places by exact day and one-based stop occurrence, not name
+  alone. A Day 2 or Day 3 hotel click must highlight and scroll to that day's
+  row rather than the first matching hotel on Day 1.
+- Repeated clicks on the same occurrence must refocus the map after the user
+  manually changes its day filter.
+- When a day is selected, derive map marker numbers from that day's circuit so
+  they continue to match the itinerary sequence.
+

@@ -106,6 +106,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Exact stop-to-circuit focus (Session 60)**: clicking a mapped itinerary
+  place fills only that exact day/stop `H` or number, subtly enlarges/rings the
+  matching map marker, and reapplies the day filter on repeated clicks. Repeated
+  hotel scrolling uses occurrence identity instead of the first name match.
 - **Occurrence-safe map inspection (Session 59)**: itinerary-to-map focus keeps
   the exact day for repeated places, Google-canonical punctuation still resolves
   named itinerary pins such as Britto's, and native/autocomplete Google POIs

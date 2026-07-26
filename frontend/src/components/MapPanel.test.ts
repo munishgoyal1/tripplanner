@@ -7,6 +7,7 @@ import {
   kindForGooglePlace,
   mapPinFromGooglePlace,
   optionsForStopDay,
+  pinMatchesFocus,
   placeNameMatches,
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
@@ -59,6 +60,8 @@ describe("map stop selection", () => {
     };
     expect(focusedDayForPin(hotel, 2)).toBe(2);
     expect(focusedDayForPin(hotel, 3)).toBe(1);
+    expect(pinMatchesFocus(hotel, "Goa Marriott Resort", 2)).toBe(true);
+    expect(pinMatchesFocus(hotel, "Goa Marriott Resort", 3)).toBe(false);
   });
 
   it("builds an inspectable candidate only from real Google geometry", () => {

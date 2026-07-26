@@ -97,8 +97,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   the previous stop. The selected map day labels each route segment at its
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
   Clicking a place stop focuses both its map pin and its contextual Details view.
+  The exact itinerary `H` or number becomes current, and the matching map marker
+  grows slightly with a stronger inner ring and higher stacking so it can be
+  found quickly without obscuring the circuit. Repeated clicks refocus the same
+  stop after manual map-day changes.
   Focus retains the exact itinerary occurrence, so clicking a repeated hotel on
-  Day 2 keeps the map on Day 2 rather than jumping to its first stay day. Google-
+  Day 2 highlights and scrolls to that row and keeps the map on Day 2 rather
+  than jumping to its first stay day. Google-
   canonical punctuation differences must not prevent an itinerary restaurant
   from resolving to its existing map pin and inspection tile.
   Selecting a Map day scrolls the itinerary to that day and focuses its primary

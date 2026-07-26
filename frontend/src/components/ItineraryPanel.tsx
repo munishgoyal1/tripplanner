@@ -14,6 +14,9 @@ interface Props {
   onStopMap?: (kind: string, name: string, day: number, stop: number) => void;
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
+  /** Exact focused occurrence for places repeated across days or within a circuit. */
+  focusDay?: number;
+  focusStop?: number;
   /** Programmatic jump target after add-to-trip actions. */
   jumpTo?: { day: number; name?: string; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
@@ -36,6 +39,8 @@ function canFocus(kind: string): boolean {
 
 function StopRow({
   stop,
+  day,
+  stopIndex,
   mapLabel,
   active,
   jumpActive,
@@ -46,6 +51,8 @@ function StopRow({
   onRemove,
 }: {
   stop: ItineraryStop;
+  day: number;
+  stopIndex: number;
   mapLabel?: string;
   active: boolean;
   jumpActive: boolean;
@@ -72,6 +79,8 @@ function StopRow({
     <li
       id={rowId}
       data-stop-name={stop.name.toLowerCase()}
+      data-stop-day={day}
+      data-stop-index={stopIndex}
       onClick={handleRowClick}
       className={`group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition ${
         jumpActive
@@ -118,8 +127,13 @@ function StopRow({
           {mapLabel && (
             <span
               aria-label={mapLabel === "H" ? "Hotel map marker" : `Map stop ${mapLabel}`}
-              className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border bg-white text-[10px] font-semibold tabular-nums"
-              style={{ borderColor: stop.color, color: stop.color }}
+              aria-current={active ? "location" : undefined}
+              className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-white"}`}
+              style={{
+                borderColor: stop.color,
+                color: active ? "white" : stop.color,
+                backgroundColor: active ? stop.color : "white",
+              }}
             >
               {mapLabel}
             </span>
@@ -223,6 +237,8 @@ function DayCard({
   onFocus,
   onMap,
   focusName,
+  focusDay,
+  focusStop,
   jumpTo,
   jumpToken,
   onRemove,
@@ -233,6 +249,8 @@ function DayCard({
   onFocus: (kind: string, name: string, day: number, stop: number) => void;
   onMap: (kind: string, name: string, day: number, stop: number) => void;
   focusName?: string | null;
+  focusDay?: number;
+  focusStop?: number;
   jumpTo?: { day: number; name?: string } | null;
   jumpToken: number;
   onRemove?: (kind: string, name: string, day: number, stop: number) => void;
@@ -326,8 +344,15 @@ function DayCard({
             <StopRow
               key={`${stop.name}-${i}`}
               stop={stop}
+              day={day.day}
+              stopIndex={i + 1}
               mapLabel={mapLabels[i]}
-              active={active && focusName?.toLowerCase() === stop.name.toLowerCase()}
+              active={
+                active
+                && focusName?.toLowerCase() === stop.name.toLowerCase()
+                && (focusDay == null || focusDay === day.day)
+                && (focusStop == null || focusStop === i + 1)
+              }
               jumpActive={jumpActive}
               rowId={rowId}
               onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
@@ -350,6 +375,8 @@ export default function ItineraryPanel({
   onStopFocus,
   onStopMap,
   focusName,
+  focusDay,
+  focusStop,
   jumpTo,
   onStopRemove,
 }: Props) {
@@ -453,10 +480,14 @@ export default function ItineraryPanel({
     const target = focusName.trim().toLowerCase();
     if (!target) return;
     const rows = Array.from(document.querySelectorAll<HTMLElement>("[data-stop-name]"));
-    const row = rows.find((el) => (el.dataset.stopName || "").toLowerCase() === target);
+    const row = rows.find((el) =>
+      (el.dataset.stopName || "").toLowerCase() === target
+      && (focusDay == null || Number(el.dataset.stopDay) === focusDay)
+      && (focusStop == null || Number(el.dataset.stopIndex) === focusStop)
+    );
     if (!row) return;
     row.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [focusName, it]);
+  }, [focusName, focusDay, focusStop, it]);
 
   if (loading && !it) {
     return (
@@ -511,6 +542,8 @@ export default function ItineraryPanel({
             day={day}
             active
             focusName={focusName}
+            focusDay={focusDay}
+            focusStop={focusStop}
             jumpTo={jumpTo ? { day: jumpTo.day, name: jumpTo.name } : null}
             jumpToken={flashTarget?.token || 0}
             onToggleBooked={handleToggleBooked}

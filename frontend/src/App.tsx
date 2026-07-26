@@ -56,6 +56,7 @@ export default function App() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
+  const [mapFocusToken, setMapFocusToken] = useState(0);
   const focus = workspace.activePlace;
   const stopFocusName = workspace.activePlace?.name ?? null;
   const tripVersion = workspace.tripRevision;
@@ -265,6 +266,7 @@ export default function App() {
   const handleFocus = async (kind: string, name: string, context?: DeselectItemOptions) => {
     const f = { kind, name, day: context?.day, stop: context?.stop };
     dispatchWorkspace({ type: "focus", place: f });
+    setMapFocusToken((token) => token + 1);
     if (isDesktop) setInspectorOpen(true);
     await refresh(f);
   };
@@ -448,6 +450,8 @@ export default function App() {
     reloadToken: tripVersion,
     focusName: stopFocusName,
     focusDay: focus?.day,
+    focusStop: focus?.stop,
+    focusToken: mapFocusToken,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
     onSelect: handleSelect,
@@ -465,6 +469,8 @@ export default function App() {
           overview={view?.overview}
           reloadToken={tripVersion}
           focusName={stopFocusName}
+          focusDay={focus?.day}
+          focusStop={focus?.stop}
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
@@ -477,6 +483,7 @@ export default function App() {
         reloadToken={tripVersion}
         focusName={stopFocusName}
         focusDay={focus?.day}
+        focusToken={mapFocusToken}
         onPinFocus={handleStopFocus}
         onDayFocus={(day, place) => {
           dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });

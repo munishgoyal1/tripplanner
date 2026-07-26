@@ -7,6 +7,7 @@ const { fetchItineraryMock, setStopBookedMock } = vi.hoisted(() => ({
   fetchItineraryMock: vi.fn(),
   setStopBookedMock: vi.fn(),
 }));
+const scrollIntoViewMock = vi.fn();
 
 vi.mock("../api", () => ({
   fetchItinerary: fetchItineraryMock,
@@ -85,6 +86,11 @@ describe("ItineraryPanel", () => {
   beforeEach(() => {
     fetchItineraryMock.mockReset().mockResolvedValue(itinerary);
     setStopBookedMock.mockReset();
+    scrollIntoViewMock.mockReset();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoViewMock,
+    });
   });
 
   it("shows compact stop, duration, and route metadata", async () => {
@@ -137,6 +143,33 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
+  });
+
+  it("highlights only the exact focused occurrence of a repeated hotel", async () => {
+    const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 2, stops: 2, booked: 0 },
+      days: [
+        { ...itinerary.days[0], day: 1, title: "Day 1", stops: [hotel] },
+        { ...itinerary.days[0], day: 2, title: "Day 2", stops: [hotel] },
+      ],
+    });
+
+    render(
+      <ItineraryPanel
+        focusName="Hotel Lutetia"
+        focusDay={2}
+        focusStop={1}
+      />,
+    );
+
+    const markers = await screen.findAllByLabelText("Hotel map marker");
+    expect(markers[0]).not.toHaveAttribute("aria-current");
+    expect(markers[1]).toHaveAttribute("aria-current", "location");
+    expect(markers[1]).toHaveClass("scale-110", "text-white");
+    const dayTwoRow = document.querySelector('[data-stop-day="2"][data-stop-index="1"]');
+    expect(scrollIntoViewMock.mock.instances[0]).toBe(dayTwoRow);
   });
 
   it("rolls back an optimistic booking update when persistence fails", async () => {

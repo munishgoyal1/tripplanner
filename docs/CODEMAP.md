@@ -129,10 +129,13 @@ frontend/
       RightRail.tsx        Mobile trip-details sheet: TripSwitcher + stacked
                itinerary/photos + opt-in lazy map
       ItineraryPanel.tsx   TripSnapshot + compact day summaries + clickable stops
-               + booked checkbox
+           + booked checkbox; exact day/stop identity owns active-row scroll
+           and the filled current `H`/number marker
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;
+                           focused marker scales/rings above its day circuit and
+                           repeated focus requests reapply after manual filtering;
                            day focus jumps itinerary
                            and sends a representative place to Details; Places
                            autocomplete/native POI clicks create a real-coordinate

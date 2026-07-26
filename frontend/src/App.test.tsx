@@ -48,7 +48,7 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, jumpTo, overview }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null }) => (
+  default: ({ reloadToken, onStopFocus, jumpTo, overview, focusDay, focusStop }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; jumpTo?: { day: number; name?: string } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number }) => (
     <div>
       <button
         type="button"
@@ -59,6 +59,8 @@ vi.mock("./components/ItineraryPanel", () => ({
         data-overview-status={overview?.status ?? ""}
         data-overview-counts={overview ? `${overview.counts.days}d · ${overview.counts.hotels} stay · ${overview.counts.activities} places` : ""}
         data-overview-cost={overview?.total_cost_display ?? ""}
+        data-focus-day={focusDay ?? ""}
+        data-focus-stop={focusStop ?? ""}
         onClick={() => onStopFocus("attraction", "Louvre Museum")}
       />
       <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
@@ -68,8 +70,8 @@ vi.mock("./components/ItineraryPanel", () => ({
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ onPinFocus, onDayFocus, focusName, focusDay }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null; focusDay?: number }) => (
-    <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""}>
+  default: ({ onPinFocus, onDayFocus, focusName, focusDay, focusToken }: { onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number, place?: { kind: string; name: string }) => void; focusName?: string | null; focusDay?: number; focusToken?: number }) => (
+    <div data-testid="map-panel" data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onDayFocus?.(2, { kind: "attraction", name: "Eiffel Tower" })}>Focus Day 2</button>
     </div>
@@ -439,6 +441,15 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Goa Marriott"));
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "2");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-focus-day", "2");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-focus-stop", "1");
+    const firstFocusToken = screen.getByTestId("map-panel").getAttribute("data-focus-token");
+
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2 hotel" }));
+    await waitFor(() => expect(screen.getByTestId("map-panel")).not.toHaveAttribute(
+      "data-focus-token",
+      firstFocusToken,
+    ));
     expect(fetchTripViewMock.mock.calls[1][0]).toEqual({
       kind: "hotel",
       name: "Goa Marriott",

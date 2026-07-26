@@ -38,12 +38,13 @@ function loadGoogleMaps(key: string): Promise<any> {
 }
 
 // Teardrop pin as an SVG data URL, tinted per day, with a number label baked in.
-function pinIcon(color: string, label: string): string {
+function pinIcon(color: string, label: string, focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
         fill="${color}" stroke="white" stroke-width="2"/>
-  <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"/>
+    <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"
+      stroke="${focused ? color : "white"}" stroke-width="${focused ? 2 : 0}"/>
   <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="14"
         font-weight="700" text-anchor="middle" fill="${color}">${label}</text>
 </svg>`.trim();
@@ -81,12 +82,13 @@ function airportIcon(): string {
 
 // Hotel/lodging pin — a lettered teardrop ("H") in slate so a place you're
 // staying reads differently from a day-numbered attraction.
-function hotelIcon(): string {
+function hotelIcon(focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
         fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
-  <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"/>
+    <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.95"
+      stroke="${focused ? HOTEL_COLOR : "white"}" stroke-width="${focused ? 2 : 0}"/>
   <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
         font-weight="700" text-anchor="middle" fill="${HOTEL_COLOR}">H</text>
 </svg>`.trim();
@@ -95,10 +97,10 @@ function hotelIcon(): string {
 
 // A small filled dot for un-scheduled "suggested" places — present but quiet
 // so it doesn't compete with the numbered day pins.
-function dotIcon(color: string): string {
+function dotIcon(color: string, focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-  <circle cx="9" cy="9" r="6" fill="${color}" stroke="white" stroke-width="2"/>
+  <circle cx="9" cy="9" r="6" fill="${color}" stroke="${focused ? "#0f172a" : "white"}" stroke-width="${focused ? 3 : 2}"/>
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -125,6 +127,11 @@ export function focusedDayForPin(pin: MapPin, focusDay?: number): number | null 
   return focusDay && pin.occurrences.some((occurrence) => occurrence.day === focusDay)
     ? focusDay
     : pin.day;
+}
+
+export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
+  if (!focusName || !placeNameMatches(pin.name, focusName)) return false;
+  return focusDay == null || pin.occurrences.some((occurrence) => occurrence.day === focusDay);
 }
 
 export function kindForGooglePlace(types: string[] | undefined): "attraction" | "hotel" | "meal" {
@@ -173,6 +180,8 @@ interface Props {
   focusName?: string | null;
   /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
   focusDay?: number;
+  /** Changes for every focus request, including repeated clicks on the same stop. */
+  focusToken?: number;
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
@@ -191,7 +200,7 @@ interface Props {
   ) => void | Promise<boolean>;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, onPinFocus, onDayFocus, onSelect, onDeselect }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -362,7 +371,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFo
     const dayColor = new Map<number, string>();
     view.days.forEach((d) => dayColor.set(d.day, d.color));
     const visitOrderByPinId = new Map<string, number>();
-    view.days.forEach((d) => {
+    const orderDays = activeDay == null
+      ? view.days
+      : view.days.filter((day) => day.day === activeDay);
+    orderDays.forEach((d) => {
       let visitOrder = 0;
       d.pin_ids.forEach((id) => {
         const pin = view.pins.find((candidate) => candidate.id === id);
@@ -390,26 +402,27 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFo
       // day-scheduled places get a bold numbered teardrop in their day color,
       // and un-scheduled suggestions get a quiet dot.
       let icon: any;
+      const focused = pinMatchesFocus(p, focusName, focusDay);
       const visitOrder = visitOrderByPinId.get(p.id);
       const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
       if (p.kind === "hotel") {
         icon = {
-          url: hotelIcon(),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
+          url: hotelIcon(focused),
+          scaledSize: new google.maps.Size(focused ? 40 : 34, focused ? 52 : 44),
+          anchor: new google.maps.Point(focused ? 20 : 17, focused ? 52 : 44),
         };
       } else if (markerDay && visitOrder) {
         const color = dayColor.get(markerDay) || "#64748b";
         icon = {
-          url: pinIcon(color, String(visitOrder)),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
+          url: pinIcon(color, String(visitOrder), focused),
+          scaledSize: new google.maps.Size(focused ? 40 : 34, focused ? 52 : 44),
+          anchor: new google.maps.Point(focused ? 20 : 17, focused ? 52 : 44),
         };
       } else {
         icon = {
-          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR),
-          scaledSize: new google.maps.Size(18, 18),
-          anchor: new google.maps.Point(9, 9),
+          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR, focused),
+          scaledSize: new google.maps.Size(focused ? 24 : 18, focused ? 24 : 18),
+          anchor: new google.maps.Point(focused ? 12 : 9, focused ? 12 : 9),
         };
       }
       const marker = new google.maps.Marker({
@@ -417,7 +430,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFo
         map,
         title: p.name,
         icon,
-        zIndex: p.selected ? 1000 : p.day ? 600 : 400,
+        zIndex: focused ? 1400 : p.selected ? 1000 : p.day ? 600 : 400,
       });
       marker.addListener("click", () => {
         setCandidatePin(null);
@@ -541,7 +554,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFo
     } else if (any && !bounds.isEmpty()) {
       map.fitBounds(bounds, 64);
     }
-  }, [view, activeDay, candidatePin, onPinFocus]);
+  }, [view, activeDay, candidatePin, focusName, focusDay, onPinFocus]);
 
   useEffect(() => {
     draw();
@@ -575,7 +588,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, onPinFo
       draw();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusName, focusDay, view]);
+  }, [focusName, focusDay, focusToken, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
     return !!p && !isAirportTarget(p);
