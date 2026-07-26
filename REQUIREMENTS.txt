@@ -2220,3 +2220,14 @@ VALIDATION:
   pin focuses that exact occurrence and pans to zoom 15. Record this as an
   observation in `docs/DEFERRED_DECISIONS.md`; do not change it proactively.
 
+=== 2026-07-26 — Session 65: Automatic local Docker startup ===
+
+- Running `scripts/dev-spa.ps1` with the default local Cosmos Emulator backend
+  must launch Docker Desktop automatically when Docker is installed but its
+  daemon is not running, then wait for the daemon before invoking Compose.
+- Automatic Docker startup applies only when the backend needs the local
+  emulator. Frontend-only, Azure Cosmos, and canary-data runs must not launch it.
+- Missing Docker Desktop, Docker startup timeout, and emulator readiness failure
+  must remain explicit errors. Never delete or reset the persisted emulator data
+  volume as an automatic recovery action.
+

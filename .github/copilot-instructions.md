@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Automatic local Docker startup (Session 65)**: the default local
+  `scripts/dev-spa.ps1` path launches an installed Docker Desktop when its daemon
+  is stopped, waits up to two minutes, then starts the Cosmos Emulator. Azure,
+  canary-data, and frontend-only runs do not launch Docker; unhealthy persisted
+  emulator data is reported but never reset automatically.
 - **Map placement + circuit-level focus (Session 64)**: temporary Google map
   place tiles expose Best day / exact-day selection beside Add to trip. Clicking
   an itinerary day header now fits the complete day circuit instead of routing

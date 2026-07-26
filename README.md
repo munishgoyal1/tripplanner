@@ -202,12 +202,14 @@ scripts\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-loca
 scripts\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
 ```
 
-By default, `scripts\dev-spa.ps1` starts the official Dockerized **Cosmos DB
-Emulator** and uses its isolated `tripplanner-local` database. Emulator data
-persists in a named Docker volume. Set `COSMOS_DEV_BACKEND=azure` in `.env` or
-pass `-CosmosBackend azure` to explicitly use the shared Azure account's
-isolated `tripplanner-local` database. Azure mode requires Azure CLI sign-in;
-credentials are resolved at startup and never written to `.env`.
+By default, `scripts\dev-spa.ps1` launches Docker Desktop when needed, starts
+the official Dockerized **Cosmos DB Emulator**, and uses its isolated
+`tripplanner-local` database. Emulator data persists in a named Docker volume.
+Docker Desktop must already be installed; startup waits up to two minutes for
+its daemon and reports a clear error without resetting emulator data. Set
+`COSMOS_DEV_BACKEND=azure` in `.env` or pass `-CosmosBackend azure` to explicitly
+use the shared Azure account's isolated `tripplanner-local` database. Azure mode
+requires Azure CLI sign-in; credentials are resolved at startup and never written to `.env`.
 `-UseCanaryData` remains a separate advanced override for hosted canary data.
 
 

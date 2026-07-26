@@ -27,7 +27,9 @@
 #
 # Cosmos backend precedence: -CosmosBackend, COSMOS_DEV_BACKEND environment,
 # .env COSMOS_DEV_BACKEND, then the default "emulator". Azure mode explicitly
-# uses the isolated tripplanner-local database in the shared data account.
+# uses the isolated tripplanner-local database in the shared data account. In
+# emulator mode, Docker Desktop is launched automatically when it is installed
+# but not running.
 #
 # First-time setup:
 #   1. Backend: .venv\Scripts\Activate.ps1 ; pip install -e ".[dev]"
