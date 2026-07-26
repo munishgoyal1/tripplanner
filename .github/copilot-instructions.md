@@ -106,6 +106,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Recoverable itinerary map pins (Session 54)**: successful Places metadata
+  retains its one-week cache, while transient empty lookup results expire after
+  one minute instead of hiding authoritative itinerary stops for a week. The
+  local Goa Day 2 circuit now includes Fort Aguada and Britto's between its
+  hotel endpoints.
 - **Concrete default hotels (Session 53)**: placeholder accommodation labels
   such as `Hotel (TBD)` are filtered out of `selected_hotels` and reported as
   incomplete planning. Unless the user asks to compare first, the agent must

@@ -69,6 +69,35 @@ def test_meta_ttl_is_one_week():
     assert pc._META_TTL_S == 7 * 24 * 60 * 60
 
 
+def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
+    calls = {"count": 0}
+
+    def flaky_lookup(name: str, city: str):
+        calls["count"] += 1
+        if calls["count"] == 1:
+            return None
+        return {
+            "place_id": "fort-aguada",
+            "name": name,
+            "lat": 15.49,
+            "lng": 73.77,
+            "photo_refs": [],
+        }
+
+    monkeypatch.setattr(pc, "_lookup_place", flaky_lookup)
+
+    assert pc.get_details("Fort Aguada", "Goa") is None
+    assert pc.get_details("Fort Aguada", "Goa") is None
+    assert calls["count"] == 1
+
+    entry = pc._CACHE[pc._key("Fort Aguada", "Goa")]
+    entry["__at__"] = time.time() - pc._MISS_TTL_S - 1
+
+    details = pc.get_details("Fort Aguada", "Goa")
+    assert details and details["place_id"] == "fort-aguada"
+    assert calls["count"] == 2
+
+
 def test_persist_then_reload_restores_details(_isolate, tmp_path):
     pc.get_summary("Taj", "Goa")
     # File written under the tmp TRIPPLANNER_HOME.

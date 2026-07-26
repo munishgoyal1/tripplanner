@@ -2065,3 +2065,12 @@ VALIDATION:
 - Treat placeholder hotels as an incomplete planning state and require the
   agent to replace every placeholder before completing its response.
 
+=== 2026-07-26 — Session 54: Recover missing itinerary map pins ===
+
+- A transient Google Places lookup failure must not hide an authoritative
+  itinerary stop from its map circuit for the normal seven-day metadata TTL.
+- Keep successful place metadata cached for one week, but retry negative
+  lookup results after one minute.
+- Preserve the complete itinerary order when the lookup recovers, including
+  hotels, attractions, and named restaurant stops.
+

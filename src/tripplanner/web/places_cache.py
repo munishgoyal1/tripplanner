@@ -44,6 +44,7 @@ _HTTP_TIMEOUT_S = 10
 # photo URLs are the exception — Google expires those within ~1h — so they get
 # a much shorter TTL and are re-resolved on demand from the long-lived refs.
 _META_TTL_S = 7 * 24 * 60 * 60  # 1 week
+_MISS_TTL_S = 60  # transient lookup failures must not hide itinerary pins for a week
 _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
@@ -107,7 +108,8 @@ def _load_once() -> None:
     now = time.time()
     with _CACHE_LOCK:
         for k, v in raw.items():
-            if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < _META_TTL_S:
+            ttl = _MISS_TTL_S if _is_miss(v) else _META_TTL_S
+            if isinstance(v, dict) and (now - v.get("__at__", 0.0)) < ttl:
                 _CACHE[k] = v
         _loaded = True
 
@@ -204,8 +206,19 @@ def _cache() -> dict[str, dict[str, Any]]:
     return _CACHE
 
 
-def _fresh(entry: dict[str, Any] | None, ttl: float = _META_TTL_S) -> bool:
-    return entry is not None and (time.time() - entry.get("__at__", 0.0)) < ttl
+def _is_miss(entry: Any) -> bool:
+    return isinstance(entry, dict) and not any(
+        key for key in entry if not key.startswith("__")
+    )
+
+
+def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
+    if entry is None:
+        return False
+    effective_ttl = (
+        ttl if ttl is not None else (_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
+    )
+    return (time.time() - entry.get("__at__", 0.0)) < effective_ttl
 
 
 def _key(name: str, city: str) -> str:
@@ -351,14 +364,14 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
         with _CACHE_LOCK:
             entry = cache.get(k)
             if not refresh and _fresh(entry):
-                return entry  # type: ignore[return-value]
+                return {} if _is_miss(entry) else entry  # type: ignore[return-value]
         info = _lookup_place(name, city) or {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
             cache[k] = info
             _evict_if_needed()
         _persist()
-        return info
+        return {} if _is_miss(info) else info
 
 
 def get_photos(
