@@ -2074,3 +2074,12 @@ VALIDATION:
 - Preserve the complete itinerary order when the lookup recovers, including
   hotels, attractions, and named restaurant stops.
 
+=== 2026-07-26 — Session 55: Matching itinerary sequence markers ===
+
+- Show subtle sequence markers on itinerary place rows so their order can be
+  matched immediately to the numbered markers on the day map circuit.
+- Use `H` for the hotel start/return endpoints and `1, 2, 3...` for each
+  attraction or named restaurant in itinerary order.
+- Keep transport and flight rows unnumbered because they are not map place
+  markers.
+

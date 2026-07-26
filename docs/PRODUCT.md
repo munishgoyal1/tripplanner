@@ -86,6 +86,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   switches; an old trip response must never overwrite the selected trip.
 - **Itinerary scanning**: each day header shows stop count, planned duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
+  Place rows carry subtle day-colored sequence markers matching the map circuit:
+  `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
   Clicking a place stop focuses both its map pin and its contextual Details view.
   Selecting a Map day scrolls the itinerary to that day and focuses its primary
   place in Details. Restaurants are place stops too: they join day circuits and

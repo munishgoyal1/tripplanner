@@ -77,6 +77,32 @@ describe("ItineraryPanel", () => {
       "href",
       "https://maps.google.com/example",
     );
+    expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
+    expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
+  });
+
+  it("matches map ordering for hotel endpoints and place stops", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 5, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Cafe de Flore", kind: "meal" },
+          itinerary.days[0].stops[1],
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findAllByLabelText("Hotel map marker")).toHaveLength(2);
+    expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
+    expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
+    expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
   });
 
   it("rolls back an optimistic booking update when persistence fails", async () => {

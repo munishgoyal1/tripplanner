@@ -106,6 +106,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Matching itinerary/map sequence (Session 55)**: itinerary place rows show
+  restrained day-colored markers matching the map circuit: `H` for hotel
+  endpoints and `1, 2, 3...` for attractions and named restaurants. Transport
+  and flight rows remain unnumbered.
 - **Recoverable itinerary map pins (Session 54)**: successful Places metadata
   retains its one-week cache, while transient empty lookup results expire after
   one minute instead of hiding authoritative itinerary stops for a week. The

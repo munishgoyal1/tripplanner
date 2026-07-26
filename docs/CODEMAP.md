@@ -228,7 +228,8 @@ It exports:
   `POST /trip/stop/booked`) persists a stop's booked flag (normalizing string
   stops to dicts). Rendered by
   [ItineraryPanel.tsx](../frontend/src/components/ItineraryPanel.tsx); clicking a
-  place stop focuses the Photos section, the 📍 button reveals it on the Map.
+  place stop focuses the Photos section, the 📍 button reveals it on the Map,
+  and subtle `H` / numbered row badges mirror the day circuit's map markers.
   When a trip has no structured `day_wise_itinerary` yet,
   `_itinerary_from_selections` synthesizes a single "Your picks so far" day from
   the selected hotels/activities so the panel is never blank.

@@ -34,6 +34,7 @@ function canFocus(kind: string): boolean {
 
 function StopRow({
   stop,
+  mapLabel,
   active,
   jumpActive,
   rowId,
@@ -43,6 +44,7 @@ function StopRow({
   onRemove,
 }: {
   stop: ItineraryStop;
+  mapLabel?: string;
   active: boolean;
   jumpActive: boolean;
   rowId: string;
@@ -99,6 +101,15 @@ function StopRow({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
+          {mapLabel && (
+            <span
+              aria-label={mapLabel === "H" ? "Hotel map marker" : `Map stop ${mapLabel}`}
+              className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border bg-white text-[10px] font-semibold tabular-nums"
+              style={{ borderColor: stop.color, color: stop.color }}
+            >
+              {mapLabel}
+            </span>
+          )}
           {stop.time && (
             <span className="font-mono text-[11px] tabular-nums text-slate-400">
               {stop.time}
@@ -216,6 +227,13 @@ function DayCard({
     (stop) => stop.kind === "hotel" || stop.kind === "attraction",
   );
   const firstPlace = day.stops[firstPlaceIndex];
+  let visitOrder = 0;
+  const mapLabels = day.stops.map((stop) => {
+    if (stop.kind === "hotel") return "H";
+    if (!["attraction", "meal", "restaurant"].includes(stop.kind)) return undefined;
+    visitOrder += 1;
+    return String(visitOrder);
+  });
   const plannedMinutes = day.stops.reduce((total, stop) => total + (stop.duration_min || 0), 0);
   const plannedDuration = plannedMinutes > 0
     ? plannedMinutes >= 60
@@ -294,6 +312,7 @@ function DayCard({
             <StopRow
               key={`${stop.name}-${i}`}
               stop={stop}
+              mapLabel={mapLabels[i]}
               active={active && focusName?.toLowerCase() === stop.name.toLowerCase()}
               jumpActive={jumpActive}
               rowId={rowId}
