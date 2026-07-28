@@ -1,7 +1,9 @@
 # Copilot Instructions — tripplanner
 
-> **Read [docs/CODEMAP.md](../docs/CODEMAP.md) (where) and
-> [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste) FIRST. Consult
+> **Read [docs/CODEMAP.md](../docs/CODEMAP.md) (where),
+> [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste), and
+> [docs/REQUIREMENTS_V2.md](../docs/REQUIREMENTS_V2.md) (current capability
+> baseline + roadmap) FIRST. Consult
 > [docs/ENGINEERING_LEARNINGS.md](../docs/ENGINEERING_LEARNINGS.md) for durable
 > cross-feature lessons before changing interaction behavior.
 > They are the canonical, committed sources of truth and are kept up to date
@@ -14,7 +16,10 @@
 - Batch independent tool calls into ONE turn. Only chain when an output is
   needed for the next input.
 - Trust this file + `docs/CODEMAP.md` + `docs/PRODUCT.md` +
+  `docs/REQUIREMENTS_V2.md` +
   `/memories/repo/tripplanner.md`. Skip re-exploration on every task.
+- For a coherent new feature, prefer an owner-edited brief under
+  `docs/feature-briefs/`. Treat roadmap entries as candidates, not approval.
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
@@ -61,6 +66,8 @@ the right place IN THE SAME TURN so future sessions don't relearn it:
 | Cross-project habit (terse, no servers, …)  | `/memories/preferences.md`            |
 | Repo-only gotcha / landmine                 | `/memories/repo/tripplanner.md`        |
 | Vision / scope / taste / design language    | `docs/PRODUCT.md` (commit)            |
+| Current capability / roadmap status         | `docs/REQUIREMENTS_V2.md` (commit)    |
+| Next coherent feature scope                 | `docs/feature-briefs/*.md` (commit)   |
 | File layout / commands / contracts          | `docs/CODEMAP.md` (commit)            |
 | New requirement / decision (with date)      | `REQUIREMENTS.txt` (commit)           |
 | Architecture / config shift                 | `README.md` + this file (commit)      |
@@ -110,6 +117,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **V2 baseline + feature-intake workflow (Session 81)**: current capabilities,
+  truthful booking boundaries, explicit gaps, proposed public-MVP roadmap, and
+  the shared quality bar now live in `docs/REQUIREMENTS_V2.md`. New coherent
+  outcomes should start from `docs/feature-briefs/FEATURE_BRIEF_TEMPLATE.md`;
+  the owner edits `NEXT_INCREMENT.md`, and the agent normalizes it into
+  acceptance criteria before implementation. Roadmap entries are not automatic
+  approval.
 - **Native occurrence + refresh correctness (Session 80, milestone C)**: Plan
   converts rendered stop indexes to the backend's one-based occurrence contract,
   so repeated-place actions reach the exact row. Native refreshes share one

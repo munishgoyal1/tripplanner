@@ -333,6 +333,8 @@ Assistant pane being open.
 ```
 tripplanner/
 ├── REQUIREMENTS.txt              # Running log of all requirements & decisions
+├── docs/REQUIREMENTS_V2.md       # Current capability baseline + proposed roadmap
+├── docs/feature-briefs/          # Reusable template + editable next increment
 ├── .github/copilot-instructions.md  # Agent context for Copilot/AI sessions
 ├── pyproject.toml                # Dependencies & project config
 ├── Dockerfile                    # Multistage: build SPA (node) + run FastAPI (uvicorn)
@@ -406,32 +408,20 @@ uv run pytest -v
 
 ## Roadmap
 
-- [x] Persistent user preference memory
-- [x] Real flight search via Duffel (primary) + Amadeus (fallback)
-- [x] Real hotel/activity search via Amadeus
-- [x] Real ratings & reviews via Google Places
-- [x] Fresh web content via Tavily search
-- [x] Trip plan lifecycle (draft → finalize → book)
-- [x] Past trip history for learning
-- [x] React SPA (served by FastAPI) for hosted multi-user mode
-- [x] Azure Cosmos DB persistence (auto-dispatch when configured)
-- [x] Azure Container Apps Bicep IaC (Free Tier compatible)
-- [ ] TripAdvisor Content API (deeper review data, requires approval)
-- [ ] Real booking execution via Duffel Orders API
-- [ ] Hotel booking integration (Booking.com / Agoda API)
-- [ ] Activity booking integration (Viator / GetYourGuide)
-- [ ] Multi-city trip support
-- [ ] Group trip planning (multiple families)
-- [ ] Custom domain + auth on top of the hosted SPA
+The versioned current capability baseline, explicit gaps, and proposed roadmap
+live in [`docs/REQUIREMENTS_V2.md`](docs/REQUIREMENTS_V2.md). Roadmap entries are
+candidate outcomes, not automatic approval. Use
+[`docs/feature-briefs/NEXT_INCREMENT.md`](docs/feature-briefs/NEXT_INCREMENT.md)
+to scope the next coherent milestone.
 
 ## Key Files for New Agents/Sessions
 
 If you're an AI agent picking up this project:
-1. Read `REQUIREMENTS.txt` for full history of decisions and requirements
+1. Read `docs/CODEMAP.md`, `docs/PRODUCT.md`, and `docs/REQUIREMENTS_V2.md`
 2. Read `.github/copilot-instructions.md` for codebase conventions
-3. The graph is in `src/tripplanner/graph.py` — single-agent tool loop
-4. The agent is in `src/tripplanner/agents/trip_agent.py`
-5. Tools/connectors are in `src/tripplanner/tools/`
+3. Read `REQUIREMENTS.txt` only when historical context is needed
+4. For planned feature work, read the active brief under `docs/feature-briefs/`
+5. The graph is in `src/tripplanner/graph.py` and tools are in `src/tripplanner/tools/`
 6. Always commit AND push after changes (user preference)
 
 ## License

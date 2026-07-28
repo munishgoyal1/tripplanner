@@ -2396,3 +2396,24 @@ VALIDATION:
 - After all six repairs, run the complete automated suite and a documented manual
   regression cycle before any release decision. No deployment is implied.
 
+=== 2026-07-28 — Session 81: V2 baseline and feature-intake workflow ===
+
+- Create one versioned V2 requirements baseline that describes the product's
+  current implemented capabilities after all incremental enhancements, separates
+  explicit gaps from implemented behavior, and keeps proposed roadmap work from
+  becoming automatic approval.
+- Keep booking language truthful: the current lifecycle can finalize, record a
+  booked state, archive a trip, and provide handoffs, but it does not complete
+  provider-side purchases or charge a payment method.
+- Add a reusable, repository-versioned feature brief template that accepts an
+  unstructured owner mind dump and guides the agent toward outcome, current
+  behavior, scenarios, cross-surface consistency, business/data rules, failure
+  states, privacy, cost, observability, acceptance criteria, validation, rollout,
+  and decisions.
+- Maintain an editable `NEXT_INCREMENT.md` working copy seeded with current
+  capability IDs. Unchanged capabilities default to preservation; the owner only
+  needs to describe and mark incremental changes.
+- For coherent new features, normalize the working brief before implementation,
+  ask only questions that materially change behavior or risk, and update the
+  brief with decisions and validation evidence through shipment.
+

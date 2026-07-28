@@ -203,6 +203,11 @@ docs/
   android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
   ENGINEERING_LEARNINGS.md  Joint architectural/domain lessons for future work
+  REQUIREMENTS_V2.md  Current implemented capability baseline, explicit gaps,
+                      proposed roadmap, and quality bar
+  feature-briefs/
+    FEATURE_BRIEF_TEMPLATE.md  Reusable owner/agent feature-intake contract
+    NEXT_INCREMENT.md          Owner-editable brief seeded from the V2 baseline
   dev.md              Dev environment notes
   ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   setup-oauth.md      OAuth setup walkthrough

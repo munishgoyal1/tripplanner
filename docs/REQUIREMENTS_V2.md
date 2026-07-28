@@ -1,0 +1,473 @@
+# Tripplanner V2 Requirements Baseline and Roadmap
+
+## Document control
+
+| Field | Value |
+|---|---|
+| Version | 2.0 |
+| Baseline date | 2026-07-28 |
+| Baseline commit | `f4f4392` |
+| Status | Current implemented baseline; roadmap items require owner approval |
+| Owner | Munish Goyal |
+| Product | tripplanner |
+
+This document is the concise, current product baseline. It answers **what the
+product can do now**, what behavior must be preserved, and which directions are
+proposed next. It replaces the need to reconstruct current scope from the
+chronological `REQUIREMENTS.txt` log.
+
+Source-of-truth boundaries:
+
+- `docs/REQUIREMENTS_V2.md`: current capabilities, gaps, and roadmap.
+- `docs/PRODUCT.md`: product intent, interaction rules, and design taste.
+- `docs/CODEMAP.md`: implementation ownership, contracts, and commands.
+- `REQUIREMENTS.txt`: chronological decision history; old entries may be obsolete.
+- `docs/ENGINEERING_LEARNINGS.md`: durable lessons from observed failures.
+- `docs/feature-briefs/NEXT_INCREMENT.md`: editable scope for the next milestone.
+
+When a shipped feature changes the capability baseline, update this document in
+the same commit. A roadmap entry is not implementation approval by itself.
+
+## Status vocabulary
+
+| Status | Meaning |
+|---|---|
+| Implemented | Available in the current repository and supported by tests or runbooks. |
+| Guarded | Implemented, but intentionally constrained by approval, configuration, or environment. |
+| Observing | Current behavior remains in place while usage evidence is gathered. |
+| Proposed | Candidate V2 work; not approved merely because it appears here. |
+| Out of scope | Explicitly excluded from the current product. |
+
+## Product contract
+
+Tripplanner is a preference-aware AI trip planner that turns a conversation into
+a concrete, editable, and exportable trip. It uses real travel and place data,
+persists the plan and the user's preferences, and keeps Itinerary, Map, Details,
+and Assistant behavior synchronized across web, iPhone, and Android.
+
+The planning target is a near-final plan within 30 minutes and few clarification
+rounds. "Bookable" currently means concrete choices, prices when providers return
+them, itinerary details, and verified handoff material. The product does **not**
+currently complete provider-side purchases or charge a payment method.
+
+## Capability index
+
+Future feature briefs should reference these stable capability IDs rather than
+re-describing the whole product.
+
+| ID | Capability | Status |
+|---|---|---|
+| CORE-01 | Single trip-planning agent with phase-selected tools | Implemented |
+| PLAN-01 | Preference-aware conversational trip creation | Implemented |
+| PLAN-02 | Source-grounded flight, stay, place, meal, route, weather, visa, and event research | Implemented |
+| PLAN-03 | Structured, chronological, hotel-anchored daily itineraries | Implemented |
+| PLAN-04 | Deterministic itinerary reflow and optional planner review | Implemented |
+| MEM-01 | Persistent profile, family, preference, history, and passive learning | Implemented |
+| LIFE-01 | Draft, finalized, and recorded-booked trip lifecycle | Implemented |
+| LIFE-02 | Saved trips, resume/switch/delete, and per-trip chat history | Implemented |
+| WEB-01 | Responsive four-pane planning workspace | Implemented |
+| ITIN-01 | Authoritative trip snapshot and occurrence-aware itinerary | Implemented |
+| MAP-01 | Day circuits, all-days overview, exact-stop focus, and POI discovery | Implemented |
+| PLACE-01 | Contextual Details and consistent Map/Details place actions | Implemented |
+| MUT-01 | Add, remove, move-day, stay, and booking-state mutations | Implemented |
+| EXPORT-01 | Preview, print, PDF, email, share link, and calendar exports | Implemented |
+| MOBILE-01 | Native Expo client for iPhone and Android | Implemented |
+| ID-01 | Guest identity plus shared web/mobile Google identity | Implemented |
+| DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
+| REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
+| SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
+| OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
+| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Proposed |
+| MONEY-01 | Minimally intrusive monetization after traction | Proposed |
+| BOOK-01 | Real provider-side booking and payment | Out of scope |
+
+## 1. Planning intelligence
+
+### CORE-01 - Single authoritative trip agent
+
+- One LangGraph agent owns planning; removed personal-assistant agents are not
+  part of V2.
+- Tool schemas are selected by conversation phase so greetings and preference
+  turns do not pay the context cost of every search provider.
+- The agent presents progress as friendly thinking, search, review, and save
+  phases while keeping internal tool names and raw arguments out of the UI.
+- GPT-4.1 is the measured default planning model. A slower or costlier model
+  requires evidence that it improves a relevant quality failure.
+
+### PLAN-01 - Preference-aware planning flow
+
+- The agent loads known preferences before asking questions and asks only for
+  information it cannot safely infer.
+- Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
+  lodging needs shape the plan.
+- One sticky display currency is used throughout a trip. Domestic travel defaults
+  to the user's home currency; international plans may use destination currency
+  or USD with a home-currency equivalent.
+- A completed planning turn persists the authoritative trip and refreshes every
+  dependent pane together.
+
+### PLAN-02 - Grounded providers and enrichment
+
+- Duffel is the primary flight search provider; Amadeus flight search is fallback
+  only.
+- Amadeus remains available for supported hotel, activity, and point-of-interest
+  searches.
+- Google Places supplies place search, ratings, reviews, photos, restaurants,
+  addresses, coordinates, and opening hours.
+- Google Routes supplies measured route distance/time and route optimization.
+  Map circuit drawings and fallback estimates avoid unnecessary Directions calls.
+- Open-Meteo supplies forecast and seasonal weather context.
+- Tavily supplies fresh travel research, official-source-biased visa/entry
+  research, and overlapping local events.
+- Missing provider keys degrade to an explicit not-configured result rather than
+  breaking the planning loop.
+
+### PLAN-03 - Complete structured itinerary
+
+- Days contain structured stops with name, type, time, duration, notes, selected
+  state, and booked state.
+- Ordinary days form a circuit from the applicable hotel, through concrete
+  attractions and named restaurants, and back to the hotel. Genuine overnight
+  flight, train, bus, or transfer days are exempt from the return-to-hotel rule.
+- Placeholder hotels and generic `TBD` meals do not satisfy completion gates.
+- Substantial days require concrete restaurant research and persisted meal stops.
+- Visit times must progress chronologically and leave room for stated duration
+  and travel. Duplicate or backwards model-authored times are rejected before
+  persistence.
+- Route ordering, displayed times, itinerary markers, and map circuit ordering
+  are treated as one schedule contract.
+
+### PLAN-04 - Reflow and planner review
+
+- Direct structural changes apply immediately and return the final authoritative
+  day after reflow.
+- Unbooked place stops may rebalance by geographic proximity and day load;
+  booked stops, hotels, flights, transport, and explicit constraints stay fixed.
+- A deterministic impact gate remains quiet for routine edits and flags material
+  crowding, excessive travel, empty days, or missing meals.
+- A flagged result offers `Review with planner` or `Keep as is`. Planner review
+  is proposal-only: it binds read-only tools, disables fallback persistence and
+  passive learning, and cannot mutate until the user approves later.
+
+## 2. Personalization and memory
+
+### MEM-01 - Persistent user understanding
+
+- Profile: display name, home city/country, age band, and occupation.
+- Family/travel party: relationship, name, age, dietary needs, mobility needs,
+  interests, and notes.
+- Travel style, budget level, hotel/room preferences, transport preferences,
+  food preferences, accessibility needs, interests, and dislikes.
+- Past planned trips, structured postmortems, ratings, casual past-trip mentions,
+  and free-form learned notes.
+- An `About me` textbox extracts structured facts and merges additively without
+  overwriting existing information.
+- Passive learning enriches preferences from normal conversation.
+- Local BM25-style recall retrieves relevant user and trip memories without an
+  external API call.
+
+## 3. Trip lifecycle, identity, and persistence
+
+### LIFE-01 - Lifecycle semantics
+
+- `draft`: mutable planning state.
+- `finalized`: completion checks run and the plan is ready for user booking.
+- `booked`: the current `execute_bookings` tool records a completion state,
+  archives the trip, and exposes handoff links where available.
+- No current provider adapter purchases a flight, hotel, or activity. Messages
+  suggesting a real confirmation or provider transaction are legacy wording,
+  not a production guarantee.
+- Individual itinerary stops can independently record booked/unbooked state.
+
+### LIFE-02 - Remembered trips and conversations
+
+- Stable trip IDs distinguish destination/date combinations and allow same-trip
+  resume without discarding prior selections.
+- Users can list, switch, resume, and delete saved trips.
+- The active trip is mirrored into saved trips on each authoritative save.
+- Chat history is stored per trip, survives refresh, and follows trip switches.
+- New-trip creation clears the active pointer without deleting saved history.
+
+### ID-01 - Identity
+
+- Web guests receive a persistent browser-local `web-<uuid>` identity backed by
+  a server-signed guest capability in hosted environments; raw request account
+  IDs are never authoritative principals.
+- Google OAuth resolves to a stable `google-<sub>` identity and uses a signed,
+  HttpOnly session cookie.
+- Native iOS and Android use browser OAuth and adopt the same Google identity as
+  web, preserving trips, chat, and preferences across devices.
+- Native identity material is stored through secure platform storage.
+- Guest-to-account migration proves ownership of both the source guest session
+  and destination account session before moving data.
+
+### DATA-01 - Storage modes
+
+- Unconfigured CLI usage persists to atomic local JSON files.
+- Local SPA development defaults to the persisted Cosmos DB Emulator and does
+  not silently fall back to hosted data.
+- Hosted canary and production use separate databases in one shared Azure Cosmos
+  account. Environment data must never be cross-wired.
+- Local and hosted writes have concurrency protections; Cosmos supports opt-in
+  versioned reads and conditional replacement.
+
+## 4. Web planning workspace
+
+### WEB-01 - Responsive workspace
+
+- Desktop is a fixed-height workspace with Itinerary, a dominant persistent Map,
+  and a right dock containing independently visible Details and Assistant.
+- Panes stay mounted through hide, restore, and maximize transitions so map and
+  chat state survive.
+- Keyboard-accessible separators resize itinerary/map, map/inspector, and
+  Details/Assistant splits; sizes persist locally.
+- A common command bar owns trip switching, New trip, visibility controls,
+  global trip actions, account/preferences, and the latest mutation result.
+- Narrow desktop uses an inspector overlay. Mobile web uses Assistant plus an
+  on-demand trip-details sheet rather than compressing the desktop layout.
+- Only panes scroll; the page itself remains spatially stable.
+
+### ITIN-01 - Itinerary and trip snapshot
+
+- One authoritative trip snapshot owns destination, dates, travelers, lifecycle,
+  counts, booking progress, budget/cost, fit, and constraints.
+- Day summaries expose stop count, duration, route distance/time/mode, and a Maps
+  handoff before stop details.
+- Place stops use day-colored markers matching map circuits: `H` for hotel
+  endpoints and sequential numbers for attractions and named meals.
+- Rows show quiet travel distance/time from the previous mapped stop.
+- Exact occurrence identity controls scroll, selection, booking state, and
+  removal for repeated places.
+
+### MAP-01 - Map behavior
+
+- Day-colored pins and route bands represent complete hotel-anchored circuits.
+- Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
+  and zoom 15. Repeating the action reapplies focus after manual filtering.
+- Aggregate day focus clears exact-place focus, fits the whole circuit, and
+  aligns the itinerary at the day's summary.
+- All-days focus clears exact and single-day focus, fits all circuits, and aligns
+  the itinerary at the trip summary.
+- Provider-expanded or differently punctuated place names still resolve to the
+  authoritative itinerary occurrence.
+- Viewport-biased autocomplete and labeled native map POI clicks create a
+  temporary real-coordinate inspection tile. Inspection does not mutate the trip.
+- Temporary places offer `Best day` or an exact authoritative day beside Add.
+
+### PLACE-01 and MUT-01 - Details and coherent mutations
+
+- Whole-trip Details is a destination guide plus a compact authoritative place
+  collection; it does not duplicate the trip snapshot or map.
+- Focused Details includes gallery, reviews, address, website, and shared trip
+  actions.
+- Map and Details use one selected-place control. A normal non-hotel occurrence
+  shows its current day, can move day, and removes directly.
+- Rare repeated places expose exact occurrence actions and `Remove everywhere`.
+  An occurrence cannot move to a day already containing the same place.
+- Hotels retain stay-range semantics instead of attraction-style single-day moves.
+- Add, move, remove, stay, and booking mutations refresh every dependent surface.
+- Duplicate removals coalesce, pending actions disable, and authoritative mutation
+  responses supersede older reads.
+- The changed place remains focused so the inverse action is immediately visible.
+
+### EXPORT-01 - Trip handoffs
+
+- Preview and print-friendly HTML with minimal, detailed, and family templates.
+- Print/save PDF and direct PDF download, with a print fallback when the direct
+  renderer is unavailable.
+- Optional place photos and embedded day maps/circuit diagrams are consistent
+  across preview, print, PDF, and email.
+- Email uses configured server delivery or a prefilled local mail-app fallback.
+- Signed, sanitized, read-only public share links.
+- RFC 5545 calendar export.
+
+## 5. Native mobile clients
+
+### MOBILE-01 - iPhone and Android parity
+
+- One Expo/React Native application provides native Trips, Plan, Map, Assistant,
+  Details, and Account experiences on iOS and Android.
+- Shared dependency-free client code owns contracts, HTTP/SSE transport,
+  mutations, and workspace revisions for web and native clients.
+- Platform adapters own navigation, sheets, secure storage, maps, deep links,
+  sharing, and lifecycle behavior.
+- Native mutations and completed Assistant turns refresh every dependent trip
+  surface, matching web ownership semantics.
+- Account supports Google sign-in/out, preferences, refresh, and API diagnostics.
+- Expo Go, EAS preview, TestFlight, and Play testing have maintained runbooks;
+  production store submission remains an explicit owner approval gate.
+
+## 6. Reliability, performance, safety, and operations
+
+### REL-01 - Reliability and performance
+
+- One workspace revision/focus owner prevents older trip, itinerary, map, or
+  Details responses from overwriting current state.
+- Requests abort on trip switches and superseding changes while prior content
+  remains visible with retry state.
+- Native refreshes share one abortable generation across Trip, Itinerary, Map,
+  saved trips, and chat so any superseded result is discarded consistently.
+- Native rendered stop indexes are converted to the backend's one-based
+  occurrence contract before exact repeated-place actions are sent.
+- Interrupted SSE exits busy state and preserves recoverable conversation state.
+- Blocking backend trip operations run in worker threads rather than blocking
+  the asynchronous API loop.
+- Local JSON writes are atomic with bounded Windows lock retry; same-user trip
+  mutations serialize.
+- Persisted local Cosmos startup repairs stale runtime locks only after proving
+  no database process exists and never resets the named data volume.
+- Place metadata uses a synchronized durable cache with long metadata TTL,
+  shorter signed-photo URL TTL, request coalescing, and parallel prefetch.
+- Read-only agent tools use a per-user read-through cache where safe.
+
+### SAFE-01 - Cost, grounding, and security
+
+- Per-user monthly LLM cost accounting can stop new chat turns at a configured
+  cap.
+- Hosted chat bounds input size, per-user/IP request rate, and per-user/global
+  concurrency before model execution; usage accounting follows the resolved
+  server-derived principal.
+- A deterministic critic records ungrounded prices, times, and URLs found in a
+  final response without adding noisy warnings to the user experience.
+- Provider secrets are configuration, not repository content, and hosted secrets
+  are injected into Container Apps.
+- User data is partitioned by identity; canary and production use isolated data.
+- OAuth callbacks, session signing, and Google Maps browser keys are owned by the
+  target environment.
+- Tool latency, failures, cache hits, structured events, and hosted health are
+  observable through API metrics and Azure logs.
+
+### OPS-01 - Development and release
+
+- One Windows setup command verifies tooling, restores locked dependencies, and
+  preserves existing secrets.
+- One local SPA command starts the persisted emulator/backend/frontend workflow,
+  safely replaces repository-owned stale listeners, and refuses unrelated port
+  owners.
+- Backend, frontend, browser, shared-client, and native validation commands are
+  documented in `docs/CODEMAP.md`.
+- Canary builds and pushes one immutable Git-SHA image to GHCR, validates IaC,
+  blocks deletes, deploys, and runs public read-only smoke.
+- The manual GitHub Actions workflow can build and push images only; it has no
+  Azure login or deployment authority. Guarded PowerShell scripts exclusively
+  own canary and production deployment.
+- Deep canary smoke verifies Azure OpenAI through an isolated write.
+- Production promotes the exact canary-tested image only after manual validation,
+  bake evidence, and the explicit approval phrase.
+- Production smoke, monitoring, and guarded revision rollback complete the flow.
+- Production deployment and mobile store submission are never automatic.
+
+## 7. Explicit gaps and non-goals
+
+### Current gaps
+
+- Real provider-side booking, payment, ticketing, and confirmation are not
+  implemented despite legacy `execute_bookings` naming and output text.
+- A public custom domain, public-MVP analytics, embedded feedback capture, ads,
+  consent management, broader expensive-endpoint/provider guardrails, and a
+  global daily spend circuit breaker are not implemented. Hosted chat admission
+  controls are already present.
+- Exact-place map focus remains at zoom 15 while real usage is observed.
+- Production mobile-store release still requires owner-approved distribution
+  setup and provider keys appropriate to each platform.
+
+### Out of scope unless explicitly reopened
+
+- General personal-assistant agents for todo, email, SMS, calls, calendar, Keep,
+  WhatsApp, budgeting, or multi-agent routing.
+- Automated payment or purchasing without explicit product, provider, legal,
+  security, and user-confirmation design.
+- Organization, team, and enterprise tenancy features.
+- Background email, SMS, or push notifications.
+- Generic chatbot behavior unrelated to planning a trip.
+
+## 8. Proposed V2 roadmap
+
+These are ordered candidate outcomes, not an instruction to implement them all.
+Each requires a focused feature brief and owner approval.
+
+### V2.1 - Public MVP readiness (highest priority candidate)
+
+**Outcome:** safely expose the existing planner to early users and measure
+whether they create useful trips and return.
+
+- Bind a purchased custom domain to production with a managed certificate.
+- Update OAuth callback ownership and restrict browser API keys to approved origins.
+- Add privacy, terms, contact, and user-data deletion surfaces appropriate to a
+  public product.
+- Extend the existing hosted chat admission boundary to any newly exposed
+  expensive paths, add provider quotas/bot controls where needed, and add a
+  global daily AI spend circuit breaker.
+- Add product analytics with a deliberately small event vocabulary and no chat,
+  itinerary, family, email, or exact-date content in telemetry.
+- Add contextual feedback after a meaningful planning outcome, not a generic
+  always-visible survey.
+- Define the activation funnel: visit -> first prompt -> trip created -> complete
+  itinerary -> export/share/handoff -> return.
+- Set Azure and provider budget alerts before broad sharing.
+
+### V2.2 - Evidence-led product improvement
+
+**Outcome:** turn observed friction and user feedback into small, measurable
+increments.
+
+- Review activation, completion time, failure points, repeated edits, export/share
+  use, return rate, and qualitative feedback on a regular cadence.
+- Use one feature brief per coherent outcome and state the expected metric change.
+- Prefer improvements to planning completeness, trust, and cross-surface coherence
+  over adding disconnected feature breadth.
+- Revisit exact-place zoom only when usage or feedback triggers the recorded
+  decision in `docs/DEFERRED_DECISIONS.md`.
+
+### V2.3 - Responsible monetization
+
+**Outcome:** test revenue only after the product demonstrates useful traffic.
+
+- Compare verified travel affiliate handoffs with display advertising; prefer
+  monetization aligned with a user's booking task.
+- If display ads are approved, first meet publisher-content, privacy, consent,
+  and `ads.txt` requirements.
+- Limit ads to a stable, clearly labeled destination-content placement. Never put
+  them in Map controls, Itinerary actions, Assistant, navigation, dialogs, or
+  beside mutation buttons.
+- Measure revenue against activation, task completion, latency, and retention;
+  remove the experiment if product harm exceeds value.
+
+### V2.4 - Verified booking handoffs
+
+**Outcome:** replace simulated execution wording with trustworthy, measurable
+provider actions.
+
+- First make lifecycle language truthful and distinguish planned, finalized,
+  handed off, and confirmed externally.
+- Add provider adapters only where commercial access, terms, confirmation,
+  cancellation, identity, payment, and support responsibilities are explicit.
+- Never infer successful booking from a link click or local status change.
+
+### V2.5 - Mobile distribution maturity
+
+**Outcome:** move from device testing to owner-approved beta and store releases.
+
+- Complete platform keys, privacy declarations, deep links, store metadata,
+  crash/usage diagnostics, and beta feedback flow.
+- Validate behavioral parity and public API safeguards before each distribution
+  stage.
+
+## 9. V2 quality bar
+
+Every increment must:
+
+1. State the user problem and observable success before implementation details.
+2. Identify current behavior and the smallest capability IDs being changed.
+3. Preserve one conceptual action across every affected pane and platform.
+4. Define empty, loading, stale, partial, error, retry, and conflict behavior.
+5. Address privacy, abuse, provider cost, latency, and data migration where relevant.
+6. Include focused acceptance criteria and a validation matrix.
+7. Update code, tests, canonical docs, and operational runbooks together.
+8. Pass the relevant local checks, then use immutable canary promotion and explicit
+   production approval for hosted changes.
+
+Use `docs/feature-briefs/FEATURE_BRIEF_TEMPLATE.md` for new work. The owner may
+write only the short required section and leave the rest for the agent to
+normalize, but unresolved product choices must remain visible rather than being
+silently invented.
