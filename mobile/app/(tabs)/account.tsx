@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
@@ -9,6 +9,7 @@ import {
   saveMobilePreferences,
   type MobilePreferences,
 } from '@/lib/tripplanner';
+import { LatestRequestGate } from '@/lib/latest-request';
 import { useTrip } from '@/providers/trip-provider';
 
 const EMPTY: MobilePreferences = {
@@ -27,19 +28,37 @@ export default function AccountScreen() {
   const [preferences, setPreferences] = useState<MobilePreferences>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [dirtyFields, setDirtyFields] = useState<Set<keyof MobilePreferences>>(new Set());
+  const preferenceRequestGate = useRef(new LatestRequestGate());
 
   useEffect(() => {
+    const requestGate = preferenceRequestGate.current;
+    const request = requestGate.start();
     setMessage('');
     void fetchMobilePreferences()
-      .then(setPreferences)
-      .catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load preferences.'));
+      .then((next) => {
+        if (!request.isCurrent()) return;
+        setPreferences(next);
+        setDirtyFields(new Set());
+      })
+      .catch((error) => {
+        if (request.isCurrent()) {
+          setMessage(error instanceof Error ? error.message : 'Could not load preferences.');
+        }
+      });
+    return () => requestGate.abort();
   }, [account]);
 
   const save = async () => {
     setSaving(true);
     setMessage('');
     try {
-      await saveMobilePreferences(preferences);
+      const updates: Partial<MobilePreferences> = {};
+      for (const key of dirtyFields) {
+        Object.assign(updates, { [key]: preferences[key] });
+      }
+      await saveMobilePreferences(updates);
+      setDirtyFields(new Set());
       setMessage('Preferences saved.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not save preferences.');
@@ -71,8 +90,12 @@ export default function AccountScreen() {
           <View key={key} style={styles.field}>
             <Text style={styles.label}>{key.replaceAll('_', ' ')}</Text>
             <TextInput
+              editable={!saving}
               value={preferences[key]}
-              onChangeText={(value) => setPreferences((current) => ({ ...current, [key]: value }))}
+              onChangeText={(value) => {
+                setDirtyFields((current) => new Set(current).add(key));
+                setPreferences((current) => ({ ...current, [key]: value }));
+              }}
               style={styles.input}
             />
           </View>
@@ -80,13 +103,17 @@ export default function AccountScreen() {
         <View style={styles.field}>
           <Text style={styles.label}>about me</Text>
           <TextInput
+            editable={!saving}
             multiline
             value={preferences.about_me}
-            onChangeText={(value) => setPreferences((current) => ({ ...current, about_me: value }))}
+            onChangeText={(value) => {
+              setDirtyFields((current) => new Set(current).add('about_me'));
+              setPreferences((current) => ({ ...current, about_me: value }));
+            }}
             style={[styles.input, styles.multiline]}
           />
         </View>
-        <Pressable disabled={saving} onPress={() => void save()} style={styles.primaryButton}>
+        <Pressable disabled={saving || dirtyFields.size === 0} onPress={() => void save()} style={styles.primaryButton}>
           <Text style={styles.primaryText}>{saving ? 'Saving…' : 'Save preferences'}</Text>
         </Pressable>
         {message ? <Text style={styles.message}>{message}</Text> : null}

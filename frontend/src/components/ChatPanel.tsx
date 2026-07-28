@@ -75,6 +75,11 @@ export default function ChatPanel({
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [failedRequest, setFailedRequest] = useState<{
+    message: string;
+    proposalOnly: boolean;
+    requestId: string;
+  } | null>(null);
   const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
   const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
   const [progressSeconds, setProgressSeconds] = useState(0);
@@ -85,7 +90,11 @@ export default function ChatPanel({
   const [auth, setAuth] = useState<AuthSession>({ authenticated: false });
   const [privacyBusy, setPrivacyBusy] = useState(false);
   // Guest-import banner: set when sign-in just occurred and the old guest account had data.
-  const [guestBanner, setGuestBanner] = useState<{ guestId: string; tripCount: number } | null>(null);
+  const [guestBanner, setGuestBanner] = useState<{
+    guestId: string;
+    tripCount: number;
+    hasPreferences: boolean;
+  } | null>(null);
   const [guestMigrating, setGuestMigrating] = useState(false);
     // Becomes true once syncAuth resolves so the transcript effect doesn't
     // race against it and load old guest messages before we know the auth state.
@@ -227,7 +236,11 @@ export default function ChatPanel({
         transcriptCacheRef.current.clear();
         fetchGuestDataSummary(prevGuestId).then((summary) => {
           if (summary.has_data) {
-            setGuestBanner({ guestId: prevGuestId, tripCount: summary.trip_count });
+            setGuestBanner({
+              guestId: prevGuestId,
+              tripCount: summary.trip_count,
+              hasPreferences: Boolean(summary.has_preferences),
+            });
           }
         });
       }
@@ -281,6 +294,10 @@ export default function ChatPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authChecked, reloadToken, tripIdHint, cacheKey, busy]);
 
+  useEffect(() => {
+    setFailedRequest(null);
+  }, [cacheKey, reloadToken, tripIdHint]);
+
   // Keep a fast in-memory snapshot keyed by trip id for instant switches.
   useEffect(() => {
     transcriptCacheRef.current.set(cacheKey, messages);
@@ -313,17 +330,24 @@ export default function ChatPanel({
     }
     setMessages([GREETING]);
     setInput("");
+    setFailedRequest(null);
     onNewTrip?.();
   }
 
-  async function sendMessage(outgoing: string, proposalOnly = false) {
+  async function sendMessage(
+    outgoing: string,
+    proposalOnly = false,
+    requestId: string = crypto.randomUUID(),
+    retrying = false,
+  ) {
     if (!outgoing.trim() || busy) return;
     if (listening) stopListening();
     setInput("");
+    setFailedRequest(null);
     setBusy(true);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
     setMessages((m) => [
-      ...m,
+      ...(retrying ? m.slice(0, -2) : m),
       { role: "user", text: outgoing },
       { role: "assistant", text: "" },
     ]);
@@ -390,6 +414,7 @@ export default function ChatPanel({
           return copy;
         });
         setBusy(false);
+        setFailedRequest(null);
         onTurnComplete(tripId);
       },
         onError: (msg) => {
@@ -404,8 +429,9 @@ export default function ChatPanel({
             copy[copy.length - 1] = { role: "assistant", text: `Warning: ${msg}` };
             return copy;
           });
+          setFailedRequest({ message: outgoing, proposalOnly, requestId });
         },
-      }, { proposalOnly });
+      }, { proposalOnly, requestId });
     } catch (error) {
       if (!handledError) {
         pendingTokens = "";
@@ -421,6 +447,7 @@ export default function ChatPanel({
           };
           return copy;
         });
+        setFailedRequest({ message: outgoing, proposalOnly, requestId });
       }
     } finally {
       setActiveTool(null);
@@ -714,10 +741,12 @@ export default function ChatPanel({
             </span>
             <div className="flex-1">
               <p className="font-medium text-sky-900">
-                You have {guestBanner.tripCount} trip{guestBanner.tripCount !== 1 ? "s" : ""} from your guest session.
+                {guestBanner.tripCount > 0
+                  ? `You have ${guestBanner.tripCount} trip${guestBanner.tripCount !== 1 ? "s" : ""} from your guest session.`
+                  : "You have travel preferences from your guest session."}
               </p>
               <p className="mt-0.5 text-xs text-sky-700">
-                Import them into your account so they're available across devices.
+                Import {guestBanner.tripCount > 0 && guestBanner.hasPreferences ? "them" : "this data"} into your account so it is available across devices.
               </p>
               <div className="mt-2 flex gap-2">
                 <button
@@ -725,7 +754,11 @@ export default function ChatPanel({
                   onClick={async () => {
                     setGuestMigrating(true);
                     const authId = getUserId();
-                    await migrateGuestData(authId, guestBanner.guestId);
+                    const result = await migrateGuestData(authId, guestBanner.guestId);
+                    if (!result.ok) {
+                      setGuestMigrating(false);
+                      return;
+                    }
                     setGuestBanner(null);
                     setGuestMigrating(false);
                     // Clear in-memory cache so the next transcript load
@@ -827,6 +860,20 @@ export default function ChatPanel({
       </div>
 
       <div className="border-t border-slate-100 bg-white p-4">
+        {failedRequest && (
+          <button
+            onClick={() => void sendMessage(
+              failedRequest.message,
+              failedRequest.proposalOnly,
+              failedRequest.requestId,
+              true,
+            )}
+            disabled={busy}
+            className="mb-2 text-xs font-medium text-brand hover:underline disabled:opacity-40"
+          >
+            Retry request
+          </button>
+        )}
         <div className="flex items-end gap-2">
           {micSupported && (
             <button

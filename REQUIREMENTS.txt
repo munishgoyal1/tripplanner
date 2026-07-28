@@ -2393,6 +2393,29 @@ VALIDATION:
   and stale refreshes must never overwrite newer trip state.
 - Cosmos read-modify-write preference and chat paths must use bounded optimistic
   concurrency so overlapping writers do not silently lose durable data.
+- Implemented field-level web/native preference writes with explicit ownership
+  for user-selected defaults. Guest import preserves authenticated choices,
+  fills missing fields, unions additive lists, and discovers preference-only guests.
+- Implemented caller-retained chat request IDs with bounded completed/interrupted
+  operation state. Completed responses replay before request/concurrency and
+  usage-cap admission; interrupted rows are excluded and replaced on retry
+  without truncating newer turns.
+- First-trip chat migration carries transcript and operation metadata, appends
+  before conditional source deletion, and reconciles a retained `_general` source
+  after an interrupted move once the destination is already active.
+- A bounded principal `chat_operations` index replays completed requests after
+  active-trip switches and is written before transcript persistence so replay can
+  repair a failed second write with the original request text.
+- Replay lookup has independent per-principal/IP limits and participates in a
+  workspace exclusion with Assistant turns, direct active-trip edits, trip
+  lifecycle changes, shared imports, guest adoption, and privacy deletion.
+- Guest sign-in adoption merges every known trip transcript, `_general`,
+  interrupted metadata, and completed replay result without replacing existing
+  account chat. Synchronous chat failures persist the same retryable interrupted
+  state as streaming failures.
+- Native account preference reads are generation-guarded across identity changes;
+  failed Assistant request identity survives shared-screen refresh and retries the
+  same operation from every native tab.
 - After all six repairs, run the complete automated suite and a documented manual
   regression cycle before any release decision. No deployment is implied.
 

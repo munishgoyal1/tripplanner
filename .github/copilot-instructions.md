@@ -130,6 +130,18 @@ Learns from user preferences and past trips.
   the owner edits `NEXT_INCREMENT.md`, and the agent normalizes it into
   acceptance criteria before implementation. Roadmap entries are not automatic
   approval.
+- **Conflict-safe preferences + chat persistence (Session 80, milestone D)**:
+  Cosmos conditional create/replace/delete now backs replayable semantic
+  preference mutations and exact-turn chat appends. Sparse web/native writes and
+  explicit-field ownership preserve unrelated or intentionally default settings;
+  guest adoption fills missing fields and unions additive lists. Chat request IDs
+  survive retries and first-trip migration, completed results replay before usage
+  admission through a bounded principal operation index, interrupted rows are
+  replaced on retry, and retained general chat is reconciled with version-aware
+  source cleanup. Guest adoption merges all transcript/replay metadata. Replay,
+  model turns, direct active-trip writes, lifecycle changes, and privacy deletion
+  share a retryable workspace exclusion. Local writes retain same-process
+  serialization plus atomic file replacement.
 - **Native occurrence + refresh correctness (Session 80, milestone C)**: Plan
   converts rendered stop indexes to the backend's one-based occurrence contract,
   so repeated-place actions reach the exact row. Native refreshes share one

@@ -29,6 +29,8 @@ export default function SettingsModal({ onClose }: Props) {
   const [saving, setSaving] = useState(false);
   const [extracted, setExtracted] = useState<string[] | null>(null);
   const [regenerating, setRegenerating] = useState(false);
+  const [summaryConflict, setSummaryConflict] = useState(false);
+  const [dirtyFields, setDirtyFields] = useState<Set<keyof Preferences>>(new Set());
   // Raw editable text for the comma-separated list fields. Kept separate from
   // the parsed arrays so a trailing comma isn't stripped mid-typing — parsed
   // into arrays only at save time.
@@ -46,13 +48,20 @@ export default function SettingsModal({ onClose }: Props) {
     fetchPreferences()
       .then((p) => {
         setPrefs(p);
+        setDirtyFields(new Set());
         syncListText(p);
       })
       .catch(() => setPrefs(null));
   }, []);
 
   function set<K extends keyof Preferences>(key: K, value: Preferences[K]) {
+    setDirtyFields((current) => new Set(current).add(key));
     setPrefs((p) => (p ? { ...p, [key]: value } : p));
+  }
+
+  function setList(key: "dietary" | "interests" | "dislikes", value: string) {
+    setDirtyFields((current) => new Set(current).add(key));
+    setListText((current) => ({ ...current, [key]: value }));
   }
 
   async function save() {
@@ -66,13 +75,30 @@ export default function SettingsModal({ onClose }: Props) {
         dislikes: parseList(listText.dislikes),
       };
       setPrefs(merged);
-      const result = await savePreferences(merged);
+      const updates: Partial<Preferences> = {};
+      for (const key of dirtyFields) {
+        Object.assign(updates, { [key]: merged[key] });
+      }
+      if (dirtyFields.has("profile_summary")) {
+        updates.profile_summary_updated_at = prefs.profile_summary_updated_at ?? null;
+      }
+      const result = await savePreferences(updates);
+      if (result.summary_conflict) {
+        const fresh = await fetchPreferences();
+        setPrefs(fresh);
+        setDirtyFields(new Set());
+        syncListText(fresh);
+        setExtracted(null);
+        setSummaryConflict(true);
+        return;
+      }
       if (result.about_me_extracted && result.about_me_extracted.length > 0) {
         // Re-load so the form reflects the structured fields the LLM filled
         // in, and surface a confirmation instead of closing immediately.
         setExtracted(result.about_me_extracted);
         const fresh = await fetchPreferences();
         setPrefs(fresh);
+        setDirtyFields(new Set());
         syncListText(fresh);
       } else {
         onClose();
@@ -86,8 +112,13 @@ export default function SettingsModal({ onClose }: Props) {
     if (!prefs) return;
     setRegenerating(true);
     try {
-      const summary = await regenerateProfileSummary();
-      setPrefs((p) => (p ? { ...p, profile_summary: summary } : p));
+      const result = await regenerateProfileSummary();
+      setPrefs((p) => (p ? { ...p, ...result } : p));
+      setDirtyFields((current) => {
+        const next = new Set(current);
+        next.delete("profile_summary");
+        return next;
+      });
     } finally {
       setRegenerating(false);
     }
@@ -133,6 +164,12 @@ export default function SettingsModal({ onClose }: Props) {
                 were added without removing anything you'd already set.
               </div>
             )}
+            {summaryConflict && (
+              <div className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                Your profile summary changed while settings were open. The latest version is
+                shown below; review it and save again.
+              </div>
+            )}
             <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">
@@ -163,7 +200,10 @@ export default function SettingsModal({ onClose }: Props) {
                   "updates itself in the background — edit or reset it any time."
                 }
                 value={prefs.profile_summary}
-                onChange={(e) => set("profile_summary", e.target.value)}
+                onChange={(e) => {
+                  setSummaryConflict(false);
+                  set("profile_summary", e.target.value);
+                }}
               />
               <p className="mt-1 text-[11px] text-slate-400">
                 This is my summary of you (distinct from “About me”, which is
@@ -284,21 +324,21 @@ export default function SettingsModal({ onClose }: Props) {
               <input
                 className="input"
                 value={listText.dietary}
-                onChange={(e) => setListText((t) => ({ ...t, dietary: e.target.value }))}
+                onChange={(e) => setList("dietary", e.target.value)}
               />
             </Field>
             <Field label="Interests (comma-separated)">
               <input
                 className="input"
                 value={listText.interests}
-                onChange={(e) => setListText((t) => ({ ...t, interests: e.target.value }))}
+                onChange={(e) => setList("interests", e.target.value)}
               />
             </Field>
             <Field label="Dislikes (comma-separated)">
               <input
                 className="input"
                 value={listText.dislikes}
-                onChange={(e) => setListText((t) => ({ ...t, dislikes: e.target.value }))}
+                onChange={(e) => setList("dislikes", e.target.value)}
               />
             </Field>
 

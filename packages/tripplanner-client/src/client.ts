@@ -215,9 +215,11 @@ export class TripplannerClient {
     handlers: StreamHandlers,
     options: StreamOptions = {},
   ): Promise<void> {
+    const requestId = options.requestId ?? crypto.randomUUID();
     const response = await this.post("/chat/stream", {
       message,
       proposal_only: options.proposalOnly ?? false,
+      request_id: requestId,
     });
     ensureOk(response, "Chat request failed");
     const stream = response.body as ReadableStream<Uint8Array> | null;

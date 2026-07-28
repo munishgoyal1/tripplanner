@@ -69,8 +69,34 @@ describe("ChatPanel progress", () => {
     await waitFor(() => expect(streamChatMock).toHaveBeenCalledWith(
       prompt,
       expect.any(Object),
-      { proposalOnly: true },
+      { proposalOnly: true, requestId: expect.any(String) },
     ));
     expect(screen.getByText(prompt)).toBeInTheDocument();
+  });
+
+  it("reuses the operation id when a failed request is retried", async () => {
+    streamChatMock
+      .mockImplementationOnce((_message: string, handlers: StreamHandlers) => {
+        handlers.onError("Please retry.");
+        return Promise.resolve();
+      })
+      .mockImplementationOnce((_message: string, handlers: StreamHandlers) => {
+        handlers.onToken("Recovered");
+        handlers.onDone("Recovered", "goa-trip");
+        return Promise.resolve();
+      });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    fireEvent.change(screen.getByPlaceholderText(/Plan a 5-day trip/), {
+      target: { value: "Plan Goa" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByRole("button", { name: "Retry request" });
+    fireEvent.click(screen.getByRole("button", { name: "Retry request" }));
+
+    await waitFor(() => expect(streamChatMock).toHaveBeenCalledTimes(2));
+    expect(streamChatMock.mock.calls[1][2].requestId).toBe(
+      streamChatMock.mock.calls[0][2].requestId,
+    );
   });
 });

@@ -4,6 +4,44 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-28 - Replay Intent, Not Stale Snapshots
+
+- An ETag protects only the state it was read with. Reading a fresh ETag and then
+  attaching it to an older full-document snapshot still loses concurrent data.
+- Model each read-modify-write operation as semantic intent that can be replayed
+  against a fresh body after a conditional create or replace conflict.
+- Append-only transcripts need the exact completed turn as their write unit.
+  Inferring a suffix from a capped full-history snapshot becomes ambiguous once
+  the retained window shifts under a concurrent writer.
+- Idempotent conflict retries need operation identity separate from message text.
+  A bounded fingerprint ledger suppresses exact retries while preserving two
+  legitimate identical turns that started from different transcript bases.
+- Request identity must survive transport failure and storage-bucket migration.
+  Let the caller retain it, persist completed/interrupted operation state, and
+  return a completed replay before applying admission rules for new model work.
+- Trip-scoped dedupe cannot replay after another tab changes the active trip.
+  Keep a bounded principal operation index, persist completion there first, and
+  use its original request text to repair a missing transcript on replay.
+- Replay-before-admission still needs an abuse and lifecycle boundary. Throttle
+  storage lookups separately from model work and count lookup/repair as active
+  workspace access so deletion or identity migration cannot race data recreation.
+- Identity adoption must merge all durable conversation state, not just visible
+  messages for the active trip: include general and saved-trip buckets,
+  interrupted request metadata, and completed replay results.
+- Cross-document moves are not atomic just because both writes are conditional.
+  Copy every newly observed source suffix, then delete only the exact source ETag;
+  on conflict, reread and replay before considering cleanup complete. If the
+  destination append fails after identity state changes, reconcile the retained
+  source into the now-active destination on the next request.
+- Default-valued settings need explicit ownership metadata. Sparse clients must
+  send only edited fields, and identity adoption must transfer ownership only for
+  guest values that actually contributed to the merged result.
+- Account-scoped native reads need the same abort/generation guard as trip reads;
+  otherwise a response from the prior identity can overwrite the signed-in view.
+- Generated summaries must validate both their durable input digest and the
+  user-editable summary state observed before generation, or late model output can
+  overwrite a concurrent user correction.
+
 ## 2026-07-26 - Cross-Surface Interaction Consistency
 
 - One conceptual action must have one owner-level behavior across every surface.

@@ -157,4 +157,96 @@ def test_chat_endpoint_returns_cap_message_when_over(monkeypatch):
     assert "budget" in body["reply"].lower() or "reached" in body["reply"].lower()
 
 
+def test_completed_chat_request_replays_when_over_cap(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from tripplanner import api
+
+    async def reject_admission(*_args, **_kwargs):
+        raise AssertionError("completed replay reached chat admission")
+
+    replay = {"reply": "Persisted reply", "agent": "trip", "trip_id": "goa"}
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: replay)
+    monkeypatch.setattr(api, "acquire_chat", reject_admission)
+    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (True, {}))
+    client = TestClient(api.app)
+
+    response = client.post(
+        "/chat",
+        json={"user_id": "alice", "message": "plan goa", "request_id": "request-1"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "reply": "Persisted reply",
+        "agent": "trip",
+        "trip_id": "goa",
+    }
+
+
+def test_completed_stream_request_replays_when_over_cap(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from tripplanner import api
+
+    async def reject_admission(*_args, **_kwargs):
+        raise AssertionError("completed replay reached chat admission")
+
+    replay = {"reply": "Persisted reply", "agent": "trip", "trip_id": "goa"}
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: replay)
+    monkeypatch.setattr(api, "acquire_chat", reject_admission)
+    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (True, {}))
+    client = TestClient(api.app)
+
+    response = client.post(
+        "/chat/stream",
+        json={"user_id": "alice", "message": "plan goa", "request_id": "request-1"},
+    )
+
+    assert response.status_code == 200
+    assert '"reply": "Persisted reply"' in response.text
+    assert '"agent": "trip"' in response.text
+
+
+def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
+    from fastapi.testclient import TestClient
+    from langchain_core.messages import AIMessage
+
+    from tripplanner import api
+    from tripplanner.graph import app_graph
+    from tripplanner.user_context import set_user_id
+    from tripplanner.web import chat_store
+
+    monkeypatch.setattr(chat_store, "_resolve_dir", lambda: tmp_path / "chats")
+    calls = 0
+
+    def invoke(_state):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise RuntimeError("model interrupted")
+        return {"messages": [AIMessage(content="Goa is ready")], "current_agent": "trip"}
+
+    monkeypatch.setattr(app_graph, "invoke", invoke)
+    client = TestClient(api.app)
+    request = {
+        "user_id": "sync-retry-user",
+        "message": "plan goa",
+        "request_id": "sync-retry-request",
+    }
+
+    with pytest.raises(RuntimeError, match="model interrupted"):
+        client.post("/chat", json=request)
+    response = client.post("/chat", json=request)
+
+    assert response.status_code == 200
+    assert response.json()["reply"] == "Goa is ready"
+    set_user_id("anon")
+    assert chat_store.transcript(None) == [
+        {"role": "user", "text": "plan goa"},
+        {"role": "assistant", "text": "Goa is ready"},
+    ]
+    set_user_id("local")
+
+
 

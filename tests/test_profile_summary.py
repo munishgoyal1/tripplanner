@@ -185,6 +185,33 @@ class TestProfileSummary:
         profile_summary.update_summary(force=True)
         assert calls["n"] == 2
 
+    def test_regeneration_does_not_overwrite_concurrent_user_edit(self, monkeypatch):
+        prefs = load_preferences()
+        prefs["interests"] = ["hiking"]
+        save_preferences(prefs)
+
+        def _fake_regen(_prefs):
+            profile_summary.set_summary("User correction.")
+            return "Stale generated summary."
+
+        monkeypatch.setattr(profile_summary, "regenerate", _fake_regen)
+
+        assert profile_summary.update_summary(force=True) == "User correction."
+        assert load_preferences()["profile_summary"] == "User correction."
+
+    def test_empty_regeneration_returns_concurrent_user_edit(self, monkeypatch):
+        prefs = load_preferences()
+        prefs["interests"] = ["hiking"]
+        save_preferences(prefs)
+
+        def _fake_regen(_prefs):
+            profile_summary.set_summary("User correction.")
+            return ""
+
+        monkeypatch.setattr(profile_summary, "regenerate", _fake_regen)
+
+        assert profile_summary.update_summary(force=True) == "User correction."
+
     def test_set_summary_persists_and_stamps_digest(self, monkeypatch):
         prefs = load_preferences()
         prefs["interests"] = ["hiking"]
@@ -206,6 +233,18 @@ class TestProfileSummary:
         out = profile_summary.update_summary()
         assert out == "My own words."
         assert calls["n"] == 0
+
+    def test_set_summary_rejects_stale_form_timestamp(self):
+        profile_summary.set_summary("Concurrent generated summary.")
+
+        result = profile_summary.set_summary(
+            "Stale form summary.",
+            expected_updated_at=None,
+        )
+
+        assert result["applied"] is False
+        assert result["profile_summary"] == "Concurrent generated summary."
+        assert load_preferences()["profile_summary"] == "Concurrent generated summary."
 
     def test_reset_clears_summary(self):
         profile_summary.set_summary("something")

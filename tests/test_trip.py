@@ -2,6 +2,8 @@
 
 import json
 import shutil
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -74,6 +76,119 @@ class TestLoadSave:
         assert prefs["trip_style"] == "leisure"
         assert prefs["family"]["children"] == 2
         assert prefs["family"]["adults"] == 1  # untouched
+
+    def test_local_mutations_serialize_without_losing_unrelated_updates(self, monkeypatch):
+        monkeypatch.setattr(user_preferences.storage_cosmos, "is_enabled", lambda: False)
+        first_entered = threading.Event()
+        release_first = threading.Event()
+        second_done = threading.Event()
+
+        def first(prefs):
+            first_entered.set()
+            assert release_first.wait(timeout=2)
+            prefs["interests"] = ["hiking"]
+            return prefs
+
+        def second(prefs):
+            prefs["dislikes"] = ["red-eye flights"]
+            return prefs
+
+        def run_second():
+            result = user_preferences.mutate_preferences(second)
+            second_done.set()
+            return result
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first_future = pool.submit(user_preferences.mutate_preferences, first)
+            assert first_entered.wait(timeout=2)
+            second_future = pool.submit(run_second)
+            assert not second_done.wait(timeout=0.1)
+            release_first.set()
+            first_future.result(timeout=2)
+            second_future.result(timeout=2)
+
+        prefs = load_preferences()
+        assert prefs["interests"] == ["hiking"]
+        assert prefs["dislikes"] == ["red-eye flights"]
+
+    def test_guest_adoption_fills_defaults_without_replacing_account_fields(self):
+        current = load_preferences()
+        current["profile"]["display_name"] = "Authenticated name"
+        current["planning_mode"] = "interactive"
+        current["interests"] = ["museums"]
+        current["trip_style"] = "balanced"
+        user_preferences.mark_explicit_fields(current, {"trip_style"})
+        incoming = load_preferences()
+        incoming["profile"]["display_name"] = "Guest name"
+        incoming["profile"]["home_city"] = "Bengaluru"
+        incoming["trip_style"] = "relaxed"
+        incoming["interests"] = ["food", "museums"]
+
+        merged = user_preferences.adopt_missing_preferences(current, incoming)
+
+        assert merged["profile"]["display_name"] == "Authenticated name"
+        assert merged["profile"]["home_city"] == "Bengaluru"
+        assert merged["planning_mode"] == "interactive"
+        assert merged["trip_style"] == "balanced"
+        assert merged["interests"] == ["museums", "food"]
+
+    def test_guest_adoption_transfers_only_adopted_explicit_defaults(self):
+        current = load_preferences()
+        current["budget_level"] = "premium"
+        incoming = load_preferences()
+        user_preferences.mark_explicit_fields(
+            incoming,
+            {"trip_style", "budget_level"},
+        )
+
+        merged = user_preferences.adopt_missing_preferences(current, incoming)
+
+        assert merged["trip_style"] == "balanced"
+        assert merged["budget_level"] == "premium"
+        assert "trip_style" in merged["_explicit_fields"]
+        assert "budget_level" not in merged["_explicit_fields"]
+
+    def test_authenticated_explicit_default_blocks_guest_non_default(self):
+        current = load_preferences()
+        user_preferences.mark_explicit_fields(current, {"trip_style"})
+        incoming = load_preferences()
+        incoming["trip_style"] = "relaxed"
+        user_preferences.mark_explicit_fields(incoming, {"trip_style"})
+
+        merged = user_preferences.adopt_missing_preferences(current, incoming)
+
+        assert merged["trip_style"] == "balanced"
+        assert merged["_explicit_fields"] == ["trip_style"]
+
+    def test_guest_adoption_merges_matching_family_member(self):
+        current = load_preferences()
+        current["family_members"] = [
+            {
+                "relationship": "spouse",
+                "name": "Megha",
+                "dietary": ["vegetarian"],
+            }
+        ]
+        incoming = load_preferences()
+        incoming["family_members"] = [
+            {
+                "relationship": "spouse",
+                "name": "megha",
+                "age": 40,
+                "interests": ["hiking"],
+            }
+        ]
+
+        merged = user_preferences.adopt_missing_preferences(current, incoming)
+
+        assert len(merged["family_members"]) == 1
+        assert merged["family_members"][0] == {
+            "relationship": "spouse",
+            "name": "Megha",
+            "age": 40,
+            "dietary": ["vegetarian"],
+            "interests": ["hiking"],
+        }
 
     def test_update_unions_additive_lists(self):
         update_preferences({"food_preferences": {"dietary": ["vegetarian"]}})
@@ -1385,7 +1500,12 @@ class TestCosmosDispatch:
         monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
         monkeypatch.setattr(
             storage_cosmos,
-            "upsert_doc",
+            "read_doc_versioned",
+            lambda c, u, d: None,
+        )
+        monkeypatch.setattr(
+            storage_cosmos,
+            "create_doc_if_absent",
             lambda c, u, d, body: captured.update(
                 {"container": c, "user_id": u, "doc_id": d, "body": body}
             ),
@@ -1401,7 +1521,12 @@ class TestCosmosDispatch:
         monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
         monkeypatch.setattr(
             storage_cosmos,
-            "upsert_doc",
+            "read_doc_versioned",
+            lambda c, u, d: None,
+        )
+        monkeypatch.setattr(
+            storage_cosmos,
+            "create_doc_if_absent",
             lambda c, u, d, body: captured.update({"user_id": u}),
         )
         token = user_context._user_id.set("session-abc-123")
@@ -1410,6 +1535,77 @@ class TestCosmosDispatch:
         finally:
             user_context._user_id.reset(token)
         assert captured["user_id"] == "session-abc-123"
+
+    def test_update_preferences_replays_after_write_conflict(self, monkeypatch):
+        state = {
+            "body": {"trip_style": "balanced", "interests": ["museums"]},
+            "version": '"v1"',
+        }
+        replace_calls = 0
+
+        monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+        monkeypatch.setattr(
+            storage_cosmos,
+            "read_doc_versioned",
+            lambda c, u, d: storage_cosmos.VersionedDocument(
+                body=state["body"], version=state["version"]
+            ),
+        )
+
+        def replace(_container, _user_id, _doc_id, body, version):
+            nonlocal replace_calls
+            replace_calls += 1
+            if replace_calls == 1:
+                state["body"] = {
+                    "trip_style": "leisure",
+                    "interests": ["museums"],
+                }
+                state["version"] = '"v2"'
+                raise storage_cosmos.WriteConflictError("concurrent update")
+            assert version == '"v2"'
+            state["body"] = body
+
+        monkeypatch.setattr(storage_cosmos, "replace_doc_if_version", replace)
+
+        result = update_preferences({"interests": ["hiking"]})
+
+        assert replace_calls == 2
+        assert result["trip_style"] == "leisure"
+        assert result["interests"] == ["museums", "hiking"]
+
+    def test_update_preferences_replays_after_create_conflict(self, monkeypatch):
+        state = {"body": None, "version": None}
+        create_calls = 0
+
+        monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+
+        def read_versioned(_container, _user, _doc_id):
+            if state["body"] is None:
+                return None
+            return storage_cosmos.VersionedDocument(
+                body=state["body"], version=state["version"]
+            )
+
+        def create(_container, _user, _doc_id, _body):
+            nonlocal create_calls
+            create_calls += 1
+            state["body"] = {"trip_style": "leisure", "interests": ["museums"]}
+            state["version"] = '"v1"'
+            raise storage_cosmos.WriteConflictError("concurrent create")
+
+        def replace(_container, _user, _doc_id, body, version):
+            assert version == '"v1"'
+            state["body"] = body
+
+        monkeypatch.setattr(storage_cosmos, "read_doc_versioned", read_versioned)
+        monkeypatch.setattr(storage_cosmos, "create_doc_if_absent", create)
+        monkeypatch.setattr(storage_cosmos, "replace_doc_if_version", replace)
+
+        result = update_preferences({"interests": ["hiking"]})
+
+        assert create_calls == 1
+        assert result["trip_style"] == "leisure"
+        assert result["interests"] == ["museums", "hiking"]
 
     def test_load_active_trip_uses_cosmos(self, monkeypatch):
         monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
@@ -1482,9 +1678,15 @@ class TestCosmosDispatch:
 
         monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
         monkeypatch.setattr(storage_cosmos, "read_doc", _read)
+        monkeypatch.setattr(storage_cosmos, "read_doc_versioned", lambda c, u, d: None)
         monkeypatch.setattr(
             storage_cosmos,
             "upsert_doc",
+            lambda c, u, d, body: upsert_calls.append((c, u, d)),
+        )
+        monkeypatch.setattr(
+            storage_cosmos,
+            "create_doc_if_absent",
             lambda c, u, d, body: upsert_calls.append((c, u, d)),
         )
         monkeypatch.setattr(

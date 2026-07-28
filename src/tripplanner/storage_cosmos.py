@@ -147,6 +147,25 @@ def upsert_doc(container: str, user_id: str, doc_id: str, body: dict[str, Any]) 
     _container(container).upsert_item(body=payload)
 
 
+def create_doc_if_absent(
+    container: str, user_id: str, doc_id: str, body: dict[str, Any]
+) -> None:
+    """Create a document only if its (user_id, doc_id) identity is unused."""
+    from azure.cosmos.exceptions import CosmosHttpResponseError
+
+    payload = copy.deepcopy(body)
+    payload["id"] = doc_id
+    payload["user_id"] = user_id
+    try:
+        _container(container).create_item(body=payload)
+    except CosmosHttpResponseError as exc:
+        if exc.status_code == 409:
+            raise WriteConflictError(
+                f"{container}/{doc_id} was created before it could be saved"
+            ) from exc
+        raise
+
+
 def replace_doc_if_version(
     container: str,
     user_id: str,
@@ -184,6 +203,33 @@ def delete_doc(container: str, user_id: str, doc_id: str) -> None:
         _container(container).delete_item(item=doc_id, partition_key=user_id)
     except CosmosResourceNotFoundError:
         return
+
+
+def delete_doc_if_version(
+    container: str, user_id: str, doc_id: str, version: str
+) -> None:
+    """Delete a document only if its opaque version still matches."""
+    from azure.core import MatchConditions
+    from azure.cosmos.exceptions import (
+        CosmosHttpResponseError,
+        CosmosResourceNotFoundError,
+    )
+
+    try:
+        _container(container).delete_item(
+            item=doc_id,
+            partition_key=user_id,
+            etag=version,
+            match_condition=MatchConditions.IfNotModified,
+        )
+    except CosmosResourceNotFoundError:
+        return
+    except CosmosHttpResponseError as exc:
+        if exc.status_code == 412:
+            raise WriteConflictError(
+                f"{container}/{doc_id} changed before it could be deleted"
+            ) from exc
+        raise
 
 
 def query_docs(container: str, user_id: str) -> list[dict[str, Any]]:

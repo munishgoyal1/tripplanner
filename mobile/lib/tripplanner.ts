@@ -95,10 +95,20 @@ export async function fetchMobilePreferences(): Promise<MobilePreferences> {
     { headers: await mobileAuthHeaders() },
   );
   if (!response.ok) throw new Error(`Could not load preferences (${response.status}).`);
-  return response.json() as Promise<MobilePreferences>;
+  const data = await response.json() as Partial<MobilePreferences>;
+  return {
+    display_name: data.display_name || '',
+    home_city: data.home_city || '',
+    home_country: data.home_country || '',
+    trip_style: data.trip_style || '',
+    budget_level: data.budget_level || '',
+    about_me: data.about_me || '',
+  };
 }
 
-export async function saveMobilePreferences(preferences: MobilePreferences): Promise<void> {
+export async function saveMobilePreferences(
+  preferences: Partial<MobilePreferences>,
+): Promise<void> {
   const response = await fetch(`${apiBaseUrl}/preferences`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...await mobileAuthHeaders() },

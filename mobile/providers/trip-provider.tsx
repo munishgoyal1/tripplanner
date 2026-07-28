@@ -36,12 +36,14 @@ interface TripContextValue {
   loading: boolean;
   sending: boolean;
   error: string | null;
+  canRetryMessage: boolean;
   revision: number;
   account: MobileAccount | null;
   refresh: () => Promise<void>;
   switchTrip: (tripId: string) => Promise<void>;
   startNewTrip: () => Promise<void>;
   sendMessage: (message: string) => Promise<void>;
+  retryMessage: () => Promise<void>;
   removePlace: (
     kind: string,
     name: string,
@@ -68,6 +70,11 @@ export function TripProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [failedMessage, setFailedMessage] = useState<{
+    message: string;
+    requestId: string;
+    rowCount: number;
+  } | null>(null);
   const [revision, bumpRevision] = useReducer((value: number) => value + 1, 0);
   const [account, setAccount] = useState<MobileAccount | null>(null);
   const refreshRequests = useRef(new LatestRequestGate());
@@ -113,6 +120,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   const signIn = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setFailedMessage(null);
     try {
       setAccount(await loginWithGoogle());
       await refresh();
@@ -123,6 +131,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   }, [refresh]);
 
   const signOut = useCallback(async () => {
+    setFailedMessage(null);
     await logoutMobile();
     setAccount(null);
     setView(null);
@@ -136,6 +145,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   const switchTrip = useCallback(async (tripId: string) => {
     setLoading(true);
     setError(null);
+    setFailedMessage(null);
     try {
       await tripplannerClient.switchTrip(tripId);
       await refresh();
@@ -147,6 +157,7 @@ export function TripProvider({ children }: PropsWithChildren) {
 
   const startNewTrip = useCallback(async () => {
     setLoading(true);
+    setFailedMessage(null);
     try {
       await tripplannerClient.startNewTrip();
       await refresh();
@@ -156,12 +167,20 @@ export function TripProvider({ children }: PropsWithChildren) {
     }
   }, [refresh]);
 
-  const sendMessage = useCallback(async (message: string) => {
+  const runMessage = useCallback(async (
+    message: string,
+    requestId: string,
+    retryRows = 0,
+  ) => {
     const trimmed = message.trim();
     if (!trimmed || sending) return;
     setSending(true);
     setError(null);
-    setMessages((current) => [...current, { role: 'user', text: trimmed }]);
+    setFailedMessage(null);
+    setMessages((current) => [
+      ...(retryRows ? current.slice(0, -retryRows) : current),
+      { role: 'user', text: trimmed },
+    ]);
     let streamed = '';
     let hasAssistantDraft = false;
     try {
@@ -189,20 +208,40 @@ export function TripProvider({ children }: PropsWithChildren) {
         onError: (messageText) => {
           throw new Error(messageText);
         },
-      });
+      }, { requestId });
       await refresh();
     } catch (caught) {
       setError(errorMessage(caught));
+      setFailedMessage({
+        message: trimmed,
+        requestId,
+        rowCount: hasAssistantDraft ? 2 : 1,
+      });
     } finally {
       setSending(false);
     }
   }, [refresh, sending]);
+
+  const sendMessage = useCallback(
+    (message: string) => runMessage(message, crypto.randomUUID()),
+    [runMessage],
+  );
+
+  const retryMessage = useCallback(async () => {
+    if (!failedMessage) return;
+    await runMessage(
+      failedMessage.message,
+      failedMessage.requestId,
+      failedMessage.rowCount,
+    );
+  }, [failedMessage, runMessage]);
 
   const removePlace = useCallback(async (
     kind: string,
     name: string,
     options?: DeselectItemOptions,
   ) => {
+    setFailedMessage(null);
     try {
       const result = await tripplannerClient.deselectItem(kind, name, options);
       setView(result.view);
@@ -217,6 +256,7 @@ export function TripProvider({ children }: PropsWithChildren) {
     name: string,
     options?: SelectItemOptions,
   ) => {
+    setFailedMessage(null);
     try {
       const result = await tripplannerClient.selectItem(kind, name, options);
       setView(result.view);
@@ -227,6 +267,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   }, [refresh]);
 
   const setBooked = useCallback(async (day: number, name: string, booked: boolean) => {
+    setFailedMessage(null);
     try {
       setItinerary(await tripplannerClient.setStopBooked(day, name, booked));
       await refresh();
@@ -245,12 +286,14 @@ export function TripProvider({ children }: PropsWithChildren) {
       loading,
       sending,
       error,
+      canRetryMessage: failedMessage !== null,
       revision,
       account,
       refresh,
       switchTrip,
       startNewTrip,
       sendMessage,
+      retryMessage,
       removePlace,
       addPlace,
       setBooked,

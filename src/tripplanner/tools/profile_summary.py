@@ -24,6 +24,7 @@ from typing import Any
 from tripplanner.tools import user_preferences
 
 log = logging.getLogger(__name__)
+_ANY_UPDATED_AT = object()
 
 # Durable fields that feed the summary. about_me is treated as highest authority.
 _DIGEST_KEYS = (
@@ -180,6 +181,11 @@ def update_summary(force: bool = False) -> str:
 
     digest = _durable_digest(prefs)
     current = prefs.get("profile_summary") or ""
+    summary_state = (
+        current,
+        prefs.get("profile_summary_updated_at"),
+        prefs.get("profile_summary_digest") or "",
+    )
     if not force and digest == (prefs.get("profile_summary_digest") or ""):
         return current
 
@@ -188,35 +194,76 @@ def update_summary(force: bool = False) -> str:
         # Still record the digest so we don't retry the LLM every turn when there
         # is genuinely nothing to summarize.
         try:
-            prefs["profile_summary_digest"] = digest
-            user_preferences.save_preferences(prefs)
+            def store_empty_digest(latest: dict[str, Any]) -> dict[str, Any] | None:
+                if _durable_digest(latest) != digest:
+                    return None
+                latest["profile_summary_digest"] = digest
+                return latest
+
+            stored = user_preferences.mutate_preferences(store_empty_digest)
         except Exception:  # pragma: no cover
-            pass
-        return current
+            return current
+        return stored.get("profile_summary") or current
 
     try:
-        prefs["profile_summary"] = summary
-        prefs["profile_summary_updated_at"] = datetime.now().isoformat()
-        prefs["profile_summary_digest"] = digest
-        user_preferences.save_preferences(prefs)
+        updated_at = datetime.now().isoformat()
+        stored_summary = False
+
+        def store_summary(latest: dict[str, Any]) -> dict[str, Any] | None:
+            nonlocal stored_summary
+            stored_summary = False
+            latest_summary_state = (
+                latest.get("profile_summary") or "",
+                latest.get("profile_summary_updated_at"),
+                latest.get("profile_summary_digest") or "",
+            )
+            if _durable_digest(latest) != digest or latest_summary_state != summary_state:
+                return None
+            latest["profile_summary"] = summary
+            latest["profile_summary_updated_at"] = updated_at
+            latest["profile_summary_digest"] = digest
+            stored_summary = True
+            return latest
+
+        stored = user_preferences.mutate_preferences(store_summary)
     except Exception:  # pragma: no cover - storage failure
         return current
-    return summary
+    return summary if stored_summary else (stored.get("profile_summary") or current)
 
 
-def set_summary(text: str) -> dict[str, Any]:
+def apply_summary(prefs: dict[str, Any], text: str) -> None:
+    text = (text or "").strip()
+    prefs["profile_summary"] = text
+    prefs["profile_summary_updated_at"] = datetime.now().isoformat() if text else None
+    prefs["profile_summary_digest"] = _durable_digest(prefs)
+
+
+def set_summary(
+    text: str,
+    *,
+    expected_updated_at: str | None | object = _ANY_UPDATED_AT,
+) -> dict[str, Any]:
     """Persist a user-corrected (or reset) summary verbatim.
 
     Stamps the current durable digest so an immediate background sweep won't
     overwrite the user's edit. Returns the updated fields.
     """
-    text = (text or "").strip()
-    prefs = user_preferences.load_preferences()
-    prefs["profile_summary"] = text
-    prefs["profile_summary_updated_at"] = datetime.now().isoformat() if text else None
-    prefs["profile_summary_digest"] = _durable_digest(prefs)
-    user_preferences.save_preferences(prefs)
+    applied = False
+
+    def apply(prefs: dict[str, Any]) -> dict[str, Any] | None:
+        nonlocal applied
+        if (
+            expected_updated_at is not _ANY_UPDATED_AT
+            and prefs.get("profile_summary_updated_at") != expected_updated_at
+        ):
+            return None
+        applied = True
+        apply_summary(prefs, text)
+        return prefs
+
+    prefs = user_preferences.mutate_preferences(apply)
     return {
+        "applied": applied,
         "profile_summary": prefs["profile_summary"],
         "profile_summary_updated_at": prefs["profile_summary_updated_at"],
     }

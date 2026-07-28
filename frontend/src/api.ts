@@ -138,7 +138,11 @@ export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string
 }
 
 /** Ask the server how much data a guest (web-*) account has. */
-export async function fetchGuestDataSummary(guestId: string): Promise<{ has_data: boolean; trip_count: number }> {
+export async function fetchGuestDataSummary(guestId: string): Promise<{
+  has_data: boolean;
+  trip_count: number;
+  has_preferences?: boolean;
+}> {
   try {
     const token = localStorage.getItem(GUEST_SESSION_KEY);
     const res = await fetch(`${BASE}/account/guest-data-summary?user_id=${encodeURIComponent(guestId)}`, {
@@ -147,7 +151,7 @@ export async function fetchGuestDataSummary(guestId: string): Promise<{ has_data
     });
     return res.json();
   } catch {
-    return { has_data: false, trip_count: 0 };
+    return { has_data: false, trip_count: 0, has_preferences: false };
   }
 }
 
@@ -206,8 +210,9 @@ export interface StreamHandlers {
 export async function streamChat(
   message: string,
   h: StreamHandlers,
-  options: { proposalOnly?: boolean } = {},
+  options: { proposalOnly?: boolean; requestId?: string } = {},
 ): Promise<void> {
+  const requestId = options.requestId ?? crypto.randomUUID();
   const res = await apiFetch(`${BASE}/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -215,6 +220,7 @@ export async function streamChat(
       message,
       user_id: getUserId(),
       proposal_only: options.proposalOnly ?? false,
+      request_id: requestId,
     }),
   });
   if (!res.ok) {
@@ -512,19 +518,28 @@ export async function fetchPreferences(): Promise<Preferences> {
 export interface SavePrefsResult {
   ok: boolean;
   about_me_extracted: string[];
+  summary_conflict?: boolean;
 }
 
-export async function savePreferences(prefs: Preferences): Promise<SavePrefsResult> {
+export async function savePreferences(
+  updates: Partial<Preferences>,
+): Promise<SavePrefsResult> {
   const res = await apiFetch(`${BASE}/preferences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...prefs, user_id: getUserId() }),
+    body: JSON.stringify({ ...updates, user_id: getUserId() }),
   });
+  if (res.status === 409) {
+    return { ok: false, about_me_extracted: [], summary_conflict: true };
+  }
   ensureOk(res, "Could not save preferences");
   return res.json();
 }
 
-export async function regenerateProfileSummary(): Promise<string> {
+export async function regenerateProfileSummary(): Promise<{
+  profile_summary: string;
+  profile_summary_updated_at: string | null;
+}> {
   const res = await apiFetch(`${BASE}/profile/summary/regenerate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -532,7 +547,10 @@ export async function regenerateProfileSummary(): Promise<string> {
   });
   ensureOk(res, "Could not regenerate the profile summary");
   const data = await res.json();
-  return (data && data.profile_summary) || "";
+  return {
+    profile_summary: (data && data.profile_summary) || "",
+    profile_summary_updated_at: data?.profile_summary_updated_at ?? null,
+  };
 }
 
 export type PrivacyAction = "delete_trip_history" | "clear_all_data" | "delete_account";

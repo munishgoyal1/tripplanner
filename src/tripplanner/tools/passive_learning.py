@@ -22,7 +22,7 @@ from typing import Any
 
 from tripplanner.tools import about_me_extractor
 from tripplanner.tools.preferences_merge import additive_overlay_extracted
-from tripplanner.tools.user_preferences import load_preferences, save_preferences
+from tripplanner.tools.user_preferences import mutate_preferences
 
 log = logging.getLogger(__name__)
 
@@ -100,31 +100,33 @@ def learn_from_message(text: str) -> list[str]:
         if not extracted and not learned:
             return []
 
-        prefs = load_preferences()
         touched: list[str] = []
-        if extracted:
-            prefs = additive_overlay_extracted(prefs, extracted)
-            touched = list(extracted.keys())
-        if learned:
-            existing = list(prefs.get("learned_notes") or [])
-            seen = {
-                (n.get("note") or "").strip().lower()
-                for n in existing
-                if isinstance(n, dict)
-            }
-            for entry in learned:
-                if not isinstance(entry, dict):
-                    continue
-                note = (entry.get("note") or "").strip()
-                if not note or note.lower() in seen:
-                    continue
-                seen.add(note.lower())
-                existing.append(entry)
-            prefs["learned_notes"] = existing
-            touched.append("learned_notes")
 
-        if touched:
-            save_preferences(prefs)
+        def apply(prefs: dict[str, Any]) -> dict[str, Any]:
+            touched.clear()
+            if extracted:
+                prefs = additive_overlay_extracted(prefs, extracted)
+                touched.extend(extracted.keys())
+            if learned:
+                existing = list(prefs.get("learned_notes") or [])
+                seen = {
+                    (entry.get("note") or "").strip().lower()
+                    for entry in existing
+                    if isinstance(entry, dict)
+                }
+                for entry in learned:
+                    if not isinstance(entry, dict):
+                        continue
+                    note = (entry.get("note") or "").strip()
+                    if not note or note.lower() in seen:
+                        continue
+                    seen.add(note.lower())
+                    existing.append(entry)
+                prefs["learned_notes"] = existing
+                touched.append("learned_notes")
+            return prefs
+
+        mutate_preferences(apply)
         return touched
     except Exception as exc:  # never break the chat turn
         log.warning("passive learning sweep failed: %s", exc)

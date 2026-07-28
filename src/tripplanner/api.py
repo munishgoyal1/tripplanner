@@ -40,13 +40,21 @@ from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from tripplanner.observability import app_event, setup_logging
-from tripplanner.request_limits import acquire_chat, release_chat
 from tripplanner.request_identity import (
     is_anonymous_id,
     is_hosted,
     require_guest_capability,
     require_signed_user,
     resolve_user_id,
+)
+from tripplanner.request_limits import (
+    acquire_chat,
+    acquire_replay_access,
+    acquire_workspace_exclusive,
+    check_replay_lookup,
+    release_chat,
+    release_replay_access,
+    release_workspace_exclusive,
 )
 from tripplanner.user_context import set_user_id
 from tripplanner.web import oauth
@@ -106,7 +114,46 @@ def _load_chat() -> tuple[str | None, list[BaseMessage]]:
     return tid, chat_store.load(tid)
 
 
-def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> str | None:
+def _load_chat_request(
+    request_id: str | None,
+) -> tuple[str | None, list[BaseMessage], dict[str, str] | None]:
+    """Load retry-aware history and any already completed operation result."""
+    from tripplanner.tools.trip_planner import active_trip_id
+    from tripplanner.web import chat_store
+
+    tid = active_trip_id()
+    chat_store.reconcile_general(tid)
+    replay = chat_store.completed_operation(tid, request_id)
+    return tid, chat_store.load_for_request(tid, request_id), replay
+
+
+def _completed_chat_request(request_id: str | None) -> dict[str, str] | None:
+    from tripplanner.web import chat_store
+
+    return chat_store.completed_request(request_id)
+
+
+async def _repair_completed_chat(
+    request_id: str | None, replay: dict[str, str]
+) -> None:
+    if not request_id:
+        return
+    from tripplanner.web import chat_store
+
+    try:
+        await asyncio.to_thread(chat_store.ensure_completed_turn, request_id, replay)
+    except Exception as exc:
+        app_event("api_chat_replay_repair_error", error=type(exc).__name__)
+
+
+def _save_chat(
+    tid_before: str | None,
+    base_history: list[BaseMessage],
+    completed_turn: list[BaseMessage],
+    request_id: str | None = None,
+    completed: bool = True,
+    agent: str = "trip",
+) -> str | None:
     """Persist the turn under the trip that's active *after* the turn.
 
     Handles three transitions (see ``chat_store.persist_turn``): no change,
@@ -126,15 +173,24 @@ def _save_chat(tid_before: str | None, history: list[BaseMessage]) -> str | None
         and tid_after is not None
         and tid_after != tid_before
     )
-    if is_switch and not chat_store.transcript(tid_after) and len(history) >= 2:
+    if is_switch and not chat_store.transcript(tid_after):
         # Brand-new destination chat: distil portable context from the prior
         # conversation so the fresh chat isn't cold. Best-effort (LLM).
         prev_dest = trip_planner.saved_trip_destination(tid_before or "")
         active = trip_planner.load_active_trip_dict() or {}
         new_dest = str(active.get("destination") or "")
-        carryover = chat_carryover.distill(history[:-2], prev_dest, new_dest)
+        carryover = chat_carryover.distill(base_history, prev_dest, new_dest)
 
-    return chat_store.persist_turn(tid_before, tid_after, history, carryover)
+    return chat_store.persist_turn(
+        tid_before,
+        tid_after,
+        base_history,
+        completed_turn,
+        carryover,
+        request_id=request_id,
+        completed=completed,
+        agent=agent,
+    )
 
 
 # Fire-and-forget passive-learning sweeps. Keep strong refs so the event loop
@@ -173,6 +229,7 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=12_000)
     user_id: str = "local"
     proposal_only: bool = False
+    request_id: str | None = Field(default=None, min_length=1, max_length=128)
 
 
 class ChatResponse(BaseModel):
@@ -233,12 +290,14 @@ class PreferencesRequest(BaseModel):
     dietary: list[str] | None = None
     interests: list[str] | None = None
     dislikes: list[str] | None = None
+    planning_mode: Literal["direct", "interactive"] | None = None
     # Free-text "About me" blurb. When provided and changed, the backend runs
     # the LLM extractor and additively overlays the structured fields it finds.
     about_me: str | None = None
     # System-authored profile summary. When provided, it's stored verbatim
     # (user correction / reset via empty string); not the same as about_me.
     profile_summary: str | None = None
+    profile_summary_updated_at: str | None = None
 
 
 class PrivacyActionRequest(BaseModel):
@@ -262,31 +321,70 @@ class ExportEmailRequest(BaseModel):
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest, request: Request) -> ChatResponse:
+async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
     from tripplanner.usage import cap_message, is_over_cap
 
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
-    permit = await acquire_chat(request, user_id)
+    replay_permit = await acquire_replay_access(user_id)
     try:
+        await check_replay_lookup(request, user_id)
+        replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
+        if replay is not None:
+            await _repair_completed_chat(req.request_id, replay)
+            return ChatResponse(
+                reply=replay["reply"],
+                agent=replay["agent"],
+                trip_id=replay["trip_id"] or None,
+            )
+        permit = await acquire_chat(request, user_id)
+    finally:
+        await release_replay_access(replay_permit)
+    try:
+        history_tid, history, replay = await asyncio.to_thread(
+            _load_chat_request, req.request_id
+        )
+        if replay is not None:
+            return ChatResponse(
+                reply=replay["reply"],
+                agent=replay["agent"],
+                trip_id=replay["trip_id"] or None,
+            )
         over, usage = is_over_cap(user_id)
         if over:
             msg = cap_message(usage)
             app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
             return ChatResponse(reply=msg, agent="cap")
 
-        history_tid, history = await asyncio.to_thread(_load_chat)
+        base_history = list(history)
         history.append(HumanMessage(content=req.message))
-        result = await asyncio.to_thread(
-            app_graph.invoke,
-            {
-                "messages": history,
-                "current_agent": "",
-                "proposal_only": req.proposal_only,
-            },
-        )
+        try:
+            result = await asyncio.to_thread(
+                app_graph.invoke,
+                {
+                    "messages": history,
+                    "current_agent": "",
+                    "proposal_only": req.proposal_only,
+                },
+            )
+        except Exception:
+            try:
+                await asyncio.to_thread(
+                    _save_chat,
+                    history_tid,
+                    base_history,
+                    [
+                        HumanMessage(content=req.message),
+                        AIMessage(content="(interrupted)"),
+                    ],
+                    req.request_id,
+                    False,
+                )
+            except Exception:
+                pass
+            raise
 
         reply = ""
         for msg in reversed(result["messages"]):
@@ -298,14 +396,23 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse:
         issues = critique(reply, result.get("messages", []))
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
-        history.append(AIMessage(content=reply))
-        tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
+        completed_turn = [HumanMessage(content=req.message), AIMessage(content=reply)]
+        agent = result.get("current_agent", "unknown")
+        tid_after = await asyncio.to_thread(
+            _save_chat,
+            history_tid,
+            base_history,
+            completed_turn,
+            req.request_id,
+            True,
+            agent,
+        )
         if not req.proposal_only:
             _schedule_learning_sweep(user_id, req.message)
 
         app_event("api_chat_response", reply_length=len(reply))
         return ChatResponse(
-            reply=reply, agent=result.get("current_agent", "unknown"), trip_id=tid_after
+            reply=reply, agent=agent, trip_id=tid_after
         )
     finally:
         await release_chat(permit)
@@ -412,7 +519,60 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
-    permit = await acquire_chat(request, user_id)
+    replay_permit = await acquire_replay_access(user_id)
+    try:
+        await check_replay_lookup(request, user_id)
+        replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
+        if replay is not None:
+            await _repair_completed_chat(req.request_id, replay)
+
+            async def _replay():
+                yield _sse("token", {"text": replay["reply"]})
+                yield _sse(
+                    "done",
+                    {
+                        "reply": replay["reply"],
+                        "agent": replay["agent"],
+                        "trip_id": replay["trip_id"] or None,
+                    },
+                )
+
+            return StreamingResponse(
+                _replay(),
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+            )
+        permit = await acquire_chat(request, user_id)
+    finally:
+        await release_replay_access(replay_permit)
+    try:
+        history_tid, history, replay = await asyncio.to_thread(
+            _load_chat_request, req.request_id
+        )
+        if replay is not None:
+            async def _replay_after_admission():
+                yield _sse("token", {"text": replay["reply"]})
+                yield _sse(
+                    "done",
+                    {
+                        "reply": replay["reply"],
+                        "agent": replay["agent"],
+                        "trip_id": replay["trip_id"] or None,
+                    },
+                )
+
+            return StreamingResponse(
+                _replay_after_admission(),
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+                background=BackgroundTask(release_chat, permit),
+            )
+        base_history = list(history)
+        history.append(HumanMessage(content=req.message))
+    except Exception:
+        await release_chat(permit)
+        raise
+
     over, usage = is_over_cap(user_id)
     if over:
         msg = cap_message(usage)
@@ -428,13 +588,6 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
             background=BackgroundTask(release_chat, permit),
         )
-
-    try:
-        history_tid, history = await asyncio.to_thread(_load_chat)
-        history.append(HumanMessage(content=req.message))
-    except Exception:
-        await release_chat(permit)
-        raise
 
     async def gen():
         reply_parts: list[str] = []
@@ -499,9 +652,18 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             # orphaned — otherwise the active trip exists with an empty chat
             # that vanishes on refresh.
             partial = "".join(reply_parts)
-            history.append(AIMessage(content=partial or "(interrupted)"))
+            completed_turn = [
+                HumanMessage(content=req.message),
+                AIMessage(content=partial or "(interrupted)"),
+            ]
             try:
-                _save_chat(history_tid, history)
+                _save_chat(
+                    history_tid,
+                    base_history,
+                    completed_turn,
+                    req.request_id,
+                    False,
+                )
             except Exception:
                 pass
             yield _sse("error", {"message": "The assistant hit an error. Please retry."})
@@ -516,13 +678,32 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         issues = critique(reply, tool_outputs)
         if issues:
             app_event("hallucination_critic", issues=len(issues), claims=issues)
-        history.append(AIMessage(content=reply))
+        completed_turn = [HumanMessage(content=req.message), AIMessage(content=reply)]
         # Safety net: if the agent described a day-wise itinerary but never
         # called update_trip_plan, parse the reply and persist it directly so
         # the Itinerary panel is never left blank.
         if not req.proposal_only and "update_trip_plan" not in tool_names_called:
             await asyncio.to_thread(_auto_persist_itinerary, reply)
-        tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
+        try:
+            tid_after = await asyncio.to_thread(
+                _save_chat,
+                history_tid,
+                base_history,
+                completed_turn,
+                req.request_id,
+            )
+        except Exception as exc:
+            app_event("api_chat_stream_save_error", error=type(exc).__name__)
+            yield _sse(
+                "error",
+                {
+                    "message": (
+                        "The reply completed but its transcript could not be saved. "
+                        "Please retry."
+                    )
+                },
+            )
+            return
         if not req.proposal_only:
             _schedule_learning_sweep(user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
@@ -621,18 +802,22 @@ async def trip_select(req: SelectRequest, request: Request) -> dict:
     """Add a hotel/attraction to the active trip (the SPA's 'Add to trip')."""
     from tripplanner.web import trip_operations
 
-    _set_request_user(request, req.user_id)
-    return await asyncio.to_thread(
-        trip_operations.select,
-        req.kind,
-        req.name,
-        start_day=req.start_day,
-        end_day=req.end_day,
-        day=req.day,
-        source_day=req.source_day,
-        source_stop=req.source_stop,
-        replace_stay=req.replace_stay,
-    )
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        return await asyncio.to_thread(
+            trip_operations.select,
+            req.kind,
+            req.name,
+            start_day=req.start_day,
+            end_day=req.end_day,
+            day=req.day,
+            source_day=req.source_day,
+            source_stop=req.source_stop,
+            replace_stay=req.replace_stay,
+        )
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.post("/trip/deselect")
@@ -640,15 +825,19 @@ async def trip_deselect(req: DeselectRequest, request: Request) -> dict:
     """Remove a hotel/attraction from the active trip (the SPA's 'Remove')."""
     from tripplanner.web import trip_operations
 
-    _set_request_user(request, req.user_id)
-    return await asyncio.to_thread(
-        trip_operations.deselect,
-        req.kind,
-        req.name,
-        day=req.day,
-        stop=req.stop,
-        all_occurrences=req.all_occurrences,
-    )
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        return await asyncio.to_thread(
+            trip_operations.deselect,
+            req.kind,
+            req.name,
+            day=req.day,
+            stop=req.stop,
+            all_occurrences=req.all_occurrences,
+        )
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.get("/trip/itinerary")
@@ -665,10 +854,14 @@ async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
     """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""
     from tripplanner.web import trip_operations
 
-    _set_request_user(request, req.user_id)
-    return await asyncio.to_thread(
-        trip_operations.set_stop_booked, req.day, req.name, req.booked
-    )
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        return await asyncio.to_thread(
+            trip_operations.set_stop_booked, req.day, req.name, req.booked
+        )
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.get("/trips")
@@ -687,8 +880,12 @@ async def trips_switch(req: TripIdRequest, request: Request) -> dict:
     the refreshed trip-panel view."""
     from tripplanner.web import trip_operations
 
-    _set_request_user(request, req.user_id)
-    return await asyncio.to_thread(trip_operations.switch_trip, req.trip_id)
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        return await asyncio.to_thread(trip_operations.switch_trip, req.trip_id)
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.post("/trips/delete")
@@ -698,12 +895,15 @@ async def trips_delete(req: TripIdRequest, request: Request) -> dict:
     from tripplanner.tools import trip_planner
     from tripplanner.web import chat_store
 
-    _set_request_user(request, req.user_id)
-    await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
-    # Also erase that trip's persisted conversation so no orphaned data lingers.
-    await asyncio.to_thread(chat_store.clear, req.trip_id)
-    trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-    return {"ok": True, "trips": trips}
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
+        await asyncio.to_thread(chat_store.clear, req.trip_id)
+        trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+        return {"ok": True, "trips": trips}
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.post("/trip/new")
@@ -713,10 +913,14 @@ async def trip_new(req: UserRequest, request: Request) -> dict:
     from tripplanner.tools import trip_planner
     from tripplanner.web import chat_store
 
-    _set_request_user(request, req.user_id)
-    await asyncio.to_thread(trip_planner.start_new_trip)
-    await asyncio.to_thread(chat_store.clear, None)
-    return {"ok": True}
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        await asyncio.to_thread(trip_planner.start_new_trip)
+        await asyncio.to_thread(chat_store.clear, None)
+        return {"ok": True}
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 
@@ -974,9 +1178,16 @@ async def trip_shared_import(token: str, req: UserRequest, request: Request) -> 
     snapshot = share.resolve(token)
     if snapshot is None:
         return JSONResponse({"error": "invalid or expired share link"}, status_code=404)
-    _set_request_user(request, req.user_id)
-    imported = trip_planner.import_shared_trip_snapshot(snapshot.get("plan") or {})
-    return {"ok": True, "view": trip_view.build_view(imported, None)}
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        imported = await asyncio.to_thread(
+            trip_planner.import_shared_trip_snapshot, snapshot.get("plan") or {}
+        )
+        view = await asyncio.to_thread(trip_view.build_view, imported, None)
+        return {"ok": True, "view": view}
+    finally:
+        await release_workspace_exclusive(workspace)
 
 
 @app.get("/preferences")
@@ -1006,6 +1217,7 @@ async def get_preferences(request: Request, user_id: str = "local") -> dict:
         "about_me": prefs.get("about_me") or "",
         "profile_summary": prefs.get("profile_summary") or "",
         "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
+        "planning_mode": prefs.get("planning_mode") or "direct",
     }
 
 
@@ -1014,57 +1226,126 @@ async def save_preferences_endpoint(req: PreferencesRequest, request: Request) -
     """Merge the provided preference fields and persist them (additive — only
     keys present in the request are written)."""
     from tripplanner.tools import preferences_merge
+    from tripplanner.tools import profile_summary as profile_summary_mod
     from tripplanner.tools import user_preferences as prefs_store
 
     _set_request_user(request, req.user_id)
-    prefs = prefs_store.load_preferences()
-    profile = dict(prefs.get("profile") or {})
-    transport = dict(prefs.get("transport_preferences") or {})
-    hotel = dict(prefs.get("hotel_preferences") or {})
-    food = dict(prefs.get("food_preferences") or {})
-
-    if req.display_name is not None:
-        profile["display_name"] = req.display_name.strip() or None
-    if req.home_city is not None:
-        profile["home_city"] = req.home_city.strip() or None
-    if req.home_country is not None:
-        profile["home_country"] = req.home_country.strip() or None
-    if req.trip_style is not None:
-        prefs["trip_style"] = req.trip_style or None
-    if req.budget_level is not None:
-        prefs["budget_level"] = req.budget_level or None
-    if req.flight_class is not None:
-        transport["flight_class"] = req.flight_class or None
-    if req.prefer_direct_flights is not None:
-        transport["prefer_direct_flights"] = req.prefer_direct_flights
-    if req.hotel_star_rating_min is not None:
-        hotel["star_rating_min"] = max(1, min(5, int(req.hotel_star_rating_min)))
-    if req.dietary is not None:
-        food["dietary"] = [d.strip() for d in req.dietary if d.strip()]
-    if req.interests is not None:
-        prefs["interests"] = [d.strip() for d in req.interests if d.strip()]
-    if req.dislikes is not None:
-        prefs["dislikes"] = [d.strip() for d in req.dislikes if d.strip()]
-
-    prefs["profile"] = profile
-    prefs["transport_preferences"] = transport
-    prefs["hotel_preferences"] = hotel
-    prefs["food_preferences"] = food
-
-    # Free-text About-me: extract structured fields and overlay additively
-    # (shared logic in preferences_merge).
+    current = prefs_store.load_preferences()
+    about_text: str | None = None
+    about_extracted: dict = {}
+    about_learned: list[dict] = []
     extracted_keys: list[str] = []
+    summary_conflict = False
+    summary_has_compare_token = "profile_summary_updated_at" in req.model_fields_set
+    explicit_paths = {
+        "display_name": "profile.display_name",
+        "home_city": "profile.home_city",
+        "home_country": "profile.home_country",
+        "trip_style": "trip_style",
+        "budget_level": "budget_level",
+        "flight_class": "transport_preferences.flight_class",
+        "prefer_direct_flights": "transport_preferences.prefer_direct_flights",
+        "hotel_star_rating_min": "hotel_preferences.star_rating_min",
+        "dietary": "food_preferences.dietary",
+        "interests": "interests",
+        "dislikes": "dislikes",
+        "planning_mode": "planning_mode",
+        "about_me": "about_me",
+        "profile_summary": "profile_summary",
+    }
+    submitted_paths = {
+        path
+        for field, path in explicit_paths.items()
+        if field in req.model_fields_set
+    }
     if req.about_me is not None:
-        prefs, extracted_keys = preferences_merge.apply_about_me(prefs, req.about_me)
+        about_text = req.about_me.strip()[: preferences_merge.ABOUT_ME_MAX_CHARS]
+        old_about = str(current.get("about_me") or "").strip()
+        if about_text and about_text != old_about:
+            extracted = preferences_merge.about_me_extractor.extract_about_me(about_text)
+            about_learned = list(extracted.pop("_learned_notes_to_append", None) or [])
+            about_extracted = extracted
+            extracted_keys = preferences_merge.flatten_keys(extracted)
+            if about_learned:
+                extracted_keys.append("learned_notes")
 
-    prefs_store.save_preferences(prefs)
+    def apply(prefs: dict) -> dict | None:
+        nonlocal summary_conflict
+        summary_conflict = False
+        if (
+            req.profile_summary is not None
+            and summary_has_compare_token
+            and prefs.get("profile_summary_updated_at") != req.profile_summary_updated_at
+        ):
+            summary_conflict = True
+            return None
 
-    # User-corrected / reset profile summary is stored verbatim (and stamps the
-    # current digest so the background sweep won't immediately overwrite it).
-    if req.profile_summary is not None:
-        from tripplanner.tools import profile_summary as profile_summary_mod
+        profile = dict(prefs.get("profile") or {})
+        transport = dict(prefs.get("transport_preferences") or {})
+        hotel = dict(prefs.get("hotel_preferences") or {})
+        food = dict(prefs.get("food_preferences") or {})
 
-        profile_summary_mod.set_summary(req.profile_summary)
+        if req.display_name is not None:
+            profile["display_name"] = req.display_name.strip() or None
+        if req.home_city is not None:
+            profile["home_city"] = req.home_city.strip() or None
+        if req.home_country is not None:
+            profile["home_country"] = req.home_country.strip() or None
+        if req.trip_style is not None:
+            prefs["trip_style"] = req.trip_style or None
+        if req.budget_level is not None:
+            prefs["budget_level"] = req.budget_level or None
+        if req.flight_class is not None:
+            transport["flight_class"] = req.flight_class or None
+        if req.prefer_direct_flights is not None:
+            transport["prefer_direct_flights"] = req.prefer_direct_flights
+        if req.hotel_star_rating_min is not None:
+            hotel["star_rating_min"] = max(1, min(5, int(req.hotel_star_rating_min)))
+        if req.dietary is not None:
+            food["dietary"] = [value.strip() for value in req.dietary if value.strip()]
+        if req.interests is not None:
+            prefs["interests"] = [value.strip() for value in req.interests if value.strip()]
+        if req.dislikes is not None:
+            prefs["dislikes"] = [value.strip() for value in req.dislikes if value.strip()]
+        if req.planning_mode is not None:
+            prefs["planning_mode"] = req.planning_mode
+
+        prefs["profile"] = profile
+        prefs["transport_preferences"] = transport
+        prefs["hotel_preferences"] = hotel
+        prefs["food_preferences"] = food
+
+        if about_text is not None:
+            prefs["about_me"] = about_text
+            prefs = preferences_merge.additive_overlay_extracted(prefs, about_extracted)
+            if about_learned:
+                notes = list(prefs.get("learned_notes") or [])
+                seen = {
+                    (entry.get("note") or "").strip().lower()
+                    for entry in notes
+                    if isinstance(entry, dict)
+                }
+                for entry in about_learned:
+                    note = str(entry.get("note") or "").strip()
+                    if note and note.lower() not in seen:
+                        seen.add(note.lower())
+                        notes.append(entry)
+                prefs["learned_notes"] = notes
+        if req.profile_summary is not None:
+            profile_summary_mod.apply_summary(prefs, req.profile_summary)
+        prefs_store.mark_explicit_fields(prefs, submitted_paths)
+        return prefs
+
+    updated = prefs_store.mutate_preferences(apply)
+    if summary_conflict:
+        return JSONResponse(
+            {
+                "error": "profile summary changed while settings were open",
+                "profile_summary": updated.get("profile_summary") or "",
+                "profile_summary_updated_at": updated.get("profile_summary_updated_at"),
+            },
+            status_code=409,
+        )
 
     app_event("api_preferences_saved")
     return {"ok": True, "about_me_extracted": extracted_keys}
@@ -1081,9 +1362,14 @@ async def regenerate_profile_summary(req: SelectRequest, request: Request) -> di
     from tripplanner.tools import profile_summary as profile_summary_mod
 
     _set_request_user(request, req.user_id)
-    summary = profile_summary_mod.update_summary(force=True)
+    profile_summary_mod.update_summary(force=True)
+    prefs = profile_summary_mod.user_preferences.load_preferences()
     app_event("api_profile_summary_regenerated")
-    return {"ok": True, "profile_summary": summary}
+    return {
+        "ok": True,
+        "profile_summary": prefs.get("profile_summary") or "",
+        "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
+    }
 
 @app.post("/account/privacy")
 async def account_privacy_action(req: PrivacyActionRequest, request: Request) -> dict:
@@ -1110,18 +1396,22 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
                 "message": "Type DELETE to confirm this action.",
             }
 
-    deleted_trips = await asyncio.to_thread(trip_planner.clear_all_trip_history)
-    deleted_chats = await asyncio.to_thread(chat_store.clear_all)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        deleted_trips = await asyncio.to_thread(trip_planner.clear_all_trip_history)
+        deleted_chats = await asyncio.to_thread(chat_store.clear_all)
 
-    deleted_usage = 0
-    deleted_cache = 0
-    reset_prefs = False
+        deleted_usage = 0
+        deleted_cache = 0
+        reset_prefs = False
 
-    if req.action in {"clear_all_data", "delete_account"}:
-        await asyncio.to_thread(prefs_store.reset_preferences)
-        reset_prefs = True
-        deleted_usage = await asyncio.to_thread(clear_usage, user_id)
-        deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, user_id)
+        if req.action in {"clear_all_data", "delete_account"}:
+            await asyncio.to_thread(prefs_store.reset_preferences)
+            reset_prefs = True
+            deleted_usage = await asyncio.to_thread(clear_usage, user_id)
+            deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, user_id)
+    finally:
+        await release_workspace_exclusive(workspace)
 
     app_event(
         "api_privacy_action",
@@ -1157,7 +1447,8 @@ async def account_migrate_guest(req: GuestMigrateRequest, request: Request) -> d
     data. Safe to call multiple times — already-migrated trips are skipped.
     Returns {ok, copied_trips, skipped_trips, copied_prefs}.
     """
-    from tripplanner.tools import trip_planner, user_preferences as prefs_store
+    from tripplanner.tools import trip_planner
+    from tripplanner.tools import user_preferences as prefs_store
     from tripplanner.user_context import set_user_id
     from tripplanner.web import chat_store
 
@@ -1168,67 +1459,60 @@ async def account_migrate_guest(req: GuestMigrateRequest, request: Request) -> d
     if is_hosted():
         require_guest_capability(request, guest_id)
 
-    # ── 1. Copy saved trips from guest into authenticated user ──────────────
-    set_user_id(guest_id)
-    guest_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-
-    set_user_id(auth_id)
-    auth_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
-    auth_trip_ids = {t["trip_id"] for t in auth_trips}
-
-    copied_trips = 0
-    skipped_trips = 0
-    for summary in guest_trips:
-        tid = summary.get("trip_id")
-        if not tid or tid in auth_trip_ids:
-            skipped_trips += 1
-            continue
-        # Load the full plan from the guest store.
+    workspace = await acquire_workspace_exclusive(guest_id, auth_id)
+    try:
         set_user_id(guest_id)
-        full_plan = await asyncio.to_thread(trip_planner._load_history_trip, tid)
-        if not full_plan:
-            skipped_trips += 1
-            continue
-        # Write it into the authenticated user's store.
-        set_user_id(auth_id)
-        await asyncio.to_thread(trip_planner._mirror_to_history, full_plan)
-        copied_trips += 1
+        guest_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+        guest_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+        guest_trip_ids = [str(item["trip_id"]) for item in guest_trips if item.get("trip_id")]
+        guest_active_id = str((guest_active or {}).get("trip_id") or "")
+        if guest_active_id:
+            guest_trip_ids.append(guest_active_id)
+        guest_chat_state = await asyncio.to_thread(chat_store.export_state, guest_trip_ids)
 
-    # ── 2. Copy preferences if the authenticated user has none yet ──────────
-    set_user_id(auth_id)
-    auth_prefs = prefs_store.load_preferences()
-    copied_prefs = False
-    if not auth_prefs.get("about_me") and not auth_prefs.get("interests"):
+        set_user_id(auth_id)
+        auth_trips = await asyncio.to_thread(trip_planner.list_saved_trips)
+        auth_trip_ids = {t["trip_id"] for t in auth_trips}
+
+        copied_trips = 0
+        skipped_trips = 0
+        for summary in guest_trips:
+            tid = summary.get("trip_id")
+            if not tid or tid in auth_trip_ids:
+                skipped_trips += 1
+                continue
+            set_user_id(guest_id)
+            full_plan = await asyncio.to_thread(trip_planner._load_history_trip, tid)
+            if not full_plan:
+                skipped_trips += 1
+                continue
+            set_user_id(auth_id)
+            await asyncio.to_thread(trip_planner._mirror_to_history, full_plan)
+            copied_trips += 1
+
+        copied_prefs = False
         set_user_id(guest_id)
         guest_prefs = prefs_store.load_preferences()
-        if guest_prefs.get("about_me") or guest_prefs.get("interests"):
+        if prefs_store.has_non_default_preferences(guest_prefs):
             set_user_id(auth_id)
-            prefs_store.save_preferences(guest_prefs)
-            copied_prefs = True
 
-    # ── 3. Copy the active trip (if guest has one and auth user has none) ───
-    set_user_id(guest_id)
-    guest_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
-    set_user_id(auth_id)
-    auth_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
-    copied_chat = False
-    if guest_active and not auth_active:
-        await asyncio.to_thread(trip_planner._save_active_trip, guest_active)
+            def adopt_guest_prefs(auth_prefs: dict) -> dict | None:
+                nonlocal copied_prefs
+                copied_prefs = False
+                merged = prefs_store.adopt_missing_preferences(auth_prefs, guest_prefs)
+                copied_prefs = merged != auth_prefs
+                return merged if copied_prefs else None
 
-    # ── 4. Copy the active trip's chat so the conversation isn't lost ───────
-    guest_active_id = (guest_active or {}).get("trip_id")
-    auth_active_id = (auth_active or {}).get("trip_id")
-    # Copy only if we just imported the active trip (auth had none before).
-    if guest_active_id and not auth_active:
-        set_user_id(guest_id)
-        guest_msgs = await asyncio.to_thread(chat_store.load, guest_active_id)
-        if not guest_msgs:
-            # Fall back to the general bucket (pre-trip conversation).
-            guest_msgs = await asyncio.to_thread(chat_store.load, None)
-        if guest_msgs:
-            set_user_id(auth_id)
-            await asyncio.to_thread(chat_store.save, guest_active_id, guest_msgs)
-            copied_chat = True
+            prefs_store.mutate_preferences(adopt_guest_prefs)
+
+        set_user_id(auth_id)
+        auth_active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
+        if guest_active and not auth_active:
+            await asyncio.to_thread(trip_planner._save_active_trip, guest_active)
+        copied_chat = await asyncio.to_thread(chat_store.adopt_state, guest_chat_state)
+    finally:
+        set_user_id(auth_id)
+        await release_workspace_exclusive(workspace)
 
     app_event(
         "api_guest_migrate",
@@ -1254,6 +1538,7 @@ async def account_guest_data_summary(request: Request, user_id: str) -> dict:
     the guest-import banner.
     """
     from tripplanner.tools import trip_planner
+    from tripplanner.tools import user_preferences as prefs_store
     from tripplanner.user_context import set_user_id
 
     guest_id = (user_id or "").strip()
@@ -1266,7 +1551,13 @@ async def account_guest_data_summary(request: Request, user_id: str) -> dict:
     trips = await asyncio.to_thread(trip_planner.list_saved_trips)
     active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
     count = len(trips) + (1 if active and not trips else 0)
-    return {"has_data": count > 0, "trip_count": count}
+    preferences = await asyncio.to_thread(prefs_store.load_preferences)
+    has_preferences = prefs_store.has_non_default_preferences(preferences)
+    return {
+        "has_data": count > 0 or has_preferences,
+        "trip_count": count,
+        "has_preferences": has_preferences,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -1403,12 +1694,18 @@ async def auth_callback_google(
         from tripplanner.user_context import set_user_id
 
         set_user_id(identifier)
-        prefs = prefs_store.load_preferences()
-        profile_blob = dict(prefs.get("profile") or {})
-        if not profile_blob.get("display_name") and profile.get("name"):
-            profile_blob["display_name"] = profile["name"].split()[0]
-            prefs["profile"] = profile_blob
-            prefs_store.save_preferences(prefs)
+        if profile.get("name"):
+            display_name = profile["name"].split()[0]
+
+            def seed_display_name(prefs: dict) -> dict | None:
+                profile_blob = dict(prefs.get("profile") or {})
+                if profile_blob.get("display_name"):
+                    return None
+                profile_blob["display_name"] = display_name
+                prefs["profile"] = profile_blob
+                return prefs
+
+            prefs_store.mutate_preferences(seed_display_name)
     except Exception:
         pass  # profile seeding is best-effort; never block login
 

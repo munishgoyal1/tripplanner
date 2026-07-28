@@ -13,7 +13,7 @@ interface ScreenProps extends PropsWithChildren {
 }
 
 export function Screen({ title, subtitle, action, scroll = true, children }: ScreenProps) {
-  const { error, loading, refresh } = useTrip();
+  const { canRetryMessage, error, loading, refresh, retryMessage } = useTrip();
   const content = (
     <>
       <View style={styles.header}>
@@ -24,8 +24,14 @@ export function Screen({ title, subtitle, action, scroll = true, children }: Scr
         {action}
       </View>
       {error ? (
-        <Pressable accessibilityRole="button" onPress={() => void refresh()} style={styles.error}>
-          <Text style={styles.errorText}>{error} Tap to retry.</Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => void (canRetryMessage ? retryMessage() : refresh())}
+          style={styles.error}
+        >
+          <Text style={styles.errorText}>
+            {error} Tap to retry{canRetryMessage ? ' request' : ''}.
+          </Text>
         </Pressable>
       ) : null}
       {loading && !children ? <ActivityIndicator color={palette.brand} style={styles.loader} /> : children}

@@ -363,13 +363,14 @@ tripplanner/
 │   ├── api.py                    # FastAPI server: /api endpoints + serves the SPA
 │   ├── user_context.py           # ContextVar holding current user_id
 │   ├── json_store.py             # Atomic local JSON persistence
-│   ├── storage_cosmos.py         # Cosmos backend + conditional write primitive
+│   ├── storage_cosmos.py         # Cosmos backend + conditional create/replace/delete
 │   │
 │   ├── web/
 │   │   ├── __init__.py
 │   │   ├── trip_view.py          # Pure-Python view-model (frontend-agnostic)
 │   │   ├── places_cache.py       # Synchronized Google Places cache
 │   │   ├── trip_operations.py    # Blocking trip operations used by async routes
+│   │   ├── chat_store.py         # Trip transcripts + principal request replay index
 │   │   └── oauth.py              # Standalone Google OAuth (HMAC session cookie)
 │   │
 │   ├── agents/
@@ -384,15 +385,16 @@ tripplanner/
 │       ├── google_places.py      # Real ratings, reviews, restaurants
 │       ├── web_search.py         # Tavily live web search
 │       ├── trip_planner.py       # Trip lifecycle (Cosmos-aware)
-│       └── user_preferences.py   # Preference store (Cosmos-aware)
+│       └── user_preferences.py   # Sparse/explicit preference merge + replayable mutations
 │
 ├── tests/
-│   └── test_trip.py              # 46 tests (prefs, planner, helpers, Cosmos dispatch)
+│   └── test_trip.py              # Preferences, planner, helpers, Cosmos dispatch
 │
 └── ~/.tripplanner/                # User data when running locally
     ├── user_preferences.json     # Preferences & past trip history
     ├── active_trip.json          # Current trip plan in progress
-    └── trips/                    # Archived booked trips
+   ├── trips/                    # Archived booked trips
+   └── chats/                    # Trip transcripts + bounded chat_operations index
 ```
 
 ## API Endpoints

@@ -54,7 +54,7 @@ src/tripplanner/
   observability.py    OpenTelemetry / Azure Monitor (best-effort)
   json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
   request_identity.py Signed web/native/guest principal resolution for hosted APIs
-  request_limits.py   In-process chat size/rate/concurrency admission controls
+  request_limits.py   Chat/replay rate limits, concurrency, workspace exclusion
   storage_cosmos.py   Cosmos persistence + opt-in conditional replacement primitive
   user_context.py     ContextVar holding the current user_id per request
   agents/
@@ -84,8 +84,8 @@ src/tripplanner/
     oauth.py          Standalone Google OAuth, HMAC mg_session cookie
     trip_view.py      PURE-PYTHON view-model (build_view, build_destination_overview,
                       build_map_view, build_itinerary — structured day-by-day stops)
-    chat_store.py     PURE-PYTHON per-trip chat transcript persistence
-                      (Cosmos users/chat_<trip_id> or local chats/<trip_id>.json)
+    chat_store.py     PURE-PYTHON transcript + request replay persistence
+              (per-trip chat docs plus principal chat_operations index)
     places_cache.py   Synchronized Google Places cache (ThreadPoolExecutor;
               1-week details TTL + 50-min photo-URL TTL; persisted L2)
     trip_operations.py  Synchronous load/mutate/render operations offloaded by api.py
@@ -330,14 +330,33 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   authenticated account cookie and the matching original guest bearer token.
 - Chat requests are limited to 12,000 characters and pass per-principal/IP
   rolling request limits plus per-principal/global concurrency admission before
-  invoking the model. The monthly LLM cap is keyed by the resolved principal.
+  invoking the model. The monthly LLM cap is keyed by the resolved principal;
+  a completed request-id replay is returned before request/concurrency admission
+  or a new usage-cap decision. Replay lookups have separate defaults of 60 per
+  principal and 180 per IP each minute. Replay reads/repairs, Assistant turns,
+  active-trip mutations, identity adoption, and destructive lifecycle actions
+  share a workspace exclusion and return retryable `409` conflicts when unsafe.
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
   local JSON under `~/.tripplanner/`. Trip/history/chat/cache writes use
   `json_store.atomic_write_json` so interruption cannot leave partial JSON.
 - Trip mutations are serialized per user inside one process. Cosmos also exposes
-  `read_doc_versioned` + `replace_doc_if_version` for future cross-replica
-  optimistic concurrency; current mutation flows retain unconditional upserts.
-- Cosmos containers: `users` (one doc per user: `preferences`, `active_trip`)
+  conditional create, replace, and delete primitives. Web and native preference
+  editors submit sparse field changes; an explicit-field ledger distinguishes a
+  user-selected default from an unset value. Preference mutations replay semantic
+  intent against each freshly read ETag, and guest adoption fills only missing
+  fields while unioning additive lists. Chat persistence appends the exact turn
+  with bounded conflict retry plus 80-entry recent-write/request-operation
+  ledgers. A principal-scoped `chat_operations` index persists completed results
+  before the transcript, so replay can repair a failed second write and survive
+  active-trip switches. Interrupted rows are excluded from same-request history
+  and replaced by a completed retry. First-trip migration copies transcript and
+  operation metadata before a version-checked source delete, and a later request
+  reconciles a retained general bucket. Guest adoption merges every known trip
+  bucket, `_general`, interrupted metadata, and completed operations without
+  replacing account chat. Local mutation paths serialize same-process writes and
+  retain atomic file replacement.
+- Cosmos containers: `users` (docs including `preferences`, `active_trip`,
+  `chat_<trip_id>`, and `chat_operations`)
   and `trips` (every saved trip — drafts, finalized, and booked). Also
   `tool_cache` (read-through tool results) and `places_cache` (durable Google
   Places cache — one shared doc, partition `_shared`).
