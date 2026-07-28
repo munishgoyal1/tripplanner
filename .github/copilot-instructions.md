@@ -110,6 +110,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Single guarded deployment path (Session 80, milestone B)**: the manual
+  GitHub Actions workflow only builds and pushes SHA/`latest` images. It has no
+  Azure login or deployment authority; canary and production releases remain
+  exclusively owned by the guarded PowerShell scripts.
 - **Hosted identity + chat abuse boundary (Session 80, milestone A)**: every
   user-data API derives its principal from a signed Google cookie, native bearer,
   or server-signed UUID guest capability in hosted environments; raw account ids

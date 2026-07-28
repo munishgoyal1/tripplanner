@@ -81,7 +81,9 @@ The script:
 2. Validates Bicep, the shared Cosmos account/database, Azure OpenAI access, and
    the environment-owned OAuth callback.
 3. Runs Azure what-if and blocks any delete operation.
-4. Builds one Docker image and pushes the SHA plus `latest` to GHCR.
+4. Builds one Docker image and pushes the SHA plus `latest` to GHCR. The manual
+  GitHub Actions workflow may perform this image publication only; it has no
+  Azure credentials or deployment step.
 5. Applies `main.bicep` and canary parameters.
 6. Updates the Container App to the immutable SHA image.
 7. Runs the public read-only hosted smoke suite.

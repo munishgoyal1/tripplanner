@@ -45,36 +45,43 @@ exactly like before (anonymous / name-only identity).
 
 ```powershell
 $secret = python -c "import secrets; print(secrets.token_urlsafe(32))"
-gh secret set CHAINLIT_AUTH_SECRET --body $secret   # reused as WEB_SESSION_SECRET in CI
+Add-Content .env "WEB_SESSION_SECRET=$secret"
 ```
+
+The guarded deployment scripts load `.env`; do not commit it.
 
 ## Step 1 — Google OAuth client
 
 1. Go to <https://console.cloud.google.com/apis/credentials>.
 2. **Create credentials → OAuth client ID → Web application**.
-3. Name it `tripplanner-trip-planner`.
-4. **Authorized redirect URI** (exact match):
+3. Name it `tripplanner`.
+4. Add both hosted **Authorized redirect URIs** (exact matches):
    ```
-   https://tripplanner-app-<your-suffix>.<env>.eastus2.azurecontainerapps.io/api/auth/callback/google
+   https://<canary-fqdn>/api/auth/callback/google
+   https://<production-fqdn>/api/auth/callback/google
    ```
-   Find your FQDN with:
+   Find the current FQDNs with:
    ```powershell
-   az containerapp show -n tripplanner-app-<suffix> -g rg-tripplanner-trip-planner --query properties.configuration.ingress.fqdn -o tsv
+   az containerapp list -g rg-tripplanner-canary --query "[?starts_with(name, 'canary-app-')].properties.configuration.ingress.fqdn" -o tsv
+   az containerapp list -g rg-tripplanner-prod --query "[?starts_with(name, 'prod-app-')].properties.configuration.ingress.fqdn" -o tsv
    ```
-5. Copy the **Client ID** and **Client secret**, then store them as GitHub secrets:
+5. Copy the **Client ID** and **Client secret** into the uncommitted `.env` file:
    ```powershell
-   gh secret set OAUTH_GOOGLE_CLIENT_ID --body "<client-id>"
-   gh secret set OAUTH_GOOGLE_CLIENT_SECRET --body "<client-secret>"
+   Add-Content .env "OAUTH_GOOGLE_CLIENT_ID=<client-id>"
+   Add-Content .env "OAUTH_GOOGLE_CLIENT_SECRET=<client-secret>"
    ```
 
-## Step 2 — Trigger redeploy
+## Step 2 — Deploy through canary
 
-The next push to `master` (or a manual workflow run) picks up the new
-secrets and bakes them into the Container App.
+The manual GitHub Actions workflow only publishes an image. Apply OAuth
+configuration and deploy through the guarded canary script:
 
 ```powershell
-gh workflow run "Build & Deploy to Azure Container Apps"
+.\infra\deploy-canary.ps1
 ```
+
+Verify canary before requesting production approval. Production promotion uses
+`.\infra\deploy-prod.ps1` and the exact image already tested in canary.
 
 ## Step 3 — Verify
 
