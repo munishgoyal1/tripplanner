@@ -4,7 +4,10 @@
 FROM node:20-slim AS frontend
 WORKDIR /web
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+COPY packages/tripplanner-client/ /packages/tripplanner-client/
+RUN npm ci --include=dev \
+    --registry=https://ms-feed-2.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/ \
+    --replace-registry-host=always
 COPY frontend/ ./
 RUN npm run build   # emits /web/dist
 
