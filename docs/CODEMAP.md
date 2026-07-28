@@ -23,6 +23,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
 - Verbose backend: `.\scripts\dev-spa.ps1 -Logs`
 - Backend tests: `.\.venv\Scripts\python.exe -m pytest -q`
+- Concurrency boundary: `.\.venv\Scripts\python.exe -m pytest -q tests/test_request_security.py`
 - SPA type check: `cd frontend; npx tsc --noEmit`
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
@@ -202,6 +203,8 @@ scripts/
   hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
   test.ps1            Legacy (Chainlit era) — do not use
 tests/                pytest suite
+                      request-security tests drive overlapping authenticated
+                      FastAPI requests through real chat/workspace admission
 docs/
   android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file

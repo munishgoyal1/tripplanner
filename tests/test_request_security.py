@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from tripplanner import api
-from tripplanner.request_limits import ChatAdmission, ReplayLookupAdmission
+from tripplanner.request_limits import ChatAdmission, ReplayLookupAdmission, chat_admission
 from tripplanner.web import oauth
 
 _SECRET = "request-security-test-secret"
@@ -327,6 +329,110 @@ def test_chat_admission_rejects_overlapping_turn_for_same_user(monkeypatch) -> N
         await admission.release(permit)
 
     asyncio.run(scenario())
+
+
+def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from langchain_core.messages import AIMessage
+
+    from tripplanner import usage
+    from tripplanner.graph import app_graph
+
+    entered_model = threading.Event()
+    release_model = threading.Event()
+
+    def invoke(_state):  # type: ignore[no-untyped-def]
+        entered_model.set()
+        assert release_model.wait(timeout=2)
+        return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
+
+    monkeypatch.setenv("CHAT_MAX_CONCURRENT_PER_USER", "1")
+    monkeypatch.setenv("CHAT_USER_REQUESTS_PER_MINUTE", "10")
+    monkeypatch.setattr(app_graph, "invoke", invoke)
+    monkeypatch.setattr(usage, "is_over_cap", lambda _user_id: (False, {}))
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
+    monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
+    monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: "trip-1")
+    asyncio.run(chat_admission.reset())
+
+    def post_chat(request_id: str):  # type: ignore[no-untyped-def]
+        client = _hosted(monkeypatch)
+        client.cookies.set(oauth.SESSION_COOKIE, _user_token("google-owner"))
+        return client.post(
+            "/chat",
+            json={"message": "plan goa", "request_id": request_id},
+        )
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(post_chat, "request-1")
+            assert entered_model.wait(timeout=2)
+            overlapping = post_chat("request-2")
+            assert overlapping.status_code == 429
+            assert "already in progress" in overlapping.json()["detail"]
+            release_model.set()
+            assert first.result(timeout=2).status_code == 200
+
+        follow_up = post_chat("request-3")
+        assert follow_up.status_code == 200
+    finally:
+        release_model.set()
+        asyncio.run(chat_admission.reset())
+
+
+def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from langchain_core.messages import AIMessage
+
+    from tripplanner import usage
+    from tripplanner.graph import app_graph
+    from tripplanner.web import trip_operations
+
+    entered_model = threading.Event()
+    release_model = threading.Event()
+
+    def invoke(_state):  # type: ignore[no-untyped-def]
+        entered_model.set()
+        assert release_model.wait(timeout=2)
+        return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
+
+    monkeypatch.setattr(app_graph, "invoke", invoke)
+    monkeypatch.setattr(usage, "is_over_cap", lambda _user_id: (False, {}))
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
+    monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
+    monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: "trip-1")
+    monkeypatch.setattr(trip_operations, "select", lambda *_args, **_kwargs: {"ok": True})
+    asyncio.run(chat_admission.reset())
+
+    def client() -> TestClient:
+        result = _hosted(monkeypatch)
+        result.cookies.set(oauth.SESSION_COOKIE, _user_token("google-owner"))
+        return result
+
+    try:
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            first = pool.submit(
+                client().post,
+                "/chat",
+                json={"message": "plan goa", "request_id": "request-1"},
+            )
+            assert entered_model.wait(timeout=2)
+            blocked = client().post(
+                "/trip/select",
+                json={"kind": "attraction", "name": "Fort Aguada"},
+            )
+            assert blocked.status_code == 409
+            assert "active Assistant request" in blocked.json()["detail"]
+            release_model.set()
+            assert first.result(timeout=2).status_code == 200
+
+        succeeded = client().post(
+            "/trip/select",
+            json={"kind": "attraction", "name": "Fort Aguada"},
+        )
+        assert succeeded.status_code == 200
+        assert succeeded.json() == {"ok": True}
+    finally:
+        release_model.set()
+        asyncio.run(chat_admission.reset())
 
 
 def test_chat_admission_enforces_user_request_window(monkeypatch) -> None:  # type: ignore[no-untyped-def]

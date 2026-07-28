@@ -117,6 +117,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Live concurrency integration coverage (engineering improvement 3)**:
+  authenticated overlapping FastAPI requests now verify the production
+  admission singleton end to end. A blocked model turn rejects a second chat
+  with 429 and a workspace mutation with 409; after the first response releases
+  its permit, both paths recover. Existing lower-level tests continue to cover
+  local mutation serialization and Cosmos semantic conflict replay.
 - **Production observability + measurable chat SLOs (engineering improvement 2)**:
   every JSON and SSE chat attempt emits one PII-safe terminal `chat_operation`
   event with outcome, transport, and end-to-end duration, including admission,
