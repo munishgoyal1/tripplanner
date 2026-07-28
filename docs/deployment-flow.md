@@ -51,6 +51,8 @@ callback bases are resolved by the deployment scripts.
 | Canary deployment history | Local ignored `logs/deployments-canary.log` |
 | Production/rollback history | Local ignored `logs/deployments-prod.log` |
 | App infrastructure | `infra/main.bicep` plus environment `.bicepparam` |
+| Production DNS | Namecheap records for `aitripplanner.co` and `www` |
+| Production TLS/domain bindings | Existing Azure managed certificates declared by `infra/main.bicep` |
 | Shared data infrastructure | `infra/data-stack.bicep`, `infra/data.bicep`, modules |
 | Canary data | Shared Cosmos account, `tripplanner-canary` database |
 | Production data | Shared Cosmos account, `tripplanner-prod` database |
@@ -133,6 +135,12 @@ image, runs read-only hosted smoke, and logs the approver and result.
 Do not use `-Build` for normal promotion because that creates a new artifact
 after canary validation.
 
+Production parameters preserve `aitripplanner.co` and `www.aitripplanner.co`
+with Azure-managed TLS and set `OAUTH_REDIRECT_BASE` to
+`https://aitripplanner.co/api`. The generated Container Apps hostname remains
+enabled as rollback access. A production what-if must show no certificate or
+custom-domain replacement before approval.
+
 ### 6. Monitor and roll back when needed
 
 Perform a short production critical-flow check and monitor for at least 15-30
@@ -186,6 +194,9 @@ captured in Bicep and the owning idempotent script in the same commit:
 
 - App, identity, environment, configuration, and secret wiring:
   `main.bicep`, environment parameters, and both deployment scripts.
+- Production custom domains and managed certificates: `main.bicep` and
+  `prod.bicepparam`; Namecheap remains authoritative for the required A, CNAME,
+  and `asuid` verification records.
 - Shared Cosmos account, databases, containers, throughput, or TTL:
   `data-stack.bicep`, `data.bicep`, modules, and `deploy-data.ps1`.
 - Fresh-subscription orchestration: `bootstrap-environments.ps1`.

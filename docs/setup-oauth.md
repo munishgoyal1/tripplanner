@@ -55,10 +55,15 @@ The guarded deployment scripts load `.env`; do not commit it.
 1. Go to <https://console.cloud.google.com/apis/credentials>.
 2. **Create credentials → OAuth client ID → Web application**.
 3. Name it `tripplanner`.
-4. Add both hosted **Authorized redirect URIs** (exact matches):
+4. Add the hosted **Authorized redirect URIs** (exact matches):
    ```
    https://<canary-fqdn>/api/auth/callback/google
-   https://<production-fqdn>/api/auth/callback/google
+   https://aitripplanner.co/api/auth/callback/google
+   ```
+   Keep the generated production Azure callback registered temporarily for
+   rollback access:
+   ```
+   https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io/api/auth/callback/google
    ```
    Find the current FQDNs with:
    ```powershell
@@ -126,8 +131,8 @@ register `<OAUTH_REDIRECT_BASE>/auth/callback/google` in the Google console.
   ```
 * **Production** (single origin serving SPA + API):
   ```
-  OAUTH_REDIRECT_BASE=https://your-app.example.com/api
-  # register https://your-app.example.com/api/auth/callback/google
+   OAUTH_REDIRECT_BASE=https://aitripplanner.co/api
+   # register https://aitripplanner.co/api/auth/callback/google
   ```
 
 If `OAUTH_REDIRECT_BASE` is unset, the callback URI is derived from the

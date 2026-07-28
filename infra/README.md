@@ -29,6 +29,8 @@ Stays at ~₹0 when idle thanks to scale-to-zero.
 ### Production (Live — Manual Approval Required)
 - Resource Group: `rg-tripplanner-prod`
 - Container App: `prod-app-*`
+- Public URL: <https://aitripplanner.co> (`www.aitripplanner.co` is also bound)
+- DNS: Namecheap; Azure-managed TLS and bindings are declared in `main.bicep`
 - Cosmos database: `tripplanner-prod` in the shared account
 - **Use for:** Tested, verified releases only
 - **Deployment:** `./infra/deploy-prod.ps1` (requires explicit approval: type `APPROVE_PROD_DEPLOYMENT`)
@@ -47,7 +49,8 @@ Transition to standardized naming by redeploying canary first, then production a
 
 - `data-stack.bicep` + `data.bicep` — shared data RG/account/databases
 - `modules/cosmos-data.bicep` — reusable Cosmos account/database/container module
-- `main.bicep` — app environment resources; references existing shared Cosmos
+- `main.bicep` — app environment resources and optional managed custom domains;
+  references existing shared Cosmos
 - `canary.bicepparam` / `prod.bicepparam` — isolated hosted database bindings
 - `cosmos-emulator.compose.yml` — official local emulator with persistent volume
 - `DEPLOYMENT_PROCESS.md` — detailed workflow, approval gates, and logging

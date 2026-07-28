@@ -77,7 +77,7 @@ re-describing the whole product.
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
-| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Proposed |
+| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
 
@@ -363,10 +363,10 @@ re-describing the whole product.
 
 - Real provider-side booking, payment, ticketing, and confirmation are not
   implemented despite legacy `execute_bookings` naming and output text.
-- A public custom domain, public-MVP analytics, embedded feedback capture, ads,
-  consent management, broader expensive-endpoint/provider guardrails, and a
-  global daily spend circuit breaker are not implemented. Hosted chat admission
-  controls are already present.
+- Public-MVP analytics, embedded feedback capture, ads, consent management,
+  broader expensive-endpoint/provider guardrails, and a global daily spend
+  circuit breaker are not implemented. The production custom domain and hosted
+  chat admission controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
 - Production mobile-store release still requires owner-approved distribution
   setup and provider keys appropriate to each platform.
@@ -391,8 +391,10 @@ Each requires a focused feature brief and owner approval.
 **Outcome:** safely expose the existing planner to early users and measure
 whether they create useful trips and return.
 
-- Bind a purchased custom domain to production with a managed certificate.
-- Update OAuth callback ownership and restrict browser API keys to approved origins.
+- Keep `aitripplanner.co` and `www.aitripplanner.co` bound to production through
+  repository-owned managed certificates and parameters.
+- Keep OAuth callback ownership on the apex domain and restrict browser API keys
+  to approved origins.
 - Add privacy, terms, contact, and user-data deletion surfaces appropriate to a
   public product.
 - Extend the existing hosted chat admission boundary to any newly exposed

@@ -35,7 +35,7 @@ User ──► Rich CLI  or  FastAPI
 
 ### Hosted mode (React SPA + FastAPI on Azure Container Apps)
 ```
-Browser ──► *.azurecontainerapps.io ──► React SPA (served by FastAPI)
+Browser ──► aitripplanner.co ──► Azure Container Apps ──► React SPA (FastAPI)
                                               │  /api/* (HTTP + SSE)
                                               ▼
                                        Trip Agent (same)
@@ -52,7 +52,9 @@ The product has a React SPA (`frontend/`) and native Expo client (`mobile/`).
 Both consume contracts, transport, SSE parsing, and workspace state from
 `packages/tripplanner-client/`. In production the FastAPI process (`api.py`)
 serves the built SPA from `frontend/dist` and the `/api/*` endpoints on one
-port. The iOS/Android app calls the same hosted endpoints directly and uses
+port. Production is available at <https://aitripplanner.co>; the generated
+Azure hostname remains available for rollback access. The iOS/Android app calls
+the same hosted endpoints directly and uses
 native browser OAuth to adopt the web app's stable Google identity. Hosted API
 access is authorized by signed web/mobile sessions or a signed anonymous guest
 capability; caller-supplied account ids are never authoritative.

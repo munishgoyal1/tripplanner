@@ -2417,3 +2417,15 @@ VALIDATION:
   ask only questions that materially change behavior or risk, and update the
   brief with decisions and validation evidence through shipment.
 
+=== 2026-07-28 — Session 82: Production custom domain ===
+
+- Serve production at `https://aitripplanner.co` and
+  `https://www.aitripplanner.co` using Namecheap authoritative DNS and
+  Azure-managed TLS on the existing production Container App.
+- Keep the generated Azure Container Apps hostname active as rollback access;
+  do not deploy a new image as part of the domain cutover.
+- Use `https://aitripplanner.co/api` as the production OAuth callback base and
+  register `https://aitripplanner.co/api/auth/callback/google` with Google.
+- Preserve the live managed certificates and hostname bindings in Bicep and
+  production parameters so later guarded deployments cannot erase the cutover.
+

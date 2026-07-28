@@ -81,7 +81,7 @@ existing feature.
 | REL-01 Reliability | Cancellation, stale-response guards, recovery, and caching | Preserve | |
 | SAFE-01 Safety | Server-derived principals, signed guests, chat admission limits, model cap, and grounding critic | Preserve | |
 | OPS-01 Delivery | Reproducible setup, canary, immutable promotion, smoke, and rollback | Preserve | |
-| PUBLIC-01 Public MVP | Not implemented; custom domain, analytics, feedback, and abuse controls proposed | Preserve | |
+| PUBLIC-01 Public MVP | Custom domain and hosted chat controls implemented; analytics, feedback, privacy/legal surfaces, and broader controls proposed | Preserve | |
 | MONEY-01 Monetization | Not implemented; evidence-led ads/affiliate experiment proposed | Preserve | |
 | BOOK-01 Real booking | Explicitly not implemented and not implied by booked status | Preserve | |
 

@@ -72,6 +72,18 @@ param webSessionSecret string = ''
 @description('Public HTTPS base URL the OAuth callback returns to (no trailing slash). Required when serving Sign in with Google through Container Apps ingress, which terminates TLS and forwards plain HTTP to the container, so request.base_url is http://. Example: https://tripplanner-app-xxx.region.azurecontainerapps.io')
 param oauthRedirectBase string = ''
 
+@description('Optional apex custom domain bound to the Container App.')
+param apexCustomDomain string = ''
+
+@description('Existing or desired managed certificate name for apexCustomDomain.')
+param apexManagedCertificateName string = ''
+
+@description('Optional www custom domain bound to the Container App.')
+param wwwCustomDomain string = ''
+
+@description('Existing or desired managed certificate name for wwwCustomDomain.')
+param wwwManagedCertificateName string = ''
+
 @description('Name of the existing shared Cosmos DB account.')
 param cosmosAccountName string
 
@@ -180,6 +192,39 @@ resource env 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
+resource apexManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (!empty(apexCustomDomain)) {
+  parent: env
+  name: apexManagedCertificateName
+  location: location
+  properties: {
+    domainControlValidation: 'HTTP'
+    subjectName: apexCustomDomain
+  }
+}
+
+resource wwwManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (!empty(wwwCustomDomain)) {
+  parent: env
+  name: wwwManagedCertificateName
+  location: location
+  properties: {
+    domainControlValidation: 'CNAME'
+    subjectName: wwwCustomDomain
+  }
+}
+
+var customDomains = concat(
+  empty(apexCustomDomain) ? [] : [{
+    name: apexCustomDomain
+    bindingType: 'SniEnabled'
+    certificateId: apexManagedCertificate.id
+  }],
+  empty(wwwCustomDomain) ? [] : [{
+    name: wwwCustomDomain
+    bindingType: 'SniEnabled'
+    certificateId: wwwManagedCertificate.id
+  }]
+)
+
 resource app 'Microsoft.App/containerApps@2024-03-01' = {
   name: appName
   location: location
@@ -191,6 +236,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8000
         transport: 'http'
         allowInsecure: false
+        customDomains: customDomains
         traffic: [
           {
             weight: 100

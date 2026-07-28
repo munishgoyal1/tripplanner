@@ -117,6 +117,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Production custom domain (Session 82)**: `aitripplanner.co` and
+  `www.aitripplanner.co` serve the production Container App through Azure-managed
+  TLS. Namecheap owns authoritative DNS; Bicep owns the existing managed
+  certificates and hostname bindings, and production OAuth callbacks use
+  `https://aitripplanner.co/api`. The generated Azure hostname remains available
+  for rollback access.
 - **V2 baseline + feature-intake workflow (Session 81)**: current capabilities,
   truthful booking boundaries, explicit gaps, proposed public-MVP roadmap, and
   the shared quality bar now live in `docs/REQUIREMENTS_V2.md`. New coherent

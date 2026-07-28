@@ -28,7 +28,7 @@ param(
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
     [string]$CosmosAccountName = "",
     [string]$AzureOpenAIAccountName = "aoaiprodmd1ks",
-    [string]$OAuthRedirectBase = "",
+    [string]$OAuthRedirectBase = "https://aitripplanner.co/api",
     [string]$CanaryResourceGroup = "rg-tripplanner-canary",
     [string]$CanaryAppNamePrefix = "canary-app-"
 )

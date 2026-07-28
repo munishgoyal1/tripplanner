@@ -184,9 +184,10 @@ infra/
   data-stack.bicep    Subscription orchestration for shared data RG/account
   data.bicep          Shared free-tier Cosmos data plane
   modules/cosmos-data.bicep  Two 400-RU/s databases + runtime containers
-  main.bicep          ACA + Log Analytics; references existing shared Cosmos
+  main.bicep          ACA + Log Analytics + optional managed custom domains;
+                      references existing shared Cosmos
   canary.bicepparam   Canary app parameters (`tripplanner-canary` database)
-  prod.bicepparam     Production app parameters (`tripplanner-prod` database)
+  prod.bicepparam     Production app, custom-domain, and `tripplanner-prod` params
   smoke-hosted.ps1    Canary/production public-HTTP smoke runner; deep prod guard
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
