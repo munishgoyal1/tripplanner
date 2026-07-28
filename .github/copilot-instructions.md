@@ -1,6 +1,7 @@
 # Copilot Instructions — tripplanner
 
-> **Read [docs/CODEMAP.md](../docs/CODEMAP.md) (where),
+> **Read [docs/README.md](../docs/README.md) (documentation guide),
+> [docs/CODEMAP.md](../docs/CODEMAP.md) (where),
 > [docs/PRODUCT.md](../docs/PRODUCT.md) (what/why + taste), and
 > [docs/REQUIREMENTS_V2.md](../docs/REQUIREMENTS_V2.md) (current capability
 > baseline + roadmap) FIRST. Consult
@@ -18,6 +19,8 @@
 - Trust this file + `docs/CODEMAP.md` + `docs/PRODUCT.md` +
   `docs/REQUIREMENTS_V2.md` +
   `/memories/repo/tripplanner.md`. Skip re-exploration on every task.
+- Treat `docs/roadmap/FUTURE_FEATURES.md` as the consolidated candidate backlog;
+  an entry there is not approval to implement it.
 - For a coherent new feature, prefer an owner-edited brief under
   `docs/feature-briefs/`. Treat roadmap entries as candidates, not approval.
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
@@ -117,6 +120,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Documentation navigation + future backlog**: `docs/README.md` classifies
+  canonical product truth, planning inputs, runbooks, and historical owner
+  artifacts without destabilizing established paths. The consolidated candidate
+  backlog lives in `docs/roadmap/FUTURE_FEATURES.md`; Live Trip Mode is the lead
+  product increment, and every candidate still requires owner selection plus a
+  focused feature brief.
 - **Performance and cost baseline (engineering improvement 6)**: a hermetic
   runner exercises real FastAPI routing, identity, worker-thread delegation,
   and workspace admission for three trip reads plus one mutation. It reports

@@ -211,11 +211,15 @@ tests/                pytest suite
                       request-security tests drive overlapping authenticated
                       FastAPI requests through real chat/workspace admission
 docs/
+  README.md           Documentation index, ownership, and structure policy
   android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
   ENGINEERING_LEARNINGS.md  Joint architectural/domain lessons for future work
+  PRODUCT.md          Product intent, interaction rules, and design taste
   REQUIREMENTS_V2.md  Current implemented capability baseline, explicit gaps,
                       proposed roadmap, and quality bar
+  roadmap/
+    FUTURE_FEATURES.md  Consolidated candidate backlog; not implementation approval
   feature-briefs/
     FEATURE_BRIEF_TEMPLATE.md  Reusable owner/agent feature-intake contract
     NEXT_INCREMENT.md          Owner-editable brief seeded from the V2 baseline

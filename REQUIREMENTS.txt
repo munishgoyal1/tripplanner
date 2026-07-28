@@ -2465,3 +2465,21 @@ VALIDATION:
   RU/throttling, Azure billing, and provider usage; optimize only bottlenecks
   supported by repeated evidence.
 
+=== 2026-07-28 — Documentation navigation and future feature backlog ===
+
+- Analyze whether the growing documentation and repository layout would benefit
+  from restructuring, and apply only changes that materially improve navigation.
+- Keep the canonical product, requirements, code map, and engineering-learning
+  documents at stable root paths. Do not create broad link churn by moving
+  established operational runbooks solely for cosmetic grouping.
+- Add `docs/README.md` as the documentation entry point, with clear ownership for
+  canonical truth, product planning, operations, development, and historical
+  owner artifacts.
+- Add `docs/roadmap/FUTURE_FEATURES.md` as a consolidated, prioritized candidate
+  backlog. Include Live Trip Mode prominently alongside reservation import,
+  disruption-aware replanning, offline mobile essentials, planning readiness,
+  collaboration, actual-versus-planned budget, public-MVP trust, mobile
+  distribution, affiliate handoffs, and verified booking work.
+- Roadmap entries remain candidates, not implementation approval. Selected work
+  must be bounded through the existing feature-brief workflow.
+

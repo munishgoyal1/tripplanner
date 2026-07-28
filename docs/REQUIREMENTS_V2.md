@@ -18,11 +18,13 @@ chronological `REQUIREMENTS.txt` log.
 
 Source-of-truth boundaries:
 
+- `docs/README.md`: documentation index, ownership, and structure policy.
 - `docs/REQUIREMENTS_V2.md`: current capabilities, gaps, and roadmap.
 - `docs/PRODUCT.md`: product intent, interaction rules, and design taste.
 - `docs/CODEMAP.md`: implementation ownership, contracts, and commands.
 - `REQUIREMENTS.txt`: chronological decision history; old entries may be obsolete.
 - `docs/ENGINEERING_LEARNINGS.md`: durable lessons from observed failures.
+- `docs/roadmap/FUTURE_FEATURES.md`: consolidated future feature candidates.
 - `docs/feature-briefs/NEXT_INCREMENT.md`: editable scope for the next milestone.
 
 When a shipped feature changes the capability baseline, update this document in
@@ -405,7 +407,10 @@ re-describing the whole product.
 ## 8. Proposed V2 roadmap
 
 These are ordered candidate outcomes, not an instruction to implement them all.
-Each requires a focused feature brief and owner approval.
+Each requires a focused feature brief and owner approval. The broader candidate
+backlog, including Live Trip Mode, reservation import, disruption-aware
+replanning, collaboration, offline mobile essentials, and longer-term verified
+booking, lives in [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md).
 
 ### V2.1 - Public MVP readiness (highest priority candidate)
 
