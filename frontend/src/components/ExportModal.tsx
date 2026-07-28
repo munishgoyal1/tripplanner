@@ -1,5 +1,5 @@
 import { Download, Eye, Mail, Printer, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { downloadTripPdf, emailTripExport, tripExportUrl } from "../api";
 
 export default function ExportModal({ onClose }: { onClose: () => void }) {
@@ -10,6 +10,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [mailtoHref, setMailtoHref] = useState("");
+  const emailRequestRef = useRef<{ key: string; requestId: string } | null>(null);
 
   const options = {
     include_photos: includePhotos,
@@ -61,8 +62,17 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
     setStatus("");
     setMailtoHref("");
     try {
-      const result = await emailTripExport(email.trim(), options);
+      const requestKey = JSON.stringify({ email: email.trim().toLowerCase(), ...options });
+      if (emailRequestRef.current?.key !== requestKey) {
+        emailRequestRef.current = { key: requestKey, requestId: crypto.randomUUID() };
+      }
+      const result = await emailTripExport(
+        email.trim(),
+        options,
+        emailRequestRef.current.requestId,
+      );
       if (result.ok) {
+        emailRequestRef.current = null;
         setStatus(result.message || "Export sent.");
         return;
       }
@@ -77,6 +87,8 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       } else {
         setStatus(result.message || "Could not send email.");
       }
+    } catch {
+      setStatus("Could not send email. Retry to safely check the same delivery attempt.");
     } finally {
       setBusy(false);
     }

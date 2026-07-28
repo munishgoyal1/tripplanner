@@ -278,6 +278,10 @@ re-describing the whole product.
 - Optional place photos and embedded day maps/circuit diagrams are consistent
   across preview, print, PDF, and email.
 - Email uses configured server delivery or a prefilled local mail-app fallback.
+  Each explicit send carries a stable client request ID. ACS receives a stable
+  provider operation ID and completed requests replay without another send;
+  ambiguous ACS outcomes never fall through to SMTP. SMTP is claimed at most
+  once and reports uncertain delivery rather than risking a duplicate retry.
 - Signed, sanitized, read-only public share links.
 - RFC 5545 calendar export.
 

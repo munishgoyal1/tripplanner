@@ -38,6 +38,19 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   guest values that actually contributed to the merged result.
 - Account-scoped native reads need the same abort/generation guard as trip reads;
   otherwise a response from the prior identity can overwrite the signed-in view.
+
+## 2026-07-28 - Bound Idempotency to the Provider Write
+
+- A completed-response ledger does not close the crash window after provider
+  acceptance but before local completion persistence. Carry one caller-owned
+  operation ID through the API and into the provider's idempotency primitive.
+- Never fail over to a second write provider after an ambiguous first-provider
+  result. The fallback can turn one logical request into two real side effects.
+- Providers without idempotency support can only offer at-most-once claiming.
+  Persist the claim before sending and surface uncertainty instead of silently
+  retrying an operation whose outcome cannot be proven.
+- Bind request IDs to a fingerprint of principal-owned target and payload. A
+  repeated key may replay the same operation but must reject changed content.
 - Generated summaries must validate both their durable input digest and the
   user-editable summary state observed before generation, or late model output can
   overwrite a concurrent user correction.

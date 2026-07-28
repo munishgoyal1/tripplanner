@@ -318,6 +318,7 @@ class ExportEmailRequest(BaseModel):
     include_photos: bool = True
     include_map_circuit: bool = True
     template: Literal["minimal", "detailed", "family"] = "detailed"
+    request_id: str = Field(min_length=1, max_length=128)
 
 
 def _record_chat_operation(
@@ -1136,16 +1137,17 @@ async def trip_export_pdf(
 
 @app.post("/trip/export/email")
 async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
-    """Send the itinerary export to an email address (SMTP when configured).
+    """Send the itinerary export once for a client-generated request ID.
 
     If SMTP is not configured, returns a `mailto:` fallback so the frontend can
     open the user's mail client with a prefilled subject/body.
     """
+    import smtplib
     from email.message import EmailMessage
     from urllib.parse import quote
-    import smtplib
 
     from tripplanner.tools import trip_planner
+    from tripplanner.web import external_operations
     from tripplanner.web.itinerary_export import build_export_html
     from tripplanner.web.share import mint_for_active_trip
 
@@ -1168,6 +1170,24 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     )
     destination = str(plan.get("destination") or "Trip")
     subject = f"{destination} itinerary export"
+    fingerprint = external_operations.payload_fingerprint(
+        {
+            "trip_id": trip_planner.active_trip_id(),
+            "email": req.email.strip().casefold(),
+            "include_photos": req.include_photos,
+            "include_map_circuit": req.include_map_circuit,
+            "template": req.template,
+        }
+    )
+    try:
+        existing = external_operations.get(req.request_id, fingerprint)
+    except external_operations.IdempotencyConflictError as exc:
+        return JSONResponse(
+            {"ok": False, "error": "idempotency_conflict", "message": str(exc)},
+            status_code=409,
+        )
+    if existing and existing.get("status") == "completed":
+        return {**dict(existing.get("result") or {}), "replayed": True}
 
     plain = (
         f"Your trip itinerary for {destination} is attached as HTML.\n"
@@ -1184,6 +1204,18 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     acs_sender = os.getenv("AZURE_COMMUNICATION_EMAIL_SENDER", "").strip()
     if acs_conn and acs_sender:
         try:
+            operation, _ = external_operations.claim_pending(
+                req.request_id, fingerprint, provider="acs"
+            )
+            if operation.get("provider") != "acs":
+                return JSONResponse(
+                    {
+                        "ok": False,
+                        "error": "email_delivery_uncertain",
+                        "message": "The earlier delivery attempt is still unresolved.",
+                    },
+                    status_code=503,
+                )
             from azure.communication.email import EmailClient
 
             client = EmailClient.from_connection_string(acs_conn)
@@ -1196,12 +1228,30 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
                     "html": html,
                 },
             }
-            poller = client.begin_send(message)
+            poller = client.begin_send(
+                message,
+                operation_id=external_operations.provider_operation_id(req.request_id),
+            )
             poller.result()
+            result = {"ok": True, "message": f"Itinerary sent to {req.email}."}
+            external_operations.record_completed(
+                req.request_id,
+                fingerprint,
+                provider="acs",
+                result=result,
+            )
             app_event("api_trip_export_email_sent", destination=destination, provider="acs")
-            return {"ok": True, "message": f"Itinerary sent to {req.email}."}
+            return result
         except Exception as exc:
             app_event("api_trip_export_email_error", error=type(exc).__name__, provider="acs")
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "error": "email_delivery_uncertain",
+                    "message": "Email delivery could not be confirmed. Retry this send safely.",
+                },
+                status_code=503,
+            )
 
     smtp_host = os.getenv("SMTP_HOST", "").strip()
     smtp_port = int(os.getenv("SMTP_PORT", "587") or "587")
@@ -1218,9 +1268,33 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
         return {
             "ok": False,
             "error": "email_not_configured",
-            "mailto": f"mailto:{quote(req.email, safe='')}?subject={quote(subject, safe='')}&body={body}",
+            "mailto": (
+                f"mailto:{quote(req.email, safe='')}?"
+                f"subject={quote(subject, safe='')}&body={body}"
+            ),
             "message": "SMTP is not configured; opened mail client fallback.",
         }
+
+    try:
+        operation, claimed = external_operations.claim_pending(
+            req.request_id, fingerprint, provider="smtp"
+        )
+    except external_operations.IdempotencyConflictError as exc:
+        return JSONResponse(
+            {"ok": False, "error": "idempotency_conflict", "message": str(exc)},
+            status_code=409,
+        )
+    if not claimed:
+        if operation.get("status") == "completed":
+            return {**dict(operation.get("result") or {}), "replayed": True}
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": "email_delivery_uncertain",
+                "message": "The earlier delivery attempt is still unresolved.",
+            },
+            status_code=503,
+        )
 
     msg = EmailMessage()
     msg["Subject"] = subject
@@ -1244,10 +1318,24 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
             smtp.send_message(msg)
     except Exception as exc:
         app_event("api_trip_export_email_error", error=type(exc).__name__)
-        return {"ok": False, "error": "email_send_failed", "message": "Could not send email."}
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": "email_delivery_uncertain",
+                "message": "Email delivery could not be confirmed.",
+            },
+            status_code=503,
+        )
 
+    result = {"ok": True, "message": f"Itinerary sent to {req.email}."}
+    external_operations.record_completed(
+        req.request_id,
+        fingerprint,
+        provider="smtp",
+        result=result,
+    )
     app_event("api_trip_export_email_sent", destination=destination)
-    return {"ok": True, "message": f"Itinerary sent to {req.email}."}
+    return result
 
 
 @app.post("/trip/share")

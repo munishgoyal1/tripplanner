@@ -88,6 +88,8 @@ src/tripplanner/
                       build_map_view, build_itinerary — structured day-by-day stops)
     chat_store.py     PURE-PYTHON transcript + request replay persistence
               (per-trip chat docs plus principal chat_operations index)
+    external_operations.py  Principal-scoped durable idempotency ledger for
+          outbound provider writes (ACS email and SMTP delivery claims)
     places_cache.py   Synchronized Google Places cache (ThreadPoolExecutor;
               1-week details TTL + 50-min photo-URL TTL; persisted L2)
     trip_operations.py  Synchronous load/mutate/render operations offloaded by api.py
@@ -424,6 +426,9 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   About-me extractor + additive merge.
 - [tests/test_observability.py](../tests/test_observability.py) — structured logging,
   PII redaction, user hashing, and audit separation.
+- [tests/test_email_export_idempotency.py](../tests/test_email_export_idempotency.py) —
+  stable ACS operation IDs, completed replay, payload conflicts, and ambiguous
+  delivery handling without cross-provider fallback.
 
 All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 

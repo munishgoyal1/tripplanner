@@ -117,6 +117,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **External side-effect idempotency (engineering improvement 4)**: trip email
+  export now carries a stable client request ID through a bounded principal
+  operation ledger. ACS receives a deterministic provider `operation_id`,
+  completed retries replay without sending, and key reuse with changed content
+  is rejected. Ambiguous ACS delivery never falls through to SMTP; SMTP claims
+  are at-most-once and uncertain outcomes are surfaced rather than duplicated.
 - **Live concurrency integration coverage (engineering improvement 3)**:
   authenticated overlapping FastAPI requests now verify the production
   admission singleton end to end. A blocked model turn rejects a second chat

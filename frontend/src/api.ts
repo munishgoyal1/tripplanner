@@ -442,6 +442,7 @@ export interface EmailExportResult {
 export async function emailTripExport(
   email: string,
   options: ExportOptions,
+  requestId: string,
 ): Promise<EmailExportResult> {
   const res = await apiFetch(`${BASE}/trip/export/email`, {
     method: "POST",
@@ -452,10 +453,12 @@ export async function emailTripExport(
       include_photos: options.include_photos,
       include_map_circuit: options.include_map_circuit,
       template: options.template,
+      request_id: requestId,
     }),
   });
-  ensureOk(res, "Could not email the itinerary");
-  return res.json();
+  const result = await res.json() as EmailExportResult;
+  if (!res.ok && !result.error) throw new Error(`Could not email the itinerary (${res.status}).`);
+  return result;
 }
 
 /**
