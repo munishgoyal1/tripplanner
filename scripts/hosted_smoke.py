@@ -7,9 +7,10 @@ import json
 import sys
 import time
 from dataclasses import dataclass
+from html.parser import HTMLParser
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import parse_qs, urlencode, urlparse
+from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
@@ -26,6 +27,19 @@ class Response:
 
     def json(self) -> Any:
         return json.loads(self.body.decode("utf-8"))
+
+
+class _AssetParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.paths: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if tag == "script" and values.get("src"):
+            self.paths.append(str(values["src"]))
+        if tag == "link" and values.get("rel") == "stylesheet" and values.get("href"):
+            self.paths.append(str(values["href"]))
 
 
 def _request(url: str, *, data: dict[str, Any] | None = None, follow: bool = True) -> Response:
@@ -83,9 +97,35 @@ class SmokeSuite:
             assert response.status == 200 and '<div id="root">' in text, "SPA root not served"
             return "React shell served"
 
+        def spa_assets() -> str:
+            index = _request(f"{self.base_url}/")
+            parser = _AssetParser()
+            parser.feed(index.body.decode("utf-8", errors="replace"))
+            assert parser.paths, "SPA references no scripts or stylesheets"
+            for path in parser.paths:
+                response = _request(urljoin(f"{self.base_url}/", path))
+                assert response.status == 200 and response.body, f"missing asset: {path}"
+            return f"{len(parser.paths)} referenced assets served"
+
         def health() -> str:
             assert self._get_json("/api/health") == {"status": "ok"}
             return "status=ok"
+
+        def api_contract() -> str:
+            paths = self._get_json("/api/openapi.json").get("paths", {})
+            required = {
+                "/chat/stream",
+                "/trip/view",
+                "/trip/map",
+                "/trip/itinerary",
+                "/trips",
+                "/preferences",
+                "/auth/login/google",
+                "/health",
+            }
+            missing = sorted(required - set(paths))
+            assert not missing, f"missing API routes: {', '.join(missing)}"
+            return f"{len(required)} critical routes present"
 
         def auth_config() -> str:
             payload = self._get_json("/api/auth/config")
@@ -121,11 +161,22 @@ class SmokeSuite:
             preferences = self._get_json(f"/api/preferences?{query}")
             usage = self._get_json(f"/api/usage?{query}")
             view = self._get_json(f"/api/trip/view?{query}")
+            history = self._get_json(f"/api/chat/history?{query}")
+            itinerary = self._get_json(f"/api/trip/itinerary?{query}")
+            map_view = self._get_json(f"/api/trip/map?{query}")
+            metrics = self._get_json("/api/metrics/tools")
+            guest_query = urlencode({"user_id": f"web-{smoke_user}"})
+            guest = self._get_json(f"/api/account/guest-data-summary?{guest_query}")
             assert isinstance(trips.get("trips"), list)
             assert isinstance(preferences, dict) and "display_name" in preferences
             assert usage.get("user_id") == smoke_user
             assert isinstance(view, dict)
-            return "trips/preferences/usage/view readable"
+            assert isinstance(history.get("messages"), list)
+            assert isinstance(itinerary, dict) and isinstance(itinerary.get("days"), list)
+            assert isinstance(map_view, dict) and isinstance(map_view.get("pins"), list)
+            assert isinstance(metrics.get("tools"), dict)
+            assert guest == {"has_data": False, "trip_count": 0}
+            return "workspace, itinerary, map, metrics and guest reads valid"
 
         def deep_chat() -> str:
             response = _request(
@@ -143,7 +194,9 @@ class SmokeSuite:
 
         checks = [
             ("SPA", spa),
+            ("SPA assets", spa_assets),
             ("Health", health),
+            ("API contract", api_contract),
             ("OAuth config", auth_config),
             ("OAuth redirect", auth_redirect),
             ("Maps config", maps_config),

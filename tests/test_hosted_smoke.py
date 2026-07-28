@@ -22,9 +22,32 @@ def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type
 
     def fake_request(url: str, **kwargs) -> Response:  # type: ignore[no-untyped-def]
         if url == f"{base}/":
-            return _response('<div id="root"></div>')
+            return _response(
+                '<link rel="stylesheet" href="/assets/app.css">'
+                '<div id="root"></div><script src="/assets/app.js"></script>'
+            )
+        if url.endswith("/assets/app.css") or url.endswith("/assets/app.js"):
+            return _response("asset")
         if url.endswith("/api/health"):
             return _response({"status": "ok"})
+        if url.endswith("/api/openapi.json"):
+            return _response(
+                {
+                    "paths": {
+                        path: {}
+                        for path in (
+                            "/chat/stream",
+                            "/trip/view",
+                            "/trip/map",
+                            "/trip/itinerary",
+                            "/trips",
+                            "/preferences",
+                            "/auth/login/google",
+                            "/health",
+                        )
+                    }
+                }
+            )
         if url.endswith("/api/auth/config"):
             return _response({"google": True, "redirect_uri": callback})
         if "/api/auth/login/google" in url:
@@ -49,6 +72,16 @@ def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type
             return _response({"user_id": "smoke-canary-readonly"})
         if "/api/trip/view?" in url:
             return _response({})
+        if "/api/chat/history?" in url:
+            return _response({"trip_id": "", "messages": []})
+        if "/api/trip/itinerary?" in url:
+            return _response({"days": []})
+        if "/api/trip/map?" in url:
+            return _response({"pins": []})
+        if url.endswith("/api/metrics/tools"):
+            return _response({"tools": {}})
+        if "/api/account/guest-data-summary?" in url:
+            return _response({"has_data": False, "trip_count": 0})
         raise AssertionError(url)
 
     monkeypatch.setattr(hosted_smoke, "_request", fake_request)

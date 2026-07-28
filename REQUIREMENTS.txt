@@ -2364,3 +2364,16 @@ VALIDATION:
 - Production deep smoke must remain separately acknowledged because it writes a
   chat turn; production deployment remains blocked without explicit approval.
 
+=== 2026-07-28 — Session 79: Reproducible setup and immutable releases ===
+
+- Document the complete canary-to-production flow, artifact locations, smoke
+  gates, bake/manual validation, production approval, monitoring, and rollback.
+- Canary deployment must remain one command and deploy the immutable Git SHA it
+  builds; production must promote that exact tested tag through its approval gate.
+- Hosted smoke must verify referenced SPA assets, critical API routes, and all
+  major read-only workspace contracts without depending on provider writes.
+- Provide one idempotent Windows developer-machine setup command for required
+  tooling and locked dependencies without starting servers or handling secrets.
+- Every Azure infrastructure change must be captured in the owning Bicep and
+  idempotent scripts so local, canary, and production workflows stay consistent.
+

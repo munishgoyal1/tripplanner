@@ -11,19 +11,26 @@
   ./infra/bootstrap-environments.ps1 -SubscriptionId <sub-id> -ImageTag v1.2.3 -ProvisionAoai
 
 .EXAMPLE
-  ./infra/bootstrap-environments.ps1 -DeployCanaryOnly -ImageTag latest
+  ./infra/bootstrap-environments.ps1 -DeployCanaryOnly
 #>
 
 param(
     [string]$SubscriptionId = "",
     [string]$Location = "eastus2",
-    [string]$ImageTag = "latest",
+    [string]$ImageTag = "",
     [switch]$ProvisionAoai = $false,
     [switch]$DeployCanaryOnly = $false,
     [string]$CosmosAccountName = ""
 )
 
 $ErrorActionPreference = "Stop"
+
+if ([string]::IsNullOrWhiteSpace($ImageTag)) {
+  $ImageTag = (git rev-parse --short HEAD 2>$null)
+  if ([string]::IsNullOrWhiteSpace($ImageTag)) {
+    throw "Could not resolve the current Git commit for the immutable image tag."
+  }
+}
 
 if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
     az account set --subscription $SubscriptionId

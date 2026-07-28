@@ -51,6 +51,7 @@ Transition to standardized naming by redeploying canary first, then production a
 - `canary.bicepparam` / `prod.bicepparam` — isolated hosted database bindings
 - `cosmos-emulator.compose.yml` — official local emulator with persistent volume
 - `DEPLOYMENT_PROCESS.md` — detailed workflow, approval gates, and logging
+- `../docs/deployment-flow.md` — developer release runbook, artifacts, smoke, and rollback
 - `deploy-canary.ps1` — deploy/test new changes (no approval)
 - `deploy-prod.ps1` — promote to production (manual approval required)
 - `rollback-prod.ps1` — revert to previous stable revision if issues occur
@@ -87,9 +88,9 @@ Notes:
 ## Hosted Smoke Tests
 
 Canary and production deploy scripts automatically run the read-only hosted
-suite after updating the image. It validates the public SPA, health endpoint,
-environment-owned Google OAuth callback and redirect, Maps configuration,
-anonymous auth, and isolated Cosmos-backed reads.
+suite after updating the image. It validates the public SPA and referenced
+assets, critical OpenAPI routes, health, environment-owned Google OAuth,
+Maps configuration, anonymous auth, and all major isolated read models.
 
 Run it independently with:
 

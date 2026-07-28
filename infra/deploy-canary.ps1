@@ -4,10 +4,10 @@
   Deploy to CANARY environment (no approval needed, for testing)
 
 .DESCRIPTION
-  Deploys the latest changes to the canary RG for testing before prod.
+    Deploys the current Git commit to the canary RG for testing before prod.
   No approval gate — use for all testing, bug fixes, and feature development.
   Builds & pushes the image from current code first by default (pass -NoBuild
-  to deploy the existing :latest image as-is).
+    with -ImageTag to deploy an existing immutable image).
 
 .EXAMPLE
   ./infra/deploy-canary.ps1
@@ -52,6 +52,13 @@ function Import-DotEnv {
 }
 
 Import-DotEnv
+
+if (-not $NoBuild -and $ImageTag -eq "latest") {
+    $ImageTag = (git rev-parse --short HEAD 2>$null)
+    if ([string]::IsNullOrWhiteSpace($ImageTag)) {
+        throw "Could not resolve the current Git commit for the immutable image tag."
+    }
+}
 
 # Configuration
 $canaryRG = $ResourceGroup
@@ -155,10 +162,28 @@ if ($DryRun) {
     exit 0
 }
 
+Write-Host "✓ Step 3: Checking infrastructure changes..."
+$whatIf = az deployment group what-if `
+    --resource-group $canaryRG `
+    --template-file $bicepFile `
+    --parameters $bicepParams `
+    --parameters "namePrefix=$canaryPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
+    --result-format ResourceIdOnly `
+    --no-pretty-print `
+    --output json | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) {
+    throw "Canary infrastructure what-if failed."
+}
+$deletes = @($whatIf.properties.changes | Where-Object { $_.changeType -eq "Delete" })
+if ($deletes.Count -gt 0) {
+    throw "Canary what-if contains $($deletes.Count) delete operation(s); review with -DryRun."
+}
+Write-Host "  ✓ What-if contains no deletes`n"
+
 # Build + push only after all no-change paths have exited.
 if (-not $NoBuild) {
     Write-Host "✓ Step 0: Building & pushing image from current code..."
-    & "$PSScriptRoot/push-image.ps1"
+    & "$PSScriptRoot/push-image.ps1" -Tag $ImageTag
     if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
     Write-Host "  ✓ Image ready`n"
 }

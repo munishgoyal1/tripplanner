@@ -17,6 +17,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 
 ## 2) Run / validate (copy-paste)
 
+- First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
 - Full stack: `.\scripts\dev-spa.ps1`
 - Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
 - Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
@@ -37,6 +38,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   Docker Desktop when its daemon is stopped; repairs stale PostgreSQL runtime
   locks only when no server process exists; never resets persisted data)
 - Deploy: see [infra/README.md](../infra/README.md)
+- Release flow: see [docs/deployment-flow.md](deployment-flow.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
 

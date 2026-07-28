@@ -49,6 +49,7 @@ $repo = "$Registry/$Image"
 $tags = @("$repo`:$sha")
 if (-not $SkipLatest) { $tags += "$repo`:latest" }
 if (-not [string]::IsNullOrWhiteSpace($Tag)) { $tags += "$repo`:$Tag" }
+$tags = @($tags | Select-Object -Unique)
 
 Write-Host "Image:    $repo"
 Write-Host "Tags:     $($tags -join ', ')`n"
@@ -98,4 +99,4 @@ Add-Content "logs/image-pushes.log" "[$timestamp] Pushed $($tags -join ', ') | B
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ IMAGE PUSHED                                          ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
-Write-Host "Next: ./infra/deploy-canary.ps1   (or deploy-prod.ps1 for production)`n"
+Write-Host "Next: ./infra/deploy-canary.ps1 -NoBuild -ImageTag $sha`n"

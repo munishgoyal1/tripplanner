@@ -33,17 +33,19 @@ stays fast. Build & push only when explicitly asked.
   ghcr.io` session (or set `GHCR_TOKEN`/`CR_PAT` with `write:packages`).
 - **Canary (Testing)**: Deploy via `./infra/deploy-canary.ps1` — no approval gate,
   use for all testing. **Builds & pushes the image from current code first by
-  default**, then deploys (one-click full deploy). Pass `-NoBuild` to deploy the
-  existing `:latest` image as-is.
+  default**, then deploys its immutable Git SHA (one-click full deploy). Pass
+  `-NoBuild -ImageTag <sha>` to redeploy an existing immutable image.
 - **Production (Live)**: Deploy via `./infra/deploy-prod.ps1` — requires manual approval via interactive prompt
+  - Resolves and promotes the immutable image currently deployed to canary
   - Script displays readiness checklist
   - Requires you to type `APPROVE_PROD_DEPLOYMENT` (exact, case-sensitive)
   - All prod deployments logged to `logs/deployments-prod.log` with timestamp and approver
   - Pass `-Build` to build+push before the approval gate's deploy step
 - **Rollback (Emergencies)**: `./infra/rollback-prod.ps1` — reverts to previous revision without data loss
 
-Canary builds new code by default; prod deploys the existing `:latest` unless
-`-Build` is passed. Run `push-image.ps1` to build/push independently.
+Canary builds new code by default. Production resolves the exact immutable SHA
+currently deployed to canary; do not rebuild normal promotions.
+See `docs/deployment-flow.md` for the canonical release runbook.
 
 Resource naming:
 - Canary RG: `rg-tripplanner-canary` (app: `canary-app-*`)
@@ -107,7 +109,14 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-26)
+## Current State (last updated 2026-07-28)
+- **Reproducible setup + immutable release flow (Session 79)**: one Windows
+  setup command installs/verifies required tooling, restores locked Python/web
+  dependencies, and preserves secrets. Canary's one-click deployment now uses
+  the Git SHA it builds. The release runbook documents artifact ownership,
+  staged production approval, infrastructure ownership, smoke, bake, monitoring,
+  and rollback. Read-only hosted smoke additionally validates SPA assets,
+  critical OpenAPI routes, and major workspace read contracts.
 - **Hosted post-deployment smoke gates (Session 78)**: canary and production
   deploys now run a retry-tolerant read-only public-HTTP suite covering the SPA,
   health, environment-owned Google OAuth, Maps, anonymous auth, and isolated

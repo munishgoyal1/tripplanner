@@ -137,10 +137,20 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Persistence | JSON files (local) / Cosmos DB (hosted) | Auto-dispatch via env var |
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
-> **Developing locally?** See [`docs/dev.md`](docs/dev.md) for the one-page cheat
-> sheet (`.\scripts\test.ps1`, Ctrl+C / F5 loop, scripts table, keyboard shortcuts).
+> **Developing locally?** Run `.\scripts\setup-dev-machine.ps1` once, then see
+> [`docs/dev.md`](docs/dev.md) for the `.\scripts\dev-spa.ps1` workflow.
 
 ## Quick Start
+
+### One-click Windows setup
+```powershell
+.\scripts\setup-dev-machine.ps1
+.\scripts\dev-spa.ps1
+```
+
+The setup command installs missing prerequisites, restores locked dependencies,
+and preserves any existing `.env`. See [docs/deployment-flow.md](docs/deployment-flow.md)
+for the two-stage canary and production release flow.
 
 ### Local CLI
 ```bash
