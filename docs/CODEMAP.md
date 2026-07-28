@@ -51,7 +51,8 @@ src/tripplanner/
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
   graph.py            LangGraph StateGraph: agent ↔ tools loop
                       (binds only select_tools(messages) per turn)
-  observability.py    OpenTelemetry / Azure Monitor (best-effort)
+  observability.py    PII-safe structured app events + restricted audit sink;
+                      Container Apps stdout flows to Log Analytics
   json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
   request_identity.py Signed web/native/guest principal resolution for hosted APIs
   request_limits.py   Chat/replay rate limits, concurrency, workspace exclusion
@@ -212,6 +213,7 @@ docs/
     NEXT_INCREMENT.md          Owner-editable brief seeded from the V2 baseline
   dev.md              Dev environment notes
   ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
+  operations-slos.md Production chat SLO definitions, KQL, and release response
   setup-oauth.md      OAuth setup walkthrough
   DEFERRED_DECISIONS.md  Usage experiments and future choices awaiting owner alignment
 ```
@@ -417,7 +419,8 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   [tests/test_apply_about_me.py](../tests/test_apply_about_me.py),
   [tests/test_about_me_additive_merge.py](../tests/test_about_me_additive_merge.py) —
   About-me extractor + additive merge.
-- [tests/test_observability.py](../tests/test_observability.py) — OTel wiring.
+- [tests/test_observability.py](../tests/test_observability.py) — structured logging,
+  PII redaction, user hashing, and audit separation.
 
 All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 

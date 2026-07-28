@@ -320,26 +320,67 @@ class ExportEmailRequest(BaseModel):
     template: Literal["minimal", "detailed", "family"] = "detailed"
 
 
+def _record_chat_operation(
+    started: float,
+    *,
+    user_id: str,
+    transport: Literal["json", "sse"],
+    outcome: Literal["completed", "replayed", "capped", "error"],
+    error: str | None = None,
+) -> None:
+    app_event(
+        "chat_operation",
+        user_id=user_id,
+        transport=transport,
+        outcome=outcome,
+        duration_ms=round((time.monotonic() - started) * 1000, 2),
+        **({"error": error} if error else {}),
+    )
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
     from tripplanner.usage import cap_message, is_over_cap
 
+    started = time.monotonic()
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
-    replay_permit = await acquire_replay_access(user_id)
+    try:
+        replay_permit = await acquire_replay_access(user_id)
+    except Exception as exc:
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="json",
+            outcome="error",
+            error=type(exc).__name__,
+        )
+        raise
     try:
         await check_replay_lookup(request, user_id)
         replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
         if replay is not None:
             await _repair_completed_chat(req.request_id, replay)
+            _record_chat_operation(
+                started, user_id=user_id, transport="json", outcome="replayed"
+            )
             return ChatResponse(
                 reply=replay["reply"],
                 agent=replay["agent"],
                 trip_id=replay["trip_id"] or None,
             )
         permit = await acquire_chat(request, user_id)
+    except Exception as exc:
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="json",
+            outcome="error",
+            error=type(exc).__name__,
+        )
+        raise
     finally:
         await release_replay_access(replay_permit)
     try:
@@ -347,6 +388,9 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             _load_chat_request, req.request_id
         )
         if replay is not None:
+            _record_chat_operation(
+                started, user_id=user_id, transport="json", outcome="replayed"
+            )
             return ChatResponse(
                 reply=replay["reply"],
                 agent=replay["agent"],
@@ -356,6 +400,9 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
         if over:
             msg = cap_message(usage)
             app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
+            _record_chat_operation(
+                started, user_id=user_id, transport="json", outcome="capped"
+            )
             return ChatResponse(reply=msg, agent="cap")
 
         base_history = list(history)
@@ -411,9 +458,21 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             _schedule_learning_sweep(user_id, req.message)
 
         app_event("api_chat_response", reply_length=len(reply))
+        _record_chat_operation(
+            started, user_id=user_id, transport="json", outcome="completed"
+        )
         return ChatResponse(
             reply=reply, agent=agent, trip_id=tid_after
         )
+    except Exception as exc:
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="json",
+            outcome="error",
+            error=type(exc).__name__,
+        )
+        raise
     finally:
         await release_chat(permit)
 
@@ -516,10 +575,21 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     from tripplanner.graph import app_graph
     from tripplanner.usage import cap_message, is_over_cap
 
+    started = time.monotonic()
     user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
-    replay_permit = await acquire_replay_access(user_id)
+    try:
+        replay_permit = await acquire_replay_access(user_id)
+    except Exception as exc:
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="sse",
+            outcome="error",
+            error=type(exc).__name__,
+        )
+        raise
     try:
         await check_replay_lookup(request, user_id)
         replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
@@ -528,6 +598,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
 
             async def _replay():
                 yield _sse("token", {"text": replay["reply"]})
+                _record_chat_operation(
+                    started, user_id=user_id, transport="sse", outcome="replayed"
+                )
                 yield _sse(
                     "done",
                     {
@@ -543,6 +616,15 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
             )
         permit = await acquire_chat(request, user_id)
+    except Exception as exc:
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="sse",
+            outcome="error",
+            error=type(exc).__name__,
+        )
+        raise
     finally:
         await release_replay_access(replay_permit)
     try:
@@ -552,6 +634,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         if replay is not None:
             async def _replay_after_admission():
                 yield _sse("token", {"text": replay["reply"]})
+                _record_chat_operation(
+                    started, user_id=user_id, transport="sse", outcome="replayed"
+                )
                 yield _sse(
                     "done",
                     {
@@ -569,17 +654,38 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             )
         base_history = list(history)
         history.append(HumanMessage(content=req.message))
-    except Exception:
+    except Exception as exc:
         await release_chat(permit)
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="sse",
+            outcome="error",
+            error=type(exc).__name__,
+        )
         raise
 
-    over, usage = is_over_cap(user_id)
+    try:
+        over, usage = is_over_cap(user_id)
+    except Exception as exc:
+        await release_chat(permit)
+        _record_chat_operation(
+            started,
+            user_id=user_id,
+            transport="sse",
+            outcome="error",
+            error=type(exc).__name__,
+        )
+        raise
     if over:
         msg = cap_message(usage)
         app_event("api_chat_stream_capped", cost_usd=usage.get("cost_usd"))
 
         async def _capped():
             yield _sse("token", {"text": msg})
+            _record_chat_operation(
+                started, user_id=user_id, transport="sse", outcome="capped"
+            )
             yield _sse("done", {"reply": msg, "agent": "cap"})
 
         return StreamingResponse(
@@ -666,6 +772,13 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 )
             except Exception:
                 pass
+            _record_chat_operation(
+                started,
+                user_id=user_id,
+                transport="sse",
+                outcome="error",
+                error=type(exc).__name__,
+            )
             yield _sse("error", {"message": "The assistant hit an error. Please retry."})
             return
 
@@ -694,6 +807,13 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             )
         except Exception as exc:
             app_event("api_chat_stream_save_error", error=type(exc).__name__)
+            _record_chat_operation(
+                started,
+                user_id=user_id,
+                transport="sse",
+                outcome="error",
+                error=type(exc).__name__,
+            )
             yield _sse(
                 "error",
                 {
@@ -707,6 +827,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         if not req.proposal_only:
             _schedule_learning_sweep(user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
+        _record_chat_operation(
+            started, user_id=user_id, transport="sse", outcome="completed"
+        )
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
     return StreamingResponse(

@@ -65,17 +65,18 @@ each entrypoint (`web/app.py`, `api.py`, `cli.py`).
     `dob`, etc. are dropped to `"<redacted>"` so the app log never carries
     the actual user message body or trip details.
 
-Structured events emitted from `web/app.py`:
+Key structured events emitted from the FastAPI application:
 
 | `event_kind` | Fields |
 |---|---|
-| `session_start` | `is_guest`, `has_oauth` |
-| `user_message` | `length`, `words` |
-| `slash_command` | `length` |
-| `tool_call` | `tool`, `status`, `ms` |
-| `turn_complete` | `tool_calls`, `reply_length`, `ms` |
-| `turn_error` | `error_kind`, `tool_calls`, `ms` |
-| `oauth_login` | `provider` (no email / no name) |
+| `api_chat_request` / `api_chat_stream_request` | sanitized request size |
+| `chat_operation` | `transport`, terminal `outcome`, `duration_ms`, optional exception class |
+| `tool_call` | `tool`, `status`, `ms`, `cache_hit` |
+| `usage_recorded` | model, token counts, estimated cost |
+| `api_oauth_login` | `provider` (no email / no name) |
+
+The production reliability objectives, low-volume interpretation, release
+response, and copy-paste KQL live in [operations-slos.md](operations-slos.md).
 
 KQL example once the container is running on Azure:
 

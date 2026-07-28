@@ -117,6 +117,14 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Production observability + measurable chat SLOs (engineering improvement 2)**:
+  every JSON and SSE chat attempt emits one PII-safe terminal `chat_operation`
+  event with outcome, transport, and end-to-end duration, including admission,
+  replay, cap, model, and persistence paths. `docs/operations-slos.md` defines
+  the initial accepted-chat success and p95 latency objectives, honest
+  low-volume interpretation, release checks, tool diagnostics, and copy-paste
+  Log Analytics queries. Existing Container Apps stdout routing remains the
+  single telemetry path; no duplicate Application Insights stack was added.
 - **Production custom domain (Session 82)**: `aitripplanner.co` and
   `www.aitripplanner.co` serve the production Container App through Azure-managed
   TLS. Namecheap owns authoritative DNS; Bicep owns the existing managed

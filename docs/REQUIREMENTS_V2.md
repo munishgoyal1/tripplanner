@@ -354,7 +354,8 @@ re-describing the whole product.
 - Deep canary smoke verifies Azure OpenAI through an isolated write.
 - Production promotes the exact canary-tested image only after manual validation,
   bake evidence, and the explicit approval phrase.
-- Production smoke, monitoring, and guarded revision rollback complete the flow.
+- Production smoke, normalized chat outcome/latency telemetry, explicit SLO
+  queries, release monitoring, and guarded revision rollback complete the flow.
 - Production deployment and mobile store submission are never automatic.
 
 ## 7. Explicit gaps and non-goals

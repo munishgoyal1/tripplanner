@@ -144,7 +144,11 @@ custom-domain replacement before approval.
 ### 6. Monitor and roll back when needed
 
 Perform a short production critical-flow check and monitor for at least 15-30
-minutes. If a critical smoke or user workflow fails:
+minutes. Run the release-observation and tool-health KQL from
+[Production Observability and SLOs](operations-slos.md). A low-volume window is
+insufficient evidence for the rolling SLO, so release judgment combines smoke,
+one representative accepted chat operation, and the observed error stream. If
+a critical smoke or user workflow fails:
 
 ```powershell
 .\infra\rollback-prod.ps1

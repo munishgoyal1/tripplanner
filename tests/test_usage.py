@@ -144,17 +144,24 @@ def test_usage_endpoint_returns_current_bucket(monkeypatch):
 def test_chat_endpoint_returns_cap_message_when_over(monkeypatch):
     from fastapi.testclient import TestClient
 
-    from tripplanner.api import app
+    from tripplanner import api
 
     # Cap so low any prior call would trip it; record a small call first.
     monkeypatch.setenv("MONTHLY_LLM_COST_CAP_USD", "0.0001")
     usage_mod.record_usage("alice", model="gpt-4o", prompt_tokens=1000, completion_tokens=1000)
-    client = TestClient(app)
+    operations = []
+    monkeypatch.setattr(
+        api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
+    )
+    client = TestClient(api.app)
     resp = client.post("/chat", json={"user_id": "alice", "message": "hello"})
     assert resp.status_code == 200
     body = resp.json()
     assert body["agent"] == "cap"
     assert "budget" in body["reply"].lower() or "reached" in body["reply"].lower()
+    assert operations == [
+        {"user_id": "alice", "transport": "json", "outcome": "capped"}
+    ]
 
 
 def test_completed_chat_request_replays_when_over_cap(monkeypatch):
@@ -166,8 +173,12 @@ def test_completed_chat_request_replays_when_over_cap(monkeypatch):
         raise AssertionError("completed replay reached chat admission")
 
     replay = {"reply": "Persisted reply", "agent": "trip", "trip_id": "goa"}
+    operations = []
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: replay)
     monkeypatch.setattr(api, "acquire_chat", reject_admission)
+    monkeypatch.setattr(
+        api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
+    )
     monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (True, {}))
     client = TestClient(api.app)
 
@@ -182,6 +193,9 @@ def test_completed_chat_request_replays_when_over_cap(monkeypatch):
         "agent": "trip",
         "trip_id": "goa",
     }
+    assert operations == [
+        {"user_id": "alice", "transport": "json", "outcome": "replayed"}
+    ]
 
 
 def test_completed_stream_request_replays_when_over_cap(monkeypatch):
@@ -193,8 +207,12 @@ def test_completed_stream_request_replays_when_over_cap(monkeypatch):
         raise AssertionError("completed replay reached chat admission")
 
     replay = {"reply": "Persisted reply", "agent": "trip", "trip_id": "goa"}
+    operations = []
     monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: replay)
     monkeypatch.setattr(api, "acquire_chat", reject_admission)
+    monkeypatch.setattr(
+        api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
+    )
     monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (True, {}))
     client = TestClient(api.app)
 
@@ -206,6 +224,9 @@ def test_completed_stream_request_replays_when_over_cap(monkeypatch):
     assert response.status_code == 200
     assert '"reply": "Persisted reply"' in response.text
     assert '"agent": "trip"' in response.text
+    assert operations == [
+        {"user_id": "alice", "transport": "sse", "outcome": "replayed"}
+    ]
 
 
 def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
@@ -228,6 +249,10 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
         return {"messages": [AIMessage(content="Goa is ready")], "current_agent": "trip"}
 
     monkeypatch.setattr(app_graph, "invoke", invoke)
+    operations = []
+    monkeypatch.setattr(
+        api, "_record_chat_operation", lambda *_args, **kwargs: operations.append(kwargs)
+    )
     client = TestClient(api.app)
     request = {
         "user_id": "sync-retry-user",
@@ -241,6 +266,19 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert response.json()["reply"] == "Goa is ready"
+    assert operations == [
+        {
+            "user_id": "sync-retry-user",
+            "transport": "json",
+            "outcome": "error",
+            "error": "RuntimeError",
+        },
+        {
+            "user_id": "sync-retry-user",
+            "transport": "json",
+            "outcome": "completed",
+        },
+    ]
     set_user_id("anon")
     assert chat_store.transcript(None) == [
         {"role": "user", "text": "plan goa"},
