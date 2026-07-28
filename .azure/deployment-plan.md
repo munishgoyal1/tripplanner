@@ -1,9 +1,7 @@
 # Azure Deployment Plan
 
-Status: Migration and cutover complete; Azure local-development database change
-prepared but not deployed; legacy cleanup partial. Local legacy Cosmos is deleted,
-but legacy canary and prod accounts still exist despite the approved deletion attempt.
-Last updated: 2026-07-24
+Status: Validated
+Last updated: 2026-07-28
 
 ## 1. Objective And Constraints
 
@@ -264,6 +262,27 @@ Repository proof recorded on 2026-07-24:
   after billing data catches up.
 
 ## 8. Validation Proof
+
+App release validation completed on 2026-07-28 for subscription
+`2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`:
+
+- Local and `origin/master` both resolved to source commit `07293c5` before
+  recording this proof; the final release image must use the new commit SHA
+  produced by this documentation update.
+- `infra/main.bicep`, `infra/canary.bicepparam`, and `infra/prod.bicepparam`
+  compiled successfully.
+- Full backend suite: 540 passed. The corrupt local `websockets` metadata was
+  repaired with the repository-compatible 14.2 wheel before rerunning.
+- Frontend suite: 68 passed; TypeScript and Vite production build passed.
+- Canary and production `az deployment group validate` commands passed.
+- Canary and production `what-if` commands returned `Succeeded`, with only
+  deploy/ignore operations and no resource deletions.
+- The app uses anonymous pulls from public GHCR and key-based service access;
+  no managed identity or Azure role assignments are declared by `main.bicep`,
+  so no deployment-time RBAC propagation gate applies.
+- Rollback baselines captured before deployment: canary revision
+  `canary-app-zcebxnuakdwnu--0000014`; production revision
+  `prod-app-f3ddjudq2rdt4--0000009`.
 
 Validated at `2026-07-24T09:09:04Z` against subscription
 `2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b` and tenant
