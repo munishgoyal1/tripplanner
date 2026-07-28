@@ -160,7 +160,8 @@ frontend/
                            rejected choices retain inputs for retry)
       SettingsModal.tsx    Identity + Preferences + About-me extractor
       Lightbox.tsx         Full-screen photo viewer
-  playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects
+  playwright.config.ts     Chrome-channel desktop + Pixel 7 smoke projects;
+                           hermetic completed-chat refresh journey
   vitest.config.ts         jsdom unit/component test configuration
 packages/tripplanner-client/
   src/types.ts             Shared TripView/Itinerary/Map/saved-trip contracts,
