@@ -163,6 +163,12 @@ Immediate old-account cost reduction remains an explicit Azure change:
 # Remove -DryRun only after approval; type APPROVE_COSMOS_400_RU when prompted.
 ```
 
+For a backup/recovery exercise, use the guarded `--recovery-drill` workflow
+instead of direct copy. It creates a checksummed offline artifact, requires an
+empty isolated target, restores from the artifact, and writes evidence. See
+[Backup and Recovery Drill](../docs/backup-recovery.md). It rejects canary and
+production targets and never performs an Azure-native point-in-time restore.
+
 Deferred cleanup requires the recorded cutover date, enforces seven full days,
 rejects the shared data resource group, and checks all Container App references:
 

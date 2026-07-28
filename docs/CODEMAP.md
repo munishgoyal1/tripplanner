@@ -199,7 +199,7 @@ infra/
 scripts/
   dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator
-  cosmos_copy.py      Copy + exact verification across Cosmos databases
+  cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Local external-provider smoke check
   hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
@@ -429,6 +429,8 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 - [tests/test_email_export_idempotency.py](../tests/test_email_export_idempotency.py) —
   stable ACS operation IDs, completed replay, payload conflicts, and ambiguous
   delivery handling without cross-provider fallback.
+- [tests/test_cosmos_copy.py](../tests/test_cosmos_copy.py) — portable backup
+  artifacts, checksums, isolated-target guards, exact restore, and TTL handling.
 
 All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 

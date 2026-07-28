@@ -117,6 +117,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Backup and recovery drill (engineering improvement 5)**: the Cosmos data
+  utility can export all six application containers into a credential-free
+  checksummed artifact, validate it offline, and restore it exactly into an
+  empty isolated recovery database. Drill mode rejects canary/production,
+  same-coordinate, nonempty, missing-container, and partial-scope targets;
+  `docs/backup-recovery.md` defines evidence, initial RPO/RTO objectives, and
+  the explicit approval boundary for any real production recovery.
 - **External side-effect idempotency (engineering improvement 4)**: trip email
   export now carries a stable client request ID through a bounded principal
   operation ledger. ACS receives a deterministic provider `operation_id`,

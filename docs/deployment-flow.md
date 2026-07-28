@@ -54,6 +54,7 @@ callback bases are resolved by the deployment scripts.
 | Production DNS | Namecheap records for `aitripplanner.co` and `www` |
 | Production TLS/domain bindings | Existing Azure managed certificates declared by `infra/main.bicep` |
 | Shared data infrastructure | `infra/data-stack.bicep`, `infra/data.bicep`, modules |
+| Backup/recovery procedure | `docs/backup-recovery.md` plus ignored `logs/recovery/` evidence |
 | Canary data | Shared Cosmos account, `tripplanner-canary` database |
 | Production data | Shared Cosmos account, `tripplanner-prod` database |
 | Runtime revisions/logs | Azure Container Apps and Log Analytics |
@@ -119,6 +120,9 @@ Container App errors, restarts, latency, and throttling during a risk-based bake
 
 Record the SHA, smoke results, manual checks, bake duration, observed errors,
 known risks, and current production rollback revision before approval.
+For a high-risk data change, attach a passing isolated recovery-drill report
+from [Backup and Recovery Drill](backup-recovery.md); a plan without evidence
+does not satisfy the production checklist.
 
 ### 5. Promote the exact image to production
 

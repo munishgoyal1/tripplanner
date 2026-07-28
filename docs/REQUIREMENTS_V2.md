@@ -342,6 +342,12 @@ re-describing the whole product.
   chat-versus-workspace exclusion, and permit recovery after the active turn.
 - Tool latency, failures, cache hits, structured events, and hosted health are
   observable through API metrics and Azure logs.
+- All six application containers can be exported to a portable checksummed
+  artifact and restored exactly into an empty isolated recovery database.
+  Recovery drills reject live, same-coordinate, nonempty, incomplete, or
+  partial targets and produce credential-free RPO/RTO evidence. Any real
+  production recovery or Azure-native point-in-time restore requires explicit
+  owner approval.
 
 ### OPS-01 - Development and release
 

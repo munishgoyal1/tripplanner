@@ -51,6 +51,19 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   retrying an operation whose outcome cannot be proven.
 - Bind request IDs to a fingerprint of principal-owned target and payload. A
   repeated key may replay the same operation but must reject changed content.
+
+## 2026-07-28 - Recovery Requires Offline Evidence
+
+- A database-to-database copy is migration tooling, not a backup, when restore
+  still depends on the source remaining readable. Materialize a portable
+  artifact and prove recovery from that artifact alone.
+- Validate checksums and item counts before the first target write, then compare
+  exact restored content. A successful write loop is not recovery evidence.
+- Recovery tooling must make the dangerous target impossible by construction:
+  reject live environment names, same coordinates, nonempty targets, missing
+  containers, and partial scopes before restoring anything.
+- Report RPO as artifact age and RTO as measured restore duration. A manual
+  drill proves recoverability but does not imply continuous point-in-time backup.
 - Generated summaries must validate both their durable input digest and the
   user-editable summary state observed before generation, or late model output can
   overwrite a concurrent user correction.
