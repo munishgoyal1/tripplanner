@@ -30,7 +30,8 @@ param(
     [string]$AzureOpenAIAccountName = "aoaiprodmd1ks",
     [string]$OAuthRedirectBase = "https://aitripplanner.co/api",
     [string]$CanaryResourceGroup = "rg-tripplanner-canary",
-    [string]$CanaryAppNamePrefix = "canary-app-"
+    [string]$CanaryAppNamePrefix = "canary-app-",
+    [string]$EnvFile = ".env.prod"
 )
 
 $ErrorActionPreference = "Stop"
@@ -55,7 +56,10 @@ function Import-DotEnv {
     }
 }
 
-Import-DotEnv
+if (-not (Test-Path $EnvFile)) {
+    throw "Production environment file not found: $EnvFile"
+}
+Import-DotEnv -Path $EnvFile
 
 # Configuration
 $prodRG = $ResourceGroup

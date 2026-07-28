@@ -10,6 +10,8 @@ env/
 
 # Environment secrets
 .env
+.env.canary
+.env.prod
 credentials/
 
 # Data directories (contain personal data)

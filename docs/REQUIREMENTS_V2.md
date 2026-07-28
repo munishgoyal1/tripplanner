@@ -343,8 +343,10 @@ re-describing the whole product.
 - Provider secrets are configuration, not repository content, and hosted secrets
   are injected into Container Apps.
 - User data is partitioned by identity; canary and production use isolated data.
-- OAuth callbacks, session signing, and Google Maps browser keys are owned by the
-  target environment.
+- OAuth callbacks, session signing, and Google Maps keys are owned by the target
+  environment. Local, canary, and production use separate Google Cloud
+  projects, OAuth clients, and restricted browser/server keys; only the billing
+  account is shared.
 - Overlapping authenticated HTTP requests verify same-principal chat rejection,
   chat-versus-workspace exclusion, and permit recovery after the active turn.
 - Tool latency, failures, cache hits, structured events, and hosted health are

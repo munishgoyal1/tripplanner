@@ -26,7 +26,8 @@ param(
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
     [string]$CosmosAccountName = "",
     [string]$AzureOpenAIAccountName = "aoaicanarymd1ks",
-    [string]$OAuthRedirectBase = ""
+    [string]$OAuthRedirectBase = "",
+    [string]$EnvFile = ".env.canary"
 )
 
 $ErrorActionPreference = "Stop"
@@ -51,7 +52,10 @@ function Import-DotEnv {
     }
 }
 
-Import-DotEnv
+if (-not (Test-Path $EnvFile)) {
+    throw "Canary environment file not found: $EnvFile"
+}
+Import-DotEnv -Path $EnvFile
 
 if (-not $NoBuild -and $ImageTag -eq "latest") {
     $ImageTag = (git rev-parse --short HEAD 2>$null)

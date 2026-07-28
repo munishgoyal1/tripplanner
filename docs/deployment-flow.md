@@ -210,6 +210,12 @@ captured in Bicep and the owning idempotent script in the same commit:
 - Fresh-subscription orchestration: `bootstrap-environments.ps1`.
 - Azure OpenAI provisioning: `provision-aoai.ps1`.
 
+Hosted secrets are also environment-owned. Canary requires ignored
+`.env.canary`; production requires ignored `.env.prod`; local development uses
+ignored `.env`. The deployment scripts refuse to fall back to local `.env`, so
+an environment's OAuth and Maps credentials cannot be injected into another
+environment by a later release.
+
 Validate shared-data changes separately and obtain approval before applying
 them. Then deploy canary through the normal flow, validate and bake, and promote
 the same application image to production. Never allow canary and production to

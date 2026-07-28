@@ -311,11 +311,17 @@ Assistant pane being open.
 
 ### Google Places API (recommended — adds real ratings & reviews)
 1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Create/select a project → enable **Places API (New)**
-3. Create an API key under "Credentials"
-4. Set in `.env`:
+2. Use the environment project: `aitripplanner-local`, `aitripplanner-canary`,
+   or `aitripplanner-prod`. The projects share billing, not credentials.
+3. Enable **Maps JavaScript API**, **Places API (New)**, **Routes API**, and
+   **Maps Static API**.
+4. Create a server key restricted to Places, Routes, and Static Maps, plus a
+   separate browser key restricted by environment referrer to Maps JavaScript
+   and Places.
+5. Set them in `.env`, `.env.canary`, or `.env.prod` as appropriate:
    ```
-   GOOGLE_PLACES_API_KEY=your-key
+   GOOGLE_PLACES_API_KEY=your-server-key
+   GOOGLE_MAPS_BROWSER_KEY=your-browser-key
    ```
    Free tier: $200/month credit (~10K text searches).
    Without this key, the agent still works but can't show real ratings.

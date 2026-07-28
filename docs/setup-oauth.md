@@ -48,33 +48,54 @@ $secret = python -c "import secrets; print(secrets.token_urlsafe(32))"
 Add-Content .env "WEB_SESSION_SECRET=$secret"
 ```
 
-The guarded deployment scripts load `.env`; do not commit it.
+Secrets are environment-owned and never committed:
+
+- `.env` - local development (`aitripplanner-local`)
+- `.env.canary` - canary deployment (`aitripplanner-canary`)
+- `.env.prod` - production deployment (`aitripplanner-prod`)
+
+The guarded hosted deployment scripts require their matching file. Never copy
+local credentials into either hosted file.
 
 ## Step 1 — Google OAuth client
 
-1. Go to <https://console.cloud.google.com/apis/credentials>.
-2. **Create credentials → OAuth client ID → Web application**.
-3. Name it `tripplanner`.
-4. Add the hosted **Authorized redirect URIs** (exact matches):
-   ```
-   https://<canary-fqdn>/api/auth/callback/google
-   https://aitripplanner.co/api/auth/callback/google
-   ```
-   Keep the generated production Azure callback registered temporarily for
-   rollback access:
-   ```
-   https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io/api/auth/callback/google
-   ```
-   Find the current FQDNs with:
+1. Use one Google Cloud project per environment: `aitripplanner-local`,
+   `aitripplanner-canary`, and `aitripplanner-prod`. They may share one billing
+   account, but OAuth clients, API keys, quotas, and telemetry stay isolated.
+2. In each project, configure an External Google Auth Platform app and create
+   one **Web application** client.
+3. Register only that environment's exact origins and callbacks:
+   - Local origins: `http://localhost:5173`, `http://127.0.0.1:5173`
+   - Local callbacks: the same origins plus `/api/auth/callback/google`
+   - Canary origin: `https://<canary-fqdn>`
+   - Canary callback: `https://<canary-fqdn>/api/auth/callback/google`
+   - Production origin: `https://aitripplanner.co`
+   - Production callback: `https://aitripplanner.co/api/auth/callback/google`
+4. Find the current hosted FQDNs with:
    ```powershell
    az containerapp list -g rg-tripplanner-canary --query "[?starts_with(name, 'canary-app-')].properties.configuration.ingress.fqdn" -o tsv
    az containerapp list -g rg-tripplanner-prod --query "[?starts_with(name, 'prod-app-')].properties.configuration.ingress.fqdn" -o tsv
    ```
-5. Copy the **Client ID** and **Client secret** into the uncommitted `.env` file:
+5. Put the **Client ID** and **Client secret** in the matching ignored env file:
    ```powershell
-   Add-Content .env "OAUTH_GOOGLE_CLIENT_ID=<client-id>"
-   Add-Content .env "OAUTH_GOOGLE_CLIENT_SECRET=<client-secret>"
+   Add-Content .env.canary "OAUTH_GOOGLE_CLIENT_ID=<client-id>"
+   Add-Content .env.canary "OAUTH_GOOGLE_CLIENT_SECRET=<client-secret>"
    ```
+
+## Maps keys
+
+Enable Maps JavaScript API, Places API (New), Routes API, and Maps Static API
+in every environment project. Create two keys per project:
+
+- Browser key: HTTP-referrer restricted to that environment; API-restricted to
+  Maps JavaScript API and Places API (New).
+- Server key: API-restricted to Places API (New), Routes API, and Maps Static
+  API. Container Apps currently has no stable outbound IP suitable for an IP
+  application restriction.
+
+Set the browser key as `GOOGLE_MAPS_BROWSER_KEY` and the server key as
+`GOOGLE_PLACES_API_KEY` in the matching env file. Maps keys do not need a
+common project; only the billing account is shared.
 
 ## Step 2 — Deploy through canary
 
@@ -140,8 +161,8 @@ incoming request — fine when the SPA and API already share an origin.
 
 ## Local dev steps
 
-1. Create (or reuse) a Google OAuth **Web application** client and add the
-   redirect URI `http://localhost:5173/api/auth/callback/google`.
+1. Use the Web client in `aitripplanner-local` with the localhost and
+   `127.0.0.1` origins/callbacks listed above.
 2. Put these in your `.env` (or shell):
    ```
    WEB_SESSION_SECRET=<any random string; reused as the session signing key>

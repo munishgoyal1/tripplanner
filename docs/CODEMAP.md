@@ -230,6 +230,11 @@ docs/
   DEFERRED_DECISIONS.md  Usage experiments and future choices awaiting owner alignment
 ```
 
+Secret files are environment-specific and ignored: local `.env`, canary
+`.env.canary`, and production `.env.prod`. The hosted deploy scripts require
+their matching file; all three Google Cloud projects own separate OAuth clients
+and browser/server Maps keys while sharing only the billing account.
+
 ## 4) Request flow (hosted mode)
 
 ```text

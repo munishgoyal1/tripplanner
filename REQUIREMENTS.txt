@@ -2452,6 +2452,19 @@ VALIDATION:
 - Preserve the live managed certificates and hostname bindings in Bicep and
   production parameters so later guarded deployments cannot erase the cutover.
 
+=== 2026-07-28 — Session 83: Google environment isolation ===
+
+- Use separate `aitripplanner-local`, `aitripplanner-canary`, and
+  `aitripplanner-prod` Google Cloud projects. Share the billing account only;
+  isolate OAuth clients, API keys, quotas, and telemetry.
+- Enable Maps JavaScript API, Places API (New), Routes API, and Maps Static API
+  in every project. Use one referrer-restricted browser key and one
+  API-restricted server key per environment.
+- Register only each environment's exact origins and OAuth callbacks.
+- Keep local secrets in ignored `.env`, canary secrets in `.env.canary`, and
+  production secrets in `.env.prod`. Hosted deployment scripts must never fall
+  back to local `.env`.
+
 === 2026-07-28 — Engineering improvement 6: performance and cost testing ===
 
 - Add a bounded, repeatable performance and cost baseline after engineering

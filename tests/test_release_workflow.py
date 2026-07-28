@@ -15,3 +15,14 @@ def test_manual_image_workflow_cannot_bypass_guarded_release() -> None:
     assert "azure/cli" not in workflow
     assert "az deployment" not in workflow
     assert "RESOURCE_GROUP" not in workflow
+
+
+def test_hosted_deployments_do_not_import_local_environment() -> None:
+    root = Path(__file__).parents[1]
+    canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
+    production = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
+
+    assert '[string]$EnvFile = ".env.canary"' in canary
+    assert '[string]$EnvFile = ".env.prod"' in production
+    assert "Import-DotEnv -Path $EnvFile" in canary
+    assert "Import-DotEnv -Path $EnvFile" in production

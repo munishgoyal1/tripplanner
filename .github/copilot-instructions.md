@@ -91,6 +91,9 @@ Learns from user preferences and past trips.
 - Azure: munishgoyal1@gmail.com (personal subscription, gpt-4.1 primary; gpt-4o + gpt-5 also deployed)
 - Amadeus: Self-Service API (test environment, 2000 calls/month free)
 - Google Places: free $200/month credit (Places API New)
+- Google Cloud: separate `aitripplanner-local`, `aitripplanner-canary`, and
+  `aitripplanner-prod` projects with environment-owned OAuth clients and
+  browser/server Maps keys; one billing account is shared.
 - Tavily: free 1000 searches/month
 
 ## Codebase Conventions
@@ -120,6 +123,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Google environment isolation (Session 83)**: local, canary, and production
+  now use separate Google Cloud projects, OAuth Web clients, and restricted
+  browser/server Maps keys. Hosted deployments require ignored `.env.canary`
+  or `.env.prod` files and cannot fall back to local `.env`; the projects share
+  only the billing account.
 - **Documentation navigation + future backlog**: `docs/README.md` classifies
   canonical product truth, planning inputs, runbooks, and historical owner
   artifacts without destabilizing established paths. The consolidated candidate
