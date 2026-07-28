@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-28 - Performance Evidence Has Distinct Layers
+
+- A hermetic in-process benchmark is a regression tripwire, not production
+  capacity evidence. Keep real routing, identity, thread offload, and admission
+  while replacing network, provider, and persistence variability.
+- Use a conservative percentile ceiling with warmups and repeated samples to
+  detect gross blocking or accidental network access without optimizing CI noise.
+- Production SLO telemetry, Cosmos RU/throttling metrics, and billing reports
+  answer different questions. Correlate them before changing code or capacity,
+  and optimize only the bottleneck supported by repeated evidence.
+
 ## 2026-07-28 - Replay Intent, Not Stale Snapshots
 
 - An ETag protects only the state it was read with. Reading a fresh ETag and then

@@ -323,6 +323,11 @@ re-describing the whole product.
 - Place metadata uses a synchronized durable cache with long metadata TTL,
   shorter signed-photo URL TTL, request coalescing, and parallel prefetch.
 - Read-only agent tools use a per-user read-through cache where safe.
+- A deterministic FastAPI regression gate measures p50/p95 and HTTP errors for
+  representative trip reads plus a workspace mutation while retaining identity,
+  thread-offload, and admission behavior. It rejects p95 above 750 ms and proves
+  the hermetic run records zero LLM calls or cost; production capacity remains
+  governed by hosted telemetry rather than local timing.
 
 ### SAFE-01 - Cost, grounding, and security
 
@@ -342,6 +347,9 @@ re-describing the whole product.
   chat-versus-workspace exclusion, and permit recovery after the active turn.
 - Tool latency, failures, cache hits, structured events, and hosted health are
   observable through API metrics and Azure logs.
+- Performance and cost evidence is separated into a hermetic regression gate,
+  production SLO/tool telemetry, and Azure billing/Cosmos RU analysis so changes
+  are driven by measured bottlenecks rather than synthetic provider traffic.
 - All six application containers can be exported to a portable checksummed
   artifact and restored exactly into an empty isolated recovery database.
   Recovery drills reject live, same-coordinate, nonempty, incomplete, or

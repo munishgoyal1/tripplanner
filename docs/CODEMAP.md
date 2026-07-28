@@ -24,6 +24,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Verbose backend: `.\scripts\dev-spa.ps1 -Logs`
 - Backend tests: `.\.venv\Scripts\python.exe -m pytest -q`
 - Concurrency boundary: `.\.venv\Scripts\python.exe -m pytest -q tests/test_request_security.py`
+- Performance/cost baseline: `$env:PYTHONPATH='src'; .\.venv\Scripts\python.exe scripts/performance_baseline.py --report-path logs/performance/baseline.json`
 - SPA type check: `cd frontend; npx tsc --noEmit`
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
@@ -40,6 +41,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   locks only when no server process exists; never resets persisted data)
 - Deploy: see [infra/README.md](../infra/README.md)
 - Release flow: see [docs/deployment-flow.md](deployment-flow.md)
+- Performance/cost interpretation: see [docs/performance-cost.md](performance-cost.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
 
@@ -200,6 +202,7 @@ scripts/
   dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
+  performance_baseline.py  Hermetic FastAPI route/admission p50/p95 + zero-cost gate
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Local external-provider smoke check
   hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
@@ -431,6 +434,9 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
   delivery handling without cross-provider fallback.
 - [tests/test_cosmos_copy.py](../tests/test_cosmos_copy.py) — portable backup
   artifacts, checksums, isolated-target guards, exact restore, and TTL handling.
+- [tests/test_performance_baseline.py](../tests/test_performance_baseline.py) —
+  percentile math, threshold/error behavior, real FastAPI route coverage, and
+  zero-LLM-cost evidence for the hermetic performance gate.
 
 All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 

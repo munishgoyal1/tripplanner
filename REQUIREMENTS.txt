@@ -2452,3 +2452,16 @@ VALIDATION:
 - Preserve the live managed certificates and hostname bindings in Bicep and
   production parameters so later guarded deployments cannot erase the cutover.
 
+=== 2026-07-28 — Engineering improvement 6: performance and cost testing ===
+
+- Add a bounded, repeatable performance and cost baseline after engineering
+  improvements 1-5 without deployment, paid provider traffic, or live data writes.
+- Measure representative real FastAPI routing, identity, worker-thread delegation,
+  and workspace admission while replacing storage/view computation with
+  deterministic representative responses.
+- Report p50/p95/error evidence, reject scenario p95 above a conservative 750 ms,
+  and prove the run records zero LLM calls or cost.
+- Keep this hermetic regression gate distinct from production SLOs, Cosmos
+  RU/throttling, Azure billing, and provider usage; optimize only bottlenecks
+  supported by repeated evidence.
+

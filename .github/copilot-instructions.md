@@ -117,6 +117,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Performance and cost baseline (engineering improvement 6)**: a hermetic
+  runner exercises real FastAPI routing, identity, worker-thread delegation,
+  and workspace admission for three trip reads plus one mutation. It reports
+  p50/p95/error evidence, rejects scenario p95 above a conservative 750 ms,
+  and proves zero LLM calls/cost while stubbing only storage/view computation.
+  `docs/performance-cost.md` separates this regression tripwire from production
+  chat/tool telemetry, Cosmos RU/throttling analysis, and Azure/provider billing.
 - **Backup and recovery drill (engineering improvement 5)**: the Cosmos data
   utility can export all six application containers into a credential-free
   checksummed artifact, validate it offline, and restore it exactly into an
