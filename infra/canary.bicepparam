@@ -1,10 +1,10 @@
 using './main.bicep'
 
 param namePrefix = 'canary'
-param containerImage = readEnvironmentVariable('CONTAINER_IMAGE', 'ghcr.io/munishgoyal1/tripplanner:latest')
-param azureOpenAiEndpoint = readEnvironmentVariable('AZURE_OPENAI_ENDPOINT', '')
-param azureOpenAiDeployment = readEnvironmentVariable('AZURE_OPENAI_DEPLOYMENT', 'gpt-4o')
-param azureOpenAiApiVersion = readEnvironmentVariable('AZURE_OPENAI_API_VERSION', '2024-10-21')
+param containerImage = 'ghcr.io/munishgoyal1/tripplanner:latest'
+param azureOpenAiEndpoint = 'https://aoaicanarymd1ks-2703a.openai.azure.com/'
+param azureOpenAiDeployment = 'gpt-4-1-canary'
+param azureOpenAiApiVersion = '2024-10-21'
 param azureOpenAiApiKey = readEnvironmentVariable('AZURE_OPENAI_API_KEY', '')
 param duffelApiKey = readEnvironmentVariable('DUFFEL_API_KEY', '')
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
@@ -15,7 +15,7 @@ param googleOauthClientSecret = readEnvironmentVariable('OAUTH_GOOGLE_CLIENT_SEC
 param githubOauthClientId = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_ID', '')
 param githubOauthClientSecret = readEnvironmentVariable('OAUTH_GITHUB_CLIENT_SECRET', '')
 param webSessionSecret = readEnvironmentVariable('WEB_SESSION_SECRET', readEnvironmentVariable('CHAINLIT_AUTH_SECRET', ''))
-param oauthRedirectBase = readEnvironmentVariable('OAUTH_REDIRECT_BASE', '')
+param oauthRedirectBase = ''
 param cosmosAccountName = readEnvironmentVariable('COSMOS_ACCOUNT_NAME', '')
 param cosmosResourceGroupName = readEnvironmentVariable('COSMOS_RESOURCE_GROUP', 'rg-tripplanner-data')
 param cosmosDatabaseName = 'tripplanner-canary'

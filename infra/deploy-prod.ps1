@@ -26,7 +26,9 @@ param(
     [string]$BicepFile = "infra/main.bicep",
     [string]$BicepParams = "infra/prod.bicepparam",
     [string]$CosmosResourceGroup = "rg-tripplanner-data",
-    [string]$CosmosAccountName = ""
+    [string]$CosmosAccountName = "",
+    [string]$AzureOpenAIAccountName = "aoaiprodmd1ks",
+    [string]$OAuthRedirectBase = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -147,6 +149,30 @@ if ($DryRun -and -not $resourceGroupExists) {
 if (-not $resourceGroupExists) {
     az group create --name $prodRG --location $Location -o none
 }
+$azureOpenAiApiKey = az cognitiveservices account keys list `
+    --resource-group $prodRG `
+    --name $AzureOpenAIAccountName `
+    --query key1 `
+    --output tsv
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($azureOpenAiApiKey)) {
+    throw "Could not read the API key for Azure OpenAI account $AzureOpenAIAccountName in $prodRG."
+}
+$env:AZURE_OPENAI_API_KEY = $azureOpenAiApiKey
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $appFqdns = @(az containerapp list `
+        --resource-group $prodRG `
+        --query "[?starts_with(name, '${prodPrefix}-app-')].properties.configuration.ingress.fqdn" `
+        --output tsv)
+    if ($appFqdns.Count -gt 1) {
+        throw "Multiple Container Apps match ${prodPrefix}-app-* in $prodRG. Pass -OAuthRedirectBase explicitly."
+    }
+    if ($appFqdns.Count -eq 1 -and -not [string]::IsNullOrWhiteSpace($appFqdns[0])) {
+        $OAuthRedirectBase = "https://$($appFqdns[0])/api"
+    }
+}
+if (-not [string]::IsNullOrWhiteSpace($OAuthRedirectBase) -and $OAuthRedirectBase -notmatch '^https://') {
+    throw "Hosted OAuth redirect base must use HTTPS: $OAuthRedirectBase"
+}
 Write-Host "  ✓ Files exist`n"
 
 # Step 2: Validate Bicep
@@ -155,7 +181,7 @@ $validation = az deployment group validate `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Bicep validation failed: $validation"
@@ -169,7 +195,7 @@ if ($DryRun) {
         --resource-group $prodRG `
         --template-file $bicepFile `
         --parameters $bicepParams `
-        --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" | Out-String
+        --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" | Out-String
     Write-Host "  ✓ Dry run completed`n"
     exit 0
 }
@@ -188,7 +214,7 @@ $rawDeploy = az deployment group create `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
-    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" `
+    --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
     --output json 2>$null | Out-String
@@ -207,12 +233,17 @@ if ($deployment.state -ne "Succeeded") {
 }
 Write-Host "  ✓ Infrastructure deployed`n"
 
+if ([string]::IsNullOrWhiteSpace($OAuthRedirectBase)) {
+    $OAuthRedirectBase = "$($deployment.containerAppUrl.TrimEnd('/'))/api"
+}
+
 # Step 5: Always set app image so deployments never stay on the hello-world default.
 Write-Host "✓ Step 4: Updating Container App image to $ImageTag..."
 az containerapp update `
     --resource-group $prodRG `
     --name $deployment.containerAppName `
     --image "ghcr.io/munishgoyal1/tripplanner:$ImageTag" `
+    --set-env-vars "OAUTH_REDIRECT_BASE=$OAuthRedirectBase" `
     -o none
 if ($LASTEXITCODE -ne 0) {
     throw "Container App image update failed."
@@ -224,7 +255,7 @@ Write-Host "╔═════════════════════�
 Write-Host "║  ✓ PRODUCTION DEPLOYMENT COMPLETE                        ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
-Write-Host "App URL: https://$($deployment.containerAppUrl)"
+Write-Host "App URL: $($deployment.containerAppUrl)"
 Write-Host "Environment: PRODUCTION"
 Write-Host "Resource Group: $prodRG"
 Write-Host "Container App: $($deployment.containerAppName)"
