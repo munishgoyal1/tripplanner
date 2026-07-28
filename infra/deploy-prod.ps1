@@ -79,9 +79,10 @@ Write-Host "║  PRE-DEPLOYMENT CHECKLIST — VERIFY ALL BEFORE PROCEEDING ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 
 $checklist = @(
-    "Canary environment tested and stable",
-    "All critical features verified",
-    "No canary errors or exceptions (last 24 hours)",
+    "Exact immutable image tag deployed to canary",
+    "Read-only and deep canary smoke suites passed",
+    "Critical and changed workflows manually verified",
+    "Canary bake period completed with acceptable telemetry",
     "Email endpoint tested end-to-end (test send successful)",
     "Database migrations validated (if any)",
     "Secrets/config parity confirmed between canary and prod",
@@ -250,6 +251,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "  ✓ Image updated`n"
 
+Write-Host "✓ Step 5: Running read-only hosted smoke tests..."
+& "$PSScriptRoot/smoke-hosted.ps1" -Environment production -BaseUrl $deployment.containerAppUrl
+if ($LASTEXITCODE -ne 0) {
+    throw "Production smoke tests failed. Run ./infra/rollback-prod.ps1 after confirming the failure."
+}
+Write-Host "  ✓ Production smoke tests passed`n"
+
 # Step 6: Output results
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ PRODUCTION DEPLOYMENT COMPLETE                        ║"
@@ -273,7 +281,7 @@ Write-Host "✓ All users can now access the production deployment`n"
 
 # Post-deployment validation hint
 Write-Host "Next steps:"
-Write-Host "  1. Monitor production logs: az containerapp logs show -g $prodRG -n $prodApp"
+Write-Host "  1. Monitor production logs: az containerapp logs show -g $prodRG -n $($deployment.containerAppName)"
 Write-Host "  2. Test critical flows (chat, map, email)"
 Write-Host "  3. If issues arise, run: ./infra/rollback-prod.ps1`n"
 

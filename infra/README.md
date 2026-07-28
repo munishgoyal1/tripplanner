@@ -84,6 +84,32 @@ Notes:
 - Deploy scripts are now parameterized, so you can target any subscription, region, RG, and name prefix.
 - Production deployment still enforces manual approval (`APPROVE_PROD_DEPLOYMENT`).
 
+## Hosted Smoke Tests
+
+Canary and production deploy scripts automatically run the read-only hosted
+suite after updating the image. It validates the public SPA, health endpoint,
+environment-owned Google OAuth callback and redirect, Maps configuration,
+anonymous auth, and isolated Cosmos-backed reads.
+
+Run it independently with:
+
+```powershell
+./infra/smoke-hosted.ps1 -Environment canary -SubscriptionId <sub-id>
+./infra/smoke-hosted.ps1 -Environment production -SubscriptionId <sub-id>
+```
+
+Before promotion, exercise Azure OpenAI through canary with an isolated smoke
+identity:
+
+```powershell
+./infra/smoke-hosted.ps1 -Environment canary -Deep -SubscriptionId <sub-id>
+```
+
+Deep production smoke writes one isolated chat turn and is blocked unless
+`-AllowProductionWrites` is supplied explicitly. See
+`DEPLOYMENT_PROCESS.md` for bake periods, manual validation, evidence, and
+rollback gates.
+
 ## Local Development Data Backend
 
 Local SPA development defaults to the isolated Docker Cosmos Emulator. To

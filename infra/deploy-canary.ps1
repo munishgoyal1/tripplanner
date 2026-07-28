@@ -205,6 +205,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "  ✓ Image updated`n"
 
+Write-Host "✓ Step 5: Running hosted smoke tests..."
+& "$PSScriptRoot/smoke-hosted.ps1" -Environment canary -BaseUrl $deployment.containerAppUrl
+if ($LASTEXITCODE -ne 0) {
+    throw "Canary smoke tests failed. Production promotion is blocked."
+}
+Write-Host "  ✓ Canary smoke tests passed`n"
+
 # Step 6: Output results
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ CANARY DEPLOYMENT COMPLETE                            ║"

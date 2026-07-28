@@ -179,6 +179,7 @@ infra/
   main.bicep          ACA + Log Analytics; references existing shared Cosmos
   canary.bicepparam   Canary app parameters (`tripplanner-canary` database)
   prod.bicepparam     Production app parameters (`tripplanner-prod` database)
+  smoke-hosted.ps1    Canary/production public-HTTP smoke runner; deep prod guard
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
@@ -186,7 +187,8 @@ scripts/
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Copy + exact verification across Cosmos databases
   autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
-  smoke_test.py       Smoke check
+  smoke_test.py       Local external-provider smoke check
+  hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
   test.ps1            Legacy (Chainlit era) — do not use
 tests/                pytest suite
 docs/

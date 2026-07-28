@@ -2353,3 +2353,14 @@ VALIDATION:
 - Details must support authoritative day moves using the exact source occurrence
   identity, including repeated visits.
 
+=== 2026-07-26 — Session 78: Hosted post-deployment smoke gates ===
+
+- Canary and production deployments must automatically verify the deployed SPA,
+  health, environment-owned Google OAuth redirect, Maps configuration,
+  anonymous authentication, and isolated Cosmos-backed reads through public HTTP.
+- Canary promotion evidence must include a deep Azure OpenAI smoke under an
+  isolated identity, manual critical/change-specific validation, and a risk-based
+  bake period before requesting explicit production approval.
+- Production deep smoke must remain separately acknowledged because it writes a
+  chat turn; production deployment remains blocked without explicit approval.
+

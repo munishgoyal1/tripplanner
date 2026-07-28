@@ -36,6 +36,13 @@ the separate approvals in `.azure/deployment-plan.md`.
 ./infra/deploy-canary.ps1 -SubscriptionId <sub-id>
 ```
 
+The deployment automatically runs the read-only hosted smoke suite. Then run
+the deep canary check to exercise Azure OpenAI through the deployed API:
+
+```powershell
+./infra/smoke-hosted.ps1 -Environment canary -Deep -SubscriptionId <sub-id>
+```
+
 **Use this for:**
 - Testing new features
 - Bug fixes
@@ -51,6 +58,31 @@ the separate approvals in `.azure/deployment-plan.md`.
 ./infra/deploy-prod.ps1 -SubscriptionId <sub-id>
 ```
 
+## Recommended Promotion Flow
+
+1. Build and push one immutable commit-SHA image.
+2. Deploy that exact image tag to canary; do not rebuild between environments.
+3. Require the automatic read-only smoke suite and the deep canary smoke to pass.
+4. Manually validate Google sign-in, one representative planning turn, map and
+  itinerary focus, saved-trip reload, and any feature changed by the release.
+5. Bake canary while watching errors, latency, restarts, and throttling. Use
+  30-60 minutes for a low-risk personal-app change, several hours for shared
+  backend/config changes, and 24 hours for migrations or high-risk releases.
+6. Present the tested image tag, smoke results, bake duration, observed errors,
+  known risks, and rollback revision to the owner for explicit approval.
+7. Deploy the same image tag to production through the approval gate.
+8. Run automatic read-only production smoke tests, perform a short manual
+  critical-flow check, and monitor closely for at least 15-30 minutes.
+9. Roll back immediately when a critical smoke or user workflow fails.
+
+The production deployment runs read-only hosted smoke tests automatically.
+Deep production smoke writes one isolated chat turn and therefore requires a
+separate acknowledgement:
+
+```powershell
+./infra/smoke-hosted.ps1 -Environment production -Deep -AllowProductionWrites
+```
+
 ### Optional: Full Fresh Bootstrap
 ```powershell
 ./infra/bootstrap-environments.ps1 -SubscriptionId <sub-id> -ImageTag v0.X.Y -ProvisionAoai
@@ -58,8 +90,11 @@ the separate approvals in `.azure/deployment-plan.md`.
 
 **Requirements before running:**
 - [ ] Canary has been tested and verified
+- [ ] Read-only and deep canary smoke suites passed for the exact image tag
+- [ ] Manual validation completed for changed and critical workflows
+- [ ] Canary bake period completed with acceptable telemetry
 - [ ] All critical features working in canary
-- [ ] No errors in canary logs for 24+ hours
+- [ ] Bake-period telemetry reviewed with no blocking errors
 - [ ] Email endpoint tested end-to-end (test send successful)
 - [ ] Database migrations (if any) validated
 - [ ] Secrets/config parity confirmed

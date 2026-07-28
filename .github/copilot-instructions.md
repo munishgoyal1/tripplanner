@@ -108,6 +108,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Hosted post-deployment smoke gates (Session 78)**: canary and production
+  deploys now run a retry-tolerant read-only public-HTTP suite covering the SPA,
+  health, environment-owned Google OAuth, Maps, anonymous auth, and isolated
+  Cosmos reads. Canary adds an explicit deep Azure OpenAI check before promotion;
+  deep production smoke requires separate write acknowledgement. Promotion uses
+  the exact canary-tested image, manual critical-flow validation, risk-based bake,
+  explicit owner approval, production smoke, monitoring, and rollback evidence.
 - **Android behavioral parity repair (Session 77)**: native booking controls
   are independent from stop navigation, booking and place mutations refresh
   every dependent trip surface, streamed Assistant drafts have stable ownership,
