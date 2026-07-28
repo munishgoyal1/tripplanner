@@ -7,6 +7,8 @@ import {
 } from "@tripplanner/client";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+const GUEST_SESSION_KEY = "tripplanner_guest_session";
+let guestSessionRequest: Promise<string | null> | null = null;
 
 function ensureOk(response: Response, action: string): void {
   if (!response.ok) throw new Error(`${action} (${response.status}).`);
@@ -24,7 +26,37 @@ export function getUserId(): string {
   return id;
 }
 
-const sharedClient = new TripplannerClient(BASE, getUserId);
+async function getApiSessionToken(): Promise<string | null> {
+  const userId = getUserId();
+  if (!userId.startsWith("web-")) return null;
+  const existing = localStorage.getItem(GUEST_SESSION_KEY);
+  if (existing) return existing;
+  if (!guestSessionRequest) {
+    guestSessionRequest = fetch(`${BASE}/auth/guest/session`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    })
+      .then(async (response) => {
+        if (!response.ok) return null;
+        const body = await response.json() as { token?: string };
+        if (body.token) localStorage.setItem(GUEST_SESSION_KEY, body.token);
+        return body.token || null;
+      })
+      .finally(() => { guestSessionRequest = null; });
+  }
+  return guestSessionRequest;
+}
+
+async function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers);
+  const token = await getApiSessionToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  return fetch(input, { ...init, credentials: "include", headers });
+}
+
+const sharedClient = new TripplannerClient(BASE, getUserId, getApiSessionToken);
 
 // Whether the current identity is the anonymous, per-browser one (vs. a name
 // the user explicitly signed in with). Used to show "Sign in" vs the name.
@@ -49,6 +81,7 @@ export function signIn(name: string): string {
 export function signOut(): void {
   localStorage.removeItem("tripplanner_user_id");
   localStorage.removeItem("tripplanner_display_name");
+  localStorage.removeItem(GUEST_SESSION_KEY);
 }
 
 export function getDisplayName(): string {
@@ -107,7 +140,11 @@ export async function syncAuth(): Promise<AuthSession & { prev_guest_id?: string
 /** Ask the server how much data a guest (web-*) account has. */
 export async function fetchGuestDataSummary(guestId: string): Promise<{ has_data: boolean; trip_count: number }> {
   try {
-    const res = await fetch(`${BASE}/account/guest-data-summary?user_id=${encodeURIComponent(guestId)}`);
+    const token = localStorage.getItem(GUEST_SESSION_KEY);
+    const res = await fetch(`${BASE}/account/guest-data-summary?user_id=${encodeURIComponent(guestId)}`, {
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     return res.json();
   } catch {
     return { has_data: false, trip_count: 0 };
@@ -120,12 +157,19 @@ export async function migrateGuestData(
   guestId: string
 ): Promise<{ ok: boolean; copied_trips: number; copied_prefs: boolean }> {
   try {
+    const token = localStorage.getItem(GUEST_SESSION_KEY);
     const res = await fetch(`${BASE}/account/migrate-guest`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({ user_id: authUserId, guest_id: guestId }),
     });
-    return res.json();
+    const result = await res.json();
+    if (result.ok) localStorage.removeItem(GUEST_SESSION_KEY);
+    return result;
   } catch {
     return { ok: false, copied_trips: 0, copied_prefs: false };
   }
@@ -164,7 +208,7 @@ export async function streamChat(
   h: StreamHandlers,
   options: { proposalOnly?: boolean } = {},
 ): Promise<void> {
-  const res = await fetch(`${BASE}/chat/stream`, {
+  const res = await apiFetch(`${BASE}/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -305,7 +349,7 @@ export async function switchTrip(tripId: string): Promise<TripView | null> {
 
 /** Delete a saved trip; returns the refreshed saved-trips list. */
 export async function deleteTrip(tripId: string): Promise<SavedTrip[]> {
-  const res = await fetch(`${BASE}/trips/delete`, {
+  const res = await apiFetch(`${BASE}/trips/delete`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ trip_id: tripId, user_id: getUserId() }),
@@ -393,7 +437,7 @@ export async function emailTripExport(
   email: string,
   options: ExportOptions,
 ): Promise<EmailExportResult> {
-  const res = await fetch(`${BASE}/trip/export/email`, {
+  const res = await apiFetch(`${BASE}/trip/export/email`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -413,7 +457,7 @@ export async function emailTripExport(
  * (origin + path) that anyone can open without logging in. Throws on failure.
  */
 export async function shareActiveTrip(): Promise<string> {
-  const res = await fetch(`${BASE}/trip/share`, {
+  const res = await apiFetch(`${BASE}/trip/share`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId(), kind: "share", name: "share" }),
@@ -427,7 +471,7 @@ export async function shareActiveTrip(): Promise<string> {
 }
 
 export async function importSharedTrip(token: string): Promise<TripView> {
-  const res = await fetch(`${BASE}/trip/shared/${encodeURIComponent(token)}/import`, {
+  const res = await apiFetch(`${BASE}/trip/shared/${encodeURIComponent(token)}/import`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId() }),
@@ -460,7 +504,7 @@ export interface Preferences {
 
 export async function fetchPreferences(): Promise<Preferences> {
   const params = new URLSearchParams({ user_id: getUserId() });
-  const res = await fetch(`${BASE}/preferences?${params.toString()}`);
+  const res = await apiFetch(`${BASE}/preferences?${params.toString()}`);
   ensureOk(res, "Could not load preferences");
   return res.json();
 }
@@ -471,7 +515,7 @@ export interface SavePrefsResult {
 }
 
 export async function savePreferences(prefs: Preferences): Promise<SavePrefsResult> {
-  const res = await fetch(`${BASE}/preferences`, {
+  const res = await apiFetch(`${BASE}/preferences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...prefs, user_id: getUserId() }),
@@ -481,7 +525,7 @@ export async function savePreferences(prefs: Preferences): Promise<SavePrefsResu
 }
 
 export async function regenerateProfileSummary(): Promise<string> {
-  const res = await fetch(`${BASE}/profile/summary/regenerate`, {
+  const res = await apiFetch(`${BASE}/profile/summary/regenerate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kind: "", name: "", user_id: getUserId() }),
@@ -509,7 +553,7 @@ export async function runPrivacyAction(
   action: PrivacyAction,
   confirmText = "",
 ): Promise<PrivacyActionResult> {
-  const res = await fetch(`${BASE}/account/privacy`, {
+  const res = await apiFetch(`${BASE}/account/privacy`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: getUserId(), action, confirm_text: confirmText }),
@@ -558,7 +602,7 @@ export async function fetchDestinationOverview(
 
   const params = new URLSearchParams({ user_id: getUserId(), news: String(news) });
   if (destination) params.set("destination", destination);
-  const req = fetch(`${BASE}/destination/overview?${params.toString()}`)
+  const req = apiFetch(`${BASE}/destination/overview?${params.toString()}`)
     .then((res) => {
       ensureOk(res, "Could not load destination details");
       return res.json() as Promise<DestinationOverview>;

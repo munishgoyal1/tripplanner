@@ -1,0 +1,79 @@
+"""Resolve the authoritative user identity for API requests."""
+
+from __future__ import annotations
+
+import os
+import re
+
+from fastapi import HTTPException, Request
+
+from tripplanner.web import oauth
+
+_ANONYMOUS_ID = re.compile(
+    r"^(?:web|mobile)-[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+    re.IGNORECASE,
+)
+_HOSTED_ENVIRONMENTS = {"canary", "prod", "production"}
+
+
+def is_hosted() -> bool:
+    return os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower() in _HOSTED_ENVIRONMENTS
+
+
+def is_anonymous_id(user_id: str) -> bool:
+    return bool(_ANONYMOUS_ID.fullmatch((user_id or "").strip()))
+
+
+def bearer_session(request: Request) -> dict[str, str] | None:
+    authorization = request.headers.get("authorization", "")
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() == "bearer" and token:
+        return oauth.read_session(token.strip())
+    return None
+
+
+def signed_session(request: Request) -> dict[str, str] | None:
+    cookie_session = oauth.read_session(request.cookies.get(oauth.SESSION_COOKIE))
+    if cookie_session and cookie_session.get("session_kind") != "guest":
+        return cookie_session
+    bearer = bearer_session(request)
+    if bearer:
+        return bearer
+    return cookie_session
+
+
+def resolve_user_id(request: Request, claimed_user_id: str = "local") -> str:
+    """Return the signed principal, or a constrained anonymous/local identity.
+
+    A valid session is authoritative even when a stale client still sends its
+    previous guest id. Hosted callers cannot claim authenticated identities by
+    supplying a user_id parameter; anonymous ids remain unguessable capabilities
+    for the login-less product path.
+    """
+    session = signed_session(request)
+    if session:
+        return str(session["user_id"])
+
+    claimed = (claimed_user_id or "local").strip() or "local"
+    if not is_hosted():
+        return claimed
+    if is_anonymous_id(claimed) and not oauth.signing_enabled():
+        return claimed
+    raise HTTPException(status_code=401, detail="Authentication required.")
+
+
+def require_signed_user(request: Request) -> str:
+    session = signed_session(request)
+    if not session or session.get("session_kind") == "guest":
+        raise HTTPException(status_code=401, detail="Sign in is required.")
+    return str(session["user_id"])
+
+
+def require_guest_capability(request: Request, guest_id: str) -> None:
+    session = bearer_session(request)
+    if (
+        not session
+        or session.get("session_kind") != "guest"
+        or session.get("user_id") != guest_id
+    ):
+        raise HTTPException(status_code=403, detail="Guest ownership could not be verified.")

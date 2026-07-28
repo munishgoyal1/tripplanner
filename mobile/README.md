@@ -48,7 +48,9 @@ tunnel, or hosted canary URL for physical-device testing.
 
 Use the Account tab to sign in with the same Google account as the web app.
 The native OAuth handoff stores the signed session in SecureStore and reuses
-the web identity, so saved trips, active trip, chat, and preferences are shared.
+the web identity. Every subsequent API request carries that signed session as a
+bearer credential, so saved trips, active trip, chat, and preferences are shared
+without trusting a caller-supplied account id.
 The selected backend must include `/auth/mobile/session`; an older production
 deployment can run the app as a local mobile profile but cannot complete native
 Google sign-in until those backend changes are deployed.

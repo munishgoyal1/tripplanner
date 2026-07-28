@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from email.message import Message
 from urllib.error import HTTPError
-from urllib.parse import quote
+from urllib.parse import parse_qs, quote, urlparse
 
 import scripts.hosted_smoke as hosted_smoke
 from scripts.hosted_smoke import Response, SmokeSuite
@@ -50,6 +50,8 @@ def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type
             )
         if url.endswith("/api/auth/config"):
             return _response({"google": True, "redirect_uri": callback})
+        if url.endswith("/api/auth/guest/session"):
+            return _response({"authenticated": False, "token": "signed-guest"})
         if "/api/auth/login/google" in url:
             location = (
                 "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri="
@@ -69,7 +71,7 @@ def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type
         if "/api/preferences?" in url:
             return _response({"display_name": ""})
         if "/api/usage?" in url:
-            return _response({"user_id": "smoke-canary-readonly"})
+            return _response({"user_id": parse_qs(urlparse(url).query)["user_id"][0]})
         if "/api/trip/view?" in url:
             return _response({})
         if "/api/chat/history?" in url:
@@ -81,7 +83,7 @@ def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type
         if url.endswith("/api/metrics/tools"):
             return _response({"tools": {}})
         if "/api/account/guest-data-summary?" in url:
-            return _response({"has_data": False, "trip_count": 0})
+            return _response({"detail": "Sign in is required."}, status=401)
         raise AssertionError(url)
 
     monkeypatch.setattr(hosted_smoke, "_request", fake_request)

@@ -12,6 +12,7 @@ import type {
 } from "./types";
 
 export type IdentityProvider = () => string | Promise<string>;
+export type SessionTokenProvider = () => string | null | Promise<string | null>;
 
 function ensureOk(response: Response, action: string): void {
   if (!response.ok) throw new Error(`${action} (${response.status}).`);
@@ -69,6 +70,7 @@ export class TripplannerClient {
   constructor(
     private readonly baseUrl: string,
     private readonly getIdentity: IdentityProvider,
+    private readonly getSessionToken?: SessionTokenProvider,
   ) {}
 
   private async userId(): Promise<string> {
@@ -80,6 +82,13 @@ export class TripplannerClient {
     return `${this.baseUrl.replace(/\/$/, "")}${path}${query ? `?${query}` : ""}`;
   }
 
+  private async request(url: string, init: RequestInit = {}): Promise<Response> {
+    const headers = new Headers(init.headers);
+    const token = await this.getSessionToken?.();
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    return fetch(url, { ...init, credentials: "include", headers });
+  }
+
   async fetchTripView(
     focus?: { kind: string; name: string },
     signal?: AbortSignal,
@@ -89,13 +98,13 @@ export class TripplannerClient {
       params.focus_kind = focus.kind;
       params.focus_name = focus.name;
     }
-    const response = await fetch(this.url("/trip/view", params), { signal });
+    const response = await this.request(this.url("/trip/view", params), { signal });
     ensureOk(response, "Could not load the trip");
     return response.json() as Promise<TripView>;
   }
 
   async fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {
-    const response = await fetch(
+    const response = await this.request(
       this.url("/trip/itinerary", { user_id: await this.userId() }),
       { signal },
     );
@@ -104,7 +113,7 @@ export class TripplannerClient {
   }
 
   async fetchMapView(signal?: AbortSignal): Promise<MapView> {
-    const response = await fetch(
+    const response = await this.request(
       this.url("/trip/map", { user_id: await this.userId() }),
       { signal },
     );
@@ -113,7 +122,7 @@ export class TripplannerClient {
   }
 
   async fetchSavedTrips(): Promise<SavedTrip[]> {
-    const response = await fetch(this.url("/trips", { user_id: await this.userId() }));
+    const response = await this.request(this.url("/trips", { user_id: await this.userId() }));
     ensureOk(response, "Could not load saved trips");
     const data = (await response.json()) as { trips?: SavedTrip[] };
     return data.trips ?? [];
@@ -122,7 +131,7 @@ export class TripplannerClient {
   async fetchChatHistory(tripId?: string): Promise<{ role: "user" | "assistant"; text: string }[]> {
     const params: Record<string, string> = { user_id: await this.userId() };
     if (tripId) params.trip_id = tripId;
-    const response = await fetch(this.url("/chat/history", params));
+    const response = await this.request(this.url("/chat/history", params));
     ensureOk(response, "Could not load chat history");
     const data = (await response.json()) as {
       messages?: { role: "user" | "assistant"; text: string }[];
@@ -244,7 +253,7 @@ export class TripplannerClient {
   }
 
   private async post(path: string, body: Record<string, unknown>): Promise<Response> {
-    return fetch(this.url(path), {
+    return this.request(this.url(path), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...body, user_id: await this.userId() }),

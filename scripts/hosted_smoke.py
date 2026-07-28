@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 import time
+import uuid
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from typing import Any
@@ -42,12 +43,22 @@ class _AssetParser(HTMLParser):
             self.paths.append(str(values["href"]))
 
 
-def _request(url: str, *, data: dict[str, Any] | None = None, follow: bool = True) -> Response:
+def _request(
+    url: str,
+    *,
+    data: dict[str, Any] | None = None,
+    follow: bool = True,
+    headers: dict[str, str] | None = None,
+) -> Response:
     body = json.dumps(data).encode("utf-8") if data is not None else None
     request = Request(
         url,
         data=body,
-        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            **(headers or {}),
+        },
     )
     opener = build_opener() if follow else build_opener(_NoRedirect())
     for attempt in range(1, 4):
@@ -88,8 +99,17 @@ class SmokeSuite:
 
     def run(self) -> bool:
         print(f"Hosted smoke tests: {self.environment} ({self.base_url})")
-        smoke_user = f"smoke-{self.environment}-readonly"
+        smoke_uuid = uuid.uuid5(uuid.NAMESPACE_URL, f"tripplanner-smoke-{self.environment}")
+        smoke_user = f"web-{smoke_uuid}"
         expected_callback = f"{self.base_url}/api/auth/callback/google"
+        guest_session = _request(
+            f"{self.base_url}/api/auth/guest/session",
+            data={"user_id": smoke_user},
+        )
+        assert guest_session.status == 200, "guest session bootstrap failed"
+        guest_token = str(guest_session.json().get("token") or "")
+        assert guest_token, "guest session token missing"
+        auth_headers = {"Authorization": f"Bearer {guest_token}"}
 
         def spa() -> str:
             response = _request(f"{self.base_url}/")
@@ -157,16 +177,23 @@ class SmokeSuite:
 
         def data_reads() -> str:
             query = urlencode({"user_id": smoke_user})
-            trips = self._get_json(f"/api/trips?{query}")
-            preferences = self._get_json(f"/api/preferences?{query}")
-            usage = self._get_json(f"/api/usage?{query}")
-            view = self._get_json(f"/api/trip/view?{query}")
-            history = self._get_json(f"/api/chat/history?{query}")
-            itinerary = self._get_json(f"/api/trip/itinerary?{query}")
-            map_view = self._get_json(f"/api/trip/map?{query}")
+            def authenticated_json(path: str) -> Any:
+                response = _request(f"{self.base_url}{path}", headers=auth_headers)
+                assert response.status == 200, f"HTTP {response.status}"
+                return response.json()
+
+            trips = authenticated_json(f"/api/trips?{query}")
+            preferences = authenticated_json(f"/api/preferences?{query}")
+            usage = authenticated_json(f"/api/usage?{query}")
+            view = authenticated_json(f"/api/trip/view?{query}")
+            history = authenticated_json(f"/api/chat/history?{query}")
+            itinerary = authenticated_json(f"/api/trip/itinerary?{query}")
+            map_view = authenticated_json(f"/api/trip/map?{query}")
             metrics = self._get_json("/api/metrics/tools")
-            guest_query = urlencode({"user_id": f"web-{smoke_user}"})
-            guest = self._get_json(f"/api/account/guest-data-summary?{guest_query}")
+            guest = _request(
+                f"{self.base_url}/api/account/guest-data-summary?{query}",
+                headers=auth_headers,
+            )
             assert isinstance(trips.get("trips"), list)
             assert isinstance(preferences, dict) and "display_name" in preferences
             assert usage.get("user_id") == smoke_user
@@ -175,7 +202,7 @@ class SmokeSuite:
             assert isinstance(itinerary, dict) and isinstance(itinerary.get("days"), list)
             assert isinstance(map_view, dict) and isinstance(map_view.get("pins"), list)
             assert isinstance(metrics.get("tools"), dict)
-            assert guest == {"has_data": False, "trip_count": 0}
+            assert guest.status == 401
             return "workspace, itinerary, map, metrics and guest reads valid"
 
         def deep_chat() -> str:
@@ -183,9 +210,10 @@ class SmokeSuite:
                 f"{self.base_url}/api/chat",
                 data={
                     "message": "Reply with exactly PONG. Do not call tools.",
-                    "user_id": f"smoke-{self.environment}-deep",
+                    "user_id": smoke_user,
                     "proposal_only": True,
                 },
+                headers=auth_headers,
             )
             assert response.status == 200, f"HTTP {response.status}"
             payload = response.json()

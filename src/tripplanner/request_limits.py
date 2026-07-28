@@ -1,0 +1,107 @@
+"""Small in-process admission limits for expensive chat turns."""
+
+from __future__ import annotations
+
+import asyncio
+import os
+import time
+from collections import defaultdict, deque
+from dataclasses import dataclass
+
+from fastapi import HTTPException, Request
+
+_WINDOW_SECONDS = 60.0
+
+
+def _positive_int(name: str, default: int) -> int:
+    try:
+        return max(1, int(os.getenv(name, str(default))))
+    except ValueError:
+        return default
+
+
+def client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")
+    if forwarded:
+        return forwarded.split(",", 1)[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+@dataclass(frozen=True)
+class ChatPermit:
+    user_id: str
+
+
+class ChatAdmission:
+    def __init__(self) -> None:
+        self._lock = asyncio.Lock()
+        self._user_requests: dict[str, deque[float]] = defaultdict(deque)
+        self._ip_requests: dict[str, deque[float]] = defaultdict(deque)
+        self._active_users: dict[str, int] = defaultdict(int)
+        self._active_total = 0
+
+    @staticmethod
+    def _record(history: deque[float], now: float, limit: int) -> bool:
+        while history and now - history[0] >= _WINDOW_SECONDS:
+            history.popleft()
+        if len(history) >= limit:
+            return False
+        history.append(now)
+        return True
+
+    async def acquire(self, user_id: str, ip_address: str) -> ChatPermit:
+        async with self._lock:
+            now = time.monotonic()
+            user_limit = _positive_int("CHAT_USER_REQUESTS_PER_MINUTE", 10)
+            ip_limit = _positive_int("CHAT_IP_REQUESTS_PER_MINUTE", 30)
+            if not self._record(self._user_requests[user_id], now, user_limit):
+                raise HTTPException(
+                    status_code=429,
+                    detail="Too many chat requests. Please wait and retry.",
+                    headers={"Retry-After": "60"},
+                )
+            if not self._record(self._ip_requests[ip_address], now, ip_limit):
+                raise HTTPException(
+                    status_code=429,
+                    detail="Too many chat requests from this network.",
+                    headers={"Retry-After": "60"},
+                )
+
+            per_user = _positive_int("CHAT_MAX_CONCURRENT_PER_USER", 1)
+            global_limit = _positive_int("CHAT_MAX_CONCURRENT_GLOBAL", 4)
+            if self._active_users[user_id] >= per_user or self._active_total >= global_limit:
+                raise HTTPException(
+                    status_code=429,
+                    detail="A chat request is already in progress. Please wait.",
+                    headers={"Retry-After": "2"},
+                )
+            self._active_users[user_id] += 1
+            self._active_total += 1
+            return ChatPermit(user_id=user_id)
+
+    async def release(self, permit: ChatPermit) -> None:
+        async with self._lock:
+            active = self._active_users.get(permit.user_id, 0)
+            if active <= 1:
+                self._active_users.pop(permit.user_id, None)
+            else:
+                self._active_users[permit.user_id] = active - 1
+            self._active_total = max(0, self._active_total - 1)
+
+    async def reset(self) -> None:
+        async with self._lock:
+            self._user_requests.clear()
+            self._ip_requests.clear()
+            self._active_users.clear()
+            self._active_total = 0
+
+
+chat_admission = ChatAdmission()
+
+
+async def acquire_chat(request: Request, user_id: str) -> ChatPermit:
+    return await chat_admission.acquire(user_id, client_ip(request))
+
+
+async def release_chat(permit: ChatPermit) -> None:
+    await chat_admission.release(permit)

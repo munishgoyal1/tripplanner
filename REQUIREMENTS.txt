@@ -2377,3 +2377,22 @@ VALIDATION:
 - Every Azure infrastructure change must be captured in the owning Bicep and
   idempotent scripts so local, canary, and production workflows stay consistent.
 
+=== 2026-07-28 — Session 80: Confirmed audit repairs and regression containment ===
+
+- Implement confirmed audit findings 1-6 as four independently reversible,
+  committed, and pushed milestones: identity/abuse boundary; release-workflow
+  correction; native occurrence/refresh correctness; conditional persistence.
+- Hosted APIs must derive authenticated identity from signed web or mobile
+  sessions. Anonymous browser/device identities require a server-signed guest
+  capability, and guest migration must prove both source and destination ownership.
+- Bound chat input, request rate, per-principal concurrency, and global concurrency;
+  monthly usage caps must use the resolved principal rather than request data.
+- Remove the legacy GitHub Actions deployment bypass; preserve the canonical
+  canary validation and exact-image production approval path.
+- Native exact-occurrence actions must use the backend's one-based stop contract,
+  and stale refreshes must never overwrite newer trip state.
+- Cosmos read-modify-write preference and chat paths must use bounded optimistic
+  concurrency so overlapping writers do not silently lose durable data.
+- After all six repairs, run the complete automated suite and a documented manual
+  regression cycle before any release decision. No deployment is implied.
+

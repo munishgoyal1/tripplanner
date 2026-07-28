@@ -158,7 +158,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   exports include embedded day route maps plus place photos, address/rating,
   itinerary notes, time, and booking status; every output path honors the same
   media toggles. The account control visibly distinguishes a signed-in identity
-  from a local guest.
+  from a local guest. Hosted account data is authorized by signed sessions, not
+  by a client-supplied identifier; anonymous browser/device identities receive a
+  signed guest capability, and migration proves ownership of both sides.
 - **Authoritative counts**: trip place counts include unique
   structured itinerary attractions and named meal/restaurant stops, even when
   the agent did not mirror them into `selected_activities`. Repeated visits,

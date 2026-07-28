@@ -53,6 +53,8 @@ src/tripplanner/
                       (binds only select_tools(messages) per turn)
   observability.py    OpenTelemetry / Azure Monitor (best-effort)
   json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
+  request_identity.py Signed web/native/guest principal resolution for hosted APIs
+  request_limits.py   In-process chat size/rate/concurrency admission controls
   storage_cosmos.py   Cosmos persistence + opt-in conditional replacement primitive
   user_context.py     ContextVar holding the current user_id per request
   agents/
@@ -304,13 +306,21 @@ AND the consumer in `TripPanel.tsx` / `DestinationOverview.tsx`.
 ## 6) Identity & persistence
 
 - Per-request user_id lives in `user_context.get_user_id()` (ContextVar).
-  Default `"local"` (CLI). Hosted mode sets it from the OAuth/guest cookie.
+  Default `"local"` (CLI). Hosted mode ignores caller-claimed account IDs and
+  resolves the principal from a signed OAuth cookie, bearer session, or signed
+  anonymous capability before binding the ContextVar.
 - OAuth (Google): `"google-<sub>"` (cross-device). Signed HttpOnly `mg_session`
   cookie, HMAC-SHA256 with `WEB_SESSION_SECRET` (back-compat fallback
   `CHAINLIT_AUTH_SECRET`). Native clients start the same browser OAuth flow with
   an `exp://` or `tripplanner://` return URL; the callback deep-links a signed
-  session token that `/auth/mobile/session` verifies before secure storage.
-- Guest fallback: `"web-<uuid>"` (per-browser via localStorage).
+  session token that `/auth/mobile/session` verifies before secure storage and
+  sends as a bearer credential on subsequent API calls.
+- Guest fallback: `"web-<uuid>"` or `"mobile-<uuid>"`, authorized by a signed
+  guest session from `/auth/guest/session`. Account migration requires both the
+  authenticated account cookie and the matching original guest bearer token.
+- Chat requests are limited to 12,000 characters and pass per-principal/IP
+  rolling request limits plus per-principal/global concurrency admission before
+  invoking the model. The monthly LLM cap is keyed by the resolved principal.
 - Persistence dispatcher: `storage_cosmos.is_enabled()` → Cosmos if true, else
   local JSON under `~/.tripplanner/`. Trip/history/chat/cache writes use
   `json_store.atomic_write_json` so interruption cannot leave partial JSON.

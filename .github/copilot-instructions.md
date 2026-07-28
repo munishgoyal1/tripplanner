@@ -110,6 +110,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Hosted identity + chat abuse boundary (Session 80, milestone A)**: every
+  user-data API derives its principal from a signed Google cookie, native bearer,
+  or server-signed UUID guest capability in hosted environments; raw account ids
+  are not authoritative. Guest migration proves both the account and source
+  guest sessions. Chat input, per-user/IP request rate, and per-user/global
+  concurrency are bounded before model execution, and usage caps follow the
+  resolved principal.
 - **Reproducible setup + immutable release flow (Session 79)**: one Windows
   setup command installs/verifies required tooling, restores locked Python/web
   dependencies, and preserves secrets. Canary's one-click deployment now uses

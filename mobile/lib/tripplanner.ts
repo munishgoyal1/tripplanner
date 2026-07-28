@@ -36,6 +36,26 @@ async function getMobileUserId(): Promise<string> {
   return created;
 }
 
+async function getMobileSessionToken(): Promise<string | null> {
+  const existing = await SecureStore.getItemAsync(SESSION_KEY);
+  if (existing) return existing;
+  const response = await fetch(`${apiBaseUrl}/auth/guest/session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: await getMobileUserId() }),
+  });
+  if (!response.ok) return null;
+  const session = await response.json() as { token?: string };
+  if (!session.token) return null;
+  await SecureStore.setItemAsync(SESSION_KEY, session.token);
+  return session.token;
+}
+
+async function mobileAuthHeaders(): Promise<Record<string, string>> {
+  const token = await getMobileSessionToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function getMobileAccount(): Promise<MobileAccount | null> {
   const raw = await SecureStore.getItemAsync(ACCOUNT_KEY);
   if (!raw) return null;
@@ -72,6 +92,7 @@ export async function logoutMobile(): Promise<void> {
 export async function fetchMobilePreferences(): Promise<MobilePreferences> {
   const response = await fetch(
     `${apiBaseUrl}/preferences?user_id=${encodeURIComponent(await getMobileUserId())}`,
+    { headers: await mobileAuthHeaders() },
   );
   if (!response.ok) throw new Error(`Could not load preferences (${response.status}).`);
   return response.json() as Promise<MobilePreferences>;
@@ -80,10 +101,14 @@ export async function fetchMobilePreferences(): Promise<MobilePreferences> {
 export async function saveMobilePreferences(preferences: MobilePreferences): Promise<void> {
   const response = await fetch(`${apiBaseUrl}/preferences`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...await mobileAuthHeaders() },
     body: JSON.stringify({ ...preferences, user_id: await getMobileUserId() }),
   });
   if (!response.ok) throw new Error(`Could not save preferences (${response.status}).`);
 }
 
-export const tripplannerClient = new TripplannerClient(apiBaseUrl, getMobileUserId);
+export const tripplannerClient = new TripplannerClient(
+  apiBaseUrl,
+  getMobileUserId,
+  getMobileSessionToken,
+);

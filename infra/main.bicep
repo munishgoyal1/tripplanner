@@ -128,6 +128,7 @@ var baseSecrets = [
 ]
 
 var baseEnv = [
+  { name: 'TRIPPLANNER_ENVIRONMENT', value: namePrefix }
   { name: 'AZURE_OPENAI_ENDPOINT', value: azureOpenAiEndpoint }
   { name: 'AZURE_OPENAI_DEPLOYMENT', value: azureOpenAiDeployment }
   { name: 'AZURE_OPENAI_API_VERSION', value: azureOpenAiApiVersion }

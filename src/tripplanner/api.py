@@ -35,10 +35,20 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from tripplanner.observability import app_event, setup_logging
+from tripplanner.request_limits import acquire_chat, release_chat
+from tripplanner.request_identity import (
+    is_anonymous_id,
+    is_hosted,
+    require_guest_capability,
+    require_signed_user,
+    resolve_user_id,
+)
+from tripplanner.user_context import set_user_id
 from tripplanner.web import oauth
 
 setup_logging()
@@ -60,6 +70,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def _set_request_user(request: Request, claimed_user_id: str = "local") -> str:
+    user_id = resolve_user_id(request, claimed_user_id)
+    set_user_id(user_id)
+    return user_id
 
 
 @app.middleware("http")
@@ -154,7 +170,7 @@ def _schedule_learning_sweep(user_id: str, message: str) -> None:
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(min_length=1, max_length=12_000)
     user_id: str = "local"
     proposal_only: bool = False
 
@@ -246,52 +262,53 @@ class ExportEmailRequest(BaseModel):
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest) -> ChatResponse:
+async def chat(req: ChatRequest, request: Request) -> ChatResponse:
     from tripplanner.graph import app_graph
     from tripplanner.usage import cap_message, is_over_cap
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(req.user_id)
+    user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_request", length=len(req.message), words=len(req.message.split()))
 
-    over, usage = is_over_cap(req.user_id)
-    if over:
-        msg = cap_message(usage)
-        app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
-        return ChatResponse(reply=msg, agent="cap")
+    permit = await acquire_chat(request, user_id)
+    try:
+        over, usage = is_over_cap(user_id)
+        if over:
+            msg = cap_message(usage)
+            app_event("api_chat_capped", cost_usd=usage.get("cost_usd"))
+            return ChatResponse(reply=msg, agent="cap")
 
-    history_tid, history = await asyncio.to_thread(_load_chat)
-    history.append(HumanMessage(content=req.message))
-    result = await asyncio.to_thread(
-        app_graph.invoke,
-        {
-            "messages": history,
-            "current_agent": "",
-            "proposal_only": req.proposal_only,
-        },
-    )
+        history_tid, history = await asyncio.to_thread(_load_chat)
+        history.append(HumanMessage(content=req.message))
+        result = await asyncio.to_thread(
+            app_graph.invoke,
+            {
+                "messages": history,
+                "current_agent": "",
+                "proposal_only": req.proposal_only,
+            },
+        )
 
-    reply = ""
-    for msg in reversed(result["messages"]):
-        if hasattr(msg, "content") and msg.content and msg.type == "ai":
-            reply = msg.content
-            break
-    # Hallucination critic: log unverified prices/times/URLs as telemetry only
-    # (internal QA signal — not surfaced to the user to avoid noisy footers).
-    from tripplanner.hallucination_critic import critique
+        reply = ""
+        for msg in reversed(result["messages"]):
+            if hasattr(msg, "content") and msg.content and msg.type == "ai":
+                reply = msg.content
+                break
+        from tripplanner.hallucination_critic import critique
 
-    issues = critique(reply, result.get("messages", []))
-    if issues:
-        app_event("hallucination_critic", issues=len(issues), claims=issues)
-    history.append(AIMessage(content=reply))
-    tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
-    if not req.proposal_only:
-        _schedule_learning_sweep(req.user_id, req.message)
+        issues = critique(reply, result.get("messages", []))
+        if issues:
+            app_event("hallucination_critic", issues=len(issues), claims=issues)
+        history.append(AIMessage(content=reply))
+        tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
+        if not req.proposal_only:
+            _schedule_learning_sweep(user_id, req.message)
 
-    app_event("api_chat_response", reply_length=len(reply))
-    return ChatResponse(
-        reply=reply, agent=result.get("current_agent", "unknown"), trip_id=tid_after
-    )
+        app_event("api_chat_response", reply_length=len(reply))
+        return ChatResponse(
+            reply=reply, agent=result.get("current_agent", "unknown"), trip_id=tid_after
+        )
+    finally:
+        await release_chat(permit)
 
 
 def _sse(event: str, data: dict[str, Any]) -> str:
@@ -382,7 +399,7 @@ def _auto_persist_itinerary(reply: str) -> None:
 
 
 @app.post("/chat/stream")
-async def chat_stream(req: ChatRequest) -> StreamingResponse:
+async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     """Stream the agent turn as Server-Sent Events.
 
     Emits ``token`` (assistant text deltas), ``tool`` (tool start/end), then a
@@ -391,12 +408,12 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
     """
     from tripplanner.graph import app_graph
     from tripplanner.usage import cap_message, is_over_cap
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(req.user_id)
+    user_id = _set_request_user(request, req.user_id)
     app_event("api_chat_stream_request", length=len(req.message))
 
-    over, usage = is_over_cap(req.user_id)
+    permit = await acquire_chat(request, user_id)
+    over, usage = is_over_cap(user_id)
     if over:
         msg = cap_message(usage)
         app_event("api_chat_stream_capped", cost_usd=usage.get("cost_usd"))
@@ -409,10 +426,15 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             _capped(),
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+            background=BackgroundTask(release_chat, permit),
         )
 
-    history_tid, history = await asyncio.to_thread(_load_chat)
-    history.append(HumanMessage(content=req.message))
+    try:
+        history_tid, history = await asyncio.to_thread(_load_chat)
+        history.append(HumanMessage(content=req.message))
+    except Exception:
+        await release_chat(permit)
+        raise
 
     async def gen():
         reply_parts: list[str] = []
@@ -502,7 +524,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
             await asyncio.to_thread(_auto_persist_itinerary, reply)
         tid_after = await asyncio.to_thread(_save_chat, history_tid, history)
         if not req.proposal_only:
-            _schedule_learning_sweep(req.user_id, req.message)
+            _schedule_learning_sweep(user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
@@ -510,21 +532,21 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         gen(),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        background=BackgroundTask(release_chat, permit),
     )
 
 
 @app.get("/chat/history")
-async def chat_history(user_id: str = "local", trip_id: str = "") -> dict:
+async def chat_history(request: Request, user_id: str = "local", trip_id: str = "") -> dict:
     """The persisted transcript for the user's *currently active* trip.
 
     Lets the SPA restore the conversation + itinerary summary after a refresh,
     and load the right conversation when the user switches saved trips.
     """
-    from tripplanner.user_context import set_user_id
     from tripplanner.tools.trip_planner import active_trip_id
     from tripplanner.web import chat_store
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     tid = trip_id.strip() or await asyncio.to_thread(active_trip_id) or ""
     rows = await asyncio.to_thread(chat_store.transcript, tid)
     return {"trip_id": tid, "messages": rows}
@@ -532,14 +554,16 @@ async def chat_history(user_id: str = "local", trip_id: str = "") -> dict:
 
 @app.get("/trip/view")
 async def trip_view_endpoint(
-    user_id: str = "local", focus_kind: str = "", focus_name: str = ""
+    request: Request,
+    user_id: str = "local",
+    focus_kind: str = "",
+    focus_name: str = "",
 ) -> dict:
     """Frontend-agnostic trip-panel view-model. ``focus_kind``/``focus_name``
     optionally zoom one item."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     focus = {"kind": focus_kind, "name": focus_name} if focus_name else None
     return await asyncio.to_thread(trip_operations.build_view, focus)
 
@@ -559,18 +583,20 @@ async def maps_config_endpoint() -> dict:
 
 
 @app.get("/trip/map")
-async def trip_map_endpoint(user_id: str = "local") -> dict:
+async def trip_map_endpoint(request: Request, user_id: str = "local") -> dict:
     """Interactive-map view-model: geocoded, day-tagged pins + route bands."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     return await asyncio.to_thread(trip_operations.build_map)
 
 
 @app.get("/destination/overview")
 async def destination_overview_endpoint(
-    destination: str = "", user_id: str = "local", news: bool = True
+    request: Request,
+    destination: str = "",
+    user_id: str = "local",
+    news: bool = True,
 ) -> dict:
     """Destination-level overview (photos, key attractions, reviews, news).
 
@@ -578,10 +604,9 @@ async def destination_overview_endpoint(
     destination so the SPA can show "about the place" before any selections.
     """
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_view
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     if not destination:
         trip = trip_planner.load_active_trip_dict()
         destination = str((trip or {}).get("destination") or "")
@@ -592,12 +617,11 @@ async def destination_overview_endpoint(
 
 
 @app.post("/trip/select")
-async def trip_select(req: SelectRequest) -> dict:
+async def trip_select(req: SelectRequest, request: Request) -> dict:
     """Add a hotel/attraction to the active trip (the SPA's 'Add to trip')."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     return await asyncio.to_thread(
         trip_operations.select,
         req.kind,
@@ -612,12 +636,11 @@ async def trip_select(req: SelectRequest) -> dict:
 
 
 @app.post("/trip/deselect")
-async def trip_deselect(req: DeselectRequest) -> dict:
+async def trip_deselect(req: DeselectRequest, request: Request) -> dict:
     """Remove a hotel/attraction from the active trip (the SPA's 'Remove')."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     return await asyncio.to_thread(
         trip_operations.deselect,
         req.kind,
@@ -629,58 +652,53 @@ async def trip_deselect(req: DeselectRequest) -> dict:
 
 
 @app.get("/trip/itinerary")
-async def trip_itinerary_endpoint(user_id: str = "local") -> dict:
+async def trip_itinerary_endpoint(request: Request, user_id: str = "local") -> dict:
     """Structured day-by-day itinerary view-model (the Itinerary tab)."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     return await asyncio.to_thread(trip_operations.build_itinerary)
 
 
 @app.post("/trip/stop/booked")
-async def trip_stop_booked(req: StopBookedRequest) -> dict:
+async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
     """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     return await asyncio.to_thread(
         trip_operations.set_stop_booked, req.day, req.name, req.booked
     )
 
 
 @app.get("/trips")
-async def trips_list(user_id: str = "local") -> dict:
+async def trips_list(request: Request, user_id: str = "local") -> dict:
     """All saved trips for the user (the SPA's 'My trips' switcher)."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     trips = await asyncio.to_thread(trip_planner.list_saved_trips)
     return {"trips": trips}
 
 
 @app.post("/trips/switch")
-async def trips_switch(req: TripIdRequest) -> dict:
+async def trips_switch(req: TripIdRequest, request: Request) -> dict:
     """Make a saved trip active (auto-saving whatever was active) and return
     the refreshed trip-panel view."""
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import trip_operations
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     return await asyncio.to_thread(trip_operations.switch_trip, req.trip_id)
 
 
 @app.post("/trips/delete")
-async def trips_delete(req: TripIdRequest) -> dict:
+async def trips_delete(req: TripIdRequest, request: Request) -> dict:
     """Delete a single saved trip AND its chat history; returns the refreshed
     saved-trips list."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import chat_store
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
     # Also erase that trip's persisted conversation so no orphaned data lingers.
     await asyncio.to_thread(chat_store.clear, req.trip_id)
@@ -689,14 +707,13 @@ async def trips_delete(req: TripIdRequest) -> dict:
 
 
 @app.post("/trip/new")
-async def trip_new(req: UserRequest) -> dict:
+async def trip_new(req: UserRequest, request: Request) -> dict:
     """Start a fresh planning chat: clear the active trip + the general chat
     bucket so the next conversation begins clean. Saved trips are untouched."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import chat_store
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     await asyncio.to_thread(trip_planner.start_new_trip)
     await asyncio.to_thread(chat_store.clear, None)
     return {"ok": True}
@@ -704,13 +721,12 @@ async def trip_new(req: UserRequest) -> dict:
 
 
 @app.get("/trip/export.ics")
-async def trip_export_ics(user_id: str = "local") -> Response:
+async def trip_export_ics(request: Request, user_id: str = "local") -> Response:
     """Download the active trip as an iCalendar (.ics) file."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web.ics_export import build_ics
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     plan = trip_planner.load_active_trip_dict()
     body = build_ics(plan)
     dest = ((plan or {}).get("destination") or "trip").lower()
@@ -724,6 +740,7 @@ async def trip_export_ics(user_id: str = "local") -> Response:
 
 @app.get("/trip/export/print")
 async def trip_export_print(
+    request: Request,
     user_id: str = "local",
     include_photos: str = "1",
     include_map_circuit: str = "1",
@@ -732,10 +749,9 @@ async def trip_export_print(
 ) -> Response:
     """Return a print-ready HTML itinerary suitable for Save-as-PDF."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web.itinerary_export import build_export_html, parse_export_bool
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     plan = trip_planner.load_active_trip_dict()
     html = build_export_html(
         plan,
@@ -749,6 +765,7 @@ async def trip_export_print(
 
 @app.get("/trip/export.pdf")
 async def trip_export_pdf(
+    request: Request,
     user_id: str = "local",
     template: str = "detailed",
     include_photos: str = "1",
@@ -756,9 +773,8 @@ async def trip_export_pdf(
 ) -> Response:
     """Return a downloadable itinerary PDF generated server-side."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     plan = trip_planner.load_active_trip_dict()
     if not plan:
         return JSONResponse({"error": "no active trip"}, status_code=404)
@@ -803,11 +819,10 @@ async def trip_export_email(req: ExportEmailRequest, request: Request) -> dict:
     import smtplib
 
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web.itinerary_export import build_export_html
     from tripplanner.web.share import mint_for_active_trip
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     plan = trip_planner.load_active_trip_dict()
     if not plan:
         return {"ok": False, "error": "no_active_trip", "message": "No active trip to export."}
@@ -915,10 +930,9 @@ async def trip_share(req: SelectRequest, request: Request) -> dict:
     Re-using ``SelectRequest`` only for its ``user_id`` field — ``kind``/``name``
     are ignored. Returns ``{token, url}`` or ``{error}`` if no active plan.
     """
-    from tripplanner.user_context import set_user_id
     from tripplanner.web.share import mint_for_active_trip
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     token = mint_for_active_trip()
     if not token:
         return {"error": "no active trip to share"}
@@ -952,28 +966,26 @@ async def trip_shared_json(token: str) -> dict:
 
 
 @app.post("/trip/shared/{token}/import")
-async def trip_shared_import(token: str, req: UserRequest) -> dict:
+async def trip_shared_import(token: str, req: UserRequest, request: Request) -> dict:
     """Import a shared snapshot into the caller's own editable trip space."""
     from tripplanner.tools import trip_planner
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import share, trip_view
 
     snapshot = share.resolve(token)
     if snapshot is None:
         return JSONResponse({"error": "invalid or expired share link"}, status_code=404)
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     imported = trip_planner.import_shared_trip_snapshot(snapshot.get("plan") or {})
     return {"ok": True, "view": trip_view.build_view(imported, None)}
 
 
 @app.get("/preferences")
-async def get_preferences(user_id: str = "local") -> dict:
+async def get_preferences(request: Request, user_id: str = "local") -> dict:
     """Return the editable subset of the user's saved preferences (for the
     SPA settings panel)."""
     from tripplanner.tools import user_preferences as prefs_store
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(user_id)
+    _set_request_user(request, user_id)
     prefs = prefs_store.load_preferences()
     profile = prefs.get("profile") or {}
     transport = prefs.get("transport_preferences") or {}
@@ -998,14 +1010,13 @@ async def get_preferences(user_id: str = "local") -> dict:
 
 
 @app.post("/preferences")
-async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
+async def save_preferences_endpoint(req: PreferencesRequest, request: Request) -> dict:
     """Merge the provided preference fields and persist them (additive — only
     keys present in the request are written)."""
     from tripplanner.tools import preferences_merge
     from tripplanner.tools import user_preferences as prefs_store
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     prefs = prefs_store.load_preferences()
     profile = dict(prefs.get("profile") or {})
     transport = dict(prefs.get("transport_preferences") or {})
@@ -1060,7 +1071,7 @@ async def save_preferences_endpoint(req: PreferencesRequest) -> dict:
 
 
 @app.post("/profile/summary/regenerate")
-async def regenerate_profile_summary(req: SelectRequest) -> dict:
+async def regenerate_profile_summary(req: SelectRequest, request: Request) -> dict:
     """Force a fresh LLM-authored profile summary for the user.
 
     Re-uses ``SelectRequest`` only for ``user_id`` (``kind``/``name`` ignored).
@@ -1068,15 +1079,14 @@ async def regenerate_profile_summary(req: SelectRequest) -> dict:
     to summarize or the model is unavailable).
     """
     from tripplanner.tools import profile_summary as profile_summary_mod
-    from tripplanner.user_context import set_user_id
 
-    set_user_id(req.user_id)
+    _set_request_user(request, req.user_id)
     summary = profile_summary_mod.update_summary(force=True)
     app_event("api_profile_summary_regenerated")
     return {"ok": True, "profile_summary": summary}
 
 @app.post("/account/privacy")
-async def account_privacy_action(req: PrivacyActionRequest) -> dict:
+async def account_privacy_action(req: PrivacyActionRequest, request: Request) -> dict:
     """Run user-requested privacy actions (GDPR-style controls).
 
     Supported actions:
@@ -1087,11 +1097,10 @@ async def account_privacy_action(req: PrivacyActionRequest) -> dict:
     from tripplanner.tools import trip_planner
     from tripplanner.tools import user_preferences as prefs_store
     from tripplanner.usage import clear_usage
-    from tripplanner.user_context import set_user_id
     from tripplanner.web import chat_store
     import tripplanner.tools_cache as tools_cache
 
-    set_user_id(req.user_id)
+    user_id = _set_request_user(request, req.user_id)
 
     if req.action in {"clear_all_data", "delete_account"}:
         if req.confirm_text.strip().upper() != "DELETE":
@@ -1111,8 +1120,8 @@ async def account_privacy_action(req: PrivacyActionRequest) -> dict:
     if req.action in {"clear_all_data", "delete_account"}:
         await asyncio.to_thread(prefs_store.reset_preferences)
         reset_prefs = True
-        deleted_usage = await asyncio.to_thread(clear_usage, req.user_id)
-        deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, req.user_id)
+        deleted_usage = await asyncio.to_thread(clear_usage, user_id)
+        deleted_cache = await asyncio.to_thread(tools_cache.clear_cache_for_user, user_id)
 
     app_event(
         "api_privacy_action",
@@ -1140,7 +1149,7 @@ async def account_privacy_action(req: PrivacyActionRequest) -> dict:
 
 
 @app.post("/account/migrate-guest")
-async def account_migrate_guest(req: GuestMigrateRequest) -> dict:
+async def account_migrate_guest(req: GuestMigrateRequest, request: Request) -> dict:
     """Copy trips and preferences from a guest (web-*) identity into an
     authenticated account.
 
@@ -1153,9 +1162,11 @@ async def account_migrate_guest(req: GuestMigrateRequest) -> dict:
     from tripplanner.web import chat_store
 
     guest_id = (req.guest_id or "").strip()
-    auth_id = (req.user_id or "").strip()
-    if not guest_id.startswith("web-") or not auth_id:
+    auth_id = require_signed_user(request) if is_hosted() else resolve_user_id(request, req.user_id)
+    if not is_anonymous_id(guest_id) or not auth_id:
         return {"ok": False, "error": "invalid_ids"}
+    if is_hosted():
+        require_guest_capability(request, guest_id)
 
     # ── 1. Copy saved trips from guest into authenticated user ──────────────
     set_user_id(guest_id)
@@ -1236,7 +1247,7 @@ async def account_migrate_guest(req: GuestMigrateRequest) -> dict:
 
 
 @app.get("/account/guest-data-summary")
-async def account_guest_data_summary(user_id: str) -> dict:
+async def account_guest_data_summary(request: Request, user_id: str) -> dict:
     """How much data does a guest (web-*) account have?
 
     Called by the frontend after OAuth login to decide whether to offer
@@ -1246,8 +1257,11 @@ async def account_guest_data_summary(user_id: str) -> dict:
     from tripplanner.user_context import set_user_id
 
     guest_id = (user_id or "").strip()
-    if not guest_id.startswith("web-"):
+    if not is_anonymous_id(guest_id):
         return {"has_data": False, "trip_count": 0}
+    if is_hosted():
+        require_signed_user(request)
+        require_guest_capability(request, guest_id)
     set_user_id(guest_id)
     trips = await asyncio.to_thread(trip_planner.list_saved_trips)
     active = await asyncio.to_thread(trip_planner.load_active_trip_dict)
@@ -1272,26 +1286,63 @@ async def auth_config(request: Request) -> dict:
     list to avoid redirect_uri_mismatch."""
     return {
         "google": oauth.is_enabled(),
+        "guest_sessions": oauth.signing_enabled(),
         "redirect_uri": oauth.redirect_uri(str(request.base_url)),
     }
+
+
+@app.post("/auth/guest/session")
+async def auth_guest_session(req: UserRequest, request: Request) -> Response:
+    """Issue a signed capability for a browser/native anonymous identity."""
+    current = oauth.read_session(request.cookies.get(oauth.SESSION_COOKIE))
+    if current and current.get("session_kind") != "guest":
+        return JSONResponse({"authenticated": True, "user_id": current["user_id"], "token": ""})
+    guest_id = (req.user_id or "").strip()
+    if not is_anonymous_id(guest_id):
+        return JSONResponse({"authenticated": False}, status_code=400)
+    if not oauth.signing_enabled():
+        if is_hosted():
+            return JSONResponse({"authenticated": False}, status_code=503)
+        return JSONResponse({"authenticated": False, "user_id": guest_id, "token": ""})
+
+    token = oauth.make_guest_token(guest_id)
+    response = JSONResponse({"authenticated": False, "user_id": guest_id, "token": token})
+    response.set_cookie(
+        oauth.SESSION_COOKIE,
+        token,
+        max_age=30 * 24 * 60 * 60,
+        httponly=True,
+        samesite="lax",
+        secure=_secure_cookie(request),
+        path="/",
+    )
+    return response
 
 
 @app.get("/auth/me")
 async def auth_me(request: Request) -> dict:
     """Return the signed-in identity (from the session cookie) or anonymous."""
     session = oauth.read_session(request.cookies.get(oauth.SESSION_COOKIE))
-    if not session:
+    if not session or session.get("session_kind") == "guest":
         return {"authenticated": False}
-    return {"authenticated": True, **session}
+    return {
+        "authenticated": True,
+        **{key: value for key, value in session.items() if key != "session_kind"},
+    }
 
 
 @app.get("/auth/mobile/session")
 async def auth_mobile_session(token: str = "") -> Response:
     """Validate a signed OAuth session returned to the native app."""
     session = oauth.read_session(token)
-    if not session:
+    if not session or session.get("session_kind") == "guest":
         return JSONResponse({"authenticated": False}, status_code=401)
-    return JSONResponse({"authenticated": True, **session})
+    return JSONResponse(
+        {
+            "authenticated": True,
+            **{key: value for key, value in session.items() if key != "session_kind"},
+        }
+    )
 
 
 def _mobile_auth_redirect(target: str, token: str) -> str | None:
@@ -1405,13 +1456,14 @@ async def metrics_tools() -> dict:
 
 
 @app.get("/usage")
-async def usage_for_user(user_id: str = "local") -> dict:
+async def usage_for_user(request: Request, user_id: str = "local") -> dict:
     """Return this month's LLM token + cost usage for ``user_id`` and the cap."""
     from tripplanner.usage import get_cap_usd, get_usage, is_over_cap
 
-    over, doc = is_over_cap(user_id)
+    resolved_user_id = _set_request_user(request, user_id)
+    over, doc = is_over_cap(resolved_user_id)
     return {
-        "user_id": user_id,
+        "user_id": resolved_user_id,
         "month": doc.get("month"),
         "prompt_tokens": doc.get("prompt_tokens", 0),
         "completion_tokens": doc.get("completion_tokens", 0),
