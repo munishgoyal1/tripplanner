@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState, Screen } from '@/components/screen';
 import { palette } from '@/constants/tripplanner-theme';
+import { exactItineraryOccurrence } from '@/lib/itinerary-occurrence';
 import { useTrip } from '@/providers/trip-provider';
 
 export default function PlanScreen() {
@@ -23,7 +24,14 @@ export default function PlanScreen() {
             <View key={`${day.day}-${stopIndex}-${stop.name}`} style={styles.stop}>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => router.push({ pathname: '/details', params: { kind: stop.kind, name: stop.name, day: day.day, stop: stopIndex } })}
+                onPress={() => router.push({
+                  pathname: '/details',
+                  params: {
+                    kind: stop.kind,
+                    name: stop.name,
+                    ...exactItineraryOccurrence(day.day, stopIndex),
+                  },
+                })}
                 style={styles.stopLink}
               >
                 <View style={styles.timeRail}><Text style={styles.time}>{stop.time || 'Anytime'}</Text><View style={styles.rail} /></View>

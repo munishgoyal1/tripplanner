@@ -121,17 +121,23 @@ export class TripplannerClient {
     return response.json() as Promise<MapView>;
   }
 
-  async fetchSavedTrips(): Promise<SavedTrip[]> {
-    const response = await this.request(this.url("/trips", { user_id: await this.userId() }));
+  async fetchSavedTrips(signal?: AbortSignal): Promise<SavedTrip[]> {
+    const response = await this.request(
+      this.url("/trips", { user_id: await this.userId() }),
+      { signal },
+    );
     ensureOk(response, "Could not load saved trips");
     const data = (await response.json()) as { trips?: SavedTrip[] };
     return data.trips ?? [];
   }
 
-  async fetchChatHistory(tripId?: string): Promise<{ role: "user" | "assistant"; text: string }[]> {
+  async fetchChatHistory(
+    tripId?: string,
+    signal?: AbortSignal,
+  ): Promise<{ role: "user" | "assistant"; text: string }[]> {
     const params: Record<string, string> = { user_id: await this.userId() };
     if (tripId) params.trip_id = tripId;
-    const response = await this.request(this.url("/chat/history", params));
+    const response = await this.request(this.url("/chat/history", params), { signal });
     ensureOk(response, "Could not load chat history");
     const data = (await response.json()) as {
       messages?: { role: "user" | "assistant"; text: string }[];

@@ -14,6 +14,7 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
 } from 'react';
 
@@ -24,6 +25,7 @@ import {
   tripplannerClient,
   type MobileAccount,
 } from '@/lib/tripplanner';
+import { LatestRequestGate } from '@/lib/latest-request';
 
 interface TripContextValue {
   view: TripView | null;
@@ -68,18 +70,21 @@ export function TripProvider({ children }: PropsWithChildren) {
   const [error, setError] = useState<string | null>(null);
   const [revision, bumpRevision] = useReducer((value: number) => value + 1, 0);
   const [account, setAccount] = useState<MobileAccount | null>(null);
+  const refreshRequests = useRef(new LatestRequestGate());
 
   const refresh = useCallback(async () => {
+    const request = refreshRequests.current.start();
     setLoading(true);
     setError(null);
     try {
       const results = await Promise.allSettled([
-        tripplannerClient.fetchTripView(),
-        tripplannerClient.fetchItinerary(),
-        tripplannerClient.fetchMapView(),
-        tripplannerClient.fetchSavedTrips(),
-        tripplannerClient.fetchChatHistory(),
+        tripplannerClient.fetchTripView(undefined, request.signal),
+        tripplannerClient.fetchItinerary(request.signal),
+        tripplannerClient.fetchMapView(request.signal),
+        tripplannerClient.fetchSavedTrips(request.signal),
+        tripplannerClient.fetchChatHistory(undefined, request.signal),
       ]);
+      if (!request.isCurrent()) return;
       const [nextView, nextItinerary, nextMap, nextTrips, history] = results;
       if (nextView.status === 'fulfilled') setView(nextView.value);
       if (nextItinerary.status === 'fulfilled') setItinerary(nextItinerary.value);
@@ -93,15 +98,16 @@ export function TripProvider({ children }: PropsWithChildren) {
       }
       bumpRevision();
     } catch (caught) {
-      setError(errorMessage(caught));
+      if (request.isCurrent()) setError(errorMessage(caught));
     } finally {
-      setLoading(false);
+      if (request.isCurrent()) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     void getMobileAccount().then(setAccount);
     void refresh();
+    return () => refreshRequests.current.abort();
   }, [refresh]);
 
   const signIn = useCallback(async () => {

@@ -110,6 +110,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Native occurrence + refresh correctness (Session 80, milestone C)**: Plan
+  converts rendered stop indexes to the backend's one-based occurrence contract,
+  so repeated-place actions reach the exact row. Native refreshes share one
+  abortable generation across Trip, Itinerary, Map, saved trips, and chat;
+  superseded results cannot overwrite newer state, while every successful chat
+  or mutation still refreshes all dependent surfaces.
 - **Single guarded deployment path (Session 80, milestone B)**: the manual
   GitHub Actions workflow only builds and pushes SHA/`latest` images. It has no
   Azure login or deployment authority; canary and production releases remain

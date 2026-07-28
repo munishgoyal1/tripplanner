@@ -28,6 +28,12 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   Details directly is insufficient when Map and Itinerary subscribe to a shared
   revision token; advance that token in the same owner-level completion handler
   so all mounted panes request the persisted plan concurrently.
+- Rendered itinerary arrays are zero-based, but persisted occurrence identities
+  are one-based. Translate once at the navigation boundary so repeated-place
+  move/remove actions target the exact backend stop.
+- A multi-surface refresh is one logical request generation. Share one abort
+  signal across its reads and commit results only while that generation is
+  current; otherwise an older trip can overwrite a newly selected one.
 
 ## 2026-07-26 - Itinerary Chronology Is One Contract
 

@@ -172,7 +172,11 @@ mobile/
   app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant,
                            Details with occurrence-safe day moves, and Account/preferences
   providers/trip-provider.tsx  Authoritative native data/revision owner; completed
-                           chat and mutations refresh all dependent trip surfaces
+                           chat and mutations refresh all dependent trip surfaces;
+                           one abortable generation prevents stale refresh commits
+  lib/itinerary-occurrence.ts  Converts zero-based rendered rows to the API's
+                           one-based exact-occurrence identity
+  lib/latest-request.ts    Small latest-request gate shared by native trip reads
   lib/tripplanner.ts       Hosted API selection + Keychain-backed identity and
                            native Google OAuth session handoff
   eas.json                 Development, preview, and App Store build profiles
