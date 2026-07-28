@@ -123,9 +123,11 @@ Complete this checklist after a fresh launch:
 
 - Trips loads saved trips and switches the active trip.
 - New trip clears the workspace without deleting saved trips.
-- Plan renders structured days and booking controls update.
+- Plan renders structured days; booking controls update without opening Details,
+   and the booked count remains consistent after leaving and returning to Plan.
 - Map renders Google Maps, pins, and day routes; a pin opens Details.
-- Details removes one exact occurrence or all repeated occurrences.
+- Details moves an exact occurrence to another day and removes one exact
+   occurrence or all repeated occurrences; Plan and Map reflect each change.
 - Assistant restores chat history and sends one streamed turn.
 - Android system Back closes Details and returns to the prior tab correctly.
 - Force-stop and reopen Expo Go; identity and active-trip data remain available.

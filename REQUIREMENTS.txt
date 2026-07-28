@@ -2343,3 +2343,13 @@ VALIDATION:
   for a later mutation, trip switch, or unrelated refresh before showing the
   new plan.
 
+=== 2026-07-26 — Session 77: Android behavioral parity repair ===
+
+- Android must provide behavioral capability parity with the web planner while
+  retaining native phone ergonomics; sharing API contracts alone is not enough.
+- Successful native booking and place mutations must invalidate every dependent
+  trip surface so Plan, Map, Details, counts, and saved-trip metadata agree.
+- Booking and stop-navigation controls must be independent Android touch targets.
+- Details must support authoritative day moves using the exact source occurrence
+  identity, including repeated visits.
+

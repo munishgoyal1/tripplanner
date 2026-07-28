@@ -166,8 +166,9 @@ packages/tripplanner-client/
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
   app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant,
-                           Details, and Account/preferences
-  providers/trip-provider.tsx  Authoritative native data/revision owner
+                           Details with occurrence-safe day moves, and Account/preferences
+  providers/trip-provider.tsx  Authoritative native data/revision owner; completed
+                           chat and mutations refresh all dependent trip surfaces
   lib/tripplanner.ts       Hosted API selection + Keychain-backed identity and
                            native Google OAuth session handoff
   eas.json                 Development, preview, and App Store build profiles

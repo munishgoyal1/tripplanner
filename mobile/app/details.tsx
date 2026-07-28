@@ -15,6 +15,16 @@ export default function DetailsScreen() {
   const occurrence = params.day !== undefined && params.stop !== undefined
     ? { day: Number(params.day), stop: Number(params.stop), all_occurrences: false }
     : undefined;
+  const focusedOccurrence = occurrence
+    ? item?.occurrences.find((row) => row.day === occurrence.day && row.stop === occurrence.stop)
+    : item?.occurrences[0];
+  const moveToDay = async (day: number) => {
+    await addPlace(kind, params.name, {
+      day,
+      source_day: focusedOccurrence?.day,
+      source_stop: focusedOccurrence?.stop,
+    });
+  };
 
   return (
     <SafeAreaView edges={['bottom']} style={styles.safe}>
@@ -26,6 +36,24 @@ export default function DetailsScreen() {
         {item?.address ? <Text style={styles.address}>{item.address}</Text> : null}
         {item?.summary ? <Text style={styles.summary}>{item.summary}</Text> : null}
         {item?.occurrences?.length ? <View style={styles.occurrences}><Text style={styles.sectionTitle}>In your itinerary</Text>{item.occurrences.map((row) => <Text key={`${row.day}-${row.stop}`} style={styles.occurrence}>Day {row.day}{row.time ? ` · ${row.time}` : ''}</Text>)}</View> : null}
+        {item?.selected && kind !== 'hotel' && focusedOccurrence && view?.available_days.length ? (
+          <View style={styles.dayPicker}>
+            <Text style={styles.sectionTitle}>Change day</Text>
+            <View style={styles.dayOptions}>
+              {view.available_days.map((day) => (
+                <Pressable
+                  accessibilityLabel={`Move ${params.name} to Day ${day}`}
+                  disabled={day === focusedOccurrence.day}
+                  key={day}
+                  onPress={() => void moveToDay(day)}
+                  style={[styles.dayOption, day === focusedOccurrence.day && styles.dayOptionActive]}
+                >
+                  <Text style={[styles.dayOptionText, day === focusedOccurrence.day && styles.dayOptionTextActive]}>Day {day}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        ) : null}
         <Pressable
           onPress={async () => {
             if (item?.selected) await removePlace(kind, params.name, occurrence);
@@ -58,6 +86,12 @@ const styles = StyleSheet.create({
   occurrences: { borderTopColor: palette.line, borderTopWidth: 1, marginTop: 22, paddingTop: 18, gap: 7 },
   sectionTitle: { color: palette.ink, fontSize: 15, fontWeight: '700' },
   occurrence: { color: palette.muted, fontSize: 13 },
+  dayPicker: { borderTopColor: palette.line, borderTopWidth: 1, marginTop: 18, paddingTop: 18, gap: 10 },
+  dayOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  dayOption: { borderColor: palette.line, borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
+  dayOptionActive: { backgroundColor: palette.accentSoft, borderColor: '#99F6E4' },
+  dayOptionText: { color: palette.ink, fontSize: 13, fontWeight: '700' },
+  dayOptionTextActive: { color: palette.accent },
   primary: { backgroundColor: palette.brand, borderRadius: 8, alignItems: 'center', paddingVertical: 14, marginTop: 25 },
   remove: { backgroundColor: palette.ink },
   primaryText: { color: '#fff', fontSize: 15, fontWeight: '800' },

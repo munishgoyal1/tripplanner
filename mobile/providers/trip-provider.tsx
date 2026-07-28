@@ -4,6 +4,7 @@ import type {
   Itinerary,
   MapView,
   SavedTrip,
+  SelectItemOptions,
   TripView,
 } from '@tripplanner/client';
 import {
@@ -44,7 +45,7 @@ interface TripContextValue {
     name: string,
     options?: DeselectItemOptions,
   ) => Promise<void>;
-  addPlace: (kind: string, name: string) => Promise<void>;
+  addPlace: (kind: string, name: string, options?: SelectItemOptions) => Promise<void>;
   setBooked: (day: number, name: string, booked: boolean) => Promise<void>;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -156,13 +157,20 @@ export function TripProvider({ children }: PropsWithChildren) {
     setError(null);
     setMessages((current) => [...current, { role: 'user', text: trimmed }]);
     let streamed = '';
+    let hasAssistantDraft = false;
     try {
       await tripplannerClient.streamChat(trimmed, {
         onToken: (token) => {
           streamed += token;
           setMessages((current) => {
-            const withoutDraft = current.filter((item) => item.role !== 'assistant' || item.text !== streamed.slice(0, -token.length));
-            return [...withoutDraft, { role: 'assistant', text: streamed }];
+            if (!hasAssistantDraft) {
+              hasAssistantDraft = true;
+              return [...current, { role: 'assistant', text: streamed }];
+            }
+            return [
+              ...current.slice(0, -1),
+              { role: 'assistant', text: streamed },
+            ];
           });
         },
         onTool: () => undefined,
@@ -198,9 +206,13 @@ export function TripProvider({ children }: PropsWithChildren) {
     }
   }, [refresh]);
 
-  const addPlace = useCallback(async (kind: string, name: string) => {
+  const addPlace = useCallback(async (
+    kind: string,
+    name: string,
+    options?: SelectItemOptions,
+  ) => {
     try {
-      const result = await tripplannerClient.selectItem(kind, name);
+      const result = await tripplannerClient.selectItem(kind, name, options);
       setView(result.view);
       await refresh();
     } catch (caught) {
@@ -211,11 +223,11 @@ export function TripProvider({ children }: PropsWithChildren) {
   const setBooked = useCallback(async (day: number, name: string, booked: boolean) => {
     try {
       setItinerary(await tripplannerClient.setStopBooked(day, name, booked));
-      bumpRevision();
+      await refresh();
     } catch (caught) {
       setError(errorMessage(caught));
     }
-  }, []);
+  }, [refresh]);
 
   return (
     <TripContext.Provider value={{

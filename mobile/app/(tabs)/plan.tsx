@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState, Screen } from '@/components/screen';
@@ -6,6 +6,7 @@ import { palette } from '@/constants/tripplanner-theme';
 import { useTrip } from '@/providers/trip-provider';
 
 export default function PlanScreen() {
+  const router = useRouter();
   const { itinerary, setBooked, view } = useTrip();
   return (
     <Screen title={view?.destination || 'Your plan'} subtitle={view?.overview?.total_cost_display || 'Day by day'}>
@@ -19,23 +20,27 @@ export default function PlanScreen() {
             </View>
           </View>
           {day.stops.map((stop, stopIndex) => (
-            <Link key={`${day.day}-${stopIndex}-${stop.name}`} href={{ pathname: '/details', params: { kind: stop.kind, name: stop.name, day: day.day, stop: stopIndex } }} asChild>
-              <Pressable style={styles.stop}>
+            <View key={`${day.day}-${stopIndex}-${stop.name}`} style={styles.stop}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => router.push({ pathname: '/details', params: { kind: stop.kind, name: stop.name, day: day.day, stop: stopIndex } })}
+                style={styles.stopLink}
+              >
                 <View style={styles.timeRail}><Text style={styles.time}>{stop.time || 'Anytime'}</Text><View style={styles.rail} /></View>
                 <View style={styles.stopBody}>
                   <Text style={styles.stopName}>{stop.name}</Text>
                   <Text numberOfLines={2} style={styles.note}>{stop.note || stop.kind}</Text>
                 </View>
-                <Pressable
-                  accessibilityLabel={`${stop.booked ? 'Mark unbooked' : 'Mark booked'} ${stop.name}`}
-                  hitSlop={10}
-                  onPress={() => void setBooked(day.day, stop.name, !stop.booked)}
-                  style={[styles.booked, stop.booked && styles.bookedActive]}
-                >
-                  <Text style={[styles.bookedText, stop.booked && styles.bookedTextActive]}>{stop.booked ? 'Booked' : 'Open'}</Text>
-                </Pressable>
               </Pressable>
-            </Link>
+              <Pressable
+                accessibilityLabel={`${stop.booked ? 'Mark unbooked' : 'Mark booked'} ${stop.name}`}
+                hitSlop={10}
+                onPress={() => void setBooked(day.day, stop.name, !stop.booked)}
+                style={[styles.booked, stop.booked && styles.bookedActive]}
+              >
+                <Text style={[styles.bookedText, stop.booked && styles.bookedTextActive]}>{stop.booked ? 'Booked' : 'Open'}</Text>
+              </Pressable>
+            </View>
           ))}
         </View>
       ))}
@@ -51,14 +56,15 @@ const styles = StyleSheet.create({
   dayHeading: { flex: 1, gap: 3 },
   dayTitle: { color: palette.ink, fontSize: 17, fontWeight: '700' },
   dayMeta: { color: palette.muted, fontSize: 12 },
-  stop: { minHeight: 74, flexDirection: 'row', gap: 10, alignItems: 'stretch', borderTopColor: palette.line, borderTopWidth: 1, paddingHorizontal: 14, paddingTop: 12 },
+  stop: { minHeight: 74, flexDirection: 'row', alignItems: 'flex-start', borderTopColor: palette.line, borderTopWidth: 1, paddingRight: 14 },
+  stopLink: { flex: 1, minHeight: 74, flexDirection: 'row', gap: 10, alignItems: 'stretch', paddingLeft: 14, paddingTop: 12 },
   timeRail: { width: 55, alignItems: 'center', gap: 5 },
   time: { color: palette.accent, fontSize: 11, fontWeight: '700' },
   rail: { width: 2, flex: 1, backgroundColor: '#CCFBF1' },
   stopBody: { flex: 1, paddingBottom: 12, gap: 4 },
   stopName: { color: palette.ink, fontSize: 15, fontWeight: '700' },
   note: { color: palette.muted, fontSize: 12, lineHeight: 17, textTransform: 'capitalize' },
-  booked: { alignSelf: 'flex-start', borderColor: palette.line, borderWidth: 1, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
+  booked: { alignSelf: 'flex-start', borderColor: palette.line, borderWidth: 1, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5, marginTop: 12 },
   bookedActive: { backgroundColor: palette.accentSoft, borderColor: '#99F6E4' },
   bookedText: { color: palette.muted, fontSize: 11, fontWeight: '700' },
   bookedTextActive: { color: palette.accent },

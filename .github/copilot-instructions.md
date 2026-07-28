@@ -108,6 +108,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-26)
+- **Android behavioral parity repair (Session 77)**: native booking controls
+  are independent from stop navigation, booking and place mutations refresh
+  every dependent trip surface, streamed Assistant drafts have stable ownership,
+  and Details can move an exact occurrence to another authoritative day.
 - **Immediate new-trip pane population (Session 76)**: completed planning turns
   now advance the shared trip revision while refreshing Details, so Itinerary
   and Map fetch the newly persisted plan concurrently instead of waiting for a
