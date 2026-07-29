@@ -44,3 +44,6 @@ logs/
 
 # Stray local upload/cache artifacts
 .files/
+
+# Owner selections captured by the local UX Labs pages
+docs/ux-experiments/LAB_SELECTIONS.local.json

@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 1 - Worker | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 1 - UI | ${activeEditorShort}${separator}${rootName}",
     "workbench.colorCustomizations": {
       "activityBar.background": "#115e59",
       "activityBar.foreground": "#ffffff",
