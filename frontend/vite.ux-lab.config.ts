@@ -12,6 +12,7 @@ export default defineConfig({
         catalog: resolve(__dirname, "labs.html"),
         itinerary: resolve(__dirname, "ux-lab.html"),
         summary: resolve(__dirname, "summary-lab.html"),
+        workspaceShell: resolve(__dirname, "workspace-shell-lab.html"),
       },
     },
   },

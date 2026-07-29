@@ -15,7 +15,7 @@ durable sections:
 Do not delete a lab after a decision. Move its catalog record from Active to
 Already decided, retain the page, and update its experiment document with the
 final choice and date. Historical experiments that predate lab pages may remain
-decision-only records.
+read-only detail records reconstructed from their preserved source material.
 
 ## Branch Strategy
 

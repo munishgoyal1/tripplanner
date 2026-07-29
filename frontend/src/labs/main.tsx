@@ -48,6 +48,7 @@ const decidedLabs: LabRecord[] = [
     date: "23 Jul 2026",
     status: "Decided",
     decision: "Layout C: map-first canvas, details-first rail, and compact lower-right Assistant.",
+    href: "/workspace-shell-lab.html",
     icon: LayoutPanelTop,
   },
 ];
@@ -121,7 +122,7 @@ function LabCatalog() {
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             {decidedLabs.map((lab) => <LabCard key={lab.title} lab={lab} archived />)}
           </div>
-          <p className="mt-3 text-xs text-slate-400">The workspace-shell comparison predates standalone lab pages. Future decided experiments retain their original page and move here with the selected outcome.</p>
+          <p className="mt-3 text-xs text-slate-400">The workspace-shell comparison predates standalone lab pages, so its linked page is a reconstructed read-only record based on preserved branches. Future decided experiments retain their original interactive page.</p>
         </section>
       </div>
     </main>
