@@ -2520,3 +2520,10 @@ VALIDATION:
 - Roadmap entries remain candidates, not implementation approval. Selected work
   must be bounded through the existing feature-brief workflow.
 
+=== 2026-07-29 — Assistant pane control order ===
+
+- Keep the Assistant pane controls in the same left-to-right order as Details:
+  Hide, then Maximize/Restore.
+- Render both actions in one stable control group so absolute positioning cannot
+  reverse their visual order.
+

@@ -321,6 +321,17 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
   });
 
+  it("orders Assistant controls as Hide then Maximize", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Hide Assistant" })).toBeInTheDocument());
+    const hide = screen.getByRole("button", { name: "Hide Assistant" });
+    const maximize = screen.getByRole("button", { name: "Maximize Assistant" });
+    expect(hide.parentElement).toBe(maximize.parentElement);
+    expect(hide.compareDocumentPosition(maximize) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("does not reload itinerary data for focus-only navigation", async () => {
     setDesktop(true);
     render(<App />);

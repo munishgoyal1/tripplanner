@@ -644,24 +644,26 @@ export default function App() {
               assistantRequest={assistantRequest}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => setDockPaneOpen("assistant", false)}
-            className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-            aria-label="Hide Assistant"
-            title="Hide Assistant"
-          >
-            <EyeOff size={15} aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleMaxPane("assistant")}
-            className="absolute right-12 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-            aria-label={maximizedPane === "assistant" ? "Restore Assistant" : "Maximize Assistant"}
-            title={maximizedPane === "assistant" ? "Restore" : "Maximize"}
-          >
-            {maximizedPane === "assistant" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-          </button>
+          <div className="absolute right-3 top-3 z-30 flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setDockPaneOpen("assistant", false)}
+              className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
+              aria-label="Hide Assistant"
+              title="Hide Assistant"
+            >
+              <EyeOff size={15} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleMaxPane("assistant")}
+              className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
+              aria-label={maximizedPane === "assistant" ? "Restore Assistant" : "Maximize Assistant"}
+              title={maximizedPane === "assistant" ? "Restore" : "Maximize"}
+            >
+              {maximizedPane === "assistant" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
+            </button>
+          </div>
         </section>
       </aside>
     </div>
