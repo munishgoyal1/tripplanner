@@ -29,6 +29,7 @@ Thumbs.db
 
 # Distribution
 dist/
+dist-ux-lab/
 build/
 *.egg-info/
 

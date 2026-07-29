@@ -19,6 +19,14 @@ The experiment badge and dashboard-style move/hide controls were removed;
 resizing and maximize remain. Keep the other branches until C is accepted on
 canary, then merge C and delete discarded experiment branches.
 
+## Active Component Experiment (2026-07-29)
+
+The standalone itinerary information-design lab is available at
+`http://localhost:5173/ux-lab.html` while the frontend dev server is running.
+It compares Journey timeline, Compact agenda, and Guided place cards without
+changing the production ItineraryPanel. See
+[`ITINERARY_INFORMATION_DESIGN.md`](ITINERARY_INFORMATION_DESIGN.md).
+
 ## Rules
 
 1. Keep each experiment isolated to UI layout/interaction files only.
