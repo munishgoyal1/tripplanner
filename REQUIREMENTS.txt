@@ -2527,3 +2527,17 @@ VALIDATION:
 - Render both actions in one stable control group so absolute positioning cannot
   reverse their visual order.
 
+=== 2026-07-29 — Itinerary UX labs and row-layout preference ===
+
+- Use isolated, realistic UX lab pages to compare coherent alternatives before
+  changing production interaction surfaces. Keep this pattern available for
+  future focused experience decisions.
+- Compact Agenda (option B) is the preferred itinerary-row treatment. Do not
+  implement it in production until it is paired with the owner's selected
+  itinerary-summary treatment.
+- Add a separate summary lab comparing Operational overview, Narrative brief,
+  and Action strip above the same Compact Agenda context so both choices can be
+  evaluated together.
+- Keep lab builds separate from the normal production artifact and retain local
+  browser-only scorecards for structured comparison.
+

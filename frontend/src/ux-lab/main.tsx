@@ -350,7 +350,7 @@ function Scorecard({ variant }: { variant: Variant }) {
 }
 
 function Lab() {
-  const [variant, setVariant] = useState<Variant>("timeline");
+  const [variant, setVariant] = useState<Variant>("agenda");
   const [compare, setCompare] = useState(false);
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_18rem)] px-4 py-6 sm:px-6 lg:px-8">
@@ -360,6 +360,7 @@ function Lab() {
             <p className="text-xs font-bold uppercase text-brand">Internal · Itinerary UX experiment</p>
             <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose how a travel day should read</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">All variants use the same itinerary facts. Compare hierarchy, transport guidance, weekday visibility, and an explicit booking-state action before changing the product.</p>
+            <p className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Current preference: B · Compact agenda</p>
           </div>
           <button type="button" onClick={() => setCompare((value) => !value)} className="btn-ghost self-start lg:self-auto">
             {compare ? "Inspect one" : "Compare all"} <ChevronRight size={14} aria-hidden />

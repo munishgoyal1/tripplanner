@@ -8,7 +8,10 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: "dist-ux-lab",
     rollupOptions: {
-      input: resolve(__dirname, "ux-lab.html"),
+      input: {
+        itinerary: resolve(__dirname, "ux-lab.html"),
+        summary: resolve(__dirname, "summary-lab.html"),
+      },
     },
   },
 });

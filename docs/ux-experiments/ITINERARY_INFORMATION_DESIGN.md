@@ -6,7 +6,7 @@
 - Isolated build: `npm --prefix frontend run build:ux-lab`
 - Owner: Munish Goyal
 - Date started: 2026-07-29
-- Status: testing
+- Status: preferred candidate selected; pairing decision pending
 
 ## Hypothesis
 
@@ -71,7 +71,8 @@ local storage.
 
 ## Decision
 
-- Decision: pending owner selection
-- Recommended first candidate: A - Journey timeline
-- Next action: select one variant, normalize real-data wording, then update the
-  production ItineraryPanel and its backend/frontend contract tests.
+- Preferred candidate: B - Compact agenda
+- Final decision: pending pairing with an itinerary-summary treatment
+- Next action: choose a summary variant in the separate summary lab, then
+  normalize real-data wording and update the production ItineraryPanel plus its
+  backend/frontend contract tests as one coherent change.
