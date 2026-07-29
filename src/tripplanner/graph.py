@@ -22,7 +22,7 @@ from tripplanner.agents.trip_agent import (
     select_tools,
 )
 from tripplanner.config import get_settings
-from tripplanner.tools.trip_planner import load_active_trip_dict
+from tripplanner.tools.trip_planner import load_active_trip_dict, planning_completion_gaps
 from tripplanner.tools_cache import wrap_tools_with_cache
 from tripplanner.usage import record_usage
 from tripplanner.user_context import get_user_id
@@ -101,16 +101,76 @@ def _tool_was_called(messages: list[BaseMessage], tool_name: str) -> bool:
     return False
 
 
-def _requires_initial_itinerary(messages: list[BaseMessage]) -> bool:
-    if not _tool_was_called(messages, "create_trip_plan"):
-        return False
-    if _tool_was_called(messages, "update_trip_plan"):
-        return False
+_COMPLETION_RESEARCH_TOOLS = {
+    "search_flights_duffel",
+    "search_flights",
+    "search_hotels",
+    "search_activities",
+    "search_points_of_interest",
+    "search_places_with_reviews",
+    "nearby_restaurants",
+    "get_weather_forecast",
+    "check_visa_requirements",
+    "find_local_events",
+}
+_MAX_POST_RESEARCH_UPDATES = 2
+
+
+def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
+    positions: list[tuple[int, str]] = []
+    for index, message in enumerate(messages):
+        for tool_call in getattr(message, "tool_calls", None) or []:
+            name = (
+                tool_call.get("name")
+                if isinstance(tool_call, dict)
+                else getattr(tool_call, "name", None)
+            )
+            if name:
+                positions.append((index, name))
+    return positions
+
+
+def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
+    positions = _tool_call_positions(messages)
+    if not any(name == "create_trip_plan" for _, name in positions):
+        return None
     try:
         trip = load_active_trip_dict() or {}
     except Exception:
-        return False
-    return bool(trip.get("destination")) and not trip.get("day_wise_itinerary")
+        return None
+    if not trip.get("destination"):
+        return None
+
+    update_positions = [index for index, name in positions if name == "update_trip_plan"]
+    if not trip.get("day_wise_itinerary") and not update_positions:
+        return (
+            "The new trip has no itinerary. Save a complete structured day_wise_itinerary "
+            "now, using sensible defaults rather than asking the user to design it."
+        )
+
+    research_positions = [
+        index for index, name in positions if name in _COMPLETION_RESEARCH_TOOLS
+    ]
+    if not research_positions:
+        return None
+    latest_research = max(research_positions)
+    updates_after_research = [index for index in update_positions if index > latest_research]
+    if not updates_after_research:
+        return (
+            "Research is complete but has not been persisted. Save the full enriched "
+            "day_wise_itinerary and the strongest real hotel, activities, meals, costs, "
+            "and other useful researched choices now."
+        )
+
+    gaps = planning_completion_gaps(trip)
+    if gaps and len(updates_after_research) < _MAX_POST_RESEARCH_UPDATES:
+        return (
+            "The saved plan still has completion gaps: "
+            + " ".join(gaps)
+            + " Use the research already returned to choose sensible defaults, replace "
+            "placeholders, and resubmit the full itinerary now."
+        )
+    return None
 
 
 def trip_agent(state: AgentState) -> AgentState:
@@ -122,20 +182,19 @@ def trip_agent(state: AgentState) -> AgentState:
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
     tools = select_tools(state["messages"], proposal_only=proposal_only)
-    force_initial_itinerary = not proposal_only and _requires_initial_itinerary(
-        state["messages"]
+    update_requirement = (
+        None if proposal_only else _trip_update_requirement(state["messages"])
     )
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
-        **({"tool_choice": "update_trip_plan"} if force_initial_itinerary else {}),
+        **({"tool_choice": "update_trip_plan"} if update_requirement else {}),
     )
     instructions = [build_trip_system_prompt()]
-    if force_initial_itinerary:
+    if update_requirement:
         instructions.append(SystemMessage(content=(
-            "The trip was created in this turn but its itinerary is still empty. "
-            "Call update_trip_plan now with the complete structured "
-            "day_wise_itinerary before writing any final response."
+            update_requirement
+            + " Call update_trip_plan before writing any final response."
         )))
     if proposal_only:
         instructions.append(SystemMessage(content=(

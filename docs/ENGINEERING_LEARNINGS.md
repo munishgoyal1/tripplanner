@@ -16,6 +16,10 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Keep request-level and child-operation timers in separate variables. A reused
   closure variable can corrupt terminal telemetry or fail before the transport's
   final completion event, preventing client invalidation even after persistence.
+- Completion gates should evaluate persisted domain quality after research, not
+  merely whether an update tool was called once. Require researched choices to
+  replace the first cut, but cap corrective retries so missing provider data
+  degrades honestly instead of creating an infinite agent loop.
 
 ## 2026-07-28 - Performance Evidence Has Distinct Layers
 

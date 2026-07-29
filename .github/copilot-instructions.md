@@ -123,6 +123,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Complete-by-default new trips (Session 85)**: after the immediate first cut,
+  new-trip research must be persisted in a second enriched full-plan update with
+  the strongest concrete hotel and sensible daily defaults. One bounded
+  correction handles remaining hotel, meal, or empty-day gaps; the opening chat
+  asks only for origin, destination, and rough timing.
 - **Enforced first itinerary persistence (Session 84)**: production telemetry
   exposed a planning turn that created and researched London but skipped
   `update_trip_plan`. The graph now forces the initial structured itinerary

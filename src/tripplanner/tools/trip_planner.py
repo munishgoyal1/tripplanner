@@ -223,6 +223,15 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     return warnings
 
 
+def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
+    """Return actionable gaps that keep a new plan from feeling complete."""
+    return [
+        *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
+        *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
+        *_hotel_selection_warnings(plan),
+    ]
+
+
 def _make_stop(name: str, kind: str, summary: dict[str, Any]) -> dict[str, Any]:
     return {
         "name": name,

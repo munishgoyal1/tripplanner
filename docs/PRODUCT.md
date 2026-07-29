@@ -19,6 +19,13 @@ without duplicating the agent, travel logic, or persistence model.
 **Target user**: the owner (Munish). One-person product. Optimize for *his*
 flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
+New-trip planning is automation-first. Once the user supplies an origin,
+destination, and rough timing, the agent owns the first complete proposal: it
+chooses sensible defaults, researches and selects the strongest verified hotel,
+fills every day with concrete places and meals, and persists the enriched plan.
+The user refines a useful plan through chat instead of designing one from a blank
+canvas or resolving avoidable `TBD` decisions.
+
 ## 2) Non-goals (resist scope creep)
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.

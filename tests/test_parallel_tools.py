@@ -172,7 +172,117 @@ def test_initial_itinerary_gate_stops_after_update(monkeypatch) -> None:
         ),
     ]
 
-    assert graph_mod._requires_initial_itinerary(messages) is False
+    assert graph_mod._trip_update_requirement(messages) is None
+
+
+def test_new_trip_requires_enriched_update_after_research(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "London",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Tower of London", "kind": "attraction"}],
+            }],
+            "selected_hotels": [],
+        },
+    )
+    messages = [
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "create_trip_plan", "args": {}, "id": "create-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "draft-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "search_hotels", "args": {}, "id": "hotel-1"}],
+        ),
+    ]
+
+    requirement = graph_mod._trip_update_requirement(messages)
+
+    assert requirement is not None
+    assert "Research is complete" in requirement
+    assert "strongest real hotel" in requirement
+
+
+def test_new_trip_retries_incomplete_researched_plan_once(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "London",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+    )
+    messages = [
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "create_trip_plan", "args": {}, "id": "create-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "search_hotels", "args": {}, "id": "hotel-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-1"}],
+        ),
+    ]
+
+    requirement = graph_mod._trip_update_requirement(messages)
+
+    assert requirement is not None
+    assert "No concrete hotel is selected" in requirement
+
+
+def test_new_trip_completion_retry_is_bounded(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "London",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+    )
+    messages = [
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "create_trip_plan", "args": {}, "id": "create-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "search_hotels", "args": {}, "id": "hotel-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-1"}],
+        ),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-2"}],
+        ),
+    ]
+
+    assert graph_mod._trip_update_requirement(messages) is None
 
 
 def test_proposal_only_never_forces_initial_itinerary(monkeypatch) -> None:

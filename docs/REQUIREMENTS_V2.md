@@ -111,6 +111,10 @@ re-describing the whole product.
   requires the initial structured `update_trip_plan` call before the final
   response, and SSE tool timing cannot interfere with the terminal completion
   event that triggers the shared pane refresh.
+- New-trip planning is complete-by-default: after research, the graph requires
+  an enriched persistence pass with the strongest concrete hotel and a full
+  best-effort itinerary. One bounded correction pass addresses remaining hotel,
+  meal, or empty-day gaps without trapping the turn when providers fail.
 
 ### PLAN-02 - Grounded providers and enrichment
 

@@ -2452,6 +2452,18 @@ VALIDATION:
 - Preserve the live managed certificates and hostname bindings in Bicep and
   production parameters so later guarded deployments cannot erase the cutover.
 
+=== 2026-07-29 — Session 85: Complete-by-default new trips ===
+
+- New-trip users should provide only origin, destination, and rough timing; the
+  agent owns a complete first proposal and the user refines it conversationally.
+- After research, require a second persistence pass that replaces first-cut
+  assumptions and `TBD` values with the strongest verified hotel, concrete
+  activities, named meals, costs, and other useful researched context.
+- If hotel, meal, or empty-day gaps remain, allow one forced correction save.
+  Bound retries so unavailable providers cannot trap the planning turn.
+- This behavior is shared by local and hosted modes because both use the same
+  FastAPI/LangGraph planning path.
+
 === 2026-07-28 — Session 84: Enforced first itinerary persistence ===
 
 - A production London planning turn created the trip and completed six research

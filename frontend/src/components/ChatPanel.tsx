@@ -39,7 +39,7 @@ interface Props {
 
 const GREETING: ChatMessage = {
   role: "assistant",
-  text: "Hi! Tell me where and when you'd like to travel and I'll plan it.",
+  text: "Where are you traveling from, where would you like to go, and roughly when? I'll build a complete first plan with sensible defaults, and you can change anything here.",
 };
 
 const PROGRESS_LABELS = {

@@ -399,6 +399,9 @@ STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
      "Draft — I'll refine with real prices and availability next."
 
   Use your own travel knowledge + loaded preferences to build this first cut.
+  Take ownership of the draft: choose sensible defaults for every day instead
+  of asking the user to assemble the itinerary. The user can refine any choice
+  conversationally after seeing a complete plan.
   Do NOT wait for flight/hotel/activity searches before persisting. The user
   must see something in the panel immediately.
 
@@ -442,6 +445,12 @@ STEP 3 — PARALLEL SEARCH (do all at once)
   │ 🎯 ACTIVITIES: top 5-10 options              │
   │ 💰 COST ESTIMATE: total per person           │
   └──────────────────────────────────────────────┘
+
+  Before the final response, persist a SECOND, enriched full-plan update using
+  the research results. Replace first-cut assumptions and every placeholder,
+  select the strongest verified hotel by default, add concrete activities and
+  named meals, and retain useful costs/route context. Do not leave research only
+  in chat while the workspace still shows the rough first cut.
 
 STEP 4 — BUILD ITINERARY
   Using the preferences (trip_style, family, dietary needs), build a day-by-day
