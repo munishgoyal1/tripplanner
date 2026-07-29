@@ -2547,11 +2547,13 @@ VALIDATION:
 
 === 2026-07-29 — Parallel coding-agent worktrees and voice input ===
 
-- Support multiple simultaneous VS Code coding-agent windows by giving each
-  independent task its own `agents/<task-name>` branch and sibling Git worktree.
-- Keep the primary checkout on `master` as the integration lane. Agents commit
-  and push their own branches; merge reviewed pull requests one at a time at
-  explicit checkpoints, then synchronize active branches from `origin/master`.
+- Support three persistent, visually distinct VS Code coding-agent windows:
+  primary `master` for review/integration plus isolated `worker-1` and `worker-2`
+  worktrees for feature and fix assignments.
+- Keep each worker on its stable `agents/worker-*` branch and give it one coherent
+  PR-sized assignment at a time. Agents commit and push their own branches;
+  Agent 3 merges reviewed pull requests one at a time, then workers synchronize
+  from `origin/master` before their next assignment.
 - Keep ignored environments and dependencies isolated per worktree, and prevent
   cleanup of dirty or unmerged branches.
 - Support voice instructions through the official local VS Code Speech extension.

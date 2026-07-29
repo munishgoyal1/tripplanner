@@ -31,15 +31,17 @@
 ## Parallel coding windows
 
 - The primary `tripplanner` checkout stays on `master` as the integration lane.
-  Feature and fix agents work only in sibling worktrees on `agents/<task-name>`.
-- One agent owns one narrow task and branch. Avoid parallel assignments that
-  substantially edit the same files or contracts.
+  Feature and fix agents work only in the persistent sibling worktrees
+  `worker-1` and `worker-2` on their matching `agents/worker-*` branches.
+- Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
+  assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
 - Use `scripts/agent-worktree.ps1` and
-  `docs/parallel-agent-development.md` for creation, synchronization, and safe
-  cleanup. Do not share `.venv` or mutable `node_modules` across worktrees.
+  `docs/parallel-agent-development.md` for slot creation, synchronization,
+  temporary worktrees, and safe cleanup. Do not share `.venv` or mutable
+  `node_modules` across worktrees.
 
 ## Deployment & Production Gates
 

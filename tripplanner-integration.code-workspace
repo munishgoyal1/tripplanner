@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "name": "Tripplanner Integration",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "window.title": "Agent 3 - Integration | ${activeEditorShort}${separator}${rootName}",
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#881337",
+      "activityBar.foreground": "#ffffff",
+      "statusBar.background": "#9f1239",
+      "statusBar.foreground": "#ffffff",
+      "titleBar.activeBackground": "#881337",
+      "titleBar.activeForeground": "#ffffff"
+    }
+  }
+}

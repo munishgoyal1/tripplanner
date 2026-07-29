@@ -22,21 +22,16 @@ When you want to test the agent's latest code change:
 
 That's it.
 
----
+## Parallel coding windows
 
-## Parallel coding-agent windows
+The repository has three named VS Code workspace launchers:
 
-Create one isolated branch, worktree, and VS Code window per task:
+- `tripplanner-integration.code-workspace` - Agent 3 on `master`
+- `tripplanner-worker-1.code-workspace` - Agent 1 on `agents/worker-1`
+- `tripplanner-worker-2.code-workspace` - Agent 2 on `agents/worker-2`
 
-```powershell
-.\scripts\agent-worktree.ps1 -Create route-cache-fix
-```
-
-Keep the primary checkout on `master` for integration, and merge completed
-branches one at a time through pull requests. See
-[parallel-agent-development.md](parallel-agent-development.md) for branch
-ownership, synchronization, cleanup, dependency isolation, and VS Code voice
-chat.
+See [parallel-agent-development.md](parallel-agent-development.md) for worker
+assignment, PR, synchronization, and merge rules.
 
 ---
 

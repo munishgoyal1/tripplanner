@@ -1,11 +1,48 @@
 # Parallel coding-agent development
 
-Use one Git worktree, branch, VS Code window, and coding-agent session per
-independent task. Keep the primary `tripplanner` checkout on `master` as the
-integration lane; do not assign feature work directly to an agent in that
-window.
+Use three persistent VS Code slots: the primary `tripplanner` checkout on
+`master` is the review/integration lane, while `worker-1` and `worker-2` are
+isolated worktrees for feature and fix work. Each worker handles one coherent
+PR-sized assignment at a time; do not assign feature work directly in the
+integration window.
 
-## Create an agent window
+## Persistent agent windows
+
+The standard slots are:
+
+| Role | Worktree | Branch | Workspace launcher |
+|---|---|---|---|
+| Agent 3 - integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
+| Agent 1 - worker | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
+| Agent 2 - worker | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
+
+The workspace launchers give each window a distinct title and color. Always
+confirm the branch in the status bar before committing or merging.
+
+Create the worker slots once from the primary checkout:
+
+```powershell
+.\scripts\agent-worktree.ps1 -Create worker-1 -NoOpen
+.\scripts\agent-worktree.ps1 -Create worker-2 -NoOpen
+code --new-window .\tripplanner-worker-1.code-workspace
+code --new-window .\tripplanner-worker-2.code-workspace
+```
+
+Keep the worktree folders and their isolated dependencies between assignments.
+After Agent 3 merges a worker PR, synchronize that worker before assigning new
+work:
+
+```powershell
+git fetch origin
+git merge origin/master
+git push
+```
+
+If GitHub deleted the remote worker branch after merge, use
+`git push -u origin HEAD` instead. Each new assignment still gets its own PR;
+the persistent branch name identifies the worker slot, not the feature.
+
+## Additional temporary agent window
 
 From any tripplanner checkout:
 

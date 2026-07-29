@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "name": "Tripplanner Worker 2",
+      "path": "../tripplanner.worktrees/worker-2"
+    }
+  ],
+  "settings": {
+    "window.title": "Agent 2 - Worker | ${activeEditorShort}${separator}${rootName}",
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#1e3a8a",
+      "activityBar.foreground": "#ffffff",
+      "statusBar.background": "#1d4ed8",
+      "statusBar.foreground": "#ffffff",
+      "titleBar.activeBackground": "#1e3a8a",
+      "titleBar.activeForeground": "#ffffff"
+    }
+  }
+}
