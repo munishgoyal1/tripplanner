@@ -58,6 +58,9 @@ Vite server writes all handoffs to the ignored worktree file
 when the owner later says to pick and execute the saved preferences. Saving a
 handoff does not change production UI and is not implementation approval by
 itself; the owner's later execution instruction remains the approval boundary.
+The page also keeps each in-progress choice and comment as a browser draft. If
+the local endpoint is temporarily unavailable, the draft survives a reload and
+can be retried once the Labs server is running again.
 
 ## Rules
 

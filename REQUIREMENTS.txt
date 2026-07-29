@@ -2569,5 +2569,8 @@ VALIDATION:
   the exact owner choice in a later session.
 - Loading a saved handoff restores both its selected option and comment on the
   corresponding lab page.
+- Keep an in-progress browser draft on every choice or comment change so a
+  temporary local-server outage cannot discard owner context. The page must
+  distinguish that draft from a repo-readable workspace save and allow retry.
 - Saving is preference capture only. Production UI remains unchanged until the
   owner explicitly tells the coding agent to pick and execute the saved handoff.

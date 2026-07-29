@@ -9,6 +9,7 @@ interface DecisionOption {
 interface SavedSelection {
   selection: string;
   comment: string;
+  updatedAt?: string;
 }
 
 interface DecisionCaptureProps {
@@ -20,11 +21,23 @@ interface DecisionCaptureProps {
 }
 
 export function DecisionCapture({ labId, labTitle, options, activeOption, onChoose }: DecisionCaptureProps) {
+  const draftKey = `tripplanner-ux-lab-handoff-${labId}`;
   const [comment, setComment] = useState("");
   const [saved, setSaved] = useState<SavedSelection | null>(null);
-  const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "offline">("loading");
 
   useEffect(() => {
+    let localDraft: SavedSelection | null = null;
+    try {
+      localDraft = JSON.parse(localStorage.getItem(draftKey) || "null") as SavedSelection | null;
+      if (localDraft) {
+        setComment(localDraft.comment || "");
+        onChoose(localDraft.selection);
+      }
+    } catch {
+      localStorage.removeItem(draftKey);
+    }
+
     const controller = new AbortController();
     fetch("/__labs/selections", { signal: controller.signal })
       .then(async (response) => {
@@ -33,7 +46,10 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       })
       .then((selections) => {
         const existing = selections[labId];
-        if (existing) {
+        const localIsNewer = localDraft?.updatedAt && existing?.updatedAt
+          ? localDraft.updatedAt > existing.updatedAt
+          : Boolean(localDraft && !existing);
+        if (existing && !localIsNewer) {
           setComment(existing.comment || "");
           setSaved(existing);
           onChoose(existing.selection);
@@ -41,15 +57,30 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         setStatus("idle");
       })
       .catch((error: unknown) => {
-        if ((error as Error).name !== "AbortError") setStatus("error");
+        if ((error as Error).name !== "AbortError") setStatus("offline");
       });
     return () => controller.abort();
-  }, [labId, onChoose]);
+  }, [draftKey, labId, onChoose]);
 
   const selectedLabel = options.find((option) => option.id === activeOption)?.label || activeOption;
   const dirty = saved?.selection !== activeOption || saved?.comment !== comment;
 
+  const keepDraft = (selection: string, nextComment: string) => {
+    localStorage.setItem(draftKey, JSON.stringify({ selection, comment: nextComment, updatedAt: new Date().toISOString() }));
+  };
+
+  const choose = (optionId: string) => {
+    onChoose(optionId);
+    keepDraft(optionId, comment);
+  };
+
+  const updateComment = (nextComment: string) => {
+    setComment(nextComment);
+    keepDraft(activeOption, nextComment);
+  };
+
   const save = async () => {
+    keepDraft(activeOption, comment);
     setStatus("saving");
     try {
       const response = await fetch("/__labs/selections", {
@@ -61,7 +92,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       setSaved({ selection: activeOption, comment });
       setStatus("saved");
     } catch {
-      setStatus("error");
+      setStatus("offline");
     }
   };
 
@@ -83,7 +114,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         <div className="mt-2 grid gap-2 sm:grid-cols-3">
           {options.map((option) => (
             <label key={option.id} className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs font-medium ring-1 ${activeOption === option.id ? "bg-brand-50 text-brand ring-brand/30" : "bg-white text-slate-600 ring-slate-200 hover:ring-brand/20"}`}>
-              <input type="radio" name={`${labId}-selection`} value={option.id} checked={activeOption === option.id} onChange={() => onChoose(option.id)} className="accent-brand" />
+              <input type="radio" name={`${labId}-selection`} value={option.id} checked={activeOption === option.id} onChange={() => choose(option.id)} className="accent-brand" />
               {option.label}
             </label>
           ))}
@@ -91,15 +122,15 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       </fieldset>
 
       <label className="mt-4 block text-xs font-semibold text-slate-700" htmlFor={`${labId}-comment`}>Modifications and implementation instructions</label>
-      <textarea id={`${labId}-comment`} value={comment} onChange={(event) => setComment(event.target.value)} rows={4} placeholder="What should change in this option? Mention anything to keep, remove, combine, or test." className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40" />
+      <textarea id={`${labId}-comment`} value={comment} onChange={(event) => updateComment(event.target.value)} rows={4} placeholder="What should change in this option? Mention anything to keep, remove, combine, or test." className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40" />
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <p className={`text-xs ${status === "error" ? "text-red-600" : "text-slate-400"}`}>
+        <p className={`text-xs ${status === "offline" ? "text-amber-700" : "text-slate-400"}`}>
           {status === "loading" && "Loading saved handoff…"}
           {status === "saving" && "Saving handoff…"}
           {status === "saved" && "Handoff saved. You can now ask Copilot to pick and execute it."}
-          {status === "error" && "Could not reach the local Labs save endpoint. Run the Labs page with npm run dev."}
-          {status === "idle" && (dirty ? "Unsaved changes" : saved ? "Saved in this workspace" : "Nothing saved yet")}
+          {status === "offline" && "Draft kept in this browser. Restart the Labs server, then retry Save handoff."}
+          {status === "idle" && (dirty ? "Workspace save pending; browser draft kept" : saved ? "Saved in this workspace" : "Nothing saved yet")}
         </p>
         <button type="button" onClick={save} disabled={status === "saving" || !dirty} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> Save handoff</button>
       </div>
