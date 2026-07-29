@@ -29,6 +29,7 @@ canonical set below instead of reading every file.
 | Document | Purpose |
 |---|---|
 | [`dev.md`](dev.md) | Local development guidance |
+| [`parallel-agent-development.md`](parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`deployment-flow.md`](deployment-flow.md) | Canonical canary, production, monitoring, and rollback flow |
 | [`operations-slos.md`](operations-slos.md) | Production observability, SLOs, and Log Analytics queries |
 | [`performance-cost.md`](performance-cost.md) | Performance and cost evidence layers and regression baseline |

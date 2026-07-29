@@ -1,0 +1,123 @@
+# Parallel coding-agent development
+
+Use one Git worktree, branch, VS Code window, and coding-agent session per
+independent task. Keep the primary `tripplanner` checkout on `master` as the
+integration lane; do not assign feature work directly to an agent in that
+window.
+
+## Create an agent window
+
+From any tripplanner checkout:
+
+```powershell
+.\scripts\agent-worktree.ps1 -Create route-cache-fix
+```
+
+This creates:
+
+- branch `agents/route-cache-fix` from the latest `origin/master`
+- worktree `C:\repos\tripplanner.worktrees\route-cache-fix`
+- a new VS Code window rooted at that worktree
+- a local copy of the primary checkout's ignored `.env`, when present
+
+Use a short task-oriented name. List or reopen agent worktrees with:
+
+```powershell
+.\scripts\agent-worktree.ps1
+.\scripts\agent-worktree.ps1 -Open route-cache-fix
+```
+
+Each worktree has isolated ignored files and dependencies. Do not share
+`.venv` across worktrees because its editable install can resolve code from the
+wrong checkout. Do not share `node_modules` when an agent might change package
+locks. Before that worktree needs to validate code, initialize it with:
+
+```powershell
+.\scripts\setup-dev-machine.ps1 -SkipToolInstall
+```
+
+Do not run the normal dev stack in multiple worktrees simultaneously: the
+default frontend, backend, and local Cosmos ports are shared. Agents can edit
+and run targeted tests independently; use one designated window for interactive
+app testing.
+
+## Give each agent a narrow assignment
+
+In each new window, start a separate coding-agent session and state:
+
+1. the exact feature or fix and acceptance criteria
+2. the files or subsystem it owns
+3. nearby work owned by other agents that it must not edit
+4. the smallest required validation
+5. that it must commit and push `agents/<name>` when complete
+
+Prefer independent file ownership. If two tasks must substantially edit the same
+module or contract, sequence them instead of running them in parallel.
+
+## Merge checkpoints
+
+The agent finishes its branch with a coherent commit and push. From that
+worktree:
+
+```powershell
+git push -u origin HEAD
+gh pr create --base master --head agents/route-cache-fix --fill
+```
+
+Use a pull request even for a solo repository. It provides one diff and check
+surface, keeps `master` stable, and makes parallel integration order explicit.
+Review and merge one ready branch at a time:
+
+```powershell
+gh pr merge --merge --delete-branch
+```
+
+Use merge commits rather than squash merges so the cleanup helper can prove that
+the local branch is contained in `origin/master`. After each checkpoint, every
+still-active agent should incorporate the new integration baseline from its own
+worktree:
+
+```powershell
+git fetch origin
+git merge origin/master
+git push
+```
+
+Resolve conflicts in the feature worktree, rerun the affected validation, and
+push the resolution. Never resolve a feature conflict by making speculative
+edits directly on `master`.
+
+## Clean up merged work
+
+After the PR is merged:
+
+```powershell
+.\scripts\agent-worktree.ps1 -Remove route-cache-fix
+```
+
+The helper refuses cleanup when the worktree is dirty or its branch is not an
+ancestor of `origin/master`. Add `-DeleteRemoteBranch` only when GitHub did not
+already delete the remote branch.
+
+## Voice instructions in VS Code
+
+Voice is only an input method for the VS Code coding-agent chat; it is not a
+tripplanner application feature.
+
+Install the official Microsoft extension once:
+
+```powershell
+code --install-extension ms-vscode.vscode-speech
+```
+
+On Windows:
+
+- `Ctrl+I`: start voice chat from anywhere in VS Code
+- hold `Ctrl+I`, speak, then release: submit in walkie-talkie mode
+- `Ctrl+Alt+V`: dictate into the focused editor or rich text field
+- `Escape`: stop dictation or speech playback
+
+VS Code Speech performs recognition locally and does not send recordings to an
+online speech service. `accessibility.voice.speechTimeout` controls the pause
+before a chat prompt is automatically submitted; set it to `0` to disable
+automatic submission.

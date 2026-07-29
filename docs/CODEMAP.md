@@ -18,6 +18,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 ## 2) Run / validate (copy-paste)
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
+- New coding-agent worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
+- List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
+- Parallel-agent workflow: [docs/parallel-agent-development.md](parallel-agent-development.md)
 - Full stack: `.\scripts\dev-spa.ps1`
 - Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
 - Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
@@ -44,6 +47,10 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Performance/cost interpretation: see [docs/performance-cost.md](performance-cost.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
+
+The primary checkout stays on `master` as the integration lane. Parallel coding
+agents work only in sibling `agents/<task-name>` worktrees and merge through
+reviewed pull requests.
 
 ## 3) Top-level layout
 
@@ -458,4 +465,3 @@ All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 - Update `README.md` when architecture changes.
 - Update [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
   AND this CODEMAP whenever the structure shifts.
-
