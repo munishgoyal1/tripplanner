@@ -241,8 +241,12 @@ re-describing the whole product.
 
 - One authoritative trip snapshot owns destination, dates, travelers, lifecycle,
   counts, booking progress, budget/cost, fit, and constraints.
-- Day summaries expose stop count, duration, route distance/time/mode, and a Maps
-  handoff before stop details.
+- Compact day briefs expose non-hotel planned-stop count, explicit day-plan
+  duration, route distance/time/mode, confirmed and remaining booking counts,
+  Travel rhythm guidance, and a Maps handoff before stop details.
+- Compact agenda rows lead with explicit Depart/Return or Arrive/Stay timing,
+  place each travel estimate above its destination, and use explicit Confirmed
+  or Needs booking actions instead of checkbox presentation.
 - Place stops use day-colored markers matching map circuits: `H` for hotel
   endpoints and sequential numbers for attractions and named meals.
 - Rows show quiet travel distance/time from the previous mapped stop.

@@ -93,12 +93,15 @@ describe("ItineraryPanel", () => {
     });
   });
 
-  it("shows compact stop, duration, and route metadata", async () => {
+  it("shows the compact brief and agenda metadata", async () => {
     render(<ItineraryPanel />);
 
     expect(await screen.findByText("Museums and river")).toBeInTheDocument();
-    expect(screen.getByText("2 stops")).toBeInTheDocument();
-    expect(screen.getByText("3h planned")).toBeInTheDocument();
+    expect(screen.getByText("Saturday · 12 September 2026")).toBeInTheDocument();
+    expect(screen.getByText("2 planned stops")).toBeInTheDocument();
+    expect(screen.getByText("3h day plan")).toBeInTheDocument();
+    expect(screen.getByText("0 confirmed · 2 to book")).toBeInTheDocument();
+    expect(screen.getByText("Travel rhythm:")).toBeInTheDocument();
     expect(screen.getByText(/4\.2 km/)).toHaveTextContent("35 min");
     expect(screen.getByRole("link", { name: "Open route" })).toHaveAttribute(
       "href",
@@ -107,6 +110,9 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
+    expect(screen.getAllByText("Arrive")).toHaveLength(2);
+    expect(screen.getByText("Stay 120 min")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
   });
 
   it("uses the itinerary entry point for the authoritative trip snapshot", async () => {
@@ -140,6 +146,7 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel />);
 
     expect(await screen.findAllByLabelText("Hotel map marker")).toHaveLength(2);
+    expect(screen.getByText("3 planned stops")).toBeInTheDocument();
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
@@ -250,11 +257,13 @@ describe("ItineraryPanel", () => {
     setStopBookedMock.mockRejectedValue(new Error("offline"));
     render(<ItineraryPanel />);
 
-    const checkbox = await screen.findByRole("checkbox", { name: "Louvre Museum: Mark booked" });
-    fireEvent.click(checkbox);
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
+    const bookingAction = await screen.findByRole("button", { name: "Louvre Museum: Mark confirmed" });
+    fireEvent.click(bookingAction);
+    expect(bookingAction).toHaveAttribute("aria-pressed", "true");
+    expect(bookingAction).toHaveTextContent("Confirmed");
 
-    await waitFor(() => expect(checkbox).toHaveAttribute("aria-checked", "false"));
+    await waitFor(() => expect(bookingAction).toHaveAttribute("aria-pressed", "false"));
+    expect(bookingAction).toHaveTextContent("Needs booking");
     expect(screen.getByRole("status")).toHaveTextContent("Could not update the booking status.");
   });
 

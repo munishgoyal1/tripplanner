@@ -1,4 +1,4 @@
-import { Clock3, ExternalLink, Loader2, MapPin, Route, Trash2 } from "lucide-react";
+import { CalendarCheck2, Check, ExternalLink, Loader2, MapPin, Route, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../types";
@@ -39,10 +39,25 @@ function canFocus(kind: string): boolean {
   return ["hotel", "attraction", "meal", "restaurant"].includes(kind);
 }
 
+function dayDateLabel(date: string): string {
+  if (!date) return "";
+  const parsed = new Date(`${date}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return date;
+  return new Intl.DateTimeFormat("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(parsed).replace(",", " ·");
+}
+
 function StopRow({
   stop,
   day,
   stopIndex,
+  isFirst,
+  isLast,
   mapLabel,
   active,
   jumpActive,
@@ -55,6 +70,8 @@ function StopRow({
   stop: ItineraryStop;
   day: number;
   stopIndex: number;
+  isFirst: boolean;
+  isLast: boolean;
   mapLabel?: string;
   active: boolean;
   jumpActive: boolean;
@@ -71,6 +88,11 @@ function StopRow({
   const insightText = (stop.insight || "").trim();
   const showNote = !!noteText && noteText.toLowerCase() !== insightText.toLowerCase();
   const showInsight = !!insightText;
+  const timingLabel = stop.kind === "hotel" && isFirst
+    ? "Depart"
+    : stop.kind === "hotel" && isLast
+      ? "Return"
+      : "Arrive";
   const handleRowClick = () => {
     if (focusable) {
       onFocus();
@@ -83,7 +105,7 @@ function StopRow({
       data-stop-day={day}
       data-stop-index={stopIndex}
       onClick={handleRowClick}
-      className={`group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition ${
+      className={`group grid grid-cols-[4.75rem_minmax(0,1fr)] gap-3 px-1 py-3 transition sm:grid-cols-[5.5rem_minmax(0,1fr)] ${
         jumpActive
           ? "bg-amber-50 ring-2 ring-amber-300"
           : active
@@ -93,38 +115,29 @@ function StopRow({
               : "hover:bg-slate-50"
                   }`}
     >
-      <button
-        type="button"
-        role="checkbox"
-        aria-checked={stop.booked}
-        aria-label={`${stop.name}: ${stop.booked ? "Mark not booked" : "Mark booked"}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleBooked(!stop.booked);
-        }}
-        className={`mt-0.5 grid h-5 w-5 flex-shrink-0 place-items-center rounded-md border transition ${
-          stop.booked
-            ? "border-emerald-500 bg-emerald-500 text-white"
-            : "border-slate-300 bg-white text-transparent hover:border-emerald-400"
-        }`}
-      >
-        <span className="text-[11px] leading-none">{"\u2713"}</span>
-      </button>
+      <div className="pt-0.5 text-right">
+        <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
+        {stop.time && <p className="text-xs font-bold tabular-nums text-ink">{stop.time}</p>}
+        {stop.duration_min ? (
+          <p className="mt-0.5 text-[10px] text-slate-500">Stay {Math.round(stop.duration_min)} min</p>
+        ) : null}
+      </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0">
         {stop.travel_from_previous && (
           <div
             aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
-            className="mb-1 flex items-center gap-1 text-[10px] font-medium text-slate-400"
+            className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-accent"
             title={`${stop.travel_from_previous.mode} estimate`}
           >
             <Route size={11} aria-hidden />
+            <span className="font-semibold capitalize">{stop.travel_from_previous.mode}</span>
             <span>{stop.travel_from_previous.distance_display}</span>
             <span aria-hidden>·</span>
             <span>{stop.travel_from_previous.duration_display}</span>
           </div>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2">
           {mapLabel && (
             <span
               aria-label={mapLabel === "H" ? "Hotel map marker" : `Map stop ${mapLabel}`}
@@ -139,41 +152,49 @@ function StopRow({
               {mapLabel}
             </span>
           )}
-          {stop.time && (
-            <span className="font-mono text-[11px] tabular-nums text-slate-400">
-              {stop.time}
-            </span>
-          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold uppercase text-slate-400">{stop.kind}</p>
+            <button
+              type="button"
+              disabled={!focusable}
+              onClick={(event) => {
+                event.stopPropagation();
+                onFocus();
+              }}
+              className={`block max-w-full truncate text-left text-sm font-semibold ${
+                focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
+              }`}
+              title={focusable ? "Show photos & reviews" : undefined}
+            >
+              <span className="mr-1" aria-hidden>{KIND_ICON[stop.kind] || KIND_ICON.other}</span>
+              {stop.name}
+            </button>
+          </div>
           <button
             type="button"
-            disabled={!focusable}
-            onClick={(e) => {
-              e.stopPropagation();
-              onFocus();
+            aria-pressed={stop.booked}
+            aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleBooked(!stop.booked);
             }}
-            className={`truncate text-left text-sm font-semibold ${
-              focusable
-                ? "text-ink hover:text-brand"
-                : "cursor-default text-ink"
-            } ${stop.booked ? "line-through decoration-emerald-500/50" : ""}`}
-            title={focusable ? "Show photos & reviews" : undefined}
+            className={`inline-flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-semibold ring-1 transition ${
+              stop.booked
+                ? "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100"
+                : "bg-white text-slate-600 ring-slate-200 hover:text-brand hover:ring-brand/30"
+            }`}
           >
-            <span className="mr-1" aria-hidden>
-              {KIND_ICON[stop.kind] || KIND_ICON.other}
-            </span>
-            {stop.name}
+            {stop.booked ? <Check size={12} aria-hidden /> : <CalendarCheck2 size={12} aria-hidden />}
+            <span className="hidden sm:inline">{stop.booked ? "Confirmed" : "Needs booking"}</span>
           </button>
         </div>
-        {(stop.duration_min || stop.selected || stop.cost_display || stop.opening_hours) && (
+        {(stop.selected || stop.cost_display || stop.opening_hours) && (
           <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
             {stop.selected && (
               <span className="pill bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
                 In trip
               </span>
             )}
-            {stop.duration_min ? (
-              <span className="chip">{Math.round(stop.duration_min)} min</span>
-            ) : null}
             {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
             {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
           </div>
@@ -189,7 +210,7 @@ function StopRow({
         )}
       </div>
 
-      <div className="mt-0.5 flex flex-shrink-0 flex-col items-end gap-1">
+      <div className="col-start-2 flex items-center justify-end gap-1">
         {removable && (
           <button
             type="button"
@@ -271,62 +292,67 @@ function DayCard({
       ? `${Math.floor(plannedMinutes / 60)}h${plannedMinutes % 60 ? ` ${plannedMinutes % 60}m` : ""}`
       : `${plannedMinutes}m`
     : null;
+  const plannedStops = day.stops.filter((stop) => stop.kind !== "hotel");
+  const confirmedStops = plannedStops.filter((stop) => stop.booked).length;
+  const remainingStops = plannedStops.length - confirmedStops;
   return (
-    <section id={`it-day-${day.day}`} className="card p-4">
+    <section id={`it-day-${day.day}`} className="overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
       <div
         onClick={() => onDayMap(day.day)}
-        className="group/day flex cursor-pointer items-center gap-3"
+        className="group/day grid cursor-pointer gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
         title={`Show complete Day ${day.day} circuit on map`}
       >
-        <span
-          className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition hover:scale-105 hover:shadow-sm disabled:cursor-default disabled:hover:scale-100"
-          style={{ backgroundColor: day.color }}
-          aria-hidden
-        >
-          {day.day}
-        </span>
         <div className="min-w-0">
-          <h3 className="display truncate text-base font-semibold text-ink">
-            {day.title}
-          </h3>
-          <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500">
-            {day.date && <span>{day.date}</span>}
-            <span>{day.stops.length} {day.stops.length === 1 ? "stop" : "stops"}</span>
+          <div className="flex items-start gap-3">
+            <span
+              className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition group-hover/day:scale-105 group-hover/day:shadow-sm"
+              style={{ backgroundColor: day.color }}
+              aria-hidden
+            >
+              {day.day}
+            </span>
+            <div className="min-w-0">
+              {day.date && <p className="text-[11px] font-bold uppercase text-brand">{dayDateLabel(day.date)}</p>}
+              <h3 className="display truncate text-lg font-semibold text-ink">{day.title}</h3>
+            </div>
+          </div>
+          {day.summary && <p className="mt-3 text-sm leading-relaxed text-slate-600">{day.summary}</p>}
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
+            <strong className="text-ink">{plannedStops.length} planned {plannedStops.length === 1 ? "stop" : "stops"}</strong>
             {plannedDuration && (
-              <span className="inline-flex items-center gap-1">
-                <Clock3 size={12} aria-hidden /> {plannedDuration} planned
-              </span>
+              <span>{plannedDuration} day plan</span>
             )}
             {day.route && (
               <span className="inline-flex items-center gap-1">
                 <MapPin size={12} aria-hidden /> {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
               </span>
             )}
-            {day.google_maps_url && (
-              <a
-                href={day.google_maps_url}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(event) => event.stopPropagation()}
-                className="inline-flex items-center gap-1 font-medium text-brand hover:text-brand/80"
-                title={`Open Day ${day.day} route in Google Maps`}
-              >
-                <ExternalLink size={12} aria-hidden /> Open route
-              </a>
+            <span className={remainingStops > 0 ? "text-amber-700" : "text-emerald-700"}>
+              {confirmedStops} confirmed · {remainingStops} to book
+            </span>
+            {day.reachability && (
+              <p className="basis-full text-slate-500">
+                <strong className="font-semibold text-accent">Travel rhythm:</strong> {day.reachability}
+              </p>
             )}
           </div>
-          {day.reachability && (
-            <p className="mt-1 text-xs text-slate-500">{day.reachability}</p>
-          )}
         </div>
+        {day.google_maps_url && (
+          <a
+            href={day.google_maps_url}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(event) => event.stopPropagation()}
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-brand px-3 text-xs font-semibold text-white shadow-sm"
+            title={`Open Day ${day.day} route in Google Maps`}
+          >
+            <Route size={13} aria-hidden /> Open route <ExternalLink size={11} aria-hidden />
+          </a>
+        )}
       </div>
 
-      {day.summary && (
-        <p className="mt-2.5 text-sm leading-relaxed text-slate-600">{day.summary}</p>
-      )}
-
       {day.stops.length > 0 && (
-        <ul className="mt-3 space-y-1">
+        <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
           {day.stops.map((stop, i) => (
             (() => {
               const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
@@ -342,6 +368,8 @@ function DayCard({
               stop={stop}
               day={day.day}
               stopIndex={i + 1}
+              isFirst={i === 0}
+              isLast={i === day.stops.length - 1}
               mapLabel={mapLabels[i]}
               active={
                 active

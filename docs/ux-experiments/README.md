@@ -34,17 +34,18 @@ The experiment badge and dashboard-style move/hide controls were removed;
 resizing and maximize remain. Keep the other branches until C is accepted on
 canary, then merge C and delete discarded experiment branches.
 
-## Active Component Experiments (2026-07-29)
+## Decided Component Experiments (2026-07-29)
 
 The itinerary information-design lab is available at
 `http://localhost:5173/ux-lab.html` while the frontend dev server is running.
-Compact Agenda is the preferred candidate, pending its pairing with a summary
-design. See
+The implemented decision is B - Compact Agenda. See
 [`ITINERARY_INFORMATION_DESIGN.md`](ITINERARY_INFORMATION_DESIGN.md).
 
 The separate day-summary lab is available at
-`http://localhost:5173/summary-lab.html`. It compares Operational overview,
-Narrative brief, and Action strip above the same Compact Agenda context. See
+`http://localhost:5173/summary-lab.html`. The implemented decision is C -
+Compact Brief, with explicit Travel rhythm and day-plan wording, confirmed and
+remaining booking counts, and hotel anchors excluded from the planned-stop
+count. See
 [`ITINERARY_SUMMARY_DESIGN.md`](ITINERARY_SUMMARY_DESIGN.md).
 
 These standalone labs are the preferred mechanism for future focused UX choices:
