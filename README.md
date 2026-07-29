@@ -143,6 +143,9 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 
 > **Developing locally?** Run `.\scripts\setup-dev-machine.ps1` once, then see
 > [`docs/dev.md`](docs/dev.md) for the `.\scripts\dev-spa.ps1` workflow.
+> For multiple simultaneous coding-agent windows, use isolated Git worktrees as
+> described in
+> [`docs/parallel-agent-development.md`](docs/parallel-agent-development.md).
 
 ## Quick Start
 
@@ -441,4 +444,3 @@ If you're an AI agent picking up this project:
 ## License
 
 MIT
-

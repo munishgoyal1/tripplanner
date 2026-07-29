@@ -2545,3 +2545,15 @@ VALIDATION:
   its catalog link to Already decided with the chosen outcome and decision date;
   do not delete historical experiments.
 
+=== 2026-07-29 — Parallel coding-agent worktrees and voice input ===
+
+- Support multiple simultaneous VS Code coding-agent windows by giving each
+  independent task its own `agents/<task-name>` branch and sibling Git worktree.
+- Keep the primary checkout on `master` as the integration lane. Agents commit
+  and push their own branches; merge reviewed pull requests one at a time at
+  explicit checkpoints, then synchronize active branches from `origin/master`.
+- Keep ignored environments and dependencies isolated per worktree, and prevent
+  cleanup of dirty or unmerged branches.
+- Support voice instructions through the official local VS Code Speech extension.
+  Voice is only for interacting with the coding agent and is not a tripplanner
+  product feature.

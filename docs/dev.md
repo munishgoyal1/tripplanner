@@ -24,6 +24,22 @@ That's it.
 
 ---
 
+## Parallel coding-agent windows
+
+Create one isolated branch, worktree, and VS Code window per task:
+
+```powershell
+.\scripts\agent-worktree.ps1 -Create route-cache-fix
+```
+
+Keep the primary checkout on `master` for integration, and merge completed
+branches one at a time through pull requests. See
+[parallel-agent-development.md](parallel-agent-development.md) for branch
+ownership, synchronization, cleanup, dependency isolation, and VS Code voice
+chat.
+
+---
+
 ## Why `dev-spa.ps1`?
 
 It is the canonical local entrypoint for the current React SPA and FastAPI
@@ -215,4 +231,3 @@ next save.
 # Tail user's persisted prefs as JSON
 Get-Content "$env:USERPROFILE\.tripplanner\users\guest-*\preferences.json" | ConvertFrom-Json
 ```
-
