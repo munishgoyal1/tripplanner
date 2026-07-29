@@ -104,8 +104,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   names and raw arguments stay out of the primary experience; streamed answer
   text replaces progress as soon as it arrives. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
-- **Itinerary scanning**: each day header shows stop count, planned duration,
+- **Itinerary scanning**: each day header shows stop count, schedule duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
+  Schedule duration spans the first timed departure/stop through the final timed
+  hotel, stay, or transit endpoint. If endpoint times are incomplete, it is an
+  estimate from non-hotel visit durations plus known route legs. Compact agenda
+  rows are dense and left-anchored: time, marker, place, booking state, and
+  actions read in one direction without drifting toward the center or right.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
   Each mapped destination row also shows a quiet estimated distance/time from

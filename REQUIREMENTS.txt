@@ -2615,8 +2615,13 @@ VALIDATION:
   and `Arrive` plus `Stay <duration>` for planned destinations.
 - Replace checkbox presentation with explicit `Confirmed` / `Needs booking`
   actions while preserving booking persistence and exact occurrence behavior.
-- Label day-level transport guidance `Travel rhythm`, describe aggregate
-  duration explicitly as the day plan, and show confirmed and remaining booking
-  counts together.
+- Label day-level transport guidance `Travel rhythm`, show confirmed and
+  remaining booking counts together, and label duration as the day schedule.
+  Schedule means the span from the first timed departure/stop through the final
+  timed hotel, stay, or transit endpoint; when endpoint times are incomplete,
+  estimate it from non-hotel stop durations plus known route legs.
 - Count planned day stops without the primary-stay hotel circuit anchors. Keep
   the original Labs pages as the preserved decision record.
+- Keep production agenda rows denser than the original lab option: left-align
+  the time gutter and place content, group status and actions beneath the place,
+  and avoid controls or content drifting toward the center or right edge.
