@@ -123,6 +123,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-28)
+- **Enforced first itinerary persistence (Session 84)**: production telemetry
+  exposed a planning turn that created and researched London but skipped
+  `update_trip_plan`. The graph now forces the initial structured itinerary
+  after same-turn creation, and SSE tool timing no longer overwrites request
+  timing before terminal telemetry and the pane-refresh `done` event.
 - **Google environment isolation (Session 83)**: local, canary, and production
   now use separate Google Cloud projects, OAuth Web clients, and restricted
   browser/server Maps keys. Hosted deployments require ignored `.env.canary`

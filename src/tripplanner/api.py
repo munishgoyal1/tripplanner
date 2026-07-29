@@ -733,8 +733,12 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                         "args": args_preview,
                     })
                 elif kind == "on_tool_end":
-                    started = tool_starts.pop(run_id, None)
-                    duration_ms = int((time.monotonic() - started) * 1000) if started else None
+                    tool_started = tool_starts.pop(run_id, None)
+                    duration_ms = (
+                        int((time.monotonic() - tool_started) * 1000)
+                        if tool_started
+                        else None
+                    )
                     payload: dict[str, Any] = {"name": name, "phase": "end"}
                     if duration_ms is not None:
                         payload["duration_ms"] = duration_ms

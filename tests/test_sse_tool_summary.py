@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import inspect
+import re
+
+from tripplanner import api
 from tripplanner.api import _auto_persist_itinerary, _summarize_tool_input
 
 
@@ -55,3 +59,10 @@ def test_auto_persist_itinerary_invokes_update_tool(monkeypatch) -> None:
 
     assert len(calls) == 1
     assert "updates_json" in calls[0]
+
+
+def test_tool_timing_does_not_overwrite_chat_request_start() -> None:
+    source = inspect.getsource(api.chat_stream)
+
+    assert "tool_started = tool_starts.pop" in source
+    assert re.search(r"^\s*started = tool_starts\.pop", source, re.MULTILINE) is None

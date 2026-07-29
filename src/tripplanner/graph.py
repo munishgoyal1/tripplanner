@@ -22,6 +22,7 @@ from tripplanner.agents.trip_agent import (
     select_tools,
 )
 from tripplanner.config import get_settings
+from tripplanner.tools.trip_planner import load_active_trip_dict
 from tripplanner.tools_cache import wrap_tools_with_cache
 from tripplanner.usage import record_usage
 from tripplanner.user_context import get_user_id
@@ -87,6 +88,31 @@ def _get_llm() -> AzureChatOpenAI:
 # ---------------------------------------------------------------------------
 # Trip agent node
 # ---------------------------------------------------------------------------
+def _tool_was_called(messages: list[BaseMessage], tool_name: str) -> bool:
+    for message in messages:
+        for tool_call in getattr(message, "tool_calls", None) or []:
+            name = (
+                tool_call.get("name")
+                if isinstance(tool_call, dict)
+                else getattr(tool_call, "name", None)
+            )
+            if name == tool_name:
+                return True
+    return False
+
+
+def _requires_initial_itinerary(messages: list[BaseMessage]) -> bool:
+    if not _tool_was_called(messages, "create_trip_plan"):
+        return False
+    if _tool_was_called(messages, "update_trip_plan"):
+        return False
+    try:
+        trip = load_active_trip_dict() or {}
+    except Exception:
+        return False
+    return bool(trip.get("destination")) and not trip.get("day_wise_itinerary")
+
+
 def trip_agent(state: AgentState) -> AgentState:
     """The trip planner agent — invokes LLM with tools bound."""
     # parallel_tool_calls=True asks the model to emit independent calls in a
@@ -96,8 +122,21 @@ def trip_agent(state: AgentState) -> AgentState:
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
     tools = select_tools(state["messages"], proposal_only=proposal_only)
-    llm = _get_llm().bind_tools(tools, parallel_tool_calls=True)
+    force_initial_itinerary = not proposal_only and _requires_initial_itinerary(
+        state["messages"]
+    )
+    llm = _get_llm().bind_tools(
+        tools,
+        parallel_tool_calls=True,
+        **({"tool_choice": "update_trip_plan"} if force_initial_itinerary else {}),
+    )
     instructions = [build_trip_system_prompt()]
+    if force_initial_itinerary:
+        instructions.append(SystemMessage(content=(
+            "The trip was created in this turn but its itinerary is still empty. "
+            "Call update_trip_plan now with the complete structured "
+            "day_wise_itinerary before writing any final response."
+        )))
     if proposal_only:
         instructions.append(SystemMessage(content=(
             "PROPOSAL-ONLY REVIEW: analyze the itinerary and offer concise numbered options. "

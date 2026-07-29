@@ -107,6 +107,10 @@ re-describing the whole product.
   or USD with a home-currency equivalent.
 - A completed planning turn persists the authoritative trip and refreshes every
   dependent pane together.
+- A turn that creates a trip cannot finish with an empty itinerary: the graph
+  requires the initial structured `update_trip_plan` call before the final
+  response, and SSE tool timing cannot interfere with the terminal completion
+  event that triggers the shared pane refresh.
 
 ### PLAN-02 - Grounded providers and enrichment
 

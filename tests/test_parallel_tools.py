@@ -12,7 +12,7 @@ import operator
 import time
 from typing import Annotated, TypedDict
 
-from langchain_core.messages import AIMessage, BaseMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langchain_core.tools import tool
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -96,3 +96,118 @@ def test_trip_agent_binds_tools_with_parallel_flag() -> None:
 
     src = inspect.getsource(graph_mod.trip_agent)
     assert "parallel_tool_calls=True" in src
+
+
+def test_trip_agent_forces_initial_itinerary_after_creation(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages):
+            return AIMessage(
+                content="",
+                tool_calls=[{
+                    "name": "update_trip_plan",
+                    "args": {"updates_json": '{"day_wise_itinerary": []}'},
+                    "id": "update-1",
+                }],
+            )
+
+    class FakeModel:
+        def bind_tools(self, _tools, **options):
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London", "day_wise_itinerary": []},
+    )
+    messages = [
+        HumanMessage(content="Plan a London trip"),
+        AIMessage(
+            content="",
+            tool_calls=[{
+                "name": "create_trip_plan",
+                "args": {
+                    "destination": "London",
+                    "departure_date": "2026-08-25",
+                    "return_date": "2026-08-31",
+                },
+                "id": "create-1",
+            }],
+        ),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+    ]
+
+    result = graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "update_trip_plan"
+    assert result["messages"][0].tool_calls[0]["name"] == "update_trip_plan"
+
+
+def test_initial_itinerary_gate_stops_after_update(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London", "day_wise_itinerary": []},
+    )
+    messages = [
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "create_trip_plan", "args": {}, "id": "create-1"}],
+        ),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-1"}],
+        ),
+    ]
+
+    assert graph_mod._requires_initial_itinerary(messages) is False
+
+
+def test_proposal_only_never_forces_initial_itinerary(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages):
+            return AIMessage(content="Review only")
+
+    class FakeModel:
+        def bind_tools(self, _tools, **options):
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London", "day_wise_itinerary": []},
+    )
+    graph_mod.trip_agent({
+        "messages": [
+            AIMessage(
+                content="",
+                tool_calls=[{
+                    "name": "create_trip_plan",
+                    "args": {},
+                    "id": "create-1",
+                }],
+            ),
+        ],
+        "current_agent": "",
+        "proposal_only": True,
+    })
+
+    assert "tool_choice" not in bound_options

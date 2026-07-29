@@ -4,6 +4,19 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-28 - Enforce Persistence at the Agent Boundary
+
+- Prompt instructions are not a completion guarantee. If a newly created
+  domain object requires a second mutating tool call before it is useful, make
+  that call a graph-level completion gate rather than relying on prose or a
+  best-effort response parser.
+- A fallback updater cannot recover a missing create operation, and format-based
+  parsing cannot recover prose that does not match its headings. Test recovery
+  from an empty workspace, not only with the update tool mocked.
+- Keep request-level and child-operation timers in separate variables. A reused
+  closure variable can corrupt terminal telemetry or fail before the transport's
+  final completion event, preventing client invalidation even after persistence.
+
 ## 2026-07-28 - Performance Evidence Has Distinct Layers
 
 - A hermetic in-process benchmark is a regression tripwire, not production
