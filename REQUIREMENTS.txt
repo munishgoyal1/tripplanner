@@ -2592,3 +2592,13 @@ VALIDATION:
 - Do not automatically restart dev servers after reboot. The owner explicitly
   starts the local stack from the designated worktree to avoid shared-port
   conflicts.
+
+=== 2026-07-29 — Two-window default coding-agent workflow ===
+
+- Supersede the three-active-window default with two active windows because the
+  third window adds more coordination cost than value for current work.
+- Agent 1 is the development agent in `worker-1`. Agent 3 is the review, merge,
+  corrective-fix, and repository-Q&A agent on primary `master`.
+- Keep Agent 2 and `worker-2` available but dormant. The normal one-click
+  launcher opens only Agent 1 and Agent 3; a separate explicit option may open
+  all three when additional parallel capacity is deliberately requested.

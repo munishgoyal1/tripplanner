@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 1 - UI | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 1 - Development | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",

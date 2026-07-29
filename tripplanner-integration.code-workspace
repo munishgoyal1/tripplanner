@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 3 - Integration | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 3 - Review & Integration | ${activeEditorShort}${separator}${rootName}",
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",
     "workbench.editor.restoreEditors": true,

@@ -1,10 +1,10 @@
 # Parallel coding-agent development
 
-Use three persistent VS Code slots: the primary `tripplanner` checkout on
-`master` is the review/integration lane, while `worker-1` and `worker-2` are
-isolated worktrees for feature and fix work. Each worker handles one coherent
-PR-sized assignment at a time; do not assign feature work directly in the
-integration window.
+Use two active VS Code windows by default: `worker-1` is the development lane,
+and the primary `tripplanner` checkout on `master` is the review, merge,
+corrective-fix, and repository-Q&A lane. Keep the persistent `worker-2` slot
+dormant unless a third parallel assignment is worth the coordination cost. Do
+not assign feature work directly in the review/integration window.
 
 ## Persistent agent windows
 
@@ -12,19 +12,19 @@ The standard slots are:
 
 | Role | Worktree | Branch | Workspace launcher |
 |---|---|---|---|
-| Agent 3 - integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
-| Agent 1 - UI | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
-| Agent 2 - worker | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
+| Agent 1 - Development | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
+| Agent 3 - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
+| Agent 2 - Worker (optional) | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
 
 The workspace launchers give each window a distinct title and color. Always
 confirm the branch in the status bar before committing or merging.
 
 After a machine restart, double-click `Open-Tripplanner-Agents.cmd` from the
 repository or the `Tripplanner Agent Windows` Desktop shortcut. The command
-resolves the primary checkout through Git, verifies all three persistent
-worktrees, and opens their workspace files in separate VS Code windows. VS Code
-restores the last window position, editor groups and tabs, cursor/scroll state,
-undo history, and terminal sessions for each workspace. The committed workspace
+resolves the primary checkout through Git, verifies the default Agent 1 and
+Agent 3 workspaces, and opens them in separate VS Code windows. VS Code restores
+the last window position, editor groups and tabs, cursor/scroll state, undo
+history, and terminal sessions for each workspace. The committed workspace
 settings keep the primary sidebar on the left and the terminal panel on the
 right. Machine-level `window.restoreWindows=all` and
 `files.hotExit=onExitAndWindowClose` retain all windows and unsaved editor
@@ -40,7 +40,11 @@ The equivalent PowerShell command, including a validation-only mode, is:
 ```powershell
 .\scripts\open-agent-windows.ps1
 .\scripts\open-agent-windows.ps1 -WhatIf
+.\scripts\open-agent-windows.ps1 -IncludeWorker2
 ```
+
+Double-click `Open-Tripplanner-All-Agents.cmd` for the equivalent optional
+three-window launch.
 
 Create the worker slots once from the primary checkout:
 

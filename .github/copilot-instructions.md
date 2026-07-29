@@ -33,6 +33,9 @@
 - The primary `tripplanner` checkout stays on `master` as the integration lane.
   Feature and fix agents work only in the persistent sibling worktrees
   `worker-1` and `worker-2` on their matching `agents/worker-*` branches.
+- The owner's default is two active windows: Agent 1 Development in `worker-1`
+  and Agent 3 Review & Integration on `master`. Keep `worker-2` dormant unless
+  the owner explicitly chooses a third parallel assignment.
 - Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
   assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using

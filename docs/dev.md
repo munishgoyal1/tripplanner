@@ -24,11 +24,14 @@ That's it.
 
 ## Parallel coding windows
 
-The repository has three named VS Code workspace launchers:
+The default workflow opens two named VS Code workspaces:
 
-- `tripplanner-integration.code-workspace` - Agent 3 on `master`
-- `tripplanner-worker-1.code-workspace` - Agent 1 on `agents/worker-1`
-- `tripplanner-worker-2.code-workspace` - Agent 2 on `agents/worker-2`
+- `tripplanner-worker-1.code-workspace` - Agent 1 Development on `agents/worker-1`
+- `tripplanner-integration.code-workspace` - Agent 3 Review & Integration on `master`
+
+Agent 2 on `agents/worker-2` remains available through
+`Open-Tripplanner-All-Agents.cmd` when a third parallel assignment is worth the
+coordination cost.
 
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.

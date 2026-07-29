@@ -1,17 +1,20 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Open the three persistent, named Tripplanner agent workspaces.
+    Open the default Tripplanner development and review workspaces.
 
 .DESCRIPTION
   Resolves the primary checkout from Git so the launcher works from the primary
     repository or either persistent worker worktree. VS Code restores each
     workspace's editor groups, tabs, view state, terminal sessions, layout, and
-    window position between launches.
+    window position between launches. Agent 2 remains available through
+    -IncludeWorker2 when a third parallel workstream is useful.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
-param()
+param(
+        [switch]$IncludeWorker2
+)
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
@@ -22,11 +25,14 @@ if ($LASTEXITCODE -ne 0 -or -not $commonGitDir) {
 }
 
 $primaryRoot = Split-Path -Parent $commonGitDir.Trim()
-$workspaces = @(
-    @{ Name = "Agent 1 - UI"; File = "tripplanner-worker-1.code-workspace"; Root = "$primaryRoot.worktrees\worker-1" },
-    @{ Name = "Agent 2 - Worker"; File = "tripplanner-worker-2.code-workspace"; Root = "$primaryRoot.worktrees\worker-2" },
-    @{ Name = "Agent 3 - Integration"; File = "tripplanner-integration.code-workspace"; Root = $primaryRoot }
-)
+$developmentWorkspace = @{ Name = "Agent 1 - Development"; File = "tripplanner-worker-1.code-workspace"; Root = "$primaryRoot.worktrees\worker-1" }
+$worker2Workspace = @{ Name = "Agent 2 - Worker"; File = "tripplanner-worker-2.code-workspace"; Root = "$primaryRoot.worktrees\worker-2" }
+$reviewWorkspace = @{ Name = "Agent 3 - Review & Integration"; File = "tripplanner-integration.code-workspace"; Root = $primaryRoot }
+$workspaces = if ($IncludeWorker2) {
+    @($developmentWorkspace, $worker2Workspace, $reviewWorkspace)
+} else {
+    @($developmentWorkspace, $reviewWorkspace)
+}
 
 if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
     throw "VS Code command 'code' is unavailable. Add it to PATH, then rerun."
