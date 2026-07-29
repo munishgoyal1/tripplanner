@@ -2540,4 +2540,8 @@ VALIDATION:
   evaluated together.
 - Keep lab builds separate from the normal production artifact and retain local
   browser-only scorecards for structured comparison.
+- Maintain one UX Labs catalog page with Active experiments and Already decided
+  sections. When a choice is confidently locked, preserve its lab page and move
+  its catalog link to Already decided with the chosen outcome and decision date;
+  do not delete historical experiments.
 

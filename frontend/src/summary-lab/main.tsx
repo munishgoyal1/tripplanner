@@ -233,6 +233,7 @@ function Lab() {
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
+            <a href="/labs.html" className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand">← All UX labs</a>
             <p className="text-xs font-bold uppercase text-brand">Internal · Itinerary summary experiment</p>
             <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose what the day summary should prioritize</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Each option sits above the selected Compact Agenda treatment. Compare how quickly the summary explains the day, exposes travel and readiness, and leads into the schedule.</p>

@@ -9,6 +9,7 @@ export default defineConfig({
     outDir: "dist-ux-lab",
     rollupOptions: {
       input: {
+        catalog: resolve(__dirname, "labs.html"),
         itinerary: resolve(__dirname, "ux-lab.html"),
         summary: resolve(__dirname, "summary-lab.html"),
       },

@@ -2,6 +2,21 @@
 
 This folder tracks A/B-style UX layout experiments so we can compare quickly and discard safely.
 
+## Lab Catalog
+
+Open `http://localhost:5173/labs.html` while the frontend dev server is running
+to access every standalone UX experiment from one place. The catalog has two
+durable sections:
+
+- **Active experiments** contains choices still being evaluated or paired.
+- **Already decided** preserves completed experiments, their original lab links,
+  and the selected outcome.
+
+Do not delete a lab after a decision. Move its catalog record from Active to
+Already decided, retain the page, and update its experiment document with the
+final choice and date. Historical experiments that predate lab pages may remain
+decision-only records.
+
 ## Branch Strategy
 
 - Stable baseline: `master`
@@ -41,7 +56,8 @@ keep production behavior unchanged until the owner selects a direction.
 1. Keep each experiment isolated to UI layout/interaction files only.
 2. Timebox each experiment to 1-2 sessions.
 3. Use the scorecard template for decision-making.
-4. End each experiment with one decision: `keep` (merge) or `discard` (delete branch).
+4. End each experiment with a recorded decision and move its catalog entry to
+  Already decided; preserve its lab page as design history.
 
 ## Fast Commands
 
