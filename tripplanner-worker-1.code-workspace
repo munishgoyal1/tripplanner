@@ -6,8 +6,15 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 1 - UI | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 1 - Development | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.editor.restoreEditors": true,
+    "workbench.editor.restoreViewState": true,
+    "files.restoreUndoStack": true,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
     "workbench.colorCustomizations": {
       "activityBar.background": "#115e59",
       "activityBar.foreground": "#ffffff",

@@ -20,13 +20,15 @@ interface LabRecord {
   icon: typeof ListChecks;
 }
 
-const activeLabs: LabRecord[] = [
+const activeLabs: LabRecord[] = [];
+
+const decidedLabs: LabRecord[] = [
   {
     title: "Itinerary row design",
     description: "Compare Journey Timeline, Compact Agenda, and Guided Place Cards for each scheduled stop.",
     date: "29 Jul 2026",
-    status: "Preferred candidate selected",
-    decision: "Current preference: B · Compact Agenda. Final pairing remains open.",
+    status: "Implemented",
+    decision: "B · Compact Agenda, paired with C · Compact Brief.",
     href: "/ux-lab.html",
     icon: ListChecks,
   },
@@ -34,14 +36,11 @@ const activeLabs: LabRecord[] = [
     title: "Itinerary summary design",
     description: "Compare Editorial, Balanced, and Compact modifications of Narrative Brief above Compact Agenda.",
     date: "29 Jul 2026",
-    status: "Choosing",
-    decision: "Pending owner selection.",
+    status: "Implemented",
+    decision: "C · Compact Brief with explicit travel rhythm, day plan, and booking readiness.",
     href: "/summary-lab.html",
     icon: LayoutPanelTop,
   },
-];
-
-const decidedLabs: LabRecord[] = [
   {
     title: "Workspace shell layout",
     description: "Compared map-first, story-first, and compact-mobile workspace structures on experiment branches.",
@@ -122,7 +121,7 @@ function LabCatalog() {
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             {decidedLabs.map((lab) => <LabCard key={lab.title} lab={lab} archived />)}
           </div>
-          <p className="mt-3 text-xs text-slate-400">The workspace-shell comparison predates standalone lab pages, so its linked page is a reconstructed read-only record based on preserved branches. Future decided experiments retain their original interactive page.</p>
+          <p className="mt-3 text-xs text-slate-400">The workspace-shell comparison predates standalone lab pages, so its linked page is a reconstructed read-only record based on preserved branches. Newer decided experiments retain their original interactive pages.</p>
         </section>
       </div>
     </main>

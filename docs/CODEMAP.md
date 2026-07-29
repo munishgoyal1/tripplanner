@@ -18,8 +18,13 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 ## 2) Run / validate (copy-paste)
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
-- Standard coding-agent windows: open `tripplanner-integration.code-workspace`,
-  `tripplanner-worker-1.code-workspace`, and `tripplanner-worker-2.code-workspace`
+- Open the default development/review pair: double-click
+  `Open-Tripplanner-Agents.cmd` or run `.\scripts\open-agent-windows.ps1`
+- Optional three-window mode: double-click `Open-Tripplanner-All-Agents.cmd`
+  or run `.\scripts\open-agent-windows.ps1 -IncludeWorker2`
+- Standard active workspaces: `tripplanner-worker-1.code-workspace` for
+  development and `tripplanner-integration.code-workspace` for review/merge;
+  `tripplanner-worker-2.code-workspace` remains available on demand
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/parallel-agent-development.md](parallel-agent-development.md)
@@ -50,9 +55,10 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
 
-The primary checkout stays on `master` as the integration lane. Parallel coding
-agents use the persistent `worker-1` and `worker-2` sibling worktrees, own one
-coherent PR-sized assignment at a time, and merge through reviewed pull requests.
+The primary checkout stays on `master` as the review/integration lane. The
+default coding agent uses persistent `worker-1` for one coherent PR-sized
+assignment; persistent `worker-2` is dormant capacity for an explicitly chosen
+third workstream. Changes merge through reviewed pull requests.
 
 ## 3) Top-level layout
 

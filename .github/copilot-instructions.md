@@ -33,6 +33,9 @@
 - The primary `tripplanner` checkout stays on `master` as the integration lane.
   Feature and fix agents work only in the persistent sibling worktrees
   `worker-1` and `worker-2` on their matching `agents/worker-*` branches.
+- The owner's default is two active windows: Agent 1 Development in `worker-1`
+  and Agent 3 Review & Integration on `master`. Keep `worker-2` dormant unless
+  the owner explicitly chooses a third parallel assignment.
 - Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
   assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using
@@ -137,7 +140,14 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-28)
+## Current State (last updated 2026-07-29)
+- **Compact itinerary brief + agenda (Session 86)**: the owner-selected Compact
+  Brief C and Compact Agenda B now drive production itinerary days. Day briefs
+  exclude hotel anchors from planned-stop counts, label duration as the day
+  plan, show confirmed and remaining booking readiness, and label guidance
+  Travel rhythm. Time-first rows expose Depart/Return or Arrive/Stay semantics,
+  travel legs, and explicit Confirmed/Needs booking actions while preserving
+  exact occurrence behavior.
 - **Complete-by-default new trips (Session 85)**: after the immediate first cut,
   new-trip research must be persisted in a second enriched full-plan update with
   the strongest concrete hotel and sensible daily defaults. One bounded
