@@ -72,38 +72,38 @@ foreach ($tool in $tools) {
     Install-MissingTool $tool
 }
 
-function Resolve-Python311 {
+function Resolve-Python313 {
     if (Get-Command py -ErrorAction SilentlyContinue) {
-        $resolved = & py -3.11 -c "import sys; print(sys.executable)" 2>$null
+        $resolved = & py -3.13 -c "import sys; print(sys.executable)" 2>$null
         if ($LASTEXITCODE -eq 0 -and $resolved) {
             return $resolved.Trim()
         }
     }
 
     if ($SkipToolInstall) {
-        throw "Python 3.11 is required but was not found. Install it with 'winget install --id Python.Python.3.11 --exact', then rerun."
+        throw "Python 3.13 is required but was not found. Install it with 'winget install --id Python.Python.3.13 --exact', then rerun."
     }
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        throw "Python 3.11 is required and winget is unavailable. Install Python 3.11, then rerun."
+        throw "Python 3.13 is required and winget is unavailable. Install Python 3.13, then rerun."
     }
 
-    Write-Host "[install] Python 3.11"
-    winget install --id Python.Python.3.11 --exact --accept-package-agreements `
+    Write-Host "[install] Python 3.13"
+    winget install --id Python.Python.3.13 --exact --accept-package-agreements `
         --accept-source-agreements --silent
     if ($LASTEXITCODE -ne 0) {
-        throw "winget could not install Python 3.11."
+        throw "winget could not install Python 3.13."
     }
     Refresh-ProcessPath
 
-    $resolved = & py -3.11 -c "import sys; print(sys.executable)" 2>$null
+    $resolved = & py -3.13 -c "import sys; print(sys.executable)" 2>$null
     if ($LASTEXITCODE -ne 0 -or -not $resolved) {
-        throw "Python 3.11 installed but the Python launcher cannot resolve it. Restart PowerShell and rerun."
+        throw "Python 3.13 installed but the Python launcher cannot resolve it. Restart PowerShell and rerun."
     }
     return $resolved.Trim()
 }
 
-$python311 = Resolve-Python311
-Write-Host "[ok] Python 3.11 ($python311)"
+$python313 = Resolve-Python313
+Write-Host "[ok] Python 3.13 ($python313)"
 
 if (-not (Test-Path ".env")) {
     Copy-Item ".env.example" ".env"
@@ -115,13 +115,13 @@ if (-not (Test-Path ".env")) {
 if (-not $SkipDependencyInstall) {
     if (Test-Path ".venv\Scripts\python.exe") {
         $venvVersion = & ".venv\Scripts\python.exe" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
-        if ($venvVersion -ne "3.11") {
-            Write-Host "[recreate] .venv uses Python $venvVersion; Python 3.11 is required"
+        if ($venvVersion -ne "3.13") {
+            Write-Host "[recreate] .venv uses Python $venvVersion; Python 3.13 is required"
             Remove-Item ".venv" -Recurse -Force
         }
     }
     if (-not (Test-Path ".venv\Scripts\python.exe")) {
-        & $python311 -m venv .venv
+        & $python313 -m venv .venv
     }
     & ".venv\Scripts\python.exe" -m pip install --upgrade pip
     Assert-LastCommandSucceeded "pip upgrade"
