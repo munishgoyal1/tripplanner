@@ -6,7 +6,7 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 2 - Worker | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 2 - Features | ${activeEditorShort}${separator}${rootName}",
     "workbench.colorCustomizations": {
       "activityBar.background": "#1e3a8a",
       "activityBar.foreground": "#ffffff",
