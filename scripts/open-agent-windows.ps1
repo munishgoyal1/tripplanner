@@ -5,8 +5,9 @@
 
 .DESCRIPTION
   Resolves the primary checkout from Git so the launcher works from the primary
-  repository or either persistent worker worktree. Each workspace retains its
-  own VS Code layout and window position between launches.
+    repository or either persistent worker worktree. VS Code restores each
+    workspace's editor groups, tabs, view state, terminal sessions, layout, and
+    window position between launches.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]

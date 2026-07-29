@@ -23,9 +23,17 @@ After a machine restart, double-click `Open-Tripplanner-Agents.cmd` from the
 repository or the `Tripplanner Agent Windows` Desktop shortcut. The command
 resolves the primary checkout through Git, verifies all three persistent
 worktrees, and opens their workspace files in separate VS Code windows. VS Code
-restores the last window position and editor/view state for each workspace;
-the committed workspace settings keep the primary sidebar on the left and the
-terminal panel on the right.
+restores the last window position, editor groups and tabs, cursor/scroll state,
+undo history, and terminal sessions for each workspace. The committed workspace
+settings keep the primary sidebar on the left and the terminal panel on the
+right. Machine-level `window.restoreWindows=all` and
+`files.hotExit=onExitAndWindowClose` retain all windows and unsaved editor
+buffers across a normal restart.
+
+The launcher does not restart active dev servers or commands after a machine
+reboot. Restored terminals retain their shell context, but restart the local
+stack explicitly from its one designated worktree so multiple windows do not
+compete for ports `5173` and `8000`.
 
 The equivalent PowerShell command, including a validation-only mode, is:
 

@@ -9,6 +9,11 @@
     "window.title": "Agent 2 - Worker | ${activeEditorShort}${separator}${rootName}",
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",
+    "workbench.editor.restoreEditors": true,
+    "workbench.editor.restoreViewState": true,
+    "files.restoreUndoStack": true,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
     "workbench.colorCustomizations": {
       "activityBar.background": "#1e3a8a",
       "activityBar.foreground": "#ffffff",

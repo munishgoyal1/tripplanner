@@ -2586,3 +2586,9 @@ VALIDATION:
 - Provide one double-click launcher and a Desktop shortcut that verify the
   persistent worktrees and open all three workspace files in separate VS Code
   windows after a machine restart.
+- Preserve each workspace's editor groups and tabs, unsaved buffers, cursor and
+  scroll state, undo history, pane layout, window position, and terminal session
+  context across restart.
+- Do not automatically restart dev servers after reboot. The owner explicitly
+  starts the local stack from the designated worktree to avoid shared-port
+  conflicts.
