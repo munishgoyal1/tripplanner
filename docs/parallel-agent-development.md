@@ -66,10 +66,13 @@ gh pr create --base master --head agents/route-cache-fix --fill
 
 Use a pull request even for a solo repository. It provides one diff and check
 surface, keeps `master` stable, and makes parallel integration order explicit.
-Review and merge one ready branch at a time:
+Review and merge one ready branch at a time from the primary `master` checkout.
+Pass the PR number explicitly so GitHub CLI does not try to switch the feature
+worktree to `master`:
 
 ```powershell
-gh pr merge --merge --delete-branch
+Set-Location C:\repos\tripplanner
+gh pr merge 123 --merge --delete-branch
 ```
 
 Use merge commits rather than squash merges so the cleanup helper can prove that
