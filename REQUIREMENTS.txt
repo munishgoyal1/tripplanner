@@ -2574,3 +2574,15 @@ VALIDATION:
   distinguish that draft from a repo-readable workspace save and allow retry.
 - Saving is preference capture only. Production UI remains unchanged until the
   owner explicitly tells the coding agent to pick and execute the saved handoff.
+
+=== 2026-07-29 — Persistent VS Code agent-window layout and launcher ===
+
+- Treat the three named, color-coded Tripplanner workspaces as the owner's
+  default VS Code development layout: Agent 1 - UI, Agent 2 - Worker, and
+  Agent 3 - Integration.
+- Keep the primary sidebar and chat/editor area on the left and the terminal
+  panel on the right in every workspace. Let VS Code retain each workspace's
+  detailed editor/view state and last window position.
+- Provide one double-click launcher and a Desktop shortcut that verify the
+  persistent worktrees and open all three workspace files in separate VS Code
+  windows after a machine restart.

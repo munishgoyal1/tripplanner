@@ -7,6 +7,8 @@
   ],
   "settings": {
     "window.title": "Agent 3 - Integration | ${activeEditorShort}${separator}${rootName}",
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
     "workbench.colorCustomizations": {
       "activityBar.background": "#881337",
       "activityBar.foreground": "#ffffff",

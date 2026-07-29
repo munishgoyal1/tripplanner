@@ -19,6 +19,21 @@ The standard slots are:
 The workspace launchers give each window a distinct title and color. Always
 confirm the branch in the status bar before committing or merging.
 
+After a machine restart, double-click `Open-Tripplanner-Agents.cmd` from the
+repository or the `Tripplanner Agent Windows` Desktop shortcut. The command
+resolves the primary checkout through Git, verifies all three persistent
+worktrees, and opens their workspace files in separate VS Code windows. VS Code
+restores the last window position and editor/view state for each workspace;
+the committed workspace settings keep the primary sidebar on the left and the
+terminal panel on the right.
+
+The equivalent PowerShell command, including a validation-only mode, is:
+
+```powershell
+.\scripts\open-agent-windows.ps1
+.\scripts\open-agent-windows.ps1 -WhatIf
+```
+
 Create the worker slots once from the primary checkout:
 
 ```powershell

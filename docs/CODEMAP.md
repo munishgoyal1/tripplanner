@@ -18,6 +18,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 ## 2) Run / validate (copy-paste)
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
+- Open all persistent coding-agent windows: double-click `Open-Tripplanner-Agents.cmd`
+  or run `.\scripts\open-agent-windows.ps1`
 - Standard coding-agent windows: open `tripplanner-integration.code-workspace`,
   `tripplanner-worker-1.code-workspace`, and `tripplanner-worker-2.code-workspace`
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`

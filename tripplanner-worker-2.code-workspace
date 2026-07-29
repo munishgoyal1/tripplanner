@@ -7,6 +7,8 @@
   ],
   "settings": {
     "window.title": "Agent 2 - Worker | ${activeEditorShort}${separator}${rootName}",
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
     "workbench.colorCustomizations": {
       "activityBar.background": "#1e3a8a",
       "activityBar.foreground": "#ffffff",
