@@ -2559,3 +2559,18 @@ VALIDATION:
 - Support voice instructions through the official local VS Code Speech extension.
   Voice is only for interacting with the coding agent and is not a tripplanner
   product feature.
+
+=== 2026-07-29 — Repo-readable UX Labs handoffs ===
+
+- Put an explicit preferred-option selector and free-form modifications or
+  implementation-instructions field on each active UX Lab page.
+- Save the handoff through the local Vite server into the worktree-local ignored
+  `docs/ux-experiments/LAB_SELECTIONS.local.json` file so a coding agent can read
+  the exact owner choice in a later session.
+- Loading a saved handoff restores both its selected option and comment on the
+  corresponding lab page.
+- Keep an in-progress browser draft on every choice or comment change so a
+  temporary local-server outage cannot discard owner context. The page must
+  distinguish that draft from a repo-readable workspace save and allow retry.
+- Saving is preference capture only. Production UI remains unchanged until the
+  owner explicitly tells the coding agent to pick and execute the saved handoff.

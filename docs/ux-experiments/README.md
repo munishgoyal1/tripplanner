@@ -51,6 +51,17 @@ These standalone labs are the preferred mechanism for future focused UX choices:
 use realistic fixtures, compare coherent alternatives, record local scores, and
 keep production behavior unchanged until the owner selects a direction.
 
+Each active experiment page also includes a **Your handoff** section. Choose one
+option, add modifications or implementation instructions, and save it. The local
+Vite server writes all handoffs to the ignored worktree file
+`docs/ux-experiments/LAB_SELECTIONS.local.json`, which a coding agent can read
+when the owner later says to pick and execute the saved preferences. Saving a
+handoff does not change production UI and is not implementation approval by
+itself; the owner's later execution instruction remains the approval boundary.
+The page also keeps each in-progress choice and comment as a browser draft. If
+the local endpoint is temporarily unavailable, the draft survives a reload and
+can be retried once the Labs server is running again.
+
 ## Rules
 
 1. Keep each experiment isolated to UI layout/interaction files only.
@@ -58,6 +69,8 @@ keep production behavior unchanged until the owner selects a direction.
 3. Use the scorecard template for decision-making.
 4. End each experiment with a recorded decision and move its catalog entry to
   Already decided; preserve its lab page as design history.
+5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute saved lab
+  preferences; implement the selected option together with its comments.
 
 ## Fast Commands
 

@@ -11,6 +11,7 @@ import {
   TicketCheck,
 } from "lucide-react";
 import "../index.css";
+import { DecisionCapture } from "../labs/DecisionCapture";
 
 type Variant = "editorial" | "balanced" | "compact";
 
@@ -191,6 +192,9 @@ function Scorecard({ variant }: { variant: Variant }) {
 function Lab() {
   const [variant, setVariant] = useState<Variant>("balanced");
   const [compare, setCompare] = useState(false);
+  const chooseVariant = React.useCallback((optionId: string) => {
+    if (variants.some((item) => item.id === optionId)) setVariant(optionId as Variant);
+  }, []);
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_18rem)] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -230,6 +234,10 @@ function Lab() {
             <Scorecard key={variant} variant={variant} />
           </div>
         )}
+
+        <div className="mt-6">
+          <DecisionCapture labId="itinerary-summary-design" labTitle="Itinerary summary design" options={variants} activeOption={variant} onChoose={chooseVariant} />
+        </div>
       </div>
     </main>
   );

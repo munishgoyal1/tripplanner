@@ -113,6 +113,9 @@ frontend/
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
+    labs/             UX Labs catalog plus shared owner decision capture;
+                      local handoffs are written by the Vite dev server to the
+                      ignored docs/ux-experiments/LAB_SELECTIONS.local.json
     main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual

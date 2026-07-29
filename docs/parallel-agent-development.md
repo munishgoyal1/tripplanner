@@ -13,7 +13,7 @@ The standard slots are:
 | Role | Worktree | Branch | Workspace launcher |
 |---|---|---|---|
 | Agent 3 - integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
-| Agent 1 - worker | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
+| Agent 1 - UI | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
 | Agent 2 - worker | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
 
 The workspace launchers give each window a distinct title and color. Always
