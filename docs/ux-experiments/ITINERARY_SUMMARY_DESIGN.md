@@ -11,30 +11,29 @@
 
 ## Hypothesis
 
-A day summary should answer four questions before the user reads the schedule:
-what kind of day is this, how demanding is it, how will I get around, and what
-still needs attention. Separating these concerns should make the itinerary more
-useful than presenting route facts, reachability, and narrative as similar text.
+A Narrative Brief should explain the purpose and rhythm of the day before the
+user reads the schedule while keeping route, travel, and booking readiness easy
+to scan. The remaining choice is how editorial or compact that brief should be.
 
 ## Variants
 
-### A - Operational overview
+### A - Editorial brief
 
-A facts grid leads with stops, planned time, travel, and confirmation progress.
-Getting around and Day overview remain distinct labeled sections. This is the
-most balanced and scannable option.
+A spacious narrative opening gives the day's character the most authority.
+Route, metrics, readiness, and travel rhythm follow as quiet supporting lines.
+This is the calmest and most travel-editorial option.
 
-### B - Narrative brief
+### B - Balanced brief
 
-The purpose and rhythm of the day lead in editorial prose, followed by a compact
-facts line and travel note. This feels calmer and more inspiring, but booking
-readiness is less prominent.
+Narrative still leads, followed by one framed journey line that pairs transport
+guidance with compact route and booking signals. This keeps the original brief's
+tone while making logistics easiest to distinguish.
 
-### C - Action strip
+### C - Compact brief
 
-Open route, booking gaps, and cautions become the dominant interactive band.
-This is the most operational option, but it can make a normal day feel like an
-exception dashboard.
+The narrative becomes a short sentence inside a denser day header. Metrics,
+transport, booking gaps, and guidance share one compact supporting line. This
+preserves more vertical space for the agenda, especially on mobile.
 
 ## Shared decisions under test
 
@@ -48,10 +47,8 @@ exception dashboard.
 ## Data boundary
 
 The current contract provides date, title, summary, stops, booked count, route
-metrics, reachability, and route URL. Variant C demonstrates a named timing
-caution and the exact unbooked places; production can derive booking gaps from
-stops, but named cautions require structured concern aggregation rather than
-invented copy.
+metrics, reachability, and route URL. All three revised variants stay within
+that boundary and require no new structured caution or transport data.
 
 ## Test scenarios
 
@@ -69,6 +66,6 @@ clarity, visual calm, and mobile fit. Scores stay in browser local storage.
 ## Decision
 
 - Decision: pending owner selection
-- Recommended starting candidate: A - Operational overview
+- Current comparison focus: three modifications of Narrative Brief B
 - Next action: select a summary variant, then implement it together with Compact
   Agenda in the production itinerary.

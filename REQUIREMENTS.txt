@@ -2535,9 +2535,9 @@ VALIDATION:
 - Compact Agenda (option B) is the preferred itinerary-row treatment. Do not
   implement it in production until it is paired with the owner's selected
   itinerary-summary treatment.
-- Add a separate summary lab comparing Operational overview, Narrative brief,
-  and Action strip above the same Compact Agenda context so both choices can be
-  evaluated together.
+- Refocus the separate summary lab on three modifications of Narrative Brief:
+  Editorial, Balanced, and Compact. Keep each above the same Compact Agenda
+  context so narrative density and logistics hierarchy can be compared directly.
 - Keep lab builds separate from the normal production artifact and retain local
   browser-only scorecards for structured comparison.
 - Maintain one UX Labs catalog page with Active experiments and Already decided

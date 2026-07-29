@@ -1,47 +1,35 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import {
-  AlertTriangle,
   ArrowRight,
   Check,
   ChevronRight,
-  Clock3,
   ExternalLink,
   Footprints,
-  MapPin,
   Navigation,
-  Route,
   Sparkles,
   TicketCheck,
-  TrainFront,
 } from "lucide-react";
 import "../index.css";
 
-type Variant = "overview" | "brief" | "actions";
+type Variant = "editorial" | "balanced" | "compact";
 
 const variants: Array<{ id: Variant; label: string; summary: string }> = [
   {
-    id: "overview",
-    label: "A · Operational overview",
-    summary: "A structured facts band makes workload and readiness immediately scannable.",
+    id: "editorial",
+    label: "A · Editorial brief",
+    summary: "A spacious narrative opening lets the character and rhythm of the day lead.",
   },
   {
-    id: "brief",
-    label: "B · Narrative brief",
-    summary: "The purpose and rhythm of the day lead; logistics remain secondary.",
+    id: "balanced",
+    label: "B · Balanced brief",
+    summary: "Narrative leads, followed by a clear journey line and compact readiness signals.",
   },
   {
-    id: "actions",
-    label: "C · Action strip",
-    summary: "Route, booking gaps, and cautions are promoted above descriptive context.",
+    id: "compact",
+    label: "C · Compact brief",
+    summary: "The same narrative and logistics fit into a denser header above the agenda.",
   },
-];
-
-const facts = [
-  { icon: MapPin, label: "Stops", value: "5" },
-  { icon: Clock3, label: "Planned", value: "7 hr" },
-  { icon: Route, label: "Travel", value: "8.6 km" },
-  { icon: TicketCheck, label: "Confirmed", value: "3 of 5" },
 ];
 
 function DateIdentity({ compact = false }: { compact?: boolean }) {
@@ -56,19 +44,6 @@ function DateIdentity({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function FactGrid() {
-  return (
-    <dl className="grid grid-cols-2 overflow-hidden rounded-md bg-slate-50 ring-1 ring-slate-200 sm:grid-cols-4">
-      {facts.map(({ icon: Icon, label, value }) => (
-        <div key={label} className="border-b border-r border-slate-200 px-3 py-2.5 last:border-r-0 sm:border-b-0">
-          <dt className="flex items-center gap-1 text-[10px] font-bold uppercase text-slate-400"><Icon size={11} aria-hidden /> {label}</dt>
-          <dd className="mt-0.5 text-sm font-semibold text-ink">{value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 function RouteAction() {
   return (
     <a href="#" onClick={(event) => event.preventDefault()} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-brand px-3 text-xs font-semibold text-white shadow-sm">
@@ -77,79 +52,67 @@ function RouteAction() {
   );
 }
 
-function OperationalOverview() {
+function EditorialBrief() {
   return (
-    <section className="space-y-4 bg-white p-4 sm:p-5">
+    <section className="bg-white p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <DateIdentity />
         <RouteAction />
       </div>
-      <FactGrid />
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="rounded-md bg-teal-50 px-3 py-2.5 ring-1 ring-teal-100">
-          <p className="flex items-center gap-1 text-[10px] font-bold uppercase text-accent"><TrainFront size={11} aria-hidden /> Getting around</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">Walk in the museum quarter; use Metro or a short taxi for the longer midday legs.</p>
-        </div>
-        <div className="rounded-md bg-slate-50 px-3 py-2.5 ring-1 ring-slate-100">
-          <p className="text-[10px] font-bold uppercase text-slate-500">Day overview</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">A focused art day with a long lunch and a lighter late-afternoon museum.</p>
-        </div>
+      <p className="display mt-5 max-w-2xl text-xl leading-relaxed text-slate-700">A focused art day in central Paris, pairing two essential collections with a relaxed French lunch and an easier finish.</p>
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 pt-3 text-xs text-slate-500">
+        <span className="font-semibold text-ink">5 stops · 7 hr</span>
+        <span>8.6 km · mixed travel</span>
+        <span className="inline-flex items-center gap-1 text-emerald-700"><Check size={12} aria-hidden /> 3 of 5 confirmed</span>
       </div>
+      <p className="mt-3 max-w-2xl text-xs leading-relaxed text-slate-500"><strong className="font-semibold text-accent">Travel rhythm:</strong> Begin on foot, take Metro after the Louvre, then use a taxi if energy is running low.</p>
     </section>
   );
 }
 
-function NarrativeBrief() {
+function BalancedBrief() {
   return (
     <section className="bg-white p-4 sm:p-5">
-      <DateIdentity />
-      <p className="display mt-4 max-w-2xl text-lg leading-relaxed text-slate-700">A focused art day in central Paris, pairing two essential collections with a relaxed French lunch and an easier finish.</p>
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-slate-100 py-3 text-xs text-slate-500">
-        <span className="font-semibold text-ink">5 stops</span>
-        <span>7 hr planned</span>
-        <span>8.6 km</span>
-        <span className="inline-flex items-center gap-1 text-emerald-700"><Check size={12} aria-hidden /> 3 confirmed</span>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <DateIdentity />
         <RouteAction />
       </div>
-      <div className="mt-4 flex items-start gap-3">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-teal-50 text-accent ring-1 ring-teal-100"><Footprints size={15} aria-hidden /></span>
-        <div>
-          <p className="text-xs font-semibold text-ink">Travel rhythm</p>
-          <p className="mt-0.5 text-xs leading-relaxed text-slate-500">Begin on foot, take Metro after the Louvre, then use a taxi if energy is running low.</p>
+      <p className="display mt-4 max-w-2xl text-lg leading-relaxed text-slate-700">A focused art day pairing two essential collections with a relaxed French lunch and an easier finish.</p>
+      <div className="mt-4 grid overflow-hidden rounded-md bg-slate-50 ring-1 ring-slate-200 sm:grid-cols-[minmax(0,1.4fr)_minmax(13rem,0.8fr)]">
+        <div className="flex items-start gap-3 border-b border-slate-200 p-3 sm:border-b-0 sm:border-r">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-teal-50 text-accent ring-1 ring-teal-100"><Footprints size={15} aria-hidden /></span>
+          <div>
+            <p className="text-xs font-semibold text-ink">Mostly walkable, one longer transfer</p>
+            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">Walk early · Metro after lunch · taxi optional late</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 p-3 text-xs">
+          <span className="font-semibold text-ink">5 stops · 7 hr</span>
+          <span className="text-slate-500">8.6 km</span>
+          <span className="col-span-2 inline-flex items-center gap-1 text-emerald-700"><TicketCheck size={12} aria-hidden /> 3 confirmed · 2 to book</span>
         </div>
       </div>
     </section>
   );
 }
 
-function ActionStrip() {
+function CompactBrief() {
   return (
-    <section className="bg-white">
-      <div className="p-4 sm:p-5">
-        <DateIdentity compact />
-      </div>
-      <div className="grid border-y border-slate-200 bg-slate-50 sm:grid-cols-3">
-        <a href="#" onClick={(event) => event.preventDefault()} className="flex items-center gap-3 border-b border-slate-200 px-4 py-3 hover:bg-white sm:border-b-0 sm:border-r">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-brand text-white"><Navigation size={14} aria-hidden /></span>
-          <span><strong className="block text-xs text-ink">Open route</strong><small className="text-[11px] text-slate-500">8.6 km · mixed travel</small></span>
-        </a>
-        <button type="button" className="flex items-center gap-3 border-b border-slate-200 px-4 py-3 text-left hover:bg-white sm:border-b-0 sm:border-r">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200"><TicketCheck size={14} aria-hidden /></span>
-          <span><strong className="block text-xs text-ink">2 need booking</strong><small className="text-[11px] text-slate-500">Lunch and Orangerie</small></span>
-        </button>
-        <button type="button" className="flex items-center gap-3 px-4 py-3 text-left hover:bg-white">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-rose-50 text-rose-700 ring-1 ring-rose-200"><AlertTriangle size={14} aria-hidden /></span>
-          <span><strong className="block text-xs text-ink">1 timing note</strong><small className="text-[11px] text-slate-500">Allow entry queue time</small></span>
-        </button>
-      </div>
-      <div className="grid gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:p-5">
-        <div>
-          <p className="text-[10px] font-bold uppercase text-slate-400">Plan</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">A focused art day with a long lunch and a lighter late-afternoon museum.</p>
+    <section className="bg-white p-4 sm:p-5">
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+        <div className="min-w-0">
+          <DateIdentity compact />
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">Two essential art collections, a relaxed French lunch, and a deliberately easier finish.</p>
         </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase text-accent">Transport</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">Walk nearby legs; use Metro or taxi across the central districts.</p>
+        <RouteAction />
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
+        <strong className="text-ink">5 stops · 7 hr</strong>
+        <span>8.6 km</span>
+        <span>Walk + Metro</span>
+        <span className="text-amber-700">2 to book</span>
+        <div className="basis-full text-slate-500">
+          <strong className="font-semibold text-accent">Getting around:</strong> Walk the museum quarter; Metro after lunch, with taxi as the low-energy fallback.
         </div>
       </div>
     </section>
@@ -182,9 +145,9 @@ function CompactAgendaContext() {
 function VariantPreview({ variant }: { variant: Variant }) {
   return (
     <div className="overflow-hidden rounded-md shadow-card ring-1 ring-slate-200">
-      {variant === "overview" && <OperationalOverview />}
-      {variant === "brief" && <NarrativeBrief />}
-      {variant === "actions" && <ActionStrip />}
+      {variant === "editorial" && <EditorialBrief />}
+      {variant === "balanced" && <BalancedBrief />}
+      {variant === "compact" && <CompactBrief />}
       <CompactAgendaContext />
     </div>
   );
@@ -226,7 +189,7 @@ function Scorecard({ variant }: { variant: Variant }) {
 }
 
 function Lab() {
-  const [variant, setVariant] = useState<Variant>("overview");
+  const [variant, setVariant] = useState<Variant>("balanced");
   const [compare, setCompare] = useState(false);
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_18rem)] px-4 py-6 sm:px-6 lg:px-8">
@@ -235,8 +198,8 @@ function Lab() {
           <div>
             <a href="/labs.html" className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand">← All UX labs</a>
             <p className="text-xs font-bold uppercase text-brand">Internal · Itinerary summary experiment</p>
-            <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose what the day summary should prioritize</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Each option sits above the selected Compact Agenda treatment. Compare how quickly the summary explains the day, exposes travel and readiness, and leads into the schedule.</p>
+            <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose the shape of the Narrative Brief</h1>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">All three options keep narrative B's day-purpose-first direction above Compact Agenda. Compare how much space the story deserves and how logistics should support it.</p>
           </div>
           <button type="button" onClick={() => setCompare((value) => !value)} className="btn-ghost self-start lg:self-auto">{compare ? "Inspect one" : "Compare all"} <ChevronRight size={14} aria-hidden /></button>
         </header>

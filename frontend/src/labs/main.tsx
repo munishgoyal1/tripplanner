@@ -32,7 +32,7 @@ const activeLabs: LabRecord[] = [
   },
   {
     title: "Itinerary summary design",
-    description: "Compare Operational Overview, Narrative Brief, and Action Strip above Compact Agenda.",
+    description: "Compare Editorial, Balanced, and Compact modifications of Narrative Brief above Compact Agenda.",
     date: "29 Jul 2026",
     status: "Choosing",
     decision: "Pending owner selection.",
