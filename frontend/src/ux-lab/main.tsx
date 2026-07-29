@@ -133,6 +133,16 @@ const modeIcon = {
   bus: BusFront,
 };
 
+function stopTiming(stop: Stop) {
+  if (stop.duration === "Start") {
+    return { timeLabel: "Depart", durationLabel: null };
+  }
+  if (stop.duration === "Return") {
+    return { timeLabel: "Return", durationLabel: null };
+  }
+  return { timeLabel: "Arrive", durationLabel: `Stay ${stop.duration}` };
+}
+
 function BookingAction({ booked }: { booked: boolean }) {
   return (
     <button
@@ -201,8 +211,10 @@ function DayHeader() {
 function TimelineVariant() {
   return (
     <div className="px-4 py-4 sm:px-5">
-      {stops.map((stop, index) => (
-        <React.Fragment key={`${stop.name}-${index}`}>
+      {stops.map((stop, index) => {
+        const timing = stopTiming(stop);
+        return (
+          <React.Fragment key={`${stop.name}-${index}`}>
           {stop.leg && (
             <div className="relative ml-[1.15rem] border-l-2 border-dashed border-teal-200 py-2 pl-6">
               <LegStrip leg={stop.leg} />
@@ -213,7 +225,10 @@ function TimelineVariant() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-start gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold text-slate-400">{stop.time} · {stop.duration}</p>
+                  <p className="text-[11px] font-semibold text-slate-500">
+                    {timing.timeLabel} {stop.time}
+                    {timing.durationLabel && <> · {timing.durationLabel}</>}
+                  </p>
                   <h3 className="truncate text-sm font-semibold text-ink">{stop.name}</h3>
                 </div>
                 <BookingAction booked={stop.booked} />
@@ -221,8 +236,9 @@ function TimelineVariant() {
               <p className="mt-1 text-xs leading-relaxed text-slate-500">{stop.detail}</p>
             </div>
           </article>
-        </React.Fragment>
-      ))}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }
@@ -230,11 +246,14 @@ function TimelineVariant() {
 function AgendaVariant() {
   return (
     <div className="divide-y divide-slate-100 px-4 sm:px-5">
-      {stops.map((stop, index) => (
-        <article key={`${stop.name}-${index}`} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 py-3">
+      {stops.map((stop, index) => {
+        const timing = stopTiming(stop);
+        return (
+          <article key={`${stop.name}-${index}`} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 py-3">
           <div className="pt-0.5 text-right">
+            <p className="text-[10px] font-bold uppercase text-slate-400">{timing.timeLabel}</p>
             <p className="text-xs font-bold text-ink">{stop.time}</p>
-            <p className="mt-0.5 text-[10px] text-slate-400">{stop.duration}</p>
+            {timing.durationLabel && <p className="mt-0.5 text-[10px] text-slate-500">{timing.durationLabel}</p>}
           </div>
           <div className="min-w-0">
             {stop.leg && <LegStrip leg={stop.leg} compact />}
@@ -248,8 +267,9 @@ function AgendaVariant() {
               <BookingAction booked={stop.booked} />
             </div>
           </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   );
 }
@@ -257,8 +277,10 @@ function AgendaVariant() {
 function CardsVariant() {
   return (
     <div className="space-y-3 px-4 py-4 sm:px-5">
-      {stops.map((stop, index) => (
-        <article key={`${stop.name}-${index}`} className="overflow-hidden rounded-md bg-white ring-1 ring-slate-200">
+      {stops.map((stop, index) => {
+        const timing = stopTiming(stop);
+        return (
+          <article key={`${stop.name}-${index}`} className="overflow-hidden rounded-md bg-white ring-1 ring-slate-200">
           {stop.leg && (
             <div className="border-b border-teal-100 bg-teal-50/70 px-3 py-2">
               <p className="mb-1 text-[10px] font-bold uppercase text-accent">Travel from previous stop</p>
@@ -270,15 +292,15 @@ function CardsVariant() {
             <div className="flex items-start gap-3">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand text-xs font-bold text-white">{index === 0 || index === stops.length - 1 ? "H" : index}</span>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold uppercase text-slate-400">{stop.kind} · {stop.time}</p>
+                <p className="text-[10px] font-bold uppercase text-slate-400">{stop.kind} · {timing.timeLabel} {stop.time}</p>
                 <h3 className="text-sm font-semibold text-ink">{stop.name}</h3>
               </div>
               <BookingAction booked={stop.booked} />
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-[7rem_minmax(0,1fr)]">
               <div>
-                <p className="text-[10px] font-bold uppercase text-slate-400">Time here</p>
-                <p className="mt-0.5 text-xs font-semibold text-slate-700">{stop.duration}</p>
+                <p className="text-[10px] font-bold uppercase text-slate-400">{timing.durationLabel ? "Planned stay" : "Schedule"}</p>
+                <p className="mt-0.5 text-xs font-semibold text-slate-700">{timing.durationLabel ? stop.duration : `${timing.timeLabel} at ${stop.time}`}</p>
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase text-slate-400">Plan</p>
@@ -286,8 +308,9 @@ function CardsVariant() {
               </div>
             </div>
           </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   );
 }

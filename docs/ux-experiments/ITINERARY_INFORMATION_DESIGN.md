@@ -38,6 +38,9 @@ and can feel repetitive during long trips.
 ## Shared decisions under test
 
 - Replace checkbox semantics with a `Confirmed` / `Needs booking` status action.
+- Label each visit's absolute clock time as `Arrive` and its planned dwell
+  duration as `Stay` or `Planned stay`. Label hotel endpoints as `Depart` and
+  `Return` instead of implying time spent there.
 - Show weekday and full date together.
 - Surface estimated mode, duration, distance, and short guidance for every leg.
 - Label day-level prose as `Getting around` and `Day overview`.
@@ -61,7 +64,9 @@ or live schedules.
    checkbox.
 3. Distinguish day transport advice from the day narrative without reading both.
 4. Scan the full day on a narrow mobile viewport.
-5. Compare a hotel endpoint, attraction, meal, and return leg.
+5. Distinguish suggested arrival time from planned time at a stop without
+  inferring their meaning from position.
+6. Compare a hotel endpoint, attraction, meal, and return leg.
 
 ## Scorecard
 

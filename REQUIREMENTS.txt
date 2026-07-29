@@ -2532,6 +2532,10 @@ VALIDATION:
 - Use isolated, realistic UX lab pages to compare coherent alternatives before
   changing production interaction surfaces. Keep this pattern available for
   future focused experience decisions.
+- In itinerary rows, treat the absolute clock time as the suggested arrival
+  time and duration as planned time at the place. Label these explicitly as
+  `Arrive` and `Stay` / `Planned stay`; use `Depart` and `Return` for hotel
+  circuit endpoints where a dwell duration does not apply.
 - Compact Agenda (option B) is the preferred itinerary-row treatment. Do not
   implement it in production until it is paired with the owner's selected
   itinerary-summary treatment.
