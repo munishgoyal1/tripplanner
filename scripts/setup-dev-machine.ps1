@@ -22,7 +22,6 @@ Set-Location $repoRoot
 
 $tools = @(
     @{ Name = "Git"; Command = "git"; Package = "Git.Git" },
-    @{ Name = "Python 3.11"; Command = "python"; Package = "Python.Python.3.11" },
     @{ Name = "Node.js LTS"; Command = "node"; Package = "OpenJS.NodeJS.LTS" },
     @{ Name = "Docker Desktop"; Command = "docker"; Package = "Docker.DockerDesktop" },
     @{ Name = "Azure CLI"; Command = "az"; Package = "Microsoft.AzureCLI" }
@@ -60,15 +59,51 @@ function Install-MissingTool {
     }
 }
 
+function Assert-LastCommandSucceeded {
+    param([string]$Description)
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Description failed with exit code $LASTEXITCODE."
+    }
+}
+
 Write-Host "`nTripplanner developer-machine setup`n"
 foreach ($tool in $tools) {
     Install-MissingTool $tool
 }
 
-$pythonVersion = & python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
-if ([version]$pythonVersion -lt [version]"3.11") {
-    throw "Python 3.11 or newer is required; found $pythonVersion."
+function Resolve-Python311 {
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        $resolved = & py -3.11 -c "import sys; print(sys.executable)" 2>$null
+        if ($LASTEXITCODE -eq 0 -and $resolved) {
+            return $resolved.Trim()
+        }
+    }
+
+    if ($SkipToolInstall) {
+        throw "Python 3.11 is required but was not found. Install it with 'winget install --id Python.Python.3.11 --exact', then rerun."
+    }
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        throw "Python 3.11 is required and winget is unavailable. Install Python 3.11, then rerun."
+    }
+
+    Write-Host "[install] Python 3.11"
+    winget install --id Python.Python.3.11 --exact --accept-package-agreements `
+        --accept-source-agreements --silent
+    if ($LASTEXITCODE -ne 0) {
+        throw "winget could not install Python 3.11."
+    }
+    Refresh-ProcessPath
+
+    $resolved = & py -3.11 -c "import sys; print(sys.executable)" 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $resolved) {
+        throw "Python 3.11 installed but the Python launcher cannot resolve it. Restart PowerShell and rerun."
+    }
+    return $resolved.Trim()
 }
+
+$python311 = Resolve-Python311
+Write-Host "[ok] Python 3.11 ($python311)"
 
 if (-not (Test-Path ".env")) {
     Copy-Item ".env.example" ".env"
@@ -78,24 +113,46 @@ if (-not (Test-Path ".env")) {
 }
 
 if (-not $SkipDependencyInstall) {
+    if (Test-Path ".venv\Scripts\python.exe") {
+        $venvVersion = & ".venv\Scripts\python.exe" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+        if ($venvVersion -ne "3.11") {
+            Write-Host "[recreate] .venv uses Python $venvVersion; Python 3.11 is required"
+            Remove-Item ".venv" -Recurse -Force
+        }
+    }
     if (-not (Test-Path ".venv\Scripts\python.exe")) {
-        python -m venv .venv
+        & $python311 -m venv .venv
     }
     & ".venv\Scripts\python.exe" -m pip install --upgrade pip
+    Assert-LastCommandSucceeded "pip upgrade"
     & ".venv\Scripts\python.exe" -m pip install -r requirements.lock
+    Assert-LastCommandSucceeded "locked Python dependency install"
     & ".venv\Scripts\python.exe" -m pip install -e . --no-deps
+    Assert-LastCommandSucceeded "editable package install"
 
     Push-Location frontend
-    try { npm ci } finally { Pop-Location }
+    try {
+        npm ci
+        Assert-LastCommandSucceeded "frontend dependency install"
+    } finally {
+        Pop-Location
+    }
 
     if ($IncludeMobile) {
         Push-Location mobile
-        try { npm ci } finally { Pop-Location }
+        try {
+            npm ci
+            Assert-LastCommandSucceeded "mobile dependency install"
+        } finally {
+            Pop-Location
+        }
     }
 }
 
 & ".venv\Scripts\python.exe" -c "import fastapi, tripplanner; print('[ok] Python environment')"
+Assert-LastCommandSucceeded "Python environment verification"
 npm --prefix frontend run build
+Assert-LastCommandSucceeded "frontend production build"
 
 $dockerReady = $false
 try {
