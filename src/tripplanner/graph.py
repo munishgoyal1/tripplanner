@@ -132,6 +132,29 @@ def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
     return positions
 
 
+def _tool_result_texts(messages: list[BaseMessage], tool_name: str) -> list[str]:
+    call_ids: set[str] = set()
+    for message in messages:
+        for tool_call in getattr(message, "tool_calls", None) or []:
+            name = (
+                tool_call.get("name")
+                if isinstance(tool_call, dict)
+                else getattr(tool_call, "name", None)
+            )
+            call_id = (
+                tool_call.get("id")
+                if isinstance(tool_call, dict)
+                else getattr(tool_call, "id", None)
+            )
+            if name == tool_name and call_id:
+                call_ids.add(str(call_id))
+    return [
+        str(message.content or "")
+        for message in messages
+        if str(getattr(message, "tool_call_id", "")) in call_ids
+    ]
+
+
 def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
     positions = _tool_call_positions(messages)
     created_this_turn = any(name == "create_trip_plan" for _, name in positions)
@@ -181,6 +204,57 @@ def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
     return None
 
 
+def _trip_hotel_search_requirement(messages: list[BaseMessage]) -> str | None:
+    positions = _tool_call_positions(messages)
+    if any(name == "search_hotels" for _, name in positions):
+        return None
+    try:
+        trip = load_active_trip_dict() or {}
+    except Exception:
+        return None
+    if not trip.get("destination") or not trip.get("day_wise_itinerary"):
+        return None
+    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
+    if not created_this_turn and not latest_user_has_planning_intent(messages):
+        return None
+    hotel_gaps = [
+        gap for gap in planning_completion_gaps(trip) if "hotel" in gap.lower()
+    ]
+    if not hotel_gaps:
+        return None
+    return (
+        "The saved itinerary still has no concrete hotel: "
+        + " ".join(hotel_gaps)
+        + " Search real hotels now so the strongest preference-matched option can be "
+        "selected by default in the next full-plan update."
+    )
+
+
+def _trip_hotel_fallback_requirement(messages: list[BaseMessage]) -> str | None:
+    positions = _tool_call_positions(messages)
+    if not any(name == "search_hotels" for _, name in positions):
+        return None
+    if any(name == "search_places_with_reviews" for _, name in positions):
+        return None
+    results = _tool_result_texts(messages, "search_hotels")
+    if not results:
+        return None
+    failure_markers = (
+        "not configured",
+        "no hotels found",
+        "hotel list error",
+        "hotel search error",
+    )
+    if not any(marker in result.lower() for result in results for marker in failure_markers):
+        return None
+    return (
+        "The hotel provider returned no usable candidates. Search Google Places for "
+        "preference-matched hotels in the destination, using a hotel-specific query. "
+        "Use its real names, ratings, review counts, addresses, and place IDs to choose "
+        "the strongest sensible default in the next full-plan update."
+    )
+
+
 def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
     """Choose the required preference-aware step before creating a new trip."""
     try:
@@ -224,24 +298,52 @@ def trip_agent(state: AgentState) -> AgentState:
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
     tools = select_tools(state["messages"], proposal_only=proposal_only)
+    hotel_fallback_requirement = (
+        None if proposal_only else _trip_hotel_fallback_requirement(state["messages"])
+    )
     update_requirement = (
-        None if proposal_only else _trip_update_requirement(state["messages"])
+        None
+        if proposal_only or hotel_fallback_requirement
+        else _trip_update_requirement(state["messages"])
+    )
+    hotel_search_requirement = (
+        None
+        if proposal_only or hotel_fallback_requirement or update_requirement
+        else _trip_hotel_search_requirement(state["messages"])
     )
     kickoff_tool = (
-        None if proposal_only or update_requirement
+        None if proposal_only or update_requirement or hotel_search_requirement
         else _trip_kickoff_tool_choice(state["messages"])
     )
-    forced_tool = "update_trip_plan" if update_requirement else kickoff_tool
+    forced_tool = (
+        "search_places_with_reviews"
+        if hotel_fallback_requirement
+        else "update_trip_plan"
+        if update_requirement
+        else "search_hotels"
+        if hotel_search_requirement
+        else kickoff_tool
+    )
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
         **({"tool_choice": forced_tool} if forced_tool else {}),
     )
     instructions = [build_trip_system_prompt()]
-    if update_requirement:
+    if hotel_fallback_requirement:
+        instructions.append(SystemMessage(content=(
+            hotel_fallback_requirement
+            + " Call search_places_with_reviews before writing any final response."
+        )))
+    elif update_requirement:
         instructions.append(SystemMessage(content=(
             update_requirement
             + " Call update_trip_plan before writing any final response."
+        )))
+    elif hotel_search_requirement:
+        instructions.append(SystemMessage(content=(
+            hotel_search_requirement
+            + " Call search_hotels before writing any final response."
         )))
     elif kickoff_tool == "request_trip_input":
         instructions.append(SystemMessage(content=(

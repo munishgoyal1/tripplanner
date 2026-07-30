@@ -237,6 +237,124 @@ def test_empty_itinerary_retry_is_bounded(monkeypatch) -> None:
     assert graph_mod._trip_update_requirement(messages) is None
 
 
+def test_trip_agent_forces_hotel_search_when_draft_keeps_placeholder(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages):
+            return AIMessage(
+                content="",
+                tool_calls=[{
+                    "name": "search_hotels",
+                    "args": {"city_code": "PAR"},
+                    "id": "hotel-1",
+                }],
+            )
+
+    class FakeModel:
+        def bind_tools(self, _tools, **options):
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel (TBD)", "kind": "hotel"},
+                    {"name": "Louvre Museum", "kind": "attraction"},
+                ],
+            }],
+            "selected_hotels": [],
+        },
+    )
+    messages = [
+        HumanMessage(content="Build my Paris itinerary"),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "draft-1"}],
+        ),
+        ToolMessage(content="Hotel planning incomplete", tool_call_id="draft-1"),
+    ]
+
+    result = graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "search_hotels"
+    assert result["messages"][0].tool_calls[0]["name"] == "search_hotels"
+
+
+def test_trip_agent_falls_back_to_google_when_hotel_provider_is_unavailable(
+    monkeypatch,
+) -> None:
+    from tripplanner import graph as graph_mod
+
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages):
+            return AIMessage(
+                content="",
+                tool_calls=[{
+                    "name": "search_places_with_reviews",
+                    "args": {"query": "family-friendly 4-star hotels", "city": "Paris"},
+                    "id": "places-1",
+                }],
+            )
+
+    class FakeModel:
+        def bind_tools(self, _tools, **options):
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "Paris",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Hotel (TBD)", "kind": "hotel"}],
+            }],
+            "selected_hotels": [],
+        },
+    )
+    messages = [
+        HumanMessage(content="Build my Paris itinerary"),
+        AIMessage(
+            content="",
+            tool_calls=[{
+                "name": "search_hotels",
+                "args": {"city": "Paris"},
+                "id": "hotel-1",
+            }],
+        ),
+        ToolMessage(
+            content="Amadeus API not configured. Falling back to general knowledge.",
+            tool_call_id="hotel-1",
+        ),
+    ]
+
+    result = graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "search_places_with_reviews"
+    assert result["messages"][0].tool_calls[0]["name"] == "search_places_with_reviews"
+
+
 def test_new_trip_requires_enriched_update_after_research(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 

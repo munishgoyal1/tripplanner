@@ -4,6 +4,18 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-30 - Complete Persisted Defaults Across Provider Failure
+
+- Enforce required defaults from persisted state, not from whether the model
+  happened to call a research tool. A complete itinerary with a placeholder
+  hotel is still incomplete even when the first update succeeded.
+- A forced provider call is not a completion guarantee. Inspect its result and
+  deterministically route known unavailable, empty, or error outcomes to a real
+  fallback before forcing the final persistence step.
+- Regression tests for agent completion must cover the sequence boundary:
+  immediate draft, missing required default, primary-provider failure, fallback
+  research, and the final persisted replacement.
+
 ## 2026-07-28 - Enforce Persistence at the Agent Boundary
 
 - Prompt instructions are not a completion guarantee. If a newly created
