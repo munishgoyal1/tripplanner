@@ -180,6 +180,9 @@ re-describing the whole product.
 - A selected hotel's explicit city, destination, or address evidence must match
   the active trip destination. A mismatch rejects the whole plan update before
   persistence rather than surfacing only as a finalization warning.
+- An unambiguous one-for-one selected hotel replacement updates every matching
+  itinerary stay anchor in the same persistence operation, so Itinerary and Map
+  cannot continue showing the removed property.
 - Substantial days require concrete restaurant research and persisted meal stops.
 - Visit times must progress chronologically and leave room for stated duration
   and travel. Duplicate or backwards model-authored times are rejected before

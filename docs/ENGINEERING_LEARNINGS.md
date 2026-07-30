@@ -14,6 +14,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   a late finalization warning leaves every live workspace surface showing bad data.
 - Prompt instructions should retain provider evidence, but deterministic persistence
   validation owns the invariant when the model strips or misreads that evidence.
+- A selected-hotel replacement is incomplete until the structured itinerary anchors
+  change in the same write; chat confirmation and selection metadata alone do not
+  update itinerary or map truth.
 
 ## 2026-07-30 - Keep Deterministic Gates Cheap
 

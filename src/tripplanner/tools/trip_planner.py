@@ -267,6 +267,50 @@ def _hotel_destination_errors(destination: str, hotels: Any) -> list[str]:
     return errors
 
 
+def _sync_replaced_hotel_anchors(
+    plan: dict[str, Any], previous_hotels: Any, selected_hotels: Any
+) -> bool:
+    if not isinstance(previous_hotels, list) or not isinstance(selected_hotels, list):
+        return False
+
+    def by_name(hotels: list[Any]) -> dict[str, dict[str, Any]]:
+        result: dict[str, dict[str, Any]] = {}
+        for hotel in hotels:
+            if not isinstance(hotel, dict):
+                continue
+            name = _stop_name(hotel) or str(hotel.get("hotel_name") or "").strip()
+            if name:
+                result[name.lower()] = hotel
+        return result
+
+    previous = by_name(previous_hotels)
+    selected = by_name(selected_hotels)
+    removed = previous.keys() - selected.keys()
+    added = selected.keys() - previous.keys()
+    if len(removed) != 1 or len(added) != 1:
+        return False
+
+    removed_name = next(iter(removed))
+    replacement = selected[next(iter(added))]
+    replacement_name = _stop_name(replacement) or str(
+        replacement.get("hotel_name") or ""
+    ).strip()
+    changed = False
+    for day in plan.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
+            continue
+        for index, stop in enumerate(day["stops"]):
+            if _stop_kind(stop) != "hotel" or _stop_name(stop).lower() != removed_name:
+                continue
+            next_stop = dict(stop) if isinstance(stop, dict) else {}
+            next_stop.update(replacement)
+            next_stop["name"] = replacement_name
+            next_stop["kind"] = "hotel"
+            day["stops"][index] = next_stop
+            changed = True
+    return changed
+
+
 def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Return actionable gaps that keep a new plan from feeling complete."""
     return [
@@ -1663,6 +1707,13 @@ def update_trip_plan(updates_json: str) -> str:
                     if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(hotel))
                 ]
             plan[key] = val
+
+    if "selected_hotels" in updates and _sync_replaced_hotel_anchors(
+        plan,
+        before.get("selected_hotels"),
+        plan.get("selected_hotels"),
+    ):
+        _reflow_unbooked_attractions(plan)
 
     _save_active_trip(plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))

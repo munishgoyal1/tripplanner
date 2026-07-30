@@ -462,6 +462,76 @@ class TestTripPlanState:
         assert not result.startswith("Error:")
         assert plan["selected_hotels"][0]["name"] == "The Himalayan"
 
+    def test_update_trip_plan_replaces_hotel_in_itinerary_anchors(self, monkeypatch):
+        from tripplanner.web import trip_view
+
+        def place_details(name, _destination):
+            coords = {
+                "The Himalayan": (32.25, 77.18),
+                "Hadimba Temple": (32.24, 77.19),
+                "Solang Valley": (32.32, 77.16),
+            }
+            lat, lng = coords.get(name, (32.24, 77.18))
+            return {"name": name, "lat": lat, "lng": lng}
+
+        monkeypatch.setattr(
+            trip_view.places_cache, "top_places", lambda *_args, **_kwargs: []
+        )
+        monkeypatch.setattr(
+            trip_view.places_cache, "prefetch", lambda *_args, **_kwargs: None
+        )
+        monkeypatch.setattr(trip_view.places_cache, "get_details", place_details)
+        monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *_args, **_kwargs: [])
+        monkeypatch.setattr(trip_view, "_airport_pin", lambda _destination: None)
+        create_trip_plan.invoke({
+            "destination": "Manali, India",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Wrong Mountain Resort",
+                "destination": "Manali",
+            }],
+            "day_wise_itinerary": [
+                {"day": 1, "stops": [
+                    {"name": "Wrong Mountain Resort", "kind": "hotel", "time": "09:00"},
+                    {"name": "Hadimba Temple", "kind": "attraction", "time": "10:00"},
+                    {"name": "Wrong Mountain Resort", "kind": "hotel", "time": "18:00"},
+                ]},
+                {"day": 2, "stops": [
+                    {"name": "Wrong Mountain Resort", "kind": "hotel", "time": "09:00"},
+                    {"name": "Solang Valley", "kind": "attraction", "time": "10:00"},
+                    {"name": "Wrong Mountain Resort", "kind": "hotel", "time": "18:00"},
+                ]},
+            ],
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "The Himalayan",
+                "destination": "Manali",
+                "address": "Hadimba Road, Manali, Himachal Pradesh, India",
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert not result.startswith("Error:")
+        assert {stop["name"] for stop in hotel_stops} == {"The Himalayan"}
+        assert [stop["time"] for stop in hotel_stops] == [
+            "09:00", "18:00", "09:00", "18:00",
+        ]
+        assert all(stop["address"].startswith("Hadimba Road") for stop in hotel_stops)
+        map_names = {pin["name"] for pin in trip_view.build_map_view(plan)["pins"]}
+        assert "The Himalayan" in map_names
+        assert "Wrong Mountain Resort" not in map_names
+
     def test_update_trip_plan_rejects_hotel_without_destination_evidence(self):
         create_trip_plan.invoke({
             "destination": "Manali, India",

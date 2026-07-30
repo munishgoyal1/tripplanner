@@ -2894,3 +2894,5 @@ VALIDATION:
   the active destination explicitly.
 - Reject the complete update atomically when hotel locality mismatches or cannot be
   established, so unrelated fields and itinerary surfaces cannot persist bad data.
+- When one selected hotel replaces one prior hotel, update every matching itinerary
+  hotel anchor in that same write so Itinerary and Map immediately show the new stay.
