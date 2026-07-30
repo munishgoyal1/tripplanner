@@ -24,10 +24,11 @@ any time.
 1. Apply known preferences before asking anything; say concisely what was applied.
 2. Distinguish durable preferences from trip-specific exceptions. A one-trip
    answer must not silently overwrite long-term memory.
-3. Ask at most one consolidated upfront question, only when the missing fact can
-   materially change dates, feasibility, party fit, accessibility, or budget.
+3. Start every new trip with one consolidated prefilled review after loading durable
+   context. Include only useful trip-specific choices and any material unresolved fact.
 4. Every structured field has a sensible prefilled value and a skip/default path.
-5. When origin, destination, and rough timing are sufficient, build immediately.
+5. After the user submits or skips the kickoff, build immediately without another
+   question in direct mode.
 6. The first plan chooses one concrete stay, popular and preference-matched places,
    named meals, practical chronological routes, and honest booking readiness.
 7. Assistant replies are tight: decision first, brief rationale, next choice only
@@ -37,8 +38,8 @@ any time.
 ## Scenarios
 
 1. **Bare request:** "Plan Paris from Delhi for five days in October." The planner
-   uses saved defaults and either builds immediately or asks one compact prompt
-   containing only material trip-specific choices.
+   enumerates the relevant saved defaults in one compact prefilled prompt, then builds
+   immediately after submit or skip.
 2. **Detailed request:** user includes dates, party, pace, and a special interest.
    The planner acknowledges the constraints and builds without another question.
 3. **Unknown critical constraint:** interactive mode cannot infer party mobility or
@@ -51,17 +52,20 @@ any time.
 ## Acceptance criteria
 
 - **AC-01:** An active UX Lab compares three assistant-overlay footprints with a
-  realistic, interactive preference-aware kickoff.
+   realistic, interactive preference-aware kickoff and a full-viewport trip workspace
+   for judging each option before production implementation.
 - **AC-02:** The backend validates a versioned structured request with one to four
   fields, bounded options, and a prefilled value for every field.
 - **AC-03:** Streaming chat emits `input_request` additively while retaining the
   normal text reply and terminal `done` event.
 - **AC-04:** Shared web/native transport retains the event without requiring either
   production UI to render it yet.
-- **AC-05:** Direct mode keeps complete-by-default behavior; structured upfront input
-  is restricted to genuinely critical interactive-mode gaps in stage 1.
-- **AC-06:** The production overlay and control renderer require the owner-selected
-  Lab direction and are not implied by this foundation.
+- **AC-05:** Direct mode always shows the one-step prefilled kickoff, then keeps
+   complete-by-default behavior without further questions. Interactive mode may add
+   unresolved critical fields to the same kickoff.
+- **AC-06:** Option A's production-code overlay and control renderer are available
+   in the local deployment for owner testing; hosted deployment and final acceptance
+   require a later explicit decision.
 - **AC-07:** Future production rendering must support keyboard, focus, screen reader,
   narrow desktop, and native mobile presentation without changing the payload.
 - **AC-08:** Planning quality must later be measured against practical routing,
@@ -73,15 +77,15 @@ any time.
 | Stage | Behavior | Status |
 | --- | --- | --- |
 | 1 | Interactive Lab, validated backend contract, additive SSE event, shared client type | Implemented |
-| 2 | Owner-selected production web overlay, structured control renderer, answer submission and recovery | Pending owner Lab selection |
+| 2 | Option A web sidecar, structured control renderer, answer submission and recovery | Implemented for local evaluation; hosted deployment pending |
 | 3 | Native rendering plus repeatable planning-quality evaluation set and tuning | Pending evidence from stage 2 |
 
 ## Open decisions
 
 | ID | Decision | Recommendation | Status |
 | --- | --- | --- | --- |
-| D-01 | Desktop overlay footprint | B - Focus overlay | Open in UX Lab |
-| D-02 | Default planning policy after stage 1 | Build immediately when origin, destination, and rough timing exist; ask once only for material blockers | Recommended |
+| D-01 | Desktop Assistant footprint | A - Docked sidecar | Local main-app trial; final acceptance pending |
+| D-02 | Default planning policy after stage 1 | Review applied defaults once, then build immediately without follow-up questions in direct mode | Implemented locally |
 | D-03 | Native presentation | Native bottom sheet using the same payload after web validation | Deferred |
 
 ## Validation

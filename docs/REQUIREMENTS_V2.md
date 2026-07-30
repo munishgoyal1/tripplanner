@@ -61,7 +61,7 @@ re-describing the whole product.
 | ID | Capability | Status |
 | --- | --- | --- |
 | CORE-01 | Single trip-planning agent with phase-selected tools | Implemented |
-| CHAT-01 | Structured minimal-input Assistant interactions | Partially implemented |
+| CHAT-01 | Structured minimal-input Assistant interactions | Observing |
 | PLAN-01 | Preference-aware conversational trip creation | Implemented |
 | PLAN-02 | Source-grounded flight, stay, place, meal, route, weather, visa, and event research | Implemented |
 | PLAN-03 | Structured, chronological, hotel-anchored daily itineraries | Implemented |
@@ -101,18 +101,24 @@ re-describing the whole product.
 
 ### CHAT-01 - Structured minimal-input Assistant interactions
 
-- The agent has a bounded `request_trip_input` tool for one consolidated
-  interactive-mode clarification. Every field must carry a sensible prefilled value.
+- Every new trip deterministically loads durable preferences, then emits one bounded
+  `request_trip_input` kickoff before plan creation. Every field carries a sensible
+  prefilled value; known context enumerates the relevant saved preferences and
+  past-trip signals already applied.
 - The backend emits the validated versioned payload as an additive `input_request`
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
-- Production rendering remains pending the active Assistant-overlay UX Lab decision;
-  current production clients continue to use the text fallback.
+- The main web app renders all validated field kinds in a prefilled compact card
+  inside the Option A right-edge Assistant sidecar. Submission and default-skip
+  responses continue through the normal retry-safe chat path.
+- Option A is available in the local deployment for owner evaluation. Hosted
+  deployment and final design acceptance remain pending.
 
 ### PLAN-01 - Preference-aware planning flow
 
-- The agent loads known preferences before asking questions and asks only for
-  information it cannot safely infer.
+- The agent loads known preferences before the one-step new-trip kickoff. Direct
+  mode uses that review and then builds without further questions; interactive
+  mode may include unresolved critical facts in the same review.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
 - One sticky display currency is used throughout a trip. Domestic travel defaults
@@ -131,10 +137,22 @@ re-describing the whole product.
 
 ### PLAN-02 - Grounded providers and enrichment
 
-- Duffel is the primary flight search provider; Amadeus flight search is fallback
-  only.
-- Amadeus remains available for supported hotel, activity, and point-of-interest
-  searches.
+- LiteAPI is the preferred read-only source for date/party-specific hotel rates,
+  flight rates, and selected-flight verification when configured. Normalized
+  results retain opaque provider references, quote time/expiry, total provider
+  currency, and explicit `live`, `unavailable`, or `provider_error` evidence.
+- The stable flight and hotel tools route through separate capability contracts;
+  future providers can implement either capability without changing the agent.
+- Viator is the preferred read-only activity provider when configured. The stable
+  activity tool returns date-filtered product discovery, operating-schedule evidence,
+  ratings, duration, cancellation/confirmation metadata, and the provider's unchanged
+  affiliate URL. Prices are explicitly `from` prices, not exact party totals or holds.
+- Duffel remains the flight fallback, and Amadeus remains available for legacy
+  flight, hotel, activity, and point-of-interest searches.
+- Google hotel results are property metadata only and are labeled `estimated`;
+  they never establish room availability or a live rate.
+- Explicit inventory refresh bypasses shared cache. Live hotel, flight, and activity
+  search uses a 60-second cache and flight verification uses 30 seconds by default.
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.

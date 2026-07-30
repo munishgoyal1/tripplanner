@@ -2758,3 +2758,102 @@ VALIDATION:
 - Local and canary must not send operational alert email. Retain bounded redacted
   local logs and provide one read-only periodic analyzer that groups failures,
   writes an ignored Markdown report, and recommends focused investigation steps.
+=== 2026-07-30 — Clear Assistant Lab alternatives and catalog navigation ===
+
+- Every standalone UX Lab page must provide a direct link back to the Labs catalog.
+- Assistant layout alternatives must differ in interaction model, not only width:
+  A is a docked sidecar with the live workspace still usable; B is a centered
+  focus modal over a visible but inactive workspace; C is a full guided takeover
+  that replaces the workspace with Trip brief, Research, and Review stages.
+- Present each alternative with a footprint diagram, concise behavior summary,
+  and the same live prompt fixture so the layout tradeoff is easy to compare.
+
+=== 2026-07-30 — Return to single-workspace development ===
+
+- Use one VS Code window in the primary checkout and work directly on `master`
+  by default; Worker 1 / Agent 3 parallel integration is no longer the normal flow.
+- Keep worker worktrees and merge helpers available only for an explicitly requested
+  parallel assignment.
+- After each commit and push, restart the affected local servers when runtime code
+  changed so the running app reflects the new milestone. Skip restarts for docs-only
+  or otherwise runtime-neutral changes.
+
+=== 2026-07-30 — Agent-owned local runtime ===
+
+- The coding agent owns starting, stopping, restarting, stale-port cleanup, and
+  health verification for the canonical local API, SPA, and UX Labs stack.
+- Do not require the owner to run `dev-spa.ps1` or diagnose whether local servers
+  are current. Keep operational friction out of the feature and Lab feedback loop.
+- After runtime commits are pushed, restart affected services and verify them before
+  reporting completion. For runtime-neutral commits, avoid needless restarts unless
+  the stack is down and the owner needs it for testing.
+
+=== 2026-07-30 — Production-scale UX Lab evaluation ===
+
+- Every UX Lab option must include a realistic full-application, production-scale
+  preview so the owner can judge how it will actually look and behave before any
+  production UX implementation is needed.
+- Keep option POCs isolated in Labs. Do not modify the main UX or add production
+  implementation tests merely to experience or compare a Lab alternative.
+- A provisional instruction such as "try A first" means make A realistically
+  testable in the Lab; production work begins only after an explicit final choice.
+
+=== 2026-07-30 — Option A local main-app trial ===
+
+- Implement the Docked sidecar option in the main web application for local testing,
+  not as an Azure production deployment or final design acceptance.
+- Keep Itinerary and Map visible and usable behind the wide right-edge Assistant;
+  Details remains independently controlled.
+- Render validated structured input requests as compact prefilled controls for
+  single choice, multiple choice, boolean, and number fields, with submit and
+  saved-default skip paths through the normal chat transport.
+
+=== 2026-07-30 — Guarantee the selected Assistant kickoff ===
+
+- The Paris local trial exposed that production had promoted Option A's sidecar shell
+  but retained a direct-mode policy that bypassed its preference-aware kickoff.
+- Every new trip must first load durable preferences, enumerate the relevant saved and
+  past-trip context being applied, and show one compact prefilled review before plan
+  creation. Submit or skip then proceeds without another question in direct mode.
+- Promoting a UX Lab option means preserving its defining interaction behavior, not
+  only reproducing its visual footprint.
+
+=== 2026-07-30 — Reduce Assistant orchestration latency ===
+
+- Assistant feedback should begin promptly and routine turns should approach the
+  responsiveness users expect from modern chat products.
+- Preserve deterministic itinerary and concrete-hotel persistence while removing
+  avoidable model rounds and repeated irrelevant tool-schema payload.
+- Measure model inference separately from provider and persistence work so latency
+  changes target the demonstrated bottleneck.
+
+=== 2026-07-30 — Provider-neutral live rates and availability ===
+
+- Build separate hotel and flight provider abstractions, beginning with LiteAPI
+  and allowing a later Booking.com accommodation adapter where account access permits.
+- First priority is a robust itinerary backed by date-, party-, room-, nationality-,
+  and currency-specific rates and availability with explicit quote freshness,
+  taxes/fees, cancellation terms, and provider evidence.
+- Keep this phase read-only. Do not add prebooking, booking, payment, cancellation,
+  or claims that a persisted historical price remains currently available.
+- Google Places may supply property identity, ratings, and reviews but must never
+  be represented as room availability or a live rate.
+
+=== 2026-07-30 — Provider-neutral live activity evidence ===
+
+- Add Viator Basic Access Affiliate sandbox support behind the stable activity
+  search tool and a capability-specific provider contract.
+- Return date-filtered discovery, operating schedules, ratings, duration,
+  cancellation/confirmation metadata, and unchanged affiliate product URLs.
+- Label product pricing as a from-price rather than an exact party total or held
+  quote. Keep booking, payment, reservation, amendment, and cancellation APIs absent.
+- Prefer Viator when its server-side key is configured; preserve the Amadeus fallback.
+
+=== 2026-07-30 — Two-worker guarded integration ===
+
+- Keep the primary `master` workspace as the default development path. Use the
+  persistent worktree environment only for clear, sizeable, isolated features.
+- When parallel mode is active, Worker 1 and Worker 2 own separate feature work.
+- The merge and Run Latest actions must preflight both workers, merge Worker 1
+  and then Worker 2 through separate merge-commit pull requests, synchronize each
+  persistent branch, and start the app only after both integrations succeed.

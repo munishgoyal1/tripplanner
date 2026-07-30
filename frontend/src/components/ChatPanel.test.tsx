@@ -99,4 +99,51 @@ describe("ChatPanel progress", () => {
       streamChatMock.mock.calls[0][2].requestId,
     );
   });
+
+  it("renders and submits a validated trip input request", async () => {
+    streamChatMock
+      .mockImplementationOnce((_message: string, handlers: StreamHandlers) => {
+        handlers.onInputRequest?.({
+          version: 1,
+          request_id: "trip-input-1",
+          question: "Anything different for this trip?",
+          known_context: ["Boutique stays", "Vegetarian-friendly"],
+          fields: [
+            {
+              id: "pace",
+              label: "Pace",
+              kind: "single",
+              value: "balanced",
+              options: [
+                { value: "easy", label: "Easy" },
+                { value: "balanced", label: "Balanced" },
+              ],
+            },
+            { id: "travelers", label: "Travelers", kind: "number", value: 2, min: 1, max: 6 },
+          ],
+          submit_label: "Build my trip",
+          allow_skip: true,
+        });
+        handlers.onDone("Choose what differs.");
+        return Promise.resolve();
+      })
+      .mockImplementationOnce((_message: string, handlers: StreamHandlers) => {
+        handlers.onDone("Building now.");
+        return Promise.resolve();
+      });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    fireEvent.change(screen.getByPlaceholderText(/Plan a 5-day trip/), { target: { value: "Plan Paris" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(await screen.findByText("Anything different for this trip?")).toBeInTheDocument();
+    expect(screen.getByText(/Boutique stays/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: "Easy" }));
+    fireEvent.click(screen.getByRole("button", { name: "Increase Travelers" }));
+    fireEvent.click(screen.getByRole("button", { name: "Build my trip" }));
+
+    await waitFor(() => expect(streamChatMock).toHaveBeenCalledTimes(2));
+    expect(streamChatMock.mock.calls[1][0]).toBe("Use these choices for this trip:\n- Pace: Easy\n- Travelers: 3");
+    expect(screen.queryByText("Anything different for this trip?")).not.toBeInTheDocument();
+  });
 });

@@ -23,8 +23,8 @@ if ($masterChanges) {
 }
 
 try {
-	Write-Host "Merging the latest Agent 1 code..." -ForegroundColor Cyan
-	& "$PSScriptRoot\merge-agent-1.ps1" -ValidateOnly:$ValidateOnly
+	Write-Host "Merging the latest Worker 1 and Worker 2 code..." -ForegroundColor Cyan
+	& "$PSScriptRoot\merge-workers.ps1" -ValidateOnly:$ValidateOnly
 } finally {
 	if ($stashCreated) {
 		Write-Host "Restoring local master changes..." -ForegroundColor Cyan
@@ -36,7 +36,7 @@ try {
 }
 
 if ($ValidateOnly) {
-	Write-Host "Ready: local master changes can be preserved around Worker 1 integration."
+	Write-Host "Ready: local master changes can be preserved around two-worker integration."
 	return
 }
 

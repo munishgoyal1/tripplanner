@@ -26,26 +26,32 @@
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
+- The coding agent owns the local server lifecycle: start, stop, restart, clear
+  stale ports, and health-check the canonical stack without handing operations
+  back to the owner. After a push, restart affected services when runtime code
+  changed. Skip unnecessary restarts for runtime-neutral changes, but ensure the
+  stack is running whenever the owner needs to test.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
 
-## Parallel coding windows
+## Development workspace
 
-- The primary `tripplanner` checkout stays on `master` as the integration lane.
-  Feature and fix agents work only in the persistent sibling worktrees
-  `worker-1` and `worker-2` on their matching `agents/worker-*` branches.
-- The owner's default is two active windows: Agent 1 Development in `worker-1`
-  and Agent 3 Review & Integration on `master`. Keep `worker-2` dormant unless
-  the owner explicitly chooses a third parallel assignment.
+- The owner's default is this single primary `tripplanner` VS Code workspace,
+  working directly on `master` for features, fixes, review, and integration.
+- Use persistent `worker-1` / `worker-2` worktrees only when the owner explicitly
+  requests parallel development for clear, sizeable, isolated features. They are
+  optional capacity, not the normal path; when active, both are independent lanes.
 - Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
   assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
-- `scripts/dev/run-latest-code.ps1` is the regular local integration flow:
+- When parallel mode is explicitly active, `scripts/dev/run-latest-code.ps1`:
   it temporarily stashes staged, unstaged, and untracked master work, performs the
-  clean guarded merge, restores the local state, and only then starts the app.
-  Worker synchronization conflicts abort and restore a clean worker automatically;
-  overlapping restored master changes stop for explicit conflict resolution.
+  clean guarded Worker 1 then Worker 2 PR merges, restores the local state, and
+  only then starts the app. Both workers preflight before either merge. Worker 2
+  incorporates Worker 1's new master first. Worker synchronization conflicts abort
+  and restore that worker automatically; overlapping restored master changes stop
+  for explicit conflict resolution.
 - Use `scripts/agent-worktree.ps1` and
   `docs/development/parallel-agent-development.md` for slot creation, synchronization,
   temporary worktrees, and safe cleanup. Do not share `.venv` or mutable
@@ -152,18 +158,32 @@ Learns from user preferences and past trips.
   owner email Action Group behind the production deployment approval gate.
   Local development retains bounded redacted JSON, and one read-only command
   produces grouped local or canary Markdown diagnostics without non-production email.
+- **Provider-neutral live travel foundation**: the stable hotel and preferred
+  flight tools now select capability-specific providers through a minimal
+  registry. LiteAPI supplies normalized read-only hotel rates, flight search,
+  and selected-flight verification with provider references, quote timestamps,
+  expiry, totals, and explicit evidence status. Legacy Duffel/Amadeus/Google
+  fallbacks remain; Google hotel results are labeled metadata-only rather than
+  live availability. Explicit refresh bypasses the 60-second inventory cache.
+  No prebook, booking, payment, order, or cancellation endpoint exists.
+- **Option A local Assistant trial**: the main web app now opens Assistant as a
+  wide right-edge sidecar over the still-visible, usable itinerary/map workspace.
+  Validated `input_request` events render as compact prefilled controls for all
+  supported field kinds and submit through normal chat. New trips deterministically
+  load preferences and force this one-step review before plan creation, enumerating
+  relevant saved and past-trip context; direct mode proceeds without more questions
+  after submit or skip. This is for local owner testing only; no Azure deployment or
+  final design acceptance is implied.
 - **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
   compares a compact operations binder, recommended layered Trip Book, and
   visual journey book across contents, trip brief, executable day, document
   readiness, and evidence-labeled personal context. Production export remains
   unchanged; secure document ingestion and merged-PDF behavior require a later
   owner-approved contract.
-- **Assistant-led itinerary foundation**: an active UX Lab compares three
-  preference-aware overlay footprints with live prefilled controls. The agent
-  can emit one bounded `request_trip_input` clarification in interactive mode;
-  FastAPI streams the validated payload as an additive `input_request` event,
-  and shared web/native transport retains it. Production rendering remains
-  pending the owner-selected Lab direction; direct mode still builds by default.
+- **Assistant-led itinerary foundation**: the selected Option A local trial preserves
+  the Lab's preference-aware kickoff, not only its footprint. FastAPI streams the
+  validated payload as an additive `input_request` event, and shared web/native
+  transport retains it. Hosted deployment and final owner acceptance remain pending.
 - **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
   consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
   time from route-only Travel and marks inferred hotel departure/return times as

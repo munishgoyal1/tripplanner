@@ -278,7 +278,6 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel")).toBeInTheDocument();
     expect(screen.getByRole("separator", { name: "Resize itinerary and map" })).toHaveAttribute("aria-valuenow", "24");
     expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "31");
-    expect(screen.getByRole("separator", { name: "Resize details and chat" })).toHaveAttribute("aria-valuenow", "46");
 
     fireEvent.keyDown(screen.getByRole("separator", { name: "Resize map and details" }), { key: "ArrowLeft" });
     expect(screen.getByRole("separator", { name: "Resize map and details" })).toHaveAttribute("aria-valuenow", "33");
@@ -292,15 +291,16 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
+    expect(screen.getByTestId("assistant-sidecar")).not.toHaveClass("hidden");
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-sidecar")).not.toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
     fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
@@ -312,13 +312,24 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Maximize Details" }));
     expect(screen.getByRole("button", { name: "Restore Details" })).toBeInTheDocument();
     expect(screen.getByTestId("map-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByRole("button", { name: "Restore Details" }));
     fireEvent.click(screen.getByRole("button", { name: "Maximize Assistant" }));
     expect(screen.getByRole("button", { name: "Restore Assistant" })).toBeInTheDocument();
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("inset-2");
+  });
+
+  it("opens Assistant as an independent desktop sidecar over the usable workspace", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("assistant-sidecar")).toBeInTheDocument());
+    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("w-[min(42rem,52vw)]");
+    expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("map-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });
 
   it("orders Assistant controls as Hide then Maximize", async () => {
@@ -503,7 +514,8 @@ describe("App responsive workspace", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("context-inspector").parentElement).not.toHaveClass("hidden");
+    expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-sidecar")).not.toHaveClass("hidden");
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });

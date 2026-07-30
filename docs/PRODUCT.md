@@ -38,6 +38,7 @@ support visual refinement while Assistant remains available for broader changes.
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
 - ❌ Automated purchasing or card charging (booking remains a verified handoff).
+- ❌ Treating an activity from-price or operating schedule as a held quote or booking.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
 - ❌ Generic chatbot vibes. This is a planner, not a friend-bot.
@@ -80,8 +81,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   mounted so their state survives. Only panes scroll; the page never does.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
-  sizes persist locally. Itinerary, Map, Details, and Assistant can each be
-  maximized and restored. On narrower desktops
+  sizes persist locally. The Assistant currently opens as a wide right-edge
+  sidecar over the workspace, leaving Itinerary and Map visible and usable;
+  Details remains an independent dock. Itinerary, Map, Details, and Assistant
+  can each be maximized and restored. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
   trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
@@ -113,10 +116,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   text replaces progress as soon as it arrives. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
 - **Assistant input**: show the saved or inferred defaults already being applied,
-  then ask only for high-impact trip-specific changes. Structured prompts stay
-  compact, prefill every field, and offer one build/continue action plus a default
-  skip path. Production overlay behavior follows an owner-selected UX Lab direction;
-  a Lab record is not approval to change the production workspace.
+  then ask only for useful trip-specific changes. Every new trip begins with this
+  single compact review after preferences load and before plan creation; direct
+  mode proceeds without follow-up questions after submit or skip. Structured prompts
+  prefill every field and offer one build/continue action plus a default skip path.
+  The Option A sidecar and structured controls are implemented in the main web app
+  for local evaluation; no hosted deployment or final design acceptance is implied
+  until the owner confirms the direction after testing.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps
   handoff before the stop details.
@@ -294,7 +300,8 @@ If a redesign violates the above without a stated reason, push back.
 
 - Be terse. 1–3 sentences for simple answers. Skip preamble/conclusion.
 - No emojis unless asked.
-- Don't start servers — the owner runs `.\scripts\dev\dev-spa.ps1` himself.
+- Own local server startup, restart, stale-port cleanup, and health checks so
+  the owner can stay focused on feature and UX Lab decisions.
 - Don't open `http://localhost:8000` in the integrated browser — the owner
   tests in his external browser. Playwright tools only when explicitly asked.
 - When something goes wrong, read the dev terminal output and fix; don't ask

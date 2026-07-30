@@ -5,10 +5,10 @@
 > **Repo**: https://github.com/munishgoyal1/tripplanner (private)
 > **Status**: Active development — trip planner with real Amadeus API search
 
-An AI-powered trip planner that creates complete, bookable travel plans in
-under 30 minutes of user interaction. Searches real flights, hotels, and
-activities via Amadeus APIs, learns from user preferences and past trips,
-and can execute bookings on the user's behalf.
+An AI-powered trip planner that creates complete, booking-ready travel plans in
+under 30 minutes of user interaction. It searches real flights, hotels, and
+activities through capability-specific providers, learns from user preferences
+and past trips, and preserves provider handoffs without charging or booking.
 
 ## Architecture
 
@@ -87,8 +87,8 @@ learning for that turn.
 | `record_past_trip` | Save trip to history with rating | Working |
 | `record_trip_postmortem` | Structured post-mortem (rating + what worked/didn't), feeds learned_notes | Working |
 | `search_flights` | Real flight search — airlines, times, stops, prices | Amadeus API |
-| `search_hotels` | Real hotel search — names, ratings, rooms, prices | Amadeus API |
-| `search_activities` | Sightseeing, tours, attraction tickets with prices | Amadeus API |
+| `search_hotels` | Live hotel rates with legacy property fallback | LiteAPI / legacy |
+| `search_activities` | Tours, schedules, and from-prices with legacy fallback | Viator / Amadeus |
 | `search_points_of_interest` | Landmarks, restaurants, attractions | Amadeus API |
 | `search_places_with_reviews` | Hotels/attractions with real Google ratings & reviews | Google Places |
 | `get_place_reviews` | Detailed reviews & editorial summary for a place | Google Places |
@@ -264,7 +264,26 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AZURE_OPENAI_DEPLOYMENT=gpt-4.1
    ```
 
-### Amadeus API (required for real search)
+### LiteAPI (recommended for live hotel and flight availability)
+1. Create an account and obtain a server-side API key from LiteAPI.
+2. Set in `.env`:
+   ```
+   LITEAPI_API_KEY=your-key
+   TRAVEL_HOTEL_PROVIDER=auto
+   TRAVEL_FLIGHT_PROVIDER=auto
+   ```
+   `auto` prefers LiteAPI when configured and otherwise preserves the legacy
+   providers. The key is backend-only. This integration searches and verifies
+   rates; it does not prebook, book, charge, cancel, or create orders.
+
+### Viator (recommended for live activity discovery)
+1. Obtain a Basic Access Affiliate sandbox API key from Viator.
+2. Paste it into the existing blank `VIATOR_API_KEY=` entry in `.env`.
+   `TRAVEL_ACTIVITY_PROVIDER=auto` selects Viator when configured and otherwise
+   preserves Amadeus fallback. Results include schedules and from-prices only;
+   no availability check, reservation, booking, payment, or cancellation is made.
+
+### Amadeus API (legacy activities and search fallback)
 1. Sign up free at [developers.amadeus.com](https://developers.amadeus.com)
 2. Create a Self-Service app → get API Key + Secret
 3. Set in `.env`:
@@ -273,7 +292,7 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AMADEUS_API_SECRET=your-secret
    AMADEUS_BASE_URL=https://test.api.amadeus.com
    ```
-   Use `https://api.amadeus.com` for production (real bookings).
+   Use `https://api.amadeus.com` only for supported production search traffic.
    Free tier: 2,000 API calls/month.
 
 ### Email export (optional)
@@ -395,7 +414,7 @@ tripplanner/
 │       ├── amadeus_client.py     # Amadeus OAuth2 client
 │       ├── flight_search.py      # Amadeus flight search (fallback)
 │       ├── hotel_search.py       # Amadeus hotel search
-│       ├── activities_search.py  # Amadeus tours & POI
+│       ├── activities_search.py  # Viator activity boundary + Amadeus fallback/POI
 │       ├── google_places.py      # Real ratings, reviews, restaurants
 │       ├── web_search.py         # Tavily live web search
 │       ├── trip_planner.py       # Trip lifecycle (Cosmos-aware)

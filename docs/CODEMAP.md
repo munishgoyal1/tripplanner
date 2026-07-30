@@ -18,18 +18,20 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 ## 2) Run / validate (copy-paste)
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
-- Open the default development/review pair: double-click
-  `Open-Tripplanner-Agents.cmd` or run `.\scripts\open-agent-windows.ps1`
-- Optional three-window mode: double-click `Open-Tripplanner-All-Agents.cmd`
+- Default workflow: open this primary checkout, work directly on `master`,
+  validate once per milestone, commit, and push; the coding agent starts,
+  restarts, clears stale ports, and health-checks affected local servers
+- Sizeable isolated parallel features: double-click `Open-Tripplanner-All-Agents.cmd`
   or run `.\scripts\open-agent-windows.ps1 -IncludeWorker2`
-- Standard active workspaces: `tripplanner-worker-1.code-workspace` for
-  development and `tripplanner-integration.code-workspace` for review/merge;
-  `tripplanner-worker-2.code-workspace` remains available on demand
-- One-click Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
-  double-click `scripts/dev/Merge-Agent1.cmd`
+- Optional parallel workspaces: `tripplanner-worker-1.code-workspace` and
+  `tripplanner-worker-2.code-workspace`; use `tripplanner-integration.code-workspace`
+  for review/merge only while that mode is explicitly active
+- Guarded two-worker integration: VS Code task `Tripplanner: Merge Workers` or
+  double-click `scripts/dev/Merge-Workers.cmd`; preflights both worktrees, then
+  merges Worker 1 followed by Worker 2 through separate merge-commit PRs
 - One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
   or double-click `scripts/dev/Run-Latest-Code.cmd`; this preserves and
-  restores staged, unstaged, and untracked local master work around integration
+  restores staged, unstaged, and untracked local master work around both merges
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
@@ -60,10 +62,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Release flow: see [docs/operations/deployment-flow.md](operations/deployment-flow.md)
 - Performance/cost interpretation: see [docs/operations/performance-cost.md](operations/performance-cost.md)
 
-The primary checkout stays on `master` as the review/integration lane. The
-default coding agent uses persistent `worker-1` for one coherent PR-sized
-assignment; persistent `worker-2` is dormant capacity for an explicitly chosen
-third workstream. Changes merge through reviewed pull requests.
+The primary checkout on `master` is the normal development lane. Persistent
+worker worktrees remain available only for owner-requested parallel assignments;
+those changes merge through reviewed pull requests.
 
 ## 3) Top-level layout
 
@@ -73,7 +74,9 @@ src/tripplanner/
   chat_interactions.py Validated prefilled Assistant input-request contract
   cli.py              Local CLI entrypoint (no SPA)
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
-  graph.py            LangGraph StateGraph: agent ↔ tools loop
+  graph.py            LangGraph StateGraph: agent ↔ tools loop; deterministically
+                      loads preferences and forces one structured kickoff before
+                      creating each new trip
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics; optional
@@ -86,11 +89,16 @@ src/tripplanner/
   user_context.py     ContextVar holding the current user_id per request
   agents/
     trip_agent.py     Single trip-planning agent — system prompt + 25 @tools
+  providers/
+    models.py         Normalized hotel/flight/activity queries, offers, money, and status
+    registry.py       Minimal capability-specific provider selection (`auto` or named)
+    liteapi.py        Read-only LiteAPI hotel rates plus flight search/verification
+    viator.py         Read-only Viator activity discovery, from-prices, and schedules
   tools/
-    duffel_flights.py     Primary flight provider
+    duffel_flights.py     Stable agent flight boundary; LiteAPI then Duffel fallback
     flight_search.py      Amadeus fallback (Amadeus self-service EOL 2026-07-17)
-    hotel_search.py       Amadeus hotels
-    activities_search.py  Amadeus activities + POI
+    hotel_search.py       Stable agent hotel boundary; LiteAPI then legacy fallback
+    activities_search.py  Stable activity boundary; Viator then Amadeus fallback + POI
     amadeus_client.py     Shared Amadeus auth/HTTP
     google_places.py      Places API New (search/reviews/photos)
     place_hours.py        Opening-hours + closure check (catches "Louvre Tue")
@@ -138,9 +146,10 @@ frontend/
           itinerary execution, confirmation readiness, and personal place context
   src/
     main.tsx          React 19 root
-    App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
+        App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-          right dock with independently hidden mounted Details/Assistant; no
+          Details dock, and an independently mounted right-edge Assistant
+          sidecar that overlays rather than resizes the usable workspace; no
           page scroll. Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
@@ -160,10 +169,13 @@ frontend/
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
-      ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
+       ChatPanel.tsx        Bubbles/composer + validated prefilled structured-input
+         cards + mounted account/settings dialogs;
            immediate thinking/tool/review/save progress with elapsed time;
            animation-frame token batching; mobile header owns launchers,
            desktop top row triggers them
+          TripInputCard.tsx    Compact renderer for single, multi, boolean, and number
+               trip-specific choices with prefilled submit and saved-default skip paths
       TripPanel.tsx        Contextual destination/place inspector: whole-trip
         destination guide + compact place rows, or rich focused-place details;
         selected places use the shared day-move/remove actions
@@ -233,8 +245,8 @@ infra/
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
-  development/       One-click agent merge and run-latest workflow scripts
-  dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
+  dev/                One-click agent merge, run-latest, and local stack scripts
+  dev/dev-spa.ps1     THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
   performance_baseline.py  Hermetic FastAPI route/admission p50/p95 + zero-cost gate

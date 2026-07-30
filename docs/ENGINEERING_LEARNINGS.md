@@ -4,6 +4,37 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-30 - Keep Deterministic Gates Cheap
+
+- Measure model rounds separately from tool execution. A 49.5-second planning
+  turn with 1.17 seconds of tool work is an orchestration problem, not a reason
+  to optimize persistence or provider code.
+- When the graph forces one tool, bind only that tool's schema. Resending every
+  unrelated schema adds context cost without giving the model any real choice.
+- Handle a known primary-provider outage inside the provider tool when a
+  grounded fallback has the same contract. Requiring the model to notice the
+  failure and choose the fallback adds a full inference round.
+
+## 2026-07-30 - Preserve Provider Evidence Semantics
+
+- Keep place identity/reviews separate from date-specific inventory evidence.
+- A provider's activity from-price is not an exact party total, and an operating
+  schedule is not a held quote. Preserve those distinctions in normalized models.
+- Return affiliate deep links unchanged; provider attribution parameters are data,
+  not URLs for the application to reconstruct.
+
+## 2026-07-30 - Complete Persisted Defaults Across Provider Failure
+
+- Enforce required defaults from persisted state, not from whether the model
+  happened to call a research tool. A complete itinerary with a placeholder
+  hotel is still incomplete even when the first update succeeded.
+- A forced provider call is not a completion guarantee. Inspect its result and
+  deterministically route known unavailable, empty, or error outcomes to a real
+  fallback before forcing the final persistence step.
+- Regression tests for agent completion must cover the sequence boundary:
+  immediate draft, missing required default, primary-provider failure, fallback
+  research, and the final persisted replacement.
+
 ## 2026-07-28 - Enforce Persistence at the Agent Boundary
 
 - Prompt instructions are not a completion guarantee. If a newly created
