@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./itinerary-occurrence": "./src/itinerary-occurrence.ts",
+    "./latest-request": "./src/latest-request.ts",
     "./types": "./src/types.ts",
     "./workspace-state": "./src/workspace-state.ts"
   }

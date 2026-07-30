@@ -53,8 +53,6 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Release flow: see [docs/operations/deployment-flow.md](operations/deployment-flow.md)
 - Performance/cost interpretation: see [docs/operations/performance-cost.md](operations/performance-cost.md)
 
-`scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
-
 The primary checkout stays on `master` as the review/integration lane. The
 default coding agent uses persistent `worker-1` for one coherent PR-sized
 assignment; persistent `worker-2` is dormant capacity for an explicitly chosen
@@ -118,10 +116,11 @@ frontend/
   vite.config.ts      Dev: proxies /api → :8000
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
+  labs/               Isolated UX experiment HTML, source, feedback plugin,
+                      TypeScript config, and Vite build; local handoffs are
+                      written to the ignored
+                      docs/ux-experiments/LAB_SELECTIONS.local.json
   src/
-    labs/             UX Labs catalog plus shared owner decision capture;
-                      local handoffs are written by the Vite dev server to the
-                      ignored docs/ux-experiments/LAB_SELECTIONS.local.json
     main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
@@ -192,6 +191,8 @@ packages/tripplanner-client/
                            including optional SSE progress phases
   src/client.ts            Fetch, mutation, and token/tool/progress SSE transport
                            for web + native
+  src/itinerary-occurrence.ts  Converts rendered stop indexes to one-based API identity
+  src/latest-request.ts    Abortable generation gate shared by platform data owners
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
   app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant,
@@ -199,9 +200,6 @@ mobile/
   providers/trip-provider.tsx  Authoritative native data/revision owner; completed
                            chat and mutations refresh all dependent trip surfaces;
                            one abortable generation prevents stale refresh commits
-  lib/itinerary-occurrence.ts  Converts zero-based rendered rows to the API's
-                           one-based exact-occurrence identity
-  lib/latest-request.ts    Small latest-request gate shared by native trip reads
   lib/tripplanner.ts       Hosted API selection + Keychain-backed identity and
                            native Google OAuth session handoff
   eas.json                 Development, preview, and App Store build profiles
@@ -221,10 +219,8 @@ scripts/
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
   performance_baseline.py  Hermetic FastAPI route/admission p50/p95 + zero-cost gate
-  autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Local external-provider smoke check
   hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
-  test.ps1            Legacy (Chainlit era) — do not use
 tests/                pytest suite
                       request-security tests drive overlapping authenticated
                       FastAPI requests through real chat/workspace admission

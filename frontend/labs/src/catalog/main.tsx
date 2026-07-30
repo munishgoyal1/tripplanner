@@ -8,7 +8,7 @@ import {
   LayoutPanelTop,
   ListChecks,
 } from "lucide-react";
-import "../index.css";
+import "../../../src/index.css";
 
 interface LabRecord {
   title: string;
@@ -29,7 +29,7 @@ const decidedLabs: LabRecord[] = [
     date: "29 Jul 2026",
     status: "Implemented",
     decision: "B · Compact Agenda, paired with C · Compact Brief.",
-    href: "/ux-lab.html",
+    href: "/labs/itinerary-information.html",
     icon: ListChecks,
   },
   {
@@ -38,7 +38,7 @@ const decidedLabs: LabRecord[] = [
     date: "29 Jul 2026",
     status: "Implemented",
     decision: "C · Compact Brief with explicit travel rhythm, day plan, and booking readiness.",
-    href: "/summary-lab.html",
+    href: "/labs/itinerary-summary.html",
     icon: LayoutPanelTop,
   },
   {
@@ -47,7 +47,7 @@ const decidedLabs: LabRecord[] = [
     date: "23 Jul 2026",
     status: "Decided",
     decision: "Layout C: map-first canvas, details-first rail, and compact lower-right Assistant.",
-    href: "/workspace-shell-lab.html",
+    href: "/labs/workspace-shell.html",
     icon: LayoutPanelTop,
   },
 ];

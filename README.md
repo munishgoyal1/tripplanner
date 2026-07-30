@@ -353,8 +353,11 @@ tripplanner/
 ├── Dockerfile                    # Multistage: build SPA (node) + run FastAPI (uvicorn)
 │
 ├── frontend/                     # React 19 + Vite + TS single-page app (the UI)
+│   ├── labs/                     # Isolated UX experiments and build configuration
 │   ├── src/                      # App.tsx, ChatPanel, TripPanel, DestinationOverview, ...
 │   └── dist/                     # Production build, served by FastAPI in prod
+│
+├── packages/tripplanner-client/  # Shared web/native contracts and request helpers
 │
 ├── infra/
 │   ├── data-stack.bicep          # Subscription-scope shared data bootstrap

@@ -15,8 +15,8 @@ import {
   Sparkles,
   TrainFront,
 } from "lucide-react";
-import "../index.css";
-import { DecisionCapture } from "../labs/DecisionCapture";
+import "../../../src/index.css";
+import { DecisionCapture } from "../shared/DecisionCapture";
 
 type Variant = "timeline" | "agenda" | "cards";
 
@@ -384,7 +384,7 @@ function Lab() {
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <a href="/labs.html" className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand">← All UX labs</a>
+            <a href="/labs/catalog.html" className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand">← All UX labs</a>
             <p className="text-xs font-bold uppercase text-brand">Internal · Itinerary UX experiment</p>
             <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose how a travel day should read</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">All variants use the same itinerary facts. Compare hierarchy, transport guidance, weekday visibility, and an explicit booking-state action before changing the product.</p>

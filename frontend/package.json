@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:ux-lab": "tsc -b && vite build --config vite.ux-lab.config.ts",
+    "build:ux-lab": "tsc -p labs/tsconfig.json && vite build --config labs/vite.config.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test"

@@ -2579,6 +2579,21 @@ VALIDATION:
 - Saving is preference capture only. Production UI remains unchanged until the
   owner explicitly tells the coding agent to pick and execute the saved handoff.
 
+=== 2026-07-30 — Repository ownership cleanup ===
+
+- Keep production frontend source separate from UX experiments. UX Lab HTML,
+  source, feedback middleware, compiler configuration, and build output belong
+  under `frontend/labs/`; `frontend/src/` contains production code only.
+- Put platform-neutral web/native request and itinerary-occurrence helpers in
+  `packages/tripplanner-client`, not under a platform-specific client.
+- Do not track generated test homes, temporary Office lock files, orphaned root
+  package metadata, or dead Chainlit-era development launchers.
+- Archive obsolete standalone architecture artifacts instead of retaining a
+  top-level folder that appears current.
+- Treat the oversized API, planner, view-model, chat-store, and frontend owner
+  modules as focused future refactors. Do not shuffle them into new folders
+  without preserving contracts through narrow tests.
+
 === 2026-07-29 — Persistent VS Code agent-window layout and launcher ===
 
 - Treat the three named, color-coded Tripplanner workspaces as the owner's

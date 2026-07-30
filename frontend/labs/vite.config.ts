@@ -6,13 +6,13 @@ export default defineConfig({
   plugins: [react()],
   build: {
     emptyOutDir: true,
-    outDir: "dist-ux-lab",
+    outDir: "labs/dist",
     rollupOptions: {
       input: {
-        catalog: resolve(__dirname, "labs.html"),
-        itinerary: resolve(__dirname, "ux-lab.html"),
-        summary: resolve(__dirname, "summary-lab.html"),
-        workspaceShell: resolve(__dirname, "workspace-shell-lab.html"),
+        catalog: resolve(__dirname, "catalog.html"),
+        itineraryInformation: resolve(__dirname, "itinerary-information.html"),
+        itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
+        workspaceShell: resolve(__dirname, "workspace-shell.html"),
       },
     },
   },

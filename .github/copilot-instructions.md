@@ -141,6 +141,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Repository ownership cleanup**: UX Lab HTML, source, feedback middleware,
+  and build configuration now live under `frontend/labs/`; production
+  `frontend/src/` excludes experiments. Platform-neutral occurrence and latest-
+  request helpers live in `packages/tripplanner-client` instead of `mobile/`.
+  Generated test-home state, orphaned root npm metadata, dead Chainlit-era
+  scripts, and the obsolete top-level architecture folder are removed.
 - **Categorized documentation**: canonical product and engineering truth remains
   prominent at `docs/`, while supporting material is grouped under
   `development/`, `operations/`, `mobile/`, `roadmap/`, `feature-briefs/`,

@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import type { Plugin } from "vite";
 
 const endpoint = "/__labs/selections";
-const feedbackPath = resolve(__dirname, "../docs/ux-experiments/LAB_SELECTIONS.local.json");
+const feedbackPath = resolve(__dirname, "../../docs/ux-experiments/LAB_SELECTIONS.local.json");
 
 interface LabSelection {
   labId: string;

@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { exactItineraryOccurrence } from "../../mobile/lib/itinerary-occurrence";
-import { LatestRequestGate } from "../../mobile/lib/latest-request";
+import { exactItineraryOccurrence, LatestRequestGate } from "@tripplanner/client";
 
-describe("native itinerary occurrence contract", () => {
+describe("shared itinerary occurrence contract", () => {
   it("converts repeated itinerary rows to distinct one-based occurrences", () => {
     expect(exactItineraryOccurrence(2, 0)).toEqual({
       day: 2,
@@ -16,7 +15,7 @@ describe("native itinerary occurrence contract", () => {
   });
 });
 
-describe("native refresh request gate", () => {
+describe("shared refresh request gate", () => {
   it("aborts and invalidates superseded refreshes", () => {
     const gate = new LatestRequestGate();
     const first = gate.start();
