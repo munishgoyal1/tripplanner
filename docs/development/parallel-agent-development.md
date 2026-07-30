@@ -128,6 +128,18 @@ git push -u origin HEAD
 gh pr create --base master --head agents/route-cache-fix --fill
 ```
 
+For the persistent Agent 1 lane, use either one-click entry point from the
+primary integration checkout:
+
+- VS Code: **Tasks: Run Task** → **Tripplanner: Merge Agent 1**
+- File Explorer: double-click `docs/development/Merge-Agent1.cmd`
+
+Both run `merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
+creates or reuses the Worker 1 pull request, merges it with a merge commit,
+updates `master`, and keeps the persistent Worker 1 branch synchronized for
+its next assignment. If the task stops on a conflict, return to the Worker 1
+window, ask that agent to resolve and validate it, then run the task again.
+
 Use a pull request even for a solo repository. It provides one diff and check
 surface, keeps `master` stable, and makes parallel integration order explicit.
 Review and merge one ready branch at a time from the primary `master` checkout.
