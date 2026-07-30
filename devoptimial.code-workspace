@@ -12,6 +12,9 @@
       "*": true,
       "plaintext": false
     },
+    "files.associations": {
+      "**/myprompts.txt": "plaintext"
+    },
     "[plaintext]": {
       "editor.inlineSuggest.enabled": false,
       "editor.inlineSuggest.suppressSuggestions": true,
