@@ -891,6 +891,22 @@ async def maps_config_endpoint() -> dict:
     return {"enabled": bool(key), "key": key}
 
 
+@app.get("/analytics/config")
+async def analytics_config_endpoint() -> dict:
+    """Expose the public GA4 id only for the production environment."""
+    import os
+    import re
+
+    from tripplanner.config import get_settings
+
+    environment = os.getenv("TRIPPLANNER_ENVIRONMENT", "local").strip().lower()
+    measurement_id = get_settings().google_analytics_measurement_id.strip().upper()
+    enabled = environment in {"prod", "production"} and bool(
+        re.fullmatch(r"G-[A-Z0-9]+", measurement_id)
+    )
+    return {"enabled": enabled, "measurement_id": measurement_id if enabled else ""}
+
+
 @app.get("/trip/map")
 async def trip_map_endpoint(request: Request, user_id: str = "local") -> dict:
     """Interactive-map view-model: geocoded, day-tagged pins + route bands."""

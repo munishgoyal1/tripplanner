@@ -1,5 +1,6 @@
 import { Download, Eye, Mail, Printer, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { trackEvent } from "../analytics";
 import { downloadTripPdf, emailTripExport, tripExportUrl } from "../api";
 
 export default function ExportModal({ onClose }: { onClose: () => void }) {
@@ -19,10 +20,12 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
   };
 
   const openPrintView = () => {
+    trackEvent("itinerary_exported", { method: "print" });
     window.open(tripExportUrl(options, true), "_blank", "noopener,noreferrer");
   };
 
   const openPreview = () => {
+    trackEvent("itinerary_exported", { method: "preview" });
     window.open(tripExportUrl(options, false), "_blank", "noopener,noreferrer");
   };
 
@@ -48,6 +51,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       link.click();
       link.remove();
       URL.revokeObjectURL(href);
+      trackEvent("itinerary_exported", { method: "pdf" });
     } finally {
       setBusy(false);
     }
@@ -74,6 +78,7 @@ export default function ExportModal({ onClose }: { onClose: () => void }) {
       if (result.ok) {
         emailRequestRef.current = null;
         setStatus(result.message || "Export sent.");
+        trackEvent("itinerary_exported", { method: "email" });
         return;
       }
       if (result.mailto) {

@@ -137,7 +137,14 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-28)
+## Current State (last updated 2026-07-30)
+- **Production customer-flow analytics (Session 86)**: consent-gated GA4 is
+  runtime-enabled only in production and uses a small content-free event
+  vocabulary for visit-to-planning-to-trip-to-handoff funnels. Query strings,
+  trip/chat content, account identity, and other customer data are excluded;
+  Account can reopen analytics preferences. Azure Log Analytics remains the
+  operational reliability source. A GA4 Web stream ID and approved deployment
+  are still required to activate collection on `aitripplanner.co`.
 - **Complete-by-default new trips (Session 85)**: after the immediate first cut,
   new-trip research must be persisted in a second enriched full-plan update with
   the strongest concrete hotel and sensible daily defaults. One bounded

@@ -8,6 +8,7 @@ import TripPanel from "./components/TripPanel";
 import TripSwitcher from "./components/TripSwitcher";
 import TripActionsMenu from "./components/TripActionsMenu";
 import RightRail from "./components/RightRail";
+import { trackEvent } from "./analytics";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import type { PlannerReview, TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
@@ -225,7 +226,9 @@ export default function App() {
   }, []);
 
   const handleIdentityChanged = useCallback(async () => {
-    setSignedIn(!isAnonymousUser());
+    const nextSignedIn = !isAnonymousUser();
+    setSignedIn(nextSignedIn);
+    if (nextSignedIn) trackEvent("login", { method: "account" });
     setView(null);
     setLoading(true);
     dispatchWorkspace({ type: "identity-changed" });
@@ -250,6 +253,7 @@ export default function App() {
         if (cancelled) return;
         applyView(v, null);
         dispatchWorkspace({ type: "trip-changed" });
+        trackEvent("shared_trip_imported");
         const next = new URL(window.location.href);
         next.searchParams.delete("share");
         window.history.replaceState({}, "", next.toString());
@@ -315,6 +319,7 @@ export default function App() {
       await handleNewTrip();
       setInspectorOpen(true);
       setChatOpen(true);
+      trackEvent("new_trip_started", { surface: "desktop" });
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not start a new trip.");
     }
@@ -333,6 +338,7 @@ export default function App() {
     dispatchWorkspace({ type: "trip-content-changed" });
     refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
+    if (tripChanged) trackEvent("trip_created");
   };
 
   const focusIndex = focus
@@ -366,6 +372,7 @@ export default function App() {
         });
       }
       dispatchWorkspace({ type: "trip-content-changed" });
+      trackEvent("place_added", { exact_day: Boolean(options?.day) });
       return true;
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not add the place.");
@@ -403,6 +410,7 @@ export default function App() {
       setPlannerReview(next.planner_review ?? null);
       setNavList(next.view.items.map((it) => ({ kind: it.kind, name: it.name })));
       dispatchWorkspace({ type: "trip-content-changed" });
+      trackEvent("place_removed", { scope: options.all_occurrences === false ? "occurrence" : "all" });
       return true;
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Could not remove the place.");

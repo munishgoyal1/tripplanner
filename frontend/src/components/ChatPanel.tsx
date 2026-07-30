@@ -19,6 +19,7 @@ import {
   type AuthSession,
 } from "../api";
 import type { ChatMessage } from "../types";
+import { trackEvent } from "../analytics";
 import SettingsModal from "./SettingsModal";
 
 interface Props {
@@ -332,6 +333,7 @@ export default function ChatPanel({
     setInput("");
     setFailedRequest(null);
     onNewTrip?.();
+    trackEvent("new_trip_started", { surface: "assistant" });
   }
 
   async function sendMessage(
@@ -346,6 +348,7 @@ export default function ChatPanel({
     setFailedRequest(null);
     setBusy(true);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
+    trackEvent("planning_started", { proposal_only: proposalOnly, retry: retrying });
     setMessages((m) => [
       ...(retrying ? m.slice(0, -2) : m),
       { role: "user", text: outgoing },
@@ -415,6 +418,7 @@ export default function ChatPanel({
         });
         setBusy(false);
         setFailedRequest(null);
+        trackEvent("planning_completed", { proposal_only: proposalOnly });
         onTurnComplete(tripId);
       },
         onError: (msg) => {
@@ -430,6 +434,7 @@ export default function ChatPanel({
             return copy;
           });
           setFailedRequest({ message: outgoing, proposalOnly, requestId });
+          trackEvent("planning_failed", { proposal_only: proposalOnly });
         },
       }, { proposalOnly, requestId });
     } catch (error) {
@@ -448,6 +453,7 @@ export default function ChatPanel({
           return copy;
         });
         setFailedRequest({ message: outgoing, proposalOnly, requestId });
+        trackEvent("planning_failed", { proposal_only: proposalOnly });
       }
     } finally {
       setActiveTool(null);
@@ -611,7 +617,10 @@ export default function ChatPanel({
                   <>
                     {googleEnabled && (
                       <button
-                        onClick={() => loginWithGoogle()}
+                        onClick={() => {
+                          trackEvent("login", { method: "google_start" });
+                          loginWithGoogle();
+                        }}
                         className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24">
@@ -635,6 +644,7 @@ export default function ChatPanel({
                   onChange={(e) => setNameInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && nameInput.trim()) {
+                      trackEvent("login", { method: "name" });
                       signIn(nameInput);
                       setShowAccount(false);
                       window.location.reload();
@@ -656,6 +666,7 @@ export default function ChatPanel({
                   <button
                     onClick={() => {
                       if (!nameInput.trim()) return;
+                      trackEvent("login", { method: "name" });
                       signIn(nameInput);
                       setShowAccount(false);
                       window.location.reload();
@@ -670,6 +681,16 @@ export default function ChatPanel({
                 )}
 
                 <div className="my-3 h-px bg-slate-200" />
+
+                <button
+                  onClick={() => {
+                    window.dispatchEvent(new Event("tripplanner:analytics-settings"));
+                    setShowAccount(false);
+                  }}
+                  className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100"
+                >
+                  Analytics preferences
+                </button>
 
                 <button
                   onClick={() => {

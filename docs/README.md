@@ -32,6 +32,7 @@ canonical set below instead of reading every file.
 | [`parallel-agent-development.md`](parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`deployment-flow.md`](deployment-flow.md) | Canonical canary, production, monitoring, and rollback flow |
 | [`operations-slos.md`](operations-slos.md) | Production observability, SLOs, and Log Analytics queries |
+| [`product-analytics.md`](product-analytics.md) | GA4 setup, privacy boundary, events, and activation funnel |
 | [`performance-cost.md`](performance-cost.md) | Performance and cost evidence layers and regression baseline |
 | [`backup-recovery.md`](backup-recovery.md) | Guarded backup, validation, restore, and recovery-drill procedure |
 | [`setup-oauth.md`](setup-oauth.md) | Google OAuth setup |

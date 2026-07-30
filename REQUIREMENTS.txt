@@ -2563,3 +2563,19 @@ VALIDATION:
 - Support voice instructions through the official local VS Code Speech extension.
   Voice is only for interacting with the coding agent and is not a tripplanner
   product feature.
+
+=== 2026-07-30 — Session 86: Production customer-flow analytics ===
+
+- Use GA4 for acquisition, activation funnels, retention, and customer-flow
+  analysis on `aitripplanner.co`; retain Azure Log Analytics as the source for
+  backend reliability, latency, model, and tool diagnostics.
+- Enable GA4 only in production and only after explicit, reversible browser
+  consent. Local and canary environments remain analytics-free.
+- Keep analytics content-free: never send chat, itinerary, destination, dates,
+  family, email, account identity, or shared-link tokens. Page views must strip
+  query strings.
+- Measure a small activation vocabulary covering visit, prompt start/completion,
+  trip creation, successful place changes, sign-in, share, export, and calendar
+  handoff. Prefer bounded enum/boolean parameters over dynamic strings.
+- Production enablement requires an owner-created GA4 Web stream and its public
+  `G-...` measurement ID in `.env.prod`; deployment remains separately approved.

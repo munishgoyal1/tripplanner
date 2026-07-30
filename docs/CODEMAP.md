@@ -114,6 +114,7 @@ frontend/
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   src/
     main.tsx          React 19 root
+    analytics.ts     Production-only, consent-gated GA4 loader and bounded events
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
           right dock with independently hidden mounted Details/Assistant; no
