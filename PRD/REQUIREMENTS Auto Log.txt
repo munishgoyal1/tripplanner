@@ -2740,3 +2740,13 @@ VALIDATION:
   each enabled API, SPA, and UX Labs port, then verify each port is released.
 - Validate enabled ports are distinct before terminating anything. Backend-only
   and frontend-only modes must clear only the ports they own.
+
+=== 2026-07-30 — Clear Assistant Lab alternatives and catalog navigation ===
+
+- Every standalone UX Lab page must provide a direct link back to the Labs catalog.
+- Assistant layout alternatives must differ in interaction model, not only width:
+  A is a docked sidecar with the live workspace still usable; B is a centered
+  focus modal over a visible but inactive workspace; C is a full guided takeover
+  that replaces the workspace with Trip brief, Research, and Review stages.
+- Present each alternative with a footprint diagram, concise behavior summary,
+  and the same live prompt fixture so the layout tradeoff is easy to compare.

@@ -34,10 +34,10 @@ const activeLabs: LabRecord[] = [
   },
   {
     title: "Assistant-led trip kickoff",
-    description: "Compare overlay footprints and test preference-aware, pre-filled inputs before the first itinerary build.",
+    description: "Compare a docked sidecar, centered focus modal, and full guided takeover using the same pre-filled trip brief.",
     date: "30 Jul 2026",
     status: "In evaluation",
-    decision: "Open · Recommended starting point: B · Focus overlay.",
+    decision: "Open · Recommended starting point: B · Focus modal.",
     href: "./chat-assistant.html",
     icon: MessageCircle,
   },

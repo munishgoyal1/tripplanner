@@ -11,7 +11,7 @@
 
 ## Hypothesis
 
-A focused Assistant overlay can make conversation the primary itinerary-building
+A focused Assistant surface can make conversation the primary itinerary-building
 surface without hiding the workspace context users need for trust. Showing the
 saved defaults already applied, then asking one compact prefilled question only
 when high-impact trip facts remain unresolved, should reduce typing and produce
@@ -19,12 +19,15 @@ a stronger first itinerary faster than either a small chat dock or a questionnai
 
 ## Variants
 
-- **A - Wide sidecar:** preserves more visible workspace but gives the conversation
-  less visual authority.
-- **B - Focus overlay (recommended):** centers a large conversation surface over a
-  dimmed workspace while retaining enough itinerary context around it.
-- **C - Guided canvas:** uses nearly the full workspace and a wider preference
-  summary; strongest focus, weakest connection to the itinerary underneath.
+- **A - Docked sidecar:** attaches Assistant to the right half of the workspace.
+  Itinerary and Map remain bright, visible, and usable at the same time. Saved
+  defaults collapse into one compact disclosure bar so chat has enough width.
+- **B - Focus modal (recommended):** opens one large centered layer over a dimmed
+  workspace. Saved defaults sit beside the conversation; the user completes one
+  concentrated planning turn, closes it, and returns to the unchanged trip view.
+- **C - Guided takeover:** replaces the entire workspace with an explicit three-step
+  path: Trip brief, Research, Review. It gives the process maximum authority but
+  hides Itinerary and Map until the first complete plan is ready.
 
 All variants use the same live interaction fixture: saved-default disclosure,
 single choice, multiple choice, traveler stepper, direct-flight toggle, skip path,
@@ -68,7 +71,8 @@ Non-goals for this experiment:
 1. Start with a bare Paris request and build using all preselected values.
 2. Change pace, priorities, party size, and flight preference before building.
 3. Skip the prompt and verify the UI makes its default assumptions explicit.
-4. Compare how much underlying itinerary context remains in A, B, and C.
+4. Verify A keeps the workspace usable, B keeps it visible but inactive, and C
+  replaces it with the staged planning path.
 5. Use keyboard-only controls and verify every field has a visible label and state.
 
 ## Scorecard (1-5)
@@ -83,7 +87,7 @@ Non-goals for this experiment:
 ## Decision
 
 - Decision: pending
-- Recommendation: B - Focus overlay
+- Recommendation: B - Focus modal
 - Rationale: it gives the Assistant enough room for rich choices while preserving
   a visible relationship to the itinerary being built.
 - Next action: save the preferred option and modifications in the Lab, then approve

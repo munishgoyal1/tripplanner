@@ -22,9 +22,27 @@ type Variant = "sidecar" | "focus" | "guided";
 type Pace = "easy" | "balanced" | "full";
 
 const variants = [
-  { id: "sidecar", label: "A · Wide sidecar" },
-  { id: "focus", label: "B · Focus overlay" },
-  { id: "guided", label: "C · Guided canvas" },
+  {
+    id: "sidecar",
+    label: "A · Docked sidecar",
+    summary: "Assistant stays attached to the right edge while the itinerary and map remain usable.",
+    footprint: "About half the workspace",
+    continuity: "Best for planning while inspecting the trip",
+  },
+  {
+    id: "focus",
+    label: "B · Focus modal",
+    summary: "A centered temporary workspace dims the trip and puts profile context beside the conversation.",
+    footprint: "Large centered layer",
+    continuity: "Best for one concentrated planning turn",
+  },
+  {
+    id: "guided",
+    label: "C · Guided takeover",
+    summary: "Assistant replaces the workspace with a staged flow from trip brief to research and review.",
+    footprint: "Entire workspace",
+    continuity: "Best for a deliberate start-to-finish wizard",
+  },
 ];
 
 const priorities = ["Food worth a detour", "Art & design", "Neighborhood walks", "One special night"];
@@ -75,6 +93,50 @@ function PreferenceSummary() {
         <div><dt className="font-semibold text-slate-400">Flights</dt><dd className="mt-1 text-slate-700">Direct when practical · economy</dd></div>
       </dl>
       <p className="mt-5 border-t border-emerald-100 pt-4 text-[11px] leading-relaxed text-slate-500">Only trip-specific changes below apply to Paris. Your long-term defaults stay unchanged.</p>
+    </aside>
+  );
+}
+
+function VariantDiagram({ variant }: { variant: Variant }) {
+  return (
+    <div className="relative h-20 overflow-hidden rounded-md border border-slate-200 bg-slate-100" aria-hidden>
+      <div className="absolute inset-2 grid grid-cols-[28%_1fr_24%] gap-1 opacity-70">
+        <span className="rounded-sm bg-white" />
+        <span className="rounded-sm bg-emerald-100" />
+        <span className="rounded-sm bg-white" />
+      </div>
+      {variant === "sidecar" && <div className="absolute inset-y-1 right-1 w-[48%] rounded-sm bg-ink shadow-lg"><span className="absolute left-2 top-2 h-1 w-12 rounded bg-white/60" /></div>}
+      {variant === "focus" && <div className="absolute inset-0 bg-slate-900/25"><div className="absolute inset-x-[10%] inset-y-[12%] rounded-sm bg-white shadow-lg"><span className="absolute left-2 top-2 h-1 w-14 rounded bg-brand/70" /></div></div>}
+      {variant === "guided" && <div className="absolute inset-0 grid grid-cols-[24%_1fr] bg-white"><span className="border-r border-slate-200 bg-brand-50" /><span className="m-3 rounded-sm bg-slate-100" /></div>}
+    </div>
+  );
+}
+
+function AppliedDefaultsBar() {
+  return (
+    <div className="border-b border-emerald-100 bg-emerald-50 px-4 py-3 text-xs text-emerald-900">
+      <span className="font-semibold">Already applied:</span> boutique 4-star stay · vegetarian-friendly · balanced days
+    </div>
+  );
+}
+
+function GuidedSteps() {
+  return (
+    <aside className="border-b border-slate-200 bg-[#f7faf9] p-5 lg:border-b-0 lg:border-r">
+      <p className="text-[10px] font-bold uppercase text-brand">Planning path</p>
+      <ol className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+        {[
+          ["1", "Trip brief", "Confirm only what differs"],
+          ["2", "Research", "Flights, stay and daily routes"],
+          ["3", "Review", "Approve the complete first plan"],
+        ].map(([number, title, detail], index) => (
+          <li key={number} className={`flex gap-3 rounded-md p-3 ${index === 0 ? "bg-white shadow-card ring-1 ring-brand/20" : "text-slate-500"}`}>
+            <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold ${index === 0 ? "bg-brand text-white" : "bg-slate-200 text-slate-500"}`}>{number}</span>
+            <span><strong className="block text-xs text-ink">{title}</strong><small className="mt-0.5 block text-[10px] leading-relaxed">{detail}</small></span>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-5 text-[11px] leading-relaxed text-slate-500">The trip workspace returns only after the first plan is ready for review.</p>
     </aside>
   );
 }
@@ -185,30 +247,28 @@ function Conversation({ built, onBuild }: { built: string | null; onBuild: (summ
 function AssistantOverlay({ variant }: { variant: Variant }) {
   const [built, setBuilt] = useState<string | null>(null);
   const overlayClass = variant === "sidecar"
-    ? "inset-y-3 right-3 w-[min(72rem,78vw)]"
+    ? "inset-y-0 right-0 w-full sm:w-[min(42rem,52vw)] sm:rounded-l-md"
     : variant === "guided"
-      ? "inset-3"
+      ? "inset-0"
       : "inset-x-[7%] inset-y-[5%]";
-  const bodyClass = variant === "sidecar"
-    ? "grid min-h-0 flex-1 lg:grid-cols-[16rem_1fr]"
-    : variant === "guided"
-      ? "grid min-h-0 flex-1 lg:grid-cols-[19rem_1fr]"
-      : "grid min-h-0 flex-1 lg:grid-cols-[17rem_1fr]";
+  const title = variant === "sidecar" ? "Plan alongside your trip" : variant === "guided" ? "Build your trip step by step" : "Focus on the trip brief";
 
   return (
-    <div className={`absolute ${overlayClass} flex overflow-hidden rounded-md bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)] ring-1 ring-slate-900/10`}>
+    <div className={`absolute ${overlayClass} flex overflow-hidden bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)] ring-1 ring-slate-900/10 ${variant === "focus" ? "rounded-md" : ""}`}>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4">
           <div className="flex min-w-0 items-center gap-3">
             <button type="button" className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-slate-500 hover:bg-slate-100" aria-label="Close assistant"><ArrowLeft size={17} /></button>
-            <div className="min-w-0"><p className="truncate text-sm font-semibold text-ink">Plan a new trip</p><p className="truncate text-[11px] text-slate-400">Your preferences are already in context</p></div>
+            <div className="min-w-0"><p className="truncate text-sm font-semibold text-ink">{title}</p><p className="truncate text-[11px] text-slate-400">Your preferences are already in context</p></div>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" className="hidden items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 sm:flex"><Map size={14} /> View trip</button>
+            {variant !== "guided" && <button type="button" className="hidden items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 sm:flex"><Map size={14} /> View trip</button>}
             <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-slate-500 hover:bg-slate-100" aria-label="Close"><X size={17} /></button>
           </div>
         </header>
-        <div className={bodyClass}><PreferenceSummary /><Conversation built={built} onBuild={setBuilt} /></div>
+        {variant === "sidecar" && <div className="flex min-h-0 flex-1 flex-col"><AppliedDefaultsBar /><Conversation built={built} onBuild={setBuilt} /></div>}
+        {variant === "focus" && <div className="grid min-h-0 flex-1 lg:grid-cols-[17rem_1fr]"><PreferenceSummary /><Conversation built={built} onBuild={setBuilt} /></div>}
+        {variant === "guided" && <div className="grid min-h-0 flex-1 lg:grid-cols-[15rem_1fr]"><GuidedSteps /><Conversation built={built} onBuild={setBuilt} /></div>}
       </div>
     </div>
   );
@@ -232,16 +292,26 @@ function ChatAssistantLab() {
           <a href="./catalog.html" className="btn-ghost"><ArrowLeft size={14} /> UX Labs</a>
         </header>
 
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex rounded-md bg-white p-1 shadow-card ring-1 ring-slate-200" role="tablist" aria-label="Overlay variants">
-            {variants.map((item) => <button key={item.id} type="button" role="tab" aria-selected={variant === item.id} onClick={() => chooseVariant(item.id)} className={`rounded px-3 py-2 text-xs font-semibold ${variant === item.id ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-50"}`}>{item.label}</button>)}
-          </div>
-          <p className="text-xs text-slate-500"><span className="font-semibold text-emerald-700">Recommended B:</span> focused conversation with enough itinerary context left visible.</p>
+        <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Assistant layout variants">
+          {variants.map((item) => (
+            <button key={item.id} type="button" role="tab" aria-selected={variant === item.id} onClick={() => chooseVariant(item.id)} className={`rounded-md bg-white p-3 text-left shadow-card ring-1 transition ${variant === item.id ? "ring-2 ring-brand" : "ring-slate-200 hover:ring-slate-300"}`}>
+              <VariantDiagram variant={item.id as Variant} />
+              <strong className="mt-3 block text-sm text-ink">{item.label}</strong>
+              <span className="mt-1 block text-xs leading-relaxed text-slate-600">{item.summary}</span>
+              <span className="mt-3 block border-t border-slate-100 pt-2 text-[10px] font-bold uppercase text-slate-400">{item.footprint}</span>
+              <span className="mt-1 block text-[11px] text-accent">{item.continuity}</span>
+            </button>
+          ))}
         </div>
 
-        <section className="relative mt-4 h-[760px] max-h-[78vh] min-h-[620px] overflow-hidden rounded-md border border-slate-200 bg-white shadow-card" aria-label="Interactive assistant overlay preview">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-ink">Live preview · {variants.find((item) => item.id === variant)?.label}</p>
+          <p className="text-xs text-slate-500">Switch options above, then use the same controls to compare the experience.</p>
+        </div>
+
+        <section className="relative mt-2 h-[760px] max-h-[78vh] min-h-[620px] overflow-hidden rounded-md border border-slate-200 bg-white shadow-card" aria-label="Interactive assistant layout preview">
           <WorkspaceBackdrop />
-          <div className="absolute inset-0 bg-slate-950/30 backdrop-blur-[1px]" />
+          {variant === "focus" && <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-[1px]" />}
           <AssistantOverlay key={variant} variant={variant} />
         </section>
 

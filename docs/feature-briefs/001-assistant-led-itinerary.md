@@ -80,7 +80,7 @@ any time.
 
 | ID | Decision | Recommendation | Status |
 | --- | --- | --- | --- |
-| D-01 | Desktop overlay footprint | B - Focus overlay | Open in UX Lab |
+| D-01 | Desktop Assistant footprint | B - Focus modal | Open in UX Lab |
 | D-02 | Default planning policy after stage 1 | Build immediately when origin, destination, and rough timing exist; ask once only for material blockers | Recommended |
 | D-03 | Native presentation | Native bottom sheet using the same payload after web validation | Deferred |
 

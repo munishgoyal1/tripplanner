@@ -56,9 +56,9 @@ keep production behavior unchanged until the owner selects a direction.
 ## Active Assistant Experiment (2026-07-30)
 
 The Assistant-led trip kickoff lab is available at
-`http://127.0.0.1:5175/chat-assistant.html`. It compares Wide sidecar,
-Focus overlay, and Guided canvas footprints around one realistic structured-input
-journey. The working recommendation is B - Focus overlay; no production layout
+`http://127.0.0.1:5175/chat-assistant.html`. It compares a concurrently usable
+Docked sidecar, a temporary centered Focus modal, and a full Guided takeover
+around one realistic structured-input journey. The working recommendation is B - Focus modal; no production layout
 change is approved until the owner saves and executes a Lab handoff. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
 
@@ -93,6 +93,7 @@ scope until a direction is selected and separately approved. See
   Already decided; preserve its lab page as design history.
 5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute saved lab
   preferences; implement the selected option together with its comments.
+6. Every standalone lab page links directly back to `catalog.html`.
 
 ## Fast Commands
 
