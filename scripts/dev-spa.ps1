@@ -7,10 +7,11 @@
 # What you get:
 #   * FastAPI on :8000 (uvicorn) -- /chat/stream, /trip/view, /trip/select
 #   * Vite dev server on :5173; /api is proxied to :8000
+#   * UX Labs Vite server on :5175; catalog at /catalog.html
 #
-# If a previous dev run left Vite holding :5173 or uvicorn holding :8000, the
-# script stops that stale tripplanner process before starting a new one. It
-# refuses to terminate an unrelated process using either port.
+# If a previous dev run left Vite holding :5173/:5175 or uvicorn holding :8000,
+# the script stops that stale tripplanner process before starting a new one. It
+# refuses to terminate an unrelated process using any configured port.
 #
 # Hot reload is OFF by default (matches the no-auto-reload preference):
 #   * Frontend changes  -> refresh the browser (Ctrl+R) to pick them up.
@@ -22,7 +23,8 @@
 #   scripts\dev-spa.ps1 -Watch        # enable live reload for both
 #   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
 #   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
-#   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
+#   scripts\dev-spa.ps1 -FrontendOnly # main SPA + Labs (API already running elsewhere)
+#   scripts\dev-spa.ps1 -NoLabs       # skip the UX Labs server
 #   scripts\dev-spa.ps1 -CosmosBackend azure # explicit Azure local database
 #   scripts\dev-spa.ps1 -UseCanaryData # explicitly use hosted canary data
 #
@@ -41,8 +43,10 @@
 param(
     [int]$ApiPort = 8000,
     [int]$FrontendPort = 5173,
+    [int]$LabsPort = 5175,
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
+    [switch]$NoLabs,
     [switch]$Watch,
     [switch]$Logs,
     [ValidateSet("azure", "emulator")]
@@ -53,6 +57,10 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
+
+if (-not $BackendOnly -and -not $NoLabs -and $FrontendPort -eq $LabsPort) {
+    throw "FrontendPort and LabsPort must be different."
+}
 
 function Get-DotEnvValue {
     param(
@@ -185,6 +193,9 @@ function Stop-StaleTripplannerFrontend {
 
 if (-not $BackendOnly) {
     Stop-StaleTripplannerFrontend -Port $FrontendPort
+    if (-not $NoLabs) {
+        Stop-StaleTripplannerFrontend -Port $LabsPort
+    }
 }
 
 if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -eq "emulator") {
@@ -255,6 +266,16 @@ if (-not $BackendOnly) {
         npm install
         Pop-Location
     }
+    $labs = $null
+    if (-not $NoLabs) {
+        Write-Host "Starting UX Labs on :$LabsPort ..." -ForegroundColor Cyan
+        $env:VITE_LABS_PORT = "$LabsPort"
+        $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
+        $labs = Start-Process -PassThru -NoNewWindow -WorkingDirectory (Join-Path $repoRoot "frontend") `
+            -FilePath "npm.cmd" -ArgumentList @("run", "dev:ux-lab")
+        Write-Host "  Labs: http://127.0.0.1:$LabsPort/catalog.html" -ForegroundColor Green
+    }
+
     Write-Host "Starting Vite dev server on :$FrontendPort ..." -ForegroundColor Cyan
     Push-Location frontend
     try {
@@ -265,6 +286,16 @@ if (-not $BackendOnly) {
     }
     finally {
         Pop-Location
+        if ($labs) {
+            try {
+                Stop-StaleTripplannerFrontend -Port $LabsPort
+            } catch {
+                Write-Warning "Could not stop the UX Labs server cleanly: $($_.Exception.Message)"
+            }
+            if (-not $labs.HasExited) {
+                Stop-Process -Id $labs.Id -ErrorAction SilentlyContinue
+            }
+        }
         if ($backend -and -not $backend.HasExited) {
             Write-Host "Stopping backend..." -ForegroundColor Cyan
             Stop-Process -Id $backend.Id -ErrorAction SilentlyContinue

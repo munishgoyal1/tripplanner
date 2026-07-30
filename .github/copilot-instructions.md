@@ -161,7 +161,8 @@ Learns from user preferences and past trips.
   progressive-focus refinements without rewriting the selected Compact Agenda.
 - **Repository ownership cleanup**: UX Lab HTML, source, feedback middleware,
   and build configuration now live under `frontend/labs/`; production
-  `frontend/src/` excludes experiments. Platform-neutral occurrence and latest-
+  `frontend/src/` excludes experiments. The canonical local SPA startup also
+  serves the isolated Labs catalog on port 5175. Platform-neutral occurrence and latest-
   request helpers live in `packages/tripplanner-client` instead of `mobile/`.
   Generated test-home state, orphaned root npm metadata, dead Chainlit-era
   scripts, and the obsolete top-level architecture folder are removed.

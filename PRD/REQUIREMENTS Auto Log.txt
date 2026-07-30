@@ -2712,3 +2712,11 @@ VALIDATION:
   application. Never discard local work.
 - If restored local changes overlap the merged code, retain the temporary stash
   and stop for explicit conflict resolution instead of hiding or overwriting it.
+
+=== 2026-07-30 — UX Labs available in regular local startup ===
+
+- The canonical `scripts/dev-spa.ps1` flow must start the isolated UX Labs
+  server together with the production SPA so the catalog is immediately
+  reachable at `http://127.0.0.1:5175/catalog.html`.
+- Preserve the standalone lab command for lab-only work and provide an explicit
+  `-NoLabs` opt-out when only the regular application stack is needed.
