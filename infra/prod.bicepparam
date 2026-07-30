@@ -26,3 +26,5 @@ param cosmosResourceGroupName = readEnvironmentVariable('COSMOS_RESOURCE_GROUP',
 param cosmosDatabaseName = 'tripplanner-prod'
 param minReplicas = 0
 param maxReplicas = 1
+param enableFailureAlerts = true
+param failureAlertEmail = 'munishgoyal1@gmail.com'

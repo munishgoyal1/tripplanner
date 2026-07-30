@@ -1,0 +1,19 @@
+ContainerAppConsoleLogs_CL
+| extend event = parse_json(Log_s)
+| extend
+    level = toupper(tostring(event.level)),
+    event_kind = tostring(event.event_kind),
+    outcome = tostring(event.outcome),
+    status = tostring(event.status)
+| where level in ("ERROR", "CRITICAL")
+    or (event_kind == "chat_operation" and outcome == "error")
+    or (event_kind == "tool_call" and status == "error")
+| project
+    Timestamp = TimeGenerated,
+    Level = level,
+    EventKind = event_kind,
+    Outcome = outcome,
+    Status = status,
+    ErrorType = tostring(event.error),
+    Logger = tostring(event.logger),
+    Tool = tostring(event.tool)

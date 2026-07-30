@@ -1,7 +1,7 @@
 # Azure Deployment Plan
 
-Status: Validated
-Last updated: 2026-07-28
+Status: Ready for Validation (production failure alerting increment approved)
+Last updated: 2026-07-30
 
 ## 1. Objective And Constraints
 
@@ -118,7 +118,7 @@ account. Three isolated databases therefore require 1,200 RU/s total.
   Cosmos data-plane RBAC are a separate security change and are not required to
   realize this cost migration.
 
-### Local development
+### Local development workflow
 
 - Add a Docker Compose definition for the official emulator image with HTTPS,
   health check, Data Explorer, and persistent storage.
@@ -258,10 +258,99 @@ Repository proof recorded on 2026-07-24:
   against the other environment.
 - Container Apps still use GHCR, scale to zero, and pass API/UI smoke tests.
 - Azure Monitor shows no sustained throttling or application errors.
+
+## 8. Production Failure Alerting Increment
+
+### Objective and measured baseline
+
+Add actionable failure detection without creating a second telemetry pipeline.
+The application already emits PII-safe JSON events to Container Apps stdout,
+and each hosted environment already retains that stream in its own Log Analytics
+workspace for 30 days. No Application Insights resource or SDK is required.
+
+Production currently has no Azure Monitor scheduled-query rule or Action Group.
+Local development prints logs to its owning console, and canary has queryable Log
+Analytics data but no repository-owned periodic diagnostic report.
+
+### Proposed architecture
+
+- Extend `infra/main.bicep` with an opt-in failure-alert contract. The default is
+  disabled, so local and canary deployments do not create an Action Group or
+  scheduled-query alert.
+- Enable the contract only in `infra/prod.bicepparam`, with the production alert
+  recipient set to `munishgoyal1@gmail.com`.
+- Create one production Action Group email receiver and one Azure Monitor
+  scheduled-query rule scoped to the existing production Log Analytics workspace.
+- Evaluate every five minutes over a five-minute window and alert when at least
+  one matching failure is present. Detect structured `chat_operation` errors,
+  structured `tool_call` errors, and ordinary JSON log records at `ERROR` or
+  `CRITICAL` level. Grouping and suppression should avoid one email per log line.
+- Keep all alert payloads on the existing redacted operational stream. Never
+  query the restricted `audit_events` container or include raw user content.
+- Add a repository-owned diagnostic script that can analyze the same failure
+  classes for canary through Azure CLI/Log Analytics and for local development
+  from captured JSON log files. It writes a redacted Markdown report under an
+  ignored `logs/diagnostics/` path and exits nonzero when failures are found, so
+  it can be run manually or from Windows Task Scheduler without sending email.
+- Keep diagnostic analysis read-only. The script may classify failures and print
+  next-step KQL, but it must not mutate Azure resources or application data.
+
+### Repository changes
+
+- `infra/main.bicep` and `infra/prod.bicepparam`: production-only Action Group
+  and scheduled-query alert.
+- `scripts/analyze-errors.ps1`: shared local/canary diagnostic report command.
+- Focused tests for environment gating, query coverage, local JSON parsing,
+  report redaction, and failure exit behavior.
+- `docs/operations/operations-slos.md`, deployment documentation, `docs/CODEMAP.md`,
+  requirements/current-state documentation, and infrastructure ownership docs.
+
+### Execution and approval boundaries
+
+1. Implement and validate repository changes only after owner approval of this
+   plan. Commit and push the worker branch; do not deploy.
+2. Deploy to canary only through the normal guarded canary flow. Because alerting
+   is disabled there, this validates template compatibility without email.
+3. Inspect a canary diagnostic report and confirm that synthetic/local fixture
+   failures are classified correctly before production promotion.
+4. Production Action Group and alert creation require the existing interactive
+   `APPROVE_PROD_DEPLOYMENT` gate. The production `what-if` output must show only
+   the intended monitor resources and no deletions.
+5. After approved deployment, verify Action Group delivery with an Azure Monitor
+   test notification and verify the query against a controlled PII-safe failure
+   event. Do not manufacture a user-facing production outage for this test.
+
+### Validation gates
+
+- Bicep build for `infra/main.bicep` and both hosted parameter files.
+- Bicep diagnostics are clean after every infrastructure edit.
+- PowerShell parser validation and focused analyzer tests pass.
+- Production parameters enable alerting; canary parameters and defaults leave it
+  disabled and require no recipient.
+- The query matches chat, tool, and ordinary error records while excluding normal
+  completed, replayed, capped, and successful tool events.
+- No email address, credentials, raw principal, prompt, or audit content appears
+  in generated diagnostic reports beyond the explicitly configured Action Group
+  recipient in production IaC.
+- Production deployment remains unexecuted until explicit approval at the
+  existing production gate.
 - Cost analysis no longer reports paid hosted provisioned-throughput charges
   after billing data catches up.
 
-## 8. Validation Proof
+## 9. Validation Proof
+
+Production failure alerting validation completed on 2026-07-30:
+
+- `infra/main.bicep`, `infra/prod.bicepparam`, and
+  `infra/canary.bicepparam` compiled with no diagnostics.
+- Focused observability and error-analysis tests: 32 passed. Focused Ruff and
+  changed PowerShell parser checks passed.
+- Full backend suite: 636 passed with one existing Starlette deprecation warning.
+- Production resource-group template validation returned `Succeeded` using the
+  current deployed image and secrets loaded only into process memory.
+- Production what-if was interrupted before returning a result. No deployment
+  command ran and no Azure resource changed. A clean no-delete what-if remains
+  required before this plan can move from `Ready for Validation` to `Validated`.
 
 App release validation completed on 2026-07-28 for subscription
 `2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`:
@@ -298,7 +387,7 @@ Validated at `2026-07-24T09:09:04Z` against subscription
   one data resource group, one free-tier account, two 400-RU/s databases, and
   six `/user_id` containers per database. Audit TTL is 7,776,000 seconds.
 
-## 9. Approval Gates
+## 10. Approval Gates
 
 On 2026-07-24, the owner approved live Cosmos resource creation, throughput
 changes, and canary migration after confirming the local emulator works. This
@@ -312,7 +401,7 @@ Later gates:
 4. Separately approve deletion of named old Cosmos accounts and ACRs after the
    rollback window.
 
-## 10. Execution Record (2026-07-24)
+## 11. Execution Record (2026-07-24)
 
 Completed in one session after the owner explicitly approved all remaining
 steps, including an immediate deletion that waives the 7-day rollback window:

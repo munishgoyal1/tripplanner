@@ -49,7 +49,9 @@
   it temporarily stashes staged, unstaged, and untracked master work, performs the
   clean guarded Worker 1 then Worker 2 PR merges, restores the local state, and
   only then starts the app. Both workers preflight before either merge. Worker 2
-  incorporates Worker 1's new master first; conflicts stop for explicit resolution.
+  incorporates Worker 1's new master first. Worker synchronization conflicts abort
+  and restore that worker automatically; overlapping restored master changes stop
+  for explicit conflict resolution.
 - Use `scripts/agent-worktree.ps1` and
   `docs/development/parallel-agent-development.md` for slot creation, synchronization,
   temporary worktrees, and safe cleanup. Do not share `.venv` or mutable
@@ -157,6 +159,12 @@ Learns from user preferences and past trips.
   Account can reopen analytics preferences. Azure Log Analytics remains the
   operational reliability source. Production is configured for GA4 Web stream
   `G-VNTSQG9SWZ`; an approved deployment is still required to activate collection.
+- **Production failure alerting + non-production analysis**: the existing PII-safe
+  Container Apps Log Analytics stream remains the single hosted telemetry path.
+  Production Bicep defines a five-minute application/chat/tool failure rule and
+  owner email Action Group behind the production deployment approval gate.
+  Local development retains bounded redacted JSON, and one read-only command
+  produces grouped local or canary Markdown diagnostics without non-production email.
 - **Provider-neutral live travel foundation**: the stable hotel and preferred
   flight tools now select capability-specific providers through a minimal
   registry. LiteAPI supplies normalized read-only hotel rates, flight search,

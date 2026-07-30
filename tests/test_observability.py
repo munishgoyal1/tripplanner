@@ -176,6 +176,36 @@ def test_app_event_scrubs_pii_in_non_sensitive_field(capsys):
     assert "<redacted>" in parsed["url"]
 
 
+def test_optional_app_log_file_is_rotating_json_and_redacted(tmp_path, monkeypatch):
+    target = tmp_path / "diagnostics" / "app.jsonl"
+    monkeypatch.setenv("APP_LOG_PATH", str(target))
+    obs.setup_logging(force=True)
+
+    logging.getLogger("test.file").error("failed for alice@example.com")
+
+    parsed = json.loads(target.read_text(encoding="utf-8").strip())
+    assert parsed["level"] == "ERROR"
+    assert parsed["msg"] == "failed for <email>"
+    assert "alice@example.com" not in target.read_text(encoding="utf-8")
+
+
+def test_json_exception_trace_is_redacted(capsys):
+    obs.setup_logging(force=True)
+    handler = logging.getLogger().handlers[0]
+    handler.setFormatter(obs.JsonFormatter())
+
+    try:
+        raise RuntimeError("token=abcdefghijklmnop1234 for alice@example.com")
+    except RuntimeError:
+        logging.getLogger("test.exception").exception("provider failed")
+
+    parsed = json.loads(capsys.readouterr().out.strip())
+    assert "<redacted>" in parsed["exc"]
+    assert "<email>" in parsed["exc"]
+    assert "abcdefghijklmnop1234" not in parsed["exc"]
+    assert "alice@example.com" not in parsed["exc"]
+
+
 # ---------------------------------------------------------------------------
 # audit_event -- local file fallback
 # ---------------------------------------------------------------------------

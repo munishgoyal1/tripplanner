@@ -26,6 +26,43 @@ function Invoke-Git {
     return $output
 }
 
+function Invoke-GitMerge {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]$Arguments,
+
+        [Parameter(Mandatory = $true)]
+        [string]$WorkerName
+    )
+
+    $output = & git -C $WorkingDirectory merge @Arguments
+    if ($LASTEXITCODE -eq 0) {
+        return $output
+    }
+
+    $conflicts = & git -C $WorkingDirectory diff --name-only --diff-filter=U
+    & git -C $WorkingDirectory rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "git merge $($Arguments -join ' ') failed in $WorkingDirectory."
+    }
+
+    & git -C $WorkingDirectory merge --abort
+    if ($LASTEXITCODE -ne 0) {
+        throw "git merge failed and its automatic abort also failed in $WorkingDirectory. Resolve the merge manually."
+    }
+
+    $remainingChanges = & git -C $WorkingDirectory status --porcelain
+    if ($LASTEXITCODE -ne 0 -or $remainingChanges) {
+        throw "git merge was aborted, but $WorkingDirectory was not restored to a clean state. Inspect it before retrying."
+    }
+
+    $conflictList = if ($conflicts) { $conflicts -join ", " } else { "unknown paths" }
+    throw "$WorkerName conflicted with origin/master in: $conflictList. The merge was aborted automatically and the worktree was restored. Reconcile the branches before retrying."
+}
+
 function Invoke-Gh {
     param(
         [Parameter(Mandatory = $true)]
@@ -109,7 +146,9 @@ Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("pull", "--ff-only", "ori
 
 Write-Host "[2/6] Bringing $workerName onto the current master..."
 Invoke-Git -WorkingDirectory $workerRoot -Arguments @("fetch", "origin") | Out-Null
-Invoke-Git -WorkingDirectory $workerRoot -Arguments @("merge", "origin/master", "--no-edit") | Out-Null
+Invoke-GitMerge -WorkingDirectory $workerRoot -Arguments @(
+    "origin/master", "--no-edit"
+) -WorkerName $workerName | Out-Null
 
 Write-Host "[3/6] Pushing $workerName..."
 $workerHead = Invoke-Git -WorkingDirectory $workerRoot -Arguments @("rev-parse", "HEAD")
@@ -154,7 +193,9 @@ Invoke-Gh -WorkingDirectory $primaryRoot -Arguments @(
 Write-Host "[6/6] Updating master and synchronizing $workerName..."
 Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("pull", "--ff-only", "origin", "master") | Out-Null
 Invoke-Git -WorkingDirectory $workerRoot -Arguments @("fetch", "origin") | Out-Null
-Invoke-Git -WorkingDirectory $workerRoot -Arguments @("merge", "origin/master", "--ff-only") | Out-Null
+Invoke-GitMerge -WorkingDirectory $workerRoot -Arguments @(
+    "origin/master", "--ff-only"
+) -WorkerName $workerName | Out-Null
 Invoke-Git -WorkingDirectory $workerRoot -Arguments @("push", "-u", "origin", "HEAD") | Out-Null
 
 Write-Host "Done: $workerName is merged, master is current, and $workerName is synchronized."

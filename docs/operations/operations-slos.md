@@ -5,6 +5,55 @@ trip planner. It uses the existing PII-safe JSON event stream written to Azure
 Container Apps stdout and retained in Log Analytics for 30 days. It does not
 add Application Insights or duplicate telemetry infrastructure.
 
+## Automatic production failure alert
+
+Production Bicep enables one Azure Monitor scheduled-query rule over the
+existing production Log Analytics workspace. Every five minutes it checks the
+previous five minutes for:
+
+- ordinary JSON records at `ERROR` or `CRITICAL` level;
+- terminal `chat_operation` records with `outcome == "error"`; and
+- `tool_call` records with `status == "error"`.
+
+Any match opens a severity-1 alert and notifies the production Action Group at
+`munishgoyal1@gmail.com` using Azure Monitor's common alert schema. Actions are
+muted for 15 minutes after notification to group a burst instead of sending one
+email per log line. Auto-mitigation resolves the alert after the query is clean.
+
+The query is owned by `infra/queries/application-failures.kql` and loaded by
+`infra/main.bicep`. `enableFailureAlerts` defaults to false and is enabled only
+by `infra/prod.bicepparam`; local and canary never create email alerts. Creating
+or changing the production Action Group still requires the normal
+`APPROVE_PROD_DEPLOYMENT` gate and a deletion-free production `what-if`.
+
+After an approved first deployment, send an Action Group test notification and
+confirm delivery. Then validate the query with a controlled PII-safe error event;
+do not create a user-facing outage just to test alerting.
+
+## Local and canary analysis
+
+Local FastAPI startup retains a rotating, PII-redacted JSON stream at
+`logs/diagnostics/local-app.jsonl` while leaving console output human-readable.
+Analyze it after a development session or from a daily Windows scheduled task:
+
+```powershell
+.\scripts\analyze-errors.ps1 -Environment local -Hours 24
+```
+
+Canary analysis reads its existing Log Analytics workspace through the signed-in
+Azure CLI and uses the exact production failure query:
+
+```powershell
+.\scripts\analyze-errors.ps1 -Environment canary -Hours 24
+```
+
+Each command writes a redacted Markdown report under ignored
+`logs/diagnostics/`. Exit code `0` means no matching failures; exit code `1`
+means failures were grouped with targeted checks for application, chat, or tool
+health. Run canary analysis after smoke and at least daily during a bake. A
+Windows Task Scheduler job may invoke the same command daily; it needs only the
+user's existing Azure CLI session and sends no email.
+
 ## Service-level indicators
 
 Every terminal `POST /chat` and `POST /chat/stream` path emits one
@@ -27,7 +76,7 @@ These are pragmatic objectives for a low-traffic personal application, not a
 claim that the service already has enough production volume to prove them.
 
 | Indicator | Objective | Window | Minimum sample |
-|---|---:|---:|---:|
+| --- | ---: | ---: | ---: |
 | Accepted chat success rate | >= 99% | Rolling 30 days | 20 accepted operations |
 | Accepted chat p95 latency | <= 120 seconds | Rolling 30 days | 20 accepted operations |
 | Release observation success rate | 100% | 30 minutes after production release | 1 accepted operation |
@@ -98,6 +147,22 @@ ContainerAppConsoleLogs_CL
 | where tostring(event.outcome) == "error"
 | summarize failures = count() by error = tostring(event.error), bin(TimeGenerated, 1h)
 | order by TimeGenerated desc, failures desc
+```
+
+For the shared alert/analyzer classification, run the checked-in query directly:
+
+```kql
+// infra/queries/application-failures.kql
+ContainerAppConsoleLogs_CL
+| extend event = parse_json(Log_s)
+| extend
+    level = toupper(tostring(event.level)),
+    event_kind = tostring(event.event_kind),
+    outcome = tostring(event.outcome),
+    status = tostring(event.status)
+| where level in ("ERROR", "CRITICAL")
+    or (event_kind == "chat_operation" and outcome == "error")
+    or (event_kind == "tool_call" and status == "error")
 ```
 
 ### Tool health
