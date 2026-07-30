@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Brief ID | `001` |
-| Status | Draft - awaiting LiteAPI account credentials |
+| Status | In progress - provider foundation and local LiteAPI adapters implemented |
 | Owner | Munish Goyal |
 | Created | 2026-07-30 |
 | Updated | 2026-07-30 |
@@ -26,9 +26,9 @@ provider tools also flatten offers into prose, losing provider IDs, quote age,
 occupancy, taxes, cancellation terms, and expiration evidence.
 
 LiteAPI (Nuitee Connect) currently exposes real-time hotel rates/availability,
-flight rates, and flight-offer verification. Booking.com Demand API can later
-provide accommodation search/availability through an affiliate account. Its
-current public Demand API does not provide flight search.
+flight rates, and flight-offer verification. Future providers may implement
+either capability independently; Booking.com Demand API is one possible later
+accommodation adapter, but its current public API does not provide flight search.
 
 ## Scope
 
@@ -67,9 +67,9 @@ current public Demand API does not provide flight search.
 
 ### Later
 
-- Booking.com accommodation adapter using the same hotel contract after affiliate
-  access and allowed integration flow are confirmed.
-- Provider routing or comparison across LiteAPI and Booking.com.
+- Any additional accommodation or flight adapter using the matching capability
+  contract after access and allowed integration flow are confirmed.
+- Provider routing or comparison across configured providers.
 - Redirect/affiliate handoff links.
 - Prebook, booking, payment, cancellation, or post-booking operations.
 
@@ -95,16 +95,9 @@ current public Demand API does not provide flight search.
 
 ```text
 src/tripplanner/providers/
-  models.py                 Normalized queries, offers, money, policies, freshness
+  models.py                 Normalized queries, offers, money, protocols, freshness
   registry.py               Configured capability selection
-  hotels.py                 Hotel provider protocol
-  flights.py                Flight provider protocol
-  liteapi/
-    client.py               Authenticated HTTP, errors, timeouts, observability
-    hotels.py               LiteAPI hotel normalization
-    flights.py              LiteAPI flight search and verify normalization
-  booking_com/
-    hotels.py               Later accommodation-only adapter
+  liteapi.py                Authenticated read-only hotel/flight adapter
 ```
 
 Existing LangChain tools remain the agent boundary and delegate to the registry.
@@ -135,11 +128,11 @@ contracts incrementally rather than rewritten in the first milestone.
 
 | Milestone | Outcome | Gate |
 |---|---|---|
-| 1 | Normalized models, protocols, registry, fake adapters, freshness tests | No credential needed |
-| 2 | LiteAPI hotel adapter and itinerary rate evidence | Search-only terms confirmed; LiteAPI key supplied locally |
-| 3 | LiteAPI flight search/verify adapter and selected-offer refresh | Flight access confirmed on account |
+| 1 | Normalized models, protocols, registry, and freshness tests | Implemented locally |
+| 2 | LiteAPI hotel adapter and normalized itinerary rate evidence | Implemented locally; live key check pending |
+| 3 | LiteAPI flight search/verify adapter and selected-offer refresh | Implemented locally; account flight access check pending |
 | 4 | Shared web/mobile/export freshness presentation | Backend contracts stable |
-| 5 | Booking.com hotel adapter | Affiliate access and integration flow approved |
+| 5 | Additional provider adapter | Provider access and integration flow approved |
 
 No Azure deployment or production credential configuration is included without
 separate owner approval.

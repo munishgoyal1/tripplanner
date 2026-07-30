@@ -148,6 +148,14 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Provider-neutral live travel foundation**: the stable hotel and preferred
+  flight tools now select capability-specific providers through a minimal
+  registry. LiteAPI supplies normalized read-only hotel rates, flight search,
+  and selected-flight verification with provider references, quote timestamps,
+  expiry, totals, and explicit evidence status. Legacy Duffel/Amadeus/Google
+  fallbacks remain; Google hotel results are labeled metadata-only rather than
+  live availability. Explicit refresh bypasses the 60-second inventory cache.
+  No prebook, booking, payment, order, or cancellation endpoint exists.
 - **Option A local Assistant trial**: the main web app now opens Assistant as a
   wide right-edge sidecar over the still-visible, usable itinerary/map workspace.
   Validated `input_request` events render as compact prefilled controls for all

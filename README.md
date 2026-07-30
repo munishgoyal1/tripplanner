@@ -264,7 +264,19 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AZURE_OPENAI_DEPLOYMENT=gpt-4.1
    ```
 
-### Amadeus API (required for real search)
+### LiteAPI (recommended for live hotel and flight availability)
+1. Create an account and obtain a server-side API key from LiteAPI.
+2. Set in `.env`:
+   ```
+   LITEAPI_API_KEY=your-key
+   TRAVEL_HOTEL_PROVIDER=auto
+   TRAVEL_FLIGHT_PROVIDER=auto
+   ```
+   `auto` prefers LiteAPI when configured and otherwise preserves the legacy
+   providers. The key is backend-only. This integration searches and verifies
+   rates; it does not prebook, book, charge, cancel, or create orders.
+
+### Amadeus API (legacy activities and search fallback)
 1. Sign up free at [developers.amadeus.com](https://developers.amadeus.com)
 2. Create a Self-Service app → get API Key + Secret
 3. Set in `.env`:
@@ -273,7 +285,7 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AMADEUS_API_SECRET=your-secret
    AMADEUS_BASE_URL=https://test.api.amadeus.com
    ```
-   Use `https://api.amadeus.com` for production (real bookings).
+   Use `https://api.amadeus.com` only for supported production search traffic.
    Free tier: 2,000 API calls/month.
 
 ### Email export (optional)

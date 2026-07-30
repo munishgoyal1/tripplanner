@@ -136,10 +136,18 @@ re-describing the whole product.
 
 ### PLAN-02 - Grounded providers and enrichment
 
-- Duffel is the primary flight search provider; Amadeus flight search is fallback
-  only.
-- Amadeus remains available for supported hotel, activity, and point-of-interest
-  searches.
+- LiteAPI is the preferred read-only source for date/party-specific hotel rates,
+  flight rates, and selected-flight verification when configured. Normalized
+  results retain opaque provider references, quote time/expiry, total provider
+  currency, and explicit `live`, `unavailable`, or `provider_error` evidence.
+- The stable flight and hotel tools route through separate capability contracts;
+  future providers can implement either capability without changing the agent.
+- Duffel remains the flight fallback, and Amadeus remains available for legacy
+  flight, hotel, activity, and point-of-interest searches.
+- Google hotel results are property metadata only and are labeled `estimated`;
+  they never establish room availability or a live rate.
+- Explicit inventory refresh bypasses shared cache. Live hotel/flight search uses
+  a 60-second cache and flight verification uses 30 seconds by default.
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.

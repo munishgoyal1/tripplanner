@@ -86,10 +86,14 @@ src/tripplanner/
   user_context.py     ContextVar holding the current user_id per request
   agents/
     trip_agent.py     Single trip-planning agent — system prompt + 25 @tools
+  providers/
+    models.py         Normalized hotel/flight queries, offers, money, and quote status
+    registry.py       Minimal capability-specific provider selection (`auto` or named)
+    liteapi.py        Read-only LiteAPI hotel rates plus flight search/verification
   tools/
-    duffel_flights.py     Primary flight provider
+    duffel_flights.py     Stable agent flight boundary; LiteAPI then Duffel fallback
     flight_search.py      Amadeus fallback (Amadeus self-service EOL 2026-07-17)
-    hotel_search.py       Amadeus hotels
+    hotel_search.py       Stable agent hotel boundary; LiteAPI then legacy fallback
     activities_search.py  Amadeus activities + POI
     amadeus_client.py     Shared Amadeus auth/HTTP
     google_places.py      Places API New (search/reviews/photos)

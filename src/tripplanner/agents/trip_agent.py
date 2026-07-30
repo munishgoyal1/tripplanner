@@ -11,7 +11,8 @@ from langchain_core.tools import tool
 
 from tripplanner.chat_interactions import request_trip_input
 from tripplanner.tools.activities_search import search_activities, search_points_of_interest
-from tripplanner.tools.duffel_flights import search_flights_duffel
+from tripplanner.tools.duffel_flights import search_flights_duffel, verify_flight_offer
+from tripplanner.tools.events import find_local_events
 from tripplanner.tools.flight_search import search_flights
 from tripplanner.tools.google_places import (
     get_place_reviews,
@@ -19,12 +20,9 @@ from tripplanner.tools.google_places import (
     search_places_with_reviews,
 )
 from tripplanner.tools.hotel_search import search_hotels
-from tripplanner.tools.routing import compute_route, optimize_day_route
-from tripplanner.tools.place_hours import check_place_hours
-from tripplanner.tools.weather import get_weather_forecast
-from tripplanner.tools.visa import check_visa_requirements
-from tripplanner.tools.events import find_local_events
 from tripplanner.tools.memory_recall import recall_relevant_memory
+from tripplanner.tools.place_hours import check_place_hours
+from tripplanner.tools.routing import compute_route, optimize_day_route
 from tripplanner.tools.trip_planner import (
     _load_active_trip,
     create_trip_plan,
@@ -47,6 +45,8 @@ from tripplanner.tools.user_preferences import (
     update_profile,
     upsert_family_member,
 )
+from tripplanner.tools.visa import check_visa_requirements
+from tripplanner.tools.weather import get_weather_forecast
 from tripplanner.tools.web_search import web_search
 
 
@@ -420,10 +420,12 @@ STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
 
 STEP 3 — PARALLEL SEARCH (do all at once)
   Call these tools in parallel based on preferences:
-  a) search_flights_duffel — PREFERRED flight search (Duffel API). Real airlines,
-     times, stops, prices. Use this first. Only fall back to search_flights
-     (Amadeus) if Duffel returns nothing useful — Amadeus self-service is being
-     decommissioned on July 17, 2026.
+    a) search_flights_duffel — preferred provider-neutral flight search. It uses
+      LiteAPI when configured, otherwise Duffel. Real airlines, times, stops,
+      prices, and quote evidence. Before describing a selected LiteAPI offer as
+      current, call verify_flight_offer and persist the verified normalized offer
+      including provider_ref, quoted_at, expires_at, and status. Only fall back to
+      search_flights (Amadeus) if the preferred search returns nothing useful.
   b) search_hotels — real hotels with names, ratings, prices (Amadeus pricing)
   c) search_places_with_reviews — Google ratings/reviews for shortlisted hotels
      and attractions. ALWAYS run this on any hotel before recommending it.
@@ -771,6 +773,7 @@ _CORE_TOOLS = [
 _SEARCH_TOOLS = [
     # Flights — Duffel preferred, Amadeus kept as fallback (deprecating 2026-07-17)
     search_flights_duffel,
+    verify_flight_offer,
     search_flights,
     # Real search (Amadeus — bookable inventory)
     search_hotels,
@@ -824,7 +827,7 @@ def proposal_tools(tools: list) -> list:
 _PLANNING_TRIGGER_TOOLS = {
     "create_trip_plan", "get_trip_plan", "update_trip_plan", "finalize_trip",
     "execute_bookings", "resume_trip", "list_past_trips",
-    "search_flights_duffel", "search_flights", "search_hotels",
+    "search_flights_duffel", "verify_flight_offer", "search_flights", "search_hotels",
     "search_activities", "search_points_of_interest",
     "search_places_with_reviews", "get_place_reviews", "nearby_restaurants",
     "check_place_hours", "compute_route", "optimize_day_route",
