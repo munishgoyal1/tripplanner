@@ -104,6 +104,7 @@ export interface RouteMetrics {
   mode: string;
   distance_display: string;
   duration_display: string;
+  detail?: string;
 }
 
 export interface DaySchedule {
@@ -164,6 +165,16 @@ export interface ItineraryStop {
   cost_display?: string;
   insight?: string;
   concern?: string;
+  departure_time?: string;
+  expected_arrival_time?: string;
+  time_estimated?: boolean;
+  buffer_before_min?: number;
+  buffer_before_display?: string;
+  timing_conflict_min?: number;
+  timing_conflict_display?: string;
+  rating?: number | null;
+  review_count?: number | null;
+  popularity_score?: number | null;
   travel_from_previous?: RouteMetrics;
 }
 

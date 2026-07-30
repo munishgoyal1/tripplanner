@@ -41,6 +41,10 @@
 - Merge completed branches one at a time through reviewed pull requests using
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
+- `scripts/development/run-latest-code.ps1` is the regular local integration flow:
+  it temporarily stashes staged, unstaged, and untracked master work, performs the
+  clean guarded merge, restores the local state, and only then starts the app.
+  Overlapping restored changes stop for explicit conflict resolution.
 - Use `scripts/agent-worktree.ps1` and
   `docs/development/parallel-agent-development.md` for slot creation, synchronization,
   temporary worktrees, and safe cleanup. Do not share `.venv` or mutable
