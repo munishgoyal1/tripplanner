@@ -52,6 +52,10 @@ function dayDateLabel(date: string): string {
   }).format(parsed).replace(",", " ·");
 }
 
+function reviewCountLabel(count: number): string {
+  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(count);
+}
+
 function StopRow({
   stop,
   day,
@@ -117,10 +121,17 @@ function StopRow({
     >
       <div className="pt-0.5 text-left">
         <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
-        {stop.time && <p className="text-xs font-bold tabular-nums text-ink">{stop.time}</p>}
+        {stop.time && (
+          <p className="text-xs font-bold tabular-nums text-ink">
+            {stop.time}{stop.time_estimated ? " est." : ""}
+          </p>
+        )}
         {stop.kind !== "hotel" && stop.duration_min ? (
-          <p className="mt-0.5 text-[10px] text-slate-500">{Math.round(stop.duration_min)} min</p>
+          <p className="mt-0.5 text-[10px] text-slate-500">{Math.round(stop.duration_min)} min visit</p>
         ) : null}
+        {stop.departure_time && (
+          <p className="mt-0.5 text-[10px] font-medium tabular-nums text-slate-600">Leave {stop.departure_time}</p>
+        )}
       </div>
 
       <div className="min-w-0">
@@ -135,6 +146,19 @@ function StopRow({
             <span>{stop.travel_from_previous.distance_display}</span>
             <span aria-hidden>·</span>
             <span>{stop.travel_from_previous.duration_display}</span>
+            {stop.travel_from_previous.detail && (
+              <span className="basis-full font-normal text-slate-600">{stop.travel_from_previous.detail}</span>
+            )}
+            {stop.expected_arrival_time && (
+              <span className="basis-full font-normal text-slate-500">
+                Est. arrive {stop.expected_arrival_time}
+                {stop.buffer_before_display && stop.time
+                  ? ` · ${stop.buffer_before_display} free before ${stop.time}`
+                  : stop.timing_conflict_display
+                    ? ` · schedule is ${stop.timing_conflict_display} too tight`
+                    : ""}
+              </span>
+            )}
           </div>
         )}
         <div className="flex items-start gap-1.5">
@@ -191,6 +215,22 @@ function StopRow({
           </button>
           {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
           {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
+          {typeof stop.rating === "number" && (
+            <span className="chip" aria-label={`${stop.name} rating ${stop.rating.toFixed(1)} out of 5`}>
+              ★ {stop.rating.toFixed(1)}
+              {typeof stop.review_count === "number" && stop.review_count > 0
+                ? ` · ${reviewCountLabel(stop.review_count)} reviews`
+                : ""}
+            </span>
+          )}
+          {typeof stop.popularity_score === "number" && stop.kind !== "hotel" && (
+            <span
+              className="chip"
+              title="Estimated from Google rating and review volume; not an itinerary inclusion percentage."
+            >
+              Must-visit score {stop.popularity_score}/100
+            </span>
+          )}
           {removable && (
             <button
               type="button"
@@ -301,16 +341,18 @@ function DayCard({
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-2 text-[11px] text-slate-500">
             <strong className="text-ink">{plannedStops.length} planned {plannedStops.length === 1 ? "stop" : "stops"}</strong>
             {day.schedule?.duration_display && (
-              <span>
-                E2E {day.schedule.duration_display}
+              <span className="basis-full">
+                <strong className="font-semibold text-ink">Schedule duration:</strong> {day.schedule.duration_display}
                 {day.schedule.start && day.schedule.end
                   ? ` · ${day.schedule.start}–${day.schedule.end}${day.schedule.estimated ? " est." : ""}`
                   : day.schedule.estimated ? " est." : ""}
               </span>
             )}
             {day.route && (
-              <span className="inline-flex items-center gap-1">
-                <MapPin size={12} aria-hidden /> Travel {day.route.duration_display} · {day.route.distance_display} · {day.route.mode}
+              <span className="inline-flex basis-full items-center gap-1">
+                <MapPin size={12} aria-hidden />
+                <strong className="font-semibold text-ink">Day&apos;s travel:</strong>
+                {day.route.duration_display} · {day.route.distance_display} · {day.route.mode}
               </span>
             )}
             <span className={remainingStops > 0 ? "text-amber-700" : "text-emerald-700"}>

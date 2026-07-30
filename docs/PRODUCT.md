@@ -117,13 +117,22 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   compact, prefill every field, and offer one build/continue action plus a default
   skip path. Production overlay behavior follows an owner-selected UX Lab direction;
   a Lab record is not approval to change the production workspace.
-- **Itinerary scanning**: each day header shows stop count, schedule duration,
-  route distance/time/mode, and a direct Maps handoff before the stop details.
+- **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
+  a separate `Day's travel` row with route distance/time/mode, and a direct Maps
+  handoff before the stop details.
   The backend owns one day timing contract consumed by both Itinerary and Map:
-  E2E schedule spans hotel departure through return (or the applicable transfer/
-  transit endpoints), while Travel is the route-only subtotal. If endpoint times
-  are incomplete, estimated departure and return are derived from timed visits
-  and known route legs and labeled as estimates. Compact agenda
+  the schedule spans hotel departure through return (or the applicable transfer/
+  transit endpoints), while `Day's travel` is the route-only subtotal. If
+  endpoint times are incomplete, estimated departure and return are derived from
+  timed visits and known route legs, shown on the hotel rows, and labeled as
+  estimates. Place rows expose arrival, visit duration, departure, estimated
+  transfer arrival, and any free buffer or timing conflict so the day clock adds
+  up. Transit uses the consistent Walk, Metro, and Taxi vocabulary; every
+  estimated leg names its endpoints and gives a short, non-fabricated transfer
+  pointer. Place evidence includes Google rating and review count plus an
+  estimated must-visit score derived from those signals. It must never be
+  described as the percentage of traveler itineraries containing the place
+  because that data is unavailable. Compact agenda
   rows are dense and left-anchored: time, marker, place, booking state, and
   actions read in one direction without drifting toward the center or right.
   Hotel circuit anchors show Depart/Return semantics without a visit duration,

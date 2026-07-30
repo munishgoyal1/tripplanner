@@ -2680,3 +2680,18 @@ VALIDATION:
 - After Assistant builds the complete practical, popular, preference-matched first
   itinerary, let Details and Map own visual refinement while Assistant remains
   available for later changes.
+
+=== 2026-07-30 — Auditable itinerary clock and place evidence ===
+
+- Show hotel Depart and Return times. When persisted endpoint times are absent,
+  derive them from timed visits and known route legs and label them as estimates.
+- Make each visit's clock auditable: show arrival, visit duration, departure,
+  estimated transfer arrival, and any free buffer or schedule conflict before the
+  next persisted arrival.
+- Replace `E2E` with `Schedule duration` and show route-only time separately as
+  `Day's travel` in both Itinerary and Map summaries.
+- Use consistent Walk, Metro, and Taxi route labels. Each estimated leg names its
+  endpoints and gives useful transfer guidance without inventing exact stations.
+- Show Google rating and review count plus a clearly labeled estimated must-visit
+  score derived from those signals. Do not fabricate an itinerary-inclusion
+  percentage because no provider supplies that evidence.

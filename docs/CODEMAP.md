@@ -172,7 +172,9 @@ frontend/
            + booked checkbox; exact day/stop identity owns active-row scroll
          and the filled current `H`/number marker; day-header click frames the
          complete map circuit and aligns its day summary without converting it
-         into exact-place focus
+         into exact-place focus; stop rows expose auditable arrival/visit/
+         departure/transfer timing, Google rating/review evidence, and the
+         estimated must-visit score
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;
@@ -322,7 +324,9 @@ It exports:
   place kind, dedupe by name, and join ordered day circuits.
 - `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
   `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
-  booked,selected,color,travel_from_previous?}]}]` +
+  booked,selected,color,departure_time?,expected_arrival_time?,buffer_before_min?,
+  timing_conflict_min?,rating?,review_count?,popularity_score?,
+  travel_from_previous?}]}]` +
   `stats{days,stops,booked}`. `_normalize_stop` /
   `_infer_stop_kind` turn string OR dict stops into structured dicts. Served by
   `GET /trip/itinerary`; `trip_planner.set_stop_booked(day,name,booked)` (behind
@@ -332,7 +336,8 @@ It exports:
   place stop focuses the Photos section, the 📍 button reveals it on the Map,
   and subtle `H` / numbered row badges mirror the day circuit's map markers.
   When a trip has no structured `day_wise_itinerary` yet,
-  `_itinerary_from_selections` synthesizes a single "Your picks so far" day from
+  `_itinerary_from_selections` synthesizes route legs and the same place evidence
+  for its geographically grouped first-draft days from
   the selected hotels/activities so the panel is never blank.
 
 UI add/remove actions call `trip_planner.add_selection` / `remove_selection`.

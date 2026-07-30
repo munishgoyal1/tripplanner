@@ -67,10 +67,17 @@ const itinerary: Itinerary = {
           travel_from_previous: {
             distance_km: 2.1,
             duration_min: 28,
-            mode: "walk",
+            mode: "Walk",
             distance_display: "2.1 km",
             duration_display: "28 min",
+            detail: "Walk from Louvre Museum to Seine cruise.",
           },
+          expected_arrival_time: "12:28",
+          buffer_before_min: 152,
+          buffer_before_display: "2 hr 32 min",
+          rating: 4.7,
+          review_count: 12500,
+          popularity_score: 91,
         },
       ],
     },
@@ -108,7 +115,8 @@ describe("ItineraryPanel", () => {
     expect(await screen.findByText("Museums and river")).toBeInTheDocument();
     expect(screen.getByText("Saturday · 12 September 2026")).toBeInTheDocument();
     expect(screen.getByText("2 planned stops")).toBeInTheDocument();
-    expect(screen.getByText("E2E 6 hr · 10:00–16:00")).toBeInTheDocument();
+    expect(screen.getByText("Schedule duration:").parentElement).toHaveTextContent("6 hr · 10:00–16:00");
+    expect(screen.getByText("Day's travel:").parentElement).toHaveTextContent("35 min · 4.2 km · walk");
     expect(screen.getByText("0 confirmed · 2 to book")).toBeInTheDocument();
     expect(screen.getByText("Travel rhythm:")).toBeInTheDocument();
     expect(screen.getByText(/4\.2 km/)).toHaveTextContent("35 min");
@@ -119,8 +127,12 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
+    expect(screen.getByText("Walk from Louvre Museum to Seine cruise.")).toBeInTheDocument();
+    expect(screen.getByText("Est. arrive 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
+    expect(screen.getByLabelText("Seine cruise rating 4.7 out of 5")).toHaveTextContent("12.5K reviews");
+    expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
     expect(screen.getAllByText("Arrive")).toHaveLength(2);
-    expect(screen.getByText("120 min")).toBeInTheDocument();
+    expect(screen.getByText("120 min visit")).toBeInTheDocument();
     expect(screen.queryByText("In trip")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
   });
@@ -184,7 +196,8 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel />);
 
-    expect(await screen.findByText("E2E 9 hr · 09:00–18:00")).toBeInTheDocument();
+    expect((await screen.findByText("Schedule duration:")).parentElement).toHaveTextContent("9 hr · 09:00–18:00");
+    expect(screen.getAllByText(/09:00/).length).toBeGreaterThan(0);
   });
 
   it("ends the schedule at a final transit arrival", async () => {
@@ -208,7 +221,7 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel />);
 
-    expect(await screen.findByText("E2E 5 hr 30 min · 08:00–13:30")).toBeInTheDocument();
+    expect((await screen.findByText("Schedule duration:")).parentElement).toHaveTextContent("5 hr 30 min · 08:00–13:30");
   });
 
   it("requests the complete circuit when the day header is clicked", async () => {

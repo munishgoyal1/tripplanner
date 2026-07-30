@@ -156,6 +156,12 @@ re-describing the whole product.
 - Visit times must progress chronologically and leave room for stated duration
   and travel. Duplicate or backwards model-authored times are rejected before
   persistence.
+- Itinerary rows make timing auditable: hotel endpoints show estimated times
+  when needed; visits show departure; transfer rows show estimated arrival,
+  endpoint guidance, and any free buffer or schedule conflict.
+- Route summaries and legs use one Walk, Metro, and Taxi vocabulary. Place rows
+  show Google rating/review evidence and may show a clearly labeled estimated
+  must-visit score, never a fabricated itinerary-inclusion percentage.
 - Route ordering, displayed times, itinerary markers, and map circuit ordering
   are treated as one schedule contract.
 
@@ -253,12 +259,13 @@ re-describing the whole product.
 
 - One authoritative trip snapshot owns destination, dates, travelers, lifecycle,
   counts, booking progress, budget/cost, fit, and constraints.
-- Compact day briefs expose non-hotel planned-stop count, explicit schedule
-  duration, route distance/time/mode, confirmed and remaining booking counts,
-  Travel rhythm guidance, and a Maps handoff before stop details. A shared backend
-  contract gives Itinerary and Map the same endpoint-to-endpoint E2E schedule and
-  separate route-only Travel subtotal. Missing hotel endpoint times are estimated
-  from timed visits and known route legs and visibly marked as estimates.
+- Compact day briefs expose non-hotel planned-stop count, explicit `Schedule
+  duration`, a separate `Day's travel` route distance/time/mode row, confirmed
+  and remaining booking counts, Travel rhythm guidance, and a Maps handoff before
+  stop details. A shared backend contract gives Itinerary and Map the same
+  endpoint-to-endpoint schedule and separate route-only travel subtotal. Missing
+  hotel endpoint times are estimated from timed visits and known route legs and
+  visibly marked as estimates.
 - Compact agenda rows lead with explicit Depart/Return or Arrive/Stay timing,
   keep time, place, status, and actions densely left-aligned, place each travel
   estimate above its destination, and use explicit Confirmed or Needs booking
