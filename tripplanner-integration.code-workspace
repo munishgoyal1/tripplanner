@@ -23,5 +23,27 @@
       "titleBar.activeBackground": "#881337",
       "titleBar.activeForeground": "#ffffff"
     }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Tripplanner: Merge Agent 1",
+        "type": "shell",
+        "command": "pwsh",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}\\docs\\development\\merge-agent-1.ps1"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "isBackground": false,
+        "problemMatcher": []
+      }
+    ]
   }
 }

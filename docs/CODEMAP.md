@@ -25,6 +25,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Standard active workspaces: `tripplanner-worker-1.code-workspace` for
   development and `tripplanner-integration.code-workspace` for review/merge;
   `tripplanner-worker-2.code-workspace` remains available on demand
+- One-click Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
+  double-click `docs/development/Merge-Agent1.cmd`
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
