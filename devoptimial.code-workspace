@@ -8,6 +8,20 @@
   "settings": {
     "window.title": "Devoptimial | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
+    "github.copilot.enable": {
+      "*": true,
+      "plaintext": false
+    },
+    "[plaintext]": {
+      "editor.inlineSuggest.enabled": false,
+      "editor.quickSuggestions": false,
+      "editor.suggestOnTriggerCharacters": false,
+      "editor.wordBasedSuggestions": "off",
+      "editor.parameterHints.enabled": false
+    },
+    "cSpell.ignorePaths": [
+      "docs/archive/myprompts.txt"
+    ],
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",
     "workbench.editor.showTabs": "multiple",
