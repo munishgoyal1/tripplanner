@@ -1,12 +1,24 @@
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { labFeedbackPlugin } from "./feedback-plugin";
 
 export default defineConfig({
-  plugins: [react()],
+  root: __dirname,
+  plugins: [react(), labFeedbackPlugin()],
+  server: {
+    host: "127.0.0.1",
+    port: 5175,
+    strictPort: true,
+  },
+  preview: {
+    host: "127.0.0.1",
+    port: 4175,
+    strictPort: true,
+  },
   build: {
     emptyOutDir: true,
-    outDir: "labs/dist",
+    outDir: "dist",
     rollupOptions: {
       input: {
         catalog: resolve(__dirname, "catalog.html"),

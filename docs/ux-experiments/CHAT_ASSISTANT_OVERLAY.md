@@ -7,7 +7,7 @@
 - Date started: 2026-07-30
 - Date ended: pending
 - Status: testing
-- Lab: `http://localhost:5173/labs/chat-assistant.html`
+- Lab: `http://127.0.0.1:5175/chat-assistant.html`
 
 ## Hypothesis
 

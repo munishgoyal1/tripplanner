@@ -28,7 +28,7 @@ const activeLabs: LabRecord[] = [
     date: "30 Jul 2026",
     status: "In evaluation",
     decision: "Open · Recommended starting point: B · Focus overlay.",
-    href: "/labs/chat-assistant.html",
+    href: "./chat-assistant.html",
     icon: MessageCircle,
   },
   {
@@ -37,7 +37,7 @@ const activeLabs: LabRecord[] = [
     date: "30 Jul 2026",
     status: "In evaluation",
     decision: "Open experiment · B starts as the recommended direction.",
-    href: "/labs/itinerary-density.html",
+    href: "./itinerary-density.html",
     icon: ListChecks,
   },
 ];
@@ -49,7 +49,7 @@ const decidedLabs: LabRecord[] = [
     date: "29 Jul 2026",
     status: "Implemented",
     decision: "B · Compact Agenda, paired with C · Compact Brief.",
-    href: "/labs/itinerary-information.html",
+    href: "./itinerary-information.html",
     icon: ListChecks,
   },
   {
@@ -58,7 +58,7 @@ const decidedLabs: LabRecord[] = [
     date: "29 Jul 2026",
     status: "Implemented",
     decision: "C · Compact Brief with explicit travel rhythm, day plan, and booking readiness.",
-    href: "/labs/itinerary-summary.html",
+    href: "./itinerary-summary.html",
     icon: LayoutPanelTop,
   },
   {
@@ -67,7 +67,7 @@ const decidedLabs: LabRecord[] = [
     date: "23 Jul 2026",
     status: "Decided",
     decision: "Layout C: map-first canvas, details-first rail, and compact lower-right Assistant.",
-    href: "/labs/workspace-shell.html",
+    href: "./workspace-shell.html",
     icon: LayoutPanelTop,
   },
 ];

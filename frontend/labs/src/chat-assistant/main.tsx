@@ -229,7 +229,7 @@ function ChatAssistantLab() {
             <h1 className="display mt-2 text-3xl font-semibold text-ink">Assistant-led trip kickoff</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Test how the Assistant can ask one compact, personalized question before building a complete first itinerary. The controls are live.</p>
           </div>
-          <a href="/labs/catalog.html" className="btn-ghost"><ArrowLeft size={14} /> UX Labs</a>
+          <a href="./catalog.html" className="btn-ghost"><ArrowLeft size={14} /> UX Labs</a>
         </header>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
