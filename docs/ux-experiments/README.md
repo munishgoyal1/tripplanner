@@ -4,7 +4,7 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 
 ## Lab Catalog
 
-The regular `scripts/dev-spa.ps1` startup serves UX Labs automatically. Open
+The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 `http://127.0.0.1:5175/catalog.html` to access every standalone experiment.
 For lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
 catalog has two durable sections:

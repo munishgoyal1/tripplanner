@@ -132,9 +132,9 @@ For the persistent Agent 1 lane, use either one-click entry point from the
 primary integration checkout:
 
 - VS Code: **Tasks: Run Task** → **Tripplanner: Merge Agent 1**
-- File Explorer: double-click `scripts/development/Merge-Agent1.cmd`
+- File Explorer: double-click `scripts/dev/Merge-Agent1.cmd`
 
-Both run `scripts/development/merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
+Both run `scripts/dev/merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
 creates or reuses the Worker 1 pull request, merges it with a merge commit,
 updates `master`, and keeps the persistent Worker 1 branch synchronized for
 its next assignment. If the task stops on a conflict, return to the Worker 1
@@ -142,10 +142,10 @@ window, ask that agent to resolve and validate it, then run the task again.
 
 To merge Agent 1 and immediately restart the local application on the merged
 code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
-`scripts/development/Run-Latest-Code.cmd`. This is the regular local workflow even
+`scripts/dev/Run-Latest-Code.cmd`. This is the regular local workflow even
 when `master` has staged, unstaged, or untracked work: it temporarily stashes the
 local state, runs the guarded merge against a clean checkout, restores the local
-state with its staged status, and then starts `scripts/dev-spa.ps1`. If restored
+state with its staged status, and then starts `scripts/dev/dev-spa.ps1`. If restored
 changes overlap the merged code, it stops with the stash retained for explicit
 conflict resolution. The direct **Merge Agent 1** command remains clean-only.
 

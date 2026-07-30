@@ -477,7 +477,7 @@ CHANGES (Part B — Chainlit removal + hosting rewire):
   (bicepparam falls back to the old env var name).
 - .github/workflows/deploy.yml — maps the existing `secrets.CHAINLIT_AUTH_SECRET` GH secret to
   the new WEB_SESSION_SECRET env (no need to re-create the secret).
-- scripts/dev-spa.ps1 / autoheal.ps1, .env.example, .dockerignore, .gitignore — de-Chainlited.
+- scripts/dev/dev-spa.ps1 / autoheal.ps1, .env.example, .dockerignore, .gitignore — de-Chainlited.
 - Docs (README.md, infra/README.md, frontend/README.md, docs/development/setup-oauth.md, docs/development/dev.md,
   .github/copilot-instructions.md) — updated to describe the SPA-served-by-FastAPI hosting and
   the standalone Google OAuth flow.
@@ -1355,7 +1355,7 @@ IMPLEMENTED:
 - Abort/generation-guarded trip view refreshes and robust SSE terminal handling.
 - Stale-while-refresh map/itinerary behavior with retry and mutation rollback.
 - Vitest/React Testing Library unit tests plus mocked Playwright viewport smoke tests.
-- Explicit strict Vite frontend port handling in scripts/dev-spa.ps1.
+- Explicit strict Vite frontend port handling in scripts/dev/dev-spa.ps1.
 - Fixed map-first desktop workspace and separate mobile trip-details sheet.
 
 === 2026-06-19 — Session 28: Direct PDF + branded templates + Azure email provider ===
@@ -2222,7 +2222,7 @@ VALIDATION:
 
 === 2026-07-26 — Session 65: Automatic local Docker startup ===
 
-- Running `scripts/dev-spa.ps1` with the default local Cosmos Emulator backend
+- Running `scripts/dev/dev-spa.ps1` with the default local Cosmos Emulator backend
   must launch Docker Desktop automatically when Docker is installed but its
   daemon is not running, then wait for the daemon before invoking Compose.
 - Automatic Docker startup applies only when the backend needs the local
@@ -2260,7 +2260,7 @@ VALIDATION:
 
 === 2026-07-26 — Session 68: Clean local SPA restart ===
 
-- Before starting Docker, Cosmos, or the backend, `scripts/dev-spa.ps1` must
+- Before starting Docker, Cosmos, or the backend, `scripts/dev/dev-spa.ps1` must
   detect and stop a previous Vite listener on the requested frontend port when
   that listener belongs to this repository.
 - The cleanup must not terminate an unrelated process. If another application
@@ -2699,8 +2699,8 @@ VALIDATION:
 === 2026-07-30 — Development script ownership ===
 
 - Executable development workflows belong under `scripts/`, not `docs/`.
-- Keep the Agent 1 merge and run-latest one-click launchers together under
-  `scripts/development/`; documentation describes and links to them but does not
+- Keep the SPA, Agent 1 merge, and run-latest one-click launchers together under
+  `scripts/dev/`; documentation describes and links to them but does not
   own executable files.
 
 === 2026-07-30 — Run-latest preserves local master work ===
@@ -2715,8 +2715,16 @@ VALIDATION:
 
 === 2026-07-30 — UX Labs available in regular local startup ===
 
-- The canonical `scripts/dev-spa.ps1` flow must start the isolated UX Labs
+- The canonical `scripts/dev/dev-spa.ps1` flow must start the isolated UX Labs
   server together with the production SPA so the catalog is immediately
   reachable at `http://127.0.0.1:5175/catalog.html`.
 - Preserve the standalone lab command for lab-only work and provide an explicit
   `-NoLabs` opt-out when only the regular application stack is needed.
+
+=== 2026-07-30 — Short development path and resilient local restart ===
+
+- Keep local development launchers under the concise `scripts/dev/` directory.
+- Before startup, force-stop the complete process tree for every listener on
+  each enabled API, SPA, and UX Labs port, then verify each port is released.
+- Validate enabled ports are distinct before terminating anything. Backend-only
+  and frontend-only modes must clear only the ports they own.

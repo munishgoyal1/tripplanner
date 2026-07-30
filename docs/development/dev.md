@@ -7,7 +7,7 @@ One page. Stick this on a second monitor.
 ## TL;DR - interactive testing
 
 ```powershell
-.\scripts\dev-spa.ps1
+.\scripts\dev\dev-spa.ps1
 ```
 
 Open <http://localhost:5173> for the app or
@@ -39,7 +39,7 @@ See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
 To merge Agent 1 and restart this local stack in one click, double-click
-`scripts/development/Run-Latest-Code.cmd` from the repository root or run the VS Code task
+`scripts/dev/Run-Latest-Code.cmd` from the repository root or run the VS Code task
 **Tripplanner: Run Latest Code** from the integration workspace. Existing staged,
 unstaged, and untracked master work is temporarily preserved and restored around
 the guarded Worker 1 merge before the server starts.
@@ -56,13 +56,13 @@ in-progress chat. Pass `-Watch` only when you intentionally want reloads.
 
 | Script | Use when | Hot reload |
 |---|---|---|
-| `.\scripts\dev-spa.ps1` | Local emulator, backend, SPA, and UX Labs | Off |
-| `.\scripts\dev-spa.ps1 -Watch` | Active code editing | On |
-| `.\scripts\dev-spa.ps1 -BackendOnly` | API only | Off |
-| `.\scripts\dev-spa.ps1 -FrontendOnly` | SPA and UX Labs only | Off |
-| `.\scripts\dev-spa.ps1 -NoLabs` | Regular stack without UX Labs | Off |
-| `.\scripts\dev-spa.ps1 -CosmosBackend azure` | Isolated Azure local database | Off |
-| `.\scripts\dev-spa.ps1 -UseCanaryData` | Explicit canary-data troubleshooting | Off |
+| `.\scripts\dev\dev-spa.ps1` | Local emulator, backend, SPA, and UX Labs | Off |
+| `.\scripts\dev\dev-spa.ps1 -Watch` | Active code editing | On |
+| `.\scripts\dev\dev-spa.ps1 -BackendOnly` | API only | Off |
+| `.\scripts\dev\dev-spa.ps1 -FrontendOnly` | SPA and UX Labs only | Off |
+| `.\scripts\dev\dev-spa.ps1 -NoLabs` | Regular stack without UX Labs | Off |
+| `.\scripts\dev\dev-spa.ps1 -CosmosBackend azure` | Isolated Azure local database | Off |
+| `.\scripts\dev\dev-spa.ps1 -UseCanaryData` | Explicit canary-data troubleshooting | Off |
 
 ---
 
@@ -201,7 +201,7 @@ Python and frontend dependencies, preserves an existing `.env`, and verifies a
 frontend production build. Add `-IncludeMobile` for Expo dependencies. Account
 login and provider secrets remain manual.
 
-After that, every session is just `.\scripts\dev-spa.ps1`.
+After that, every session is just `.\scripts\dev\dev-spa.ps1`.
 
 ---
 

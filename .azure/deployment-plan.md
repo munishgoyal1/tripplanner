@@ -65,7 +65,7 @@ throughput and unused ACRs are.
 - Configure the Python SDK for gateway mode and disable certificate validation
   only when the endpoint is explicitly localhost/loopback and the local
   emulator flag is enabled. Hosted endpoints always retain TLS validation.
-- Make `scripts/dev-spa.ps1` resolve Azure account credentials at runtime and
+- Make `scripts/dev/dev-spa.ps1` resolve Azure account credentials at runtime and
   verify `tripplanner-local` exists in Azure mode; never persist credentials.
   Emulator mode starts/checks Docker and explicitly sets the loopback endpoint,
   well-known emulator key, and `tripplanner-local` database.
@@ -124,7 +124,7 @@ account. Three isolated databases therefore require 1,200 RU/s total.
   health check, Data Explorer, and persistent storage.
 - Add a local bootstrap/check script that starts the emulator, waits for
   readiness, and verifies database access without printing credentials.
-- Update `scripts/dev-spa.ps1` so local development defaults to the emulator and
+- Update `scripts/dev/dev-spa.ps1` so local development defaults to the emulator and
   cloud data remains explicit opt-in.
 - Add emulator-aware SDK configuration and focused tests proving TLS bypass is
   loopback-only.

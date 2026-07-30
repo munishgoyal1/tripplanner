@@ -288,7 +288,7 @@ If a redesign violates the above without a stated reason, push back.
 
 - Be terse. 1–3 sentences for simple answers. Skip preamble/conclusion.
 - No emojis unless asked.
-- Don't start servers — the owner runs `.\scripts\dev-spa.ps1` himself.
+- Don't start servers — the owner runs `.\scripts\dev\dev-spa.ps1` himself.
 - Don't open `http://localhost:8000` in the integrated browser — the owner
   tests in his external browser. Playwright tools only when explicitly asked.
 - When something goes wrong, read the dev terminal output and fix; don't ask

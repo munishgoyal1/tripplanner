@@ -26,17 +26,17 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   development and `tripplanner-integration.code-workspace` for review/merge;
   `tripplanner-worker-2.code-workspace` remains available on demand
 - One-click Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
-  double-click `scripts/development/Merge-Agent1.cmd`
+  double-click `scripts/dev/Merge-Agent1.cmd`
 - One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
-  or double-click `scripts/development/Run-Latest-Code.cmd`; this preserves and
+  or double-click `scripts/dev/Run-Latest-Code.cmd`; this preserves and
   restores staged, unstaged, and untracked local master work around integration
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
-- Full stack: `.\scripts\dev-spa.ps1`
-- Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
-- Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
-- Verbose backend: `.\scripts\dev-spa.ps1 -Logs`
+- Full stack: `.\scripts\dev\dev-spa.ps1`
+- Backend only: `.\scripts\dev\dev-spa.ps1 -BackendOnly`
+- Frontend only: `.\scripts\dev\dev-spa.ps1 -FrontendOnly`
+- Verbose backend: `.\scripts\dev\dev-spa.ps1 -Logs`
 - Backend tests: `.\.venv\Scripts\python.exe -m pytest -q`
 - Concurrency boundary: `.\.venv\Scripts\python.exe -m pytest -q tests/test_request_security.py`
 - Performance/cost baseline: `$env:PYTHONPATH='src'; .\.venv\Scripts\python.exe scripts/performance_baseline.py --report-path logs/performance/baseline.json`
@@ -125,7 +125,7 @@ frontend/
   labs/               Isolated UX experiment HTML, source, feedback plugin,
                       TypeScript config, and dedicated Vite server (`npm --prefix
                       frontend run dev:ux-lab`, port 5175). The canonical
-                      `scripts/dev-spa.ps1` starts it with the SPA; local handoffs are
+                      `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
                       written to the ignored
                       docs/ux-experiments/LAB_SELECTIONS.local.json
     src/itinerary-density/  Active 320px day-density comparison; preserves the

@@ -41,7 +41,7 @@
 - Merge completed branches one at a time through reviewed pull requests using
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
-- `scripts/development/run-latest-code.ps1` is the regular local integration flow:
+- `scripts/dev/run-latest-code.ps1` is the regular local integration flow:
   it temporarily stashes staged, unstaged, and untracked master work, performs the
   clean guarded merge, restores the local state, and only then starts the app.
   Overlapping restored changes stop for explicit conflict resolution.
@@ -327,10 +327,9 @@ Learns from user preferences and past trips.
   and Map day chips use the same aggregate circuit action as itinerary day
   headers on desktop and mobile. Reusable lessons now live in the separate
   `docs/ENGINEERING_LEARNINGS.md`; the owner's `learning.txt` is untouched.
-- **Clean local SPA restart (Session 68)**: `scripts/dev-spa.ps1` now stops a
-  previous Vite listener only when its Node command belongs to this repository,
-  before Docker/Cosmos/backend startup. Unrelated frontend-port owners still
-  fail explicitly, and backend-only runs leave the frontend untouched.
+- **Clean local SPA restart (Session 68)**: `scripts/dev/dev-spa.ps1` force-clears
+  stale process trees from enabled API, SPA, and Labs ports before startup and
+  verifies each port is released. Backend-only runs leave frontend ports untouched.
 - **Immediate mutually exclusive map focus (Session 67)**: exact-stop clicks
   clear stale aggregate circuit state, while day-header clicks clear exact
   focus. MapPanel also cancels queued circuit work before pin focus. Loaded
@@ -344,7 +343,7 @@ Learns from user preferences and past trips.
   flight/transport travel days. The local five-day Goa trip was restored from
   its persisted transcript with populated, closed hotel circuits on every day.
 - **Automatic local Docker startup (Session 65)**: the default local
-  `scripts/dev-spa.ps1` path launches an installed Docker Desktop when its daemon
+  `scripts/dev/dev-spa.ps1` path launches an installed Docker Desktop when its daemon
   is stopped, waits up to two minutes, then starts the Cosmos Emulator. Azure,
   canary-data, and frontend-only runs do not launch Docker; unhealthy persisted
   emulator data is reported but never reset automatically.
