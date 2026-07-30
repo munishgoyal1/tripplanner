@@ -883,7 +883,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           </div>
           <div className="mt-1 text-[11px] text-slate-500">
             {activeDayObj
-              ? `${activeDayObj.label} route: ${activeDayObj.route.distance_display} · ${activeDayObj.route.duration_display} · ${activeDayObj.route.mode} (estimated)`
+              ? `${activeDayObj.label}: E2E ${activeDayObj.schedule?.duration_display || "unavailable"}${activeDayObj.schedule?.start && activeDayObj.schedule?.end ? ` · ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""} · Travel ${activeDayObj.route.duration_display} · ${activeDayObj.route.distance_display} · ${activeDayObj.route.mode}`
               : "Select a day to view route distance, travel time, and mode."}
           </div>
         </div>

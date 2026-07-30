@@ -82,7 +82,7 @@ function StopRow({
   onRemove?: () => void | Promise<void>;
 }) {
   const focusable = canFocus(stop.kind);
-  const removable = !!onRemove && focusable;
+  const removable = !!onRemove && focusable && stop.kind !== "hotel";
   const [removing, setRemoving] = useState(false);
   const noteText = (stop.note || "").trim();
   const insightText = (stop.insight || "").trim();
@@ -105,7 +105,7 @@ function StopRow({
       data-stop-day={day}
       data-stop-index={stopIndex}
       onClick={handleRowClick}
-      className={`group grid grid-cols-[4.75rem_minmax(0,1fr)] gap-3 px-1 py-3 transition sm:grid-cols-[5.5rem_minmax(0,1fr)] ${
+      className={`group grid grid-cols-[3.75rem_minmax(0,1fr)] gap-2 px-1 py-2 transition ${
         jumpActive
           ? "bg-amber-50 ring-2 ring-amber-300"
           : active
@@ -115,11 +115,11 @@ function StopRow({
               : "hover:bg-slate-50"
                   }`}
     >
-      <div className="pt-0.5 text-right">
+      <div className="pt-0.5 text-left">
         <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
         {stop.time && <p className="text-xs font-bold tabular-nums text-ink">{stop.time}</p>}
-        {stop.duration_min ? (
-          <p className="mt-0.5 text-[10px] text-slate-500">Stay {Math.round(stop.duration_min)} min</p>
+        {stop.kind !== "hotel" && stop.duration_min ? (
+          <p className="mt-0.5 text-[10px] text-slate-500">{Math.round(stop.duration_min)} min</p>
         ) : null}
       </div>
 
@@ -127,7 +127,7 @@ function StopRow({
         {stop.travel_from_previous && (
           <div
             aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
-            className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-accent"
+            className="mb-1 flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
             title={`${stop.travel_from_previous.mode} estimate`}
           >
             <Route size={11} aria-hidden />
@@ -137,7 +137,7 @@ function StopRow({
             <span>{stop.travel_from_previous.duration_display}</span>
           </div>
         )}
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-1.5">
           {mapLabel && (
             <span
               aria-label={mapLabel === "H" ? "Hotel map marker" : `Map stop ${mapLabel}`}
@@ -170,6 +170,8 @@ function StopRow({
               {stop.name}
             </button>
           </div>
+        </div>
+        <div className="mt-1 flex flex-wrap items-center gap-1">
           <button
             type="button"
             aria-pressed={stop.booked}
@@ -178,27 +180,50 @@ function StopRow({
               event.stopPropagation();
               onToggleBooked(!stop.booked);
             }}
-            className={`inline-flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-semibold ring-1 transition ${
+            className={`inline-flex h-6 items-center gap-1 rounded-full px-2 text-[10px] font-semibold ring-1 transition ${
               stop.booked
                 ? "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100"
                 : "bg-white text-slate-600 ring-slate-200 hover:text-brand hover:ring-brand/30"
             }`}
           >
-            {stop.booked ? <Check size={12} aria-hidden /> : <CalendarCheck2 size={12} aria-hidden />}
-            <span className="hidden sm:inline">{stop.booked ? "Confirmed" : "Needs booking"}</span>
+            {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
+            {stop.booked ? "Confirmed" : "Needs booking"}
+          </button>
+          {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
+          {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
+          {removable && (
+            <button
+              type="button"
+              disabled={removing}
+              onClick={async (event) => {
+                event.stopPropagation();
+                setRemoving(true);
+                try {
+                  await onRemove?.();
+                } finally {
+                  setRemoving(false);
+                }
+              }}
+              aria-label={`Remove ${stop.name} from itinerary`}
+              className="grid h-6 w-6 place-items-center rounded-full bg-slate-50 text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100"
+              title="Remove from itinerary"
+            >
+              {removing ? <Loader2 size={12} className="animate-spin" aria-hidden /> : <Trash2 size={12} aria-hidden />}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onMap();
+            }}
+            aria-label={`Show ${stop.name} on the map`}
+            className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-white hover:text-brand"
+            title="Show on map"
+          >
+            <MapPin size={13} aria-hidden />
           </button>
         </div>
-        {(stop.selected || stop.cost_display || stop.opening_hours) && (
-          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-            {stop.selected && (
-              <span className="pill bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-                In trip
-              </span>
-            )}
-            {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
-            {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
-          </div>
-        )}
         {(stop.concern || showNote || showInsight) && (
           <div className="mt-1 space-y-0.5">
             {stop.concern && (
@@ -210,44 +235,6 @@ function StopRow({
         )}
       </div>
 
-      <div className="col-start-2 flex items-center justify-end gap-1">
-        {removable && (
-          <button
-            type="button"
-            disabled={removing}
-            onClick={async (e) => {
-              e.stopPropagation();
-              setRemoving(true);
-              try {
-                await onRemove?.();
-              } finally {
-                setRemoving(false);
-              }
-            }}
-            aria-label={stop.kind === "hotel" ? `Remove ${stop.name} stay` : `Remove ${stop.name} from itinerary`}
-            className={`grid h-7 w-7 place-items-center rounded-full transition ring-1 ${
-              stop.kind === "hotel"
-                ? "bg-rose-50 text-rose-700 ring-rose-100 hover:bg-rose-100"
-                : "bg-slate-50 text-slate-600 ring-slate-200 hover:bg-slate-100"
-            }`}
-            title={stop.kind === "hotel" ? "Remove stay from itinerary" : "Remove from itinerary"}
-          >
-            {removing ? <Loader2 size={13} className="animate-spin" aria-hidden /> : <Trash2 size={13} aria-hidden />}
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onMap();
-          }}
-          aria-label={`Show ${stop.name} on the map`}
-          className="grid h-7 w-7 place-items-center rounded-full text-slate-400 transition hover:bg-white hover:text-brand"
-          title="Show on map"
-        >
-          <MapPin size={15} aria-hidden />
-        </button>
-      </div>
     </li>
   );
 }
@@ -286,12 +273,6 @@ function DayCard({
     visitOrder += 1;
     return String(visitOrder);
   });
-  const plannedMinutes = day.stops.reduce((total, stop) => total + (stop.duration_min || 0), 0);
-  const plannedDuration = plannedMinutes > 0
-    ? plannedMinutes >= 60
-      ? `${Math.floor(plannedMinutes / 60)}h${plannedMinutes % 60 ? ` ${plannedMinutes % 60}m` : ""}`
-      : `${plannedMinutes}m`
-    : null;
   const plannedStops = day.stops.filter((stop) => stop.kind !== "hotel");
   const confirmedStops = plannedStops.filter((stop) => stop.booked).length;
   const remainingStops = plannedStops.length - confirmedStops;
@@ -299,7 +280,7 @@ function DayCard({
     <section id={`it-day-${day.day}`} className="overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
       <div
         onClick={() => onDayMap(day.day)}
-        className="group/day grid cursor-pointer gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+        className="group/day grid cursor-pointer gap-2 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
         title={`Show complete Day ${day.day} circuit on map`}
       >
         <div className="min-w-0">
@@ -316,15 +297,20 @@ function DayCard({
               <h3 className="display truncate text-lg font-semibold text-ink">{day.title}</h3>
             </div>
           </div>
-          {day.summary && <p className="mt-3 text-sm leading-relaxed text-slate-600">{day.summary}</p>}
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-slate-100 pt-3 text-[11px] text-slate-500">
+          {day.summary && <p className="mt-2 text-xs leading-relaxed text-slate-600">{day.summary}</p>}
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-2 text-[11px] text-slate-500">
             <strong className="text-ink">{plannedStops.length} planned {plannedStops.length === 1 ? "stop" : "stops"}</strong>
-            {plannedDuration && (
-              <span>{plannedDuration} day plan</span>
+            {day.schedule?.duration_display && (
+              <span>
+                E2E {day.schedule.duration_display}
+                {day.schedule.start && day.schedule.end
+                  ? ` · ${day.schedule.start}–${day.schedule.end}${day.schedule.estimated ? " est." : ""}`
+                  : day.schedule.estimated ? " est." : ""}
+              </span>
             )}
             {day.route && (
               <span className="inline-flex items-center gap-1">
-                <MapPin size={12} aria-hidden /> {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
+                <MapPin size={12} aria-hidden /> Travel {day.route.duration_display} · {day.route.distance_display} · {day.route.mode}
               </span>
             )}
             <span className={remainingStops > 0 ? "text-amber-700" : "text-emerald-700"}>

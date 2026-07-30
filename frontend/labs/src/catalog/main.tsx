@@ -31,6 +31,15 @@ const activeLabs: LabRecord[] = [
     href: "/labs/chat-assistant.html",
     icon: MessageCircle,
   },
+  {
+    title: "Compact itinerary density",
+    description: "Compare one-line, circuit-header, and progressive-focus agendas inside a 320 px day frame.",
+    date: "30 Jul 2026",
+    status: "In evaluation",
+    decision: "Open experiment · B starts as the recommended direction.",
+    href: "/labs/itinerary-density.html",
+    icon: ListChecks,
+  },
 ];
 
 const decidedLabs: LabRecord[] = [

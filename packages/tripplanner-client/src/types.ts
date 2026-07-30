@@ -106,6 +106,16 @@ export interface RouteMetrics {
   duration_display: string;
 }
 
+export interface DaySchedule {
+  start: string;
+  end: string;
+  duration_min: number;
+  duration_display: string;
+  travel_duration_min: number;
+  travel_duration_display: string;
+  estimated: boolean;
+}
+
 export interface MapLeg extends RouteMetrics {
   from_pin_id: string;
   to_pin_id: string;
@@ -117,6 +127,7 @@ export interface MapDay {
   color: string;
   pin_ids: string[];
   route: RouteMetrics;
+  schedule?: DaySchedule;
   legs?: MapLeg[];
 }
 
@@ -166,6 +177,7 @@ export interface ItineraryDay {
   reachability?: string;
   google_maps_url?: string;
   route?: MapDay["route"];
+  schedule?: DaySchedule;
 }
 
 export interface Itinerary {

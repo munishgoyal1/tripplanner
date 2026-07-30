@@ -1141,6 +1141,8 @@ def remove_selection(
     target = str(name or "").strip().lower()
     if not target:
         return False
+    if kind == "hotel" and not all_occurrences:
+        return False
     key = "selected_hotels" if kind == "hotel" else "selected_activities"
     bucket = plan.get(key) or []
     itinerary = plan.get("day_wise_itinerary") or []

@@ -147,6 +147,14 @@ Learns from user preferences and past trips.
   FastAPI streams the validated payload as an additive `input_request` event,
   and shared web/native transport retains it. Production rendering remains
   pending the owner-selected Lab direction; direct mode still builds by default.
+- **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
+  consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
+  time from route-only Travel and marks inferred hotel departure/return times as
+  estimates. Hotel anchors no longer show generic stay duration, redundant In
+  trip state, or invalid exact-delete controls; backend mutation also rejects
+  single-anchor removal. The itinerary pane can expand to 55% while retaining a
+  usable map. A separate 320 px density lab compares ledger, circuit-header, and
+  progressive-focus refinements without rewriting the selected Compact Agenda.
 - **Repository ownership cleanup**: UX Lab HTML, source, feedback middleware,
   and build configuration now live under `frontend/labs/`; production
   `frontend/src/` excludes experiments. Platform-neutral occurrence and latest-
@@ -159,11 +167,11 @@ Learns from user preferences and past trips.
   `ux-experiments/`, and `archive/`. `docs/README.md` is the navigation owner.
 - **Compact itinerary brief + agenda (Session 86)**: the owner-selected Compact
   Brief C and Compact Agenda B now drive production itinerary days. Day briefs
-  exclude hotel anchors from planned-stop counts, label duration as the day
-  plan, show confirmed and remaining booking readiness, and label guidance
-  Travel rhythm. Time-first rows expose Depart/Return or Arrive/Stay semantics,
-  travel legs, and explicit Confirmed/Needs booking actions while preserving
-  exact occurrence behavior.
+  exclude hotel anchors from planned-stop counts, label the end-to-end timed span
+  as the schedule, show confirmed and remaining booking readiness, and label
+  guidance Travel rhythm. Dense left-anchored rows expose Depart/Return or
+  Arrive/Stay semantics, travel legs, and explicit Confirmed/Needs booking
+  actions while preserving exact occurrence behavior.
 - **Complete-by-default new trips (Session 85)**: after the immediate first cut,
   new-trip research must be persisted in a second enriched full-plan update with
   the strongest concrete hotel and sensible daily defaults. One bounded

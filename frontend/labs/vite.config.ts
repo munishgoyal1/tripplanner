@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         catalog: resolve(__dirname, "catalog.html"),
         chatAssistant: resolve(__dirname, "chat-assistant.html"),
+        itineraryDensity: resolve(__dirname, "itinerary-density.html"),
         itineraryInformation: resolve(__dirname, "itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
         workspaceShell: resolve(__dirname, "workspace-shell.html"),

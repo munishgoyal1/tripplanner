@@ -853,6 +853,76 @@ def _route_duration_display(duration_min: int) -> str:
     return f"{hours} hr" + (f" {minutes} min" if minutes else "")
 
 
+def _clock_minutes(value: Any) -> int | None:
+    match = re.fullmatch(r"\s*(\d{1,2}):(\d{2})(?:\s*([ap]m))?\s*", str(value or ""), re.I)
+    if not match:
+        return None
+    hours = int(match.group(1))
+    minutes = int(match.group(2))
+    meridiem = (match.group(3) or "").lower()
+    if minutes > 59 or hours > (12 if meridiem else 23):
+        return None
+    if meridiem:
+        hours %= 12
+        if meridiem == "pm":
+            hours += 12
+    return hours * 60 + minutes
+
+
+def _clock_display(minutes: int) -> str:
+    minutes %= 24 * 60
+    return f"{minutes // 60:02d}:{minutes % 60:02d}"
+
+
+def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[str, Any]:
+    timed = [
+        (index, minutes)
+        for index, stop in enumerate(stops)
+        if (minutes := _clock_minutes(stop.get("time"))) is not None
+    ]
+    travel_minutes = int(route.get("duration_min") or 0)
+    if not timed:
+        visit_minutes = sum(
+            int(stop.get("duration_min") or 0)
+            for stop in stops
+            if stop.get("kind") != "hotel"
+        )
+        total = visit_minutes + travel_minutes
+        return {
+            "start": "",
+            "end": "",
+            "duration_min": total,
+            "duration_display": _route_duration_display(total),
+            "travel_duration_min": travel_minutes,
+            "travel_duration_display": _route_duration_display(travel_minutes),
+            "estimated": True,
+        }
+
+    first_index, first_time = timed[0]
+    last_index, last_time = timed[-1]
+    start = first_time - int(
+        (stops[first_index].get("travel_from_previous") or {}).get("duration_min") or 0
+    )
+    end = last_time
+    if end < first_time:
+        end += 24 * 60
+    if stops[last_index].get("kind") not in {"hotel", "flight", "transport"}:
+        end += int(stops[last_index].get("duration_min") or 0)
+    end += sum(
+        int((stop.get("travel_from_previous") or {}).get("duration_min") or 0)
+        for stop in stops[last_index + 1 :]
+    )
+    return {
+        "start": _clock_display(start),
+        "end": _clock_display(end),
+        "duration_min": max(0, end - start),
+        "duration_display": _route_duration_display(max(0, end - start)),
+        "travel_duration_min": travel_minutes,
+        "travel_duration_display": _route_duration_display(travel_minutes),
+        "estimated": any(stop.get("kind") == "hotel" and not stop.get("time") for stop in stops),
+    }
+
+
 def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
     legs = [
         _route_stats_for_distance(_haversine_km(coords[i - 1], coords[i]))
@@ -1001,6 +1071,14 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "legs": _route_legs_for_day(ids, pin_by_id),
             }
         )
+    itinerary_days = {
+        int(day["day"]): day for day in build_itinerary(trip).get("days", [])
+    }
+    for day in days:
+        itinerary_day = itinerary_days.get(int(day["day"]))
+        if itinerary_day:
+            day["schedule"] = itinerary_day.get("schedule")
+
     scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
     unscheduled = [pin_id for pin_id in unscheduled if pin_id not in scheduled_ids]
 
@@ -1497,6 +1575,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             "color": color,
             "stops": stops,
             "route": route,
+            "schedule": _day_schedule(stops, route),
             "reachability": _reachability_hint(stops, route),
             "google_maps_url": _google_maps_day_url(destination, stops, route.get("mode", "")),
         })
@@ -1573,7 +1652,11 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             if s:
                 summary = places_cache.get_details(s["name"], destination) or {}
                 opening, concern = _opening_hint(summary, str(entry.get("date") or ""))
-                s["duration_min"] = _duration_hint(s["kind"], s.get("duration_min"))
+                s["duration_min"] = (
+                    None
+                    if s["kind"] == "hotel"
+                    else _duration_hint(s["kind"], s.get("duration_min"))
+                )
                 if not s.get("opening_hours"):
                     s["opening_hours"] = opening
                 if not s.get("concern"):
@@ -1610,7 +1693,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                     opening, concern = _opening_hint(
                         summary, str(entry.get("date") or "")
                     )
-                    anchor["duration_min"] = _duration_hint("hotel", None)
+                    anchor["duration_min"] = None
                     anchor["opening_hours"] = opening
                     anchor["concern"] = concern
                     anchor["cost_display"] = _cost_hint(
@@ -1650,6 +1733,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
 
         # Calculate route stats for the day.
         route = _route_stats_for_day_coords(day_coords)
+        schedule = _day_schedule(stops, route)
 
         days.append(
             {
@@ -1660,6 +1744,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "color": _day_color(day_num),
                 "stops": stops,
                 "route": route,
+                "schedule": schedule,
                 "reachability": _reachability_hint(stops, route),
                 "google_maps_url": _google_maps_day_url(
                     destination, stops, route.get("mode", "")

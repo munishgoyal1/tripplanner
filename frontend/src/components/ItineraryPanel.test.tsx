@@ -35,6 +35,15 @@ const itinerary: Itinerary = {
         distance_display: "4.2 km",
         duration_display: "35 min",
       },
+      schedule: {
+        start: "10:00",
+        end: "16:00",
+        duration_min: 360,
+        duration_display: "6 hr",
+        travel_duration_min: 35,
+        travel_duration_display: "35 min",
+        estimated: false,
+      },
       stops: [
         {
           name: "Louvre Museum",
@@ -99,7 +108,7 @@ describe("ItineraryPanel", () => {
     expect(await screen.findByText("Museums and river")).toBeInTheDocument();
     expect(screen.getByText("Saturday · 12 September 2026")).toBeInTheDocument();
     expect(screen.getByText("2 planned stops")).toBeInTheDocument();
-    expect(screen.getByText("3h day plan")).toBeInTheDocument();
+    expect(screen.getByText("E2E 6 hr · 10:00–16:00")).toBeInTheDocument();
     expect(screen.getByText("0 confirmed · 2 to book")).toBeInTheDocument();
     expect(screen.getByText("Travel rhythm:")).toBeInTheDocument();
     expect(screen.getByText(/4\.2 km/)).toHaveTextContent("35 min");
@@ -111,7 +120,8 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
     expect(screen.getAllByText("Arrive")).toHaveLength(2);
-    expect(screen.getByText("Stay 120 min")).toBeInTheDocument();
+    expect(screen.getByText("120 min")).toBeInTheDocument();
+    expect(screen.queryByText("In trip")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
   });
 
@@ -150,6 +160,55 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
+  });
+
+  it("uses the full hotel-to-hotel span for the schedule", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        schedule: {
+          ...itinerary.days[0].schedule!,
+          start: "09:00",
+          end: "18:00",
+          duration_min: 540,
+          duration_display: "9 hr",
+        },
+        stops: [
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel", time: "9:00 AM", duration_min: null },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel", time: "6:00 PM", duration_min: null },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findByText("E2E 9 hr · 09:00–18:00")).toBeInTheDocument();
+  });
+
+  it("ends the schedule at a final transit arrival", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        schedule: {
+          ...itinerary.days[0].schedule!,
+          start: "08:00",
+          end: "13:30",
+          duration_min: 330,
+          duration_display: "5 hr 30 min",
+        },
+        stops: [
+          { ...itinerary.days[0].stops[0], time: "8:00", duration_min: 120 },
+          { ...itinerary.days[0].stops[1], name: "Gare du Nord", kind: "transport", time: "13:30", duration_min: 60 },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findByText("E2E 5 hr 30 min · 08:00–13:30")).toBeInTheDocument();
   });
 
   it("requests the complete circuit when the day header is clicked", async () => {

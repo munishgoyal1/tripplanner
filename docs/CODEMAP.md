@@ -121,6 +121,8 @@ frontend/
                       TypeScript config, and Vite build; local handoffs are
                       written to the ignored
                       docs/ux-experiments/LAB_SELECTIONS.local.json
+    src/itinerary-density/  Active 320px day-density comparison; preserves the
+          implemented Compact Agenda while evaluating refinements
   src/
     main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
