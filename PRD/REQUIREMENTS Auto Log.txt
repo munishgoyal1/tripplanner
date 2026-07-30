@@ -2702,3 +2702,13 @@ VALIDATION:
 - Keep the Agent 1 merge and run-latest one-click launchers together under
   `scripts/development/`; documentation describes and links to them but does not
   own executable files.
+
+=== 2026-07-30 — Run-latest preserves local master work ===
+
+- `Run Latest Code` is the regular integration workflow even when local `master`
+  contains staged, unstaged, or untracked changes.
+- Temporarily preserve that local state, integrate Worker 1 against a clean
+  checkout, restore the local state with its staged status, and then start the
+  application. Never discard local work.
+- If restored local changes overlap the merged code, retain the temporary stash
+  and stop for explicit conflict resolution instead of hiding or overwriting it.

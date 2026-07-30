@@ -28,7 +28,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - One-click Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
   double-click `scripts/development/Merge-Agent1.cmd`
 - One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
-  or double-click `scripts/development/Run-Latest-Code.cmd`
+  or double-click `scripts/development/Run-Latest-Code.cmd`; this preserves and
+  restores staged, unstaged, and untracked local master work around integration
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
