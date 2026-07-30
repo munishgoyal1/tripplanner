@@ -2740,3 +2740,10 @@ VALIDATION:
   each enabled API, SPA, and UX Labs port, then verify each port is released.
 - Validate enabled ports are distinct before terminating anything. Backend-only
   and frontend-only modes must clear only the ports they own.
+
+=== 2026-07-30 — Clean rollback for Worker integration conflicts ===
+
+- Automated Worker 1 synchronization must not leave staged files, unmerged paths,
+  or `MERGE_HEAD` behind when `origin/master` conflicts with the worker branch.
+- Report the conflicting paths, abort the attempted merge, verify the previously
+  clean worker was restored, and leave deliberate conflict resolution to its agent.

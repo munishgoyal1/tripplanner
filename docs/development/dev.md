@@ -42,7 +42,8 @@ To merge Agent 1 and restart this local stack in one click, double-click
 `scripts/dev/Run-Latest-Code.cmd` from the repository root or run the VS Code task
 **Tripplanner: Run Latest Code** from the integration workspace. Existing staged,
 unstaged, and untracked master work is temporarily preserved and restored around
-the guarded Worker 1 merge before the server starts.
+the guarded Worker 1 merge before the server starts. A Worker synchronization
+conflict is automatically aborted so it cannot leave staged or unmerged residue.
 
 ---
 

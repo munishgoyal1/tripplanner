@@ -137,8 +137,12 @@ primary integration checkout:
 Both run `scripts/dev/merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
 creates or reuses the Worker 1 pull request, merges it with a merge commit,
 updates `master`, and keeps the persistent Worker 1 branch synchronized for
-its next assignment. If the task stops on a conflict, return to the Worker 1
-window, ask that agent to resolve and validate it, then run the task again.
+its next assignment. If the task detects a conflict while synchronizing Worker 1,
+it reports the paths, aborts the attempted merge, and verifies that the worker is
+clean. Return to the Worker 1 window, ask that agent to merge `origin/master`,
+resolve and validate the reported paths, commit and push, then run the task again.
+Independent dated additions to `PRD/REQUIREMENTS Auto Log.txt` use Git's union
+merge driver because that file is append-only; both branches' entries are retained.
 
 To merge Agent 1 and immediately restart the local application on the merged
 code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
