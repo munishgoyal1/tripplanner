@@ -73,6 +73,17 @@ The page also keeps each in-progress choice and comment as a browser draft. If
 the local endpoint is temporarily unavailable, the draft survives a reload and
 can be retried once the Labs server is running again.
 
+## Active Trip Book Experiment (2026-07-30)
+
+The Execution-ready Trip Book lab is available at
+`http://127.0.0.1:5175/itinerary-trip-book.html`. It compares a compact
+Operations binder, the recommended Layered Trip Book, and a Visual journey
+book using the same family-trip facts. The experiment tests packet structure,
+navigation, document readiness, and evidence-labeled personalization only;
+secure document ingestion and merged-PDF production behavior remain out of
+scope until a direction is selected and separately approved. See
+[`ITINERARY_TRIP_BOOK.md`](ITINERARY_TRIP_BOOK.md).
+
 ## Rules
 
 1. Keep each experiment isolated to UI layout/interaction files only.

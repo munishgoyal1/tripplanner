@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import {
   ArrowRight,
+  BookOpen,
   Check,
   Clock3,
   FlaskConical,
@@ -22,6 +23,15 @@ interface LabRecord {
 }
 
 const activeLabs: LabRecord[] = [
+  {
+    title: "Execution-ready Trip Book",
+    description: "Compare compact, layered, and visual structures for one printable itinerary with confirmations and personal context.",
+    date: "30 Jul 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Layered Trip Book.",
+    href: "./itinerary-trip-book.html",
+    icon: BookOpen,
+  },
   {
     title: "Assistant-led trip kickoff",
     description: "Compare overlay footprints and test preference-aware, pre-filled inputs before the first itinerary build.",

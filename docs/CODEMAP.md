@@ -129,6 +129,8 @@ frontend/
                       docs/ux-experiments/LAB_SELECTIONS.local.json
     src/itinerary-density/  Active 320px day-density comparison; preserves the
           implemented Compact Agenda while evaluating refinements
+        src/itinerary-trip-book/  Active printable packet comparison for contents,
+          itinerary execution, confirmation readiness, and personal place context
   src/
     main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial

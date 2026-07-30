@@ -2712,3 +2712,15 @@ VALIDATION:
   application. Never discard local work.
 - If restored local changes overlap the merged code, retain the temporary stash
   and stop for explicit conflict resolution instead of hiding or overwriting it.
+
+=== 2026-07-30 — Execution-ready Trip Book experiment ===
+
+- Design a succinct, informational itinerary that can execute the complete trip
+  from a printed packet or phone PDF.
+- Order the packet as contents, trip and daily itinerary, booking confirmations,
+  visa or entry documents, then optional place guidance and photos.
+- Keep map, itinerary, Details, Assistant, and export facts consistent.
+- Personal insights at trip, day, city, attraction, and hotel level must connect
+  verified travel facts to known family preferences rather than inventing advice.
+- Compare compact binder, layered Trip Book, and visual journey structures in an
+  isolated UX Lab before approving production document ingestion or PDF merging.

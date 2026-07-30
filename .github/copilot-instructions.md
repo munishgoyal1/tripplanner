@@ -145,6 +145,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
+  compares a compact operations binder, recommended layered Trip Book, and
+  visual journey book across contents, trip brief, executable day, document
+  readiness, and evidence-labeled personal context. Production export remains
+  unchanged; secure document ingestion and merged-PDF behavior require a later
+  owner-approved contract.
 - **Assistant-led itinerary foundation**: an active UX Lab compares three
   preference-aware overlay footprints with live prefilled controls. The agent
   can emit one bounded `request_trip_input` clarification in interactive mode;
