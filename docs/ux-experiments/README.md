@@ -51,15 +51,21 @@ count. See
 
 These standalone labs are the preferred mechanism for future focused UX choices:
 use realistic fixtures, compare coherent alternatives, record local scores, and
-keep production behavior unchanged until the owner selects a direction.
+keep production behavior unchanged until the owner selects a direction. Every
+experiment must include a production-scale preview that shows the option inside
+a realistic full application viewport; a miniature specimen alone is not enough
+to judge or approve a direction.
 
 ## Active Assistant Experiment (2026-07-30)
 
 The Assistant-led trip kickoff lab is available at
 `http://127.0.0.1:5175/chat-assistant.html`. It compares a concurrently usable
 Docked sidecar, a temporary centered Focus modal, and a full Guided takeover
-around one realistic structured-input journey. The working recommendation is B - Focus modal; no production layout
-change is approved until the owner saves and executes a Lab handoff. See
+around one realistic structured-input journey. Each option can open in a
+full-viewport trip workspace before a decision. A - Docked sidecar is the current
+trial, while the recommendation remains B - Focus modal; neither is a final
+selection. No production layout change is approved until the owner explicitly
+chooses a direction after evaluation. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one
@@ -93,7 +99,12 @@ scope until a direction is selected and separately approved. See
   Already decided; preserve its lab page as design history.
 5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute saved lab
   preferences; implement the selected option together with its comments.
+  Provisional language such as "try" or "see first" means extend or run the Lab
+  preview, not production implementation approval. Do not add production code or
+  production tests merely to evaluate an option.
 6. Every standalone lab page links directly back to `catalog.html`.
+7. Every option can be experienced at realistic production scale before selection;
+  keep that preview inside the Lab until the owner explicitly approves production.
 
 ## Fast Commands
 

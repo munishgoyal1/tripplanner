@@ -8,6 +8,7 @@
 - Date ended: pending
 - Status: testing
 - Lab: `http://127.0.0.1:5175/chat-assistant.html`
+- Full-size preview: choose an option, then use **Open full-size preview**
 
 ## Hypothesis
 
@@ -31,7 +32,9 @@ a stronger first itinerary faster than either a small chat dock or a questionnai
 
 All variants use the same live interaction fixture: saved-default disclosure,
 single choice, multiple choice, traveler stepper, direct-flight toggle, skip path,
-and one-click build handoff.
+and one-click build handoff. Each variant also runs at full viewport scale over a
+realistic itinerary, map, and details workspace so the footprint can be judged
+without first changing production UX.
 
 ## Scope
 
@@ -51,6 +54,7 @@ Related backend foundation:
 Non-goals for this experiment:
 
 - No production Assistant layout change before owner selection.
+- No production renderer tests merely to evaluate a Lab option.
 - No change to direct-mode complete-by-default planning.
 - No generic form builder or arbitrary model-authored HTML.
 - No persistence of unanswered input requests in this milestone.
@@ -87,8 +91,9 @@ Non-goals for this experiment:
 ## Decision
 
 - Decision: pending
+- Current trial: A - Docked sidecar, for full-size evaluation only
 - Recommendation: B - Focus modal
 - Rationale: it gives the Assistant enough room for rich choices while preserving
   a visible relationship to the itinerary being built.
-- Next action: save the preferred option and modifications in the Lab, then approve
-  the production implementation slice.
+- Next action: compare options in full-size preview, save the preferred option and
+  modifications in the Lab, then explicitly approve the production implementation slice.

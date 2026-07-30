@@ -2770,3 +2770,13 @@ VALIDATION:
 - After runtime commits are pushed, restart affected services and verify them before
   reporting completion. For runtime-neutral commits, avoid needless restarts unless
   the stack is down and the owner needs it for testing.
+
+=== 2026-07-30 — Production-scale UX Lab evaluation ===
+
+- Every UX Lab option must include a realistic full-application, production-scale
+  preview so the owner can judge how it will actually look and behave before any
+  production UX implementation is needed.
+- Keep option POCs isolated in Labs. Do not modify the main UX or add production
+  implementation tests merely to experience or compare a Lab alternative.
+- A provisional instruction such as "try A first" means make A realistically
+  testable in the Lab; production work begins only after an explicit final choice.

@@ -51,7 +51,8 @@ any time.
 ## Acceptance criteria
 
 - **AC-01:** An active UX Lab compares three assistant-overlay footprints with a
-  realistic, interactive preference-aware kickoff.
+   realistic, interactive preference-aware kickoff and a full-viewport trip workspace
+   for judging each option before production implementation.
 - **AC-02:** The backend validates a versioned structured request with one to four
   fields, bounded options, and a prefilled value for every field.
 - **AC-03:** Streaming chat emits `input_request` additively while retaining the
@@ -73,14 +74,14 @@ any time.
 | Stage | Behavior | Status |
 | --- | --- | --- |
 | 1 | Interactive Lab, validated backend contract, additive SSE event, shared client type | Implemented |
-| 2 | Owner-selected production web overlay, structured control renderer, answer submission and recovery | Pending owner Lab selection |
+| 2 | Owner-selected production web overlay, structured control renderer, answer submission and recovery | Pending explicit owner selection after full-size Lab evaluation |
 | 3 | Native rendering plus repeatable planning-quality evaluation set and tuning | Pending evidence from stage 2 |
 
 ## Open decisions
 
 | ID | Decision | Recommendation | Status |
 | --- | --- | --- | --- |
-| D-01 | Desktop Assistant footprint | B - Focus modal | Open in UX Lab |
+| D-01 | Desktop Assistant footprint | B - Focus modal; A is the current provisional trial | Open in full-size UX Lab preview |
 | D-02 | Default planning policy after stage 1 | Build immediately when origin, destination, and rough timing exist; ask once only for material blockers | Recommended |
 | D-03 | Native presentation | Native bottom sheet using the same payload after web validation | Deferred |
 

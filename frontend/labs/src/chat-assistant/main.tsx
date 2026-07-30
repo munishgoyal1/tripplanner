@@ -5,6 +5,7 @@ import {
   Check,
   Heart,
   Map,
+  Maximize2,
   MessageCircle,
   Minus,
   Plus,
@@ -48,30 +49,47 @@ const variants = [
 const priorities = ["Food worth a detour", "Art & design", "Neighborhood walks", "One special night"];
 
 function WorkspaceBackdrop() {
+  const [activeDay, setActiveDay] = useState(2);
   return (
-    <div className="absolute inset-0 grid grid-cols-[28%_1fr_25%] bg-slate-100" aria-hidden>
-      <section className="border-r border-slate-200 bg-white p-5">
-        <div className="h-5 w-28 rounded bg-slate-200" />
-        {[1, 2, 3].map((day) => (
-          <div key={day} className="mt-6 border-l-2 border-slate-200 pl-4">
-            <div className="h-3 w-16 rounded bg-slate-200" />
-            <div className="mt-3 h-14 rounded-md bg-slate-100" />
-            <div className="mt-2 h-14 rounded-md bg-slate-100" />
+    <div className="absolute inset-0 flex flex-col bg-slate-100">
+      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3 shadow-sm">
+        <button type="button" className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink">Paris · Oct 12–17</button>
+        <span className="text-xs font-medium text-emerald-700">Draft saved · 4 of 7 bookings ready</span>
+        <nav className="ml-auto flex items-center gap-1 text-xs text-slate-500" aria-label="Preview workspace controls">
+          <button type="button" className="rounded-md bg-slate-100 px-2 py-1.5 font-semibold text-ink">Itinerary</button>
+          <button type="button" className="rounded-md px-2 py-1.5 hover:bg-slate-100">Map</button>
+          <button type="button" className="rounded-md px-2 py-1.5 hover:bg-slate-100">Details</button>
+        </nav>
+      </header>
+      <div className="grid min-h-0 flex-1 grid-cols-[30%_1fr_24%]">
+        <section className="overflow-y-auto border-r border-slate-200 bg-white p-4" aria-label="Preview itinerary">
+          <p className="text-[10px] font-bold uppercase text-brand">Your Paris circuit</p>
+          <h2 className="display mt-1 text-xl font-semibold text-ink">Five relaxed days</h2>
+          <p className="mt-1 text-xs text-slate-500">2 travelers · boutique stay · vegetarian-friendly</p>
+          {[1, 2, 3].map((day) => (
+            <button key={day} type="button" onClick={() => setActiveDay(day)} className={`mt-4 block w-full border-l-2 pl-3 text-left ${activeDay === day ? "border-brand" : "border-slate-200"}`}>
+              <span className="flex items-center justify-between"><strong className="text-xs text-ink">Day {day}</strong><small className="text-[10px] text-slate-400">{day === 1 ? "Arrival" : day === 2 ? "7h 20m schedule" : "6h 40m schedule"}</small></span>
+              <span className="mt-2 block rounded-md bg-slate-50 p-2.5 ring-1 ring-slate-100"><strong className="block text-xs text-slate-700">{day === 1 ? "Le Marais arrival walk" : day === 2 ? "Louvre · Palais Royal · Seine" : "Montmartre · Pigalle"}</strong><small className="mt-1 block text-[10px] text-slate-500">Hotel departure · 3 planned stops · return</small></span>
+            </button>
+          ))}
+        </section>
+        <section className="relative overflow-hidden bg-[#dfe9e3]" aria-label={`Preview map showing Day ${activeDay}`}>
+          <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(32deg,transparent_46%,#aebfb6_47%,#aebfb6_49%,transparent_50%),linear-gradient(128deg,transparent_46%,#c1d0c8_47%,#c1d0c8_49%,transparent_50%)] [background-size:84px_84px]" />
+          <div className="absolute left-[18%] top-4 flex gap-1 rounded-md bg-white p-1 shadow-card">
+            {[1, 2, 3].map((day) => <button key={day} type="button" onClick={() => setActiveDay(day)} className={`rounded px-2 py-1 text-[10px] font-bold ${activeDay === day ? "bg-ink text-white" : "text-slate-500"}`}>Day {day}</button>)}
           </div>
-        ))}
-      </section>
-      <section className="relative overflow-hidden bg-[#e5ebe7]">
-        <div className="absolute inset-0 opacity-50 [background-image:linear-gradient(32deg,transparent_46%,#b7c7bf_47%,#b7c7bf_49%,transparent_50%),linear-gradient(128deg,transparent_46%,#c7d4ce_47%,#c7d4ce_49%,transparent_50%)] [background-size:84px_84px]" />
-        <div className="absolute left-[38%] top-[30%] h-4 w-4 rounded-full bg-brand ring-4 ring-white" />
-        <div className="absolute left-[57%] top-[48%] h-4 w-4 rounded-full bg-accent ring-4 ring-white" />
-        <div className="absolute bottom-8 left-8 rounded-md bg-white/90 px-3 py-2 text-xs font-semibold text-slate-500 shadow-card">Paris · 5 days</div>
-      </section>
-      <section className="border-l border-slate-200 bg-white p-5">
-        <div className="h-32 rounded-md bg-slate-100" />
-        <div className="mt-4 h-4 w-32 rounded bg-slate-200" />
-        <div className="mt-3 h-2 w-full rounded bg-slate-100" />
-        <div className="mt-2 h-2 w-4/5 rounded bg-slate-100" />
-      </section>
+          <div className="absolute left-[35%] top-[28%] grid h-8 w-8 place-items-center rounded-full bg-brand text-xs font-bold text-white ring-4 ring-white">1</div>
+          <div className="absolute left-[56%] top-[47%] grid h-8 w-8 place-items-center rounded-full bg-accent text-xs font-bold text-white ring-4 ring-white">2</div>
+          <div className="absolute bottom-6 left-5 rounded-md bg-white/95 px-3 py-2 text-xs shadow-card"><strong className="text-ink">Day {activeDay} circuit</strong><span className="ml-2 text-slate-500">8.4 km · 48 min travel</span></div>
+        </section>
+        <section className="overflow-hidden border-l border-slate-200 bg-white p-4" aria-label="Preview trip details">
+          <div className="h-28 rounded-md bg-[linear-gradient(145deg,#cbd5d1,#f1f5f3)]" />
+          <p className="mt-4 text-[10px] font-bold uppercase text-accent">Day {activeDay} focus</p>
+          <h2 className="display mt-1 text-lg font-semibold text-ink">Paris neighborhood guide</h2>
+          <p className="mt-2 text-xs leading-relaxed text-slate-600">Walkable routes, practical meal stops, and quieter evening options tuned to this trip.</p>
+          <div className="mt-4 space-y-2 text-xs"><p className="rounded-md bg-slate-50 p-2.5 font-semibold text-slate-700">Louvre Museum · Confirmed</p><p className="rounded-md bg-slate-50 p-2.5 font-semibold text-slate-700">Le Potager du Marais · Needs booking</p></div>
+        </section>
+      </div>
     </div>
   );
 }
@@ -275,10 +293,23 @@ function AssistantOverlay({ variant }: { variant: Variant }) {
 }
 
 function ChatAssistantLab() {
-  const [variant, setVariant] = useState<Variant>("focus");
+  const previewVariant = new URLSearchParams(window.location.search).get("preview");
+  const fullPreview = variants.some((item) => item.id === previewVariant);
+  const [variant, setVariant] = useState<Variant>(fullPreview ? previewVariant as Variant : "focus");
   const chooseVariant = useCallback((optionId: string) => {
     if (variants.some((item) => item.id === optionId)) setVariant(optionId as Variant);
   }, []);
+
+  if (fullPreview) {
+    return (
+      <main className="relative h-[100dvh] min-h-[40rem] overflow-hidden bg-white">
+        <WorkspaceBackdrop />
+        {variant === "focus" && <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-[1px]" />}
+        <AssistantOverlay key={variant} variant={variant} />
+        <a href="./chat-assistant.html" className="fixed bottom-4 left-4 z-[80] inline-flex items-center gap-2 rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white shadow-pop ring-1 ring-white/30"><ArrowLeft size={14} /> Exit full-size preview</a>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-full bg-slate-50 px-4 py-7 sm:px-6 lg:px-8">
@@ -306,7 +337,7 @@ function ChatAssistantLab() {
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-semibold text-ink">Live preview · {variants.find((item) => item.id === variant)?.label}</p>
-          <p className="text-xs text-slate-500">Switch options above, then use the same controls to compare the experience.</p>
+          <div className="flex flex-wrap items-center gap-3"><p className="text-xs text-slate-500">Switch options above, then use the same controls to compare the experience.</p><a href={`?preview=${variant}`} className="btn-primary"><Maximize2 size={14} /> Open full-size preview</a></div>
         </div>
 
         <section className="relative mt-2 h-[760px] max-h-[78vh] min-h-[620px] overflow-hidden rounded-md border border-slate-200 bg-white shadow-card" aria-label="Interactive assistant layout preview">
