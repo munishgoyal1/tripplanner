@@ -198,6 +198,9 @@ if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "az
 
 if (-not $FrontendOnly) {
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
+    if ([string]::IsNullOrWhiteSpace($env:APP_LOG_PATH)) {
+        $env:APP_LOG_PATH = Join-Path $repoRoot "logs\diagnostics\local-app.jsonl"
+    }
     if ($Logs) {
         $env:LOG_LEVEL = "DEBUG"
         Write-Host "  LOG_LEVEL=DEBUG (verbose backend logs)" -ForegroundColor DarkGray

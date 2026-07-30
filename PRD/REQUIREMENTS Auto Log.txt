@@ -2747,3 +2747,14 @@ VALIDATION:
   or `MERGE_HEAD` behind when `origin/master` conflicts with the worker branch.
 - Report the conflicting paths, abort the attempted merge, verify the previously
   clean worker was restored, and leave deliberate conflict resolution to its agent.
+
+=== 2026-07-30 — Production failure alerts and non-production analysis ===
+
+- Reuse the existing PII-safe Container Apps stdout and Log Analytics pipeline;
+  do not add a duplicate Application Insights stack.
+- In production only, detect any application, chat, or tool failure every five
+  minutes and notify `munishgoyal1@gmail.com` through Azure Monitor email.
+- Keep alert creation behind the explicit production deployment approval gate.
+- Local and canary must not send operational alert email. Retain bounded redacted
+  local logs and provide one read-only periodic analyzer that groups failures,
+  writes an ignored Markdown report, and recommends focused investigation steps.

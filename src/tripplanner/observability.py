@@ -36,6 +36,7 @@ import re
 import sys
 import threading
 import uuid
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any
 
@@ -214,7 +215,7 @@ class JsonFormatter(logging.Formatter):
             else:
                 base[key] = redact_value(value)
         if record.exc_info:
-            base["exc"] = self.formatException(record.exc_info)
+            base["exc"] = redact_text(self.formatException(record.exc_info))
         return json.dumps(base, default=str, ensure_ascii=False)
 
 
@@ -250,6 +251,7 @@ def setup_logging(force: bool = False) -> None:
     Environment knobs:
       - ``LOG_LEVEL``  (default ``INFO``)
       - ``LOG_JSON``   (``1`` / ``0``; auto-on when ``_is_hosted()``)
+            - ``APP_LOG_PATH`` (optional rotating PII-safe JSON file for local analysis)
     """
     global _SETUP_DONE
     with _SETUP_LOCK:
@@ -267,11 +269,27 @@ def setup_logging(force: bool = False) -> None:
         # Reset existing handlers so reconfigures (e.g. tests) take effect.
         for h in list(root.handlers):
             root.removeHandler(h)
+            h.close()
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(level)
         handler.addFilter(PiiRedactingFilter())
         handler.setFormatter(JsonFormatter() if use_json else _TextFormatterWithPid())
         root.addHandler(handler)
+
+        app_log_path = os.environ.get("APP_LOG_PATH")
+        if app_log_path:
+            path = Path(app_log_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            file_handler = RotatingFileHandler(
+                path,
+                maxBytes=5_000_000,
+                backupCount=2,
+                encoding="utf-8",
+            )
+            file_handler.setLevel(level)
+            file_handler.addFilter(PiiRedactingFilter())
+            file_handler.setFormatter(JsonFormatter())
+            root.addHandler(file_handler)
         root.setLevel(level)
 
         # Quiet some noisy third-party loggers in normal mode.

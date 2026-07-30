@@ -106,10 +106,17 @@ param maxReplicas int = 1
 @description('If true, the restricted audit sink also stores the raw user message body. Opt-in for privacy; off by default.')
 param auditUserMessages bool = false
 
+@description('Create an Azure Monitor failure alert and email Action Group. Enable only in production.')
+param enableFailureAlerts bool = false
+
+@description('Email recipient for production failure alerts. Required when enableFailureAlerts is true.')
+param failureAlertEmail string = ''
+
 var suffix = uniqueString(resourceGroup().id)
 var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
+var failureAlertQuery = loadTextContent('queries/application-failures.kql')
 
 // OAuth secrets are only attached when a value is supplied. Container Apps
 // rejects empty-string secret values, so we conditionally build the secrets
@@ -169,6 +176,62 @@ resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
     retentionInDays: 30
     features: {
       enableLogAccessUsingOnlyResourcePermissions: true
+    }
+  }
+}
+
+resource failureAlertActions 'Microsoft.Insights/actionGroups@2023-01-01' = if (enableFailureAlerts) {
+  name: '${namePrefix}-failure-alert-actions'
+  location: 'global'
+  properties: {
+    groupShortName: 'tripfail'
+    enabled: true
+    emailReceivers: [
+      {
+        name: 'Tripplanner production owner'
+        emailAddress: failureAlertEmail
+        useCommonAlertSchema: true
+      }
+    ]
+  }
+}
+
+resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (enableFailureAlerts) {
+  name: '${namePrefix}-application-failures'
+  location: location
+  kind: 'LogAlert'
+  properties: {
+    displayName: 'Tripplanner production application failures'
+    description: 'Alerts on PII-safe application, chat, or tool failure records.'
+    severity: 1
+    enabled: true
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT5M'
+    scopes: [logs.id]
+    targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
+    autoMitigate: true
+    muteActionsDuration: 'PT15M'
+    skipQueryValidation: false
+    criteria: {
+      allOf: [
+        {
+          query: failureAlertQuery
+          timeAggregation: 'Count'
+          operator: 'GreaterThan'
+          threshold: 0
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [failureAlertActions.id]
+      customProperties: {
+        environment: namePrefix
+        signal: 'application_failure'
+      }
     }
   }
 }

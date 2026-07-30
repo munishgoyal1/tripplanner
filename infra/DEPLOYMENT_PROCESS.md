@@ -13,11 +13,16 @@
 | Cosmos DB | Shared account / `tripplanner-canary` | Shared account / `tripplanner-prod` |
 | Container App Env | `canary-env-*` | `prod-env-*` |
 | Log Analytics | `canary-logs-*` | `prod-logs-*` |
+| Failure alerting | Report only | Email Action Group + scheduled-query rule |
 | Azure OpenAI (script-provisioned) | `aoaicanary*` | `aoaiprod*` |
 
 Email/Communication services are optional and are not provisioned by `main.bicep`.
 The shared account lives in `rg-tripplanner-data`; `data-stack.bicep` owns it,
 while `main.bicep` can only reference it as an existing resource.
+
+Azure Monitor failure email is separate from application email delivery.
+`main.bicep` creates it only when production parameters set
+`enableFailureAlerts=true`; canary never sends operational alert email.
 
 ## Deployment Workflow
 

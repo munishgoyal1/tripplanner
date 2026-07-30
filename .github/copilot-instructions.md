@@ -146,6 +146,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Production failure alerting + non-production analysis**: the existing PII-safe
+  Container Apps Log Analytics stream remains the single hosted telemetry path.
+  Production Bicep defines a five-minute application/chat/tool failure rule and
+  owner email Action Group behind the production deployment approval gate.
+  Local development retains bounded redacted JSON, and one read-only command
+  produces grouped local or canary Markdown diagnostics without non-production email.
 - **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
   compares a compact operations binder, recommended layered Trip Book, and
   visual journey book across contents, trip brief, executable day, document
