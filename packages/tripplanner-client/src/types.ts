@@ -222,10 +222,38 @@ export interface ToolEventExtras {
   duration_ms?: number;
 }
 
+export interface TripInputOption {
+  value: string;
+  label: string;
+  detail?: string;
+}
+
+export interface TripInputField {
+  id: string;
+  label: string;
+  kind: "single" | "multi" | "boolean" | "number";
+  value: string | string[] | boolean | number;
+  options?: TripInputOption[];
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+export interface TripInputRequest {
+  version: 1;
+  request_id: string;
+  question: string;
+  known_context: string[];
+  fields: TripInputField[];
+  submit_label: string;
+  allow_skip: boolean;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
+  onInputRequest?: (request: TripInputRequest) => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
 }

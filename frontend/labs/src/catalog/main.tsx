@@ -7,6 +7,7 @@ import {
   FlaskConical,
   LayoutPanelTop,
   ListChecks,
+  MessageCircle,
 } from "lucide-react";
 import "../../../src/index.css";
 
@@ -20,7 +21,17 @@ interface LabRecord {
   icon: typeof ListChecks;
 }
 
-const activeLabs: LabRecord[] = [];
+const activeLabs: LabRecord[] = [
+  {
+    title: "Assistant-led trip kickoff",
+    description: "Compare overlay footprints and test preference-aware, pre-filled inputs before the first itinerary build.",
+    date: "30 Jul 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Focus overlay.",
+    href: "/labs/chat-assistant.html",
+    icon: MessageCircle,
+  },
+];
 
 const decidedLabs: LabRecord[] = [
   {

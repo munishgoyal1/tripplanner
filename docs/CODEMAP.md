@@ -63,6 +63,7 @@ third workstream. Changes merge through reviewed pull requests.
 ```text
 src/tripplanner/
   api.py              FastAPI app — routes, SSE chat, /api prefix strip, SPA mount
+  chat_interactions.py Validated prefilled Assistant input-request contract
   cli.py              Local CLI entrypoint (no SPA)
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
   graph.py            LangGraph StateGraph: agent ↔ tools loop
@@ -476,7 +477,7 @@ All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 - **Always commit AND push** after every coherent change.
 - **No major functional changes** without explicit consent.
 - Keep it **simple and modular**; no over-engineering.
-- Update `REQUIREMENTS.txt` when new requirements come in.
+- Update `PRD/REQUIREMENTS Auto Log.txt` when new requirements come in.
 - Update `README.md` when architecture changes.
 - Update [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
   AND this CODEMAP whenever the structure shifts.

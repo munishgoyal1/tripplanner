@@ -14,7 +14,7 @@
 This document is the concise, current product baseline. It answers **what the
 product can do now**, what behavior must be preserved, and which directions are
 proposed next. It replaces the need to reconstruct current scope from the
-chronological `REQUIREMENTS.txt` log.
+chronological `PRD/REQUIREMENTS Auto Log.txt` log.
 
 Source-of-truth boundaries:
 
@@ -22,7 +22,7 @@ Source-of-truth boundaries:
 - `docs/REQUIREMENTS_V2.md`: current capabilities, gaps, and roadmap.
 - `docs/PRODUCT.md`: product intent, interaction rules, and design taste.
 - `docs/CODEMAP.md`: implementation ownership, contracts, and commands.
-- `REQUIREMENTS.txt`: chronological decision history; old entries may be obsolete.
+- `PRD/REQUIREMENTS Auto Log.txt`: chronological decision history; old entries may be obsolete.
 - `docs/ENGINEERING_LEARNINGS.md`: durable lessons from observed failures.
 - `docs/roadmap/FUTURE_FEATURES.md`: consolidated future feature candidates.
 - `docs/feature-briefs/NEXT_INCREMENT.md`: editable scope for the next milestone.
@@ -35,6 +35,7 @@ the same commit. A roadmap entry is not implementation approval by itself.
 | Status | Meaning |
 |---|---|
 | Implemented | Available in the current repository and supported by tests or runbooks. |
+| Partially implemented | A compatible foundation exists, but the user-facing workflow is not complete. |
 | Guarded | Implemented, but intentionally constrained by approval, configuration, or environment. |
 | Observing | Current behavior remains in place while usage evidence is gathered. |
 | Proposed | Candidate V2 work; not approved merely because it appears here. |
@@ -60,6 +61,7 @@ re-describing the whole product.
 | ID | Capability | Status |
 |---|---|---|
 | CORE-01 | Single trip-planning agent with phase-selected tools | Implemented |
+| CHAT-01 | Structured minimal-input Assistant interactions | Partially implemented |
 | PLAN-01 | Preference-aware conversational trip creation | Implemented |
 | PLAN-02 | Source-grounded flight, stay, place, meal, route, weather, visa, and event research | Implemented |
 | PLAN-03 | Structured, chronological, hotel-anchored daily itineraries | Implemented |
@@ -95,6 +97,16 @@ re-describing the whole product.
   phases while keeping internal tool names and raw arguments out of the UI.
 - GPT-4.1 is the measured default planning model. A slower or costlier model
   requires evidence that it improves a relevant quality failure.
+
+### CHAT-01 - Structured minimal-input Assistant interactions
+
+- The agent has a bounded `request_trip_input` tool for one consolidated
+  interactive-mode clarification. Every field must carry a sensible prefilled value.
+- The backend emits the validated versioned payload as an additive `input_request`
+  SSE event while retaining a concise text fallback for older clients.
+- Shared web/native TypeScript transport retains the event contract.
+- Production rendering remains pending the active Assistant-overlay UX Lab decision;
+  current production clients continue to use the text fallback.
 
 ### PLAN-01 - Preference-aware planning flow
 
@@ -407,6 +419,9 @@ re-describing the whole product.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
 - Production mobile-store release still requires owner-approved distribution
   setup and provider keys appropriate to each platform.
+- Structured Assistant input is not yet rendered in production web or native UI.
+  The selectable overlay/control prototype is active in UX Labs; production wiring
+  requires an owner-selected direction.
 
 ### Out of scope unless explicitly reopened
 

@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta, timezone
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
 
+from tripplanner.chat_interactions import request_trip_input
 from tripplanner.tools.activities_search import search_activities, search_points_of_interest
 from tripplanner.tools.duffel_flights import search_flights_duffel
 from tripplanner.tools.flight_search import search_flights
@@ -346,7 +347,14 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
                       question if critical info (dates, companions, budget)
                       cannot be inferred, BEFORE running searches.
   If genuinely critical info is missing (e.g. trip budget for THIS trip), ask
-  ONCE with a consolidated question — BUT ONLY in "interactive" mode.
+  ONCE with a consolidated question — BUT ONLY in "interactive" mode. Call
+  request_trip_input so capable clients can render pre-filled controls instead
+  of forcing the user to type. Include only unresolved, high-impact fields;
+  include every sensible default as the field's value; list the saved or inferred
+  facts already applied in known_context_json. After the tool call, ask one short
+  natural-language question for clients that do not support structured inputs.
+  Never repeat the choices as a long numbered list and never use this tool to
+  re-ask stable preferences already loaded in Step 1.
   Otherwise: DON'T ASK, INFER + EXTRACT.
   Save answers/extractions immediately via the appropriate tool.
 
@@ -748,6 +756,8 @@ _CORE_TOOLS = [
     add_user_interest,
     add_user_dislike,
     record_trip_mention,
+    # One bounded, prefilled clarification for interactive planning mode
+    request_trip_input,
     # Semantic-ish recall over the user's persistent memory (BM25-lite, no API)
     recall_relevant_memory,
     # Trip plan management

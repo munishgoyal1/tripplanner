@@ -12,7 +12,7 @@ canonical set below instead of reading every file.
 | [`REQUIREMENTS_V2.md`](REQUIREMENTS_V2.md) | Implemented capability baseline, explicit gaps, and near-term roadmap | Shipped capability or status changes |
 | [`CODEMAP.md`](CODEMAP.md) | Code ownership, architecture, contracts, and commands | File layout or technical contracts change |
 | [`ENGINEERING_LEARNINGS.md`](ENGINEERING_LEARNINGS.md) | Durable lessons from observed failures | A reusable engineering lesson is proven |
-| [`../REQUIREMENTS.txt`](../REQUIREMENTS.txt) | Chronological requirement and decision history | A new requirement or decision is made |
+| [`../PRD/REQUIREMENTS Auto Log.txt`](../PRD/REQUIREMENTS%20Auto%20Log.txt) | Chronological requirement and decision history | A new requirement or decision is made |
 
 ## Product planning
 

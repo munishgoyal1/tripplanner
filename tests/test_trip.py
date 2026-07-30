@@ -1799,6 +1799,12 @@ class TestSystemPromptDateInjection:
         assert TRIP_SYSTEM_PROMPT is not None
         assert "Trip Planner Agent" in TRIP_SYSTEM_PROMPT.content
 
+    def test_interactive_questions_use_structured_prefilled_input(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "request_trip_input" in msg.content
+        assert "pre-filled controls" in msg.content
+        assert "only unresolved, high-impact fields" in msg.content
+
 
 # ---------------------------------------------------------------------------
 # Passive learning — learned_notes + remember_about_user tool

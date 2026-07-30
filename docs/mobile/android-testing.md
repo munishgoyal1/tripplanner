@@ -222,7 +222,7 @@ or chat. Do not submit to production without explicit owner approval.
 
 1. Update this runbook when SDKs, commands, API targets, or recurring failures change.
 2. Update `docs/CODEMAP.md` when ownership or layout changes.
-3. Update `docs/PRODUCT.md` and `REQUIREMENTS.txt` for product decisions.
+3. Update `docs/PRODUCT.md` and `PRD/REQUIREMENTS Auto Log.txt` for product decisions.
 4. Run `npx tsc --noEmit`, `npm run lint`, `npm exec --yes expo-doctor`, and
    `npx expo export --platform android`.
 5. Commit and push documentation with the implementation it describes.

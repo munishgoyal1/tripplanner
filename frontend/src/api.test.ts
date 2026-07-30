@@ -44,17 +44,23 @@ describe("streamChat", () => {
       vi.fn().mockResolvedValue(
         streamResponse([
           'event: progress\ndata: {"stage":"thinking"}\n\n',
+          'event: input_request\ndata: {"version":1,"request_id":"request-1","question":"Pick a pace","known_context":["Boutique stays"],"fields":[{"id":"pace","label":"Pace","kind":"single","value":"balanced","options":[{"value":"easy","label":"Easy"},{"value":"balanced","label":"Balanced"}]}],"submit_label":"Continue","allow_skip":true}\n\n',
           'event: token\ndata: {"text":"Hello"}\n\n',
           'event: done\ndata: {"reply":"Hello","trip_id":"trip-1"}\n\n',
         ]),
       ),
     );
     const events = handlers();
+    events.onInputRequest = vi.fn();
 
     await streamChat("plan a trip", events);
 
     expect(events.onToken).toHaveBeenCalledWith("Hello");
     expect(events.onProgress).toHaveBeenCalledWith("thinking");
+    expect(events.onInputRequest).toHaveBeenCalledWith(expect.objectContaining({
+      request_id: "request-1",
+      question: "Pick a pace",
+    }));
     expect(events.onDone).toHaveBeenCalledWith("Hello", "trip-1");
   });
 
