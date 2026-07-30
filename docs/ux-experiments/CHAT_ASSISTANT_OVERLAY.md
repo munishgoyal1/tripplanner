@@ -91,9 +91,9 @@ Non-goals for this experiment:
 ## Decision
 
 - Decision: pending
-- Current trial: A - Docked sidecar, for full-size evaluation only
-- Recommendation: B - Focus modal
+- Current trial: A - Docked sidecar, implemented in the local main app for testing
+- Recommendation: evaluate A in normal local planning before final acceptance
 - Rationale: it gives the Assistant enough room for rich choices while preserving
   a visible relationship to the itinerary being built.
-- Next action: compare options in full-size preview, save the preferred option and
-  modifications in the Lab, then explicitly approve the production implementation slice.
+- Next action: test A in the local app with real planning turns, then accept it,
+  request adjustments, or return to another Lab option. No Azure deployment is approved.

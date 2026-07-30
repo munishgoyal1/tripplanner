@@ -148,6 +148,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Option A local Assistant trial**: the main web app now opens Assistant as a
+  wide right-edge sidecar over the still-visible, usable itinerary/map workspace.
+  Validated `input_request` events render as compact prefilled controls for all
+  supported field kinds and submit through normal chat. This is for local owner
+  testing only; no Azure deployment or final design acceptance is implied.
 - **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
   compares a compact operations binder, recommended layered Trip Book, and
   visual journey book across contents, trip brief, executable day, document

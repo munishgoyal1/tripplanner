@@ -2780,3 +2780,13 @@ VALIDATION:
   implementation tests merely to experience or compare a Lab alternative.
 - A provisional instruction such as "try A first" means make A realistically
   testable in the Lab; production work begins only after an explicit final choice.
+
+=== 2026-07-30 — Option A local main-app trial ===
+
+- Implement the Docked sidecar option in the main web application for local testing,
+  not as an Azure production deployment or final design acceptance.
+- Keep Itinerary and Map visible and usable behind the wide right-edge Assistant;
+  Details remains independently controlled.
+- Render validated structured input requests as compact prefilled controls for
+  single choice, multiple choice, boolean, and number fields, with submit and
+  saved-default skip paths through the normal chat transport.

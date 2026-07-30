@@ -136,9 +136,10 @@ frontend/
           itinerary execution, confirmation readiness, and personal place context
   src/
     main.tsx          React 19 root
-    App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
+        App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-          right dock with independently hidden mounted Details/Assistant; no
+          Details dock, and an independently mounted right-edge Assistant
+          sidecar that overlays rather than resizes the usable workspace; no
           page scroll. Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
@@ -158,10 +159,13 @@ frontend/
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
-      ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
+       ChatPanel.tsx        Bubbles/composer + validated prefilled structured-input
+         cards + mounted account/settings dialogs;
            immediate thinking/tool/review/save progress with elapsed time;
            animation-frame token batching; mobile header owns launchers,
            desktop top row triggers them
+          TripInputCard.tsx    Compact renderer for single, multi, boolean, and number
+               trip-specific choices with prefilled submit and saved-default skip paths
       TripPanel.tsx        Contextual destination/place inspector: whole-trip
         destination guide + compact place rows, or rich focused-place details;
         selected places use the shared day-move/remove actions

@@ -61,7 +61,7 @@ re-describing the whole product.
 | ID | Capability | Status |
 |---|---|---|
 | CORE-01 | Single trip-planning agent with phase-selected tools | Implemented |
-| CHAT-01 | Structured minimal-input Assistant interactions | Partially implemented |
+| CHAT-01 | Structured minimal-input Assistant interactions | Observing |
 | PLAN-01 | Preference-aware conversational trip creation | Implemented |
 | PLAN-02 | Source-grounded flight, stay, place, meal, route, weather, visa, and event research | Implemented |
 | PLAN-03 | Structured, chronological, hotel-anchored daily itineraries | Implemented |
@@ -105,8 +105,11 @@ re-describing the whole product.
 - The backend emits the validated versioned payload as an additive `input_request`
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
-- Production rendering remains pending the active Assistant-overlay UX Lab decision;
-  current production clients continue to use the text fallback.
+- The main web app renders all validated field kinds in a prefilled compact card
+  inside the Option A right-edge Assistant sidecar. Submission and default-skip
+  responses continue through the normal retry-safe chat path.
+- Option A is available in the local deployment for owner evaluation. Hosted
+  deployment and final design acceptance remain pending.
 
 ### PLAN-01 - Preference-aware planning flow
 

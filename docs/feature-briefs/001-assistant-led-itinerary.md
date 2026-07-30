@@ -61,8 +61,9 @@ any time.
   production UI to render it yet.
 - **AC-05:** Direct mode keeps complete-by-default behavior; structured upfront input
   is restricted to genuinely critical interactive-mode gaps in stage 1.
-- **AC-06:** The production overlay and control renderer require the owner-selected
-  Lab direction and are not implied by this foundation.
+- **AC-06:** Option A's production-code overlay and control renderer are available
+   in the local deployment for owner testing; hosted deployment and final acceptance
+   require a later explicit decision.
 - **AC-07:** Future production rendering must support keyboard, focus, screen reader,
   narrow desktop, and native mobile presentation without changing the payload.
 - **AC-08:** Planning quality must later be measured against practical routing,
@@ -74,14 +75,14 @@ any time.
 | Stage | Behavior | Status |
 | --- | --- | --- |
 | 1 | Interactive Lab, validated backend contract, additive SSE event, shared client type | Implemented |
-| 2 | Owner-selected production web overlay, structured control renderer, answer submission and recovery | Pending explicit owner selection after full-size Lab evaluation |
+| 2 | Option A web sidecar, structured control renderer, answer submission and recovery | Implemented for local evaluation; hosted deployment pending |
 | 3 | Native rendering plus repeatable planning-quality evaluation set and tuning | Pending evidence from stage 2 |
 
 ## Open decisions
 
 | ID | Decision | Recommendation | Status |
 | --- | --- | --- | --- |
-| D-01 | Desktop Assistant footprint | B - Focus modal; A is the current provisional trial | Open in full-size UX Lab preview |
+| D-01 | Desktop Assistant footprint | A - Docked sidecar | Local main-app trial; final acceptance pending |
 | D-02 | Default planning policy after stage 1 | Build immediately when origin, destination, and rough timing exist; ask once only for material blockers | Recommended |
 | D-03 | Native presentation | Native bottom sheet using the same payload after web validation | Deferred |
 

@@ -80,8 +80,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   mounted so their state survives. Only panes scroll; the page never does.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
-  sizes persist locally. Itinerary, Map, Details, and Assistant can each be
-  maximized and restored. On narrower desktops
+  sizes persist locally. The Assistant currently opens as a wide right-edge
+  sidecar over the workspace, leaving Itinerary and Map visible and usable;
+  Details remains an independent dock. Itinerary, Map, Details, and Assistant
+  can each be maximized and restored. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
   trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
@@ -115,8 +117,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Assistant input**: show the saved or inferred defaults already being applied,
   then ask only for high-impact trip-specific changes. Structured prompts stay
   compact, prefill every field, and offer one build/continue action plus a default
-  skip path. Production overlay behavior follows an owner-selected UX Lab direction;
-  a Lab record is not approval to change the production workspace.
+  skip path. The Option A sidecar and structured controls are implemented in the
+  main web app for local evaluation; no hosted deployment or final design acceptance
+  is implied until the owner confirms the direction after testing.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps
   handoff before the stop details.
