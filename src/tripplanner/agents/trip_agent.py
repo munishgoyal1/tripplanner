@@ -833,7 +833,7 @@ _PLANNING_TRIGGER_TOOLS = {
 
 _PLANNING_INTENT_RE = re.compile(
     r"\b(plan|trip|travel|holiday|vacation|flight|flights|hotel|hotels|"
-    r"itinerar|visit|getaway|weekend|honeymoon|tour|fly|stay|book|"
+    r"itinerary|itineraries|visit|getaway|weekend|honeymoon|tour|fly|stay|book|"
     r"days?\s+in|go\s+to)\b",
     re.I,
 )

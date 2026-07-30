@@ -115,6 +115,7 @@ _COMPLETION_RESEARCH_TOOLS = {
     "find_local_events",
 }
 _MAX_POST_RESEARCH_UPDATES = 2
+_MAX_INITIAL_ITINERARY_UPDATES = 2
 
 
 def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
@@ -133,20 +134,26 @@ def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
 
 def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
     positions = _tool_call_positions(messages)
-    if not any(name == "create_trip_plan" for _, name in positions):
-        return None
+    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
     try:
         trip = load_active_trip_dict() or {}
     except Exception:
         return None
     if not trip.get("destination"):
         return None
+    if not created_this_turn and not latest_user_has_planning_intent(messages):
+        return None
 
     update_positions = [index for index, name in positions if name == "update_trip_plan"]
-    if not trip.get("day_wise_itinerary") and not update_positions:
+    if (
+        not trip.get("day_wise_itinerary")
+        and len(update_positions) < _MAX_INITIAL_ITINERARY_UPDATES
+    ):
         return (
             "The new trip has no itinerary. Save a complete structured day_wise_itinerary "
-            "now, using sensible defaults rather than asking the user to design it."
+            "now, using sensible defaults rather than asking the user to design it. "
+            "A prior update may have failed or saved no days, so include the required "
+            "updates_json argument with the full itinerary."
         )
 
     research_positions = [

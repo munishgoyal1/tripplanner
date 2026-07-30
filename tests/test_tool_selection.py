@@ -43,6 +43,15 @@ def test_planning_intent_binds_search() -> None:
     assert "search_hotels" in _names(tools)
 
 
+@pytest.mark.parametrize(
+    "message",
+    ["Why is my itinerary pane blank?", "Build my Paris itineraries"],
+)
+def test_itinerary_wording_binds_search(message: str) -> None:
+    tools = trip_agent.select_tools([HumanMessage(content=message)])
+    assert "search_hotels" in _names(tools)
+
+
 def test_active_trip_binds_search_even_without_intent(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
