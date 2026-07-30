@@ -127,7 +127,7 @@ Azure mode resolves the shared account endpoint/key through the signed-in Azure
 CLI at startup and never persists credentials. The equivalent one-run override is:
 
 ```powershell
-./scripts/dev-spa.ps1 -CosmosBackend azure
+./scripts/dev/dev-spa.ps1 -CosmosBackend azure
 ```
 
 The emulator path performs the startup/readiness check and sets the loopback

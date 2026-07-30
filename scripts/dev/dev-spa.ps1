@@ -7,10 +7,10 @@
 # What you get:
 #   * FastAPI on :8000 (uvicorn) -- /chat/stream, /trip/view, /trip/select
 #   * Vite dev server on :5173; /api is proxied to :8000
+#   * UX Labs Vite server on :5175; catalog at /catalog.html
 #
-# If a previous dev run left Vite holding :5173 or uvicorn holding :8000, the
-# script stops that stale tripplanner process before starting a new one. It
-# refuses to terminate an unrelated process using either port.
+# If a previous dev run left any configured port occupied, the script force-
+# stops the listening process tree and verifies the port is free before restart.
 #
 # Hot reload is OFF by default (matches the no-auto-reload preference):
 #   * Frontend changes  -> refresh the browser (Ctrl+R) to pick them up.
@@ -18,13 +18,14 @@
 #   Pass -Watch to enable live reload for both (uvicorn --reload + Vite HMR).
 #
 # Usage:
-#   scripts\dev-spa.ps1               # start both (backend + frontend), no hot reload
-#   scripts\dev-spa.ps1 -Watch        # enable live reload for both
-#   scripts\dev-spa.ps1 -Logs         # verbose backend logs (LOG_LEVEL=DEBUG)
-#   scripts\dev-spa.ps1 -BackendOnly  # just the API (e.g. frontend already running)
-#   scripts\dev-spa.ps1 -FrontendOnly # just Vite (API already running elsewhere)
-#   scripts\dev-spa.ps1 -CosmosBackend azure # explicit Azure local database
-#   scripts\dev-spa.ps1 -UseCanaryData # explicitly use hosted canary data
+#   scripts\dev\dev-spa.ps1               # start both, no hot reload
+#   scripts\dev\dev-spa.ps1 -Watch        # enable live reload for both
+#   scripts\dev\dev-spa.ps1 -Logs         # verbose backend logs
+#   scripts\dev\dev-spa.ps1 -BackendOnly  # just the API
+#   scripts\dev\dev-spa.ps1 -FrontendOnly # main SPA + Labs
+#   scripts\dev\dev-spa.ps1 -NoLabs       # skip the UX Labs server
+#   scripts\dev\dev-spa.ps1 -CosmosBackend azure # Azure local database
+#   scripts\dev\dev-spa.ps1 -UseCanaryData # hosted canary data
 #
 # Cosmos backend precedence: -CosmosBackend, COSMOS_DEV_BACKEND environment,
 # .env COSMOS_DEV_BACKEND, then the default "emulator". Azure mode explicitly
@@ -41,8 +42,10 @@
 param(
     [int]$ApiPort = 8000,
     [int]$FrontendPort = 5173,
+    [int]$LabsPort = 5175,
     [switch]$BackendOnly,
     [switch]$FrontendOnly,
+    [switch]$NoLabs,
     [switch]$Watch,
     [switch]$Logs,
     [ValidateSet("azure", "emulator")]
@@ -51,8 +54,18 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$repoRoot = Split-Path -Parent $PSScriptRoot
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Set-Location $repoRoot
+
+$activePorts = @()
+if (-not $FrontendOnly) { $activePorts += $ApiPort }
+if (-not $BackendOnly) {
+    $activePorts += $FrontendPort
+    if (-not $NoLabs) { $activePorts += $LabsPort }
+}
+if (($activePorts | Sort-Object -Unique).Count -ne $activePorts.Count) {
+    throw "ApiPort, FrontendPort, and LabsPort must be different when their services are enabled."
+}
 
 function Get-DotEnvValue {
     param(
@@ -87,104 +100,54 @@ if ($UseCanaryData -and $PSBoundParameters.ContainsKey("CosmosBackend") -and $Co
     throw "-UseCanaryData cannot be combined with -CosmosBackend emulator."
 }
 
-function Stop-StaleTripplannerBackend {
+function Clear-ListeningPort {
     param(
-        [int]$Port
+        [int]$Port,
+        [string]$Service
     )
 
-    $listener = $null
+    $listeners = @()
     try {
-        $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+        $listeners = @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
     } catch {
-        $listener = $null
+        $listeners = @()
     }
 
-    if (-not $listener) {
+    if ($listeners.Count -eq 0) {
         return
     }
 
-    $proc = $null
+    $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+    Write-Host "Clearing $Service port :$Port (PID $($processIds -join ', ')) ..." -ForegroundColor Yellow
+    foreach ($processId in $processIds) {
+        & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0 -and (Get-Process -Id $processId -ErrorAction SilentlyContinue)) {
+            throw "Could not stop PID $processId on $Service port $Port."
+        }
+        Wait-Process -Id $processId -Timeout 5 -ErrorAction SilentlyContinue
+    }
+
+    $remaining = @()
     try {
-        $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue
+        $remaining = @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
     } catch {
-        $proc = $null
+        $remaining = @()
     }
 
-    $procName = if ($proc) { $proc.Name } else { "PID $($listener.OwningProcess)" }
-    $commandLine = if ($proc -and $proc.CommandLine) { $proc.CommandLine } else { "" }
-    $isTripplannerBackend = $commandLine -match 'tripplanner\.api:app' -or $commandLine -match 'uvicorn\s+tripplanner\.api:app'
-
-    if (-not $isTripplannerBackend) {
-        throw "Port $Port is already in use by $procName. Stop that process or use -ApiPort <port>."
-    }
-
-    Write-Host "Stopping stale tripplanner backend on :$Port ..." -ForegroundColor Yellow
-    Stop-Process -Id $listener.OwningProcess -Force -ErrorAction Stop
-
-    $remaining = $null
-    try {
-        $remaining = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-    } catch {
-        $remaining = $null
-    }
-
-    if ($remaining) {
-        throw "Stopped PID $($listener.OwningProcess), but port $Port is still busy. Try closing the leftover process manually."
+    if ($remaining.Count -gt 0) {
+        $remainingIds = @($remaining.OwningProcess | Sort-Object -Unique) -join ", "
+        throw "$Service port $Port is still occupied by PID $remainingIds after forced cleanup."
     }
 }
 
-function Stop-StaleTripplannerFrontend {
-    param(
-        [int]$Port
-    )
-
-    $listener = $null
-    try {
-        $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-    } catch {
-        $listener = $null
-    }
-
-    if (-not $listener) {
-        return
-    }
-
-    $proc = $null
-    try {
-        $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue
-    } catch {
-        $proc = $null
-    }
-
-    $procName = if ($proc) { $proc.Name } else { "PID $($listener.OwningProcess)" }
-    $commandLine = if ($proc -and $proc.CommandLine) { $proc.CommandLine } else { "" }
-    $frontendPath = [regex]::Escape((Join-Path $repoRoot "frontend"))
-    $isTripplannerFrontend = $procName -ieq "node.exe" `
-        -and $commandLine -match '(?i)[\\/]vite[\\/]bin[\\/]vite\.js' `
-        -and $commandLine -match "(?i)$frontendPath"
-
-    if (-not $isTripplannerFrontend) {
-        throw "Port $Port is already in use by $procName. Stop that process or use -FrontendPort <port>."
-    }
-
-    Write-Host "Stopping stale tripplanner frontend on :$Port ..." -ForegroundColor Yellow
-    Stop-Process -Id $listener.OwningProcess -Force -ErrorAction Stop
-    Wait-Process -Id $listener.OwningProcess -Timeout 5 -ErrorAction SilentlyContinue
-
-    $remaining = $null
-    try {
-        $remaining = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-    } catch {
-        $remaining = $null
-    }
-
-    if ($remaining) {
-        throw "Stopped PID $($listener.OwningProcess), but port $Port is still busy. Try closing the leftover process manually."
-    }
+if (-not $FrontendOnly) {
+    Clear-ListeningPort -Port $ApiPort -Service "FastAPI"
 }
-
 if (-not $BackendOnly) {
-    Stop-StaleTripplannerFrontend -Port $FrontendPort
+    Clear-ListeningPort -Port $FrontendPort -Service "SPA"
+    if (-not $NoLabs) {
+        Clear-ListeningPort -Port $LabsPort -Service "UX Labs"
+    }
 }
 
 if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -eq "emulator") {
@@ -234,7 +197,6 @@ if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "az
 }
 
 if (-not $FrontendOnly) {
-    Stop-StaleTripplannerBackend -Port $ApiPort
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
     if ($Logs) {
         $env:LOG_LEVEL = "DEBUG"
@@ -255,6 +217,16 @@ if (-not $BackendOnly) {
         npm install
         Pop-Location
     }
+    $labs = $null
+    if (-not $NoLabs) {
+        Write-Host "Starting UX Labs on :$LabsPort ..." -ForegroundColor Cyan
+        $env:VITE_LABS_PORT = "$LabsPort"
+        $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
+        $labs = Start-Process -PassThru -NoNewWindow -WorkingDirectory (Join-Path $repoRoot "frontend") `
+            -FilePath "npm.cmd" -ArgumentList @("run", "dev:ux-lab")
+        Write-Host "  Labs: http://127.0.0.1:$LabsPort/catalog.html" -ForegroundColor Green
+    }
+
     Write-Host "Starting Vite dev server on :$FrontendPort ..." -ForegroundColor Cyan
     Push-Location frontend
     try {
@@ -265,6 +237,16 @@ if (-not $BackendOnly) {
     }
     finally {
         Pop-Location
+        if ($labs) {
+            try {
+                Clear-ListeningPort -Port $LabsPort -Service "UX Labs"
+            } catch {
+                Write-Warning "Could not stop the UX Labs server cleanly: $($_.Exception.Message)"
+            }
+            if (-not $labs.HasExited) {
+                Stop-Process -Id $labs.Id -ErrorAction SilentlyContinue
+            }
+        }
         if ($backend -and -not $backend.HasExited) {
             Write-Host "Stopping backend..." -ForegroundColor Cyan
             Stop-Process -Id $backend.Id -ErrorAction SilentlyContinue
@@ -275,4 +257,3 @@ elseif ($backend) {
     Write-Host "Backend running (PID $($backend.Id)). Press Ctrl+C to stop." -ForegroundColor Green
     Wait-Process -Id $backend.Id
 }
-

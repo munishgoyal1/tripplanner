@@ -41,4 +41,4 @@ if ($ValidateOnly) {
 }
 
 Write-Host "Starting the latest local application..." -ForegroundColor Cyan
-& "$repoRoot\scripts\dev-spa.ps1"
+& "$PSScriptRoot\dev-spa.ps1"

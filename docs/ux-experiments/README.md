@@ -4,10 +4,10 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 
 ## Lab Catalog
 
-Run `npm --prefix frontend run dev:ux-lab`, then open
-`http://127.0.0.1:5175/catalog.html` to access every standalone UX experiment
-from its isolated Vite server. The catalog has two
-durable sections:
+The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
+`http://127.0.0.1:5175/catalog.html` to access every standalone experiment.
+For lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
+catalog has two durable sections:
 
 - **Active experiments** contains choices still being evaluated or paired.
 - **Already decided** preserves completed experiments, their original lab links,

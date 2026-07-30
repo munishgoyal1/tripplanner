@@ -403,8 +403,8 @@ re-describing the whole product.
 - One Windows setup command verifies tooling, restores locked dependencies, and
   preserves existing secrets.
 - One local SPA command starts the persisted emulator/backend/frontend workflow,
-  safely replaces repository-owned stale listeners, and refuses unrelated port
-  owners.
+  force-clears process trees from enabled API, SPA, and Labs ports, verifies
+  release, and cleanly restarts each enabled service.
 - Backend, frontend, browser, shared-client, and native validation commands are
   documented in `docs/CODEMAP.md`.
 - Canary builds and pushes one immutable Git-SHA image to GHCR, validates IaC,

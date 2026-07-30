@@ -142,7 +142,7 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
 > **Developing locally?** Run `.\scripts\setup-dev-machine.ps1` once, then see
-> [`docs/development/dev.md`](docs/development/dev.md) for the `.\scripts\dev-spa.ps1` workflow.
+> [`docs/development/dev.md`](docs/development/dev.md) for the `.\scripts\dev\dev-spa.ps1` workflow.
 > For multiple simultaneous coding-agent windows, use isolated Git worktrees as
 > described in
 > [`docs/development/parallel-agent-development.md`](docs/development/parallel-agent-development.md).
@@ -152,7 +152,7 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 ### One-click Windows setup
 ```powershell
 .\scripts\setup-dev-machine.ps1
-.\scripts\dev-spa.ps1
+.\scripts\dev\dev-spa.ps1
 ```
 
 The setup command installs missing prerequisites, restores locked dependencies,
@@ -185,7 +185,7 @@ uv run uvicorn tripplanner.api:app --reload
 ### Local hosted-UI preview (React SPA + FastAPI)
 ```bash
 # Backend (API) + Vite dev server together, with the /api proxy wired up:
-scripts\dev-spa.ps1
+scripts\dev\dev-spa.ps1
 # open http://localhost:5173
 #
 # Or run just the backend and have it serve a production SPA build:
@@ -212,20 +212,20 @@ Don't wait 3–4 minutes for CI on every code change. Use the local dev script
 — it runs the FastAPI backend plus the Vite dev server together:
 
 ```powershell
-scripts\dev-spa.ps1                 # backend on :8000 + Vite on :5173
-scripts\dev-spa.ps1 -Watch          # enable live reload for both
-scripts\dev-spa.ps1 -BackendOnly    # just the API
-scripts\dev-spa.ps1 -FrontendOnly   # just Vite
-scripts\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-local
-scripts\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
+scripts\dev\dev-spa.ps1                 # backend on :8000 + Vite on :5173
+scripts\dev\dev-spa.ps1 -Watch          # enable live reload for both
+scripts\dev\dev-spa.ps1 -BackendOnly    # just the API
+scripts\dev\dev-spa.ps1 -FrontendOnly   # just Vite
+scripts\dev\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-local
+scripts\dev\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
 ```
 
-By default, `scripts\dev-spa.ps1` launches Docker Desktop when needed, starts
+By default, `scripts\dev\dev-spa.ps1` launches Docker Desktop when needed, starts
 the official Dockerized **Cosmos DB Emulator**, and uses its isolated
 `tripplanner-local` database. Emulator data persists in a named Docker volume.
-Rerunning the script first replaces a previous Vite process from this repository
-on the requested frontend port. It refuses to stop unrelated port owners; use
-`-FrontendPort <port>` when another application legitimately needs that port.
+Rerunning the script force-stops process trees listening on the enabled API,
+frontend, and Labs ports and verifies each port is released before restart. Use
+custom port parameters before launch when another application needs a default port.
 Docker Desktop must already be installed; startup waits up to two minutes for
 its daemon and reports a clear error without resetting emulator data. Set
 `COSMOS_DEV_BACKEND=azure` in `.env` or pass `-CosmosBackend azure` to explicitly
@@ -239,7 +239,7 @@ Three speeds of feedback you actually have:
 | Speed | Command | When |
 |---|---|---|
 | ~1 sec | `.venv\Scripts\python.exe -m pytest -q` | logic/tool changes — runs 92 tests |
-| ~3 sec reload | `scripts\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
+| ~3 sec reload | `scripts\dev\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
 | ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
 
 The local loop and deployed app run **identical code**. The dev script sets the

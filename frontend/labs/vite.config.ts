@@ -8,8 +8,9 @@ export default defineConfig({
   plugins: [react(), labFeedbackPlugin()],
   server: {
     host: "127.0.0.1",
-    port: 5175,
+    port: Number(process.env.VITE_LABS_PORT || 5175),
     strictPort: true,
+    hmr: process.env.VITE_HMR === "1",
   },
   preview: {
     host: "127.0.0.1",

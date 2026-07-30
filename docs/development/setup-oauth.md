@@ -170,7 +170,7 @@ incoming request — fine when the SPA and API already share an origin.
    OAUTH_GOOGLE_CLIENT_SECRET=<client secret>
    OAUTH_REDIRECT_BASE=http://localhost:5173/api
    ```
-3. Run the SPA stack: `scripts\dev-spa.ps1` (backend on `:8000`, Vite on
+3. Run the SPA stack: `scripts\dev\dev-spa.ps1` (backend on `:8000`, Vite on
    `:5173`). Open <http://localhost:5173>, click the account menu →
    **Sign in with Google**.
 
