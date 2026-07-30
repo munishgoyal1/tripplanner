@@ -90,7 +90,8 @@ Key structured events emitted from the FastAPI application:
 | `api_oauth_login` | `provider` (no email / no name) |
 
 The production reliability objectives, low-volume interpretation, release
-response, and copy-paste KQL live in [operations-slos.md](operations-slos.md).
+response, and copy-paste KQL live in
+[operations-slos.md](../operations/operations-slos.md).
 
 KQL example once the container is running on Azure:
 

@@ -27,7 +27,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   `tripplanner-worker-2.code-workspace` remains available on demand
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
-- Parallel-agent workflow: [docs/parallel-agent-development.md](parallel-agent-development.md)
+- Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
 - Full stack: `.\scripts\dev-spa.ps1`
 - Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
 - Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
@@ -40,9 +40,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
 - iPhone via Expo Go: `cd mobile; npm run iphone` (LAN port 8082)
-- iPhone testing runbook: [docs/ios-testing.md](ios-testing.md)
+- iPhone testing runbook: [docs/mobile/ios-testing.md](mobile/ios-testing.md)
 - Android via Expo Go: `cd mobile; npm run android` (LAN port 8082)
-- Android testing runbook: [docs/android-testing.md](android-testing.md)
+- Android testing runbook: [docs/mobile/android-testing.md](mobile/android-testing.md)
 - Mobile checks: `cd mobile; npx tsc --noEmit; npm run lint; npm exec --yes expo-doctor`
 - iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
@@ -50,8 +50,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   Docker Desktop when its daemon is stopped; repairs stale PostgreSQL runtime
   locks only when no server process exists; never resets persisted data)
 - Deploy: see [infra/README.md](../infra/README.md)
-- Release flow: see [docs/deployment-flow.md](deployment-flow.md)
-- Performance/cost interpretation: see [docs/performance-cost.md](performance-cost.md)
+- Release flow: see [docs/operations/deployment-flow.md](operations/deployment-flow.md)
+- Performance/cost interpretation: see [docs/operations/performance-cost.md](operations/performance-cost.md)
 
 `scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
 
@@ -230,22 +230,30 @@ tests/                pytest suite
                       FastAPI requests through real chat/workspace admission
 docs/
   README.md           Documentation index, ownership, and structure policy
-  android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
   ENGINEERING_LEARNINGS.md  Joint architectural/domain lessons for future work
   PRODUCT.md          Product intent, interaction rules, and design taste
   REQUIREMENTS_V2.md  Current implemented capability baseline, explicit gaps,
                       proposed roadmap, and quality bar
+  archive/            Inactive owner inputs and historical reference artifacts
+  development/
+    dev.md            Dev environment notes
+    parallel-agent-development.md  Worktree and coding-agent workflow
+    setup-oauth.md    OAuth setup walkthrough
+  operations/
+    backup-recovery.md Guarded backup, restore, and recovery drill
+    deployment-flow.md Canary, production, monitoring, and rollback flow
+    operations-slos.md Production chat SLOs, KQL, and release response
+    performance-cost.md Performance and cost evidence and regression baseline
+  mobile/
+    android-testing.md Expo Go, EAS preview, Play testing, troubleshooting
+    ios-testing.md    Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   roadmap/
+    DEFERRED_DECISIONS.md Deliberately postponed choices awaiting evidence
     FUTURE_FEATURES.md  Consolidated candidate backlog; not implementation approval
   feature-briefs/
     FEATURE_BRIEF_TEMPLATE.md  Reusable owner/agent feature-intake contract
     NEXT_INCREMENT.md          Owner-editable brief seeded from the V2 baseline
-  dev.md              Dev environment notes
-  ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
-  operations-slos.md Production chat SLO definitions, KQL, and release response
-  setup-oauth.md      OAuth setup walkthrough
-  DEFERRED_DECISIONS.md  Usage experiments and future choices awaiting owner alignment
 ```
 
 Secret files are environment-specific and ignored: local `.env`, canary

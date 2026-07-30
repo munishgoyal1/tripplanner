@@ -54,7 +54,7 @@ callback bases are resolved by the deployment scripts.
 | Production DNS | Namecheap records for `aitripplanner.co` and `www` |
 | Production TLS/domain bindings | Existing Azure managed certificates declared by `infra/main.bicep` |
 | Shared data infrastructure | `infra/data-stack.bicep`, `infra/data.bicep`, modules |
-| Backup/recovery procedure | `docs/backup-recovery.md` plus ignored `logs/recovery/` evidence |
+| Backup/recovery procedure | `docs/operations/backup-recovery.md` plus ignored `logs/recovery/` evidence |
 | Canary data | Shared Cosmos account, `tripplanner-canary` database |
 | Production data | Shared Cosmos account, `tripplanner-prod` database |
 | Runtime revisions/logs | Azure Container Apps and Log Analytics |

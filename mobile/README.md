@@ -8,7 +8,7 @@ Android.
 ## Run on Android
 
 The maintained setup, smoke-test, troubleshooting, EAS preview, and Google Play
-instructions live in [`docs/android-testing.md`](../docs/android-testing.md).
+instructions live in [`docs/mobile/android-testing.md`](../docs/mobile/android-testing.md).
 
 Install Expo Go from Google Play, then from this directory:
 
@@ -23,7 +23,7 @@ This starts LAN mode on port 8082. Scan the QR code from Expo Go. The same
 ## Run on iPhone
 
 The maintained setup, smoke-test, troubleshooting, EAS preview, and TestFlight
-instructions live in [`docs/ios-testing.md`](../docs/ios-testing.md).
+instructions live in [`docs/mobile/ios-testing.md`](../docs/mobile/ios-testing.md).
 
 Install Expo Go from the App Store, then from this directory:
 

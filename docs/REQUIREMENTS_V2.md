@@ -459,7 +459,7 @@ increments.
 - Prefer improvements to planning completeness, trust, and cross-surface coherence
   over adding disconnected feature breadth.
 - Revisit exact-place zoom only when usage or feedback triggers the recorded
-  decision in `docs/DEFERRED_DECISIONS.md`.
+  decision in `docs/roadmap/DEFERRED_DECISIONS.md`.
 
 ### V2.3 - Responsible monetization
 

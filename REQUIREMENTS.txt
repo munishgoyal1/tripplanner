@@ -478,7 +478,7 @@ CHANGES (Part B — Chainlit removal + hosting rewire):
 - .github/workflows/deploy.yml — maps the existing `secrets.CHAINLIT_AUTH_SECRET` GH secret to
   the new WEB_SESSION_SECRET env (no need to re-create the secret).
 - scripts/dev-spa.ps1 / autoheal.ps1, .env.example, .dockerignore, .gitignore — de-Chainlited.
-- Docs (README.md, infra/README.md, frontend/README.md, docs/setup-oauth.md, docs/dev.md,
+- Docs (README.md, infra/README.md, frontend/README.md, docs/development/setup-oauth.md, docs/development/dev.md,
   .github/copilot-instructions.md) — updated to describe the SPA-served-by-FastAPI hosting and
   the standalone Google OAuth flow.
 
@@ -2218,7 +2218,7 @@ VALIDATION:
   stop or zoom 15 to one place.
 - Keep current place-level behavior for now: clicking an itinerary place or map
   pin focuses that exact occurrence and pans to zoom 15. Record this as an
-  observation in `docs/DEFERRED_DECISIONS.md`; do not change it proactively.
+  observation in `docs/roadmap/DEFERRED_DECISIONS.md`; do not change it proactively.
 
 === 2026-07-26 — Session 65: Automatic local Docker startup ===
 
@@ -2620,3 +2620,12 @@ VALIDATION:
   counts together.
 - Count planned day stops without the primary-stay hotel circuit anchors. Keep
   the original Labs pages as the preserved decision record.
+
+=== 2026-07-30 — Documentation categories ===
+
+- Keep canonical product, requirements, code-map, learning, and deferred-decision
+  documents prominent at the `docs/` root.
+- Organize supporting documents by lifecycle under `docs/development/`,
+  `docs/operations/`, `docs/mobile/`, and `docs/archive/`.
+- Update every live cross-reference when moving a document. Preserve the active
+  `Requirements.docx` owner input at the root while its Office lock exists.
