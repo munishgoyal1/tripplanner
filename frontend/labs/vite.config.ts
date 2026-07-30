@@ -27,6 +27,7 @@ export default defineConfig({
         itineraryDensity: resolve(__dirname, "itinerary-density.html"),
         itineraryInformation: resolve(__dirname, "itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
+        itineraryTripBook: resolve(__dirname, "itinerary-trip-book.html"),
         workspaceShell: resolve(__dirname, "workspace-shell.html"),
       },
     },

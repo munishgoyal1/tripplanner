@@ -1,7 +1,17 @@
-Itinerary:
-- should be 
+Goals:
+    TOp level goal is to provide a succint and informational view of itinerary stops and day wise detail including everything neeeded to execute on the trip.
+    Ideally customer should just be able to export the itinerary pdf and be able to use that either soft or hard copy say, for entire trip.
+    It shoudld include booking confirmaitons, example hotel voucher, flight tickets etc. visa docs etc. all appended at the end say
+    starting can be a list of contents
+    then the itinerary itself
+    then the tickets, htoel bookings
+    then the visa etc.
+    then may be more detail on the itinerary places , including some pic and insights (optional)
+    customer should be able to get the great insights at each day level, trip level, place (city) level, attarction, hotel level etc.
+    These insights should contain things specifci to them their family. e..g you can use the swimming pool which at the hotel rooftop since your soin likes inifitinyt pools or he likes swimming in shallow pool etc.
+    Another on- you can go to Hotel's sunset barbeque music event that is compplimentary etc.
 
-figure how users interact with the product
-1. chat is primary. pick preferences or even chat agent should ask. 
-2. if chat agent is unsure then it shoudl just ask some of those.
-make it more interactive the chat assistant part
+
+Consistency:
+    everyhting should be consistent example the map view, itinerary view, details, or the cha tassitant, the export view etc.
+
