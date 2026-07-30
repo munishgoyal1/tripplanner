@@ -30,17 +30,21 @@ Thumbs.db
 
 # Distribution
 dist/
-dist-ux-lab/
+frontend/labs/dist/
 build/
 *.egg-info/
 
 # Test / coverage
 .pytest_cache/
+.tmp_test_home/
 .coverage
 htmlcov/
 
-# Dev server logs (tee'd by scripts/dev-spa.ps1 -LogFile, tailed by scripts/autoheal.ps1)
+# Dev server logs
 logs/
+
+# Temporary Microsoft Office lock files
+~$*
 
 # Stray local upload/cache artifacts
 .files/

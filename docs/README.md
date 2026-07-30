@@ -21,22 +21,32 @@ canonical set below instead of reading every file.
 | [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md) | Consolidated future feature and enhancement candidates; not implementation approval |
 | [`feature-briefs/NEXT_INCREMENT.md`](feature-briefs/NEXT_INCREMENT.md) | Owner-editable scope for the next coherent milestone |
 | [`feature-briefs/FEATURE_BRIEF_TEMPLATE.md`](feature-briefs/FEATURE_BRIEF_TEMPLATE.md) | Full feature-brief template and acceptance structure |
-| [`DEFERRED_DECISIONS.md`](DEFERRED_DECISIONS.md) | Deliberately postponed decisions awaiting evidence or approval |
+| [`roadmap/DEFERRED_DECISIONS.md`](roadmap/DEFERRED_DECISIONS.md) | Deliberately postponed decisions awaiting evidence or approval |
 | [`ux-experiments/`](ux-experiments/) | Bounded UX experiment records and template |
 
-## Operations and development
+## Development
 
 | Document | Purpose |
 |---|---|
-| [`dev.md`](dev.md) | Local development guidance |
-| [`parallel-agent-development.md`](parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
-| [`deployment-flow.md`](deployment-flow.md) | Canonical canary, production, monitoring, and rollback flow |
-| [`operations-slos.md`](operations-slos.md) | Production observability, SLOs, and Log Analytics queries |
-| [`performance-cost.md`](performance-cost.md) | Performance and cost evidence layers and regression baseline |
-| [`backup-recovery.md`](backup-recovery.md) | Guarded backup, validation, restore, and recovery-drill procedure |
-| [`setup-oauth.md`](setup-oauth.md) | Google OAuth setup |
-| [`ios-testing.md`](ios-testing.md) | iPhone and iOS testing runbook |
-| [`android-testing.md`](android-testing.md) | Android testing runbook |
+| [`development/dev.md`](development/dev.md) | Local development guidance |
+| [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
+| [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
+
+## Operations
+
+| Document | Purpose |
+|---|---|
+| [`operations/deployment-flow.md`](operations/deployment-flow.md) | Canonical canary, production, monitoring, and rollback flow |
+| [`operations/operations-slos.md`](operations/operations-slos.md) | Production observability, SLOs, and Log Analytics queries |
+| [`operations/performance-cost.md`](operations/performance-cost.md) | Performance and cost evidence layers and regression baseline |
+| [`operations/backup-recovery.md`](operations/backup-recovery.md) | Guarded backup, validation, restore, and recovery-drill procedure |
+
+## Mobile
+
+| Document | Purpose |
+|---|---|
+| [`mobile/ios-testing.md`](mobile/ios-testing.md) | iPhone and iOS testing runbook |
+| [`mobile/android-testing.md`](mobile/android-testing.md) | Android testing runbook |
 
 Infrastructure-specific deployment details remain under
 [`../infra/`](../infra/), with [`../infra/README.md`](../infra/README.md) as the
@@ -45,30 +55,35 @@ entry point. Mobile package-specific setup remains in
 
 ## Owner and historical artifacts
 
-The Word and text files in this directory are owner inputs or historical
-reference material, not current implementation truth:
+The Word and text files below are owner inputs or historical reference
+material, not current implementation truth:
 
-- `Requirements.docx`
-- `Bugs to resolve.docx`
-- `deployment_detail.txt`
-- `prompts.txt`
-- `usage.txt`
+- [`Requirements.docx`](Requirements.docx) remains at the root while it is an
+  active owner input.
+- [`archive/Bugs to resolve.docx`](archive/Bugs%20to%20resolve.docx)
+- [`archive/AI Trip Planner - Memory Architecture Specification v1.pdf`](archive/AI%20Trip%20Planner%20-%20Memory%20Architecture%20Specification%20v1.pdf)
+- [`archive/key_info_infra.txt`](archive/key_info_infra.txt)
+- [`archive/prompts.txt`](archive/prompts.txt)
+- [`archive/usage.txt`](archive/usage.txt)
 
 The temporary Office lock file `~$quirements.docx` should not be treated as
-source material and may be removed when no editor owns it. These artifacts stay
-at their current paths until the owner explicitly approves archival or deletion;
-moving opaque historical inputs without reviewing their contents would create
-more uncertainty than structure.
+source material and may be removed when no editor owns it. Do not move the
+active Word document while that lock exists.
 
 ## Structure policy
 
-- Keep the five canonical documents at the `docs/` root for stable, prominent
-  paths.
+- Keep the canonical documents listed above at the `docs/` root for stable,
+  prominent paths.
 - Put future product candidates in `docs/roadmap/`.
 - Put active milestone intake in `docs/feature-briefs/`.
 - Put UX experiments in `docs/ux-experiments/`.
-- Keep operational runbook paths stable unless a coordinated move updates every
-  script, README, agent instruction, and historical reference.
+- Put local setup and contributor workflows in `docs/development/`.
+- Put deployment, reliability, observability, and performance runbooks in
+  `docs/operations/`.
+- Put native-platform testing runbooks in `docs/mobile/`.
+- Put inactive owner inputs and historical artifacts in `docs/archive/`.
+- Move runbook paths only as a coordinated change that updates every script,
+  README, agent instruction, and historical reference.
 - Add a new top-level docs folder only when at least two durable documents share
   a clear owner and lifecycle.
 - Prefer updating an existing canonical document over creating another summary.

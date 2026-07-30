@@ -142,10 +142,10 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
 > **Developing locally?** Run `.\scripts\setup-dev-machine.ps1` once, then see
-> [`docs/dev.md`](docs/dev.md) for the `.\scripts\dev-spa.ps1` workflow.
+> [`docs/development/dev.md`](docs/development/dev.md) for the `.\scripts\dev-spa.ps1` workflow.
 > For multiple simultaneous coding-agent windows, use isolated Git worktrees as
 > described in
-> [`docs/parallel-agent-development.md`](docs/parallel-agent-development.md).
+> [`docs/development/parallel-agent-development.md`](docs/development/parallel-agent-development.md).
 
 ## Quick Start
 
@@ -156,7 +156,7 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 ```
 
 The setup command installs missing prerequisites, restores locked dependencies,
-and preserves any existing `.env`. See [docs/deployment-flow.md](docs/deployment-flow.md)
+and preserves any existing `.env`. See [docs/operations/deployment-flow.md](docs/operations/deployment-flow.md)
 for the two-stage canary and production release flow.
 
 ### Local CLI
@@ -353,8 +353,11 @@ tripplanner/
 ├── Dockerfile                    # Multistage: build SPA (node) + run FastAPI (uvicorn)
 │
 ├── frontend/                     # React 19 + Vite + TS single-page app (the UI)
+│   ├── labs/                     # Isolated UX experiments and build configuration
 │   ├── src/                      # App.tsx, ChatPanel, TripPanel, DestinationOverview, ...
 │   └── dist/                     # Production build, served by FastAPI in prod
+│
+├── packages/tripplanner-client/  # Shared web/native contracts and request helpers
 │
 ├── infra/
 │   ├── data-stack.bicep          # Subscription-scope shared data bootstrap

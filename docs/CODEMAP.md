@@ -27,7 +27,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   `tripplanner-worker-2.code-workspace` remains available on demand
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
-- Parallel-agent workflow: [docs/parallel-agent-development.md](parallel-agent-development.md)
+- Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
 - Full stack: `.\scripts\dev-spa.ps1`
 - Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
 - Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
@@ -40,9 +40,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
 - iPhone via Expo Go: `cd mobile; npm run iphone` (LAN port 8082)
-- iPhone testing runbook: [docs/ios-testing.md](ios-testing.md)
+- iPhone testing runbook: [docs/mobile/ios-testing.md](mobile/ios-testing.md)
 - Android via Expo Go: `cd mobile; npm run android` (LAN port 8082)
-- Android testing runbook: [docs/android-testing.md](android-testing.md)
+- Android testing runbook: [docs/mobile/android-testing.md](mobile/android-testing.md)
 - Mobile checks: `cd mobile; npx tsc --noEmit; npm run lint; npm exec --yes expo-doctor`
 - iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
@@ -50,10 +50,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   Docker Desktop when its daemon is stopped; repairs stale PostgreSQL runtime
   locks only when no server process exists; never resets persisted data)
 - Deploy: see [infra/README.md](../infra/README.md)
-- Release flow: see [docs/deployment-flow.md](deployment-flow.md)
-- Performance/cost interpretation: see [docs/performance-cost.md](performance-cost.md)
-
-`scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
+- Release flow: see [docs/operations/deployment-flow.md](operations/deployment-flow.md)
+- Performance/cost interpretation: see [docs/operations/performance-cost.md](operations/performance-cost.md)
 
 The primary checkout stays on `master` as the review/integration lane. The
 default coding agent uses persistent `worker-1` for one coherent PR-sized
@@ -118,12 +116,13 @@ frontend/
   vite.config.ts      Dev: proxies /api → :8000
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
+  labs/               Isolated UX experiment HTML, source, feedback plugin,
+                      TypeScript config, and Vite build; local handoffs are
+                      written to the ignored
+                      docs/ux-experiments/LAB_SELECTIONS.local.json
+    src/itinerary-density/  Active 320px day-density comparison; preserves the
+          implemented Compact Agenda while evaluating refinements
   src/
-    labs/             UX Labs catalog plus shared owner decision capture;
-                      local handoffs are written by the Vite dev server to the
-                      ignored docs/ux-experiments/LAB_SELECTIONS.local.json
-    itinerary-density-lab/ Active 320px day-density comparison; preserves the
-              implemented Compact Agenda lab while evaluating refinements
     main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
@@ -194,6 +193,8 @@ packages/tripplanner-client/
                            including optional SSE progress phases
   src/client.ts            Fetch, mutation, and token/tool/progress SSE transport
                            for web + native
+  src/itinerary-occurrence.ts  Converts rendered stop indexes to one-based API identity
+  src/latest-request.ts    Abortable generation gate shared by platform data owners
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
   app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant,
@@ -201,9 +202,6 @@ mobile/
   providers/trip-provider.tsx  Authoritative native data/revision owner; completed
                            chat and mutations refresh all dependent trip surfaces;
                            one abortable generation prevents stale refresh commits
-  lib/itinerary-occurrence.ts  Converts zero-based rendered rows to the API's
-                           one-based exact-occurrence identity
-  lib/latest-request.ts    Small latest-request gate shared by native trip reads
   lib/tripplanner.ts       Hosted API selection + Keychain-backed identity and
                            native Google OAuth session handoff
   eas.json                 Development, preview, and App Store build profiles
@@ -223,31 +221,37 @@ scripts/
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
   performance_baseline.py  Hermetic FastAPI route/admission p50/p95 + zero-cost gate
-  autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Local external-provider smoke check
   hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
-  test.ps1            Legacy (Chainlit era) — do not use
 tests/                pytest suite
                       request-security tests drive overlapping authenticated
                       FastAPI requests through real chat/workspace admission
 docs/
   README.md           Documentation index, ownership, and structure policy
-  android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
   ENGINEERING_LEARNINGS.md  Joint architectural/domain lessons for future work
   PRODUCT.md          Product intent, interaction rules, and design taste
   REQUIREMENTS_V2.md  Current implemented capability baseline, explicit gaps,
                       proposed roadmap, and quality bar
+  archive/            Inactive owner inputs and historical reference artifacts
+  development/
+    dev.md            Dev environment notes
+    parallel-agent-development.md  Worktree and coding-agent workflow
+    setup-oauth.md    OAuth setup walkthrough
+  operations/
+    backup-recovery.md Guarded backup, restore, and recovery drill
+    deployment-flow.md Canary, production, monitoring, and rollback flow
+    operations-slos.md Production chat SLOs, KQL, and release response
+    performance-cost.md Performance and cost evidence and regression baseline
+  mobile/
+    android-testing.md Expo Go, EAS preview, Play testing, troubleshooting
+    ios-testing.md    Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   roadmap/
+    DEFERRED_DECISIONS.md Deliberately postponed choices awaiting evidence
     FUTURE_FEATURES.md  Consolidated candidate backlog; not implementation approval
   feature-briefs/
     FEATURE_BRIEF_TEMPLATE.md  Reusable owner/agent feature-intake contract
     NEXT_INCREMENT.md          Owner-editable brief seeded from the V2 baseline
-  dev.md              Dev environment notes
-  ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
-  operations-slos.md Production chat SLO definitions, KQL, and release response
-  setup-oauth.md      OAuth setup walkthrough
-  DEFERRED_DECISIONS.md  Usage experiments and future choices awaiting owner alignment
 ```
 
 Secret files are environment-specific and ignored: local `.env`, canary

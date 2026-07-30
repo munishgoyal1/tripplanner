@@ -478,7 +478,7 @@ CHANGES (Part B — Chainlit removal + hosting rewire):
 - .github/workflows/deploy.yml — maps the existing `secrets.CHAINLIT_AUTH_SECRET` GH secret to
   the new WEB_SESSION_SECRET env (no need to re-create the secret).
 - scripts/dev-spa.ps1 / autoheal.ps1, .env.example, .dockerignore, .gitignore — de-Chainlited.
-- Docs (README.md, infra/README.md, frontend/README.md, docs/setup-oauth.md, docs/dev.md,
+- Docs (README.md, infra/README.md, frontend/README.md, docs/development/setup-oauth.md, docs/development/dev.md,
   .github/copilot-instructions.md) — updated to describe the SPA-served-by-FastAPI hosting and
   the standalone Google OAuth flow.
 
@@ -2218,7 +2218,7 @@ VALIDATION:
   stop or zoom 15 to one place.
 - Keep current place-level behavior for now: clicking an itinerary place or map
   pin focuses that exact occurrence and pans to zoom 15. Record this as an
-  observation in `docs/DEFERRED_DECISIONS.md`; do not change it proactively.
+  observation in `docs/roadmap/DEFERRED_DECISIONS.md`; do not change it proactively.
 
 === 2026-07-26 — Session 65: Automatic local Docker startup ===
 
@@ -2579,6 +2579,21 @@ VALIDATION:
 - Saving is preference capture only. Production UI remains unchanged until the
   owner explicitly tells the coding agent to pick and execute the saved handoff.
 
+=== 2026-07-30 — Repository ownership cleanup ===
+
+- Keep production frontend source separate from UX experiments. UX Lab HTML,
+  source, feedback middleware, compiler configuration, and build output belong
+  under `frontend/labs/`; `frontend/src/` contains production code only.
+- Put platform-neutral web/native request and itinerary-occurrence helpers in
+  `packages/tripplanner-client`, not under a platform-specific client.
+- Do not track generated test homes, temporary Office lock files, orphaned root
+  package metadata, or dead Chainlit-era development launchers.
+- Archive obsolete standalone architecture artifacts instead of retaining a
+  top-level folder that appears current.
+- Treat the oversized API, planner, view-model, chat-store, and frontend owner
+  modules as focused future refactors. Do not shuffle them into new folders
+  without preserving contracts through narrow tests.
+
 === 2026-07-29 — Persistent VS Code agent-window layout and launcher ===
 
 - Treat the three named, color-coded Tripplanner workspaces as the owner's
@@ -2638,3 +2653,12 @@ VALIDATION:
   preserving a usable map center.
 - Evaluate further compact itinerary refinements in a separate 320 px UX Lab;
   preserve the already implemented Compact Agenda and Compact Brief decisions.
+
+=== 2026-07-30 — Documentation categories ===
+
+- Keep canonical product, requirements, code-map, learning, and deferred-decision
+  documents prominent at the `docs/` root.
+- Organize supporting documents by lifecycle under `docs/development/`,
+  `docs/operations/`, `docs/mobile/`, and `docs/archive/`.
+- Update every live cross-reference when moving a document. Preserve the active
+  `Requirements.docx` owner input at the root while its Office lock exists.

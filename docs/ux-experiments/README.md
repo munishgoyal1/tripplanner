@@ -4,7 +4,7 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 
 ## Lab Catalog
 
-Open `http://localhost:5173/labs.html` while the frontend dev server is running
+Open `http://localhost:5173/labs/catalog.html` while the frontend dev server is running
 to access every standalone UX experiment from one place. The catalog has two
 durable sections:
 
@@ -37,12 +37,12 @@ canary, then merge C and delete discarded experiment branches.
 ## Decided Component Experiments (2026-07-29)
 
 The itinerary information-design lab is available at
-`http://localhost:5173/ux-lab.html` while the frontend dev server is running.
+`http://localhost:5173/labs/itinerary-information.html` while the frontend dev server is running.
 The implemented decision is B - Compact Agenda. See
 [`ITINERARY_INFORMATION_DESIGN.md`](ITINERARY_INFORMATION_DESIGN.md).
 
 The separate day-summary lab is available at
-`http://localhost:5173/summary-lab.html`. The implemented decision is C -
+`http://localhost:5173/labs/itinerary-summary.html`. The implemented decision is C -
 Compact Brief, with explicit Travel rhythm and day-plan wording, confirmed and
 remaining booking counts, and hotel anchors excluded from the planned-stop
 count. See

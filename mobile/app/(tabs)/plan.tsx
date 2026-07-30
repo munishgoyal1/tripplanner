@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState, Screen } from '@/components/screen';
 import { palette } from '@/constants/tripplanner-theme';
-import { exactItineraryOccurrence } from '@/lib/itinerary-occurrence';
+import { exactItineraryOccurrence } from '@tripplanner/client';
 import { useTrip } from '@/providers/trip-provider';
 
 export default function PlanScreen() {

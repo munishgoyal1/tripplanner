@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "Tripplanner Worker 1",
-      "path": "../tripplanner.worktrees/worker-1"
+      "name": "Tripplanner Development",
+      "path": "."
     }
   ],
   "settings": {
-    "window.title": "Agent 1 - Development | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Devoptimial | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
     "github.copilot.enable": {
       "*": true,

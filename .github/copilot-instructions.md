@@ -42,7 +42,7 @@
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
 - Use `scripts/agent-worktree.ps1` and
-  `docs/parallel-agent-development.md` for slot creation, synchronization,
+  `docs/development/parallel-agent-development.md` for slot creation, synchronization,
   temporary worktrees, and safe cleanup. Do not share `.venv` or mutable
   `node_modules` across worktrees.
 
@@ -71,7 +71,7 @@ stays fast. Build & push only when explicitly asked.
 
 Canary builds new code by default. Production resolves the exact immutable SHA
 currently deployed to canary; do not rebuild normal promotions.
-See `docs/deployment-flow.md` for the canonical release runbook.
+See `docs/operations/deployment-flow.md` for the canonical release runbook.
 
 Resource naming:
 - Canary RG: `rg-tripplanner-canary` (app: `canary-app-*`)
@@ -140,7 +140,7 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-29)
+## Current State (last updated 2026-07-30)
 - **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
   consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
   time from route-only Travel and marks inferred hotel departure/return times as
@@ -149,6 +149,16 @@ Learns from user preferences and past trips.
   single-anchor removal. The itinerary pane can expand to 55% while retaining a
   usable map. A separate 320 px density lab compares ledger, circuit-header, and
   progressive-focus refinements without rewriting the selected Compact Agenda.
+- **Repository ownership cleanup**: UX Lab HTML, source, feedback middleware,
+  and build configuration now live under `frontend/labs/`; production
+  `frontend/src/` excludes experiments. Platform-neutral occurrence and latest-
+  request helpers live in `packages/tripplanner-client` instead of `mobile/`.
+  Generated test-home state, orphaned root npm metadata, dead Chainlit-era
+  scripts, and the obsolete top-level architecture folder are removed.
+- **Categorized documentation**: canonical product and engineering truth remains
+  prominent at `docs/`, while supporting material is grouped under
+  `development/`, `operations/`, `mobile/`, `roadmap/`, `feature-briefs/`,
+  `ux-experiments/`, and `archive/`. `docs/README.md` is the navigation owner.
 - **Compact itinerary brief + agenda (Session 86)**: the owner-selected Compact
   Brief C and Compact Agenda B now drive production itinerary days. Day briefs
   exclude hotel anchors from planned-stop counts, label the end-to-end timed span
@@ -182,14 +192,14 @@ Learns from user preferences and past trips.
   and workspace admission for three trip reads plus one mutation. It reports
   p50/p95/error evidence, rejects scenario p95 above a conservative 750 ms,
   and proves zero LLM calls/cost while stubbing only storage/view computation.
-  `docs/performance-cost.md` separates this regression tripwire from production
+  `docs/operations/performance-cost.md` separates this regression tripwire from production
   chat/tool telemetry, Cosmos RU/throttling analysis, and Azure/provider billing.
 - **Backup and recovery drill (engineering improvement 5)**: the Cosmos data
   utility can export all six application containers into a credential-free
   checksummed artifact, validate it offline, and restore it exactly into an
   empty isolated recovery database. Drill mode rejects canary/production,
   same-coordinate, nonempty, missing-container, and partial-scope targets;
-  `docs/backup-recovery.md` defines evidence, initial RPO/RTO objectives, and
+  `docs/operations/backup-recovery.md` defines evidence, initial RPO/RTO objectives, and
   the explicit approval boundary for any real production recovery.
 - **External side-effect idempotency (engineering improvement 4)**: trip email
   export now carries a stable client request ID through a bounded principal
@@ -206,7 +216,7 @@ Learns from user preferences and past trips.
 - **Production observability + measurable chat SLOs (engineering improvement 2)**:
   every JSON and SSE chat attempt emits one PII-safe terminal `chat_operation`
   event with outcome, transport, and end-to-end duration, including admission,
-  replay, cap, model, and persistence paths. `docs/operations-slos.md` defines
+  replay, cap, model, and persistence paths. `docs/operations/operations-slos.md` defines
   the initial accepted-chat success and p95 latency objectives, honest
   low-volume interpretation, release checks, tool diagnostics, and copy-paste
   Log Analytics queries. Existing Container Apps stdout routing remains the
@@ -332,7 +342,7 @@ Learns from user preferences and past trips.
   an itinerary day header now fits the complete day circuit instead of routing
   through one representative place; desktop and mobile share a repeatable
   circuit-focus token. Exact-place clicks intentionally retain zoom 15 for now,
-  with the usage decision recorded in `docs/DEFERRED_DECISIONS.md`.
+  with the usage decision recorded in `docs/roadmap/DEFERRED_DECISIONS.md`.
 - **Exact map focus regression repair (Session 63)**: changing itinerary
   selection updates existing same-day marker icons immediately, restores the
   previous marker, and leaves exactly one current map number. Circuit/hotel
@@ -400,10 +410,10 @@ Learns from user preferences and past trips.
 - **Native Android app (Session 51)**: the Expo/React Native mobile shell now
   explicitly supports Android with package `com.munishgoyal1.tripplanner`,
   Material icon mappings, Google Maps via `react-native-maps`, secure identity,
-  LAN Expo Go testing on port 8082, and a maintained `docs/android-testing.md`
+  LAN Expo Go testing on port 8082, and a maintained `docs/mobile/android-testing.md`
   runbook. Android reuses all shared client/state/backend behavior. Standalone
   EAS maps need a restricted Android Maps key before preview/Play testing.
-- **Repeatable iPhone testing (Session 50)**: `docs/ios-testing.md` is the
+- **Repeatable iPhone testing (Session 50)**: `docs/mobile/ios-testing.md` is the
   maintained Expo Go, EAS preview, and TestFlight runbook. Physical-device
   testing defaults to LAN port 8082 because Docker can occupy 8081; ngrok is an
   optional fallback and may be blocked by the current network. Mobile checks
@@ -721,7 +731,7 @@ Learns from user preferences and past trips.
     Signed HttpOnly `mg_session` cookie (HMAC-SHA256 with `WEB_SESSION_SECRET`,
     falls back to `CHAINLIT_AUTH_SECRET` for back-compat).
   - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
-  - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
+  - Setup walkthrough: `docs/development/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
 - Single trip planner agent with 34 tools across 10 families:
   - Preferences & continuous learning (10):

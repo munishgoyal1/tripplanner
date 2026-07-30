@@ -9,7 +9,7 @@ import {
   saveMobilePreferences,
   type MobilePreferences,
 } from '@/lib/tripplanner';
-import { LatestRequestGate } from '@/lib/latest-request';
+import { LatestRequestGate } from '@tripplanner/client';
 import { useTrip } from '@/providers/trip-provider';
 
 const EMPTY: MobilePreferences = {

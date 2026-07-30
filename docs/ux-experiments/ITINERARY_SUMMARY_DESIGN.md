@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Surface: `frontend/summary-lab.html`
+- Surface: `frontend/labs/itinerary-summary.html`
 - Isolated build: `npm --prefix frontend run build:ux-lab`
 - Paired row treatment: B - Compact agenda
 - Owner: Munish Goyal

@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { labFeedbackPlugin } from "./labFeedbackPlugin";
+import { labFeedbackPlugin } from "./labs/feedback-plugin";
 
 // Dev server proxies /api -> FastAPI so the SPA and backend share an origin
 // during development (avoids CORS friction and lets SSE stream cleanly).
