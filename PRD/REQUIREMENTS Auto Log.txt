@@ -2809,3 +2809,15 @@ VALIDATION:
   avoidable model rounds and repeated irrelevant tool-schema payload.
 - Measure model inference separately from provider and persistence work so latency
   changes target the demonstrated bottleneck.
+
+=== 2026-07-30 — Provider-neutral live rates and availability ===
+
+- Build separate hotel and flight provider abstractions, beginning with LiteAPI
+  and allowing a later Booking.com accommodation adapter where account access permits.
+- First priority is a robust itinerary backed by date-, party-, room-, nationality-,
+  and currency-specific rates and availability with explicit quote freshness,
+  taxes/fees, cancellation terms, and provider evidence.
+- Keep this phase read-only. Do not add prebooking, booking, payment, cancellation,
+  or claims that a persisted historical price remains currently available.
+- Google Places may supply property identity, ratings, and reviews but must never
+  be represented as room availability or a live rate.
