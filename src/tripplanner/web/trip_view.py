@@ -368,6 +368,97 @@ def _planned_place_names(trip: dict[str, Any]) -> set[str]:
     return names
 
 
+def _weather_condition(summary: str) -> str:
+    value = summary.strip().lower()
+    if any(word in value for word in ("thunder", "storm", "hail")):
+        return "storm"
+    if any(word in value for word in ("snow", "sleet", "freezing")):
+        return "snow"
+    if any(word in value for word in ("rain", "drizzle", "shower")):
+        return "rain"
+    if "fog" in value or "mist" in value:
+        return "fog"
+    if "overcast" in value or "cloudy" in value:
+        return "cloudy" if "partly" not in value else "partly_cloudy"
+    if any(word in value for word in ("clear", "sunny")):
+        return "clear"
+    return "unknown"
+
+
+def _number(value: Any) -> float | None:
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def build_weather(trip: dict[str, Any] | None) -> dict[str, Any] | None:
+    raw = (trip or {}).get("weather")
+    if not isinstance(raw, dict):
+        return None
+    source = str(raw.get("source") or "").strip().lower()
+    if source not in {"forecast", "seasonal_estimate", "agent_climate_estimate"}:
+        return None
+
+    days: list[dict[str, Any]] = []
+    for raw_day in raw.get("days") or []:
+        if not isinstance(raw_day, dict):
+            continue
+        day_date = str(raw_day.get("date") or "").strip()
+        summary = str(raw_day.get("summary") or "Typical conditions").strip()
+        if not day_date:
+            continue
+        days.append(
+            {
+                "date": day_date,
+                "summary": summary,
+                "condition": _weather_condition(summary),
+                "high_c": _number(raw_day.get("high_c")),
+                "low_c": _number(raw_day.get("low_c")),
+                "precip_mm": _number(raw_day.get("precip_mm")),
+                "precip_probability_pct": _number(
+                    raw_day.get("precip_probability_pct")
+                ),
+            }
+        )
+    if not days:
+        return None
+
+    highs = [day["high_c"] for day in days if day["high_c"] is not None]
+    lows = [day["low_c"] for day in days if day["low_c"] is not None]
+    rainy = any(
+        day["condition"] in {"rain", "storm"}
+        or (day["precip_mm"] or 0) >= 2
+        or (day["precip_probability_pct"] or 0) >= 40
+        for day in days
+    )
+    snowy = any(day["condition"] == "snow" for day in days)
+    packing = [str(item).strip() for item in raw.get("packing_advice") or [] if str(item).strip()]
+    if not packing:
+        if snowy or (lows and min(lows) <= 5):
+            packing.append("Insulated coat, warm layers, gloves, and weatherproof shoes")
+        elif lows and min(lows) <= 15:
+            packing.append("Light jacket and layers for cooler mornings and evenings")
+        elif highs and max(highs) >= 28:
+            packing.append("Light, breathable clothes plus a hat and sunscreen")
+        else:
+            packing.append("Comfortable light layers for changing conditions")
+        if rainy:
+            packing.append("Compact umbrella, light rain jacket, and quick-dry footwear")
+
+    return {
+        "source": source,
+        "source_label": {
+            "forecast": "Live forecast",
+            "seasonal_estimate": "Typical for this season",
+            "agent_climate_estimate": "Typical monthly pattern",
+        }[source],
+        "note": str(raw.get("note") or "").strip(),
+        "days": days,
+        "packing_advice": packing,
+    }
+
+
 # ---------------------------------------------------------------------------
 # view-model assembly (may hit Places for photos/reviews)
 # ---------------------------------------------------------------------------
@@ -398,6 +489,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
         "budget": build_budget(trip),
+        "weather": build_weather(trip),
         "family_pills": family_pills(prefs),
         "constraints": [
             str(c).strip()
@@ -1717,6 +1809,10 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
     symbol = currency_symbol(trip)
     selected_prices = _selected_price_map(trip)
     itin = trip.get("day_wise_itinerary") or []
+    weather = build_weather(trip)
+    weather_by_date = {
+        day["date"]: day for day in (weather or {}).get("days", [])
+    }
 
     # Pre-load all place coords so we can calculate route stats per day.
     # Use EVERY itinerary stop name, not just selected buckets, so added meals,
@@ -1861,6 +1957,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "stops": stops,
                 "route": route,
                 "schedule": schedule,
+                "weather": weather_by_date.get(str(entry.get("date") or "").strip()),
                 "reachability": _reachability_hint(stops, route),
                 "google_maps_url": _google_maps_day_url(
                     destination, stops, route.get("mode", "")

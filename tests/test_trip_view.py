@@ -93,6 +93,74 @@ def test_build_view_overview_and_items() -> None:
     assert hotel["reviews"]
 
 
+def test_build_weather_normalizes_forecast_and_packing() -> None:
+    weather = trip_view.build_weather(
+        {
+            "weather": {
+                "source": "forecast",
+                "days": [
+                    {
+                        "date": "2026-07-14",
+                        "summary": "Heavy rain",
+                        "high_c": 30,
+                        "low_c": 24,
+                        "precip_mm": 18,
+                        "precip_probability_pct": 85,
+                    }
+                ],
+            }
+        }
+    )
+
+    assert weather is not None
+    assert weather["source_label"] == "Live forecast"
+    assert weather["days"][0]["condition"] == "rain"
+    assert weather["days"][0]["high_c"] == 30
+    assert any("breathable" in item for item in weather["packing_advice"])
+    assert any("umbrella" in item for item in weather["packing_advice"])
+
+
+def test_build_weather_labels_agent_fallback_honestly() -> None:
+    weather = trip_view.build_weather(
+        {
+            "weather": {
+                "source": "agent_climate_estimate",
+                "note": "Open-Meteo was unavailable.",
+                "days": [
+                    {"date": "2026-12-02", "summary": "Typically cool", "high_c": 17, "low_c": 8}
+                ],
+            }
+        }
+    )
+
+    assert weather is not None
+    assert weather["source_label"] == "Typical monthly pattern"
+    assert weather["note"] == "Open-Meteo was unavailable."
+    assert any("jacket" in item for item in weather["packing_advice"])
+
+
+def test_itinerary_matches_weather_to_day_date() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "weather": {
+            "source": "seasonal_estimate",
+            "days": [
+                {"date": "2026-01-10", "summary": "Clear", "high_c": 27, "low_c": 18},
+                {"date": "2026-01-11", "summary": "Rain", "high_c": 25, "low_c": 17},
+            ],
+        },
+        "day_wise_itinerary": [
+            {"day": 1, "date": "2026-01-10", "stops": []},
+            {"day": 2, "date": "2026-01-11", "stops": []},
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    assert itinerary["days"][0]["weather"]["condition"] == "clear"
+    assert itinerary["days"][1]["weather"]["condition"] == "rain"
+
+
 def test_overview_counts_unique_itinerary_places() -> None:
     trip = {
         "selected_flights": [],

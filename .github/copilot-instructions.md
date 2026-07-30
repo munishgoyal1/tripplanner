@@ -152,6 +152,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Weather-aware itinerary summaries**: Open-Meteo needs no API key and now
+  persists normalized trip weather. Live forecast failure falls back to the
+  same-season archive; total provider failure permits only an explicitly labeled
+  monthly-climate estimate. Trip snapshot and day headers show condition icons,
+  temperature/rain context, and deterministic clothing/umbrella guidance.
 - **Production customer-flow analytics (Session 86)**: consent-gated GA4 is
   runtime-enabled only in production and uses a small content-free event
   vocabulary for visit-to-planning-to-trip-to-handoff funnels. Query strings,

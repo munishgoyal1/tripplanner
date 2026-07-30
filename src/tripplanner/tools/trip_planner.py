@@ -1525,6 +1525,7 @@ def create_trip_plan(
         "total_cost": 0,
         "budget": 0,
         "currency": "",
+        "weather": {},
         # One-off constraints/exceptions that apply to THIS trip only (e.g.
         # "3-star is fine just this time"). They never leak into durable prefs.
         "trip_constraints": [],
@@ -1564,6 +1565,9 @@ def update_trip_plan(updates_json: str) -> str:
     - currency: ISO code of the sticky display currency ("INR", "USD", "EUR",
       ...) — set it once when you pick the plan's currency so every surface
       (including the budget meter) shows the same symbol
+        - weather: normalized get_weather_forecast result with source, note, days,
+            and optional packing_advice. If Open-Meteo fails completely, use source
+            "agent_climate_estimate" and clearly label monthly climate knowledge.
     - notes: string
     - trip_constraints: list of strings — one-off exceptions/constraints that
       apply to THIS trip ONLY (e.g. "3-star hotel is fine just for this trip",
@@ -1593,7 +1597,7 @@ def update_trip_plan(updates_json: str) -> str:
     allowed_keys = {
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
-        "origin", "budget", "currency", "trip_constraints",
+        "origin", "budget", "currency", "weather", "trip_constraints",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     for key, val in updates.items():

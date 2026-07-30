@@ -217,8 +217,13 @@ def get_weather_forecast(location: str, start_date: str, end_date: str) -> str:
     if use_forecast:
         payload = _fetch_forecast(geo["latitude"], geo["longitude"], start, end, geo["timezone"])
         source = "forecast"
-        # If the trip extends past forecast horizon, the API silently clips —
-        # daily.time will only cover the available window.
+        if not payload:
+            proxy_start = _shift_year(start, -1)
+            proxy_end = _shift_year(end, -1)
+            payload = _fetch_archive(
+                geo["latitude"], geo["longitude"], proxy_start, proxy_end, geo["timezone"]
+            )
+            source = "seasonal_estimate"
     else:
         proxy_start = _shift_year(start, -1)
         proxy_end = _shift_year(end, -1)
