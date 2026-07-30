@@ -371,6 +371,10 @@ class TestTripPlanState:
         })
         update = json.dumps({
             "selected_flights": [{"airline": "IndiGo", "price": 8500}],
+            "weather": {
+                "source": "forecast",
+                "days": [{"date": "2026-07-01", "summary": "Rain", "high_c": 29}],
+            },
             "total_cost": 8500,
         })
         result = update_trip_plan.invoke({"updates_json": update})
@@ -378,6 +382,7 @@ class TestTripPlanState:
 
         plan = json.loads(get_trip_plan.invoke({}))
         assert len(plan["selected_flights"]) == 1
+        assert plan["weather"]["source"] == "forecast"
         assert plan["total_cost"] == 8500
 
     def test_update_trip_plan_rejects_placeholder_hotel_selection(self):

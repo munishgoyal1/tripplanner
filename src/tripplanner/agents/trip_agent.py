@@ -484,8 +484,13 @@ STEP 4 — BUILD ITINERARY
       • Swap outdoor plans for indoor on heavy-rain days
       • Build the packing list with REAL numbers ("Goa Jul 12-18 → daily highs
         29-31°C, rain 4/7 days → quick-dry rain jacket + sandals")
+    Persist the tool's complete normalized result in update_trip_plan under
+    "weather", adding a concise "packing_advice" string list when useful.
     If the source is "seasonal_estimate" (trip > 16 days out), label the
     weather section "typical for this season" rather than "forecast".
+    If Open-Meteo fails completely, use your general monthly climate knowledge
+    to persist weather with source "agent_climate_estimate", one entry per trip
+    date, and a note that live weather was unavailable. Never call that a forecast.
   - Visa & entry rules: for any international trip call
     check_visa_requirements(passport_country, destination_country, purpose,
     days). Surface visa-required / visa-on-arrival / e-visa status, the

@@ -2874,3 +2874,13 @@ VALIDATION:
 - The merge and Run Latest actions must preflight both workers, merge Worker 1
   and then Worker 2 through separate merge-commit pull requests, synchronize each
   persistent branch, and start the app only after both integrations succeed.
+
+=== 2026-07-30 — Weather-aware itinerary summaries ===
+
+- Persist weather for the travel dates and show a condition icon with concise
+  temperature/rain context on every itinerary day.
+- Show compact daily weather icons in the authoritative trip snapshot and include
+  practical clothing, umbrella, rain-jacket, and footwear guidance.
+- Prefer live weather. Fall back to seasonal archive evidence when it is unavailable,
+  then to explicitly labeled monthly climate knowledge only if the provider fails.
+- Keep the provider keyless when possible; Open-Meteo requires no API key.

@@ -1,5 +1,6 @@
 import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane, Users } from "lucide-react";
 import type { Budget, TripOverview } from "../types";
+import WeatherIcon from "./WeatherIcon";
 
 interface Props {
   overview: TripOverview;
@@ -103,6 +104,34 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
           </span>
         )}
       </div>
+
+      {overview.weather && (
+        <div className="mt-3 border-t border-slate-200 pt-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[10px] font-semibold uppercase text-slate-400">Weather</p>
+            <span className="text-[10px] font-medium text-slate-500">{overview.weather.source_label}</span>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label={`${overview.weather.source_label} weather summary`}>
+            {overview.weather.days.map((day, index) => (
+              <span
+                key={day.date}
+                className="inline-flex h-7 items-center gap-1 rounded-md bg-sky-50 px-2 text-[11px] font-medium text-slate-700 ring-1 ring-sky-100"
+                title={`${day.date}: ${day.summary}${day.precip_probability_pct != null ? `, ${day.precip_probability_pct}% precipitation` : ""}`}
+              >
+                <span className="text-sky-700"><WeatherIcon condition={day.condition} size={14} /></span>
+                <span>D{index + 1}</span>
+                {day.high_c != null && <span className="tabular-nums">{Math.round(day.high_c)}°</span>}
+              </span>
+            ))}
+          </div>
+          {overview.weather.packing_advice.length > 0 && (
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              <span className="font-semibold text-slate-700">Pack:</span>{" "}
+              {overview.weather.packing_advice.join(". ")}.
+            </p>
+          )}
+        </div>
+      )}
 
       {overview.family_pills && overview.family_pills.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">

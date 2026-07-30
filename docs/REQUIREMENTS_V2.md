@@ -157,7 +157,11 @@ re-describing the whole product.
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.
   Map circuit drawings and fallback estimates avoid unnecessary Directions calls.
-- Open-Meteo supplies forecast and seasonal weather context.
+- Open-Meteo supplies no-key daily forecasts and same-season archive context.
+  Forecast failures fall back to the archive; total provider failure may use an
+  explicitly labeled agent monthly-climate estimate. Normalized weather persists
+  with the trip, drives per-day and trip-summary icons, and produces practical
+  clothing, rain, umbrella, and footwear guidance.
 - Tavily supplies fresh travel research, official-source-biased visa/entry
   research, and overlapping local events.
 - Missing provider keys degrade to an explicit not-configured result rather than
