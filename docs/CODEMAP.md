@@ -21,18 +21,17 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Default workflow: open this primary checkout, work directly on `master`,
   validate once per milestone, commit, and push; the coding agent starts,
   restarts, clears stale ports, and health-checks affected local servers
-- Optional parallel development pair: double-click `Open-Tripplanner-Agents.cmd`
-  or run `.\scripts\open-agent-windows.ps1`
-- Optional three-window mode: double-click `Open-Tripplanner-All-Agents.cmd`
+- Sizeable isolated parallel features: double-click `Open-Tripplanner-All-Agents.cmd`
   or run `.\scripts\open-agent-windows.ps1 -IncludeWorker2`
 - Optional parallel workspaces: `tripplanner-worker-1.code-workspace` and
   `tripplanner-worker-2.code-workspace`; use `tripplanner-integration.code-workspace`
   for review/merge only while that mode is explicitly active
-- Optional Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
-  double-click `scripts/dev/Merge-Agent1.cmd`
+- Guarded two-worker integration: VS Code task `Tripplanner: Merge Workers` or
+  double-click `scripts/dev/Merge-Workers.cmd`; preflights both worktrees, then
+  merges Worker 1 followed by Worker 2 through separate merge-commit PRs
 - One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
   or double-click `scripts/dev/Run-Latest-Code.cmd`; this preserves and
-  restores staged, unstaged, and untracked local master work around integration
+  restores staged, unstaged, and untracked local master work around both merges
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
@@ -242,8 +241,8 @@ infra/
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
-  development/       One-click agent merge and run-latest workflow scripts
-  dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
+  dev/                One-click agent merge, run-latest, and local stack scripts
+  dev/dev-spa.ps1     THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
   performance_baseline.py  Hermetic FastAPI route/admission p50/p95 + zero-cost gate

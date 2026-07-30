@@ -2831,3 +2831,12 @@ VALIDATION:
 - Label product pricing as a from-price rather than an exact party total or held
   quote. Keep booking, payment, reservation, amendment, and cancellation APIs absent.
 - Prefer Viator when its server-side key is configured; preserve the Amadeus fallback.
+
+=== 2026-07-30 — Two-worker guarded integration ===
+
+- Keep the primary `master` workspace as the default development path. Use the
+  persistent worktree environment only for clear, sizeable, isolated features.
+- When parallel mode is active, Worker 1 and Worker 2 own separate feature work.
+- The merge and Run Latest actions must preflight both workers, merge Worker 1
+  and then Worker 2 through separate merge-commit pull requests, synchronize each
+  persistent branch, and start the app only after both integrations succeed.

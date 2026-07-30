@@ -38,7 +38,8 @@
 - The owner's default is this single primary `tripplanner` VS Code workspace,
   working directly on `master` for features, fixes, review, and integration.
 - Use persistent `worker-1` / `worker-2` worktrees only when the owner explicitly
-  requests parallel development. They are optional capacity, not the normal path.
+  requests parallel development for clear, sizeable, isolated features. They are
+  optional capacity, not the normal path; when active, both are independent lanes.
 - Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
   assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using
@@ -46,8 +47,9 @@
   behavior, and push.
 - When parallel mode is explicitly active, `scripts/dev/run-latest-code.ps1`:
   it temporarily stashes staged, unstaged, and untracked master work, performs the
-  clean guarded merge, restores the local state, and only then starts the app.
-  Overlapping restored changes stop for explicit conflict resolution.
+  clean guarded Worker 1 then Worker 2 PR merges, restores the local state, and
+  only then starts the app. Both workers preflight before either merge. Worker 2
+  incorporates Worker 1's new master first; conflicts stop for explicit resolution.
 - Use `scripts/agent-worktree.ps1` and
   `docs/development/parallel-agent-development.md` for slot creation, synchronization,
   temporary worktrees, and safe cleanup. Do not share `.venv` or mutable

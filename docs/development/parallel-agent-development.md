@@ -1,10 +1,10 @@
 # Optional parallel coding-agent development
 
 The default workflow uses one VS Code window in the primary `tripplanner`
-checkout and works directly on `master`. Use this parallel workflow only when
-the owner explicitly requests concurrent assignments. In that mode, `worker-1`
-is the development lane, the primary checkout is the review/integration lane,
-and `worker-2` remains optional capacity.
+checkout and works directly on `master`. Use this parallel workflow only for
+clear, sizeable, isolated features when the owner explicitly requests concurrent
+assignments. In that mode, `worker-1` and `worker-2` are separate development
+lanes and the primary checkout is the review/integration lane.
 
 ## Persistent agent windows
 
@@ -13,16 +13,16 @@ The standard slots are:
 | Role | Worktree | Branch | Workspace launcher |
 |---|---|---|---|
 | Agent 1 - Development | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
+| Agent 2 - Development | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
 | Agent 3 - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
-| Agent 2 - Worker (optional) | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
 
 The workspace launchers give each window a distinct title and color. Always
 confirm the branch in the status bar before committing or merging.
 
-When parallel mode is requested, double-click `Open-Tripplanner-Agents.cmd` from the
-repository or the `Tripplanner Agent Windows` Desktop shortcut. The command
-resolves the primary checkout through Git, verifies the default Agent 1 and
-Agent 3 workspaces, and opens them in separate VS Code windows. VS Code restores
+When parallel mode is requested, double-click `Open-Tripplanner-All-Agents.cmd`
+from the repository. The command resolves the primary checkout through Git,
+verifies both worker workspaces plus the integration workspace, and opens them
+in separate VS Code windows. VS Code restores
 the last window position, editor groups and tabs, cursor/scroll state, undo
 history, and terminal sessions for each workspace. The committed workspace
 settings keep the primary sidebar on the left and the terminal panel on the
@@ -38,13 +38,9 @@ compete for ports `5173` and `8000`.
 The equivalent PowerShell command, including a validation-only mode, is:
 
 ```powershell
-.\scripts\open-agent-windows.ps1
-.\scripts\open-agent-windows.ps1 -WhatIf
 .\scripts\open-agent-windows.ps1 -IncludeWorker2
+.\scripts\open-agent-windows.ps1 -IncludeWorker2 -WhatIf
 ```
-
-Double-click `Open-Tripplanner-All-Agents.cmd` for the equivalent optional
-three-window launch.
 
 Create the worker slots once from the primary checkout:
 
@@ -128,26 +124,33 @@ git push -u origin HEAD
 gh pr create --base master --head agents/route-cache-fix --fill
 ```
 
-For the persistent Agent 1 lane, use either one-click entry point from the
-primary integration checkout:
+To integrate both persistent worker lanes, use either one-click entry point
+from the primary integration checkout:
 
-- VS Code: **Tasks: Run Task** → **Tripplanner: Merge Agent 1**
-- File Explorer: double-click `scripts/dev/Merge-Agent1.cmd`
+- VS Code: **Tasks: Run Task** → **Tripplanner: Merge Workers**
+- File Explorer: double-click `scripts/dev/Merge-Workers.cmd`
 
-Both run `scripts/dev/merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
-creates or reuses the Worker 1 pull request, merges it with a merge commit,
-updates `master`, and keeps the persistent Worker 1 branch synchronized for
-its next assignment. If the task stops on a conflict, return to the Worker 1
-window, ask that agent to resolve and validate it, then run the task again.
+Both run `scripts/dev/merge-workers.ps1`. It refuses dirty or unexpected
+worktrees and preflights both before either merge. It then creates or reuses each
+worker's pull request, merges Worker 1 with a merge commit, updates `master`,
+brings Worker 2 onto that new baseline, and merges Worker 2 with a separate merge
+commit. Each persistent branch finishes synchronized for its next assignment.
+If the task stops on a conflict, return to the named worker window, resolve and
+validate there, push, then run the task again.
 
-In optional parallel mode, to merge Agent 1 and immediately restart the local application on the merged
-code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
+The older `Merge-Agent1.cmd` and `merge-agent-1.ps1` names remain compatibility
+aliases for this same two-worker flow. For a validation-only preflight, run
+`.\scripts\dev\merge-workers.ps1 -ValidateOnly` directly; the `.cmd` launchers
+do not forward arguments.
+
+In parallel mode, to merge both workers and immediately restart the local
+application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
 `scripts/dev/Run-Latest-Code.cmd`. This is the regular local workflow even
 when `master` has staged, unstaged, or untracked work: it temporarily stashes the
-local state, runs the guarded merge against a clean checkout, restores the local
+local state, runs both guarded merges against a clean checkout, restores the local
 state with its staged status, and then starts `scripts/dev/dev-spa.ps1`. If restored
 changes overlap the merged code, it stops with the stash retained for explicit
-conflict resolution. The direct **Merge Agent 1** command remains clean-only.
+conflict resolution. The direct **Merge Workers** command remains clean-only.
 
 Use a pull request for each optional worker branch. It provides one diff and
 check surface, keeps `master` stable, and makes parallel integration order
