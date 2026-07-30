@@ -2790,3 +2790,13 @@ VALIDATION:
 - Render validated structured input requests as compact prefilled controls for
   single choice, multiple choice, boolean, and number fields, with submit and
   saved-default skip paths through the normal chat transport.
+
+=== 2026-07-30 — Guarantee the selected Assistant kickoff ===
+
+- The Paris local trial exposed that production had promoted Option A's sidecar shell
+  but retained a direct-mode policy that bypassed its preference-aware kickoff.
+- Every new trip must first load durable preferences, enumerate the relevant saved and
+  past-trip context being applied, and show one compact prefilled review before plan
+  creation. Submit or skip then proceeds without another question in direct mode.
+- Promoting a UX Lab option means preserving its defining interaction behavior, not
+  only reproducing its visual footprint.

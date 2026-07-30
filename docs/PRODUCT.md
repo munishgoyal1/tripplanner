@@ -115,11 +115,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   text replaces progress as soon as it arrives. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
 - **Assistant input**: show the saved or inferred defaults already being applied,
-  then ask only for high-impact trip-specific changes. Structured prompts stay
-  compact, prefill every field, and offer one build/continue action plus a default
-  skip path. The Option A sidecar and structured controls are implemented in the
-  main web app for local evaluation; no hosted deployment or final design acceptance
-  is implied until the owner confirms the direction after testing.
+  then ask only for useful trip-specific changes. Every new trip begins with this
+  single compact review after preferences load and before plan creation; direct
+  mode proceeds without follow-up questions after submit or skip. Structured prompts
+  prefill every field and offer one build/continue action plus a default skip path.
+  The Option A sidecar and structured controls are implemented in the main web app
+  for local evaluation; no hosted deployment or final design acceptance is implied
+  until the owner confirms the direction after testing.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps
   handoff before the stop details.

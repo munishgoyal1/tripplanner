@@ -337,25 +337,20 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
       must-haves, deal-breakers)
   Use ALL of this to pre-tailor your suggestions instead of asking again.
   CHECK planning_mode in the loaded prefs (default: "direct"):
-    • "direct"      — NEVER pause to ask clarifying questions, even when
-                      some info is missing. Infer from preferences + context,
-                      propose sensible defaults, and proceed STRAIGHT to a
-                      complete plan with real searches. Mention any assumptions
-                      you made ("I assumed 2 adults, 7 nights, mid-range budget")
-                      at the start so the user can correct you.
-    • "interactive" — You MAY stop after Step 2 to ask ONE consolidated
-                      question if critical info (dates, companions, budget)
-                      cannot be inferred, BEFORE running searches.
-  If genuinely critical info is missing (e.g. trip budget for THIS trip), ask
-  ONCE with a consolidated question — BUT ONLY in "interactive" mode. Call
-  request_trip_input so capable clients can render pre-filled controls instead
-  of forcing the user to type. Include only unresolved, high-impact fields;
-  include every sensible default as the field's value; list the saved or inferred
-  facts already applied in known_context_json. After the tool call, ask one short
-  natural-language question for clients that do not support structured inputs.
-  Never repeat the choices as a long numbered list and never use this tool to
-  re-ask stable preferences already loaded in Step 1.
-  Otherwise: DON'T ASK, INFER + EXTRACT.
+    • "direct"      — For a NEW trip, show one compact pre-filled kickoff that
+                      reviews saved context and sensible trip defaults. Do not
+                      ask additional free-text clarifying questions; after the
+                      user submits or skips, infer anything else and proceed to
+                      a complete plan with real searches.
+    • "interactive" — Use the same one-step kickoff and include any unresolved
+                      critical dates, companions, accessibility, or budget facts.
+  For every NEW trip, call request_trip_input ONCE before create_trip_plan so
+  capable clients render pre-filled controls instead of forcing the user to type.
+  Include the relevant saved or inferred facts already applied in
+  known_context_json, plus only useful trip-specific fields with sensible defaults.
+  After the tool call, ask one short natural-language question for clients that
+  do not support structured inputs. Never repeat the choices as a long numbered
+  list and never ask again after the user submits or skips the kickoff.
   Save answers/extractions immediately via the appropriate tool.
 
   When the prefs blob is large or a specific concern surfaces ("does my dad
@@ -663,10 +658,10 @@ SOURCE TAGGING:
 ═══════════════════════════════════════════════════════════════
 CRITICAL RULES:
 ═══════════════════════════════════════════════════════════════
-1. BE PROACTIVE — don't ask 20 questions. Use saved preferences + past trips to
-   generate a near-final plan immediately. Only ask what you truly cannot infer,
-   AND only when planning_mode is "interactive" — in "direct" mode (the default)
-   never stop to ask; always infer and proceed.
+1. BE PROACTIVE — don't ask 20 questions. For a new trip, present the single
+  pre-filled preference-aware kickoff, then use saved preferences + past trips
+  to generate a near-final plan immediately. Do not ask follow-up questions in
+  direct mode; infer and proceed after the kickoff.
 2. SHOW REAL DATA — always search for actual flights, hotels, and activities with
    real prices. Never give vague "around $X" estimates when you can search.
    For ratings & reviews use search_places_with_reviews / get_place_reviews — do NOT
@@ -861,11 +856,16 @@ def _planning_active(messages: list) -> bool:
             if name in _PLANNING_TRIGGER_TOOLS:
                 return True
     # 3. The latest user message expresses planning intent.
-    for m in reversed(messages):
-        if isinstance(m, HumanMessage):
-            if _PLANNING_INTENT_RE.search(str(m.content or "")):
-                return True
-            break
+    if latest_user_has_planning_intent(messages):
+        return True
+    return False
+
+
+def latest_user_has_planning_intent(messages: list) -> bool:
+    """Return whether the latest user message expresses trip-planning intent."""
+    for message in reversed(messages):
+        if isinstance(message, HumanMessage):
+            return bool(_PLANNING_INTENT_RE.search(str(message.content or "")))
     return False
 
 

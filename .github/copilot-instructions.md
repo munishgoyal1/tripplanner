@@ -151,20 +151,21 @@ Learns from user preferences and past trips.
 - **Option A local Assistant trial**: the main web app now opens Assistant as a
   wide right-edge sidecar over the still-visible, usable itinerary/map workspace.
   Validated `input_request` events render as compact prefilled controls for all
-  supported field kinds and submit through normal chat. This is for local owner
-  testing only; no Azure deployment or final design acceptance is implied.
+  supported field kinds and submit through normal chat. New trips deterministically
+  load preferences and force this one-step review before plan creation, enumerating
+  relevant saved and past-trip context; direct mode proceeds without more questions
+  after submit or skip. This is for local owner testing only; no Azure deployment or
+  final design acceptance is implied.
 - **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
   compares a compact operations binder, recommended layered Trip Book, and
   visual journey book across contents, trip brief, executable day, document
   readiness, and evidence-labeled personal context. Production export remains
   unchanged; secure document ingestion and merged-PDF behavior require a later
   owner-approved contract.
-- **Assistant-led itinerary foundation**: an active UX Lab compares three
-  preference-aware overlay footprints with live prefilled controls. The agent
-  can emit one bounded `request_trip_input` clarification in interactive mode;
-  FastAPI streams the validated payload as an additive `input_request` event,
-  and shared web/native transport retains it. Production rendering remains
-  pending the owner-selected Lab direction; direct mode still builds by default.
+- **Assistant-led itinerary foundation**: the selected Option A local trial preserves
+  the Lab's preference-aware kickoff, not only its footprint. FastAPI streams the
+  validated payload as an additive `input_request` event, and shared web/native
+  transport retains it. Hosted deployment and final owner acceptance remain pending.
 - **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
   consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
   time from route-only Travel and marks inferred hotel departure/return times as

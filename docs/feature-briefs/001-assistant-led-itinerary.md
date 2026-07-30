@@ -24,10 +24,11 @@ any time.
 1. Apply known preferences before asking anything; say concisely what was applied.
 2. Distinguish durable preferences from trip-specific exceptions. A one-trip
    answer must not silently overwrite long-term memory.
-3. Ask at most one consolidated upfront question, only when the missing fact can
-   materially change dates, feasibility, party fit, accessibility, or budget.
+3. Start every new trip with one consolidated prefilled review after loading durable
+   context. Include only useful trip-specific choices and any material unresolved fact.
 4. Every structured field has a sensible prefilled value and a skip/default path.
-5. When origin, destination, and rough timing are sufficient, build immediately.
+5. After the user submits or skips the kickoff, build immediately without another
+   question in direct mode.
 6. The first plan chooses one concrete stay, popular and preference-matched places,
    named meals, practical chronological routes, and honest booking readiness.
 7. Assistant replies are tight: decision first, brief rationale, next choice only
@@ -37,8 +38,8 @@ any time.
 ## Scenarios
 
 1. **Bare request:** "Plan Paris from Delhi for five days in October." The planner
-   uses saved defaults and either builds immediately or asks one compact prompt
-   containing only material trip-specific choices.
+   enumerates the relevant saved defaults in one compact prefilled prompt, then builds
+   immediately after submit or skip.
 2. **Detailed request:** user includes dates, party, pace, and a special interest.
    The planner acknowledges the constraints and builds without another question.
 3. **Unknown critical constraint:** interactive mode cannot infer party mobility or
@@ -59,8 +60,9 @@ any time.
   normal text reply and terminal `done` event.
 - **AC-04:** Shared web/native transport retains the event without requiring either
   production UI to render it yet.
-- **AC-05:** Direct mode keeps complete-by-default behavior; structured upfront input
-  is restricted to genuinely critical interactive-mode gaps in stage 1.
+- **AC-05:** Direct mode always shows the one-step prefilled kickoff, then keeps
+   complete-by-default behavior without further questions. Interactive mode may add
+   unresolved critical fields to the same kickoff.
 - **AC-06:** Option A's production-code overlay and control renderer are available
    in the local deployment for owner testing; hosted deployment and final acceptance
    require a later explicit decision.
@@ -83,7 +85,7 @@ any time.
 | ID | Decision | Recommendation | Status |
 | --- | --- | --- | --- |
 | D-01 | Desktop Assistant footprint | A - Docked sidecar | Local main-app trial; final acceptance pending |
-| D-02 | Default planning policy after stage 1 | Build immediately when origin, destination, and rough timing exist; ask once only for material blockers | Recommended |
+| D-02 | Default planning policy after stage 1 | Review applied defaults once, then build immediately without follow-up questions in direct mode | Implemented locally |
 | D-03 | Native presentation | Native bottom sheet using the same payload after web validation | Deferred |
 
 ## Validation

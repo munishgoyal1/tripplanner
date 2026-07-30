@@ -10,7 +10,7 @@ import operator
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.callbacks import BaseCallbackHandler
-from langchain_core.messages import BaseMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -18,6 +18,7 @@ from langgraph.prebuilt import ToolNode
 from tripplanner.agents.trip_agent import (
     TRIP_TOOLS,
     build_trip_system_prompt,
+    latest_user_has_planning_intent,
     proposal_tools,
     select_tools,
 )
@@ -173,6 +174,40 @@ def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
     return None
 
 
+def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
+    """Choose the required preference-aware step before creating a new trip."""
+    try:
+        active_trip = load_active_trip_dict() or {}
+    except Exception:
+        active_trip = {}
+    if active_trip.get("destination"):
+        return None
+
+    positions = _tool_call_positions(messages)
+    latest_create = max(
+        (index for index, name in positions if name == "create_trip_plan"),
+        default=-1,
+    )
+    if any(
+        name == "request_trip_input" and index > latest_create
+        for index, name in positions
+    ):
+        return None
+    if not latest_user_has_planning_intent(messages):
+        return None
+
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    turn_tools = {name for index, name in positions if index > latest_human}
+    if "create_trip_plan" in turn_tools:
+        return None
+    if "get_travel_preferences" not in turn_tools:
+        return "get_travel_preferences"
+    return "request_trip_input"
+
+
 def trip_agent(state: AgentState) -> AgentState:
     """The trip planner agent — invokes LLM with tools bound."""
     # parallel_tool_calls=True asks the model to emit independent calls in a
@@ -185,16 +220,28 @@ def trip_agent(state: AgentState) -> AgentState:
     update_requirement = (
         None if proposal_only else _trip_update_requirement(state["messages"])
     )
+    kickoff_tool = (
+        None if proposal_only or update_requirement
+        else _trip_kickoff_tool_choice(state["messages"])
+    )
+    forced_tool = "update_trip_plan" if update_requirement else kickoff_tool
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
-        **({"tool_choice": "update_trip_plan"} if update_requirement else {}),
+        **({"tool_choice": forced_tool} if forced_tool else {}),
     )
     instructions = [build_trip_system_prompt()]
     if update_requirement:
         instructions.append(SystemMessage(content=(
             update_requirement
             + " Call update_trip_plan before writing any final response."
+        )))
+    elif kickoff_tool == "request_trip_input":
+        instructions.append(SystemMessage(content=(
+            "Start this new trip with one compact preference review. Call "
+            "request_trip_input now. Enumerate the relevant saved preferences and "
+            "past-trip signals already applied in known_context_json, and prefill "
+            "useful trip-specific choices. Do not call create_trip_plan yet."
         )))
     if proposal_only:
         instructions.append(SystemMessage(content=(

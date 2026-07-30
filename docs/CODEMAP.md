@@ -73,7 +73,9 @@ src/tripplanner/
   chat_interactions.py Validated prefilled Assistant input-request contract
   cli.py              Local CLI entrypoint (no SPA)
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
-  graph.py            LangGraph StateGraph: agent ↔ tools loop
+  graph.py            LangGraph StateGraph: agent ↔ tools loop; deterministically
+                      loads preferences and forces one structured kickoff before
+                      creating each new trip
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics

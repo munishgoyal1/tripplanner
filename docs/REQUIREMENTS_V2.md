@@ -100,8 +100,10 @@ re-describing the whole product.
 
 ### CHAT-01 - Structured minimal-input Assistant interactions
 
-- The agent has a bounded `request_trip_input` tool for one consolidated
-  interactive-mode clarification. Every field must carry a sensible prefilled value.
+- Every new trip deterministically loads durable preferences, then emits one bounded
+  `request_trip_input` kickoff before plan creation. Every field carries a sensible
+  prefilled value; known context enumerates the relevant saved preferences and
+  past-trip signals already applied.
 - The backend emits the validated versioned payload as an additive `input_request`
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
@@ -113,8 +115,9 @@ re-describing the whole product.
 
 ### PLAN-01 - Preference-aware planning flow
 
-- The agent loads known preferences before asking questions and asks only for
-  information it cannot safely infer.
+- The agent loads known preferences before the one-step new-trip kickoff. Direct
+  mode uses that review and then builds without further questions; interactive
+  mode may include unresolved critical facts in the same review.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
 - One sticky display currency is used throughout a trip. Domestic travel defaults
