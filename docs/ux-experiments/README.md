@@ -52,6 +52,15 @@ These standalone labs are the preferred mechanism for future focused UX choices:
 use realistic fixtures, compare coherent alternatives, record local scores, and
 keep production behavior unchanged until the owner selects a direction.
 
+## Active Assistant Experiment (2026-07-30)
+
+The Assistant-led trip kickoff lab is available at
+`http://localhost:5173/labs/chat-assistant.html`. It compares Wide sidecar,
+Focus overlay, and Guided canvas footprints around one realistic structured-input
+journey. The working recommendation is B - Focus overlay; no production layout
+change is approved until the owner saves and executes a Lab handoff. See
+[`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
+
 Each active experiment page also includes a **Your handoff** section. Choose one
 option, add modifications or implementation instructions, and save it. The local
 Vite server writes all handoffs to the ignored worktree file

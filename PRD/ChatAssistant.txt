@@ -1,0 +1,36 @@
+
+Goal:
+   - main top level goal is to build smartest personalized itinerary in shortest time and with minimal user intervention or input required.
+
+ 
+
+Next Steps (Iterative development):
+    -let's start with UX labs and backend intelligence around refining and solidifying the chat assistant funcitonality and UX first
+    -below are the details on what to try for chat assistant
+
+
+Chat assistant:
+
+    Overall
+    - make the chat assistant flow solid; both from interactivity and the quality and relevance and tightness of outputs that can wow the customer, 
+    the itinerary build up should be practical, popular, as per customer long-term saved preferences and this trip specific preferences
+
+    - try chat assistnat to be as overlay to provide more space to chat and for agent to present in-chat choice options, taking inputs, preferences etc.
+
+
+    User journey:
+
+    - user comes and types new trip requirement, may eb along with some prefreerences upfront or could be bare minimum and he expects the planner to know their preferences
+    - but planner can ask upfropnt if it needs any info from user - this is the interactivity part.
+        Agent should be able to present choices in radio, 1,2,3,4 etc. pre-filled text choices, buttons, yes, no, like dislike etc. all sorts of best and most intuitive input forms
+        So that user has the minimal to do
+        Agent should also summmarize a bit on all preferences and then generate or later make updates to the itinerary
+
+    - Agent (chat assisitant) is the primary way of building itinerary
+
+
+    
+    - once chat main work is over , let user use details and maps to refine. they can always come back to chat also to refine
+
+
+   

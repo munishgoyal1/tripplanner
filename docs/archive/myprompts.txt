@@ -1,3 +1,32 @@
+Chat assistant:
+
+    Overall
+    - make the chat assistant flow solid; both from interactivity and the quality and relevance and tightness of outputs that can wow the customer, 
+    the itinerary build up should be practical, popular, as per customer long-term saved preferences and this trip specific preferences
+
+    - try chat assistnat to be as overlay to provide more space to chat and for agent to present in-chat choice options, taking inputs, preferences etc.
+
+
+    User journey:
+
+    - user comes and types new trip requirement, may eb along with some prefreerences upfront or could be bare minimum and he expects the planner to know their preferences
+    - but planner can ask upfropnt if it needs any info from user - this is the interactivity part
+    
+
+
+
+
+once chat main work is over , let user use details and maps to refine 
+they can always come back to chat to refine
+
+Itinerary:
+- should be 
+
+figure how users interact with the product
+1. chat is primary. pick preferences or even chat agent should ask. 
+2. if chat agent is unsure then it shoudl just ask some of those.
+make it more interactive the chat assistant part
+
 s ok clickign on profile icon works, but click on it again doesnt remove the profile detrails banner that appeared. Also clicking on any othjer place outside of that banner  etc. should remove/hide it back.
 
 Make the chat and detail panel alkso have maximize option jus tlike mnap to keep experience consistent.

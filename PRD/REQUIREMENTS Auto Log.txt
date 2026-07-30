@@ -2662,3 +2662,21 @@ VALIDATION:
   `docs/operations/`, `docs/mobile/`, and `docs/archive/`.
 - Update every live cross-reference when moving a document. Preserve the active
   `Requirements.docx` owner input at the root while its Office lock exists.
+
+=== 2026-07-30 — Assistant-led itinerary and minimal-input kickoff ===
+
+- Make the Assistant the primary itinerary-building surface and optimize for the
+  smartest personalized plan in the shortest time with minimal user intervention.
+- Start from durable preferences, family/trip history, and any trip-specific facts
+  already supplied. Ask only for unresolved information that materially changes the
+  plan, and consolidate it into one interaction.
+- Support intuitive prefilled controls such as single choice, multiple choice,
+  yes/no, counters, and quick actions so the user can respond with minimal typing.
+- Summarize the defaults being applied and keep one-trip exceptions separate from
+  long-term saved preferences.
+- Use a focused Assistant overlay experiment to create enough room for conversation
+  and in-chat choices. Do not change production layout until the owner selects a Lab
+  direction.
+- After Assistant builds the complete practical, popular, preference-matched first
+  itinerary, let Details and Map own visual refinement while Assistant remains
+  available for later changes.

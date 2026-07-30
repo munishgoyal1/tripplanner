@@ -8,6 +8,7 @@ import type {
   SelectionPlacement,
   StreamHandlers,
   StreamOptions,
+  TripInputRequest,
   TripView,
 } from "./types";
 
@@ -54,6 +55,16 @@ function dispatchFrame(event: string, data: Record<string, unknown>, handlers: S
     if (stage === "thinking" || stage === "reviewing" || stage === "saving") {
       handlers.onProgress(stage);
     }
+  }
+  if (
+    event === "input_request"
+    && handlers.onInputRequest
+    && data.version === 1
+    && typeof data.request_id === "string"
+    && typeof data.question === "string"
+    && Array.isArray(data.fields)
+  ) {
+    handlers.onInputRequest(data as unknown as TripInputRequest);
   }
   if (event === "done") {
     handlers.onDone(

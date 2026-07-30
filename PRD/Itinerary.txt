@@ -1,0 +1,7 @@
+Itinerary:
+- should be 
+
+figure how users interact with the product
+1. chat is primary. pick preferences or even chat agent should ask. 
+2. if chat agent is unsure then it shoudl just ask some of those.
+make it more interactive the chat assistant part

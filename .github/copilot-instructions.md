@@ -90,7 +90,7 @@ the right place IN THE SAME TURN so future sessions don't relearn it:
 | Current capability / roadmap status         | `docs/REQUIREMENTS_V2.md` (commit)    |
 | Next coherent feature scope                 | `docs/feature-briefs/*.md` (commit)   |
 | File layout / commands / contracts          | `docs/CODEMAP.md` (commit)            |
-| New requirement / decision (with date)      | `REQUIREMENTS.txt` (commit)           |
+| New requirement / decision (with date)      | `PRD/REQUIREMENTS Auto Log.txt` (commit) |
 | Architecture / config shift                 | `README.md` + this file (commit)      |
 | Current in-flight TODOs only                | `/memories/session/<topic>.md`        |
 
@@ -136,11 +136,17 @@ Learns from user preferences and past trips.
 - Always commit AND push after every change
 - Keep it simple, modular — no over-engineering
 - No major functional changes without user consent
-- Update REQUIREMENTS.txt when new requirements come in
+- Update `PRD/REQUIREMENTS Auto Log.txt` when new requirements come in
 - Update README.md when architecture changes
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Assistant-led itinerary foundation**: an active UX Lab compares three
+  preference-aware overlay footprints with live prefilled controls. The agent
+  can emit one bounded `request_trip_input` clarification in interactive mode;
+  FastAPI streams the validated payload as an additive `input_request` event,
+  and shared web/native transport retains it. Production rendering remains
+  pending the owner-selected Lab direction; direct mode still builds by default.
 - **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
   consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
   time from route-only Travel and marks inferred hotel departure/return times as
@@ -896,10 +902,11 @@ Learns from user preferences and past trips.
 - Removed (Session 1): todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
 
 ## Files to Read for Context
-- `REQUIREMENTS.txt` — full history of requirements and decisions (Session 6 = hosted mode)
+- `PRD/REQUIREMENTS Auto Log.txt` — full history of requirements and decisions
 - `README.md` — architecture (local + hosted), setup, project structure
 - `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
 - `src/tripplanner/graph.py` — single-agent tool loop (unchanged for hosted mode)
+- `src/tripplanner/chat_interactions.py` — validated structured Assistant input contract
 - `src/tripplanner/agents/trip_agent.py` — trip agent with 32 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/tripplanner/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/tripplanner/user_context.py` — per-request user_id ContextVar

@@ -26,6 +26,14 @@ fills every day with concrete places and meals, and persists the enriched plan.
 The user refines a useful plan through chat instead of designing one from a blank
 canvas or resolving avoidable `TBD` decisions.
 
+The Assistant is the primary itinerary-building surface. It starts from saved
+preferences and trip history, distinguishes durable defaults from one-trip
+exceptions, and asks at most one consolidated question when an unresolved fact
+would materially change the plan. Capable clients should render that question as
+prefilled structured controls with a skip/default path; typed data, not model-authored
+markup, owns those interactions. After the first complete plan, Details and Map
+support visual refinement while Assistant remains available for broader changes.
+
 ## 2) Non-goals (resist scope creep)
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
@@ -104,6 +112,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   names and raw arguments stay out of the primary experience; streamed answer
   text replaces progress as soon as it arrives. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
+- **Assistant input**: show the saved or inferred defaults already being applied,
+  then ask only for high-impact trip-specific changes. Structured prompts stay
+  compact, prefill every field, and offer one build/continue action plus a default
+  skip path. Production overlay behavior follows an owner-selected UX Lab direction;
+  a Lab record is not approval to change the production workspace.
 - **Itinerary scanning**: each day header shows stop count, schedule duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
   The backend owns one day timing contract consumed by both Itinerary and Map:
@@ -256,7 +269,7 @@ If a redesign violates the above without a stated reason, push back.
   unpushed work.
 - **No major functional changes without explicit consent.** Refactors and
   structural improvements are fine; new features/behaviors require a yes.
-- Update `README.md`, `REQUIREMENTS.txt`, [CODEMAP.md](./CODEMAP.md), and
+- Update `README.md`, [the requirements log](../PRD/REQUIREMENTS%20Auto%20Log.txt), [CODEMAP.md](./CODEMAP.md), and
   [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) in
   the SAME commit as the code change that triggers them.
 - Free-tier or near-free everything: Azure ≤ ₹10K/mo, Amadeus test, Google
