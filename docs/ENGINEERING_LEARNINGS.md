@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-30 - Keep Deterministic Gates Cheap
+
+- Measure model rounds separately from tool execution. A 49.5-second planning
+  turn with 1.17 seconds of tool work is an orchestration problem, not a reason
+  to optimize persistence or provider code.
+- When the graph forces one tool, bind only that tool's schema. Resending every
+  unrelated schema adds context cost without giving the model any real choice.
+- Handle a known primary-provider outage inside the provider tool when a
+  grounded fallback has the same contract. Requiring the model to notice the
+  failure and choose the fallback adds a full inference round.
+
 ## 2026-07-30 - Complete Persisted Defaults Across Provider Failure
 
 - Enforce required defaults from persisted state, not from whether the model

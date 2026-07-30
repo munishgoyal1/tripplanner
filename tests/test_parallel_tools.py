@@ -241,6 +241,7 @@ def test_trip_agent_forces_hotel_search_when_draft_keeps_placeholder(monkeypatch
     from tripplanner import graph as graph_mod
 
     bound_options: dict = {}
+    bound_tool_names: list[str] = []
 
     class FakeBoundModel:
         def invoke(self, _messages):
@@ -254,8 +255,9 @@ def test_trip_agent_forces_hotel_search_when_draft_keeps_placeholder(monkeypatch
             )
 
     class FakeModel:
-        def bind_tools(self, _tools, **options):
+        def bind_tools(self, tools, **options):
             bound_options.update(options)
+            bound_tool_names.extend(tool.name for tool in tools)
             return FakeBoundModel()
 
     monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
@@ -290,6 +292,7 @@ def test_trip_agent_forces_hotel_search_when_draft_keeps_placeholder(monkeypatch
     })
 
     assert bound_options["tool_choice"] == "search_hotels"
+    assert bound_tool_names == ["search_hotels"]
     assert result["messages"][0].tool_calls[0]["name"] == "search_hotels"
 
 

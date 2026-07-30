@@ -6,6 +6,7 @@ from langchain_core.tools import tool
 
 from tripplanner.tools import amadeus_client
 from tripplanner.tools.flight_search import resolve_iata
+from tripplanner.tools.google_places import search_places_with_reviews
 
 
 def _format_hotels(data: dict) -> str:
@@ -85,10 +86,12 @@ def search_hotels(
         max_results: Maximum hotel options to return.
     """
     if not amadeus_client.is_configured():
-        return (
-            "Amadeus API not configured. Set AMADEUS_API_KEY and AMADEUS_API_SECRET in .env.\n"
-            "Sign up free at https://developers.amadeus.com\n"
-            "Falling back to general knowledge for hotel suggestions."
+        return search_places_with_reviews.invoke(
+            {
+                "query": "well-rated hotel",
+                "city": city,
+                "max_results": max_results,
+            }
         )
 
     city_code = resolve_iata(city)

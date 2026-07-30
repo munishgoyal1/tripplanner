@@ -2800,3 +2800,12 @@ VALIDATION:
   creation. Submit or skip then proceeds without another question in direct mode.
 - Promoting a UX Lab option means preserving its defining interaction behavior, not
   only reproducing its visual footprint.
+
+=== 2026-07-30 — Reduce Assistant orchestration latency ===
+
+- Assistant feedback should begin promptly and routine turns should approach the
+  responsiveness users expect from modern chat products.
+- Preserve deterministic itinerary and concrete-hotel persistence while removing
+  avoidable model rounds and repeated irrelevant tool-schema payload.
+- Measure model inference separately from provider and persistence work so latency
+  changes target the demonstrated bottleneck.

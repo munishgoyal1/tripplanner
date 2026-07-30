@@ -1377,6 +1377,25 @@ class TestGooglePlacesHelpers:
         assert "not configured" in result.lower()
 
 
+def test_hotel_search_uses_google_fallback_when_amadeus_unconfigured(monkeypatch):
+    from tripplanner.tools import hotel_search
+
+    class FakeGoogleSearch:
+        @staticmethod
+        def invoke(args):
+            return json.dumps([{"name": "Grounded Hotel", "rating": 4.7, **args}])
+
+    monkeypatch.setattr(hotel_search.amadeus_client, "is_configured", lambda: False)
+    monkeypatch.setattr(hotel_search, "search_places_with_reviews", FakeGoogleSearch())
+
+    result = hotel_search.search_hotels.invoke(
+        {"city": "Paris", "checkin": "2026-09-01", "checkout": "2026-09-05"}
+    )
+
+    assert "Grounded Hotel" in result
+    assert '"city": "Paris"' in result
+
+
 class TestWebSearchHelpers:
     def test_not_configured_returns_friendly_message(self, monkeypatch):
         from tripplanner import config

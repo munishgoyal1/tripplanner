@@ -297,7 +297,6 @@ def trip_agent(state: AgentState) -> AgentState:
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
-    tools = select_tools(state["messages"], proposal_only=proposal_only)
     hotel_fallback_requirement = (
         None if proposal_only else _trip_hotel_fallback_requirement(state["messages"])
     )
@@ -324,6 +323,9 @@ def trip_agent(state: AgentState) -> AgentState:
         if hotel_search_requirement
         else kickoff_tool
     )
+    tools = select_tools(state["messages"], proposal_only=proposal_only)
+    if forced_tool:
+        tools = [tool for tool in tools if tool.name == forced_tool]
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
