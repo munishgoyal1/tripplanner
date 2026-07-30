@@ -227,17 +227,24 @@ if ($DryRun) {
 }
 
 Write-Host "✓ Step 3: Checking infrastructure changes..."
-$whatIf = az deployment group what-if `
+$rawWhatIf = az deployment group what-if `
     --resource-group $prodRG `
     --template-file $bicepFile `
     --parameters $bicepParams `
     --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     --result-format ResourceIdOnly `
     --no-pretty-print `
-    --output json | ConvertFrom-Json
+    --only-show-errors `
+    --output json 2>$null | Out-String
 if ($LASTEXITCODE -ne 0) {
     throw "Production infrastructure what-if failed."
 }
+$jsonStart = $rawWhatIf.IndexOf('{')
+$jsonEnd = $rawWhatIf.LastIndexOf('}')
+if ($jsonStart -lt 0 -or $jsonEnd -lt $jsonStart) {
+    throw "Production what-if did not return JSON."
+}
+$whatIf = $rawWhatIf.Substring($jsonStart, $jsonEnd - $jsonStart + 1) | ConvertFrom-Json
 $deletes = @($whatIf.properties.changes | Where-Object { $_.changeType -eq "Delete" })
 if ($deletes.Count -gt 0) {
     throw "Production what-if contains $($deletes.Count) delete operation(s); review with -DryRun."
