@@ -26,10 +26,19 @@ fills every day with concrete places and meals, and persists the enriched plan.
 The user refines a useful plan through chat instead of designing one from a blank
 canvas or resolving avoidable `TBD` decisions.
 
+The Assistant is the primary itinerary-building surface. It starts from saved
+preferences and trip history, distinguishes durable defaults from one-trip
+exceptions, and asks at most one consolidated question when an unresolved fact
+would materially change the plan. Capable clients should render that question as
+prefilled structured controls with a skip/default path; typed data, not model-authored
+markup, owns those interactions. After the first complete plan, Details and Map
+support visual refinement while Assistant remains available for broader changes.
+
 ## 2) Non-goals (resist scope creep)
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
 - ❌ Automated purchasing or card charging (booking remains a verified handoff).
+- ❌ Treating an activity from-price or operating schedule as a held quote or booking.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
 - ❌ Generic chatbot vibes. This is a planner, not a friend-bot.
@@ -72,8 +81,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   mounted so their state survives. Only panes scroll; the page never does.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
-  sizes persist locally. Itinerary, Map, Details, and Assistant can each be
-  maximized and restored. On narrower desktops
+  sizes persist locally. The Assistant currently opens as a wide right-edge
+  sidecar over the workspace, leaving Itinerary and Map visible and usable;
+  Details remains an independent dock. Itinerary, Map, Details, and Assistant
+  can each be maximized and restored. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
   trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
@@ -104,8 +115,41 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   names and raw arguments stay out of the primary experience; streamed answer
   text replaces progress as soon as it arrives. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
-- **Itinerary scanning**: each day header shows stop count, planned duration,
-  route distance/time/mode, and a direct Maps handoff before the stop details.
+- **Assistant input**: show the saved or inferred defaults already being applied,
+  then ask only for useful trip-specific changes. Every new trip begins with this
+  single compact review after preferences load and before plan creation; direct
+  mode proceeds without follow-up questions after submit or skip. Structured prompts
+  prefill every field and offer one build/continue action plus a default skip path.
+  The Option A sidecar and structured controls are implemented in the main web app
+  for local evaluation; no hosted deployment or final design acceptance is implied
+  until the owner confirms the direction after testing.
+- **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
+  a separate `Day's travel` row with route distance/time/mode, and a direct Maps
+  handoff before the stop details.
+  A complete exported Trip Book should remain executable away from the live app:
+  contents first, trip and day plans next, then booking confirmations and entry
+  documents, with optional place context last. Personal insights must identify
+  the saved preference and verified travel fact behind them. Packet structure is
+  currently an active UX Lab decision; document ingestion and merged-PDF storage
+  are not approved production scope.
+  The backend owns one day timing contract consumed by both Itinerary and Map:
+  the schedule spans hotel departure through return (or the applicable transfer/
+  transit endpoints), while `Day's travel` is the route-only subtotal. If
+  endpoint times are incomplete, estimated departure and return are derived from
+  timed visits and known route legs, shown on the hotel rows, and labeled as
+  estimates. Place rows expose arrival, visit duration, departure, estimated
+  transfer arrival, and any free buffer or timing conflict so the day clock adds
+  up. Transit uses the consistent Walk, Metro, and Taxi vocabulary; every
+  estimated leg names its endpoints and gives a short, non-fabricated transfer
+  pointer. Place evidence includes Google rating and review count plus an
+  estimated must-visit score derived from those signals. It must never be
+  described as the percentage of traveler itineraries containing the place
+  because that data is unavailable. Compact agenda
+  rows are dense and left-anchored: time, marker, place, booking state, and
+  actions read in one direction without drifting toward the center or right.
+  Hotel circuit anchors show Depart/Return semantics without a visit duration,
+  redundant In trip state, or an individual delete action; stay changes use the
+  stay-range controls instead.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
   Each mapped destination row also shows a quiet estimated distance/time from
@@ -246,7 +290,7 @@ If a redesign violates the above without a stated reason, push back.
   unpushed work.
 - **No major functional changes without explicit consent.** Refactors and
   structural improvements are fine; new features/behaviors require a yes.
-- Update `README.md`, `REQUIREMENTS.txt`, [CODEMAP.md](./CODEMAP.md), and
+- Update `README.md`, [the requirements log](../PRD/REQUIREMENTS%20Auto%20Log.txt), [CODEMAP.md](./CODEMAP.md), and
   [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) in
   the SAME commit as the code change that triggers them.
 - Free-tier or near-free everything: Azure ≤ ₹10K/mo, Amadeus test, Google
@@ -256,7 +300,8 @@ If a redesign violates the above without a stated reason, push back.
 
 - Be terse. 1–3 sentences for simple answers. Skip preamble/conclusion.
 - No emojis unless asked.
-- Don't start servers — the owner runs `.\scripts\dev-spa.ps1` himself.
+- Own local server startup, restart, stale-port cleanup, and health checks so
+  the owner can stay focused on feature and UX Lab decisions.
 - Don't open `http://localhost:8000` in the integrated browser — the owner
   tests in his external browser. Playwright tools only when explicitly asked.
 - When something goes wrong, read the dev terminal output and fix; don't ask

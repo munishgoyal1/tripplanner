@@ -4,6 +4,7 @@ import {
   type DeselectItemOptions,
   type SelectItemOptions,
   type SelectionPlacement,
+  type TripInputRequest,
 } from "@tripplanner/client";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "/api";
@@ -202,6 +203,7 @@ export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
+  onInputRequest?: (request: TripInputRequest) => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
 }
@@ -296,6 +298,16 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
     case "progress":
       if (["thinking", "reviewing", "saving"].includes(data.stage)) {
         h.onProgress?.(data.stage);
+      }
+      break;
+    case "input_request":
+      if (
+        data.version === 1
+        && typeof data.request_id === "string"
+        && typeof data.question === "string"
+        && Array.isArray(data.fields)
+      ) {
+        h.onInputRequest?.(data as TripInputRequest);
       }
       break;
     case "done":

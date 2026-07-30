@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+import json
+
 from langchain_core.tools import tool
 
+from tripplanner.providers.liteapi import LiteAPIError
+from tripplanner.providers.models import HotelSearchQuery
+from tripplanner.providers.registry import get_hotel_provider
 from tripplanner.tools import amadeus_client
 from tripplanner.tools.flight_search import resolve_iata
+from tripplanner.tools.google_places import search_places_with_reviews
 
 
 def _format_hotels(data: dict) -> str:
@@ -71,6 +77,11 @@ def search_hotels(
     ratings: str = "3,4,5",
     price_max: int = 0,
     max_results: int = 5,
+    currency: str = "INR",
+    guest_nationality: str = "IN",
+    children_ages: list[int] | None = None,
+    refundable_only: bool = False,
+    refresh: bool = False,
 ) -> str:
     """Search for real hotels with names, ratings, room types, and prices.
 
@@ -83,12 +94,55 @@ def search_hotels(
         ratings: Comma-separated star ratings to include (e.g. '4,5').
         price_max: Maximum price per night (0 = no limit).
         max_results: Maximum hotel options to return.
+        currency: ISO currency code for live rates.
+        guest_nationality: ISO country code; required for accurate taxes and rates.
+        children_ages: Ages of children sharing the first room.
+        refundable_only: Return only refundable live rates when supported.
+        refresh: Bypass the short-lived shared result cache.
     """
+    del refresh
+    provider = get_hotel_provider()
+    if provider:
+        try:
+            offers = provider.search_hotels(
+                HotelSearchQuery(
+                    destination=city,
+                    checkin=checkin,
+                    checkout=checkout,
+                    adults_per_room=adults,
+                    rooms=rooms,
+                    children_ages=children_ages or [],
+                    currency=currency.upper(),
+                    guest_nationality=guest_nationality.upper(),
+                    refundable_only=refundable_only,
+                    max_results=max_results,
+                )
+            )
+            return json.dumps(
+                {
+                    "quote_status": "live" if offers else "unavailable",
+                    "provider": provider.name,
+                    "offers": [offer.model_dump(mode="json") for offer in offers],
+                },
+                ensure_ascii=False,
+            )
+        except (LiteAPIError, ValueError) as exc:
+            return json.dumps(
+                {
+                    "quote_status": "provider_error",
+                    "provider": provider.name,
+                    "error": str(exc),
+                }
+            )
+
     if not amadeus_client.is_configured():
+        places = search_places_with_reviews.invoke(
+            {"query": "well-rated hotel", "city": city, "max_results": max_results}
+        )
         return (
-            "Amadeus API not configured. Set AMADEUS_API_KEY and AMADEUS_API_SECRET in .env.\n"
-            "Sign up free at https://developers.amadeus.com\n"
-            "Falling back to general knowledge for hotel suggestions."
+            "quote_status=estimated; provider=google_places; "
+            "property metadata only, no live room rate or availability\n"
+            f"{places}"
         )
 
     city_code = resolve_iata(city)
@@ -118,7 +172,7 @@ def search_hotels(
             "checkOutDate": checkout,
             "adults": adults,
             "roomQuantity": rooms,
-            "currency": "INR",
+            "currency": currency.upper(),
         }
         if price_max:
             offer_params["priceRange"] = f"0-{price_max}"

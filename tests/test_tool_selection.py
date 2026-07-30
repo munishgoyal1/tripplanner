@@ -33,12 +33,22 @@ def test_core_tools_subset_of_full() -> None:
 def test_greeting_binds_core_only() -> None:
     tools = trip_agent.select_tools([HumanMessage(content="Hi, I'm Munish from Bengaluru")])
     assert _names(tools) == _names(trip_agent._CORE_TOOLS)
+    assert "request_trip_input" in _names(tools)
     assert "search_flights_duffel" not in _names(tools)
 
 
 def test_planning_intent_binds_search() -> None:
     tools = trip_agent.select_tools([HumanMessage(content="plan a 5-day trip to Goa")])
     assert "search_flights_duffel" in _names(tools)
+    assert "search_hotels" in _names(tools)
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["Why is my itinerary pane blank?", "Build my Paris itineraries"],
+)
+def test_itinerary_wording_binds_search(message: str) -> None:
+    tools = trip_agent.select_tools([HumanMessage(content=message)])
     assert "search_hotels" in _names(tools)
 
 

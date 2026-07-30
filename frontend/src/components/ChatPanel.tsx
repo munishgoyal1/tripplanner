@@ -18,9 +18,10 @@ import {
   getUserId,
   type AuthSession,
 } from "../api";
-import type { ChatMessage } from "../types";
+import type { ChatMessage, TripInputRequest } from "../types";
 import { trackEvent } from "../analytics";
 import SettingsModal from "./SettingsModal";
+import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 
 interface Props {
   onTurnComplete: (tripId?: string) => void;
@@ -76,6 +77,7 @@ export default function ChatPanel({
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [tripInputRequest, setTripInputRequest] = useState<TripInputRequest | null>(null);
   const [failedRequest, setFailedRequest] = useState<{
     message: string;
     proposalOnly: boolean;
@@ -297,6 +299,7 @@ export default function ChatPanel({
 
   useEffect(() => {
     setFailedRequest(null);
+    setTripInputRequest(null);
   }, [cacheKey, reloadToken, tripIdHint]);
 
   // Keep a fast in-memory snapshot keyed by trip id for instant switches.
@@ -332,6 +335,7 @@ export default function ChatPanel({
     setMessages([GREETING]);
     setInput("");
     setFailedRequest(null);
+    setTripInputRequest(null);
     onNewTrip?.();
     trackEvent("new_trip_started", { surface: "assistant" });
   }
@@ -346,6 +350,7 @@ export default function ChatPanel({
     if (listening) stopListening();
     setInput("");
     setFailedRequest(null);
+    setTripInputRequest(null);
     setBusy(true);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
     trackEvent("planning_started", { proposal_only: proposalOnly, retry: retrying });
@@ -383,6 +388,9 @@ export default function ChatPanel({
         },
       onProgress: (stage) => {
         setProgress({ label: PROGRESS_LABELS[stage], startedAt: Date.now() });
+      },
+      onInputRequest: (request) => {
+        setTripInputRequest(request);
       },
       onTool: (name, phase, extras) => {
         if (phase === "start") {
@@ -876,6 +884,15 @@ export default function ChatPanel({
               {progressSeconds >= 2 ? ` · ${progressSeconds}s` : ""}…
             </span>
           </div>
+        )}
+        {tripInputRequest && (
+          <TripInputCard
+            key={tripInputRequest.request_id}
+            request={tripInputRequest}
+            disabled={busy}
+            onSubmit={(values) => void sendMessage(formatTripInputResponse(tripInputRequest, values))}
+            onSkip={() => void sendMessage("Use the prefilled defaults and continue.")}
+          />
         )}
         <div ref={endRef} />
       </div>

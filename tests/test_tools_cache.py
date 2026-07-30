@@ -108,6 +108,24 @@ def test_wrap_tools_calls_underlying_once_per_unique_arg_set():
     assert calls["n"] == 2
 
 
+def test_refresh_bypasses_lookup_and_does_not_store_result():
+    calls = {"n": 0}
+
+    @tool
+    def search_hotels(city: str, refresh: bool = False) -> str:
+        """Return a changing hotel quote for refresh-cache testing."""
+        calls["n"] += 1
+        return f"quote-{calls['n']}"
+
+    [wrapped] = tools_cache.wrap_tools_with_cache([search_hotels])
+
+    assert wrapped.invoke({"city": "Paris"}) == "quote-1"
+    assert wrapped.invoke({"city": "Paris"}) == "quote-1"
+    assert wrapped.invoke({"city": "Paris", "refresh": True}) == "quote-2"
+    assert wrapped.invoke({"city": "Paris"}) == "quote-1"
+    assert calls["n"] == 2
+
+
 def test_wrap_tools_skips_stateful_tools_entirely():
     calls = {"n": 0}
 

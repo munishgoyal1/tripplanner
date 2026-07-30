@@ -104,6 +104,17 @@ export interface RouteMetrics {
   mode: string;
   distance_display: string;
   duration_display: string;
+  detail?: string;
+}
+
+export interface DaySchedule {
+  start: string;
+  end: string;
+  duration_min: number;
+  duration_display: string;
+  travel_duration_min: number;
+  travel_duration_display: string;
+  estimated: boolean;
 }
 
 export interface MapLeg extends RouteMetrics {
@@ -117,6 +128,7 @@ export interface MapDay {
   color: string;
   pin_ids: string[];
   route: RouteMetrics;
+  schedule?: DaySchedule;
   legs?: MapLeg[];
 }
 
@@ -153,6 +165,16 @@ export interface ItineraryStop {
   cost_display?: string;
   insight?: string;
   concern?: string;
+  departure_time?: string;
+  expected_arrival_time?: string;
+  time_estimated?: boolean;
+  buffer_before_min?: number;
+  buffer_before_display?: string;
+  timing_conflict_min?: number;
+  timing_conflict_display?: string;
+  rating?: number | null;
+  review_count?: number | null;
+  popularity_score?: number | null;
   travel_from_previous?: RouteMetrics;
 }
 
@@ -166,6 +188,7 @@ export interface ItineraryDay {
   reachability?: string;
   google_maps_url?: string;
   route?: MapDay["route"];
+  schedule?: DaySchedule;
 }
 
 export interface Itinerary {
@@ -222,10 +245,38 @@ export interface ToolEventExtras {
   duration_ms?: number;
 }
 
+export interface TripInputOption {
+  value: string;
+  label: string;
+  detail?: string;
+}
+
+export interface TripInputField {
+  id: string;
+  label: string;
+  kind: "single" | "multi" | "boolean" | "number";
+  value: string | string[] | boolean | number;
+  options?: TripInputOption[];
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+export interface TripInputRequest {
+  version: 1;
+  request_id: string;
+  question: string;
+  known_context: string[];
+  fields: TripInputField[];
+  submit_label: string;
+  allow_skip: boolean;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
+  onInputRequest?: (request: TripInputRequest) => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
 }

@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Surface: `frontend/workspace-shell-lab.html`
+- Surface: `frontend/labs/workspace-shell.html`
 - Original branches: `exp/ux-shell-a-map-first`,
   `exp/ux-shell-b-story-first`, `exp/ux-shell-c-compact-mobile`
 - Date started: 2026-06-20

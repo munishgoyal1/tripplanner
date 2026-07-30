@@ -2,12 +2,12 @@
 
 ## Meta
 
-- Surface: `frontend/summary-lab.html`
+- Surface: `frontend/labs/itinerary-summary.html`
 - Isolated build: `npm --prefix frontend run build:ux-lab`
 - Paired row treatment: B - Compact agenda
 - Owner: Munish Goyal
 - Date started: 2026-07-29
-- Status: testing
+- Status: decided and implemented
 
 ## Hypothesis
 
@@ -65,7 +65,10 @@ clarity, visual calm, and mobile fit. Scores stay in browser local storage.
 
 ## Decision
 
-- Decision: pending owner selection
-- Current comparison focus: three modifications of Narrative Brief B
-- Next action: select a summary variant, then implement it together with Compact
-  Agenda in the production itinerary.
+- Decision: C - Compact brief, paired with B - Compact agenda
+- Implemented: 2026-07-29 in the production `ItineraryPanel`
+- Owner modifications implemented:
+  - label guidance `Travel rhythm` instead of `Getting around`
+  - describe duration explicitly as the day plan
+  - show both confirmed and remaining booking counts
+  - exclude hotel circuit anchors from the displayed planned-stop count

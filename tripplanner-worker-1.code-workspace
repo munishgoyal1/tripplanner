@@ -6,7 +6,40 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 1 - Worker | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 1 - Development | ${activeEditorShort}${separator}${rootName}",
+    "chat.editing.autoAcceptDelay": 1,
+    "github.copilot.enable": {
+      "*": true,
+      "plaintext": false
+    },
+    "files.associations": {
+      "**/myprompts.txt": "plaintext"
+    },
+    "[plaintext]": {
+      "editor.inlineSuggest.enabled": false,
+      "editor.inlineSuggest.suppressSuggestions": true,
+      "editor.quickSuggestions": false,
+      "editor.suggestOnTriggerCharacters": false,
+      "editor.wordBasedSuggestions": "off",
+      "editor.parameterHints.enabled": false,
+      "editor.tabCompletion": "off",
+      "editor.acceptSuggestionOnEnter": "off",
+      "editor.snippetSuggestions": "none",
+      "editor.suggest.showWords": false,
+      "editor.suggest.showSnippets": false,
+      "editor.suggest.showText": false
+    },
+    "cSpell.ignorePaths": [
+      "docs/archive/myprompts.txt"
+    ],
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.editor.restoreEditors": true,
+    "workbench.editor.restoreViewState": true,
+    "files.restoreUndoStack": true,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
     "workbench.colorCustomizations": {
       "activityBar.background": "#115e59",
       "activityBar.foreground": "#ffffff",

@@ -14,7 +14,7 @@
 This document is the concise, current product baseline. It answers **what the
 product can do now**, what behavior must be preserved, and which directions are
 proposed next. It replaces the need to reconstruct current scope from the
-chronological `REQUIREMENTS.txt` log.
+chronological `PRD/REQUIREMENTS Auto Log.txt` log.
 
 Source-of-truth boundaries:
 
@@ -22,7 +22,7 @@ Source-of-truth boundaries:
 - `docs/REQUIREMENTS_V2.md`: current capabilities, gaps, and roadmap.
 - `docs/PRODUCT.md`: product intent, interaction rules, and design taste.
 - `docs/CODEMAP.md`: implementation ownership, contracts, and commands.
-- `REQUIREMENTS.txt`: chronological decision history; old entries may be obsolete.
+- `PRD/REQUIREMENTS Auto Log.txt`: chronological decision history; old entries may be obsolete.
 - `docs/ENGINEERING_LEARNINGS.md`: durable lessons from observed failures.
 - `docs/roadmap/FUTURE_FEATURES.md`: consolidated future feature candidates.
 - `docs/feature-briefs/NEXT_INCREMENT.md`: editable scope for the next milestone.
@@ -35,6 +35,7 @@ the same commit. A roadmap entry is not implementation approval by itself.
 | Status | Meaning |
 |---|---|
 | Implemented | Available in the current repository and supported by tests or runbooks. |
+| Partially implemented | A compatible foundation exists, but the user-facing workflow is not complete. |
 | Guarded | Implemented, but intentionally constrained by approval, configuration, or environment. |
 | Observing | Current behavior remains in place while usage evidence is gathered. |
 | Proposed | Candidate V2 work; not approved merely because it appears here. |
@@ -60,6 +61,7 @@ re-describing the whole product.
 | ID | Capability | Status |
 |---|---|---|
 | CORE-01 | Single trip-planning agent with phase-selected tools | Implemented |
+| CHAT-01 | Structured minimal-input Assistant interactions | Observing |
 | PLAN-01 | Preference-aware conversational trip creation | Implemented |
 | PLAN-02 | Source-grounded flight, stay, place, meal, route, weather, visa, and event research | Implemented |
 | PLAN-03 | Structured, chronological, hotel-anchored daily itineraries | Implemented |
@@ -96,10 +98,26 @@ re-describing the whole product.
 - GPT-4.1 is the measured default planning model. A slower or costlier model
   requires evidence that it improves a relevant quality failure.
 
+### CHAT-01 - Structured minimal-input Assistant interactions
+
+- Every new trip deterministically loads durable preferences, then emits one bounded
+  `request_trip_input` kickoff before plan creation. Every field carries a sensible
+  prefilled value; known context enumerates the relevant saved preferences and
+  past-trip signals already applied.
+- The backend emits the validated versioned payload as an additive `input_request`
+  SSE event while retaining a concise text fallback for older clients.
+- Shared web/native TypeScript transport retains the event contract.
+- The main web app renders all validated field kinds in a prefilled compact card
+  inside the Option A right-edge Assistant sidecar. Submission and default-skip
+  responses continue through the normal retry-safe chat path.
+- Option A is available in the local deployment for owner evaluation. Hosted
+  deployment and final design acceptance remain pending.
+
 ### PLAN-01 - Preference-aware planning flow
 
-- The agent loads known preferences before asking questions and asks only for
-  information it cannot safely infer.
+- The agent loads known preferences before the one-step new-trip kickoff. Direct
+  mode uses that review and then builds without further questions; interactive
+  mode may include unresolved critical facts in the same review.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
 - One sticky display currency is used throughout a trip. Domestic travel defaults
@@ -118,10 +136,22 @@ re-describing the whole product.
 
 ### PLAN-02 - Grounded providers and enrichment
 
-- Duffel is the primary flight search provider; Amadeus flight search is fallback
-  only.
-- Amadeus remains available for supported hotel, activity, and point-of-interest
-  searches.
+- LiteAPI is the preferred read-only source for date/party-specific hotel rates,
+  flight rates, and selected-flight verification when configured. Normalized
+  results retain opaque provider references, quote time/expiry, total provider
+  currency, and explicit `live`, `unavailable`, or `provider_error` evidence.
+- The stable flight and hotel tools route through separate capability contracts;
+  future providers can implement either capability without changing the agent.
+- Viator is the preferred read-only activity provider when configured. The stable
+  activity tool returns date-filtered product discovery, operating-schedule evidence,
+  ratings, duration, cancellation/confirmation metadata, and the provider's unchanged
+  affiliate URL. Prices are explicitly `from` prices, not exact party totals or holds.
+- Duffel remains the flight fallback, and Amadeus remains available for legacy
+  flight, hotel, activity, and point-of-interest searches.
+- Google hotel results are property metadata only and are labeled `estimated`;
+  they never establish room availability or a live rate.
+- Explicit inventory refresh bypasses shared cache. Live hotel, flight, and activity
+  search uses a 60-second cache and flight verification uses 30 seconds by default.
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.
@@ -144,6 +174,12 @@ re-describing the whole product.
 - Visit times must progress chronologically and leave room for stated duration
   and travel. Duplicate or backwards model-authored times are rejected before
   persistence.
+- Itinerary rows make timing auditable: hotel endpoints show estimated times
+  when needed; visits show departure; transfer rows show estimated arrival,
+  endpoint guidance, and any free buffer or schedule conflict.
+- Route summaries and legs use one Walk, Metro, and Taxi vocabulary. Place rows
+  show Google rating/review evidence and may show a clearly labeled estimated
+  must-visit score, never a fabricated itinerary-inclusion percentage.
 - Route ordering, displayed times, itinerary markers, and map circuit ordering
   are treated as one schedule contract.
 
@@ -241,11 +277,22 @@ re-describing the whole product.
 
 - One authoritative trip snapshot owns destination, dates, travelers, lifecycle,
   counts, booking progress, budget/cost, fit, and constraints.
-- Day summaries expose stop count, duration, route distance/time/mode, and a Maps
-  handoff before stop details.
+- Compact day briefs expose non-hotel planned-stop count, explicit `Schedule
+  duration`, a separate `Day's travel` route distance/time/mode row, confirmed
+  and remaining booking counts, Travel rhythm guidance, and a Maps handoff before
+  stop details. A shared backend contract gives Itinerary and Map the same
+  endpoint-to-endpoint schedule and separate route-only travel subtotal. Missing
+  hotel endpoint times are estimated from timed visits and known route legs and
+  visibly marked as estimates.
+- Compact agenda rows lead with explicit Depart/Return or Arrive/Stay timing,
+  keep time, place, status, and actions densely left-aligned, place each travel
+  estimate above its destination, and use explicit Confirmed or Needs booking
+  actions instead of checkbox presentation.
 - Place stops use day-colored markers matching map circuits: `H` for hotel
   endpoints and sequential numbers for attractions and named meals.
 - Rows show quiet travel distance/time from the previous mapped stop.
+- Generated hotel circuit anchors have no visit duration, In trip badge, or
+  single-occurrence removal. Hotel changes use authoritative stay-range actions.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 
@@ -374,8 +421,8 @@ re-describing the whole product.
 - One Windows setup command verifies tooling, restores locked dependencies, and
   preserves existing secrets.
 - One local SPA command starts the persisted emulator/backend/frontend workflow,
-  safely replaces repository-owned stale listeners, and refuses unrelated port
-  owners.
+  force-clears process trees from enabled API, SPA, and Labs ports, verifies
+  release, and cleanly restarts each enabled service.
 - Backend, frontend, browser, shared-client, and native validation commands are
   documented in `docs/CODEMAP.md`.
 - Canary builds and pushes one immutable Git-SHA image to GHCR, validates IaC,
@@ -405,6 +452,9 @@ re-describing the whole product.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
 - Production mobile-store release still requires owner-approved distribution
   setup and provider keys appropriate to each platform.
+- Structured Assistant input is not yet rendered in production web or native UI.
+  The selectable overlay/control prototype is active in UX Labs; production wiring
+  requires an owner-selected direction.
 
 ### Out of scope unless explicitly reopened
 
@@ -457,7 +507,7 @@ increments.
 - Prefer improvements to planning completeness, trust, and cross-surface coherence
   over adding disconnected feature breadth.
 - Revisit exact-place zoom only when usage or feedback triggers the recorded
-  decision in `docs/DEFERRED_DECISIONS.md`.
+  decision in `docs/roadmap/DEFERRED_DECISIONS.md`.
 
 ### V2.3 - Responsible monetization
 

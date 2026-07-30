@@ -27,7 +27,7 @@ TypeScript types in `src/types.ts` mirror it — keep them in sync.
 From the repo root:
 
 ```powershell
-scripts\dev-spa.ps1          # starts FastAPI (:8000) + Vite (:5173)
+scripts\dev\dev-spa.ps1      # starts FastAPI (:8000) + Vite (:5173)
 ```
 
 Or manually:

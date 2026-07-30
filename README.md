@@ -5,10 +5,10 @@
 > **Repo**: https://github.com/munishgoyal1/tripplanner (private)
 > **Status**: Active development — trip planner with real Amadeus API search
 
-An AI-powered trip planner that creates complete, bookable travel plans in
-under 30 minutes of user interaction. Searches real flights, hotels, and
-activities via Amadeus APIs, learns from user preferences and past trips,
-and can execute bookings on the user's behalf.
+An AI-powered trip planner that creates complete, booking-ready travel plans in
+under 30 minutes of user interaction. It searches real flights, hotels, and
+activities through capability-specific providers, learns from user preferences
+and past trips, and preserves provider handoffs without charging or booking.
 
 ## Architecture
 
@@ -87,8 +87,8 @@ learning for that turn.
 | `record_past_trip` | Save trip to history with rating | Working |
 | `record_trip_postmortem` | Structured post-mortem (rating + what worked/didn't), feeds learned_notes | Working |
 | `search_flights` | Real flight search — airlines, times, stops, prices | Amadeus API |
-| `search_hotels` | Real hotel search — names, ratings, rooms, prices | Amadeus API |
-| `search_activities` | Sightseeing, tours, attraction tickets with prices | Amadeus API |
+| `search_hotels` | Live hotel rates with legacy property fallback | LiteAPI / legacy |
+| `search_activities` | Tours, schedules, and from-prices with legacy fallback | Viator / Amadeus |
 | `search_points_of_interest` | Landmarks, restaurants, attractions | Amadeus API |
 | `search_places_with_reviews` | Hotels/attractions with real Google ratings & reviews | Google Places |
 | `get_place_reviews` | Detailed reviews & editorial summary for a place | Google Places |
@@ -142,21 +142,21 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
 > **Developing locally?** Run `.\scripts\setup-dev-machine.ps1` once, then see
-> [`docs/dev.md`](docs/dev.md) for the `.\scripts\dev-spa.ps1` workflow.
+> [`docs/development/dev.md`](docs/development/dev.md) for the `.\scripts\dev\dev-spa.ps1` workflow.
 > For multiple simultaneous coding-agent windows, use isolated Git worktrees as
 > described in
-> [`docs/parallel-agent-development.md`](docs/parallel-agent-development.md).
+> [`docs/development/parallel-agent-development.md`](docs/development/parallel-agent-development.md).
 
 ## Quick Start
 
 ### One-click Windows setup
 ```powershell
 .\scripts\setup-dev-machine.ps1
-.\scripts\dev-spa.ps1
+.\scripts\dev\dev-spa.ps1
 ```
 
 The setup command installs missing prerequisites, restores locked dependencies,
-and preserves any existing `.env`. See [docs/deployment-flow.md](docs/deployment-flow.md)
+and preserves any existing `.env`. See [docs/operations/deployment-flow.md](docs/operations/deployment-flow.md)
 for the two-stage canary and production release flow.
 
 ### Local CLI
@@ -185,7 +185,7 @@ uv run uvicorn tripplanner.api:app --reload
 ### Local hosted-UI preview (React SPA + FastAPI)
 ```bash
 # Backend (API) + Vite dev server together, with the /api proxy wired up:
-scripts\dev-spa.ps1
+scripts\dev\dev-spa.ps1
 # open http://localhost:5173
 #
 # Or run just the backend and have it serve a production SPA build:
@@ -212,20 +212,20 @@ Don't wait 3–4 minutes for CI on every code change. Use the local dev script
 — it runs the FastAPI backend plus the Vite dev server together:
 
 ```powershell
-scripts\dev-spa.ps1                 # backend on :8000 + Vite on :5173
-scripts\dev-spa.ps1 -Watch          # enable live reload for both
-scripts\dev-spa.ps1 -BackendOnly    # just the API
-scripts\dev-spa.ps1 -FrontendOnly   # just Vite
-scripts\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-local
-scripts\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
+scripts\dev\dev-spa.ps1                 # backend on :8000 + Vite on :5173
+scripts\dev\dev-spa.ps1 -Watch          # enable live reload for both
+scripts\dev\dev-spa.ps1 -BackendOnly    # just the API
+scripts\dev\dev-spa.ps1 -FrontendOnly   # just Vite
+scripts\dev\dev-spa.ps1 -CosmosBackend azure # explicitly use Azure tripplanner-local
+scripts\dev\dev-spa.ps1 -UseCanaryData  # explicitly share hosted canary data
 ```
 
-By default, `scripts\dev-spa.ps1` launches Docker Desktop when needed, starts
+By default, `scripts\dev\dev-spa.ps1` launches Docker Desktop when needed, starts
 the official Dockerized **Cosmos DB Emulator**, and uses its isolated
 `tripplanner-local` database. Emulator data persists in a named Docker volume.
-Rerunning the script first replaces a previous Vite process from this repository
-on the requested frontend port. It refuses to stop unrelated port owners; use
-`-FrontendPort <port>` when another application legitimately needs that port.
+Rerunning the script force-stops process trees listening on the enabled API,
+frontend, and Labs ports and verifies each port is released before restart. Use
+custom port parameters before launch when another application needs a default port.
 Docker Desktop must already be installed; startup waits up to two minutes for
 its daemon and reports a clear error without resetting emulator data. Set
 `COSMOS_DEV_BACKEND=azure` in `.env` or pass `-CosmosBackend azure` to explicitly
@@ -239,7 +239,7 @@ Three speeds of feedback you actually have:
 | Speed | Command | When |
 |---|---|---|
 | ~1 sec | `.venv\Scripts\python.exe -m pytest -q` | logic/tool changes — runs 92 tests |
-| ~3 sec reload | `scripts\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
+| ~3 sec reload | `scripts\dev\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
 | ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
 
 The local loop and deployed app run **identical code**. The dev script sets the
@@ -264,7 +264,26 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AZURE_OPENAI_DEPLOYMENT=gpt-4.1
    ```
 
-### Amadeus API (required for real search)
+### LiteAPI (recommended for live hotel and flight availability)
+1. Create an account and obtain a server-side API key from LiteAPI.
+2. Set in `.env`:
+   ```
+   LITEAPI_API_KEY=your-key
+   TRAVEL_HOTEL_PROVIDER=auto
+   TRAVEL_FLIGHT_PROVIDER=auto
+   ```
+   `auto` prefers LiteAPI when configured and otherwise preserves the legacy
+   providers. The key is backend-only. This integration searches and verifies
+   rates; it does not prebook, book, charge, cancel, or create orders.
+
+### Viator (recommended for live activity discovery)
+1. Obtain a Basic Access Affiliate sandbox API key from Viator.
+2. Paste it into the existing blank `VIATOR_API_KEY=` entry in `.env`.
+   `TRAVEL_ACTIVITY_PROVIDER=auto` selects Viator when configured and otherwise
+   preserves Amadeus fallback. Results include schedules and from-prices only;
+   no availability check, reservation, booking, payment, or cancellation is made.
+
+### Amadeus API (legacy activities and search fallback)
 1. Sign up free at [developers.amadeus.com](https://developers.amadeus.com)
 2. Create a Self-Service app → get API Key + Secret
 3. Set in `.env`:
@@ -273,7 +292,7 @@ databases (800 RU/s total), while Container Apps remain scale-to-zero.
    AMADEUS_API_SECRET=your-secret
    AMADEUS_BASE_URL=https://test.api.amadeus.com
    ```
-   Use `https://api.amadeus.com` for production (real bookings).
+   Use `https://api.amadeus.com` only for supported production search traffic.
    Free tier: 2,000 API calls/month.
 
 ### Email export (optional)
@@ -353,8 +372,11 @@ tripplanner/
 ├── Dockerfile                    # Multistage: build SPA (node) + run FastAPI (uvicorn)
 │
 ├── frontend/                     # React 19 + Vite + TS single-page app (the UI)
+│   ├── labs/                     # Isolated UX experiments and build configuration
 │   ├── src/                      # App.tsx, ChatPanel, TripPanel, DestinationOverview, ...
 │   └── dist/                     # Production build, served by FastAPI in prod
+│
+├── packages/tripplanner-client/  # Shared web/native contracts and request helpers
 │
 ├── infra/
 │   ├── data-stack.bicep          # Subscription-scope shared data bootstrap
@@ -392,7 +414,7 @@ tripplanner/
 │       ├── amadeus_client.py     # Amadeus OAuth2 client
 │       ├── flight_search.py      # Amadeus flight search (fallback)
 │       ├── hotel_search.py       # Amadeus hotel search
-│       ├── activities_search.py  # Amadeus tours & POI
+│       ├── activities_search.py  # Viator activity boundary + Amadeus fallback/POI
 │       ├── google_places.py      # Real ratings, reviews, restaurants
 │       ├── web_search.py         # Tavily live web search
 │       ├── trip_planner.py       # Trip lifecycle (Cosmos-aware)

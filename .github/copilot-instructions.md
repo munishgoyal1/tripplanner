@@ -26,20 +26,32 @@
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
+- The coding agent owns the local server lifecycle: start, stop, restart, clear
+  stale ports, and health-check the canonical stack without handing operations
+  back to the owner. After a push, restart affected services when runtime code
+  changed. Skip unnecessary restarts for runtime-neutral changes, but ensure the
+  stack is running whenever the owner needs to test.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
 
-## Parallel coding windows
+## Development workspace
 
-- The primary `tripplanner` checkout stays on `master` as the integration lane.
-  Feature and fix agents work only in the persistent sibling worktrees
-  `worker-1` and `worker-2` on their matching `agents/worker-*` branches.
+- The owner's default is this single primary `tripplanner` VS Code workspace,
+  working directly on `master` for features, fixes, review, and integration.
+- Use persistent `worker-1` / `worker-2` worktrees only when the owner explicitly
+  requests parallel development for clear, sizeable, isolated features. They are
+  optional capacity, not the normal path; when active, both are independent lanes.
 - Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
   assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
+- When parallel mode is explicitly active, `scripts/dev/run-latest-code.ps1`:
+  it temporarily stashes staged, unstaged, and untracked master work, performs the
+  clean guarded Worker 1 then Worker 2 PR merges, restores the local state, and
+  only then starts the app. Both workers preflight before either merge. Worker 2
+  incorporates Worker 1's new master first; conflicts stop for explicit resolution.
 - Use `scripts/agent-worktree.ps1` and
-  `docs/parallel-agent-development.md` for slot creation, synchronization,
+  `docs/development/parallel-agent-development.md` for slot creation, synchronization,
   temporary worktrees, and safe cleanup. Do not share `.venv` or mutable
   `node_modules` across worktrees.
 
@@ -68,7 +80,7 @@ stays fast. Build & push only when explicitly asked.
 
 Canary builds new code by default. Production resolves the exact immutable SHA
 currently deployed to canary; do not rebuild normal promotions.
-See `docs/deployment-flow.md` for the canonical release runbook.
+See `docs/operations/deployment-flow.md` for the canonical release runbook.
 
 Resource naming:
 - Canary RG: `rg-tripplanner-canary` (app: `canary-app-*`)
@@ -87,7 +99,7 @@ the right place IN THE SAME TURN so future sessions don't relearn it:
 | Current capability / roadmap status         | `docs/REQUIREMENTS_V2.md` (commit)    |
 | Next coherent feature scope                 | `docs/feature-briefs/*.md` (commit)   |
 | File layout / commands / contracts          | `docs/CODEMAP.md` (commit)            |
-| New requirement / decision (with date)      | `REQUIREMENTS.txt` (commit)           |
+| New requirement / decision (with date)      | `PRD/REQUIREMENTS Auto Log.txt` (commit) |
 | Architecture / config shift                 | `README.md` + this file (commit)      |
 | Current in-flight TODOs only                | `/memories/session/<topic>.md`        |
 
@@ -133,7 +145,7 @@ Learns from user preferences and past trips.
 - Always commit AND push after every change
 - Keep it simple, modular — no over-engineering
 - No major functional changes without user consent
-- Update REQUIREMENTS.txt when new requirements come in
+- Update `PRD/REQUIREMENTS Auto Log.txt` when new requirements come in
 - Update README.md when architecture changes
 - This file must always reflect current state
 
@@ -143,8 +155,60 @@ Learns from user preferences and past trips.
   vocabulary for visit-to-planning-to-trip-to-handoff funnels. Query strings,
   trip/chat content, account identity, and other customer data are excluded;
   Account can reopen analytics preferences. Azure Log Analytics remains the
-  operational reliability source. A GA4 Web stream ID and approved deployment
-  are still required to activate collection on `aitripplanner.co`.
+  operational reliability source. Production is configured for GA4 Web stream
+  `G-VNTSQG9SWZ`; an approved deployment is still required to activate collection.
+- **Provider-neutral live travel foundation**: the stable hotel and preferred
+  flight tools now select capability-specific providers through a minimal
+  registry. LiteAPI supplies normalized read-only hotel rates, flight search,
+  and selected-flight verification with provider references, quote timestamps,
+  expiry, totals, and explicit evidence status. Legacy Duffel/Amadeus/Google
+  fallbacks remain; Google hotel results are labeled metadata-only rather than
+  live availability. Explicit refresh bypasses the 60-second inventory cache.
+  No prebook, booking, payment, order, or cancellation endpoint exists.
+- **Option A local Assistant trial**: the main web app now opens Assistant as a
+  wide right-edge sidecar over the still-visible, usable itinerary/map workspace.
+  Validated `input_request` events render as compact prefilled controls for all
+  supported field kinds and submit through normal chat. New trips deterministically
+  load preferences and force this one-step review before plan creation, enumerating
+  relevant saved and past-trip context; direct mode proceeds without more questions
+  after submit or skip. This is for local owner testing only; no Azure deployment or
+  final design acceptance is implied.
+- **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
+  compares a compact operations binder, recommended layered Trip Book, and
+  visual journey book across contents, trip brief, executable day, document
+  readiness, and evidence-labeled personal context. Production export remains
+  unchanged; secure document ingestion and merged-PDF behavior require a later
+  owner-approved contract.
+- **Assistant-led itinerary foundation**: the selected Option A local trial preserves
+  the Lab's preference-aware kickoff, not only its footprint. FastAPI streams the
+  validated payload as an additive `input_request` event, and shared web/native
+  transport retains it. Hosted deployment and final owner acceptance remain pending.
+- **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
+  consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
+  time from route-only Travel and marks inferred hotel departure/return times as
+  estimates. Hotel anchors no longer show generic stay duration, redundant In
+  trip state, or invalid exact-delete controls; backend mutation also rejects
+  single-anchor removal. The itinerary pane can expand to 55% while retaining a
+  usable map. A separate 320 px density lab compares ledger, circuit-header, and
+  progressive-focus refinements without rewriting the selected Compact Agenda.
+- **Repository ownership cleanup**: UX Lab HTML, source, feedback middleware,
+  and build configuration now live under `frontend/labs/`; production
+  `frontend/src/` excludes experiments. The canonical local SPA startup also
+  serves the isolated Labs catalog on port 5175. Platform-neutral occurrence and latest-
+  request helpers live in `packages/tripplanner-client` instead of `mobile/`.
+  Generated test-home state, orphaned root npm metadata, dead Chainlit-era
+  scripts, and the obsolete top-level architecture folder are removed.
+- **Categorized documentation**: canonical product and engineering truth remains
+  prominent at `docs/`, while supporting material is grouped under
+  `development/`, `operations/`, `mobile/`, `roadmap/`, `feature-briefs/`,
+  `ux-experiments/`, and `archive/`. `docs/README.md` is the navigation owner.
+- **Compact itinerary brief + agenda (Session 86)**: the owner-selected Compact
+  Brief C and Compact Agenda B now drive production itinerary days. Day briefs
+  exclude hotel anchors from planned-stop counts, label the end-to-end timed span
+  as the schedule, show confirmed and remaining booking readiness, and label
+  guidance Travel rhythm. Dense left-anchored rows expose Depart/Return or
+  Arrive/Stay semantics, travel legs, and explicit Confirmed/Needs booking
+  actions while preserving exact occurrence behavior.
 - **Complete-by-default new trips (Session 85)**: after the immediate first cut,
   new-trip research must be persisted in a second enriched full-plan update with
   the strongest concrete hotel and sensible daily defaults. One bounded
@@ -171,14 +235,14 @@ Learns from user preferences and past trips.
   and workspace admission for three trip reads plus one mutation. It reports
   p50/p95/error evidence, rejects scenario p95 above a conservative 750 ms,
   and proves zero LLM calls/cost while stubbing only storage/view computation.
-  `docs/performance-cost.md` separates this regression tripwire from production
+  `docs/operations/performance-cost.md` separates this regression tripwire from production
   chat/tool telemetry, Cosmos RU/throttling analysis, and Azure/provider billing.
 - **Backup and recovery drill (engineering improvement 5)**: the Cosmos data
   utility can export all six application containers into a credential-free
   checksummed artifact, validate it offline, and restore it exactly into an
   empty isolated recovery database. Drill mode rejects canary/production,
   same-coordinate, nonempty, missing-container, and partial-scope targets;
-  `docs/backup-recovery.md` defines evidence, initial RPO/RTO objectives, and
+  `docs/operations/backup-recovery.md` defines evidence, initial RPO/RTO objectives, and
   the explicit approval boundary for any real production recovery.
 - **External side-effect idempotency (engineering improvement 4)**: trip email
   export now carries a stable client request ID through a bounded principal
@@ -195,7 +259,7 @@ Learns from user preferences and past trips.
 - **Production observability + measurable chat SLOs (engineering improvement 2)**:
   every JSON and SSE chat attempt emits one PII-safe terminal `chat_operation`
   event with outcome, transport, and end-to-end duration, including admission,
-  replay, cap, model, and persistence paths. `docs/operations-slos.md` defines
+  replay, cap, model, and persistence paths. `docs/operations/operations-slos.md` defines
   the initial accepted-chat success and p95 latency objectives, honest
   low-volume interpretation, release checks, tool diagnostics, and copy-paste
   Log Analytics queries. Existing Container Apps stdout routing remains the
@@ -295,10 +359,9 @@ Learns from user preferences and past trips.
   and Map day chips use the same aggregate circuit action as itinerary day
   headers on desktop and mobile. Reusable lessons now live in the separate
   `docs/ENGINEERING_LEARNINGS.md`; the owner's `learning.txt` is untouched.
-- **Clean local SPA restart (Session 68)**: `scripts/dev-spa.ps1` now stops a
-  previous Vite listener only when its Node command belongs to this repository,
-  before Docker/Cosmos/backend startup. Unrelated frontend-port owners still
-  fail explicitly, and backend-only runs leave the frontend untouched.
+- **Clean local SPA restart (Session 68)**: `scripts/dev/dev-spa.ps1` force-clears
+  stale process trees from enabled API, SPA, and Labs ports before startup and
+  verifies each port is released. Backend-only runs leave frontend ports untouched.
 - **Immediate mutually exclusive map focus (Session 67)**: exact-stop clicks
   clear stale aggregate circuit state, while day-header clicks clear exact
   focus. MapPanel also cancels queued circuit work before pin focus. Loaded
@@ -312,7 +375,7 @@ Learns from user preferences and past trips.
   flight/transport travel days. The local five-day Goa trip was restored from
   its persisted transcript with populated, closed hotel circuits on every day.
 - **Automatic local Docker startup (Session 65)**: the default local
-  `scripts/dev-spa.ps1` path launches an installed Docker Desktop when its daemon
+  `scripts/dev/dev-spa.ps1` path launches an installed Docker Desktop when its daemon
   is stopped, waits up to two minutes, then starts the Cosmos Emulator. Azure,
   canary-data, and frontend-only runs do not launch Docker; unhealthy persisted
   emulator data is reported but never reset automatically.
@@ -321,7 +384,7 @@ Learns from user preferences and past trips.
   an itinerary day header now fits the complete day circuit instead of routing
   through one representative place; desktop and mobile share a repeatable
   circuit-focus token. Exact-place clicks intentionally retain zoom 15 for now,
-  with the usage decision recorded in `docs/DEFERRED_DECISIONS.md`.
+  with the usage decision recorded in `docs/roadmap/DEFERRED_DECISIONS.md`.
 - **Exact map focus regression repair (Session 63)**: changing itinerary
   selection updates existing same-day marker icons immediately, restores the
   previous marker, and leaves exactly one current map number. Circuit/hotel
@@ -389,10 +452,10 @@ Learns from user preferences and past trips.
 - **Native Android app (Session 51)**: the Expo/React Native mobile shell now
   explicitly supports Android with package `com.munishgoyal1.tripplanner`,
   Material icon mappings, Google Maps via `react-native-maps`, secure identity,
-  LAN Expo Go testing on port 8082, and a maintained `docs/android-testing.md`
+  LAN Expo Go testing on port 8082, and a maintained `docs/mobile/android-testing.md`
   runbook. Android reuses all shared client/state/backend behavior. Standalone
   EAS maps need a restricted Android Maps key before preview/Play testing.
-- **Repeatable iPhone testing (Session 50)**: `docs/ios-testing.md` is the
+- **Repeatable iPhone testing (Session 50)**: `docs/mobile/ios-testing.md` is the
   maintained Expo Go, EAS preview, and TestFlight runbook. Physical-device
   testing defaults to LAN port 8082 because Docker can occupy 8081; ngrok is an
   optional fallback and may be blocked by the current network. Mobile checks
@@ -710,7 +773,7 @@ Learns from user preferences and past trips.
     Signed HttpOnly `mg_session` cookie (HMAC-SHA256 with `WEB_SESSION_SECRET`,
     falls back to `CHAINLIT_AUTH_SECRET` for back-compat).
   - Guest fallback → persistent `web-<uuid>` id (localStorage, same browser).
-  - Setup walkthrough: `docs/setup-oauth.md`. All OAuth env vars are optional;
+  - Setup walkthrough: `docs/development/setup-oauth.md`. All OAuth env vars are optional;
     leaving them unset keeps the app login-less.
 - Single trip planner agent with 34 tools across 10 families:
   - Preferences & continuous learning (10):
@@ -875,10 +938,11 @@ Learns from user preferences and past trips.
 - Removed (Session 1): todo, comms, calendar, budget agents. Google OAuth / Twilio integrations.
 
 ## Files to Read for Context
-- `REQUIREMENTS.txt` — full history of requirements and decisions (Session 6 = hosted mode)
+- `PRD/REQUIREMENTS Auto Log.txt` — full history of requirements and decisions
 - `README.md` — architecture (local + hosted), setup, project structure
 - `infra/README.md` — Azure deploy walkthrough (GHCR + `az deployment group create`)
 - `src/tripplanner/graph.py` — single-agent tool loop (unchanged for hosted mode)
+- `src/tripplanner/chat_interactions.py` — validated structured Assistant input contract
 - `src/tripplanner/agents/trip_agent.py` — trip agent with 32 tools (incl. EXTRACTION CHECKLIST prompt)
 - `src/tripplanner/storage_cosmos.py` — optional Cosmos backend (lazy import)
 - `src/tripplanner/user_context.py` — per-request user_id ContextVar

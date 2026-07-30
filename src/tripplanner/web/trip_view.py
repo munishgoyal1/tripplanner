@@ -827,23 +827,36 @@ def _route_stats_for_day(
     return _route_stats_for_coords(coords)
 
 
-def _route_stats_for_distance(distance: float) -> dict[str, Any]:
+def _route_stats_for_distance(
+    distance: float, *, from_name: str = "", to_name: str = ""
+) -> dict[str, Any]:
     if distance <= 3:
-        mode, speed = "walk", 4.5
+        mode, speed = "Walk", 4.5
     elif distance <= 20:
-        mode, speed = "local transit", 18.0
+        mode, speed = "Metro", 18.0
     else:
-        mode, speed = "car transfer", 35.0
+        mode, speed = "Taxi", 35.0
 
     duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
     distance_1 = round(distance, 1)
-    return {
+    result = {
         "distance_km": distance_1,
         "duration_min": duration_min,
         "mode": mode,
         "distance_display": f"{distance_1:.1f} km",
         "duration_display": _route_duration_display(duration_min),
     }
+    if from_name and to_name:
+        if mode == "Walk":
+            result["detail"] = f"Walk from {from_name} to {to_name}."
+        elif mode == "Metro":
+            result["detail"] = (
+                f"Take the Metro from near {from_name} toward {to_name}; "
+                "walk to and from the nearest stations."
+            )
+        else:
+            result["detail"] = f"Take a taxi from {from_name} to {to_name}."
+    return result
 
 
 def _route_duration_display(duration_min: int) -> str:
@@ -851,6 +864,124 @@ def _route_duration_display(duration_min: int) -> str:
         return f"{duration_min} min"
     hours, minutes = divmod(duration_min, 60)
     return f"{hours} hr" + (f" {minutes} min" if minutes else "")
+
+
+def _clock_minutes(value: Any) -> int | None:
+    match = re.fullmatch(r"\s*(\d{1,2}):(\d{2})(?:\s*([ap]m))?\s*", str(value or ""), re.I)
+    if not match:
+        return None
+    hours = int(match.group(1))
+    minutes = int(match.group(2))
+    meridiem = (match.group(3) or "").lower()
+    if minutes > 59 or hours > (12 if meridiem else 23):
+        return None
+    if meridiem:
+        hours %= 12
+        if meridiem == "pm":
+            hours += 12
+    return hours * 60 + minutes
+
+
+def _clock_display(minutes: int) -> str:
+    minutes %= 24 * 60
+    return f"{minutes // 60:02d}:{minutes % 60:02d}"
+
+
+def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[str, Any]:
+    timed = [
+        (index, minutes)
+        for index, stop in enumerate(stops)
+        if (minutes := _clock_minutes(stop.get("time"))) is not None
+    ]
+    travel_minutes = int(route.get("duration_min") or 0)
+    if not timed:
+        visit_minutes = sum(
+            int(stop.get("duration_min") or 0)
+            for stop in stops
+            if stop.get("kind") != "hotel"
+        )
+        total = visit_minutes + travel_minutes
+        return {
+            "start": "",
+            "end": "",
+            "duration_min": total,
+            "duration_display": _route_duration_display(total),
+            "travel_duration_min": travel_minutes,
+            "travel_duration_display": _route_duration_display(travel_minutes),
+            "estimated": True,
+        }
+
+    first_index, first_time = timed[0]
+    last_index, last_time = timed[-1]
+    start = first_time - int(
+        (stops[first_index].get("travel_from_previous") or {}).get("duration_min") or 0
+    )
+    end = last_time
+    if end < first_time:
+        end += 24 * 60
+    if stops[last_index].get("kind") not in {"hotel", "flight", "transport"}:
+        end += int(stops[last_index].get("duration_min") or 0)
+    end += sum(
+        int((stop.get("travel_from_previous") or {}).get("duration_min") or 0)
+        for stop in stops[last_index + 1 :]
+    )
+    return {
+        "start": _clock_display(start),
+        "end": _clock_display(end),
+        "duration_min": max(0, end - start),
+        "duration_display": _route_duration_display(max(0, end - start)),
+        "travel_duration_min": travel_minutes,
+        "travel_duration_display": _route_duration_display(travel_minutes),
+        "estimated": any(stop.get("kind") == "hotel" and not stop.get("time") for stop in stops),
+    }
+
+
+def _enrich_stop_timing(stops: list[dict[str, Any]]) -> None:
+    for index, stop in enumerate(stops):
+        arrival = _clock_minutes(stop.get("time"))
+        if arrival is None:
+            continue
+
+        duration = int(stop.get("duration_min") or 0)
+        if duration > 0 and stop.get("kind") != "hotel":
+            stop["departure_time"] = _clock_display(arrival + duration)
+
+        if index == 0:
+            continue
+        previous = stops[index - 1]
+        previous_arrival = _clock_minutes(previous.get("time"))
+        if previous_arrival is None:
+            continue
+        previous_duration = int(previous.get("duration_min") or 0)
+        if previous.get("kind") == "hotel":
+            previous_duration = 0
+        travel_minutes = int(
+            (stop.get("travel_from_previous") or {}).get("duration_min") or 0
+        )
+        expected_arrival = previous_arrival + previous_duration + travel_minutes
+        actual_arrival = arrival
+        while actual_arrival < previous_arrival:
+            actual_arrival += 24 * 60
+        buffer_minutes = actual_arrival - expected_arrival
+        stop["expected_arrival_time"] = _clock_display(expected_arrival)
+        if buffer_minutes > 0:
+            stop["buffer_before_min"] = buffer_minutes
+            stop["buffer_before_display"] = _route_duration_display(buffer_minutes)
+        elif buffer_minutes < 0:
+            stop["timing_conflict_min"] = abs(buffer_minutes)
+            stop["timing_conflict_display"] = _route_duration_display(abs(buffer_minutes))
+
+
+def _apply_hotel_endpoint_times(
+    stops: list[dict[str, Any]], schedule: dict[str, Any]
+) -> None:
+    if not stops:
+        return
+    endpoints = ((stops[0], schedule.get("start")), (stops[-1], schedule.get("end")))
+    for stop, endpoint_time in endpoints:
+        if stop.get("kind") == "hotel" and not stop.get("time") and endpoint_time:
+            stop["time"] = str(endpoint_time)
+            stop["time_estimated"] = True
 
 
 def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
@@ -863,7 +994,7 @@ def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]
     distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
     duration = sum(int(leg["duration_min"]) for leg in legs)
     modes = list(dict.fromkeys(str(leg["mode"]) for leg in legs))
-    mode = modes[0] if len(modes) == 1 else "mixed local travel"
+    mode = modes[0] if len(modes) == 1 else " + ".join(modes)
     return {
         "distance_km": distance,
         "duration_min": duration,
@@ -888,7 +1019,9 @@ def _route_legs_for_day(
             _haversine_km(
                 (float(start_coords[0]), float(start_coords[1])),
                 (float(end_coords[0]), float(end_coords[1])),
-            )
+            ),
+            from_name=str(start.get("name") or ""),
+            to_name=str(end.get("name") or ""),
         )
         legs.append({"from_pin_id": from_id, "to_pin_id": to_id, **metrics})
     return legs
@@ -1001,6 +1134,14 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "legs": _route_legs_for_day(ids, pin_by_id),
             }
         )
+    itinerary_days = {
+        int(day["day"]): day for day in build_itinerary(trip).get("days", [])
+    }
+    for day in days:
+        itinerary_day = itinerary_days.get(int(day["day"]))
+        if itinerary_day:
+            day["schedule"] = itinerary_day.get("schedule")
+
     scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
     unscheduled = [pin_id for pin_id in unscheduled if pin_id not in scheduled_ids]
 
@@ -1215,6 +1356,17 @@ def _insight_hint(name: str, kind: str, summary: dict[str, Any]) -> str:
     return f"{name} is a popular stop to include in this day circuit."
 
 
+def _popularity_score(summary: dict[str, Any]) -> int | None:
+    rating = summary.get("rating")
+    review_count = summary.get("review_count")
+    if not isinstance(rating, (int, float)) or rating <= 0:
+        return None
+    rating_points = min(float(rating), 5.0) / 5.0 * 75
+    volume = int(review_count) if isinstance(review_count, (int, float)) else 0
+    volume_points = min(math.log10(max(volume, 1)) / 5.0, 1.0) * 25
+    return int(round(rating_points + volume_points))
+
+
 def _reachability_hint(stops: list[dict[str, Any]], route: dict[str, Any]) -> str:
     names = [str(s.get("name") or "").strip() for s in stops if str(s.get("name") or "").strip()]
     if len(names) < 2:
@@ -1225,19 +1377,21 @@ def _reachability_hint(stops: list[dict[str, Any]], route: dict[str, Any]) -> st
     mode = str(route.get("mode") or "").strip().lower()
     if mode == "walk":
         return f"Start at {first}, then walk to {second}; most stops are in a compact area."
-    if mode == "local transit":
+    if mode == "metro":
         return (
-            f"Start from {first}, take a short cab to {second}, and use metro/local transit "
-            "for the remaining hops."
+            f"Take the Metro from near {first} toward {second}; use the nearest stations "
+            "and walk the short connections."
         )
-    return f"Hire a cab from {first} to {second}, then continue the day circuit by taxi."
+    if mode == "taxi":
+        return f"Take a taxi from {first} to {second}, then continue the circuit by taxi."
+    return f"Use {route.get('mode')} between {first}, {second}, and the remaining stops."
 
 
 def _google_travel_mode(route_mode: str) -> str:
     mode = str(route_mode or "").strip().lower()
     if mode == "walk":
         return "walking"
-    if mode == "local transit":
+    if mode == "metro":
         return "transit"
     return "driving"
 
@@ -1303,9 +1457,15 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     if not name or not destination or not places_cache.is_configured():
         return None
     try:
-        info = places_cache.get_details(name, destination) or {}
+        coords = places_cache.place_coords(name, destination)
     except Exception:  # noqa: BLE001 — never let geocoding break the itinerary
         return None
+    if coords:
+        return (float(coords[0]), float(coords[1]))
+    try:
+        info = places_cache.get_details(name, destination) or {}
+    except Exception:  # noqa: BLE001
+        info = {}
     lat, lng = info.get("lat"), info.get("lng")
     if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
         return (float(lat), float(lng))
@@ -1315,12 +1475,11 @@ def _place_coords(name: str, destination: str) -> tuple[float, float] | None:
     plain = re.sub(r"\s*\([^)]*\)", "", str(name or "")).strip()
     if plain and plain.lower() != str(name or "").strip().lower():
         try:
-            info2 = places_cache.get_details(plain, destination) or {}
+            coords = places_cache.place_coords(plain, destination)
         except Exception:  # noqa: BLE001
             return None
-        lat2, lng2 = info2.get("lat"), info2.get("lng")
-        if isinstance(lat2, (int, float)) and isinstance(lng2, (int, float)):
-            return (float(lat2), float(lng2))
+        if coords:
+            return (float(coords[0]), float(coords[1]))
     return None
 
 
@@ -1450,6 +1609,9 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
                     "cost_display": _cost_hint("hotel", summary, 0.0, symbol),
                     "insight": _insight_hint(hname, "hotel", summary),
                     "concern": concern,
+                    "rating": summary.get("rating"),
+                    "review_count": summary.get("review_count"),
+                    "popularity_score": _popularity_score(summary),
                 })
                 # Add hotel coords to day route.
                 c = coords.get(hname) or _place_coords(hname, destination)
@@ -1467,6 +1629,9 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "cost_display": _cost_hint("attraction", summary, 0.0, symbol),
                 "insight": _insight_hint(name, "attraction", summary),
                 "concern": concern,
+                "rating": summary.get("rating"),
+                "review_count": summary.get("review_count"),
+                "popularity_score": _popularity_score(summary),
             })
             # Add attraction coords to day route.
             c = coords.get(name)
@@ -1486,7 +1651,26 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             continue
 
         primary = chunk[0] if chunk else (anchor or f"Day {i}")
+        previous_coords: tuple[float, float] | None = None
+        previous_name = ""
+        for stop in stops:
+            stop_coords = coords.get(str(stop.get("name") or "")) or _place_coords(
+                str(stop.get("name") or ""), destination
+            )
+            if stop_coords and previous_coords:
+                stop["travel_from_previous"] = _route_stats_for_distance(
+                    _haversine_km(previous_coords, stop_coords),
+                    from_name=previous_name,
+                    to_name=str(stop.get("name") or ""),
+                )
+            if stop_coords:
+                previous_coords = stop_coords
+                previous_name = str(stop.get("name") or "")
         route = _route_stats_for_day_coords(day_coords)
+        _enrich_stop_timing(stops)
+        schedule = _day_schedule(stops, route)
+        _apply_hotel_endpoint_times(stops, schedule)
+        _enrich_stop_timing(stops)
 
         days.append({
             "day": i,
@@ -1497,6 +1681,7 @@ def _itinerary_from_selections(trip: dict[str, Any] | None) -> dict[str, Any]:
             "color": color,
             "stops": stops,
             "route": route,
+            "schedule": schedule,
             "reachability": _reachability_hint(stops, route),
             "google_maps_url": _google_maps_day_url(destination, stops, route.get("mode", "")),
         })
@@ -1573,7 +1758,11 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             if s:
                 summary = places_cache.get_details(s["name"], destination) or {}
                 opening, concern = _opening_hint(summary, str(entry.get("date") or ""))
-                s["duration_min"] = _duration_hint(s["kind"], s.get("duration_min"))
+                s["duration_min"] = (
+                    None
+                    if s["kind"] == "hotel"
+                    else _duration_hint(s["kind"], s.get("duration_min"))
+                )
                 if not s.get("opening_hours"):
                     s["opening_hours"] = opening
                 if not s.get("concern"):
@@ -1586,6 +1775,9 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 )
                 if not s.get("insight"):
                     s["insight"] = _insight_hint(s["name"], s["kind"], summary)
+                s["rating"] = summary.get("rating")
+                s["review_count"] = summary.get("review_count")
+                s["popularity_score"] = _popularity_score(summary)
                 s["color"] = _day_color(day_num)
                 stops.append(s)
                 # Accumulate coords for route stats.
@@ -1610,7 +1802,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                     opening, concern = _opening_hint(
                         summary, str(entry.get("date") or "")
                     )
-                    anchor["duration_min"] = _duration_hint("hotel", None)
+                    anchor["duration_min"] = None
                     anchor["opening_hours"] = opening
                     anchor["concern"] = concern
                     anchor["cost_display"] = _cost_hint(
@@ -1637,19 +1829,27 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
 
         day_coords = []
         previous_coords: tuple[float, float] | None = None
+        previous_name = ""
         for stop in stops:
             coords = place_coords_map.get(str(stop.get("name") or "").strip().lower())
             if coords:
                 if previous_coords:
                     stop["travel_from_previous"] = _route_stats_for_distance(
-                        _haversine_km(previous_coords, coords)
+                        _haversine_km(previous_coords, coords),
+                        from_name=previous_name,
+                        to_name=str(stop.get("name") or ""),
                     )
                 day_coords.append(coords)
                 previous_coords = coords
+                previous_name = str(stop.get("name") or "")
         total_stops += len(stops)
 
         # Calculate route stats for the day.
         route = _route_stats_for_day_coords(day_coords)
+        _enrich_stop_timing(stops)
+        schedule = _day_schedule(stops, route)
+        _apply_hotel_endpoint_times(stops, schedule)
+        _enrich_stop_timing(stops)
 
         days.append(
             {
@@ -1660,6 +1860,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "color": _day_color(day_num),
                 "stops": stops,
                 "route": route,
+                "schedule": schedule,
                 "reachability": _reachability_hint(stops, route),
                 "google_maps_url": _google_maps_day_url(
                     destination, stops, route.get("mode", "")

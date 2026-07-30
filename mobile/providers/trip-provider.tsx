@@ -25,7 +25,7 @@ import {
   tripplannerClient,
   type MobileAccount,
 } from '@/lib/tripplanner';
-import { LatestRequestGate } from '@/lib/latest-request';
+import { LatestRequestGate } from '@tripplanner/client';
 
 interface TripContextValue {
   view: TripView | null;

@@ -39,6 +39,7 @@ from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
+from tripplanner.chat_interactions import extract_input_request
 from tripplanner.observability import app_event, setup_logging
 from tripplanner.request_identity import (
     is_anonymous_id,
@@ -743,6 +744,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     if duration_ms is not None:
                         payload["duration_ms"] = duration_ms
                     output = data.get("output")
+                    input_request = extract_input_request(output)
+                    if input_request is not None:
+                        yield _sse("input_request", input_request)
                     if output is not None:
                         # ToolNode wraps the result in a ToolMessage; the raw
                         # @tool may also surface a plain string.

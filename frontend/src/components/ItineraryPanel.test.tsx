@@ -35,6 +35,15 @@ const itinerary: Itinerary = {
         distance_display: "4.2 km",
         duration_display: "35 min",
       },
+      schedule: {
+        start: "10:00",
+        end: "16:00",
+        duration_min: 360,
+        duration_display: "6 hr",
+        travel_duration_min: 35,
+        travel_duration_display: "35 min",
+        estimated: false,
+      },
       stops: [
         {
           name: "Louvre Museum",
@@ -58,10 +67,17 @@ const itinerary: Itinerary = {
           travel_from_previous: {
             distance_km: 2.1,
             duration_min: 28,
-            mode: "walk",
+            mode: "Walk",
             distance_display: "2.1 km",
             duration_display: "28 min",
+            detail: "Walk from Louvre Museum to Seine cruise.",
           },
+          expected_arrival_time: "12:28",
+          buffer_before_min: 152,
+          buffer_before_display: "2 hr 32 min",
+          rating: 4.7,
+          review_count: 12500,
+          popularity_score: 91,
         },
       ],
     },
@@ -93,12 +109,16 @@ describe("ItineraryPanel", () => {
     });
   });
 
-  it("shows compact stop, duration, and route metadata", async () => {
+  it("shows the compact brief and agenda metadata", async () => {
     render(<ItineraryPanel />);
 
     expect(await screen.findByText("Museums and river")).toBeInTheDocument();
-    expect(screen.getByText("2 stops")).toBeInTheDocument();
-    expect(screen.getByText("3h planned")).toBeInTheDocument();
+    expect(screen.getByText("Saturday · 12 September 2026")).toBeInTheDocument();
+    expect(screen.getByText("2 planned stops")).toBeInTheDocument();
+    expect(screen.getByText("Schedule duration:").parentElement).toHaveTextContent("6 hr · 10:00–16:00");
+    expect(screen.getByText("Day's travel:").parentElement).toHaveTextContent("35 min · 4.2 km · walk");
+    expect(screen.getByText("0 confirmed · 2 to book")).toBeInTheDocument();
+    expect(screen.getByText("Travel rhythm:")).toBeInTheDocument();
     expect(screen.getByText(/4\.2 km/)).toHaveTextContent("35 min");
     expect(screen.getByRole("link", { name: "Open route" })).toHaveAttribute(
       "href",
@@ -107,6 +127,14 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Travel from previous stop: 2.1 km, 28 min")).toBeInTheDocument();
+    expect(screen.getByText("Walk from Louvre Museum to Seine cruise.")).toBeInTheDocument();
+    expect(screen.getByText("Est. arrive 12:28 · 2 hr 32 min free before 15:00")).toBeInTheDocument();
+    expect(screen.getByLabelText("Seine cruise rating 4.7 out of 5")).toHaveTextContent("12.5K reviews");
+    expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
+    expect(screen.getAllByText("Arrive")).toHaveLength(2);
+    expect(screen.getByText("120 min visit")).toBeInTheDocument();
+    expect(screen.queryByText("In trip")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
   });
 
   it("uses the itinerary entry point for the authoritative trip snapshot", async () => {
@@ -140,9 +168,60 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel />);
 
     expect(await screen.findAllByLabelText("Hotel map marker")).toHaveLength(2);
+    expect(screen.getByText("3 planned stops")).toBeInTheDocument();
     expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
     expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
+  });
+
+  it("uses the full hotel-to-hotel span for the schedule", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        schedule: {
+          ...itinerary.days[0].schedule!,
+          start: "09:00",
+          end: "18:00",
+          duration_min: 540,
+          duration_display: "9 hr",
+        },
+        stops: [
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel", time: "9:00 AM", duration_min: null },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel", time: "6:00 PM", duration_min: null },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect((await screen.findByText("Schedule duration:")).parentElement).toHaveTextContent("9 hr · 09:00–18:00");
+    expect(screen.getAllByText(/09:00/).length).toBeGreaterThan(0);
+  });
+
+  it("ends the schedule at a final transit arrival", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        schedule: {
+          ...itinerary.days[0].schedule!,
+          start: "08:00",
+          end: "13:30",
+          duration_min: 330,
+          duration_display: "5 hr 30 min",
+        },
+        stops: [
+          { ...itinerary.days[0].stops[0], time: "8:00", duration_min: 120 },
+          { ...itinerary.days[0].stops[1], name: "Gare du Nord", kind: "transport", time: "13:30", duration_min: 60 },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect((await screen.findByText("Schedule duration:")).parentElement).toHaveTextContent("5 hr 30 min · 08:00–13:30");
   });
 
   it("requests the complete circuit when the day header is clicked", async () => {
@@ -250,11 +329,13 @@ describe("ItineraryPanel", () => {
     setStopBookedMock.mockRejectedValue(new Error("offline"));
     render(<ItineraryPanel />);
 
-    const checkbox = await screen.findByRole("checkbox", { name: "Louvre Museum: Mark booked" });
-    fireEvent.click(checkbox);
-    expect(checkbox).toHaveAttribute("aria-checked", "true");
+    const bookingAction = await screen.findByRole("button", { name: "Louvre Museum: Mark confirmed" });
+    fireEvent.click(bookingAction);
+    expect(bookingAction).toHaveAttribute("aria-pressed", "true");
+    expect(bookingAction).toHaveTextContent("Confirmed");
 
-    await waitFor(() => expect(checkbox).toHaveAttribute("aria-checked", "false"));
+    await waitFor(() => expect(bookingAction).toHaveAttribute("aria-pressed", "false"));
+    expect(bookingAction).toHaveTextContent("Needs booking");
     expect(screen.getByRole("status")).toHaveTextContent("Could not update the booking status.");
   });
 

@@ -53,7 +53,6 @@ from langchain_core.tools import BaseTool
 
 from tripplanner.user_context import get_user_id
 
-
 # Tools that mutate persistent state — never read/write cache directly.
 _STATEFUL_TOOLS: frozenset[str] = frozenset(
     {
@@ -120,10 +119,11 @@ _CACHE_POLICIES: dict[str, CachePolicy] = {
     "recall_relevant_memory": CachePolicy(scope=_USER_SCOPE, ttl_seconds=60),
 
     # Highly volatile inventory/pricing/search.
-    "search_flights_duffel": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
+    "search_flights_duffel": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
+    "verify_flight_offer": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=30),
     "search_flights": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
-    "search_hotels": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
-    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "search_hotels": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
+    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
     "search_points_of_interest": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
     "search_places_with_reviews": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
     "nearby_restaurants": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
@@ -140,7 +140,7 @@ _CACHE_POLICIES: dict[str, CachePolicy] = {
 }
 
 # Per-process LRU when Cosmos is unavailable.
-_LOCAL_CACHE: "OrderedDict[str, tuple[float, str]]" = OrderedDict()
+_LOCAL_CACHE: OrderedDict[str, tuple[float, str]] = OrderedDict()
 _LOCAL_MAX = 256
 
 
@@ -175,7 +175,7 @@ def _cache_key(tool_name: str, args: dict[str, Any] | None, *, scope: str) -> st
     We include the tool name in the digest to avoid any chance of a
     cross-tool collision; the doc id then doubles as a debug label.
     """
-    blob = f"{tool_name}|{_canonical_args(args, scope=scope)}".encode("utf-8")
+    blob = f"{tool_name}|{_canonical_args(args, scope=scope)}".encode()
     digest = hashlib.sha256(blob).hexdigest()[:32]
     return f"{tool_name}-{digest}"
 
@@ -183,7 +183,8 @@ def _cache_key(tool_name: str, args: dict[str, Any] | None, *, scope: str) -> st
 def _resolve_policy(tool_name: str) -> CachePolicy | None:
     if tool_name in _STATEFUL_TOOLS:
         return None
-    return _CACHE_POLICIES.get(tool_name, CachePolicy(scope=_USER_SCOPE, ttl_seconds=_DEFAULT_TTL_SECONDS))
+    default = CachePolicy(scope=_USER_SCOPE, ttl_seconds=_DEFAULT_TTL_SECONDS)
+    return _CACHE_POLICIES.get(tool_name, default)
 
 
 def _resolve_user_partition(scope: str, user_id: str) -> str:
@@ -344,7 +345,7 @@ def wrap_tools_with_cache(tools: list[BaseTool]) -> list[BaseTool]:
     return wrapped
 
 
-def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
+def _build_cached_copy(tool: BaseTool, structured_tool: Any) -> BaseTool:
     """Return a new StructuredTool that wraps ``tool`` with cache lookup."""
     original_invoke = tool.invoke
     tool_name = tool.name
@@ -365,12 +366,13 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
         cache_args = dict(kwargs)
         if args:
             cache_args["__pos"] = list(args)
+        refresh = cache_args.pop("refresh", False) is True
 
         started = time.time()
         user_id = get_user_id() or "local"
         cache_scope = policy.scope if policy else "stateful"
 
-        hit = cache_lookup(tool_name, cache_args)
+        hit = None if refresh else cache_lookup(tool_name, cache_args)
         if hit is not None:
             record_tool_call(
                 tool_name,
@@ -410,10 +412,11 @@ def _build_cached_copy(tool: BaseTool, StructuredTool: Any) -> BaseTool:
             _invalidate_user_scoped_cache(user_id)
             return result
 
-        cache_store(tool_name, cache_args, result, ttl=policy.ttl_seconds)
+        if not refresh:
+            cache_store(tool_name, cache_args, result, ttl=policy.ttl_seconds)
         return result
 
-    return StructuredTool.from_function(
+    return structured_tool.from_function(
         func=cached_func,
         name=tool.name,
         description=tool.description,

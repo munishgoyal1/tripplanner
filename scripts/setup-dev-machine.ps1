@@ -163,7 +163,7 @@ try {
 }
 
 Write-Host "`nSetup complete."
-Write-Host "Local app:       .\scripts\dev-spa.ps1"
+Write-Host "Local app:       .\scripts\dev\dev-spa.ps1"
 Write-Host "Canary release:  .\infra\deploy-canary.ps1"
 Write-Host "Prod promotion:  .\infra\deploy-prod.ps1"
 Write-Host "Azure access:    run 'az login' before deployment."

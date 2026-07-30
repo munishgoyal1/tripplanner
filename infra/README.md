@@ -54,7 +54,7 @@ Transition to standardized naming by redeploying canary first, then production a
 - `canary.bicepparam` / `prod.bicepparam` — isolated hosted database bindings
 - `cosmos-emulator.compose.yml` — official local emulator with persistent volume
 - `DEPLOYMENT_PROCESS.md` — detailed workflow, approval gates, and logging
-- `../docs/deployment-flow.md` — developer release runbook, artifacts, smoke, and rollback
+- `../docs/operations/deployment-flow.md` — developer release runbook, artifacts, smoke, and rollback
 - `deploy-canary.ps1` — deploy/test new changes (no approval)
 - `deploy-prod.ps1` — promote to production (manual approval required)
 - `rollback-prod.ps1` — revert to previous stable revision if issues occur
@@ -127,7 +127,7 @@ Azure mode resolves the shared account endpoint/key through the signed-in Azure
 CLI at startup and never persists credentials. The equivalent one-run override is:
 
 ```powershell
-./scripts/dev-spa.ps1 -CosmosBackend azure
+./scripts/dev/dev-spa.ps1 -CosmosBackend azure
 ```
 
 The emulator path performs the startup/readiness check and sets the loopback
@@ -166,7 +166,7 @@ Immediate old-account cost reduction remains an explicit Azure change:
 For a backup/recovery exercise, use the guarded `--recovery-drill` workflow
 instead of direct copy. It creates a checksummed offline artifact, requires an
 empty isolated target, restores from the artifact, and writes evidence. See
-[Backup and Recovery Drill](../docs/backup-recovery.md). It rejects canary and
+[Backup and Recovery Drill](../docs/operations/backup-recovery.md). It rejects canary and
 production targets and never performs an Azure-native point-in-time restore.
 
 Deferred cleanup requires the recorded cutover date, enforces seven full days,

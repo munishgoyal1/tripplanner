@@ -2,11 +2,11 @@
 
 ## Meta
 
-- Surface: `frontend/ux-lab.html`
+- Surface: `frontend/labs/itinerary-information.html`
 - Isolated build: `npm --prefix frontend run build:ux-lab`
 - Owner: Munish Goyal
 - Date started: 2026-07-29
-- Status: preferred candidate selected; pairing decision pending
+- Status: decided and implemented
 
 ## Hypothesis
 
@@ -77,7 +77,8 @@ local storage.
 ## Decision
 
 - Preferred candidate: B - Compact agenda
-- Final decision: pending pairing with an itinerary-summary treatment
-- Next action: choose a summary variant in the separate summary lab, then
-  normalize real-data wording and update the production ItineraryPanel plus its
-  backend/frontend contract tests as one coherent change.
+- Final decision: B - Compact agenda, paired with C - Compact brief
+- Implemented: 2026-07-29 in the production `ItineraryPanel`
+- Production keeps the existing focus, map, removal, booking-persistence, and
+  one-based occurrence contracts while replacing checkbox presentation with an
+  explicit `Confirmed` / `Needs booking` action.

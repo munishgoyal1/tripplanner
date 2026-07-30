@@ -393,6 +393,95 @@ def test_build_itinerary_route_uses_all_stop_names(monkeypatch: pytest.MonkeyPat
     assert day["route"]["duration_min"] > 0
 
 
+def test_itinerary_schedule_estimates_complete_hotel_circuit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "hotel": (51.5098, -0.1222),
+        "riverside walk": (51.4830, -0.1350),
+        "dinner": (51.5130, -0.1364),
+    }
+
+    def fake_details(name: str, _city: str) -> dict[str, Any]:
+        lat, lng = coords[name.lower()]
+        return {
+            "name": name,
+            "lat": lat,
+            "lng": lng,
+            "rating": 4.7,
+            "review_count": 12500,
+        }
+
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_details)
+    itinerary = trip_view.build_itinerary({
+        "destination": "London",
+        "selected_hotels": [{"name": "Hotel"}],
+        "selected_activities": [],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Hotel", "kind": "hotel"},
+                {"name": "Riverside Walk", "kind": "attraction", "time": "16:00", "duration_min": 90},
+                {"name": "Dinner", "kind": "meal", "time": "19:00", "duration_min": 60},
+                {"name": "Hotel", "kind": "hotel"},
+            ],
+        }],
+    })
+
+    day = itinerary["days"][0]
+    assert day["stops"][0]["duration_min"] is None
+    assert day["stops"][-1]["duration_min"] is None
+    assert day["stops"][0]["time"] == day["schedule"]["start"]
+    assert day["stops"][0]["time_estimated"] is True
+    assert day["stops"][1]["departure_time"] == "17:30"
+    assert day["stops"][2]["expected_arrival_time"] != "19:00"
+    assert day["stops"][2]["buffer_before_min"] > 0
+    assert day["stops"][1]["rating"] == 4.7
+    assert day["stops"][1]["review_count"] == 12500
+    assert day["stops"][1]["popularity_score"] >= 80
+    assert "Hotel" in day["stops"][1]["travel_from_previous"]["detail"]
+    assert "Riverside Walk" in day["stops"][1]["travel_from_previous"]["detail"]
+    assert day["schedule"]["start"]
+    assert day["schedule"]["end"]
+    assert day["schedule"]["duration_min"] > 240
+    assert day["schedule"]["travel_duration_min"] == day["route"]["duration_min"]
+    assert day["schedule"]["estimated"] is True
+
+
+def test_itinerary_exposes_timing_conflict(monkeypatch: pytest.MonkeyPatch) -> None:
+    coords = {
+        "museum": (51.5098, -0.1222),
+        "dinner": (51.5130, -0.1364),
+    }
+
+    def fake_details(name: str, _city: str) -> dict[str, Any]:
+        lat, lng = coords[name.lower()]
+        return {"name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_details)
+    itinerary = trip_view.build_itinerary({
+        "destination": "London",
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Museum", "kind": "attraction", "time": "10:00", "duration_min": 120},
+                {"name": "Dinner", "kind": "meal", "time": "11:00", "duration_min": 60},
+            ],
+        }],
+    })
+
+    dinner = itinerary["days"][0]["stops"][1]
+    assert dinner["expected_arrival_time"] > "12:00"
+    assert dinner["timing_conflict_min"] > 60
+    assert dinner["timing_conflict_display"]
+
+
 def test_build_itinerary_prefetches_stop_details_without_reviews(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -484,9 +573,7 @@ def test_map_view_route_stats_for_multi_stop_day(_map_geo: None) -> None:
     day1 = next(d for d in mv["days"] if d["day"] == 1)
     assert day1["route"]["distance_km"] > 0
     assert day1["route"]["duration_min"] > 0
-    assert day1["route"]["mode"] in {
-        "walk", "local transit", "car transfer", "mixed local travel"
-    }
+    assert set(day1["route"]["mode"].split(" + ")) <= {"Walk", "Metro", "Taxi"}
 
 
 def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:
@@ -710,6 +797,13 @@ def test_itinerary_falls_back_to_selections() -> None:
     # hotel listed before attraction; both marked selected
     assert day["stops"][0]["kind"] == "hotel"
     assert all(s["selected"] for s in day["stops"])
+    attraction = next(stop for stop in day["stops"] if stop["kind"] == "attraction")
+    assert attraction["rating"] == 4.5
+    assert attraction["review_count"] == 1234
+    assert attraction["popularity_score"] >= 80
+    assert attraction["travel_from_previous"]["mode"] in {"Walk", "Metro", "Taxi"}
+    assert "Taj Exotica Resort" in attraction["travel_from_previous"]["detail"]
+    assert "Dudhsagar Falls Trek" in attraction["travel_from_previous"]["detail"]
     assert it["stats"]["stops"] == len(day["stops"])
     assert "google.com/maps" in day["google_maps_url"]
 
@@ -943,7 +1037,7 @@ def test_itinerary_enriches_stop_metadata(monkeypatch: pytest.MonkeyPatch) -> No
     assert hotel["cost_display"] == "\u20b912,000"
     assert hotel["opening_hours"].startswith("Monday:")
     assert hotel["insight"]
-    assert hotel["duration_min"] > 0
+    assert hotel["duration_min"] is None
 
     assert trek["cost_display"] == "Mid-range"
     assert trek["opening_hours"].startswith("Monday:")

@@ -6,7 +6,15 @@
     }
   ],
   "settings": {
-    "window.title": "Agent 3 - Integration | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 3 - Review & Integration | ${activeEditorShort}${separator}${rootName}",
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.editor.restoreEditors": true,
+    "workbench.editor.restoreViewState": true,
+    "files.restoreUndoStack": true,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
     "workbench.colorCustomizations": {
       "activityBar.background": "#881337",
       "activityBar.foreground": "#ffffff",
@@ -15,5 +23,44 @@
       "titleBar.activeBackground": "#881337",
       "titleBar.activeForeground": "#ffffff"
     }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Tripplanner: Merge Workers",
+        "type": "shell",
+        "command": "pwsh",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}\\scripts\\dev\\merge-workers.ps1"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "isBackground": false,
+        "problemMatcher": []
+      },
+      {
+        "label": "Tripplanner: Run Latest Code",
+        "type": "shell",
+        "command": "pwsh",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}\\scripts\\dev\\run-latest-code.ps1"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "isBackground": true,
+        "problemMatcher": []
+      }
+    ]
   }
 }

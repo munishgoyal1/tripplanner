@@ -33,6 +33,21 @@ class Settings(BaseModel):
     # Test tokens look like duffel_test_xxx and return synthetic offers.
     duffel_api_key: str = os.getenv("DUFFEL_API_KEY", "")
 
+    # Read-only live hotel/flight rates. Booking operations are intentionally absent.
+    liteapi_api_key: str = os.getenv("LITEAPI_API_KEY", "")
+    liteapi_base_url: str = os.getenv(
+        "LITEAPI_BASE_URL", "https://api.liteapi.travel/v3.0"
+    ).rstrip("/")
+    travel_hotel_provider: str = os.getenv("TRAVEL_HOTEL_PROVIDER", "auto").strip().lower()
+    travel_flight_provider: str = os.getenv("TRAVEL_FLIGHT_PROVIDER", "auto").strip().lower()
+
+    # Read-only Viator tours and activity schedules. Transactional APIs are absent.
+    viator_api_key: str = os.getenv("VIATOR_API_KEY", "")
+    viator_base_url: str = os.getenv(
+        "VIATOR_BASE_URL", "https://api.sandbox.viator.com/partner"
+    ).rstrip("/")
+    travel_activity_provider: str = os.getenv("TRAVEL_ACTIVITY_PROVIDER", "auto").strip().lower()
+
     # Google Places API (New) — restaurant/attraction ratings & reviews
     # Get a key: https://console.cloud.google.com (enable 'Places API (New)')
     # Free tier: $200/month credit

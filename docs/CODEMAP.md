@@ -18,15 +18,27 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 ## 2) Run / validate (copy-paste)
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
-- Standard coding-agent windows: open `tripplanner-integration.code-workspace`,
-  `tripplanner-worker-1.code-workspace`, and `tripplanner-worker-2.code-workspace`
+- Default workflow: open this primary checkout, work directly on `master`,
+  validate once per milestone, commit, and push; the coding agent starts,
+  restarts, clears stale ports, and health-checks affected local servers
+- Sizeable isolated parallel features: double-click `Open-Tripplanner-All-Agents.cmd`
+  or run `.\scripts\open-agent-windows.ps1 -IncludeWorker2`
+- Optional parallel workspaces: `tripplanner-worker-1.code-workspace` and
+  `tripplanner-worker-2.code-workspace`; use `tripplanner-integration.code-workspace`
+  for review/merge only while that mode is explicitly active
+- Guarded two-worker integration: VS Code task `Tripplanner: Merge Workers` or
+  double-click `scripts/dev/Merge-Workers.cmd`; preflights both worktrees, then
+  merges Worker 1 followed by Worker 2 through separate merge-commit PRs
+- One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
+  or double-click `scripts/dev/Run-Latest-Code.cmd`; this preserves and
+  restores staged, unstaged, and untracked local master work around both merges
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
-- Parallel-agent workflow: [docs/parallel-agent-development.md](parallel-agent-development.md)
-- Full stack: `.\scripts\dev-spa.ps1`
-- Backend only: `.\scripts\dev-spa.ps1 -BackendOnly`
-- Frontend only: `.\scripts\dev-spa.ps1 -FrontendOnly`
-- Verbose backend: `.\scripts\dev-spa.ps1 -Logs`
+- Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
+- Full stack: `.\scripts\dev\dev-spa.ps1`
+- Backend only: `.\scripts\dev\dev-spa.ps1 -BackendOnly`
+- Frontend only: `.\scripts\dev\dev-spa.ps1 -FrontendOnly`
+- Verbose backend: `.\scripts\dev\dev-spa.ps1 -Logs`
 - Backend tests: `.\.venv\Scripts\python.exe -m pytest -q`
 - Concurrency boundary: `.\.venv\Scripts\python.exe -m pytest -q tests/test_request_security.py`
 - Performance/cost baseline: `$env:PYTHONPATH='src'; .\.venv\Scripts\python.exe scripts/performance_baseline.py --report-path logs/performance/baseline.json`
@@ -35,9 +47,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Frontend tests: `cd frontend; npm test -- --run`
 - Browser smoke: `cd frontend; npm run test:e2e`
 - iPhone via Expo Go: `cd mobile; npm run iphone` (LAN port 8082)
-- iPhone testing runbook: [docs/ios-testing.md](ios-testing.md)
+- iPhone testing runbook: [docs/mobile/ios-testing.md](mobile/ios-testing.md)
 - Android via Expo Go: `cd mobile; npm run android` (LAN port 8082)
-- Android testing runbook: [docs/android-testing.md](android-testing.md)
+- Android testing runbook: [docs/mobile/android-testing.md](mobile/android-testing.md)
 - Mobile checks: `cd mobile; npx tsc --noEmit; npm run lint; npm exec --yes expo-doctor`
 - iOS bundle check: `cd mobile; npx expo export --platform ios`
 - Local Cosmos backend: `COSMOS_DEV_BACKEND=emulator|azure` (default `emulator`)
@@ -45,23 +57,24 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   Docker Desktop when its daemon is stopped; repairs stale PostgreSQL runtime
   locks only when no server process exists; never resets persisted data)
 - Deploy: see [infra/README.md](../infra/README.md)
-- Release flow: see [docs/deployment-flow.md](deployment-flow.md)
-- Performance/cost interpretation: see [docs/performance-cost.md](performance-cost.md)
+- Release flow: see [docs/operations/deployment-flow.md](operations/deployment-flow.md)
+- Performance/cost interpretation: see [docs/operations/performance-cost.md](operations/performance-cost.md)
 
-`scripts/test.ps1` is **legacy** (Chainlit era). Don't use it.
-
-The primary checkout stays on `master` as the integration lane. Parallel coding
-agents use the persistent `worker-1` and `worker-2` sibling worktrees, own one
-coherent PR-sized assignment at a time, and merge through reviewed pull requests.
+The primary checkout on `master` is the normal development lane. Persistent
+worker worktrees remain available only for owner-requested parallel assignments;
+those changes merge through reviewed pull requests.
 
 ## 3) Top-level layout
 
 ```text
 src/tripplanner/
   api.py              FastAPI app — routes, SSE chat, /api prefix strip, SPA mount
+  chat_interactions.py Validated prefilled Assistant input-request contract
   cli.py              Local CLI entrypoint (no SPA)
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
-  graph.py            LangGraph StateGraph: agent ↔ tools loop
+  graph.py            LangGraph StateGraph: agent ↔ tools loop; deterministically
+                      loads preferences and forces one structured kickoff before
+                      creating each new trip
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics
@@ -72,11 +85,16 @@ src/tripplanner/
   user_context.py     ContextVar holding the current user_id per request
   agents/
     trip_agent.py     Single trip-planning agent — system prompt + 25 @tools
+  providers/
+    models.py         Normalized hotel/flight/activity queries, offers, money, and status
+    registry.py       Minimal capability-specific provider selection (`auto` or named)
+    liteapi.py        Read-only LiteAPI hotel rates plus flight search/verification
+    viator.py         Read-only Viator activity discovery, from-prices, and schedules
   tools/
-    duffel_flights.py     Primary flight provider
+    duffel_flights.py     Stable agent flight boundary; LiteAPI then Duffel fallback
     flight_search.py      Amadeus fallback (Amadeus self-service EOL 2026-07-17)
-    hotel_search.py       Amadeus hotels
-    activities_search.py  Amadeus activities + POI
+    hotel_search.py       Stable agent hotel boundary; LiteAPI then legacy fallback
+    activities_search.py  Stable activity boundary; Viator then Amadeus fallback + POI
     amadeus_client.py     Shared Amadeus auth/HTTP
     google_places.py      Places API New (search/reviews/photos)
     place_hours.py        Opening-hours + closure check (catches "Louvre Tue")
@@ -112,12 +130,23 @@ frontend/
   vite.config.ts      Dev: proxies /api → :8000
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
+  labs/               Isolated UX experiment HTML, source, feedback plugin,
+                      TypeScript config, and dedicated Vite server (`npm --prefix
+                      frontend run dev:ux-lab`, port 5175). The canonical
+                      `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
+                      written to the ignored
+                      docs/ux-experiments/LAB_SELECTIONS.local.json
+    src/itinerary-density/  Active 320px day-density comparison; preserves the
+          implemented Compact Agenda while evaluating refinements
+        src/itinerary-trip-book/  Active printable packet comparison for contents,
+          itinerary execution, confirmation readiness, and personal place context
   src/
     main.tsx          React 19 root
-    analytics.ts     Production-only, consent-gated GA4 loader and bounded events
-    App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
+    analytics.ts      Production-only, consent-gated GA4 loader and bounded events
+        App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-          right dock with independently hidden mounted Details/Assistant; no
+          Details dock, and an independently mounted right-edge Assistant
+          sidecar that overlays rather than resizes the usable workspace; no
           page scroll. Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
@@ -137,10 +166,13 @@ frontend/
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
-      ChatPanel.tsx        Bubbles/composer + mounted account/settings dialogs;
+       ChatPanel.tsx        Bubbles/composer + validated prefilled structured-input
+         cards + mounted account/settings dialogs;
            immediate thinking/tool/review/save progress with elapsed time;
            animation-frame token batching; mobile header owns launchers,
            desktop top row triggers them
+          TripInputCard.tsx    Compact renderer for single, multi, boolean, and number
+               trip-specific choices with prefilled submit and saved-default skip paths
       TripPanel.tsx        Contextual destination/place inspector: whole-trip
         destination guide + compact place rows, or rich focused-place details;
         selected places use the shared day-move/remove actions
@@ -158,7 +190,9 @@ frontend/
            + booked checkbox; exact day/stop identity owns active-row scroll
          and the filled current `H`/number marker; day-header click frames the
          complete map circuit and aligns its day summary without converting it
-         into exact-place focus
+         into exact-place focus; stop rows expose auditable arrival/visit/
+         departure/transfer timing, Google rating/review evidence, and the
+         estimated must-visit score
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
                            (occurrence-aware place focus highlights the exact day;
@@ -184,6 +218,8 @@ packages/tripplanner-client/
                            including optional SSE progress phases
   src/client.ts            Fetch, mutation, and token/tool/progress SSE transport
                            for web + native
+  src/itinerary-occurrence.ts  Converts rendered stop indexes to one-based API identity
+  src/latest-request.ts    Abortable generation gate shared by platform data owners
   src/workspace-state.ts   Platform-neutral trip revision/focus reducer
 mobile/
   app/                     iOS/Android Expo Router: Trips, Plan, Map, Assistant,
@@ -191,9 +227,6 @@ mobile/
   providers/trip-provider.tsx  Authoritative native data/revision owner; completed
                            chat and mutations refresh all dependent trip surfaces;
                            one abortable generation prevents stale refresh commits
-  lib/itinerary-occurrence.ts  Converts zero-based rendered rows to the API's
-                           one-based exact-occurrence identity
-  lib/latest-request.ts    Small latest-request gate shared by native trip reads
   lib/tripplanner.ts       Hosted API selection + Keychain-backed identity and
                            native Google OAuth session handoff
   eas.json                 Development, preview, and App Store build profiles
@@ -209,35 +242,43 @@ infra/
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
-  dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
+  dev/                One-click agent merge, run-latest, and local stack scripts
+  dev/dev-spa.ps1     THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill
   performance_baseline.py  Hermetic FastAPI route/admission p50/p95 + zero-cost gate
-  autoheal.ps1        Legacy auto-heal watcher (Chainlit era)
   smoke_test.py       Local external-provider smoke check
   hosted_smoke.py     Deployed SPA/API/OAuth/Cosmos and optional LLM smoke suite
-  test.ps1            Legacy (Chainlit era) — do not use
 tests/                pytest suite
                       request-security tests drive overlapping authenticated
                       FastAPI requests through real chat/workspace admission
 docs/
   README.md           Documentation index, ownership, and structure policy
-  android-testing.md  Expo Go, EAS preview, Play testing, troubleshooting
   CODEMAP.md          This file
   ENGINEERING_LEARNINGS.md  Joint architectural/domain lessons for future work
   PRODUCT.md          Product intent, interaction rules, and design taste
   REQUIREMENTS_V2.md  Current implemented capability baseline, explicit gaps,
                       proposed roadmap, and quality bar
+  archive/            Inactive owner inputs and historical reference artifacts
+  development/
+    dev.md            Dev environment notes
+    parallel-agent-development.md  Worktree and coding-agent workflow
+    setup-oauth.md    OAuth setup walkthrough
+  operations/
+    backup-recovery.md Guarded backup, restore, and recovery drill
+    deployment-flow.md Canary, production, monitoring, and rollback flow
+    operations-slos.md Production chat SLOs, KQL, and release response
+    product-analytics.md GA4 privacy boundary, events, reports, and production setup
+    performance-cost.md Performance and cost evidence and regression baseline
+  mobile/
+    android-testing.md Expo Go, EAS preview, Play testing, troubleshooting
+    ios-testing.md    Expo Go, EAS preview, TestFlight, troubleshooting, handoff
   roadmap/
+    DEFERRED_DECISIONS.md Deliberately postponed choices awaiting evidence
     FUTURE_FEATURES.md  Consolidated candidate backlog; not implementation approval
   feature-briefs/
     FEATURE_BRIEF_TEMPLATE.md  Reusable owner/agent feature-intake contract
     NEXT_INCREMENT.md          Owner-editable brief seeded from the V2 baseline
-  dev.md              Dev environment notes
-  ios-testing.md      Expo Go, EAS preview, TestFlight, troubleshooting, handoff
-  operations-slos.md Production chat SLO definitions, KQL, and release response
-  setup-oauth.md      OAuth setup walkthrough
-  DEFERRED_DECISIONS.md  Usage experiments and future choices awaiting owner alignment
 ```
 
 Secret files are environment-specific and ignored: local `.env`, canary
@@ -303,7 +344,9 @@ It exports:
   place kind, dedupe by name, and join ordered day circuits.
 - `build_itinerary(trip) -> dict` — structured day-by-day itinerary:
   `days[{day,date,title,summary,color,stops[{name,kind,time,duration_min,note,
-  booked,selected,color,travel_from_previous?}]}]` +
+  booked,selected,color,departure_time?,expected_arrival_time?,buffer_before_min?,
+  timing_conflict_min?,rating?,review_count?,popularity_score?,
+  travel_from_previous?}]}]` +
   `stats{days,stops,booked}`. `_normalize_stop` /
   `_infer_stop_kind` turn string OR dict stops into structured dicts. Served by
   `GET /trip/itinerary`; `trip_planner.set_stop_booked(day,name,booked)` (behind
@@ -313,7 +356,8 @@ It exports:
   place stop focuses the Photos section, the 📍 button reveals it on the Map,
   and subtle `H` / numbered row badges mirror the day circuit's map markers.
   When a trip has no structured `day_wise_itinerary` yet,
-  `_itinerary_from_selections` synthesizes a single "Your picks so far" day from
+  `_itinerary_from_selections` synthesizes route legs and the same place evidence
+  for its geographically grouped first-draft days from
   the selected hotels/activities so the panel is never blank.
 
 UI add/remove actions call `trip_planner.add_selection` / `remove_selection`.
@@ -464,7 +508,7 @@ All pytest. Run them with `.\.venv\Scripts\python.exe -m pytest -q`.
 - **Always commit AND push** after every coherent change.
 - **No major functional changes** without explicit consent.
 - Keep it **simple and modular**; no over-engineering.
-- Update `REQUIREMENTS.txt` when new requirements come in.
+- Update `PRD/REQUIREMENTS Auto Log.txt` when new requirements come in.
 - Update `README.md` when architecture changes.
 - Update [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
   AND this CODEMAP whenever the structure shifts.

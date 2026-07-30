@@ -310,12 +310,12 @@ export default function SettingsModal({ onClose }: Props) {
                   }
                 />
                 <span>
-                  <span className="font-medium text-ink">Jump straight to a full plan</span>
+                  <span className="font-medium text-ink">Use smart defaults after kickoff</span>
                   <br />
                   <span className="text-slate-500 text-[11px]">
-                    When checked (default), the agent skips clarifying questions and
-                    delivers a complete itinerary with real flights, hotels and prices in
-                    one go. Uncheck if you prefer the agent to ask first before searching.
+                    The agent first shows one prefilled review of saved preferences and
+                    trip choices, then builds without extra questions. Uncheck to include
+                    unresolved critical details in that same review.
                   </span>
                 </span>
               </label>

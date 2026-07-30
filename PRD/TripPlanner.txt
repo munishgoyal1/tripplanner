@@ -1,0 +1,4 @@
+Goals:
+
+   - Top level main goal is to build smartest personalized itinerary in shortest time and with minimal user intervention or input required.
+    
