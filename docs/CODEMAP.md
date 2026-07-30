@@ -122,7 +122,8 @@ frontend/
   tailwind.config.js  Design tokens: coral brand, teal accent, ink/muted/surface,
                       shadow-card/-pop, rounded-4xl, Inter + Fraunces
   labs/               Isolated UX experiment HTML, source, feedback plugin,
-                      TypeScript config, and Vite build; local handoffs are
+                      TypeScript config, and dedicated Vite server (`npm --prefix
+                      frontend run dev:ux-lab`, port 5175); local handoffs are
                       written to the ignored
                       docs/ux-experiments/LAB_SELECTIONS.local.json
     src/itinerary-density/  Active 320px day-density comparison; preserves the
