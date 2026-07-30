@@ -135,8 +135,12 @@ worktrees and preflights both before either merge. It then creates or reuses eac
 worker's pull request, merges Worker 1 with a merge commit, updates `master`,
 brings Worker 2 onto that new baseline, and merges Worker 2 with a separate merge
 commit. Each persistent branch finishes synchronized for its next assignment.
-If the task stops on a conflict, return to the named worker window, resolve and
-validate there, push, then run the task again.
+If synchronization conflicts, the task reports the paths, aborts the attempted
+merge, and verifies that the worker is clean. Return to the named worker window,
+merge `origin/master`, resolve and validate the reported paths, commit and push,
+then run the task again. Independent dated additions to
+`PRD/REQUIREMENTS Auto Log.txt` use Git's union merge driver because that file is
+append-only; both branches' entries are retained.
 
 The older `Merge-Agent1.cmd` and `merge-agent-1.ps1` names remain compatibility
 aliases for this same two-worker flow. For a validation-only preflight, run

@@ -42,6 +42,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Backend tests: `.\.venv\Scripts\python.exe -m pytest -q`
 - Concurrency boundary: `.\.venv\Scripts\python.exe -m pytest -q tests/test_request_security.py`
 - Performance/cost baseline: `$env:PYTHONPATH='src'; .\.venv\Scripts\python.exe scripts/performance_baseline.py --report-path logs/performance/baseline.json`
+- Local error analysis: `.\scripts\analyze-errors.ps1 -Environment local -Hours 24`
+- Canary error analysis: `.\scripts\analyze-errors.ps1 -Environment canary -Hours 24`
 - SPA type check: `cd frontend; npx tsc --noEmit`
 - SPA build: `cd frontend; npm run build`
 - Frontend tests: `cd frontend; npm test -- --run`
@@ -77,7 +79,9 @@ src/tripplanner/
                       creating each new trip
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
-                      Container Apps stdout flows to Log Analytics
+                      Container Apps stdout flows to Log Analytics; optional
+                      rotating local JSON supports redacted error analysis
+  error_analysis.py   Shared local/canary failure classification and Markdown reports
   json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
   request_identity.py Signed web/native/guest principal resolution for hosted APIs
   request_limits.py   Chat/replay rate limits, concurrency, workspace exclusion

@@ -58,6 +58,7 @@ callback bases are resolved by the deployment scripts.
 | Canary data | Shared Cosmos account, `tripplanner-canary` database |
 | Production data | Shared Cosmos account, `tripplanner-prod` database |
 | Runtime revisions/logs | Azure Container Apps and Log Analytics |
+| Production failure alert | `infra/main.bicep`, production parameters, Azure Monitor |
 
 The SHA tag is the promotion identity. `latest` is pushed for convenience but
 must not be used as production evidence because it can move between canary and
@@ -160,6 +161,12 @@ a critical smoke or user workflow fails:
 
 The rollback command requires `ROLLBACK` and activates the prior Container Apps
 revision. It does not undo Cosmos writes or schema/data migrations.
+
+The production Bicep deployment also owns the failure Action Group and
+scheduled-query alert. Verify its first-delivery test after an approved
+deployment. During canary bake, run
+`.\scripts\analyze-errors.ps1 -Environment canary -Hours 24`; canary produces a
+local report and never emails the production recipient.
 
 ## Hosted Smoke Suite
 

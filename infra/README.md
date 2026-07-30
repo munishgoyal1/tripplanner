@@ -5,6 +5,7 @@ Cheapest viable footprint for global hosting:
 | Resource | Purpose | Free tier? |
 |---|---|---|
 | Log Analytics workspace | Required by Container Apps | First 5 GB/mo free |
+| Azure Monitor alert + Action Group | Production failure notification | Negligible at low volume |
 | Cosmos DB (NoSQL) | Shared account; isolated canary/prod databases | **1000 RU/s + 25 GB free** (one per subscription) |
 | Container Apps environment | Hosting fabric | n/a (env itself is free) |
 | Container App | React SPA + FastAPI agent | **180k vCPU-sec + 2M req/mo free**, scales to zero |
@@ -50,7 +51,8 @@ Transition to standardized naming by redeploying canary first, then production a
 - `data-stack.bicep` + `data.bicep` — shared data RG/account/databases
 - `modules/cosmos-data.bicep` — reusable Cosmos account/database/container module
 - `main.bicep` — app environment resources and optional managed custom domains;
-  references existing shared Cosmos
+  references existing shared Cosmos; conditionally creates production failure alerting
+- `queries/application-failures.kql` — shared production alert and canary-analysis query
 - `canary.bicepparam` / `prod.bicepparam` — isolated hosted database bindings
 - `cosmos-emulator.compose.yml` — official local emulator with persistent volume
 - `DEPLOYMENT_PROCESS.md` — detailed workflow, approval gates, and logging
@@ -64,6 +66,7 @@ Transition to standardized naming by redeploying canary first, then production a
 - `start-cosmos-emulator.ps1` — start or readiness-check local Cosmos
 - `set-cosmos-throughput.ps1` — idempotently reduce an old database to 400 RU/s
 - `cleanup-obsolete-resources.ps1` — dependency-checked, approval-gated cleanup
+- `../scripts/analyze-errors.ps1` — read-only local/canary failure report
 
 ## Fresh Subscription Quick Start
 

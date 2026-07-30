@@ -3,7 +3,7 @@
 ## Document control
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Version | 2.0 |
 | Baseline date | 2026-07-28 |
 | Baseline commit | `f4f4392` |
@@ -33,7 +33,7 @@ the same commit. A roadmap entry is not implementation approval by itself.
 ## Status vocabulary
 
 | Status | Meaning |
-|---|---|
+| --- | --- |
 | Implemented | Available in the current repository and supported by tests or runbooks. |
 | Partially implemented | A compatible foundation exists, but the user-facing workflow is not complete. |
 | Guarded | Implemented, but intentionally constrained by approval, configuration, or environment. |
@@ -59,7 +59,7 @@ Future feature briefs should reference these stable capability IDs rather than
 re-describing the whole product.
 
 | ID | Capability | Status |
-|---|---|---|
+| --- | --- | --- |
 | CORE-01 | Single trip-planning agent with phase-selected tools | Implemented |
 | CHAT-01 | Structured minimal-input Assistant interactions | Observing |
 | PLAN-01 | Preference-aware conversational trip creation | Implemented |
@@ -81,6 +81,7 @@ re-describing the whole product.
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
+| OPS-02 | Production failure email alerting and non-production error analysis | Guarded |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
@@ -436,6 +437,21 @@ re-describing the whole product.
 - Production smoke, normalized chat outcome/latency telemetry, explicit SLO
   queries, release monitoring, and guarded revision rollback complete the flow.
 - Production deployment and mobile store submission are never automatic.
+
+### OPS-02 - Failure detection and response
+
+- The existing PII-safe Container Apps stdout stream and 30-day Log Analytics
+  workspace remain the only hosted telemetry pipeline; Application Insights is
+  not duplicated.
+- Production parameters enable a five-minute Azure Monitor scheduled-query alert
+  for application, chat, and tool failures. Its Action Group emails the owner,
+  groups bursts, and auto-resolves after the query is clean.
+- The alert is guarded because creating it requires the existing explicit
+  production deployment approval. Canary and local parameters cannot send email.
+- Local development retains a bounded rotating redacted JSON log. One read-only
+  analyzer classifies that stream or canary Log Analytics results and writes an
+  ignored Markdown report with targeted investigation steps and a scheduler-
+  friendly failure exit code.
 
 ## 7. Explicit gaps and non-goals
 
