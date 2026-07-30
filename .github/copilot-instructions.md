@@ -26,8 +26,11 @@
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
-- After the push, restart the affected local servers when runtime code changed.
-  Skip restarts for documentation-only or otherwise runtime-neutral changes.
+- The coding agent owns the local server lifecycle: start, stop, restart, clear
+  stale ports, and health-check the canonical stack without handing operations
+  back to the owner. After a push, restart affected services when runtime code
+  changed. Skip unnecessary restarts for runtime-neutral changes, but ensure the
+  stack is running whenever the owner needs to test.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
 
 ## Development workspace

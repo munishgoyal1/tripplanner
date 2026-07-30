@@ -2760,3 +2760,13 @@ VALIDATION:
 - After each commit and push, restart the affected local servers when runtime code
   changed so the running app reflects the new milestone. Skip restarts for docs-only
   or otherwise runtime-neutral changes.
+
+=== 2026-07-30 — Agent-owned local runtime ===
+
+- The coding agent owns starting, stopping, restarting, stale-port cleanup, and
+  health verification for the canonical local API, SPA, and UX Labs stack.
+- Do not require the owner to run `dev-spa.ps1` or diagnose whether local servers
+  are current. Keep operational friction out of the feature and Lab feedback loop.
+- After runtime commits are pushed, restart affected services and verify them before
+  reporting completion. For runtime-neutral commits, avoid needless restarts unless
+  the stack is down and the owner needs it for testing.

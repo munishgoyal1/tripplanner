@@ -6,27 +6,16 @@ One page. Stick this on a second monitor.
 
 ## TL;DR - interactive testing
 
-```powershell
-.\scripts\dev\dev-spa.ps1
-```
-
 Open <http://localhost:5173> for the app or
 <http://127.0.0.1:5175/catalog.html> for UX Labs in your regular browser
-(Chrome / Edge / Firefox). Both frontend servers start automatically. The agent
-can edit files and your chat session **will not** be wiped.
+(Chrome / Edge / Firefox). The coding agent owns `dev-spa.ps1`, stale-port
+cleanup, startup, restarts after runtime changes, and health checks. The owner
+only refreshes the browser when ready to test a feature or Lab.
 
-When you want to test the agent's latest code change:
+## Optional parallel coding windows
 
-1. Click into the terminal running `dev-spa.ps1`.
-2. Press `Ctrl+C` to stop both processes.
-3. Press Up then Enter to rerun `dev-spa.ps1`.
-4. Switch to the **browser**, press `F5`.
-
-That's it.
-
-## Parallel coding windows
-
-The default workflow opens two named VS Code workspaces:
+The default workflow uses this single primary workspace directly on `master`.
+Only when the owner explicitly requests parallel development, use:
 
 - `tripplanner-worker-1.code-workspace` - Agent 1 Development on `agents/worker-1`
 - `tripplanner-integration.code-workspace` - Agent 3 Review & Integration on `master`
@@ -38,7 +27,7 @@ coordination cost.
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
-To merge Agent 1 and restart this local stack in one click, double-click
+In optional parallel mode, to merge Agent 1 and restart this local stack in one click, double-click
 `scripts/dev/Run-Latest-Code.cmd` from the repository root or run the VS Code task
 **Tripplanner: Run Latest Code** from the integration workspace. Existing staged,
 unstaged, and untracked master work is temporarily preserved and restored around
@@ -50,7 +39,8 @@ the guarded Worker 1 merge before the server starts.
 
 It is the canonical local entrypoint for the current React SPA and FastAPI
 backend. Hot reload is off by default, so backend edits do not interrupt an
-in-progress chat. Pass `-Watch` only when you intentionally want reloads.
+in-progress chat. The coding agent invokes it in a dedicated background session
+and passes `-Watch` only when live reload is intentionally useful.
 
 ## Modes at a glance
 

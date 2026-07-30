@@ -19,7 +19,8 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
 - Default workflow: open this primary checkout, work directly on `master`,
-  validate once per milestone, commit, push, and restart affected local servers
+  validate once per milestone, commit, and push; the coding agent starts,
+  restarts, clears stale ports, and health-checks affected local servers
 - Optional parallel development pair: double-click `Open-Tripplanner-Agents.cmd`
   or run `.\scripts\open-agent-windows.ps1`
 - Optional three-window mode: double-click `Open-Tripplanner-All-Agents.cmd`
