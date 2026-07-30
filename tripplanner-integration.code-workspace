@@ -43,6 +43,23 @@
         },
         "isBackground": false,
         "problemMatcher": []
+      },
+      {
+        "label": "Tripplanner: Run Latest Code",
+        "type": "shell",
+        "command": "pwsh",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "${workspaceFolder}\\docs\\development\\run-latest-code.ps1"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "isBackground": true,
+        "problemMatcher": []
       }
     ]
   }

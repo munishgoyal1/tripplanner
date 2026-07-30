@@ -140,6 +140,11 @@ updates `master`, and keeps the persistent Worker 1 branch synchronized for
 its next assignment. If the task stops on a conflict, return to the Worker 1
 window, ask that agent to resolve and validate it, then run the task again.
 
+To merge Agent 1 and immediately restart the local application on the merged
+code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
+`docs/development/Run-Latest-Code.cmd`. This runs the same guarded merge first,
+then starts the canonical `scripts/dev-spa.ps1` stack only when merging succeeds.
+
 Use a pull request even for a solo repository. It provides one diff and check
 surface, keeps `master` stable, and makes parallel integration order explicit.
 Review and merge one ready branch at a time from the primary `master` checkout.
