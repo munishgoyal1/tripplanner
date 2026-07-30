@@ -42,6 +42,7 @@ class HotelOffer(BaseModel):
     provider: str
     provider_ref: dict[str, str]
     hotel_name: str
+    search_destination: str
     room_name: str
     board_name: str | None = None
     total: Money

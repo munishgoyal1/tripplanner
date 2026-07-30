@@ -423,6 +423,62 @@ class TestTripPlanState:
 
         assert "Hotel planning incomplete" not in result
 
+    def test_update_trip_plan_rejects_hotel_outside_destination_atomically(self):
+        create_trip_plan.invoke({
+            "destination": "Manali, India",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Mountain Luxury Resort",
+                "destination": "Queenstown, New Zealand",
+                "address": "Kawarau Village, Queenstown, New Zealand",
+            }],
+            "total_cost": 125000,
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert result.startswith("Error: hotel location must match")
+        assert "outside the trip destination 'Manali, India'" in result
+        assert plan["selected_hotels"] == []
+        assert plan["total_cost"] == 0
+
+    def test_update_trip_plan_accepts_hotel_with_matching_destination_evidence(self):
+        create_trip_plan.invoke({
+            "destination": "Manali, India",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "The Himalayan",
+                "destination": "Manali",
+                "address": "Hadimba Road, Manali, Himachal Pradesh, India",
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert not result.startswith("Error:")
+        assert plan["selected_hotels"][0]["name"] == "The Himalayan"
+
+    def test_update_trip_plan_rejects_hotel_without_destination_evidence(self):
+        create_trip_plan.invoke({
+            "destination": "Manali, India",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Mystery Luxury Resort",
+                "search_destination": "Manali, India",
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert "has no location evidence matching" in result
+        assert plan["selected_hotels"] == []
+
     def test_update_trip_plan_warns_about_restaurant_placeholders(self):
         create_trip_plan.invoke({
             "destination": "Kolkata",
@@ -696,7 +752,7 @@ class TestTripPlanState:
             "return_date": "2026-08-31",
         })
         update_trip_plan.invoke({"updates_json": json.dumps({
-            "selected_hotels": [{"name": "Wilde Aparthotels"}],
+            "selected_hotels": [{"name": "Wilde Aparthotels", "city": "London"}],
             "day_wise_itinerary": [
                 {
                     "day": 4,
@@ -1260,7 +1316,11 @@ class TestTripPlanState:
         # Add selections
         update_trip_plan.invoke({"updates_json": json.dumps({
             "selected_flights": [{"airline": "Air India", "price": 7000}],
-            "selected_hotels": [{"name": "Snow Valley", "price": 12000}],
+            "selected_hotels": [{
+                "name": "Snow Valley",
+                "city": "Manali",
+                "price": 12000,
+            }],
             "selected_activities": [{"name": "Rohtang Pass", "price": 2000}],
             "cost_breakdown": {"flights": 7000, "hotel": 12000, "activities": 2000},
             "total_cost": 21000,
@@ -2205,7 +2265,7 @@ class TestSavedTrips:
 
     def test_starting_new_trip_keeps_previous(self):
         _make_trip("Mumbai", "2026-07-10", "2026-07-15",
-                   selected_hotels=[{"name": "Taj", "price": 9000}])
+                   selected_hotels=[{"name": "Taj", "city": "Mumbai", "price": 9000}])
         _make_trip("Vietnam", "2026-09-01", "2026-09-10")
         trips = list_saved_trips()
         dests = {t["destination"] for t in trips}
@@ -2216,7 +2276,7 @@ class TestSavedTrips:
 
     def test_same_dest_and_dates_resumes_not_overwrites(self):
         _make_trip("Mumbai", "2026-07-10", "2026-07-15",
-                   selected_hotels=[{"name": "Taj", "price": 9000}])
+                   selected_hotels=[{"name": "Taj", "city": "Mumbai", "price": 9000}])
         # Re-create with identical destination + dates -> should resume.
         result = create_trip_plan.invoke(
             {"destination": "Mumbai", "departure_date": "2026-07-10", "return_date": "2026-07-15"}

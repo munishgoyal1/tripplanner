@@ -139,8 +139,10 @@ re-describing the whole product.
 
 - LiteAPI is the preferred read-only source for date/party-specific hotel rates,
   flight rates, and selected-flight verification when configured. Normalized
-  results retain opaque provider references, quote time/expiry, total provider
-  currency, and explicit `live`, `unavailable`, or `provider_error` evidence.
+  hotel results retain the searched destination as query context, not physical
+  locality proof; all results retain opaque provider
+  references, quote time/expiry, total provider currency, and explicit `live`,
+  `unavailable`, or `provider_error` evidence.
 - The stable flight and hotel tools route through separate capability contracts;
   future providers can implement either capability without changing the agent.
 - Viator is the preferred read-only activity provider when configured. The stable
@@ -175,6 +177,9 @@ re-describing the whole product.
   attractions and named restaurants, and back to the hotel. Genuine overnight
   flight, train, bus, or transfer days are exempt from the return-to-hotel rule.
 - Placeholder hotels and generic `TBD` meals do not satisfy completion gates.
+- A selected hotel's explicit city, destination, or address evidence must match
+  the active trip destination. A mismatch rejects the whole plan update before
+  persistence rather than surfacing only as a finalization warning.
 - Substantial days require concrete restaurant research and persisted meal stops.
 - Visit times must progress chronologically and leave room for stated duration
   and travel. Duplicate or backwards model-authored times are rejected before

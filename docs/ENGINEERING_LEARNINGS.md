@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-30 - Validate Geographic Identity Before Persistence
+
+- Preference fit, price, and luxury do not compensate for a hotel in the wrong
+  destination. Preserve searched locality on normalized offers and selected plans.
+- A search destination is query context, not proof of a returned property's physical
+  location. Validate actual city, address, and country evidence independently.
+- Reject explicit hotel locality mismatches atomically at the mutation boundary;
+  a late finalization warning leaves every live workspace surface showing bad data.
+- Prompt instructions should retain provider evidence, but deterministic persistence
+  validation owns the invariant when the model strips or misreads that evidence.
+
 ## 2026-07-30 - Keep Deterministic Gates Cheap
 
 - Measure model rounds separately from tool execution. A 49.5-second planning

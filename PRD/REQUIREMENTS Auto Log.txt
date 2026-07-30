@@ -2884,3 +2884,13 @@ VALIDATION:
 - Prefer live weather. Fall back to seasonal archive evidence when it is unavailable,
   then to explicitly labeled monthly climate knowledge only if the provider fails.
 - Keep the provider keyless when possible; Open-Meteo requires no API key.
+
+=== 2026-07-30 — Destination-safe hotel replacement ===
+
+- Replacing or upgrading a hotel must never select a property outside the active
+  trip destination, regardless of price, rating, or luxury preference fit.
+- Preserve destination/address evidence from hotel search results in the selected
+  plan. A new hotel selection must either carry matching locality evidence or name
+  the active destination explicitly.
+- Reject the complete update atomically when hotel locality mismatches or cannot be
+  established, so unrelated fields and itinerary surfaces cannot persist bad data.

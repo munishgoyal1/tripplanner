@@ -223,6 +223,50 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     return warnings
 
 
+def _hotel_destination_errors(destination: str, hotels: Any) -> list[str]:
+    if not destination.strip() or not isinstance(hotels, list):
+        return []
+    destination_token = re.split(r"[,;/]", destination.lower(), maxsplit=1)[0].strip()
+    if not destination_token:
+        return []
+    destination_parts = [part.strip() for part in re.split(r"[,;/]", destination.lower())]
+    destination_country = destination_parts[1] if len(destination_parts) > 1 else ""
+    errors: list[str] = []
+    for hotel in hotels:
+        if not isinstance(hotel, dict):
+            continue
+        name = _stop_name(hotel) or str(hotel.get("hotel_name") or "").strip()
+        if _HOTEL_PLACEHOLDER_RE.search(name):
+            continue
+        structured_locations = [
+            str(hotel.get(key) or "").strip().lower()
+            for key in ("destination", "city", "location")
+            if str(hotel.get(key) or "").strip()
+        ]
+        address = str(hotel.get("address") or "").strip().lower()
+        country = str(hotel.get("country") or "").strip().lower()
+        mismatched_location = any(
+            destination_token not in location for location in structured_locations
+        )
+        mismatched_country = bool(
+            country and destination_country and destination_country not in country
+        )
+        address_only_mismatch = bool(
+            address and not structured_locations and destination_token not in address
+        )
+        if mismatched_location or mismatched_country or address_only_mismatch:
+            errors.append(
+                f"{name or 'Selected hotel'} is located outside the trip destination "
+                f"'{destination}'."
+            )
+        elif not structured_locations and not address and destination_token not in name.lower():
+            errors.append(
+                f"{name or 'Selected hotel'} has no location evidence matching the trip "
+                f"destination '{destination}'."
+            )
+    return errors
+
+
 def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Return actionable gaps that keep a new plan from feeling complete."""
     return [
@@ -1584,6 +1628,16 @@ def update_trip_plan(updates_json: str) -> str:
         updates = json.loads(updates_json)
     except json.JSONDecodeError:
         return "Error: invalid JSON."
+
+    hotel_destination_errors = _hotel_destination_errors(
+        str(plan.get("destination") or ""), updates.get("selected_hotels")
+    )
+    if hotel_destination_errors:
+        return (
+            "Error: hotel location must match the active trip destination. "
+            + " ".join(hotel_destination_errors)
+            + " Search again using the active trip destination and resubmit the full update."
+        )
 
     if "day_wise_itinerary" in updates:
         time_errors = _itinerary_time_errors(updates.get("day_wise_itinerary"))

@@ -437,7 +437,10 @@ STEP 3 — PARALLEL SEARCH (do all at once)
     HOTEL COMPLETION GATE: unless the user explicitly asks to compare hotel
     options before choosing, select the strongest preference-matched real hotel
     from the search results as the default in this same turn. Persist it in
-    selected_hotels and replace every placeholder hotel in day_wise_itinerary.
+    selected_hotels, including the result's destination/address evidence, and
+    replace every placeholder hotel in day_wise_itinerary. The selected hotel's
+    location MUST match the active trip destination; never substitute a similarly
+    named or more luxurious property in another city or country.
     Never persist "Hotel (TBD)", a generic accommodation label, or an invented
     hotel price as a selected hotel. If update_trip_plan reports "Hotel planning
     incomplete", search, choose, verify, and update again before the final reply.
