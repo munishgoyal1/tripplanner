@@ -146,6 +146,7 @@ frontend/
           itinerary execution, confirmation readiness, and personal place context
   src/
     main.tsx          React 19 root
+    analytics.ts      Production-only, consent-gated GA4 loader and bounded events
         App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
           Details dock, and an independently mounted right-edge Assistant
@@ -271,6 +272,7 @@ docs/
     backup-recovery.md Guarded backup, restore, and recovery drill
     deployment-flow.md Canary, production, monitoring, and rollback flow
     operations-slos.md Production chat SLOs, KQL, and release response
+    product-analytics.md GA4 privacy boundary, events, reports, and production setup
     performance-cost.md Performance and cost evidence and regression baseline
   mobile/
     android-testing.md Expo Go, EAS preview, Play testing, troubleshooting

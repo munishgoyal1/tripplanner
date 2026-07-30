@@ -82,7 +82,7 @@ re-describing the whole product.
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Guarded |
-| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented |
+| PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented; privacy-safe analytics implemented |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
 
@@ -459,10 +459,12 @@ re-describing the whole product.
 
 - Real provider-side booking, payment, ticketing, and confirmation are not
   implemented despite legacy `execute_bookings` naming and output text.
-- Public-MVP analytics, embedded feedback capture, ads, consent management,
-  broader expensive-endpoint/provider guardrails, and a global daily spend
-  circuit breaker are not implemented. The production custom domain and hosted
-  chat admission controls are already present.
+- Embedded feedback capture, ads, broader expensive-endpoint/provider guardrails,
+  and a global daily spend circuit breaker are not implemented. Production-only
+  GA4 product analytics uses explicit reversible consent, a deliberately small
+  event vocabulary, and no chat, itinerary, family, email, exact-date, account,
+  or shared-link content. The production custom domain and hosted chat admission
+  controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
 - Production mobile-store release still requires owner-approved distribution
   setup and provider keys appropriate to each platform.

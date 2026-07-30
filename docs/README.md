@@ -38,6 +38,7 @@ canonical set below instead of reading every file.
 |---|---|
 | [`operations/deployment-flow.md`](operations/deployment-flow.md) | Canonical canary, production, monitoring, and rollback flow |
 | [`operations/operations-slos.md`](operations/operations-slos.md) | Production observability, SLOs, and Log Analytics queries |
+| [`operations/product-analytics.md`](operations/product-analytics.md) | GA4 setup, privacy boundary, events, and activation funnel |
 | [`operations/performance-cost.md`](operations/performance-cost.md) | Performance and cost evidence layers and regression baseline |
 | [`operations/backup-recovery.md`](operations/backup-recovery.md) | Guarded backup, validation, restore, and recovery-drill procedure |
 

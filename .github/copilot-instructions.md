@@ -152,6 +152,13 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Production customer-flow analytics (Session 86)**: consent-gated GA4 is
+  runtime-enabled only in production and uses a small content-free event
+  vocabulary for visit-to-planning-to-trip-to-handoff funnels. Query strings,
+  trip/chat content, account identity, and other customer data are excluded;
+  Account can reopen analytics preferences. Azure Log Analytics remains the
+  operational reliability source. Production is configured for GA4 Web stream
+  `G-VNTSQG9SWZ`; an approved deployment is still required to activate collection.
 - **Production failure alerting + non-production analysis**: the existing PII-safe
   Container Apps Log Analytics stream remains the single hosted telemetry path.
   Production Bicep defines a five-minute application/chat/tool failure rule and

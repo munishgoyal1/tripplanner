@@ -1,5 +1,6 @@
 import { CalendarPlus, ChevronDown, FileDown, Link2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { trackEvent } from "../analytics";
 import { shareActiveTrip, tripIcsUrl } from "../api";
 
 interface Props {
@@ -32,6 +33,7 @@ export default function TripActionsMenu({ disabled = false, onExport }: Props) {
     setShareStatus("Creating link...");
     try {
       const url = await shareActiveTrip();
+      trackEvent("trip_shared");
       try {
         await navigator.clipboard.writeText(url);
         setShareStatus("Link copied");
@@ -95,6 +97,7 @@ export default function TripActionsMenu({ disabled = false, onExport }: Props) {
             role="menuitem"
             href={tripIcsUrl()}
             download
+            onClick={() => trackEvent("calendar_exported")}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-ink"
           >
             <CalendarPlus size={16} className="text-slate-400" aria-hidden />

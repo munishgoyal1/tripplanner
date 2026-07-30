@@ -60,6 +60,10 @@ class Settings(BaseModel):
     # the Cloud console. Leave empty to disable the map panel entirely.
     google_maps_browser_key: str = os.getenv("GOOGLE_MAPS_BROWSER_KEY", "")
 
+    # GA4 measurement id exposed to the browser only in production. This is a
+    # public identifier, not a credential; leave empty to disable analytics.
+    google_analytics_measurement_id: str = os.getenv("GOOGLE_ANALYTICS_MEASUREMENT_ID", "")
+
     # Tavily web search — fresh travel content beyond LLM training cutoff
     # Sign up free: https://tavily.com (1000 searches/month free)
     tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
