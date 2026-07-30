@@ -1,10 +1,10 @@
-# Parallel coding-agent development
+# Optional parallel coding-agent development
 
-Use two active VS Code windows by default: `worker-1` is the development lane,
-and the primary `tripplanner` checkout on `master` is the review, merge,
-corrective-fix, and repository-Q&A lane. Keep the persistent `worker-2` slot
-dormant unless a third parallel assignment is worth the coordination cost. Do
-not assign feature work directly in the review/integration window.
+The default workflow uses one VS Code window in the primary `tripplanner`
+checkout and works directly on `master`. Use this parallel workflow only when
+the owner explicitly requests concurrent assignments. In that mode, `worker-1`
+is the development lane, the primary checkout is the review/integration lane,
+and `worker-2` remains optional capacity.
 
 ## Persistent agent windows
 
@@ -19,7 +19,7 @@ The standard slots are:
 The workspace launchers give each window a distinct title and color. Always
 confirm the branch in the status bar before committing or merging.
 
-After a machine restart, double-click `Open-Tripplanner-Agents.cmd` from the
+When parallel mode is requested, double-click `Open-Tripplanner-Agents.cmd` from the
 repository or the `Tripplanner Agent Windows` Desktop shortcut. The command
 resolves the primary checkout through Git, verifies the default Agent 1 and
 Agent 3 workspaces, and opens them in separate VS Code windows. VS Code restores
@@ -140,7 +140,7 @@ updates `master`, and keeps the persistent Worker 1 branch synchronized for
 its next assignment. If the task stops on a conflict, return to the Worker 1
 window, ask that agent to resolve and validate it, then run the task again.
 
-To merge Agent 1 and immediately restart the local application on the merged
+In optional parallel mode, to merge Agent 1 and immediately restart the local application on the merged
 code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
 `scripts/dev/Run-Latest-Code.cmd`. This is the regular local workflow even
 when `master` has staged, unstaged, or untracked work: it temporarily stashes the
@@ -149,9 +149,9 @@ state with its staged status, and then starts `scripts/dev/dev-spa.ps1`. If rest
 changes overlap the merged code, it stops with the stash retained for explicit
 conflict resolution. The direct **Merge Agent 1** command remains clean-only.
 
-Use a pull request even for a solo repository. It provides one diff and check
-surface, keeps `master` stable, and makes parallel integration order explicit.
-Review and merge one ready branch at a time from the primary `master` checkout.
+Use a pull request for each optional worker branch. It provides one diff and
+check surface, keeps `master` stable, and makes parallel integration order
+explicit. Review and merge one ready branch at a time from the primary checkout.
 Pass the PR number explicitly so GitHub CLI does not try to switch the feature
 worktree to `master`:
 

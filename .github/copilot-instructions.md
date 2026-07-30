@@ -26,22 +26,22 @@
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
+- After the push, restart the affected local servers when runtime code changed.
+  Skip restarts for documentation-only or otherwise runtime-neutral changes.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
 
-## Parallel coding windows
+## Development workspace
 
-- The primary `tripplanner` checkout stays on `master` as the integration lane.
-  Feature and fix agents work only in the persistent sibling worktrees
-  `worker-1` and `worker-2` on their matching `agents/worker-*` branches.
-- The owner's default is two active windows: Agent 1 Development in `worker-1`
-  and Agent 3 Review & Integration on `master`. Keep `worker-2` dormant unless
-  the owner explicitly chooses a third parallel assignment.
+- The owner's default is this single primary `tripplanner` VS Code workspace,
+  working directly on `master` for features, fixes, review, and integration.
+- Use persistent `worker-1` / `worker-2` worktrees only when the owner explicitly
+  requests parallel development. They are optional capacity, not the normal path.
 - Each worker owns one narrow PR-sized assignment at a time. Avoid parallel
   assignments that substantially edit the same files or contracts.
 - Merge completed branches one at a time through reviewed pull requests using
   merge commits. Active branches then merge `origin/master`, validate affected
   behavior, and push.
-- `scripts/dev/run-latest-code.ps1` is the regular local integration flow:
+- When parallel mode is explicitly active, `scripts/dev/run-latest-code.ps1`:
   it temporarily stashes staged, unstaged, and untracked master work, performs the
   clean guarded merge, restores the local state, and only then starts the app.
   Overlapping restored changes stop for explicit conflict resolution.

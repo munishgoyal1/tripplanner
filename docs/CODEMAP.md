@@ -18,14 +18,16 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 ## 2) Run / validate (copy-paste)
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
-- Open the default development/review pair: double-click
-  `Open-Tripplanner-Agents.cmd` or run `.\scripts\open-agent-windows.ps1`
+- Default workflow: open this primary checkout, work directly on `master`,
+  validate once per milestone, commit, push, and restart affected local servers
+- Optional parallel development pair: double-click `Open-Tripplanner-Agents.cmd`
+  or run `.\scripts\open-agent-windows.ps1`
 - Optional three-window mode: double-click `Open-Tripplanner-All-Agents.cmd`
   or run `.\scripts\open-agent-windows.ps1 -IncludeWorker2`
-- Standard active workspaces: `tripplanner-worker-1.code-workspace` for
-  development and `tripplanner-integration.code-workspace` for review/merge;
-  `tripplanner-worker-2.code-workspace` remains available on demand
-- One-click Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
+- Optional parallel workspaces: `tripplanner-worker-1.code-workspace` and
+  `tripplanner-worker-2.code-workspace`; use `tripplanner-integration.code-workspace`
+  for review/merge only while that mode is explicitly active
+- Optional Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
   double-click `scripts/dev/Merge-Agent1.cmd`
 - One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
   or double-click `scripts/dev/Run-Latest-Code.cmd`; this preserves and
@@ -58,10 +60,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Release flow: see [docs/operations/deployment-flow.md](operations/deployment-flow.md)
 - Performance/cost interpretation: see [docs/operations/performance-cost.md](operations/performance-cost.md)
 
-The primary checkout stays on `master` as the review/integration lane. The
-default coding agent uses persistent `worker-1` for one coherent PR-sized
-assignment; persistent `worker-2` is dormant capacity for an explicitly chosen
-third workstream. Changes merge through reviewed pull requests.
+The primary checkout on `master` is the normal development lane. Persistent
+worker worktrees remain available only for owner-requested parallel assignments;
+those changes merge through reviewed pull requests.
 
 ## 3) Top-level layout
 

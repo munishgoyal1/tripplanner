@@ -2750,3 +2750,13 @@ VALIDATION:
   that replaces the workspace with Trip brief, Research, and Review stages.
 - Present each alternative with a footprint diagram, concise behavior summary,
   and the same live prompt fixture so the layout tradeoff is easy to compare.
+
+=== 2026-07-30 — Return to single-workspace development ===
+
+- Use one VS Code window in the primary checkout and work directly on `master`
+  by default; Worker 1 / Agent 3 parallel integration is no longer the normal flow.
+- Keep worker worktrees and merge helpers available only for an explicitly requested
+  parallel assignment.
+- After each commit and push, restart the affected local servers when runtime code
+  changed so the running app reflects the new milestone. Skip restarts for docs-only
+  or otherwise runtime-neutral changes.
