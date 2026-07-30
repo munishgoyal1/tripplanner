@@ -393,6 +393,47 @@ def test_build_itinerary_route_uses_all_stop_names(monkeypatch: pytest.MonkeyPat
     assert day["route"]["duration_min"] > 0
 
 
+def test_itinerary_schedule_estimates_complete_hotel_circuit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "hotel": (51.5098, -0.1222),
+        "riverside walk": (51.4830, -0.1350),
+        "dinner": (51.5130, -0.1364),
+    }
+
+    def fake_details(name: str, _city: str) -> dict[str, Any]:
+        lat, lng = coords[name.lower()]
+        return {"name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(trip_view.places_cache, "is_configured", lambda: True)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_details)
+    itinerary = trip_view.build_itinerary({
+        "destination": "London",
+        "selected_hotels": [{"name": "Hotel"}],
+        "selected_activities": [],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Hotel", "kind": "hotel"},
+                {"name": "Riverside Walk", "kind": "attraction", "time": "16:00", "duration_min": 90},
+                {"name": "Dinner", "kind": "meal", "time": "19:00", "duration_min": 60},
+                {"name": "Hotel", "kind": "hotel"},
+            ],
+        }],
+    })
+
+    day = itinerary["days"][0]
+    assert day["stops"][0]["duration_min"] is None
+    assert day["stops"][-1]["duration_min"] is None
+    assert day["schedule"]["start"]
+    assert day["schedule"]["end"]
+    assert day["schedule"]["duration_min"] > 240
+    assert day["schedule"]["travel_duration_min"] == day["route"]["duration_min"]
+    assert day["schedule"]["estimated"] is True
+
+
 def test_build_itinerary_prefetches_stop_details_without_reviews(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -943,7 +984,7 @@ def test_itinerary_enriches_stop_metadata(monkeypatch: pytest.MonkeyPatch) -> No
     assert hotel["cost_display"] == "\u20b912,000"
     assert hotel["opening_hours"].startswith("Monday:")
     assert hotel["insight"]
-    assert hotel["duration_min"] > 0
+    assert hotel["duration_min"] is None
 
     assert trek["cost_display"] == "Mid-range"
     assert trek["opening_hours"].startswith("Monday:")

@@ -122,6 +122,8 @@ frontend/
     labs/             UX Labs catalog plus shared owner decision capture;
                       local handoffs are written by the Vite dev server to the
                       ignored docs/ux-experiments/LAB_SELECTIONS.local.json
+    itinerary-density-lab/ Active 320px day-density comparison; preserves the
+              implemented Compact Agenda lab while evaluating refinements
     main.tsx          React 19 root
     App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual

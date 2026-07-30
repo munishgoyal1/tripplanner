@@ -2625,3 +2625,16 @@ VALIDATION:
 - Keep production agenda rows denser than the original lab option: left-align
   the time gutter and place content, group status and actions beneath the place,
   and avoid controls or content drifting toward the center or right edge.
+
+=== 2026-07-30 — Truthful itinerary timing and density follow-up ===
+
+- Itinerary and Map day summaries must consume one backend-owned timing contract.
+  Show endpoint-to-endpoint E2E schedule separately from route-only Travel time,
+  distance, and mode. Mark inferred hotel departure/return times as estimates.
+- Hotel circuit anchors show Depart/Return semantics without a visit duration or
+  redundant `In trip` badge. A generated endpoint cannot be removed as an exact
+  occurrence; stay changes use the authoritative stay-range flow.
+- Allow the desktop itinerary pane to expand beyond the former 38% ceiling while
+  preserving a usable map center.
+- Evaluate further compact itinerary refinements in a separate 320 px UX Lab;
+  preserve the already implemented Compact Agenda and Compact Brief decisions.

@@ -141,6 +141,14 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-29)
+- **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
+  consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
+  time from route-only Travel and marks inferred hotel departure/return times as
+  estimates. Hotel anchors no longer show generic stay duration, redundant In
+  trip state, or invalid exact-delete controls; backend mutation also rejects
+  single-anchor removal. The itinerary pane can expand to 55% while retaining a
+  usable map. A separate 320 px density lab compares ledger, circuit-header, and
+  progressive-focus refinements without rewriting the selected Compact Agenda.
 - **Compact itinerary brief + agenda (Session 86)**: the owner-selected Compact
   Brief C and Compact Agenda B now drive production itinerary days. Day briefs
   exclude hotel anchors from planned-stop counts, label the end-to-end timed span

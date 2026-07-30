@@ -243,9 +243,10 @@ re-describing the whole product.
   counts, booking progress, budget/cost, fit, and constraints.
 - Compact day briefs expose non-hotel planned-stop count, explicit schedule
   duration, route distance/time/mode, confirmed and remaining booking counts,
-  Travel rhythm guidance, and a Maps handoff before stop details. Schedule spans
-  the first timed departure/stop through the final timed hotel, stay, or transit
-  endpoint, with non-hotel durations plus known route legs as the fallback.
+  Travel rhythm guidance, and a Maps handoff before stop details. A shared backend
+  contract gives Itinerary and Map the same endpoint-to-endpoint E2E schedule and
+  separate route-only Travel subtotal. Missing hotel endpoint times are estimated
+  from timed visits and known route legs and visibly marked as estimates.
 - Compact agenda rows lead with explicit Depart/Return or Arrive/Stay timing,
   keep time, place, status, and actions densely left-aligned, place each travel
   estimate above its destination, and use explicit Confirmed or Needs booking
@@ -253,6 +254,8 @@ re-describing the whole product.
 - Place stops use day-colored markers matching map circuits: `H` for hotel
   endpoints and sequential numbers for attractions and named meals.
 - Rows show quiet travel distance/time from the previous mapped stop.
+- Generated hotel circuit anchors have no visit duration, In trip badge, or
+  single-occurrence removal. Hotel changes use authoritative stay-range actions.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 

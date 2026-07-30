@@ -106,11 +106,16 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   model unless measured quality failures justify a slower or costlier model.
 - **Itinerary scanning**: each day header shows stop count, schedule duration,
   route distance/time/mode, and a direct Maps handoff before the stop details.
-  Schedule duration spans the first timed departure/stop through the final timed
-  hotel, stay, or transit endpoint. If endpoint times are incomplete, it is an
-  estimate from non-hotel visit durations plus known route legs. Compact agenda
+  The backend owns one day timing contract consumed by both Itinerary and Map:
+  E2E schedule spans hotel departure through return (or the applicable transfer/
+  transit endpoints), while Travel is the route-only subtotal. If endpoint times
+  are incomplete, estimated departure and return are derived from timed visits
+  and known route legs and labeled as estimates. Compact agenda
   rows are dense and left-anchored: time, marker, place, booking state, and
   actions read in one direction without drifting toward the center or right.
+  Hotel circuit anchors show Depart/Return semantics without a visit duration,
+  redundant In trip state, or an individual delete action; stay changes use the
+  stay-range controls instead.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
   Each mapped destination row also shows a quiet estimated distance/time from

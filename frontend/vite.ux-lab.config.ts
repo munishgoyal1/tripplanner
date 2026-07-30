@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         catalog: resolve(__dirname, "labs.html"),
         itinerary: resolve(__dirname, "ux-lab.html"),
+        itineraryDensity: resolve(__dirname, "itinerary-density-lab.html"),
         summary: resolve(__dirname, "summary-lab.html"),
         workspaceShell: resolve(__dirname, "workspace-shell-lab.html"),
       },

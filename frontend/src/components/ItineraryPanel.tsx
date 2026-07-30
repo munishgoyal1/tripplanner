@@ -52,49 +52,6 @@ function dayDateLabel(date: string): string {
   }).format(parsed).replace(",", " ·");
 }
 
-function timeToMinutes(value: string): number | null {
-  const match = value.trim().match(/^(\d{1,2}):(\d{2})(?:\s*([ap]m))?$/i);
-  if (!match) return null;
-  let hours = Number(match[1]);
-  const minutes = Number(match[2]);
-  const meridiem = match[3]?.toLowerCase();
-  if (minutes > 59 || hours > (meridiem ? 12 : 23)) return null;
-  if (meridiem) {
-    hours %= 12;
-    if (meridiem === "pm") hours += 12;
-  }
-  return hours * 60 + minutes;
-}
-
-function dayScheduleMinutes(day: ItineraryDay): number {
-  const timedStops = day.stops
-    .map((stop) => ({ stop, minutes: timeToMinutes(stop.time || "") }))
-    .filter((item): item is { stop: ItineraryStop; minutes: number } => item.minutes !== null);
-  if (timedStops.length >= 2) {
-    const first = timedStops[0].minutes;
-    const last = timedStops[timedStops.length - 1];
-    let end = last.minutes;
-    if (end < first) end += 24 * 60;
-    const endpointKinds = ["hotel", "flight", "transport"];
-    if (!endpointKinds.includes(last.stop.kind) && last.stop.duration_min) {
-      end += last.stop.duration_min;
-    }
-    return Math.max(0, end - first);
-  }
-  const visitMinutes = day.stops.reduce(
-    (total, stop) => total + (stop.kind === "hotel" ? 0 : (stop.duration_min || 0)),
-    0,
-  );
-  return visitMinutes + (day.route?.duration_min || 0);
-}
-
-function durationLabel(minutes: number): string | null {
-  if (minutes <= 0) return null;
-  return minutes >= 60
-    ? `${Math.floor(minutes / 60)}h${minutes % 60 ? ` ${minutes % 60}m` : ""}`
-    : `${minutes}m`;
-}
-
 function StopRow({
   stop,
   day,
@@ -125,7 +82,7 @@ function StopRow({
   onRemove?: () => void | Promise<void>;
 }) {
   const focusable = canFocus(stop.kind);
-  const removable = !!onRemove && focusable;
+  const removable = !!onRemove && focusable && stop.kind !== "hotel";
   const [removing, setRemoving] = useState(false);
   const noteText = (stop.note || "").trim();
   const insightText = (stop.insight || "").trim();
@@ -161,8 +118,8 @@ function StopRow({
       <div className="pt-0.5 text-left">
         <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
         {stop.time && <p className="text-xs font-bold tabular-nums text-ink">{stop.time}</p>}
-        {stop.duration_min ? (
-          <p className="mt-0.5 text-[10px] text-slate-500">Stay {Math.round(stop.duration_min)} min</p>
+        {stop.kind !== "hotel" && stop.duration_min ? (
+          <p className="mt-0.5 text-[10px] text-slate-500">{Math.round(stop.duration_min)} min</p>
         ) : null}
       </div>
 
@@ -232,11 +189,6 @@ function StopRow({
             {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
             {stop.booked ? "Confirmed" : "Needs booking"}
           </button>
-          {stop.selected && (
-            <span className="pill bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-              In trip
-            </span>
-          )}
           {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
           {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
           {removable && (
@@ -252,13 +204,9 @@ function StopRow({
                   setRemoving(false);
                 }
               }}
-              aria-label={stop.kind === "hotel" ? `Remove ${stop.name} stay` : `Remove ${stop.name} from itinerary`}
-              className={`grid h-6 w-6 place-items-center rounded-full ring-1 transition ${
-                stop.kind === "hotel"
-                  ? "bg-rose-50 text-rose-700 ring-rose-100 hover:bg-rose-100"
-                  : "bg-slate-50 text-slate-600 ring-slate-200 hover:bg-slate-100"
-              }`}
-              title={stop.kind === "hotel" ? "Remove stay from itinerary" : "Remove from itinerary"}
+              aria-label={`Remove ${stop.name} from itinerary`}
+              className="grid h-6 w-6 place-items-center rounded-full bg-slate-50 text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100"
+              title="Remove from itinerary"
             >
               {removing ? <Loader2 size={12} className="animate-spin" aria-hidden /> : <Trash2 size={12} aria-hidden />}
             </button>
@@ -325,7 +273,6 @@ function DayCard({
     visitOrder += 1;
     return String(visitOrder);
   });
-  const scheduleDuration = durationLabel(dayScheduleMinutes(day));
   const plannedStops = day.stops.filter((stop) => stop.kind !== "hotel");
   const confirmedStops = plannedStops.filter((stop) => stop.booked).length;
   const remainingStops = plannedStops.length - confirmedStops;
@@ -353,12 +300,17 @@ function DayCard({
           {day.summary && <p className="mt-2 text-xs leading-relaxed text-slate-600">{day.summary}</p>}
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-2 text-[11px] text-slate-500">
             <strong className="text-ink">{plannedStops.length} planned {plannedStops.length === 1 ? "stop" : "stops"}</strong>
-            {scheduleDuration && (
-              <span>{scheduleDuration} schedule</span>
+            {day.schedule?.duration_display && (
+              <span>
+                E2E {day.schedule.duration_display}
+                {day.schedule.start && day.schedule.end
+                  ? ` · ${day.schedule.start}–${day.schedule.end}${day.schedule.estimated ? " est." : ""}`
+                  : day.schedule.estimated ? " est." : ""}
+              </span>
             )}
             {day.route && (
               <span className="inline-flex items-center gap-1">
-                <MapPin size={12} aria-hidden /> {day.route.distance_display} · {day.route.duration_display} · {day.route.mode}
+                <MapPin size={12} aria-hidden /> Travel {day.route.duration_display} · {day.route.distance_display} · {day.route.mode}
               </span>
             )}
             <span className={remainingStops > 0 ? "text-amber-700" : "text-emerald-700"}>

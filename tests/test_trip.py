@@ -684,6 +684,36 @@ class TestTripPlanState:
         assert plan["selected_activities"] == []
         assert plan["day_wise_itinerary"][0]["stops"] == []
 
+    def test_remove_selection_rejects_single_hotel_circuit_anchor(self):
+        create_trip_plan.invoke({
+            "destination": "London",
+            "departure_date": "2026-08-26",
+            "return_date": "2026-08-31",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "Wilde Aparthotels"}],
+            "day_wise_itinerary": [
+                {
+                    "day": 4,
+                    "stops": [
+                        {"name": "Wilde Aparthotels", "kind": "hotel"},
+                        {"name": "Kew Gardens", "kind": "attraction"},
+                        {"name": "Wilde Aparthotels", "kind": "hotel"},
+                    ],
+                },
+            ],
+        })})
+
+        assert remove_selection(
+            "hotel", "Wilde Aparthotels", day=4, stop=1, all_occurrences=False
+        ) is False
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert [stop["name"] for stop in plan["day_wise_itinerary"][0]["stops"]] == [
+            "Wilde Aparthotels",
+            "Kew Gardens",
+            "Wilde Aparthotels",
+        ]
+
     def test_set_stop_booked_normalizes_string_stop(self):
         create_trip_plan.invoke({
             "destination": "Goa",

@@ -81,7 +81,7 @@ export default function App() {
   const canvasMaximized = maximizedPane === "itinerary" || maximizedPane === "map";
   const dockMaximized = maximizedPane === "details" || maximizedPane === "assistant";
   const [itineraryPct, setItineraryPct] = useState(() =>
-    storedPercent("tripplanner_itinerary_pct", 24, 18, 38)
+    storedPercent("tripplanner_itinerary_pct", 24, 18, 55)
   );
   const [inspectorPct, setInspectorPct] = useState(() =>
     storedPercent("tripplanner_inspector_pct", 31, 24, 40)
@@ -141,10 +141,10 @@ export default function App() {
       const rect = workspaceRef.current.getBoundingClientRect();
       if (target === "itinerary") {
         const next = ((event.clientX - rect.left) / rect.width) * 100;
-        setItineraryPct(clamp(next, 18, 100 - inspectorPct - 30));
+        setItineraryPct(clamp(next, 18, 100 - inspectorPct - 20));
       } else {
         const next = ((rect.right - event.clientX) / rect.width) * 100;
-        setInspectorPct(clamp(next, 24, Math.min(40, 100 - itineraryPct - 30)));
+        setInspectorPct(clamp(next, 24, Math.min(40, 100 - itineraryPct - 20)));
       }
     };
 
@@ -176,10 +176,10 @@ export default function App() {
     const growing = key === "ArrowRight" || key === "ArrowDown";
     const delta = growing ? 2 : -2;
     if (target === "itinerary" && (key === "ArrowLeft" || key === "ArrowRight")) {
-      setItineraryPct((value) => clamp(value + delta, 18, 100 - inspectorPct - 30));
+      setItineraryPct((value) => clamp(value + delta, 18, 100 - inspectorPct - 20));
     } else if (target === "inspector" && (key === "ArrowLeft" || key === "ArrowRight")) {
       setInspectorPct((value) =>
-        clamp(value + (growing ? -2 : 2), 24, Math.min(40, 100 - itineraryPct - 30))
+        clamp(value + (growing ? -2 : 2), 24, Math.min(40, 100 - itineraryPct - 20))
       );
     } else if (target === "chat" && (key === "ArrowUp" || key === "ArrowDown")) {
       setChatPct((value) => clamp(value + (key === "ArrowUp" ? 2 : -2), 30, 65));
