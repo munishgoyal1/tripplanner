@@ -61,7 +61,7 @@ material, not current implementation truth:
 - [`Requirements.docx`](Requirements.docx) remains at the root while it is an
   active owner input.
 - [`archive/Bugs to resolve.docx`](archive/Bugs%20to%20resolve.docx)
-- [`archive/deployment_detail.txt`](archive/deployment_detail.txt)
+- [`archive/key_info_infra.txt`](archive/key_info_infra.txt)
 - [`archive/prompts.txt`](archive/prompts.txt)
 - [`archive/usage.txt`](archive/usage.txt)
 
