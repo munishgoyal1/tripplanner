@@ -37,7 +37,7 @@ See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
 To merge Agent 1 and restart this local stack in one click, double-click
-`Run-Latest-Code.cmd` in this folder or run the VS Code task
+`scripts/development/Run-Latest-Code.cmd` from the repository root or run the VS Code task
 **Tripplanner: Run Latest Code** from the integration workspace.
 
 ---

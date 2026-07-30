@@ -26,9 +26,9 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
   development and `tripplanner-integration.code-workspace` for review/merge;
   `tripplanner-worker-2.code-workspace` remains available on demand
 - One-click Agent 1 integration: VS Code task `Tripplanner: Merge Agent 1` or
-  double-click `docs/development/Merge-Agent1.cmd`
+  double-click `scripts/development/Merge-Agent1.cmd`
 - One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
-  or double-click `docs/development/Run-Latest-Code.cmd`
+  or double-click `scripts/development/Run-Latest-Code.cmd`
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`
 - List coding-agent worktrees: `.\scripts\agent-worktree.ps1`
 - Parallel-agent workflow: [docs/development/parallel-agent-development.md](development/parallel-agent-development.md)
@@ -224,6 +224,7 @@ infra/
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
+  development/       One-click agent merge and run-latest workflow scripts
   dev-spa.ps1         THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator
   cosmos_copy.py      Direct Cosmos copy plus guarded offline backup/restore drill

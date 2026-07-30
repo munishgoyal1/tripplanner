@@ -2695,3 +2695,10 @@ VALIDATION:
 - Show Google rating and review count plus a clearly labeled estimated must-visit
   score derived from those signals. Do not fabricate an itinerary-inclusion
   percentage because no provider supplies that evidence.
+
+=== 2026-07-30 — Development script ownership ===
+
+- Executable development workflows belong under `scripts/`, not `docs/`.
+- Keep the Agent 1 merge and run-latest one-click launchers together under
+  `scripts/development/`; documentation describes and links to them but does not
+  own executable files.

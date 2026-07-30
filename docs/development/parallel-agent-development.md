@@ -132,9 +132,9 @@ For the persistent Agent 1 lane, use either one-click entry point from the
 primary integration checkout:
 
 - VS Code: **Tasks: Run Task** → **Tripplanner: Merge Agent 1**
-- File Explorer: double-click `docs/development/Merge-Agent1.cmd`
+- File Explorer: double-click `scripts/development/Merge-Agent1.cmd`
 
-Both run `merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
+Both run `scripts/development/merge-agent-1.ps1`, which refuses dirty or unexpected worktrees,
 creates or reuses the Worker 1 pull request, merges it with a merge commit,
 updates `master`, and keeps the persistent Worker 1 branch synchronized for
 its next assignment. If the task stops on a conflict, return to the Worker 1
@@ -142,7 +142,7 @@ window, ask that agent to resolve and validate it, then run the task again.
 
 To merge Agent 1 and immediately restart the local application on the merged
 code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
-`docs/development/Run-Latest-Code.cmd`. This runs the same guarded merge first,
+`scripts/development/Run-Latest-Code.cmd`. This runs the same guarded merge first,
 then starts the canonical `scripts/dev-spa.ps1` stack only when merging succeeds.
 
 Use a pull request even for a solo repository. It provides one diff and check
