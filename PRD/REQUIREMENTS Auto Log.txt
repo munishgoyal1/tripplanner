@@ -2821,3 +2821,13 @@ VALIDATION:
   or claims that a persisted historical price remains currently available.
 - Google Places may supply property identity, ratings, and reviews but must never
   be represented as room availability or a live rate.
+
+=== 2026-07-30 — Provider-neutral live activity evidence ===
+
+- Add Viator Basic Access Affiliate sandbox support behind the stable activity
+  search tool and a capability-specific provider contract.
+- Return date-filtered discovery, operating schedules, ratings, duration,
+  cancellation/confirmation metadata, and unchanged affiliate product URLs.
+- Label product pricing as a from-price rather than an exact party total or held
+  quote. Keep booking, payment, reservation, amendment, and cancellation APIs absent.
+- Prefer Viator when its server-side key is configured; preserve the Amadeus fallback.

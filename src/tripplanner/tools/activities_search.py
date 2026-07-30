@@ -2,8 +2,13 @@
 
 from __future__ import annotations
 
+import json
+
 from langchain_core.tools import tool
 
+from tripplanner.providers.models import ActivitySearchQuery
+from tripplanner.providers.registry import get_activity_provider
+from tripplanner.providers.viator import ViatorError
 from tripplanner.tools import amadeus_client
 
 # Approximate coordinates for popular destinations
@@ -85,6 +90,12 @@ def search_activities(
     latitude: float = 0,
     longitude: float = 0,
     radius: int = 20,
+    start_date: str = "",
+    end_date: str = "",
+    adults: int = 1,
+    children: int = 0,
+    currency: str = "INR",
+    refresh: bool = False,
 ) -> str:
     """Search for sightseeing tours, attraction tickets, and local experiences.
 
@@ -94,10 +105,53 @@ def search_activities(
         latitude: Override latitude (0 = auto-detect from city name).
         longitude: Override longitude (0 = auto-detect from city name).
         radius: Search radius in km from the city center.
+        start_date: Optional activity window start date, YYYY-MM-DD.
+        end_date: Optional activity window end date, YYYY-MM-DD.
+        adults: Number of adults for future exact-party pricing compatibility.
+        children: Number of children for future exact-party pricing compatibility.
+        currency: ISO currency code for provider from-prices.
+        refresh: Bypass the short-lived shared result cache.
     """
+    del refresh
+    provider = get_activity_provider()
+    if provider:
+        try:
+            offers = provider.search_activities(
+                ActivitySearchQuery(
+                    destination=city,
+                    start_date=start_date,
+                    end_date=end_date,
+                    adults=adults,
+                    children=children,
+                    currency=currency.upper(),
+                    max_results=max_results,
+                )
+            )
+            if offers:
+                return json.dumps(
+                    {
+                        "quote_status": "live",
+                        "provider": provider.name,
+                        "pricing_scope": "from_price; not an exact party total or held quote",
+                        "booking_supported": False,
+                        "offers": [offer.model_dump(mode="json") for offer in offers],
+                    },
+                    ensure_ascii=False,
+                )
+        except (ViatorError, ValueError) as exc:
+            return json.dumps(
+                {
+                    "quote_status": "provider_error",
+                    "provider": provider.name,
+                    "booking_supported": False,
+                    "error": str(exc),
+                }
+            )
+
     if not amadeus_client.is_configured():
         return (
-            "Amadeus API not configured. Set AMADEUS_API_KEY and AMADEUS_API_SECRET in .env.\n"
+            "Viator and Amadeus APIs not configured. Set VIATOR_API_KEY for read-only "
+            "activity prices and schedules.\n"
             "Sign up free at https://developers.amadeus.com\n"
             "Falling back to general knowledge for activity suggestions."
         )

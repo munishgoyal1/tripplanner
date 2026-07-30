@@ -41,6 +41,13 @@ class Settings(BaseModel):
     travel_hotel_provider: str = os.getenv("TRAVEL_HOTEL_PROVIDER", "auto").strip().lower()
     travel_flight_provider: str = os.getenv("TRAVEL_FLIGHT_PROVIDER", "auto").strip().lower()
 
+    # Read-only Viator tours and activity schedules. Transactional APIs are absent.
+    viator_api_key: str = os.getenv("VIATOR_API_KEY", "")
+    viator_base_url: str = os.getenv(
+        "VIATOR_BASE_URL", "https://api.sandbox.viator.com/partner"
+    ).rstrip("/")
+    travel_activity_provider: str = os.getenv("TRAVEL_ACTIVITY_PROVIDER", "auto").strip().lower()
+
     # Google Places API (New) — restaurant/attraction ratings & reviews
     # Get a key: https://console.cloud.google.com (enable 'Places API (New)')
     # Free tier: $200/month credit

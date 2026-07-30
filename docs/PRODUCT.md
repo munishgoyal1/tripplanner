@@ -38,6 +38,7 @@ support visual refinement while Assistant remains available for broader changes.
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
 - ❌ Automated purchasing or card charging (booking remains a verified handoff).
+- ❌ Treating an activity from-price or operating schedule as a held quote or booking.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
 - ❌ Generic chatbot vibes. This is a planner, not a friend-bot.

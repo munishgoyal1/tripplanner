@@ -15,6 +15,14 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   grounded fallback has the same contract. Requiring the model to notice the
   failure and choose the fallback adds a full inference round.
 
+## 2026-07-30 - Preserve Provider Evidence Semantics
+
+- Keep place identity/reviews separate from date-specific inventory evidence.
+- A provider's activity from-price is not an exact party total, and an operating
+  schedule is not a held quote. Preserve those distinctions in normalized models.
+- Return affiliate deep links unchanged; provider attribution parameters are data,
+  not URLs for the application to reconstruct.
+
 ## 2026-07-30 - Complete Persisted Defaults Across Provider Failure
 
 - Enforce required defaults from persisted state, not from whether the model

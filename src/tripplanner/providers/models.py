@@ -82,6 +82,35 @@ class FlightOffer(BaseModel):
     changes: dict[str, Any] | None = None
 
 
+class ActivitySearchQuery(BaseModel):
+    destination: str
+    start_date: str = ""
+    end_date: str = ""
+    adults: int = Field(default=1, ge=1)
+    children: int = Field(default=0, ge=0)
+    currency: str = "INR"
+    max_results: int = Field(default=10, ge=1, le=20)
+
+
+class ActivityOffer(BaseModel):
+    provider: str
+    provider_ref: dict[str, str]
+    title: str
+    destination: str
+    from_price: Money
+    total: Money | None = None
+    available: bool | None = None
+    availability_ranges: list[dict[str, str]] = Field(default_factory=list)
+    duration_minutes: dict[str, int] | None = None
+    rating: float | None = None
+    review_count: int | None = None
+    cancellation_summary: str | None = None
+    confirmation_type: str | None = None
+    provider_url: str | None = None
+    quoted_at: datetime
+    status: QuoteStatus = QuoteStatus.LIVE
+
+
 class HotelAvailabilityProvider(Protocol):
     name: str
 
@@ -94,3 +123,9 @@ class FlightAvailabilityProvider(Protocol):
     def search_flights(self, query: FlightSearchQuery) -> list[FlightOffer]: ...
 
     def verify_flight(self, offer_id: str) -> FlightOffer: ...
+
+
+class ActivityAvailabilityProvider(Protocol):
+    name: str
+
+    def search_activities(self, query: ActivitySearchQuery) -> list[ActivityOffer]: ...

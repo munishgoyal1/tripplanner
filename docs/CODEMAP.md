@@ -87,14 +87,15 @@ src/tripplanner/
   agents/
     trip_agent.py     Single trip-planning agent — system prompt + 25 @tools
   providers/
-    models.py         Normalized hotel/flight queries, offers, money, and quote status
+    models.py         Normalized hotel/flight/activity queries, offers, money, and status
     registry.py       Minimal capability-specific provider selection (`auto` or named)
     liteapi.py        Read-only LiteAPI hotel rates plus flight search/verification
+    viator.py         Read-only Viator activity discovery, from-prices, and schedules
   tools/
     duffel_flights.py     Stable agent flight boundary; LiteAPI then Duffel fallback
     flight_search.py      Amadeus fallback (Amadeus self-service EOL 2026-07-17)
     hotel_search.py       Stable agent hotel boundary; LiteAPI then legacy fallback
-    activities_search.py  Amadeus activities + POI
+    activities_search.py  Stable activity boundary; Viator then Amadeus fallback + POI
     amadeus_client.py     Shared Amadeus auth/HTTP
     google_places.py      Places API New (search/reviews/photos)
     place_hours.py        Opening-hours + closure check (catches "Louvre Tue")

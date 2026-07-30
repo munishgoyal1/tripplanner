@@ -123,7 +123,7 @@ _CACHE_POLICIES: dict[str, CachePolicy] = {
     "verify_flight_offer": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=30),
     "search_flights": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=5 * 60),
     "search_hotels": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
-    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
+    "search_activities": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=60),
     "search_points_of_interest": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
     "search_places_with_reviews": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),
     "nearby_restaurants": CachePolicy(scope=_GLOBAL_SCOPE, ttl_seconds=20 * 60),

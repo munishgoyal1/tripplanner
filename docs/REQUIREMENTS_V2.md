@@ -142,12 +142,16 @@ re-describing the whole product.
   currency, and explicit `live`, `unavailable`, or `provider_error` evidence.
 - The stable flight and hotel tools route through separate capability contracts;
   future providers can implement either capability without changing the agent.
+- Viator is the preferred read-only activity provider when configured. The stable
+  activity tool returns date-filtered product discovery, operating-schedule evidence,
+  ratings, duration, cancellation/confirmation metadata, and the provider's unchanged
+  affiliate URL. Prices are explicitly `from` prices, not exact party totals or holds.
 - Duffel remains the flight fallback, and Amadeus remains available for legacy
   flight, hotel, activity, and point-of-interest searches.
 - Google hotel results are property metadata only and are labeled `estimated`;
   they never establish room availability or a live rate.
-- Explicit inventory refresh bypasses shared cache. Live hotel/flight search uses
-  a 60-second cache and flight verification uses 30 seconds by default.
+- Explicit inventory refresh bypasses shared cache. Live hotel, flight, and activity
+  search uses a 60-second cache and flight verification uses 30 seconds by default.
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.
