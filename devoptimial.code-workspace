@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {
+      "name": "Tripplanner Development",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "window.title": "Devoptimial | ${activeEditorShort}${separator}${rootName}",
+    "chat.editing.autoAcceptDelay": 1,
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.editor.restoreEditors": true,
+    "workbench.editor.restoreViewState": true,
+    "files.restoreUndoStack": true,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#115e59",
+      "activityBar.foreground": "#ffffff",
+      "statusBar.background": "#0f766e",
+      "statusBar.foreground": "#ffffff",
+      "titleBar.activeBackground": "#115e59",
+      "titleBar.activeForeground": "#ffffff"
+    }
+  }
+}
