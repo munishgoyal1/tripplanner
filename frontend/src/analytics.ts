@@ -20,7 +20,7 @@ let measurementId = "";
 let ready = false;
 
 function analyticsWindow(): Window & {
-  dataLayer?: unknown[][];
+  dataLayer?: unknown[];
   gtag?: (...args: unknown[]) => void;
 } {
   return window;
@@ -49,7 +49,9 @@ export function enableAnalytics(id: string): void {
   measurementId = id;
   const target = analyticsWindow();
   target.dataLayer = target.dataLayer || [];
-  target.gtag = (...args: unknown[]) => target.dataLayer!.push(args);
+  target.gtag = function () {
+    target.dataLayer!.push(arguments);
+  };
   target.gtag("consent", "default", {
     analytics_storage: "denied",
     ad_storage: "denied",
