@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-31 - Never Recover Create With Update
+
+- Treat an explicit whole-trip request for a destination different from the active
+  trip as a creation boundary before running any itinerary-completion gates.
+- A fallback updater must prove that the same operation created the object it is
+  repairing. Never apply parsed output to whichever unrelated object happens to be active.
+- Prompt instructions are insufficient for identity-changing writes. Deterministic
+  orchestration must establish the destination-specific trip before enrichment begins.
+- Diagnose cross-object corruption from persisted operation identity plus tool telemetry:
+  a completed turn can be operationally healthy while every update targets the wrong object.
+
 ## 2026-07-30 - Validate Geographic Identity Before Persistence
 
 - Preference fit, price, and luxury do not compensate for a hotel in the wrong

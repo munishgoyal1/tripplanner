@@ -151,7 +151,12 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-30)
+## Current State (last updated 2026-07-31)
+- **Destination-safe new-trip persistence**: an explicit whole-trip request for a
+  destination different from the active trip now forces `create_trip_plan` before
+  itinerary completion or enrichment gates. SSE prose fallback persistence is
+  limited to turns that actually created a trip, preventing a missing create call
+  from overwriting an unrelated active saved trip.
 - **Modern web Assistant controls**: the Option A sidecar can abort its active SSE
   response through the shared transport, preserves and marks useful partial text,
   and restores the composer without failure/retry state. Completed messages expose

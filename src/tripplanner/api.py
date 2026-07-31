@@ -566,6 +566,13 @@ def _auto_persist_itinerary(reply: str) -> None:
         pass  # best-effort; never crash the response path
 
 
+def _should_auto_persist_itinerary(tool_names_called: set[str]) -> bool:
+    return (
+        "create_trip_plan" in tool_names_called
+        and "update_trip_plan" not in tool_names_called
+    )
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     """Stream the agent turn as Server-Sent Events.
@@ -804,7 +811,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         # Safety net: if the agent described a day-wise itinerary but never
         # called update_trip_plan, parse the reply and persist it directly so
         # the Itinerary panel is never left blank.
-        if not req.proposal_only and "update_trip_plan" not in tool_names_called:
+        if not req.proposal_only and _should_auto_persist_itinerary(tool_names_called):
             await asyncio.to_thread(_auto_persist_itinerary, reply)
         try:
             tid_after = await asyncio.to_thread(

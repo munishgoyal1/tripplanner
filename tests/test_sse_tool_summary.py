@@ -6,7 +6,11 @@ import inspect
 import re
 
 from tripplanner import api
-from tripplanner.api import _auto_persist_itinerary, _summarize_tool_input
+from tripplanner.api import (
+    _auto_persist_itinerary,
+    _should_auto_persist_itinerary,
+    _summarize_tool_input,
+)
 
 
 def test_summarize_none_is_empty() -> None:
@@ -59,6 +63,15 @@ def test_auto_persist_itinerary_invokes_update_tool(monkeypatch) -> None:
 
     assert len(calls) == 1
     assert "updates_json" in calls[0]
+
+
+def test_auto_persist_requires_trip_created_in_same_turn() -> None:
+    assert not _should_auto_persist_itinerary(set())
+    assert not _should_auto_persist_itinerary({"search_hotels"})
+    assert _should_auto_persist_itinerary({"create_trip_plan"})
+    assert not _should_auto_persist_itinerary(
+        {"create_trip_plan", "update_trip_plan"}
+    )
 
 
 def test_tool_timing_does_not_overwrite_chat_request_start() -> None:

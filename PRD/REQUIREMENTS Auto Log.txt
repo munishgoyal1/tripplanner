@@ -2905,3 +2905,13 @@ VALIDATION:
   established, so unrelated fields and itinerary surfaces cannot persist bad data.
 - When one selected hotel replaces one prior hotel, update every matching itinerary
   hotel anchor in that same write so Itinerary and Map immediately show the new stay.
+
+=== 2026-07-31 — Destination-safe new-trip creation ===
+
+- An explicit request to plan a whole trip to a destination different from the
+  active trip must create or resume its own saved trip before any itinerary update.
+- Completion and enrichment gates must never mutate an unrelated active trip while
+  trying to recover a model-skipped `create_trip_plan` call.
+- Prose itinerary fallback may persist only when that same operation created the trip.
+- Production repair is a separate approved data operation: preserve the recoverable
+  Hawaii plan and do not guess at restoration of the overwritten London itinerary.

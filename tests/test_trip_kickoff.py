@@ -4,7 +4,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 import pytest
 
 from tripplanner import graph as graph_mod
-from tripplanner.graph import _trip_kickoff_tool_choice
+from tripplanner.graph import _trip_creation_tool_choice, _trip_kickoff_tool_choice
 
 
 @pytest.fixture(autouse=True)
@@ -55,6 +55,44 @@ def test_active_trip_follow_up_has_no_kickoff(monkeypatch: pytest.MonkeyPatch) -
 
     assert _trip_kickoff_tool_choice(
         [HumanMessage(content="Make my Paris trip more relaxed")]
+    ) is None
+
+
+def test_explicit_destination_switch_requires_new_trip(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_creation_tool_choice(
+        [HumanMessage(content="plan a trip to hawaii")]
+    ) == "create_trip_plan"
+
+
+def test_active_destination_follow_up_does_not_create_trip(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_creation_tool_choice(
+        [HumanMessage(content="Plan my trip to London in more detail")]
+    ) is None
+
+
+def test_day_trip_does_not_replace_active_trip(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_creation_tool_choice(
+        [HumanMessage(content="Plan a day trip to Oxford")]
     ) is None
 
 
