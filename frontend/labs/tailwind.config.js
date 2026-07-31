@@ -2,5 +2,5 @@ import baseConfig from "../tailwind.config.js";
 
 export default {
   ...baseConfig,
-  content: ["./labs/**/*.html", "./labs/src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}", "./labs/**/*.{html,ts,tsx}"],
 };

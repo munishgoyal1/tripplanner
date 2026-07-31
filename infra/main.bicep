@@ -214,7 +214,6 @@ resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = if (
     scopes: [logs.id]
     targetResourceTypes: ['Microsoft.OperationalInsights/workspaces']
     autoMitigate: true
-    muteActionsDuration: 'PT15M'
     skipQueryValidation: false
     criteria: {
       allOf: [

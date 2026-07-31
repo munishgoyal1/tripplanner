@@ -16,9 +16,9 @@ previous five minutes for:
 - `tool_call` records with `status == "error"`.
 
 Any match opens a severity-1 alert and notifies the production Action Group at
-`munishgoyal1@gmail.com` using Azure Monitor's common alert schema. Actions are
-muted for 15 minutes after notification to group a burst instead of sending one
-email per log line. Auto-mitigation resolves the alert after the query is clean.
+`munishgoyal1@gmail.com` using Azure Monitor's common alert schema. The alert is
+stateful, so a continuing failure condition remains one alert instead of sending
+one email per log line. Auto-mitigation resolves it after the query is clean.
 
 The query is owned by `infra/queries/application-failures.kql` and loaded by
 `infra/main.bicep`. `enableFailureAlerts` defaults to false and is enabled only
@@ -26,15 +26,17 @@ by `infra/prod.bicepparam`; local and canary never create email alerts. Creating
 or changing the production Action Group still requires the normal
 `APPROVE_PROD_DEPLOYMENT` gate and a deletion-free production `what-if`.
 
-After an approved first deployment, send an Action Group test notification and
+After the approved first deployment, send an Action Group test notification and
 confirm delivery. Then validate the query with a controlled PII-safe error event;
 do not create a user-facing outage just to test alerting.
 
 ## Local and canary analysis
 
 Local FastAPI startup retains a rotating, PII-redacted JSON stream at
-`logs/diagnostics/local-app.jsonl` while leaving console output human-readable.
-Analyze it after a development session or from a daily Windows scheduled task:
+the primary Git checkout's `logs/diagnostics/local-app.jsonl` while leaving
+console output human-readable. Primary and worker VS Code windows resolve the
+same path through Git's common directory. Analyze it after a development session
+or from a daily Windows scheduled task:
 
 ```powershell
 .\scripts\analyze-errors.ps1 -Environment local -Hours 24
@@ -64,6 +66,11 @@ Every terminal `POST /chat` and `POST /chat/stream` path emits one
 - `transport`: `json` or `sse`.
 - `error`: exception class for failures, never the exception message.
 - `user`: a stable one-way hash, never the raw principal.
+
+Final Azure OpenAI `RateLimitError` records also include only safe provider
+metadata: deployment, HTTP status, inferred token/request scope, retry delay,
+and remaining token/request headers when Azure returns them. Response bodies,
+prompts, credentials, and user text are never included.
 
 `completed` and `replayed` are successful service outcomes. `capped` is an
 intentional product-policy outcome and is excluded from the reliability

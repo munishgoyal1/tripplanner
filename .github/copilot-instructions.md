@@ -12,6 +12,12 @@
 > structure or owner intent on every task.
 
 ## Agent efficiency rules (avoid wasting the user's time)
+- Before substantive work, and after every user prompt, ensure the current agent
+  chat has a concrete 4-5 word title summarizing the latest prompt or active task
+  (for example, `Debug Azure Model Rate Limits`). Use `/rename <title>` when
+  supported. Keep the title only while it still accurately summarizes the latest
+  prompt. This applies to existing and new chats in the primary and every
+  tripplanner worker VS Code instance.
 - Read big chunks (50–200 lines) and read multiple files in parallel.
   Do NOT dribble 5-line reads.
 - Batch independent tool calls into ONE turn. Only chain when an output is
@@ -151,7 +157,22 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-30)
+## Current State (last updated 2026-07-31)
+- **Shared local diagnostics + model throttle evidence**: every canonical local
+  stack writes rotating PII-safe JSON under the primary Git checkout, so primary
+  and worker VS Code windows analyze the same log. Final Azure OpenAI rate-limit
+  failures retain only safe deployment/status/retry/remaining-quota metadata and
+  identify token versus request pressure without logging prompts or response bodies.
+- **Destination-safe new-trip persistence**: an explicit whole-trip request for a
+  destination different from the active trip now forces `create_trip_plan` before
+  itinerary completion or enrichment gates. SSE prose fallback persistence is
+  limited to turns that actually created a trip, preventing a missing create call
+  from overwriting an unrelated active saved trip.
+- **Deterministic mid-chat new trips**: explicit new/separate/another/different
+  trip intent preempts completion gates for the currently active trip, runs the
+  normal preference kickoff, and then forces `create_trip_plan`. The prior trip
+  and its transcript remain separate; the existing carryover path seeds only
+  portable context into the new trip chat.
 - **Modern web Assistant controls**: the Option B focus modal can abort its active SSE
   response through the shared transport, preserves and marks useful partial text,
   and restores the composer without failure/retry state. Completed messages expose
@@ -168,11 +189,11 @@ Learns from user preferences and past trips.
   trip/chat content, account identity, and other customer data are excluded;
   Account can reopen analytics preferences. Azure Log Analytics remains the
   operational reliability source. Production is configured for GA4 Web stream
-  `G-VNTSQG9SWZ`; an approved deployment is still required to activate collection.
+  `G-VNTSQG9SWZ`; production release `10963d5` activated consent-gated collection.
 - **Production failure alerting + non-production analysis**: the existing PII-safe
   Container Apps Log Analytics stream remains the single hosted telemetry path.
-  Production Bicep defines a five-minute application/chat/tool failure rule and
-  owner email Action Group behind the production deployment approval gate.
+  Production release `10963d5` deployed a stateful five-minute application/chat/
+  tool failure rule and owner email Action Group behind the approval gate.
   Local development retains bounded redacted JSON, and one read-only command
   produces grouped local or canary Markdown diagnostics without non-production email.
 - **Provider-neutral live travel foundation**: the stable hotel and preferred

@@ -81,7 +81,7 @@ re-describing the whole product.
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
-| OPS-02 | Production failure email alerting and non-production error analysis | Guarded |
+| OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented; privacy-safe analytics implemented |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
@@ -127,6 +127,10 @@ re-describing the whole product.
 - The agent loads known preferences before the one-step new-trip kickoff. Direct
   mode uses that review and then builds without further questions; interactive
   mode may include unresolved critical facts in the same review.
+- Explicit requests for a new, separate, another, or different trip start the
+  new-trip kickoff even when another trip's chat is active. After the user submits
+  or skips that kickoff, the graph requires `create_trip_plan`; the prior trip and
+  its transcript remain separate.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
 - One sticky display currency is used throughout a trip. Domestic travel defaults
@@ -134,6 +138,10 @@ re-describing the whole product.
   or USD with a home-currency equivalent.
 - A completed planning turn persists the authoritative trip and refreshes every
   dependent pane together.
+- An explicit whole-trip request for a destination different from the active trip
+  creates or resumes that destination-specific trip before any itinerary update.
+  Prose fallback persistence may repair only a trip created in that same turn, so
+  it cannot overwrite an unrelated active trip.
 - A turn that creates a trip cannot finish with an empty itinerary: the graph
   requires the initial structured `update_trip_plan` call before the final
   response, and SSE tool timing cannot interfere with the terminal completion

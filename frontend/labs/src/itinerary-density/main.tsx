@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from "react";
 import ReactDOM from "react-dom/client";
-import { ArrowLeft, CalendarCheck2, Check, ChevronDown, Clock3, MapPin, Route } from "lucide-react";
+import { CalendarCheck2, Check, ChevronDown, Clock3, MapPin, Route } from "lucide-react";
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabNavigation } from "../shared/LabNavigation";
 
 type Variant = "ledger" | "circuit" | "focus";
 
@@ -98,7 +99,7 @@ function App() {
       <div className="mx-auto max-w-5xl">
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div><p className="text-[10px] font-bold uppercase text-brand">Active UX experiment</p><h1 className="display mt-1 text-3xl font-semibold text-ink">Compact itinerary density</h1><p className="mt-2 max-w-3xl text-sm text-slate-600">Remove repeated state, preserve truthful circuit timing, and fit a useful day in roughly one-third of a desktop viewport. The 320 px frame below is the constraint.</p></div>
-          <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} /> UX Labs</a>
+          <LabNavigation current="active" />
         </header>
         <div className="mt-5 grid gap-2 sm:grid-cols-3">{variants.map((variant) => <button key={variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 ${active === variant.id ? "bg-white ring-brand/40 shadow-card" : "bg-white/60 ring-slate-200"}`}><strong className="text-xs text-ink">{variant.label}</strong><span className="mt-1 block text-[11px] leading-relaxed text-slate-500">{variant.note}</span></button>)}</div>
         <section className="mt-4 overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200" style={{ minHeight: 320 }} aria-label="320 pixel itinerary density preview">{active === "ledger" ? <Ledger /> : active === "circuit" ? <Circuit /> : <Focus />}</section>

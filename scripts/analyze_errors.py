@@ -17,6 +17,7 @@ from tripplanner.error_analysis import (  # noqa: E402
     failures_from_azure_result,
     failures_from_local_log,
     render_report,
+    shared_diagnostics_dir,
 )
 
 
@@ -73,7 +74,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("environment", choices=("local", "canary"))
     parser.add_argument("--hours", type=int, default=24)
-    parser.add_argument("--log-path", type=Path, default=Path("logs/diagnostics/local-app.jsonl"))
+    parser.add_argument("--log-path", type=Path)
     parser.add_argument("--report-path", type=Path)
     parser.add_argument("--resource-group", default="rg-tripplanner-canary")
     parser.add_argument("--workspace-id", default="")
@@ -81,14 +82,16 @@ def main() -> int:
 
     if args.hours < 1:
         parser.error("--hours must be at least 1")
+    diagnostics_dir = shared_diagnostics_dir(ROOT)
+    local_log_path = args.log_path or diagnostics_dir / "local-app.jsonl"
     if args.environment == "local":
-        failures = failures_from_local_log(args.log_path)
+        failures = failures_from_local_log(local_log_path)
     else:
         failures = _canary_failures(args.resource_group, args.workspace_id, args.hours)
 
     timestamp = dt.datetime.now(dt.UTC).strftime("%Y%m%dT%H%M%SZ")
-    report_path = args.report_path or Path(
-        f"logs/diagnostics/{args.environment}-errors-{timestamp}.md"
+    report_path = args.report_path or diagnostics_dir / (
+        f"{args.environment}-errors-{timestamp}.md"
     )
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(

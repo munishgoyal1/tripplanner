@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import subprocess
 from pathlib import Path
 
 from tripplanner.error_analysis import (
@@ -9,7 +10,22 @@ from tripplanner.error_analysis import (
     failures_from_azure_result,
     failures_from_local_log,
     render_report,
+    shared_diagnostics_dir,
 )
+
+
+def test_shared_diagnostics_dir_uses_primary_git_worktree(monkeypatch, tmp_path: Path) -> None:
+    primary = tmp_path / "tripplanner"
+    worker = tmp_path / "tripplanner.worktrees" / "worker-1"
+    worker.mkdir(parents=True)
+    monkeypatch.setattr(
+        "tripplanner.error_analysis.subprocess.run",
+        lambda *_args, **_kwargs: subprocess.CompletedProcess(
+            args=[], returncode=0, stdout=str(primary / ".git") + "\n"
+        ),
+    )
+
+    assert shared_diagnostics_dir(worker) == primary / "logs" / "diagnostics"
 
 
 def test_classifies_only_failure_signals() -> None:
@@ -34,6 +50,19 @@ def test_classifies_only_failure_signals() -> None:
     assert chat and chat.signature == "chat:TimeoutError"
     assert tool and tool.signature == "tool:routing:HTTPError"
     assert application and application.signature == "application:tripplanner.api"
+
+
+def test_rate_limit_signature_includes_safe_provider_scope() -> None:
+    failure = classify_event(
+        {
+            "event_kind": "chat_operation",
+            "outcome": "error",
+            "error": "RateLimitError",
+            "rate_limit_scope": "tokens",
+        }
+    )
+
+    assert failure and failure.signature == "chat:RateLimitError:tokens"
 
 
 def test_reads_current_and_rotated_local_json_without_raw_messages(tmp_path: Path) -> None:
@@ -99,6 +128,8 @@ def test_infrastructure_enables_email_alerts_only_in_production() -> None:
     assert "param enableFailureAlerts bool = false" in template
     assert "if (enableFailureAlerts)" in template
     assert "loadTextContent('queries/application-failures.kql')" in template
+    assert "autoMitigate: true" in template
+    assert "muteActionsDuration" not in template
     assert "param enableFailureAlerts = true" in production
     assert "munishgoyal1@gmail.com" in production
     assert "enableFailureAlerts" not in canary

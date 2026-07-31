@@ -1,7 +1,7 @@
 # Azure Deployment Plan
 
-Status: Ready for Validation (production failure alerting increment approved)
-Last updated: 2026-07-30
+Status: Validated
+Last updated: 2026-07-31
 
 ## 1. Objective And Constraints
 
@@ -338,6 +338,28 @@ Analytics data but no repository-owned periodic diagnostic report.
   after billing data catches up.
 
 ## 9. Validation Proof
+
+Production deployment repair validation completed on 2026-07-31:
+
+- The first approved production attempt failed in ARM before the image update;
+  Azure rejected `autoMitigate: true` combined with `muteActionsDuration` on the
+  scheduled-query alert. Production remained on its prior revision and image.
+- The stateful alert retains automatic mitigation and no longer declares the
+  incompatible stateless action-suppression duration.
+- `infra/main.bicep` compiled with no diagnostics. Focused failure-alert and
+  release-workflow tests passed (7 tests), and both deployment scripts passed
+  PowerShell parser validation.
+- Production `az deployment group validate` returned `Succeeded` for the
+  corrected template. Production what-if returned one update and zero deletes.
+- Both guarded deployment scripts now preserve Azure CLI stderr and check the
+  native exit code before parsing JSON, so ARM failures surface their real error.
+- The approved retry deployed production revision
+  `prod-app-f3ddjudq2rdt4--0000014` on immutable image `10963d5`. Read-only smoke
+  passed all nine checks through both the generated Container Apps hostname and
+  `https://aitripplanner.co`; the smoke contract now validates the deployment-owned
+  OAuth callback independently from the HTTP request hostname.
+- Azure Monitor accepted a `logalertv2` test notification for the enabled
+  production Action Group. Owner mailbox receipt remains to be confirmed.
 
 Production failure alerting validation completed on 2026-07-30:
 

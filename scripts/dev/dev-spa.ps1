@@ -55,6 +55,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$sharedRepoRoot = $repoRoot
+if (Get-Command git -ErrorAction SilentlyContinue) {
+    $gitCommonDir = (& git -C $repoRoot rev-parse --path-format=absolute --git-common-dir 2>$null |
+        Select-Object -First 1)
+    if ($LASTEXITCODE -eq 0 -and
+        -not [string]::IsNullOrWhiteSpace($gitCommonDir) -and
+        (Split-Path -Leaf $gitCommonDir) -eq ".git") {
+        $sharedRepoRoot = Split-Path -Parent $gitCommonDir
+    }
+}
 Set-Location $repoRoot
 
 $activePorts = @()
@@ -199,8 +209,9 @@ if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "az
 if (-not $FrontendOnly) {
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
     if ([string]::IsNullOrWhiteSpace($env:APP_LOG_PATH)) {
-        $env:APP_LOG_PATH = Join-Path $repoRoot "logs\diagnostics\local-app.jsonl"
+        $env:APP_LOG_PATH = Join-Path $sharedRepoRoot "logs\diagnostics\local-app.jsonl"
     }
+    Write-Host "  Diagnostics: $env:APP_LOG_PATH" -ForegroundColor DarkGray
     if ($Logs) {
         $env:LOG_LEVEL = "DEBUG"
         Write-Host "  LOG_LEVEL=DEBUG (verbose backend logs)" -ForegroundColor DarkGray
