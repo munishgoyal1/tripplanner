@@ -77,11 +77,13 @@ src/tripplanner/
   graph.py            LangGraph StateGraph: agent ↔ tools loop; deterministically
                       loads preferences and forces one structured kickoff before
                       creating each new trip, including explicit separate-trip
-                      intent from inside another trip's chat
+                      intent from inside another trip's chat; implicit destination
+                      switches force create_trip_plan before update/enrichment gates
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics; optional
-                      rotating local JSON supports redacted error analysis
+                      rotating local JSON supports shared-worktree redacted
+                      error analysis and safe Azure OpenAI throttle metadata
   error_analysis.py   Shared local/canary failure classification and Markdown reports
   json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
   request_identity.py Signed web/native/guest principal resolution for hosted APIs
@@ -149,6 +151,10 @@ frontend/
           implemented Compact Agenda while evaluating refinements
         src/itinerary-trip-book/  Active printable packet comparison for contents,
           itinerary execution, confirmation readiness, and personal place context
+        src/workspace-command-bar/  Active command-bar comparison for pane visibility,
+          local hide, and maximize/restore control hierarchy
+        src/trip-snapshot/  Active whole-trip snapshot comparison; distinct from the
+          decided day-level Narrative Brief experiment
   src/
     main.tsx          React 19 root
     analytics.ts      Production-only, consent-gated GA4 loader and bounded events

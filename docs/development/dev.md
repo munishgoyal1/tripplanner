@@ -66,6 +66,10 @@ each entrypoint (`web/app.py`, `api.py`, `cli.py`).
 ### Stream 1 — App log (sanitized, public-readable)
 
 - **Local dev**: human-friendly text on stdout (`HH:MM:SS LEVEL logger: msg`).
+- **Local diagnostics**: rotating PII-safe JSON at the primary checkout's
+  `logs/diagnostics/local-app.jsonl` (5 MB plus two backups). Git worktrees use
+  this same shared path, so any VS Code instance can run
+  `.\scripts\analyze-errors.ps1 -Environment local -Hours 24`.
 - **Hosted (Container Apps)**: one-line JSON to stdout, auto-shipped to the
   Log Analytics workspace provisioned by `infra/main.bicep`.
 - **What's sanitized before anything is written**:
@@ -144,6 +148,7 @@ ORDER BY c.ts DESC
 |---|---|---|
 | `LOG_LEVEL` | `INFO` | Standard Python log level. |
 | `LOG_JSON` | unset locally / `1` in Bicep | Emit JSON instead of text on stdout. |
+| `APP_LOG_PATH` | primary checkout `logs/diagnostics/local-app.jsonl` | Override the rotating PII-safe local JSON path. |
 | `AUDIT_USER_MESSAGES` | unset (off) | When `1`, persist raw message bodies to the audit sink. **Opt-in.** |
 
 Bicep exposes `auditUserMessages` (default `false`) so the same opt-in is
@@ -168,10 +173,10 @@ visible at deploy time.
 
 ## How the agent debugs without screenshots
 
-The dev-server terminal captures every Python stack trace. The agent reads it
-directly from the terminal output, so you usually **don't** need to screenshot
-errors. Just tell the agent "saving failed" or "got an error on /profile" and
-it will pull the trace from the terminal.
+The shared local JSON log retains sanitized failures independently of the VS Code
+window that started the stack. Tell the agent "saving failed" or "got an error on
+/profile" and it can run the analyzer or inspect the surrounding JSONL records
+without relying on one terminal's scrollback.
 
 You only need screenshots for:
 

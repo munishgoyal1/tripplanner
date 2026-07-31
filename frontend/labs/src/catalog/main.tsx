@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  FlaskConical,
-} from "lucide-react";
+import { FlaskConical } from "lucide-react";
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabRecordCard } from "../shared/LabRecordCard";

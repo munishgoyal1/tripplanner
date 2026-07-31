@@ -12,6 +12,24 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
+    title: "Workspace command bar controls",
+    description: "Compare direct pane toggles, a segmented view group, and a compact Layout popover with local Hide and Maximize controls.",
+    date: "31 Jul 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Segmented view group.",
+    href: "./workspace-command-bar.html",
+    icon: LayoutPanelTop,
+  },
+  {
+    title: "Trip snapshot hierarchy",
+    description: "Compare scan-ledger, decision-brief, and progressive whole-trip summaries above the itinerary agenda.",
+    date: "31 Jul 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Decision brief.",
+    href: "./trip-snapshot.html",
+    icon: ListChecks,
+  },
+  {
     title: "Map command and day context",
     description: "Compare route ribbons, a compact command deck, and a schedule-first map for add-stop, day focus, and route summaries.",
     date: "31 Jul 2026",

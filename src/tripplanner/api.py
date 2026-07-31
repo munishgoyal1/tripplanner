@@ -40,7 +40,7 @@ from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from tripplanner.chat_interactions import extract_input_request
-from tripplanner.observability import app_event, setup_logging
+from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_identity import (
     is_anonymous_id,
     is_hosted,
@@ -329,14 +329,22 @@ def _record_chat_operation(
     transport: Literal["json", "sse"],
     outcome: Literal["completed", "replayed", "capped", "error"],
     error: str | None = None,
+    exception: BaseException | None = None,
 ) -> None:
+    error_name = error or (type(exception).__name__ if exception else None)
+    model_fields = (
+        model_rate_limit_fields(exception, _config.get_settings().azure_openai_deployment)
+        if exception
+        else {}
+    )
     app_event(
         "chat_operation",
         user_id=user_id,
         transport=transport,
         outcome=outcome,
         duration_ms=round((time.monotonic() - started) * 1000, 2),
-        **({"error": error} if error else {}),
+        **({"error": error_name} if error_name else {}),
+        **model_fields,
     )
 
 
@@ -472,7 +480,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             user_id=user_id,
             transport="json",
             outcome="error",
-            error=type(exc).__name__,
+            exception=exc,
         )
         raise
     finally:
@@ -564,6 +572,13 @@ def _auto_persist_itinerary(reply: str) -> None:
         _utp.invoke({"updates_json": json.dumps({"day_wise_itinerary": days})})
     except Exception:
         pass  # best-effort; never crash the response path
+
+
+def _should_auto_persist_itinerary(tool_names_called: set[str]) -> bool:
+    return (
+        "create_trip_plan" in tool_names_called
+        and "update_trip_plan" not in tool_names_called
+    )
 
 
 @app.post("/chat/stream")
@@ -786,7 +801,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 user_id=user_id,
                 transport="sse",
                 outcome="error",
-                error=type(exc).__name__,
+                exception=exc,
             )
             yield _sse("error", {"message": "The assistant hit an error. Please retry."})
             return
@@ -804,7 +819,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         # Safety net: if the agent described a day-wise itinerary but never
         # called update_trip_plan, parse the reply and persist it directly so
         # the Itinerary panel is never left blank.
-        if not req.proposal_only and "update_trip_plan" not in tool_names_called:
+        if not req.proposal_only and _should_auto_persist_itinerary(tool_names_called):
             await asyncio.to_thread(_auto_persist_itinerary, reply)
         try:
             tid_after = await asyncio.to_thread(

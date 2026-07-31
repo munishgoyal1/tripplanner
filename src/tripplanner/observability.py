@@ -133,6 +133,68 @@ def hash_user_id(user_id: str | None) -> str:
     return f"u_{digest[:12]}"
 
 
+def model_rate_limit_fields(error: BaseException, deployment: str) -> dict[str, Any]:
+    """Return a strict whitelist of safe Azure OpenAI 429 metadata."""
+    if type(error).__name__ != "RateLimitError":
+        return {}
+
+    response = getattr(error, "response", None)
+    headers = getattr(response, "headers", {}) or {}
+
+    def header_int(name: str) -> int | None:
+        try:
+            value = headers.get(name)
+            return max(0, int(float(value))) if value is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    remaining_requests = header_int("x-ratelimit-remaining-requests")
+    remaining_tokens = header_int("x-ratelimit-remaining-tokens")
+    retry_after_ms = header_int("retry-after-ms")
+    if retry_after_ms is None:
+        retry_after_seconds = header_int("retry-after")
+        retry_after_ms = retry_after_seconds * 1000 if retry_after_seconds is not None else None
+
+    if remaining_tokens == 0 and remaining_requests == 0:
+        scope = "tokens_and_requests"
+    elif remaining_tokens == 0 or (
+        remaining_tokens is not None
+        and remaining_requests is not None
+        and remaining_requests > 0
+    ):
+        scope = "tokens"
+    elif remaining_requests == 0:
+        scope = "requests"
+    else:
+        scope = "unknown"
+
+    status_code = getattr(error, "status_code", None) or getattr(
+        response, "status_code", None
+    )
+    code = getattr(error, "code", None)
+    safe_code = (
+        str(code)
+        if code is not None and re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", str(code))
+        else None
+    )
+    fields: dict[str, Any] = {
+        "model_provider": "azure_openai",
+        "model_deployment": deployment,
+        "rate_limit_scope": scope,
+    }
+    if isinstance(status_code, int):
+        fields["provider_status"] = status_code
+    if safe_code:
+        fields["provider_error_code"] = safe_code
+    if retry_after_ms is not None:
+        fields["retry_after_ms"] = retry_after_ms
+    if remaining_requests is not None:
+        fields["remaining_requests"] = remaining_requests
+    if remaining_tokens is not None:
+        fields["remaining_tokens"] = remaining_tokens
+    return fields
+
+
 # ---------------------------------------------------------------------------
 # logging.Filter / Formatter
 # ---------------------------------------------------------------------------

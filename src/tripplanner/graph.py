@@ -117,6 +117,11 @@ _COMPLETION_RESEARCH_TOOLS = {
 }
 _MAX_POST_RESEARCH_UPDATES = 2
 _MAX_INITIAL_ITINERARY_UPDATES = 2
+_NEW_TRIP_REQUEST_RE = re.compile(
+    r"\b(?:plan|create|start|build|organize|organise)\b.{0,40}"
+    r"\b(?:trip|vacation|holiday|getaway)\b.{0,24}\b(?:to|in)\b",
+    re.IGNORECASE,
+)
 
 
 def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
@@ -324,6 +329,36 @@ def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
     return "request_trip_input"
 
 
+def _trip_creation_tool_choice(messages: list[BaseMessage]) -> str | None:
+    """Require a fresh plan for an explicit switch away from the active destination."""
+    try:
+        active_trip = load_active_trip_dict() or {}
+    except Exception:
+        return None
+    active_destination = str(active_trip.get("destination") or "").strip()
+    if not active_destination:
+        return None
+
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    if latest_human < 0:
+        return None
+    turn_tools = {
+        name for index, name in _tool_call_positions(messages) if index > latest_human
+    }
+    if "create_trip_plan" in turn_tools:
+        return None
+
+    request = str(messages[latest_human].content or "").strip()
+    if "day trip" in request.lower() or not _NEW_TRIP_REQUEST_RE.search(request):
+        return None
+    if active_destination.lower() in request.lower():
+        return None
+    return "create_trip_plan"
+
+
 def trip_agent(state: AgentState) -> AgentState:
     """The trip planner agent — invokes LLM with tools bound."""
     # parallel_tool_calls=True asks the model to emit independent calls in a
@@ -332,12 +367,15 @@ def trip_agent(state: AgentState) -> AgentState:
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
+    creation_tool = (
+        None if proposal_only else _trip_creation_tool_choice(state["messages"])
+    )
     new_trip_flow = _latest_user_starts_new_trip(
         state["messages"]
     ) or _pending_trip_kickoff_answer(state["messages"])
     hotel_fallback_requirement = (
         None
-        if proposal_only or new_trip_flow
+        if proposal_only or creation_tool or new_trip_flow
         else _trip_hotel_fallback_requirement(state["messages"])
     )
     update_requirement = (
@@ -355,7 +393,9 @@ def trip_agent(state: AgentState) -> AgentState:
         else _trip_kickoff_tool_choice(state["messages"])
     )
     forced_tool = (
-        "search_places_with_reviews"
+        creation_tool
+        if creation_tool
+        else "search_places_with_reviews"
         if hotel_fallback_requirement
         else "update_trip_plan"
         if update_requirement
@@ -374,7 +414,12 @@ def trip_agent(state: AgentState) -> AgentState:
         **({"tool_choice": forced_tool} if forced_tool else {}),
     )
     instructions = [build_trip_system_prompt()]
-    if hotel_fallback_requirement:
+    if creation_tool:
+        instructions.append(SystemMessage(content=(
+            "The user explicitly requested a different whole-trip destination. "
+            "Call create_trip_plan now so the existing active trip is not overwritten."
+        )))
+    elif hotel_fallback_requirement:
         instructions.append(SystemMessage(content=(
             hotel_fallback_requirement
             + " Call search_places_with_reviews before writing any final response."

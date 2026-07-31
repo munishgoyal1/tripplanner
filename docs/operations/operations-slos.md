@@ -33,8 +33,10 @@ do not create a user-facing outage just to test alerting.
 ## Local and canary analysis
 
 Local FastAPI startup retains a rotating, PII-redacted JSON stream at
-`logs/diagnostics/local-app.jsonl` while leaving console output human-readable.
-Analyze it after a development session or from a daily Windows scheduled task:
+the primary Git checkout's `logs/diagnostics/local-app.jsonl` while leaving
+console output human-readable. Primary and worker VS Code windows resolve the
+same path through Git's common directory. Analyze it after a development session
+or from a daily Windows scheduled task:
 
 ```powershell
 .\scripts\analyze-errors.ps1 -Environment local -Hours 24
@@ -64,6 +66,11 @@ Every terminal `POST /chat` and `POST /chat/stream` path emits one
 - `transport`: `json` or `sse`.
 - `error`: exception class for failures, never the exception message.
 - `user`: a stable one-way hash, never the raw principal.
+
+Final Azure OpenAI `RateLimitError` records also include only safe provider
+metadata: deployment, HTTP status, inferred token/request scope, retry delay,
+and remaining token/request headers when Azure returns them. Response bodies,
+prompts, credentials, and user text are never included.
 
 `completed` and `replayed` are successful service outcomes. `capped` is an
 intentional product-policy outcome and is excluded from the reliability

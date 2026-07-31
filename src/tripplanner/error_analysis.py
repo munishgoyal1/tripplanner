@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import subprocess
 from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -20,6 +21,31 @@ class Failure:
     signature: str
 
 
+def shared_diagnostics_dir(repo_root: Path) -> Path:
+    """Return the primary checkout's diagnostics directory for any worktree."""
+    root = repo_root.resolve()
+    try:
+        completed = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "rev-parse",
+                "--path-format=absolute",
+                "--git-common-dir",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        common_dir = Path(completed.stdout.strip())
+        if common_dir.name.lower() == ".git":
+            root = common_dir.parent
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return root / "logs" / "diagnostics"
+
+
 def classify_event(event: dict[str, Any]) -> Failure | None:
     normalized = {str(key).lower(): value for key, value in event.items()}
     event_kind = str(normalized.get("event_kind") or normalized.get("eventkind") or "")
@@ -32,7 +58,11 @@ def classify_event(event: dict[str, Any]) -> Failure | None:
     timestamp = str(normalized.get("ts") or normalized.get("timestamp") or "unknown")
 
     if event_kind == "chat_operation" and outcome == "error":
-        return Failure(timestamp, "chat", f"chat:{error_type or 'unknown'}")
+        signature = f"chat:{error_type or 'unknown'}"
+        rate_limit_scope = _safe_label(normalized.get("rate_limit_scope"))
+        if error_type == "RateLimitError" and rate_limit_scope:
+            signature += f":{rate_limit_scope}"
+        return Failure(timestamp, "chat", signature)
     if event_kind == "tool_call" and status == "error":
         return Failure(timestamp, "tool", f"tool:{tool or 'unknown'}:{error_type or 'unknown'}")
     if level in {"ERROR", "CRITICAL"}:
@@ -102,6 +132,11 @@ def render_report(
         if "chat" in categories:
             lines.append(
                 "- Compare chat failure classes with admission, model, and persistence events."
+            )
+        if any("RateLimitError" in record.signature for record in records):
+            lines.append(
+                "- Compare the recorded rate-limit scope and deployment with Azure OpenAI "
+                "TPM/RPM metrics for the same minute."
             )
         if "tool" in categories:
             lines.append(
