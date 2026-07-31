@@ -146,6 +146,10 @@ frontend/
           implemented Compact Agenda while evaluating refinements
         src/itinerary-trip-book/  Active printable packet comparison for contents,
           itinerary execution, confirmation readiness, and personal place context
+        src/workspace-command-bar/  Active command-bar comparison for pane visibility,
+          local hide, and maximize/restore control hierarchy
+        src/trip-snapshot/  Active whole-trip snapshot comparison; distinct from the
+          decided day-level Narrative Brief experiment
   src/
     main.tsx          React 19 root
     analytics.ts      Production-only, consent-gated GA4 loader and bounded events

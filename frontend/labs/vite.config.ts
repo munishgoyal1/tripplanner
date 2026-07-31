@@ -28,6 +28,8 @@ export default defineConfig({
         itineraryInformation: resolve(__dirname, "itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
         itineraryTripBook: resolve(__dirname, "itinerary-trip-book.html"),
+        tripSnapshot: resolve(__dirname, "trip-snapshot.html"),
+        workspaceCommandBar: resolve(__dirname, "workspace-command-bar.html"),
         workspaceShell: resolve(__dirname, "workspace-shell.html"),
       },
     },

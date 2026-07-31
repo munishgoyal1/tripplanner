@@ -2932,3 +2932,12 @@ VALIDATION:
   active request so the owner can identify it while switching among VS Code windows.
 - Rename the chat before substantive work and update it when the primary task changes.
 - Apply the convention in the primary workspace and every worker VS Code instance.
+
+=== 2026-07-31 — Command bar and Trip Snapshot UX Labs ===
+
+- Create isolated interactive Labs for the workspace command bar, including pane
+  show/hide and pane-local maximize/restore control hierarchy.
+- Create a separate whole-trip Trip Snapshot Lab for the summary band above the
+  itinerary; do not conflate it with the decided day-level Narrative Brief.
+- Compare three realistic alternatives on each surface and capture the owner's
+  selection without changing production behavior until a direction is accepted.
