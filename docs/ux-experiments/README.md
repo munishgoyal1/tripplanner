@@ -7,15 +7,18 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 `http://127.0.0.1:5175/catalog.html` to access every standalone experiment.
 For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
-workspace has two durable linked pages:
+workspace has three durable catalog views:
 
-- `catalog.html` contains active choices still being evaluated or paired.
+- `catalog.html` is All Labs: active, parked, and completed experiments.
+- `catalog.html?view=active` contains choices still being evaluated or ready
+  for implementation.
 - `completed-labs.html` preserves completed experiments, their original Lab
   links, and the selected outcome.
 
 Do not delete a Lab after a decision. Move its shared record from `activeLabs`
 to `completedLabs`, retain the page, and update its experiment document with the
-final choice and date. Every standalone Lab links directly to both indexes.
+final choice and date. Every standalone Lab has one explicit Back to All Labs link;
+catalog filters appear only on catalog pages.
 Historical experiments that predate Lab pages may remain read-only detail records
 reconstructed from their preserved source material.
 
@@ -90,12 +93,18 @@ recommended starting point; no production Map change is approved. See
 [`MAP_PANEL_CONTROLS.md`](MAP_PANEL_CONTROLS.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one
-option, add modifications or implementation instructions, and save it. The local
+option, record modifications, additional inputs, details to preserve, and
+implementation or validation instructions, then choose its next step. The local
 Vite server writes all handoffs to the ignored worktree file
 `docs/ux-experiments/LAB_SELECTIONS.local.json`, which a coding agent can read
 when the owner later says to pick and execute the saved preferences. Saving a
 handoff does not change production UI and is not implementation approval by
 itself; the owner's later execution instruction remains the approval boundary.
+**Save for implementation** keeps the Lab in progress and marks the complete
+handoff ready. **Park for later** preserves the option and notes, removes the Lab
+from In progress, and lists it under Parked on All Labs. **Discard Lab** removes
+the Lab from catalogs and deletes its option, notes, and browser draft; only a
+minimal discarded marker remains so it stays hidden.
 The page also keeps each in-progress choice and comment as a browser draft. If
 the local endpoint is temporarily unavailable, the draft survives a reload and
 can be retried once the Labs server is running again.
@@ -116,14 +125,14 @@ scope until a direction is selected and separately approved. See
 1. Keep each experiment isolated to UI layout/interaction files only.
 2. Timebox each experiment to 1-2 sessions.
 3. Use the scorecard template for decision-making.
-4. End each experiment with a recorded decision and move its shared record from
+4. End each implemented experiment with a recorded decision and move its shared record from
   the active catalog to the completed page; preserve its Lab page as design history.
-5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute saved lab
-  preferences; implement the selected option together with its comments.
+5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute a `ready`
+  handoff; implement the selected option together with all handoff notes.
   Provisional language such as "try" or "see first" means extend or run the Lab
   preview, not production implementation approval. Do not add production code or
   production tests merely to evaluate an option.
-6. Every standalone Lab page links directly to the active and completed indexes.
+6. Every standalone Lab page links directly back to All Labs.
 7. Every option can be experienced at realistic production scale before selection;
   keep that preview inside the Lab until the owner explicitly approves production.
 

@@ -1,4 +1,4 @@
-import { Check, Save } from "lucide-react";
+import { Archive, Check, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface DecisionOption {
@@ -9,8 +9,11 @@ interface DecisionOption {
 interface SavedSelection {
   selection: string;
   comment: string;
+  disposition?: LabDisposition;
   updatedAt?: string;
 }
+
+type LabDisposition = "ready" | "parked" | "discarded";
 
 interface DecisionCaptureProps {
   labId: string;
@@ -24,6 +27,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
   const draftKey = `tripplanner-ux-lab-handoff-${labId}`;
   const [comment, setComment] = useState("");
   const [saved, setSaved] = useState<SavedSelection | null>(null);
+  const [disposition, setDisposition] = useState<LabDisposition>("ready");
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "offline">("loading");
 
   useEffect(() => {
@@ -32,6 +36,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       localDraft = JSON.parse(localStorage.getItem(draftKey) || "null") as SavedSelection | null;
       if (localDraft) {
         setComment(localDraft.comment || "");
+        setDisposition(localDraft.disposition || "ready");
         onChoose(localDraft.selection);
       }
     } catch {
@@ -51,8 +56,9 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           : Boolean(localDraft && !existing);
         if (existing && !localIsNewer) {
           setComment(existing.comment || "");
+          setDisposition(existing.disposition || "ready");
           setSaved(existing);
-          onChoose(existing.selection);
+          if (existing.selection) onChoose(existing.selection);
         }
         setStatus("idle");
       })
@@ -63,10 +69,10 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
   }, [draftKey, labId, onChoose]);
 
   const selectedLabel = options.find((option) => option.id === activeOption)?.label || activeOption;
-  const dirty = saved?.selection !== activeOption || saved?.comment !== comment;
+  const dirty = saved?.selection !== activeOption || saved?.comment !== comment || saved?.disposition !== disposition;
 
-  const keepDraft = (selection: string, nextComment: string) => {
-    localStorage.setItem(draftKey, JSON.stringify({ selection, comment: nextComment, updatedAt: new Date().toISOString() }));
+  const keepDraft = (selection: string, nextComment: string, nextDisposition = disposition) => {
+    localStorage.setItem(draftKey, JSON.stringify({ selection, comment: nextComment, disposition: nextDisposition, updatedAt: new Date().toISOString() }));
   };
 
   const choose = (optionId: string) => {
@@ -79,17 +85,26 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
     keepDraft(activeOption, nextComment);
   };
 
-  const save = async () => {
-    keepDraft(activeOption, comment);
+  const save = async (nextDisposition: LabDisposition) => {
+    if (nextDisposition === "discarded" && !confirm("Discard this Lab completely? It will be removed from Lab catalogs and its chosen option and handoff notes will be deleted.")) return;
+    setDisposition(nextDisposition);
+    keepDraft(activeOption, comment, nextDisposition);
     setStatus("saving");
     try {
       const response = await fetch("/__labs/selections", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ labId, labTitle, selection: activeOption, selectionLabel: selectedLabel, comment }),
+        body: JSON.stringify(nextDisposition === "discarded"
+          ? { labId, labTitle, disposition: nextDisposition }
+          : { labId, labTitle, selection: activeOption, selectionLabel: selectedLabel, comment, disposition: nextDisposition }),
       });
       if (!response.ok) throw new Error("Unable to save selection");
-      setSaved({ selection: activeOption, comment });
+      if (nextDisposition === "discarded") {
+        localStorage.removeItem(draftKey);
+        setSaved({ selection: "", comment: "", disposition: nextDisposition });
+      } else {
+        setSaved({ selection: activeOption, comment, disposition: nextDisposition });
+      }
       setStatus("saved");
     } catch {
       setStatus("offline");
@@ -101,8 +116,8 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-bold uppercase text-brand">Your handoff</p>
-          <h2 id={`${labId}-decision-title`} className="mt-0.5 text-base font-semibold text-ink">Select a direction and leave instructions</h2>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">Saved to a local workspace file that Copilot can read when you say “pick and execute.”</p>
+          <h2 id={`${labId}-decision-title`} className="mt-0.5 text-base font-semibold text-ink">Choose a direction and set its next step</h2>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">The chosen option, handoff notes, and Lab status stay together in the workspace record.</p>
         </div>
         {saved && !dirty && (
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase text-emerald-700 ring-1 ring-emerald-200"><Check size={11} aria-hidden /> Saved</span>
@@ -121,18 +136,24 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         </div>
       </fieldset>
 
-      <label className="mt-4 block text-xs font-semibold text-slate-700" htmlFor={`${labId}-comment`}>Modifications and implementation instructions</label>
-      <textarea id={`${labId}-comment`} value={comment} onChange={(event) => updateComment(event.target.value)} rows={4} placeholder="What should change in this option? Mention anything to keep, remove, combine, or test." className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40" />
+      <label className="mt-4 block text-xs font-semibold text-slate-700" htmlFor={`${labId}-comment`}>Handoff notes</label>
+      <textarea id={`${labId}-comment`} value={comment} onChange={(event) => updateComment(event.target.value)} rows={5} placeholder="Describe modifications, additional inputs, details to preserve, and implementation or validation instructions for this option." className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40" />
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className={`text-xs ${status === "offline" ? "text-amber-700" : "text-slate-400"}`}>
           {status === "loading" && "Loading saved handoff…"}
           {status === "saving" && "Saving handoff…"}
-          {status === "saved" && "Handoff saved. You can now ask Copilot to pick and execute it."}
+          {status === "saved" && disposition === "ready" && "Ready handoff saved for implementation."}
+          {status === "saved" && disposition === "parked" && "Lab parked with its chosen option and notes."}
+          {status === "saved" && disposition === "discarded" && "Lab discarded; its option and handoff notes were deleted."}
           {status === "offline" && "Draft kept in this browser. Restart the Labs server, then retry Save handoff."}
           {status === "idle" && (dirty ? "Workspace save pending; browser draft kept" : saved ? "Saved in this workspace" : "Nothing saved yet")}
         </p>
-        <button type="button" onClick={save} disabled={status === "saving" || !dirty} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> Save handoff</button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => save("discarded")} disabled={status === "saving"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-rose-700 ring-1 ring-rose-200 hover:bg-rose-50 disabled:opacity-50"><Trash2 size={13} aria-hidden /> Discard Lab</button>
+          <button type="button" onClick={() => save("parked")} disabled={status === "saving"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-amber-800 ring-1 ring-amber-200 hover:bg-amber-50 disabled:opacity-50"><Archive size={13} aria-hidden /> Park for later</button>
+          <button type="button" onClick={() => save("ready")} disabled={status === "saving" || !dirty && disposition === "ready"} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> Save for implementation</button>
+        </div>
       </div>
     </section>
   );

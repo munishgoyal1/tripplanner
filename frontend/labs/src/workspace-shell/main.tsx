@@ -125,7 +125,7 @@ function HistoricalLab() {
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_20rem)] px-4 py-7 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="border-b border-slate-200 pb-5">
-          <LabNavigation current="completed" />
+          <LabNavigation detail />
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <p className="text-xs font-bold uppercase text-emerald-700">Historical decision record</p>
             <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-700 ring-1 ring-emerald-200">Decided 23 Jul 2026</span>

@@ -11,6 +11,7 @@ interface LabSelection {
   selection: string;
   selectionLabel: string;
   comment: string;
+  disposition?: "ready" | "parked" | "discarded";
   updatedAt: string;
 }
 
@@ -56,13 +57,27 @@ export function labFeedbackPlugin(): Plugin {
             chunks.push(buffer);
           }
           const selection = JSON.parse(Buffer.concat(chunks).toString("utf8")) as LabSelection;
-          if (!selection.labId || !selection.labTitle || !selection.selection || !selection.selectionLabel) {
+          if (!selection.labId || !selection.labTitle || selection.disposition !== "discarded" && (!selection.selection || !selection.selectionLabel)) {
             sendJson(response, 400, { error: "Incomplete lab selection" });
+            return;
+          }
+          if (selection.disposition && !["ready", "parked", "discarded"].includes(selection.disposition)) {
+            sendJson(response, 400, { error: "Invalid lab disposition" });
             return;
           }
 
           const selections = await readSelections();
-          selections[selection.labId] = { ...selection, updatedAt: new Date().toISOString() };
+          selections[selection.labId] = selection.disposition === "discarded"
+            ? {
+                labId: selection.labId,
+                labTitle: selection.labTitle,
+                selection: "",
+                selectionLabel: "",
+                comment: "",
+                disposition: "discarded",
+                updatedAt: new Date().toISOString(),
+              }
+            : { ...selection, updatedAt: new Date().toISOString() };
           await mkdir(dirname(feedbackPath), { recursive: true });
           await writeFile(feedbackPath, `${JSON.stringify(selections, null, 2)}\n`, "utf8");
           sendJson(response, 200, selections[selection.labId]);

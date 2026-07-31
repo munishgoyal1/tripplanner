@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { Archive, FlaskConical } from "lucide-react";
 import "../../../src/index.css";
@@ -8,6 +8,19 @@ import { activeLabs, completedLabs } from "../shared/labRecords";
 
 function LabCatalog() {
   const activeOnly = new URLSearchParams(window.location.search).get("view") === "active";
+  const [dispositions, setDispositions] = useState<Record<string, "ready" | "parked" | "discarded">>({});
+
+  useEffect(() => {
+    fetch("/__labs/selections")
+      .then((response) => response.ok ? response.json() : {})
+      .then((selections: Record<string, { disposition?: "ready" | "parked" | "discarded" }>) => {
+        setDispositions(Object.fromEntries(Object.entries(selections).flatMap(([id, value]) => value.disposition ? [[id, value.disposition]] : [])));
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const visibleLabs = activeLabs.filter((lab) => dispositions[lab.id] !== "parked" && dispositions[lab.id] !== "discarded");
+  const parkedLabs = activeLabs.filter((lab) => dispositions[lab.id] === "parked");
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_20rem)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -26,14 +39,24 @@ function LabCatalog() {
               <p className="text-[10px] font-bold uppercase text-brand">In evaluation</p>
               <h2 id="active-labs" className="mt-0.5 text-lg font-semibold text-ink">Active experiments</h2>
             </div>
-            <span className="text-xs text-slate-400">{activeLabs.length} open</span>
+            <span className="text-xs text-slate-400">{visibleLabs.length} open</span>
           </div>
           <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
-            {activeLabs.map((lab, index) => <LabRecordCard key={lab.title} lab={lab} index={index + 1} compact />)}
+            {visibleLabs.map((lab, index) => <LabRecordCard key={lab.id} lab={lab} index={index + 1} compact state={dispositions[lab.id] === "ready" ? "ready" : undefined} />)}
           </div>
         </section>
 
         {!activeOnly && (
+          <>
+          {parkedLabs.length > 0 && <section className="mt-10" aria-labelledby="parked-labs-title">
+            <div className="flex items-end justify-between gap-4">
+              <div><p className="text-[10px] font-bold uppercase text-amber-700">Saved for later</p><h2 id="parked-labs-title" className="mt-0.5 text-lg font-semibold text-ink">Parked experiments</h2></div>
+              <span className="text-xs text-slate-400">{parkedLabs.length} parked</span>
+            </div>
+            <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
+              {parkedLabs.map((lab, index) => <LabRecordCard key={lab.id} lab={lab} index={index + 1} compact state="parked" />)}
+            </div>
+          </section>}
           <section className="mt-10" aria-labelledby="completed-labs-title">
             <div className="flex items-end justify-between gap-4">
               <div>
@@ -43,9 +66,10 @@ function LabCatalog() {
               <a href="./completed-labs.html" className="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Open archive</a>
             </div>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              {completedLabs.map((lab) => <LabRecordCard key={lab.title} lab={lab} completed />)}
+              {completedLabs.map((lab) => <LabRecordCard key={lab.id} lab={lab} completed />)}
             </div>
           </section>
+          </>
         )}
       </div>
     </main>

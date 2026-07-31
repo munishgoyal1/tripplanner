@@ -201,7 +201,7 @@ function Lab() {
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-3"><LabNavigation current="completed" /></div>
+            <div className="mb-3"><LabNavigation detail /></div>
             <p className="text-xs font-bold uppercase text-brand">Internal · Itinerary summary experiment</p>
             <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose the shape of the Narrative Brief</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">All three options keep narrative B's day-purpose-first direction above Compact Agenda. Compare how much space the story deserves and how logistics should support it.</p>

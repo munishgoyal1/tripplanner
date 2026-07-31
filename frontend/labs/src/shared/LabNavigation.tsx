@@ -1,8 +1,18 @@
-import { Archive, FlaskConical, ListChecks } from "lucide-react";
+import { Archive, ArrowLeft, FlaskConical, ListChecks } from "lucide-react";
 
 type LabSection = "catalog" | "active" | "completed";
 
-export function LabNavigation({ current = "active" }: { current?: LabSection }) {
+export function LabNavigation({ current = "active", detail = false }: { current?: LabSection; detail?: boolean }) {
+  if (detail) {
+    return (
+      <nav aria-label="Lab navigation">
+        <a href="./catalog.html" className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-white px-2.5 text-xs font-semibold text-slate-600 shadow-card ring-1 ring-slate-200 transition hover:text-brand hover:ring-brand/30">
+          <ArrowLeft size={13} aria-hidden /> Back to All Labs
+        </a>
+      </nav>
+    );
+  }
+
   const links = [
     { id: "catalog", label: "All labs", href: "./catalog.html", icon: FlaskConical },
     { id: "active", label: "In progress", href: "./catalog.html?view=active", icon: ListChecks },

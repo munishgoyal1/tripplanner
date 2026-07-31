@@ -302,7 +302,7 @@ function ChatAssistantLab() {
             <h1 className="display mt-2 text-3xl font-semibold text-ink">Assistant overlap after planning</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare three minimally intrusive ways to slide Assistant in for prompts and return visual priority to Itinerary, Map, and Details afterward. Build the brief, collapse it, reopen it, and inspect the same live workspace in every option.</p>
           </div>
-          <LabNavigation current="active" />
+          <LabNavigation detail />
         </header>
 
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Assistant layout variants">

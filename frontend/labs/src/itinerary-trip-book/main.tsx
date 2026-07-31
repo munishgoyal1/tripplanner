@@ -228,7 +228,7 @@ function App() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#fff7ed_0,transparent_30%),linear-gradient(180deg,#f8fafc_0,#e2e8f0_100%)] px-4 py-7 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <LabNavigation current="active" />
+        <LabNavigation detail />
         <div className="mt-4 flex flex-col gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div><p className="text-[10px] font-bold uppercase text-brand">Active itinerary experiment</p><h1 className="display mt-1 text-3xl font-semibold text-ink sm:text-4xl">Execution-ready Trip Book</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how one complete, printable trip can stay concise enough to use on the move while carrying every booking, entry document, and evidence-backed family insight.</p></div>
           <div className="flex items-center gap-2 text-xs text-slate-500"><FileText size={15} /><strong className="text-ink">{activeVariant.pages} pages</strong><span>· A4 + phone PDF</span></div>

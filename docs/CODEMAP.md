@@ -143,9 +143,11 @@ frontend/
                       `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
                       written to the ignored
                           docs/ux-experiments/LAB_SELECTIONS.local.json. `catalog.html`
-                          owns the combined index and distinct `?view=active` list,
-                          `completed-labs.html` preserves decisions, and shared
-                          navigation connects every Lab page.
+                          owns the combined active/parked/completed index and distinct
+                          `?view=active` list; `completed-labs.html` preserves decisions.
+                          Individual pages return directly to All Labs. Shared
+                          `DecisionCapture` persists ready, parked, or discarded
+                          lifecycle plus chosen-option implementation notes.
                     src/map-controls/ Active production-scale comparison for Map day/all-days
                       scope, Add stop hierarchy, and schedule versus route evidence
     src/itinerary-density/  Active 320px day-density comparison; preserves the

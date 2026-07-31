@@ -2995,3 +2995,14 @@ VALIDATION:
 - Make All labs and In progress distinct navigation destinations. The combined
   index shows active and completed work; the active view concisely distinguishes
   all six open experiments with numbering and category labels.
+
+=== 2026-07-31 — Lab navigation and lifecycle handoffs ===
+
+- Keep All Labs, In progress, and Completed as catalog-only navigation. Every
+  individual Lab must instead provide one explicit Back to All Labs action.
+- A Lab handoff binds the selected option to modifications, additional inputs,
+  details to preserve, and implementation or validation instructions. Coding
+  agents use the complete handoff when the owner later approves implementation.
+- Support three next steps: ready for implementation; parked for later with the
+  option and notes preserved; or discarded from catalogs with option, notes, and
+  browser draft deleted. Parked Labs remain visible only in All Labs.

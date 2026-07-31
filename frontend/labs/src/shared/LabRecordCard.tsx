@@ -6,11 +6,13 @@ export function LabRecordCard({
   completed = false,
   index,
   compact = false,
+  state,
 }: {
   lab: LabRecord;
   completed?: boolean;
   index?: number;
   compact?: boolean;
+  state?: "ready" | "parked";
 }) {
   const Icon = lab.icon;
   if (compact) {
@@ -18,7 +20,10 @@ export function LabRecordCard({
       <a href={lab.href} className="group grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 bg-white px-3 py-3 transition last:border-b-0 hover:bg-slate-50">
         <span className="text-center font-mono text-sm font-semibold text-slate-300 group-hover:text-brand">{String(index ?? 0).padStart(2, "0")}</span>
         <span className="min-w-0">
-          <span className="block text-[10px] font-bold uppercase text-brand">{lab.category}</span>
+          <span className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase text-brand">
+            {lab.category}
+            {state && <span className={state === "parked" ? "text-amber-700" : "text-emerald-700"}>{state === "parked" ? "Parked" : "Ready to implement"}</span>}
+          </span>
           <span className="mt-0.5 block text-sm font-semibold text-ink">{lab.title}</span>
           <span className="mt-0.5 block text-xs text-slate-500">{lab.description}</span>
         </span>

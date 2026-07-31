@@ -312,7 +312,7 @@ function Lab() {
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="border-b border-slate-200 pb-5">
-          <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> UX Labs</a>
+          <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a>
           <p className="mt-4 text-xs font-bold uppercase text-brand">Active experiment · Workspace toolbar</p>
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Command bar and pane controls</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">The standard term for the top row is <strong className="font-semibold text-ink">workspace command bar</strong>. Compare how it should expose pane visibility while Hide and Maximize remain predictable local actions in every pane header.</p>

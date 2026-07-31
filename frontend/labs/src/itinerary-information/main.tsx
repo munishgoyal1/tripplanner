@@ -385,7 +385,7 @@ function Lab() {
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-4 border-b border-slate-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-3"><LabNavigation current="completed" /></div>
+            <div className="mb-3"><LabNavigation detail /></div>
             <p className="text-xs font-bold uppercase text-brand">Internal · Itinerary UX experiment</p>
             <h1 className="display mt-1 text-3xl font-semibold text-ink">Choose how a travel day should read</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">All variants use the same itinerary facts. Compare hierarchy, transport guidance, weekday visibility, and an explicit booking-state action before changing the product.</p>

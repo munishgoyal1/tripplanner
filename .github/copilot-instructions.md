@@ -158,6 +158,12 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
+- **Navigable Lab lifecycle handoffs**: catalog filters live only on All Labs,
+  In progress, and Completed indexes; each individual experiment has one clear
+  return to All Labs. Active handoffs bind the selected option to owner-authored
+  modifications and implementation inputs, and can be marked ready, parked with
+  that handoff preserved, or discarded with option, notes, and browser draft
+  deleted. Parked Labs leave In progress and remain grouped on All Labs.
 - **Shared local diagnostics + model throttle evidence**: every canonical local
   stack writes rotating PII-safe JSON under the primary Git checkout, so primary
   and worker VS Code windows analyze the same log. Final Azure OpenAI rate-limit
