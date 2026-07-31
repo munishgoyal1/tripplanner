@@ -2884,6 +2884,15 @@ VALIDATION:
 - Because a completed turn may already have changed the trip, edited text is a new
   corrective turn with a fresh request ID; do not imply that transcript history or
   authoritative itinerary side effects were rolled back.
+
+=== 2026-07-30 — Select Option B Assistant focus modal ===
+
+- Replace the Option A trial sidecar with the selected Option B centered focus modal
+  in the main web application while leaving the workspace visible but inactive.
+- Preserve the mounted Assistant and its conversation state when closed. Support an
+  explicit close action, Escape, and reopening from the command bar.
+- Keep the preference-aware structured kickoff and modern Stop, Copy, and edit-as-new-
+  turn controls unchanged. This implementation does not authorize an Azure deployment.
 === 2026-07-30 — Weather-aware itinerary summaries ===
 
 - Persist weather for the travel dates and show a condition icon with concise

@@ -78,16 +78,15 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Weather must identify live forecasts versus seasonal/monthly estimates, and
   every itinerary day with weather evidence shows its condition and temperature.
   Its saved-trip menu must overlay
-  every planner pane. Itinerary, Map, Details, and Assistant have obvious,
-  symmetric show/hide controls. Details and Assistant are independent sections
-  in the right dock: either can fill it while the other is hidden, and both stay
-  mounted so their state survives. Only panes scroll; the page never does.
+  every planner pane. Itinerary, Map, Details, and Assistant have obvious
+  show/hide controls. Assistant opens in a centered focus modal over the visible
+  but inactive workspace and stays mounted while hidden so its conversation state
+  survives. Only panes scroll; the page never does.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
-  sizes persist locally. The Assistant currently opens as a wide right-edge
-  sidecar over the workspace, leaving Itinerary and Map visible and usable;
-  Details remains an independent dock. Itinerary, Map, Details, and Assistant
-  can each be maximized and restored. On narrower desktops
+  sizes persist locally. The Assistant closes explicitly or with Escape and
+  reopens from the command bar; Details remains an independent dock. Itinerary,
+  Map, and Details can each be maximized and restored. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
   trip-details sheet.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
@@ -128,9 +127,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   single compact review after preferences load and before plan creation; direct
   mode proceeds without follow-up questions after submit or skip. Structured prompts
   prefill every field and offer one build/continue action plus a default skip path.
-  The Option A sidecar and structured controls are implemented in the main web app
-  for local evaluation; no hosted deployment or final design acceptance is implied
-  until the owner confirms the direction after testing.
+  The selected Option B focus modal and structured controls are implemented in
+  the main web app. No hosted deployment is implied.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps
   handoff before the stop details.

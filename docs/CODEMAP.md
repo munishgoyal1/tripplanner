@@ -149,9 +149,10 @@ frontend/
     analytics.ts      Production-only, consent-gated GA4 loader and bounded events
         App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-          Details dock, and an independently mounted right-edge Assistant
-          sidecar that overlays rather than resizes the usable workspace; no
-          page scroll. Top command/status bar owns saved-trip selection,
+          Details dock, and an independently mounted centered Assistant focus
+          modal over the visible but inactive workspace; no page scroll. The modal
+          closes explicitly or with Escape and reopens without losing chat state.
+          Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
         live here too. Shared place/day focus synchronizes itinerary, map,
