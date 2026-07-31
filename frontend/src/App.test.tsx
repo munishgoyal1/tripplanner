@@ -286,25 +286,25 @@ describe("App responsive workspace", () => {
     expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
 
-  it("hides Details and Assistant independently while keeping both mounted", async () => {
+  it("closes Details and Assistant independently while keeping both mounted", async () => {
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
-    expect(screen.getByTestId("assistant-sidecar")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByTestId("assistant-sidecar")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Close Assistant" })[1]);
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
-  it("maximizes and restores Details and Assistant independently", async () => {
+  it("maximizes and restores Details independently", async () => {
     setDesktop(true);
     render(<App />);
 
@@ -312,35 +312,35 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Maximize Details" }));
     expect(screen.getByRole("button", { name: "Restore Details" })).toBeInTheDocument();
     expect(screen.getByTestId("map-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
 
     fireEvent.click(screen.getByRole("button", { name: "Restore Details" }));
-    fireEvent.click(screen.getByRole("button", { name: "Maximize Assistant" }));
-    expect(screen.getByRole("button", { name: "Restore Assistant" })).toBeInTheDocument();
-    expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("inset-2");
+    expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
-  it("opens Assistant as an independent desktop sidecar over the usable workspace", async () => {
+  it("opens Assistant as a centered focus modal over the unchanged workspace", async () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByTestId("assistant-sidecar")).toBeInTheDocument());
-    expect(screen.getByTestId("assistant-sidecar")).toHaveClass("w-[min(42rem,52vw)]");
+    await waitFor(() => expect(screen.getByTestId("assistant-modal")).toBeInTheDocument());
+    expect(screen.getByTestId("assistant-modal")).toHaveClass("w-[calc(100vw-4rem)]", "max-w-[64rem]");
+    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("grid");
     expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });
 
-  it("orders Assistant controls as Hide then Maximize", async () => {
+  it("closes and reopens Assistant from the command bar without unmounting chat", async () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Hide Assistant" })).toBeInTheDocument());
-    const hide = screen.getByRole("button", { name: "Hide Assistant" });
-    const maximize = screen.getByRole("button", { name: "Maximize Assistant" });
-    expect(hide.parentElement).toBe(maximize.parentElement);
-    expect(hide.compareDocumentPosition(maximize) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId("assistant-modal")).toBeInTheDocument());
+    fireEvent.click(screen.getAllByRole("button", { name: "Close Assistant" })[1]);
+    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("hidden");
+    expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
+    fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
+    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("grid");
+    expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
   });
 
   it("does not reload itinerary data for focus-only navigation", async () => {
@@ -515,7 +515,7 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
-    expect(screen.getByTestId("assistant-sidecar")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });

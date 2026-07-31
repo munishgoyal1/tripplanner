@@ -24,6 +24,15 @@ interface LabRecord {
 
 const activeLabs: LabRecord[] = [
   {
+    title: "Workspace visual refresh",
+    description: "Compare semantic icon-and-text, compact icon, and text-led controls inside a realistic full planner shell.",
+    date: "30 Jul 2026",
+    status: "In evaluation",
+    decision: "Open · Production control styling remains unchanged until selection.",
+    href: "./shell-visual-refresh.html",
+    icon: LayoutPanelTop,
+  },
+  {
     title: "Execution-ready Trip Book",
     description: "Compare compact, layered, and visual structures for one printable itinerary with confirmations and personal context.",
     date: "30 Jul 2026",
@@ -31,15 +40,6 @@ const activeLabs: LabRecord[] = [
     decision: "Open · Recommended starting point: B · Layered Trip Book.",
     href: "./itinerary-trip-book.html",
     icon: BookOpen,
-  },
-  {
-    title: "Assistant-led trip kickoff",
-    description: "Compare a docked sidecar, centered focus modal, and full guided takeover using the same pre-filled trip brief.",
-    date: "30 Jul 2026",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: B · Focus modal.",
-    href: "./chat-assistant.html",
-    icon: MessageCircle,
   },
   {
     title: "Compact itinerary density",
@@ -53,6 +53,15 @@ const activeLabs: LabRecord[] = [
 ];
 
 const decidedLabs: LabRecord[] = [
+  {
+    title: "Assistant-led trip kickoff",
+    description: "Compared a docked sidecar, centered focus modal, and full guided takeover using the same pre-filled trip brief.",
+    date: "30 Jul 2026",
+    status: "Implemented",
+    decision: "B · Focus modal, preserving the mounted conversation and unchanged workspace.",
+    href: "./chat-assistant.html",
+    icon: MessageCircle,
+  },
   {
     title: "Itinerary row design",
     description: "Compare Journey Timeline, Compact Agenda, and Guided Place Cards for each scheduled stop.",

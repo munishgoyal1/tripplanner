@@ -6,6 +6,9 @@ import { labFeedbackPlugin } from "./feedback-plugin";
 export default defineConfig({
   root: __dirname,
   plugins: [react(), labFeedbackPlugin()],
+  css: {
+    postcss: __dirname,
+  },
   server: {
     host: "127.0.0.1",
     port: Number(process.env.VITE_LABS_PORT || 5175),
@@ -28,6 +31,7 @@ export default defineConfig({
         itineraryInformation: resolve(__dirname, "itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
         itineraryTripBook: resolve(__dirname, "itinerary-trip-book.html"),
+        shellVisualRefresh: resolve(__dirname, "shell-visual-refresh.html"),
         workspaceShell: resolve(__dirname, "workspace-shell.html"),
       },
     },

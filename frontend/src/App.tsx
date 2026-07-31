@@ -1,4 +1,4 @@
-import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound } from "lucide-react";
+import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ExportModal from "./components/ExportModal";
@@ -21,7 +21,7 @@ interface NavRef {
 }
 
 type CanvasPane = "itinerary" | "map";
-type WorkspacePane = CanvasPane | "details" | "assistant";
+type WorkspacePane = CanvasPane | "details";
 type ResizeTarget = "itinerary" | "inspector" | null;
 
 function clamp(value: number, min: number, max: number): number {
@@ -107,6 +107,15 @@ export default function App() {
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
+
+  useEffect(() => {
+    if (!isDesktop || !chatOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setChatOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [chatOpen, isDesktop]);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1200px)");
@@ -433,7 +442,7 @@ export default function App() {
   const setDockPaneOpen = (pane: "details" | "assistant", open: boolean) => {
     if (pane === "details") setInspectorOpen(open);
     else setChatOpen(open);
-    if (!open && maximizedPane === pane) setMaximizedPane(null);
+    if (!open && pane === "details" && maximizedPane === pane) setMaximizedPane(null);
   };
 
   const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
@@ -569,7 +578,7 @@ export default function App() {
   };
 
   const inspector = (
-    <div className={!inspectorOpen || canvasMaximized || maximizedPane === "assistant" ? "hidden" : "contents"}>
+    <div className={!inspectorOpen || canvasMaximized ? "hidden" : "contents"}>
       <aside
         ref={inspectorRef}
         data-testid="context-inspector"
@@ -579,7 +588,7 @@ export default function App() {
             : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
         }`}
       >
-        <section className={`h-full min-h-0 flex-col ${inspectorOpen && maximizedPane !== "assistant" ? "flex" : "hidden"}`}>
+        <section className={`h-full min-h-0 flex-col ${inspectorOpen ? "flex" : "hidden"}`}>
           <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {focus ? "Place details" : "Destination guide"}
@@ -612,46 +621,46 @@ export default function App() {
     </div>
   );
 
-  const assistantSidecar = (
-    <aside
-      data-testid="assistant-sidecar"
-      aria-label="Trip Assistant"
-      className={`absolute z-50 min-h-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop ${
-        chatOpen && !canvasMaximized && maximizedPane !== "details" ? "flex flex-col" : "hidden"
-      } ${maximizedPane === "assistant" ? "inset-2" : "inset-y-2 right-2 w-[min(42rem,52vw)]"}`}
+  const assistantModal = (
+    <div
+      data-testid="assistant-modal-layer"
+      className={`fixed inset-0 z-[60] place-items-center p-5 sm:p-8 ${chatOpen ? "grid" : "hidden"}`}
     >
-      <div className="relative min-h-0 flex-1">
-        <ChatPanel
-          onTurnComplete={handleTurnComplete}
-          reloadToken={chatReloadToken}
-          tripIdHint={chatTripId}
-          onNewTrip={handleNewTrip}
-          onImported={handleImported}
-          hideGlobalControls
-          assistantRequest={assistantRequest}
-        />
-      </div>
-      <div className="absolute right-3 top-3 z-30 flex items-center gap-1">
+      <button
+        type="button"
+        aria-label="Close Assistant"
+        onClick={() => setDockPaneOpen("assistant", false)}
+        className="absolute inset-0 cursor-default bg-slate-950/35 backdrop-blur-[1px]"
+      />
+      <aside
+        data-testid="assistant-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Trip Assistant"
+        className="relative z-10 flex h-[calc(100dvh-4rem)] max-h-[52rem] w-[calc(100vw-4rem)] max-w-[64rem] min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)]"
+      >
+        <div className="relative min-h-0 flex-1">
+          <ChatPanel
+            onTurnComplete={handleTurnComplete}
+            reloadToken={chatReloadToken}
+            tripIdHint={chatTripId}
+            onNewTrip={handleNewTrip}
+            onImported={handleImported}
+            hideGlobalControls
+            assistantRequest={assistantRequest}
+          />
+        </div>
         <button
           type="button"
           onClick={() => setDockPaneOpen("assistant", false)}
-          className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-          aria-label="Hide Assistant"
-          title="Hide Assistant"
+          className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-md bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50 hover:text-ink"
+          aria-label="Close Assistant"
+          title="Close Assistant"
         >
-          <EyeOff size={15} aria-hidden />
+          <X size={15} aria-hidden />
         </button>
-        <button
-          type="button"
-          onClick={() => toggleMaxPane("assistant")}
-          className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:text-ink"
-          aria-label={maximizedPane === "assistant" ? "Restore Assistant" : "Maximize Assistant"}
-          title={maximizedPane === "assistant" ? "Restore" : "Maximize"}
-        >
-          {maximizedPane === "assistant" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-        </button>
-      </div>
-    </aside>
+      </aside>
+    </div>
   );
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
@@ -826,7 +835,7 @@ export default function App() {
             </div>
           )}
           {inspector}
-          {assistantSidecar}
+          {assistantModal}
         </main>
       </div>
         ) : (

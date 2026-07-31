@@ -56,17 +56,26 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
-## Active Assistant Experiment (2026-07-30)
+## Decided Assistant Experiment (2026-07-30)
 
 The Assistant-led trip kickoff lab is available at
 `http://127.0.0.1:5175/chat-assistant.html`. It compares a concurrently usable
 Docked sidecar, a temporary centered Focus modal, and a full Guided takeover
 around one realistic structured-input journey. Each option can open in a
-full-viewport trip workspace before a decision. A - Docked sidecar is the current
-trial, while the recommendation remains B - Focus modal; neither is a final
-selection. No production layout change is approved until the owner explicitly
-chooses a direction after evaluation. See
+full-viewport trip workspace. The selected and implemented direction is B -
+Focus modal: a centered temporary layer over the unchanged workspace, with the
+conversation kept mounted across close and reopen. No Azure deployment is
+approved by this UI decision. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
+
+## Active Workspace Refresh Experiment (2026-07-30)
+
+The workspace visual-refresh lab is available at
+`http://127.0.0.1:5175/shell-visual-refresh.html`. It compares semantic icon and
+text controls, a compact icon control rail, and a text-led command bar inside a
+realistic interactive planner. This is an isolated visual experiment; production
+pane icons and shell styling remain unchanged until the owner selects a direction.
+See [`SHELL_VISUAL_REFRESH.md`](SHELL_VISUAL_REFRESH.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one
 option, add modifications or implementation instructions, and save it. The local

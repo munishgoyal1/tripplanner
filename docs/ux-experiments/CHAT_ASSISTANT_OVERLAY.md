@@ -5,8 +5,8 @@
 - Branch: `agents/worker-1`
 - Owner: Munish Goyal
 - Date started: 2026-07-30
-- Date ended: pending
-- Status: testing
+- Date ended: 2026-07-30
+- Status: implemented
 - Lab: `http://127.0.0.1:5175/chat-assistant.html`
 - Full-size preview: choose an option, then use **Open full-size preview**
 
@@ -53,7 +53,7 @@ Related backend foundation:
 
 Non-goals for this experiment:
 
-- No production Assistant layout change before owner selection.
+- No additional production Assistant layout change beyond the selected focus modal.
 - No production renderer tests merely to evaluate a Lab option.
 - No change to direct-mode complete-by-default planning.
 - No generic form builder or arbitrary model-authored HTML.
@@ -90,10 +90,10 @@ Non-goals for this experiment:
 
 ## Decision
 
-- Decision: pending
-- Current trial: A - Docked sidecar, implemented in the local main app for testing
-- Recommendation: evaluate A in normal local planning before final acceptance
-- Rationale: it gives the Assistant enough room for rich choices while preserving
-  a visible relationship to the itinerary being built.
-- Next action: test A in the local app with real planning turns, then accept it,
-  request adjustments, or return to another Lab option. No Azure deployment is approved.
+- Decision: B - Focus modal
+- Implementation: centered temporary desktop layer with a dim backdrop, explicit
+  close and command-bar reopen, and one continuously mounted conversation.
+- Rationale: it gives a planning turn enough room without permanently covering or
+  resizing the itinerary, map, and details workspace.
+- Next action: evaluate broader shell and control styling separately in the
+  workspace visual-refresh Lab. No Azure deployment is approved.
