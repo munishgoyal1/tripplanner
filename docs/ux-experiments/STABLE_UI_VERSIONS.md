@@ -9,6 +9,7 @@ the latest three; older tags are cheap and should not be moved or deleted casual
 
 | Snapshot | Commit | Interface state |
 |---|---|---|
+| `ui-stable/2026-07-31-semantic-command-bar` | `2665f7b` | Semantic icon-and-text top row before the Direct pane toggles Lab added its labeled primary New trip hierarchy. |
 | `ui-stable/2026-07-31-corner-assistant` | `240c2dc` | Current lower-right 480 px Assistant conversation sheet over the usable itinerary/map/details workspace. |
 | `ui-stable/2026-07-31-sidecar-assistant` | `cb61af7` | Earlier Assistant sidecar experience with Stop, Copy, and edit-as-new-turn controls. |
 | `ui-stable/2026-07-31-itinerary-workspace` | `8da626d` | Pre-sidecar workspace with truthful itinerary timing, compact agenda, Map, and Details. |

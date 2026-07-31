@@ -3054,3 +3054,15 @@ VALIDATION:
   command bar does not overflow.
 - Keep familiar global commands compact and preserve all existing handlers, pane
   behavior, mobile behavior, and workspace UI below the top row.
+
+=== 2026-07-31 — Implement direct workspace command controls ===
+
+- Implement Workspace command bar Option A: keep Itinerary, Map, Details, and
+  Assistant as stable one-click visibility controls rather than placing them in
+  a segmented mode control or Layout menu.
+- Present New trip as a labeled primary command while preserving the accepted
+  semantic pane icons and compact-width icon fallback.
+- Keep Hide and Maximize in each pane header and preserve all pane layout,
+  resizing, content, Assistant, and mobile behavior.
+- Preserve the prior accepted top row as immutable pushed tag
+  `ui-stable/2026-07-31-semantic-command-bar` at commit `2665f7b`.

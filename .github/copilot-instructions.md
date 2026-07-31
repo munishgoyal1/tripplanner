@@ -158,11 +158,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
-- **Semantic desktop command bar**: the implemented Workspace visual refresh
-  Lab Option A changes only the top row. Itinerary, Map, Details, and Assistant
-  pair meaning-first icons with short wide-desktop labels and collapse to icons
-  at compact desktop widths; familiar global commands stay icon-led. Pane
-  behavior and all workspace UI below the command bar are unchanged.
+- **Direct semantic desktop command bar**: implemented Option A from both command
+  bar Labs changes only the top row. New trip is a labeled primary command;
+  Itinerary, Map, Details, and Assistant remain direct meaning-first controls
+  with short wide-desktop labels and compact icon fallbacks. Pane-local Hide and
+  Maximize behavior and all workspace UI below the command bar are unchanged.
 - **Non-interfering UX Lab change markers**: every individual Lab can outline its
   exact varied preview regions through shared Lab-only annotations. A scope-panel
   toggle hides the portal-rendered, pointer-transparent overlays for a clean view;

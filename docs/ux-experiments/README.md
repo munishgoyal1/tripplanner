@@ -103,6 +103,17 @@ show short pane labels; compact desktops retain the semantic icons without
 overflow. Pane behavior and workspace UI below the command bar remain unchanged.
 See [`SHELL_VISUAL_REFRESH.md`](SHELL_VISUAL_REFRESH.md).
 
+## Implemented Command Bar Controls Experiment (2026-07-31)
+
+The command-bar Lab remains available at
+`http://127.0.0.1:5175/workspace-command-bar.html`. The selected and implemented
+direction is A - Direct pane toggles. New trip is a labeled primary command;
+Itinerary, Map, Details, and Assistant remain stable one-click controls in an
+explicit visibility group. Existing Hide and Maximize actions stay in each pane
+header. The pre-change semantic command bar is preserved at
+`ui-stable/2026-07-31-semantic-command-bar`. See
+[`WORKSPACE_COMMAND_BAR.md`](WORKSPACE_COMMAND_BAR.md).
+
 ## Active Map Controls Experiment (2026-07-31)
 
 The Map commands and day context Lab is available at

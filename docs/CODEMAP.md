@@ -159,8 +159,8 @@ frontend/
           implemented Compact Agenda while evaluating refinements
         src/itinerary-trip-book/  Active printable packet comparison for contents,
           itinerary execution, confirmation readiness, and personal place context
-        src/workspace-command-bar/  Active command-bar comparison for pane visibility,
-          local hide, and maximize/restore control hierarchy
+        src/workspace-command-bar/  Completed command-bar comparison; Option A keeps
+          direct pane visibility controls with local hide and maximize/restore
         src/trip-snapshot/  Active whole-trip snapshot comparison; distinct from the
           decided day-level Narrative Brief experiment
   src/
@@ -174,8 +174,9 @@ frontend/
           Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
-        live here too. Wide desktops pair semantic icons with short pane labels;
-        compact desktop widths retain icon-only controls. Shared place/day focus
+        live here too. New trip is a labeled primary command; wide desktops pair
+        semantic icons with short pane labels and compact desktop widths retain
+        icon-only pane controls. Shared place/day focus
         synchronizes itinerary, map, and details.
           Persistent mouse/keyboard separators resize all
               desktop pane splits. Four-pane maximize/restore, request cancellation,

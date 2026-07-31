@@ -303,6 +303,8 @@ re-describing the whole product.
 - At wide desktop sizes, pane visibility controls pair semantic icons with the
   short labels Itinerary, Map, Details, and Assistant. Compact desktop widths
   retain the icons without introducing header overflow.
+- New trip is a labeled primary command. The four pane controls remain directly
+  available without a submenu; Hide and Maximize remain local pane-header actions.
 - Narrow desktop uses an inspector overlay. Mobile web uses Assistant plus an
   on-demand trip-details sheet rather than compressing the desktop layout.
 - Only panes scroll; the page itself remains spatially stable.

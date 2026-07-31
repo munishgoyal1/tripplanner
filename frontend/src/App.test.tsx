@@ -286,11 +286,14 @@ describe("App responsive workspace", () => {
     expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
 
-  it("uses meaning-first labeled controls for workspace surfaces", async () => {
+  it("uses direct meaning-first controls for workspace surfaces", async () => {
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "New trip" })).toHaveClass("bg-brand");
+    expect(screen.getByText("New trip", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
     expect(itinerary).toHaveClass("rounded-md", "bg-ink", "text-white");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();

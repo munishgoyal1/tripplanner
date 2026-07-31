@@ -14,17 +14,6 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
-    id: "workspace-command-bar",
-    title: "Workspace command bar controls",
-    category: "Workspace controls",
-    description: "Compare direct pane toggles, a segmented view group, and a compact Layout popover with local Hide and Maximize controls.",
-    date: "31 Jul 2026",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: B · Segmented view group.",
-    href: "./workspace-command-bar.html",
-    icon: LayoutPanelTop,
-  },
-  {
     id: "trip-snapshot-hierarchy",
     title: "Trip snapshot hierarchy",
     category: "Trip overview",
@@ -71,6 +60,17 @@ export const activeLabs: LabRecord[] = [
 ];
 
 export const completedLabs: LabRecord[] = [
+  {
+    id: "workspace-command-bar",
+    title: "Workspace command bar controls",
+    category: "Workspace controls",
+    description: "Compared direct pane toggles, a segmented view group, and a compact Layout popover with local Hide and Maximize controls.",
+    date: "31 Jul 2026",
+    status: "Implemented",
+    decision: "A · Direct pane toggles, with labeled New trip and unchanged pane-local controls.",
+    href: "./workspace-command-bar.html",
+    icon: LayoutPanelTop,
+  },
   {
     id: "shell-visual-refresh",
     title: "Workspace visual refresh",

@@ -705,48 +705,52 @@ export default function App() {
             <button
               type="button"
               onClick={handleStartNewTrip}
-              className="grid h-8 w-8 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-ink"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand px-3 text-xs font-semibold text-white transition hover:bg-rose-700"
               title="Start a new trip"
               aria-label="New trip"
             >
-              <Plus size={15} aria-hidden />
+              <Plus size={14} aria-hidden />
+              <span>New trip</span>
             </button>
-            <button
-              type="button"
-              onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
-              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${itineraryOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
-              aria-pressed={itineraryOpen}
-              title="Show or hide itinerary"
-            >
-              <List size={15} aria-hidden /> <span className="hidden xl:inline">Itinerary</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setCanvasOpen("map", !mapOpen)}
-              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${mapOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
-              aria-pressed={mapOpen}
-              title="Show or hide map"
-            >
-              <Map size={15} aria-hidden /> <span className="hidden xl:inline">Map</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDockPaneOpen("details", !inspectorOpen)}
-              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${inspectorOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
-              aria-pressed={inspectorOpen}
-              title="Show or hide trip details"
-            >
-              <PanelRight size={15} aria-hidden /> <span className="hidden xl:inline">Details</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDockPaneOpen("assistant", !chatOpen)}
-              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${chatOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
-              aria-pressed={chatOpen}
-              title="Show or hide the trip assistant"
-            >
-              <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
-            </button>
+            <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
+            <div className="flex items-center gap-1" aria-label="Pane visibility">
+              <button
+                type="button"
+                onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${itineraryOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                aria-pressed={itineraryOpen}
+                title="Show or hide itinerary"
+              >
+                <List size={15} aria-hidden /> <span className="hidden xl:inline">Itinerary</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCanvasOpen("map", !mapOpen)}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${mapOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                aria-pressed={mapOpen}
+                title="Show or hide map"
+              >
+                <Map size={15} aria-hidden /> <span className="hidden xl:inline">Map</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setDockPaneOpen("details", !inspectorOpen)}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${inspectorOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                aria-pressed={inspectorOpen}
+                title="Show or hide trip details"
+              >
+                <PanelRight size={15} aria-hidden /> <span className="hidden xl:inline">Details</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setDockPaneOpen("assistant", !chatOpen)}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${chatOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                aria-pressed={chatOpen}
+                title="Show or hide the trip assistant"
+              >
+                <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
+              </button>
+            </div>
             <TripActionsMenu
               disabled={!view?.has_trip}
               onExport={() => setShowExport(true)}
