@@ -353,6 +353,13 @@ Production deployment repair validation completed on 2026-07-31:
   corrected template. Production what-if returned one update and zero deletes.
 - Both guarded deployment scripts now preserve Azure CLI stderr and check the
   native exit code before parsing JSON, so ARM failures surface their real error.
+- The approved retry deployed production revision
+  `prod-app-f3ddjudq2rdt4--0000014` on immutable image `10963d5`. Read-only smoke
+  passed all nine checks through both the generated Container Apps hostname and
+  `https://aitripplanner.co`; the smoke contract now validates the deployment-owned
+  OAuth callback independently from the HTTP request hostname.
+- Azure Monitor accepted a `logalertv2` test notification for the enabled
+  production Action Group. Owner mailbox receipt remains to be confirmed.
 
 Production failure alerting validation completed on 2026-07-30:
 

@@ -81,7 +81,7 @@ re-describing the whole product.
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
-| OPS-02 | Production failure email alerting and non-production error analysis | Guarded |
+| OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented; privacy-safe analytics implemented |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |

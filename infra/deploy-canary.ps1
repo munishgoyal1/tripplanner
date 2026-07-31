@@ -246,7 +246,11 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "  ✓ Image updated`n"
 
 Write-Host "✓ Step 5: Running hosted smoke tests..."
-& "$PSScriptRoot/smoke-hosted.ps1" -Environment canary -BaseUrl $deployment.containerAppUrl
+$expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/google"
+& "$PSScriptRoot/smoke-hosted.ps1" `
+    -Environment canary `
+    -BaseUrl $deployment.containerAppUrl `
+    -ExpectedOAuthCallback $expectedOAuthCallback
 if ($LASTEXITCODE -ne 0) {
     throw "Canary smoke tests failed. Production promotion is blocked."
 }

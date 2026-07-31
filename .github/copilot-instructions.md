@@ -173,11 +173,11 @@ Learns from user preferences and past trips.
   trip/chat content, account identity, and other customer data are excluded;
   Account can reopen analytics preferences. Azure Log Analytics remains the
   operational reliability source. Production is configured for GA4 Web stream
-  `G-VNTSQG9SWZ`; an approved deployment is still required to activate collection.
+  `G-VNTSQG9SWZ`; production release `10963d5` activated consent-gated collection.
 - **Production failure alerting + non-production analysis**: the existing PII-safe
   Container Apps Log Analytics stream remains the single hosted telemetry path.
-  Production Bicep defines a five-minute application/chat/tool failure rule and
-  owner email Action Group behind the production deployment approval gate.
+  Production release `10963d5` deployed a stateful five-minute application/chat/
+  tool failure rule and owner email Action Group behind the approval gate.
   Local development retains bounded redacted JSON, and one read-only command
   produces grouped local or canary Markdown diagnostics without non-production email.
 - **Provider-neutral live travel foundation**: the stable hotel and preferred

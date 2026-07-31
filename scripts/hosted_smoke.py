@@ -78,10 +78,20 @@ def _request(
 
 
 class SmokeSuite:
-    def __init__(self, base_url: str, environment: str, deep: bool = False) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        environment: str,
+        deep: bool = False,
+        expected_oauth_callback: str = "",
+    ) -> None:
         self.base_url = base_url.rstrip("/")
         self.environment = environment
         self.deep = deep
+        self.expected_oauth_callback = (
+            expected_oauth_callback
+            or f"{self.base_url}/api/auth/callback/google"
+        )
         self.failures: list[str] = []
 
     def _check(self, name: str, check) -> None:  # type: ignore[no-untyped-def]
@@ -101,7 +111,7 @@ class SmokeSuite:
         print(f"Hosted smoke tests: {self.environment} ({self.base_url})")
         smoke_uuid = uuid.uuid5(uuid.NAMESPACE_URL, f"tripplanner-smoke-{self.environment}")
         smoke_user = f"web-{smoke_uuid}"
-        expected_callback = f"{self.base_url}/api/auth/callback/google"
+        expected_callback = self.expected_oauth_callback
         guest_session = _request(
             f"{self.base_url}/api/auth/guest/session",
             data={"user_id": smoke_user},
@@ -244,10 +254,17 @@ def main() -> int:
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--environment", choices=("canary", "production"), required=True)
     parser.add_argument("--deep", action="store_true")
+    parser.add_argument("--expected-oauth-callback", default="")
     args = parser.parse_args()
 
     try:
-        return 0 if SmokeSuite(args.base_url, args.environment, args.deep).run() else 1
+        suite = SmokeSuite(
+            args.base_url,
+            args.environment,
+            args.deep,
+            args.expected_oauth_callback,
+        )
+        return 0 if suite.run() else 1
     except (TimeoutError, URLError) as error:
         print(f"Hosted smoke tests could not reach the app: {error}", file=sys.stderr)
         return 1

@@ -306,7 +306,11 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "  ✓ Image updated`n"
 
 Write-Host "✓ Step 5: Running read-only hosted smoke tests..."
-& "$PSScriptRoot/smoke-hosted.ps1" -Environment production -BaseUrl $deployment.containerAppUrl
+$expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/google"
+& "$PSScriptRoot/smoke-hosted.ps1" `
+    -Environment production `
+    -BaseUrl $deployment.containerAppUrl `
+    -ExpectedOAuthCallback $expectedOAuthCallback
 if ($LASTEXITCODE -ne 0) {
     throw "Production smoke tests failed. Run ./infra/rollback-prod.ps1 after confirming the failure."
 }

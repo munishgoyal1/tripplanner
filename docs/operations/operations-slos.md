@@ -16,9 +16,9 @@ previous five minutes for:
 - `tool_call` records with `status == "error"`.
 
 Any match opens a severity-1 alert and notifies the production Action Group at
-`munishgoyal1@gmail.com` using Azure Monitor's common alert schema. Actions are
-muted for 15 minutes after notification to group a burst instead of sending one
-email per log line. Auto-mitigation resolves the alert after the query is clean.
+`munishgoyal1@gmail.com` using Azure Monitor's common alert schema. The alert is
+stateful, so a continuing failure condition remains one alert instead of sending
+one email per log line. Auto-mitigation resolves it after the query is clean.
 
 The query is owned by `infra/queries/application-failures.kql` and loaded by
 `infra/main.bicep`. `enableFailureAlerts` defaults to false and is enabled only
@@ -26,7 +26,7 @@ by `infra/prod.bicepparam`; local and canary never create email alerts. Creating
 or changing the production Action Group still requires the normal
 `APPROVE_PROD_DEPLOYMENT` gate and a deletion-free production `what-if`.
 
-After an approved first deployment, send an Action Group test notification and
+After the approved first deployment, send an Action Group test notification and
 confirm delivery. Then validate the query with a controlled PII-safe error event;
 do not create a user-facing outage just to test alerting.
 

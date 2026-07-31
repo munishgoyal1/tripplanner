@@ -18,7 +18,7 @@ def _response(
 
 def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     base = "https://canary.example.com"
-    callback = f"{base}/api/auth/callback/google"
+    callback = "https://canary-auth.example.com/api/auth/callback/google"
 
     def fake_request(url: str, **kwargs) -> Response:  # type: ignore[no-untyped-def]
         if url == f"{base}/":
@@ -87,7 +87,7 @@ def test_read_only_suite_validates_hosted_contract(monkeypatch) -> None:  # type
         raise AssertionError(url)
 
     monkeypatch.setattr(hosted_smoke, "_request", fake_request)
-    assert SmokeSuite(f"{base}/", "canary").run() is True
+    assert SmokeSuite(f"{base}/", "canary", expected_oauth_callback=callback).run() is True
 
 
 def test_suite_fails_for_cross_environment_oauth_callback(monkeypatch) -> None:  # type: ignore[no-untyped-def]
