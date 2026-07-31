@@ -128,6 +128,8 @@ def test_infrastructure_enables_email_alerts_only_in_production() -> None:
     assert "param enableFailureAlerts bool = false" in template
     assert "if (enableFailureAlerts)" in template
     assert "loadTextContent('queries/application-failures.kql')" in template
+    assert "autoMitigate: true" in template
+    assert "muteActionsDuration" not in template
     assert "param enableFailureAlerts = true" in production
     assert "munishgoyal1@gmail.com" in production
     assert "enableFailureAlerts" not in canary

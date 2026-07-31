@@ -15,6 +15,16 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Diagnose cross-object corruption from persisted operation identity plus tool telemetry:
   a completed turn can be operationally healthy while every update targets the wrong object.
 
+## 2026-07-31 - New Intent Must Preempt Old Completion Gates
+
+- An active domain object does not imply that every planning message mutates it.
+  Explicit new-object language must enter the creation workflow even from an old
+  object's scoped conversation.
+- Once a required structured kickoff has been answered, force the create mutation.
+  Prompt guidance alone can leave the user chatting against the prior object.
+- New-object routing must run before quality/completion gates for the old object;
+  otherwise an incomplete old state can capture and mutate a clearly separate request.
+
 ## 2026-07-30 - Validate Geographic Identity Before Persistence
 
 - Preference fit, price, and luxury do not compensate for a hotel in the wrong

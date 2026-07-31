@@ -6,17 +6,18 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 
 The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 `http://127.0.0.1:5175/catalog.html` to access every standalone experiment.
-For lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
-catalog has two durable sections:
+For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
+workspace has two durable linked pages:
 
-- **Active experiments** contains choices still being evaluated or paired.
-- **Already decided** preserves completed experiments, their original lab links,
-  and the selected outcome.
+- `catalog.html` contains active choices still being evaluated or paired.
+- `completed-labs.html` preserves completed experiments, their original Lab
+  links, and the selected outcome.
 
-Do not delete a lab after a decision. Move its catalog record from Active to
-Already decided, retain the page, and update its experiment document with the
-final choice and date. Historical experiments that predate lab pages may remain
-read-only detail records reconstructed from their preserved source material.
+Do not delete a Lab after a decision. Move its shared record from `activeLabs`
+to `completedLabs`, retain the page, and update its experiment document with the
+final choice and date. Every standalone Lab links directly to both indexes.
+Historical experiments that predate Lab pages may remain read-only detail records
+reconstructed from their preserved source material.
 
 ## Branch Strategy
 
@@ -56,17 +57,28 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
-## Active Assistant Experiment (2026-07-30)
+## Active Assistant Experiment (2026-07-31)
 
-The Assistant-led trip kickoff lab is available at
-`http://127.0.0.1:5175/chat-assistant.html`. It compares a concurrently usable
-Docked sidecar, a temporary centered Focus modal, and a full Guided takeover
-around one realistic structured-input journey. Each option can open in a
-full-viewport trip workspace before a decision. A - Docked sidecar is the current
-trial, while the recommendation remains B - Focus modal; neither is a final
-selection. No production layout change is approved until the owner explicitly
-chooses a direction after evaluation. See
+The Assistant overlap lab is available at
+`http://127.0.0.1:5175/chat-assistant.html`. It compares a Collapsible edge
+drawer, Corner conversation sheet, and Prompt popover + rail around the same
+realistic structured-input journey. Each option supports the full open, build,
+return, collapsed, and reopen lifecycle over a production-scale trip workspace.
+A - Collapsible edge drawer is the recommended starting point; no option is a
+final selection. No production layout change is approved until the owner
+explicitly chooses a direction after evaluation. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
+
+## Active Map Controls Experiment (2026-07-31)
+
+The Map commands and day context Lab is available at
+`http://127.0.0.1:5175/map-controls.html`. It compares a Unified route ribbon,
+Contextual command deck, and Schedule-first strip in the same production-scale
+Paris workspace. Every option preserves day/all-days aggregate focus, exact-pin
+focus, explicit Add stop placement, and the distinction between full schedule
+duration and route-only travel evidence. A - Unified route ribbon is the
+recommended starting point; no production Map change is approved. See
+[`MAP_PANEL_CONTROLS.md`](MAP_PANEL_CONTROLS.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one
 option, add modifications or implementation instructions, and save it. The local
@@ -95,14 +107,14 @@ scope until a direction is selected and separately approved. See
 1. Keep each experiment isolated to UI layout/interaction files only.
 2. Timebox each experiment to 1-2 sessions.
 3. Use the scorecard template for decision-making.
-4. End each experiment with a recorded decision and move its catalog entry to
-  Already decided; preserve its lab page as design history.
+4. End each experiment with a recorded decision and move its shared record from
+  the active catalog to the completed page; preserve its Lab page as design history.
 5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute saved lab
   preferences; implement the selected option together with its comments.
   Provisional language such as "try" or "see first" means extend or run the Lab
   preview, not production implementation approval. Do not add production code or
   production tests merely to evaluate an option.
-6. Every standalone lab page links directly back to `catalog.html`.
+6. Every standalone Lab page links directly to the active and completed indexes.
 7. Every option can be experienced at realistic production scale before selection;
   keep that preview inside the Lab until the owner explicitly approves production.
 

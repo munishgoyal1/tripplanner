@@ -70,6 +70,20 @@ def test_explicit_destination_switch_requires_new_trip(monkeypatch: pytest.Monke
     ) == "create_trip_plan"
 
 
+def test_active_trip_explicit_new_trip_starts_fresh_kickoff(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Paris"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="Create a separate new Hawaii trip")]
+    ) == "get_travel_preferences"
+
+
 def test_active_destination_follow_up_does_not_create_trip(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -94,6 +108,72 @@ def test_day_trip_does_not_replace_active_trip(monkeypatch: pytest.MonkeyPatch) 
     assert _trip_creation_tool_choice(
         [HumanMessage(content="Plan a day trip to Oxford")]
     ) is None
+
+
+def test_trip_agent_forces_creation_after_kickoff_answer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [
+        HumanMessage(content="Create a separate new Hawaii trip"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("request_trip_input"),
+        HumanMessage(content="Use these choices and build it"),
+    ]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {"destination": "Paris"})
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "create_trip_plan"
+    assert bound_options["tools"] == ["create_trip_plan"]
+
+
+def test_new_trip_intent_preempts_incomplete_active_trip_gate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    messages = [HumanMessage(content="Create a separate new Hawaii trip")]
+    bound_options: dict = {}
+
+    class FakeBoundModel:
+        def invoke(self, _messages: list) -> AIMessage:
+            return AIMessage(content="")
+
+    class FakeModel:
+        def bind_tools(self, tools: list, **options: object) -> FakeBoundModel:
+            bound_options["tools"] = [tool.name for tool in tools]
+            bound_options.update(options)
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {
+        "destination": "Paris",
+        "day_wise_itinerary": [],
+    })
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert bound_options["tool_choice"] == "get_travel_preferences"
+    assert bound_options["tools"] == ["get_travel_preferences"]
 
 
 @pytest.mark.parametrize(

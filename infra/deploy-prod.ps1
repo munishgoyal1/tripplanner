@@ -268,7 +268,11 @@ $rawDeploy = az deployment group create `
     --parameters "namePrefix=$prodPrefix" "cosmosResourceGroupName=$CosmosResourceGroup" "cosmosAccountName=$CosmosAccountName" "oauthRedirectBase=$OAuthRedirectBase" `
     --only-show-errors `
     --query "{state:properties.provisioningState, containerAppUrl:properties.outputs.containerAppUrl.value, containerAppName:properties.outputs.containerAppName.value}" `
-    --output json 2>$null | Out-String
+    --output json 2>&1 | Out-String
+$deployExitCode = $LASTEXITCODE
+if ($deployExitCode -ne 0) {
+    throw "Production infrastructure deployment failed. Azure CLI output:`n$rawDeploy"
+}
 
 # az may prepend non-JSON info lines (e.g. "Bicep CLI is already installed...")
 # to stdout, so isolate the JSON object before parsing.
@@ -302,7 +306,11 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "  ✓ Image updated`n"
 
 Write-Host "✓ Step 5: Running read-only hosted smoke tests..."
-& "$PSScriptRoot/smoke-hosted.ps1" -Environment production -BaseUrl $deployment.containerAppUrl
+$expectedOAuthCallback = "$($OAuthRedirectBase.TrimEnd('/'))/auth/callback/google"
+& "$PSScriptRoot/smoke-hosted.ps1" `
+    -Environment production `
+    -BaseUrl $deployment.containerAppUrl `
+    -ExpectedOAuthCallback $expectedOAuthCallback
 if ($LASTEXITCODE -ne 0) {
     throw "Production smoke tests failed. Run ./infra/rollback-prod.ps1 after confirming the failure."
 }

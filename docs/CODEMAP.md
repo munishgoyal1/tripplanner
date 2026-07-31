@@ -76,8 +76,9 @@ src/tripplanner/
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
   graph.py            LangGraph StateGraph: agent ↔ tools loop; deterministically
                       loads preferences and forces one structured kickoff before
-                      creating each new trip; explicit destination switches force
-                      create_trip_plan before any update/enrichment gate
+                      creating each new trip, including explicit separate-trip
+                      intent from inside another trip's chat; implicit destination
+                      switches force create_trip_plan before update/enrichment gates
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics; optional
@@ -141,7 +142,11 @@ frontend/
                       frontend run dev:ux-lab`, port 5175). The canonical
                       `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
                       written to the ignored
-                      docs/ux-experiments/LAB_SELECTIONS.local.json
+                          docs/ux-experiments/LAB_SELECTIONS.local.json. `catalog.html`
+                          owns active experiments, `completed-labs.html` preserves
+                          decisions, and shared navigation connects every Lab page.
+                    src/map-controls/ Active production-scale comparison for Map day/all-days
+                      scope, Add stop hierarchy, and schedule versus route evidence
     src/itinerary-density/  Active 320px day-density comparison; preserves the
           implemented Compact Agenda while evaluating refinements
         src/itinerary-trip-book/  Active printable packet comparison for contents,

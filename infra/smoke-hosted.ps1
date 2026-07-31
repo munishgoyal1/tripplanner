@@ -4,6 +4,7 @@ param(
     [ValidateSet("canary", "production")]
     [string]$Environment,
     [string]$BaseUrl = "",
+    [string]$ExpectedOAuthCallback = "",
     [switch]$Deep = $false,
     [switch]$AllowProductionWrites = $false,
     [string]$SubscriptionId = ""
@@ -32,8 +33,21 @@ if ([string]::IsNullOrWhiteSpace($BaseUrl)) {
     $BaseUrl = "https://$($fqdns[0])"
 }
 
+if ([string]::IsNullOrWhiteSpace($ExpectedOAuthCallback)) {
+    $ExpectedOAuthCallback = if ($Environment -eq "production") {
+        "https://aitripplanner.co/api/auth/callback/google"
+    } else {
+        "$($BaseUrl.TrimEnd('/'))/api/auth/callback/google"
+    }
+}
+
 $python = if (Test-Path ".venv/Scripts/python.exe") { ".venv/Scripts/python.exe" } else { "python" }
-$arguments = @("scripts/hosted_smoke.py", "--environment", $Environment, "--base-url", $BaseUrl)
+$arguments = @(
+    "scripts/hosted_smoke.py",
+    "--environment", $Environment,
+    "--base-url", $BaseUrl,
+    "--expected-oauth-callback", $ExpectedOAuthCallback
+)
 if ($Deep) { $arguments += "--deep" }
 
 & $python @arguments
