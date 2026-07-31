@@ -286,6 +286,20 @@ describe("App responsive workspace", () => {
     expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
 
+  it("uses meaning-first labeled controls for workspace surfaces", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    const itinerary = screen.getByTitle("Show or hide itinerary");
+    expect(itinerary).toHaveClass("rounded-md", "bg-ink", "text-white");
+    expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
+    expect(screen.getByText("Itinerary", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByText("Map", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByText("Details", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByText("Assistant", { selector: "nav span" })).toBeInTheDocument();
+  });
+
   it("closes Details and Assistant independently while keeping both mounted", async () => {
     setDesktop(true);
     render(<App />);

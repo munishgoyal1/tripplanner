@@ -151,8 +151,10 @@ frontend/
                           for explicit `data-lab-change` preview targets without
                           affecting layout or input; `DecisionCapture` persists ready,
                           parked, or discarded lifecycle plus scoped implementation notes.
-                    src/map-controls/ Active production-scale comparison for Map day/all-days
-                      scope, Add stop hierarchy, and schedule versus route evidence
+    src/shell-visual-refresh/  Completed semantic icon-and-text desktop top-row
+          comparison; Option A is implemented
+    src/map-controls/  Active production-scale comparison for Map day/all-days scope,
+          Add stop hierarchy, and schedule versus route evidence
     src/itinerary-density/  Active 320px day-density comparison; preserves the
           implemented Compact Agenda while evaluating refinements
         src/itinerary-trip-book/  Active printable packet comparison for contents,
@@ -172,8 +174,9 @@ frontend/
           Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
         latest mutation result; desktop account/preferences and login status
-        live here too. Shared place/day focus synchronizes itinerary, map,
-        and details.
+        live here too. Wide desktops pair semantic icons with short pane labels;
+        compact desktop widths retain icon-only controls. Shared place/day focus
+        synchronizes itinerary, map, and details.
           Persistent mouse/keyboard separators resize all
               desktop pane splits. Four-pane maximize/restore, request cancellation,
               mutation responses supersede older reads, same-place removal

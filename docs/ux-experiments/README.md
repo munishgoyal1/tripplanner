@@ -92,13 +92,15 @@ across close and reopen. No Azure deployment is
 approved by this UI decision. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
 
-## Active Workspace Refresh Experiment (2026-07-30)
+## Implemented Workspace Refresh Experiment (2026-07-31)
 
 The workspace visual-refresh lab is available at
 `http://127.0.0.1:5175/shell-visual-refresh.html`. It compares semantic icon and
 text controls, a compact icon control rail, and a text-led command bar inside a
-realistic interactive planner. This is an isolated visual experiment; production
-pane icons and shell styling remain unchanged until the owner selects a direction.
+realistic interactive planner. The selected and implemented direction is A -
+Semantic icon + text, scoped only to the desktop top command bar. Wide desktops
+show short pane labels; compact desktops retain the semantic icons without
+overflow. Pane behavior and workspace UI below the command bar remain unchanged.
 See [`SHELL_VISUAL_REFRESH.md`](SHELL_VISUAL_REFRESH.md).
 
 ## Active Map Controls Experiment (2026-07-31)

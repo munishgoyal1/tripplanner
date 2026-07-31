@@ -1,4 +1,4 @@
-import { EyeOff, Map, Maximize2, MessageCircle, Minimize2, PanelLeft, PanelRight, Plus, Settings, UserRound, X } from "lucide-react";
+import { EyeOff, List, Map, Maximize2, MessageCircle, Minimize2, PanelRight, Plus, Settings, UserRound, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ExportModal from "./components/ExportModal";
@@ -678,7 +678,7 @@ export default function App() {
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
-        <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-slate-100 bg-white/95 px-3 shadow-sm backdrop-blur">
+        <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
           <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
           <div className="mr-auto flex min-w-32 flex-1 items-center gap-2">
             <div className="min-w-0 flex-1" aria-live="polite" role="status">
@@ -705,33 +705,34 @@ export default function App() {
             <button
               type="button"
               onClick={handleStartNewTrip}
-              className="btn-ghost"
+              className="grid h-8 w-8 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-ink"
               title="Start a new trip"
+              aria-label="New trip"
             >
-              <Plus size={15} aria-hidden /> <span className="hidden xl:inline">New trip</span>
+              <Plus size={15} aria-hidden />
             </button>
             <button
               type="button"
               onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
-              className={`btn-ghost ${itineraryOpen ? "bg-slate-100 text-ink" : ""}`}
+              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${itineraryOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
               aria-pressed={itineraryOpen}
               title="Show or hide itinerary"
             >
-              <PanelLeft size={15} aria-hidden /> <span className="hidden 2xl:inline">Itinerary</span>
+              <List size={15} aria-hidden /> <span className="hidden xl:inline">Itinerary</span>
             </button>
             <button
               type="button"
               onClick={() => setCanvasOpen("map", !mapOpen)}
-              className={`btn-ghost ${mapOpen ? "bg-slate-100 text-ink" : ""}`}
+              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${mapOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
               aria-pressed={mapOpen}
               title="Show or hide map"
             >
-              <Map size={15} aria-hidden /> <span className="hidden 2xl:inline">Map</span>
+              <Map size={15} aria-hidden /> <span className="hidden xl:inline">Map</span>
             </button>
             <button
               type="button"
               onClick={() => setDockPaneOpen("details", !inspectorOpen)}
-              className={`btn-ghost ${inspectorOpen ? "bg-slate-100 text-ink" : ""}`}
+              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${inspectorOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
               aria-pressed={inspectorOpen}
               title="Show or hide trip details"
             >
@@ -740,7 +741,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setDockPaneOpen("assistant", !chatOpen)}
-              className={`btn-ghost ${chatOpen ? "bg-slate-100 text-ink" : ""}`}
+              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${chatOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
               aria-pressed={chatOpen}
               title="Show or hide the trip assistant"
             >
@@ -749,11 +750,12 @@ export default function App() {
             <TripActionsMenu
               disabled={!view?.has_trip}
               onExport={() => setShowExport(true)}
+              compactTrigger
             />
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
-              className="btn-ghost"
+              className="grid h-8 w-8 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-ink"
               title={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in to sync trips"}
               aria-label={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in"}
             >
@@ -765,7 +767,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-settings"))}
-              className="btn-ghost"
+              className="grid h-8 w-8 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-ink"
               title="Travel preferences"
               aria-label="Travel preferences"
             >

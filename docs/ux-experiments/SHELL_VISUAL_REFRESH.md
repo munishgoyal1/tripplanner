@@ -4,7 +4,7 @@
 
 - Owner: Munish Goyal
 - Date started: 2026-07-30
-- Status: evaluating
+- Status: implemented
 - Lab: `http://127.0.0.1:5175/shell-visual-refresh.html`
 - Full-size preview: choose an option, then use **Open full-size preview**
 
@@ -37,13 +37,19 @@ Changed experiment files:
 
 Non-goals:
 
-- No production pane-icon or shell-style change before owner selection.
+- No visual or behavioral change below the desktop top command bar.
 - No change to itinerary, map, Details, or Assistant contracts.
-- No production tests for an unselected visual direction.
+- No mobile workspace redesign.
 
 ## Decision
 
-- Decision: pending
-- Production status: unchanged
-- Next action: compare all three full-size variants and save one handoff with any
-  requested combinations or refinements.
+- Decision: **A - Semantic icon + text**
+- Owner boundary: only change the top row.
+- Production status: implemented on 2026-07-31.
+- Implementation: Itinerary, Map, Details, and Assistant use meaning-first icons
+  with short labels at wide desktop sizes and icon-only controls at compact
+  desktop widths. Familiar New trip, trip actions, account, and preferences
+  commands remain compact icons. Existing handlers, pane behavior, and all UI
+  below the command bar are unchanged.
+- Validation: focused App tests pass; the live command bar has no horizontal
+  overflow at 1440 px or 1024 px.

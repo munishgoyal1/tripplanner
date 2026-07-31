@@ -14,17 +14,6 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
-    id: "shell-visual-refresh",
-    title: "Workspace visual refresh",
-    category: "Visual system",
-    description: "Compare semantic icon-and-text, compact icon, and text-led controls inside a realistic full planner shell.",
-    date: "30 Jul 2026",
-    status: "In evaluation",
-    decision: "Open · Production control styling remains unchanged until selection.",
-    href: "./shell-visual-refresh.html",
-    icon: LayoutPanelTop,
-  },
-  {
     id: "workspace-command-bar",
     title: "Workspace command bar controls",
     category: "Workspace controls",
@@ -82,6 +71,17 @@ export const activeLabs: LabRecord[] = [
 ];
 
 export const completedLabs: LabRecord[] = [
+  {
+    id: "shell-visual-refresh",
+    title: "Workspace visual refresh",
+    category: "Visual system",
+    description: "Compared semantic icon-and-text, compact icon, and text-led controls inside a realistic full planner shell.",
+    date: "31 Jul 2026",
+    status: "Implemented",
+    decision: "A · Semantic icon + text, applied only to the desktop top command bar.",
+    href: "./shell-visual-refresh.html",
+    icon: LayoutPanelTop,
+  },
   {
     id: "chat-assistant-overlay",
     title: "Assistant-led trip kickoff",

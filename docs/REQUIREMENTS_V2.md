@@ -300,6 +300,9 @@ re-describing the whole product.
   Details/Assistant splits; sizes persist locally.
 - A common command bar owns trip switching, New trip, visibility controls,
   global trip actions, account/preferences, and the latest mutation result.
+- At wide desktop sizes, pane visibility controls pair semantic icons with the
+  short labels Itinerary, Map, Details, and Assistant. Compact desktop widths
+  retain the icons without introducing header overflow.
 - Narrow desktop uses an inspector overlay. Mobile web uses Assistant plus an
   on-demand trip-details sheet rather than compressing the desktop layout.
 - Only panes scroll; the page itself remains spatially stable.

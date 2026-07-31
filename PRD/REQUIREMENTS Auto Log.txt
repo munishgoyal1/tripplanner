@@ -3044,3 +3044,13 @@ VALIDATION:
   layout space, accept no pointer input, and be removable for an exact clean view.
 - Keep marker implementation and target metadata inside isolated Lab source only;
   production components and styling remain unchanged.
+
+=== 2026-07-31 — Implement Workspace visual refresh Option A ===
+
+- Implement the selected Semantic icon + text direction only in the production
+  desktop top command bar.
+- Pair Itinerary, Map, Details, and Assistant with meaning-first icons and short
+  labels at wide desktop sizes; collapse labels at compact desktop widths so the
+  command bar does not overflow.
+- Keep familiar global commands compact and preserve all existing handlers, pane
+  behavior, mobile behavior, and workspace UI below the top row.
