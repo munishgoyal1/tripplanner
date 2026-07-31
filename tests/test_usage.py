@@ -266,19 +266,21 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert response.json()["reply"] == "Goa is ready"
-    assert operations == [
-        {
-            "user_id": "sync-retry-user",
-            "transport": "json",
-            "outcome": "error",
-            "error": "RuntimeError",
-        },
-        {
-            "user_id": "sync-retry-user",
-            "transport": "json",
-            "outcome": "completed",
-        },
-    ]
+    assert len(operations) == 2
+    error_operation = operations[0]
+    exception = error_operation.pop("exception")
+    assert isinstance(exception, RuntimeError)
+    assert str(exception) == "model interrupted"
+    assert error_operation == {
+        "user_id": "sync-retry-user",
+        "transport": "json",
+        "outcome": "error",
+    }
+    assert operations[1] == {
+        "user_id": "sync-retry-user",
+        "transport": "json",
+        "outcome": "completed",
+    }
     set_user_id("anon")
     assert chat_store.transcript(None) == [
         {"role": "user", "text": "plan goa"},

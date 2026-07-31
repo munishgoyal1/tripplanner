@@ -3,7 +3,7 @@ param(
     [ValidateSet("local", "canary")]
     [string]$Environment = "local",
     [int]$Hours = 24,
-    [string]$LogPath = "logs/diagnostics/local-app.jsonl",
+    [string]$LogPath = "",
     [string]$ReportPath = "",
     [string]$WorkspaceId = ""
 )
@@ -17,9 +17,11 @@ if (-not (Test-Path $python)) {
 $arguments = @(
     (Join-Path $PSScriptRoot "analyze_errors.py"),
     $Environment,
-    "--hours", $Hours,
-    "--log-path", $LogPath
+    "--hours", $Hours
 )
+if (-not [string]::IsNullOrWhiteSpace($LogPath)) {
+    $arguments += @("--log-path", $LogPath)
+}
 if (-not [string]::IsNullOrWhiteSpace($ReportPath)) {
     $arguments += @("--report-path", $ReportPath)
 }

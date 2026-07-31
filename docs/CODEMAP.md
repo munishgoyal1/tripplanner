@@ -81,7 +81,8 @@ src/tripplanner/
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics; optional
-                      rotating local JSON supports redacted error analysis
+                      rotating local JSON supports shared-worktree redacted
+                      error analysis and safe Azure OpenAI throttle metadata
   error_analysis.py   Shared local/canary failure classification and Markdown reports
   json_store.py       Atomic local JSON replacement with bounded Windows-lock retry
   request_identity.py Signed web/native/guest principal resolution for hosted APIs

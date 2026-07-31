@@ -2915,3 +2915,13 @@ VALIDATION:
 - Prose itinerary fallback may persist only when that same operation created the trip.
 - Production repair is a separate approved data operation: preserve the recoverable
   Hawaii plan and do not guess at restoration of the overwritten London itinerary.
+
+=== 2026-07-31 — Shared local diagnostics and rate-limit evidence ===
+
+- Local stack diagnostics must remain available from any primary or worker VS Code
+  instance, independent of which checkout launched the running backend.
+- Keep one rotating, PII-safe JSON log in the primary Git checkout and make the
+  read-only analyzer discover that path automatically from every worktree.
+- Azure OpenAI rate-limit failures must identify the deployment, status, retry delay,
+  remaining token/request quota, and inferred limiting bucket when headers permit.
+- Never log prompts, provider response bodies, credentials, or raw user content.

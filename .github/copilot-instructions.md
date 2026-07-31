@@ -152,6 +152,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
+- **Shared local diagnostics + model throttle evidence**: every canonical local
+  stack writes rotating PII-safe JSON under the primary Git checkout, so primary
+  and worker VS Code windows analyze the same log. Final Azure OpenAI rate-limit
+  failures retain only safe deployment/status/retry/remaining-quota metadata and
+  identify token versus request pressure without logging prompts or response bodies.
 - **Destination-safe new-trip persistence**: an explicit whole-trip request for a
   destination different from the active trip now forces `create_trip_plan` before
   itinerary completion or enrichment gates. SSE prose fallback persistence is
