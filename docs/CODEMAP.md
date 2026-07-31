@@ -140,7 +140,11 @@ frontend/
                       frontend run dev:ux-lab`, port 5175). The canonical
                       `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
                       written to the ignored
-                      docs/ux-experiments/LAB_SELECTIONS.local.json
+                          docs/ux-experiments/LAB_SELECTIONS.local.json. `catalog.html`
+                          owns active experiments, `completed-labs.html` preserves
+                          decisions, and shared navigation connects every Lab page.
+                    src/map-controls/ Active production-scale comparison for Map day/all-days
+                      scope, Add stop hierarchy, and schedule versus route evidence
     src/itinerary-density/  Active 320px day-density comparison; preserves the
           implemented Compact Agenda while evaluating refinements
         src/itinerary-trip-book/  Active printable packet comparison for contents,

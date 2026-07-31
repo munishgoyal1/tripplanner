@@ -27,10 +27,12 @@ export default defineConfig({
       input: {
         catalog: resolve(__dirname, "catalog.html"),
         chatAssistant: resolve(__dirname, "chat-assistant.html"),
+        completedLabs: resolve(__dirname, "completed-labs.html"),
         itineraryDensity: resolve(__dirname, "itinerary-density.html"),
         itineraryInformation: resolve(__dirname, "itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
         itineraryTripBook: resolve(__dirname, "itinerary-trip-book.html"),
+        mapControls: resolve(__dirname, "map-controls.html"),
         workspaceShell: resolve(__dirname, "workspace-shell.html"),
       },
     },

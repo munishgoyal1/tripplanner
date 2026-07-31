@@ -2916,3 +2916,17 @@ VALIDATION:
 - Explore less intrusive overlapping Assistant treatments that slide in and out
   easily. After planning prompts finish, Itinerary, Map, and Details should regain
   visual priority. No replacement layout is selected or approved by this request.
+
+=== 2026-07-31 — Map controls Lab and completed Labs archive ===
+
+- Create a comprehensive, production-scale Map Panel UX Lab exploring stronger
+  hierarchy for the top command area, Add stop, day/all-days controls, and the
+  day-wise route and schedule summary.
+- Preserve existing Map semantics while comparing coherent alternatives: aggregate
+  trip focus, aggregate day-circuit focus, exact-place focus, explicit stop-day
+  placement, and separate schedule versus route-only travel evidence.
+- Separate experiments still in progress from completed UX Labs. Keep every Lab
+  preserved and provide direct navigation between active and completed indexes
+  from every standalone Lab page.
+- This request approves Lab exploration only. Production Map behavior remains
+  unchanged until an option and modifications are explicitly selected.

@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabNavigation } from "../shared/LabNavigation";
 import "../../../src/index.css";
 
 type Variant = "edge" | "sheet" | "popover";
@@ -301,7 +302,7 @@ function ChatAssistantLab() {
             <h1 className="display mt-2 text-3xl font-semibold text-ink">Assistant overlap after planning</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare three minimally intrusive ways to slide Assistant in for prompts and return visual priority to Itinerary, Map, and Details afterward. Build the brief, collapse it, reopen it, and inspect the same live workspace in every option.</p>
           </div>
-          <a href="./catalog.html" className="btn-ghost"><ArrowLeft size={14} /> UX Labs</a>
+          <LabNavigation current="active" />
         </header>
 
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Assistant layout variants">
