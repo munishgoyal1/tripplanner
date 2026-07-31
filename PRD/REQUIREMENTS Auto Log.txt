@@ -2925,3 +2925,10 @@ VALIDATION:
 - Azure OpenAI rate-limit failures must identify the deployment, status, retry delay,
   remaining token/request quota, and inferred limiting bucket when headers permit.
 - Never log prompts, provider response bodies, credentials, or raw user content.
+
+=== 2026-07-31 — Identifiable parallel agent chats ===
+
+- Every tripplanner agent chat must use a concrete 3-6 word title summarizing its
+  active request so the owner can identify it while switching among VS Code windows.
+- Rename the chat before substantive work and update it when the primary task changes.
+- Apply the convention in the primary workspace and every worker VS Code instance.

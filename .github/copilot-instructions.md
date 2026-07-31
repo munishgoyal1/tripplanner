@@ -12,6 +12,10 @@
 > structure or owner intent on every task.
 
 ## Agent efficiency rules (avoid wasting the user's time)
+- Before substantive work, rename the current agent chat to a concrete 3-6 word
+  summary of the active request (for example, `Debug Azure Rate Limits`). Use
+  `/rename <title>` when supported, and update it when the primary task changes.
+  This applies in the primary and every tripplanner worker VS Code instance.
 - Read big chunks (50–200 lines) and read multiple files in parallel.
   Do NOT dribble 5-line reads.
 - Batch independent tool calls into ONE turn. Only chain when an output is
