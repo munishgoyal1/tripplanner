@@ -26,3 +26,15 @@ def test_hosted_deployments_do_not_import_local_environment() -> None:
     assert '[string]$EnvFile = ".env.prod"' in production
     assert "Import-DotEnv -Path $EnvFile" in canary
     assert "Import-DotEnv -Path $EnvFile" in production
+
+
+def test_hosted_deployments_surface_azure_cli_failures() -> None:
+    root = Path(__file__).parents[1]
+    canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
+    production = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
+
+    for script in (canary, production):
+        deploy_block = script.split("$rawDeploy = az deployment group create", 1)[1]
+        assert "--output json 2>&1 | Out-String" in deploy_block
+        assert "$deployExitCode = $LASTEXITCODE" in deploy_block
+        assert "if ($deployExitCode -ne 0)" in deploy_block
