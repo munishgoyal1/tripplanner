@@ -437,7 +437,10 @@ STEP 3 — PARALLEL SEARCH (do all at once)
     HOTEL COMPLETION GATE: unless the user explicitly asks to compare hotel
     options before choosing, select the strongest preference-matched real hotel
     from the search results as the default in this same turn. Persist it in
-    selected_hotels and replace every placeholder hotel in day_wise_itinerary.
+    selected_hotels, including the result's destination/address evidence, and
+    replace every placeholder hotel in day_wise_itinerary. The selected hotel's
+    location MUST match the active trip destination; never substitute a similarly
+    named or more luxurious property in another city or country.
     Never persist "Hotel (TBD)", a generic accommodation label, or an invented
     hotel price as a selected hotel. If update_trip_plan reports "Hotel planning
     incomplete", search, choose, verify, and update again before the final reply.
@@ -484,8 +487,13 @@ STEP 4 — BUILD ITINERARY
       • Swap outdoor plans for indoor on heavy-rain days
       • Build the packing list with REAL numbers ("Goa Jul 12-18 → daily highs
         29-31°C, rain 4/7 days → quick-dry rain jacket + sandals")
+    Persist the tool's complete normalized result in update_trip_plan under
+    "weather", adding a concise "packing_advice" string list when useful.
     If the source is "seasonal_estimate" (trip > 16 days out), label the
     weather section "typical for this season" rather than "forecast".
+    If Open-Meteo fails completely, use your general monthly climate knowledge
+    to persist weather with source "agent_climate_estimate", one entry per trip
+    date, and a note that live weather was unavailable. Never call that a forecast.
   - Visa & entry rules: for any international trip call
     check_visa_requirements(passport_country, destination_country, purpose,
     days). Surface visa-required / visa-on-arrival / e-visa status, the

@@ -44,6 +44,15 @@ const itinerary: Itinerary = {
         travel_duration_display: "35 min",
         estimated: false,
       },
+      weather: {
+        date: "2026-09-12",
+        summary: "Light rain",
+        condition: "rain",
+        high_c: 18,
+        low_c: 12,
+        precip_mm: 3.2,
+        precip_probability_pct: 65,
+      },
       stops: [
         {
           name: "Louvre Museum",
@@ -95,6 +104,21 @@ const overview: TripOverview = {
   counts: { flights: 1, hotels: 1, activities: 4, days: 5 },
   total_cost: 45000,
   total_cost_display: "₹45,000",
+  weather: {
+    source: "forecast",
+    source_label: "Live forecast",
+    note: "Real forecast from Open-Meteo.",
+    days: [{
+      date: "2026-09-12",
+      summary: "Light rain",
+      condition: "rain",
+      high_c: 18,
+      low_c: 12,
+      precip_mm: 3.2,
+      precip_probability_pct: 65,
+    }],
+    packing_advice: ["Compact umbrella and light rain jacket"],
+  },
   constraints: ["Vegetarian meals"],
 };
 
@@ -135,6 +159,8 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("120 min visit")).toBeInTheDocument();
     expect(screen.queryByText("In trip")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
+    expect(screen.getByLabelText("Light rain, high 18 degrees Celsius, low 12 degrees Celsius")).toHaveTextContent("18° / 12°C");
+    expect(screen.getByText("65% rain")).toBeInTheDocument();
   });
 
   it("uses the itinerary entry point for the authoritative trip snapshot", async () => {
@@ -147,6 +173,9 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("₹45,000");
     expect(snapshot).toHaveTextContent("0/2 stops booked");
     expect(snapshot).toHaveTextContent("Vegetarian meals");
+    expect(snapshot).toHaveTextContent("Live forecast");
+    expect(snapshot).toHaveTextContent("D1");
+    expect(snapshot).toHaveTextContent("Compact umbrella and light rain jacket");
   });
 
   it("matches map ordering for hotel endpoints and place stops", async () => {

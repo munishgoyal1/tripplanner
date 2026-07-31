@@ -103,7 +103,7 @@ src/tripplanner/
     google_places.py      Places API New (search/reviews/photos)
     place_hours.py        Opening-hours + closure check (catches "Louvre Tue")
     routing.py            Google Routes API v2 (travel time + day optimizer)
-    weather.py            Open-Meteo forecast + archive (seasonal estimate)
+    weather.py            Open-Meteo forecast + archive fallback (no API key)
     visa.py               Tavily-backed visa & entry rules (prefers .gov / IATA)
     events.py             Tavily-backed local events / festivals / public holidays
     memory_recall.py      BM25-lite recall over learned notes / past trips / family
@@ -118,7 +118,7 @@ src/tripplanner/
   web/
     oauth.py          Standalone Google OAuth, HMAC mg_session cookie
     trip_view.py      PURE-PYTHON view-model (build_view, build_destination_overview,
-                      build_map_view, build_itinerary — structured day-by-day stops)
+              build_map_view, build_itinerary, normalized weather + packing)
     chat_store.py     PURE-PYTHON transcript + request replay persistence
               (per-trip chat docs plus principal chat_operations index)
     external_operations.py  Principal-scoped durable idempotency ledger for
@@ -183,7 +183,8 @@ frontend/
         destination guide + compact place rows, or rich focused-place details;
         selected places use the shared day-move/remove actions
       TripSnapshot.tsx     Single authoritative trip-summary presentation used
-        at the itinerary entry point on desktop and mobile
+        at the itinerary entry point; includes compact weather + packing context
+      WeatherIcon.tsx      Shared Lucide condition-icon mapping
       TripActionsMenu.tsx  Common-bar Export/Share/Calendar popover and share feedback
        PlaceTripActions.tsx Shared Map/Details selected-place control: current day,
           authoritative day move, exact/remove-everywhere occurrence actions
@@ -192,7 +193,7 @@ frontend/
       ExportModal.tsx      Print/PDF/email export options and handoff
       RightRail.tsx        Mobile trip-details sheet: TripSwitcher + stacked
                itinerary/photos + opt-in lazy map
-      ItineraryPanel.tsx   TripSnapshot + compact day summaries + clickable stops
+      ItineraryPanel.tsx   TripSnapshot + weather-aware day summaries + clickable stops
            + booked checkbox; exact day/stop identity owns active-row scroll
          and the filled current `H`/number marker; day-header click frames the
          complete map circuit and aligns its day summary without converting it

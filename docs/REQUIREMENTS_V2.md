@@ -145,8 +145,10 @@ re-describing the whole product.
 
 - LiteAPI is the preferred read-only source for date/party-specific hotel rates,
   flight rates, and selected-flight verification when configured. Normalized
-  results retain opaque provider references, quote time/expiry, total provider
-  currency, and explicit `live`, `unavailable`, or `provider_error` evidence.
+  hotel results retain the searched destination as query context, not physical
+  locality proof; all results retain opaque provider
+  references, quote time/expiry, total provider currency, and explicit `live`,
+  `unavailable`, or `provider_error` evidence.
 - The stable flight and hotel tools route through separate capability contracts;
   future providers can implement either capability without changing the agent.
 - Viator is the preferred read-only activity provider when configured. The stable
@@ -163,7 +165,11 @@ re-describing the whole product.
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.
   Map circuit drawings and fallback estimates avoid unnecessary Directions calls.
-- Open-Meteo supplies forecast and seasonal weather context.
+- Open-Meteo supplies no-key daily forecasts and same-season archive context.
+  Forecast failures fall back to the archive; total provider failure may use an
+  explicitly labeled agent monthly-climate estimate. Normalized weather persists
+  with the trip, drives per-day and trip-summary icons, and produces practical
+  clothing, rain, umbrella, and footwear guidance.
 - Tavily supplies fresh travel research, official-source-biased visa/entry
   research, and overlapping local events.
 - Missing provider keys degrade to an explicit not-configured result rather than
@@ -177,6 +183,12 @@ re-describing the whole product.
   attractions and named restaurants, and back to the hotel. Genuine overnight
   flight, train, bus, or transfer days are exempt from the return-to-hotel rule.
 - Placeholder hotels and generic `TBD` meals do not satisfy completion gates.
+- A selected hotel's explicit city, destination, or address evidence must match
+  the active trip destination. A mismatch rejects the whole plan update before
+  persistence rather than surfacing only as a finalization warning.
+- An unambiguous one-for-one selected hotel replacement updates every matching
+  itinerary stay anchor in the same persistence operation, so Itinerary and Map
+  cannot continue showing the removed property.
 - Substantial days require concrete restaurant research and persisted meal stops.
 - Visit times must progress chronologically and leave room for stated duration
   and travel. Duplicate or backwards model-authored times are rejected before

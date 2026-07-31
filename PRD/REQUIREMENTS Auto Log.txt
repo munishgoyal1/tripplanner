@@ -2884,3 +2884,24 @@ VALIDATION:
 - Because a completed turn may already have changed the trip, edited text is a new
   corrective turn with a fresh request ID; do not imply that transcript history or
   authoritative itinerary side effects were rolled back.
+=== 2026-07-30 — Weather-aware itinerary summaries ===
+
+- Persist weather for the travel dates and show a condition icon with concise
+  temperature/rain context on every itinerary day.
+- Show compact daily weather icons in the authoritative trip snapshot and include
+  practical clothing, umbrella, rain-jacket, and footwear guidance.
+- Prefer live weather. Fall back to seasonal archive evidence when it is unavailable,
+  then to explicitly labeled monthly climate knowledge only if the provider fails.
+- Keep the provider keyless when possible; Open-Meteo requires no API key.
+
+=== 2026-07-30 — Destination-safe hotel replacement ===
+
+- Replacing or upgrading a hotel must never select a property outside the active
+  trip destination, regardless of price, rating, or luxury preference fit.
+- Preserve destination/address evidence from hotel search results in the selected
+  plan. A new hotel selection must either carry matching locality evidence or name
+  the active destination explicitly.
+- Reject the complete update atomically when hotel locality mismatches or cannot be
+  established, so unrelated fields and itinerary surfaces cannot persist bad data.
+- When one selected hotel replaces one prior hotel, update every matching itinerary
+  hotel anchor in that same write so Itinerary and Map immediately show the new stay.

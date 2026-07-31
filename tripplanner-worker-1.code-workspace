@@ -18,7 +18,11 @@
     "[plaintext]": {
       "editor.inlineSuggest.enabled": false,
       "editor.inlineSuggest.suppressSuggestions": true,
-      "editor.quickSuggestions": false,
+      "editor.quickSuggestions": {
+        "comments": "off",
+        "strings": "off",
+        "other": "off"
+      },
       "editor.suggestOnTriggerCharacters": false,
       "editor.wordBasedSuggestions": "off",
       "editor.parameterHints.enabled": false,

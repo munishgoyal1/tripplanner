@@ -74,7 +74,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   controls (including account/preferences), and the latest mutation outcome.
   The itinerary begins with the one authoritative trip snapshot: destination,
   dates, travelers, lifecycle, unique counts, booking progress, cost/budget,
-  trip fit, and constraints. Its saved-trip menu must overlay
+  trip fit, constraints, compact daily weather, and practical packing guidance.
+  Weather must identify live forecasts versus seasonal/monthly estimates, and
+  every itinerary day with weather evidence shows its condition and temperature.
+  Its saved-trip menu must overlay
   every planner pane. Itinerary, Map, Details, and Assistant have obvious,
   symmetric show/hide controls. Details and Assistant are independent sections
   in the right dock: either can fill it while the other is hidden, and both stay

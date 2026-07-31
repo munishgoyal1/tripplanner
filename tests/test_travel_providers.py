@@ -105,6 +105,7 @@ def test_liteapi_normalizes_live_hotel_rates(monkeypatch):
     assert captured["json"]["occupancies"] == [{"adults": 2, "children": []}]
     assert len(offers) == 1
     assert offers[0].hotel_name == "Harbour Hotel"
+    assert offers[0].search_destination == "London"
     assert offers[0].total.amount == 425.5
     assert offers[0].provider_ref == {
         "hotel_id": "hotel-1",

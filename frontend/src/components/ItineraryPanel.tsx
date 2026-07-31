@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../types";
 import TripSnapshot from "./TripSnapshot";
+import WeatherIcon from "./WeatherIcon";
 
 interface Props {
   overview?: TripOverview | null;
@@ -335,6 +336,22 @@ function DayCard({
             <div className="min-w-0">
               {day.date && <p className="text-[11px] font-bold uppercase text-brand">{dayDateLabel(day.date)}</p>}
               <h3 className="display truncate text-lg font-semibold text-ink">{day.title}</h3>
+              {day.weather && (
+                <div
+                  className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-slate-600"
+                  aria-label={`${day.weather.summary}, high ${day.weather.high_c ?? "unknown"} degrees Celsius, low ${day.weather.low_c ?? "unknown"} degrees Celsius`}
+                  title={day.weather.precip_probability_pct != null ? `${day.weather.precip_probability_pct}% chance of precipitation` : day.weather.summary}
+                >
+                  <span className="text-accent"><WeatherIcon condition={day.weather.condition} size={16} /></span>
+                  <span>{day.weather.summary}</span>
+                  {day.weather.high_c != null && day.weather.low_c != null && (
+                    <span className="tabular-nums text-slate-500">{Math.round(day.weather.high_c)}° / {Math.round(day.weather.low_c)}°C</span>
+                  )}
+                  {day.weather.precip_probability_pct != null && day.weather.precip_probability_pct >= 30 && (
+                    <span className="text-sky-700">{Math.round(day.weather.precip_probability_pct)}% rain</span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           {day.summary && <p className="mt-2 text-xs leading-relaxed text-slate-600">{day.summary}</p>}

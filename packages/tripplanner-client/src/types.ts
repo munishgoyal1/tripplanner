@@ -40,6 +40,26 @@ export interface Budget {
   over_budget: boolean;
 }
 
+export type WeatherCondition = "clear" | "partly_cloudy" | "cloudy" | "fog" | "rain" | "storm" | "snow" | "unknown";
+
+export interface WeatherDay {
+  date: string;
+  summary: string;
+  condition: WeatherCondition;
+  high_c: number | null;
+  low_c: number | null;
+  precip_mm: number | null;
+  precip_probability_pct: number | null;
+}
+
+export interface TripWeather {
+  source: "forecast" | "seasonal_estimate" | "agent_climate_estimate";
+  source_label: string;
+  note: string;
+  days: WeatherDay[];
+  packing_advice: string[];
+}
+
 export interface TripOverview {
   destination: string;
   origin: string;
@@ -52,6 +72,7 @@ export interface TripOverview {
   total_cost: number | null;
   total_cost_display: string;
   budget?: Budget | null;
+  weather?: TripWeather | null;
   family_pills?: string[];
   constraints?: string[];
 }
@@ -189,6 +210,7 @@ export interface ItineraryDay {
   google_maps_url?: string;
   route?: MapDay["route"];
   schedule?: DaySchedule;
+  weather?: WeatherDay | null;
 }
 
 export interface Itinerary {

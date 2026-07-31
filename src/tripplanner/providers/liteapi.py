@@ -190,6 +190,7 @@ class LiteAPIProvider:
                                 "rate_id": str(rate.get("rateId") or ""),
                             },
                             hotel_name=str(metadata.get("name") or hotel.get("name") or hotel_id),
+                            search_destination=query.destination,
                             room_name=str(rate.get("name") or room.get("name") or "Room"),
                             board_name=rate.get("boardName"),
                             total=total,
