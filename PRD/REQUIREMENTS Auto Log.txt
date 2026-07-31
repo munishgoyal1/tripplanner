@@ -2874,3 +2874,13 @@ VALIDATION:
 - The merge and Run Latest actions must preflight both workers, merge Worker 1
   and then Worker 2 through separate merge-commit pull requests, synchronize each
   persistent branch, and start the app only after both integrations succeed.
+
+=== 2026-07-30 — Modern Assistant response controls ===
+
+- Add familiar modern chat controls to the web Assistant: stop active generation,
+  copy user or Assistant messages, and edit a prior user instruction for resend.
+- Stop must cancel the active SSE request, preserve useful partial output, recover
+  the composer, and never appear as a failed request or same-operation retry.
+- Because a completed turn may already have changed the trip, edited text is a new
+  corrective turn with a fresh request ID; do not imply that transcript history or
+  authoritative itinerary side effects were rolled back.

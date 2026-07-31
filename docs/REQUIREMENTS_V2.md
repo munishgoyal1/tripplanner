@@ -111,6 +111,12 @@ re-describing the whole product.
 - The main web app renders all validated field kinds in a prefilled compact card
   inside the Option A right-edge Assistant sidecar. Submission and default-skip
   responses continue through the normal retry-safe chat path.
+- While a web response is running, the Send control becomes Stop and aborts the
+  active SSE request without presenting a failure or same-request retry. Useful
+  partial text remains visibly marked as stopped and the composer recovers.
+- Completed user and Assistant messages can be copied. A prior user instruction
+  can be loaded into the composer, revised, and sent as a fresh corrective turn;
+  existing transcript and itinerary side effects are not falsely presented as undone.
 - Option A is available in the local deployment for owner evaluation. Hosted
   deployment and final design acceptance remain pending.
 

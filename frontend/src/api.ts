@@ -212,7 +212,7 @@ export interface StreamHandlers {
 export async function streamChat(
   message: string,
   h: StreamHandlers,
-  options: { proposalOnly?: boolean; requestId?: string } = {},
+  options: { proposalOnly?: boolean; requestId?: string; signal?: AbortSignal } = {},
 ): Promise<void> {
   const requestId = options.requestId ?? crypto.randomUUID();
   const res = await apiFetch(`${BASE}/chat/stream`, {
@@ -224,6 +224,7 @@ export async function streamChat(
       proposal_only: options.proposalOnly ?? false,
       request_id: requestId,
     }),
+    signal: options.signal,
   });
   if (!res.ok) {
     let message = `Chat request failed (${res.status}).`;

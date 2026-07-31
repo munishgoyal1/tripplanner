@@ -115,6 +115,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   names and raw arguments stay out of the primary experience; streamed answer
   text replaces progress as soon as it arrives. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
+  While streaming, Send becomes Stop; cancellation preserves useful partial text,
+  restores the composer, and does not masquerade as a failed retry. Message Copy
+  is direct. Editing a prior instruction loads it into the composer and sends any
+  revision as a new corrective turn because completed turns may already have
+  changed the authoritative itinerary.
 - **Assistant input**: show the saved or inferred defaults already being applied,
   then ask only for useful trip-specific changes. Every new trip begins with this
   single compact review after preferences load and before plan creation; direct

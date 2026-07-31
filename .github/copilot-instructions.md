@@ -152,6 +152,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Modern web Assistant controls**: the Option A sidecar can abort its active SSE
+  response through the shared transport, preserves and marks useful partial text,
+  and restores the composer without failure/retry state. Completed messages expose
+  Copy, and prior user instructions can be revised in the composer and sent as new
+  corrective operations so durable itinerary side effects and replay IDs remain honest.
 - **Production customer-flow analytics (Session 86)**: consent-gated GA4 is
   runtime-enabled only in production and uses a small content-free event
   vocabulary for visit-to-planning-to-trip-to-handoff funnels. Query strings,

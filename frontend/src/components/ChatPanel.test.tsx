@@ -32,6 +32,12 @@ describe("ChatPanel progress", () => {
     });
   });
 
+  async function readyComposer(): Promise<HTMLTextAreaElement> {
+    const composer = screen.getByPlaceholderText(/Plan a 5-day trip/);
+    await waitFor(() => expect(composer).toBeEnabled());
+    return composer as HTMLTextAreaElement;
+  }
+
   it("shows immediate and friendly progress while a turn is running", async () => {
     let handlers: StreamHandlers | undefined;
     streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
@@ -40,7 +46,7 @@ describe("ChatPanel progress", () => {
     });
     render(<ChatPanel onTurnComplete={vi.fn()} />);
 
-    const input = screen.getByPlaceholderText(/Plan a 5-day trip/);
+    const input = await readyComposer();
     fireEvent.change(input, { target: { value: "Plan a Goa weekend" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
@@ -50,6 +56,71 @@ describe("ChatPanel progress", () => {
 
     expect(screen.getByText(/Checking places and reviews/)).toBeInTheDocument();
     expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
+  });
+
+  it("stops an active response without presenting it as a failed request", async () => {
+    streamChatMock.mockImplementation(
+      (_message: string, handlers: StreamHandlers, options: { signal?: AbortSignal }) => {
+        handlers.onToken("Partial itinerary");
+        return new Promise<void>((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () => {
+            reject(new DOMException("Aborted", "AbortError"));
+          });
+        });
+      },
+    );
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    const composer = await readyComposer();
+    fireEvent.change(composer, {
+      target: { value: "Plan Goa" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(streamChatMock).toHaveBeenCalledOnce());
+    await screen.findByText("Partial itinerary");
+    fireEvent.click(await screen.findByRole("button", { name: "Stop response" }));
+
+    expect(await screen.findByText(/Response stopped\./)).toHaveTextContent("Partial itinerary");
+    expect(screen.queryByRole("button", { name: "Retry request" })).not.toBeInTheDocument();
+    expect(composer).toBeEnabled();
+  });
+
+  it("copies messages and loads prior user text for editing and resend", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    streamChatMock.mockImplementation((_message: string, handlers: StreamHandlers) => {
+      handlers.onToken("A complete plan");
+      handlers.onDone("A complete plan", "goa-trip");
+      return Promise.resolve();
+    });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    const composer = await readyComposer();
+    fireEvent.change(composer, { target: { value: "Plan Goa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    await screen.findByText("A complete plan");
+    await waitFor(() => {
+      expect(screen.getAllByRole("button", { name: "Copy message" })).toHaveLength(3);
+    });
+    const copyButtons = screen.getAllByRole("button", { name: "Copy message" });
+    fireEvent.click(copyButtons[copyButtons.length - 1]);
+    expect(writeText).toHaveBeenCalledWith("A complete plan");
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit message" }));
+    expect(composer).toHaveValue("Plan Goa");
+    await waitFor(() => expect(composer).toHaveFocus());
+
+    fireEvent.change(composer, { target: { value: "Plan Kerala instead" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(streamChatMock).toHaveBeenCalledTimes(2));
+    expect(streamChatMock.mock.calls[1][0]).toBe("Plan Kerala instead");
+    expect(streamChatMock.mock.calls[1][2].requestId).not.toBe(
+      streamChatMock.mock.calls[0][2].requestId,
+    );
   });
 
   it("starts an approved planner review as a proposal-only assistant turn", async () => {
@@ -66,10 +137,12 @@ describe("ChatPanel progress", () => {
       />,
     );
 
+    await readyComposer();
+
     await waitFor(() => expect(streamChatMock).toHaveBeenCalledWith(
       prompt,
       expect.any(Object),
-      { proposalOnly: true, requestId: expect.any(String) },
+      expect.objectContaining({ proposalOnly: true, requestId: expect.any(String) }),
     ));
     expect(screen.getByText(prompt)).toBeInTheDocument();
   });
@@ -87,7 +160,7 @@ describe("ChatPanel progress", () => {
       });
     render(<ChatPanel onTurnComplete={vi.fn()} />);
 
-    fireEvent.change(screen.getByPlaceholderText(/Plan a 5-day trip/), {
+    fireEvent.change(await readyComposer(), {
       target: { value: "Plan Goa" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -133,7 +206,7 @@ describe("ChatPanel progress", () => {
       });
     render(<ChatPanel onTurnComplete={vi.fn()} />);
 
-    fireEvent.change(screen.getByPlaceholderText(/Plan a 5-day trip/), { target: { value: "Plan Paris" } });
+    fireEvent.change(await readyComposer(), { target: { value: "Plan Paris" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     expect(await screen.findByText("Anything different for this trip?")).toBeInTheDocument();

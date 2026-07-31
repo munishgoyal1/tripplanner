@@ -166,12 +166,14 @@ frontend/
               sheet. Only the active responsive shell mounts.
     workspaceState.ts Canonical reducer for trip identity/revision, active place,
               chat reload, and itinerary jump state
-    api.ts            All HTTP/SSE + auth glue + per-destination overview cache
+    api.ts            All HTTP/SSE + auth glue + abortable chat transport +
+              per-destination overview cache
     types.ts          Shared TS contracts (TripView, TripItem, Preferences, …)
     index.css         Tailwind + reusable .card/.btn-primary/.btn-ghost/.pill/.chip
     components/
-       ChatPanel.tsx        Bubbles/composer + validated prefilled structured-input
-         cards + mounted account/settings dialogs;
+       ChatPanel.tsx        Bubbles/composer + Stop, Copy, and edit-as-new-turn
+         controls + validated prefilled structured-input cards + mounted
+         account/settings dialogs;
            immediate thinking/tool/review/save progress with elapsed time;
            animation-frame token batching; mobile header owns launchers,
            desktop top row triggers them
