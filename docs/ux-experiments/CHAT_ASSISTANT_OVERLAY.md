@@ -1,4 +1,4 @@
-# Experiment: Assistant-led trip kickoff
+# Experiment: Assistant overlap after planning
 
 ## Meta
 
@@ -12,29 +12,27 @@
 
 ## Hypothesis
 
-A focused Assistant surface can make conversation the primary itinerary-building
-surface without hiding the workspace context users need for trust. Showing the
-saved defaults already applied, then asking one compact prefilled question only
-when high-impact trip facts remain unresolved, should reduce typing and produce
-a stronger first itinerary faster than either a small chat dock or a questionnaire.
+A temporary Assistant surface can provide enough room for complete planning prompts,
+then recede so Itinerary, Map, and Details regain visual priority. A clear launcher
+should make re-entry easy without keeping a large conversation pane permanently open.
 
 ## Variants
 
-- **A - Docked sidecar:** attaches Assistant to the right half of the workspace.
-  Itinerary and Map remain bright, visible, and usable at the same time. Saved
-  defaults collapse into one compact disclosure bar so chat has enough width.
-- **B - Focus modal (recommended):** opens one large centered layer over a dimmed
-  workspace. Saved defaults sit beside the conversation; the user completes one
-  concentrated planning turn, closes it, and returns to the unchanged trip view.
-- **C - Guided takeover:** replaces the entire workspace with an explicit three-step
-  path: Trip brief, Research, Review. It gives the process maximum authority but
-  hides Itinerary and Map until the first complete plan is ready.
+- **A - Collapsible edge drawer (recommended):** a 420 px full-height drawer
+  overlays Details while leaving Itinerary and most of Map usable. It collapses
+  into a 48 px edge rail with a quiet ready indicator.
+- **B - Corner conversation sheet:** a 480 px lower-right sheet uses about two-thirds
+  of the workspace height. It leaves more of the map visible and collapses into a
+  familiar floating Assistant button.
+- **C - Prompt popover + rail:** a 400 px prompt surface opens beside a persistent
+  48 px edge rail. It gives the three workspace panels the most visual priority,
+  but provides the least room for a long transcript.
 
 All variants use the same live interaction fixture: saved-default disclosure,
-single choice, multiple choice, traveler stepper, direct-flight toggle, skip path,
-and one-click build handoff. Each variant also runs at full viewport scale over a
-realistic itinerary, map, and details workspace so the footprint can be judged
-without first changing production UX.
+single choice, multiple choice, traveler stepper, direct-flight toggle, functional
+skip path, one-click build handoff, Return to trip action, collapsed launcher, and
+reopen behavior. Each runs at full viewport scale over the same realistic itinerary,
+map, and details workspace.
 
 ## Scope
 
@@ -75,9 +73,10 @@ Non-goals for this experiment:
 1. Start with a bare Paris request and build using all preselected values.
 2. Change pace, priorities, party size, and flight preference before building.
 3. Skip the prompt and verify the UI makes its default assumptions explicit.
-4. Verify A keeps the workspace usable, B keeps it visible but inactive, and C
-  replaces it with the staged planning path.
-5. Use keyboard-only controls and verify every field has a visible label and state.
+4. Collapse and reopen each option; judge whether its resting affordance is obvious
+  without competing with the three trip panels.
+5. Compare how much Itinerary, Map, and Details remain visible while each is open.
+6. Use keyboard-only controls and verify every field has a visible label and state.
 
 ## Scorecard (1-5)
 
@@ -91,9 +90,11 @@ Non-goals for this experiment:
 ## Decision
 
 - Decision: pending
-- Current trial: A - Docked sidecar, implemented in the local main app for testing
-- Recommendation: evaluate A in normal local planning before final acceptance
-- Rationale: it gives the Assistant enough room for rich choices while preserving
-  a visible relationship to the itinerary being built.
-- Next action: test A in the local app with real planning turns, then accept it,
-  request adjustments, or return to another Lab option. No Azure deployment is approved.
+- Current production trial remains the older wide Docked sidecar; this revised Lab
+  does not modify it.
+- Recommendation: begin with A - Collapsible edge drawer.
+- Rationale: it retains enough room for rich controls and readable conversation,
+  while its collapsed rail returns nearly the full workspace after prompts finish.
+- Next action: test all three full-size previews, save one handoff with any requested
+  modifications, then explicitly approve production implementation. No Azure
+  deployment is approved.

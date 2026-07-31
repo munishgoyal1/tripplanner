@@ -6,6 +6,9 @@ import { labFeedbackPlugin } from "./feedback-plugin";
 export default defineConfig({
   root: __dirname,
   plugins: [react(), labFeedbackPlugin()],
+  css: {
+    postcss: __dirname,
+  },
   server: {
     host: "127.0.0.1",
     port: Number(process.env.VITE_LABS_PORT || 5175),

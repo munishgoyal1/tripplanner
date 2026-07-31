@@ -56,16 +56,16 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
-## Active Assistant Experiment (2026-07-30)
+## Active Assistant Experiment (2026-07-31)
 
-The Assistant-led trip kickoff lab is available at
-`http://127.0.0.1:5175/chat-assistant.html`. It compares a concurrently usable
-Docked sidecar, a temporary centered Focus modal, and a full Guided takeover
-around one realistic structured-input journey. Each option can open in a
-full-viewport trip workspace before a decision. A - Docked sidecar is the current
-trial, while the recommendation remains B - Focus modal; neither is a final
-selection. No production layout change is approved until the owner explicitly
-chooses a direction after evaluation. See
+The Assistant overlap lab is available at
+`http://127.0.0.1:5175/chat-assistant.html`. It compares a Collapsible edge
+drawer, Corner conversation sheet, and Prompt popover + rail around the same
+realistic structured-input journey. Each option supports the full open, build,
+return, collapsed, and reopen lifecycle over a production-scale trip workspace.
+A - Collapsible edge drawer is the recommended starting point; no option is a
+final selection. No production layout change is approved until the owner
+explicitly chooses a direction after evaluation. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one
