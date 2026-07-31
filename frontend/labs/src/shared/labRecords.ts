@@ -12,6 +12,15 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
+    title: "Workspace visual refresh",
+    description: "Compare semantic icon-and-text, compact icon, and text-led controls inside a realistic full planner shell.",
+    date: "30 Jul 2026",
+    status: "In evaluation",
+    decision: "Open · Production control styling remains unchanged until selection.",
+    href: "./shell-visual-refresh.html",
+    icon: LayoutPanelTop,
+  },
+  {
     title: "Workspace command bar controls",
     description: "Compare direct pane toggles, a segmented view group, and a compact Layout popover with local Hide and Maximize controls.",
     date: "31 Jul 2026",
@@ -48,15 +57,6 @@ export const activeLabs: LabRecord[] = [
     icon: BookOpen,
   },
   {
-    title: "Assistant overlap after planning",
-    description: "Compare a collapsible edge drawer, corner conversation sheet, and prompt popover using the same complete trip brief.",
-    date: "31 Jul 2026",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: A · Collapsible edge drawer.",
-    href: "./chat-assistant.html",
-    icon: MessageCircle,
-  },
-  {
     title: "Compact itinerary density",
     description: "Compare one-line, circuit-header, and progressive-focus agendas inside a 320 px day frame.",
     date: "30 Jul 2026",
@@ -68,6 +68,15 @@ export const activeLabs: LabRecord[] = [
 ];
 
 export const completedLabs: LabRecord[] = [
+  {
+    title: "Assistant-led trip kickoff",
+    description: "Compared a docked sidecar, centered focus modal, and full guided takeover using the same pre-filled trip brief.",
+    date: "30 Jul 2026",
+    status: "Implemented",
+    decision: "B · Focus modal, preserving the mounted conversation and unchanged workspace.",
+    href: "./chat-assistant.html",
+    icon: MessageCircle,
+  },
   {
     title: "Itinerary row design",
     description: "Compared Journey Timeline, Compact Agenda, and Guided Place Cards for each scheduled stop.",

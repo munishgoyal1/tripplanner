@@ -5,8 +5,8 @@
 - Branch: `agents/worker-1`
 - Owner: Munish Goyal
 - Date started: 2026-07-30
-- Date ended: pending
-- Status: testing
+- Date ended: 2026-07-30
+- Status: implemented
 - Lab: `http://127.0.0.1:5175/chat-assistant.html`
 - Full-size preview: choose an option, then use **Open full-size preview**
 
@@ -51,7 +51,7 @@ Related backend foundation:
 
 Non-goals for this experiment:
 
-- No production Assistant layout change before owner selection.
+- No additional production Assistant layout change beyond the selected focus modal.
 - No production renderer tests merely to evaluate a Lab option.
 - No change to direct-mode complete-by-default planning.
 - No generic form builder or arbitrary model-authored HTML.
@@ -89,12 +89,10 @@ Non-goals for this experiment:
 
 ## Decision
 
-- Decision: pending
-- Current production trial remains the older wide Docked sidecar; this revised Lab
-  does not modify it.
-- Recommendation: begin with A - Collapsible edge drawer.
-- Rationale: it retains enough room for rich controls and readable conversation,
-  while its collapsed rail returns nearly the full workspace after prompts finish.
-- Next action: test all three full-size previews, save one handoff with any requested
-  modifications, then explicitly approve production implementation. No Azure
-  deployment is approved.
+- Decision: B - Focus modal
+- Implementation: centered temporary desktop layer with a dim backdrop, explicit
+  close and command-bar reopen, and one continuously mounted conversation.
+- Rationale: it gives a planning turn enough room without permanently covering or
+  resizing the itinerary, map, and details workspace.
+- Next action: evaluate broader shell and control styling separately in the
+  workspace visual-refresh Lab. No Azure deployment is approved.

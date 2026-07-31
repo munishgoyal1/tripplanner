@@ -173,7 +173,7 @@ Learns from user preferences and past trips.
   normal preference kickoff, and then forces `create_trip_plan`. The prior trip
   and its transcript remain separate; the existing carryover path seeds only
   portable context into the new trip chat.
-- **Modern web Assistant controls**: the Option A sidecar can abort its active SSE
+- **Modern web Assistant controls**: the Option B focus modal can abort its active SSE
   response through the shared transport, preserves and marks useful partial text,
   and restores the composer without failure/retry state. Completed messages expose
   Copy, and prior user instructions can be revised in the composer and sent as new
@@ -204,24 +204,25 @@ Learns from user preferences and past trips.
   fallbacks remain; Google hotel results are labeled metadata-only rather than
   live availability. Explicit refresh bypasses the 60-second inventory cache.
   No prebook, booking, payment, order, or cancellation endpoint exists.
-- **Option A local Assistant trial**: the main web app now opens Assistant as a
-  wide right-edge sidecar over the still-visible, usable itinerary/map workspace.
+- **Option B Assistant focus modal**: the main web app now opens Assistant in a
+  centered focus modal over the still-visible but inactive itinerary/map workspace.
+  It closes explicitly or with Escape, reopens from the command bar, and remains
+  mounted while hidden so conversation state survives.
   Validated `input_request` events render as compact prefilled controls for all
   supported field kinds and submit through normal chat. New trips deterministically
   load preferences and force this one-step review before plan creation, enumerating
   relevant saved and past-trip context; direct mode proceeds without more questions
-  after submit or skip. This is for local owner testing only; no Azure deployment or
-  final design acceptance is implied.
+  after submit or skip. No Azure deployment is implied.
 - **Execution-ready Trip Book Lab**: one realistic London family-trip fixture
   compares a compact operations binder, recommended layered Trip Book, and
   visual journey book across contents, trip brief, executable day, document
   readiness, and evidence-labeled personal context. Production export remains
   unchanged; secure document ingestion and merged-PDF behavior require a later
   owner-approved contract.
-- **Assistant-led itinerary foundation**: the selected Option A local trial preserves
+- **Assistant-led itinerary foundation**: the selected Option B modal preserves
   the Lab's preference-aware kickoff, not only its footprint. FastAPI streams the
   validated payload as an additive `input_request` event, and shared web/native
-  transport retains it. Hosted deployment and final owner acceptance remain pending.
+  transport retains it. Hosted deployment remains pending.
 - **Truthful itinerary timing + density lab (Session 87)**: Itinerary and Map
   consume one backend-owned day schedule that separates endpoint-to-endpoint E2E
   time from route-only Travel and marks inferred hotel departure/return times as
