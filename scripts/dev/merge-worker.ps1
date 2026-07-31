@@ -142,7 +142,9 @@ if ($ValidateOnly) {
 
 Write-Host "[1/6] Updating master..."
 Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
-Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("pull", "--ff-only", "origin", "master") | Out-Null
+Invoke-GitMerge -WorkingDirectory $primaryRoot -Arguments @(
+    "origin/master", "--ff-only"
+) -WorkerName "Master" | Out-Null
 
 Write-Host "[2/6] Bringing $workerName onto the current master..."
 Invoke-Git -WorkingDirectory $workerRoot -Arguments @("fetch", "origin") | Out-Null
@@ -191,7 +193,10 @@ Invoke-Gh -WorkingDirectory $primaryRoot -Arguments @(
 ) | Out-Host
 
 Write-Host "[6/6] Updating master and synchronizing $workerName..."
-Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("pull", "--ff-only", "origin", "master") | Out-Null
+Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
+Invoke-GitMerge -WorkingDirectory $primaryRoot -Arguments @(
+    "origin/master", "--ff-only"
+) -WorkerName "Master" | Out-Null
 Invoke-Git -WorkingDirectory $workerRoot -Arguments @("fetch", "origin") | Out-Null
 Invoke-GitMerge -WorkingDirectory $workerRoot -Arguments @(
     "origin/master", "--ff-only"
