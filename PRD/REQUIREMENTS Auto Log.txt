@@ -3066,3 +3066,12 @@ VALIDATION:
   resizing, content, Assistant, and mobile behavior.
 - Preserve the prior accepted top row as immutable pushed tag
   `ui-stable/2026-07-31-semantic-command-bar` at commit `2665f7b`.
+
+=== 2026-07-31 — Implement Trip Snapshot Decision brief ===
+
+- Implement Trip Snapshot hierarchy Option B only in the authoritative whole-trip
+  summary above the itinerary agenda.
+- Keep Days, Stay, Places, and Flights in one compact facts row and make booking
+  readiness explicit without changing day briefs or itinerary rows.
+- Keep meaningful family/preference and constraint evidence, but do not repeat the
+  prototype's vague Trip fit summary below Budget.

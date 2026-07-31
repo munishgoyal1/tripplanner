@@ -1,4 +1,4 @@
-import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane, Users } from "lucide-react";
+import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane } from "lucide-react";
 import type { Budget, TripOverview } from "../types";
 import WeatherIcon from "./WeatherIcon";
 
@@ -57,6 +57,9 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
     { label: overview.counts.flights === 1 ? "flight" : "flights", value: overview.counts.flights, icon: Plane },
   ];
   const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).join(" - ");
+  const travelersLabel = `${overview.travelers} ${Number(overview.travelers) === 1 ? "traveler" : "travelers"}`;
+  const remainingStops = stops != null && booked != null ? Math.max(stops - booked, 0) : null;
+  const readinessPct = stops ? Math.round(((booked ?? 0) / stops) * 100) : 0;
 
   return (
     <section aria-label="Trip snapshot" className="border-b border-slate-200 bg-white px-4 py-4">
@@ -67,7 +70,7 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
             {overview.destination || "Your trip"}
           </h1>
           <p className="mt-1 truncate text-xs text-slate-500">
-            {[overview.origin && `From ${overview.origin}`, dateRange].filter(Boolean).join(" · ")}
+            {[overview.origin && `From ${overview.origin}`, dateRange, travelersLabel].filter(Boolean).join(" · ")}
           </p>
         </div>
         <div className="shrink-0 text-right">
@@ -80,29 +83,31 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-4 divide-x divide-slate-200 border-y border-slate-200 py-2.5">
+      {stops != null && booked != null && (
+        <div className="mt-3 border-t border-slate-200 pt-3">
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
+              <CheckCircle2 size={13} className="text-emerald-600" aria-hidden />
+              {booked} of {stops} ready
+            </span>
+            <span className={remainingStops ? "text-amber-700" : "text-emerald-700"}>
+              {remainingStops ? `${remainingStops} need booking` : "All confirmed"}
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100" aria-label={`${readinessPct}% of stops ready`}>
+            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${readinessPct}%` }} />
+          </div>
+        </div>
+      )}
+
+      <div className="mt-3 grid grid-cols-4 divide-x divide-slate-200 border-y border-slate-200 py-1.5">
         {countFacts.map(({ label, value, icon: Icon }) => (
-          <div key={label} aria-label={`${value} ${label}`} className="min-w-0 px-2 first:pl-0 last:pr-0">
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <Icon size={13} aria-hidden />
-              <span className="truncate text-[10px] uppercase">{label}</span>
-            </div>
-            <p className="mt-0.5 text-base font-semibold tabular-nums text-ink">{value}</p>
+          <div key={label} aria-label={`${value} ${label}`} className="flex min-w-0 items-center justify-center gap-1 px-1.5">
+            <Icon size={12} className="shrink-0 text-slate-400" aria-hidden />
+            <p className="text-xs font-semibold tabular-nums text-ink">{value}</p>
+            <span className="truncate text-[9px] font-medium uppercase text-slate-400">{label}</span>
           </div>
         ))}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600">
-        <span className="inline-flex items-center gap-1.5">
-          <Users size={13} className="text-slate-400" aria-hidden />
-          {overview.travelers} {Number(overview.travelers) === 1 ? "traveler" : "travelers"}
-        </span>
-        {stops != null && booked != null && (
-          <span className="inline-flex items-center gap-1.5">
-            <CheckCircle2 size={13} className="text-slate-400" aria-hidden />
-            {booked}/{stops} stops booked
-          </span>
-        )}
       </div>
 
       {overview.weather && (

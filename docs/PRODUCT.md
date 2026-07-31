@@ -78,7 +78,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   primary command, while trip actions, account, and preferences remain compact icons.
   The itinerary begins with the one authoritative trip snapshot: destination,
   dates, travelers, lifecycle, unique counts, booking progress, cost/budget,
-  trip fit, constraints, compact daily weather, and practical packing guidance.
+  family/preference context, constraints, compact daily weather, and practical
+  packing guidance. Its Decision brief hierarchy keeps booking readiness explicit,
+  renders Days/Stay/Places/Flights as one compact facts row, and does not repeat a
+  generic Trip fit summary below Budget.
   Weather must identify live forecasts versus seasonal/monthly estimates, and
   every itinerary day with weather evidence shows its condition and temperature.
   Its saved-trip menu must overlay
@@ -111,7 +114,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Optional Lab-only markers outline those exact varied regions without changing
   preview layout, styling, or interaction and can be hidden for an unannotated view.
 - **Density**: information-rich but ordered. The itinerary snapshot should pack
-  the trip's decision-making facts into a scan-friendly hierarchy. Whole-trip
+  the trip's decision-making facts into a scan-friendly Decision brief hierarchy.
+  Whole-trip
   place browsing uses compact media rows; rich galleries and reviews belong to
   the focused-place view. One clear primary action per item.
 - **Motion**: subtle hover-lift, 300ms cross-fades on data switches. NO

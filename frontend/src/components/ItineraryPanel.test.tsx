@@ -171,8 +171,12 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("5 days")).toBeInTheDocument();
     expect(screen.getByLabelText("4 places")).toBeInTheDocument();
     expect(snapshot).toHaveTextContent("₹45,000");
-    expect(snapshot).toHaveTextContent("0/2 stops booked");
+    expect(snapshot).toHaveTextContent("Delhi · 2026-09-12 - 2026-09-16 · 2 travelers");
+    expect(snapshot).toHaveTextContent("0 of 2 ready");
+    expect(snapshot).toHaveTextContent("2 need booking");
+    expect(screen.getByLabelText("0% of stops ready")).toBeInTheDocument();
     expect(snapshot).toHaveTextContent("Vegetarian meals");
+    expect(snapshot).not.toHaveTextContent("Trip fit:");
     expect(snapshot).toHaveTextContent("Live forecast");
     expect(snapshot).toHaveTextContent("D1");
     expect(snapshot).toHaveTextContent("Compact umbrella and light rain jacket");

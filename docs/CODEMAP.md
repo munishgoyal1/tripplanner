@@ -161,8 +161,8 @@ frontend/
           itinerary execution, confirmation readiness, and personal place context
         src/workspace-command-bar/  Completed command-bar comparison; Option A keeps
           direct pane visibility controls with local hide and maximize/restore
-        src/trip-snapshot/  Active whole-trip snapshot comparison; distinct from the
-          decided day-level Narrative Brief experiment
+        src/trip-snapshot/  Completed whole-trip snapshot comparison; Option B's
+          Decision brief is implemented and remains distinct from day briefs
   src/
     main.tsx          React 19 root
     analytics.ts      Production-only, consent-gated GA4 loader and bounded events
@@ -205,7 +205,8 @@ frontend/
         destination guide + compact place rows, or rich focused-place details;
         selected places use the shared day-move/remove actions
       TripSnapshot.tsx     Single authoritative trip-summary presentation used
-        at the itinerary entry point; includes compact weather + packing context
+        at the itinerary entry point; Decision brief hierarchy with explicit
+        readiness, compact facts, weather, packing, preferences, and budget
       WeatherIcon.tsx      Shared Lucide condition-icon mapping
       TripActionsMenu.tsx  Common-bar Export/Share/Calendar popover and share feedback
        PlaceTripActions.tsx Shared Map/Details selected-place control: current day,

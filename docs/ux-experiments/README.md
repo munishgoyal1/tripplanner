@@ -114,6 +114,17 @@ header. The pre-change semantic command bar is preserved at
 `ui-stable/2026-07-31-semantic-command-bar`. See
 [`WORKSPACE_COMMAND_BAR.md`](WORKSPACE_COMMAND_BAR.md).
 
+## Implemented Trip Snapshot Experiment (2026-07-31)
+
+The whole-trip snapshot Lab remains available at
+`http://127.0.0.1:5175/trip-snapshot.html`. The selected and implemented direction
+is B - Decision brief. The production snapshot now keeps traveler context with trip
+identity, presents explicit booking readiness, and compresses Days, Stay, Places,
+and Flights into one-line facts. Family and constraint evidence remains visible,
+but the prototype's repeated Trip fit line below Budget was intentionally omitted.
+Day briefs and itinerary rows are unchanged. See
+[`TRIP_SNAPSHOT_HIERARCHY.md`](TRIP_SNAPSHOT_HIERARCHY.md).
+
 ## Active Map Controls Experiment (2026-07-31)
 
 The Map commands and day context Lab is available at

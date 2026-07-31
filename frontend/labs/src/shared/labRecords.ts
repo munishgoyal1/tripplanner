@@ -14,17 +14,6 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
-    id: "trip-snapshot-hierarchy",
-    title: "Trip snapshot hierarchy",
-    category: "Trip overview",
-    description: "Compare scan-ledger, decision-brief, and progressive whole-trip summaries above the itinerary agenda.",
-    date: "31 Jul 2026",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: B · Decision brief.",
-    href: "./trip-snapshot.html",
-    icon: ListChecks,
-  },
-  {
     id: "map-controls",
     title: "Map command and day context",
     category: "Map interaction",
@@ -60,6 +49,17 @@ export const activeLabs: LabRecord[] = [
 ];
 
 export const completedLabs: LabRecord[] = [
+  {
+    id: "trip-snapshot-hierarchy",
+    title: "Trip snapshot hierarchy",
+    category: "Trip overview",
+    description: "Compared scan-ledger, decision-brief, and progressive whole-trip summaries above the itinerary agenda.",
+    date: "31 Jul 2026",
+    status: "Implemented",
+    decision: "B · Decision brief, with compact facts and no repeated Trip fit block below Budget.",
+    href: "./trip-snapshot.html",
+    icon: ListChecks,
+  },
   {
     id: "workspace-command-bar",
     title: "Workspace command bar controls",
