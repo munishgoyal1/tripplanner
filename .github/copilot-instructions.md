@@ -152,6 +152,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Deterministic mid-chat new trips**: explicit new/separate/another/different
+  trip intent preempts completion gates for the currently active trip, runs the
+  normal preference kickoff, and then forces `create_trip_plan`. The prior trip
+  and its transcript remain separate; the existing carryover path seeds only
+  portable context into the new trip chat.
 - **Modern web Assistant controls**: the Option A sidecar can abort its active SSE
   response through the shared transport, preserves and marks useful partial text,
   and restores the composer without failure/retry state. Completed messages expose

@@ -76,7 +76,8 @@ src/tripplanner/
   config.py           Pydantic Settings from .env, including local Cosmos backend choice
   graph.py            LangGraph StateGraph: agent ↔ tools loop; deterministically
                       loads preferences and forces one structured kickoff before
-                      creating each new trip
+                      creating each new trip, including explicit separate-trip
+                      intent from inside another trip's chat
                       (binds only select_tools(messages) per turn)
   observability.py    PII-safe structured app events + restricted audit sink;
                       Container Apps stdout flows to Log Analytics; optional

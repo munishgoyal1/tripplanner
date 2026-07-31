@@ -2905,3 +2905,14 @@ VALIDATION:
   established, so unrelated fields and itinerary surfaces cannot persist bad data.
 - When one selected hotel replaces one prior hotel, update every matching itinerary
   hotel anchor in that same write so Itinerary and Map immediately show the new stay.
+
+=== 2026-07-31 — Mid-chat separate trip creation and compact Assistant overlap ===
+
+- The Assistant must detect an explicit request for a new, separate, another, or
+  different trip even while the user is chatting inside an existing trip.
+- Run the normal one-step preference kickoff, then require creation of a distinct
+  persisted trip and trip-scoped transcript. Never apply that request as a mutation
+  of the currently open trip; preserve the prior trip and its chat.
+- Explore less intrusive overlapping Assistant treatments that slide in and out
+  easily. After planning prompts finish, Itinerary, Map, and Details should regain
+  visual priority. No replacement layout is selected or approved by this request.

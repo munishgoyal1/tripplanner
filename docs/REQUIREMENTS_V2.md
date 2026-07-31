@@ -125,6 +125,10 @@ re-describing the whole product.
 - The agent loads known preferences before the one-step new-trip kickoff. Direct
   mode uses that review and then builds without further questions; interactive
   mode may include unresolved critical facts in the same review.
+- Explicit requests for a new, separate, another, or different trip start the
+  new-trip kickoff even when another trip's chat is active. After the user submits
+  or skips that kickoff, the graph requires `create_trip_plan`; the prior trip and
+  its transcript remain separate.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
 - One sticky display currency is used throughout a trip. Domestic travel defaults
