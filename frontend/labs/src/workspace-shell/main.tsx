@@ -73,7 +73,7 @@ function Pane({ label, icon: Icon, className }: { label: string; icon: typeof Ma
 function LayoutDiagram({ layout }: { layout: Option["layout"] }) {
   if (layout === "map") {
     return (
-      <div className="grid h-32 grid-cols-[1.5fr_1fr] gap-1 rounded-md bg-slate-100 p-2 ring-1 ring-slate-200" aria-label="Map-first pane arrangement">
+      <div data-lab-change="Pane arrangement" className="grid h-32 grid-cols-[1.5fr_1fr] gap-1 rounded-md bg-slate-100 p-2 ring-1 ring-slate-200" aria-label="Map-first pane arrangement">
         <div className="grid grid-rows-[1.4fr_1fr] gap-1"><Pane label="Map" icon={Map} className="bg-teal-50 text-accent ring-teal-200" /><Pane label="Details" icon={PanelRight} className="bg-white text-slate-600 ring-slate-200" /></div>
         <div className="grid grid-rows-2 gap-1"><Pane label="Itinerary" icon={Route} className="bg-white text-slate-600 ring-slate-200" /><Pane label="Chat" icon={MessageSquare} className="bg-white text-slate-600 ring-slate-200" /></div>
       </div>
@@ -81,14 +81,14 @@ function LayoutDiagram({ layout }: { layout: Option["layout"] }) {
   }
   if (layout === "story") {
     return (
-      <div className="grid h-32 grid-cols-[1.45fr_1fr] gap-1 rounded-md bg-slate-100 p-2 ring-1 ring-slate-200" aria-label="Story-first pane arrangement">
+      <div data-lab-change="Pane arrangement" className="grid h-32 grid-cols-[1.45fr_1fr] gap-1 rounded-md bg-slate-100 p-2 ring-1 ring-slate-200" aria-label="Story-first pane arrangement">
         <div className="grid grid-rows-[1.4fr_1fr] gap-1"><Pane label="Itinerary" icon={Route} className="bg-brand-50 text-brand ring-brand-100" /><Pane label="Details" icon={PanelRight} className="bg-white text-slate-600 ring-slate-200" /></div>
         <div className="grid grid-rows-2 gap-1"><Pane label="Chat" icon={MessageSquare} className="bg-white text-slate-600 ring-slate-200" /><Pane label="Map" icon={Map} className="bg-white text-slate-600 ring-slate-200" /></div>
       </div>
     );
   }
   return (
-    <div className="grid h-32 grid-cols-[0.9fr_1.5fr_1fr] gap-1 rounded-md bg-slate-100 p-2 ring-1 ring-slate-200" aria-label="Selected spatial workspace pane arrangement">
+    <div data-lab-change="Pane arrangement" className="grid h-32 grid-cols-[0.9fr_1.5fr_1fr] gap-1 rounded-md bg-slate-100 p-2 ring-1 ring-slate-200" aria-label="Selected spatial workspace pane arrangement">
       <Pane label="Itinerary" icon={Route} className="bg-white text-slate-600 ring-slate-200" />
       <Pane label="Map" icon={Map} className="bg-teal-50 text-accent ring-teal-200" />
       <div className="grid grid-rows-[1.25fr_0.75fr] gap-1"><Pane label="Details" icon={PanelRight} className="bg-white text-slate-600 ring-slate-200" /><Pane label="Assistant" icon={MessageSquare} className="bg-white text-slate-600 ring-slate-200" /></div>

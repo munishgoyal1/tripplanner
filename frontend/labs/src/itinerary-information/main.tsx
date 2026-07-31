@@ -213,7 +213,7 @@ function DayHeader() {
 
 function TimelineVariant() {
   return (
-    <div className="px-4 py-4 sm:px-5">
+    <div data-lab-change="Itinerary row hierarchy" className="px-4 py-4 sm:px-5">
       {stops.map((stop, index) => {
         const timing = stopTiming(stop);
         return (
@@ -248,7 +248,7 @@ function TimelineVariant() {
 
 function AgendaVariant() {
   return (
-    <div className="divide-y divide-slate-100 px-4 sm:px-5">
+    <div data-lab-change="Itinerary row hierarchy" className="divide-y divide-slate-100 px-4 sm:px-5">
       {stops.map((stop, index) => {
         const timing = stopTiming(stop);
         return (
@@ -279,7 +279,7 @@ function AgendaVariant() {
 
 function CardsVariant() {
   return (
-    <div className="space-y-3 px-4 py-4 sm:px-5">
+    <div data-lab-change="Itinerary row hierarchy" className="space-y-3 px-4 py-4 sm:px-5">
       {stops.map((stop, index) => {
         const timing = stopTiming(stop);
         return (

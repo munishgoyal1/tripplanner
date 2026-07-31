@@ -57,7 +57,7 @@ function RouteAction() {
 
 function EditorialBrief() {
   return (
-    <section className="bg-white p-4 sm:p-5">
+    <section data-lab-change="Narrative Day brief" className="bg-white p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <DateIdentity />
         <RouteAction />
@@ -75,7 +75,7 @@ function EditorialBrief() {
 
 function BalancedBrief() {
   return (
-    <section className="bg-white p-4 sm:p-5">
+    <section data-lab-change="Narrative Day brief" className="bg-white p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <DateIdentity />
         <RouteAction />
@@ -101,7 +101,7 @@ function BalancedBrief() {
 
 function CompactBrief() {
   return (
-    <section className="bg-white p-4 sm:p-5">
+    <section data-lab-change="Narrative Day brief" className="bg-white p-4 sm:p-5">
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
         <div className="min-w-0">
           <DateIdentity compact />

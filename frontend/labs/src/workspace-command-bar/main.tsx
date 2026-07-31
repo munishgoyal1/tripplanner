@@ -122,11 +122,11 @@ function GlobalActions() {
 function DirectBar({ visibility, toggle }: { visibility: Visibility; toggle: (pane: PaneId) => void }) {
   return (
     <>
-      <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand px-3 text-xs font-semibold text-white">
+      <button data-lab-change="New-trip command representation" type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand px-3 text-xs font-semibold text-white">
         <Plus size={14} aria-hidden /> New trip
       </button>
       <div className="mx-1 h-5 w-px bg-slate-200" />
-      <div className="flex items-center gap-1" aria-label="Pane visibility">
+      <div data-lab-change="Pane visibility controls" className="flex items-center gap-1" aria-label="Pane visibility">
         {panes.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -149,7 +149,7 @@ function SegmentedBar({ visibility, toggle }: { visibility: Visibility; toggle: 
   return (
     <>
       <IconButton label="Start new trip"><Plus size={15} aria-hidden /></IconButton>
-      <div className="flex overflow-hidden rounded-md bg-slate-100 p-0.5 ring-1 ring-slate-200" aria-label="Visible workspace panes">
+      <div data-lab-change="Pane visibility controls" className="flex overflow-hidden rounded-md bg-slate-100 p-0.5 ring-1 ring-slate-200" aria-label="Visible workspace panes">
         {panes.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -188,7 +188,7 @@ function LayoutMenuBar({
   return (
     <>
       <IconButton label="Start new trip"><Plus size={15} aria-hidden /></IconButton>
-      <div className="relative">
+      <div data-lab-change="Layout and pane visibility menu" className="relative">
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}

@@ -3035,3 +3035,12 @@ VALIDATION:
 - Preserve itinerary times and other stop context during replacement.
 - Repair the persisted Mauritius plan so Preskil Island Resort is shown consistently
   in the active trip and saved history.
+
+=== 2026-07-31 — Non-interfering UX Lab change markers ===
+
+- Provide an optional visual marker on every individual Lab preview so the owner
+  can identify exactly which UI regions vary between options.
+- Keep annotations separate from the UI being evaluated: markers must consume no
+  layout space, accept no pointer input, and be removable for an exact clean view.
+- Keep marker implementation and target metadata inside isolated Lab source only;
+  production components and styling remain unchanged.

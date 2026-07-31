@@ -104,6 +104,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Before its options, every Lab explicitly separates the exact elements being
   changed from realistic surrounding UI that is context only. Selecting an option
   does not implicitly approve changes to other elements visible in its preview.
+  Optional Lab-only markers outline those exact varied regions without changing
+  preview layout, styling, or interaction and can be hidden for an unannotated view.
 - **Density**: information-rich but ordered. The itinerary snapshot should pack
   the trip's decision-making facts into a scan-friendly hierarchy. Whole-trip
   place browsing uses compact media rows; rich galleries and reviews belong to

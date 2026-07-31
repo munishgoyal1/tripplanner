@@ -325,7 +325,7 @@ function ChatAssistantLab() {
           <div className="flex flex-wrap items-center gap-3"><p className="text-xs text-slate-500">Switch options above, then use the same controls to compare the experience.</p><a href={`?preview=${variant}`} className="btn-primary"><Maximize2 size={14} /> Open full-size preview</a></div>
         </div>
 
-        <section className="relative mt-2 h-[760px] max-h-[78vh] min-h-[620px] overflow-hidden rounded-md border border-slate-200 bg-white shadow-card" aria-label="Interactive assistant layout preview">
+        <section data-lab-change="Assistant surface and footprint" className="relative mt-2 h-[760px] max-h-[78vh] min-h-[620px] overflow-hidden rounded-md border border-slate-200 bg-white shadow-card" aria-label="Interactive assistant layout preview">
           <WorkspaceBackdrop />
           <AssistantOverlay key={variant} variant={variant} />
         </section>

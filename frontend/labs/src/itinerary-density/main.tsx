@@ -58,7 +58,7 @@ function LabHeader() {
 
 function Ledger() {
   return (
-    <div>
+    <div data-lab-change="Itinerary row density">
       <LabHeader />
       <div className="divide-y divide-slate-100">
         <div className="grid grid-cols-[3.5rem_1fr_auto] items-center gap-2 px-3 py-1.5 text-xs"><span className="font-semibold text-slate-500">Depart</span><strong className="truncate">H · Wilde Aparthotels</strong><span className="text-slate-400">09:50 est.</span></div>
@@ -71,7 +71,7 @@ function Ledger() {
 
 function Circuit() {
   return (
-    <div>
+    <div data-lab-change="Itinerary row density">
       <LabHeader />
       <div className="flex items-center gap-2 border-b border-teal-100 bg-teal-50/70 px-3 py-1.5 text-[11px] text-teal-800"><Route size={12} /><strong>Wilde Aparthotels</strong><span>Depart 09:50</span><span aria-hidden>→</span><span>Return 20:14 est.</span></div>
       <div className="divide-y divide-slate-100 px-3">
@@ -83,7 +83,7 @@ function Circuit() {
 
 function Focus() {
   return (
-    <div>
+    <div data-lab-change="Itinerary row density">
       <LabHeader />
       <div className="divide-y divide-slate-100 px-3">
         {stops.map((stop, index) => <div key={stop.name} className={`py-2 ${index === 1 ? "bg-slate-50 -mx-3 px-3" : ""}`}><div className="grid grid-cols-[3.4rem_minmax(0,1fr)_auto] items-center gap-2"><strong className="text-xs tabular-nums">{stop.time}</strong><span className="truncate text-xs font-semibold"><b className="mr-1.5 text-amber-700">{stop.marker}</b>{stop.name}</span>{index === 1 ? <ChevronDown size={14} className="text-slate-400" /> : <Booking booked={stop.booked} iconOnly />}</div>{index === 1 && <div className="ml-[3.4rem] mt-1.5 flex items-center gap-2 text-[10px] text-slate-500"><span>{stop.kind} · {stop.duration}</span><span className="text-teal-700">Travel {stop.travel}</span><Booking booked={stop.booked} /></div>}</div>)}

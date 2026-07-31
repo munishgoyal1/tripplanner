@@ -207,7 +207,7 @@ function AgendaContext() {
 
 function Preview({ variant }: { variant: VariantId }) {
   return (
-    <div className="mx-auto max-w-2xl overflow-hidden rounded-md shadow-card ring-1 ring-slate-200">
+    <div data-lab-change="Trip snapshot hierarchy" className="mx-auto max-w-2xl overflow-hidden rounded-md shadow-card ring-1 ring-slate-200">
       {variant === "ledger" && <LedgerSnapshot />}
       {variant === "brief" && <BriefSnapshot />}
       {variant === "progressive" && <ProgressiveSnapshot />}

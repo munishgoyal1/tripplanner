@@ -1,4 +1,6 @@
-import { CircleDot, LockKeyhole } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { CircleDot, Eye, EyeOff, LockKeyhole } from "lucide-react";
 
 interface ScopeDefinition {
   changes: string[];
@@ -78,31 +80,130 @@ const scopes: Record<string, ScopeDefinition> = {
   },
 };
 
+interface MarkerRect {
+  label: string;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+const MARKERS_KEY = "tripplanner_lab_change_markers";
+
+function ChangeMarkerOverlay({ enabled }: { enabled: boolean }) {
+  const [markers, setMarkers] = useState<MarkerRect[]>([]);
+
+  useEffect(() => {
+    if (!enabled) {
+      setMarkers([]);
+      return;
+    }
+
+    let frame = 0;
+    let targets: HTMLElement[] = [];
+    const update = () => {
+      setMarkers(targets.map((target) => {
+        const rect = target.getBoundingClientRect();
+        return {
+          label: target.dataset.labChange || "Changes in this Lab",
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      }).filter((marker) => marker.width > 0 && marker.height > 0));
+    };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    const resizeObserver = new ResizeObserver(schedule);
+    const refreshTargets = () => {
+      targets = Array.from(document.querySelectorAll<HTMLElement>("[data-lab-change]"));
+      resizeObserver.disconnect();
+      targets.forEach((target) => resizeObserver.observe(target));
+      schedule();
+    };
+    const root = document.getElementById("root");
+    const mutationObserver = new MutationObserver(refreshTargets);
+    if (root) mutationObserver.observe(root, { childList: true, subtree: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("scroll", schedule, true);
+    refreshTargets();
+
+    return () => {
+      cancelAnimationFrame(frame);
+      mutationObserver.disconnect();
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", schedule, true);
+    };
+  }, [enabled]);
+
+  if (!enabled || markers.length === 0) return null;
+  return createPortal(
+    <div className="pointer-events-none fixed inset-0 z-[90]" aria-hidden="true">
+      {markers.map((marker, index) => (
+        <div key={`${marker.label}-${index}`}>
+          <div
+            className="fixed rounded-md ring-2 ring-emerald-500 ring-offset-2 ring-offset-transparent"
+            style={{ top: marker.top, left: marker.left, width: marker.width, height: marker.height }}
+          />
+          <span
+            className="fixed max-w-56 truncate rounded-sm bg-emerald-700 px-2 py-1 text-[10px] font-bold uppercase text-white shadow-pop"
+            style={{ top: Math.max(4, marker.top - 25), left: Math.max(4, marker.left) }}
+          >
+            Change · {marker.label}
+          </span>
+        </div>
+      ))}
+    </div>,
+    document.body,
+  );
+}
+
 export function LabScope({ labId }: { labId: string }) {
   const scope = scopes[labId];
+  const [markersVisible, setMarkersVisible] = useState(() => localStorage.getItem(MARKERS_KEY) !== "hidden");
   if (!scope) return null;
 
+  const toggleMarkers = () => {
+    setMarkersVisible((visible) => {
+      localStorage.setItem(MARKERS_KEY, visible ? "hidden" : "visible");
+      return !visible;
+    });
+  };
+
   return (
-    <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200" aria-labelledby={`${labId}-scope-title`}>
-      <div className="border-b border-slate-100 px-4 py-3">
-        <p className="text-[10px] font-bold uppercase text-brand">Change scope</p>
-        <h2 id={`${labId}-scope-title`} className="mt-0.5 text-sm font-semibold text-ink">What this Lab is deciding</h2>
-        <p className="mt-1 text-xs leading-relaxed text-slate-500">Only the items under Changes vary between options. The rest of the preview is fixed context and is not part of this decision.</p>
-      </div>
-      <div className="grid md:grid-cols-2">
-        <div className="px-4 py-3 md:border-r md:border-slate-100">
-          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-700"><CircleDot size={12} aria-hidden /> Changes in this Lab</p>
-          <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-700">
-            {scope.changes.map((item) => <li key={item} className="flex gap-2"><span className="text-emerald-600">•</span><span>{item}</span></li>)}
-          </ul>
+    <>
+      <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200" aria-labelledby={`${labId}-scope-title`}>
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase text-brand">Change scope</p>
+            <h2 id={`${labId}-scope-title`} className="mt-0.5 text-sm font-semibold text-ink">What this Lab is deciding</h2>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">Only the items under Changes vary between options. The rest of the preview is fixed context and is not part of this decision.</p>
+          </div>
+          <button type="button" aria-pressed={markersVisible} onClick={toggleMarkers} className="btn-ghost shrink-0">
+            {markersVisible ? <EyeOff size={14} aria-hidden /> : <Eye size={14} aria-hidden />}
+            {markersVisible ? "Hide change markers" : "Show change markers"}
+          </button>
         </div>
-        <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-3 md:border-t-0">
-          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-500"><LockKeyhole size={12} aria-hidden /> Context only, not changing</p>
-          <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
-            {scope.context.map((item) => <li key={item} className="flex gap-2"><span className="text-slate-400">•</span><span>{item}</span></li>)}
-          </ul>
+        <div className="grid md:grid-cols-2">
+          <div className="px-4 py-3 md:border-r md:border-slate-100">
+            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-700"><CircleDot size={12} aria-hidden /> Changes in this Lab</p>
+            <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-700">
+              {scope.changes.map((item) => <li key={item} className="flex gap-2"><span className="text-emerald-600">•</span><span>{item}</span></li>)}
+            </ul>
+          </div>
+          <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-3 md:border-t-0">
+            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-500"><LockKeyhole size={12} aria-hidden /> Context only, not changing</p>
+            <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
+              {scope.context.map((item) => <li key={item} className="flex gap-2"><span className="text-slate-400">•</span><span>{item}</span></li>)}
+            </ul>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <ChangeMarkerOverlay enabled={markersVisible} />
+    </>
   );
 }

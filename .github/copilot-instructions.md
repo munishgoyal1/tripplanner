@@ -158,6 +158,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
+- **Non-interfering UX Lab change markers**: every individual Lab can outline its
+  exact varied preview regions through shared Lab-only annotations. A scope-panel
+  toggle hides the portal-rendered, pointer-transparent overlays for a clean view;
+  markers add no wrappers, dimensions, or production component styling.
 - **Concrete-hotel placeholder synchronization**: selecting one unambiguous real
   hotel replaces stale `Hotel (TBD)` itinerary anchors even when placeholder
   filtering left the prior `selected_hotels` list empty. Existing stop timing is

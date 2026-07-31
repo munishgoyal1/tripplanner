@@ -147,8 +147,10 @@ frontend/
                           `?view=active` list; `completed-labs.html` preserves decisions.
                           Individual pages return directly to All Labs. Shared
                           `LabScope` distinguishes exact option changes from fixed
-                          preview context; `DecisionCapture` persists ready, parked,
-                          or discarded lifecycle plus scoped implementation notes.
+                          preview context and renders optional portal-based overlays
+                          for explicit `data-lab-change` preview targets without
+                          affecting layout or input; `DecisionCapture` persists ready,
+                          parked, or discarded lifecycle plus scoped implementation notes.
                     src/map-controls/ Active production-scale comparison for Map day/all-days
                       scope, Add stop hierarchy, and schedule versus route evidence
     src/itinerary-density/  Active 320px day-density comparison; preserves the

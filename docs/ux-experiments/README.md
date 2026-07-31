@@ -28,6 +28,14 @@ elements that vary and separately names the surrounding fixture elements that ar
 context only. Choosing an option authorizes only the declared changes; context UI
 must remain unchanged unless the owner's handoff explicitly adds it.
 
+The Change scope block also controls optional **change markers** on each preview.
+Markers outline only elements carrying a Lab-owned `data-lab-change` target and
+label the varied region without wrapping or restyling it. The marker layer is
+rendered in a body portal, takes no layout space, and ignores pointer input, so
+showing or hiding it cannot change the preview's dimensions or interactions.
+Marker state is shared across Labs in the browser. These annotations exist only
+under `frontend/labs/`; they must never be added to production components.
+
 ## Branch Strategy
 
 - Stable baseline: `master`
@@ -149,6 +157,8 @@ scope until a direction is selected and separately approved. See
   keep that preview inside the Lab until the owner explicitly approves production.
 8. State exact in-scope changes and context-only elements before the alternatives.
   A realistic preview is not permission to redesign every element it happens to show.
+9. Mark each varied preview region with `data-lab-change`; keep annotations out of
+  production UI and ensure marker overlays take no layout space or pointer input.
 
 ## Fast Commands
 
