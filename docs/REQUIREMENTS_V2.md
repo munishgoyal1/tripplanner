@@ -109,9 +109,9 @@ re-describing the whole product.
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
 - The main web app renders all validated field kinds in a prefilled compact card
-  inside the selected Option B centered Assistant focus modal. The visible workspace
-  is inactive while the modal is open; explicit close, Escape, and command-bar reopen
-  preserve the mounted conversation. Submission and default-skip responses continue
+  inside the selected Option B lower-right Assistant conversation sheet. The visible
+  workspace remains usable while the sheet is open; explicit close, Escape, and
+  command-bar reopen preserve the mounted conversation. Submission and default-skip responses continue
   through the normal retry-safe chat path.
 - While a web response is running, the Send control becomes Stop and aborts the
   active SSE request without presenting a failure or same-request retry. Useful
@@ -119,7 +119,7 @@ re-describing the whole product.
 - Completed user and Assistant messages can be copied. A prior user instruction
   can be loaded into the composer, revised, and sent as a fresh corrective turn;
   existing transcript and itinerary side effects are not falsely presented as undone.
-- Option B is implemented in the local web application. Hosted deployment remains
+- Option B is implemented in the web application. A new hosted deployment remains
   pending explicit approval.
 
 ### PLAN-01 - Preference-aware planning flow

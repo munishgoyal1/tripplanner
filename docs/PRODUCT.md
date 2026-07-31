@@ -79,9 +79,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   every itinerary day with weather evidence shows its condition and temperature.
   Its saved-trip menu must overlay
   every planner pane. Itinerary, Map, Details, and Assistant have obvious
-  show/hide controls. Assistant opens in a centered focus modal over the visible
-  but inactive workspace and stays mounted while hidden so its conversation state
-  survives. Only panes scroll; the page never does.
+  show/hide controls. Assistant opens as a compact lower-right conversation sheet
+  over the still-usable workspace and stays mounted while hidden so its conversation
+  state survives. Only panes scroll; the page never does.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
   sizes persist locally. The Assistant closes explicitly or with Escape and
@@ -127,7 +127,7 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   single compact review after preferences load and before plan creation; direct
   mode proceeds without follow-up questions after submit or skip. Structured prompts
   prefill every field and offer one build/continue action plus a default skip path.
-  The selected Option B focus modal and structured controls are implemented in
+  The selected Option B corner conversation sheet and structured controls are implemented in
   the main web app. No hosted deployment is implied.
 - **Itinerary scanning**: each day header shows stop count, `Schedule duration`,
   a separate `Day's travel` row with route distance/time/mode, and a direct Maps

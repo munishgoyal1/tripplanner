@@ -2983,3 +2983,15 @@ VALIDATION:
   from every standalone Lab page.
 - This request approves Lab exploration only. Production Map behavior remains
   unchanged until an option and modifications are explicitly selected.
+
+=== 2026-07-31 — Corner Assistant and distinct Lab index ===
+
+- Correct the prior Option B interpretation: production Assistant must use the
+  Lab's approximately 480 px lower-right conversation sheet at about 68% height,
+  with sharp edges and no page-covering backdrop or centered modal.
+- Keep Itinerary, Map, and Details visible and usable while Assistant is open.
+  Preserve close, Escape, command-bar reopen, mounted chat state, structured input,
+  Stop, Copy, and edit-as-new-turn behavior.
+- Make All labs and In progress distinct navigation destinations. The combined
+  index shows active and completed work; the active view concisely distinguishes
+  all six open experiments with numbering and category labels.

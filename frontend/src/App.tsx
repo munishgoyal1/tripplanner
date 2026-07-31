@@ -624,20 +624,13 @@ export default function App() {
   const assistantModal = (
     <div
       data-testid="assistant-modal-layer"
-      className={`fixed inset-0 z-[60] place-items-center p-5 sm:p-8 ${chatOpen ? "grid" : "hidden"}`}
+      className={`fixed bottom-4 right-4 z-[60] h-[68%] min-h-[31rem] w-[min(30rem,calc(100vw-2rem))] ${chatOpen ? "flex" : "hidden"}`}
     >
-      <button
-        type="button"
-        aria-label="Close Assistant"
-        onClick={() => setDockPaneOpen("assistant", false)}
-        className="absolute inset-0 cursor-default bg-slate-950/35 backdrop-blur-[1px]"
-      />
       <aside
         data-testid="assistant-modal"
         role="dialog"
-        aria-modal="true"
         aria-label="Trip Assistant"
-        className="relative z-10 flex h-[calc(100dvh-4rem)] max-h-[52rem] w-[calc(100vw-4rem)] max-w-[64rem] min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)]"
+        className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)]"
       >
         <div className="relative min-h-0 flex-1">
           <ChatPanel

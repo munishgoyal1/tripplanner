@@ -24,7 +24,7 @@ open, rather than its current screen position.
   for familiar commands such as add, export, settings, and account.
 
 All variants use the same realistic itinerary, map, Details inspector, and the
-selected centered Assistant focus modal. The controls are interactive, and every
+selected lower-right Assistant conversation sheet. The controls are interactive, and every
 variant can run as a full-viewport preview.
 
 ## Scope

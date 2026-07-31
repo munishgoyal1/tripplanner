@@ -298,7 +298,7 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
-    fireEvent.click(screen.getAllByRole("button", { name: "Close Assistant" })[1]);
+    fireEvent.click(screen.getByRole("button", { name: "Close Assistant" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
     expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
@@ -318,13 +318,21 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
-  it("opens Assistant as a centered focus modal over the unchanged workspace", async () => {
+  it("opens Assistant as a lower-right conversation sheet over the usable workspace", async () => {
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("assistant-modal")).toBeInTheDocument());
-    expect(screen.getByTestId("assistant-modal")).toHaveClass("w-[calc(100vw-4rem)]", "max-w-[64rem]");
-    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("grid");
+    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass(
+      "bottom-4",
+      "right-4",
+      "h-[68%]",
+      "w-[min(30rem,calc(100vw-2rem))]",
+      "flex",
+    );
+    expect(screen.getByTestId("assistant-modal")).not.toHaveAttribute("aria-modal");
+    expect(screen.getByTestId("assistant-modal")).toHaveClass("rounded-md");
+    expect(screen.queryByRole("button", { name: "Close Assistant" })).toBeInTheDocument();
     expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
@@ -335,11 +343,11 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("assistant-modal")).toBeInTheDocument());
-    fireEvent.click(screen.getAllByRole("button", { name: "Close Assistant" })[1]);
+    fireEvent.click(screen.getByRole("button", { name: "Close Assistant" }));
     expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
     fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
-    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("grid");
+    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("flex");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
   });
 

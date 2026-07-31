@@ -60,12 +60,12 @@ to judge or approve a direction.
 ## Decided Assistant Experiment (2026-07-30)
 
 The Assistant-led trip kickoff lab is available at
-`http://127.0.0.1:5175/chat-assistant.html`. It compares a concurrently usable
-Docked sidecar, a temporary centered Focus modal, and a full Guided takeover
-around one realistic structured-input journey. Each option can open in a
-full-viewport trip workspace. The selected and implemented direction is B -
-Focus modal: a centered temporary layer over the unchanged workspace, with the
-conversation kept mounted across close and reopen. No Azure deployment is
+`http://127.0.0.1:5175/chat-assistant.html`. It compares a collapsible edge
+drawer, a corner conversation sheet, and a prompt popover around one realistic
+structured-input journey. Each option can open in a full-viewport trip workspace.
+The selected and implemented direction is B - Corner conversation sheet: a 480 px
+lower-right surface over the usable workspace, with the conversation kept mounted
+across close and reopen. No Azure deployment is
 approved by this UI decision. See
 [`CHAT_ASSISTANT_OVERLAY.md`](CHAT_ASSISTANT_OVERLAY.md).
 

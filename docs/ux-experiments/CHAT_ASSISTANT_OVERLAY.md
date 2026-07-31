@@ -51,7 +51,7 @@ Related backend foundation:
 
 Non-goals for this experiment:
 
-- No additional production Assistant layout change beyond the selected focus modal.
+- No additional production Assistant layout change beyond the selected conversation sheet.
 - No production renderer tests merely to evaluate a Lab option.
 - No change to direct-mode complete-by-default planning.
 - No generic form builder or arbitrary model-authored HTML.
@@ -89,10 +89,10 @@ Non-goals for this experiment:
 
 ## Decision
 
-- Decision: B - Focus modal
-- Implementation: centered temporary desktop layer with a dim backdrop, explicit
-  close and command-bar reopen, and one continuously mounted conversation.
-- Rationale: it gives a planning turn enough room without permanently covering or
-  resizing the itinerary, map, and details workspace.
+- Decision: B - Corner conversation sheet
+- Implementation: 480 px lower-right desktop sheet using about 68% of workspace
+  height, with sharp edges, explicit close, and one continuously mounted conversation.
+- Rationale: it gives follow-up turns enough room while leaving most of the map and
+  itinerary visible and usable.
 - Next action: evaluate broader shell and control styling separately in the
   workspace visual-refresh Lab. No Azure deployment is approved.

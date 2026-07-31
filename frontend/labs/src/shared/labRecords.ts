@@ -2,6 +2,7 @@ import { BookOpen, LayoutPanelTop, ListChecks, Map, MessageCircle } from "lucide
 
 export interface LabRecord {
   title: string;
+  category: string;
   description: string;
   date: string;
   status: string;
@@ -13,6 +14,7 @@ export interface LabRecord {
 export const activeLabs: LabRecord[] = [
   {
     title: "Workspace visual refresh",
+    category: "Visual system",
     description: "Compare semantic icon-and-text, compact icon, and text-led controls inside a realistic full planner shell.",
     date: "30 Jul 2026",
     status: "In evaluation",
@@ -22,6 +24,7 @@ export const activeLabs: LabRecord[] = [
   },
   {
     title: "Workspace command bar controls",
+    category: "Workspace controls",
     description: "Compare direct pane toggles, a segmented view group, and a compact Layout popover with local Hide and Maximize controls.",
     date: "31 Jul 2026",
     status: "In evaluation",
@@ -31,6 +34,7 @@ export const activeLabs: LabRecord[] = [
   },
   {
     title: "Trip snapshot hierarchy",
+    category: "Trip overview",
     description: "Compare scan-ledger, decision-brief, and progressive whole-trip summaries above the itinerary agenda.",
     date: "31 Jul 2026",
     status: "In evaluation",
@@ -40,6 +44,7 @@ export const activeLabs: LabRecord[] = [
   },
   {
     title: "Map command and day context",
+    category: "Map interaction",
     description: "Compare route ribbons, a compact command deck, and a schedule-first map for add-stop, day focus, and route summaries.",
     date: "31 Jul 2026",
     status: "In evaluation",
@@ -49,6 +54,7 @@ export const activeLabs: LabRecord[] = [
   },
   {
     title: "Execution-ready Trip Book",
+    category: "Trip export",
     description: "Compare compact, layered, and visual structures for one printable itinerary with confirmations and personal context.",
     date: "30 Jul 2026",
     status: "In evaluation",
@@ -58,6 +64,7 @@ export const activeLabs: LabRecord[] = [
   },
   {
     title: "Compact itinerary density",
+    category: "Itinerary layout",
     description: "Compare one-line, circuit-header, and progressive-focus agendas inside a 320 px day frame.",
     date: "30 Jul 2026",
     status: "In evaluation",
@@ -70,15 +77,17 @@ export const activeLabs: LabRecord[] = [
 export const completedLabs: LabRecord[] = [
   {
     title: "Assistant-led trip kickoff",
-    description: "Compared a docked sidecar, centered focus modal, and full guided takeover using the same pre-filled trip brief.",
+    category: "Assistant layout",
+    description: "Compared a collapsible edge drawer, corner conversation sheet, and prompt popover using the same pre-filled trip brief.",
     date: "30 Jul 2026",
     status: "Implemented",
-    decision: "B · Focus modal, preserving the mounted conversation and unchanged workspace.",
+    decision: "B · Corner conversation sheet, preserving the mounted conversation and usable workspace.",
     href: "./chat-assistant.html",
     icon: MessageCircle,
   },
   {
     title: "Itinerary row design",
+    category: "Itinerary layout",
     description: "Compared Journey Timeline, Compact Agenda, and Guided Place Cards for each scheduled stop.",
     date: "29 Jul 2026",
     status: "Implemented",
@@ -88,6 +97,7 @@ export const completedLabs: LabRecord[] = [
   },
   {
     title: "Itinerary summary design",
+    category: "Trip overview",
     description: "Compared Editorial, Balanced, and Compact modifications of Narrative Brief above Compact Agenda.",
     date: "29 Jul 2026",
     status: "Implemented",
@@ -97,6 +107,7 @@ export const completedLabs: LabRecord[] = [
   },
   {
     title: "Workspace shell layout",
+    category: "Workspace layout",
     description: "Compared map-first, story-first, and compact-mobile workspace structures on experiment branches.",
     date: "23 Jul 2026",
     status: "Decided",

@@ -5,7 +5,7 @@ type LabSection = "catalog" | "active" | "completed";
 export function LabNavigation({ current = "active" }: { current?: LabSection }) {
   const links = [
     { id: "catalog", label: "All labs", href: "./catalog.html", icon: FlaskConical },
-    { id: "active", label: "In progress", href: "./catalog.html#active-labs", icon: ListChecks },
+    { id: "active", label: "In progress", href: "./catalog.html?view=active", icon: ListChecks },
     { id: "completed", label: "Completed", href: "./completed-labs.html", icon: Archive },
   ] as const;
 

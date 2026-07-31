@@ -143,8 +143,9 @@ frontend/
                       `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
                       written to the ignored
                           docs/ux-experiments/LAB_SELECTIONS.local.json. `catalog.html`
-                          owns active experiments, `completed-labs.html` preserves
-                          decisions, and shared navigation connects every Lab page.
+                          owns the combined index and distinct `?view=active` list,
+                          `completed-labs.html` preserves decisions, and shared
+                          navigation connects every Lab page.
                     src/map-controls/ Active production-scale comparison for Map day/all-days
                       scope, Add stop hierarchy, and schedule versus route evidence
     src/itinerary-density/  Active 320px day-density comparison; preserves the
@@ -160,8 +161,8 @@ frontend/
     analytics.ts      Production-only, consent-gated GA4 loader and bounded events
         App.tsx           Responsive workspace owner. Desktop: fixed 100dvh spatial
           planner with itinerary left, persistent map center, contextual
-          Details dock, and an independently mounted centered Assistant focus
-          modal over the visible but inactive workspace; no page scroll. The modal
+          Details dock, and an independently mounted lower-right Assistant
+          conversation sheet over the usable workspace; no page scroll. The sheet
           closes explicitly or with Escape and reopens without losing chat state.
           Top command/status bar owns saved-trip selection,
         New trip, pane visibility, grouped trip actions, and
