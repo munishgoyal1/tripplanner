@@ -4,6 +4,16 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-07-31 - Synchronize Rejected Placeholders
+
+- Filtering a placeholder from a selected-items collection does not remove the
+  same placeholder from a separately persisted itinerary.
+- When one concrete replacement is unambiguous, synchronize placeholder anchors
+  even if the prior selected-items collection was empty. A normal old-to-new diff
+  cannot detect a placeholder that was deliberately rejected from that collection.
+- Validate both normalized selections and rendered itinerary occurrences; either
+  can look correct while the other retains stale planning data.
+
 ## 2026-07-31 - Never Recover Create With Update
 
 - Treat an explicit whole-trip request for a destination different from the active

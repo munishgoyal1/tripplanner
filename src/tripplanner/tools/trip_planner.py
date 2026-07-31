@@ -287,21 +287,28 @@ def _sync_replaced_hotel_anchors(
     selected = by_name(selected_hotels)
     removed = previous.keys() - selected.keys()
     added = selected.keys() - previous.keys()
-    if len(removed) != 1 or len(added) != 1:
-        return False
+    replacements: dict[str, dict[str, Any]] = {}
+    if len(removed) == 1 and len(added) == 1:
+        replacements[next(iter(removed))] = selected[next(iter(added))]
+    placeholder_replacement = next(iter(selected.values())) if len(selected) == 1 else None
 
-    removed_name = next(iter(removed))
-    replacement = selected[next(iter(added))]
-    replacement_name = _stop_name(replacement) or str(
-        replacement.get("hotel_name") or ""
-    ).strip()
     changed = False
     for day in plan.get("day_wise_itinerary") or []:
         if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
             continue
         for index, stop in enumerate(day["stops"]):
-            if _stop_kind(stop) != "hotel" or _stop_name(stop).lower() != removed_name:
+            if _stop_kind(stop) != "hotel":
                 continue
+            stop_name = _stop_name(stop)
+            replacement = replacements.get(stop_name.lower())
+            if replacement is None and placeholder_replacement is not None:
+                if _HOTEL_PLACEHOLDER_RE.search(stop_name):
+                    replacement = placeholder_replacement
+            if replacement is None:
+                continue
+            replacement_name = _stop_name(replacement) or str(
+                replacement.get("hotel_name") or ""
+            ).strip()
             next_stop = dict(stop) if isinstance(stop, dict) else {}
             next_stop.update(replacement)
             next_stop["name"] = replacement_name

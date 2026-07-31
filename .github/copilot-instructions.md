@@ -158,6 +158,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
+- **Concrete-hotel placeholder synchronization**: selecting one unambiguous real
+  hotel replaces stale `Hotel (TBD)` itinerary anchors even when placeholder
+  filtering left the prior `selected_hotels` list empty. Existing stop timing is
+  retained; the local Mauritius plan was repaired to Preskil Island Resort.
 - **Restorable stable UI history**: owner-accepted interface milestones are
   preserved as immutable, remotely pushed `ui-stable/*` tags, with the latest
   three documented under UX experiments. A guarded helper lists, creates, or opens

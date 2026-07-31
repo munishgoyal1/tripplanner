@@ -193,6 +193,8 @@ re-describing the whole product.
   attractions and named restaurants, and back to the hotel. Genuine overnight
   flight, train, bus, or transfer days are exempt from the return-to-hotel rule.
 - Placeholder hotels and generic `TBD` meals do not satisfy completion gates.
+- When one concrete hotel is selected, any remaining placeholder hotel anchors in
+  the persisted itinerary are replaced with that hotel while retaining day timing.
 - A selected hotel's explicit city, destination, or address evidence must match
   the active trip destination. A mismatch rejects the whole plan update before
   persistence rather than surfacing only as a finalization warning.

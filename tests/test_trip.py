@@ -423,6 +423,41 @@ class TestTripPlanState:
 
         assert "Hotel planning incomplete" not in result
 
+    def test_update_trip_plan_replaces_placeholder_anchors_with_concrete_hotel(self):
+        create_trip_plan.invoke({
+            "destination": "Mauritius",
+            "departure_date": "2026-08-28",
+            "return_date": "2026-09-03",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [
+                    {"name": "Hotel (TBD)", "kind": "hotel", "time": "09:00"},
+                    {"name": "Blue Bay Marine Park", "kind": "attraction", "time": "10:00"},
+                    {"name": "Hotel (TBD)", "kind": "hotel", "time": "18:00"},
+                ],
+            }],
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "Preskil Island Resort",
+                "destination": "Mauritius",
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        hotel_stops = [
+            stop
+            for day in plan["day_wise_itinerary"]
+            for stop in day["stops"]
+            if stop.get("kind") == "hotel"
+        ]
+        assert "Hotel planning incomplete" not in result
+        assert {stop["name"] for stop in hotel_stops} == {"Preskil Island Resort"}
+        assert [stop["time"] for stop in hotel_stops] == ["09:00", "18:00"]
+
     def test_update_trip_plan_rejects_hotel_outside_destination_atomically(self):
         create_trip_plan.invoke({
             "destination": "Manali, India",

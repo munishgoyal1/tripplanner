@@ -3026,3 +3026,12 @@ VALIDATION:
 - Allow an old version to be opened safely in a detached sibling worktree without
   changing master. Returning to it must be a new compatibility-checked commit, not
   a destructive reset or an automatic production deployment.
+
+=== 2026-07-31 — Concrete hotel must replace itinerary placeholders ===
+
+- A concrete selected hotel must replace remaining `Hotel (TBD)` itinerary anchors
+  when it is the single unambiguous stay, including when the placeholder was already
+  filtered out of `selected_hotels`.
+- Preserve itinerary times and other stop context during replacement.
+- Repair the persisted Mauritius plan so Preskil Island Resort is shown consistently
+  in the active trip and saved history.
