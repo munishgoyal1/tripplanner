@@ -306,4 +306,5 @@ export interface StreamHandlers {
 export interface StreamOptions {
   proposalOnly?: boolean;
   requestId?: string;
+  signal?: AbortSignal;
 }

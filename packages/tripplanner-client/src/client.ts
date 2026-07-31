@@ -227,11 +227,15 @@ export class TripplannerClient {
     options: StreamOptions = {},
   ): Promise<void> {
     const requestId = options.requestId ?? crypto.randomUUID();
-    const response = await this.post("/chat/stream", {
-      message,
-      proposal_only: options.proposalOnly ?? false,
-      request_id: requestId,
-    });
+    const response = await this.post(
+      "/chat/stream",
+      {
+        message,
+        proposal_only: options.proposalOnly ?? false,
+        request_id: requestId,
+      },
+      options.signal,
+    );
     ensureOk(response, "Chat request failed");
     const stream = response.body as ReadableStream<Uint8Array> | null;
     if (!stream?.getReader) {
@@ -271,11 +275,16 @@ export class TripplannerClient {
     if (!terminalEvent) throw new Error("The response stream ended before completion.");
   }
 
-  private async post(path: string, body: Record<string, unknown>): Promise<Response> {
+  private async post(
+    path: string,
+    body: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): Promise<Response> {
     return this.request(this.url(path), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...body, user_id: await this.userId() }),
+      signal,
     });
   }
 }

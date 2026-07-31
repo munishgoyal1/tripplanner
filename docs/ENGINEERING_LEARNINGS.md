@@ -112,6 +112,18 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Account-scoped native reads need the same abort/generation guard as trip reads;
   otherwise a response from the prior identity can overwrite the signed-in view.
 
+## 2026-07-30 - Cancellation Is Not Replay
+
+- User cancellation belongs at the streaming transport boundary. Abort the active
+  fetch/read, let server disconnect cleanup release admission, and recover the
+  composer without failure telemetry or a same-request retry affordance.
+- Token paints and transcript hydration are asynchronous writers. A cancelled turn
+  must cancel queued token work, and initial history restoration must finish before
+  accepting a new turn so stale rows cannot replace newer visible state.
+- Chat edits cannot imply rollback when a prior turn may have persisted itinerary
+  mutations. Preserve the audit trail and send revised text under a fresh operation
+  identity as a corrective turn.
+
 ## 2026-07-28 - Bound Idempotency to the Provider Write
 
 - A completed-response ledger does not close the crash window after provider

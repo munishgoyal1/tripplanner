@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Check, Copy, Pencil, Send, Square } from "lucide-react";
 import {
   streamChat,
   signIn,
@@ -107,12 +108,17 @@ export default function ChatPanel({
   const topRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
+  const loadedTranscriptRequestRef = useRef<string | null>(null);
   // Set to true immediately after a Google sign-in where the previous identity
   // was a guest web-* id. The transcript effect reads this and skips loading
   // the (now-irrelevant) guest chat, keeping the screen at GREETING + banner.
   const freshSignInRef = useRef(false);
   const handledAssistantRequestRef = useRef(0);
   const sendRequestedMessageRef = useRef<(message: string, proposalOnly?: boolean) => void>(() => {});
+  const streamControllerRef = useRef<AbortController | null>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
+  const copyTimerRef = useRef<number | null>(null);
+  const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
 
   useEffect(() => {
     if (!assistantRequest || busy || !transcriptReady || handledAssistantRequestRef.current === assistantRequest.id) return;
@@ -130,6 +136,11 @@ export default function ChatPanel({
     const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
   }, [progress]);
+
+  useEffect(() => () => {
+    streamControllerRef.current?.abort();
+    if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
+  }, []);
 
   useEffect(() => {
     const openAccount = () => setShowAccount((open) => !open);
@@ -159,6 +170,7 @@ export default function ChatPanel({
   }, [showAccount]);
 
   const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
+  const transcriptRequestKey = JSON.stringify([cacheKey, reloadToken, tripIdHint]);
 
   // --- mic dictation (Web Speech API, Chrome/Edge/Safari) -------------------
   // Feature-detected at runtime; no SpeechRecognition types in lib.dom yet,
@@ -263,6 +275,8 @@ export default function ChatPanel({
   useEffect(() => {
     if (!authChecked) return;
     if (busy) return;
+    if (loadedTranscriptRequestRef.current === transcriptRequestKey) return;
+    loadedTranscriptRequestRef.current = transcriptRequestKey;
     // Skip transcript reload on a fresh sign-in from guest mode — the user
     // should see a clean GREETING + the import banner, not old guest messages.
     if (freshSignInRef.current) {
@@ -286,6 +300,9 @@ export default function ChatPanel({
         setMessages(next);
       })
       .catch(() => {
+        if (loadedTranscriptRequestRef.current === transcriptRequestKey) {
+          loadedTranscriptRequestRef.current = null;
+        }
         /* keep whatever's on screen */
       })
       .finally(() => {
@@ -295,7 +312,7 @@ export default function ChatPanel({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authChecked, reloadToken, tripIdHint, cacheKey, busy]);
+  }, [authChecked, reloadToken, tripIdHint, cacheKey, busy, transcriptRequestKey]);
 
   useEffect(() => {
     setFailedRequest(null);
@@ -346,13 +363,15 @@ export default function ChatPanel({
     requestId: string = crypto.randomUUID(),
     retrying = false,
   ) {
-    if (!outgoing.trim() || busy) return;
+    if (!outgoing.trim() || busy || !transcriptReady) return;
     if (listening) stopListening();
     setInput("");
     setFailedRequest(null);
     setTripInputRequest(null);
     setBusy(true);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
+    const streamController = new AbortController();
+    streamControllerRef.current = streamController;
     trackEvent("planning_started", { proposal_only: proposalOnly, retry: retrying });
     setMessages((m) => [
       ...(retrying ? m.slice(0, -2) : m),
@@ -430,6 +449,7 @@ export default function ChatPanel({
         onTurnComplete(tripId);
       },
         onError: (msg) => {
+          if (streamController.signal.aborted) return;
           handledError = true;
           pendingTokens = "";
           if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
@@ -444,9 +464,25 @@ export default function ChatPanel({
           setFailedRequest({ message: outgoing, proposalOnly, requestId });
           trackEvent("planning_failed", { proposal_only: proposalOnly });
         },
-      }, { proposalOnly, requestId });
+      }, { proposalOnly, requestId, signal: streamController.signal });
     } catch (error) {
-      if (!handledError) {
+      if (streamController.signal.aborted) {
+        pendingTokens = "";
+        if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
+        tokenFrame = null;
+        setMessages((current) => {
+          const next = [...current];
+          const draft = next[next.length - 1];
+          if (draft?.role === "assistant") {
+            const partial = draft.text.trimEnd();
+            next[next.length - 1] = {
+              ...draft,
+              text: partial ? `${partial}\n\nResponse stopped.` : "Response stopped.",
+            };
+          }
+          return next;
+        });
+      } else if (!handledError) {
         pendingTokens = "";
         if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
         tokenFrame = null;
@@ -464,6 +500,9 @@ export default function ChatPanel({
         trackEvent("planning_failed", { proposal_only: proposalOnly });
       }
     } finally {
+      if (streamControllerRef.current === streamController) {
+        streamControllerRef.current = null;
+      }
       setActiveTool(null);
       setProgress(null);
       if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
@@ -478,6 +517,31 @@ export default function ChatPanel({
 
   function send() {
     void sendMessage(input.trim());
+  }
+
+  function stopResponse() {
+    streamControllerRef.current?.abort();
+    setActiveTool(null);
+    setProgress(null);
+  }
+
+  async function copyMessage(text: string, index: number) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedMessage(index);
+      if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = window.setTimeout(() => setCopiedMessage(null), 1600);
+    } catch {
+      setCopiedMessage(null);
+    }
+  }
+
+  function editAndResend(text: string) {
+    setInput(text);
+    window.requestAnimationFrame(() => {
+      composerRef.current?.focus();
+      composerRef.current?.setSelectionRange(text.length, text.length);
+    });
   }
 
   async function handleDeleteTripHistory() {
@@ -559,7 +623,7 @@ export default function ChatPanel({
         <div className="flex items-center gap-1">
           {!hideGlobalControls && <button
             onClick={startFresh}
-            disabled={busy}
+            disabled={busy || !transcriptReady}
             title="Start a new trip plan"
             aria-label="Start a new trip plan"
             className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink disabled:opacity-40"
@@ -831,7 +895,7 @@ export default function ChatPanel({
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`group flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
           >
             <div
               className={`max-w-[82%] whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
@@ -874,6 +938,31 @@ export default function ChatPanel({
                 </div>
               )}
             </div>
+            {m.text && !(busy && i === messages.length - 1) && (
+              <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-slate-400 opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
+                <button
+                  type="button"
+                  onClick={() => void copyMessage(m.text, i)}
+                  title={copiedMessage === i ? "Copied" : "Copy message"}
+                  aria-label={copiedMessage === i ? "Message copied" : "Copy message"}
+                  className="rounded-md p-1.5 hover:bg-white hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20"
+                >
+                  {copiedMessage === i ? <Check size={15} /> : <Copy size={15} />}
+                </button>
+                {m.role === "user" && (
+                  <button
+                    type="button"
+                    onClick={() => editAndResend(m.text)}
+                    disabled={busy}
+                    title="Edit in the composer and send as a new instruction"
+                    aria-label="Edit message"
+                    className="rounded-md p-1.5 hover:bg-white hover:text-ink focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:opacity-30"
+                  >
+                    <Pencil size={15} />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ))}
         {busy && progress && (
@@ -935,6 +1024,7 @@ export default function ChatPanel({
             </button>
           )}
           <textarea
+            ref={composerRef}
             className="flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
             rows={2}
             placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
@@ -946,14 +1036,19 @@ export default function ChatPanel({
                 send();
               }
             }}
-            disabled={busy}
+            disabled={busy || !transcriptReady}
           />
           <button
-            onClick={send}
-            disabled={busy || !input.trim()}
-            className="btn-primary px-5"
+            onClick={busy ? stopResponse : send}
+            disabled={!busy && (!transcriptReady || !input.trim())}
+            title={busy ? "Stop response" : "Send message"}
+            aria-label={busy ? "Stop response" : "Send"}
+            className={busy
+              ? "grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-white transition hover:bg-slate-700"
+              : "btn-primary grid h-11 w-11 shrink-0 place-items-center rounded-full p-0"
+            }
           >
-            Send
+            {busy ? <Square size={15} fill="currentColor" /> : <Send size={18} />}
           </button>
         </div>
       </div>

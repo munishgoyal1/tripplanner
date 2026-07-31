@@ -152,6 +152,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-30)
+- **Modern web Assistant controls**: the Option A sidecar can abort its active SSE
+  response through the shared transport, preserves and marks useful partial text,
+  and restores the composer without failure/retry state. Completed messages expose
+  Copy, and prior user instructions can be revised in the composer and sent as new
+  corrective operations so durable itinerary side effects and replay IDs remain honest.
 - **Weather-aware itinerary summaries**: Open-Meteo needs no API key and now
   persists normalized trip weather. Live forecast failure falls back to the
   same-season archive; total provider failure permits only an explicitly labeled
