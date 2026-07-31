@@ -3079,3 +3079,13 @@ VALIDATION:
   summary for older trips without authored notes.
 - Keep Weather visible: show persisted day evidence and packing advice when present,
   or an explicit unavailable state rather than silently removing the section.
+
+=== 2026-07-31 — Implement unified Map route ribbon ===
+
+- Implement Map commands and day context Option A, changing only the Map command
+  hierarchy.
+- Keep All days/day scope and Add stop directly available in the first stable row.
+- Label current scope, Full schedule, and Route-only travel separately in the
+  second row; expand the existing Add stop form inline.
+- Preserve aggregate and exact focus semantics, active-day placement, Best day,
+  map geography, pins, routes, mutations, and cross-pane synchronization.

@@ -125,15 +125,16 @@ but the prototype's repeated Trip fit line below Budget was intentionally omitte
 Day briefs and itinerary rows are unchanged. See
 [`TRIP_SNAPSHOT_HIERARCHY.md`](TRIP_SNAPSHOT_HIERARCHY.md).
 
-## Active Map Controls Experiment (2026-07-31)
+## Implemented Map Controls Experiment (2026-07-31)
 
 The Map commands and day context Lab is available at
 `http://127.0.0.1:5175/map-controls.html`. It compares a Unified route ribbon,
 Contextual command deck, and Schedule-first strip in the same production-scale
-Paris workspace. Every option preserves day/all-days aggregate focus, exact-pin
-focus, explicit Add stop placement, and the distinction between full schedule
-duration and route-only travel evidence. A - Unified route ribbon is the
-recommended starting point; no production Map change is approved. See
+Paris workspace. The selected and implemented direction is A - Unified route
+ribbon. One stable row owns All days/day scope and Add stop; a second labels the
+current scope, Full schedule, and Route-only travel. Add stop expands inline.
+Day/all-days aggregate focus, exact-pin focus, placement, pins, routes, mutations,
+and surrounding workspace behavior are unchanged. See
 [`MAP_PANEL_CONTROLS.md`](MAP_PANEL_CONTROLS.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one

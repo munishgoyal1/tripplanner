@@ -308,10 +308,17 @@ describe("map stop selection", () => {
         pin_ids: [],
         route: {
           distance_km: 0,
-          duration_min: 0,
-          mode: "walk",
-          distance_display: "0 km",
-          duration_display: "0 min",
+          duration_min: 25,
+          mode: "car",
+          distance_display: "8 km",
+          duration_display: "25 min",
+        },
+        schedule: {
+          duration_min: 480,
+          duration_display: "8 hr",
+          start: "09:00",
+          end: "17:00",
+          estimated: true,
         },
       }],
       available_days: [1],
@@ -322,11 +329,21 @@ describe("map stop selection", () => {
     const onSelect = vi.fn().mockResolvedValue(false);
     render(createElement(MapPanel, { onSelect }));
 
+    expect(await screen.findByText("Trip scope")).toBeInTheDocument();
+    expect(screen.getByText("All 1 day")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Day 1" }));
+    expect(screen.getByText("Full schedule")).toBeInTheDocument();
+    expect(screen.getByText("8 hr · 09:00–17:00 est.")).toBeInTheDocument();
+    expect(screen.getByText("Route-only travel")).toBeInTheDocument();
+    expect(screen.getByText("25 min · 8 km · car")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Add stop" }));
     const input = await screen.findByPlaceholderText("Search places on this map…");
     const day = screen.getByRole("combobox", { name: "Add stop to day" });
+    expect(day).toHaveValue("1");
     fireEvent.change(input, { target: { value: "North Market" } });
     fireEvent.change(day, { target: { value: "1" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add stop" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
     await waitFor(() => expect(onSelect).toHaveBeenCalledWith(
       "attraction",

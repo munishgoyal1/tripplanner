@@ -1,8 +1,8 @@
 # Map Panel Controls UX Lab
 
-**Status:** Active experiment  
+**Status:** Implemented - Option A, Unified Route Ribbon
 **Lab:** `http://127.0.0.1:5175/map-controls.html`  
-**Production impact:** None until an option is explicitly selected and approved
+**Production impact:** Map command hierarchy only; map behavior and surrounding workspace are unchanged
 
 ## Question
 
@@ -52,3 +52,11 @@ supports comparison across days, but occupies persistent lower map space.
 
 Record the preferred option and modifications in the Lab handoff. A saved handoff
 is evaluation evidence, not permission to change production Map behavior.
+
+## Implemented Decision
+
+Option A is implemented in production. The first stable row owns All days/day
+scope and the Add stop command. The second row gives the current scope, Full
+schedule, and Route-only travel distinct labels; Add stop expands its existing
+form inline. All focus callbacks, placement rules, map geography, pins, routes,
+mutations, and cross-pane synchronization retain their prior behavior.

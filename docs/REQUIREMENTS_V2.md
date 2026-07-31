@@ -351,6 +351,9 @@ re-describing the whole product.
 - Viewport-biased autocomplete and labeled native map POI clicks create a
   temporary real-coordinate inspection tile. Inspection does not mutate the trip.
 - Temporary places offer `Best day` or an exact authoritative day beside Add.
+- Map commands use a unified two-row route ribbon. All days/day scope and Add stop
+  remain directly available; scope, Full schedule, and Route-only travel have
+  distinct labels, and Add stop expands its existing form inline.
 
 ### PLACE-01 and MUT-01 - Details and coherent mutations
 

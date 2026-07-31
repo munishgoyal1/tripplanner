@@ -14,17 +14,6 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
-    id: "map-controls",
-    title: "Map command and day context",
-    category: "Map interaction",
-    description: "Compare route ribbons, a compact command deck, and a schedule-first map for add-stop, day focus, and route summaries.",
-    date: "31 Jul 2026",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: A · Unified route ribbon.",
-    href: "./map-controls.html",
-    icon: Map,
-  },
-  {
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",
     category: "Trip export",
@@ -49,6 +38,17 @@ export const activeLabs: LabRecord[] = [
 ];
 
 export const completedLabs: LabRecord[] = [
+  {
+    id: "map-controls",
+    title: "Map command and day context",
+    category: "Map interaction",
+    description: "Compared route ribbons, a compact command deck, and a schedule-first map for add-stop, day focus, and route summaries.",
+    date: "31 Jul 2026",
+    status: "Implemented",
+    decision: "A · Unified route ribbon, changing only the Map command hierarchy.",
+    href: "./map-controls.html",
+    icon: Map,
+  },
   {
     id: "trip-snapshot-hierarchy",
     title: "Trip snapshot hierarchy",
