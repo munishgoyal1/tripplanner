@@ -22,6 +22,7 @@ import {
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 
 type Variant = "ribbon" | "deck" | "schedule";
 type Scope = "all" | number;
@@ -188,6 +189,7 @@ function MapControlsLab() {
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#ecfdf5_32rem,#f8fafc_100%)] px-4 py-7 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[92rem]">
         <header className="flex flex-wrap items-end justify-between gap-5 border-b border-slate-200 pb-5"><div><div className="flex items-center gap-2 text-accent"><Map size={17} /><p className="text-[10px] font-bold uppercase">Active UX Lab</p></div><h1 className="display mt-2 text-3xl font-semibold text-ink">Map commands and day context</h1><p className="mt-2 max-w-4xl text-sm leading-relaxed text-slate-600">Compare three complete control systems for the Map’s most frequent work: switch between all circuits and one day, understand full schedule versus route-only travel, add a stop to an explicit day, and inspect an exact place without losing context.</p></div><LabNavigation detail /></header>
+        <LabScope labId="map-controls" />
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Map control variants">{variants.map((item) => <button key={item.id} role="tab" aria-selected={variant === item.id} onClick={() => setVariant(item.id)} className={`rounded-md bg-white p-3 text-left shadow-card ring-1 transition ${variant === item.id ? "ring-2 ring-accent" : "ring-slate-200 hover:ring-slate-300"}`}><VariantDiagram variant={item.id} /><strong className="mt-3 block text-sm text-ink">{item.label}</strong><span className="mt-1 block text-xs leading-relaxed text-slate-600">{item.note}</span><span className="mt-3 block border-t border-slate-100 pt-2 text-[10px] font-semibold text-accent">{item.strength}</span></button>)}</div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-semibold text-ink">Live production-scale preview</p><p className="mt-0.5 text-[11px] text-slate-500">Try day scope, exact pins, Add stop, summary expansion, and narrow widths.</p></div><a href={`?preview=${variant}`} className="btn-primary"><Maximize2 size={14} /> Open full-size preview</a></div>
         <section className="mt-2 h-[720px] max-h-[78vh] min-h-[620px] overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200" aria-label="Interactive Map controls preview"><MapWorkspace key={variant} variant={variant} /></section>

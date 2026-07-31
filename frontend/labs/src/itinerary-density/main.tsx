@@ -4,6 +4,7 @@ import { CalendarCheck2, Check, ChevronDown, Clock3, MapPin, Route } from "lucid
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 
 type Variant = "ledger" | "circuit" | "focus";
 
@@ -101,6 +102,7 @@ function App() {
           <div><p className="text-[10px] font-bold uppercase text-brand">Active UX experiment</p><h1 className="display mt-1 text-3xl font-semibold text-ink">Compact itinerary density</h1><p className="mt-2 max-w-3xl text-sm text-slate-600">Remove repeated state, preserve truthful circuit timing, and fit a useful day in roughly one-third of a desktop viewport. The 320 px frame below is the constraint.</p></div>
           <LabNavigation detail />
         </header>
+        <LabScope labId="itinerary-density" />
         <div className="mt-5 grid gap-2 sm:grid-cols-3">{variants.map((variant) => <button key={variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 ${active === variant.id ? "bg-white ring-brand/40 shadow-card" : "bg-white/60 ring-slate-200"}`}><strong className="text-xs text-ink">{variant.label}</strong><span className="mt-1 block text-[11px] leading-relaxed text-slate-500">{variant.note}</span></button>)}</div>
         <section className="mt-4 overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200" style={{ minHeight: 320 }} aria-label="320 pixel itinerary density preview">{active === "ledger" ? <Ledger /> : active === "circuit" ? <Circuit /> : <Focus />}</section>
         <p className="mt-2 text-right text-[10px] font-semibold uppercase text-slate-400">320 px target frame</p>

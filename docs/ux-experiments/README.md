@@ -22,6 +22,12 @@ catalog filters appear only on catalog pages.
 Historical experiments that predate Lab pages may remain read-only detail records
 reconstructed from their preserved source material.
 
+Every individual Lab must declare its decision boundary before showing options or
+the production-scale preview. The shared **Change scope** block names the exact
+elements that vary and separately names the surrounding fixture elements that are
+context only. Choosing an option authorizes only the declared changes; context UI
+must remain unchanged unless the owner's handoff explicitly adds it.
+
 ## Branch Strategy
 
 - Stable baseline: `master`
@@ -135,6 +141,8 @@ scope until a direction is selected and separately approved. See
 6. Every standalone Lab page links directly back to All Labs.
 7. Every option can be experienced at realistic production scale before selection;
   keep that preview inside the Lab until the owner explicitly approves production.
+8. State exact in-scope changes and context-only elements before the alternatives.
+  A realistic preview is not permission to redesign every element it happens to show.
 
 ## Fast Commands
 

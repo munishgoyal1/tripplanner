@@ -13,6 +13,7 @@ import {
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 
 type Variant = "editorial" | "balanced" | "compact";
 
@@ -208,6 +209,8 @@ function Lab() {
           </div>
           <button type="button" onClick={() => setCompare((value) => !value)} className="btn-ghost self-start lg:self-auto">{compare ? "Inspect one" : "Compare all"} <ChevronRight size={14} aria-hidden /></button>
         </header>
+
+        <LabScope labId="itinerary-summary-design" />
 
         {!compare && (
           <div className="mt-5 grid gap-2 sm:grid-cols-3" role="tablist" aria-label="Itinerary summary variants">

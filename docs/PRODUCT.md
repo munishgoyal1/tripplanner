@@ -101,6 +101,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   has one clear return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
   marked ready, parked with that handoff intact, or discarded from consideration.
+  Before its options, every Lab explicitly separates the exact elements being
+  changed from realistic surrounding UI that is context only. Selecting an option
+  does not implicitly approve changes to other elements visible in its preview.
 - **Density**: information-rich but ordered. The itinerary snapshot should pack
   the trip's decision-making facts into a scan-friendly hierarchy. Whole-trip
   place browsing uses compact media rows; rich galleries and reviews belong to

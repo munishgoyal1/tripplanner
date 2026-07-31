@@ -117,7 +117,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         <div>
           <p className="text-[10px] font-bold uppercase text-brand">Your handoff</p>
           <h2 id={`${labId}-decision-title`} className="mt-0.5 text-base font-semibold text-ink">Choose a direction and set its next step</h2>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">The chosen option, handoff notes, and Lab status stay together in the workspace record.</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">The chosen option, handoff notes, and Lab status stay together in the workspace record. Implementation is limited to the Change scope above unless your notes explicitly add another change.</p>
         </div>
         {saved && !dirty && (
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase text-emerald-700 ring-1 ring-emerald-200"><Check size={11} aria-hidden /> Saved</span>

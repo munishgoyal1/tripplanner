@@ -19,6 +19,7 @@ import type { LucideIcon } from "lucide-react";
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 
 type Variant = "binder" | "layered" | "visual";
 type Section = "contents" | "overview" | "day" | "documents" | "guide";
@@ -233,6 +234,8 @@ function App() {
           <div><p className="text-[10px] font-bold uppercase text-brand">Active itinerary experiment</p><h1 className="display mt-1 text-3xl font-semibold text-ink sm:text-4xl">Execution-ready Trip Book</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how one complete, printable trip can stay concise enough to use on the move while carrying every booking, entry document, and evidence-backed family insight.</p></div>
           <div className="flex items-center gap-2 text-xs text-slate-500"><FileText size={15} /><strong className="text-ink">{activeVariant.pages} pages</strong><span>· A4 + phone PDF</span></div>
         </div>
+
+        <LabScope labId="itinerary-trip-book" />
 
         <div className="mt-5 grid gap-2 lg:grid-cols-3">{variants.map((item) => <button key={item.id} type="button" onClick={() => setVariant(item.id)} className={`rounded-md p-4 text-left ring-1 transition ${variant === item.id ? "bg-white shadow-card ring-brand/40" : "bg-white/60 ring-slate-200 hover:bg-white"}`}><div className="flex items-center justify-between gap-2"><strong className="text-sm text-ink">{item.label}</strong><span className="text-[10px] font-semibold text-slate-400">{item.pages}p</span></div><span className="mt-1.5 block text-xs leading-relaxed text-slate-500">{item.note}</span></button>)}</div>
 

@@ -18,6 +18,7 @@ import {
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 
 type Variant = "timeline" | "agenda" | "cards";
 
@@ -395,6 +396,8 @@ function Lab() {
             {compare ? "Inspect one" : "Compare all"} <ChevronRight size={14} aria-hidden />
           </button>
         </header>
+
+        <LabScope labId="itinerary-row-design" />
 
         {!compare && (
           <div className="mt-5 grid gap-2 sm:grid-cols-3" role="tablist" aria-label="Itinerary design variants">

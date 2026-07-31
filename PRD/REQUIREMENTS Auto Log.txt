@@ -3006,3 +3006,13 @@ VALIDATION:
 - Support three next steps: ready for implementation; parked for later with the
   option and notes preserved; or discarded from catalogs with option, notes, and
   browser draft deleted. Parked Labs remain visible only in All Labs.
+
+=== 2026-07-31 — Explicit UX Lab change scope ===
+
+- Every individual Lab must state the exact elements its options change before
+  showing those options or a realistic workspace preview.
+- Separately identify surrounding preview elements that are fixed context only.
+  Their presence in the fixture must not imply that the selected Lab option will
+  modify them.
+- Implementation handoffs are limited to the declared scope unless the owner's
+  notes explicitly request an additional change.

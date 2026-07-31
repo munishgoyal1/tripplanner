@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabScope } from "../shared/LabScope";
 import "../shared/experiment-layout.css";
 
 type VariantId = "ledger" | "brief" | "progressive";
@@ -227,6 +228,8 @@ function Lab() {
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Trip snapshot hierarchy</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">The standard product term is <strong className="font-semibold text-ink">trip snapshot</strong>: a whole-trip summary band at the top of Itinerary. It is not a generic panel and it is distinct from each day’s Day brief.</p>
         </header>
+
+        <LabScope labId="trip-snapshot-hierarchy" />
 
         <div className="lab-variant-grid mt-5" role="tablist" aria-label="Trip snapshot variants">
           {variants.map((variant) => (

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabScope } from "../shared/LabScope";
 import "../shared/experiment-layout.css";
 
 type PaneId = "itinerary" | "map" | "details" | "assistant";
@@ -317,6 +318,8 @@ function Lab() {
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Command bar and pane controls</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">The standard term for the top row is <strong className="font-semibold text-ink">workspace command bar</strong>. Compare how it should expose pane visibility while Hide and Maximize remain predictable local actions in every pane header.</p>
         </header>
+
+        <LabScope labId="workspace-command-bar" />
 
         <div className="lab-variant-grid mt-5" role="tablist" aria-label="Command bar variants">
           {variants.map((variant) => (

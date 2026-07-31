@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 
 interface Option {
   id: string;
@@ -133,6 +134,8 @@ function HistoricalLab() {
           <h1 className="display mt-2 text-3xl font-semibold text-ink">Workspace shell layout</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">The original experiment ran on preserved branches before standalone lab pages existed. This page reconstructs the verified option intent and pane arrangements from those records; it is a read-only design archive, not a live version switcher.</p>
         </header>
+
+        <LabScope labId="workspace-shell" />
 
         <div className="mt-6 grid gap-4 xl:grid-cols-3">
           {options.map((option) => <OptionCard key={option.id} option={option} />)}

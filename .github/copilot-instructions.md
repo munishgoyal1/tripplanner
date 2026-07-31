@@ -158,6 +158,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
+- **Explicit UX Lab decision boundaries**: every individual Lab names the exact
+  elements varied by its options and separately lists surrounding preview UI that
+  is fixed context. Option selection and implementation handoff are limited to
+  that declared scope unless owner notes explicitly add another change.
 - **Navigable Lab lifecycle handoffs**: catalog filters live only on All Labs,
   In progress, and Completed indexes; each individual experiment has one clear
   return to All Labs. Active handoffs bind the selected option to owner-authored

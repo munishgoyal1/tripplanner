@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
+import { LabScope } from "../shared/LabScope";
 import "../../../src/index.css";
 
 type Variant = "edge" | "sheet" | "popover";
@@ -304,6 +305,8 @@ function ChatAssistantLab() {
           </div>
           <LabNavigation detail />
         </header>
+
+        <LabScope labId="chat-assistant-overlay" />
 
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Assistant layout variants">
           {variants.map((item) => (

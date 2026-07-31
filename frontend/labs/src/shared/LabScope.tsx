@@ -1,0 +1,108 @@
+import { CircleDot, LockKeyhole } from "lucide-react";
+
+interface ScopeDefinition {
+  changes: string[];
+  context: string[];
+}
+
+const scopes: Record<string, ScopeDefinition> = {
+  "shell-visual-refresh": {
+    changes: [
+      "The visual language of pane visibility controls and related workspace chrome",
+      "Whether those controls use icon-and-text, compact icons, or text-led commands",
+    ],
+    context: ["Pane arrangement and resizing behavior", "Itinerary, Map, Details, Assistant, and trip content"],
+  },
+  "workspace-command-bar": {
+    changes: [
+      "How the command bar groups and presents pane visibility controls",
+      "Whether visibility uses direct toggles, a segmented group, or a Layout menu",
+    ],
+    context: ["Pane layout, sizes, and content", "Each pane's existing Hide and Maximize behavior"],
+  },
+  "trip-snapshot-hierarchy": {
+    changes: [
+      "The information hierarchy and density of the whole-trip snapshot above the itinerary",
+      "How trip facts, readiness, budget, and constraints are grouped and emphasized",
+    ],
+    context: ["Day briefs and itinerary stop rows", "Map, Details, Assistant, and the fixture's trip facts"],
+  },
+  "map-controls": {
+    changes: [
+      "The Map control hierarchy for All days/day scope, Add stop, and route summaries",
+      "Where full-schedule and route-only timing appear while inspecting the Map",
+    ],
+    context: ["Map geography, pins, routes, and fixture data", "Itinerary sidebar, trip structure, and mutation semantics"],
+  },
+  "itinerary-trip-book": {
+    changes: [
+      "The exported Trip Book's structure, navigation, information layering, and visual emphasis",
+      "How itinerary, confirmations, documents, and personal context are organized for print and phone PDF",
+    ],
+    context: ["The underlying London trip facts and booking states", "Live workspace UI, document ingestion, storage, and PDF merge behavior"],
+  },
+  "itinerary-density": {
+    changes: [
+      "The density and progressive disclosure of itinerary stop rows inside a 320 px day frame",
+      "Which timing, travel, duration, and booking details remain visible at a glance",
+    ],
+    context: ["Stop order, names, times, travel estimates, and booking facts", "Trip snapshot, day brief, Map, Details, and Assistant"],
+  },
+  "chat-assistant-overlay": {
+    changes: [
+      "The Assistant surface's placement, footprint, open/close behavior, and relationship to the workspace",
+      "How the structured trip kickoff appears inside that Assistant surface",
+    ],
+    context: ["Itinerary, Map, Details, command bar, and trip fixture", "Planning logic, saved preferences, tools, and generated itinerary content"],
+  },
+  "itinerary-row-design": {
+    changes: [
+      "The visual structure and information hierarchy of each itinerary stop row",
+      "How time, travel, duration, place identity, notes, and booking state are scanned",
+    ],
+    context: ["Trip snapshot and day-summary design", "Stop sequence, trip facts, Map, Details, and Assistant behavior"],
+  },
+  "itinerary-summary-design": {
+    changes: [
+      "The day brief above each itinerary agenda: wording, hierarchy, density, and booking-readiness summary",
+      "How schedule span, planned stops, travel rhythm, and guidance are communicated",
+    ],
+    context: ["The Compact Agenda stop-row design below it", "Trip snapshot, stop facts, Map, Details, and Assistant behavior"],
+  },
+  "workspace-shell": {
+    changes: [
+      "The overall workspace pane arrangement, relative priority, and responsive composition",
+      "Where Itinerary, Map, Details, and Assistant live across desktop and compact layouts",
+    ],
+    context: ["The detailed visual design inside each pane", "Trip data, planning logic, map behavior, and itinerary content"],
+  },
+};
+
+export function LabScope({ labId }: { labId: string }) {
+  const scope = scopes[labId];
+  if (!scope) return null;
+
+  return (
+    <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200" aria-labelledby={`${labId}-scope-title`}>
+      <div className="border-b border-slate-100 px-4 py-3">
+        <p className="text-[10px] font-bold uppercase text-brand">Change scope</p>
+        <h2 id={`${labId}-scope-title`} className="mt-0.5 text-sm font-semibold text-ink">What this Lab is deciding</h2>
+        <p className="mt-1 text-xs leading-relaxed text-slate-500">Only the items under Changes vary between options. The rest of the preview is fixed context and is not part of this decision.</p>
+      </div>
+      <div className="grid md:grid-cols-2">
+        <div className="px-4 py-3 md:border-r md:border-slate-100">
+          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-700"><CircleDot size={12} aria-hidden /> Changes in this Lab</p>
+          <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-700">
+            {scope.changes.map((item) => <li key={item} className="flex gap-2"><span className="text-emerald-600">•</span><span>{item}</span></li>)}
+          </ul>
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50/60 px-4 py-3 md:border-t-0">
+          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-500"><LockKeyhole size={12} aria-hidden /> Context only, not changing</p>
+          <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
+            {scope.context.map((item) => <li key={item} className="flex gap-2"><span className="text-slate-400">•</span><span>{item}</span></li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
