@@ -81,7 +81,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   family/preference context, constraints, compact daily weather, and practical
   packing guidance. Its Decision brief hierarchy keeps booking readiness explicit,
   renders Days/Stay/Places/Flights as one compact facts row, and does not repeat a
-  generic Trip fit summary below Budget.
+  generic Trip fit summary below Budget. A trip-level narrative follows identity;
+  older trips without authored notes receive a factual summary. Weather remains a
+  stable section and labels missing persisted forecast data instead of disappearing.
   Weather must identify live forecasts versus seasonal/monthly estimates, and
   every itinerary day with weather evidence shows its condition and temperature.
   Its saved-trip menu must overlay

@@ -17,10 +17,14 @@
 
 - Decision: **B - Decision brief**
 - Production status: implemented on 2026-07-31.
-- Traveler context is part of trip identity, followed by explicit booking readiness.
+- Traveler context is part of trip identity, followed by an authored trip-level
+  narrative when available and a factual generated summary for older trips.
+- Booking readiness remains explicit.
 - Days, Stay, Places, and Flights use one compact one-line facts row.
-- Weather, packing guidance, family/preference context, constraints, and Budget retain
-  their existing data and behavior.
+- Persisted weather renders its source, day conditions, temperatures, and packing
+  guidance. Older trips without weather retain a visible, truthful unavailable state
+  rather than silently dropping the Weather section.
+- Family/preference context, constraints, and Budget retain their existing data and behavior.
 - The prototype's generic Trip fit line below Budget is intentionally omitted. Its
   useful evidence already appears as specific family/preference and constraint data;
   repeating a vague summary added no distinct decision support.
@@ -28,4 +32,4 @@
 
 ## Validation
 
-- Focused ItineraryPanel suite: 12 tests pass.
+- Focused ItineraryPanel suite: 13 tests pass.

@@ -60,6 +60,14 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
   const travelersLabel = `${overview.travelers} ${Number(overview.travelers) === 1 ? "traveler" : "travelers"}`;
   const remainingStops = stops != null && booked != null ? Math.max(stops - booked, 0) : null;
   const readinessPct = stops ? Math.round(((booked ?? 0) / stops) * 100) : 0;
+  const tripSummary = overview.notes.trim() || [
+    overview.counts.days > 0 ? `${overview.counts.days}-day` : "Planned",
+    overview.destination,
+    `trip for ${travelersLabel}`,
+    overview.counts.activities > 0
+      ? `with ${overview.counts.activities} planned ${overview.counts.activities === 1 ? "place" : "places"}.`
+      : "with itinerary details still being planned.",
+  ].filter(Boolean).join(" ");
 
   return (
     <section aria-label="Trip snapshot" className="border-b border-slate-200 bg-white px-4 py-4">
@@ -82,6 +90,8 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
           )}
         </div>
       </div>
+
+      <p className="mt-3 text-sm leading-relaxed text-slate-600">{tripSummary}</p>
 
       {stops != null && booked != null && (
         <div className="mt-3 border-t border-slate-200 pt-3">
@@ -110,12 +120,15 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
         ))}
       </div>
 
-      {overview.weather && (
-        <div className="mt-3 border-t border-slate-200 pt-3">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] font-semibold uppercase text-slate-400">Weather</p>
+      <div className="mt-3 border-t border-slate-200 pt-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[10px] font-semibold uppercase text-slate-400">Weather</p>
+          {overview.weather && (
             <span className="text-[10px] font-medium text-slate-500">{overview.weather.source_label}</span>
-          </div>
+          )}
+        </div>
+        {overview.weather ? (
+          <>
           <div className="mt-2 flex flex-wrap gap-1.5" aria-label={`${overview.weather.source_label} weather summary`}>
             {overview.weather.days.map((day, index) => (
               <span
@@ -135,8 +148,11 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
               {overview.weather.packing_advice.join(". ")}.
             </p>
           )}
-        </div>
-      )}
+          </>
+        ) : (
+          <p className="mt-2 text-xs text-slate-500">Forecast unavailable for this trip.</p>
+        )}
+      </div>
 
       {overview.family_pills && overview.family_pills.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">

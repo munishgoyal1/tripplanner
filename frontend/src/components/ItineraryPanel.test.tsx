@@ -100,7 +100,7 @@ const overview: TripOverview = {
   return_date: "2026-09-16",
   travelers: 2,
   status: "finalized",
-  notes: "",
+  notes: "Five easy-paced days balancing museums, river views, and neighborhood meals.",
   counts: { flights: 1, hotels: 1, activities: 4, days: 5 },
   total_cost: 45000,
   total_cost_display: "₹45,000",
@@ -175,11 +175,21 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("0 of 2 ready");
     expect(snapshot).toHaveTextContent("2 need booking");
     expect(screen.getByLabelText("0% of stops ready")).toBeInTheDocument();
+    expect(snapshot).toHaveTextContent("Five easy-paced days balancing museums, river views, and neighborhood meals.");
     expect(snapshot).toHaveTextContent("Vegetarian meals");
     expect(snapshot).not.toHaveTextContent("Trip fit:");
     expect(snapshot).toHaveTextContent("Live forecast");
     expect(snapshot).toHaveTextContent("D1");
     expect(snapshot).toHaveTextContent("Compact umbrella and light rain jacket");
+  });
+
+  it("keeps summary and weather visible when an older trip has no forecast", async () => {
+    render(<ItineraryPanel overview={{ ...overview, notes: "", weather: null }} />);
+
+    const snapshot = await screen.findByRole("region", { name: "Trip snapshot" });
+    expect(snapshot).toHaveTextContent("5-day Paris trip for 2 travelers with 4 planned places.");
+    expect(snapshot).toHaveTextContent("Weather");
+    expect(snapshot).toHaveTextContent("Forecast unavailable for this trip.");
   });
 
   it("matches map ordering for hotel endpoints and place stops", async () => {

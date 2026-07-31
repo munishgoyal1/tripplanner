@@ -206,7 +206,8 @@ frontend/
         selected places use the shared day-move/remove actions
       TripSnapshot.tsx     Single authoritative trip-summary presentation used
         at the itinerary entry point; Decision brief hierarchy with explicit
-        readiness, compact facts, weather, packing, preferences, and budget
+        trip narrative, readiness, compact facts, weather/empty state, packing,
+        preferences, and budget
       WeatherIcon.tsx      Shared Lucide condition-icon mapping
       TripActionsMenu.tsx  Common-bar Export/Share/Calendar popover and share feedback
        PlaceTripActions.tsx Shared Map/Details selected-place control: current day,

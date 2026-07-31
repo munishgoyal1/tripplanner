@@ -159,10 +159,12 @@ Learns from user preferences and past trips.
 
 ## Current State (last updated 2026-07-31)
 - **Decision-brief trip snapshot**: implemented Trip Snapshot Lab Option B only
-  in the authoritative whole-trip band. Traveler context stays with identity,
-  booking readiness is explicit, and Days/Stay/Places/Flights share one compact
-  facts row. Family/constraint evidence remains visible without repeating a vague
-  Trip fit block below Budget; day briefs and agenda rows are unchanged.
+  in the authoritative whole-trip band. Traveler context and an authored or factual
+  trip-level narrative stay with identity, booking readiness is explicit, and
+  Days/Stay/Places/Flights share one compact facts row. Persisted weather renders
+  day evidence; older trips retain a truthful unavailable state. Family/constraint
+  evidence remains visible without repeating a vague Trip fit block below Budget;
+  day briefs and agenda rows are unchanged.
 - **Direct semantic desktop command bar**: implemented Option A from both command
   bar Labs changes only the top row. New trip is a labeled primary command;
   Itinerary, Map, Details, and Assistant remain direct meaning-first controls

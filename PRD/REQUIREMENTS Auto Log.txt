@@ -3075,3 +3075,7 @@ VALIDATION:
   readiness explicit without changing day briefs or itinerary rows.
 - Keep meaningful family/preference and constraint evidence, but do not repeat the
   prototype's vague Trip fit summary below Budget.
+- Show the Lab's trip-level narrative beneath identity. Use a factual generated
+  summary for older trips without authored notes.
+- Keep Weather visible: show persisted day evidence and packing advice when present,
+  or an explicit unavailable state rather than silently removing the section.

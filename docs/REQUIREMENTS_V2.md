@@ -314,8 +314,10 @@ re-describing the whole product.
 - One authoritative trip snapshot owns destination, dates, travelers, lifecycle,
   counts, booking progress, budget/cost, family/preference context, and constraints.
 - The snapshot uses the Decision brief hierarchy: traveler context stays with trip
-  identity, readiness is explicit, Days/Stay/Places/Flights share one compact facts
-  row, and no generic Trip fit line is repeated below Budget.
+  identity, a trip-level narrative follows it, readiness is explicit, and
+  Days/Stay/Places/Flights share one compact facts row. Weather remains visible with
+  real persisted evidence or a truthful unavailable state. No generic Trip fit line
+  is repeated below Budget.
 - Compact day briefs expose non-hotel planned-stop count, explicit `Schedule
   duration`, a separate `Day's travel` route distance/time/mode row, confirmed
   and remaining booking counts, Travel rhythm guidance, and a Maps handoff before
