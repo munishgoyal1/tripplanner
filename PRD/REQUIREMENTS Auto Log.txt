@@ -2941,3 +2941,12 @@ VALIDATION:
   itinerary; do not conflate it with the decided day-level Narrative Brief.
 - Compare three realistic alternatives on each surface and capture the owner's
   selection without changing production behavior until a direction is accepted.
+
+=== 2026-07-31 — Current-task session titles everywhere ===
+
+- Every VS Code agent session must use a concrete 4-5 word title summarizing the
+  latest prompt or active task, across all workspaces and running instances.
+- Reevaluate the title after every user prompt, retaining it only when it remains
+  an accurate summary of the latest task.
+- Existing open chats adopt the rule when they next receive a prompt; do not limit
+  enforcement to newly created chats or tripplanner repositories.
