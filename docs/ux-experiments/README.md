@@ -31,11 +31,17 @@ must remain unchanged unless the owner's handoff explicitly adds it.
 ## Branch Strategy
 
 - Stable baseline: `master`
+- Immutable accepted UI baselines: `ui-stable/*` tags documented in
+  [`STABLE_UI_VERSIONS.md`](STABLE_UI_VERSIONS.md)
 - Preserved pre-scroll baseline: `preserve/pre-vertical-scroll` (from commit `3e7df9c`)
 - Active experiment branches:
   - `exp/ux-shell-a-map-first`
   - `exp/ux-shell-b-story-first`
   - `exp/ux-shell-c-compact-mobile`
+
+Use stable UI tags, not new long-lived branches or copied frontend folders, for
+future accepted restoration points. A Lab does not become stable merely because it
+exists or has a selected option; the owner must accept the implemented UI first.
 
 ## Current Decision (2026-07-23)
 

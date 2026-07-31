@@ -265,6 +265,8 @@ infra/
   cosmos-emulator.compose.yml  Portable local Cosmos DB Emulator
   README.md           Walkthrough
 scripts/
+  dev/stable-ui.ps1  Lists, creates, or opens immutable `ui-stable/*` tags in
+                     detached sibling worktrees without changing master
   dev/                One-click agent merge, run-latest, and local stack scripts
   dev/dev-spa.ps1     THE dev entrypoint; safely replaces its stale Vite/API
                       listeners, then starts/uses the local Cosmos Emulator

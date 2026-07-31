@@ -158,6 +158,11 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-07-31)
+- **Restorable stable UI history**: owner-accepted interface milestones are
+  preserved as immutable, remotely pushed `ui-stable/*` tags, with the latest
+  three documented under UX experiments. A guarded helper lists, creates, or opens
+  snapshots in detached sibling worktrees; restoration remains a new validated
+  commit and never resets master or deploys automatically.
 - **Explicit UX Lab decision boundaries**: every individual Lab names the exact
   elements varied by its options and separately lists surrounding preview UI that
   is fixed context. Option selection and implementation handoff are limited to

@@ -23,6 +23,7 @@ canonical set below instead of reading every file.
 | [`feature-briefs/FEATURE_BRIEF_TEMPLATE.md`](feature-briefs/FEATURE_BRIEF_TEMPLATE.md) | Full feature-brief template and acceptance structure |
 | [`roadmap/DEFERRED_DECISIONS.md`](roadmap/DEFERRED_DECISIONS.md) | Deliberately postponed decisions awaiting evidence or approval |
 | [`ux-experiments/`](ux-experiments/) | Bounded UX experiment records and template |
+| [`ux-experiments/STABLE_UI_VERSIONS.md`](ux-experiments/STABLE_UI_VERSIONS.md) | Immutable accepted UI snapshots and safe restoration workflow |
 
 ## Development
 

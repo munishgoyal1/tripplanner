@@ -3016,3 +3016,13 @@ VALIDATION:
   modify them.
 - Implementation handoffs are limited to the declared scope unless the owner's
   notes explicitly request an additional change.
+
+=== 2026-07-31 — Restorable stable UI history ===
+
+- Preserve at least the latest three owner-accepted production UI states as
+  immutable, remotely pushed Git tags rather than copied source folders.
+- Keep Lab iterations separate from stable snapshots: only accepted, implemented,
+  validated UI milestones qualify.
+- Allow an old version to be opened safely in a detached sibling worktree without
+  changing master. Returning to it must be a new compatibility-checked commit, not
+  a destructive reset or an automatic production deployment.
