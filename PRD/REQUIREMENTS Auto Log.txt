@@ -3132,3 +3132,13 @@ VALIDATION:
   Maximize/Restore icons in one restrained pane-local pair.
 - Preserve existing handlers, disabled states, independent ownership, recovery,
   resizing, layout, pane content, Map controls, and workspace command-bar controls.
+
+=== 2026-08-01 — Consolidate canonical documentation ownership ===
+
+- Keep `docs/REQUIREMENTS_V2.md` as the current capability baseline and the PRD
+  requirements log as chronological history; neither substitutes for the other.
+- Remove session-by-session capability history from agent instructions and point
+  agents to canonical product, requirements, architecture, and learning documents.
+- Use `docs/operations/deployment-flow.md` as the single release runbook;
+  `infra/README.md` owns only infrastructure topology, files, and data operations.
+- Remove the superseded `infra/DEPLOYMENT_PROCESS.md` duplicate.

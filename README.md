@@ -238,9 +238,9 @@ Three speeds of feedback you actually have:
 
 | Speed | Command | When |
 |---|---|---|
-| ~1 sec | `.venv\Scripts\python.exe -m pytest -q` | logic/tool changes — runs 92 tests |
+| Fast | `.venv\Scripts\python.exe -m pytest -q` | Backend logic and tool changes |
 | ~3 sec reload | `scripts\dev\dev-spa.ps1` | UI / agent prompt / streaming changes — Vite serves the SPA; refresh the browser |
-| ~3-4 min | `git push` | only when shipping to prod, changing Dockerfile, or testing CI/Bicep |
+| Release | `infra\deploy-canary.ps1` | Build, deploy, and smoke the immutable canary image |
 
 The local loop and deployed app run **identical code**. The dev script sets the
 emulator endpoint explicitly, while hosted Container Apps use environment-
@@ -248,7 +248,9 @@ specific databases in the shared account. Leave `COSMOS_ENDPOINT` unset when
 running the CLI directly to retain the local JSON fallback.
 
 ### Deploy to Azure (hosted, multi-user, Cosmos-backed)
-See [infra/README.md](infra/README.md) for the full deploy walkthrough. One
+See the canonical [deployment flow](docs/operations/deployment-flow.md) for the
+release procedure and [infra/README.md](infra/README.md) for infrastructure
+ownership. One
 lifetime free-tier account hosts separate 400-RU/s canary and production
 databases (800 RU/s total), while Container Apps remain scale-to-zero.
 
