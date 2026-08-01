@@ -335,7 +335,10 @@ describe("map stop selection", () => {
     expect(screen.getByText("Travel 25 min, 8 km, car")).toBeInTheDocument();
 
     const input = await screen.findByPlaceholderText("Search places on this map…");
+    const stopType = screen.getByRole("combobox", { name: "Stop type (optional)" });
     const day = screen.getByRole("combobox", { name: "Add stop to day" });
+    expect(stopType).toHaveValue("");
+    expect(stopType).toHaveTextContent("Type (optional)");
     expect(day).toHaveValue("1");
     fireEvent.change(input, { target: { value: "North Market" } });
     fireEvent.change(day, { target: { value: "1" } });
@@ -407,6 +410,10 @@ describe("map stop selection", () => {
     await waitFor(() => expect(placeChanged).toBeTypeOf("function"));
     act(() => placeChanged?.());
 
+    const stopType = await screen.findByRole("combobox", { name: "Stop type (optional)" });
+    expect(stopType).toHaveValue("attraction");
+    expect(stopType).toHaveTextContent("Attraction · auto-filled");
+    expect(stopType).toHaveClass("bg-emerald-50");
     const day = await screen.findByRole("combobox", { name: "Add Dudhsagar Falls to day" });
     expect(day).toHaveValue("auto");
     expect(day).toHaveTextContent("Best day");

@@ -230,6 +230,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   also accepts labeled POIs clicked directly on the map. Selecting any named POI
   first opens a temporary real-coordinate map tile and the contextual Details
   inspector while merely populating Add stop; inspection never mutates the trip.
+  Stop type is optional for manually entered names. Google-selected places
+  visibly label their inferred Attraction, Hotel, or Restaurant type as
+  auto-filled while keeping that value editable before Add.
   A user can then choose the exact itinerary day before adding; that explicit choice takes precedence over
   automatic cross-day rebalancing, including when the place already exists on
   another day. The temporary map place tile exposes its own `Best day` / exact

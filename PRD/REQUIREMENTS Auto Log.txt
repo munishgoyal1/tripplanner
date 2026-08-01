@@ -3126,3 +3126,10 @@ VALIDATION:
   Maximize/Restore icons in one restrained pane-local pair.
 - Preserve existing handlers, disabled states, independent ownership, recovery,
   resizing, layout, pane content, Map controls, and workspace command-bar controls.
+
+=== 2026-08-01 — Make Add stop type optional and transparent ===
+
+- Do not make users feel that place type is required when manually entering a stop.
+- When Google infers Attraction, Hotel, or Restaurant, visibly identify the value
+  as auto-filled and keep it editable before Add.
+- Preserve the existing Attraction fallback for unclassified manual entries.

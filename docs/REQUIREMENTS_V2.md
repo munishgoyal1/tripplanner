@@ -351,6 +351,9 @@ re-describing the whole product.
 - Viewport-biased autocomplete and labeled native map POI clicks create a
   temporary real-coordinate inspection tile. Inspection does not mutate the trip.
 - Temporary places offer `Best day` or an exact authoritative day beside Add.
+- Add stop type is optional for manual text. A Google-selected place visibly
+  marks its inferred Attraction, Hotel, or Restaurant type as auto-filled and
+  lets the user correct it before adding.
 - Map day scope remains directly available beside the Map pane title. The Add stop
   form stays visible below the header, and one compact context line distinguishes
   the selected day's schedule span from route-only duration, distance, and mode.

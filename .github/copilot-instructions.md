@@ -158,6 +158,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-08-01)
+- **Optional, transparent Add stop typing**: manually entered Map stops no longer
+  present place type as required. Google-selected places visibly mark their
+  inferred Attraction, Hotel, or Restaurant type as auto-filled while retaining
+  manual correction; unclassified manual entries keep the existing Attraction fallback.
 - **Refined Map command hierarchy**: the accepted Map commands direction now uses
   the pane title row for All days/day scope, keeps Add stop directly visible below,
   and compresses schedule span plus route-only evidence into one labeled line.
