@@ -118,6 +118,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   marked ready, parked with that handoff intact, completed with the selected
   decision preserved, or discarded from consideration. Completion archives the
   evaluation decision without implying production implementation approval.
+  Completed Lab cards live only in the dedicated archive reached from the catalog;
+  they do not repeat below active or parked work on the main Labs page.
   Lifecycle records have one machine-level authority shared by all worktrees;
   unavailable state is never inferred as active, and the prior snapshot remains
   recoverable after each write.
