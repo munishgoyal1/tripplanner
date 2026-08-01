@@ -151,8 +151,12 @@ See [`PANE_CONTROL_POLISH.md`](PANE_CONTROL_POLISH.md).
 Each active experiment page also includes a **Your handoff** section. Choose one
 option, record modifications, additional inputs, details to preserve, and
 implementation or validation instructions, then choose its next step. The local
-Vite server writes all handoffs to the ignored worktree file
-`docs/ux-experiments/LAB_SELECTIONS.local.json`, which a coding agent can read
+Vite server writes all handoffs to the machine-level store
+`%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json`, which is shared by the
+primary checkout and every worker worktree. Writes use atomic replacement and
+retain `selections.previous.json` for recovery. Existing records in the former
+ignored `docs/ux-experiments/LAB_SELECTIONS.local.json` location migrate once
+when the shared store is absent. A coding agent can read the shared store
 when the owner later says to pick and execute the saved preferences. Saving a
 handoff does not change production UI and is not implementation approval by
 itself; the owner's later execution instruction remains the approval boundary.
@@ -186,7 +190,7 @@ scope until a direction is selected and separately approved. See
 3. Use the scorecard template for decision-making.
 4. End each implemented experiment with a recorded decision and move its shared record from
   the active catalog to the completed page; preserve its Lab page as design history.
-5. Read `LAB_SELECTIONS.local.json` when the owner asks to execute a `ready`
+5. Read `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json` when the owner asks to execute a `ready`
   handoff; implement the selected option together with all handoff notes.
   Provisional language such as "try" or "see first" means extend or run the Lab
   preview, not production implementation approval. Do not add production code or

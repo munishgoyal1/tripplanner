@@ -117,6 +117,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   marked ready, parked with that handoff intact, completed with the selected
   decision preserved, or discarded from consideration. Completion archives the
   evaluation decision without implying production implementation approval.
+  Lifecycle records have one machine-level authority shared by all worktrees;
+  unavailable state is never inferred as active, and the prior snapshot remains
+  recoverable after each write.
   Before its options, every Lab explicitly separates the exact elements being
   changed from realistic surrounding UI that is context only. Selecting an option
   does not implicitly approve changes to other elements visible in its preview.

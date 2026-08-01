@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { Archive, FlaskConical } from "lucide-react";
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabRecordCard } from "../shared/LabRecordCard";
-import { activeLabs, completedLabs, locallyCompletedLabs, type LabSelectionState } from "../shared/labRecords";
+import { activeLabs, completedLabs, locallyCompletedLabs } from "../shared/labRecords";
+import { useLabSelections } from "../shared/useLabSelections";
 
 function LabCatalog() {
   const activeOnly = new URLSearchParams(window.location.search).get("view") === "active";
-  const [selections, setSelections] = useState<Record<string, LabSelectionState>>({});
+  const { selections, status } = useLabSelections();
 
-  useEffect(() => {
-    fetch("/__labs/selections")
-      .then((response) => response.ok ? response.json() : {})
-      .then((saved: Record<string, LabSelectionState>) => setSelections(saved))
-      .catch(() => undefined);
-  }, []);
-
-  const visibleLabs = activeLabs.filter((lab) => !["parked", "completed", "discarded"].includes(selections[lab.id]?.disposition || ""));
-  const parkedLabs = activeLabs.filter((lab) => selections[lab.id]?.disposition === "parked");
+  const visibleLabs = status === "loaded" ? activeLabs.filter((lab) => !["parked", "completed", "discarded"].includes(selections[lab.id]?.disposition || "")) : [];
+  const parkedLabs = status === "loaded" ? activeLabs.filter((lab) => selections[lab.id]?.disposition === "parked") : [];
   const allCompletedLabs = [...locallyCompletedLabs(selections), ...completedLabs];
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_20rem)] px-4 py-8 sm:px-6 lg:px-8">
@@ -38,11 +32,12 @@ function LabCatalog() {
               <p className="text-[10px] font-bold uppercase text-brand">In evaluation</p>
               <h2 id="active-labs" className="mt-0.5 text-lg font-semibold text-ink">Active experiments</h2>
             </div>
-            <span className="text-xs text-slate-400">{visibleLabs.length} open</span>
+            <span className="text-xs text-slate-400">{status === "loaded" ? visibleLabs.length : "—"} open</span>
           </div>
-          <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
+          {status !== "loaded" && <p role={status === "error" ? "alert" : "status"} className={`mt-3 rounded-md px-4 py-3 text-sm ring-1 ${status === "error" ? "bg-rose-50 text-rose-800 ring-rose-200" : "bg-white text-slate-500 ring-slate-200"}`}>{status === "error" ? "Lab decisions are unavailable. No lifecycle state has been inferred; restart the Labs server and reload." : "Loading saved Lab decisions…"}</p>}
+          {status === "loaded" && <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
             {visibleLabs.map((lab, index) => <LabRecordCard key={lab.id} lab={lab} index={index + 1} compact state={selections[lab.id]?.disposition === "ready" ? "ready" : undefined} />)}
-          </div>
+          </div>}
         </section>
 
         {!activeOnly && (

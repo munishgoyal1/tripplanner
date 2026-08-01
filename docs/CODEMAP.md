@@ -140,9 +140,10 @@ frontend/
   labs/               Isolated UX experiment HTML, source, feedback plugin,
                       TypeScript config, and dedicated Vite server (`npm --prefix
                       frontend run dev:ux-lab`, port 5175). The canonical
-                      `scripts/dev/dev-spa.ps1` starts it with the SPA; local handoffs are
-                      written to the ignored
-                          docs/ux-experiments/LAB_SELECTIONS.local.json. `catalog.html`
+                        `scripts/dev/dev-spa.ps1` starts it with the SPA; handoffs are
+                        atomically written to the worktree-shared machine store
+                          `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json`, with
+                          one previous snapshot retained for recovery. `catalog.html`
                           owns the combined active/parked/completed index and distinct
                           `?view=active` list; `completed-labs.html` preserves decisions.
                           Individual pages return directly to All Labs. Shared
@@ -153,6 +154,8 @@ frontend/
                           parked, completed, or discarded lifecycle plus scoped
                           implementation notes. Locally completed active records are
                           projected into both Completed catalogs without source-array moves.
+                          Catalog lifecycle loading fails closed instead of inferring
+                          missing records as active experiments.
     src/shell-visual-refresh/  Completed semantic icon-and-text desktop top-row
           comparison; Option A is implemented
     src/map-controls/  Active production-scale comparison for Map day/all-days scope,

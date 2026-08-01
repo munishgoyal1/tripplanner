@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { Archive, CheckCircle2 } from "lucide-react";
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabRecordCard } from "../shared/LabRecordCard";
-import { completedLabs, locallyCompletedLabs, type LabSelectionState } from "../shared/labRecords";
+import { completedLabs, locallyCompletedLabs } from "../shared/labRecords";
+import { useLabSelections } from "../shared/useLabSelections";
 
 function CompletedLabs() {
-  const [selections, setSelections] = useState<Record<string, LabSelectionState>>({});
-
-  useEffect(() => {
-    fetch("/__labs/selections")
-      .then((response) => response.ok ? response.json() : {})
-      .then((saved: Record<string, LabSelectionState>) => setSelections(saved))
-      .catch(() => undefined);
-  }, []);
+  const { selections, status } = useLabSelections();
 
   const allCompletedLabs = [...locallyCompletedLabs(selections), ...completedLabs];
   return (
@@ -30,6 +24,7 @@ function CompletedLabs() {
         </header>
 
         <section className="mt-7" aria-labelledby="completed-labs-title">
+          {status === "error" && <p role="alert" className="mb-4 rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-800 ring-1 ring-rose-200">Saved Lab decisions are unavailable. This archive is showing only committed completed experiments.</p>}
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="flex items-center gap-1 text-[10px] font-bold uppercase text-emerald-700"><CheckCircle2 size={12} aria-hidden /> Decision recorded</p>

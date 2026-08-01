@@ -201,6 +201,11 @@ Learns from user preferences and past trips.
   discarded with option, notes, and browser draft deleted. Parked Labs leave In
   progress and remain grouped on All Labs; completed Labs move to both Completed
   views without implying that production implementation is approved or shipped.
+- **Worktree-safe Lab decisions**: all primary and worker Labs servers use one
+  machine-level `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json` authority
+  with atomic writes and one previous snapshot. Catalog load failure is explicit
+  and never reclassifies missing decisions as active; server state overrides stale
+  browser drafts.
 - **Shared local diagnostics + model throttle evidence**: every canonical local
   stack writes rotating PII-safe JSON under the primary Git checkout, so primary
   and worker VS Code windows analyze the same log. Final Azure OpenAI rate-limit

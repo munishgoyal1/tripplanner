@@ -51,10 +51,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       })
       .then((selections) => {
         const existing = selections[labId];
-        const localIsNewer = localDraft?.updatedAt && existing?.updatedAt
-          ? localDraft.updatedAt > existing.updatedAt
-          : Boolean(localDraft && !existing);
-        if (existing && !localIsNewer) {
+        if (existing) {
           setComment(existing.comment || "");
           setDisposition(existing.disposition || "ready");
           setSaved(existing);

@@ -3108,3 +3108,14 @@ VALIDATION:
 - Remove completed Labs from In progress and show them in both Completed views.
 - Treat completion as a recorded evaluation decision, not implicit approval or
   proof of production implementation.
+
+=== 2026-08-01 — Prevent cross-worktree Lab lifecycle loss ===
+
+- Use one machine-level Lab decision store shared by primary and worker worktrees
+  instead of checkout-relative ignored files.
+- Restore Execution-ready Trip Book and Compact itinerary density to Parked with
+  their selected options and notes retained.
+- Use atomic writes, retain the previous snapshot, and prefer server records over
+  stale browser drafts.
+- Show lifecycle data as unavailable when it cannot be loaded; never infer missing
+  records as In progress.
