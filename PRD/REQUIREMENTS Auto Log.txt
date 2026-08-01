@@ -3101,6 +3101,13 @@ VALIDATION:
 - Evaluate alternative Hide and Maximize presentation only in a separate
   enhancements and polishing Lab; do not include that redesign in the Map change.
 
+=== 2026-08-01 — Quiet command-bar visual priority ===
+
+- Make New trip and the other desktop command-bar controls more subtle so the
+  itinerary, map, and trip decisions remain the primary visual focus.
+- Use a restrained coral tint for New trip, quiet neutral active pane states, and
+  lighter utility icons while preserving one-click behavior and accessible labels.
+- Keep all itinerary, map, Details, Assistant, and mobile behavior unchanged.
 === 2026-08-01 — Assign local stack ownership to Agent 3 ===
 
 - Agent 3 in the primary workspace owns local stack startup, stop, restart,

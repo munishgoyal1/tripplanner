@@ -291,16 +291,19 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "New trip" })).toHaveClass("bg-brand");
+    expect(screen.getByRole("button", { name: "New trip" })).toHaveClass("bg-brand/10", "text-brand");
     expect(screen.getByText("New trip", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
-    expect(itinerary).toHaveClass("rounded-md", "bg-ink", "text-white");
+    expect(itinerary).toHaveClass("rounded-md", "bg-slate-100", "text-slate-600");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
     expect(screen.getByText("Itinerary", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Map", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Details", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Assistant", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-slate-400");
+    expect(screen.getByRole("button", { name: "Guest - sign in" })).toHaveClass("text-slate-400");
+    expect(screen.getByRole("button", { name: "Travel preferences" })).toHaveClass("text-slate-400");
   });
 
   it("closes Details and Assistant independently while keeping both mounted", async () => {

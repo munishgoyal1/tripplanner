@@ -74,8 +74,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   controls (including account/preferences), and the latest mutation outcome.
   Itinerary, Map, Details, and Assistant use semantic icons with short labels on
   wide desktops, collapsing to icon-only controls when desktop width is tighter;
-  all four remain direct one-click visibility controls. New trip is a labeled
-  primary command, while trip actions, account, and preferences remain compact icons.
+  all four remain direct one-click visibility controls. New trip uses a restrained
+  coral tint rather than a solid fill; active pane controls use quiet neutral fills,
+  while trip actions, account, and preferences remain lighter compact icons. This
+  keeps itinerary, map, and trip decisions visually dominant.
   The itinerary begins with the one authoritative trip snapshot: destination,
   dates, travelers, lifecycle, unique counts, booking progress, cost/budget,
   family/preference context, constraints, compact daily weather, and practical

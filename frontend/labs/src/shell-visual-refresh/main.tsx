@@ -63,13 +63,13 @@ function SurfaceControl({ variant, id, label, Icon, active, onToggle }: {
   onToggle: (id: string) => void;
 }) {
   if (variant === "text") {
-    return <button type="button" onClick={() => onToggle(id)} className={`h-8 border-b-2 px-2 text-xs font-semibold ${active ? "border-[#d94d61] text-[#172433]" : "border-transparent text-[#66727d] hover:text-[#172433]"}`} aria-pressed={active}>{label}</button>;
+    return <button type="button" onClick={() => onToggle(id)} className={`h-8 border-b-2 px-2 text-xs font-semibold ${active ? "border-[#d94d61] text-[#56636e]" : "border-transparent text-[#89928f] hover:text-[#56636e]"}`} aria-pressed={active}>{label}</button>;
   }
   return (
     <button
       type="button"
       onClick={() => onToggle(id)}
-      className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${active ? "bg-[#172433] text-white" : "text-[#66727d] hover:bg-[#edf1f0] hover:text-[#172433]"}`}
+      className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${active ? "bg-[#edf1f0] text-[#56636e]" : "text-[#89928f] hover:bg-[#f4f6f5] hover:text-[#56636e]"}`}
       aria-pressed={active}
       aria-label={label}
       title={label}
@@ -99,17 +99,17 @@ function Workspace({ variant }: { variant: Variant }) {
         <span className="mx-1 h-5 w-px bg-[#dce2df]" />
         {variant === "text" ? (
           <>
-            <button type="button" className="h-8 px-2 text-xs font-semibold text-[#66727d] hover:text-[#172433]">New trip</button>
-            <button type="button" className="h-8 px-2 text-xs font-semibold text-[#66727d] hover:text-[#172433]">Export</button>
+            <button type="button" className="h-8 rounded-md bg-[#fff0f2] px-2 text-xs font-semibold text-[#b43d50] hover:bg-[#ffe4e8]">New trip</button>
+            <button type="button" className="h-8 px-2 text-xs font-semibold text-[#89928f] hover:text-[#56636e]">Export</button>
           </>
         ) : (
           <>
-            <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#66727d] hover:bg-[#edf1f0]" title="New trip" aria-label="New trip"><Plus size={15} /></button>
-            <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#66727d] hover:bg-[#edf1f0]" title="Export trip" aria-label="Export trip"><Download size={15} /></button>
+            <button type="button" className="grid h-8 w-8 place-items-center rounded-md bg-[#fff0f2] text-[#b43d50] hover:bg-[#ffe4e8]" title="New trip" aria-label="New trip"><Plus size={15} /></button>
+            <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#89928f] hover:bg-[#f4f6f5] hover:text-[#56636e]" title="Export trip" aria-label="Export trip"><Download size={15} /></button>
           </>
         )}
-        <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#66727d] hover:bg-[#edf1f0]" aria-label="Travel preferences"><Settings2 size={15} /></button>
-        <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#18806f] hover:bg-[#edf1f0]" aria-label="Account"><CircleUserRound size={16} /></button>
+        <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#89928f] hover:bg-[#f4f6f5] hover:text-[#56636e]" aria-label="Travel preferences"><Settings2 size={15} /></button>
+        <button type="button" className="grid h-8 w-8 place-items-center rounded-md text-[#89928f] hover:bg-[#f4f6f5] hover:text-[#56636e]" aria-label="Account"><CircleUserRound size={16} /></button>
       </header>
 
       <div className={`grid min-h-0 flex-1 max-md:!grid-cols-1 ${visible.itinerary && visible.details ? "grid-cols-[minmax(14rem,24%)_1fr_minmax(14rem,27%)]" : visible.itinerary ? "grid-cols-[minmax(14rem,27%)_1fr]" : visible.details ? "grid-cols-[1fr_minmax(14rem,29%)]" : "grid-cols-1"}`}>

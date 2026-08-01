@@ -712,7 +712,7 @@ export default function App() {
             <button
               type="button"
               onClick={handleStartNewTrip}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand px-3 text-xs font-semibold text-white transition hover:bg-rose-700"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand/10 px-3 text-xs font-semibold text-brand transition hover:bg-brand/15"
               title="Start a new trip"
               aria-label="New trip"
             >
@@ -724,7 +724,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${itineraryOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${itineraryOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
                 aria-pressed={itineraryOpen}
                 title="Show or hide itinerary"
               >
@@ -733,7 +733,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCanvasOpen("map", !mapOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${mapOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${mapOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
                 aria-pressed={mapOpen}
                 title="Show or hide map"
               >
@@ -742,7 +742,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setDockPaneOpen("details", !inspectorOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${inspectorOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${inspectorOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
                 aria-pressed={inspectorOpen}
                 title="Show or hide trip details"
               >
@@ -751,7 +751,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setDockPaneOpen("assistant", !chatOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${chatOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"}`}
+                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${chatOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
                 aria-pressed={chatOpen}
                 title="Show or hide the trip assistant"
               >
@@ -766,7 +766,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
-              className="grid h-8 w-8 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-ink"
+              className="grid h-8 w-8 place-items-center rounded-md text-slate-400 transition hover:bg-slate-50 hover:text-slate-600"
               title={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in to sync trips"}
               aria-label={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in"}
             >
@@ -778,7 +778,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-settings"))}
-              className="grid h-8 w-8 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-ink"
+              className="grid h-8 w-8 place-items-center rounded-md text-slate-400 transition hover:bg-slate-50 hover:text-slate-600"
               title="Travel preferences"
               aria-label="Travel preferences"
             >

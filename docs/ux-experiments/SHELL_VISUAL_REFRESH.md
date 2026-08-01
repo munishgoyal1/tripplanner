@@ -48,8 +48,9 @@ Non-goals:
 - Production status: implemented on 2026-07-31.
 - Implementation: Itinerary, Map, Details, and Assistant use meaning-first icons
   with short labels at wide desktop sizes and icon-only controls at compact
-  desktop widths. Familiar New trip, trip actions, account, and preferences
-  commands remain compact icons. Existing handlers, pane behavior, and all UI
-  below the command bar are unchanged.
+  desktop widths. New trip uses a restrained coral tint, active pane controls use
+  quiet neutral fills, and trip actions, account, and preferences use lighter
+  compact icons. Existing handlers, pane behavior, and all UI below the command
+  bar are unchanged.
 - Validation: focused App tests pass; the live command bar has no horizontal
   overflow at 1440 px or 1024 px.
