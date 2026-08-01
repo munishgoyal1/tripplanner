@@ -1,4 +1,4 @@
-import { BookOpen, LayoutPanelTop, ListChecks, Map, MessageCircle, SlidersHorizontal } from "lucide-react";
+import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, SlidersHorizontal } from "lucide-react";
 
 export interface LabRecord {
   id: string;
@@ -28,6 +28,17 @@ export function locallyCompletedLabs(selections: Record<string, LabSelectionStat
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    id: "destination-guide",
+    title: "Destination guide depth and context",
+    category: "Place discovery",
+    description: "Compare contextual alternatives, city chapters, and a filtered directory for browsing beyond the current ten-place shortlist.",
+    date: "1 Aug 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: A · Contextual explorer.",
+    href: "./destination-guide.html",
+    icon: Compass,
+  },
   {
     id: "account-settings",
     title: "Account and settings ownership",

@@ -29,6 +29,7 @@ export default defineConfig({
         catalog: resolve(__dirname, "catalog.html"),
         chatAssistant: resolve(__dirname, "chat-assistant.html"),
         completedLabs: resolve(__dirname, "completed-labs.html"),
+        destinationGuide: resolve(__dirname, "destination-guide.html"),
         itineraryDensity: resolve(__dirname, "itinerary-density.html"),
         itineraryInformation: resolve(__dirname, "itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),

@@ -521,6 +521,9 @@ re-describing the whole product.
   enabling collection. The production custom domain and hosted chat admission
   controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
+- Whole-trip Details still receives one eager, flat collection capped at ten
+  places. The active Destination Guide Lab compares contextual city/type browsing
+  and progressive results before a paged production contract is approved.
 - Production mobile-store release still requires owner-approved distribution
   setup and provider keys appropriate to each platform.
 - Structured Assistant input is not yet rendered in production web or native UI.

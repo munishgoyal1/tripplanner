@@ -3202,3 +3202,18 @@ VALIDATION:
   saves a preference even when analytics collection is not configured.
 - Do not change production account/settings ownership until the owner selects a
   Lab option and saves its implementation handoff.
+
+=== 2026-08-01 — Propose deeper contextual Destination Guide browsing ===
+
+- Expose more grounded places than the current ten-item whole-trip Details cap
+  without eagerly loading rich media for one unbounded list.
+- At the whole-trip level, show a useful mix of top choices across the trip's
+  cities, with explicit city and Hotels, Attractions, and Food scopes.
+- When a hotel, attraction, or restaurant is focused, retain its rich detail and
+  show same-type alternatives in the same city.
+- Compare contextual exploration, city chapters, and a searchable directory in
+  a production-scale UX Lab; start evaluation with contextual exploration.
+- Prefer explicit progressive batches over infinite scroll and preserve selected
+  itinerary places without letting them consume every discovery result.
+- Do not change the production place-discovery contract or Details layout until
+  the owner selects a Lab option and saves its implementation handoff.

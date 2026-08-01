@@ -8,6 +8,13 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "destination-guide": {
+    changes: [
+      "How whole-trip places are scoped by destination and place type, ordered, and progressively revealed",
+      "How a focused hotel, attraction, or restaurant leads to relevant alternatives",
+    ],
+    context: ["Itinerary, Map, trip route, and selected-place mutation behavior", "Provider ranking, place data, photos, reviews, and API pagination implementation"],
+  },
   "account-settings": {
     changes: [
       "Ownership and grouping of Account, Settings, travel profile, analytics, privacy, and sign-out controls",
