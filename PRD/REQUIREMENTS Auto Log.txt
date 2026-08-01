@@ -3190,3 +3190,15 @@ VALIDATION:
   selections and handoff instructions.
 - Keep All labs focused on active and parked work, with completed Labs remaining
   isolated in their archive.
+
+=== 2026-08-01 — Propose account and settings ownership Lab ===
+
+- Compare a unified account menu, a strict profile/settings split, and a
+  sectioned account settings hub using the real command-bar context.
+- Remove duplicated destinations in every option while preserving identity,
+  travel profile, analytics, privacy/data controls, and sign-out.
+- Make Analytics preferences interactive in every Lab option.
+- Independently fix the production Analytics preferences command so it opens and
+  saves a preference even when analytics collection is not configured.
+- Do not change production account/settings ownership until the owner selects a
+  Lab option and saves its implementation handoff.

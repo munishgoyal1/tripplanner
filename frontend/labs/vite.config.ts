@@ -25,6 +25,7 @@ export default defineConfig({
     outDir: "dist",
     rollupOptions: {
       input: {
+        accountSettings: resolve(__dirname, "account-settings.html"),
         catalog: resolve(__dirname, "catalog.html"),
         chatAssistant: resolve(__dirname, "chat-assistant.html"),
         completedLabs: resolve(__dirname, "completed-labs.html"),

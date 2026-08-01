@@ -1,4 +1,4 @@
-import { BookOpen, LayoutPanelTop, ListChecks, Map, MessageCircle } from "lucide-react";
+import { BookOpen, LayoutPanelTop, ListChecks, Map, MessageCircle, SlidersHorizontal } from "lucide-react";
 
 export interface LabRecord {
   id: string;
@@ -28,6 +28,17 @@ export function locallyCompletedLabs(selections: Record<string, LabSelectionStat
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    id: "account-settings",
+    title: "Account and settings ownership",
+    category: "Account controls",
+    description: "Compare one unified account menu, a strict profile/settings split, and a sectioned account hub with working analytics preferences.",
+    date: "1 Aug 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: A · Unified account menu.",
+    href: "./account-settings.html",
+    icon: SlidersHorizontal,
+  },
   {
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",

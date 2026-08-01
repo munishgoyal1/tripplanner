@@ -516,7 +516,9 @@ re-describing the whole product.
   and a global daily spend circuit breaker are not implemented. Production-only
   GA4 product analytics uses explicit reversible consent, a deliberately small
   event vocabulary, and no chat, itinerary, family, email, exact-date, account,
-  or shared-link content. The production custom domain and hosted chat admission
+  or shared-link content. Analytics preferences can be reopened from Account
+  even when collection is not configured; the preference is saved without
+  enabling collection. The production custom domain and hosted chat admission
   controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
 - Production mobile-store release still requires owner-approved distribution
