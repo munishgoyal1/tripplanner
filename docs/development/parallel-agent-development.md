@@ -31,9 +31,9 @@ right. Machine-level `window.restoreWindows=all` and
 buffers across a normal restart.
 
 The launcher does not restart active dev servers or commands after a machine
-reboot. Restored terminals retain their shell context, but restart the local
-stack explicitly from its one designated worktree so multiple windows do not
-compete for ports `5173` and `8000`.
+reboot. Agent 3 owns the local stack from the primary worktree so multiple
+windows do not compete for ports `5173` and `8000`. Workers 1 and 2 must not
+start, stop, or restart it unless the owner explicitly approves that action.
 
 The equivalent PowerShell command, including a validation-only mode, is:
 

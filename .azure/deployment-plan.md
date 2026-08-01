@@ -150,8 +150,9 @@ account. Three isolated databases therefore require 1,200 RU/s total.
 
 ### Documentation
 
-- Update `README.md`, `infra/README.md`, `infra/DEPLOYMENT_PROCESS.md`,
-  `docs/CODEMAP.md`, `.github/copilot-instructions.md`, and `REQUIREMENTS.txt`
+- Update `README.md`, `infra/README.md`, the canonical
+  `docs/operations/deployment-flow.md`, `docs/CODEMAP.md`,
+  `.github/copilot-instructions.md`, and the requirements baseline
   to describe the new ownership boundaries, commands, cost model, and gates.
 
 ## 5. Migration And Rollback

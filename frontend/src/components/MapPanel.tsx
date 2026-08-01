@@ -268,7 +268,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
   const [candidatePin, setCandidatePin] = useState<MapPin | null>(null);
   const [newStopName, setNewStopName] = useState("");
-  const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
+  const [newStopKind, setNewStopKind] = useState<"" | "attraction" | "hotel" | "meal">("");
+  const [stopKindAutoFilled, setStopKindAutoFilled] = useState(false);
   const [newStopDay, setNewStopDay] = useState("auto");
   const [addingStop, setAddingStop] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
@@ -301,6 +302,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       if (!candidate) return;
       setNewStopName(candidate.name);
       setNewStopKind(candidate.kind as "attraction" | "hotel" | "meal");
+      setStopKindAutoFilled(true);
       setCandidatePin(candidate);
       setSelectedPin(candidate);
       pendingFocusRef.current = candidate;
@@ -715,11 +717,15 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     setAddingStop(true);
     try {
       const added = await onSelect?.(
-        newStopKind,
+        newStopKind || "attraction",
         name,
         optionsForStopDay(newStopDay),
       );
-      if (added !== false) setNewStopName("");
+      if (added !== false) {
+        setNewStopName("");
+        setNewStopKind("");
+        setStopKindAutoFilled(false);
+      }
     } finally {
       setAddingStop(false);
     }
@@ -837,7 +843,13 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                   ref={stopInputRef}
                   type="text"
                   value={newStopName}
-                  onChange={(event) => setNewStopName(event.target.value)}
+                  onChange={(event) => {
+                    setNewStopName(event.target.value);
+                    if (stopKindAutoFilled) {
+                      setNewStopKind("");
+                      setStopKindAutoFilled(false);
+                    }
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") void handleAddStop();
                   }}
@@ -848,16 +860,18 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
               </div>
               <select
                 value={newStopKind}
-                onChange={(event) => setNewStopKind(
-                  (event.target.value as "attraction" | "hotel" | "meal") || "attraction",
-                )}
-                className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
-                title="Choose stop type"
-                aria-label="Stop type"
+                onChange={(event) => {
+                  setNewStopKind(event.target.value as "" | "attraction" | "hotel" | "meal");
+                  setStopKindAutoFilled(false);
+                }}
+                className={`rounded-md border px-3 py-1.5 text-xs ${stopKindAutoFilled ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}
+                title={stopKindAutoFilled ? "Type auto-filled from Google; change it if needed" : "Stop type is optional"}
+                aria-label="Stop type (optional)"
               >
-                <option value="attraction">Attraction</option>
-                <option value="hotel">Hotel</option>
-                <option value="meal">Restaurant</option>
+                <option value="">Type (optional)</option>
+                <option value="attraction">Attraction{stopKindAutoFilled && newStopKind === "attraction" ? " · auto-filled" : ""}</option>
+                <option value="hotel">Hotel{stopKindAutoFilled && newStopKind === "hotel" ? " · auto-filled" : ""}</option>
+                <option value="meal">Restaurant{stopKindAutoFilled && newStopKind === "meal" ? " · auto-filled" : ""}</option>
               </select>
               {view.days.length > 0 && (
                 <select

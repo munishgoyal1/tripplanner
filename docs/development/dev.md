@@ -8,9 +8,11 @@ One page. Stick this on a second monitor.
 
 Open <http://localhost:5173> for the app or
 <http://127.0.0.1:5175/catalog.html> for UX Labs in your regular browser
-(Chrome / Edge / Firefox). The coding agent owns `dev-spa.ps1`, stale-port
-cleanup, startup, restarts after runtime changes, and health checks. The owner
-only refreshes the browser when ready to test a feature or Lab.
+(Chrome / Edge / Firefox). Agent 3 in the primary workspace owns `dev-spa.ps1`,
+stale-port cleanup, startup, restarts after runtime changes, and health checks
+for manual testing. Workers 1 and 2 must ask the owner before changing the local
+stack lifecycle. The owner only refreshes the browser when ready to test a
+feature or Lab.
 
 ## Optional parallel coding windows
 
@@ -40,8 +42,8 @@ conflict is automatically aborted so it cannot leave staged or unmerged residue.
 
 It is the canonical local entrypoint for the current React SPA and FastAPI
 backend. Hot reload is off by default, so backend edits do not interrupt an
-in-progress chat. The coding agent invokes it in a dedicated background session
-and passes `-Watch` only when live reload is intentionally useful.
+in-progress chat. Agent 3 invokes it in a dedicated background session and passes
+`-Watch` only when live reload is intentionally useful.
 
 ## Modes at a glance
 

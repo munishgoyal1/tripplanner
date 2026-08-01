@@ -96,8 +96,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Map commands use the pane header efficiently: All days/day scope lives beside
   the Map title, the Add stop form stays directly visible below it, and one compact
   line separates schedule span from route-only travel. This hierarchy does not
-  change map focus, placement, pin, route, or mutation behavior. Pane-local Hide
-  and Maximize presentation remains unchanged pending a separate polish Lab.
+  change map focus, placement, pin, route, or mutation behavior. Itinerary, Map,
+  and Details group their pane-local Hide and Maximize/Restore icons in a quiet
+  restrained pair without changing behavior, disabled states, or recovery.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
   sizes persist locally. The Assistant closes explicitly or with Escape and
@@ -116,7 +117,14 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **UX Labs**: catalog filters belong only on catalog pages; an individual Lab
   has one clear return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
-  marked ready, parked with that handoff intact, or discarded from consideration.
+  marked ready, parked with that handoff intact, completed with the selected
+  decision preserved, or discarded from consideration. Completion archives the
+  evaluation decision without implying production implementation approval.
+  Completed Lab cards live only in the dedicated archive reached from the catalog;
+  they do not repeat below active or parked work on the main Labs page.
+  Lifecycle records have one machine-level authority shared by all worktrees;
+  unavailable state is never inferred as active, and the prior snapshot remains
+  recoverable after each write.
   Before its options, every Lab explicitly separates the exact elements being
   changed from realistic surrounding UI that is context only. Selecting an option
   does not implicitly approve changes to other elements visible in its preview.
@@ -181,7 +189,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   actions read in one direction without drifting toward the center or right.
   Hotel circuit anchors show Depart/Return semantics without a visit duration,
   redundant In trip state, or an individual delete action; stay changes use the
-  stay-range controls instead.
+  stay-range controls instead. When a day departs from and returns to the same
+  hotel, one combined row shows both times without removing either underlying
+  route endpoint or its return-leg evidence. Different endpoint hotels remain
+  separate and read as Check out and Check in.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
   Each mapped destination row also shows a quiet estimated distance/time from
@@ -226,6 +237,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   also accepts labeled POIs clicked directly on the map. Selecting any named POI
   first opens a temporary real-coordinate map tile and the contextual Details
   inspector while merely populating Add stop; inspection never mutates the trip.
+  Stop type is optional for manually entered names. Google-selected places
+  visibly label their inferred Attraction, Hotel, or Restaurant type as
+  auto-filled while keeping that value editable before Add.
   A user can then choose the exact itinerary day before adding; that explicit choice takes precedence over
   automatic cross-day rebalancing, including when the place already exists on
   another day. The temporary map place tile exposes its own `Best day` / exact
@@ -332,8 +346,9 @@ If a redesign violates the above without a stated reason, push back.
 
 - Be terse. 1–3 sentences for simple answers. Skip preamble/conclusion.
 - No emojis unless asked.
-- Own local server startup, restart, stale-port cleanup, and health checks so
-  the owner can stay focused on feature and UX Lab decisions.
+- Agent 3 owns local server startup, restart, stale-port cleanup, and health checks
+  for the owner's manual testing. Workers 1 and 2 must ask before changing the
+  local stack lifecycle.
 - Don't open `http://localhost:8000` in the integrated browser — the owner
   tests in his external browser. Playwright tools only when explicitly asked.
 - When something goes wrong, read the dev terminal output and fix; don't ask

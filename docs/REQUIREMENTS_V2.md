@@ -336,6 +336,9 @@ re-describing the whole product.
 - Rows show quiet travel distance/time from the previous mapped stop.
 - Generated hotel circuit anchors have no visit duration, In trip badge, or
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
+  Identical departure and return hotels render once with both times while
+  preserving route endpoints, return-leg evidence, and exact focus. Different
+  endpoint hotels remain separate Check out and Check in rows.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 
@@ -353,11 +356,14 @@ re-describing the whole product.
 - Viewport-biased autocomplete and labeled native map POI clicks create a
   temporary real-coordinate inspection tile. Inspection does not mutate the trip.
 - Temporary places offer `Best day` or an exact authoritative day beside Add.
+- Add stop type is optional for manual text. A Google-selected place visibly
+  marks its inferred Attraction, Hotel, or Restaurant type as auto-filled and
+  lets the user correct it before adding.
 - Map day scope remains directly available beside the Map pane title. The Add stop
   form stays visible below the header, and one compact context line distinguishes
   the selected day's schedule span from route-only duration, distance, and mode.
-- Pane-local Hide and Maximize behavior and presentation remain unchanged; visual
-  alternatives are isolated in a separate enhancements and polishing Lab.
+- Itinerary, Map, and Details group pane-local Hide and Maximize/Restore icons in
+  a restrained pair. Existing behavior, disabled states, and recovery remain unchanged.
 
 ### PLACE-01 and MUT-01 - Details and coherent mutations
 

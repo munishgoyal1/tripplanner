@@ -192,18 +192,84 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("Forecast unavailable for this trip.");
   });
 
-  it("matches map ordering for hotel endpoints and place stops", async () => {
+  it("combines identical hotel endpoints without changing place numbering", async () => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,
       stats: { days: 1, stops: 5, booked: 0 },
       days: [{
         ...itinerary.days[0],
         stops: [
-          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" },
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel", time: "09:00" },
           itinerary.days[0].stops[0],
           { ...itinerary.days[0].stops[0], name: "Cafe de Flore", kind: "meal" },
           itinerary.days[0].stops[1],
-          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" },
+          {
+            ...itinerary.days[0].stops[0],
+            name: "Hotel Lutetia",
+            kind: "hotel",
+            time: "20:00",
+            travel_from_previous: {
+              distance_km: 3.4,
+              duration_min: 18,
+              mode: "Taxi",
+              distance_display: "3.4 km",
+              duration_display: "18 min",
+              detail: "Taxi from Seine cruise to Hotel Lutetia.",
+            },
+            expected_arrival_time: "20:00",
+            note: "Collect stored bags at reception.",
+            concern: "Confirm late front-desk access.",
+          },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findAllByLabelText("Hotel circuit marker for Hotel Lutetia")).toHaveLength(1);
+    expect(screen.getAllByText("Hotel Lutetia")).toHaveLength(1);
+    expect(screen.getByText("Depart")).toBeInTheDocument();
+    expect(screen.getByText("Return")).toBeInTheDocument();
+    expect(screen.getByText("09:00")).toBeInTheDocument();
+    expect(screen.getByText("20:00")).toBeInTheDocument();
+    expect(screen.getByLabelText("Travel from previous stop: 3.4 km, 18 min")).toBeInTheDocument();
+    expect(screen.getByText("Taxi from Seine cruise to Hotel Lutetia.")).toBeInTheDocument();
+    expect(screen.getByText("Collect stored bags at reception.")).toBeInTheDocument();
+    expect(screen.getByText("Confirm late front-desk access.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Hotel Lutetia: Mark confirmed" })).toBeInTheDocument();
+    expect(screen.getByText("3 planned stops")).toBeInTheDocument();
+    expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
+    expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
+    expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
+  });
+
+  it("keeps the combined hotel row addressable from either route endpoint", async () => {
+    const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 3, booked: 0 },
+      days: [{ ...itinerary.days[0], stops: [hotel, itinerary.days[0].stops[0], hotel] }],
+    });
+
+    render(<ItineraryPanel focusName="Hotel Lutetia" focusDay={1} focusStop={3} />);
+
+    const marker = await screen.findByLabelText("Hotel circuit marker for Hotel Lutetia");
+    expect(marker).toHaveAttribute("aria-current", "location");
+    const circuitRow = document.querySelector('[data-stop-name="hotel lutetia"]');
+    expect(circuitRow).toHaveAttribute("data-stop-indexes", "1,3");
+    expect(scrollIntoViewMock.mock.instances[0]).toBe(circuitRow);
+  });
+
+  it("keeps different hotel endpoints as explicit checkout and checkin rows", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 3, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel", time: "09:00" },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Le Roch Hotel", kind: "hotel", time: "18:00" },
         ],
       }],
     });
@@ -211,10 +277,10 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel />);
 
     expect(await screen.findAllByLabelText("Hotel map marker")).toHaveLength(2);
-    expect(screen.getByText("3 planned stops")).toBeInTheDocument();
-    expect(screen.getByLabelText("Map stop 1")).toHaveTextContent("1");
-    expect(screen.getByLabelText("Map stop 2")).toHaveTextContent("2");
-    expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
+    expect(screen.getByText("Hotel Lutetia")).toBeInTheDocument();
+    expect(screen.getByText("Le Roch Hotel")).toBeInTheDocument();
+    expect(screen.getByText("Check out")).toBeInTheDocument();
+    expect(screen.getByText("Check in")).toBeInTheDocument();
   });
 
   it("uses the full hotel-to-hotel span for the schedule", async () => {

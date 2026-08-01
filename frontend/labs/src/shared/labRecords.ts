@@ -12,18 +12,22 @@ export interface LabRecord {
   icon: typeof ListChecks;
 }
 
+export interface LabSelectionState {
+  disposition?: "ready" | "parked" | "completed" | "discarded";
+  selectionLabel?: string;
+}
+
+export function locallyCompletedLabs(selections: Record<string, LabSelectionState>): LabRecord[] {
+  return activeLabs
+    .filter((lab) => selections[lab.id]?.disposition === "completed")
+    .map((lab) => ({
+      ...lab,
+      status: "Completed",
+      decision: selections[lab.id]?.selectionLabel || "Decision recorded",
+    }));
+}
+
 export const activeLabs: LabRecord[] = [
-  {
-    id: "pane-control-polish",
-    title: "Pane control polish",
-    category: "Enhancements and polish",
-    description: "Compare clearer pane-local presentations for Hide and Maximize without changing independent ownership or behavior.",
-    date: "1 Aug 2026",
-    status: "In evaluation",
-    decision: "Open experiment · presentation only; pane behavior stays fixed.",
-    href: "./pane-controls.html",
-    icon: LayoutPanelTop,
-  },
   {
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",
@@ -35,20 +39,31 @@ export const activeLabs: LabRecord[] = [
     href: "./itinerary-trip-book.html",
     icon: BookOpen,
   },
+];
+
+export const completedLabs: LabRecord[] = [
   {
     id: "itinerary-density",
     title: "Compact itinerary density",
     category: "Itinerary layout",
-    description: "Compare one-line, circuit-header, and progressive-focus agendas inside a 320 px day frame.",
-    date: "30 Jul 2026",
-    status: "In evaluation",
-    decision: "Open experiment · B starts as the recommended direction.",
+    description: "Consolidated identical hotel endpoints while retaining the detailed Compact Agenda and distinct stay transitions.",
+    date: "1 Aug 2026",
+    status: "Implemented",
+    decision: "B · Circuit header, adapted to preserve production detail and exact endpoint behavior.",
     href: "./itinerary-density.html",
     icon: ListChecks,
   },
-];
-
-export const completedLabs: LabRecord[] = [
+  {
+    id: "pane-control-polish",
+    title: "Pane control polish",
+    category: "Enhancements and polish",
+    description: "Compared clearer pane-local presentations for Hide and Maximize without changing independent ownership or behavior.",
+    date: "1 Aug 2026",
+    status: "Implemented",
+    decision: "B · Restrained icon pair, applied only to Itinerary, Map, and Details pane-local controls.",
+    href: "./pane-controls.html",
+    icon: LayoutPanelTop,
+  },
   {
     id: "map-controls",
     title: "Map command and day context",

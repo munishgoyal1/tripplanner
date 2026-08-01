@@ -555,25 +555,27 @@ export default function App() {
         <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 px-3">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
           {pane === "map" && <div ref={setMapHeaderTarget} className="min-w-0 flex-1" />}
-          <button
-            type="button"
-            onClick={() => setCanvasOpen(pane, false)}
-            className={`${pane === "itinerary" ? "ml-auto" : ""} grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink disabled:opacity-30`}
-            aria-label={`Hide ${label}`}
-            title={`Hide ${label}`}
-            disabled={(pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen)}
-          >
-            <EyeOff size={15} aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleMaxPane(pane)}
-            className="grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
-            aria-label={maximizedPane === pane ? `Restore ${label}` : `Maximize ${label}`}
-            title={maximizedPane === pane ? "Restore" : "Maximize"}
-          >
-            {maximizedPane === pane ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-          </button>
+          <div role="group" aria-label={`${label} pane controls`} className="ml-auto flex shrink-0 items-center rounded-md bg-slate-50 p-0.5 ring-1 ring-inset ring-slate-200/80">
+            <button
+              type="button"
+              onClick={() => setCanvasOpen(pane, false)}
+              className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm disabled:opacity-30"
+              aria-label={`Hide ${label}`}
+              title={`Hide ${label}`}
+              disabled={(pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen)}
+            >
+              <EyeOff size={14} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleMaxPane(pane)}
+              className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm"
+              aria-label={maximizedPane === pane ? `Restore ${label}` : `Maximize ${label}`}
+              title={maximizedPane === pane ? "Restore" : "Maximize"}
+            >
+              {maximizedPane === pane ? <Minimize2 size={14} aria-hidden /> : <Maximize2 size={14} aria-hidden />}
+            </button>
+          </div>
         </header>
         <div className="min-h-0 flex-1">{renderCanvasBody(pane)}</div>
       </article>
@@ -597,24 +599,26 @@ export default function App() {
               {focus ? "Place details" : "Destination guide"}
             </h2>
             {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
-            <button
-              type="button"
-              onClick={() => setDockPaneOpen("details", false)}
-              className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
-              aria-label="Hide Details"
-              title="Hide Details"
-            >
-              <EyeOff size={15} aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleMaxPane("details")}
-              className="grid h-7 w-7 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-ink"
-              aria-label={maximizedPane === "details" ? "Restore Details" : "Maximize Details"}
-              title={maximizedPane === "details" ? "Restore" : "Maximize"}
-            >
-              {maximizedPane === "details" ? <Minimize2 size={15} aria-hidden /> : <Maximize2 size={15} aria-hidden />}
-            </button>
+            <div role="group" aria-label="Details pane controls" className="ml-auto flex shrink-0 items-center rounded-md bg-slate-50 p-0.5 ring-1 ring-inset ring-slate-200/80">
+              <button
+                type="button"
+                onClick={() => setDockPaneOpen("details", false)}
+                className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 hover:bg-white hover:text-ink hover:shadow-sm"
+                aria-label="Hide Details"
+                title="Hide Details"
+              >
+                <EyeOff size={14} aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleMaxPane("details")}
+                className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 hover:bg-white hover:text-ink hover:shadow-sm"
+                aria-label={maximizedPane === "details" ? "Restore Details" : "Maximize Details"}
+                title={maximizedPane === "details" ? "Restore" : "Maximize"}
+              >
+                {maximizedPane === "details" ? <Minimize2 size={14} aria-hidden /> : <Maximize2 size={14} aria-hidden />}
+              </button>
+            </div>
           </header>
           <div className="min-h-0 flex-1">
             <TripPanel {...tripPanelProps} hideSwitcher />

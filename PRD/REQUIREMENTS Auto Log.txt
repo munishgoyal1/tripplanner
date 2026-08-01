@@ -3108,3 +3108,76 @@ VALIDATION:
 - Use a restrained coral tint for New trip, quiet neutral active pane states, and
   lighter utility icons while preserving one-click behavior and accessible labels.
 - Keep all itinerary, map, Details, Assistant, and mobile behavior unchanged.
+=== 2026-08-01 — Assign local stack ownership to Agent 3 ===
+
+- Agent 3 in the primary workspace owns local stack startup, stop, restart,
+  stale-port cleanup, and health checks for owner manual testing.
+- Workers 1 and 2 must not change the local stack lifecycle without explicit
+  owner approval and should use server-free validation by default.
+=== 2026-08-01 — Add completed Lab lifecycle ===
+
+- Provide a Mark completed action on every active UX Lab.
+- Preserve the selected option and handoff notes when completing a Lab.
+- Remove completed Labs from In progress and show them in both Completed views.
+- Treat completion as a recorded evaluation decision, not implicit approval or
+  proof of production implementation.
+
+=== 2026-08-01 — Prevent cross-worktree Lab lifecycle loss ===
+
+- Use one machine-level Lab decision store shared by primary and worker worktrees
+  instead of checkout-relative ignored files.
+- Restore Execution-ready Trip Book and Compact itinerary density to Parked with
+  their selected options and notes retained.
+- Use atomic writes, retain the previous snapshot, and prefer server records over
+  stale browser drafts.
+- Show lifecycle data as unavailable when it cannot be loaded; never infer missing
+  records as In progress.
+
+=== 2026-08-01 — Implement Pane Control Polish Lab Option B ===
+
+- Group each Itinerary, Map, and Details pane's existing Hide and
+  Maximize/Restore icons in one restrained pane-local pair.
+- Preserve existing handlers, disabled states, independent ownership, recovery,
+  resizing, layout, pane content, Map controls, and workspace command-bar controls.
+
+=== 2026-08-01 — Consolidate canonical documentation ownership ===
+
+- Keep `docs/REQUIREMENTS_V2.md` as the current capability baseline and the PRD
+  requirements log as chronological history; neither substitutes for the other.
+- Remove session-by-session capability history from agent instructions and point
+  agents to canonical product, requirements, architecture, and learning documents.
+- Use `docs/operations/deployment-flow.md` as the single release runbook;
+  `infra/README.md` owns only infrastructure topology, files, and data operations.
+- Remove the superseded `infra/DEPLOYMENT_PROCESS.md` duplicate.
+=== 2026-08-01 — Make Add stop type optional and transparent ===
+
+- Do not make users feel that place type is required when manually entering a stop.
+- When Google infers Attraction, Hotel, or Restaurant, visibly identify the value
+  as auto-filled and keep it editable before Add.
+- Preserve the existing Attraction fallback for unclassified manual entries.
+
+=== 2026-08-01 — Implement Compact Itinerary Density Lab Option B ===
+
+- Preserve the current itinerary information detail, categories, evidence, and actions;
+  compactness must not come from removing useful stop information.
+- When a day starts and ends at the same hotel, show that hotel once with both
+  Depart and Return timing while retaining both underlying route endpoints.
+- Preserve the return leg's travel and arrival evidence and exact endpoint focus.
+- When the endpoint hotels differ, keep both visible as Check out and Check in.
+
+=== 2026-08-01 — Recover large research turns from model token throttling ===
+
+- Prevent multi-city planning from replaying unbounded parallel tool output into
+  the synthesis model call.
+- Preserve complete tool results in graph state while sending bounded copies to
+  the model, distributed across all research results.
+- Retry transient Azure OpenAI token-bucket throttling within a bounded limit and
+  retain safe rate-limit diagnostics when recovery is exhausted.
+
+=== 2026-08-01 — Separate completed Labs from the active catalog ===
+
+- Keep the main UX Labs catalog focused on active and parked evaluations.
+- Expose completed Labs through one link to the dedicated archive page instead
+  of repeating every completed card in the main catalog.
+- Preserve completed decisions, rationale, and original Lab pages unchanged in
+  the archive.

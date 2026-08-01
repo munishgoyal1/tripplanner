@@ -11,7 +11,7 @@ import re
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.callbacks import BaseCallbackHandler
-from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -79,12 +79,49 @@ def _get_llm() -> AzureChatOpenAI:
         azure_deployment=s.azure_openai_deployment,
         api_version=s.azure_openai_api_version,
         temperature=0.3,
+        max_retries=5,
         # Stream tokens so astream_events emits on_chat_model_stream chunks —
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
         streaming=True,
         callbacks=[_UsageCallback(s.azure_openai_deployment)],
     )
+
+
+_MAX_MODEL_TOOL_RESULT_CHARS = 2_000
+_MAX_MODEL_TOOL_RESULTS_TOTAL_CHARS = 24_000
+_TOOL_RESULT_TRUNCATION = (
+    "\n...[truncated for synthesis; full result remains in graph state]"
+)
+
+
+def _messages_for_model(messages: list[BaseMessage]) -> list[BaseMessage]:
+    tool_results = [
+        message
+        for message in messages
+        if isinstance(message, ToolMessage) and isinstance(message.content, str)
+    ]
+    if not tool_results:
+        return messages
+    result_limit = min(
+        _MAX_MODEL_TOOL_RESULT_CHARS,
+        _MAX_MODEL_TOOL_RESULTS_TOTAL_CHARS // len(tool_results),
+    )
+    content_limit = max(0, result_limit - len(_TOOL_RESULT_TRUNCATION))
+    return [
+        message.model_copy(
+            update={
+                "content": (
+                    message.content[:content_limit] + _TOOL_RESULT_TRUNCATION
+                )[:result_limit]
+            }
+        )
+        if isinstance(message, ToolMessage)
+        and isinstance(message.content, str)
+        and len(message.content) > result_limit
+        else message
+        for message in messages
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -447,7 +484,7 @@ def trip_agent(state: AgentState) -> AgentState:
             "Do not create, update, finalize, book, resume, or otherwise mutate trip or user data. "
             "Ask the user to approve an option before any later mutation turn."
         )))
-    response = llm.invoke(instructions + state["messages"])
+    response = llm.invoke(instructions + _messages_for_model(state["messages"]))
     return {"messages": [response], "current_agent": "trip"}
 
 

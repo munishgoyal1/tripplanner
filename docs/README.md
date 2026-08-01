@@ -7,7 +7,7 @@ canonical set below instead of reading every file.
 ## Canonical documents
 
 | Document | Purpose | Update when |
-|---|---|---|
+| --- | --- | --- |
 | [`PRODUCT.md`](PRODUCT.md) | Product intent, scope, interaction rules, and design taste | Vision or product taste changes |
 | [`REQUIREMENTS_V2.md`](REQUIREMENTS_V2.md) | Implemented capability baseline, explicit gaps, and near-term roadmap | Shipped capability or status changes |
 | [`CODEMAP.md`](CODEMAP.md) | Code ownership, architecture, contracts, and commands | File layout or technical contracts change |
@@ -17,7 +17,7 @@ canonical set below instead of reading every file.
 ## Product planning
 
 | Location | Purpose |
-|---|---|
+| --- | --- |
 | [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md) | Consolidated future feature and enhancement candidates; not implementation approval |
 | [`feature-briefs/NEXT_INCREMENT.md`](feature-briefs/NEXT_INCREMENT.md) | Owner-editable scope for the next coherent milestone |
 | [`feature-briefs/FEATURE_BRIEF_TEMPLATE.md`](feature-briefs/FEATURE_BRIEF_TEMPLATE.md) | Full feature-brief template and acceptance structure |
@@ -28,7 +28,7 @@ canonical set below instead of reading every file.
 ## Development
 
 | Document | Purpose |
-|---|---|
+| --- | --- |
 | [`development/dev.md`](development/dev.md) | Local development guidance |
 | [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
@@ -36,7 +36,7 @@ canonical set below instead of reading every file.
 ## Operations
 
 | Document | Purpose |
-|---|---|
+| --- | --- |
 | [`operations/deployment-flow.md`](operations/deployment-flow.md) | Canonical canary, production, monitoring, and rollback flow |
 | [`operations/operations-slos.md`](operations/operations-slos.md) | Production observability, SLOs, and Log Analytics queries |
 | [`operations/product-analytics.md`](operations/product-analytics.md) | GA4 setup, privacy boundary, events, and activation funnel |
@@ -46,13 +46,14 @@ canonical set below instead of reading every file.
 ## Mobile
 
 | Document | Purpose |
-|---|---|
+| --- | --- |
 | [`mobile/ios-testing.md`](mobile/ios-testing.md) | iPhone and iOS testing runbook |
 | [`mobile/android-testing.md`](mobile/android-testing.md) | Android testing runbook |
 
-Infrastructure-specific deployment details remain under
+Infrastructure topology, IaC, and guarded data operations remain under
 [`../infra/`](../infra/), with [`../infra/README.md`](../infra/README.md) as the
-entry point. Mobile package-specific setup remains in
+entry point. Release procedures belong in the canonical operations runbook.
+Mobile package-specific setup remains in
 [`../mobile/README.md`](../mobile/README.md).
 
 ## Owner and historical artifacts
