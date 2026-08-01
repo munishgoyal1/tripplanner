@@ -812,6 +812,69 @@ def test_map_view_reuses_places_across_complete_day_circuits(_map_geo: None) -> 
         assert "hr" in days[2]["route"]["duration_display"]
 
 
+def test_map_view_carries_forward_hotel_after_transition(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Trident Udaipur": (24.577, 73.683),
+        "Taj Hari Mahal Jodhpur": (26.269, 73.010),
+        "Suryagarh Jaisalmer": (26.916, 70.921),
+        "Camel Safari at Sam Sand Dunes": (26.835, 70.528),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [
+            {"name": "Trident Udaipur"},
+            {"name": "Taj Hari Mahal Jodhpur"},
+            {"name": "Suryagarh Jaisalmer"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 5,
+                "stops": [
+                    {"name": "Taj Hari Mahal Jodhpur", "kind": "hotel"},
+                    {"name": "Drive: Jodhpur to Jaisalmer", "kind": "transport"},
+                    {"name": "Suryagarh Jaisalmer", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 6,
+                "stops": [
+                    {"name": "Camel Safari at Sam Sand Dunes", "kind": "attraction"},
+                ],
+            },
+        ],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    day6 = next(day for day in view["days"] if day["day"] == 6)
+    route_names = [names_by_id[pin_id] for pin_id in day6["pin_ids"]]
+    assert route_names == [
+        "Suryagarh Jaisalmer",
+        "Camel Safari at Sam Sand Dunes",
+        "Suryagarh Jaisalmer",
+    ]
+
+
 def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:
     trip = {
         **SAMPLE_TRIP,

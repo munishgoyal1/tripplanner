@@ -1271,12 +1271,29 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         )
         return int(occurrence.get("stop")) if occurrence and occurrence.get("stop") else 10_000
 
+    itinerary_days = {
+        int(day["day"]): day for day in build_itinerary(trip).get("days", [])
+    }
+
+    def _resolved_stay_id(day: int) -> str | None:
+        itinerary_day = itinerary_days.get(day) or {}
+        hotel = next(
+            (
+                stop
+                for stop in itinerary_day.get("stops") or []
+                if stop.get("kind") == "hotel"
+            ),
+            None,
+        )
+        pin = _pin_for_stop(hotel.get("name")) if hotel else None
+        return str(pin["id"]) if pin else None
+
     stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
     days = []
     for d in sorted(by_day):
         ids = sorted(by_day[d], key=lambda pin_id: _occurrence_stop(pin_id, d))
         day_stay = next((pid for pid in ids if pin_by_id[pid]["kind"] == "hotel"), None)
-        stay_id = day_stay or (stay_ids[0] if stay_ids else None)
+        stay_id = day_stay or _resolved_stay_id(d) or (stay_ids[0] if stay_ids else None)
         is_transfer_day = d in transfer_days
         if stay_id and not is_transfer_day:
             ids = [stay_id, *(pid for pid in ids if pid != stay_id), stay_id]
@@ -1306,9 +1323,6 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 "legs": _route_legs_for_day(route_ids, pin_by_id),
             }
         )
-    itinerary_days = {
-        int(day["day"]): day for day in build_itinerary(trip).get("days", [])
-    }
     for day in days:
         itinerary_day = itinerary_days.get(int(day["day"]))
         if itinerary_day:
