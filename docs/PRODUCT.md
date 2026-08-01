@@ -185,7 +185,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   actions read in one direction without drifting toward the center or right.
   Hotel circuit anchors show Depart/Return semantics without a visit duration,
   redundant In trip state, or an individual delete action; stay changes use the
-  stay-range controls instead.
+  stay-range controls instead. When a day departs from and returns to the same
+  hotel, one combined row shows both times without removing either underlying
+  route endpoint or its return-leg evidence. Different endpoint hotels remain
+  separate and read as Check out and Check in.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
   Each mapped destination row also shows a quiet estimated distance/time from

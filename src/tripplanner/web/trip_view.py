@@ -1915,8 +1915,8 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 middle = [stop for stop in stops if stop["kind"] != "hotel"]
                 hotel_start = dict(anchor)
                 hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
-                hotel_return = dict(anchor)
-                hotel_return["note"] = "Return to your stay"
+                hotel_return = dict(hotel_stops[-1] if len(hotel_stops) > 1 else anchor)
+                hotel_return["note"] = hotel_return.get("note") or "Return to your stay"
                 stops = [hotel_start, *middle, hotel_return]
 
         rendered_hotels = [stop for stop in stops if stop["kind"] == "hotel"]

@@ -334,6 +334,9 @@ re-describing the whole product.
 - Rows show quiet travel distance/time from the previous mapped stop.
 - Generated hotel circuit anchors have no visit duration, In trip badge, or
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
+  Identical departure and return hotels render once with both times while
+  preserving route endpoints, return-leg evidence, and exact focus. Different
+  endpoint hotels remain separate Check out and Check in rows.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 

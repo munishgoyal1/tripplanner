@@ -57,12 +57,30 @@ function reviewCountLabel(count: number): string {
   return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(count);
 }
 
+function normalizedPlaceName(name: string): string {
+  return name.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function uniqueDetailTexts(...values: Array<string | undefined>): string[] {
+  const seen = new Set<string>();
+  return values.flatMap((value) => {
+    const text = (value || "").trim();
+    const key = text.toLowerCase();
+    if (!text || seen.has(key)) return [];
+    seen.add(key);
+    return [text];
+  });
+}
+
 function StopRow({
   stop,
   day,
   stopIndex,
   isFirst,
   isLast,
+  hotelTimingLabel,
+  returnStop,
+  representedStopIndexes,
   mapLabel,
   active,
   jumpActive,
@@ -77,6 +95,9 @@ function StopRow({
   stopIndex: number;
   isFirst: boolean;
   isLast: boolean;
+  hotelTimingLabel?: "Check out" | "Check in";
+  returnStop?: ItineraryStop;
+  representedStopIndexes?: number[];
   mapLabel?: string;
   active: boolean;
   jumpActive: boolean;
@@ -89,15 +110,20 @@ function StopRow({
   const focusable = canFocus(stop.kind);
   const removable = !!onRemove && focusable && stop.kind !== "hotel";
   const [removing, setRemoving] = useState(false);
-  const noteText = (stop.note || "").trim();
-  const insightText = (stop.insight || "").trim();
-  const showNote = !!noteText && noteText.toLowerCase() !== insightText.toLowerCase();
-  const showInsight = !!insightText;
-  const timingLabel = stop.kind === "hotel" && isFirst
+  const circuitTimingNotes = new Set(["start from your stay", "return to your stay"]);
+  const insightTexts = uniqueDetailTexts(stop.insight, returnStop?.insight);
+  const insightKeys = new Set(insightTexts.map((text) => text.toLowerCase()));
+  const noteTexts = uniqueDetailTexts(stop.note, returnStop?.note).filter((text) =>
+    !insightKeys.has(text.toLowerCase())
+    && (!returnStop || !circuitTimingNotes.has(text.toLowerCase()))
+  );
+  const concernTexts = uniqueDetailTexts(stop.concern, returnStop?.concern);
+  const timingLabel = hotelTimingLabel || (stop.kind === "hotel" && isFirst
     ? "Depart"
     : stop.kind === "hotel" && isLast
       ? "Return"
-      : "Arrive";
+      : "Arrive");
+  const travelStop = returnStop?.travel_from_previous ? returnStop : stop;
   const handleRowClick = () => {
     if (focusable) {
       onFocus();
@@ -109,8 +135,9 @@ function StopRow({
       data-stop-name={stop.name.toLowerCase()}
       data-stop-day={day}
       data-stop-index={stopIndex}
+      data-stop-indexes={(representedStopIndexes || [stopIndex]).join(",")}
       onClick={handleRowClick}
-      className={`group grid grid-cols-[3.75rem_minmax(0,1fr)] gap-2 px-1 py-2 transition ${
+      className={`group grid grid-cols-[3.75rem_minmax(0,1fr)] gap-2 px-1 py-1.5 transition ${
         jumpActive
           ? "bg-amber-50 ring-2 ring-amber-300"
           : active
@@ -121,11 +148,22 @@ function StopRow({
                   }`}
     >
       <div className="pt-0.5 text-left">
-        <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
-        {stop.time && (
-          <p className="text-xs font-bold tabular-nums text-ink">
-            {stop.time}{stop.time_estimated ? " est." : ""}
-          </p>
+        {returnStop ? (
+          <>
+            <p className="text-[10px] font-bold uppercase text-slate-400">Depart</p>
+            <p className="text-xs font-bold tabular-nums text-ink">{stop.time || "—"}{stop.time_estimated ? " est." : ""}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">Return</p>
+            <p className="text-xs font-bold tabular-nums text-ink">{returnStop.time || "—"}{returnStop.time_estimated ? " est." : ""}</p>
+          </>
+        ) : (
+          <>
+            <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
+            {stop.time && (
+              <p className="text-xs font-bold tabular-nums text-ink">
+                {stop.time}{stop.time_estimated ? " est." : ""}
+              </p>
+            )}
+          </>
         )}
         {stop.kind !== "hotel" && stop.duration_min ? (
           <p className="mt-0.5 text-[10px] text-slate-500">{Math.round(stop.duration_min)} min visit</p>
@@ -136,27 +174,27 @@ function StopRow({
       </div>
 
       <div className="min-w-0">
-        {stop.travel_from_previous && (
+        {travelStop.travel_from_previous && (
           <div
-            aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
+            aria-label={`Travel from previous stop: ${travelStop.travel_from_previous.distance_display}, ${travelStop.travel_from_previous.duration_display}`}
             className="mb-1 flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
-            title={`${stop.travel_from_previous.mode} estimate`}
+            title={`${travelStop.travel_from_previous.mode} estimate`}
           >
             <Route size={11} aria-hidden />
-            <span className="font-semibold capitalize">{stop.travel_from_previous.mode}</span>
-            <span>{stop.travel_from_previous.distance_display}</span>
+            <span className="font-semibold capitalize">{travelStop.travel_from_previous.mode}</span>
+            <span>{travelStop.travel_from_previous.distance_display}</span>
             <span aria-hidden>·</span>
-            <span>{stop.travel_from_previous.duration_display}</span>
-            {stop.travel_from_previous.detail && (
-              <span className="basis-full font-normal text-slate-600">{stop.travel_from_previous.detail}</span>
+            <span>{travelStop.travel_from_previous.duration_display}</span>
+            {travelStop.travel_from_previous.detail && (
+              <span className="basis-full font-normal text-slate-600">{travelStop.travel_from_previous.detail}</span>
             )}
-            {stop.expected_arrival_time && (
+            {travelStop.expected_arrival_time && (
               <span className="basis-full font-normal text-slate-500">
-                Est. arrive {stop.expected_arrival_time}
-                {stop.buffer_before_display && stop.time
-                  ? ` · ${stop.buffer_before_display} free before ${stop.time}`
-                  : stop.timing_conflict_display
-                    ? ` · schedule is ${stop.timing_conflict_display} too tight`
+                Est. arrive {travelStop.expected_arrival_time}
+                {travelStop.buffer_before_display && travelStop.time
+                  ? ` · ${travelStop.buffer_before_display} free before ${travelStop.time}`
+                  : travelStop.timing_conflict_display
+                    ? ` · schedule is ${travelStop.timing_conflict_display} too tight`
                     : ""}
               </span>
             )}
@@ -165,7 +203,9 @@ function StopRow({
         <div className="flex items-start gap-1.5">
           {mapLabel && (
             <span
-              aria-label={mapLabel === "H" ? "Hotel map marker" : `Map stop ${mapLabel}`}
+              aria-label={mapLabel === "H"
+                ? returnStop ? `Hotel circuit marker for ${stop.name}` : "Hotel map marker"
+                : `Map stop ${mapLabel}`}
               aria-current={active ? "location" : undefined}
               className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-white"}`}
               style={{
@@ -265,13 +305,11 @@ function StopRow({
             <MapPin size={13} aria-hidden />
           </button>
         </div>
-        {(stop.concern || showNote || showInsight) && (
+        {(concernTexts.length > 0 || noteTexts.length > 0 || insightTexts.length > 0) && (
           <div className="mt-1 space-y-0.5">
-            {stop.concern && (
-              <p className="text-xs font-medium text-rose-700">{stop.concern}</p>
-            )}
-            {showNote && <p className="text-xs text-slate-500">{noteText}</p>}
-            {showInsight && <p className="text-xs text-slate-600">{insightText}</p>}
+            {concernTexts.map((text) => <p key={text} className="text-xs font-medium text-rose-700">{text}</p>)}
+            {noteTexts.map((text) => <p key={text} className="text-xs text-slate-500">{text}</p>)}
+            {insightTexts.map((text) => <p key={text} className="text-xs text-slate-600">{text}</p>)}
           </div>
         )}
       </div>
@@ -317,11 +355,17 @@ function DayCard({
   const plannedStops = day.stops.filter((stop) => stop.kind !== "hotel");
   const confirmedStops = plannedStops.filter((stop) => stop.booked).length;
   const remainingStops = plannedStops.length - confirmedStops;
+  const firstStop = day.stops[0];
+  const lastStop = day.stops[day.stops.length - 1];
+  const hasHotelEndpoints = day.stops.length > 1 && firstStop?.kind === "hotel" && lastStop?.kind === "hotel";
+  const combinesHotelCircuit = hasHotelEndpoints && normalizedPlaceName(firstStop.name) === normalizedPlaceName(lastStop.name);
+  const changesHotel = hasHotelEndpoints && !combinesHotelCircuit;
+  const visibleStops = combinesHotelCircuit ? day.stops.slice(0, -1) : day.stops;
   return (
     <section id={`it-day-${day.day}`} className="overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
       <div
         onClick={() => onDayMap(day.day)}
-        className="group/day grid cursor-pointer gap-2 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+        className="group/day grid cursor-pointer gap-2 px-3 py-2.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
         title={`Show complete Day ${day.day} circuit on map`}
       >
         <div className="min-w-0">
@@ -355,7 +399,7 @@ function DayCard({
             </div>
           </div>
           {day.summary && <p className="mt-2 text-xs leading-relaxed text-slate-600">{day.summary}</p>}
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-2 text-[11px] text-slate-500">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-1.5 text-[11px] text-slate-500">
             <strong className="text-ink">{plannedStops.length} planned {plannedStops.length === 1 ? "stop" : "stops"}</strong>
             {day.schedule?.duration_display && (
               <span className="basis-full">
@@ -398,8 +442,10 @@ function DayCard({
 
       {day.stops.length > 0 && (
         <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
-          {day.stops.map((stop, i) => (
+          {visibleStops.map((stop, i) => (
             (() => {
+              const returnStop = combinesHotelCircuit && i === 0 ? lastStop : undefined;
+              const representedStopIndexes = returnStop ? [1, day.stops.length] : [i + 1];
               const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
               const jumpActive =
                 jumpToken > 0 &&
@@ -415,12 +461,15 @@ function DayCard({
               stopIndex={i + 1}
               isFirst={i === 0}
               isLast={i === day.stops.length - 1}
+              hotelTimingLabel={changesHotel && i === 0 ? "Check out" : changesHotel && i === day.stops.length - 1 ? "Check in" : undefined}
+              returnStop={returnStop}
+              representedStopIndexes={representedStopIndexes}
               mapLabel={mapLabels[i]}
               active={
                 active
                 && focusName?.toLowerCase() === stop.name.toLowerCase()
                 && (focusDay == null || focusDay === day.day)
-                && (focusStop == null || focusStop === i + 1)
+                && (focusStop == null || representedStopIndexes.includes(focusStop))
               }
               jumpActive={jumpActive}
               rowId={rowId}
@@ -563,7 +612,7 @@ export default function ItineraryPanel({
     const row = rows.find((el) =>
       (el.dataset.stopName || "").toLowerCase() === target
       && (focusDay == null || Number(el.dataset.stopDay) === focusDay)
-      && (focusStop == null || Number(el.dataset.stopIndex) === focusStop)
+      && (focusStop == null || (el.dataset.stopIndexes || el.dataset.stopIndex || "").split(",").includes(String(focusStop)))
     );
     if (!row) return;
     row.scrollIntoView({ behavior: "smooth", block: "center" });

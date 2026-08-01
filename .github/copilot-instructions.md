@@ -158,6 +158,10 @@ Learns from user preferences and past trips.
 - This file must always reflect current state
 
 ## Current State (last updated 2026-08-01)
+- **Detail-preserving compact itinerary circuits**: implemented Itinerary Density
+  Lab Option B without adopting simplified stop rows. Identical same-day hotel
+  endpoints render once with Depart and Return times while preserving route data,
+  return-leg evidence, and exact focus; different hotels remain Check out/Check in.
 - **Optional, transparent Add stop typing**: manually entered Map stops no longer
   present place type as required. Google-selected places visibly mark their
   inferred Attraction, Hotel, or Restaurant type as auto-filled while retaining

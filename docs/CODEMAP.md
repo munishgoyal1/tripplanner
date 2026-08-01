@@ -160,8 +160,8 @@ frontend/
           comparison; Option A is implemented
     src/map-controls/  Active production-scale comparison for Map day/all-days scope,
           Add stop hierarchy, and schedule versus route evidence
-    src/itinerary-density/  Active 320px day-density comparison; preserves the
-          implemented Compact Agenda while evaluating refinements
+        src/itinerary-density/  Completed 320px day-density comparison; Option B
+          consolidates identical hotel endpoints while preserving Compact Agenda detail
         src/itinerary-trip-book/  Active printable packet comparison for contents,
           itinerary execution, confirmation readiness, and personal place context
         src/workspace-command-bar/  Completed command-bar comparison; Option A keeps
