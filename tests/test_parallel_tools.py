@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import operator
 import time
+from types import SimpleNamespace
 from typing import Annotated, TypedDict
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
@@ -70,7 +71,11 @@ def test_tool_node_runs_parallel_tool_calls_concurrently() -> None:
     # baseline.
     assert elapsed < 0.7, f"ToolNode ran serially (took {elapsed:.2f}s)"
 
-    tool_messages = [m for m in out["messages"] if hasattr(m, "content") and m.content in {"one", "two", "three"}]
+    tool_messages = [
+        message
+        for message in out["messages"]
+        if hasattr(message, "content") and message.content in {"one", "two", "three"}
+    ]
     assert len(tool_messages) == 3
     contents = sorted(tm.content for tm in tool_messages)
     assert contents == ["one", "three", "two"]
@@ -96,6 +101,84 @@ def test_trip_agent_binds_tools_with_parallel_flag() -> None:
 
     src = inspect.getsource(graph_mod.trip_agent)
     assert "parallel_tool_calls=True" in src
+
+
+def test_llm_allows_token_bucket_recovery(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    captured: dict = {}
+
+    class FakeAzureChatOpenAI:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    monkeypatch.setattr(graph_mod, "AzureChatOpenAI", FakeAzureChatOpenAI)
+    monkeypatch.setattr(
+        graph_mod,
+        "get_settings",
+        lambda: SimpleNamespace(
+            azure_openai_endpoint="https://example.openai.azure.com",
+            azure_openai_api_key="test-key",
+            azure_openai_deployment="test-deployment",
+            azure_openai_api_version="2024-10-21",
+        ),
+    )
+
+    graph_mod._get_llm()
+
+    assert captured["max_retries"] == 5
+
+
+def test_trip_agent_compacts_tool_results_only_for_model_input(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    captured_messages: list[BaseMessage] = []
+
+    class FakeBoundModel:
+        def invoke(self, messages):
+            captured_messages.extend(messages)
+            return AIMessage(content="Done")
+
+    class FakeModel:
+        def bind_tools(self, _tools, **_options):
+            return FakeBoundModel()
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(graph_mod, "select_tools", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(graph_mod, "load_active_trip_dict", lambda: {})
+    full_result = "R" * 5_000
+    tool_messages = [
+        ToolMessage(content=full_result, tool_call_id=f"research-{index}")
+        for index in range(14)
+    ]
+    messages: list[BaseMessage] = [HumanMessage(content="Plan Rajasthan"), *tool_messages]
+
+    graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    sent_results = [
+        message for message in captured_messages if isinstance(message, ToolMessage)
+    ]
+    assert len(sent_results) == len(tool_messages)
+    assert sum(len(str(message.content)) for message in sent_results) <= 24_000
+    assert all("truncated for synthesis" in str(message.content) for message in sent_results)
+    assert all(message.content == full_result for message in tool_messages)
+
+
+def test_model_tool_result_budget_is_strict_for_large_batches() -> None:
+    from tripplanner import graph as graph_mod
+
+    tool_messages = [
+        ToolMessage(content="R" * 5_000, tool_call_id=f"research-{index}")
+        for index in range(60)
+    ]
+
+    compacted = graph_mod._messages_for_model(tool_messages)
+
+    assert sum(len(str(message.content)) for message in compacted) <= 24_000
 
 
 def test_trip_agent_forces_initial_itinerary_after_creation(monkeypatch) -> None:

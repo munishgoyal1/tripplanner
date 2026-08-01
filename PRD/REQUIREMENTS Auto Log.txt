@@ -3157,3 +3157,12 @@ VALIDATION:
   Depart and Return timing while retaining both underlying route endpoints.
 - Preserve the return leg's travel and arrival evidence and exact endpoint focus.
 - When the endpoint hotels differ, keep both visible as Check out and Check in.
+
+=== 2026-08-01 — Recover large research turns from model token throttling ===
+
+- Prevent multi-city planning from replaying unbounded parallel tool output into
+  the synthesis model call.
+- Preserve complete tool results in graph state while sending bounded copies to
+  the model, distributed across all research results.
+- Retry transient Azure OpenAI token-bucket throttling within a bounded limit and
+  retain safe rate-limit diagnostics when recovery is exhausted.
