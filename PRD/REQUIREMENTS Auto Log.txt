@@ -3142,3 +3142,18 @@ VALIDATION:
 - Use `docs/operations/deployment-flow.md` as the single release runbook;
   `infra/README.md` owns only infrastructure topology, files, and data operations.
 - Remove the superseded `infra/DEPLOYMENT_PROCESS.md` duplicate.
+=== 2026-08-01 — Make Add stop type optional and transparent ===
+
+- Do not make users feel that place type is required when manually entering a stop.
+- When Google infers Attraction, Hotel, or Restaurant, visibly identify the value
+  as auto-filled and keep it editable before Add.
+- Preserve the existing Attraction fallback for unclassified manual entries.
+
+=== 2026-08-01 — Implement Compact Itinerary Density Lab Option B ===
+
+- Preserve the current itinerary information detail, categories, evidence, and actions;
+  compactness must not come from removing useful stop information.
+- When a day starts and ends at the same hotel, show that hotel once with both
+  Depart and Return timing while retaining both underlying route endpoints.
+- Preserve the return leg's travel and arrival evidence and exact endpoint focus.
+- When the endpoint hotels differ, keep both visible as Check out and Check in.

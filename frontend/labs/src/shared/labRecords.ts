@@ -39,20 +39,20 @@ export const activeLabs: LabRecord[] = [
     href: "./itinerary-trip-book.html",
     icon: BookOpen,
   },
+];
+
+export const completedLabs: LabRecord[] = [
   {
     id: "itinerary-density",
     title: "Compact itinerary density",
     category: "Itinerary layout",
-    description: "Compare one-line, circuit-header, and progressive-focus agendas inside a 320 px day frame.",
-    date: "30 Jul 2026",
-    status: "In evaluation",
-    decision: "Open experiment · B starts as the recommended direction.",
+    description: "Consolidated identical hotel endpoints while retaining the detailed Compact Agenda and distinct stay transitions.",
+    date: "1 Aug 2026",
+    status: "Implemented",
+    decision: "B · Circuit header, adapted to preserve production detail and exact endpoint behavior.",
     href: "./itinerary-density.html",
     icon: ListChecks,
   },
-];
-
-export const completedLabs: LabRecord[] = [
   {
     id: "pane-control-polish",
     title: "Pane control polish",

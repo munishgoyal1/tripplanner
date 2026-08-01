@@ -73,6 +73,12 @@ remaining booking counts, and hotel anchors excluded from the planned-stop
 count. See
 [`ITINERARY_SUMMARY_DESIGN.md`](ITINERARY_SUMMARY_DESIGN.md).
 
+The compact itinerary density Lab selected Option B with an explicit preservation
+constraint. Production retains the detailed Compact Agenda and tightens spacing;
+identical hotel endpoints render once with Depart and Return timing, while different
+hotels remain explicit Check out and Check in rows. See
+[`ITINERARY_DENSITY.md`](ITINERARY_DENSITY.md).
+
 These standalone labs are the preferred mechanism for future focused UX choices:
 use realistic fixtures, compare coherent alternatives, record local scores, and
 keep production behavior unchanged until the owner selects a direction. Every

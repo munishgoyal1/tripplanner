@@ -100,7 +100,7 @@ for worktree synchronization, guarded integration, and cleanup.
 Update the existing owner rather than creating another summary:
 
 | Change | Update |
-|---|---|
+| --- | --- |
 | Cross-project preference | `/memories/preferences.md` |
 | Repository-specific fact or landmine | `/memories/repo/tripplanner.md` |
 | Product intent, scope, or design taste | `docs/PRODUCT.md` |

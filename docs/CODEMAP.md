@@ -33,19 +33,26 @@ trip through shared API contracts.
 | `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, production SPA mount |
+| `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
+| `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |
+| `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
 | `src/tripplanner/cli.py` | Local command-line experience |
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
+| `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view model and display semantics |
+| `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
+| `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
-| `src/tripplanner/storage_cosmos.py` | Cosmos implementation and container access |
-| `src/tripplanner/chat_store.py` | Conversation storage and carryover |
+| `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
 | `src/tripplanner/trip_events.py` | Durable trip event ownership |
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
+| `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
-| `src/tripplanner/tools/` | LangChain tools and provider boundaries |
+| `src/tripplanner/providers/` | Normalized travel provider clients and capability registry |
+| `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Configuration comes from `Settings`, not scattered environment reads.
@@ -55,6 +62,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | Path | Owns |
 | --- | --- |
 | `frontend/src/App.tsx` | Web application composition and top-level trip workspace ownership |
+| `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
@@ -113,11 +121,11 @@ evidence.
 | Area | Primary paths | Contract |
 | --- | --- | --- |
 | Destination discovery | `tools/destinations.py`, `tools/search.py` | Return grounded options with source context |
-| Flights and hotels | Existing search/provider tools under `tools/` | Prefer live availability; label fallback data accurately |
+| Flights and hotels | Stable agent tools plus `providers/registry.py` | Prefer live availability; label fallback data accurately |
 | Activities | Existing Viator/Amadeus provider boundaries | Preserve provenance and handoff material |
 | Maps and geocoding | Map/location tools plus frontend map utilities | Keep coordinates and selected itinerary synchronized |
 | Preferences | About Me extractor, apply logic, and store | Merge additively unless the owner explicitly removes data |
-| Email/export | Export tool and idempotency store | Retried requests must not duplicate delivery records |
+| Email/export | Export tool and external operation ledger | Retried requests must not duplicate delivery records |
 
 Booking means grounded selection and verified handoff material. The application
 does not purchase, pay, cancel, or manage provider orders.
@@ -129,6 +137,7 @@ does not purchase, pay, cancel, or manage provider orders.
 ```text
 POST /api/.../messages
   -> authenticate account or guest capability
+  -> apply admission and workspace limits
   -> load trip and conversation
   -> stream graph events over SSE
   -> execute phase-eligible tools

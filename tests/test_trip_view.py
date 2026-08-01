@@ -931,6 +931,33 @@ def test_structured_itinerary_adds_selected_hotel_as_daily_circuit_anchor() -> N
         assert day["stops"][-1]["note"] == "Return to your stay"
 
 
+def test_structured_itinerary_preserves_same_hotel_return_metadata() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Taj Exotica Resort", "kind": "hotel", "note": "Leave bags"},
+                    {"name": "Aguada Fort", "kind": "attraction"},
+                    {
+                        "name": "Taj Exotica Resort",
+                        "kind": "hotel",
+                        "note": "Collect bags at reception",
+                        "concern": "Confirm late front-desk access",
+                    },
+                ],
+            }
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    hotel_return = itinerary["days"][0]["stops"][-1]
+    assert hotel_return["note"] == "Collect bags at reception"
+    assert hotel_return["concern"] == "Confirm late front-desk access"
+
+
 def test_structured_itinerary_preserves_overnight_travel_without_hotel_anchor() -> None:
     trip = {
         **SAMPLE_TRIP,
