@@ -950,12 +950,16 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
         "Dilwara Temples": (24.609, 72.723),
         "Nakki Lake": (24.593, 72.704),
     }
+    canonical_names = {
+        "Hotel Hillock Mount Abu": "Hotel Hillock",
+        "Dilwara Temples": "Delwara Jain Temple",
+    }
     monkeypatch.setattr(
         trip_view.places_cache,
         "get_details",
         lambda name, city: {
             "place_id": f"pid-{name}",
-            "name": name,
+            "name": canonical_names.get(name, name),
             "lat": coords.get(name, (None, None))[0],
             "lng": coords.get(name, (None, None))[1],
         },
@@ -986,10 +990,10 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
     day = view["days"][0]
     route_names = [names_by_id[pin_id] for pin_id in day["pin_ids"]]
     assert route_names == [
-        "Hotel Hillock Mount Abu",
-        "Dilwara Temples",
+        "Hotel Hillock",
+        "Delwara Jain Temple",
         "Nakki Lake",
-        "Hotel Hillock Mount Abu",
+        "Hotel Hillock",
     ]
     assert len(day["legs"]) == 3
     assert day["route"]["distance_km"] < 10

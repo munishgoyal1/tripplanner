@@ -888,6 +888,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
             {
                 "id": f"p{i}",
                 "name": info.get("name") or name,
+                "_source_name": name,
                 "kind": kind,
                 "selected": is_sel,
                 "day": explicit_day_by_name.get(name.strip().lower())
@@ -1218,7 +1219,10 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     pins = _map_pins(trip, destination)
     airport = None if any(pin["kind"] == "airport" for pin in pins) else _airport_pin(destination)
 
-    pin_by_name = {str(p["name"]).strip().lower(): p for p in pins}
+    pin_by_name: dict[str, dict[str, Any]] = {}
+    for pin in pins:
+        pin_by_name[str(pin["name"]).strip().lower()] = pin
+        pin_by_name[str(pin["_source_name"]).strip().lower()] = pin
 
     def _pin_for_stop(name: Any) -> dict[str, Any] | None:
         needle = str(name or "").strip().lower()
@@ -1341,6 +1345,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         if coords
         else None
     )
+    for pin in pins:
+        pin.pop("_source_name", None)
 
     return {
         "enabled": key_configured,
