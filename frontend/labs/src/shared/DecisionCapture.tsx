@@ -1,4 +1,4 @@
-import { Archive, Check, Save, Trash2 } from "lucide-react";
+import { Archive, Check, CheckCircle2, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface DecisionOption {
@@ -13,7 +13,7 @@ interface SavedSelection {
   updatedAt?: string;
 }
 
-type LabDisposition = "ready" | "parked" | "discarded";
+type LabDisposition = "ready" | "parked" | "completed" | "discarded";
 
 interface DecisionCaptureProps {
   labId: string;
@@ -145,6 +145,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           {status === "saving" && "Saving handoff…"}
           {status === "saved" && disposition === "ready" && "Ready handoff saved for implementation."}
           {status === "saved" && disposition === "parked" && "Lab parked with its chosen option and notes."}
+          {status === "saved" && disposition === "completed" && "Lab marked completed with its decision and notes preserved."}
           {status === "saved" && disposition === "discarded" && "Lab discarded; its option and handoff notes were deleted."}
           {status === "offline" && "Draft kept in this browser. Restart the Labs server, then retry Save handoff."}
           {status === "idle" && (dirty ? "Workspace save pending; browser draft kept" : saved ? "Saved in this workspace" : "Nothing saved yet")}
@@ -152,6 +153,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" onClick={() => save("discarded")} disabled={status === "saving"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-rose-700 ring-1 ring-rose-200 hover:bg-rose-50 disabled:opacity-50"><Trash2 size={13} aria-hidden /> Discard Lab</button>
           <button type="button" onClick={() => save("parked")} disabled={status === "saving"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-amber-800 ring-1 ring-amber-200 hover:bg-amber-50 disabled:opacity-50"><Archive size={13} aria-hidden /> Park for later</button>
+          <button type="button" onClick={() => save("completed")} disabled={status === "saving" || !dirty && disposition === "completed"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-50 disabled:opacity-50"><CheckCircle2 size={13} aria-hidden /> Mark completed</button>
           <button type="button" onClick={() => save("ready")} disabled={status === "saving" || !dirty && disposition === "ready"} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> Save for implementation</button>
         </div>
       </div>

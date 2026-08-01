@@ -11,7 +11,7 @@ interface LabSelection {
   selection: string;
   selectionLabel: string;
   comment: string;
-  disposition?: "ready" | "parked" | "discarded";
+  disposition?: "ready" | "parked" | "completed" | "discarded";
   updatedAt: string;
 }
 
@@ -61,7 +61,7 @@ export function labFeedbackPlugin(): Plugin {
             sendJson(response, 400, { error: "Incomplete lab selection" });
             return;
           }
-          if (selection.disposition && !["ready", "parked", "discarded"].includes(selection.disposition)) {
+          if (selection.disposition && !["ready", "parked", "completed", "discarded"].includes(selection.disposition)) {
             sendJson(response, 400, { error: "Invalid lab disposition" });
             return;
           }

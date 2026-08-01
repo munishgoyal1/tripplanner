@@ -158,7 +158,10 @@ handoff does not change production UI and is not implementation approval by
 itself; the owner's later execution instruction remains the approval boundary.
 **Save for implementation** keeps the Lab in progress and marks the complete
 handoff ready. **Park for later** preserves the option and notes, removes the Lab
-from In progress, and lists it under Parked on All Labs. **Discard Lab** removes
+from In progress, and lists it under Parked on All Labs. **Mark completed**
+preserves the selected option and notes, removes the Lab from In progress, and
+lists it in both Completed views; completion records the evaluation decision but
+does not assert that production implementation is shipped or approved. **Discard Lab** removes
 the Lab from catalogs and deletes its option, notes, and browser draft; only a
 minimal discarded marker remains so it stays hidden.
 The page also keeps each in-progress choice and comment as a browser draft. If

@@ -114,7 +114,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **UX Labs**: catalog filters belong only on catalog pages; an individual Lab
   has one clear return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
-  marked ready, parked with that handoff intact, or discarded from consideration.
+  marked ready, parked with that handoff intact, completed with the selected
+  decision preserved, or discarded from consideration. Completion archives the
+  evaluation decision without implying production implementation approval.
   Before its options, every Lab explicitly separates the exact elements being
   changed from realistic surrounding UI that is context only. Selecting an option
   does not implicitly approve changes to other elements visible in its preview.

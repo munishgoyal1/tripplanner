@@ -12,6 +12,21 @@ export interface LabRecord {
   icon: typeof ListChecks;
 }
 
+export interface LabSelectionState {
+  disposition?: "ready" | "parked" | "completed" | "discarded";
+  selectionLabel?: string;
+}
+
+export function locallyCompletedLabs(selections: Record<string, LabSelectionState>): LabRecord[] {
+  return activeLabs
+    .filter((lab) => selections[lab.id]?.disposition === "completed")
+    .map((lab) => ({
+      ...lab,
+      status: "Completed",
+      decision: selections[lab.id]?.selectionLabel || "Decision recorded",
+    }));
+}
+
 export const activeLabs: LabRecord[] = [
   {
     id: "pane-control-polish",

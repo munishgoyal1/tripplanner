@@ -197,8 +197,10 @@ Learns from user preferences and past trips.
   In progress, and Completed indexes; each individual experiment has one clear
   return to All Labs. Active handoffs bind the selected option to owner-authored
   modifications and implementation inputs, and can be marked ready, parked with
-  that handoff preserved, or discarded with option, notes, and browser draft
-  deleted. Parked Labs leave In progress and remain grouped on All Labs.
+  that handoff preserved, completed with the decision and notes retained, or
+  discarded with option, notes, and browser draft deleted. Parked Labs leave In
+  progress and remain grouped on All Labs; completed Labs move to both Completed
+  views without implying that production implementation is approved or shipped.
 - **Shared local diagnostics + model throttle evidence**: every canonical local
   stack writes rotating PII-safe JSON under the primary Git checkout, so primary
   and worker VS Code windows analyze the same log. Final Azure OpenAI rate-limit

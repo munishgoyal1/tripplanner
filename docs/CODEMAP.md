@@ -150,7 +150,9 @@ frontend/
                           preview context and renders optional portal-based overlays
                           for explicit `data-lab-change` preview targets without
                           affecting layout or input; `DecisionCapture` persists ready,
-                          parked, or discarded lifecycle plus scoped implementation notes.
+                          parked, completed, or discarded lifecycle plus scoped
+                          implementation notes. Locally completed active records are
+                          projected into both Completed catalogs without source-array moves.
     src/shell-visual-refresh/  Completed semantic icon-and-text desktop top-row
           comparison; Option A is implemented
     src/map-controls/  Active production-scale comparison for Map day/all-days scope,
