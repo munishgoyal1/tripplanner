@@ -973,6 +973,7 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
                 {"name": "Drive: Udaipur to Mount Abu", "kind": "transport"},
                 {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
                 {"name": "Nakki Lake", "kind": "attraction"},
+                {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
             ],
         }],
     }
@@ -982,8 +983,13 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
     names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
     day = view["days"][0]
     route_names = [names_by_id[pin_id] for pin_id in day["pin_ids"]]
-    assert route_names == ["Hotel Hillock Mount Abu", "Nakki Lake"]
-    assert day["route"]["distance_km"] < 5
+    assert route_names == [
+        "Hotel Hillock Mount Abu",
+        "Nakki Lake",
+        "Hotel Hillock Mount Abu",
+    ]
+    assert len(day["legs"]) == 2
+    assert day["route"]["distance_km"] < 10
 
 
 # ---------------------------------------------------------------------------

@@ -1237,6 +1237,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     # can reference it wherever the itinerary includes it.
     by_day: dict[int, list[str]] = {}
     local_stop_indexes_by_day: dict[int, set[int]] = {}
+    local_route_pin_ids_by_day: dict[int, list[str]] = {}
     transfer_days: set[int] = set()
     for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
         if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
@@ -1246,11 +1247,13 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         local_stop_indexes_by_day[day_num] = _local_route_stop_indexes(entry["stops"])
         if len(local_stop_indexes_by_day[day_num]) < len(entry["stops"]):
             transfer_days.add(day_num)
-        for stop in entry["stops"]:
+        for stop_index, stop in enumerate(entry["stops"], start=1):
             name = stop.get("name") if isinstance(stop, dict) else stop
             pin = _pin_for_stop(name)
             if pin and pin["id"] not in by_day.setdefault(day_num, []):
                 by_day[day_num].append(pin["id"])
+            if pin and stop_index in local_stop_indexes_by_day[day_num]:
+                local_route_pin_ids_by_day.setdefault(day_num, []).append(pin["id"])
 
     unscheduled: list[str] = []
     for p in pins:
@@ -1301,11 +1304,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             pid for pid in ids if pin_by_id[pid]["kind"] in {"airport", "station", "bus_station"}
         ]
         if is_transfer_day:
-            route_ids = [
-                pid
-                for pid in ids
-                if _occurrence_stop(pid, d) in local_stop_indexes_by_day[d]
-            ]
+            route_ids = local_route_pin_ids_by_day.get(d, [])
             ids = [*terminal_ids, *route_ids]
         else:
             route_ids = [
