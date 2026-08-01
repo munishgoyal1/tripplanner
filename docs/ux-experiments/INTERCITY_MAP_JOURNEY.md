@@ -32,11 +32,14 @@ transfers around a visually distinct airport-to-airport arc.
 ## Variants
 
 - **A - Connected day journey:** fit both city contexts, local circuits, and the
-  inter-city movement in one complete selected-day map.
+  inter-city movement in one complete selected-day map, without B's separate
+  summary strip or C's visibility controls.
 - **B - Journey strip and local map:** keep the destination map at a useful local
-  scale while a pinned strip preserves the complete stay-to-stay journey.
+  scale while a pinned strip preserves the complete stay-to-stay journey. The
+  origin circuit leaves the canvas and no route-layer controls are added.
 - **C - Optional inter-city layer:** show local and inter-city geometry together
-  by default, with separate visibility controls for each scale.
+  by default, with separate visibility controls for each scale. Unlike B, the
+  inter-city leg remains geometry on the dual-scale map.
 
 ## Current recommendation
 

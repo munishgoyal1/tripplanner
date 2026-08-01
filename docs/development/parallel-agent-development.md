@@ -143,11 +143,11 @@ then run the task again. Independent dated additions to
 append-only; both branches' entries are retained.
 
 To integrate only one lane, double-click `scripts/dev/Merge-Agent-1.cmd` or
-`scripts/dev/Merge-Agent-2.cmd`. For validation-only preflights, run the matching
-PowerShell script with `-ValidateOnly`, or run
+`scripts/dev/Merge-Agent-2.cmd`. For validation-only preflights, run
+`merge-worker.ps1 -WorkerNumber 1 -ValidateOnly` (or worker 2), or run
 `.\scripts\dev\merge-all-agents.ps1 -ValidateOnly` for both. The `.cmd`
-launchers do not forward arguments. The agent-named scripts delegate to the
-generic `merge-worker.ps1` engine using the corresponding worker number.
+launchers do not forward arguments; they call the generic `merge-worker.ps1`
+engine with the corresponding worker number.
 
 In parallel mode, to merge both workers and immediately restart the local
 application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click

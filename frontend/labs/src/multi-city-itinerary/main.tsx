@@ -71,9 +71,24 @@ const journeys: Record<TravelMode, Journey> = {
 };
 
 const variants = [
-  { id: "transition-spine" as const, label: "A · Transition spine", summary: "One chronological chain makes checkout, travel, arrival, and check-in auditable." },
-  { id: "stay-handoff" as const, label: "B · Stay handoff", summary: "The old and new stays frame one prominent transfer object between them." },
-  { id: "city-chapters" as const, label: "C · City chapters", summary: "Morning, Journey, and Evening sections emphasize the change in destination context." },
+  {
+    id: "transition-spine" as const,
+    label: "A · Transition spine",
+    summary: "One chronological chain makes checkout, travel, arrival, and check-in auditable.",
+    delta: "Changes only the row hierarchy: every event stays in one ordered timeline. Unlike B, hotels are not paired as cards; unlike C, the day is not split into city chapters.",
+  },
+  {
+    id: "stay-handoff" as const,
+    label: "B · Stay handoff",
+    summary: "The old and new stays frame one prominent transfer object between them.",
+    delta: "Changes only the stay grouping: origin and destination hotels become a paired handoff above the journey. Unlike A, this is not one timeline; unlike C, there are no Morning/Journey/Evening sections.",
+  },
+  {
+    id: "city-chapters" as const,
+    label: "C · City chapters",
+    summary: "Morning, Journey, and Evening sections emphasize the change in destination context.",
+    delta: "Changes only the day grouping: content is divided into origin, journey, and destination chapters. Unlike A, there is no continuous spine; unlike B, the two hotels are not paired.",
+  },
 ];
 
 function ModeControl({ mode, onChange }: { mode: TravelMode; onChange: (mode: TravelMode) => void }) {
@@ -109,7 +124,8 @@ function Preview({ variant }: { variant: VariantId }) {
 
 function Lab() {
   const [active, setActive] = useState<VariantId>("transition-spine");
-  return <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><header className="border-b border-slate-200 pb-5"><a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a><div className="mt-4 flex items-center gap-2 text-brand"><Route size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Multi-city itinerary</p></div><h1 className="display mt-1 text-3xl font-semibold text-ink">Transition-day itinerary design</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how a multi-city day should show checkout from the old stay, the complete road, rail, or flight journey, check-in at the new stay, and any usable destination time afterward.</p></header><LabScope labId="multi-city-itinerary" /><div className="lab-variant-grid mt-5" role="tablist" aria-label="Transition-day variants">{variants.map((variant) => <button key={variant.id} type="button" role="tab" aria-selected={active === variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 ${active === variant.id ? "bg-white shadow-card ring-brand/30" : "bg-white/70 ring-slate-200 hover:bg-white"}`}><span className="text-sm font-semibold text-ink">{variant.label}</span><span className="mt-1 block text-xs leading-relaxed text-slate-500">{variant.summary}</span></button>)}</div><section className="mt-6"><div className="mb-3 flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase text-slate-400">Interactive production-scale preview</p><h2 className="mt-0.5 text-lg font-semibold text-ink">{variants.find((item) => item.id === active)?.label}</h2></div>{active === "transition-spine" && <p className="text-xs font-semibold text-emerald-700"><Check size={13} className="inline" aria-hidden /> Recommended for schedule auditability</p>}</div><div className="overflow-x-auto pb-2"><Preview key={active} variant={active} /></div></section><div className="mt-6"><DecisionCapture labId="multi-city-itinerary" labTitle="Transition-day itinerary design" options={variants} activeOption={active} onChoose={(id) => setActive(id as VariantId)} /></div></div></main>;
+  const activeVariant = variants.find((item) => item.id === active)!;
+  return <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><header className="border-b border-slate-200 pb-5"><a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a><div className="mt-4 flex items-center gap-2 text-brand"><Route size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Multi-city itinerary</p></div><h1 className="display mt-1 text-3xl font-semibold text-ink">Transition-day itinerary design</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how a multi-city day should show checkout from the old stay, the complete road, rail, or flight journey, check-in at the new stay, and any usable destination time afterward.</p></header><LabScope labId="multi-city-itinerary" /><div className="lab-variant-grid mt-5" role="tablist" aria-label="Transition-day variants">{variants.map((variant) => <button key={variant.id} type="button" role="tab" aria-selected={active === variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 ${active === variant.id ? "bg-white shadow-card ring-brand/30" : "bg-white/70 ring-slate-200 hover:bg-white"}`}><span className="text-sm font-semibold text-ink">{variant.label}</span><span className="mt-1 block text-xs leading-relaxed text-slate-500">{variant.summary}</span><span className="mt-2 block border-t border-slate-100 pt-2 text-[11px] leading-relaxed text-slate-600"><strong className="text-ink">Exact delta:</strong> {variant.delta}</span></button>)}</div><section className="mt-6"><div className="mb-3 flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase text-slate-400">Interactive production-scale preview</p><h2 className="mt-0.5 text-lg font-semibold text-ink">{activeVariant.label}</h2><p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-600"><strong className="text-ink">This preview changes:</strong> {activeVariant.delta}</p></div>{active === "transition-spine" && <p className="shrink-0 text-xs font-semibold text-emerald-700"><Check size={13} className="inline" aria-hidden /> Recommended for schedule auditability</p>}</div><div className="overflow-x-auto pb-2"><Preview key={active} variant={active} /></div></section><div className="mt-6"><DecisionCapture labId="multi-city-itinerary" labTitle="Transition-day itinerary design" options={variants} activeOption={active} onChoose={(id) => setActive(id as VariantId)} /></div></div></main>;
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<React.StrictMode><Lab /></React.StrictMode>);
