@@ -364,9 +364,18 @@ function DayCard({
   const firstStop = day.stops[0];
   const lastStop = day.stops[day.stops.length - 1];
   const hasHotelEndpoints = day.stops.length > 1 && firstStop?.kind === "hotel" && lastStop?.kind === "hotel";
-  const combinesHotelCircuit = hasHotelEndpoints && normalizedPlaceName(firstStop.name) === normalizedPlaceName(lastStop.name);
-  const changesHotel = hasHotelEndpoints && !combinesHotelCircuit;
-  const visibleStops = combinesHotelCircuit ? day.stops.slice(0, -1) : day.stops;
+  const circuitHotelIndex = lastStop?.kind === "hotel"
+    ? day.stops.findIndex((stop, index) => (
+      index < day.stops.length - 1
+      && stop.kind === "hotel"
+      && normalizedPlaceName(stop.name) === normalizedPlaceName(lastStop.name)
+    ))
+    : -1;
+  const combinesHotelCircuit = circuitHotelIndex >= 0;
+  const changesHotel = hasHotelEndpoints && normalizedPlaceName(firstStop.name) !== normalizedPlaceName(lastStop.name);
+  const visibleStops = day.stops
+    .map((stop, index) => ({ stop, index }))
+    .filter(({ index }) => !combinesHotelCircuit || index < day.stops.length - 1);
   return (
     <section id={`it-day-${day.day}`} className="overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
       <div
@@ -448,10 +457,10 @@ function DayCard({
 
       {day.stops.length > 0 && (
         <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
-          {visibleStops.map((stop, i) => (
+          {visibleStops.map(({ stop, index: i }) => (
             (() => {
-              const returnStop = combinesHotelCircuit && i === 0 ? lastStop : undefined;
-              const representedStopIndexes = returnStop ? [1, day.stops.length] : [i + 1];
+              const returnStop = combinesHotelCircuit && i === circuitHotelIndex ? lastStop : undefined;
+              const representedStopIndexes = returnStop ? [i + 1, day.stops.length] : [i + 1];
               const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
               const jumpActive =
                 jumpToken > 0 &&

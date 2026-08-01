@@ -243,6 +243,49 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
   });
 
+  it("combines a destination hotel return after an intercity transfer", async () => {
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 5, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...baseStop, name: "Trident Udaipur", kind: "hotel", note: "Check-out" },
+          { ...baseStop, name: "Drive: Udaipur to Mount Abu", kind: "transport" },
+          { ...baseStop, name: "Hotel Hillock Mount Abu", kind: "hotel", note: "Check-in" },
+          { ...baseStop, name: "Nakki Lake", kind: "attraction" },
+          {
+            ...baseStop,
+            name: "Hotel Hillock Mount Abu",
+            kind: "hotel",
+            note: "Return to hotel",
+            travel_from_previous: {
+              distance_km: 1.5,
+              duration_min: 20,
+              mode: "Walk",
+              distance_display: "1.5 km",
+              duration_display: "20 min",
+              detail: "Walk from Nakki Lake to Hotel Hillock Mount Abu.",
+            },
+          },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findAllByText("Hotel Hillock Mount Abu")).toHaveLength(1);
+    expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
+    expect(screen.getByText("Check out")).toBeInTheDocument();
+    expect(screen.getByLabelText("Hotel circuit marker for Hotel Hillock Mount Abu")).toBeInTheDocument();
+    expect(screen.getByLabelText("Travel from previous stop: 1.5 km, 20 min")).toBeInTheDocument();
+    expect(document.querySelector('[data-stop-name="hotel hillock mount abu"]')).toHaveAttribute(
+      "data-stop-indexes",
+      "3,5",
+    );
+  });
+
   it("keeps the combined hotel row addressable from either route endpoint", async () => {
     const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
     fetchItineraryMock.mockResolvedValue({
