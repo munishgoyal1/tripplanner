@@ -37,6 +37,15 @@ temporarily preserved and restored around both guarded merges before the server
 starts. A worker synchronization conflict is automatically aborted so it cannot
 leave staged or unmerged residue.
 
+Use these launchers by outcome:
+
+| Launcher | Purpose |
+| --- | --- |
+| `Run-Latest-Code.cmd` | Merge both workers, restore local `master` edits, and start the app. This is the normal one-click choice. |
+| `Merge-All-Agents.cmd` | Merge both workers without starting the app. |
+| `Merge-Agent-1.cmd` / `Merge-Agent-2.cmd` | Merge only the selected worker. |
+| `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
+
 ---
 
 ## Why `dev-spa.ps1`?

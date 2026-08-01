@@ -5,12 +5,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$mergeAgent1 = Join-Path $PSScriptRoot "merge-agent-1.ps1"
-$mergeAgent2 = Join-Path $PSScriptRoot "merge-agent-2.ps1"
+$mergeWorker = Join-Path $PSScriptRoot "merge-worker.ps1"
 
 Write-Host "Preflighting Agent 1 and Agent 2..." -ForegroundColor Cyan
-& $mergeAgent1 -ValidateOnly
-& $mergeAgent2 -ValidateOnly
+& $mergeWorker -WorkerNumber 1 -ValidateOnly
+& $mergeWorker -WorkerNumber 2 -ValidateOnly
 
 if ($ValidateOnly) {
     Write-Host "Ready: both agents can be integrated sequentially."
@@ -18,8 +17,8 @@ if ($ValidateOnly) {
 }
 
 Write-Host "Integrating Agent 1..." -ForegroundColor Cyan
-& $mergeAgent1
+& $mergeWorker -WorkerNumber 1
 Write-Host "Integrating Agent 2..." -ForegroundColor Cyan
-& $mergeAgent2
+& $mergeWorker -WorkerNumber 2
 
 Write-Host "Done: Agent 1 and Agent 2 are integrated into master." -ForegroundColor Green
