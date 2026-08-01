@@ -108,6 +108,45 @@ describe("map stop selection", () => {
     expect(Object.fromEntries(visitOrdersForDay(view, 1))).toEqual({ palace: 1 });
   });
 
+  it("numbers both Mount Abu visits in a closed transfer-day circuit", () => {
+    const pin = (id: string, name: string, kind: string, stop: number) => ({
+      id,
+      name,
+      kind,
+      selected: true,
+      day: 3,
+      lat: 24 + stop / 100,
+      lng: 72 + stop / 100,
+      rating: null,
+      address: "Mount Abu",
+      photo: null,
+      occurrences: [{ day: 3, stop, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [
+        pin("hillock", "Hotel Hillock", "hotel", 3),
+        pin("dilwara", "Dilwara Temples", "attraction", 4),
+        pin("nakki", "Nakki Lake", "attraction", 5),
+      ],
+      days: [{
+        day: 3,
+        label: "Day 3",
+        color: "#2563eb",
+        pin_ids: ["hillock", "dilwara", "nakki", "hillock"],
+        route: { distance_km: 8, duration_min: 90, mode: "car", distance_display: "8 km", duration_display: "1 hr 30 min" },
+      }],
+      available_days: [3],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(visitOrdersForDay(view, 3))).toEqual({ dilwara: 1, nakki: 2 });
+  });
+
   it("uses the requested occurrence day for a repeated hotel", () => {
     const hotel = {
       id: "p0",

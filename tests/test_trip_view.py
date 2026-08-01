@@ -947,6 +947,7 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
     coords = {
         "Trident Udaipur": (24.577, 73.683),
         "Hotel Hillock Mount Abu": (24.592, 72.708),
+        "Dilwara Temples": (24.609, 72.723),
         "Nakki Lake": (24.593, 72.704),
     }
     monkeypatch.setattr(
@@ -972,6 +973,7 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
                 {"name": "Trident Udaipur", "kind": "hotel"},
                 {"name": "Drive: Udaipur to Mount Abu", "kind": "transport"},
                 {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
+                {"name": "Dilwara Temples", "kind": "attraction"},
                 {"name": "Nakki Lake", "kind": "attraction"},
                 {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
             ],
@@ -985,10 +987,11 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
     route_names = [names_by_id[pin_id] for pin_id in day["pin_ids"]]
     assert route_names == [
         "Hotel Hillock Mount Abu",
+        "Dilwara Temples",
         "Nakki Lake",
         "Hotel Hillock Mount Abu",
     ]
-    assert len(day["legs"]) == 2
+    assert len(day["legs"]) == 3
     assert day["route"]["distance_km"] < 10
 
 
