@@ -172,10 +172,12 @@ Learns from user preferences and past trips.
   evidence remains visible without repeating a vague Trip fit block below Budget;
   day briefs and agenda rows are unchanged.
 - **Direct semantic desktop command bar**: implemented Option A from both command
-  bar Labs changes only the top row. New trip is a labeled primary command;
+  bar Labs changes only the top row. New trip is a softly tinted labeled command;
   Itinerary, Map, Details, and Assistant remain direct meaning-first controls
-  with short wide-desktop labels and compact icon fallbacks. Pane-local Hide and
-  Maximize behavior and all workspace UI below the command bar are unchanged.
+  with quiet neutral active states, short wide-desktop labels, and compact icon
+  fallbacks. Utility icons are lighter so itinerary and map retain visual priority.
+  Pane-local Hide and Maximize behavior and all workspace UI below the command bar
+  are unchanged.
 - **Non-interfering UX Lab change markers**: every individual Lab can outline its
   exact varied preview regions through shared Lab-only annotations. A scope-panel
   toggle hides the portal-rendered, pointer-transparent overlays for a clean view;

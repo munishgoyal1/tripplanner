@@ -53,7 +53,7 @@ export default function TripActionsMenu({ disabled = false, onExport, compactTri
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
         className={compactTrigger
-          ? "inline-flex h-8 items-center justify-center gap-0.5 rounded-md px-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-ink disabled:opacity-40"
+          ? "inline-flex h-8 items-center justify-center gap-0.5 rounded-md px-1.5 text-slate-400 transition hover:bg-slate-50 hover:text-slate-600 disabled:opacity-40"
           : "btn-ghost disabled:opacity-40"}
         aria-expanded={open}
         aria-haspopup="menu"
