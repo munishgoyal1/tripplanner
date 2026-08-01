@@ -3232,3 +3232,11 @@ VALIDATION:
   local airport transfers from the airport-to-airport leg.
 - Do not change production itinerary or Map behavior until the owner selects a
   Lab option and saves its implementation handoff.
+
+=== 2026-08-01 — Make Lab option deltas explicit ===
+
+- Give every Lab option an Exact delta statement that identifies the structure
+  or behavior unique to that option and contrasts it with the alternatives.
+- Repeat the selected option's delta above its production-scale preview so the
+  distinction remains visible after selection.
+- Do not treat benefit-oriented option summaries as sufficient approval scope.

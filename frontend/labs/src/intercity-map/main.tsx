@@ -19,9 +19,24 @@ type VariantId = "full-journey" | "journey-strip" | "layer-toggle";
 type TravelMode = "road" | "train" | "flight";
 
 const variants = [
-  { id: "full-journey" as const, label: "A · Connected day journey", summary: "Fit both cities, their local circuits, and the inter-city leg in one complete day view." },
-  { id: "journey-strip" as const, label: "B · Journey strip + local map", summary: "Keep a useful destination-city map scale and summarize the long leg in a pinned strip." },
-  { id: "layer-toggle" as const, label: "C · Optional inter-city layer", summary: "Show both scales by default but let the user independently hide local or inter-city geometry." },
+  {
+    id: "full-journey" as const,
+    label: "A · Connected day journey",
+    summary: "Fit both cities, their local circuits, and the inter-city leg in one complete day view.",
+    delta: "Changes only the map framing: one zoomed-out canvas shows both city contexts and their connector. Unlike B, there is no separate summary strip; unlike C, there are no layer controls.",
+  },
+  {
+    id: "journey-strip" as const,
+    label: "B · Journey strip + local map",
+    summary: "Keep a useful destination-city map scale and summarize the long leg in a pinned strip.",
+    delta: "Changes the map to destination-local scale and moves the complete inter-city leg into a fixed strip. Unlike A, the origin circuit is not on the canvas; unlike C, users cannot toggle route layers.",
+  },
+  {
+    id: "layer-toggle" as const,
+    label: "C · Optional inter-city layer",
+    summary: "Show both scales by default but let the user independently hide local or inter-city geometry.",
+    delta: "Adds independent Local plans and Inter-city travel controls to the dual-scale canvas. Unlike A, geometry can be hidden; unlike B, the inter-city leg remains map geometry rather than a summary strip.",
+  },
 ];
 
 const modes = {
@@ -80,7 +95,8 @@ function Preview({ variant }: { variant: VariantId }) {
 
 function Lab() {
   const [active, setActive] = useState<VariantId>("full-journey");
-  return <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><header className="border-b border-slate-200 pb-5"><a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a><div className="mt-4 flex items-center gap-2 text-brand"><Map size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Map completeness</p></div><h1 className="display mt-1 text-3xl font-semibold text-ink">Inter-city travel on the day map</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Reconsider the rule that removes inter-city travel from the map circuit. Compare complete transfer-day framing while preserving ordinary hotel-return loops and using distinct geometry for road, rail, and flight.</p></header><LabScope labId="intercity-map" /><div className="lab-variant-grid mt-5" role="tablist" aria-label="Inter-city map variants">{variants.map((variant) => <button key={variant.id} type="button" role="tab" aria-selected={active === variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 ${active === variant.id ? "bg-white shadow-card ring-brand/30" : "bg-white/70 ring-slate-200 hover:bg-white"}`}><span className="text-sm font-semibold text-ink">{variant.label}</span><span className="mt-1 block text-xs leading-relaxed text-slate-500">{variant.summary}</span></button>)}</div><section className="mt-6"><div className="mb-3 flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase text-slate-400">Interactive production-scale preview</p><h2 className="mt-0.5 text-lg font-semibold text-ink">{variants.find((item) => item.id === active)?.label}</h2></div>{active === "full-journey" && <p className="text-xs font-semibold text-emerald-700"><Check size={13} className="inline" aria-hidden /> Recommended for day completeness</p>}</div><div className="overflow-x-auto pb-2"><Preview key={active} variant={active} /></div></section><div className="mt-6"><DecisionCapture labId="intercity-map" labTitle="Inter-city travel on the day map" options={variants} activeOption={active} onChoose={(id) => setActive(id as VariantId)} /></div></div></main>;
+  const activeVariant = variants.find((item) => item.id === active)!;
+  return <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><header className="border-b border-slate-200 pb-5"><a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a><div className="mt-4 flex items-center gap-2 text-brand"><Map size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Map completeness</p></div><h1 className="display mt-1 text-3xl font-semibold text-ink">Inter-city travel on the day map</h1><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Reconsider the rule that removes inter-city travel from the map circuit. Compare complete transfer-day framing while preserving ordinary hotel-return loops and using distinct geometry for road, rail, and flight.</p></header><LabScope labId="intercity-map" /><div className="lab-variant-grid mt-5" role="tablist" aria-label="Inter-city map variants">{variants.map((variant) => <button key={variant.id} type="button" role="tab" aria-selected={active === variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 ${active === variant.id ? "bg-white shadow-card ring-brand/30" : "bg-white/70 ring-slate-200 hover:bg-white"}`}><span className="text-sm font-semibold text-ink">{variant.label}</span><span className="mt-1 block text-xs leading-relaxed text-slate-500">{variant.summary}</span><span className="mt-2 block border-t border-slate-100 pt-2 text-[11px] leading-relaxed text-slate-600"><strong className="text-ink">Exact delta:</strong> {variant.delta}</span></button>)}</div><section className="mt-6"><div className="mb-3 flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase text-slate-400">Interactive production-scale preview</p><h2 className="mt-0.5 text-lg font-semibold text-ink">{activeVariant.label}</h2><p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-600"><strong className="text-ink">This preview changes:</strong> {activeVariant.delta}</p></div>{active === "full-journey" && <p className="shrink-0 text-xs font-semibold text-emerald-700"><Check size={13} className="inline" aria-hidden /> Recommended for day completeness</p>}</div><div className="overflow-x-auto pb-2"><Preview key={active} variant={active} /></div></section><div className="mt-6"><DecisionCapture labId="intercity-map" labTitle="Inter-city travel on the day map" options={variants} activeOption={active} onChoose={(id) => setActive(id as VariantId)} /></div></div></main>;
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<React.StrictMode><Lab /></React.StrictMode>);

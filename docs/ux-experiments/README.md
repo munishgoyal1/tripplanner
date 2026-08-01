@@ -30,6 +30,12 @@ elements that vary and separately names the surrounding fixture elements that ar
 context only. Choosing an option authorizes only the declared changes; context UI
 must remain unchanged unless the owner's handoff explicitly adds it.
 
+Every option selector must also include an **Exact delta** statement. It names
+the structure or behavior unique to that option and explicitly contrasts it with
+the alternatives. Repeat the selected option's delta above its preview so the
+comparison remains visible after selection. A benefit-oriented summary alone is
+not sufficient to distinguish or approve an option.
+
 The Change scope block also controls optional **change markers** on each preview.
 Markers outline only elements carrying a Lab-owned `data-lab-change` target and
 label the varied region without wrapping or restyling it. The marker layer is

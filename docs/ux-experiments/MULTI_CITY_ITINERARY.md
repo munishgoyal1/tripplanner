@@ -31,11 +31,14 @@ duration, and endpoint information.
 ## Variants
 
 - **A - Transition spine:** one chronological chain keeps both stay endpoints
-  and the complete journey auditable without splitting the day into cards.
+  and the complete journey auditable without splitting the day into cards. It
+  uses neither B's paired hotel cards nor C's city chapters.
 - **B - Stay handoff:** the origin and destination hotels frame a prominent
-  transfer object, with the destination evening retained below.
+  transfer object, with the destination evening retained below. It replaces A's
+  single timeline and does not introduce C's Morning/Journey/Evening sections.
 - **C - City chapters:** Morning in the origin city, Journey, and Evening in the
-  destination city make the change in place context explicit.
+  destination city make the change in place context explicit. It uses neither
+  A's continuous spine nor B's paired hotel handoff.
 
 ## Current recommendation
 
