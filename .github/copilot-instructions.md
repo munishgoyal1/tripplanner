@@ -36,11 +36,10 @@
 - Run validation (tsc, pytest, build) ONCE at the end of a milestone, not
   after every micro-edit (exception: when a mid-edit failure is suspected).
 - One milestone = one commit + push. Per owner rule, never leave unpushed work.
-- The coding agent owns the local server lifecycle: start, stop, restart, clear
-  stale ports, and health-check the canonical stack without handing operations
-  back to the owner. After a push, restart affected services when runtime code
-  changed. Skip unnecessary restarts for runtime-neutral changes, but ensure the
-  stack is running whenever the owner needs to test.
+- Agent 3 in the primary `master` workspace owns the local server lifecycle for
+  the owner's manual testing: start, stop, restart, stale-port cleanup, and health
+  checks. Workers 1 and 2 must not change the local stack lifecycle unless the
+  owner explicitly approves it first; worker validation should remain server-free.
 - Do not add docstrings/type-hints/comments to code you didn't touch.
 
 ## Development workspace

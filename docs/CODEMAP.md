@@ -19,8 +19,10 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 
 - First-machine setup: `.\scripts\setup-dev-machine.ps1` (`-IncludeMobile` when needed)
 - Default workflow: open this primary checkout, work directly on `master`,
-  validate once per milestone, commit, and push; the coding agent starts,
-  restarts, clears stale ports, and health-checks affected local servers
+  validate once per milestone, commit, and push; Agent 3 starts, restarts, clears
+  stale ports, and health-checks affected local servers for manual testing
+- Worker 1 and Worker 2 do not start, stop, or restart the local stack without
+  explicit owner approval; use server-free validation in worker worktrees
 - Sizeable isolated parallel features: double-click `Open-Tripplanner-All-Agents.cmd`
   or run `.\scripts\open-agent-windows.ps1 -IncludeWorker2`
 - Optional parallel workspaces: `tripplanner-worker-1.code-workspace` and
@@ -29,7 +31,7 @@ a shared free-tier Cosmos account in hosted environments. Auto-dispatch via `sto
 - Guarded two-worker integration: VS Code task `Tripplanner: Merge Workers` or
   double-click `scripts/dev/Merge-Workers.cmd`; preflights both worktrees, then
   merges Worker 1 followed by Worker 2 through separate merge-commit PRs
-- One-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
+- Agent 3 one-click merge and local restart: VS Code task `Tripplanner: Run Latest Code`
   or double-click `scripts/dev/Run-Latest-Code.cmd`; this preserves and
   restores staged, unstaged, and untracked local master work around both merges
 - Optional temporary worktree/window: `.\scripts\agent-worktree.ps1 -Create <task-name>`

@@ -3100,3 +3100,10 @@ VALIDATION:
   treatment in production.
 - Evaluate alternative Hide and Maximize presentation only in a separate
   enhancements and polishing Lab; do not include that redesign in the Map change.
+
+=== 2026-08-01 — Assign local stack ownership to Agent 3 ===
+
+- Agent 3 in the primary workspace owns local stack startup, stop, restart,
+  stale-port cleanup, and health checks for owner manual testing.
+- Workers 1 and 2 must not change the local stack lifecycle without explicit
+  owner approval and should use server-free validation by default.
