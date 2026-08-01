@@ -1,7 +1,7 @@
 # Pane Control Polish UX Lab
 
-**Status:** Active enhancement and polishing experiment  
-**Production impact:** None until the owner selects and separately approves an option
+**Status:** Completed and implemented
+**Selected direction:** B - Restrained icon pair
 
 ## Decision boundary
 
@@ -20,3 +20,10 @@ The following remain fixed:
 - **C - Pane action menu:** one local trigger reveals labeled Hide and Maximize actions.
 
 The Lab is available at `http://127.0.0.1:5175/pane-controls.html`. It is intentionally separate from the Map command refinement requested on 2026-08-01.
+
+## Implementation
+
+Itinerary, Map, and Details now render their existing Hide and Maximize/Restore
+icons in one quiet pane-local group. Existing handlers, disabled states, pane
+recovery, resizing, layout, content, Map controls, and workspace command-bar
+controls are unchanged.

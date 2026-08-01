@@ -138,14 +138,15 @@ placement, pins, routes, mutations, and surrounding workspace behavior are
 unchanged. See
 [`MAP_PANEL_CONTROLS.md`](MAP_PANEL_CONTROLS.md).
 
-## Active Pane Control Polish Experiment (2026-08-01)
+## Implemented Pane Control Polish Experiment (2026-08-01)
 
 The separate enhancements and polishing Lab is available at
 `http://127.0.0.1:5175/pane-controls.html`. It compares compact semantic actions,
-a restrained icon pair, and a pane-local action menu. Every option preserves each
-pane's independent Hide and Maximize/Restore behavior, recovery, layout, and
-content. This experiment is not part of the Map command refinement and makes no
-production UI change until the owner selects and separately approves a direction.
+a restrained icon pair, and a pane-local action menu. The selected and implemented
+direction is B - Restrained icon pair for Itinerary, Map, and Details. It groups
+each pane's existing icons without changing independent Hide and Maximize/Restore
+behavior, disabled states, recovery, layout, or content. This experiment remains
+separate from the Map command refinement.
 See [`PANE_CONTROL_POLISH.md`](PANE_CONTROL_POLISH.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one

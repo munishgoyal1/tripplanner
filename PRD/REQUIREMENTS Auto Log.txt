@@ -3119,3 +3119,10 @@ VALIDATION:
   stale browser drafts.
 - Show lifecycle data as unavailable when it cannot be loaded; never infer missing
   records as In progress.
+
+=== 2026-08-01 — Implement Pane Control Polish Lab Option B ===
+
+- Group each Itinerary, Map, and Details pane's existing Hide and
+  Maximize/Restore icons in one restrained pane-local pair.
+- Preserve existing handlers, disabled states, independent ownership, recovery,
+  resizing, layout, pane content, Map controls, and workspace command-bar controls.

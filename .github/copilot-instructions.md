@@ -162,8 +162,11 @@ Learns from user preferences and past trips.
   the pane title row for All days/day scope, keeps Add stop directly visible below,
   and compresses schedule span plus route-only evidence into one labeled line.
   Focus semantics, placement, pins, routes, mutations, and cross-pane synchronization
-  are unchanged. Pane-local Hide/Maximize styling remains unchanged while a separate
-  enhancements and polishing Lab evaluates presentation alternatives.
+  are unchanged.
+- **Restrained pane-local controls**: implemented Pane Control Polish Lab Option B
+  for Itinerary, Map, and Details. Existing Hide and Maximize/Restore actions now
+  share one quiet icon group; handlers, disabled states, pane recovery, resizing,
+  layout, content, Map controls, and workspace command-bar controls are unchanged.
 - **Decision-brief trip snapshot**: implemented Trip Snapshot Lab Option B only
   in the authoritative whole-trip band. Traveler context and an authored or factual
   trip-level narrative stay with identity, booking readiness is explicit, and

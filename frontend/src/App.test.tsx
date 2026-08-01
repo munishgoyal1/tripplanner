@@ -321,6 +321,19 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
+  it("uses restrained icon groups for pane-local controls", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    for (const label of ["Itinerary", "Map", "Details"]) {
+      const controls = screen.getByRole("group", { name: `${label} pane controls` });
+      expect(controls).toHaveClass("bg-slate-50", "ring-inset");
+      expect(screen.getByRole("button", { name: `Hide ${label}` })).toHaveClass("rounded-[5px]");
+      expect(screen.getByRole("button", { name: `Maximize ${label}` })).toHaveClass("rounded-[5px]");
+    }
+  });
+
   it("maximizes and restores Details independently", async () => {
     setDesktop(true);
     render(<App />);

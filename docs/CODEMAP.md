@@ -166,6 +166,8 @@ frontend/
           itinerary execution, confirmation readiness, and personal place context
         src/workspace-command-bar/  Completed command-bar comparison; Option A keeps
           direct pane visibility controls with local hide and maximize/restore
+        src/pane-controls/  Completed pane-control comparison; Option B groups
+          each pane's existing Hide and Maximize/Restore icons without behavior changes
         src/trip-snapshot/  Completed whole-trip snapshot comparison; Option B's
           Decision brief is implemented and remains distinct from day briefs
   src/
