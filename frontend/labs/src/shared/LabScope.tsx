@@ -8,6 +8,20 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "intercity-map": {
+    changes: [
+      "Whether and how an inter-city transfer appears with local route circuits on the selected day's Map",
+      "Road, rail, and flight geometry, terminals, labels, framing, and optional route layers",
+    ],
+    context: ["Itinerary timing, hotel endpoints, route facts, and place order", "Google Maps implementation, provider routing, geocoding, and mutation behavior"],
+  },
+  "multi-city-itinerary": {
+    changes: [
+      "The visual hierarchy of checkout, inter-city travel, arrival, check-in, and remaining destination plans",
+      "How road, rail, and flight transition days separate their origin and destination context",
+    ],
+    context: ["Persisted stop order, timing, booking state, and hotel identity", "Map rendering, route providers, itinerary mutation, and trip planning logic"],
+  },
   "destination-guide": {
     changes: [
       "How whole-trip places are scoped by destination and place type, ordered, and progressively revealed",

@@ -1,4 +1,4 @@
-import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, SlidersHorizontal } from "lucide-react";
+import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal } from "lucide-react";
 
 export interface LabRecord {
   id: string;
@@ -28,6 +28,28 @@ export function locallyCompletedLabs(selections: Record<string, LabSelectionStat
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    id: "intercity-map",
+    title: "Inter-city travel on the day map",
+    category: "Map completeness",
+    description: "Compare a connected day journey, a journey strip, and optional route layers for road, rail, and flight transfer days.",
+    date: "1 Aug 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: A · Connected day journey.",
+    href: "./intercity-map.html",
+    icon: Map,
+  },
+  {
+    id: "multi-city-itinerary",
+    title: "Transition-day itinerary design",
+    category: "Multi-city itinerary",
+    description: "Compare three ways to show old-stay checkout, inter-city travel, new-stay check-in, and the remaining day.",
+    date: "1 Aug 2026",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: A · Transition spine.",
+    href: "./multi-city-itinerary.html",
+    icon: Route,
+  },
   {
     id: "destination-guide",
     title: "Destination guide depth and context",

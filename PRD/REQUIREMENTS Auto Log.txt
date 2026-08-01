@@ -3217,3 +3217,18 @@ VALIDATION:
   itinerary places without letting them consume every discovery result.
 - Do not change the production place-discovery contract or Details layout until
   the owner selects a Lab option and saves its implementation handoff.
+
+=== 2026-08-01 — Propose complete multi-city transition-day Labs ===
+
+- Create exactly two production-scale Labs: one for multi-city itinerary
+  hierarchy and one for complete inter-city Map visibility.
+- Keep ordinary sightseeing days as closed hotel circuits, but treat genuine
+  transfer days as open journeys from the origin stay to the destination stay.
+- In the itinerary Lab, compare a chronological transition spine, a stay-to-stay
+  handoff, and origin/journey/destination city chapters.
+- In the Map Lab, compare a connected dual-scale day, a persistent inter-city
+  journey strip over a local map, and optional local/inter-city route layers.
+- Give road, rail, and flight distinct interactive states. Flights must separate
+  local airport transfers from the airport-to-airport leg.
+- Do not change production itinerary or Map behavior until the owner selects a
+  Lab option and saves its implementation handoff.
