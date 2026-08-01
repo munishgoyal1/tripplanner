@@ -25,6 +25,10 @@
 - Trust this file + `docs/CODEMAP.md` + `docs/PRODUCT.md` +
   `docs/REQUIREMENTS_V2.md` +
   `/memories/repo/tripplanner.md`. Skip re-exploration on every task.
+- Before starting any new code change, fetch `origin` and synchronize the active
+  branch with the latest `origin/master`. Require a clean worktree first, resolve
+  synchronization conflicts before editing, and re-read affected files after the
+  sync so implementation is based on current code rather than a stale worker state.
 - Treat `docs/roadmap/FUTURE_FEATURES.md` as the consolidated candidate backlog;
   an entry there is not approval to implement it.
 - For a coherent new feature, prefer an owner-edited brief under
