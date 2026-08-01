@@ -118,6 +118,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   marked ready, parked with that handoff intact, completed with the selected
   decision preserved, or discarded from consideration. Completion archives the
   evaluation decision without implying production implementation approval.
+  Completed Lab cards live only in the dedicated archive reached from the catalog;
+  they do not repeat below active or parked work on the main Labs page.
   Lifecycle records have one machine-level authority shared by all worktrees;
   unavailable state is never inferred as active, and the prior snapshot remains
   recoverable after each write.
@@ -342,8 +344,9 @@ If a redesign violates the above without a stated reason, push back.
 
 - Be terse. 1–3 sentences for simple answers. Skip preamble/conclusion.
 - No emojis unless asked.
-- Own local server startup, restart, stale-port cleanup, and health checks so
-  the owner can stay focused on feature and UX Lab decisions.
+- Agent 3 owns local server startup, restart, stale-port cleanup, and health checks
+  for the owner's manual testing. Workers 1 and 2 must ask before changing the
+  local stack lifecycle.
 - Don't open `http://localhost:8000` in the integrated browser — the owner
   tests in his external browser. Playwright tools only when explicitly asked.
 - When something goes wrong, read the dev terminal output and fix; don't ask

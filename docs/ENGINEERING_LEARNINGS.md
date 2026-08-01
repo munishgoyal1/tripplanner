@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-01 - Budget Parallel Research Before Synthesis
+
+- A parallel research batch can succeed at every provider and still fail when
+  all verbose tool results are replayed into the next model call. Diagnose the
+  terminal model response separately from tool health.
+- Keep full tool results in graph state for persistence and diagnostics, but send
+  bounded copies to synthesis. Distribute the budget across every result so a
+  multi-city plan does not discard one destination entirely.
+- Pair context reduction with bounded provider retries. Retries alone prolong a
+  token-bucket failure, while truncating stored state would destroy evidence.
+
 ## 2026-07-31 - Synchronize Rejected Placeholders
 
 - Filtering a placeholder from a selected-items collection does not remove the
