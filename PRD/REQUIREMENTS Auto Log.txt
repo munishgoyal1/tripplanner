@@ -3190,3 +3190,45 @@ VALIDATION:
   selections and handoff instructions.
 - Keep All labs focused on active and parked work, with completed Labs remaining
   isolated in their archive.
+
+=== 2026-08-01 — Propose account and settings ownership Lab ===
+
+- Compare a unified account menu, a strict profile/settings split, and a
+  sectioned account settings hub using the real command-bar context.
+- Remove duplicated destinations in every option while preserving identity,
+  travel profile, analytics, privacy/data controls, and sign-out.
+- Make Analytics preferences interactive in every Lab option.
+- Independently fix the production Analytics preferences command so it opens and
+  saves a preference even when analytics collection is not configured.
+- Do not change production account/settings ownership until the owner selects a
+  Lab option and saves its implementation handoff.
+
+=== 2026-08-01 — Propose deeper contextual Destination Guide browsing ===
+
+- Expose more grounded places than the current ten-item whole-trip Details cap
+  without eagerly loading rich media for one unbounded list.
+- At the whole-trip level, show a useful mix of top choices across the trip's
+  cities, with explicit city and Hotels, Attractions, and Food scopes.
+- When a hotel, attraction, or restaurant is focused, retain its rich detail and
+  show same-type alternatives in the same city.
+- Compare contextual exploration, city chapters, and a searchable directory in
+  a production-scale UX Lab; start evaluation with contextual exploration.
+- Prefer explicit progressive batches over infinite scroll and preserve selected
+  itinerary places without letting them consume every discovery result.
+- Do not change the production place-discovery contract or Details layout until
+  the owner selects a Lab option and saves its implementation handoff.
+
+=== 2026-08-01 — Propose complete multi-city transition-day Labs ===
+
+- Create exactly two production-scale Labs: one for multi-city itinerary
+  hierarchy and one for complete inter-city Map visibility.
+- Keep ordinary sightseeing days as closed hotel circuits, but treat genuine
+  transfer days as open journeys from the origin stay to the destination stay.
+- In the itinerary Lab, compare a chronological transition spine, a stay-to-stay
+  handoff, and origin/journey/destination city chapters.
+- In the Map Lab, compare a connected dual-scale day, a persistent inter-city
+  journey strip over a local map, and optional local/inter-city route layers.
+- Give road, rail, and flight distinct interactive states. Flights must separate
+  local airport transfers from the airport-to-airport leg.
+- Do not change production itinerary or Map behavior until the owner selects a
+  Lab option and saves its implementation handoff.

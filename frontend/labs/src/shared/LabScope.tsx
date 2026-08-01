@@ -8,6 +8,34 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "intercity-map": {
+    changes: [
+      "Whether and how an inter-city transfer appears with local route circuits on the selected day's Map",
+      "Road, rail, and flight geometry, terminals, labels, framing, and optional route layers",
+    ],
+    context: ["Itinerary timing, hotel endpoints, route facts, and place order", "Google Maps implementation, provider routing, geocoding, and mutation behavior"],
+  },
+  "multi-city-itinerary": {
+    changes: [
+      "The visual hierarchy of checkout, inter-city travel, arrival, check-in, and remaining destination plans",
+      "How road, rail, and flight transition days separate their origin and destination context",
+    ],
+    context: ["Persisted stop order, timing, booking state, and hotel identity", "Map rendering, route providers, itinerary mutation, and trip planning logic"],
+  },
+  "destination-guide": {
+    changes: [
+      "How whole-trip places are scoped by destination and place type, ordered, and progressively revealed",
+      "How a focused hotel, attraction, or restaurant leads to relevant alternatives",
+    ],
+    context: ["Itinerary, Map, trip route, and selected-place mutation behavior", "Provider ranking, place data, photos, reviews, and API pagination implementation"],
+  },
+  "account-settings": {
+    changes: [
+      "Ownership and grouping of Account, Settings, travel profile, analytics, privacy, and sign-out controls",
+      "The command-bar trigger or triggers and the destination opened by Analytics preferences",
+    ],
+    context: ["Trip selection, pane visibility, and workspace content", "Authentication, analytics collection, preference storage, and privacy API behavior"],
+  },
   "shell-visual-refresh": {
     changes: [
       "The visual language of pane visibility controls and related workspace chrome",

@@ -7,11 +7,13 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 `http://127.0.0.1:5175/catalog.html` to access every standalone experiment.
 For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
-workspace has three durable catalog views:
+workspace has four durable catalog views:
 
-- `catalog.html` is All Labs: active, parked, and completed experiments.
+- `catalog.html` is All Labs: active and parked experiments.
 - `catalog.html?view=active` contains choices still being evaluated or ready
   for implementation.
+- `catalog.html?view=parked` contains saved evaluations waiting for a later
+  decision.
 - `completed-labs.html` preserves completed experiments, their original Lab
   links, and the selected outcome.
 

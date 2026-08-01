@@ -516,9 +516,19 @@ re-describing the whole product.
   and a global daily spend circuit breaker are not implemented. Production-only
   GA4 product analytics uses explicit reversible consent, a deliberately small
   event vocabulary, and no chat, itinerary, family, email, exact-date, account,
-  or shared-link content. The production custom domain and hosted chat admission
+  or shared-link content. Analytics preferences can be reopened from Account
+  even when collection is not configured; the preference is saved without
+  enabling collection. The production custom domain and hosted chat admission
   controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
+- Multi-city transfer days preserve checkout, transport, and check-in in the
+  itinerary, but production Map route geometry intentionally omits the inter-city
+  portion and its terminals. Two active Labs separately compare transition-day
+  itinerary hierarchy and complete road, rail, or flight Map framing before any
+  production treatment is approved.
+- Whole-trip Details still receives one eager, flat collection capped at ten
+  places. The active Destination Guide Lab compares contextual city/type browsing
+  and progressive results before a paged production contract is approved.
 - Production mobile-store release still requires owner-approved distribution
   setup and provider keys appropriate to each platform.
 - Structured Assistant input is not yet rendered in production web or native UI.
