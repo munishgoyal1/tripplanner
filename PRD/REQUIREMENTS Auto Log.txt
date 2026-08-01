@@ -3107,3 +3107,28 @@ VALIDATION:
   stale-port cleanup, and health checks for owner manual testing.
 - Workers 1 and 2 must not change the local stack lifecycle without explicit
   owner approval and should use server-free validation by default.
+=== 2026-08-01 — Add completed Lab lifecycle ===
+
+- Provide a Mark completed action on every active UX Lab.
+- Preserve the selected option and handoff notes when completing a Lab.
+- Remove completed Labs from In progress and show them in both Completed views.
+- Treat completion as a recorded evaluation decision, not implicit approval or
+  proof of production implementation.
+
+=== 2026-08-01 — Prevent cross-worktree Lab lifecycle loss ===
+
+- Use one machine-level Lab decision store shared by primary and worker worktrees
+  instead of checkout-relative ignored files.
+- Restore Execution-ready Trip Book and Compact itinerary density to Parked with
+  their selected options and notes retained.
+- Use atomic writes, retain the previous snapshot, and prefer server records over
+  stale browser drafts.
+- Show lifecycle data as unavailable when it cannot be loaded; never infer missing
+  records as In progress.
+
+=== 2026-08-01 — Implement Pane Control Polish Lab Option B ===
+
+- Group each Itinerary, Map, and Details pane's existing Hide and
+  Maximize/Restore icons in one restrained pane-local pair.
+- Preserve existing handlers, disabled states, independent ownership, recovery,
+  resizing, layout, pane content, Map controls, and workspace command-bar controls.

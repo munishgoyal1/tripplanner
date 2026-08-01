@@ -12,18 +12,22 @@ export interface LabRecord {
   icon: typeof ListChecks;
 }
 
+export interface LabSelectionState {
+  disposition?: "ready" | "parked" | "completed" | "discarded";
+  selectionLabel?: string;
+}
+
+export function locallyCompletedLabs(selections: Record<string, LabSelectionState>): LabRecord[] {
+  return activeLabs
+    .filter((lab) => selections[lab.id]?.disposition === "completed")
+    .map((lab) => ({
+      ...lab,
+      status: "Completed",
+      decision: selections[lab.id]?.selectionLabel || "Decision recorded",
+    }));
+}
+
 export const activeLabs: LabRecord[] = [
-  {
-    id: "pane-control-polish",
-    title: "Pane control polish",
-    category: "Enhancements and polish",
-    description: "Compare clearer pane-local presentations for Hide and Maximize without changing independent ownership or behavior.",
-    date: "1 Aug 2026",
-    status: "In evaluation",
-    decision: "Open experiment · presentation only; pane behavior stays fixed.",
-    href: "./pane-controls.html",
-    icon: LayoutPanelTop,
-  },
   {
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",
@@ -49,6 +53,17 @@ export const activeLabs: LabRecord[] = [
 ];
 
 export const completedLabs: LabRecord[] = [
+  {
+    id: "pane-control-polish",
+    title: "Pane control polish",
+    category: "Enhancements and polish",
+    description: "Compared clearer pane-local presentations for Hide and Maximize without changing independent ownership or behavior.",
+    date: "1 Aug 2026",
+    status: "Implemented",
+    decision: "B · Restrained icon pair, applied only to Itinerary, Map, and Details pane-local controls.",
+    href: "./pane-controls.html",
+    icon: LayoutPanelTop,
+  },
   {
     id: "map-controls",
     title: "Map command and day context",

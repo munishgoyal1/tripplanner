@@ -94,8 +94,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Map commands use the pane header efficiently: All days/day scope lives beside
   the Map title, the Add stop form stays directly visible below it, and one compact
   line separates schedule span from route-only travel. This hierarchy does not
-  change map focus, placement, pin, route, or mutation behavior. Pane-local Hide
-  and Maximize presentation remains unchanged pending a separate polish Lab.
+  change map focus, placement, pin, route, or mutation behavior. Itinerary, Map,
+  and Details group their pane-local Hide and Maximize/Restore icons in a quiet
+  restrained pair without changing behavior, disabled states, or recovery.
   Accessible drag/keyboard
   separators resize itinerary, map, inspector, and the details/chat split, and
   sizes persist locally. The Assistant closes explicitly or with Escape and
@@ -114,7 +115,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **UX Labs**: catalog filters belong only on catalog pages; an individual Lab
   has one clear return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
-  marked ready, parked with that handoff intact, or discarded from consideration.
+  marked ready, parked with that handoff intact, completed with the selected
+  decision preserved, or discarded from consideration. Completion archives the
+  evaluation decision without implying production implementation approval.
+  Lifecycle records have one machine-level authority shared by all worktrees;
+  unavailable state is never inferred as active, and the prior snapshot remains
+  recoverable after each write.
   Before its options, every Lab explicitly separates the exact elements being
   changed from realistic surrounding UI that is context only. Selecting an option
   does not implicitly approve changes to other elements visible in its preview.

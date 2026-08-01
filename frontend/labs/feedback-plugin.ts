@@ -1,32 +1,12 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
 import type { Plugin } from "vite";
+import { readSelections, writeSelections, type LabSelection } from "./lab-selection-store";
 
 const endpoint = "/__labs/selections";
-const feedbackPath = resolve(__dirname, "../../docs/ux-experiments/LAB_SELECTIONS.local.json");
-
-interface LabSelection {
-  labId: string;
-  labTitle: string;
-  selection: string;
-  selectionLabel: string;
-  comment: string;
-  disposition?: "ready" | "parked" | "discarded";
-  updatedAt: string;
-}
-
-async function readSelections(): Promise<Record<string, LabSelection>> {
-  try {
-    return JSON.parse(await readFile(feedbackPath, "utf8")) as Record<string, LabSelection>;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return {};
-    throw error;
-  }
-}
 
 function sendJson(response: import("node:http").ServerResponse, status: number, body: unknown) {
   response.statusCode = status;
   response.setHeader("Content-Type", "application/json");
+  response.setHeader("Cache-Control", "no-store");
   response.end(JSON.stringify(body));
 }
 
@@ -61,7 +41,7 @@ export function labFeedbackPlugin(): Plugin {
             sendJson(response, 400, { error: "Incomplete lab selection" });
             return;
           }
-          if (selection.disposition && !["ready", "parked", "discarded"].includes(selection.disposition)) {
+          if (selection.disposition && !["ready", "parked", "completed", "discarded"].includes(selection.disposition)) {
             sendJson(response, 400, { error: "Invalid lab disposition" });
             return;
           }
@@ -78,8 +58,7 @@ export function labFeedbackPlugin(): Plugin {
                 updatedAt: new Date().toISOString(),
               }
             : { ...selection, updatedAt: new Date().toISOString() };
-          await mkdir(dirname(feedbackPath), { recursive: true });
-          await writeFile(feedbackPath, `${JSON.stringify(selections, null, 2)}\n`, "utf8");
+          await writeSelections(selections);
           sendJson(response, 200, selections[selection.labId]);
         } catch (error) {
           server.config.logger.error(`Unable to save lab feedback: ${String(error)}`);

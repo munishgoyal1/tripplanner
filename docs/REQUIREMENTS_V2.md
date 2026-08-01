@@ -354,8 +354,8 @@ re-describing the whole product.
 - Map day scope remains directly available beside the Map pane title. The Add stop
   form stays visible below the header, and one compact context line distinguishes
   the selected day's schedule span from route-only duration, distance, and mode.
-- Pane-local Hide and Maximize behavior and presentation remain unchanged; visual
-  alternatives are isolated in a separate enhancements and polishing Lab.
+- Itinerary, Map, and Details group pane-local Hide and Maximize/Restore icons in
+  a restrained pair. Existing behavior, disabled states, and recovery remain unchanged.
 
 ### PLACE-01 and MUT-01 - Details and coherent mutations
 

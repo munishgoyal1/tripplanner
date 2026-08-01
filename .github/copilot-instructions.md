@@ -165,8 +165,11 @@ Learns from user preferences and past trips.
   the pane title row for All days/day scope, keeps Add stop directly visible below,
   and compresses schedule span plus route-only evidence into one labeled line.
   Focus semantics, placement, pins, routes, mutations, and cross-pane synchronization
-  are unchanged. Pane-local Hide/Maximize styling remains unchanged while a separate
-  enhancements and polishing Lab evaluates presentation alternatives.
+  are unchanged.
+- **Restrained pane-local controls**: implemented Pane Control Polish Lab Option B
+  for Itinerary, Map, and Details. Existing Hide and Maximize/Restore actions now
+  share one quiet icon group; handlers, disabled states, pane recovery, resizing,
+  layout, content, Map controls, and workspace command-bar controls are unchanged.
 - **Decision-brief trip snapshot**: implemented Trip Snapshot Lab Option B only
   in the authoritative whole-trip band. Traveler context and an authored or factual
   trip-level narrative stay with identity, booking readiness is explicit, and
@@ -200,8 +203,15 @@ Learns from user preferences and past trips.
   In progress, and Completed indexes; each individual experiment has one clear
   return to All Labs. Active handoffs bind the selected option to owner-authored
   modifications and implementation inputs, and can be marked ready, parked with
-  that handoff preserved, or discarded with option, notes, and browser draft
-  deleted. Parked Labs leave In progress and remain grouped on All Labs.
+  that handoff preserved, completed with the decision and notes retained, or
+  discarded with option, notes, and browser draft deleted. Parked Labs leave In
+  progress and remain grouped on All Labs; completed Labs move to both Completed
+  views without implying that production implementation is approved or shipped.
+- **Worktree-safe Lab decisions**: all primary and worker Labs servers use one
+  machine-level `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json` authority
+  with atomic writes and one previous snapshot. Catalog load failure is explicit
+  and never reclassifies missing decisions as active; server state overrides stale
+  browser drafts.
 - **Shared local diagnostics + model throttle evidence**: every canonical local
   stack writes rotating PII-safe JSON under the primary Git checkout, so primary
   and worker VS Code windows analyze the same log. Final Azure OpenAI rate-limit
