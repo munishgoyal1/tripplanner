@@ -3181,3 +3181,12 @@ VALIDATION:
   of repeating every completed card in the main catalog.
 - Preserve completed decisions, rationale, and original Lab pages unchanged in
   the archive.
+
+=== 2026-08-01 — Add a Parked Labs catalog filter ===
+
+- Expose Parked beside All labs, In progress, and Completed in the UX Labs
+  catalog navigation.
+- Show only parked evaluations in the Parked view while preserving their saved
+  selections and handoff instructions.
+- Keep All labs focused on active and parked work, with completed Labs remaining
+  isolated in their archive.

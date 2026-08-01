@@ -114,8 +114,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Shape**: use radii and elevation only where an object is genuinely framed
   or floating. The itinerary snapshot and destination guide are full-width
   bands inside their panes, not decorative cards nested inside cards.
-- **UX Labs**: catalog filters belong only on catalog pages; an individual Lab
-  has one clear return to All Labs. A chosen option carries its modifications,
+- **UX Labs**: catalog filters belong only on catalog pages and expose All Labs,
+  In progress, Parked, and Completed views; an individual Lab has one clear
+  return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
   marked ready, parked with that handoff intact, completed with the selected
   decision preserved, or discarded from consideration. Completion archives the
