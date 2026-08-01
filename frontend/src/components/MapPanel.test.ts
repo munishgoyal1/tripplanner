@@ -79,6 +79,35 @@ describe("map stop selection", () => {
     expect(Object.fromEntries(visitOrdersForDay(view, 2))).toEqual({ fort: 1, mapusa: 2, chapora: 3 });
   });
 
+  it("does not number transport terminals as sightseeing stops", () => {
+    const pin = (id: string, kind: string, stop: number) => ({
+      id,
+      name: id,
+      kind,
+      selected: true,
+      day: 1,
+      lat: 15 + stop,
+      lng: 73 + stop,
+      rating: null,
+      address: "Rajasthan",
+      photo: null,
+      occurrences: [{ day: 1, stop, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [pin("origin-airport", "airport", 1), pin("palace", "attraction", 2)],
+      days: [{ day: 1, label: "Day 1", color: "#e11d48", pin_ids: ["origin-airport", "palace"], route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "0 km", duration_display: "0 min" } }],
+      available_days: [1],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(visitOrdersForDay(view, 1))).toEqual({ palace: 1 });
+  });
+
   it("uses the requested occurrence day for a repeated hotel", () => {
     const hotel = {
       id: "p0",

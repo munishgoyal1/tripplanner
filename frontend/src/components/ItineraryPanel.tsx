@@ -122,6 +122,8 @@ function StopRow({
     ? "Depart"
     : stop.kind === "hotel" && isLast
       ? "Return"
+      : stop.kind === "flight"
+        ? "Depart"
       : "Arrive");
   const travelStop = returnStop?.travel_from_previous ? returnStop : stop;
   const handleRowClick = () => {
@@ -166,10 +168,14 @@ function StopRow({
           </>
         )}
         {stop.kind !== "hotel" && stop.duration_min ? (
-          <p className="mt-0.5 text-[10px] text-slate-500">{Math.round(stop.duration_min)} min visit</p>
+          <p className="mt-0.5 text-[10px] text-slate-500">
+            {Math.round(stop.duration_min)} min {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
+          </p>
         ) : null}
         {stop.departure_time && (
-          <p className="mt-0.5 text-[10px] font-medium tabular-nums text-slate-600">Leave {stop.departure_time}</p>
+          <p className="mt-0.5 text-[10px] font-medium tabular-nums text-slate-600">
+            {stop.kind === "flight" || stop.kind === "transport" ? "Arrive" : "Leave"} {stop.departure_time}
+          </p>
         )}
       </div>
 
@@ -264,7 +270,7 @@ function StopRow({
                 : ""}
             </span>
           )}
-          {typeof stop.popularity_score === "number" && stop.kind !== "hotel" && (
+          {typeof stop.popularity_score === "number" && stop.kind === "attraction" && (
             <span
               className="chip"
               title="Estimated from Google rating and review volume; not an itinerary inclusion percentage."
