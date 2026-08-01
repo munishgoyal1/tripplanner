@@ -33,6 +33,7 @@ export default defineConfig({
         itinerarySummary: resolve(__dirname, "itinerary-summary.html"),
         itineraryTripBook: resolve(__dirname, "itinerary-trip-book.html"),
         mapControls: resolve(__dirname, "map-controls.html"),
+        paneControls: resolve(__dirname, "pane-controls.html"),
         shellVisualRefresh: resolve(__dirname, "shell-visual-refresh.html"),
         tripSnapshot: resolve(__dirname, "trip-snapshot.html"),
         workspaceCommandBar: resolve(__dirname, "workspace-command-bar.html"),

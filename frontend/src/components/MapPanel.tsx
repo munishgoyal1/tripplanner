@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Plus, Search, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Plus, Search } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
 import PlaceTripActions from "./PlaceTripActions";
@@ -255,9 +256,10 @@ interface Props {
     name: string,
     options?: DeselectItemOptions,
   ) => void | Promise<boolean>;
+  headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -269,7 +271,6 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   const [newStopKind, setNewStopKind] = useState<"attraction" | "hotel" | "meal">("attraction");
   const [newStopDay, setNewStopDay] = useState("auto");
   const [addingStop, setAddingStop] = useState(false);
-  const [addStopOpen, setAddStopOpen] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
 
   const mapEl = useRef<HTMLDivElement>(null);
@@ -765,6 +766,51 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           : null;
   const activeDayObj =
     view && activeDay != null ? view.days.find((d) => d.day === activeDay) : null;
+  const dayScopeControls = view ? (
+    <div className="flex min-w-0 items-center gap-1 overflow-x-auto" aria-label="Map day scope">
+      <button
+        type="button"
+        onClick={() => {
+          if (circuitZoomTimerRef.current !== null) {
+            window.clearTimeout(circuitZoomTimerRef.current);
+            circuitZoomTimerRef.current = null;
+          }
+          pendingFocusRef.current = null;
+          pendingCircuitFocusRef.current = null;
+          setActiveDay(null);
+          setSelectedPin(null);
+          setNewStopDay("auto");
+          onAllDaysFocus?.();
+        }}
+        className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition ${
+          activeDay === null ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+        }`}
+      >
+        All days
+      </button>
+      {view.days.map((day) => (
+        <button
+          key={day.day}
+          type="button"
+          onClick={() => {
+            if (circuitZoomTimerRef.current !== null) {
+              window.clearTimeout(circuitZoomTimerRef.current);
+              circuitZoomTimerRef.current = null;
+            }
+            setActiveDay(day.day);
+            setNewStopDay(String(day.day));
+            onDayFocus?.(day.day);
+          }}
+          className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition ${
+            activeDay === day.day ? "text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+          }`}
+          style={activeDay === day.day ? { backgroundColor: day.color } : undefined}
+        >
+          {day.label}
+        </button>
+      ))}
+    </div>
+  ) : null;
 
   return (
     <div className="relative flex h-full flex-col">
@@ -779,102 +825,11 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
         </div>
       )}
       {view && (
-        <div className="border-b border-slate-200 bg-white/95 shadow-card" aria-label="Map commands">
-          <div className="flex min-h-11 flex-wrap items-center gap-1.5 px-3 py-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                if (circuitZoomTimerRef.current !== null) {
-                  window.clearTimeout(circuitZoomTimerRef.current);
-                  circuitZoomTimerRef.current = null;
-                }
-                pendingFocusRef.current = null;
-                pendingCircuitFocusRef.current = null;
-                setActiveDay(null);
-                setSelectedPin(null);
-                setNewStopDay("auto");
-                onAllDaysFocus?.();
-              }}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                activeDay === null ? "bg-ink text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              All days
-            </button>
-            {view.days.map((day) => (
-              <button
-                key={day.day}
-                type="button"
-                onClick={() => {
-                  if (circuitZoomTimerRef.current !== null) {
-                    window.clearTimeout(circuitZoomTimerRef.current);
-                    circuitZoomTimerRef.current = null;
-                  }
-                  setActiveDay(day.day);
-                  setNewStopDay(String(day.day));
-                  onDayFocus?.(day.day);
-                }}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
-                  activeDay === day.day ? "text-white" : "text-slate-700 hover:opacity-80"
-                }`}
-                style={
-                  activeDay === day.day
-                    ? { backgroundColor: day.color }
-                    : { backgroundColor: `${day.color}22` }
-                }
-              >
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: day.color }}
-                  aria-hidden
-                />
-                {day.label}
-              </button>
-            ))}
-            <span className="ml-auto h-5 border-l border-slate-200" aria-hidden />
-            <button
-              type="button"
-              onClick={() => setAddStopOpen((open) => !open)}
-              aria-expanded={addStopOpen}
-              className={`inline-flex shrink-0 items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-semibold transition ${
-                addStopOpen ? "bg-brand-50 text-brand" : "text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              <Plus className="h-3.5 w-3.5" aria-hidden />
-              Add stop
-            </button>
-          </div>
-          <div className="border-t border-slate-100 px-3 py-2">
-            <div className="grid grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,auto))] items-center gap-3">
-              <div className="min-w-0">
-                <p className="text-[9px] font-bold uppercase text-slate-400">
-                  {activeDayObj ? "Day scope" : "Trip scope"}
-                </p>
-                <p className="truncate text-xs font-semibold text-ink">
-                  {activeDayObj
-                    ? activeDayObj.label
-                    : `All ${view.days.length} ${view.days.length === 1 ? "day" : "days"}`}
-                </p>
-              </div>
-              <div className="min-w-0 border-l border-slate-200 pl-3">
-                <p className="text-[9px] font-bold uppercase text-slate-400">Full schedule</p>
-                <p className="truncate text-[11px] font-semibold text-slate-700">
-                  {activeDayObj
-                    ? `${activeDayObj.schedule?.duration_display || "Unavailable"}${activeDayObj.schedule?.start && activeDayObj.schedule?.end ? ` · ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""}`
-                    : "Choose a day"}
-                </p>
-              </div>
-              <div className="min-w-0 border-l border-slate-200 pl-3">
-                <p className="text-[9px] font-bold uppercase text-slate-400">Route-only travel</p>
-                <p className="truncate text-[11px] font-semibold text-slate-700">
-                  {activeDayObj
-                    ? `${activeDayObj.route.duration_display} · ${activeDayObj.route.distance_display} · ${activeDayObj.route.mode}`
-                    : "Choose a day"}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className={`${addStopOpen ? "" : "hidden"} border-t border-slate-100 px-3 py-2`}>
+        <div className="border-b border-slate-200 bg-white/95" aria-label="Map commands">
+          {headerTarget ? createPortal(dayScopeControls, headerTarget) : (
+            <div className="border-b border-slate-100 px-3 py-1.5">{dayScopeControls}</div>
+          )}
+          <div className="px-3 py-2">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[9rem] flex-1">
                 <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
@@ -927,15 +882,20 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                 <Plus className="h-3.5 w-3.5" aria-hidden />
                 {addingStop ? "Adding…" : "Add"}
               </button>
-              <button
-                type="button"
-                onClick={() => setAddStopOpen(false)}
-                className="grid h-7 w-7 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                title="Close Add stop"
-              >
-                <X className="h-3.5 w-3.5" aria-hidden />
-              </button>
             </div>
+          </div>
+          <div className="flex min-h-6 items-center gap-1.5 border-t border-slate-100 px-3 py-1 text-[10px] text-slate-500">
+            {activeDayObj ? (
+              <>
+                <span className="font-semibold text-slate-700">{activeDayObj.label}</span>
+                <span aria-hidden>·</span>
+                <span>Schedule {activeDayObj.schedule?.duration_display || "unavailable"}{activeDayObj.schedule?.start && activeDayObj.schedule?.end ? `, ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""}</span>
+                <span aria-hidden>·</span>
+                <span>Travel {activeDayObj.route.duration_display}, {activeDayObj.route.distance_display}, {activeDayObj.route.mode}</span>
+              </>
+            ) : (
+              <span>Choose a day for schedule and route-only travel.</span>
+            )}
           </div>
         </div>
       )}

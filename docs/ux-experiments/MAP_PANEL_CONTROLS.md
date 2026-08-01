@@ -26,9 +26,10 @@ travel evidence?
 
 ### A - Unified Route Ribbon
 
-Two stable rows combine day scope and Add stop with a structured route brief.
-This is the recommended starting point because every frequent action remains
-visible, but schedule and route facts gain labels instead of becoming one sentence.
+The selected direction keeps every frequent action visible and distinguishes
+schedule span from route-only evidence. The production refinement uses otherwise
+idle Map title-row space for day scope, keeps Add stop permanently visible below,
+and compresses the route brief to one labeled line.
 
 ### B - Contextual Command Deck
 
@@ -55,8 +56,11 @@ is evaluation evidence, not permission to change production Map behavior.
 
 ## Implemented Decision
 
-Option A is implemented in production. The first stable row owns All days/day
-scope and the Add stop command. The second row gives the current scope, Full
-schedule, and Route-only travel distinct labels; Add stop expands its existing
-form inline. All focus callbacks, placement rules, map geography, pins, routes,
-mutations, and cross-pane synchronization retain their prior behavior.
+Option A is implemented in production with owner-reviewed refinements. All
+days/day scope occupies the Map pane header beside its title. The existing Add
+stop form remains visible directly below instead of hiding behind a disclosure,
+and a compact context line distinguishes the selected day's schedule span from
+route-only duration, distance, and mode. All focus callbacks, placement rules,
+map geography, pins, routes, mutations, and cross-pane synchronization retain
+their prior behavior. Pane-local Hide and Maximize presentation was explicitly
+excluded and moved to the separate Pane Control Polish Lab.

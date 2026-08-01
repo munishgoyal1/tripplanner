@@ -14,6 +14,17 @@ export interface LabRecord {
 
 export const activeLabs: LabRecord[] = [
   {
+    id: "pane-control-polish",
+    title: "Pane control polish",
+    category: "Enhancements and polish",
+    description: "Compare clearer pane-local presentations for Hide and Maximize without changing independent ownership or behavior.",
+    date: "1 Aug 2026",
+    status: "In evaluation",
+    decision: "Open experiment · presentation only; pane behavior stays fixed.",
+    href: "./pane-controls.html",
+    icon: LayoutPanelTop,
+  },
+  {
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",
     category: "Trip export",

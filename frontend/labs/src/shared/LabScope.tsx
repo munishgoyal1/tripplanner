@@ -36,6 +36,13 @@ const scopes: Record<string, ScopeDefinition> = {
     ],
     context: ["Map geography, pins, routes, and fixture data", "Itinerary sidebar, trip structure, and mutation semantics"],
   },
+  "pane-control-polish": {
+    changes: [
+      "The visual presentation of each pane's existing Hide and Maximize or Restore actions",
+      "Whether those pane-local actions use compact labels, a restrained icon pair, or a local action menu",
+    ],
+    context: ["Independent pane ownership, handlers, disabled states, and recovery", "Pane layout, resizing, content, command bar, and responsive behavior"],
+  },
   "itinerary-trip-book": {
     changes: [
       "The exported Trip Book's structure, navigation, information layering, and visual emphasis",

@@ -157,12 +157,13 @@ Learns from user preferences and past trips.
 - Update README.md when architecture changes
 - This file must always reflect current state
 
-## Current State (last updated 2026-07-31)
-- **Unified Map route ribbon**: implemented Map commands Lab Option A only in
-  the Map command hierarchy. All days/day scope and Add stop share the first row;
-  scope, Full schedule, and Route-only travel are separately labeled below, and
-  Add stop expands inline. Focus semantics, placement, pins, routes, mutations,
-  cross-pane synchronization, and surrounding workspace UI are unchanged.
+## Current State (last updated 2026-08-01)
+- **Refined Map command hierarchy**: the accepted Map commands direction now uses
+  the pane title row for All days/day scope, keeps Add stop directly visible below,
+  and compresses schedule span plus route-only evidence into one labeled line.
+  Focus semantics, placement, pins, routes, mutations, and cross-pane synchronization
+  are unchanged. Pane-local Hide/Maximize styling remains unchanged while a separate
+  enhancements and polishing Lab evaluates presentation alternatives.
 - **Decision-brief trip snapshot**: implemented Trip Snapshot Lab Option B only
   in the authoritative whole-trip band. Traveler context and an authored or factual
   trip-level narrative stay with identity, booking readiness is explicit, and

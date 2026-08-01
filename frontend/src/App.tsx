@@ -73,6 +73,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : true;
   });
   const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
+  const [mapHeaderTarget, setMapHeaderTarget] = useState<HTMLDivElement | null>(null);
   const [itineraryOpen, setItineraryOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
@@ -542,6 +543,7 @@ export default function App() {
         onAllDaysFocus={handleMapAllDaysFocus}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
+        headerTarget={mapHeaderTarget}
       />
     );
   };
@@ -552,10 +554,11 @@ export default function App() {
       <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
         <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 px-3">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
+          {pane === "map" && <div ref={setMapHeaderTarget} className="min-w-0 flex-1" />}
           <button
             type="button"
             onClick={() => setCanvasOpen(pane, false)}
-            className="ml-auto grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink disabled:opacity-30"
+            className={`${pane === "itinerary" ? "ml-auto" : ""} grid h-7 w-7 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink disabled:opacity-30`}
             aria-label={`Hide ${label}`}
             title={`Hide ${label}`}
             disabled={(pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen)}

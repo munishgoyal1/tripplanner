@@ -3089,3 +3089,14 @@ VALIDATION:
   second row; expand the existing Add stop form inline.
 - Preserve aggregate and exact focus semantics, active-day placement, Best day,
   map geography, pins, routes, mutations, and cross-pane synchronization.
+
+=== 2026-08-01 — Refine Map hierarchy; separate pane-control polish ===
+
+- Keep the Map Add stop search, type, day, and action controls permanently visible
+  in one row rather than behind an expandable command.
+- Use the Map pane title row for All days/day scope and compress schedule span plus
+  route-only travel evidence into one compact line.
+- Preserve each pane's independent Hide and Maximize behavior and existing visual
+  treatment in production.
+- Evaluate alternative Hide and Maximize presentation only in a separate
+  enhancements and polishing Lab; do not include that redesign in the Map change.

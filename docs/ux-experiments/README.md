@@ -131,11 +131,22 @@ The Map commands and day context Lab is available at
 `http://127.0.0.1:5175/map-controls.html`. It compares a Unified route ribbon,
 Contextual command deck, and Schedule-first strip in the same production-scale
 Paris workspace. The selected and implemented direction is A - Unified route
-ribbon. One stable row owns All days/day scope and Add stop; a second labels the
-current scope, Full schedule, and Route-only travel. Add stop expands inline.
-Day/all-days aggregate focus, exact-pin focus, placement, pins, routes, mutations,
-and surrounding workspace behavior are unchanged. See
+ribbon, refined after production review. Day scope now uses the Map title row,
+Add stop remains directly visible below, and one compact line separates schedule
+span from route-only travel. Day/all-days aggregate focus, exact-pin focus,
+placement, pins, routes, mutations, and surrounding workspace behavior are
+unchanged. See
 [`MAP_PANEL_CONTROLS.md`](MAP_PANEL_CONTROLS.md).
+
+## Active Pane Control Polish Experiment (2026-08-01)
+
+The separate enhancements and polishing Lab is available at
+`http://127.0.0.1:5175/pane-controls.html`. It compares compact semantic actions,
+a restrained icon pair, and a pane-local action menu. Every option preserves each
+pane's independent Hide and Maximize/Restore behavior, recovery, layout, and
+content. This experiment is not part of the Map command refinement and makes no
+production UI change until the owner selects and separately approves a direction.
+See [`PANE_CONTROL_POLISH.md`](PANE_CONTROL_POLISH.md).
 
 Each active experiment page also includes a **Your handoff** section. Choose one
 option, record modifications, additional inputs, details to preserve, and

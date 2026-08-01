@@ -226,8 +226,9 @@ frontend/
          estimated must-visit score
       DestinationOverview.tsx  Unframed destination photo + summary + reviews + news
       MapPanel.tsx         Interactive Google map: day-colored pins + route bands
-                           with a unified two-row command ribbon for day scope,
-                           inline Add stop, Full schedule, and Route-only travel
+                           with day scope portaled into the desktop Map header,
+                           an always-visible Add stop form, and one compact
+                           schedule/route-only context line
                            (occurrence-aware place focus highlights the exact day;
                            one marker at a time gets number-only contrast at fixed
                            34x44 geometry, with focus-only updates applied in place;
