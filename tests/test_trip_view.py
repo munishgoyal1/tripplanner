@@ -834,6 +834,95 @@ def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:
     assert restaurant["id"] in day1["pin_ids"]
 
 
+def test_map_view_shows_flight_airports_without_local_circuit(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Udaipur Airport": (24.6177, 73.8961),
+        "Taj Exotica Resort": (15.04, 73.92),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Flight: Bangalore to Udaipur", "kind": "flight", "time": "08:00"},
+                {"name": "Taj Exotica Resort", "kind": "hotel", "time": "10:30"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    pins = {pin["name"]: pin for pin in view["pins"]}
+    assert pins["Bangalore Airport"]["kind"] == "airport"
+    assert pins["Udaipur Airport"]["kind"] == "airport"
+    assert view["airport"] is None
+    day = view["days"][0]
+    assert day["pin_ids"][0] != day["pin_ids"][-1]
+    assert day["route"]["distance_km"] == 0
+    assert day["legs"] == []
+
+
+def test_map_view_routes_only_destination_segment_after_road_transfer(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Trident Udaipur": (24.577, 73.683),
+        "Hotel Hillock Mount Abu": (24.592, 72.708),
+        "Nakki Lake": (24.593, 72.704),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [
+            {"name": "Trident Udaipur"},
+            {"name": "Hotel Hillock Mount Abu"},
+        ],
+        "day_wise_itinerary": [{
+            "day": 3,
+            "stops": [
+                {"name": "Trident Udaipur", "kind": "hotel"},
+                {"name": "Drive: Udaipur to Mount Abu", "kind": "transport"},
+                {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
+                {"name": "Nakki Lake", "kind": "attraction"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    day = view["days"][0]
+    route_names = [names_by_id[pin_id] for pin_id in day["pin_ids"]]
+    assert route_names == ["Hotel Hillock Mount Abu", "Nakki Lake"]
+    assert day["route"]["distance_km"] < 5
+
+
 # ---------------------------------------------------------------------------
 # build_itinerary (pure, no network)
 # ---------------------------------------------------------------------------
@@ -973,6 +1062,46 @@ def test_structured_itinerary_preserves_overnight_travel_without_hotel_anchor() 
     itinerary = trip_view.build_itinerary(trip)
 
     assert [stop["kind"] for stop in itinerary["days"][0]["stops"]] == ["transport"]
+
+
+def test_structured_itinerary_preserves_arrival_and_departure_flights() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bangalore to Udaipur", "kind": "flight", "time": "08:00"},
+                    {"name": "Trident Udaipur", "kind": "hotel", "time": "10:30"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Suryagarh", "kind": "hotel", "time": "07:20"},
+                    {"name": "Flight: Jaisalmer to Bangalore", "kind": "flight", "time": "10:00"},
+                ],
+            },
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    arrival, departure = itinerary["days"]
+    assert [stop["kind"] for stop in arrival["stops"]] == ["flight", "hotel"]
+    assert [stop["kind"] for stop in departure["stops"]] == ["hotel", "flight"]
+    assert arrival["stops"][0]["name"] == "Flight: Bangalore Airport to Udaipur Airport"
+    assert departure["stops"][-1]["name"] == (
+        "Flight: Jaisalmer Airport to Bangalore Airport"
+    )
+    for flight in (arrival["stops"][0], departure["stops"][-1]):
+        assert flight["rating"] is None
+        assert flight["review_count"] is None
+        assert flight["popularity_score"] is None
+        assert flight["opening_hours"] == ""
+        assert flight["duration_min"] is None
 
 
 def test_structured_itinerary_preserves_explicit_hotel_transition() -> None:

@@ -81,6 +81,20 @@ function airportIcon(): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+function terminalIcon(kind: string): string {
+  if (kind === "airport") return airportIcon();
+  const label = kind === "station" ? "T" : "B";
+  const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
+  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
+        fill="${AIRPORT_COLOR}" stroke="white" stroke-width="2"/>
+  <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.97"/>
+  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
+        font-weight="700" text-anchor="middle" fill="${AIRPORT_COLOR}">${label}</text>
+</svg>`.trim();
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 // Hotel/lodging pin — a lettered teardrop ("H") in slate so a place you're
 // staying reads differently from a day-numbered attraction.
 export function hotelIcon(focused = false): string {
@@ -135,7 +149,7 @@ export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string,
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   const pins = (day?.pin_ids ?? [])
     .map((id) => view.pins.find((candidate) => candidate.id === id))
-    .filter((pin): pin is MapPin => !!pin && pin.kind !== "hotel");
+    .filter((pin): pin is MapPin => !!pin && !["hotel", "airport", "station", "bus_station"].includes(pin.kind));
   const ordered = [...new Map(pins.map((pin) => [pin.id, pin])).values()].sort((left, right) => {
     const leftStop = left.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
     const rightStop = right.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
@@ -477,6 +491,11 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
+        if (["airport", "station", "bus_station"].includes(p.kind)) return {
+          url: terminalIcon(p.kind),
+          scaledSize: new google.maps.Size(34, 44),
+          anchor: new google.maps.Point(17, 44),
+        };
         if (markerDay && visitOrder) {
           const color = dayColor.get(markerDay) || "#64748b";
           return {
@@ -570,7 +589,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       if (activeDay !== null && d.day !== activeDay) continue;
       const path = d.pin_ids
         .map((id) => pinById.get(id))
-        .filter((p): p is MapPin => !!p)
+        .filter((p): p is MapPin => !!p && !["airport", "station", "bus_station"].includes(p.kind))
         .map((p) => ({ lat: p.lat, lng: p.lng }));
       if (path.length < 2) continue;
       const line = new google.maps.Polyline({
