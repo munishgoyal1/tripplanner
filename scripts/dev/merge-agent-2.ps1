@@ -5,4 +5,4 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-& "$PSScriptRoot\merge-worker.ps1" -WorkerNumber 1 -ValidateOnly:$ValidateOnly
+& "$PSScriptRoot\merge-worker.ps1" -WorkerNumber 2 -ValidateOnly:$ValidateOnly

@@ -29,12 +29,13 @@ coordination cost.
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
-In optional parallel mode, to merge Agent 1 and restart this local stack in one click, double-click
-`scripts/dev/Run-Latest-Code.cmd` from the repository root or run the VS Code task
-**Tripplanner: Run Latest Code** from the integration workspace. Existing staged,
-unstaged, and untracked master work is temporarily preserved and restored around
-the guarded Worker 1 merge before the server starts. A Worker synchronization
-conflict is automatically aborted so it cannot leave staged or unmerged residue.
+In optional parallel mode, to merge Agent 1 and Agent 2 and restart this local
+stack in one click, double-click `scripts/dev/Run-Latest-Code.cmd` from the
+repository root or run the VS Code task **Tripplanner: Run Latest Code** from the
+integration workspace. Existing staged, unstaged, and untracked master work is
+temporarily preserved and restored around both guarded merges before the server
+starts. A worker synchronization conflict is automatically aborted so it cannot
+leave staged or unmerged residue.
 
 ---
 

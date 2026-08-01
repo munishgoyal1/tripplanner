@@ -28,7 +28,7 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Tripplanner: Merge Workers",
+        "label": "Tripplanner: Merge All Agents",
         "type": "shell",
         "command": "pwsh",
         "args": [
@@ -36,7 +36,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}\\scripts\\dev\\merge-workers.ps1"
+          "${workspaceFolder}\\scripts\\dev\\merge-all-agents.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"

@@ -124,13 +124,13 @@ git push -u origin HEAD
 gh pr create --base master --head agents/route-cache-fix --fill
 ```
 
-To integrate both persistent worker lanes, use either one-click entry point
-from the primary integration checkout:
+To integrate both persistent agent lanes, use either one-click entry point from
+the primary integration checkout:
 
-- VS Code: **Tasks: Run Task** → **Tripplanner: Merge Workers**
-- File Explorer: double-click `scripts/dev/Merge-Workers.cmd`
+- VS Code: **Tasks: Run Task** → **Tripplanner: Merge All Agents**
+- File Explorer: double-click `scripts/dev/Merge-All-Agents.cmd`
 
-Both run `scripts/dev/merge-workers.ps1`. It refuses dirty or unexpected
+Both run `scripts/dev/merge-all-agents.ps1`. It refuses dirty or unexpected
 worktrees and preflights both before either merge. It then creates or reuses each
 worker's pull request, merges Worker 1 with a merge commit, updates `master`,
 brings Worker 2 onto that new baseline, and merges Worker 2 with a separate merge
@@ -142,10 +142,12 @@ then run the task again. Independent dated additions to
 `PRD/REQUIREMENTS Auto Log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
-The older `Merge-Agent1.cmd` and `merge-agent-1.ps1` names remain compatibility
-aliases for this same two-worker flow. For a validation-only preflight, run
-`.\scripts\dev\merge-workers.ps1 -ValidateOnly` directly; the `.cmd` launchers
-do not forward arguments.
+To integrate only one lane, double-click `scripts/dev/Merge-Agent-1.cmd` or
+`scripts/dev/Merge-Agent-2.cmd`. For validation-only preflights, run the matching
+PowerShell script with `-ValidateOnly`, or run
+`.\scripts\dev\merge-all-agents.ps1 -ValidateOnly` for both. The `.cmd`
+launchers do not forward arguments. The agent-named scripts delegate to the
+generic `merge-worker.ps1` engine using the corresponding worker number.
 
 In parallel mode, to merge both workers and immediately restart the local
 application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
@@ -154,7 +156,7 @@ when `master` has staged, unstaged, or untracked work: it temporarily stashes th
 local state, runs both guarded merges against a clean checkout, restores the local
 state with its staged status, and then starts `scripts/dev/dev-spa.ps1`. If restored
 changes overlap the merged code, it stops with the stash retained for explicit
-conflict resolution. The direct **Merge Workers** command remains clean-only.
+conflict resolution. The direct **Merge All Agents** command remains clean-only.
 
 Use a pull request for each optional worker branch. It provides one diff and
 check surface, keeps `master` stable, and makes parallel integration order
