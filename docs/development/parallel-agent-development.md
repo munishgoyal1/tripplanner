@@ -155,6 +155,19 @@ worker launchers call the generic `sync-worker.ps1` engine with the correspondin
 worker number. `Sync-All-Worktrees.cmd -ValidateOnly` forwards the validation flag
 to its shared engine.
 
+When ongoing worker edits must remain completely untouched, run
+`.\scripts\dev\merge-latest-worktrees.ps1`. It snapshots the current committed
+`HEAD` of every registered non-detached worktree, merges those immutable commits
+in a disposable detached worktree, pushes the result to `master`, and fast-forwards
+the primary checkout. It never checks out, stages, stashes, resets, or updates a
+worker worktree, so staged, unstaged, and untracked worker files do not block it.
+Commits created after the snapshot wait for the next run. A committed-code conflict
+stops the script without modifying any real worker worktree. If the primary checkout
+is dirty, its changes are temporarily stashed and restored around the final
+fast-forward; overlapping primary edits still require explicit resolution.
+If another client updates remote `master` during integration, the push is rejected
+safely; rerun the command against the new baseline.
+
 In parallel mode, to synchronize all worktrees and immediately restart the local
 application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
 `scripts/dev/Run-Latest-Code.cmd`. This is the regular local workflow even
