@@ -180,6 +180,11 @@ and restores each affected worktree's local state, and then starts the existing
 `scripts/dev/dev-spa.ps1`. If restored changes overlap synchronized code, it
 stops with the stash retained for explicit conflict resolution.
 
+All `dev-spa.ps1` flags remain optional and can be passed through `Run-Latest.cmd`.
+Pass positional `all` (or named `-All`) to call the existing all-worktree sync
+engine before starting the stack; with no sync selector, only the launcher
+worktree is updated.
+
 ## Clean up merged work
 
 After the PR is merged:
