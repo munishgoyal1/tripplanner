@@ -657,6 +657,57 @@ def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:
     assert by_name["Dudhsagar Falls Trek"]["day"] == 1
 
 
+def test_map_view_ignores_other_city_hotel_mentioned_in_structured_day_plan(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Trident Udaipur": (24.577, 73.683),
+        "City Palace Udaipur": (24.576, 73.683),
+        "Taj Hari Mahal Jodhpur": (26.269, 73.010),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [
+            {"name": "Trident Udaipur"},
+            {"name": "Taj Hari Mahal Jodhpur"},
+        ],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "plan": "Explore Udaipur before the later Jodhpur stay.",
+            "stops": [
+                {"name": "Trident Udaipur", "kind": "hotel"},
+                {"name": "City Palace Udaipur", "kind": "attraction"},
+                {"name": "Trident Udaipur", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    day = view["days"][0]
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Trident Udaipur",
+        "City Palace Udaipur",
+        "Trident Udaipur",
+    ]
+    jodhpur = next(pin for pin in view["pins"] if pin["name"] == "Taj Hari Mahal Jodhpur")
+    assert jodhpur["day"] is None
+    assert all(jodhpur["id"] not in (leg["from_pin_id"], leg["to_pin_id"]) for leg in day["legs"])
+
+
 def test_map_view_selected_stay_anchors_route_when_no_match(_map_geo: None) -> None:
     trip = {
         **SAMPLE_TRIP,

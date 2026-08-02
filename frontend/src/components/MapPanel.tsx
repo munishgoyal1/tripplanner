@@ -260,12 +260,31 @@ export function optionsForStopDay(day: string): SelectItemOptions | undefined {
   return day !== "auto" && Number.isInteger(parsed) && parsed > 0 ? { day: parsed } : undefined;
 }
 
-export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: number): boolean {
+export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {
   const day = view.days.find((candidate) => candidate.day === dayNumber);
-  if (!day) return false;
-  const pins = day.pin_ids
+  if (!day) return [];
+  return day.pin_ids
     .map((id) => view.pins.find((pin) => pin.id === id))
     .filter((pin): pin is MapPin => !!pin);
+}
+
+export function hotelReturnForDay(
+  view: MapView,
+  dayNumber: number,
+): { pin: MapPin; label: string } | null {
+  const day = view.days.find((candidate) => candidate.day === dayNumber);
+  if (!day || day.pin_ids.length < 2 || day.pin_ids[0] !== day.pin_ids.at(-1)) return null;
+  const pin = view.pins.find((candidate) => candidate.id === day.pin_ids[0]);
+  if (!pin || pin.kind !== "hotel") return null;
+  const end = day.schedule?.end;
+  return {
+    pin,
+    label: end ? `Return · ${end}${day.schedule?.estimated ? " est." : ""}` : "Return",
+  };
+}
+
+export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: number): boolean {
+  const pins = pinsForDayCircuit(view, dayNumber);
   if (pins.length === 0) return false;
   const bounds = new google.maps.LatLngBounds();
   pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
@@ -504,12 +523,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     });
 
     const activeDayPinIds = new Set(
-      activeDay === null
-        ? []
-        : view.days.find((day) => day.day === activeDay)?.pin_ids ?? []
+      activeDay === null ? [] : pinsForDayCircuit(view, activeDay).map((pin) => pin.id)
     );
     const visible = (p: MapPin) =>
-      p.kind === "hotel" || activeDay === null || activeDayPinIds.has(p.id);
+      activeDay === null || activeDayPinIds.has(p.id);
     const bounds = new google.maps.LatLngBounds();
     let any = false;
 
@@ -681,6 +698,26 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           });
           overlaysRef.current.push(marker);
         }
+      }
+    }
+
+    if (activeDay !== null) {
+      const hotelReturn = hotelReturnForDay(view, activeDay);
+      const activeDayView = view.days.find((day) => day.day === activeDay);
+      if (hotelReturn && activeDayView) {
+        const marker = new google.maps.Marker({
+          position: { lat: hotelReturn.pin.lat, lng: hotelReturn.pin.lng },
+          map,
+          clickable: false,
+          title: `${hotelReturn.label} to ${hotelReturn.pin.name}`,
+          icon: {
+            url: routeLegIcon(hotelReturn.label, activeDayView.color),
+            scaledSize: new google.maps.Size(112, 26),
+            anchor: new google.maps.Point(56, 52),
+          },
+          zIndex: 1100,
+        });
+        overlaysRef.current.push(marker);
       }
     }
 
