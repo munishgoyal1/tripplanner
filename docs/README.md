@@ -67,8 +67,9 @@ choose." Canonical documents answer "what is true now."
 
 Infrastructure topology, IaC, and guarded data operations remain under
 [`../infra/`](../infra/), with [`../infra/README.md`](../infra/README.md) as the
-entry point. Release procedures belong in the canonical operations runbook.
-Mobile package-specific setup remains in
+entry point. Local setup, development workflow, diagnostics, and convenience
+utilities remain under [`../scripts/`](../scripts/README.md). Release procedures
+belong in the canonical operations runbook. Mobile package-specific setup remains in
 [`../mobile/README.md`](../mobile/README.md).
 
 ## Reference source material
@@ -95,6 +96,8 @@ active Word document while that lock exists.
 - Put native-platform testing runbooks in `docs/mobile/`.
 - Put original owner inputs, dated history, and inactive owner-driven artifacts
   under `docs/reference/`.
+- Keep Azure-mutating infrastructure operations in `infra/` and local developer
+  workflow or convenience helpers in `scripts/`.
 - Move runbook paths only as a coordinated change that updates every script,
   README, agent instruction, and historical reference.
 - Add a new top-level docs folder only when at least two durable documents share

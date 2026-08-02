@@ -29,10 +29,10 @@ coordination cost.
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
-In optional parallel mode, run `scripts/dev/Sync-Latest.cmd` from the worktree
+In optional parallel mode, run `scripts/user/Sync-Latest.cmd` from the worktree
 that should receive all latest committed code. To synchronize the launcher
 worktree and then restart its local stack in one click, double-click
-`scripts/dev/Run-Latest.cmd` or run the VS Code task
+`scripts/user/Run-Latest.cmd` or run the VS Code task
 **Tripplanner: Run Latest**. Existing staged, unstaged, and untracked work
 is preserved in every affected worktree.
 
@@ -40,9 +40,9 @@ Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `Sync-Latest.cmd` | On Agent 3, integrate all committed worker code. On a worker, update only from `master`; pass `all` to include every committed worker head. Only the launcher worktree is updated. |
-| `Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. |
-| `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
+| `scripts/user/Sync-Latest.cmd` | On Agent 3, integrate all committed worker code. On a worker, update only from `master`; pass `all` to include every committed worker head. Only the launcher worktree is updated. |
+| `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. |
+| `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 ---
 

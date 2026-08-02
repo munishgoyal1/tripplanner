@@ -4,13 +4,13 @@
   Manage isolated tripplanner worktrees for parallel coding-agent windows.
 
 .EXAMPLE
-  .\scripts\agent-worktree.ps1 -Create route-cache-fix
+    .\scripts\dev\agent-worktree.ps1 -Create route-cache-fix
 
 .EXAMPLE
-  .\scripts\agent-worktree.ps1 -Open route-cache-fix
+    .\scripts\dev\agent-worktree.ps1 -Open route-cache-fix
 
 .EXAMPLE
-  .\scripts\agent-worktree.ps1 -Remove route-cache-fix
+    .\scripts\dev\agent-worktree.ps1 -Remove route-cache-fix
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "List")]
@@ -68,7 +68,7 @@ function Get-AgentWorktreePath {
     return Join-Path $worktreesRoot $Name
 }
 
-$scriptRepoRoot = Split-Path -Parent $PSScriptRoot
+$scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
     "rev-parse", "--path-format=absolute", "--git-common-dir"
 )

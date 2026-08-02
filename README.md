@@ -380,13 +380,18 @@ tripplanner/
 │
 ├── packages/tripplanner-client/  # Shared web/native contracts and request helpers
 │
+├── scripts/
+│   ├── README.md                 # Developer workflow + utility ownership
+│   ├── user/                     # Regular owner-facing launchers
+│   └── dev/                      # Local stack, worktrees, sync, and emulator
+│       └── cosmos-emulator.compose.yml  # Portable local persistence
+│
 ├── infra/
 │   ├── data-stack.bicep          # Subscription-scope shared data bootstrap
 │   ├── data.bicep                # Free-tier Cosmos account + databases
 │   ├── main.bicep                # RG-scope IaC (ACA + Log Analytics)
 │   ├── canary.bicepparam         # Canary app + database binding
 │   ├── prod.bicepparam           # Production app + database binding
-│   ├── cosmos-emulator.compose.yml  # Portable local persistence
 │   └── README.md                 # Deploy walkthrough
 │
 ├── src/tripplanner/
