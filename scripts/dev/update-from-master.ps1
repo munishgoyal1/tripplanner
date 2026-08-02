@@ -113,6 +113,64 @@ function Merge-RemoteRef {
     Complete-MergeConflict -WorkingDirectory $WorkingDirectory -LaneName $LaneName
 }
 
+function Restore-SafetyStash {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string]$LaneName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$StashCommit
+    )
+
+    $currentStash = Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "rev-parse", "refs/stash"
+    )
+    if ($currentStash -ne $StashCommit) {
+        throw "$LaneName safety stash is no longer the newest stash; it was retained."
+    }
+
+    Write-Host "Restoring uncommitted $LaneName changes..." -ForegroundColor Cyan
+    & git -C $WorkingDirectory stash pop --index "stash@{0}"
+    if ($LASTEXITCODE -eq 0) {
+        return
+    }
+
+    $remaining = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "diff", "--name-only", "--diff-filter=U"
+    ))
+    if ($remaining.Count -gt 0) {
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
+        $remaining = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+            "diff", "--name-only", "--diff-filter=U"
+        ))
+    }
+
+    if ($remaining.Count -gt 0) {
+        Write-Host "$LaneName has new local-edit conflicts:" -ForegroundColor Yellow
+        $remaining | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+        throw "$LaneName local changes need semantic resolution; the safety stash was retained."
+    }
+
+    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--check") | Out-Null
+    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "diff", "--cached", "--check"
+    ) | Out-Null
+    $currentStash = Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "rev-parse", "refs/stash"
+    )
+    if ($currentStash -ne $StashCommit) {
+        throw "$LaneName conflict was resolved, but its safety stash identity changed; no stash was dropped."
+    }
+
+    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "stash", "drop", "stash@{0}"
+    ) | Out-Null
+    Write-Host "Reused a recorded resolution for $LaneName local changes." -ForegroundColor Green
+}
+
 function Update-Lane {
     param(
         [Parameter(Mandatory = $true)]
@@ -146,6 +204,7 @@ function Update-Lane {
     }
 
     $stashCreated = $false
+    $stashCommit = $null
     $changes = Invoke-Git -WorkingDirectory $workingDirectory -Arguments @("status", "--porcelain")
     if ($changes) {
         Write-Host "Preserving uncommitted $laneName changes..." -ForegroundColor Cyan
@@ -153,6 +212,9 @@ function Update-Lane {
             "stash", "push", "--include-untracked", "--message", "update-from-master temporary $laneName changes"
         ) | Out-Null
         $stashCreated = $true
+        $stashCommit = Invoke-Git -WorkingDirectory $workingDirectory -Arguments @(
+            "rev-parse", "refs/stash"
+        )
     }
 
     try {
@@ -180,11 +242,8 @@ function Update-Lane {
             if ($LASTEXITCODE -eq 0) {
                 Write-Warning "$laneName local changes remain in the safety stash until its merge conflict is resolved."
             } else {
-                Write-Host "Restoring uncommitted $laneName changes..." -ForegroundColor Cyan
-                & git -C $workingDirectory stash pop --index
-                if ($LASTEXITCODE -ne 0) {
-                    throw "$laneName local changes overlap the latest code. Resolve this worktree; the safety stash was retained."
-                }
+                Restore-SafetyStash -WorkingDirectory $workingDirectory `
+                    -LaneName $laneName -StashCommit $stashCommit
             }
         }
     }
