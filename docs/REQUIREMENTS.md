@@ -334,8 +334,9 @@ re-describing the whole product.
   keep time, place, status, and actions densely left-aligned, place each travel
   estimate above its destination, and use explicit Confirmed or Needs booking
   actions instead of checkbox presentation.
-- Place stops use day-colored markers matching map circuits: `H` for hotel
-  endpoints and sequential numbers for attractions and named meals.
+- Place stops use day-colored markers matching map circuits: `H` for a single
+  hotel, route-ordered `H1`, `H2`, and so on for distinct hotel endpoints, and
+  sequential numbers for attractions and named meals.
 - Flight transitions expose separate departure and arrival airport rows marked
   `A`, preserve their persisted local Depart/Arrive times, and estimate the
   destination-stay arrival only from known transfer timing.
@@ -364,9 +365,13 @@ implemented capability baseline.
   use distinct treatment, with `A` airport pins and other terminal pins retained.
 - Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
   and zoom 15. Repeating the action reapplies focus after manual filtering.
-- Airport terminal focus uses the same zoom 15 map behavior without opening
-  place Details. It resolves the itinerary airport alias and requested occurrence
-  even when the provider returns a different canonical terminal name.
+- Airport terminal focus uses the same zoom 15 map behavior and opens contextual
+  place Details with available photos, rating, reviews, address, summary, and
+  website. It resolves the itinerary airport alias and requested occurrence even
+  when the provider returns a different canonical terminal name.
+- Selecting an inter-city flight or transport row frames the complete ordered
+  source-to-destination route and connector without opening place Details or
+  changing the destination-local framing used by aggregate day focus.
 - Aggregate day focus clears exact-place focus, applies the framing rule above,
   and aligns the itinerary at the day's summary.
 - All-days focus clears exact and single-day focus, fits all circuits and complete

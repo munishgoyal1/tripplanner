@@ -226,6 +226,37 @@ def test_focus_zooms_single_item() -> None:
     assert view["title"].endswith("Taj Exotica Resort")
 
 
+def test_airport_focus_exposes_place_details_and_terminal_occurrence() -> None:
+    trip = {
+        "destination": "Rajasthan",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Flight: Bengaluru Airport to Udaipur Airport",
+                        "kind": "flight",
+                        "time": "08:00",
+                    }
+                ],
+            }
+        ],
+    }
+
+    view = trip_view.build_view(
+        trip,
+        {"kind": "airport", "name": "Udaipur Airport", "day": 1, "stop": 1},
+    )
+
+    airport = view["items"][0]
+    assert airport["kind"] == "airport"
+    assert airport["name"] == "Udaipur Airport"
+    assert airport["rating"] == 4.5
+    assert airport["photos"]
+    assert airport["reviews"] == [{"rating": 5, "text": "Loved it!", "author": "Asha"}]
+    assert airport["occurrences"] == [{"day": 1, "stop": 1, "time": "08:00"}]
+
+
 def test_fmt_money_default_rupee() -> None:
     assert trip_view.fmt_money(82000) == "\u20b982,000"
     assert trip_view.fmt_money(0) == "\u2014"

@@ -1,5 +1,13 @@
 import type { MapLeg, MapPin, MapView } from "../../types";
 
+export function isIntercityTravel(kind: string, name: string): boolean {
+  if (kind === "flight") return true;
+  if (kind !== "transport") return false;
+  const normalizedName = name.trim().toLowerCase();
+  return ["train", "rail", "bus", "drive:", "road transfer", "private car"]
+    .some((token) => normalizedName.includes(token));
+}
+
 export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {
   return `${leg.distance_display} · ${leg.duration_display}`;
 }
@@ -87,6 +95,14 @@ export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   if (!day) return [];
   return (day.circuit_pin_ids ?? day.pin_ids)
+    .map((id) => view.pins.find((pin) => pin.id === id))
+    .filter((pin): pin is MapPin => !!pin);
+}
+
+export function pinsForDayRoute(view: MapView, dayNumber: number): MapPin[] {
+  const day = view.days.find((candidate) => candidate.day === dayNumber);
+  if (!day) return [];
+  return day.pin_ids
     .map((id) => view.pins.find((pin) => pin.id === id))
     .filter((pin): pin is MapPin => !!pin);
 }

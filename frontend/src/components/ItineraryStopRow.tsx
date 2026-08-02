@@ -1,6 +1,7 @@
 import { CalendarCheck2, Check, Loader2, MapPin, Route, Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { ItineraryStop } from "../types";
+import { isIntercityTravel } from "./map/routeDerivations";
 
 const KIND_ICON: Record<string, string> = {
   hotel: "\u{1F3E8}",
@@ -12,9 +13,9 @@ const KIND_ICON: Record<string, string> = {
   other: "\u{1F4CD}",
 };
 
-// Places open Details; airport rows use the same interaction for map-only focus.
-function canFocus(kind: string): boolean {
-  return ["hotel", "attraction", "meal", "restaurant", "airport"].includes(kind);
+function canFocus(stop: ItineraryStop): boolean {
+  return ["hotel", "attraction", "meal", "restaurant", "airport"].includes(stop.kind)
+    || isIntercityTravel(stop.kind, stop.name);
 }
 
 function reviewCountLabel(count: number): string {
@@ -69,8 +70,9 @@ export default function ItineraryStopRow({
   onMap,
   onRemove,
 }: ItineraryStopRowProps) {
-  const focusable = canFocus(stop.kind);
-  const removable = !!onRemove && focusable && !["hotel", "airport"].includes(stop.kind);
+  const focusable = canFocus(stop);
+  const routeFocusable = isIntercityTravel(stop.kind, stop.name);
+  const removable = !!onRemove && ["attraction", "activity", "meal", "restaurant"].includes(stop.kind);
   const [removing, setRemoving] = useState(false);
   const circuitTimingNotes = new Set(["start from your stay", "return to your stay"]);
   const insightTexts = uniqueDetailTexts(stop.insight, returnStop?.insight);
@@ -175,7 +177,7 @@ export default function ItineraryStopRow({
         <div className="flex items-start gap-1.5">
           {mapLabel && (
             <span
-              aria-label={mapLabel === "H"
+              aria-label={mapLabel.startsWith("H")
                 ? returnStop ? `Hotel circuit marker for ${stop.name}` : "Hotel map marker"
                 : `Map stop ${mapLabel}`}
               aria-current={active ? "location" : undefined}
@@ -201,7 +203,11 @@ export default function ItineraryStopRow({
               className={`block max-w-full truncate text-left text-sm font-semibold ${
                 focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
               }`}
-              title={stop.kind === "airport" ? "Show on map" : focusable ? "Show photos & reviews" : undefined}
+              title={routeFocusable
+                ? "Show complete route"
+                : stop.kind === "airport"
+                  ? "Show airport details"
+                  : focusable ? "Show photos & reviews" : undefined}
             >
               <span className="mr-1" aria-hidden>{KIND_ICON[stop.kind] || KIND_ICON.other}</span>
               {stop.name}
@@ -272,7 +278,7 @@ export default function ItineraryStopRow({
             }}
             aria-label={`Show ${stop.name} on the map`}
             className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-white hover:text-brand"
-            title="Show on map"
+            title={routeFocusable ? "Show complete route" : "Show on map"}
           >
             <MapPin size={13} aria-hidden />
           </button>

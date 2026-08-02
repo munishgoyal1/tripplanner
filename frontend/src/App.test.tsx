@@ -72,13 +72,19 @@ vi.mock("./components/ItineraryPanel", () => ({
       <button type="button" onClick={() => onStopMap?.("airport", "Udaipur Airport", 1, 3)}>
         Show Udaipur Airport on map
       </button>
+      <button type="button" onClick={() => onStopFocus("flight", "Flight: Bengaluru to Udaipur", 1, 2)}>
+        Focus inter-city flight
+      </button>
+      <button type="button" onClick={() => onStopMap?.("flight", "Flight: Bengaluru to Udaipur", 1, 2)}>
+        Map inter-city flight
+      </button>
       <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
     </div>
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
-    <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0}>
+  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusToken?: number }) => (
+    <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-token={routeFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onPinFocus("airport", "Udaipur Airport", 1, 3)}>Focus airport pin</button>
       <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
@@ -400,35 +406,68 @@ describe("App responsive workspace", () => {
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
   });
 
-  it("zooms an itinerary airport without requesting place details", async () => {
+  it("opens airport details and keeps its exact map occurrence focused", async () => {
     setDesktop(true);
+    fetchTripViewMock
+      .mockResolvedValueOnce(emptyView)
+      .mockResolvedValueOnce({
+        ...emptyView,
+        focus: { kind: "airport", name: "Udaipur Airport", day: 1, stop: 3 },
+        items: [{ name: "Udaipur Airport", kind: "airport", selected: false }],
+      });
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
-    const fetchesBeforeFocus = fetchTripViewMock.mock.calls.length;
     fireEvent.click(screen.getByRole("button", { name: "Show Udaipur Airport on map" }));
 
-    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Udaipur Airport");
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Udaipur Airport"));
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "1");
-    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
-    expect(screen.getByText("Destination guide")).toBeInTheDocument();
-    expect(screen.queryByText("Place details")).not.toBeInTheDocument();
-    expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeFocus);
+    expect(screen.getByText("Place details")).toBeInTheDocument();
+    expect(fetchTripViewMock).toHaveBeenLastCalledWith({
+      kind: "airport",
+      name: "Udaipur Airport",
+      day: 1,
+      stop: 3,
+    }, expect.any(Object));
   });
 
   it("retains shared occurrence focus from an airport marker", async () => {
     setDesktop(true);
+    fetchTripViewMock
+      .mockResolvedValueOnce(emptyView)
+      .mockResolvedValueOnce({
+        ...emptyView,
+        focus: { kind: "airport", name: "Udaipur Airport", day: 1, stop: 3 },
+        items: [{ name: "Udaipur Airport", kind: "airport", selected: false }],
+      });
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
-    const fetchesBeforeFocus = fetchTripViewMock.mock.calls.length;
     fireEvent.click(screen.getByRole("button", { name: "Focus airport pin" }));
 
-    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Udaipur Airport");
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Udaipur Airport"));
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "1");
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-focus-stop", "3");
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("frames the complete inter-city route without opening place details", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId("itinerary-panel"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Louvre Museum");
+    fireEvent.click(screen.getByRole("button", { name: "Focus inter-city flight" }));
+
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-route-day", "1");
+    expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-route-token", "0");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
-    expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeFocus);
+
+    const firstRouteToken = screen.getByTestId("map-panel").getAttribute("data-route-token");
+    fireEvent.click(screen.getByRole("button", { name: "Map inter-city flight" }));
+    expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-route-token", firstRouteToken);
   });
 
   it("refreshes itinerary and map as soon as a planning turn completes", async () => {

@@ -630,7 +630,9 @@ def build_view(
             destination,
             selected_names,
             itinerary_names,
-            _place_occurrences(trip, ref["name"]),
+            _terminal_occurrences(trip, ref["name"])
+            if ref["kind"] in {"airport", "station", "bus_station"}
+            else _place_occurrences(trip, ref["name"]),
         )
         for ref in refs
     ]

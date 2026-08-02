@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Plus, Search } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
-import { focusedDayForPin, pinMatchesFocus } from "./map/focusMatching";
+import { focusedDayForPin, focusNameForPin, pinMatchesFocus } from "./map/focusMatching";
 import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
 import {
   airportIcon,
@@ -19,12 +19,13 @@ import {
   hotelLabelsForDay,
   hotelReturnForDay,
   pinsForDayCircuit,
+  pinsForDayRoute,
   routeStyleForLeg,
   visitOrdersForDay,
 } from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
 
-export { focusedDayForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
+export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
 export { kindForGooglePlace, mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
 export { airportIcon, hotelIcon, pinIcon } from "./map/mapIcons";
 export {
@@ -32,6 +33,7 @@ export {
   hotelLabelsForDay,
   hotelReturnForDay,
   pinsForDayCircuit,
+  pinsForDayRoute,
   routePathForPinIds,
   routeStyleForLeg,
   visitOrdersForDay,
@@ -108,6 +110,15 @@ export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: n
   return true;
 }
 
+export function fitDayRoute(google: any, map: any, view: MapView, dayNumber: number): boolean {
+  const pins = pinsForDayRoute(view, dayNumber);
+  if (pins.length === 0) return false;
+  const bounds = new google.maps.LatLngBounds();
+  pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
+  map.fitBounds(bounds, 64);
+  return true;
+}
+
 export function zoomToPin(map: any, pin: MapPin | MapAirport): void {
   map.panTo({ lat: pin.lat, lng: pin.lng });
   map.setZoom(15);
@@ -133,6 +144,10 @@ interface Props {
   circuitFocusDay?: number;
   /** Changes for every circuit framing request, including repeated clicks. */
   circuitFocusToken?: number;
+  /** Itinerary day whose complete inter-city route should be framed. */
+  routeFocusDay?: number;
+  /** Changes for every route framing request, including repeated clicks. */
+  routeFocusToken?: number;
   /** User clicked a pin and wants other sections synced to that place. */
   onPinFocus?: (kind: string, name: string, day?: number, stop?: number) => void;
   /** User selected a day filter and wants the itinerary synced to that day. */
@@ -154,7 +169,7 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -186,6 +201,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
   const pendingCircuitFocusRef = useRef<number | null>(null);
+  const pendingRouteFocusRef = useRef<number | null>(null);
 
   useEffect(() => {
     onPinFocusRef.current = onPinFocus;
@@ -417,7 +433,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
           ) ?? p.occurrences[0];
           onPinFocusRef.current?.(
             p.kind,
-            p.name,
+            focusNameForPin(p),
             occurrence?.day ?? activeDay ?? p.day ?? undefined,
             occurrence?.stop,
           );
@@ -572,6 +588,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
 
     // If the itinerary asked to focus a pin, zoom into it instead of fitting
     // all bounds — and do it here so a redraw can't undo the zoom.
+    const routeDay = pendingRouteFocusRef.current;
     const circuitDay = pendingCircuitFocusRef.current;
     const focus = pendingFocusRef.current;
     if (focus) {
@@ -582,6 +599,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
       } else {
         setSelectedPin(focus);
       }
+    } else if (routeDay && fitDayRoute(google, map, view, routeDay)) {
+      pendingRouteFocusRef.current = null;
     } else if (circuitDay && fitDayCircuit(google, map, view, circuitDay)) {
       pendingCircuitFocusRef.current = null;
       if (circuitZoomTimerRef.current !== null) {
@@ -614,6 +633,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
       return;
     }
     pendingCircuitFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
     const normalizedFocus = focusName.trim().toLowerCase();
     let target: MapPin | MapAirport | undefined = view.pins.find((pin) =>
       pinMatchesFocus(pin, focusName, focusDay, focusStop)
@@ -646,6 +666,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
   useEffect(() => {
     if (!view || !circuitFocusDay || circuitFocusToken === 0) return;
     pendingFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
     pendingCircuitFocusRef.current = circuitFocusDay;
     if (activeDay !== circuitFocusDay) {
       setActiveDay(circuitFocusDay);
@@ -665,6 +686,25 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
       circuitZoomTimerRef.current = null;
     }, 1200);
   }, [activeDay, circuitFocusDay, circuitFocusToken, view]);
+
+  useEffect(() => {
+    if (!view || !routeFocusDay || routeFocusToken === 0) {
+      pendingRouteFocusRef.current = null;
+      return;
+    }
+    pendingFocusRef.current = null;
+    pendingCircuitFocusRef.current = null;
+    pendingRouteFocusRef.current = routeFocusDay;
+    if (activeDay !== routeFocusDay) {
+      setActiveDay(routeFocusDay);
+      return;
+    }
+    const google = window.google;
+    const map = mapRef.current;
+    if (google && map && fitDayRoute(google, map, view, routeFocusDay)) {
+      pendingRouteFocusRef.current = null;
+    }
+  }, [activeDay, routeFocusDay, routeFocusToken, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
     return !!p && !isAirportTarget(p) && !isJourneyTerminal(p);
@@ -742,6 +782,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
           }
           pendingFocusRef.current = null;
           pendingCircuitFocusRef.current = null;
+          pendingRouteFocusRef.current = null;
           setActiveDay(null);
           setSelectedPin(null);
           setNewStopDay("auto");
@@ -762,6 +803,9 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
               window.clearTimeout(circuitZoomTimerRef.current);
               circuitZoomTimerRef.current = null;
             }
+            pendingFocusRef.current = null;
+            pendingCircuitFocusRef.current = null;
+            pendingRouteFocusRef.current = null;
             setActiveDay(day.day);
             setNewStopDay(String(day.day));
             onDayFocus?.(day.day);
