@@ -1,4 +1,4 @@
-import { EyeOff, List, Map, Maximize2, MessageCircle, Minimize2, PanelRight, Plus, Settings, UserRound, X } from "lucide-react";
+import { EyeOff, List, Map, Maximize2, MessageCircle, Minimize2, PanelRight, Plus, UserRound, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import ChatPanel from "./components/ChatPanel";
 import ExportModal from "./components/ExportModal";
@@ -766,23 +766,15 @@ export default function App() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
-              className="grid h-8 w-8 place-items-center rounded-md text-slate-400 transition hover:bg-slate-50 hover:text-slate-600"
-              title={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in to sync trips"}
-              aria-label={signedIn ? `Signed in as ${getDisplayName() || "user"}` : "Guest - sign in"}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+              title="Account settings"
+              aria-label="Account settings"
             >
               <span className="relative">
                 <UserRound size={15} aria-hidden />
                 <span className={`absolute -bottom-1 -right-1 h-2 w-2 rounded-full ring-2 ring-white ${signedIn ? "bg-emerald-500" : "bg-slate-400"}`} aria-hidden />
               </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event("tripplanner:open-settings"))}
-              className="grid h-8 w-8 place-items-center rounded-md text-slate-400 transition hover:bg-slate-50 hover:text-slate-600"
-              title="Travel preferences"
-              aria-label="Travel preferences"
-            >
-              <Settings size={15} aria-hidden />
+              <span>{signedIn ? getDisplayName() || "Account" : "Guest"}</span>
             </button>
           </nav>
         </header>

@@ -299,7 +299,9 @@ re-describing the whole product.
 - Keyboard-accessible separators resize itinerary/map, map/inspector, and
   Details/Assistant splits; sizes persist locally.
 - A common command bar owns trip switching, New trip, visibility controls,
-  global trip actions, account/preferences, and the latest mutation result.
+  global trip actions, one labeled Account settings trigger, and the latest
+  mutation result. Account settings owns Profile and sign-in, Travel Profile,
+  Analytics preferences, and Privacy and data in one right-side sheet.
 - At wide desktop sizes, pane visibility controls pair semantic icons with the
   short labels Itinerary, Map, Details, and Assistant. Compact desktop widths
   retain the icons without introducing header overflow.

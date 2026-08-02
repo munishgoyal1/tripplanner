@@ -76,7 +76,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   wide desktops, collapsing to icon-only controls when desktop width is tighter;
   all four remain direct one-click visibility controls. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
-  while trip actions, account, and preferences remain lighter compact icons. This
+  while trip actions remain a lighter compact icon and Account settings uses one
+  short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.
   The itinerary begins with the one authoritative trip snapshot: destination,
   dates, travelers, lifecycle, unique counts, booking progress, cost/budget,
@@ -327,8 +328,10 @@ If a redesign violates the above without a stated reason, push back.
   don't block paint.
 - **Settings has an "About me" textbox** that runs an LLM extractor and
   **additively** merges into preferences. Never overwrite existing user data.
-- **Account details behave like a popover.** The account control toggles it;
-  clicking elsewhere or pressing Escape dismisses it.
+- **Account settings has one owner.** One labeled identity command opens a
+  right-side sheet for Profile and sign-in, Travel Profile, Analytics
+  preferences, and Privacy and data. Escape or the explicit close control
+  dismisses it; do not restore a separate Travel preferences command-bar gear.
 
 ## 6) Owner taste — code & process
 

@@ -21,6 +21,7 @@ import {
 } from "../api";
 import type { ChatMessage, TripInputRequest } from "../types";
 import { trackEvent } from "../analytics";
+import AccountSettingsHub from "./AccountSettingsHub";
 import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 
@@ -143,7 +144,7 @@ export default function ChatPanel({
   }, []);
 
   useEffect(() => {
-    const openAccount = () => setShowAccount((open) => !open);
+    const openAccount = () => setShowAccount(true);
     const openSettings = () => setShowSettings(true);
     window.addEventListener("tripplanner:open-account", openAccount);
     window.addEventListener("tripplanner:open-settings", openSettings);
@@ -155,18 +156,11 @@ export default function ChatPanel({
 
   useEffect(() => {
     if (!showAccount) return;
-    const dismissAccount = (event: PointerEvent) => {
-      if (!accountRef.current?.contains(event.target as Node)) setShowAccount(false);
-    };
     const dismissOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setShowAccount(false);
     };
-    document.addEventListener("pointerdown", dismissAccount);
     window.addEventListener("keydown", dismissOnEscape);
-    return () => {
-      document.removeEventListener("pointerdown", dismissAccount);
-      window.removeEventListener("keydown", dismissOnEscape);
-    };
+    return () => window.removeEventListener("keydown", dismissOnEscape);
   }, [showAccount]);
 
   const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
@@ -633,12 +627,12 @@ export default function ChatPanel({
             </svg>
             <span className="hidden sm:inline">New trip</span>
           </button>}
-          <div className="relative">
+          <div>
             {!hideGlobalControls && <button
-              onClick={() => setShowAccount((s) => !s)}
-              title="Account"
-              aria-label="Account"
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
+              onClick={() => setShowAccount(true)}
+              title="Account settings"
+              aria-label="Account settings"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -652,7 +646,7 @@ export default function ChatPanel({
                   : getDisplayName() || "Account"}
               </span>
             </button>}
-            {showAccount && createPortal(
+            {false && showAccount && createPortal(
               <div ref={accountRef} className="fixed right-3 top-14 z-[100] w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
                 {auth.authenticated ? (
                   <>
@@ -807,7 +801,7 @@ export default function ChatPanel({
               document.body,
             )}
           </div>
-          {!hideGlobalControls && <button
+          {false && !hideGlobalControls && <button
             onClick={() => setShowSettings(true)}
             title="Travel preferences"
             aria-label="Travel preferences"
@@ -1055,6 +1049,45 @@ export default function ChatPanel({
 
       {showSettings && createPortal(
         <SettingsModal onClose={() => setShowSettings(false)} />,
+        document.body,
+      )}
+      {showAccount && createPortal(
+        <AccountSettingsHub
+          auth={auth}
+          googleEnabled={googleEnabled}
+          localIdentityActive={!isAnonymousUser()}
+          nameInput={nameInput}
+          privacyBusy={privacyBusy}
+          onNameInputChange={setNameInput}
+          onClose={() => setShowAccount(false)}
+          onGoogleSignIn={() => {
+            trackEvent("login", { method: "google_start" });
+            loginWithGoogle();
+          }}
+          onLocalSignIn={() => {
+            if (!nameInput.trim()) return;
+            trackEvent("login", { method: "name" });
+            signIn(nameInput);
+            setShowAccount(false);
+            window.location.reload();
+          }}
+          onSignOut={async () => {
+            if (auth.authenticated) await logoutGoogle();
+            else signOut();
+            window.location.reload();
+          }}
+          onOpenTravelProfile={() => {
+            setShowAccount(false);
+            setShowSettings(true);
+          }}
+          onOpenAnalytics={() => {
+            setShowAccount(false);
+            window.dispatchEvent(new Event("tripplanner:analytics-settings"));
+          }}
+          onDeleteTripHistory={() => void handleDeleteTripHistory()}
+          onClearAllData={() => void handleClearAllData()}
+          onDeleteAccount={() => void handleDeleteAccountData()}
+        />,
         document.body,
       )}
     </div>

@@ -63,6 +63,8 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | --- | --- |
 | `frontend/src/App.tsx` | Web application composition and top-level trip workspace ownership |
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
+| `frontend/src/components/AccountSettingsHub.tsx` | Web account/settings section ownership; delegates persisted destinations to existing auth, preferences, analytics, and privacy boundaries |
+| `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
