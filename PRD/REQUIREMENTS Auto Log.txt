@@ -3240,3 +3240,13 @@ VALIDATION:
 - Repeat the selected option's delta above its production-scale preview so the
   distinction remains visible after selection.
 - Do not treat benefit-oriented option summaries as sufficient approval scope.
+
+=== 2026-08-02 — Synchronize all persistent worktrees ===
+
+- Treat the worker integration workflow as synchronization: update `master`,
+  integrate reviewed worker commits through pull requests, and finish with every
+  persistent worker fast-forwarded to the final `origin/master`.
+- Use Sync terminology for user-facing scripts and tasks rather than Merge,
+  because the expected outcome spans `master` and all worker worktrees.
+- Keep one shared guarded engine per worker and one all-worktree orchestrator;
+  replace overlapping launchers instead of adding parallel script variants.

@@ -7,7 +7,9 @@ param(
 
     [switch]$ValidateOnly,
 
-    [switch]$ResolveConflicts
+    [switch]$ResolveConflicts,
+
+    [switch]$SyncOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -224,6 +226,21 @@ Assert-CleanWorktree -WorkingDirectory $workerRoot -Name $workerName
 
 if ($ValidateOnly) {
     Write-Host "Ready: master and $workerName are clean and on the expected branches."
+    return
+}
+
+if ($SyncOnly) {
+    Write-Host "Synchronizing master and $workerName..."
+    Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
+    Invoke-GitMerge -WorkingDirectory $primaryRoot -Arguments @(
+        "origin/master", "--ff-only"
+    ) -WorkerName "Master" | Out-Null
+    Invoke-Git -WorkingDirectory $workerRoot -Arguments @("fetch", "origin") | Out-Null
+    Invoke-GitMerge -WorkingDirectory $workerRoot -Arguments @(
+        "origin/master", "--ff-only"
+    ) -WorkerName $workerName | Out-Null
+    Invoke-Git -WorkingDirectory $workerRoot -Arguments @("push", "-u", "origin", "HEAD") | Out-Null
+    Write-Host "Done: master and $workerName are on the latest master." -ForegroundColor Green
     return
 }
 
