@@ -9,7 +9,7 @@ The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
 workspace has five durable catalog views:
 
-- `catalog.html` is All Labs: in-progress, implemented-review, and parked experiments.
+- `catalog.html` is All Labs: in-progress and parked experiments only.
 - `catalog.html?view=active` contains choices still being evaluated or currently
   under implementation.
 - `catalog.html?view=implemented-review` contains production implementations
@@ -18,6 +18,10 @@ workspace has five durable catalog views:
   decision.
 - `completed-labs.html` preserves completed experiments, their original Lab
   links, and the selected outcome.
+
+The implemented-review workflow starts with production implementations made on
+2026-08-02. Earlier implemented Labs remain Completed; implementations from that
+date onward stay in Implemented review until explicit owner sign-off.
 
 Do not delete a Lab after a decision. Update its machine lifecycle record, retain
 the page, and update its experiment document with the final choice and date.

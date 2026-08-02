@@ -4,7 +4,7 @@
 
 - Owner: Munish Goyal
 - Date started: 2026-08-01
-- Status: completed
+- Status: Implemented - To be reviewed
 - Lab: `http://127.0.0.1:5175/multi-city-itinerary.html`
 
 ## Problem
@@ -50,6 +50,7 @@ attractions, and other choices to a separate interaction design.
 
 - Decision: B - Stay handoff
 - Production implementation status: implemented 2026-08-02
+- Review status: awaiting owner review
 - Preserved behavior: stop order and identity, timing, booking state, focus, Map
   actions, route providers, and planning logic
 - Deferred: a separate interaction for comparing or replacing transport modes,

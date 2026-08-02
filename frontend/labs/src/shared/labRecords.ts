@@ -31,7 +31,7 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
   const disposition = effectiveLabDisposition(lab, selection);
   const status = disposition === "completed" ? "Completed"
     : disposition === "implemented-review" ? "Implemented - To be reviewed"
-    : disposition === "ready" ? "Under implementation"
+    : disposition === "ready" ? "In progress"
     : disposition === "parked" ? "Parked"
     : lab.status;
   const decision = selection?.disposition && selection.selectionLabel ? selection.selectionLabel : lab.decision;
@@ -56,6 +56,8 @@ export const activeLabs: LabRecord[] = [
     category: "Multi-city itinerary",
     description: "Compare three ways to show old-stay checkout, inter-city travel, new-stay check-in, and the remaining day.",
     createdAt: "2026-08-01",
+    defaultDisposition: "implemented-review",
+    defaultStateChangedAt: "2026-08-02",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Transition spine.",
     href: "./multi-city-itinerary.html",
@@ -78,6 +80,8 @@ export const activeLabs: LabRecord[] = [
     category: "Account controls",
     description: "Compare one unified account menu, a strict profile/settings split, and a sectioned account hub with complete profile, analytics, and privacy destinations.",
     createdAt: "2026-08-01",
+    defaultDisposition: "implemented-review",
+    defaultStateChangedAt: "2026-08-02",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Unified account menu.",
     href: "./account-settings.html",

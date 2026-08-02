@@ -116,13 +116,17 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   or floating. The itinerary snapshot and destination guide are full-width
   bands inside their panes, not decorative cards nested inside cards.
 - **UX Labs**: catalog filters belong only on catalog pages and expose All Labs,
-  In progress, Implemented review, Parked, and Completed views; an individual Lab has one clear
+  In progress, Implemented review, Parked, and Completed views. All Labs contains
+  only open and parked work; implemented Labs appear only in Implemented review
+  or Completed. An individual Lab has one clear
   return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
   marked ready, parked with that handoff intact, implemented and awaiting owner
   review, completed after owner sign-off with the selected decision preserved,
   or discarded from consideration. Production implementation moves a Lab to
   **Implemented - To be reviewed**; only explicit owner sign-off completes it.
+  This review workflow applies to implementations from 2026-08-02 onward;
+  implementations completed before that date remain in the Completed archive.
   Every card identifies when the Lab was created and when it entered its current
   lifecycle state. Machine state overrides committed historical fallback metadata,
   so one Lab cannot appear in conflicting filters.

@@ -2,7 +2,7 @@ import { ArrowRight, Clock3 } from "lucide-react";
 import type { LabDisposition, LabRecord, LabSelectionState } from "./labRecords";
 
 const stateLabels: Record<LabDisposition, string> = {
-  ready: "Under implementation",
+  ready: "In progress",
   "implemented-review": "Implemented - To be reviewed",
   parked: "Parked",
   completed: "Completed",
@@ -30,7 +30,9 @@ export function LabRecordCard({
   selection?: LabSelectionState;
 }) {
   const Icon = lab.icon;
-  const stateDate = selection?.stateChangedAt || selection?.updatedAt || lab.defaultStateChangedAt;
+  const stateDate = state === lab.defaultDisposition && lab.defaultStateChangedAt
+    ? lab.defaultStateChangedAt
+    : selection?.stateChangedAt || selection?.updatedAt || lab.defaultStateChangedAt;
   const stateLabel = state ? stateLabels[state] : "In evaluation";
   if (compact) {
     return (
