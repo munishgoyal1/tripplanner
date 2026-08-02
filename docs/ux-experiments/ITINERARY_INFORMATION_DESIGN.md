@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Surface: `frontend/labs/itinerary-information.html`
+- Surface: `frontend/labs/lab-2-itinerary-information.html`
 - Isolated build: `npm --prefix frontend run build:ux-lab`
 - Owner: Munish Goyal
 - Date started: 2026-07-29

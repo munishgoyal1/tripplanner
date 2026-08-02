@@ -5,7 +5,7 @@
 - Owner: Munish Goyal
 - Date started: 2026-07-31
 - Status: implemented
-- Lab: `http://127.0.0.1:5175/workspace-command-bar.html`
+- Lab: `http://127.0.0.1:5175/lab-7-workspace-command-bar.html`
 
 ## Variants
 

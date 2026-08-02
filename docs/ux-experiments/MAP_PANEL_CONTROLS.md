@@ -1,7 +1,7 @@
 # Map Panel Controls UX Lab
 
 **Status:** Implemented - Option A, Unified Route Ribbon
-**Lab:** `http://127.0.0.1:5175/map-controls.html`  
+**Lab:** `http://127.0.0.1:5175/lab-8-map-controls.html`
 **Production impact:** Map command hierarchy only; map behavior and surrounding workspace are unchanged
 
 ## Question

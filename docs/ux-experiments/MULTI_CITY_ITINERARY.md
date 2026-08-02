@@ -5,7 +5,7 @@
 - Owner: Munish Goyal
 - Date started: 2026-08-01
 - Status: Implemented - To be reviewed
-- Lab: `http://127.0.0.1:5175/multi-city-itinerary.html`
+- Lab: `http://127.0.0.1:5175/lab-15-multi-city-itinerary.html`
 
 ## Problem
 

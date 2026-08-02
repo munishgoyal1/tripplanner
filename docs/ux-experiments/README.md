@@ -83,12 +83,12 @@ canary, then merge C and delete discarded experiment branches.
 ## Decided Component Experiments (2026-07-29)
 
 The itinerary information-design lab is available at
-`http://127.0.0.1:5175/itinerary-information.html` while the UX Lab server is running.
+`http://127.0.0.1:5175/lab-2-itinerary-information.html` while the UX Lab server is running.
 The implemented decision is B - Compact Agenda. See
 [`ITINERARY_INFORMATION_DESIGN.md`](ITINERARY_INFORMATION_DESIGN.md).
 
 The separate day-summary lab is available at
-`http://127.0.0.1:5175/itinerary-summary.html`. The implemented decision is C -
+`http://127.0.0.1:5175/lab-3-itinerary-summary.html`. The implemented decision is C -
 Compact Brief, with explicit Travel rhythm and day-plan wording, confirmed and
 remaining booking counts, and hotel anchors excluded from the planned-stop
 count. See
@@ -110,7 +110,7 @@ to judge or approve a direction.
 ## Decided Assistant Experiment (2026-07-30)
 
 The Assistant-led trip kickoff lab is available at
-`http://127.0.0.1:5175/chat-assistant.html`. It compares a collapsible edge
+`http://127.0.0.1:5175/lab-4-chat-assistant.html`. It compares a collapsible edge
 drawer, a corner conversation sheet, and a prompt popover around one realistic
 structured-input journey. Each option can open in a full-viewport trip workspace.
 The selected and implemented direction is B - Corner conversation sheet: a 480 px
@@ -122,7 +122,7 @@ approved by this UI decision. See
 ## Implemented Workspace Refresh Experiment (2026-07-31)
 
 The workspace visual-refresh lab is available at
-`http://127.0.0.1:5175/shell-visual-refresh.html`. It compares semantic icon and
+`http://127.0.0.1:5175/lab-9-shell-visual-refresh.html`. It compares semantic icon and
 text controls, a compact icon control rail, and a text-led command bar inside a
 realistic interactive planner. The selected and implemented direction is A -
 Semantic icon + text, scoped only to the desktop top command bar. Wide desktops
@@ -133,7 +133,7 @@ See [`SHELL_VISUAL_REFRESH.md`](SHELL_VISUAL_REFRESH.md).
 ## Implemented Command Bar Controls Experiment (2026-07-31)
 
 The command-bar Lab remains available at
-`http://127.0.0.1:5175/workspace-command-bar.html`. The selected and implemented
+`http://127.0.0.1:5175/lab-7-workspace-command-bar.html`. The selected and implemented
 direction is A - Direct pane toggles. New trip is a labeled primary command;
 Itinerary, Map, Details, and Assistant remain stable one-click controls in an
 explicit visibility group. Existing Hide and Maximize actions stay in each pane
@@ -144,7 +144,7 @@ header. The pre-change semantic command bar is preserved at
 ## Implemented Trip Snapshot Experiment (2026-07-31)
 
 The whole-trip snapshot Lab remains available at
-`http://127.0.0.1:5175/trip-snapshot.html`. The selected and implemented direction
+`http://127.0.0.1:5175/lab-6-trip-snapshot.html`. The selected and implemented direction
 is B - Decision brief. The production snapshot now keeps traveler context with trip
 identity, presents explicit booking readiness, and compresses Days, Stay, Places,
 and Flights into one-line facts. Family and constraint evidence remains visible,
@@ -155,7 +155,7 @@ Day briefs and itinerary rows are unchanged. See
 ## Implemented Map Controls Experiment (2026-07-31)
 
 The Map commands and day context Lab is available at
-`http://127.0.0.1:5175/map-controls.html`. It compares a Unified route ribbon,
+`http://127.0.0.1:5175/lab-8-map-controls.html`. It compares a Unified route ribbon,
 Contextual command deck, and Schedule-first strip in the same production-scale
 Paris workspace. The selected and implemented direction is A - Unified route
 ribbon, refined after production review. Day scope now uses the Map title row,
@@ -168,7 +168,7 @@ unchanged. See
 ## Implemented Pane Control Polish Experiment (2026-08-01)
 
 The separate enhancements and polishing Lab is available at
-`http://127.0.0.1:5175/pane-controls.html`. It compares compact semantic actions,
+`http://127.0.0.1:5175/lab-10-pane-controls.html`. It compares compact semantic actions,
 a restrained icon pair, and a pane-local action menu. The selected and implemented
 direction is B - Restrained icon pair for Itinerary, Map, and Details. It groups
 each pane's existing icons without changing independent Hide and Maximize/Restore
@@ -207,7 +207,7 @@ can be retried once the Labs server is running again.
 ## Active Trip Book Experiment (2026-07-30)
 
 The Execution-ready Trip Book lab is available at
-`http://127.0.0.1:5175/itinerary-trip-book.html`. It compares a compact
+`http://127.0.0.1:5175/lab-5-itinerary-trip-book.html`. It compares a compact
 Operations binder, the recommended Layered Trip Book, and a Visual journey
 book using the same family-trip facts. The experiment tests packet structure,
 navigation, document readiness, and evidence-labeled personalization only;
