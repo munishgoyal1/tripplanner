@@ -23,6 +23,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Sync-MeTo-Latest.cmd` | Synchronize committed code into the launcher worktree |
 | `user/All-SyncTo-Latest.cmd` | Integrate committed code, then synchronize master and both workers |
+| `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility

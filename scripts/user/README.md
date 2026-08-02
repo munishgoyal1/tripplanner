@@ -7,6 +7,7 @@ stays under `scripts/dev/` so everyday commands remain easy to find.
 | --- | --- |
 | `Sync-MeTo-Latest.cmd` | Synchronize committed code into only the launcher worktree |
 | `All-SyncTo-Latest.cmd` | Integrate committed code, then synchronize all three worktrees |
+| `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest.cmd` | Synchronize the launcher worktree, then start its local stack |
 
 Run `Sync-MeTo-Latest.cmd all` from a worker to include committed sibling worktree
