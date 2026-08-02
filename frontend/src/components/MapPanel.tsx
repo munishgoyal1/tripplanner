@@ -106,12 +106,15 @@ const AIRPORT_COLOR = "#0f172a";
 const HOTEL_COLOR = "#334155"; // slate — distinct from the day palette
 const SUGGEST_COLOR = "#94a3b8";
 
-function airportIcon(): string {
+export function airportIcon(focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
         fill="${AIRPORT_COLOR}" stroke="white" stroke-width="2"/>
-  <text x="17" y="22" font-size="15" text-anchor="middle">${"\u2708"}</text>
+  <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
+      stroke="white" stroke-width="${focused ? 2 : 0}"/>
+  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
+        font-weight="700" text-anchor="middle" fill="${focused ? "white" : AIRPORT_COLOR}">A</text>
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -263,7 +266,7 @@ export function optionsForStopDay(day: string): SelectItemOptions | undefined {
 export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   if (!day) return [];
-  return day.pin_ids
+  return (day.circuit_pin_ids ?? day.pin_ids)
     .map((id) => view.pins.find((pin) => pin.id === id))
     .filter((pin): pin is MapPin => !!pin);
 }
@@ -294,6 +297,11 @@ export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: n
   pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
   map.fitBounds(bounds, 64);
   return true;
+}
+
+export function zoomToPin(map: any, pin: MapPin | MapAirport): void {
+  map.panTo({ lat: pin.lat, lng: pin.lng });
+  map.setZoom(15);
 }
 
 export function capCircuitZoom(map: any): void {
@@ -527,7 +535,9 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     });
 
     const activeDayPinIds = new Set(
-      activeDay === null ? [] : pinsForDayCircuit(view, activeDay).map((pin) => pin.id)
+      activeDay === null
+        ? []
+        : view.days.find((day) => day.day === activeDay)?.pin_ids ?? []
     );
     const visible = (p: MapPin) =>
       activeDay === null || activeDayPinIds.has(p.id);
@@ -552,7 +562,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
           anchor: new google.maps.Point(17, 44),
         };
         if (["airport", "station", "bus_station"].includes(p.kind)) return {
-          url: terminalIcon(p.kind),
+          url: p.kind === "airport" ? airportIcon(isFocused) : terminalIcon(p.kind),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
@@ -582,12 +592,18 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       });
       marker.addListener("click", () => {
         setCandidatePin(null);
-        if (["hotel", "attraction", "meal", "restaurant"].includes(p.kind)) {
+        if (["hotel", "attraction", "meal", "restaurant", "airport"].includes(p.kind)) {
           const occurrence = p.occurrences.find(
             (candidate) => candidate.day === (activeDay ?? p.day),
           ) ?? p.occurrences[0];
-          onPinFocusRef.current?.(p.kind, p.name, occurrence?.day, occurrence?.stop);
+          onPinFocusRef.current?.(
+            p.kind,
+            p.name,
+            occurrence?.day ?? activeDay ?? p.day ?? undefined,
+            occurrence?.stop,
+          );
         }
+        if (isJourneyTerminal(p)) zoomToPin(map, p);
         setSelectedPin(p);
       });
       pinMarkersRef.current.push({ pin: p, marker, normalIcon, focusedIcon, baseZIndex });
@@ -632,6 +648,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
         zIndex: 200,
       });
       marker.addListener("click", () => {
+        zoomToPin(map, a);
         setSelectedPin(a);
       });
       overlaysRef.current.push(marker);
@@ -730,8 +747,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     const circuitDay = pendingCircuitFocusRef.current;
     const focus = pendingFocusRef.current;
     if (focus) {
-      map.panTo({ lat: focus.lat, lng: focus.lng });
-      map.setZoom(15);
+      zoomToPin(map, focus);
       pendingFocusRef.current = null;
       if (isAirportTarget(focus)) {
         setSelectedPin(focus);
@@ -793,8 +809,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     }
     syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay);
     const map = mapRef.current;
-    map?.panTo({ lat: target.lat, lng: target.lng });
-    map?.setZoom(15);
+    if (map) zoomToPin(map, target);
     setSelectedPin(target);
     if (map && !clearingCandidate) pendingFocusRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps

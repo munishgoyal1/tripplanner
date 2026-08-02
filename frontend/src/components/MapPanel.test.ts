@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   capCircuitZoom,
+  airportIcon,
   focusedDayForPin,
   fitDayCircuit,
   formatLegLabel,
@@ -18,6 +19,7 @@ import {
   routeStyleForLeg,
   syncPinMarkerFocus,
   visitOrdersForDay,
+  zoomToPin,
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
@@ -54,6 +56,24 @@ describe("placeNameMatches", () => {
 });
 
 describe("map stop selection", () => {
+  it("uses an A label for airport markers", () => {
+    expect(decodeURIComponent(airportIcon())).toContain(">A</text>");
+  });
+
+  it("zooms an airport like any exact itinerary stop", () => {
+    const map = { panTo: vi.fn(), setZoom: vi.fn() };
+    zoomToPin(map, {
+      id: "arrival-airport",
+      name: "Udaipur Airport",
+      kind: "airport",
+      lat: 24.6177,
+      lng: 73.8961,
+    });
+
+    expect(map.panTo).toHaveBeenCalledWith({ lat: 24.6177, lng: 73.8961 });
+    expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
   it("numbers pins by itinerary occurrence when route pin order drifts", () => {
     const pin = (id: string, name: string, stop: number) => ({
       id,

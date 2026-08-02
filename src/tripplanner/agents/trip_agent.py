@@ -526,6 +526,8 @@ STEP 4 — BUILD ITINERARY
     stop is an object with: name (REQUIRED, must match the hotels/attractions
     you selected), kind (one of: hotel, attraction, meal, transport, flight,
     other), and optionally time ("HH:MM"), duration_min (int), note (short).
+    For a flight, time is the scheduled departure and arrival_time ("HH:MM")
+    is required; use the flight's real local airport times and duration_min.
   - Visit times MUST strictly increase in the same order as the stops array and
     leave enough room for each stop's duration plus travel to the next place.
     Never give two visits the same time. After optimize_day_route or any route

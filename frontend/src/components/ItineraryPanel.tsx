@@ -32,12 +32,13 @@ const KIND_ICON: Record<string, string> = {
   meal: "\u{1F37D}\uFE0F",
   transport: "\u{1F695}",
   flight: "\u2708\uFE0F",
+  airport: "\u{1F6EB}",
   other: "\u{1F4CD}",
 };
 
-// A place stop can load photos; meals/transport/flights are informational.
+// Places open Details; airport rows use the same interaction for map-only focus.
 function canFocus(kind: string): boolean {
-  return ["hotel", "attraction", "meal", "restaurant"].includes(kind);
+  return ["hotel", "attraction", "meal", "restaurant", "airport"].includes(kind);
 }
 
 function dayDateLabel(date: string): string {
@@ -108,7 +109,7 @@ function StopRow({
   onRemove?: () => void | Promise<void>;
 }) {
   const focusable = canFocus(stop.kind);
-  const removable = !!onRemove && focusable && stop.kind !== "hotel";
+  const removable = !!onRemove && focusable && !["hotel", "airport"].includes(stop.kind);
   const [removing, setRemoving] = useState(false);
   const circuitTimingNotes = new Set(["start from your stay", "return to your stay"]);
   const insightTexts = uniqueDetailTexts(stop.insight, returnStop?.insight);
@@ -118,13 +119,17 @@ function StopRow({
     && (!returnStop || !circuitTimingNotes.has(text.toLowerCase()))
   );
   const concernTexts = uniqueDetailTexts(stop.concern, returnStop?.concern);
-  const timingLabel = hotelTimingLabel || (stop.kind === "hotel" && isFirst
+  const timingLabel = hotelTimingLabel || (stop.terminal_role === "departure"
     ? "Depart"
-    : stop.kind === "hotel" && isLast
-      ? "Return"
-      : stop.kind === "flight"
+    : stop.terminal_role === "arrival"
+      ? "Arrive"
+      : stop.kind === "hotel" && isFirst
         ? "Depart"
-      : "Arrive");
+        : stop.kind === "hotel" && isLast
+          ? "Return"
+          : stop.kind === "flight"
+            ? "Depart"
+            : "Arrive");
   const travelStop = returnStop?.travel_from_previous ? returnStop : stop;
   const handleRowClick = () => {
     if (focusable) {
@@ -235,7 +240,7 @@ function StopRow({
               className={`block max-w-full truncate text-left text-sm font-semibold ${
                 focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
               }`}
-              title={focusable ? "Show photos & reviews" : undefined}
+              title={stop.kind === "airport" ? "Show on map" : focusable ? "Show photos & reviews" : undefined}
             >
               <span className="mr-1" aria-hidden>{KIND_ICON[stop.kind] || KIND_ICON.other}</span>
               {stop.name}
@@ -243,7 +248,7 @@ function StopRow({
           </div>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1">
-          <button
+          {stop.kind !== "airport" && <button
             type="button"
             aria-pressed={stop.booked}
             aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}
@@ -259,7 +264,7 @@ function StopRow({
           >
             {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
             {stop.booked ? "Confirmed" : "Needs booking"}
-          </button>
+          </button>}
           {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
           {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
           {typeof stop.rating === "number" && (
@@ -354,11 +359,12 @@ function DayCard({
   let visitOrder = 0;
   const mapLabels = day.stops.map((stop) => {
     if (stop.kind === "hotel") return "H";
+    if (stop.kind === "airport") return "A";
     if (!["attraction", "meal", "restaurant"].includes(stop.kind)) return undefined;
     visitOrder += 1;
     return String(visitOrder);
   });
-  const plannedStops = day.stops.filter((stop) => stop.kind !== "hotel");
+  const plannedStops = day.stops.filter((stop) => !["hotel", "airport"].includes(stop.kind));
   const confirmedStops = plannedStops.filter((stop) => stop.booked).length;
   const remainingStops = plannedStops.length - confirmedStops;
   const firstStop = day.stops[0];

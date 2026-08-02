@@ -43,14 +43,17 @@ transfers around a visually distinct airport-to-airport arc.
 
 ## Selected direction
 
-**A - Connected day journey**. It makes completeness visible without requiring
-another control and gives the Map the same authoritative day sequence as the
-itinerary.
+**A - Connected day journey, with local selected-day framing**. It makes
+completeness visible without another control and gives the Map the same
+authoritative day sequence as the itinerary, while avoiding an unusably broad
+viewport for normal destination work.
 
 The production handoff is intentionally limited to the selected option:
 
-- Preserve every mappable transfer-day endpoint in itinerary order and fit the
+- Preserve every mappable transfer-day endpoint in itinerary order and render the
   complete open journey when that day is selected.
+- Frame the useful destination airport-to-stay circuit on arrival days. When no
+  substantive destination stop remains, frame the origin stay-to-airport circuit.
 - Keep local legs in the day color and distinguish solid road, dashed rail, and
   dotted flight connectors. Flight and rail terminal pins remain informational.
 - Continue using endpoint-based geodesic estimates; do not add a billed route
@@ -60,6 +63,7 @@ The production handoff is intentionally limited to the selected option:
 ## Decision
 
 - Decision: Option A approved by the owner on 2026-08-02
-- Owner modifications: none
+- Owner modification: retain complete connected geometry, but use local
+  destination- or origin-side framing for selected transfer days
 - Production implementation status: implemented
 - Validation: focused road, rail, and flight view-model tests plus the MapPanel unit suite

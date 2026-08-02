@@ -3290,3 +3290,15 @@ VALIDATION:
   retain positive integer identities beginning with Agent 1 and Agent 2.
 - Keep the primary branch as `master` and preserve existing worker branch names,
   worktree paths, and workspace filenames.
+
+=== 2026-08-02 — Refine flight-day framing and terminal detail ===
+
+- Keep complete connected transfer-day geometry and distinct dotted flight arcs,
+  but frame the useful destination-local circuit rather than both distant cities.
+- On departure-only days, frame the origin stay and departure airport when the
+  destination side contains no substantive local stop.
+- Show both flight airports as `A` itinerary and Map markers with truthful local
+  departure and arrival times from persisted flight data.
+- Estimate destination-stay arrival only from known airport-transfer timing.
+- Airport row and marker focus uses normal exact-stop zoom without opening place
+  Details.
