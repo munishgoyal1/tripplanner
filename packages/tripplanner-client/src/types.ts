@@ -181,8 +181,11 @@ export interface ItineraryStop {
   kind: string;
   time: string;
   arrival_time?: string;
+  arrival_time_estimated?: boolean;
   terminal_role?: "departure" | "arrival";
   duration_min: number | null;
+  duration_estimated?: boolean;
+  operational_time_display?: string;
   note: string;
   booked: boolean;
   selected: boolean;

@@ -301,10 +301,10 @@ describe("ItineraryPanel", () => {
       days: [{
         ...itinerary.days[0],
         stops: [
-          { ...baseStop, name: "Bangalore Airport", kind: "airport", time: "08:00", terminal_role: "departure" },
-          { ...baseStop, name: "Flight: Bangalore Airport to Udaipur Airport", kind: "flight", time: "08:00", departure_time: "09:10" },
-          { ...baseStop, name: "Udaipur Airport", kind: "airport", time: "09:10", terminal_role: "arrival" },
-          { ...baseStop, name: "Trident Udaipur", kind: "hotel", time: "09:45", time_estimated: true },
+          { ...baseStop, name: "Bangalore Airport", kind: "airport", time: "06:00", duration_min: 120, operational_time_display: "2 hr check-in and security", terminal_role: "departure" },
+          { ...baseStop, name: "Flight: Bangalore Airport to Udaipur Airport", kind: "flight", time: "08:00", duration_min: 70, departure_time: "09:10" },
+          { ...baseStop, name: "Udaipur Airport", kind: "airport", time: "09:10", duration_min: 45, operational_time_display: "45 min baggage and airport exit", terminal_role: "arrival" },
+          { ...baseStop, name: "Trident Udaipur", kind: "hotel", time: "10:30", time_estimated: true },
         ],
       }],
     });
@@ -314,9 +314,13 @@ describe("ItineraryPanel", () => {
     expect(await screen.findAllByLabelText("Map stop A")).toHaveLength(2);
     expect(screen.getByText("Bangalore Airport")).toBeInTheDocument();
     expect(screen.getByText("Udaipur Airport")).toBeInTheDocument();
-    expect(screen.getAllByText("08:00").length).toBeGreaterThan(0);
+    expect(screen.getByText("06:00")).toBeInTheDocument();
+    expect(screen.getByText("08:00")).toBeInTheDocument();
     expect(screen.getAllByText("09:10").length).toBeGreaterThan(0);
-    expect(screen.getByText("09:45 est.")).toBeInTheDocument();
+    expect(screen.getByText("10:30 est.")).toBeInTheDocument();
+    expect(screen.getByText("2 hr check-in and security")).toBeInTheDocument();
+    expect(screen.getByText("1 hr 10 min flight")).toBeInTheDocument();
+    expect(screen.getByText("45 min baggage and airport exit")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Bangalore Airport: Mark confirmed" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Udaipur Airport: Mark confirmed" })).not.toBeInTheDocument();
     expect(screen.getByText("1 planned stop")).toBeInTheDocument();
@@ -443,6 +447,32 @@ describe("ItineraryPanel", () => {
     fireEvent.click(await screen.findByTitle("Show complete Day 1 circuit on map"));
     expect(onDayMap).toHaveBeenCalledTimes(1);
     expect(onDayMap).toHaveBeenCalledWith(1);
+  });
+
+  it("marks the focused day circuit as selected", async () => {
+    render(<ItineraryPanel circuitFocusDay={1} circuitFocusToken={42} />);
+
+    expect(await screen.findByTitle("Show complete Day 1 circuit on map")).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+  });
+
+  it("uses Trip Snapshot as the selected All days map control", async () => {
+    const onAllDaysMap = vi.fn();
+    render(
+      <ItineraryPanel
+        overview={overview}
+        circuitFocusToken={42}
+        onAllDaysMap={onAllDaysMap}
+      />,
+    );
+
+    const snapshot = await screen.findByRole("region", { name: "Trip snapshot" });
+    expect(snapshot).toHaveAttribute("aria-current", "true");
+    fireEvent.click(snapshot);
+    fireEvent.keyDown(snapshot, { key: "Enter" });
+    expect(onAllDaysMap).toHaveBeenCalledTimes(2);
   });
 
   it("highlights only the exact focused occurrence of a repeated hotel", async () => {

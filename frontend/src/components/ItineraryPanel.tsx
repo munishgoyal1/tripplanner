@@ -16,6 +16,11 @@ interface Props {
   onStopMap?: (kind: string, name: string, day: number, stop: number) => void;
   /** Show the complete route circuit for one itinerary day. */
   onDayMap?: (day: number) => void;
+  /** Show all itinerary day circuits on the map. */
+  onAllDaysMap?: () => void;
+  /** Aggregate map selection shared with the day and All days controls. */
+  circuitFocusDay?: number;
+  circuitFocusToken?: number;
   /** The currently focused stop name (so we can highlight the active row). */
   focusName?: string | null;
   /** Exact focused occurrence for places repeated across days or within a circuit. */
@@ -47,6 +52,7 @@ function normalizedPlaceName(name: string): string {
 function DayCard({
   day,
   active,
+  circuitActive,
   onToggleBooked,
   onFocus,
   onMap,
@@ -60,6 +66,7 @@ function DayCard({
 }: {
   day: ItineraryDay;
   active: boolean;
+  circuitActive: boolean;
   onToggleBooked: (day: number, name: string, next: boolean) => void;
   onFocus: (kind: string, name: string, day: number, stop: number) => void;
   onMap: (kind: string, name: string, day: number, stop: number) => void;
@@ -146,13 +153,24 @@ function DayCard({
     );
   };
   return (
-    <section id={`it-day-${day.day}`} className="overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
+    <section
+      id={`it-day-${day.day}`}
+      className={`overflow-hidden rounded-md bg-white shadow-card transition ${
+        circuitActive ? "ring-2 ring-brand/40" : "ring-1 ring-slate-200"
+      }`}
+    >
       <div
-        onClick={() => onDayMap(day.day)}
-        className="group/day grid cursor-pointer gap-2 px-3 py-2.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
-        title={`Show complete Day ${day.day} circuit on map`}
+        className={`group/day grid cursor-pointer gap-2 px-3 py-2.5 transition sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start ${
+          circuitActive ? "bg-brand/5" : "hover:bg-slate-50"
+        }`}
       >
-        <div className="min-w-0">
+        <button
+          type="button"
+          onClick={() => onDayMap(day.day)}
+          aria-current={circuitActive ? "true" : undefined}
+          className="min-w-0 text-left"
+          title={`Show complete Day ${day.day} circuit on map`}
+        >
           <div className="flex items-start gap-3">
             <span
               className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full text-sm font-bold text-white transition group-hover/day:scale-105 group-hover/day:shadow-sm"
@@ -209,7 +227,7 @@ function DayCard({
               </p>
             )}
           </div>
-        </div>
+        </button>
         {day.google_maps_url && (
           <a
             href={day.google_maps_url}
@@ -272,6 +290,9 @@ export default function ItineraryPanel({
   onStopFocus,
   onStopMap,
   onDayMap,
+  onAllDaysMap,
+  circuitFocusDay,
+  circuitFocusToken = 0,
   focusName,
   focusDay,
   focusStop,
@@ -284,6 +305,7 @@ export default function ItineraryPanel({
   const [retryToken, setRetryToken] = useState(0);
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const allDaysActive = circuitFocusToken > 0 && circuitFocusDay == null;
 
   useEffect(() => {
     let cancelled = false;
@@ -400,7 +422,7 @@ export default function ItineraryPanel({
   if (loading && !it) {
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
-        {overview && <TripSnapshot overview={overview} />}
+        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} />}
         <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
           Loading itinerary…
         </div>
@@ -411,7 +433,7 @@ export default function ItineraryPanel({
   if (!it || !it.has_itinerary) {
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
-        {overview && <TripSnapshot overview={overview} />}
+        {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
           <div className="max-w-xs text-sm text-slate-500">
             No day-by-day plan yet. Once the assistant builds your itinerary, each
@@ -425,7 +447,15 @@ export default function ItineraryPanel({
   const { stats } = it;
   return (
     <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
-      {overview && <TripSnapshot overview={overview} booked={stats.booked} stops={stats.stops} />}
+      {overview && (
+        <TripSnapshot
+          overview={overview}
+          booked={stats.booked}
+          stops={stats.stops}
+          active={allDaysActive}
+          onAllDaysMap={onAllDaysMap}
+        />
+      )}
       <div className="px-4 py-4">
         {error && (
           <div role="status" className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-100">
@@ -449,6 +479,7 @@ export default function ItineraryPanel({
             key={day.day}
             day={day}
             active
+            circuitActive={circuitFocusToken > 0 && circuitFocusDay === day.day}
             focusName={focusName}
             focusDay={focusDay}
             focusStop={focusStop}

@@ -22,6 +22,7 @@ from datetime import date
 from typing import Any
 from urllib.parse import quote
 
+from tripplanner.config import get_settings
 from tripplanner.tools import user_preferences
 from tripplanner.web import places_cache
 
@@ -1038,7 +1039,7 @@ def _route_stats_for_distance(
     if distance <= 3:
         mode, speed = "Walk", 4.5
     elif distance <= 20:
-        mode, speed = "Metro", 18.0
+        mode, speed = "Taxi", 25.0
     else:
         mode, speed = "Taxi", 35.0
 
@@ -1625,16 +1626,47 @@ def _flight_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
     if stop["kind"] != "flight" or len(terminal_refs) != 2:
         return [stop]
 
+    settings = get_settings()
     departure = str(stop.get("time") or "")
     arrival = str(stop.get("arrival_time") or "")
+    duration = stop.get("duration_min")
+    if not isinstance(duration, (int, float)) or duration <= 0:
+        duration = settings.flight_duration_default_min
+        stop["duration_min"] = duration
+        stop["duration_estimated"] = True
 
-    def _airport_stop(name: str, time: str, role: str) -> dict[str, Any]:
+    departure_minutes = _clock_minutes(departure)
+    arrival_estimated = False
+    if not arrival and departure_minutes is not None:
+        arrival = _clock_display(departure_minutes + int(duration))
+        stop["arrival_time"] = arrival
+        stop["arrival_time_estimated"] = True
+        stop["concern"] = stop.get("concern") or (
+            "Arrival time estimated; verify the local arrival time with the airline."
+        )
+        arrival_estimated = True
+
+    def _airport_stop(
+        name: str,
+        time: str,
+        role: str,
+        duration_min: int,
+        time_estimated: bool,
+    ) -> dict[str, Any]:
+        operation = (
+            f"{_route_duration_display(duration_min)} check-in and security"
+            if role == "departure"
+            else f"{_route_duration_display(duration_min)} baggage and airport exit"
+        )
         return {
             "name": name,
             "kind": "airport",
             "time": time,
             "arrival_time": "",
-            "duration_min": None,
+            "duration_min": duration_min,
+            "duration_estimated": True,
+            "operational_time_display": operation,
+            "time_estimated": time_estimated,
             "note": "",
             "booked": False,
             "selected": False,
@@ -1646,10 +1678,27 @@ def _flight_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
         }
 
     stop["name"] = f"Flight: {terminal_refs[0][1]} to {terminal_refs[1][1]}"
+    departure_airport_time = (
+        _clock_display(departure_minutes - settings.airport_departure_buffer_min)
+        if departure_minutes is not None
+        else ""
+    )
     return [
-        _airport_stop(terminal_refs[0][1], departure, "departure"),
+        _airport_stop(
+            terminal_refs[0][1],
+            departure_airport_time,
+            "departure",
+            settings.airport_departure_buffer_min,
+            bool(departure_airport_time),
+        ),
         stop,
-        _airport_stop(terminal_refs[1][1], arrival, "arrival"),
+        _airport_stop(
+            terminal_refs[1][1],
+            arrival,
+            "arrival",
+            settings.airport_arrival_buffer_min,
+            arrival_estimated,
+        ),
     ]
 
 
@@ -2292,7 +2341,10 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 transfer_minutes = int(
                     (stop.get("travel_from_previous") or {}).get("duration_min") or 0
                 )
-                stop["time"] = _clock_display(previous_time + transfer_minutes)
+                airport_exit_minutes = int(previous.get("duration_min") or 0)
+                stop["time"] = _clock_display(
+                    previous_time + airport_exit_minutes + transfer_minutes
+                )
                 stop["time_estimated"] = True
         schedule = _day_schedule(stops, route)
         _apply_hotel_endpoint_times(stops, schedule)

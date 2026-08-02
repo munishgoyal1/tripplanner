@@ -6,6 +6,8 @@ interface Props {
   overview: TripOverview;
   booked?: number;
   stops?: number;
+  active?: boolean;
+  onAllDaysMap?: () => void;
 }
 
 function BudgetSummary({ budget }: { budget: Budget }) {
@@ -44,7 +46,7 @@ function BudgetSummary({ budget }: { budget: Budget }) {
   );
 }
 
-export default function TripSnapshot({ overview, booked, stops }: Props) {
+export default function TripSnapshot({ overview, booked, stops, active = false, onAllDaysMap }: Props) {
   const statusTone = overview.status === "booked"
     ? "bg-brand/10 text-brand ring-brand/20"
     : overview.status === "finalized"
@@ -70,7 +72,25 @@ export default function TripSnapshot({ overview, booked, stops }: Props) {
   ].filter(Boolean).join(" ");
 
   return (
-    <section aria-label="Trip snapshot" className="border-b border-slate-200 bg-white px-4 py-4">
+    <section
+      aria-label="Trip snapshot"
+      aria-current={active ? "true" : undefined}
+      tabIndex={onAllDaysMap ? 0 : undefined}
+      onClick={onAllDaysMap}
+      onKeyDown={(event) => {
+        if (!onAllDaysMap || (event.key !== "Enter" && event.key !== " ")) return;
+        event.preventDefault();
+        onAllDaysMap();
+      }}
+      className={`border-b px-4 py-4 transition ${
+        active
+          ? "border-brand/30 bg-brand/5 ring-inset ring-2 ring-brand/20"
+          : onAllDaysMap
+            ? "cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
+            : "border-slate-200 bg-white"
+      }`}
+      title={onAllDaysMap ? "Show all itinerary days on map" : undefined}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase text-brand">Trip snapshot</p>

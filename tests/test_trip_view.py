@@ -7,6 +7,7 @@ touch the network.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -672,7 +673,7 @@ def test_map_view_route_stats_for_multi_stop_day(_map_geo: None) -> None:
     day1 = next(d for d in mv["days"] if d["day"] == 1)
     assert day1["route"]["distance_km"] > 0
     assert day1["route"]["duration_min"] > 0
-    assert set(day1["route"]["mode"].split(" + ")) <= {"Walk", "Metro", "Taxi"}
+    assert set(day1["route"]["mode"].split(" + ")) <= {"Walk", "Taxi"}
 
 
 def test_map_view_structured_stops_take_precedence(_map_geo: None) -> None:
@@ -1042,11 +1043,11 @@ def test_map_view_connects_flight_airports_to_destination_stay(
     assert pins["Bangalore Airport"]["name"] == "Kempegowda International Airport Bengaluru"
     assert pins["Udaipur Airport"]["name"] == "Maharana Pratap Airport"
     assert pins["Bangalore Airport"]["occurrences"] == [
-        {"day": 1, "stop": 1, "time": "08:00"},
-        {"day": 2, "stop": 4, "time": ""},
+        {"day": 1, "stop": 1, "time": "06:00"},
+        {"day": 2, "stop": 4, "time": "11:30"},
     ]
     assert pins["Udaipur Airport"]["occurrences"] == [
-        {"day": 1, "stop": 3, "time": ""},
+        {"day": 1, "stop": 3, "time": "09:30"},
     ]
     assert pins["Trident Udaipur"]["occurrences"] == [
         {"day": 1, "stop": 4, "time": "10:30"},
@@ -1466,7 +1467,7 @@ def test_itinerary_falls_back_to_selections() -> None:
     assert attraction["rating"] == 4.5
     assert attraction["review_count"] == 1234
     assert attraction["popularity_score"] >= 80
-    assert attraction["travel_from_previous"]["mode"] in {"Walk", "Metro", "Taxi"}
+    assert attraction["travel_from_previous"]["mode"] in {"Walk", "Taxi"}
     assert "Taj Exotica Resort" in attraction["travel_from_previous"]["detail"]
     assert "Dudhsagar Falls Trek" in attraction["travel_from_previous"]["detail"]
     assert it["stats"]["stops"] == len(day["stops"])
@@ -1630,7 +1631,10 @@ def test_structured_itinerary_preserves_arrival_and_departure_flights(
         "hotel", "airport", "flight", "airport"
     ]
     assert arrival["stops"][0]["name"] == "Bangalore Airport"
-    assert arrival["stops"][0]["time"] == "08:00"
+    assert arrival["stops"][0]["time"] == "06:00"
+    assert arrival["stops"][0]["operational_time_display"] == (
+        "2 hr check-in and security"
+    )
     assert arrival["stops"][2]["name"] == "Udaipur Airport"
     assert arrival["stops"][1]["departure_time"] == "11:10"
     assert arrival["stops"][2]["time"] == "11:10"
@@ -1648,9 +1652,42 @@ def test_structured_itinerary_preserves_arrival_and_departure_flights(
     assert itinerary["stats"]["stops"] == 4
 
 
-def test_flight_arrival_requires_persisted_local_time() -> None:
+def test_local_route_does_not_invent_unverified_metro_service() -> None:
+    route = trip_view._route_stats_for_distance(
+        10.0,
+        from_name="Trident Udaipur",
+        to_name="City Palace Udaipur",
+    )
+
+    assert route["mode"] == "Taxi"
+    assert route["detail"] == "Take a taxi from Trident Udaipur to City Palace Udaipur."
+
+
+def test_flight_arrival_and_airport_buffers_use_configured_estimates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Udaipur Airport": (24.6177, 73.8961),
+        "Trident Udaipur": (24.577, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    monkeypatch.setattr(
+        trip_view,
+        "get_settings",
+        lambda: SimpleNamespace(
+            airport_departure_buffer_min=150,
+            airport_arrival_buffer_min=35,
+            flight_duration_default_min=90,
+        ),
+    )
     trip = {
         **SAMPLE_TRIP,
+        "selected_hotels": [{"name": "Trident Udaipur"}],
         "day_wise_itinerary": [{
             "day": 1,
             "stops": [{
@@ -1658,16 +1695,24 @@ def test_flight_arrival_requires_persisted_local_time() -> None:
                 "kind": "flight",
                 "time": "08:00",
                 "duration_min": 70,
-            }],
+            }, {"name": "Trident Udaipur", "kind": "hotel"}],
         }],
     }
 
     itinerary = trip_view.build_itinerary(trip)
 
-    airport, flight, arrival_airport = itinerary["days"][0]["stops"]
-    assert airport["time"] == "08:00"
-    assert flight.get("departure_time") is None
-    assert arrival_airport["time"] == ""
+    departure_airport, flight, arrival_airport, hotel = itinerary["days"][0]["stops"]
+    assert departure_airport["time"] == "05:30"
+    assert departure_airport["duration_min"] == 150
+    assert departure_airport["operational_time_display"] == "2 hr 30 min check-in and security"
+    assert flight["time"] == "08:00"
+    assert flight["departure_time"] == "09:10"
+    assert flight["duration_min"] == 70
+    assert arrival_airport["time"] == "09:10"
+    assert arrival_airport["time_estimated"] is True
+    assert arrival_airport["duration_min"] == 35
+    assert arrival_airport["operational_time_display"] == "35 min baggage and airport exit"
+    assert hotel["time"] > "09:45"
 
 
 def test_arrival_hotel_time_requires_airport_transfer_evidence(

@@ -272,6 +272,13 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Explicit airport names are self-locating provider queries. Appending the trip
   destination can resolve an origin airport to an unrelated destination-region
   airport, and the cache key must use the same unbiased query context.
+- Geographic distance does not prove transit capability. A 10 km urban leg may
+  support Metro in one city and not another; use a conservative Taxi fallback
+  until a route source explicitly establishes transit service.
+- Airport schedules need separate flight, preflight, and post-arrival clocks.
+  Keep persisted/provider flight timing authoritative, label derived timing as
+  estimated, and apply configurable check-in/security and baggage/exit buffers
+  before calculating the next itinerary stop.
 
 ## 2026-07-26 - Persisted Services Need Runtime-State Recovery
 

@@ -85,7 +85,9 @@ summary. Ordinary days fit their complete circuit. Transfer days keep the full
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
-between every airport pair, and aligns Itinerary to the trip summary. Neither
+between every airport pair, aligns Itinerary to the trip summary, and marks Trip
+Snapshot as selected. The selected day summary receives the same exclusive
+aggregate-selection treatment. Trip Snapshot itself invokes All days. Neither
 action requests place Details.
 
 Selecting an inter-city flight or transport row is a route action rather than
@@ -97,6 +99,9 @@ or replace destination-local framing for ordinary day-header focus.
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `gives a map day chip the same aggregate circuit focus as an itinerary day header`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows all circuits and returns itinerary focus to the trip summary`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `maps a Trip Snapshot click to the shared All days focus`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `marks the focused day circuit as selected`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `uses Trip Snapshot as the selected All days map control`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames the complete inter-city route without opening place details`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`

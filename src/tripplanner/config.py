@@ -11,6 +11,13 @@ from pydantic import BaseModel, Field
 load_dotenv()
 
 
+def _env_positive_int(name: str, default: int) -> int:
+    try:
+        return max(1, int(os.getenv(name, str(default))))
+    except ValueError:
+        return default
+
+
 class Settings(BaseModel):
     # Azure OpenAI
     azure_openai_endpoint: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
@@ -40,6 +47,12 @@ class Settings(BaseModel):
     ).rstrip("/")
     travel_hotel_provider: str = os.getenv("TRAVEL_HOTEL_PROVIDER", "auto").strip().lower()
     travel_flight_provider: str = os.getenv("TRAVEL_FLIGHT_PROVIDER", "auto").strip().lower()
+
+    # Static schedule estimates used only when a persisted itinerary or live
+    # provider does not contain the corresponding operational timing.
+    flight_duration_default_min: int = _env_positive_int("FLIGHT_DURATION_DEFAULT_MIN", 90)
+    airport_departure_buffer_min: int = _env_positive_int("AIRPORT_DEPARTURE_BUFFER_MIN", 120)
+    airport_arrival_buffer_min: int = _env_positive_int("AIRPORT_ARRIVAL_BUFFER_MIN", 45)
 
     # Read-only Viator tours and activity schedules. Transactional APIs are absent.
     viator_api_key: str = os.getenv("VIATOR_API_KEY", "")

@@ -50,7 +50,7 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, onStopMap, onDayMap, jumpTo, overview, focusDay, focusStop }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number) => void; onDayMap?: (day: number) => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number }) => (
+  default: ({ reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div>
       <button
         type="button"
@@ -64,6 +64,8 @@ vi.mock("./components/ItineraryPanel", () => ({
         data-overview-cost={overview?.total_cost_display ?? ""}
         data-focus-day={focusDay ?? ""}
         data-focus-stop={focusStop ?? ""}
+        data-circuit-day={circuitFocusDay ?? ""}
+        data-circuit-token={circuitFocusToken ?? 0}
         onClick={() => onStopFocus("attraction", "Louvre Museum", 2, 1)}
       />
       <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
@@ -79,6 +81,7 @@ vi.mock("./components/ItineraryPanel", () => ({
         Map inter-city flight
       </button>
       <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
+      <button type="button" onClick={() => onAllDaysMap?.()}>Show all days from snapshot</button>
     </div>
   ),
 }));
@@ -498,6 +501,7 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Focus Day 2" }));
 
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-circuit-day", "2");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "2");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
@@ -516,6 +520,22 @@ describe("App responsive workspace", () => {
 
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-summary", "true");
+  });
+
+  it("maps a Trip Snapshot click to the shared All days focus", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2" }));
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-circuit-day", "2");
+
+    fireEvent.click(screen.getByRole("button", { name: "Show all days from snapshot" }));
+
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-circuit-day", "");
+    expect(screen.getByTestId("itinerary-panel")).not.toHaveAttribute("data-circuit-token", "0");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "");
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-summary", "true");
   });
 

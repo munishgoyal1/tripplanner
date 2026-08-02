@@ -209,9 +209,11 @@ re-describing the whole product.
 - Itinerary rows make timing auditable: hotel endpoints show estimated times
   when needed; visits show departure; transfer rows show estimated arrival,
   endpoint guidance, and any free buffer or schedule conflict.
-- Route summaries and legs use one Walk, Metro, and Taxi vocabulary. Place rows
-  show Google rating/review evidence and may show a clearly labeled estimated
-  must-visit score, never a fabricated itinerary-inclusion percentage.
+- Route summaries and legs use one Walk and Taxi fallback vocabulary. Metro is
+  shown only when route evidence establishes service; distance alone never
+  implies that a city has a metro. Place rows show Google rating/review evidence
+  and may show a clearly labeled estimated must-visit score, never a fabricated
+  itinerary-inclusion percentage.
 - Route ordering, displayed times, itinerary markers, and map circuit ordering
   are treated as one schedule contract.
 
@@ -338,8 +340,11 @@ re-describing the whole product.
   hotel, route-ordered `H1`, `H2`, and so on for distinct hotel endpoints, and
   sequential numbers for attractions and named meals.
 - Flight transitions expose separate departure and arrival airport rows marked
-  `A`, preserve their persisted local Depart/Arrive times, and estimate the
-  destination-stay arrival only from known transfer timing.
+  `A`. Persisted local flight times and durations remain authoritative. Missing
+  arrival or duration fields use visibly estimated static fallbacks; departure
+  airport arrival includes configurable check-in/security time, arrival airport
+  handling includes configurable baggage/exit time, and destination-stay arrival
+  is estimated only from airport handling plus known transfer timing.
 - Rows show quiet travel distance/time from the previous mapped stop.
 - Generated hotel circuit anchors have no visit duration, In trip badge, or
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
@@ -376,9 +381,10 @@ implemented capability baseline.
   source-to-destination route and connector without opening place Details or
   changing the destination-local framing used by aggregate day focus.
 - Aggregate day focus clears exact-place focus, applies the framing rule above,
-  and aligns the itinerary at the day's summary.
+  aligns the itinerary at the day's summary, and visibly selects that day card.
 - All-days focus clears exact and single-day focus, fits all circuits and complete
-  dotted flight connections, and aligns the itinerary at the trip summary.
+  dotted flight connections, aligns the itinerary at the trip summary, and
+  visibly selects the clickable Trip Snapshot.
 - Provider-expanded or differently punctuated place names still resolve to the
   authoritative itinerary occurrence.
 - Viewport-biased autocomplete and labeled native map POI clicks create a

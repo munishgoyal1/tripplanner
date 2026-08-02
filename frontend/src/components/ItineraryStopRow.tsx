@@ -22,6 +22,14 @@ function reviewCountLabel(count: number): string {
   return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(count);
 }
 
+function durationLabel(minutes: number): string {
+  if (minutes < 60) return `${Math.round(minutes)} min`;
+  const rounded = Math.round(minutes);
+  const hours = Math.floor(rounded / 60);
+  const remaining = rounded % 60;
+  return `${hours} hr${remaining ? ` ${remaining} min` : ""}`;
+}
+
 function uniqueDetailTexts(...values: Array<string | undefined>): string[] {
   const seen = new Set<string>();
   return values.flatMap((value) => {
@@ -83,9 +91,9 @@ export default function ItineraryStopRow({
   );
   const concernTexts = uniqueDetailTexts(stop.concern, returnStop?.concern);
   const timingLabel = hotelTimingLabel || (stop.terminal_role === "departure"
-    ? "Depart"
+    ? "Airport arrival"
     : stop.terminal_role === "arrival"
-      ? "Arrive"
+      ? "Land"
       : stop.kind === "hotel" && isFirst
         ? "Depart"
         : stop.kind === "hotel" && isLast
@@ -135,9 +143,14 @@ export default function ItineraryStopRow({
             )}
           </>
         )}
-        {stop.kind !== "hotel" && stop.duration_min ? (
+        {stop.operational_time_display ? (
+          <p className="mt-0.5 text-[10px] leading-tight text-slate-500">
+            {stop.operational_time_display}
+          </p>
+        ) : stop.kind !== "hotel" && stop.duration_min ? (
           <p className="mt-0.5 text-[10px] text-slate-500">
-            {Math.round(stop.duration_min)} min {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
+            {stop.kind === "flight" ? durationLabel(stop.duration_min) : `${Math.round(stop.duration_min)} min`} {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
+            {stop.duration_estimated ? " est." : ""}
           </p>
         ) : null}
         {stop.departure_time && (

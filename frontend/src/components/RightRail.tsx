@@ -104,10 +104,13 @@ export default function RightRail({
               focusName={focusName}
               focusDay={focusDay}
               focusStop={focusStop}
+              circuitFocusDay={circuitFocusDay}
+              circuitFocusToken={circuitFocusToken}
               jumpTo={itineraryJump}
               onStopFocus={onStopFocus}
               onStopMap={onStopMap}
               onDayMap={onDayMap}
+              onAllDaysMap={onMapAllDaysFocus}
               onStopRemove={onDeselect
                 ? async (kind, name, day, stop) => { await onDeselect(kind, name, {
                     day,

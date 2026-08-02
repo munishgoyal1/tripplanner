@@ -556,10 +556,13 @@ export default function App() {
           focusName={stopFocusName}
           focusDay={stopFocus?.day}
           focusStop={stopFocus?.stop}
+          circuitFocusDay={circuitFocus.day || undefined}
+          circuitFocusToken={circuitFocus.token}
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
           onDayMap={handleDayFocus}
+          onAllDaysMap={handleMapAllDaysFocus}
           onStopRemove={handleStopRemove}
         />
       );
