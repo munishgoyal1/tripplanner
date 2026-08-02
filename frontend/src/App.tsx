@@ -1,12 +1,15 @@
-import { EyeOff, List, Map, Maximize2, MessageCircle, Minimize2, PanelRight, Plus, UserRound, X } from "lucide-react";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import AssistantModalShell from "./components/AssistantModalShell";
+import CanvasPaneFrame from "./components/CanvasPaneFrame";
 import ChatPanel from "./components/ChatPanel";
+import DetailsPaneShell from "./components/DetailsPaneShell";
+import DesktopToolbar from "./components/DesktopToolbar";
+import ErrorBanner from "./components/ErrorBanner";
 import ExportModal from "./components/ExportModal";
 import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
+import MobileWorkspaceShell from "./components/MobileWorkspaceShell";
 import TripPanel from "./components/TripPanel";
-import TripSwitcher from "./components/TripSwitcher";
-import TripActionsMenu from "./components/TripActionsMenu";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
@@ -571,119 +574,34 @@ export default function App() {
     );
   };
 
-  const renderCanvasPane = (pane: CanvasPane) => {
-    const label = pane === "itinerary" ? "Itinerary" : "Map";
-    return (
-      <article className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-card">
-        <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 px-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</h2>
-          {pane === "map" && <div ref={setMapHeaderTarget} className="min-w-0 flex-1" />}
-          <div role="group" aria-label={`${label} pane controls`} className="ml-auto flex shrink-0 items-center rounded-md bg-slate-50 p-0.5 ring-1 ring-inset ring-slate-200/80">
-            <button
-              type="button"
-              onClick={() => setCanvasOpen(pane, false)}
-              className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm disabled:opacity-30"
-              aria-label={`Hide ${label}`}
-              title={`Hide ${label}`}
-              disabled={(pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen)}
-            >
-              <EyeOff size={14} aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleMaxPane(pane)}
-              className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm"
-              aria-label={maximizedPane === pane ? `Restore ${label}` : `Maximize ${label}`}
-              title={maximizedPane === pane ? "Restore" : "Maximize"}
-            >
-              {maximizedPane === pane ? <Minimize2 size={14} aria-hidden /> : <Maximize2 size={14} aria-hidden />}
-            </button>
-          </div>
-        </header>
-        <div className="min-h-0 flex-1">{renderCanvasBody(pane)}</div>
-      </article>
-    );
-  };
-
   const inspector = (
-    <div className={!inspectorOpen || canvasMaximized ? "hidden" : "contents"}>
-      <aside
-        ref={inspectorRef}
-        data-testid="context-inspector"
-        className={`flex min-h-0 flex-col overflow-hidden bg-surface ${
-          isWideDesktop || dockMaximized
-            ? "h-full rounded-2xl border border-slate-200/70 shadow-card"
-            : "absolute inset-y-2 right-2 z-40 w-[min(27rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 shadow-pop"
-        }`}
-      >
-        <section className={`h-full min-h-0 flex-col ${inspectorOpen ? "flex" : "hidden"}`}>
-          <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-100 bg-white px-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {focus ? "Place details" : "Destination guide"}
-            </h2>
-            {focus && <span className="min-w-0 truncate text-xs font-medium text-ink">{focus.name}</span>}
-            <div role="group" aria-label="Details pane controls" className="ml-auto flex shrink-0 items-center rounded-md bg-slate-50 p-0.5 ring-1 ring-inset ring-slate-200/80">
-              <button
-                type="button"
-                onClick={() => setDockPaneOpen("details", false)}
-                className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 hover:bg-white hover:text-ink hover:shadow-sm"
-                aria-label="Hide Details"
-                title="Hide Details"
-              >
-                <EyeOff size={14} aria-hidden />
-              </button>
-              <button
-                type="button"
-                onClick={() => toggleMaxPane("details")}
-                className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 hover:bg-white hover:text-ink hover:shadow-sm"
-                aria-label={maximizedPane === "details" ? "Restore Details" : "Maximize Details"}
-                title={maximizedPane === "details" ? "Restore" : "Maximize"}
-              >
-                {maximizedPane === "details" ? <Minimize2 size={14} aria-hidden /> : <Maximize2 size={14} aria-hidden />}
-              </button>
-            </div>
-          </header>
-          <div className="min-h-0 flex-1">
-            <TripPanel {...tripPanelProps} hideSwitcher />
-          </div>
-        </section>
-      </aside>
-    </div>
+    <DetailsPaneShell
+      open={inspectorOpen}
+      canvasMaximized={canvasMaximized}
+      wideLayout={isWideDesktop}
+      maximized={dockMaximized}
+      focused={Boolean(focus)}
+      focusName={focus?.name ?? null}
+      inspectorRef={inspectorRef}
+      onHide={() => setDockPaneOpen("details", false)}
+      onToggleMaximize={() => toggleMaxPane("details")}
+    >
+      <TripPanel {...tripPanelProps} hideSwitcher />
+    </DetailsPaneShell>
   );
 
   const assistantModal = (
-    <div
-      data-testid="assistant-modal-layer"
-      className={`fixed bottom-4 right-4 z-[60] h-[68%] min-h-[31rem] w-[min(30rem,calc(100vw-2rem))] ${chatOpen ? "flex" : "hidden"}`}
-    >
-      <aside
-        data-testid="assistant-modal"
-        role="dialog"
-        aria-label="Trip Assistant"
-        className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,.28)]"
-      >
-        <div className="relative min-h-0 flex-1">
-          <ChatPanel
-            onTurnComplete={handleTurnComplete}
-            reloadToken={chatReloadToken}
-            tripIdHint={chatTripId}
-            onNewTrip={handleNewTrip}
-            onImported={handleImported}
-            hideGlobalControls
-            assistantRequest={assistantRequest}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={() => setDockPaneOpen("assistant", false)}
-          className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-md bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 hover:bg-slate-50 hover:text-ink"
-          aria-label="Close Assistant"
-          title="Close Assistant"
-        >
-          <X size={15} aria-hidden />
-        </button>
-      </aside>
-    </div>
+    <AssistantModalShell open={chatOpen} onClose={() => setDockPaneOpen("assistant", false)}>
+      <ChatPanel
+        onTurnComplete={handleTurnComplete}
+        reloadToken={chatReloadToken}
+        tripIdHint={chatTripId}
+        onNewTrip={handleNewTrip}
+        onImported={handleImported}
+        hideGlobalControls
+        assistantRequest={assistantRequest}
+      />
+    </AssistantModalShell>
   );
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
@@ -691,116 +609,42 @@ export default function App() {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
   }, [isDesktop, mobileTripOpen]);
 
-  const errorBanner = actionError ? (
-    <div role="alert" className="fixed left-1/2 top-3 z-[70] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-xl bg-rose-50 px-4 py-2 text-sm text-rose-800 shadow-pop ring-1 ring-rose-200">
-      <span>{actionError}</span>
-      <button type="button" onClick={() => setActionError(null)} className="font-semibold" aria-label="Dismiss error">
-        x
-      </button>
-    </div>
-  ) : null;
   const latestStatus = compactStatus(view?.alerts?.[0]);
   const visibleStatus = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
     : latestStatus;
   return <>
-    {errorBanner}
+    <ErrorBanner message={actionError} onDismiss={() => setActionError(null)} />
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
-        <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
-          <TripSwitcher version={tripVersion} onSwitched={handleSwitched} />
-          <div className="mr-auto flex min-w-32 flex-1 items-center gap-2">
-            <div className="min-w-0 flex-1" aria-live="polite" role="status">
-            {visibleStatus ? (
-              <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${plannerReview ? "text-amber-800" : "text-emerald-700"}`} title={visibleStatus}>
-                {visibleStatus}
-              </p>
-            ) : loading ? (
-              <p className="text-xs text-slate-400">Refreshing trip…</p>
-            ) : null}
-            </div>
-            {plannerReview && (
-              <div className="flex shrink-0 items-center gap-1" aria-label="Planner review choices">
-                <button type="button" onClick={reviewWithPlanner} className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-200">
-                  Review with planner
-                </button>
-                <button type="button" onClick={() => setPlannerReview(null)} className="rounded-md px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100">
-                  Keep as is
-                </button>
-              </div>
-            )}
-          </div>
-          <nav className="flex shrink-0 items-center gap-1" aria-label="Workspace controls">
-            <button
-              type="button"
-              onClick={handleStartNewTrip}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-brand/10 px-3 text-xs font-semibold text-brand transition hover:bg-brand/15"
-              title="Start a new trip"
-              aria-label="New trip"
-            >
-              <Plus size={14} aria-hidden />
-              <span>New trip</span>
-            </button>
-            <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
-            <div className="flex items-center gap-1" aria-label="Pane visibility">
-              <button
-                type="button"
-                onClick={() => setCanvasOpen("itinerary", !itineraryOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${itineraryOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-                aria-pressed={itineraryOpen}
-                title="Show or hide itinerary"
-              >
-                <List size={15} aria-hidden /> <span className="hidden xl:inline">Itinerary</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setCanvasOpen("map", !mapOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${mapOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-                aria-pressed={mapOpen}
-                title="Show or hide map"
-              >
-                <Map size={15} aria-hidden /> <span className="hidden xl:inline">Map</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setDockPaneOpen("details", !inspectorOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${inspectorOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-                aria-pressed={inspectorOpen}
-                title="Show or hide trip details"
-              >
-                <PanelRight size={15} aria-hidden /> <span className="hidden xl:inline">Details</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setDockPaneOpen("assistant", !chatOpen)}
-                className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${chatOpen ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-                aria-pressed={chatOpen}
-                title="Show or hide the trip assistant"
-              >
-                <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
-              </button>
-            </div>
-            <TripActionsMenu
-              disabled={!view?.has_trip}
-              onExport={() => setShowExport(true)}
-              compactTrigger
-            />
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-              title="Account settings"
-              aria-label="Account settings"
-            >
-              <span className="relative">
-                <UserRound size={15} aria-hidden />
-                <span className={`absolute -bottom-1 -right-1 h-2 w-2 rounded-full ring-2 ring-white ${signedIn ? "bg-emerald-500" : "bg-slate-400"}`} aria-hidden />
-              </span>
-              <span>{signedIn ? getDisplayName() || "Account" : "Guest"}</span>
-            </button>
-          </nav>
-        </header>
+        <DesktopToolbar
+          tripVersion={tripVersion}
+          onTripSwitched={handleSwitched}
+          visibleStatus={visibleStatus}
+          reviewPending={plannerReview !== null}
+          loading={loading}
+          onReviewWithPlanner={reviewWithPlanner}
+          onKeepReview={() => setPlannerReview(null)}
+          onStartNewTrip={handleStartNewTrip}
+          paneVisibility={{
+            itinerary: itineraryOpen,
+            map: mapOpen,
+            details: inspectorOpen,
+            assistant: chatOpen,
+          }}
+          onTogglePane={(pane) => {
+            if (pane === "itinerary") setCanvasOpen(pane, !itineraryOpen);
+            else if (pane === "map") setCanvasOpen(pane, !mapOpen);
+            else if (pane === "details") setDockPaneOpen(pane, !inspectorOpen);
+            else setDockPaneOpen(pane, !chatOpen);
+          }}
+          tripActionsDisabled={!view?.has_trip}
+          onExport={() => setShowExport(true)}
+          signedIn={signedIn}
+          accountLabel={signedIn ? getDisplayName() || "Account" : "Guest"}
+          onOpenAccount={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
+        />
 
         <main
           ref={workspaceRef}
@@ -818,7 +662,15 @@ export default function App() {
           }}
         >
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>
-            {renderCanvasPane("itinerary")}
+            <CanvasPaneFrame
+              label="Itinerary"
+              maximized={maximizedPane === "itinerary"}
+              hideDisabled={!mapOpen}
+              onHide={() => setCanvasOpen("itinerary", false)}
+              onToggleMaximize={() => toggleMaxPane("itinerary")}
+            >
+              {renderCanvasBody("itinerary")}
+            </CanvasPaneFrame>
           </section>
           {!maximizedPane && itineraryOpen && mapOpen && (
             <div
@@ -837,7 +689,16 @@ export default function App() {
             </div>
           )}
           <section className={`min-h-0 min-w-0 ${!mapOpen || maximizedPane && maximizedPane !== "map" ? "hidden" : ""}`}>
-            {renderCanvasPane("map")}
+            <CanvasPaneFrame
+              label="Map"
+              maximized={maximizedPane === "map"}
+              hideDisabled={!itineraryOpen}
+              onHide={() => setCanvasOpen("map", false)}
+              onToggleMaximize={() => toggleMaxPane("map")}
+              headerTargetRef={setMapHeaderTarget}
+            >
+              {renderCanvasBody("map")}
+            </CanvasPaneFrame>
           </section>
           {!maximizedPane && isWideDesktop && dockOpen && (itineraryOpen || mapOpen) && (
             <div
@@ -860,62 +721,24 @@ export default function App() {
         </main>
       </div>
         ) : (
-        <section className="flex h-screen flex-col">
-        <ChatPanel
-          onTurnComplete={handleTurnComplete}
-          reloadToken={chatReloadToken}
-          tripIdHint={chatTripId}
-          onNewTrip={handleNewTrip}
-          onImported={handleImported}
-        />
-
-        {view?.has_trip && !mobileTripOpen && (
-          <button
-            type="button"
-            onClick={() => setMobileTripOpen(true)}
-            aria-label="Open trip details"
-            className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-pop ring-1 ring-black/10 transition active:scale-95"
-          >
-            <span>Trip details</span>
-          </button>
-        )}
-
-        <div
-          onClick={() => setMobileTripOpen(false)}
-          aria-hidden={!mobileTripOpen}
-          className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity ${
-            mobileTripOpen ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        />
-        <section
-          role="dialog"
-          aria-modal="true"
-          aria-label="Trip details"
-          className={`fixed inset-x-0 bottom-0 z-50 flex h-[88vh] flex-col rounded-t-3xl bg-surface shadow-pop transition-transform duration-300 ${
-            mobileTripOpen ? "translate-y-0" : "translate-y-full"
-          }`}
-        >
-          <div className="flex items-center justify-between px-4 pt-2 pb-1">
-            <button
-              type="button"
-              onClick={() => setMobileTripOpen(false)}
-              aria-label="Close trip details"
-              className="-ml-2 grid h-10 w-10 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-ink"
-            >
-              <span className="text-xl leading-none">x</span>
-            </button>
-            <div
-              onClick={() => setMobileTripOpen(false)}
-              className="mx-auto -ml-10 h-1.5 w-12 cursor-pointer rounded-full bg-slate-300"
-              aria-hidden
+        <MobileWorkspaceShell
+          chat={(
+            <ChatPanel
+              onTurnComplete={handleTurnComplete}
+              reloadToken={chatReloadToken}
+              tripIdHint={chatTripId}
+              onNewTrip={handleNewTrip}
+              onImported={handleImported}
             />
-            <span className="w-10" aria-hidden />
-          </div>
-          <div className="min-h-0 flex-1">
+          )}
+          hasTrip={Boolean(view?.has_trip)}
+          tripOpen={mobileTripOpen}
+          onOpenTrip={() => setMobileTripOpen(true)}
+          onCloseTrip={() => setMobileTripOpen(false)}
+          tripDetails={(
             <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
-          </div>
-        </section>
-      </section>
+          )}
+        />
     )}
   </>;
 }
