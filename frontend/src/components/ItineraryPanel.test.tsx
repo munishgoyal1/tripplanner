@@ -243,7 +243,7 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
   });
 
-  it("groups a multi-city transfer as a stay handoff without changing stop identity", async () => {
+  it("shows a multi-city transfer as one chronological spine without changing stop identity", async () => {
     const baseStop = itinerary.days[0].stops[0];
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,
@@ -275,10 +275,17 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel />);
 
-    const handoff = await screen.findByLabelText("Stay handoff from Trident Udaipur to Hotel Hillock Mount Abu");
-    expect(handoff).toHaveTextContent("Leaving → arriving");
-    expect(screen.getByLabelText("Journey between stays")).toHaveTextContent("Drive: Udaipur to Mount Abu");
-    expect(screen.getByLabelText("Plans after check-in")).toHaveTextContent("Nakki Lake");
+    const timeline = await screen.findByLabelText("Transition day timeline from Trident Udaipur to Hotel Hillock Mount Abu");
+    expect(Array.from(timeline.querySelectorAll("[data-stop-name]"), (row) => row.getAttribute("data-stop-name")))
+      .toEqual([
+        "trident udaipur",
+        "drive: udaipur to mount abu",
+        "hotel hillock mount abu",
+        "nakki lake",
+      ]);
+    expect(screen.queryByText("Stay handoff")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Journey between stays")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Plans after check-in")).not.toBeInTheDocument();
     expect(await screen.findAllByText("Hotel Hillock Mount Abu")).toHaveLength(1);
     expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
     expect(screen.getByText("Check out")).toBeInTheDocument();

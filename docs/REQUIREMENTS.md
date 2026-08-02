@@ -350,7 +350,9 @@ re-describing the whole product.
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
   Identical departure and return hotels render once with both times while
   preserving route endpoints, return-leg evidence, and exact focus. Different
-  endpoint hotels remain separate Check out and Check in rows.
+  endpoint hotels remain separate Check out and Check in rows. A multi-city
+  transition day renders checkout, the complete journey, destination check-in,
+  and remaining plans once in one chronological spine.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 

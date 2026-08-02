@@ -220,7 +220,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   stay-range controls instead. When a day departs from and returns to the same
   hotel, one combined row shows both times without removing either underlying
   route endpoint or its return-leg evidence. Different endpoint hotels remain
-  separate and read as Check out and Check in.
+  separate and read as Check out and Check in. A multi-city transition day keeps
+  those endpoints, the complete journey, and remaining destination plans in one
+  chronological spine rather than pairing hotels as cards or splitting city chapters.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for a single hotel, route-ordered `H1`, `H2`, and so on for distinct hotel
   endpoints, and `1, 2, 3...` for attractions and restaurants.
