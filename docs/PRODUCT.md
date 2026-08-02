@@ -136,7 +136,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   implementations completed before that date remain in the Completed archive.
   Every card identifies when the Lab was created and when it entered its current
   lifecycle state. Every Lab also has one permanent integer identifier, displayed
-  as `Lab #N` in every catalog state and on its detail page. Its HTML entry name is
+  as `Lab #N` in every catalog state and on its detail page. The top of every Lab
+  detail page shows its authoritative, color-coded lifecycle status and its state
+  date when recorded, updating immediately after a lifecycle save. Its HTML entry name is
   prefixed with `lab-N-`. New Labs take the next integer; numbers are never changed,
   reused, or derived from filtering or display order. Machine state
   overrides committed historical fallback metadata,

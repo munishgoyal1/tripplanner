@@ -1,5 +1,6 @@
 import { Archive, Check, CheckCircle2, Save, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { LAB_SELECTION_SAVED_EVENT } from "./useLabSelections";
 
 interface DecisionOption {
   id: string;
@@ -152,6 +153,9 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       setSaved(savedSelection);
       setImplementations(implementationHistory(savedSelection, optionsRef.current));
       setStatus("saved");
+      window.dispatchEvent(new CustomEvent(LAB_SELECTION_SAVED_EVENT, {
+        detail: { labId, selection: savedSelection },
+      }));
     } catch {
       setStatus("offline");
     } finally {
