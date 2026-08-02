@@ -52,6 +52,24 @@ export function labFeedbackPlugin(): Plugin {
           const stateChangedAt = previous?.disposition === selection.disposition
             ? previous.stateChangedAt || previous.updatedAt
             : updatedAt;
+          const previousImplementation = previous?.implementation || (
+            previous?.selection && ["implemented-review", "completed"].includes(previous.disposition || "")
+              ? {
+                  selection: previous.selection,
+                  selectionLabel: previous.selectionLabel,
+                  comment: previous.comment,
+                  recordedAt: previous.updatedAt,
+                }
+              : undefined
+          );
+          const implementation = selection.disposition === "implemented-review"
+            ? {
+                selection: selection.selection,
+                selectionLabel: selection.selectionLabel,
+                comment: selection.comment,
+                recordedAt: updatedAt,
+              }
+            : previousImplementation;
           selections[selection.labId] = selection.disposition === "discarded"
             ? {
                 labId: selection.labId,
@@ -63,7 +81,7 @@ export function labFeedbackPlugin(): Plugin {
                 stateChangedAt,
                 updatedAt,
               }
-            : { ...selection, stateChangedAt, updatedAt };
+            : { ...selection, implementation, stateChangedAt, updatedAt };
           await writeSelections(selections);
           sendJson(response, 200, selections[selection.labId]);
         } catch (error) {

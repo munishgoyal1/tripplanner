@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { CircleDot, Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { allLabs } from "./labRecords";
 
 interface ScopeDefinition {
   changes: string[];
@@ -199,6 +200,7 @@ function ChangeMarkerOverlay({ enabled }: { enabled: boolean }) {
 
 export function LabScope({ labId }: { labId: string }) {
   const scope = scopes[labId];
+  const labNumber = allLabs.find((lab) => lab.id === labId)?.labNumber;
   const [markersVisible, setMarkersVisible] = useState(() => localStorage.getItem(MARKERS_KEY) !== "hidden");
   if (!scope) return null;
 
@@ -214,7 +216,7 @@ export function LabScope({ labId }: { labId: string }) {
       <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200" aria-labelledby={`${labId}-scope-title`}>
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
           <div>
-            <p className="text-[10px] font-bold uppercase text-brand">Change scope</p>
+            <p className="text-[10px] font-bold uppercase text-brand">Lab #{labNumber} · Change scope</p>
             <h2 id={`${labId}-scope-title`} className="mt-0.5 text-sm font-semibold text-ink">What this Lab is deciding</h2>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">Only the items under Changes vary between options. The rest of the preview is fixed context and is not part of this decision.</p>
           </div>

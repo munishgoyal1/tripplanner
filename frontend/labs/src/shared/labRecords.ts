@@ -51,7 +51,7 @@ export const activeLabs: LabRecord[] = [
     createdAt: "2026-08-01",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Connected day journey.",
-    href: "./intercity-map.html",
+    href: "./lab-14-intercity-map.html",
     icon: Map,
   },
   {
@@ -65,7 +65,7 @@ export const activeLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-08-02",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Transition spine.",
-    href: "./multi-city-itinerary.html",
+    href: "./lab-15-multi-city-itinerary.html",
     icon: Route,
   },
   {
@@ -77,7 +77,7 @@ export const activeLabs: LabRecord[] = [
     createdAt: "2026-08-01",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Contextual explorer.",
-    href: "./destination-guide.html",
+    href: "./lab-13-destination-guide.html",
     icon: Compass,
   },
   {
@@ -91,7 +91,7 @@ export const activeLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-08-02",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Unified account menu.",
-    href: "./account-settings.html",
+    href: "./lab-12-account-settings.html",
     icon: SlidersHorizontal,
   },
   {
@@ -103,7 +103,7 @@ export const activeLabs: LabRecord[] = [
     createdAt: "2026-07-30",
     status: "In evaluation",
     decision: "Open · Recommended starting point: B · Layered Trip Book.",
-    href: "./itinerary-trip-book.html",
+    href: "./lab-5-itinerary-trip-book.html",
     icon: BookOpen,
   },
 ];
@@ -120,7 +120,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-08-01",
     status: "Implemented",
     decision: "B · Circuit header, adapted to preserve production detail and exact endpoint behavior.",
-    href: "./itinerary-density.html",
+    href: "./lab-11-itinerary-density.html",
     icon: ListChecks,
   },
   {
@@ -134,7 +134,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-08-01",
     status: "Implemented",
     decision: "B · Restrained icon pair, applied only to Itinerary, Map, and Details pane-local controls.",
-    href: "./pane-controls.html",
+    href: "./lab-10-pane-controls.html",
     icon: LayoutPanelTop,
   },
   {
@@ -148,7 +148,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-31",
     status: "Implemented",
     decision: "A · Unified route ribbon, changing only the Map command hierarchy.",
-    href: "./map-controls.html",
+    href: "./lab-8-map-controls.html",
     icon: Map,
   },
   {
@@ -162,7 +162,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-31",
     status: "Implemented",
     decision: "B · Decision brief, with compact facts and no repeated Trip fit block below Budget.",
-    href: "./trip-snapshot.html",
+    href: "./lab-6-trip-snapshot.html",
     icon: ListChecks,
   },
   {
@@ -176,7 +176,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-31",
     status: "Implemented",
     decision: "A · Direct pane toggles, with labeled New trip and unchanged pane-local controls.",
-    href: "./workspace-command-bar.html",
+    href: "./lab-7-workspace-command-bar.html",
     icon: LayoutPanelTop,
   },
   {
@@ -190,7 +190,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-31",
     status: "Implemented",
     decision: "A · Semantic icon + text, applied only to the desktop top command bar.",
-    href: "./shell-visual-refresh.html",
+    href: "./lab-9-shell-visual-refresh.html",
     icon: LayoutPanelTop,
   },
   {
@@ -204,7 +204,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-30",
     status: "Implemented",
     decision: "B · Corner conversation sheet, preserving the mounted conversation and usable workspace.",
-    href: "./chat-assistant.html",
+    href: "./lab-4-chat-assistant.html",
     icon: MessageCircle,
   },
   {
@@ -218,7 +218,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-29",
     status: "Implemented",
     decision: "B · Compact Agenda, paired with C · Compact Brief.",
-    href: "./itinerary-information.html",
+    href: "./lab-2-itinerary-information.html",
     icon: ListChecks,
   },
   {
@@ -232,7 +232,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-29",
     status: "Implemented",
     decision: "C · Compact Brief with explicit travel rhythm, day plan, and booking readiness.",
-    href: "./itinerary-summary.html",
+    href: "./lab-3-itinerary-summary.html",
     icon: LayoutPanelTop,
   },
   {
@@ -246,7 +246,7 @@ export const completedLabs: LabRecord[] = [
     defaultStateChangedAt: "2026-07-23",
     status: "Decided",
     decision: "Layout C: map-first canvas, details-first rail, and compact lower-right Assistant.",
-    href: "./workspace-shell.html",
+    href: "./lab-1-workspace-shell.html",
     icon: LayoutPanelTop,
   },
 ];

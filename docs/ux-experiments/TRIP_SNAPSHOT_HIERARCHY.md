@@ -5,7 +5,7 @@
 - Owner: Munish Goyal
 - Date started: 2026-07-31
 - Status: implemented
-- Lab: `http://127.0.0.1:5175/trip-snapshot.html`
+- Lab: `http://127.0.0.1:5175/lab-6-trip-snapshot.html`
 
 ## Variants
 

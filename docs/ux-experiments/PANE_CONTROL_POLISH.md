@@ -19,7 +19,7 @@ The following remain fixed:
 - **B - Restrained icon pair:** direct icons in one quiet pane-local group.
 - **C - Pane action menu:** one local trigger reveals labeled Hide and Maximize actions.
 
-The Lab is available at `http://127.0.0.1:5175/pane-controls.html`. It is intentionally separate from the Map command refinement requested on 2026-08-01.
+The Lab is available at `http://127.0.0.1:5175/lab-10-pane-controls.html`. It is intentionally separate from the Map command refinement requested on 2026-08-01.
 
 ## Implementation
 

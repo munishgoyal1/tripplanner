@@ -5,7 +5,7 @@
 - Owner: Munish Goyal
 - Date started: 2026-07-30
 - Status: implemented
-- Lab: `http://127.0.0.1:5175/shell-visual-refresh.html`
+- Lab: `http://127.0.0.1:5175/lab-9-shell-visual-refresh.html`
 - Full-size preview: choose an option, then use **Open full-size preview**
 
 ## Hypothesis
@@ -31,7 +31,7 @@ variant can run as a full-viewport preview.
 
 Changed experiment files:
 
-- `frontend/labs/shell-visual-refresh.html`
+- `frontend/labs/lab-9-shell-visual-refresh.html`
 - `frontend/labs/src/shell-visual-refresh/main.tsx`
 - Lab catalog and build registration
 

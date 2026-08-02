@@ -156,7 +156,7 @@ function PaneControlsLab() {
   const [variant, setVariant] = useState<Variant>(fullPreview ? preview as Variant : "pair");
   const choose = useCallback((value: string) => setVariant(value as Variant), []);
 
-  if (fullPreview) return <main className="relative h-[100dvh] min-h-[40rem] overflow-hidden"><PlannerWorkspace variant={variant} /><a href="./pane-controls.html" className="fixed bottom-4 left-4 z-[80] inline-flex items-center gap-2 rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white shadow-pop"><ArrowLeft size={14} /> Exit full-size preview</a></main>;
+  if (fullPreview) return <main className="relative h-[100dvh] min-h-[40rem] overflow-hidden"><PlannerWorkspace variant={variant} /><a href="./lab-10-pane-controls.html" className="fixed bottom-4 left-4 z-[80] inline-flex items-center gap-2 rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white shadow-pop"><ArrowLeft size={14} /> Exit full-size preview</a></main>;
 
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#ecfdf5_32rem,#f8fafc_100%)] px-4 py-7 sm:px-6 lg:px-8">

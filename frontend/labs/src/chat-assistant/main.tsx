@@ -289,7 +289,7 @@ function ChatAssistantLab() {
       <main className="relative h-[100dvh] min-h-[40rem] overflow-hidden bg-white">
         <WorkspaceBackdrop />
         <AssistantOverlay key={variant} variant={variant} />
-        <a href="./chat-assistant.html" className="fixed bottom-4 left-4 z-[80] inline-flex items-center gap-2 rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white shadow-pop ring-1 ring-white/30"><ArrowLeft size={14} /> Exit full-size preview</a>
+        <a href="./lab-4-chat-assistant.html" className="fixed bottom-4 left-4 z-[80] inline-flex items-center gap-2 rounded-md bg-ink px-3 py-2 text-xs font-semibold text-white shadow-pop ring-1 ring-white/30"><ArrowLeft size={14} /> Exit full-size preview</a>
       </main>
     );
   }
