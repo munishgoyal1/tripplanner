@@ -552,10 +552,11 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
           const end = pinById.get(leg.to_pin_id);
           if (!start || !end) continue;
           const label = formatLegLabel(leg);
+          const labelOffset = leg.intercity ? 0.35 : 0.5;
           const marker = new google.maps.Marker({
             position: {
-              lat: (start.lat + end.lat) / 2,
-              lng: (start.lng + end.lng) / 2,
+              lat: start.lat + (end.lat - start.lat) * labelOffset,
+              lng: start.lng + (end.lng - start.lng) * labelOffset,
             },
             map,
             clickable: false,

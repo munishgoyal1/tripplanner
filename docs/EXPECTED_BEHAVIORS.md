@@ -128,9 +128,11 @@ color. A day with one unique hotel retains the plain `H` marker.
 **Trigger:** View a mapped inter-city flight, road transfer, bus, or train leg.
 
 **Expected:** Its connector is dotted and carries a small transport glyph at its
-midpoint. Flight connectors are blue with an airplane, road connectors are black
-with a car or bus as applicable, and train connectors are gray with a train. Local
-route legs retain their day color and do not gain an inter-city transport glyph.
+midpoint in All days, selected-day, and individual-route focus. Selected-day route
+labels remain offset from that midpoint so they do not cover the glyph. Flight
+connectors are blue with an airplane, road connectors are black with a car or bus
+as applicable, and train connectors are gray with a train. Local route legs retain
+their day color and do not gain an inter-city transport glyph.
 
 **Executable proof:**
 

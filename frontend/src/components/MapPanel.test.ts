@@ -771,12 +771,17 @@ describe("map stop selection", () => {
     const polyline = vi.fn(function (_options: Record<string, unknown>) {
       return { setMap: vi.fn() };
     });
+    const marker = vi.fn(function (_options: {
+      title?: string;
+      position?: { lat: number; lng: number };
+      icon?: { url?: string };
+    }) {
+      return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+    });
     window.google = {
       maps: {
         Map: vi.fn(function () { return map; }),
-        Marker: vi.fn(function () {
-          return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
-        }),
+        Marker: marker,
         Polyline: polyline,
         Size: vi.fn(function () {}),
         Point: vi.fn(function () {}),
@@ -860,6 +865,43 @@ describe("map stop selection", () => {
       strokeColor: "#2563eb",
       strokeOpacity: 0,
     }));
+
+    rendered.rerender(createElement(MapPanel, {
+      circuitFocusDay: 1,
+      circuitFocusToken: 1,
+    }));
+    await waitFor(() => expect(marker).toHaveBeenCalledWith(expect.objectContaining({
+      title: "1,330 km · 2 hr 5 min · Flight",
+    })));
+    const routeLabel = marker.mock.calls
+      .map(([options]) => options)
+      .find((options) => options.title === "1,330 km · 2 hr 5 min · Flight");
+    expect(routeLabel?.position).not.toEqual({
+      lat: (13.1986 + 24.6177) / 2,
+      lng: (77.7066 + 73.8961) / 2,
+    });
+
+    rendered.rerender(createElement(MapPanel));
+    fireEvent.click(screen.getByRole("button", { name: "All days" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+    const routeLabelCount = marker.mock.calls
+      .map(([options]) => options)
+      .filter((options) => options.title === "1,330 km · 2 hr 5 min · Flight").length;
+    rendered.rerender(createElement(MapPanel, {
+      routeFocusDay: 1,
+      routeFocusToken: 1,
+    }));
+    await waitFor(() => expect(marker.mock.calls
+      .map(([options]) => options)
+      .filter((options) => options.title === "1,330 km · 2 hr 5 min · Flight")).toHaveLength(routeLabelCount + 1));
+    const routeFocusedLabels = marker.mock.calls
+      .map(([options]) => options)
+      .filter((options) => options.title === "1,330 km · 2 hr 5 min · Flight");
+    const routeFocusedLabel = routeFocusedLabels[routeFocusedLabels.length - 1];
+    expect(routeFocusedLabel?.position).not.toEqual({
+      lat: (13.1986 + 24.6177) / 2,
+      lng: (77.7066 + 73.8961) / 2,
+    });
 
     rendered.rerender(createElement(MapPanel, {
       focusName: "Bangalore Airport",
