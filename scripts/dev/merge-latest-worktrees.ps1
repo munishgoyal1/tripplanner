@@ -5,6 +5,8 @@ param(
     [ValidateSet(1, 2)]
     [int]$WorkerNumber,
 
+    [switch]$SkipPrimaryUpdate,
+
     [switch]$ValidateOnly
 )
 
@@ -232,6 +234,11 @@ try {
             Write-Warning "Could not remove temporary integration worktree: $integrationRoot"
         }
     }
+}
+
+if ($SkipPrimaryUpdate) {
+    Write-Host "Done: integrated master was published; existing worktrees were untouched." -ForegroundColor Green
+    return
 }
 
 $stashCreated = $false

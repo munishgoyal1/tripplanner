@@ -28,9 +28,10 @@ not override the canonical documents above, which govern current behavior.
 - The primary `master` workspace is the default development lane. Use persistent
   Worker 1 and Worker 2 worktrees only for owner-requested, sizeable, isolated
   parallel assignments. Each worker owns one PR-sized change at a time.
-- Run `Sync-Latest.cmd` from the worktree that should receive all latest committed
-  code. It integrates worker heads through `master`, then updates only the
-  launcher worktree; non-launcher workers remain untouched.
+- Run `Sync-Latest.cmd` from the worktree to update. Agent 3 always integrates all
+  committed worker heads. A worker receives only `master` by default; pass `all`
+  to include committed sibling worktree changes through `master`. The launcher is
+  the only worktree updated.
 - Agent 3 in the primary workspace owns local stack startup, stop, restart,
   stale-port cleanup, and health checks for the owner's manual testing. Workers 1
   and 2 must obtain explicit approval before changing the stack lifecycle and use
