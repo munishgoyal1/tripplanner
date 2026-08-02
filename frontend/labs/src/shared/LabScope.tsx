@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { CircleDot, Eye, EyeOff, LockKeyhole } from "lucide-react";
-import { allLabs } from "./labRecords";
+import { allLabs, effectiveLabDisposition, type LabDisposition } from "./labRecords";
+import { useLabSelections } from "./useLabSelections";
 
 interface ScopeDefinition {
   changes: string[];
@@ -126,6 +127,23 @@ interface MarkerRect {
 
 const MARKERS_KEY = "tripplanner_lab_change_markers";
 
+const statusPresentation: Record<LabDisposition, { label: string; className: string }> = {
+  ready: { label: "In progress", className: "bg-orange-50 text-orange-800 ring-orange-200" },
+  "implemented-review": { label: "Implemented - To be reviewed", className: "bg-sky-50 text-sky-800 ring-sky-200" },
+  parked: { label: "Parked", className: "bg-amber-50 text-amber-800 ring-amber-200" },
+  completed: { label: "Completed", className: "bg-emerald-50 text-emerald-800 ring-emerald-200" },
+  discarded: { label: "Discarded", className: "bg-slate-100 text-slate-600 ring-slate-200" },
+};
+
+function formatStatusDate(value: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value));
+}
+
 function ChangeMarkerOverlay({ enabled }: { enabled: boolean }) {
   const [markers, setMarkers] = useState<MarkerRect[]>([]);
 
@@ -200,9 +218,14 @@ function ChangeMarkerOverlay({ enabled }: { enabled: boolean }) {
 
 export function LabScope({ labId }: { labId: string }) {
   const scope = scopes[labId];
-  const labNumber = allLabs.find((lab) => lab.id === labId)?.labNumber;
+  const lab = allLabs.find((candidate) => candidate.id === labId);
+  const { selections, status: selectionStatus } = useLabSelections();
+  const selection = selections[labId];
+  const disposition = lab ? effectiveLabDisposition(lab, selection) : undefined;
+  const status = disposition ? statusPresentation[disposition] : undefined;
+  const statusDate = selection?.stateChangedAt || selection?.updatedAt || lab?.defaultStateChangedAt;
   const [markersVisible, setMarkersVisible] = useState(() => localStorage.getItem(MARKERS_KEY) !== "hidden");
-  if (!scope) return null;
+  if (!scope || !lab) return null;
 
   const toggleMarkers = () => {
     setMarkersVisible((visible) => {
@@ -216,14 +239,27 @@ export function LabScope({ labId }: { labId: string }) {
       <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200" aria-labelledby={`${labId}-scope-title`}>
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-4 py-3">
           <div>
-            <p className="text-[10px] font-bold uppercase text-brand">Lab #{labNumber} · Change scope</p>
+            <p className="text-[10px] font-bold uppercase text-brand">Lab #{lab.labNumber} · Change scope</p>
             <h2 id={`${labId}-scope-title`} className="mt-0.5 text-sm font-semibold text-ink">What this Lab is deciding</h2>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">Only the items under Changes vary between options. The rest of the preview is fixed context and is not part of this decision.</p>
           </div>
-          <button type="button" aria-pressed={markersVisible} onClick={toggleMarkers} className="btn-ghost shrink-0">
-            {markersVisible ? <EyeOff size={14} aria-hidden /> : <Eye size={14} aria-hidden />}
-            {markersVisible ? "Hide change markers" : "Show change markers"}
-          </button>
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            <div className="text-right" aria-live="polite">
+              <p className="text-[10px] font-bold uppercase text-slate-400">Lab status</p>
+              {selectionStatus === "loading" && <span className="mt-1 inline-flex rounded-full bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-500 ring-1 ring-slate-200">Loading status...</span>}
+              {selectionStatus === "error" && <span className="mt-1 inline-flex rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 ring-1 ring-rose-200">Status unavailable</span>}
+              {selectionStatus === "loaded" && (
+                <>
+                  <span className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ${status?.className || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{status?.label || "In evaluation"}</span>
+                  {statusDate && <p className="mt-1 text-[10px] text-slate-400">Since {formatStatusDate(statusDate)}</p>}
+                </>
+              )}
+            </div>
+            <button type="button" aria-pressed={markersVisible} onClick={toggleMarkers} className="btn-ghost">
+              {markersVisible ? <EyeOff size={14} aria-hidden /> : <Eye size={14} aria-hidden />}
+              {markersVisible ? "Hide change markers" : "Show change markers"}
+            </button>
+          </div>
         </div>
         <div className="grid md:grid-cols-2">
           <div className="px-4 py-3 md:border-r md:border-slate-100">
