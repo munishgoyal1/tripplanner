@@ -141,53 +141,9 @@ The internal merge engine uses its disposable integration worktree; the target
 update engine uses the launcher worktree and keeps its local changes in a safety
 stash until the merge finishes or is aborted. Sibling code always reaches a
 worker through `master`; worker branches are not merged directly into one another.
-
-### Deliberate PR integration
-
-The agent finishes its branch with a coherent commit and push. From that
-worktree:
-
-```powershell
-git push -u origin HEAD
-gh pr create --base master --head agents/route-cache-fix --fill
-```
-
-For an explicit review checkpoint, use the clean-worktree PR integration entry
-point from the primary integration checkout:
-
-- File Explorer: double-click `scripts/dev/Sync-All-Worktrees.cmd`
-
-This uses the guarded PR integration engine. The command refuses dirty or
-unexpected worktrees, preflights both
-before either merge, and enables Git `rerere` so a previously validated conflict
-resolution is reused automatically. For a new semantic conflict, it pauses in the
-named worker worktree, reports the exact paths, and waits for `RESOLVED` after the
-owner or worker reconciles and validates both changes. It rejects remaining conflict
-markers, records the resolution for future reuse, commits it on the worker branch,
-and resumes integration. `ABORT` restores the worker to its clean pre-merge state.
-It never applies blanket ours/theirs conflict choices. The engine then creates or
-reuses each worker's pull request, merges Worker 1 with a merge commit, updates
-`master`, brings Worker 2 onto that new baseline, and merges Worker 2 separately.
-Finally, it fast-forwards both persistent workers to the resulting `master`, so
-all three worktrees finish synchronized for their next assignments.
 Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
-
-The same command handles one or both lanes. With no argument it synchronizes
-both; pass `1` or `2` as the first argument to select one lane:
-
-```powershell
-.\scripts\dev\sync-all-worktrees.ps1 1
-.\scripts\dev\Sync-All-Worktrees.cmd 2
-```
-
-Add `-ValidateOnly` for a preflight without integration. The `.cmd` launcher
-forwards both parameters to the shared PowerShell orchestrator. The lower-level
-`sync-worker.ps1` remains its internal single-worker engine.
-
-`Sync-Latest.cmd` owns the dirty-tolerant alternative described above. Its
-lower-level merge and target-update PowerShell engines remain internal.
 
 In parallel mode, to synchronize the launcher worktree and immediately restart
 the local application on the merged code, use **Tasks: Run Task** →
@@ -196,32 +152,6 @@ the local application on the merged code, use **Tasks: Run Task** →
 and restores each affected worktree's local state, and then starts the existing
 `scripts/dev/dev-spa.ps1`. If restored changes overlap synchronized code, it
 stops with the stash retained for explicit conflict resolution.
-
-Use a pull request for each optional worker branch. It provides one diff and
-check surface, keeps `master` stable, and makes parallel integration order
-explicit. Review and merge one ready branch at a time from the primary checkout.
-Pass the PR number explicitly so GitHub CLI does not try to switch the feature
-worktree to `master`:
-
-```powershell
-Set-Location C:\repos\tripplanner
-gh pr merge 123 --merge --delete-branch
-```
-
-Use merge commits rather than squash merges so the cleanup helper can prove that
-the local branch is contained in `origin/master`. After each checkpoint, every
-still-active agent should incorporate the new integration baseline from its own
-worktree:
-
-```powershell
-git fetch origin
-git merge origin/master
-git push
-```
-
-Resolve conflicts in the feature worktree, rerun the affected validation, and
-push the resolution. Never resolve a feature conflict by making speculative
-edits directly on `master`.
 
 ## Clean up merged work
 

@@ -24,7 +24,7 @@ $workerNumber = switch ($branch) {
 $laneName = if ($workerNumber -eq 3) { "Agent 3 (master)" } else { "Agent $workerNumber" }
 
 Write-Host "Synchronizing latest committed code into $laneName..." -ForegroundColor Cyan
-& "$PSScriptRoot\merge-worktrees.ps1" -ValidateOnly:$ValidateOnly
+& "$PSScriptRoot\merge-latest-worktrees.ps1" -ValidateOnly:$ValidateOnly
 
 if ($workerNumber -eq 3) {
     Write-Host "Agent 3 is current after worktree integration." -ForegroundColor Green

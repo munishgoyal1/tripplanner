@@ -27,9 +27,9 @@ not override the canonical documents above, which govern current behavior.
 - The primary `master` workspace is the default development lane. Use persistent
   Worker 1 and Worker 2 worktrees only for owner-requested, sizeable, isolated
   parallel assignments. Each worker owns one PR-sized change at a time.
-- Synchronize reviewed worker pull requests one at a time through the guarded
-  sync scripts. After integration, fast-forward every persistent worker to the
-  final `origin/master`, validate affected behavior, and push.
+- Run `Sync-Latest.cmd` from the worktree that should receive all latest committed
+  code. It integrates worker heads through `master`, then updates only the
+  launcher worktree; non-launcher workers remain untouched.
 - Agent 3 in the primary workspace owns local stack startup, stop, restart,
   stale-port cleanup, and health checks for the owner's manual testing. Workers 1
   and 2 must obtain explicit approval before changing the stack lifecycle and use
@@ -41,7 +41,7 @@ not override the canonical documents above, which govern current behavior.
 - Do not add docstrings, type hints, or comments to code you did not otherwise touch.
 
 See [parallel-agent-development.md](../docs/development/parallel-agent-development.md)
-for worktree synchronization, guarded integration, and cleanup.
+for worktree synchronization and cleanup.
 
 ## Product and engineering boundaries
 
