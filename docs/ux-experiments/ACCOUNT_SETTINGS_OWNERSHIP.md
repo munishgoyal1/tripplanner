@@ -4,7 +4,8 @@
 
 - Owner: Munish Goyal
 - Date started: 2026-08-01
-- Status: testing
+- Status: Implemented - To be reviewed
+- Date implemented: 2026-08-02
 - Lab: `http://127.0.0.1:5175/account-settings.html`
 
 ## Problem
@@ -34,11 +35,11 @@ because its event could not render the consent surface.
 - **C - Account settings hub:** one labeled identity trigger opens a larger,
   sectioned sheet for all person-level controls.
 
-## Current recommendation
+## Selected direction
 
-Start evaluation with **A - Unified account menu**. It removes the redundant
-trigger with the smallest footprint and keeps person-level settings in one
-predictable location. This recommendation is not implementation approval.
+**C - Account settings hub** was selected and promoted to production. One
+labeled identity command opens a right-side sheet with Profile and Sign-in,
+Travel Profile, Analytics preferences, and Privacy and Data sections.
 
 ## Inspectable destination detail
 
@@ -61,6 +62,10 @@ future preference, while collection remains disabled without a measurement ID.
 
 ## Decision
 
-- Decision: pending owner evaluation
-- Production redesign status: not implemented
-- Next action: compare all three interactive options and save one handoff
+- Decision: **C - Account settings hub**
+- Production redesign status: Implemented on 2026-08-02; awaiting owner review
+- Production scope: labeled identity trigger, sectioned account sheet, existing
+  Google/local identity flows, persisted Travel Profile, analytics consent, and
+  established privacy deletion actions.
+- Grounding note: the Lab's illustrative session inventory and portable export
+  were not promoted because production does not currently expose those APIs.

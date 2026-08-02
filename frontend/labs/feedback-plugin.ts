@@ -41,12 +41,17 @@ export function labFeedbackPlugin(): Plugin {
             sendJson(response, 400, { error: "Incomplete lab selection" });
             return;
           }
-          if (selection.disposition && !["ready", "parked", "completed", "discarded"].includes(selection.disposition)) {
+          if (selection.disposition && !["ready", "implemented-review", "parked", "completed", "discarded"].includes(selection.disposition)) {
             sendJson(response, 400, { error: "Invalid lab disposition" });
             return;
           }
 
           const selections = await readSelections();
+          const previous = selections[selection.labId];
+          const updatedAt = new Date().toISOString();
+          const stateChangedAt = previous?.disposition === selection.disposition
+            ? previous.stateChangedAt || previous.updatedAt
+            : updatedAt;
           selections[selection.labId] = selection.disposition === "discarded"
             ? {
                 labId: selection.labId,
@@ -55,9 +60,10 @@ export function labFeedbackPlugin(): Plugin {
                 selectionLabel: "",
                 comment: "",
                 disposition: "discarded",
-                updatedAt: new Date().toISOString(),
+                stateChangedAt,
+                updatedAt,
               }
-            : { ...selection, updatedAt: new Date().toISOString() };
+            : { ...selection, stateChangedAt, updatedAt };
           await writeSelections(selections);
           sendJson(response, 200, selections[selection.labId]);
         } catch (error) {

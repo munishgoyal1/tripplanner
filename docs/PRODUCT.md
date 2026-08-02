@@ -76,7 +76,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   wide desktops, collapsing to icon-only controls when desktop width is tighter;
   all four remain direct one-click visibility controls. New trip uses a restrained
   coral tint rather than a solid fill; active pane controls use quiet neutral fills,
-  while trip actions, account, and preferences remain lighter compact icons. This
+  while trip actions remain a lighter compact icon and Account settings uses one
+  short identity label. This
   keeps itinerary, map, and trip decisions visually dominant.
   The itinerary begins with the one authoritative trip snapshot: destination,
   dates, travelers, lifecycle, unique counts, booking progress, cost/budget,
@@ -114,13 +115,24 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
 - **Shape**: use radii and elevation only where an object is genuinely framed
   or floating. The itinerary snapshot and destination guide are full-width
   bands inside their panes, not decorative cards nested inside cards.
-- **UX Labs**: catalog filters belong only on catalog pages and expose All Labs,
-  In progress, Parked, and Completed views; an individual Lab has one clear
+- **UX Labs**: catalog filters belong only on catalog pages and expose All Open Labs,
+  In progress, Implemented review, Parked, and Completed views. All Open Labs contains
+  every lifecycle state except Completed, including implementations awaiting review.
+  An individual Lab has one clear
   return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
-  marked ready, parked with that handoff intact, completed with the selected
-  decision preserved, or discarded from consideration. Completion archives the
-  evaluation decision without implying production implementation approval.
+  marked ready, parked with that handoff intact, implemented and awaiting owner
+  review, completed after owner sign-off with the selected decision preserved,
+  or discarded from consideration. Production implementation moves a Lab to
+  **Implemented - To be reviewed**; only explicit owner sign-off completes it.
+  This review workflow applies to implementations from 2026-08-02 onward;
+  implementations completed before that date remain in the Completed archive.
+  Every card identifies when the Lab was created and when it entered its current
+  lifecycle state. Every Lab also has one permanent integer identifier, displayed
+  as `Lab #N` in every catalog state. New Labs take the next integer; numbers are
+  never changed, reused, or derived from filtering or display order. Machine state
+  overrides committed historical fallback metadata,
+  so one Lab cannot appear in conflicting filters.
   Completed Lab cards live only in the dedicated archive reached from the catalog;
   they do not repeat below active or parked work on the main Labs page.
   Lifecycle records have one machine-level authority shared by all worktrees;
@@ -327,8 +339,10 @@ If a redesign violates the above without a stated reason, push back.
   don't block paint.
 - **Settings has an "About me" textbox** that runs an LLM extractor and
   **additively** merges into preferences. Never overwrite existing user data.
-- **Account details behave like a popover.** The account control toggles it;
-  clicking elsewhere or pressing Escape dismisses it.
+- **Account settings has one owner.** One labeled identity command opens a
+  right-side sheet for Profile and sign-in, Travel Profile, Analytics
+  preferences, and Privacy and data. Escape or the explicit close control
+  dismisses it; do not restore a separate Travel preferences command-bar gear.
 
 ## 6) Owner taste — code & process
 

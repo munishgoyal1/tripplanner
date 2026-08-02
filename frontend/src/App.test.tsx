@@ -302,8 +302,8 @@ describe("App responsive workspace", () => {
     expect(screen.getByText("Details", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Assistant", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-slate-400");
-    expect(screen.getByRole("button", { name: "Guest - sign in" })).toHaveClass("text-slate-400");
-    expect(screen.getByRole("button", { name: "Travel preferences" })).toHaveClass("text-slate-400");
+    expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
+    expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
   });
 
   it("closes Details and Assistant independently while keeping both mounted", async () => {
@@ -566,7 +566,7 @@ describe("App responsive workspace", () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Guest - sign in" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest"));
     fireEvent.click(screen.getByRole("button", { name: "Trip actions" }));
     expect(screen.getByRole("menuitem", { name: /Share trip/ })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: /Add to calendar/ })).toHaveAttribute(
@@ -585,10 +585,10 @@ describe("App responsive workspace", () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Guest - sign in" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest"));
     isAnonymousUserMock.mockReturnValue(false);
     fireEvent(window, new Event("tripplanner:identity-changed"));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Signed in as Munish" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Munish"));
   });
 
   it("loads itinerary place focus into both the map state and details pane", async () => {

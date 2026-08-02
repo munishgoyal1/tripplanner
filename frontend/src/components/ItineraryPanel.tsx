@@ -152,7 +152,7 @@ function StopRow({
       <div className="pt-0.5 text-left">
         {returnStop ? (
           <>
-            <p className="text-[10px] font-bold uppercase text-slate-400">Depart</p>
+            <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
             <p className="text-xs font-bold tabular-nums text-ink">{stop.time || "—"}{stop.time_estimated ? " est." : ""}</p>
             <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">Return</p>
             <p className="text-xs font-bold tabular-nums text-ink">{returnStop.time || "—"}{returnStop.time_estimated ? " est." : ""}</p>
@@ -373,9 +373,49 @@ function DayCard({
     : -1;
   const combinesHotelCircuit = circuitHotelIndex >= 0;
   const changesHotel = hasHotelEndpoints && normalizedPlaceName(firstStop.name) !== normalizedPlaceName(lastStop.name);
+  const destinationHotelIndex = changesHotel
+    ? combinesHotelCircuit ? circuitHotelIndex : day.stops.length - 1
+    : -1;
   const visibleStops = day.stops
     .map((stop, index) => ({ stop, index }))
     .filter(({ index }) => !combinesHotelCircuit || index < day.stops.length - 1);
+  const renderStop = ({ stop, index: i }: { stop: ItineraryStop; index: number }) => {
+    const returnStop = combinesHotelCircuit && i === circuitHotelIndex ? lastStop : undefined;
+    const representedStopIndexes = returnStop ? [i + 1, day.stops.length] : [i + 1];
+    const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const jumpActive =
+      jumpToken > 0
+      && !!jumpTo
+      && jumpTo.day === day.day
+      && !!jumpTo.name
+      && jumpTo.name.toLowerCase() === stop.name.toLowerCase();
+    return (
+      <StopRow
+        key={`${stop.name}-${i}`}
+        stop={stop}
+        day={day.day}
+        stopIndex={i + 1}
+        isFirst={i === 0}
+        isLast={i === day.stops.length - 1}
+        hotelTimingLabel={changesHotel && i === 0 ? "Check out" : changesHotel && i === destinationHotelIndex ? "Check in" : undefined}
+        returnStop={returnStop}
+        representedStopIndexes={representedStopIndexes}
+        mapLabel={mapLabels[i]}
+        active={
+          active
+          && focusName?.toLowerCase() === stop.name.toLowerCase()
+          && (focusDay == null || focusDay === day.day)
+          && (focusStop == null || representedStopIndexes.includes(focusStop))
+        }
+        jumpActive={jumpActive}
+        rowId={rowId}
+        onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
+        onFocus={() => onFocus(stop.kind, stop.name, day.day, i + 1)}
+        onMap={() => onMap(stop.kind, stop.name, day.day, i + 1)}
+        onRemove={onRemove ? () => onRemove(stop.kind, stop.name, day.day, i + 1) : undefined}
+      />
+    );
+  };
   return (
     <section id={`it-day-${day.day}`} className="overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
       <div
@@ -456,47 +496,42 @@ function DayCard({
       </div>
 
       {day.stops.length > 0 && (
-        <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
-          {visibleStops.map(({ stop, index: i }) => (
-            (() => {
-              const returnStop = combinesHotelCircuit && i === circuitHotelIndex ? lastStop : undefined;
-              const representedStopIndexes = returnStop ? [i + 1, day.stops.length] : [i + 1];
-              const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-              const jumpActive =
-                jumpToken > 0 &&
-                !!jumpTo &&
-                jumpTo.day === day.day &&
-                !!jumpTo.name &&
-                jumpTo.name.toLowerCase() === stop.name.toLowerCase();
-              return (
-            <StopRow
-              key={`${stop.name}-${i}`}
-              stop={stop}
-              day={day.day}
-              stopIndex={i + 1}
-              isFirst={i === 0}
-              isLast={i === day.stops.length - 1}
-              hotelTimingLabel={changesHotel && i === 0 ? "Check out" : changesHotel && i === day.stops.length - 1 ? "Check in" : undefined}
-              returnStop={returnStop}
-              representedStopIndexes={representedStopIndexes}
-              mapLabel={mapLabels[i]}
-              active={
-                active
-                && focusName?.toLowerCase() === stop.name.toLowerCase()
-                && (focusDay == null || focusDay === day.day)
-                && (focusStop == null || representedStopIndexes.includes(focusStop))
-              }
-              jumpActive={jumpActive}
-              rowId={rowId}
-              onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
-              onFocus={() => onFocus(stop.kind, stop.name, day.day, i + 1)}
-              onMap={() => onMap(stop.kind, stop.name, day.day, i + 1)}
-              onRemove={onRemove ? () => onRemove(stop.kind, stop.name, day.day, i + 1) : undefined}
-            />
-              );
-            })()
-          ))}
-        </ul>
+        changesHotel && destinationHotelIndex > 0 ? (
+          <div className="border-t border-slate-200 bg-surface px-3 py-3 sm:px-4" aria-label={`Stay handoff from ${firstStop.name} to ${day.stops[destinationHotelIndex].name}`}>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="text-[10px] font-bold uppercase text-brand">Stay handoff</p>
+              <p className="text-[10px] text-slate-500">Leaving → arriving</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <ul className="overflow-hidden rounded-md bg-white ring-1 ring-slate-200">
+                {renderStop(visibleStops[0])}
+              </ul>
+              <ul className="overflow-hidden rounded-md bg-white ring-1 ring-slate-200">
+                {renderStop(visibleStops.find(({ index }) => index === destinationHotelIndex)!)}
+              </ul>
+            </div>
+            {destinationHotelIndex > 1 && (
+              <section className="mt-3 overflow-hidden rounded-md bg-teal-50/70 ring-1 ring-teal-100" aria-label="Journey between stays">
+                <p className="px-3 pt-2 text-[10px] font-bold uppercase text-teal-800">Journey</p>
+                <ul className="divide-y divide-teal-100 px-2 pb-1">
+                  {visibleStops.filter(({ index }) => index > 0 && index < destinationHotelIndex).map(renderStop)}
+                </ul>
+              </section>
+            )}
+            {visibleStops.some(({ index }) => index > destinationHotelIndex) && (
+              <section className="mt-3" aria-label="Plans after check-in">
+                <p className="mb-1 px-1 text-[10px] font-bold uppercase text-slate-500">After check-in</p>
+                <ul className="divide-y divide-slate-100">
+                  {visibleStops.filter(({ index }) => index > destinationHotelIndex).map(renderStop)}
+                </ul>
+              </section>
+            )}
+          </div>
+        ) : (
+          <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
+            {visibleStops.map(renderStop)}
+          </ul>
+        )
       )}
     </section>
   );

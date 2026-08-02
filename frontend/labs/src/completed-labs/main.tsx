@@ -4,13 +4,18 @@ import { Archive, CheckCircle2 } from "lucide-react";
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabRecordCard } from "../shared/LabRecordCard";
-import { completedLabs, locallyCompletedLabs } from "../shared/labRecords";
+import { allLabs, effectiveLabDisposition, resolvedLabRecord } from "../shared/labRecords";
 import { useLabSelections } from "../shared/useLabSelections";
 
 function CompletedLabs() {
   const { selections, status } = useLabSelections();
 
-  const allCompletedLabs = [...locallyCompletedLabs(selections), ...completedLabs];
+  const allCompletedLabs = status === "loaded"
+    ? allLabs
+        .filter((lab) => effectiveLabDisposition(lab, selections[lab.id]) === "completed")
+        .map((lab) => resolvedLabRecord(lab, selections[lab.id]))
+        .sort((first, second) => second.labNumber - first.labNumber)
+    : [];
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f0fdf4_0,#fafaf9_22rem)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -24,7 +29,7 @@ function CompletedLabs() {
         </header>
 
         <section className="mt-7" aria-labelledby="completed-labs-title">
-          {status === "error" && <p role="alert" className="mb-4 rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-800 ring-1 ring-rose-200">Saved Lab decisions are unavailable. This archive is showing only committed completed experiments.</p>}
+          {status !== "loaded" && <p role={status === "error" ? "alert" : "status"} className={`mb-4 rounded-md px-4 py-3 text-sm ring-1 ${status === "error" ? "bg-rose-50 text-rose-800 ring-rose-200" : "bg-white text-slate-500 ring-slate-200"}`}>{status === "error" ? "Saved Lab decisions are unavailable. No completion state has been inferred." : "Loading completed Lab decisions…"}</p>}
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="flex items-center gap-1 text-[10px] font-bold uppercase text-emerald-700"><CheckCircle2 size={12} aria-hidden /> Decision recorded</p>
@@ -33,7 +38,7 @@ function CompletedLabs() {
             <span className="text-xs text-slate-400">{allCompletedLabs.length} completed</span>
           </div>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
-            {allCompletedLabs.map((lab) => <LabRecordCard key={lab.id} lab={lab} completed />)}
+            {allCompletedLabs.map((lab) => <LabRecordCard key={lab.id} lab={lab} completed state="completed" selection={selections[lab.id]} />)}
           </div>
           <p className="mt-4 text-xs leading-relaxed text-slate-400">The workspace-shell comparison predates standalone Lab pages, so its page reconstructs the preserved branch decision. Newer completed experiments retain their original interactive comparisons.</p>
         </section>

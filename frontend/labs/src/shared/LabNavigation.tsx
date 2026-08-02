@@ -1,21 +1,22 @@
-import { Archive, ArrowLeft, FlaskConical, ListChecks, PauseCircle } from "lucide-react";
+import { Archive, ArrowLeft, FlaskConical, ListChecks, PauseCircle, ScanSearch } from "lucide-react";
 
-type LabSection = "catalog" | "active" | "parked" | "completed";
+type LabSection = "catalog" | "active" | "implemented-review" | "parked" | "completed";
 
 export function LabNavigation({ current = "active", detail = false }: { current?: LabSection; detail?: boolean }) {
   if (detail) {
     return (
       <nav aria-label="Lab navigation">
         <a href="./catalog.html" className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-white px-2.5 text-xs font-semibold text-slate-600 shadow-card ring-1 ring-slate-200 transition hover:text-brand hover:ring-brand/30">
-          <ArrowLeft size={13} aria-hidden /> Back to All Labs
+          <ArrowLeft size={13} aria-hidden /> Back to All Open Labs
         </a>
       </nav>
     );
   }
 
   const links = [
-    { id: "catalog", label: "All labs", href: "./catalog.html", icon: FlaskConical },
+    { id: "catalog", label: "All Open Labs", href: "./catalog.html", icon: FlaskConical },
     { id: "active", label: "In progress", href: "./catalog.html?view=active", icon: ListChecks },
+    { id: "implemented-review", label: "Implemented review", href: "./catalog.html?view=implemented-review", icon: ScanSearch },
     { id: "parked", label: "Parked", href: "./catalog.html?view=parked", icon: PauseCircle },
     { id: "completed", label: "Completed", href: "./completed-labs.html", icon: Archive },
   ] as const;
