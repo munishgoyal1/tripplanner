@@ -8,6 +8,7 @@ import {
 
 interface Props {
   onClose: () => void;
+  embedded?: boolean;
 }
 
 const TRIP_STYLES = ["", "relaxed", "balanced", "packed", "luxury", "budget", "adventure"];
@@ -24,7 +25,7 @@ function parseList(s: string): string[] {
     .filter(Boolean);
 }
 
-export default function SettingsModal({ onClose }: Props) {
+export default function SettingsModal({ onClose, embedded = false }: Props) {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
   const [extracted, setExtracted] = useState<string[] | null>(null);
@@ -124,22 +125,8 @@ export default function SettingsModal({ onClose }: Props) {
     }
   }
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink">Travel preferences</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-ink">
-            ✕
-          </button>
-        </div>
-
+  const content = (
+    <>
         {!prefs ? (
           <p className="text-sm text-slate-500">Loading…</p>
         ) : (
@@ -343,12 +330,7 @@ export default function SettingsModal({ onClose }: Props) {
             </Field>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={onClose}
-                className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100"
-              >
-                Cancel
-              </button>
+              {!embedded && <button onClick={onClose} className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100">Cancel</button>}
               <button
                 onClick={save}
                 disabled={saving}
@@ -359,6 +341,25 @@ export default function SettingsModal({ onClose }: Props) {
             </div>
           </div>
         )}
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-ink">Travel preferences</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-ink">✕</button>
+        </div>
+        {content}
       </div>
     </div>
   );

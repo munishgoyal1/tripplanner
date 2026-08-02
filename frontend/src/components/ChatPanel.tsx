@@ -750,7 +750,6 @@ export default function ChatPanel({
 
                 <button
                   onClick={() => {
-                    window.dispatchEvent(new Event("tripplanner:analytics-settings"));
                     setShowAccount(false);
                   }}
                   className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100"
@@ -1075,14 +1074,6 @@ export default function ChatPanel({
             if (auth.authenticated) await logoutGoogle();
             else signOut();
             window.location.reload();
-          }}
-          onOpenTravelProfile={() => {
-            setShowAccount(false);
-            setShowSettings(true);
-          }}
-          onOpenAnalytics={() => {
-            setShowAccount(false);
-            window.dispatchEvent(new Event("tripplanner:analytics-settings"));
           }}
           onDeleteTripHistory={() => void handleDeleteTripHistory()}
           onClearAllData={() => void handleClearAllData()}

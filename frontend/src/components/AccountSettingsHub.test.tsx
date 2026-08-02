@@ -14,8 +14,6 @@ function renderHub(overrides: Partial<React.ComponentProps<typeof AccountSetting
     onGoogleSignIn: vi.fn(),
     onLocalSignIn: vi.fn(),
     onSignOut: vi.fn(),
-    onOpenTravelProfile: vi.fn(),
-    onOpenAnalytics: vi.fn(),
     onDeleteTripHistory: vi.fn(),
     onClearAllData: vi.fn(),
     onDeleteAccount: vi.fn(),
@@ -36,14 +34,16 @@ describe("AccountSettingsHub", () => {
     expect(screen.getByRole("button", { name: /Privacy and data/ })).toBeInTheDocument();
   });
 
-  it("delegates travel profile and analytics to their existing production surfaces", () => {
-    const props = renderHub();
+  it("keeps travel profile and analytics inside the account settings hub", async () => {
+    renderHub();
 
     fireEvent.click(screen.getByRole("button", { name: /Travel profile/ }));
+    expect(screen.getByRole("heading", { name: "Travel profile" })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Account settings" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Back to settings/ }));
     fireEvent.click(screen.getByRole("button", { name: /Analytics preferences/ }));
-
-    expect(props.onOpenTravelProfile).toHaveBeenCalledOnce();
-    expect(props.onOpenAnalytics).toHaveBeenCalledOnce();
+    expect(screen.getByRole("region", { name: "Analytics preferences" })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Account settings" })).toBeInTheDocument();
   });
 
   it("supports sign-in and all grounded privacy actions", () => {

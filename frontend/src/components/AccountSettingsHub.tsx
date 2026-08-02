@@ -11,8 +11,10 @@ import {
   X,
 } from "lucide-react";
 import type { AuthSession } from "../api";
+import { AnalyticsPreferences } from "./AnalyticsConsent";
+import SettingsModal from "./SettingsModal";
 
-type Destination = "menu" | "profile" | "privacy";
+type Destination = "menu" | "profile" | "travel" | "analytics" | "privacy";
 
 interface Props {
   auth: AuthSession;
@@ -25,8 +27,6 @@ interface Props {
   onGoogleSignIn: () => void;
   onLocalSignIn: () => void;
   onSignOut: () => void;
-  onOpenTravelProfile: () => void;
-  onOpenAnalytics: () => void;
   onDeleteTripHistory: () => void;
   onClearAllData: () => void;
   onDeleteAccount: () => void;
@@ -65,8 +65,6 @@ export default function AccountSettingsHub({
   onGoogleSignIn,
   onLocalSignIn,
   onSignOut,
-  onOpenTravelProfile,
-  onOpenAnalytics,
   onDeleteTripHistory,
   onClearAllData,
   onDeleteAccount,
@@ -88,8 +86,8 @@ export default function AccountSettingsHub({
           </div>
           <nav className="divide-y divide-slate-100" aria-label="Account settings sections">
             <MenuRow icon={CircleUserRound} label="Profile and sign-in" detail="Identity and account access" onClick={() => setDestination("profile")} />
-            <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, travel style, and accessibility" onClick={onOpenTravelProfile} />
-            <MenuRow icon={BarChart3} label="Analytics preferences" detail="Anonymous product analytics choice" onClick={onOpenAnalytics} />
+            <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, travel style, and accessibility" onClick={() => setDestination("travel")} />
+            <MenuRow icon={BarChart3} label="Analytics preferences" detail="Anonymous product analytics choice" onClick={() => setDestination("analytics")} />
             <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, erasure, and account deletion" onClick={() => setDestination("privacy")} />
           </nav>
         </>}
@@ -109,6 +107,14 @@ export default function AccountSettingsHub({
             <div className="flex items-center gap-2"><button type="button" onClick={onLocalSignIn} disabled={!nameInput.trim()} className="h-9 rounded-md bg-brand px-4 text-xs font-semibold text-white disabled:opacity-40">{localIdentityActive ? "Update name" : "Sign in"}</button>{localIdentityActive && <button type="button" onClick={onSignOut} className="h-9 rounded-md px-3 text-xs font-semibold text-slate-500 hover:bg-slate-50">Sign out</button>}</div>
           </div>}
         </div>}
+
+        {destination === "travel" && <div className="p-4">
+          <BackButton onClick={() => setDestination("menu")} />
+          <div className="mt-4 flex items-start gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-teal-50 text-teal-700"><SlidersHorizontal size={17} aria-hidden /></span><div><p className="text-[10px] font-bold uppercase text-brand">Reusable defaults</p><h3 className="mt-0.5 text-sm font-semibold text-ink">Travel profile</h3><p className="mt-1 text-xs leading-relaxed text-slate-500">Keep your travel style and preferences available for future plans.</p></div></div>
+          <div className="mt-4"><SettingsModal embedded onClose={() => setDestination("menu")} /></div>
+        </div>}
+
+        {destination === "analytics" && <AnalyticsPreferences onBack={() => setDestination("menu")} />}
 
         {destination === "privacy" && <div className="p-4">
           <BackButton onClick={() => setDestination("menu")} />
