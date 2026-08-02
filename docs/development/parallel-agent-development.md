@@ -146,10 +146,12 @@ is updated once after the integrated result is pushed.
 Non-target worktrees are never stashed, checked out, reset, or otherwise modified.
 Target worktree changes are temporarily stashed and restored with their staged
 state. Git `rerere` attempts a previously validated merge resolution. A new
-semantic conflict stops in the affected target for explicit resolution and keeps
-its safety stash rather than choosing blanket ours/theirs. Sibling code always
-reaches a worker through `master`; worker branches are not merged directly into
-one another.
+semantic conflict pauses, lists the exact paths and resolution worktree, and
+waits for `RESOLVED` or `ABORT` rather than choosing blanket ours/theirs.
+`Merge-Worktrees` uses its disposable integration worktree; `Update-From-Master`
+uses the selected target and keeps its local changes in a safety stash until the
+merge finishes or is aborted. Sibling code always reaches a worker through
+`master`; worker branches are not merged directly into one another.
 
 ### Deliberate PR integration
 

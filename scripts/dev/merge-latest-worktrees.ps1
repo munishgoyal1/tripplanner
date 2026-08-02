@@ -26,6 +26,68 @@ function Invoke-Git {
     return $output
 }
 
+function Complete-MergeConflict {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string]$SourceName
+    )
+
+    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
+    $remaining = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "diff", "--name-only", "--diff-filter=U"
+    ))
+    if ($remaining.Count -eq 0) {
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
+        Write-Host "Reused a recorded conflict resolution for $SourceName." -ForegroundColor Green
+        return
+    }
+
+    Write-Host "`n$SourceName has new conflicts that need a semantic decision:" -ForegroundColor Yellow
+    $remaining | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    Write-Host "Resolve them in the temporary integration worktree: $WorkingDirectory"
+
+    while ($true) {
+        $confirmation = Read-Host "Type RESOLVED to verify and continue, or ABORT to leave master unchanged"
+        if ($confirmation -eq "ABORT") {
+            Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("merge", "--abort") | Out-Null
+            throw "Integration of $SourceName was aborted. No real worktree was modified."
+        }
+        if ($confirmation -ne "RESOLVED") {
+            Write-Host "Enter exactly RESOLVED or ABORT." -ForegroundColor Yellow
+            continue
+        }
+
+        $markers = & git -C $WorkingDirectory grep -n `
+            -e "^<<<<<<< " -e "^||||||| " -e "^=======$" -e "^>>>>>>> " `
+            -- @remaining
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Conflict markers remain:`n$($markers -join [Environment]::NewLine)" -ForegroundColor Yellow
+            continue
+        }
+        if ($LASTEXITCODE -ne 1) {
+            throw "Could not scan resolved files for conflict markers."
+        }
+
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments (@("add", "--") + $remaining) | Out-Null
+        $unresolved = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+            "diff", "--name-only", "--diff-filter=U"
+        ))
+        if ($unresolved.Count -gt 0) {
+            Write-Host "Still unresolved:`n$($unresolved -join [Environment]::NewLine)" -ForegroundColor Yellow
+            continue
+        }
+
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--cached", "--check") | Out-Null
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
+        Write-Host "Recorded the conflict resolution for $SourceName." -ForegroundColor Green
+        return
+    }
+}
+
 function Get-WorktreeHeads {
     param(
         [Parameter(Mandatory = $true)]
@@ -134,6 +196,8 @@ try {
         "worktree", "add", "--detach", $integrationRoot, $originMaster
     ) | Out-Null
     $integrationAdded = $true
+    Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("config", "rerere.enabled", "true") | Out-Null
+    Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
 
     foreach ($source in $sources) {
         & git -C $integrationRoot merge-base --is-ancestor $source.Head HEAD
@@ -148,10 +212,7 @@ try {
         Write-Host "Merging committed $($source.Branch) head $($source.Head.Substring(0, 7))..." -ForegroundColor Cyan
         & git -C $integrationRoot merge --no-edit --no-ff $source.Head
         if ($LASTEXITCODE -ne 0) {
-            $conflicts = @(& git -C $integrationRoot diff --name-only --diff-filter=U)
-            $conflictList = if ($conflicts) { $conflicts -join ", " } else { "unknown paths" }
-            & git -C $integrationRoot merge --abort 2>$null
-            throw "Committed branch $($source.Branch) conflicts with the integration result in: $conflictList. No real worktree was modified."
+            Complete-MergeConflict -WorkingDirectory $integrationRoot -SourceName $source.Branch
         }
     }
 

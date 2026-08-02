@@ -26,6 +26,68 @@ function Invoke-Git {
     return $output
 }
 
+function Complete-MergeConflict {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string]$LaneName
+    )
+
+    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
+    $remaining = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+        "diff", "--name-only", "--diff-filter=U"
+    ))
+    if ($remaining.Count -eq 0) {
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
+        Write-Host "Reused a recorded conflict resolution in $LaneName." -ForegroundColor Green
+        return
+    }
+
+    Write-Host "`n$LaneName has new conflicts that need a semantic decision:" -ForegroundColor Yellow
+    $remaining | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    Write-Host "Resolve them in: $WorkingDirectory"
+
+    while ($true) {
+        $confirmation = Read-Host "Type RESOLVED to verify and continue, or ABORT to restore the pre-merge state"
+        if ($confirmation -eq "ABORT") {
+            Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("merge", "--abort") | Out-Null
+            throw "$LaneName merge was aborted."
+        }
+        if ($confirmation -ne "RESOLVED") {
+            Write-Host "Enter exactly RESOLVED or ABORT." -ForegroundColor Yellow
+            continue
+        }
+
+        $markers = & git -C $WorkingDirectory grep -n `
+            -e "^<<<<<<< " -e "^||||||| " -e "^=======$" -e "^>>>>>>> " `
+            -- @remaining
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Conflict markers remain:`n$($markers -join [Environment]::NewLine)" -ForegroundColor Yellow
+            continue
+        }
+        if ($LASTEXITCODE -ne 1) {
+            throw "Could not scan resolved files for conflict markers."
+        }
+
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments (@("add", "--") + $remaining) | Out-Null
+        $unresolved = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
+            "diff", "--name-only", "--diff-filter=U"
+        ))
+        if ($unresolved.Count -gt 0) {
+            Write-Host "Still unresolved:`n$($unresolved -join [Environment]::NewLine)" -ForegroundColor Yellow
+            continue
+        }
+
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--cached", "--check") | Out-Null
+        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
+        Write-Host "Recorded the conflict resolution in $LaneName." -ForegroundColor Green
+        return
+    }
+}
+
 function Merge-RemoteRef {
     param(
         [Parameter(Mandatory = $true)]
@@ -48,22 +110,7 @@ function Merge-RemoteRef {
         throw "Could not merge $RemoteRef into $LaneName."
     }
 
-    & git -C $WorkingDirectory rerere | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw "Git rerere could not inspect the $LaneName conflict."
-    }
-
-    $remaining = @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not inspect unresolved paths in $LaneName."
-    }
-    if ($remaining.Count -gt 0) {
-        $paths = $remaining -join ", "
-        throw "$LaneName needs a semantic merge resolution in: $paths. Resolve and commit the merge, then rerun this command. Preserved local changes remain in the safety stash."
-    }
-
-    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
-    Write-Host "Reused a recorded conflict resolution in $LaneName." -ForegroundColor Green
+    Complete-MergeConflict -WorkingDirectory $WorkingDirectory -LaneName $LaneName
 }
 
 function Update-Lane {
