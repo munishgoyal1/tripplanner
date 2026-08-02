@@ -47,6 +47,11 @@ export function labFeedbackPlugin(): Plugin {
           }
 
           const selections = await readSelections();
+          const previous = selections[selection.labId];
+          const updatedAt = new Date().toISOString();
+          const stateChangedAt = previous?.disposition === selection.disposition
+            ? previous.stateChangedAt || previous.updatedAt
+            : updatedAt;
           selections[selection.labId] = selection.disposition === "discarded"
             ? {
                 labId: selection.labId,
@@ -55,9 +60,10 @@ export function labFeedbackPlugin(): Plugin {
                 selectionLabel: "",
                 comment: "",
                 disposition: "discarded",
-                updatedAt: new Date().toISOString(),
+                stateChangedAt,
+                updatedAt,
               }
-            : { ...selection, updatedAt: new Date().toISOString() };
+            : { ...selection, stateChangedAt, updatedAt };
           await writeSelections(selections);
           sendJson(response, 200, selections[selection.labId]);
         } catch (error) {

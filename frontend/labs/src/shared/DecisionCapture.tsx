@@ -10,6 +10,7 @@ interface SavedSelection {
   selection: string;
   comment: string;
   disposition?: LabDisposition;
+  stateChangedAt?: string;
   updatedAt?: string;
 }
 
@@ -96,12 +97,11 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           : { labId, labTitle, selection: activeOption, selectionLabel: selectedLabel, comment, disposition: nextDisposition }),
       });
       if (!response.ok) throw new Error("Unable to save selection");
+      const savedSelection = await response.json() as SavedSelection;
       if (nextDisposition === "discarded") {
         localStorage.removeItem(draftKey);
-        setSaved({ selection: "", comment: "", disposition: nextDisposition });
-      } else {
-        setSaved({ selection: activeOption, comment, disposition: nextDisposition });
       }
+      setSaved(savedSelection);
       setStatus("saved");
     } catch {
       setStatus("offline");

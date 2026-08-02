@@ -7,19 +7,21 @@ This folder tracks A/B-style UX layout experiments so we can compare quickly and
 The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 `http://127.0.0.1:5175/catalog.html` to access every standalone experiment.
 For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
-workspace has four durable catalog views:
+workspace has five durable catalog views:
 
-- `catalog.html` is All Labs: active and parked experiments.
-- `catalog.html?view=active` contains choices still being evaluated, ready for
-  implementation, or implemented and awaiting owner review.
+- `catalog.html` is All Labs: in-progress, implemented-review, and parked experiments.
+- `catalog.html?view=active` contains choices still being evaluated or currently
+  under implementation.
+- `catalog.html?view=implemented-review` contains production implementations
+  awaiting owner review and sign-off.
 - `catalog.html?view=parked` contains saved evaluations waiting for a later
   decision.
 - `completed-labs.html` preserves completed experiments, their original Lab
   links, and the selected outcome.
 
-Do not delete a Lab after a decision. Move its shared record from `activeLabs`
-to `completedLabs`, retain the page, and update its experiment document with the
-final choice and date. Every standalone Lab has one explicit Back to All Labs link;
+Do not delete a Lab after a decision. Update its machine lifecycle record, retain
+the page, and update its experiment document with the final choice and date.
+Every standalone Lab has one explicit Back to All Labs link;
 catalog filters appear only on catalog pages.
 Historical experiments that predate Lab pages may remain read-only detail records
 reconstructed from their preserved source material.
@@ -175,6 +177,9 @@ when the shared store is absent. A coding agent can read the shared store
 when the owner later says to pick and execute the saved preferences. Saving a
 handoff does not change production UI and is not implementation approval by
 itself; the owner's later execution instruction remains the approval boundary.
+Cards show both the Lab creation date and the date it entered its current
+lifecycle state. The machine record wins over committed historical fallback
+metadata when the two disagree.
 **Save for implementation** keeps the Lab in progress and marks the complete
 handoff ready. **Mark implemented - to be reviewed** is required after production
 implementation and keeps the Lab visible in progress for owner validation.

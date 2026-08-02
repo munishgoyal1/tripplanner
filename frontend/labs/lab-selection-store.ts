@@ -9,6 +9,7 @@ export interface LabSelection {
   selectionLabel: string;
   comment: string;
   disposition?: "ready" | "implemented-review" | "parked" | "completed" | "discarded";
+  stateChangedAt?: string;
   updatedAt: string;
 }
 
