@@ -356,7 +356,7 @@ If a redesign violates the above without a stated reason, push back.
   unpushed work.
 - **No major functional changes without explicit consent.** Refactors and
   structural improvements are fine; new features/behaviors require a yes.
-- Update `README.md`, [the requirements log](../PRD/REQUIREMENTS%20Auto%20Log.txt), [CODEMAP.md](./CODEMAP.md), and
+- Update `README.md`, [the requirements log](./reference/history/requirements-log.txt), [CODEMAP.md](./CODEMAP.md), and
   [`.github/copilot-instructions.md`](../.github/copilot-instructions.md) in
   the SAME commit as the code change that triggers them.
 - Free-tier or near-free everything: Azure ≤ ₹10K/mo, Amadeus test, Google

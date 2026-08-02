@@ -144,7 +144,7 @@ reuses each worker's pull request, merges Worker 1 with a merge commit, updates
 Finally, it fast-forwards both persistent workers to the resulting `master`, so
 all three worktrees finish synchronized for their next assignments.
 Independent dated additions to
-`PRD/REQUIREMENTS Auto Log.txt` use Git's union merge driver because that file is
+`docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
 The same command handles one or both lanes. With no argument it synchronizes

@@ -3,7 +3,7 @@
 This document answers four questions: where behavior is owned, which contracts
 must remain stable, how data flows, and which commands validate a change. Product
 intent belongs in [PRODUCT.md](PRODUCT.md); capability status belongs in
-[REQUIREMENTS_V2.md](REQUIREMENTS_V2.md); durable failure lessons belong in
+[REQUIREMENTS.md](REQUIREMENTS.md); durable failure lessons belong in
 [ENGINEERING_LEARNINGS.md](ENGINEERING_LEARNINGS.md).
 
 ## System Shape
@@ -175,7 +175,7 @@ conversation or explicit edit
 | `.github/copilot-instructions.md` | Durable coding-agent rules and canonical pointers |
 | `docs/README.md` | Documentation index and ownership |
 | `docs/PRODUCT.md` | Product intent and interaction rules |
-| `docs/REQUIREMENTS_V2.md` | Current capabilities, gaps, and roadmap |
+| `docs/REQUIREMENTS.md` | Current capabilities, gaps, and roadmap |
 | `docs/ENGINEERING_LEARNINGS.md` | Durable lessons from observed failures |
 | `docs/feature-briefs/` | Owner-approved active milestone scope |
 | `docs/roadmap/` | Candidate and deferred ideas |
@@ -186,7 +186,7 @@ conversation or explicit edit
 | `infra/` | Azure IaC and approval-gated operational scripts |
 | `scripts/` | Local development, smoke, migration, and maintenance helpers |
 | `tests/` | Python unit and integration tests |
-| `PRD/REQUIREMENTS Auto Log.txt` | Append-only chronological decisions and requirement history |
+| `docs/reference/` | Indexed owner inputs, decision history, and dated technical snapshots |
 
 ## Validation Commands
 
@@ -247,7 +247,7 @@ The non-negotiable gates are:
 | Persistence | Persistence interface and selected implementation | Both local and Cosmos behavior |
 | Azure resources | Owning Bicep/script | Dry run, canary flow, environment isolation |
 | Product scope | `PRODUCT.md` or owner-edited feature brief | Requirements baseline after implementation |
-| Capability status | `REQUIREMENTS_V2.md` | Append dated decision when relevant |
+| Capability status | `REQUIREMENTS.md` | Append dated decision when relevant |
 
 Update this map only when ownership, contracts, repository structure, or canonical
 commands change. Do not turn it into a release diary or duplicate feature status.

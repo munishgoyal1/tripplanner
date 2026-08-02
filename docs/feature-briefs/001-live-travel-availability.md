@@ -9,7 +9,7 @@
 | Owner | Munish Goyal |
 | Created | 2026-07-30 |
 | Updated | 2026-07-30 |
-| Baseline | `docs/REQUIREMENTS_V2.md` v2.0 |
+| Baseline | `docs/REQUIREMENTS.md` at `f4f4392` |
 | Related capability IDs | PLAN-01, PLAN-02, PLAN-03, LIFE-01, REL-01, SAFE-01 |
 
 ## One-sentence requirement
