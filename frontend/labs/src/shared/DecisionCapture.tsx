@@ -104,6 +104,9 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
 
   const selectedLabel = options.find((option) => option.id === activeOption)?.label || activeOption;
   const dirty = saved?.selection !== activeOption || saved?.comment !== comment || saved?.disposition !== disposition;
+  const isReimplementation = implementations.length > 0;
+  const readyStored = Boolean(saved && disposition === "ready" && !dirty);
+  const showSaveConfirmation = status === "saved" && readyStored;
 
   const keepDraft = (selection: string, nextComment: string, nextDisposition = disposition) => {
     localStorage.setItem(draftKey, JSON.stringify({
@@ -130,10 +133,13 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
     setDisposition(nextDisposition);
     keepDraft(activeOption, comment, nextDisposition);
     setStatus("saving");
+    const controller = new AbortController();
+    const saveTimeout = window.setTimeout(() => controller.abort(), 10_000);
     try {
       const response = await fetch("/__labs/selections", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify(nextDisposition === "discarded"
           ? { labId, labTitle, disposition: nextDisposition }
           : { labId, labTitle, selection: activeOption, selectionLabel: selectedLabel, comment, disposition: nextDisposition }),
@@ -148,6 +154,8 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       setStatus("saved");
     } catch {
       setStatus("offline");
+    } finally {
+      window.clearTimeout(saveTimeout);
     }
   };
 
@@ -208,6 +216,16 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       <label className="mt-4 block text-xs font-semibold text-slate-700" htmlFor={`${labId}-comment`}>Handoff notes</label>
       <textarea id={`${labId}-comment`} value={comment} onChange={(event) => updateComment(event.target.value)} rows={5} placeholder="Describe modifications, additional inputs, details to preserve, and implementation or validation instructions for this option." className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40" />
 
+      {showSaveConfirmation && (
+        <div role="status" aria-live="polite" className={`mt-3 flex items-start gap-2 rounded-md px-3 py-2.5 ring-1 ${isReimplementation ? "bg-teal-50 text-teal-900 ring-teal-200" : "bg-emerald-50 text-emerald-900 ring-emerald-200"}`}>
+          <CheckCircle2 size={16} className="mt-0.5 shrink-0" aria-hidden />
+          <div>
+            <p className="text-xs font-bold">{isReimplementation ? "Re-implementation handoff saved" : "Implementation handoff saved"}</p>
+            <p className="mt-0.5 text-xs leading-relaxed">{selectedLabel} and its exact notes are ready {isReimplementation ? `to implement as Version ${implementations.length + 1}` : "for implementation"}.</p>
+          </div>
+        </div>
+      )}
+
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className={`text-xs ${status === "offline" ? "text-amber-700" : "text-slate-400"}`}>
           {status === "loading" && "Loading saved handoff…"}
@@ -217,7 +235,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           {status === "saved" && disposition === "parked" && "Lab parked with its chosen option and notes."}
           {status === "saved" && disposition === "completed" && "Owner sign-off recorded; Lab completed with its decision and notes preserved."}
           {status === "saved" && disposition === "discarded" && "Lab discarded; its option and handoff notes were deleted."}
-          {status === "offline" && "Draft kept in this browser. Restart the Labs server, then retry Save handoff."}
+          {status === "offline" && "Save did not complete. The draft is kept in this browser; restart the Labs server, then retry."}
           {status === "idle" && (dirty ? "Workspace save pending; browser draft kept" : saved ? "Saved in this workspace" : "Nothing saved yet")}
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -225,7 +243,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           <button type="button" onClick={() => save("parked")} disabled={status === "saving"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-amber-800 ring-1 ring-amber-200 hover:bg-amber-50 disabled:opacity-50"><Archive size={13} aria-hidden /> Park for later</button>
           <button type="button" onClick={() => save("implemented-review")} disabled={status === "saving" || !dirty && disposition === "implemented-review"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-sky-700 ring-1 ring-sky-200 hover:bg-sky-50 disabled:opacity-50"><CheckCircle2 size={13} aria-hidden /> Mark implemented - to be reviewed</button>
           <button type="button" onClick={() => save("completed")} disabled={status === "saving" || disposition !== "implemented-review"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-50 disabled:opacity-50"><CheckCircle2 size={13} aria-hidden /> Sign off and complete</button>
-          <button type="button" onClick={() => save("ready")} disabled={status === "saving" || !dirty && disposition === "ready"} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> {implementations.length ? "Start re-implementation" : "Save for implementation"}</button>
+          <button type="button" onClick={() => save("ready")} disabled={status === "saving" || !dirty && disposition === "ready"} className={isReimplementation ? "inline-flex h-9 items-center gap-1.5 rounded-md bg-teal-700 px-3 text-xs font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50" : "btn-primary disabled:cursor-not-allowed disabled:opacity-50"}><Save size={14} aria-hidden /> {readyStored ? isReimplementation ? "Re-implementation saved" : "Implementation saved" : isReimplementation ? "Save for re-implementation" : "Save for implementation"}</button>
         </div>
       </div>
     </section>

@@ -99,7 +99,10 @@ its handoff notes, and save it for implementation.
 option and notes become a Ready handoff for another implementation cycle, while
 every implemented version remains visible under What was implemented with its
 selected option, exact saved notes, version number, and recorded time. One final
-summary lists every implemented option and its notes. The permanent Lab
+summary lists every implemented option and its notes. Saving shows an explicit
+confirmation naming the selected option and next version; the re-implementation
+action is visually distinct and cannot remain indefinitely in a Saving state.
+The permanent Lab
 number appears on the detail page and in its HTML filename.
 
 **Executable proof:**
