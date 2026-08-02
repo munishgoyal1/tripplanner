@@ -116,6 +116,43 @@ module or contract, sequence them instead of running them in parallel.
 
 ## Merge checkpoints
 
+### Everyday synchronization
+
+Three composable launchers cover normal parallel work. Positional numbers are
+Agent 1, Agent 2, and Agent 3 (`master`). Where a lane number applies, omitting
+it selects all lanes.
+
+```powershell
+# Agent 3: merge committed local and remote worker heads into master.
+.\scripts\dev\Merge-Worktrees.cmd
+.\scripts\dev\Merge-Worktrees.cmd 1
+
+# Apply the latest own remote plus origin/master to selected lanes.
+.\scripts\dev\Update-From-Master.cmd
+.\scripts\dev\Update-From-Master.cmd 2
+
+# Integrate every worker through master, then update selected lanes.
+.\scripts\dev\Sync-Latest.cmd 1
+.\scripts\dev\Sync-Latest.cmd
+```
+
+`Sync-Latest 3` is exactly the Agent 3 operation performed by `Merge-Worktrees`;
+it returns after that integration rather than pulling `master` redundantly.
+`Merge-Worktrees`
+starts its disposable integration checkout directly from fetched `origin/master`,
+so pulling local `master` before integration would be redundant; local `master`
+is updated once after the integrated result is pushed.
+
+Non-target worktrees are never stashed, checked out, reset, or otherwise modified.
+Target worktree changes are temporarily stashed and restored with their staged
+state. Git `rerere` attempts a previously validated merge resolution. A new
+semantic conflict stops in the affected target for explicit resolution and keeps
+its safety stash rather than choosing blanket ours/theirs. Sibling code always
+reaches a worker through `master`; worker branches are not merged directly into
+one another.
+
+### Deliberate PR integration
+
 The agent finishes its branch with a coherent commit and push. From that
 worktree:
 
@@ -124,13 +161,12 @@ git push -u origin HEAD
 gh pr create --base master --head agents/route-cache-fix --fill
 ```
 
-To synchronize both persistent agent lanes, use either one-click entry point from
-the primary integration checkout:
+For an explicit review checkpoint, use the clean-worktree PR integration entry
+point from the primary integration checkout:
 
-- VS Code: **Tasks: Run Task** → **Tripplanner: Sync All Worktrees**
 - File Explorer: double-click `scripts/dev/Sync-All-Worktrees.cmd`
 
-Both use the shared guarded integration engine. The sync command refuses dirty or
+This uses the guarded PR integration engine. The command refuses dirty or
 unexpected worktrees, preflights both
 before either merge, and enables Git `rerere` so a previously validated conflict
 resolution is reused automatically. For a new semantic conflict, it pauses in the
@@ -159,27 +195,16 @@ Add `-ValidateOnly` for a preflight without integration. The `.cmd` launcher
 forwards both parameters to the shared PowerShell orchestrator. The lower-level
 `sync-worker.ps1` remains its internal single-worker engine.
 
-When ongoing worker edits must remain completely untouched, run
-`.\scripts\dev\merge-latest-worktrees.ps1`. It snapshots the current committed
-`HEAD` of every registered non-detached worktree, merges those immutable commits
-in a disposable detached worktree, pushes the result to `master`, and fast-forwards
-the primary checkout. It never checks out, stages, stashes, resets, or updates a
-worker worktree, so staged, unstaged, and untracked worker files do not block it.
-Commits created after the snapshot wait for the next run. A committed-code conflict
-stops the script without modifying any real worker worktree. If the primary checkout
-is dirty, its changes are temporarily stashed and restored around the final
-fast-forward; overlapping primary edits still require explicit resolution.
-If another client updates remote `master` during integration, the push is rejected
-safely; rerun the command against the new baseline.
+`Merge-Worktrees.cmd` owns the dirty-tolerant alternative described above.
+Its lower-level `merge-latest-worktrees.ps1` engine also remains callable directly.
 
 In parallel mode, to synchronize all worktrees and immediately restart the local
 application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
 `scripts/dev/Run-Latest-Code.cmd`. This is the regular local workflow even
-when `master` has staged, unstaged, or untracked work: it temporarily stashes the
-local state, runs both guarded merges against a clean checkout, restores the local
-state with its staged status, and then starts `scripts/dev/dev-spa.ps1`. If restored
-changes overlap the merged code, it stops with the stash retained for explicit
-conflict resolution. The direct **Sync All Worktrees** command remains clean-only.
+when any lane has staged, unstaged, or untracked work: it runs `Sync Latest`,
+preserves and restores each affected lane's local state, and then starts
+`scripts/dev/dev-spa.ps1`. If restored changes overlap synchronized code, it stops
+with the stash retained for explicit conflict resolution.
 
 Use a pull request for each optional worker branch. It provides one diff and
 check surface, keeps `master` stable, and makes parallel integration order

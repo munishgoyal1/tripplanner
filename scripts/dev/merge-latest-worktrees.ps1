@@ -1,6 +1,10 @@
 #!/usr/bin/env pwsh
 [CmdletBinding()]
 param(
+    [Parameter(Position = 0)]
+    [ValidateSet(1, 2)]
+    [int]$WorkerNumber,
+
     [switch]$ValidateOnly
 )
 
@@ -36,11 +40,13 @@ function Get-WorktreeHeads {
 
     foreach ($line in $worktreeOutput) {
         if (-not $line) {
-            if ($record.worktree -and $record.HEAD -and $record.branch -and $record.branch -ne "refs/heads/master") {
+            if ($record.worktree -and $record.HEAD -and
+                $record.branch -match "^refs/heads/agents/worker-(1|2)$") {
                 $worktrees.Add([pscustomobject]@{
                     Path = $record.worktree
                     Head = $record.HEAD
                     Branch = ($record.branch -replace "^refs/heads/", "")
+                    Number = [int]$Matches[1]
                 })
             }
             $record = @{}
@@ -71,6 +77,11 @@ $primaryBranch = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("branch"
 if ($primaryBranch -ne "master") {
     throw "The primary checkout must be on master, not $primaryBranch."
 }
+$workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
+    @($WorkerNumber)
+} else {
+    @(1, 2)
+}
 
 Write-Host "Fetching the latest origin/master..." -ForegroundColor Cyan
 Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
@@ -84,7 +95,23 @@ $sources.Add([pscustomobject]@{
     Branch = "master"
 })
 foreach ($worktree in Get-WorktreeHeads -WorkingDirectory $primaryRoot) {
-    $sources.Add($worktree)
+    if ($worktree.Number -in $workerNumbers) {
+        $sources.Add($worktree)
+    }
+}
+foreach ($number in $workerNumbers) {
+    $remoteBranch = "origin/agents/worker-$number"
+    & git -C $primaryRoot rev-parse --verify --quiet $remoteBranch | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        $remoteHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", $remoteBranch)
+        $sources.Add([pscustomobject]@{
+            Path = $remoteBranch
+            Head = $remoteHead
+            Branch = $remoteBranch
+        })
+    } elseif ($LASTEXITCODE -ne 1) {
+        throw "Could not inspect $remoteBranch."
+    }
 }
 
 Write-Host "Committed worktree heads selected for integration:" -ForegroundColor Cyan

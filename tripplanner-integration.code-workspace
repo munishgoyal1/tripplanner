@@ -28,7 +28,7 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Tripplanner: Sync All Worktrees",
+        "label": "Tripplanner: Sync Latest",
         "type": "shell",
         "command": "pwsh",
         "args": [
@@ -36,8 +36,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}\\scripts\\dev\\sync-all-worktrees.ps1",
-          "-ResolveConflicts"
+          "${workspaceFolder}\\scripts\\dev\\sync-latest.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"

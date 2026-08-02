@@ -32,18 +32,18 @@ assignment, PR, synchronization, and merge rules.
 In optional parallel mode, to synchronize Agent 1, Agent 2, and `master`, then restart this local
 stack in one click, double-click `scripts/dev/Run-Latest-Code.cmd` from the
 repository root or run the VS Code task **Tripplanner: Run Latest Code** from the
-integration workspace. Existing staged, unstaged, and untracked master work is
-temporarily preserved and restored around guarded integration before the server
-starts. A worker synchronization conflict is automatically aborted so it cannot
-leave staged or unmerged residue.
+integration workspace. Existing staged, unstaged, and untracked work is preserved
+in each worktree while committed code is synchronized.
 
 Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `Run-Latest-Code.cmd` | Synchronize all worktrees, restore local `master` edits, and start the app. This is the normal one-click choice. |
-| `Sync-All-Worktrees.cmd` | Integrate both workers by default, or pass `1` / `2` to synchronize one worker. Guides new semantic conflicts in the owning worker. |
-| `merge-latest-worktrees.ps1` | Merge only committed `HEAD` snapshots from every registered worktree into `master` and update the primary checkout. Dirty worker files are ignored and untouched. |
+| `Merge-Worktrees.cmd [1\|2]` | Agent 3 only: integrate committed local and remote worker heads into `master`. No argument selects both workers. |
+| `Update-From-Master.cmd [1\|2\|3]` | Merge each selected lane's own remote and latest `master` into that lane. No argument selects all lanes. |
+| `Sync-Latest.cmd [1\|2\|3]` | Integrate all workers through `master`, then update the selected lane. No argument synchronizes all lanes; Agent 3 is already current after integration. |
+| `Run-Latest-Code.cmd` | Run Sync Latest for all lanes, then start the app. |
+| `Sync-All-Worktrees.cmd` | Deliberate clean-worktree PR integration workflow. Guides new semantic conflicts in the owning worker. |
 | `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 ---
