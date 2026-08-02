@@ -886,13 +886,23 @@ async def trip_view_endpoint(
     user_id: str = "local",
     focus_kind: str = "",
     focus_name: str = "",
+    focus_day: int | None = None,
+    focus_stop: int | None = None,
 ) -> dict:
-    """Frontend-agnostic trip-panel view-model. ``focus_kind``/``focus_name``
-    optionally zoom one item."""
+    """Frontend-agnostic trip-panel view-model with optional occurrence focus."""
     from tripplanner.web import trip_operations
 
     _set_request_user(request, user_id)
-    focus = {"kind": focus_kind, "name": focus_name} if focus_name else None
+    focus = (
+        {
+            "kind": focus_kind,
+            "name": focus_name,
+            **({"day": focus_day} if focus_day is not None else {}),
+            **({"stop": focus_stop} if focus_stop is not None else {}),
+        }
+        if focus_name
+        else None
+    )
     return await asyncio.to_thread(trip_operations.build_view, focus)
 
 

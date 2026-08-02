@@ -9,6 +9,7 @@ canonical set below instead of reading every file.
 | Document | Purpose | Update when |
 | --- | --- | --- |
 | [`PRODUCT.md`](PRODUCT.md) | Product intent, scope, interaction rules, and design taste | Vision or product taste changes |
+| [`EXPECTED_BEHAVIORS.md`](EXPECTED_BEHAVIORS.md) | Authoritative user actions and observable outcomes, with stable regression IDs | Observable behavior changes or a regression contract is added |
 | [`REQUIREMENTS.md`](REQUIREMENTS.md) | Implemented capability baseline, explicit gaps, and near-term roadmap | Shipped capability or status changes |
 | [`CODEMAP.md`](CODEMAP.md) | Code ownership, architecture, contracts, and commands | File layout or technical contracts change |
 | [`ENGINEERING_LEARNINGS.md`](ENGINEERING_LEARNINGS.md) | Durable lessons from observed failures | A reusable engineering lesson is proven |

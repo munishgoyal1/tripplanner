@@ -81,7 +81,7 @@ export interface TripView {
   has_trip: boolean;
   title: string;
   destination: string;
-  focus: { kind: string; name: string } | null;
+  focus: { kind: string; name: string; day?: number; stop?: number } | null;
   is_fallback: boolean;
   empty_message: string;
   overview: TripOverview | null;

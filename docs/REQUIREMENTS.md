@@ -345,6 +345,10 @@ re-describing the whole product.
 
 ### MAP-01 - Map behavior
 
+The authoritative action-by-action regression contract is
+[`EXPECTED_BEHAVIORS.md`](EXPECTED_BEHAVIORS.md). This section records the
+implemented capability baseline.
+
 - Day-colored pins and route bands represent complete hotel-anchored circuits.
 - Genuine transfer days instead render one open endpoint-to-endpoint journey in
   itinerary order and fit both city contexts. Local legs retain the day color;

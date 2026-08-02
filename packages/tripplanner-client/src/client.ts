@@ -101,13 +101,15 @@ export class TripplannerClient {
   }
 
   async fetchTripView(
-    focus?: { kind: string; name: string },
+    focus?: { kind: string; name: string; day?: number; stop?: number },
     signal?: AbortSignal,
   ): Promise<TripView> {
     const params: Record<string, string> = { user_id: await this.userId() };
     if (focus?.name) {
       params.focus_kind = focus.kind;
       params.focus_name = focus.name;
+      if (focus.day != null) params.focus_day = String(focus.day);
+      if (focus.stop != null) params.focus_stop = String(focus.stop);
     }
     const response = await this.request(this.url("/trip/view", params), { signal });
     ensureOk(response, "Could not load the trip");
