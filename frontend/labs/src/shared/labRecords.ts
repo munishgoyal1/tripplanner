@@ -1,6 +1,7 @@
 import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal } from "lucide-react";
 
 export interface LabRecord {
+  labNumber: number;
   id: string;
   title: string;
   category: string;
@@ -23,6 +24,8 @@ export interface LabSelectionState {
 
 export type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
 
+export const LAST_ASSIGNED_LAB_NUMBER = 15;
+
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition | undefined {
   return selection?.disposition ?? lab.defaultDisposition;
 }
@@ -40,6 +43,7 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 
 export const activeLabs: LabRecord[] = [
   {
+    labNumber: 14,
     id: "intercity-map",
     title: "Inter-city travel on the day map",
     category: "Map completeness",
@@ -51,6 +55,7 @@ export const activeLabs: LabRecord[] = [
     icon: Map,
   },
   {
+    labNumber: 15,
     id: "multi-city-itinerary",
     title: "Transition-day itinerary design",
     category: "Multi-city itinerary",
@@ -64,6 +69,7 @@ export const activeLabs: LabRecord[] = [
     icon: Route,
   },
   {
+    labNumber: 13,
     id: "destination-guide",
     title: "Destination guide depth and context",
     category: "Place discovery",
@@ -75,6 +81,7 @@ export const activeLabs: LabRecord[] = [
     icon: Compass,
   },
   {
+    labNumber: 12,
     id: "account-settings",
     title: "Account and settings ownership",
     category: "Account controls",
@@ -88,6 +95,7 @@ export const activeLabs: LabRecord[] = [
     icon: SlidersHorizontal,
   },
   {
+    labNumber: 5,
     id: "itinerary-trip-book",
     title: "Execution-ready Trip Book",
     category: "Trip export",
@@ -102,6 +110,7 @@ export const activeLabs: LabRecord[] = [
 
 export const completedLabs: LabRecord[] = [
   {
+    labNumber: 11,
     id: "itinerary-density",
     title: "Compact itinerary density",
     category: "Itinerary layout",
@@ -115,6 +124,7 @@ export const completedLabs: LabRecord[] = [
     icon: ListChecks,
   },
   {
+    labNumber: 10,
     id: "pane-control-polish",
     title: "Pane control polish",
     category: "Enhancements and polish",
@@ -128,6 +138,7 @@ export const completedLabs: LabRecord[] = [
     icon: LayoutPanelTop,
   },
   {
+    labNumber: 8,
     id: "map-controls",
     title: "Map command and day context",
     category: "Map interaction",
@@ -141,6 +152,7 @@ export const completedLabs: LabRecord[] = [
     icon: Map,
   },
   {
+    labNumber: 6,
     id: "trip-snapshot-hierarchy",
     title: "Trip snapshot hierarchy",
     category: "Trip overview",
@@ -154,6 +166,7 @@ export const completedLabs: LabRecord[] = [
     icon: ListChecks,
   },
   {
+    labNumber: 7,
     id: "workspace-command-bar",
     title: "Workspace command bar controls",
     category: "Workspace controls",
@@ -167,6 +180,7 @@ export const completedLabs: LabRecord[] = [
     icon: LayoutPanelTop,
   },
   {
+    labNumber: 9,
     id: "shell-visual-refresh",
     title: "Workspace visual refresh",
     category: "Visual system",
@@ -180,6 +194,7 @@ export const completedLabs: LabRecord[] = [
     icon: LayoutPanelTop,
   },
   {
+    labNumber: 4,
     id: "chat-assistant-overlay",
     title: "Assistant-led trip kickoff",
     category: "Assistant layout",
@@ -193,6 +208,7 @@ export const completedLabs: LabRecord[] = [
     icon: MessageCircle,
   },
   {
+    labNumber: 2,
     id: "itinerary-row-design",
     title: "Itinerary row design",
     category: "Itinerary layout",
@@ -206,6 +222,7 @@ export const completedLabs: LabRecord[] = [
     icon: ListChecks,
   },
   {
+    labNumber: 3,
     id: "itinerary-summary-design",
     title: "Itinerary summary design",
     category: "Trip overview",
@@ -219,6 +236,7 @@ export const completedLabs: LabRecord[] = [
     icon: LayoutPanelTop,
   },
   {
+    labNumber: 1,
     id: "workspace-shell",
     title: "Workspace shell layout",
     category: "Workspace layout",
@@ -234,3 +252,10 @@ export const completedLabs: LabRecord[] = [
 ];
 
 export const allLabs = [...activeLabs, ...completedLabs];
+
+const assignedLabNumbers = allLabs.map((lab) => lab.labNumber);
+const labNumbersAreValid = assignedLabNumbers.every((number) => Number.isInteger(number) && number > 0)
+  && new Set(assignedLabNumbers).size === allLabs.length
+  && Math.max(...assignedLabNumbers) === LAST_ASSIGNED_LAB_NUMBER
+  && allLabs.length === LAST_ASSIGNED_LAB_NUMBER;
+if (!labNumbersAreValid) throw new Error("Lab numbers must be unique, contiguous, and never reused");

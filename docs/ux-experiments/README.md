@@ -9,7 +9,8 @@ The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
 workspace has five durable catalog views:
 
-- `catalog.html` is All Labs: in-progress and parked experiments only.
+- `catalog.html` is All Open Labs: in-progress, implemented-review, and parked
+  experiments; only completed experiments are excluded.
 - `catalog.html?view=active` contains choices still being evaluated or currently
   under implementation.
 - `catalog.html?view=implemented-review` contains production implementations
@@ -29,6 +30,12 @@ Every standalone Lab has one explicit Back to All Labs link;
 catalog filters appear only on catalog pages.
 Historical experiments that predate Lab pages may remain read-only detail records
 reconstructed from their preserved source material.
+
+Each Lab has one permanent integer `labNumber` in the canonical registry. Allocate
+a new Lab by incrementing `LAST_ASSIGNED_LAB_NUMBER` and assigning that value once.
+Never renumber or reuse an identifier when a Lab changes state, is completed, or is
+discarded. Catalog sections display the stored number rather than a row index so
+`Lab #N` always identifies the same experiment.
 
 Every individual Lab must declare its decision boundary before showing options or
 the production-scale preview. The shared **Change scope** block names the exact

@@ -17,14 +17,12 @@ function formatDate(value: string): string {
 export function LabRecordCard({
   lab,
   completed = false,
-  index,
   compact = false,
   state,
   selection,
 }: {
   lab: LabRecord;
   completed?: boolean;
-  index?: number;
   compact?: boolean;
   state?: LabDisposition;
   selection?: LabSelectionState;
@@ -37,7 +35,7 @@ export function LabRecordCard({
   if (compact) {
     return (
       <a href={lab.href} className="group grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 bg-white px-3 py-3 transition last:border-b-0 hover:bg-slate-50">
-        <span className="text-center font-mono text-sm font-semibold text-slate-300 group-hover:text-brand">{String(index ?? 0).padStart(2, "0")}</span>
+        <span className="text-center font-mono text-sm font-semibold text-slate-300 group-hover:text-brand">#{lab.labNumber}</span>
         <span className="min-w-0">
           <span className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase text-brand">
             {lab.category}
@@ -63,7 +61,7 @@ export function LabRecordCard({
             <h3 className="text-sm font-semibold text-ink">{lab.title}</h3>
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ring-1 ${completed ? "bg-emerald-50 text-emerald-700 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-amber-200"}`}>{lab.status}</span>
           </div>
-          <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">{lab.category}</p>
+          <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">Lab #{lab.labNumber} · {lab.category}</p>
           <p className="mt-1 text-xs leading-relaxed text-slate-500">{lab.description}</p>
         </div>
         <ArrowRight size={16} className="mt-1 shrink-0 text-slate-400" aria-hidden />

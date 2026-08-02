@@ -42,7 +42,8 @@ Use these launchers by outcome:
 | Launcher | Purpose |
 | --- | --- |
 | `Run-Latest-Code.cmd` | Merge both workers, restore local `master` edits, and start the app. This is the normal one-click choice. |
-| `Merge-All-Agents.cmd` | Merge both workers without starting the app. |
+| `Resolve-Merge-All-Agents.cmd` | Merge both workers without starting the app; reuse known conflict resolutions and guide new semantic resolutions in the correct worker. |
+| `Merge-All-Agents.cmd` | Strict non-interactive merge of both workers; abort on any new conflict. |
 | `Merge-Agent-1.cmd` / `Merge-Agent-2.cmd` | Merge only the selected worker. |
 | `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 

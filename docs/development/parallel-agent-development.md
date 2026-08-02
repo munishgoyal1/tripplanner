@@ -128,17 +128,21 @@ To integrate both persistent agent lanes, use either one-click entry point from
 the primary integration checkout:
 
 - VS Code: **Tasks: Run Task** → **Tripplanner: Merge All Agents**
-- File Explorer: double-click `scripts/dev/Merge-All-Agents.cmd`
+- File Explorer: double-click `scripts/dev/Resolve-Merge-All-Agents.cmd`
 
-Both run `scripts/dev/merge-all-agents.ps1`. It refuses dirty or unexpected
-worktrees and preflights both before either merge. It then creates or reuses each
-worker's pull request, merges Worker 1 with a merge commit, updates `master`,
-brings Worker 2 onto that new baseline, and merges Worker 2 with a separate merge
-commit. Each persistent branch finishes synchronized for its next assignment.
-If synchronization conflicts, the task reports the paths, aborts the attempted
-merge, and verifies that the worker is clean. Return to the named worker window,
-merge `origin/master`, resolve and validate the reported paths, commit and push,
-then run the task again. Independent dated additions to
+Both use `scripts/dev/merge-all-agents.ps1`. The Resolve launcher is the preferred
+interactive entry point: it refuses dirty or unexpected worktrees, preflights both
+before either merge, and enables Git `rerere` so a previously validated conflict
+resolution is reused automatically. For a new semantic conflict, it pauses in the
+named worker worktree, reports the exact paths, and waits for `RESOLVED` after the
+owner or worker reconciles and validates both changes. It rejects remaining conflict
+markers, records the resolution for future reuse, commits it on the worker branch,
+and resumes integration. `ABORT` restores the worker to its clean pre-merge state.
+It never applies blanket ours/theirs conflict choices. The engine then creates or
+reuses each worker's pull request, merges Worker 1 with a merge commit, updates
+`master`, brings Worker 2 onto that new baseline, and merges Worker 2 separately.
+Each persistent branch finishes synchronized for its next assignment.
+Independent dated additions to
 `PRD/REQUIREMENTS Auto Log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
@@ -146,8 +150,9 @@ To integrate only one lane, double-click `scripts/dev/Merge-Agent-1.cmd` or
 `scripts/dev/Merge-Agent-2.cmd`. For validation-only preflights, run
 `merge-worker.ps1 -WorkerNumber 1 -ValidateOnly` (or worker 2), or run
 `.\scripts\dev\merge-all-agents.ps1 -ValidateOnly` for both. The `.cmd`
-launchers do not forward arguments; they call the generic `merge-worker.ps1`
-engine with the corresponding worker number.
+worker launchers call the generic `merge-worker.ps1` engine with the corresponding
+worker number. `Resolve-Merge-All-Agents.cmd -ValidateOnly` forwards the validation
+flag to its shared engine.
 
 In parallel mode, to merge both workers and immediately restart the local
 application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
