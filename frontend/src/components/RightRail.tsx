@@ -123,6 +123,7 @@ export default function RightRail({
                 reloadToken={reloadToken}
                 focusName={focusName}
                 focusDay={focusDay}
+                focusStop={focusStop}
                 focusToken={focusToken}
                 circuitFocusDay={circuitFocusDay}
                 circuitFocusToken={circuitFocusToken}
