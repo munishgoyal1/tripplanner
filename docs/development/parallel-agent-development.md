@@ -12,9 +12,16 @@ The standard slots are:
 
 | Role | Worktree | Branch | Workspace launcher |
 |---|---|---|---|
-| Agent 1 - Development | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
-| Agent 2 - Development | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
+| Agent 1 - Iti-Map | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
+| Agent 2 - Detail-Chat | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
 | Agent 3 - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
+
+Agent 1 defaults to Itinerary, Map, and their shared focus/view-model contracts.
+Agent 2 defaults to Details, Chat, and their assistant interaction contracts.
+These are logical task-routing defaults, not hard code boundaries. Keep the
+numeric agent identities, worker branch names, worktree paths, and numeric script
+arguments unchanged. Assign cross-area work explicitly and sequence overlapping
+edits when both domains touch the same state or contract.
 
 The workspace launchers give each window a distinct title and color. Always
 confirm the branch in the status bar before committing or merging.

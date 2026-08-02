@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "Tripplanner Worker 1",
+      "name": "Tripplanner Agent 1 - Iti-Map",
       "path": "../tripplanner.worktrees/worker-1"
     }
   ],
   "settings": {
-    "window.title": "Agent 1 - Development | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 1 - Iti-Map | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
     "github.copilot.enable": {
       "*": true,

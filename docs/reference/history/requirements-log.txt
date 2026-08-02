@@ -3273,3 +3273,12 @@ VALIDATION:
   because the expected outcome spans `master` and all worker worktrees.
 - Keep one shared guarded engine per worker and one all-worktree orchestrator;
   replace overlapping launchers instead of adding parallel script variants.
+
+=== 2026-08-02 — Logical worker area names ===
+
+- Name Agent 1's logical default area `Iti-Map` and Agent 2's logical default
+  area `Detail-Chat`, retaining the numeric agent identities for recognition.
+- Use the labels to route relevant assignments and build recurring subsystem
+  context; they are not hard ownership boundaries.
+- Preserve worker branch names, worktree paths, and every script's numeric agent
+  arguments and behavior.

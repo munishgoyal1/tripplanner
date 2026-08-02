@@ -26,8 +26,10 @@ not override the canonical documents above, which govern current behavior.
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
 - The primary `master` workspace is the default development lane. Use persistent
-  Worker 1 and Worker 2 worktrees only for owner-requested, sizeable, isolated
-  parallel assignments. Each worker owns one PR-sized change at a time.
+  Agent 1 - Iti-Map and Agent 2 - Detail-Chat worktrees only for owner-requested,
+  sizeable, isolated parallel assignments. These names are logical default
+  ownership areas; agent numbers, branches, worktree paths, and script arguments
+  remain unchanged. Each worker owns one PR-sized change at a time.
 - Run `Sync-Latest.cmd` from the worktree to update. Agent 3 always integrates all
   committed worker heads. A worker receives only `master` by default; pass `all`
   to include committed sibling worktree changes through `master`. The launcher is
