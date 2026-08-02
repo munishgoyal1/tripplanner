@@ -8,7 +8,7 @@ One page. Stick this on a second monitor.
 
 Open <http://localhost:5173> for the app or
 <http://127.0.0.1:5175/catalog.html> for UX Labs in your regular browser
-(Chrome / Edge / Firefox). Agent 3 in the primary workspace owns `dev-spa.ps1`,
+(Chrome / Edge / Firefox). MasterAgent in the primary workspace owns `dev-spa.ps1`,
 stale-port cleanup, startup, restarts after runtime changes, and health checks
 for manual testing. Workers 1 and 2 must ask the owner before changing the local
 stack lifecycle. The owner only refreshes the browser when ready to test a
@@ -20,7 +20,7 @@ The default workflow uses this single primary workspace directly on `master`.
 Only when the owner explicitly requests parallel development, use:
 
 - `tripplanner-worker-1.code-workspace` - Agent 1 - Iti-Map on `agents/worker-1`
-- `tripplanner-integration.code-workspace` - Agent 3 Review & Integration on `master`
+- `tripplanner-integration.code-workspace` - MasterAgent Review & Integration on `master`
 
 Agent 2 - Detail-Chat on `agents/worker-2` remains available through
 `Open-Tripplanner-All-Agents.cmd` when a third parallel assignment is worth the
@@ -40,8 +40,8 @@ Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `scripts/user/Sync-MeTo-Latest.cmd` | On Agent 3, integrate all committed worker code. On a worker, update only from `master`; pass `all` to include every committed worker head. Only the launcher worktree is updated. |
-| `scripts/user/All-SyncTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update Agent 3, Agent 1, and Agent 2 while preserving each worktree's local edits. |
+| `scripts/user/Sync-MeTo-Latest.cmd` | On MasterAgent, integrate all committed worker code. On a worker, update only from `master`; pass `all` to include every committed worker head. Only the launcher worktree is updated. |
+| `scripts/user/All-SyncTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent, Agent 1, and Agent 2 while preserving each worktree's local edits. |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
@@ -52,7 +52,7 @@ Use these launchers by outcome:
 
 It is the canonical local entrypoint for the current React SPA and FastAPI
 backend. Hot reload is off by default, so backend edits do not interrupt an
-in-progress chat. Agent 3 invokes it in a dedicated background session and passes
+in-progress chat. MasterAgent invokes it in a dedicated background session and passes
 `-Watch` only when live reload is intentionally useful.
 
 ## Modes at a glance

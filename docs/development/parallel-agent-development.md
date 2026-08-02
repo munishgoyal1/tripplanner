@@ -14,14 +14,15 @@ The standard slots are:
 |---|---|---|---|
 | Agent 1 - Iti-Map | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
 | Agent 2 - Detail-Chat | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
-| Agent 3 - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
+| MasterAgent - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
 
 Agent 1 defaults to Itinerary, Map, and their shared focus/view-model contracts.
 Agent 2 defaults to Details, Chat, and their assistant interaction contracts.
-These are logical task-routing defaults, not hard code boundaries. Keep the
-numeric agent identities, worker branch names, worktree paths, and numeric script
-arguments unchanged. Assign cross-area work explicitly and sequence overlapping
-edits when both domains touch the same state or contract.
+These are logical task-routing defaults, not hard code boundaries. MasterAgent
+uses reserved integer `0`; workers use positive integer identities. Keep worker
+branch names, worktree paths, and numeric script arguments stable. Assign
+cross-area work explicitly and sequence overlapping edits when both domains
+touch the same state or contract.
 
 The workspace launchers give each window a distinct title and color. Always
 confirm the branch in the status bar before committing or merging.
@@ -38,7 +39,7 @@ right. Machine-level `window.restoreWindows=all` and
 buffers across a normal restart.
 
 The launcher does not restart active dev servers or commands after a machine
-reboot. Agent 3 owns the local stack from the primary worktree so multiple
+reboot. MasterAgent owns the local stack from the primary worktree so multiple
 windows do not compete for ports `5173` and `8000`. Workers 1 and 2 must not
 start, stop, or restart it unless the owner explicitly approves that action.
 
@@ -59,7 +60,7 @@ code --new-window .\tripplanner-worker-2.code-workspace
 ```
 
 Keep the worktree folders and their isolated dependencies between assignments.
-After Agent 3 merges a worker PR, synchronize that worker before assigning new
+After MasterAgent merges a worker PR, synchronize that worker before assigning new
 work:
 
 ```powershell
@@ -133,13 +134,13 @@ worktree that should receive all latest committed code; no lane number is needed
 .\scripts\user\Sync-MeTo-Latest.cmd all
 ```
 
-From Agent 3, it integrates committed local and remote worker heads into
+From MasterAgent, it integrates committed local and remote worker heads into
 `master`. From Worker 1 or Worker 2, the no-argument command merges the latest
 `master` into only the launcher worktree. Pass `all` from a worker to first
 integrate every committed worker head through `master`, then merge that result
 into only the launcher worktree. The internal merge engine starts its disposable
 integration checkout directly from fetched `origin/master`, then updates local
-`master` only when Agent 3 is the launcher.
+`master` only when MasterAgent is the launcher.
 
 Non-launcher worktrees are never stashed, checked out, reset, or otherwise modified.
 Target worktree changes are temporarily stashed and restored with their staged
@@ -154,14 +155,14 @@ Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
-To intentionally synchronize every worktree from any Agent 1, Agent 2, or Agent 3
+To intentionally synchronize every worktree from MasterAgent, Agent 1, or Agent 2
 launcher, run:
 
 ```powershell
 .\scripts\user\All-SyncTo-Latest.cmd
 ```
 
-This first integrates committed heads through `master`, then updates Agent 3,
+This first integrates committed heads through `master`, then updates MasterAgent,
 Agent 1, and Agent 2 independently. Each lane's staged, unstaged, and untracked
 files are preserved in an exact safety stash. Git `rerere` automatically applies
 a previously recorded resolution. A novel local-edit conflict retains that

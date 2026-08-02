@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "Tripplanner Integration",
+      "name": "Tripplanner MasterAgent",
       "path": "."
     }
   ],
   "settings": {
-    "window.title": "Agent 3 - Review & Integration | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "MasterAgent - Review & Integration | ${activeEditorShort}${separator}${rootName}",
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",
     "workbench.editor.showTabs": "multiple",

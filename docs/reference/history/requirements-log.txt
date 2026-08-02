@@ -3282,3 +3282,11 @@ VALIDATION:
   context; they are not hard ownership boundaries.
 - Preserve worker branch names, worktree paths, and every script's numeric agent
   arguments and behavior.
+
+=== 2026-08-02 — Reserve MasterAgent as lane zero ===
+
+- Rename the primary review and integration lane from Agent 3 to `MasterAgent`.
+- Reserve integer `0` for MasterAgent in synchronization scripts; worker agents
+  retain positive integer identities beginning with Agent 1 and Agent 2.
+- Keep the primary branch as `master` and preserve existing worker branch names,
+  worktree paths, and workspace filenames.

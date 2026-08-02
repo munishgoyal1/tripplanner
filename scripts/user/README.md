@@ -11,10 +11,10 @@ stays under `scripts/dev/` so everyday commands remain easy to find.
 | `Run-Latest.cmd` | Synchronize the launcher worktree, then start its local stack |
 
 Run `Sync-MeTo-Latest.cmd all` from a worker to include committed sibling worktree
-changes through `master`. Without `all`, a worker receives only `master`; Agent 3
-always integrates all committed worker heads.
+changes through `master`. Without `all`, a worker receives only `master`;
+MasterAgent always integrates all committed worker heads.
 
-Run `All-SyncTo-Latest.cmd` from Agent 1, Agent 2, or Agent 3 when every
+Run `All-SyncTo-Latest.cmd` from MasterAgent, Agent 1, or Agent 2 when every
 worktree should receive the integrated `master`. Each worktree's staged,
 unstaged, and untracked files are preserved in an exact safety stash. Git
 `rerere` automatically reuses a previously recorded resolution; a new semantic

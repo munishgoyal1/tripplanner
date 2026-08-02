@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet(1, 2, 3)]
+    [ValidateSet(0, 1, 2)]
     [int]$WorkerNumber,
 
     [switch]$ValidateOnly
@@ -182,13 +182,13 @@ function Update-Lane {
         [switch]$ValidateOnly
     )
 
-    $laneName = if ($Number -eq 3) { "Agent 3 (master)" } else { "Agent $Number" }
-    $workingDirectory = if ($Number -eq 3) {
+    $laneName = if ($Number -eq 0) { "MasterAgent (0)" } else { "Agent $Number" }
+    $workingDirectory = if ($Number -eq 0) {
         $PrimaryRoot
     } else {
         "$PrimaryRoot.worktrees\worker-$Number"
     }
-    $branch = if ($Number -eq 3) { "master" } else { "agents/worker-$Number" }
+    $branch = if ($Number -eq 0) { "master" } else { "agents/worker-$Number" }
 
     if (-not (Test-Path $workingDirectory -PathType Container)) {
         throw "$laneName worktree not found: $workingDirectory"
@@ -229,7 +229,7 @@ function Update-Lane {
             throw "Could not inspect $ownRemote."
         }
 
-        if ($Number -ne 3) {
+        if ($Number -ne 0) {
             Merge-RemoteRef -WorkingDirectory $workingDirectory -RemoteRef "origin/master" -LaneName $laneName
         }
 
@@ -264,7 +264,7 @@ $primaryRoot = Split-Path -Parent $commonGitDir
 $workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
     @($WorkerNumber)
 } else {
-    @(3, 1, 2)
+    @(0, 1, 2)
 }
 
 if (-not $ValidateOnly) {

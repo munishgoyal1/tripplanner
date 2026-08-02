@@ -223,7 +223,7 @@ git diff --check
 
 Use focused pytest targets or frontend tests during iteration. Workers use
 server-free validation unless the owner explicitly authorizes stack changes.
-Agent 3 in the primary workspace owns local stack lifecycle and manual-test health.
+MasterAgent in the primary workspace owns local stack lifecycle and manual-test health.
 
 ## Deployment and Operations
 

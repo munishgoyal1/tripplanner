@@ -27,7 +27,7 @@ if ($LASTEXITCODE -ne 0 -or -not $commonGitDir) {
 $primaryRoot = Split-Path -Parent $commonGitDir.Trim()
 $developmentWorkspace = @{ Name = "Agent 1 - Development"; File = "tripplanner-worker-1.code-workspace"; Root = "$primaryRoot.worktrees\worker-1" }
 $worker2Workspace = @{ Name = "Agent 2 - Worker"; File = "tripplanner-worker-2.code-workspace"; Root = "$primaryRoot.worktrees\worker-2" }
-$reviewWorkspace = @{ Name = "Agent 3 - Review & Integration"; File = "tripplanner-integration.code-workspace"; Root = $primaryRoot }
+$reviewWorkspace = @{ Name = "MasterAgent - Review & Integration"; File = "tripplanner-integration.code-workspace"; Root = $primaryRoot }
 $workspaces = if ($IncludeWorker2) {
     @($developmentWorkspace, $worker2Workspace, $reviewWorkspace)
 } else {

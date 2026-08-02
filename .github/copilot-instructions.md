@@ -28,16 +28,17 @@ not override the canonical documents above, which govern current behavior.
 - The primary `master` workspace is the default development lane. Use persistent
   Agent 1 - Iti-Map and Agent 2 - Detail-Chat worktrees only for owner-requested,
   sizeable, isolated parallel assignments. These names are logical default
-  ownership areas; agent numbers, branches, worktree paths, and script arguments
-  remain unchanged. Each worker owns one PR-sized change at a time.
-- Run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree to update. Agent 3 always
+  ownership areas. MasterAgent uses reserved integer `0`; worker agents retain
+  positive integers, branches, worktree paths, and numeric script arguments.
+  Each worker owns one PR-sized change at a time.
+- Run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree to update. MasterAgent always
   integrates all committed worker heads. A worker receives only `master` by
   default; pass `all` to include committed sibling worktree changes through
   `master`. The launcher is the only worktree updated.
 - Use `scripts/user/All-SyncTo-Latest.cmd` only when every worktree should be
   updated. It may run from any lane, preserves each lane's local edits, reuses
   recorded `rerere` resolutions, and reports novel conflicts without guessing.
-- Agent 3 in the primary workspace owns local stack startup, stop, restart,
+- MasterAgent in the primary workspace owns local stack startup, stop, restart,
   stale-port cleanup, and health checks for the owner's manual testing. Workers 1
   and 2 must obtain explicit approval before changing the stack lifecycle and use
   server-free validation by default.
