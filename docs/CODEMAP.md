@@ -71,6 +71,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/MapPanel.tsx` | Google Maps lifecycle, refs, drawing, viewport mutation, focus coordination, and compatibility re-exports |
 | `frontend/src/components/map/` | Pure map icon generation, focus matching, route/day derivation, and Google-place candidate conversion |
+| `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
