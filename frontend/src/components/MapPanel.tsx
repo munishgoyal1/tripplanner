@@ -273,7 +273,11 @@ export function hotelReturnForDay(
   dayNumber: number,
 ): { pin: MapPin; label: string } | null {
   const day = view.days.find((candidate) => candidate.day === dayNumber);
-  if (!day || day.pin_ids.length < 2 || day.pin_ids[0] !== day.pin_ids.at(-1)) return null;
+  if (
+    !day
+    || day.pin_ids.length < 2
+    || day.pin_ids[0] !== day.pin_ids[day.pin_ids.length - 1]
+  ) return null;
   const pin = view.pins.find((candidate) => candidate.id === day.pin_ids[0]);
   if (!pin || pin.kind !== "hotel") return null;
   const end = day.schedule?.end;

@@ -64,7 +64,7 @@ vi.mock("./components/ItineraryPanel", () => ({
         data-overview-cost={overview?.total_cost_display ?? ""}
         data-focus-day={focusDay ?? ""}
         data-focus-stop={focusStop ?? ""}
-        onClick={() => onStopFocus("attraction", "Louvre Museum")}
+        onClick={() => onStopFocus("attraction", "Louvre Museum", 2, 1)}
       />
       <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
         Focus Day 2 hotel
@@ -450,8 +450,8 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2 hotel" }));
-    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Goa Marriott");
+    fireEvent.click(screen.getByTestId("itinerary-panel"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Louvre Museum");
     const fetchesBeforeDayFocus = fetchTripViewMock.mock.calls.length;
     fireEvent.click(screen.getByRole("button", { name: "Show complete Day 3 circuit" }));
 
@@ -591,10 +591,11 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Munish"));
   });
 
-  it("loads itinerary place focus into both the map state and details pane", async () => {
+  it("keeps an itinerary-only stop focused in its map occurrence and details after refresh", async () => {
     const focusedView = {
       ...emptyView,
-      focus: { kind: "attraction", name: "Louvre Museum" },
+      focus: { kind: "attraction", name: "Louvre Museum", day: 2, stop: 1 },
+      items: [{ kind: "attraction", name: "Louvre Museum", selected: false }],
     };
     fetchTripViewMock.mockResolvedValueOnce(emptyView).mockResolvedValueOnce(focusedView);
     setDesktop(true);
@@ -604,7 +605,14 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByTestId("itinerary-panel"));
 
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Louvre Museum"));
-    expect(fetchTripViewMock.mock.calls[1][0]).toEqual({ kind: "attraction", name: "Louvre Museum" });
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Louvre Museum");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "2");
+    expect(fetchTripViewMock.mock.calls[1][0]).toEqual({
+      kind: "attraction",
+      name: "Louvre Museum",
+      day: 2,
+      stop: 1,
+    });
     expect(screen.getByText("Louvre Museum")).toBeInTheDocument();
   });
 

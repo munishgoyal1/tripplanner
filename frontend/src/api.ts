@@ -334,6 +334,8 @@ export async function fetchChatHistory(
 export async function fetchTripView(focus?: {
   kind: string;
   name: string;
+  day?: number;
+  stop?: number;
 }, signal?: AbortSignal): Promise<TripView> {
   return sharedClient.fetchTripView(focus, signal);
 }

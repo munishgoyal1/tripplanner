@@ -5,6 +5,7 @@ Read these canonical sources before changing code:
 - [docs/README.md](../docs/README.md): documentation ownership and navigation.
 - [docs/CODEMAP.md](../docs/CODEMAP.md): architecture, code ownership, contracts, and commands.
 - [docs/PRODUCT.md](../docs/PRODUCT.md): product intent, interaction rules, and design taste.
+- [docs/EXPECTED_BEHAVIORS.md](../docs/EXPECTED_BEHAVIORS.md): authoritative user actions, outcomes, and regression IDs.
 - [docs/REQUIREMENTS.md](../docs/REQUIREMENTS.md): current capability baseline, gaps, and roadmap.
 - [docs/ENGINEERING_LEARNINGS.md](../docs/ENGINEERING_LEARNINGS.md): durable lessons from observed failures.
 
