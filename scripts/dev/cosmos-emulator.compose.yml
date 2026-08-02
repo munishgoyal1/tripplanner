@@ -1,3 +1,5 @@
+name: infra
+
 services:
   cosmos:
     image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-latest
