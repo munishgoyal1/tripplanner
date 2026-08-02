@@ -226,8 +226,8 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel />);
 
-    expect(await screen.findAllByLabelText("Hotel circuit marker for Hotel Lutetia")).toHaveLength(1);
-    expect(screen.getAllByText("Hotel Lutetia")).toHaveLength(1);
+    expect(await screen.findAllByText("Hotel Lutetia")).toHaveLength(1);
+    expect(screen.getByText("Return to Hotel Lutetia")).toBeInTheDocument();
     expect(screen.getByText("Depart")).toBeInTheDocument();
     expect(screen.getByText("Return")).toBeInTheDocument();
     expect(screen.getByText("09:00")).toBeInTheDocument();
@@ -276,27 +276,25 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel />);
 
     const timeline = await screen.findByLabelText("Transition day timeline from Trident Udaipur to Hotel Hillock Mount Abu");
+    expect(screen.queryByText("Stay handoff")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Journey between stays")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Plans after check-in")).not.toBeInTheDocument();
+    expect(await screen.findAllByText("Hotel Hillock Mount Abu")).toHaveLength(1);
+    expect(screen.getByText("Return to Hotel Hillock Mount Abu")).toBeInTheDocument();
+    expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
+    expect(screen.getByText("Check out")).toBeInTheDocument();
+    expect(screen.getByText("Check in")).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Hotel map marker").map((marker) => marker.textContent)).toEqual(["H1", "H2"]);
+    expect(screen.getByLabelText("Travel from previous stop: 1.5 km, 20 min")).toBeInTheDocument();
     expect(Array.from(timeline.querySelectorAll("[data-stop-name]"), (row) => row.getAttribute("data-stop-name")))
       .toEqual([
         "trident udaipur",
         "drive: udaipur to mount abu",
         "hotel hillock mount abu",
         "nakki lake",
+        "hotel hillock mount abu",
       ]);
-    expect(screen.queryByText("Stay handoff")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Journey between stays")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Plans after check-in")).not.toBeInTheDocument();
-    expect(await screen.findAllByText("Hotel Hillock Mount Abu")).toHaveLength(1);
-    expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
-    expect(screen.getByText("Check out")).toBeInTheDocument();
-    expect(screen.getByText("Check in")).toBeInTheDocument();
-    expect(screen.getByLabelText("Hotel map marker")).toHaveTextContent("H1");
-    expect(screen.getByLabelText("Hotel circuit marker for Hotel Hillock Mount Abu")).toHaveTextContent("H2");
-    expect(screen.getByLabelText("Travel from previous stop: 1.5 km, 20 min")).toBeInTheDocument();
-    expect(document.querySelector('[data-stop-name="hotel hillock mount abu"]')).toHaveAttribute(
-      "data-stop-indexes",
-      "3,5",
-    );
+    expect(screen.getAllByRole("button", { name: "Hotel Hillock Mount Abu: Mark confirmed" })).toHaveLength(1);
   });
 
   it("shows both flight airports with A markers and their local times", async () => {
@@ -342,7 +340,7 @@ describe("ItineraryPanel", () => {
     );
   });
 
-  it("keeps the combined hotel row addressable from either route endpoint", async () => {
+  it("keeps the hotel return endpoint independently addressable", async () => {
     const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,
@@ -352,11 +350,11 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel focusName="Hotel Lutetia" focusDay={1} focusStop={3} />);
 
-    const marker = await screen.findByLabelText("Hotel circuit marker for Hotel Lutetia");
-    expect(marker).toHaveAttribute("aria-current", "location");
-    const circuitRow = document.querySelector('[data-stop-name="hotel lutetia"]');
-    expect(circuitRow).toHaveAttribute("data-stop-indexes", "1,3");
-    expect(scrollIntoViewMock.mock.instances[0]).toBe(circuitRow);
+    const returnLabel = await screen.findByText("Return to Hotel Lutetia");
+    const returnRow = returnLabel.closest("li");
+    expect(returnRow).toHaveAttribute("data-stop-indexes", "3");
+    expect(returnRow).toHaveClass("ring-1", "ring-brand/20");
+    expect(scrollIntoViewMock.mock.instances[0]).toBe(returnRow);
   });
 
   it("keeps different hotel endpoints as explicit checkout and checkin rows", async () => {

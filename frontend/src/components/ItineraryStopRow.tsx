@@ -48,7 +48,7 @@ export interface ItineraryStopRowProps {
   isFirst: boolean;
   isLast: boolean;
   hotelTimingLabel?: "Check out" | "Check in";
-  returnStop?: ItineraryStop;
+  circuitReturn?: boolean;
   representedStopIndexes?: number[];
   mapLabel?: string;
   active: boolean;
@@ -67,7 +67,7 @@ export default function ItineraryStopRow({
   isFirst,
   isLast,
   hotelTimingLabel,
-  returnStop,
+  circuitReturn = false,
   representedStopIndexes,
   mapLabel,
   active,
@@ -83,14 +83,14 @@ export default function ItineraryStopRow({
   const removable = !!onRemove && ["attraction", "activity", "meal", "restaurant"].includes(stop.kind);
   const [removing, setRemoving] = useState(false);
   const circuitTimingNotes = new Set(["start from your stay", "return to your stay"]);
-  const insightTexts = uniqueDetailTexts(stop.insight, returnStop?.insight);
+  const insightTexts = uniqueDetailTexts(stop.insight);
   const insightKeys = new Set(insightTexts.map((text) => text.toLowerCase()));
-  const noteTexts = uniqueDetailTexts(stop.note, returnStop?.note).filter((text) =>
+  const noteTexts = uniqueDetailTexts(stop.note).filter((text) =>
     !insightKeys.has(text.toLowerCase())
-    && (!returnStop || !circuitTimingNotes.has(text.toLowerCase()))
+    && !circuitTimingNotes.has(text.toLowerCase())
   );
-  const concernTexts = uniqueDetailTexts(stop.concern, returnStop?.concern);
-  const timingLabel = hotelTimingLabel || (stop.terminal_role === "departure"
+  const concernTexts = uniqueDetailTexts(stop.concern);
+  const timingLabel = circuitReturn ? "Return" : hotelTimingLabel || (stop.terminal_role === "departure"
     ? "Airport arrival"
     : stop.terminal_role === "arrival"
       ? "Land"
@@ -101,7 +101,6 @@ export default function ItineraryStopRow({
           : stop.kind === "flight"
             ? "Depart"
             : "Arrive");
-  const travelStop = returnStop?.travel_from_previous ? returnStop : stop;
   const handleRowClick = () => {
     if (focusable) {
       onFocus();
@@ -126,22 +125,11 @@ export default function ItineraryStopRow({
                   }`}
     >
       <div className="pt-0.5 text-left">
-        {returnStop ? (
-          <>
-            <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
-            <p className="text-xs font-bold tabular-nums text-ink">{stop.time || "—"}{stop.time_estimated ? " est." : ""}</p>
-            <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">Return</p>
-            <p className="text-xs font-bold tabular-nums text-ink">{returnStop.time || "—"}{returnStop.time_estimated ? " est." : ""}</p>
-          </>
-        ) : (
-          <>
-            <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
-            {stop.time && (
-              <p className="text-xs font-bold tabular-nums text-ink">
-                {stop.time}{stop.time_estimated ? " est." : ""}
-              </p>
-            )}
-          </>
+        <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
+        {stop.time && (
+          <p className="text-xs font-bold tabular-nums text-ink">
+            {stop.time}{stop.time_estimated ? " est." : ""}
+          </p>
         )}
         {stop.operational_time_display ? (
           <p className="mt-0.5 text-[10px] leading-tight text-slate-500">
@@ -161,27 +149,27 @@ export default function ItineraryStopRow({
       </div>
 
       <div className="min-w-0">
-        {travelStop.travel_from_previous && (
+        {stop.travel_from_previous && (
           <div
-            aria-label={`Travel from previous stop: ${travelStop.travel_from_previous.distance_display}, ${travelStop.travel_from_previous.duration_display}`}
+            aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
             className="mb-1 flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
-            title={`${travelStop.travel_from_previous.mode} estimate`}
+            title={`${stop.travel_from_previous.mode} estimate`}
           >
             <Route size={11} aria-hidden />
-            <span className="font-semibold capitalize">{travelStop.travel_from_previous.mode}</span>
-            <span>{travelStop.travel_from_previous.distance_display}</span>
+            <span className="font-semibold capitalize">{stop.travel_from_previous.mode}</span>
+            <span>{stop.travel_from_previous.distance_display}</span>
             <span aria-hidden>·</span>
-            <span>{travelStop.travel_from_previous.duration_display}</span>
-            {travelStop.travel_from_previous.detail && (
-              <span className="basis-full font-normal text-slate-600">{travelStop.travel_from_previous.detail}</span>
+            <span>{stop.travel_from_previous.duration_display}</span>
+            {stop.travel_from_previous.detail && (
+              <span className="basis-full font-normal text-slate-600">{stop.travel_from_previous.detail}</span>
             )}
-            {travelStop.expected_arrival_time && (
+            {stop.expected_arrival_time && (
               <span className="basis-full font-normal text-slate-500">
-                Est. arrive {travelStop.expected_arrival_time}
-                {travelStop.buffer_before_display && travelStop.time
-                  ? ` · ${travelStop.buffer_before_display} free before ${travelStop.time}`
-                  : travelStop.timing_conflict_display
-                    ? ` · schedule is ${travelStop.timing_conflict_display} too tight`
+                Est. arrive {stop.expected_arrival_time}
+                {stop.buffer_before_display && stop.time
+                  ? ` · ${stop.buffer_before_display} free before ${stop.time}`
+                  : stop.timing_conflict_display
+                    ? ` · schedule is ${stop.timing_conflict_display} too tight`
                     : ""}
               </span>
             )}
@@ -191,7 +179,7 @@ export default function ItineraryStopRow({
           {mapLabel && (
             <span
               aria-label={mapLabel.startsWith("H")
-                ? returnStop ? `Hotel circuit marker for ${stop.name}` : "Hotel map marker"
+                ? "Hotel map marker"
                 : `Map stop ${mapLabel}`}
               aria-current={active ? "location" : undefined}
               className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-white"}`}
@@ -205,7 +193,7 @@ export default function ItineraryStopRow({
             </span>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase text-slate-400">{stop.kind}</p>
+            <p className="text-[10px] font-bold uppercase text-slate-400">{circuitReturn ? "Hotel return" : stop.kind}</p>
             <button
               type="button"
               disabled={!focusable}
@@ -223,12 +211,12 @@ export default function ItineraryStopRow({
                   : focusable ? "Show photos & reviews" : undefined}
             >
               <span className="mr-1" aria-hidden>{KIND_ICON[stop.kind] || KIND_ICON.other}</span>
-              {stop.name}
+              {circuitReturn ? `Return to ${stop.name}` : stop.name}
             </button>
           </div>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1">
-          {stop.kind !== "airport" && <button
+          {!circuitReturn && stop.kind !== "airport" && <button
             type="button"
             aria-pressed={stop.booked}
             aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}
@@ -245,9 +233,9 @@ export default function ItineraryStopRow({
             {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
             {stop.booked ? "Confirmed" : "Needs booking"}
           </button>}
-          {stop.cost_display && <span className="chip">{stop.cost_display}</span>}
-          {stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
-          {typeof stop.rating === "number" && (
+          {!circuitReturn && stop.cost_display && <span className="chip">{stop.cost_display}</span>}
+          {!circuitReturn && stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
+          {!circuitReturn && typeof stop.rating === "number" && (
             <span className="chip" aria-label={`${stop.name} rating ${stop.rating.toFixed(1)} out of 5`}>
               ★ {stop.rating.toFixed(1)}
               {typeof stop.review_count === "number" && stop.review_count > 0
@@ -255,7 +243,7 @@ export default function ItineraryStopRow({
                 : ""}
             </span>
           )}
-          {typeof stop.popularity_score === "number" && stop.kind === "attraction" && (
+          {!circuitReturn && typeof stop.popularity_score === "number" && stop.kind === "attraction" && (
             <span
               className="chip"
               title="Estimated from Google rating and review volume; not an itinerary inclusion percentage."
@@ -263,7 +251,7 @@ export default function ItineraryStopRow({
               Must-visit score {stop.popularity_score}/100
             </span>
           )}
-          {removable && (
+          {!circuitReturn && removable && (
             <button
               type="button"
               disabled={removing}
@@ -296,11 +284,11 @@ export default function ItineraryStopRow({
             <MapPin size={13} aria-hidden />
           </button>
         </div>
-        {(concernTexts.length > 0 || noteTexts.length > 0 || insightTexts.length > 0) && (
+        {(concernTexts.length > 0 || noteTexts.length > 0 || (!circuitReturn && insightTexts.length > 0)) && (
           <div className="mt-1 space-y-0.5">
             {concernTexts.map((text) => <p key={text} className="text-xs font-medium text-rose-700">{text}</p>)}
             {noteTexts.map((text) => <p key={text} className="text-xs text-slate-500">{text}</p>)}
-            {insightTexts.map((text) => <p key={text} className="text-xs text-slate-600">{text}</p>)}
+            {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-xs text-slate-600">{text}</p>)}
           </div>
         )}
       </div>

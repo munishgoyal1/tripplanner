@@ -112,13 +112,12 @@ function DayCard({
   const destinationHotelIndex = changesHotel
     ? combinesHotelCircuit ? circuitHotelIndex : day.stops.length - 1
     : -1;
-  const visibleStops = day.stops
-    .map((stop, index) => ({ stop, index }))
-    .filter(({ index }) => !combinesHotelCircuit || index < day.stops.length - 1);
+  const visibleStops = day.stops.map((stop, index) => ({ stop, index }));
   const renderStop = ({ stop, index: i }: { stop: ItineraryStop; index: number }) => {
-    const returnStop = combinesHotelCircuit && i === circuitHotelIndex ? lastStop : undefined;
-    const representedStopIndexes = returnStop ? [i + 1, day.stops.length] : [i + 1];
-    const rowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const circuitReturn = combinesHotelCircuit && i === day.stops.length - 1;
+    const representedStopIndexes = [i + 1];
+    const baseRowId = `it-stop-${day.day}-${stop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    const rowId = circuitReturn ? `${baseRowId}-return` : baseRowId;
     const jumpActive =
       jumpToken > 0
       && !!jumpTo
@@ -134,9 +133,9 @@ function DayCard({
         isFirst={i === 0}
         isLast={i === day.stops.length - 1}
         hotelTimingLabel={changesHotel && i === 0 ? "Check out" : changesHotel && i === destinationHotelIndex ? "Check in" : undefined}
-        returnStop={returnStop}
+        circuitReturn={circuitReturn}
         representedStopIndexes={representedStopIndexes}
-        mapLabel={mapLabels[i]}
+        mapLabel={circuitReturn ? undefined : mapLabels[i]}
         active={
           active
           && focusName?.toLowerCase() === stop.name.toLowerCase()

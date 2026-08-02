@@ -1793,6 +1793,88 @@ def test_timed_road_transfer_estimates_destination_hotel_check_in() -> None:
     assert hotel["time_estimated"] is True
 
 
+def test_road_transfer_estimates_duration_arrival_and_hotel_check_in(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Trident Udaipur": (24.577, 73.683),
+        "Hotel Hillock Mount Abu": (24.592, 72.708),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_hotels": [
+            {"name": "Trident Udaipur"},
+            {"name": "Hotel Hillock Mount Abu"},
+        ],
+        "day_wise_itinerary": [{
+            "day": 3,
+            "stops": [
+                {
+                    "name": "Trident Udaipur",
+                    "kind": "hotel",
+                    "time": "09:00",
+                },
+                {"name": "Drive: Udaipur to Mount Abu", "kind": "transport"},
+                {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    _, drive, hotel = itinerary["days"][0]["stops"]
+    assert drive["time"] == "09:00"
+    assert drive["time_estimated"] is True
+    assert drive["duration_min"] > 0
+    assert drive["duration_estimated"] is True
+    assert drive["departure_time"]
+    assert hotel["time"] == drive["departure_time"]
+    assert hotel["time_estimated"] is True
+
+
+def test_road_transfer_without_checkout_estimates_duration_but_not_check_in(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Trident Udaipur": (24.577, 73.683),
+        "Hotel Hillock Mount Abu": (24.592, 72.708),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_hotels": [
+            {"name": "Trident Udaipur"},
+            {"name": "Hotel Hillock Mount Abu"},
+        ],
+        "day_wise_itinerary": [{
+            "day": 3,
+            "stops": [
+                {"name": "Trident Udaipur", "kind": "hotel"},
+                {"name": "Drive: Udaipur to Mount Abu", "kind": "transport"},
+                {"name": "Hotel Hillock Mount Abu", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    _, drive, hotel = itinerary["days"][0]["stops"]
+    assert drive["duration_min"] > 0
+    assert drive["duration_estimated"] is True
+    assert drive["time"] == ""
+    assert hotel["time"] == ""
+    assert "time_estimated" not in hotel
+
+
 def test_untimed_road_transfer_does_not_invent_hotel_check_in() -> None:
     trip = {
         **SAMPLE_TRIP,

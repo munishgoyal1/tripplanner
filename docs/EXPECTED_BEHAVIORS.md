@@ -115,14 +115,19 @@ another city, and checks in at a different hotel.
 
 **Expected:** Check out, every journey stop, destination check-in, and remaining
 destination plans appear once in one ordered transition spine. The two hotels
-remain distinct `H1` and `H2` endpoints, while a repeated return to the destination
-hotel stays merged into its check-in row. The itinerary does not pair the hotels
-as cards or split the day into Journey and After check-in sections.
+remain distinct `H1` and `H2` endpoints. A repeated return to the destination
+hotel appears after the final plan as a compact chronological endpoint carrying
+its incoming travel and return time, without duplicating stay controls or hotel
+details. The itinerary does not pair the hotels as cards or split the day into
+Journey and After check-in sections.
 
 **Executable proof:**
 
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a multi-city transfer as one chronological spine without changing stop identity`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps the hotel return endpoint independently addressable`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_road_transfer_estimates_destination_hotel_check_in`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_estimates_duration_arrival_and_hotel_check_in`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_without_checkout_estimates_duration_but_not_check_in`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_untimed_road_transfer_does_not_invent_hotel_check_in`
 
 ### EB-ITIN-002 - Use conservative local transfer modes

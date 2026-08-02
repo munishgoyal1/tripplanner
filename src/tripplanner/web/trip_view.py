@@ -820,6 +820,14 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
     return None
 
 
+_INTERCITY_SPEED_KMH = {
+    "Flight": 650.0,
+    "Train": 80.0,
+    "Bus": 50.0,
+    "Drive": 65.0,
+}
+
+
 def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
     transfer_indexes = [
         index
@@ -1180,6 +1188,44 @@ def _enrich_stop_timing(stops: list[dict[str, Any]]) -> None:
             stop["timing_conflict_display"] = _route_duration_display(abs(buffer_minutes))
 
 
+def _enrich_drive_transfer_timing(
+    stops: list[dict[str, Any]],
+    place_coords_map: dict[str, tuple[float, float]],
+) -> None:
+    for index in range(1, len(stops) - 1):
+        stop = stops[index]
+        if _intercity_transfer_mode(
+            str(stop.get("name") or ""), str(stop.get("kind") or "")
+        ) != "Drive":
+            continue
+
+        previous = stops[index - 1]
+        following = stops[index + 1]
+        if previous.get("kind") != "hotel" or following.get("kind") != "hotel":
+            continue
+        duration = stop.get("duration_min")
+        if not isinstance(duration, (int, float)) or duration <= 0:
+            previous_coords = place_coords_map.get(
+                str(previous.get("name") or "").strip().lower()
+            )
+            following_coords = place_coords_map.get(
+                str(following.get("name") or "").strip().lower()
+            )
+            if previous_coords and following_coords:
+                distance = _haversine_km(previous_coords, following_coords)
+                speed = _INTERCITY_SPEED_KMH["Drive"]
+                stop["duration_min"] = max(1, int(round((distance / speed) * 60)))
+                stop["duration_estimated"] = True
+
+        if (
+            not stop.get("time")
+            and previous.get("kind") == "hotel"
+            and _clock_minutes(previous.get("time")) is not None
+        ):
+            stop["time"] = str(previous["time"])
+            stop["time_estimated"] = True
+
+
 def _apply_hotel_endpoint_times(
     stops: list[dict[str, Any]], schedule: dict[str, Any]
 ) -> None:
@@ -1238,9 +1284,7 @@ def _route_legs_for_day(
         )
         intercity_mode = (intercity_modes or {}).get((from_id, to_id))
         if intercity_mode:
-            speed = {"Flight": 650.0, "Train": 80.0, "Bus": 50.0, "Drive": 65.0}[
-                intercity_mode
-            ]
+            speed = _INTERCITY_SPEED_KMH[intercity_mode]
             duration = int(round((distance / speed) * 60))
             metrics = {
                 "distance_km": round(distance, 1),
@@ -2324,6 +2368,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
 
         # Calculate route stats for the day.
         route = _route_stats_for_day_coords(day_coords)
+        _enrich_drive_transfer_timing(stops, place_coords_map)
         _enrich_stop_timing(stops)
         for stop_index, stop in enumerate(stops[1:], start=1):
             previous = stops[stop_index - 1]

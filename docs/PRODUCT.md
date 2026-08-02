@@ -218,11 +218,12 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Hotel circuit anchors show Depart/Return semantics without a visit duration,
   redundant In trip state, or an individual delete action; stay changes use the
   stay-range controls instead. When a day departs from and returns to the same
-  hotel, one combined row shows both times without removing either underlying
-  route endpoint or its return-leg evidence. Different endpoint hotels remain
-  separate and read as Check out and Check in. A multi-city transition day keeps
-  those endpoints, the complete journey, and remaining destination plans in one
-  chronological spine rather than pairing hotels as cards or splitting city chapters.
+  hotel, the first row owns stay details and controls while a compact return
+  endpoint remains after the final plan with its incoming travel and return time.
+  Different endpoint hotels remain separate and read as Check out and Check in.
+  A multi-city transition day keeps those endpoints, the complete journey,
+  remaining destination plans, and return in one chronological spine rather than
+  pairing hotels as cards or splitting city chapters.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for a single hotel, route-ordered `H1`, `H2`, and so on for distinct hotel
   endpoints, and `1, 2, 3...` for attractions and restaurants.

@@ -208,9 +208,11 @@ re-describing the whole product.
   persistence.
 - Itinerary rows make timing auditable: hotel endpoints show estimated times
   when needed; visits show departure; transfer rows show estimated arrival,
-  endpoint guidance, and any free buffer or schedule conflict. A timed direct
-  road transfer may supply its completion time as the destination hotel check-in;
-  an untimed transfer does not invent one.
+  endpoint guidance, and any free buffer or schedule conflict. A direct Drive
+  between geocoded stays may estimate duration from the same coarse inter-city
+  model used by Map. A known checkout anchors its estimated departure, arrival,
+  and destination check-in; without a departure anchor, duration remains visible
+  but clock times are not invented.
 - Route summaries and legs use one Walk and Taxi fallback vocabulary. Straight-line
   fallback uses Walk only through 1.5 km and Taxi for longer legs. Metro is shown
   only when route evidence establishes service; distance alone never implies that
@@ -351,11 +353,13 @@ re-describing the whole product.
 - Rows show quiet travel distance/time from the previous mapped stop.
 - Generated hotel circuit anchors have no visit duration, In trip badge, or
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
-  Identical departure and return hotels render once with both times while
-  preserving route endpoints, return-leg evidence, and exact focus. Different
-  endpoint hotels remain separate Check out and Check in rows. A multi-city
-  transition day renders checkout, the complete journey, destination check-in,
-  and remaining plans once in one chronological spine.
+  Identical departure and return hotels share one stay identity and one set of
+  controls while preserving route endpoints, return-leg evidence, and exact
+  focus. The return is a compact chronological endpoint after the final plan,
+  without duplicate stay controls or hotel details. Different endpoint hotels
+  remain separate Check out and Check in rows. A multi-city transition day
+  renders checkout, the complete journey, destination check-in, remaining plans,
+  and return in one spine.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 
