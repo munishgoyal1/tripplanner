@@ -2,8 +2,40 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Search } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
-import type { MapAirport, MapLeg, MapView, MapPin } from "../types";
+import type { MapAirport, MapView, MapPin } from "../types";
+import { focusedDayForPin, pinMatchesFocus } from "./map/focusMatching";
+import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
+import {
+  airportIcon,
+  dotIcon,
+  hotelIcon,
+  pinIcon,
+  routeLegIcon,
+  SUGGEST_COLOR,
+  terminalIcon,
+} from "./map/mapIcons";
+import {
+  formatLegLabel,
+  hotelLabelsForDay,
+  hotelReturnForDay,
+  pinsForDayCircuit,
+  routeStyleForLeg,
+  visitOrdersForDay,
+} from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
+
+export { focusedDayForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
+export { kindForGooglePlace, mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
+export { airportIcon, hotelIcon, pinIcon } from "./map/mapIcons";
+export {
+  formatLegLabel,
+  hotelLabelsForDay,
+  hotelReturnForDay,
+  pinsForDayCircuit,
+  routePathForPinIds,
+  routeStyleForLeg,
+  visitOrdersForDay,
+} from "./map/routeDerivations";
 
 // Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
 // `any` for the map objects. The browser key is referrer-restricted server-side.
@@ -38,216 +70,12 @@ function loadGoogleMaps(key: string): Promise<any> {
   return loaderPromise;
 }
 
-// Teardrop pin as an SVG data URL, tinted per day, with a number label baked in.
-export function pinIcon(color: string, label: string, focused = false): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-      fill="${color}" stroke="white" stroke-width="2"/>
-    <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
-      stroke="white" stroke-width="${focused ? 2 : 0}"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="14"
-        font-weight="700" text-anchor="middle" fill="${focused ? "white" : color}">${label}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {
-  return `${leg.distance_display} · ${leg.duration_display}`;
-}
-
-export function routeStyleForLeg(
-  leg: MapLeg,
-  dayColor: string,
-  connectsHotels = false,
-): Record<string, unknown> {
-  if (connectsHotels) {
-    return {
-      strokeColor: dayColor,
-      strokeOpacity: 0,
-      strokeWeight: 3,
-      icons: [{
-        icon: { path: "M 0,-1 0,1", strokeColor: dayColor, strokeOpacity: 0.9, scale: 3 },
-        repeat: "10px",
-      }],
-    };
-  }
-  if (!leg.intercity) {
-    return { strokeColor: dayColor, strokeOpacity: 0.85, strokeWeight: 3 };
-  }
-  if (leg.mode === "Flight") {
-    return {
-      strokeColor: "#0284c7",
-      strokeOpacity: 0,
-      strokeWeight: 3,
-      icons: [{
-        icon: { path: "M 0,-1 0,1", strokeColor: "#0284c7", strokeOpacity: 0.95, scale: 3 },
-        repeat: "14px",
-      }],
-    };
-  }
-  if (leg.mode === "Train") {
-    return {
-      strokeColor: "#e11d48",
-      strokeOpacity: 0,
-      strokeWeight: 4,
-      icons: [{
-        icon: { path: "M 0,-1 0,1", strokeColor: "#e11d48", strokeOpacity: 0.9, scale: 3 },
-        repeat: "10px",
-      }],
-    };
-  }
-  return {
-    strokeColor: leg.mode === "Bus" ? "#0f766e" : "#e11d48",
-    strokeOpacity: 0.9,
-    strokeWeight: 5,
-  };
-}
-
-export function routePathForPinIds(pinIds: string[], pins: MapPin[]): Array<{ lat: number; lng: number }> {
-  const pinById = new Map(pins.map((pin) => [pin.id, pin] as const));
-  return pinIds
-    .map((id) => pinById.get(id))
-    .filter((pin): pin is MapPin => !!pin)
-    .map((pin) => ({ lat: pin.lat, lng: pin.lng }));
-}
-
-function routeLegIcon(label: string, color: string): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="112" height="26" viewBox="0 0 112 26">
-  <rect x="1" y="1" width="110" height="24" rx="12" fill="white" fill-opacity="0.94"
-        stroke="${color}" stroke-opacity="0.35"/>
-  <text x="56" y="17" font-family="Inter,Arial,sans-serif" font-size="10"
-        font-weight="600" text-anchor="middle" fill="#475569">${label}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-const AIRPORT_COLOR = "#0f172a";
-const HOTEL_COLOR = "#334155"; // slate — distinct from the day palette
-const SUGGEST_COLOR = "#94a3b8";
-
-export function airportIcon(focused = false): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${AIRPORT_COLOR}" stroke="white" stroke-width="2"/>
-  <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
-      stroke="white" stroke-width="${focused ? 2 : 0}"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
-        font-weight="700" text-anchor="middle" fill="${focused ? "white" : AIRPORT_COLOR}">A</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-function terminalIcon(kind: string): string {
-  if (kind === "airport") return airportIcon();
-  const label = kind === "station" ? "T" : "B";
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${AIRPORT_COLOR}" stroke="white" stroke-width="2"/>
-  <circle cx="17" cy="16" r="11" fill="white" fill-opacity="0.97"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
-        font-weight="700" text-anchor="middle" fill="${AIRPORT_COLOR}">${label}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-// Hotel/lodging pin — a lettered teardrop in slate so a place you're
-// staying reads differently from a day-numbered attraction.
-export function hotelIcon(focused = false, label = "H"): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
-  <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
-        fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
-    <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
-      stroke="white" stroke-width="${focused ? 2 : 0}"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="${label.length > 1 ? 11 : 13}"
-        font-weight="700" text-anchor="middle" fill="${focused ? "white" : HOTEL_COLOR}">${label}</text>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-// A small filled dot for un-scheduled "suggested" places — present but quiet
-// so it doesn't compete with the numbered day pins.
-function dotIcon(color: string, focused = false): string {
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-  <circle cx="9" cy="9" r="6" fill="${color}" stroke="${focused ? "#0f172a" : "white"}" stroke-width="${focused ? 3 : 2}"/>
-</svg>`.trim();
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
 function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
   return pin.id === "airport";
 }
 
 function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
   return ["airport", "station", "bus_station"].includes(pin.kind);
-}
-
-export function placeNameMatches(candidate: string, focusName: string): boolean {
-  const normalize = (value: string) => value
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-  const normalizedCandidate = normalize(candidate);
-  const normalizedFocus = normalize(focusName);
-  if (!normalizedCandidate || !normalizedFocus) return false;
-  return normalizedCandidate === normalizedFocus
-    || normalizedCandidate.includes(normalizedFocus)
-    || normalizedFocus.includes(normalizedCandidate)
-    || normalizedFocus.split(" ").every((token) => normalizedCandidate.split(" ").includes(token));
-}
-
-export function focusedDayForPin(pin: MapPin, focusDay?: number): number | null {
-  return focusDay && pin.occurrences.some((occurrence) => occurrence.day === focusDay)
-    ? focusDay
-    : pin.day;
-}
-
-export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string, number> {
-  const day = view.days.find((candidate) => candidate.day === dayNumber);
-  const pins = (day?.pin_ids ?? [])
-    .map((id) => view.pins.find((candidate) => candidate.id === id))
-    .filter((pin): pin is MapPin => !!pin && !["hotel", "airport", "station", "bus_station"].includes(pin.kind));
-  const ordered = [...new Map(pins.map((pin) => [pin.id, pin])).values()].sort((left, right) => {
-    const leftStop = left.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
-    const rightStop = right.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
-    return (leftStop ?? Number.MAX_SAFE_INTEGER) - (rightStop ?? Number.MAX_SAFE_INTEGER);
-  });
-  return new Map(ordered.map((pin, index) => [pin.id, index + 1]));
-}
-
-export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string, string> {
-  const day = view.days.find((candidate) => candidate.day === dayNumber);
-  const hotels = (day?.pin_ids ?? [])
-    .map((id) => view.pins.find((candidate) => candidate.id === id))
-    .filter((pin): pin is MapPin => !!pin && pin.kind === "hotel");
-  const ordered = [...new Map(hotels.map((pin) => [pin.id, pin])).values()];
-  const numbered = ordered.length > 1;
-  return new Map(ordered.map((pin, index) => [pin.id, numbered ? `H${index + 1}` : "H"]));
-}
-
-export function pinMatchesFocus(
-  pin: MapPin,
-  focusName?: string | null,
-  focusDay?: number,
-  focusStop?: number,
-): boolean {
-  if (
-    !focusName
-    || !(
-      placeNameMatches(pin.name, focusName)
-      || (pin.source_name && placeNameMatches(pin.source_name, focusName))
-    )
-  ) return false;
-  return (focusDay == null && focusStop == null) || pin.occurrences.some((occurrence) => (
-    (focusDay == null || occurrence.day === focusDay)
-    && (focusStop == null || occurrence.stop === focusStop)
-  ));
 }
 
 interface PinMarkerEntry {
@@ -269,71 +97,6 @@ export function syncPinMarkerFocus(
     marker.setIcon(focused ? focusedIcon : normalIcon);
     marker.setZIndex(focused ? 1400 : baseZIndex);
   });
-}
-
-export function kindForGooglePlace(types: string[] | undefined): "attraction" | "hotel" | "meal" {
-  if (types?.some((type) => type === "lodging" || type === "hotel")) return "hotel";
-  if (types?.some((type) => type === "restaurant" || type === "meal_takeaway")) return "meal";
-  return "attraction";
-}
-
-export function mapPinFromGooglePlace(place: any): MapPin | null {
-  const name = String(place?.name || "").trim();
-  const location = place?.geometry?.location;
-  const lat = typeof location?.lat === "function" ? location.lat() : location?.lat;
-  const lng = typeof location?.lng === "function" ? location.lng() : location?.lng;
-  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  let photo: string | null = null;
-  try {
-    photo = place.photos?.[0]?.getUrl?.({ maxWidth: 800 }) ?? null;
-  } catch {
-    photo = null;
-  }
-  return {
-    id: `candidate:${String(place.place_id || name).trim().toLowerCase()}`,
-    name,
-    kind: kindForGooglePlace(place.types),
-    selected: false,
-    day: null,
-    lat,
-    lng,
-    rating: typeof place.rating === "number" ? place.rating : null,
-    address: String(place.formatted_address || ""),
-    photo,
-    occurrences: [],
-  };
-}
-
-export function optionsForStopDay(day: string): SelectItemOptions | undefined {
-  const parsed = Number(day);
-  return day !== "auto" && Number.isInteger(parsed) && parsed > 0 ? { day: parsed } : undefined;
-}
-
-export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {
-  const day = view.days.find((candidate) => candidate.day === dayNumber);
-  if (!day) return [];
-  return (day.circuit_pin_ids ?? day.pin_ids)
-    .map((id) => view.pins.find((pin) => pin.id === id))
-    .filter((pin): pin is MapPin => !!pin);
-}
-
-export function hotelReturnForDay(
-  view: MapView,
-  dayNumber: number,
-): { pin: MapPin; label: string } | null {
-  const day = view.days.find((candidate) => candidate.day === dayNumber);
-  if (
-    !day
-    || day.pin_ids.length < 2
-    || day.pin_ids[0] !== day.pin_ids[day.pin_ids.length - 1]
-  ) return null;
-  const pin = view.pins.find((candidate) => candidate.id === day.pin_ids[0]);
-  if (!pin || pin.kind !== "hotel") return null;
-  const end = day.schedule?.end;
-  return {
-    pin,
-    label: end ? `Return · ${end}${day.schedule?.estimated ? " est." : ""}` : "Return",
-  };
 }
 
 export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: number): boolean {
