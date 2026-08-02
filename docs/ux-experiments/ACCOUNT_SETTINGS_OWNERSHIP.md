@@ -4,7 +4,7 @@
 
 - Owner: Munish Goyal
 - Date started: 2026-08-01
-- Status: implemented
+- Status: Implemented - To be reviewed
 - Lab: `http://127.0.0.1:5175/account-settings.html`
 
 ## Problem
@@ -62,7 +62,7 @@ future preference, while collection remains disabled without a measurement ID.
 ## Decision
 
 - Decision: **C - Account settings hub**
-- Production redesign status: implemented
+- Production redesign status: Implemented - To be reviewed
 - Production scope: labeled identity trigger, sectioned account sheet, existing
   Google/local identity flows, persisted Travel Profile, analytics consent, and
   established privacy deletion actions.

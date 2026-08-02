@@ -12,7 +12,7 @@ export function LabRecordCard({
   completed?: boolean;
   index?: number;
   compact?: boolean;
-  state?: "ready" | "parked";
+  state?: "ready" | "implemented-review" | "parked";
 }) {
   const Icon = lab.icon;
   if (compact) {
@@ -22,7 +22,7 @@ export function LabRecordCard({
         <span className="min-w-0">
           <span className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase text-brand">
             {lab.category}
-            {state && <span className={state === "parked" ? "text-amber-700" : "text-emerald-700"}>{state === "parked" ? "Parked" : "Ready to implement"}</span>}
+            {state && <span className={state === "parked" ? "text-amber-700" : state === "implemented-review" ? "text-sky-700" : "text-emerald-700"}>{state === "parked" ? "Parked" : state === "implemented-review" ? "Implemented - To be reviewed" : "Ready to implement"}</span>}
           </span>
           <span className="mt-0.5 block text-sm font-semibold text-ink">{lab.title}</span>
           <span className="mt-0.5 block text-xs text-slate-500">{lab.description}</span>

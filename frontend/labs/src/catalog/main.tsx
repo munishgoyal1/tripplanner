@@ -39,7 +39,10 @@ function LabCatalog() {
             <span className="text-xs text-slate-400">{status === "loaded" ? visibleLabs.length : "—"} open</span>
           </div>
           <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
-            {visibleLabs.map((lab, index) => <LabRecordCard key={lab.id} lab={lab} index={index + 1} compact state={selections[lab.id]?.disposition === "ready" ? "ready" : undefined} />)}
+            {visibleLabs.map((lab, index) => {
+              const disposition = selections[lab.id]?.disposition;
+              return <LabRecordCard key={lab.id} lab={lab} index={index + 1} compact state={disposition === "ready" || disposition === "implemented-review" ? disposition : undefined} />;
+            })}
           </div>
         </section>}
 

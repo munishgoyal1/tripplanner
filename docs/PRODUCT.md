@@ -119,9 +119,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   In progress, Parked, and Completed views; an individual Lab has one clear
   return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
-  marked ready, parked with that handoff intact, completed with the selected
-  decision preserved, or discarded from consideration. Completion archives the
-  evaluation decision without implying production implementation approval.
+  marked ready, parked with that handoff intact, implemented and awaiting owner
+  review, completed after owner sign-off with the selected decision preserved,
+  or discarded from consideration. Production implementation moves a Lab to
+  **Implemented - To be reviewed**; only explicit owner sign-off completes it.
   Completed Lab cards live only in the dedicated archive reached from the catalog;
   they do not repeat below active or parked work on the main Labs page.
   Lifecycle records have one machine-level authority shared by all worktrees;

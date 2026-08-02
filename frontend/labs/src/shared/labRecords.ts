@@ -13,7 +13,7 @@ export interface LabRecord {
 }
 
 export interface LabSelectionState {
-  disposition?: "ready" | "parked" | "completed" | "discarded";
+  disposition?: "ready" | "implemented-review" | "parked" | "completed" | "discarded";
   selectionLabel?: string;
 }
 

@@ -8,7 +8,7 @@ export interface LabSelection {
   selection: string;
   selectionLabel: string;
   comment: string;
-  disposition?: "ready" | "parked" | "completed" | "discarded";
+  disposition?: "ready" | "implemented-review" | "parked" | "completed" | "discarded";
   updatedAt: string;
 }
 

@@ -10,8 +10,8 @@ For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
 workspace has four durable catalog views:
 
 - `catalog.html` is All Labs: active and parked experiments.
-- `catalog.html?view=active` contains choices still being evaluated or ready
-  for implementation.
+- `catalog.html?view=active` contains choices still being evaluated, ready for
+  implementation, or implemented and awaiting owner review.
 - `catalog.html?view=parked` contains saved evaluations waiting for a later
   decision.
 - `completed-labs.html` preserves completed experiments, their original Lab
@@ -176,11 +176,12 @@ when the owner later says to pick and execute the saved preferences. Saving a
 handoff does not change production UI and is not implementation approval by
 itself; the owner's later execution instruction remains the approval boundary.
 **Save for implementation** keeps the Lab in progress and marks the complete
-handoff ready. **Park for later** preserves the option and notes, removes the Lab
-from In progress, and lists it under Parked on All Labs. **Mark completed**
-preserves the selected option and notes, removes the Lab from In progress, and
-lists it in both Completed views; completion records the evaluation decision but
-does not assert that production implementation is shipped or approved. **Discard Lab** removes
+handoff ready. **Mark implemented - to be reviewed** is required after production
+implementation and keeps the Lab visible in progress for owner validation.
+**Sign off and complete** is enabled only from that review state; it records the
+owner's approval, removes the Lab from In progress, and lists it in both Completed
+views. **Park for later** preserves the option and notes, removes the Lab from In
+progress, and lists it under Parked on All Labs. **Discard Lab** removes
 the Lab from catalogs and deletes its option, notes, and browser draft; only a
 minimal discarded marker remains so it stays hidden.
 The page also keeps each in-progress choice and comment as a browser draft. If
@@ -203,8 +204,9 @@ scope until a direction is selected and separately approved. See
 1. Keep each experiment isolated to UI layout/interaction files only.
 2. Timebox each experiment to 1-2 sessions.
 3. Use the scorecard template for decision-making.
-4. End each implemented experiment with a recorded decision and move its shared record from
-  the active catalog to the completed page; preserve its Lab page as design history.
+4. After implementing an experiment, move its shared record to `implemented-review`.
+  Keep it active until the owner signs off, then move it to `completed`; preserve
+  its Lab page as design history.
 5. Read `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json` when the owner asks to execute a `ready`
   handoff; implement the selected option together with all handoff notes.
   Provisional language such as "try" or "see first" means extend or run the Lab
