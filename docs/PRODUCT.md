@@ -129,7 +129,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   browsable, and an implemented or completed Lab can be revisited with another
   option, revised comments, or additional input. Saving that handoff starts a new
   implementation cycle in Ready while preserving a visible record of what was
-  implemented previously.
+  implemented previously. What was implemented retains each implementation as an
+  ordered version with its selected option, exact saved handoff notes, and recorded
+  time, followed by one summary of every implemented option and its notes.
   This review workflow applies to implementations from 2026-08-02 onward;
   implementations completed before that date remain in the Completed archive.
   Every card identifies when the Lab was created and when it entered its current

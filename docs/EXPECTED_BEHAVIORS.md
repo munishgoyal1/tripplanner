@@ -97,10 +97,17 @@ its handoff notes, and save it for implementation.
 
 **Expected:** Every option remains selectable in every lifecycle state. The new
 option and notes become a Ready handoff for another implementation cycle, while
-the prior implemented option and notes remain visible under What was implemented.
-The permanent Lab number appears on the detail page and in its HTML filename.
+every implemented version remains visible under What was implemented with its
+selected option, exact saved notes, version number, and recorded time. One final
+summary lists every implemented option and its notes. Saving shows an explicit
+confirmation naming the selected option and next version; the re-implementation
+action is visually distinct and cannot remain indefinitely in a Saving state.
+The permanent Lab
+number appears on the detail page and in its HTML filename.
 
 **Executable proof:**
 
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `keeps every option browsable after loading an implemented choice`
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `starts a re-implementation handoff without losing the completed direction`
+- [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `shows exact notes and a final summary for every implementation version`
+- [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `appends the next implementation version after a reopened Lab`
