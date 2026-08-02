@@ -141,6 +141,7 @@ export interface DaySchedule {
 export interface MapLeg extends RouteMetrics {
   from_pin_id: string;
   to_pin_id: string;
+  intercity?: boolean;
 }
 
 export interface MapDay {

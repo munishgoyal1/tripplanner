@@ -3240,3 +3240,14 @@ VALIDATION:
 - Repeat the selected option's delta above its production-scale preview so the
   distinction remains visible after selection.
 - Do not treat benefit-oriented option summaries as sufficient approval scope.
+
+=== 2026-08-02 — Implement connected inter-city Map journeys ===
+
+- Approve Option A, Connected day journey, from the inter-city Map Lab.
+- Render genuine transfer days as one open, ordered route from origin context
+  through the inter-city movement to destination context.
+- Keep ordinary sightseeing days as closed hotel circuits.
+- Distinguish road, rail, bus, and flight connectors without adding the journey
+  strip or independent layer controls from the other Lab options.
+- Keep rail and flight terminals visible and informational; do not expose them
+  as editable itinerary places.

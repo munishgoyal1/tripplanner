@@ -12,6 +12,8 @@ import {
   pinIcon,
   pinMatchesFocus,
   placeNameMatches,
+  routePathForPinIds,
+  routeStyleForLeg,
   syncPinMarkerFocus,
   visitOrdersForDay,
 } from "./MapPanel";
@@ -190,6 +192,46 @@ describe("map stop selection", () => {
   it("formats compact map leg labels", () => {
     expect(formatLegLabel({ distance_display: "4.6 km", duration_display: "15 min" }))
       .toBe("4.6 km · 15 min");
+  });
+
+  it("distinguishes local, road, bus, rail, and flight route geometry", () => {
+    const leg = {
+      from_pin_id: "origin",
+      to_pin_id: "destination",
+      distance_km: 100,
+      duration_min: 90,
+      mode: "Taxi",
+      distance_display: "100 km",
+      duration_display: "1 hr 30 min",
+    };
+
+    expect(routeStyleForLeg(leg, "#2563eb")).toMatchObject({
+      strokeColor: "#2563eb",
+      strokeOpacity: 0.85,
+      strokeWeight: 3,
+    });
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb"))
+      .toMatchObject({ strokeColor: "#e11d48", strokeOpacity: 0.9, strokeWeight: 5 });
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Bus" }, "#2563eb"))
+      .toMatchObject({ strokeColor: "#0f766e", strokeOpacity: 0.9, strokeWeight: 5 });
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Train" }, "#2563eb"))
+      .toMatchObject({ strokeColor: "#e11d48", strokeOpacity: 0, strokeWeight: 4 });
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Flight" }, "#2563eb"))
+      .toMatchObject({ strokeColor: "#0284c7", strokeOpacity: 0, strokeWeight: 3 });
+  });
+
+  it("retains ordered route geometry when leg metadata is absent", () => {
+    const pins = [
+      { id: "origin", name: "Origin", kind: "hotel", selected: true, day: 1, lat: 26.9, lng: 75.8, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "station", name: "Station", kind: "station", selected: false, day: 1, lat: 25.7, lng: 74.7, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "destination", name: "Destination", kind: "hotel", selected: true, day: 1, lat: 24.6, lng: 73.7, rating: null, address: "", photo: null, occurrences: [] },
+    ];
+
+    expect(routePathForPinIds(["origin", "station", "destination"], pins)).toEqual([
+      { lat: 26.9, lng: 75.8 },
+      { lat: 25.7, lng: 74.7 },
+      { lat: 24.6, lng: 73.7 },
+    ]);
   });
 
   it("fits every pin in the requested day circuit", () => {

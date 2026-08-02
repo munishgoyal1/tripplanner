@@ -345,6 +345,10 @@ re-describing the whole product.
 ### MAP-01 - Map behavior
 
 - Day-colored pins and route bands represent complete hotel-anchored circuits.
+- Genuine transfer days instead render one open endpoint-to-endpoint journey in
+  itinerary order and fit both city contexts. Local legs retain the day color;
+  road, rail, bus, and flight connectors use distinct treatment, with terminal
+  pins retained around rail and flight travel.
 - Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
   and zoom 15. Repeating the action reapplies focus after manual filtering.
 - Aggregate day focus clears exact-place focus, fits the whole circuit, and
@@ -521,11 +525,9 @@ re-describing the whole product.
   enabling collection. The production custom domain and hosted chat admission
   controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
-- Multi-city transfer days preserve checkout, transport, and check-in in the
-  itinerary, but production Map route geometry intentionally omits the inter-city
-  portion and its terminals. Two active Labs separately compare transition-day
-  itinerary hierarchy and complete road, rail, or flight Map framing before any
-  production treatment is approved.
+- Multi-city transition-day itinerary hierarchy remains under Lab evaluation.
+  The production Map now shows the complete road, rail, bus, or flight journey;
+  only the separate itinerary presentation decision remains pending.
 - Whole-trip Details still receives one eager, flat collection capped at ten
   places. The active Destination Guide Lab compares contextual city/type browsing
   and progressive results before a paged production contract is approved.

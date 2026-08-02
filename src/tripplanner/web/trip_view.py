@@ -772,6 +772,21 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
     return []
 
 
+def _intercity_transfer_mode(name: str, kind: str) -> str | None:
+    lowered = str(name or "").strip().lower()
+    if kind == "flight":
+        return "Flight"
+    if kind != "transport":
+        return None
+    if "train" in lowered or "rail" in lowered:
+        return "Train"
+    if "bus" in lowered:
+        return "Bus"
+    if any(token in lowered for token in ("drive:", "road transfer", "private car")):
+        return "Drive"
+    return None
+
+
 def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
     transfer_indexes = [
         index
@@ -1156,7 +1171,9 @@ def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]
 
 
 def _route_legs_for_day(
-    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
+    pin_ids: list[str],
+    pin_by_id: dict[str, dict[str, Any]],
+    intercity_modes: dict[tuple[str, str], str] | None = None,
 ) -> list[dict[str, Any]]:
     legs: list[dict[str, Any]] = []
     for from_id, to_id in zip(pin_ids, pin_ids[1:]):
@@ -1166,14 +1183,30 @@ def _route_legs_for_day(
         end_coords = (end.get("lat"), end.get("lng"))
         if not all(isinstance(value, (int, float)) for value in (*start_coords, *end_coords)):
             continue
-        metrics = _route_stats_for_distance(
-            _haversine_km(
-                (float(start_coords[0]), float(start_coords[1])),
-                (float(end_coords[0]), float(end_coords[1])),
-            ),
-            from_name=str(start.get("name") or ""),
-            to_name=str(end.get("name") or ""),
+        distance = _haversine_km(
+            (float(start_coords[0]), float(start_coords[1])),
+            (float(end_coords[0]), float(end_coords[1])),
         )
+        intercity_mode = (intercity_modes or {}).get((from_id, to_id))
+        if intercity_mode:
+            speed = {"Flight": 650.0, "Train": 80.0, "Bus": 50.0, "Drive": 65.0}[
+                intercity_mode
+            ]
+            duration = int(round((distance / speed) * 60))
+            metrics = {
+                "distance_km": round(distance, 1),
+                "duration_min": duration,
+                "mode": intercity_mode,
+                "distance_display": f"{distance:.1f} km",
+                "duration_display": _route_duration_display(duration),
+            }
+            metrics["intercity"] = True
+        else:
+            metrics = _route_stats_for_distance(
+                distance,
+                from_name=str(start.get("name") or ""),
+                to_name=str(end.get("name") or ""),
+            )
         legs.append({"from_pin_id": from_id, "to_pin_id": to_id, **metrics})
     return legs
 
@@ -1240,24 +1273,57 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     # multiple days. A pin has one primary day for display, while day routes
     # can reference it wherever the itinerary includes it.
     by_day: dict[int, list[str]] = {}
-    local_stop_indexes_by_day: dict[int, set[int]] = {}
-    local_route_pin_ids_by_day: dict[int, list[str]] = {}
+    route_pin_ids_by_day: dict[int, list[str]] = {}
+    intercity_modes_by_day: dict[int, dict[tuple[str, str], str]] = {}
     transfer_days: set[int] = set()
     for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
         if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
             continue
         raw_day = entry.get("day")
         day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        local_stop_indexes_by_day[day_num] = _local_route_stop_indexes(entry["stops"])
-        if len(local_stop_indexes_by_day[day_num]) < len(entry["stops"]):
-            transfer_days.add(day_num)
-        for stop_index, stop in enumerate(entry["stops"], start=1):
+        route_ids = route_pin_ids_by_day.setdefault(day_num, [])
+        pending_intercity_mode: str | None = None
+        for stop in entry["stops"]:
             name = stop.get("name") if isinstance(stop, dict) else stop
+            kind = str(stop.get("kind") or "").strip().lower() if isinstance(stop, dict) else ""
+            mode = _intercity_transfer_mode(str(name or ""), kind)
+            if mode:
+                transfer_days.add(day_num)
+                terminal_refs = _transport_terminal_refs(str(name or ""), kind)
+                terminal_ids: list[str] = []
+                for _, terminal_name in terminal_refs:
+                    terminal_pin = _pin_for_stop(terminal_name)
+                    if terminal_pin:
+                        terminal_ids.append(str(terminal_pin["id"]))
+                if len(terminal_ids) == len(terminal_refs) and len(terminal_ids) >= 2:
+                    for terminal_id in terminal_ids:
+                        if terminal_id not in by_day.setdefault(day_num, []):
+                            by_day[day_num].append(terminal_id)
+                        route_ids.append(terminal_id)
+                    intercity_modes_by_day.setdefault(day_num, {})[
+                        (terminal_ids[0], terminal_ids[-1])
+                    ] = mode
+                else:
+                    if not route_ids and terminal_refs:
+                        origin_pin = _pin_for_stop(terminal_refs[0][1])
+                        if origin_pin:
+                            origin_id = str(origin_pin["id"])
+                            if origin_id not in by_day.setdefault(day_num, []):
+                                by_day[day_num].append(origin_id)
+                            route_ids.append(origin_id)
+                    pending_intercity_mode = mode
+                continue
             pin = _pin_for_stop(name)
             if pin and pin["id"] not in by_day.setdefault(day_num, []):
                 by_day[day_num].append(pin["id"])
-            if pin and stop_index in local_stop_indexes_by_day[day_num]:
-                local_route_pin_ids_by_day.setdefault(day_num, []).append(pin["id"])
+            if pin:
+                pin_id = str(pin["id"])
+                if pending_intercity_mode and route_ids:
+                    intercity_modes_by_day.setdefault(day_num, {})[
+                        (route_ids[-1], pin_id)
+                    ] = pending_intercity_mode
+                    pending_intercity_mode = None
+                route_ids.append(pin_id)
 
     unscheduled: list[str] = []
     for p in pins:
@@ -1304,26 +1370,39 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         is_transfer_day = d in transfer_days
         if stay_id and not is_transfer_day:
             ids = [stay_id, *(pid for pid in ids if pid != stay_id), stay_id]
-        terminal_ids = [
-            pid for pid in ids if pin_by_id[pid]["kind"] in {"airport", "station", "bus_station"}
-        ]
         if is_transfer_day:
-            route_ids = local_route_pin_ids_by_day.get(d, [])
-            ids = [*terminal_ids, *route_ids]
+            route_ids = route_pin_ids_by_day.get(d, [])
+            ids = route_ids
         else:
             route_ids = [
                 pid
                 for pid in ids
                 if pin_by_id[pid]["kind"] not in {"airport", "station", "bus_station"}
             ]
+        intercity_modes = intercity_modes_by_day.get(d)
+        legs = _route_legs_for_day(route_ids, pin_by_id, intercity_modes)
+        route = _route_stats_for_day(route_ids, pin_by_id)
+        if intercity_modes:
+            distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
+            duration = sum(int(leg["duration_min"]) for leg in legs)
+            modes = list(dict.fromkeys(intercity_modes.values()))
+            if any(not leg.get("intercity") for leg in legs):
+                modes.append("local")
+            route = {
+                "distance_km": distance,
+                "duration_min": duration,
+                "mode": " + ".join(modes),
+                "distance_display": f"{distance:.1f} km",
+                "duration_display": _route_duration_display(duration),
+            }
         days.append(
             {
                 "day": d,
                 "label": f"Day {d}",
                 "color": _day_color(d),
                 "pin_ids": ids,
-                "route": _route_stats_for_day(route_ids, pin_by_id),
-                "legs": _route_legs_for_day(route_ids, pin_by_id),
+                "route": route,
+                "legs": legs,
             }
         )
     for day in days:

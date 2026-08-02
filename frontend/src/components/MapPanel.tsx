@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Search } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
-import type { MapAirport, MapView, MapPin } from "../types";
+import type { MapAirport, MapLeg, MapView, MapPin } from "../types";
 import PlaceTripActions from "./PlaceTripActions";
 
 // Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
@@ -54,6 +54,41 @@ export function pinIcon(color: string, label: string, focused = false): string {
 
 export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {
   return `${leg.distance_display} · ${leg.duration_display}`;
+}
+
+export function routeStyleForLeg(leg: MapLeg, dayColor: string): Record<string, unknown> {
+  if (!leg.intercity) {
+    return { strokeColor: dayColor, strokeOpacity: 0.85, strokeWeight: 3 };
+  }
+  if (leg.mode === "Flight") {
+    return {
+      strokeColor: "#0284c7",
+      strokeOpacity: 0,
+      strokeWeight: 3,
+      icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.95, scale: 3 }, repeat: "14px" }],
+    };
+  }
+  if (leg.mode === "Train") {
+    return {
+      strokeColor: "#e11d48",
+      strokeOpacity: 0,
+      strokeWeight: 4,
+      icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.9, scale: 3 }, repeat: "10px" }],
+    };
+  }
+  return {
+    strokeColor: leg.mode === "Bus" ? "#0f766e" : "#e11d48",
+    strokeOpacity: 0.9,
+    strokeWeight: 5,
+  };
+}
+
+export function routePathForPinIds(pinIds: string[], pins: MapPin[]): Array<{ lat: number; lng: number }> {
+  const pinById = new Map(pins.map((pin) => [pin.id, pin] as const));
+  return pinIds
+    .map((id) => pinById.get(id))
+    .filter((pin): pin is MapPin => !!pin)
+    .map((pin) => ({ lat: pin.lat, lng: pin.lng }));
 }
 
 function routeLegIcon(label: string, color: string): string {
@@ -122,6 +157,10 @@ function dotIcon(color: string, focused = false): string {
 
 function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
   return pin.id === "airport";
+}
+
+function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
+  return ["airport", "station", "bus_station"].includes(pin.kind);
 }
 
 export function placeNameMatches(candidate: string, focusName: string): boolean {
@@ -583,24 +622,41 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       }
     }
 
-    // Geodesic route lines connecting each day's stops in order. (Straight
-    // arcs, not road directions, to avoid the billed Directions API.)
+    // Geodesic route lines connecting each day's stops in order. Local legs
+    // keep the day color; the inter-city leg uses mode-specific treatment.
+    // These remain straight arcs to avoid the billed Directions API.
     for (const d of view.days) {
       if (activeDay !== null && d.day !== activeDay) continue;
-      const path = d.pin_ids
-        .map((id) => pinById.get(id))
-        .filter((p): p is MapPin => !!p && !["airport", "station", "bus_station"].includes(p.kind))
-        .map((p) => ({ lat: p.lat, lng: p.lng }));
-      if (path.length < 2) continue;
-      const line = new google.maps.Polyline({
-        path,
-        geodesic: true,
-        strokeColor: d.color,
-        strokeOpacity: 0.85,
-        strokeWeight: 3,
-        map,
-      });
-      overlaysRef.current.push(line);
+      const legs = d.legs ?? [];
+      for (const leg of legs) {
+        const start = pinById.get(leg.from_pin_id);
+        const end = pinById.get(leg.to_pin_id);
+        if (!start || !end) continue;
+        const line = new google.maps.Polyline({
+          path: [
+            { lat: start.lat, lng: start.lng },
+            { lat: end.lat, lng: end.lng },
+          ],
+          geodesic: true,
+          ...routeStyleForLeg(leg, d.color),
+          map,
+        });
+        overlaysRef.current.push(line);
+      }
+      if (legs.length === 0) {
+        const path = routePathForPinIds(d.pin_ids, view.pins);
+        if (path.length >= 2) {
+          const line = new google.maps.Polyline({
+            path,
+            geodesic: true,
+            strokeColor: d.color,
+            strokeOpacity: 0.85,
+            strokeWeight: 3,
+            map,
+          });
+          overlaysRef.current.push(line);
+        }
+      }
 
       if (activeDay === d.day) {
         for (const leg of d.legs ?? []) {
@@ -727,7 +783,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   }, [activeDay, circuitFocusDay, circuitFocusToken, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
-    return !!p && !isAirportTarget(p);
+    return !!p && !isAirportTarget(p) && !isJourneyTerminal(p);
   };
 
   const handleAddStop = async () => {
@@ -1021,7 +1077,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
                 )}
               </div>
             ) : (
-              <p className="mt-2 text-xs text-slate-500">Arrival airport context pin</p>
+              <p className="mt-2 text-xs text-slate-500">Travel terminal in this day's journey</p>
             )}
           </aside>
         )}

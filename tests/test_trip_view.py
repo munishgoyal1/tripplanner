@@ -897,14 +897,14 @@ def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:
     assert restaurant["id"] in day1["pin_ids"]
 
 
-def test_map_view_shows_flight_airports_without_local_circuit(
+def test_map_view_connects_flight_airports_to_destination_stay(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     coords = {
         "Bangalore Airport": (13.1986, 77.7066),
         "Udaipur Airport": (24.6177, 73.8961),
-        "Taj Exotica Resort": (15.04, 73.92),
+        "Trident Udaipur": (24.577, 73.683),
     }
     monkeypatch.setattr(
         trip_view.places_cache,
@@ -919,11 +919,12 @@ def test_map_view_shows_flight_airports_without_local_circuit(
     trip = {
         **SAMPLE_TRIP,
         "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
         "day_wise_itinerary": [{
             "day": 1,
             "stops": [
                 {"name": "Flight: Bangalore to Udaipur", "kind": "flight", "time": "08:00"},
-                {"name": "Taj Exotica Resort", "kind": "hotel", "time": "10:30"},
+                {"name": "Trident Udaipur", "kind": "hotel", "time": "10:30"},
             ],
         }],
     }
@@ -936,11 +937,18 @@ def test_map_view_shows_flight_airports_without_local_circuit(
     assert view["airport"] is None
     day = view["days"][0]
     assert day["pin_ids"][0] != day["pin_ids"][-1]
-    assert day["route"]["distance_km"] == 0
-    assert day["legs"] == []
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    route_names = [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]]
+    assert route_names == ["Bangalore Airport", "Udaipur Airport", "Trident Udaipur"]
+    assert day["route"]["distance_km"] > 0
+    assert day["route"]["duration_min"] < 240
+    assert day["route"]["mode"] == "Flight + local"
+    assert day["legs"][0]["mode"] == "Flight"
+    assert day["legs"][0]["intercity"] is True
+    assert "intercity" not in day["legs"][1]
 
 
-def test_map_view_routes_only_destination_segment_after_road_transfer(
+def test_map_view_connects_origin_and_destination_segments_after_road_transfer(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -990,13 +998,232 @@ def test_map_view_routes_only_destination_segment_after_road_transfer(
     day = view["days"][0]
     route_names = [names_by_id[pin_id] for pin_id in day["pin_ids"]]
     assert route_names == [
+        "Trident Udaipur",
         "Hotel Hillock",
         "Delwara Jain Temple",
         "Nakki Lake",
         "Hotel Hillock",
     ]
-    assert len(day["legs"]) == 3
-    assert day["route"]["distance_km"] < 10
+    assert len(day["legs"]) == 4
+    assert day["route"]["distance_km"] > 90
+    assert day["route"]["mode"] == "Drive + local"
+    assert day["legs"][0]["mode"] == "Drive"
+    assert day["legs"][0]["intercity"] is True
+    assert all("intercity" not in leg for leg in day["legs"][1:])
+
+
+def test_map_view_connects_train_stations_between_stays(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Rambagh Palace Jaipur": (26.898, 75.808),
+        "Jaipur Railway Station": (26.9196, 75.7878),
+        "Udaipur Railway Station": (24.5683, 73.6991),
+        "Trident Udaipur": (24.577, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [
+            {"name": "Rambagh Palace Jaipur"},
+            {"name": "Trident Udaipur"},
+        ],
+        "day_wise_itinerary": [{
+            "day": 4,
+            "stops": [
+                {"name": "Rambagh Palace Jaipur", "kind": "hotel"},
+                {"name": "Train: Jaipur to Udaipur", "kind": "transport"},
+                {"name": "Trident Udaipur", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    day = view["days"][0]
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Rambagh Palace Jaipur",
+        "Jaipur Railway Station",
+        "Udaipur Railway Station",
+        "Trident Udaipur",
+    ]
+    assert day["route"]["mode"] == "Train + local"
+    assert day["legs"][1]["mode"] == "Train"
+    assert day["legs"][1]["intercity"] is True
+
+
+def test_map_view_connects_bus_stands_between_stays(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Origin Hotel": (26.9, 75.8),
+        "Jaipur Bus Stand": (26.92, 75.79),
+        "Udaipur Bus Stand": (24.58, 73.7),
+        "Destination Hotel": (24.577, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Origin Hotel"}, {"name": "Destination Hotel"}],
+        "day_wise_itinerary": [{
+            "day": 2,
+            "stops": [
+                {"name": "Origin Hotel", "kind": "hotel"},
+                {"name": "Bus: Jaipur to Udaipur", "kind": "transport"},
+                {"name": "Destination Hotel", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    day = view["days"][0]
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Origin Hotel",
+        "Jaipur Bus Stand",
+        "Udaipur Bus Stand",
+        "Destination Hotel",
+    ]
+    assert day["route"]["mode"] == "Bus + local"
+    assert day["legs"][1]["mode"] == "Bus"
+    assert day["legs"][1]["intercity"] is True
+
+
+def test_map_view_keeps_local_taxi_day_as_closed_hotel_circuit(_map_geo: None) -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_activities": [],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Taj Exotica Resort", "kind": "hotel"},
+                {"name": "Taxi: Taj Exotica Resort to Fort Aguada", "kind": "transport"},
+                {"name": "Fort Aguada", "kind": "attraction"},
+                {"name": "Taj Exotica Resort", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    day = view["days"][0]
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    route_names = [names_by_id[pin_id] for pin_id in day["pin_ids"]]
+    assert route_names == ["Taj Exotica Resort", "Fort Aguada", "Taj Exotica Resort"]
+    assert all("intercity" not in leg for leg in day["legs"])
+
+
+def test_map_view_falls_back_to_stays_when_one_flight_terminal_is_unmapped(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Origin Hotel": (13.05, 77.59),
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Destination Hotel": (24.577, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Origin Hotel"}, {"name": "Destination Hotel"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Origin Hotel", "kind": "hotel"},
+                {"name": "Flight: Bangalore to Udaipur", "kind": "flight"},
+                {"name": "Destination Hotel", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    day = view["days"][0]
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Origin Hotel",
+        "Destination Hotel",
+    ]
+    assert day["legs"][0]["mode"] == "Flight"
+    assert day["legs"][0]["intercity"] is True
+
+
+def test_map_view_uses_origin_terminal_when_partial_flight_is_first_stop(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Destination Hotel": (24.577, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Destination Hotel"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Flight: Bangalore to Udaipur", "kind": "flight"},
+                {"name": "Destination Hotel", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    day = view["days"][0]
+    names_by_id = {pin["id"]: pin["name"] for pin in view["pins"]}
+    assert [names_by_id[pin_id] for pin_id in day["pin_ids"]] == [
+        "Bangalore Airport",
+        "Destination Hotel",
+    ]
+    assert day["route"]["mode"] == "Flight"
+    assert day["legs"][0]["mode"] == "Flight"
+    assert day["legs"][0]["intercity"] is True
 
 
 # ---------------------------------------------------------------------------
