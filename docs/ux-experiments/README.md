@@ -31,6 +31,12 @@ catalog filters appear only on catalog pages.
 Historical experiments that predate Lab pages may remain read-only detail records
 reconstructed from their preserved source material.
 
+Each Lab has one permanent integer `labNumber` in the canonical registry. Allocate
+a new Lab by incrementing `LAST_ASSIGNED_LAB_NUMBER` and assigning that value once.
+Never renumber or reuse an identifier when a Lab changes state, is completed, or is
+discarded. Catalog sections display the stored number rather than a row index so
+`Lab #N` always identifies the same experiment.
+
 Every individual Lab must declare its decision boundary before showing options or
 the production-scale preview. The shared **Change scope** block names the exact
 elements that vary and separately names the surrounding fixture elements that are

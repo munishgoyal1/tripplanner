@@ -14,6 +14,7 @@ function CompletedLabs() {
     ? allLabs
         .filter((lab) => effectiveLabDisposition(lab, selections[lab.id]) === "completed")
         .map((lab) => resolvedLabRecord(lab, selections[lab.id]))
+        .sort((first, second) => second.labNumber - first.labNumber)
     : [];
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f0fdf4_0,#fafaf9_22rem)] px-4 py-8 sm:px-6 lg:px-8">

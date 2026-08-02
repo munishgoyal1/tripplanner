@@ -128,7 +128,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   This review workflow applies to implementations from 2026-08-02 onward;
   implementations completed before that date remain in the Completed archive.
   Every card identifies when the Lab was created and when it entered its current
-  lifecycle state. Machine state overrides committed historical fallback metadata,
+  lifecycle state. Every Lab also has one permanent integer identifier, displayed
+  as `Lab #N` in every catalog state. New Labs take the next integer; numbers are
+  never changed, reused, or derived from filtering or display order. Machine state
+  overrides committed historical fallback metadata,
   so one Lab cannot appear in conflicting filters.
   Completed Lab cards live only in the dedicated archive reached from the catalog;
   they do not repeat below active or parked work on the main Labs page.

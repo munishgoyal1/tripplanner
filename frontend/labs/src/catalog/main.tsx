@@ -16,7 +16,9 @@ function LabCatalog() {
   const { selections, status } = useLabSelections();
 
   const labsFor = (dispositions: Array<string | undefined>) => status === "loaded"
-    ? allLabs.filter((lab) => dispositions.includes(effectiveLabDisposition(lab, selections[lab.id])))
+    ? allLabs
+        .filter((lab) => dispositions.includes(effectiveLabDisposition(lab, selections[lab.id])))
+        .sort((first, second) => second.labNumber - first.labNumber)
     : [];
   const visibleLabs = labsFor([undefined, "ready"]);
   const reviewLabs = labsFor(["implemented-review"]);
@@ -46,9 +48,9 @@ function LabCatalog() {
             <span className="text-xs text-slate-400">{status === "loaded" ? visibleLabs.length : "—"} open</span>
           </div>
           <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
-            {visibleLabs.map((lab, index) => {
+            {visibleLabs.map((lab) => {
               const disposition = selections[lab.id]?.disposition;
-              return <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} index={index + 1} compact state={disposition} selection={selections[lab.id]} />;
+              return <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} compact state={disposition} selection={selections[lab.id]} />;
             })}
           </div>
         </section>}
@@ -59,7 +61,7 @@ function LabCatalog() {
             <span className="text-xs text-slate-400">{reviewLabs.length} awaiting review</span>
           </div>
           <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
-            {reviewLabs.map((lab, index) => <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} index={index + 1} compact state="implemented-review" selection={selections[lab.id]} />)}
+            {reviewLabs.map((lab) => <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} compact state="implemented-review" selection={selections[lab.id]} />)}
           </div>
         </section>}
 
@@ -69,7 +71,7 @@ function LabCatalog() {
               <span className="text-xs text-slate-400">{parkedLabs.length} parked</span>
             </div>
             <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
-              {parkedLabs.map((lab, index) => <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} index={index + 1} compact state="parked" selection={selections[lab.id]} />)}
+              {parkedLabs.map((lab) => <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} compact state="parked" selection={selections[lab.id]} />)}
             </div>
           </section>}
       </div>
