@@ -116,6 +116,20 @@ color. A day with one unique hotel retains the plain `H` marker.
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps different hotel endpoints as explicit checkout and checkin rows`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
 
+### EB-MAP-002 - Distinguish inter-city transport on the map
+
+**Trigger:** View a mapped inter-city flight, road transfer, bus, or train leg.
+
+**Expected:** Its connector is dotted and carries a small transport glyph at its
+midpoint. Flight connectors are blue with an airplane, road connectors are black
+with a car or bus as applicable, and train connectors are gray with a train. Local
+route legs retain their day color and do not gain an inter-city transport glyph.
+
+**Executable proof:**
+
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
+
 ### EB-STATE-001 - Keep planner surfaces synchronized
 
 **Trigger:** A focus, selection, trip mutation, identity change, or overlapping

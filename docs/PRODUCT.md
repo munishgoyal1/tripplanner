@@ -255,7 +255,9 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Clicking an inter-city flight or transport row frames its complete source-to-
   destination route and connector without opening place Details. All-days view
   retains the dotted flight arcs between every airport pair so the complete trip
-  connection remains visible in the overall itinerary geography.
+  connection remains visible in the overall itinerary geography. Inter-city
+  connectors are dotted and visually identify their mode: blue with an airplane
+  for flights, black with a car or bus for road travel, and gray with a train for rail.
   The complete day header is also clickable: it clears any prior exact-place
   selection and filters the map to that day. Ordinary days fit the complete route
   circuit. Transfer days retain the complete connected geometry but frame the
