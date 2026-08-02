@@ -123,24 +123,26 @@ worktree that should receive all latest committed code; no lane number is needed
 
 ```powershell
 .\scripts\dev\Sync-Latest.cmd
+.\scripts\dev\Sync-Latest.cmd all
 ```
 
 From Agent 3, it integrates committed local and remote worker heads into
-`master`. From Worker 1 or Worker 2, it performs that same integration through
-`master`, then merges the integrated `master` into the launcher worktree. Other
-worker worktrees are not updated. The internal merge engine starts its disposable
+`master`. From Worker 1 or Worker 2, the no-argument command merges the latest
+`master` into only the launcher worktree. Pass `all` from a worker to first
+integrate every committed worker head through `master`, then merge that result
+into only the launcher worktree. The internal merge engine starts its disposable
 integration checkout directly from fetched `origin/master`, then updates local
-`master` once after the integrated result is pushed.
+`master` only when Agent 3 is the launcher.
 
-Non-target worktrees are never stashed, checked out, reset, or otherwise modified.
+Non-launcher worktrees are never stashed, checked out, reset, or otherwise modified.
 Target worktree changes are temporarily stashed and restored with their staged
 state. Git `rerere` attempts a previously validated merge resolution. A new
 semantic conflict pauses, lists the exact paths and resolution worktree, and
 waits for `RESOLVED` or `ABORT` rather than choosing blanket ours/theirs.
-The internal merge engine uses its disposable integration worktree; the target
-update engine uses the launcher worktree and keeps its local changes in a safety
-stash until the merge finishes or is aborted. Sibling code always reaches a
-worker through `master`; worker branches are not merged directly into one another.
+The internal merge engine uses its disposable integration worktree; the launcher
+update engine keeps local changes in a safety stash until the merge finishes or
+is aborted. Sibling code always reaches a worker through `master`; worker branches
+are not merged directly into one another.
 Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.

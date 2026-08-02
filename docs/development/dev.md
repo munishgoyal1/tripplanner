@@ -40,7 +40,7 @@ Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `Sync-Latest.cmd` | Integrate all committed worker code through `master`, then update the worktree containing the launcher. No lane argument is needed. |
+| `Sync-Latest.cmd` | On Agent 3, integrate all committed worker code. On a worker, update only from `master`; pass `all` to include every committed worker head. Only the launcher worktree is updated. |
 | `Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. |
 | `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 

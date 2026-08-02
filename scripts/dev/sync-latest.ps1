@@ -1,6 +1,10 @@
 #!/usr/bin/env pwsh
 [CmdletBinding()]
 param(
+    [Parameter(Position = 0)]
+    [ValidateSet("all")]
+    [string]$Target,
+
     [switch]$ValidateOnly
 )
 
@@ -24,12 +28,16 @@ $workerNumber = switch ($branch) {
 $laneName = if ($workerNumber -eq 3) { "Agent 3 (master)" } else { "Agent $workerNumber" }
 
 Write-Host "Synchronizing latest committed code into $laneName..." -ForegroundColor Cyan
-& "$PSScriptRoot\merge-latest-worktrees.ps1" -ValidateOnly:$ValidateOnly
-
 if ($workerNumber -eq 3) {
+    & "$PSScriptRoot\merge-latest-worktrees.ps1" -ValidateOnly:$ValidateOnly
     Write-Host "Agent 3 is current after worktree integration." -ForegroundColor Green
     return
 }
 
-Write-Host "Applying integrated master to $laneName..." -ForegroundColor Cyan
+if ($Target -eq "all") {
+    Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
+    & "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
+}
+
+Write-Host "Applying latest master to $laneName..." -ForegroundColor Cyan
 & "$PSScriptRoot\update-from-master.ps1" $workerNumber -ValidateOnly:$ValidateOnly
