@@ -4,7 +4,7 @@
 
 This is the consolidated candidate backlog for meaningful future product work.
 It complements the implemented capability baseline in
-[`../REQUIREMENTS_V2.md`](../REQUIREMENTS_V2.md) and does not approve any item
+[`../REQUIREMENTS.md`](../REQUIREMENTS.md) and does not approve any item
 for implementation. Before work begins, the owner selects one coherent outcome
 and scopes it through [`../feature-briefs/NEXT_INCREMENT.md`](../feature-briefs/NEXT_INCREMENT.md).
 

@@ -1,0 +1,14 @@
+# Development Guides
+
+This folder explains how humans and coding agents work on the repository. It owns
+local setup and collaboration procedures, not product requirements, architecture,
+or deployment policy.
+
+- [`dev.md`](dev.md): local application, test, and UX Lab commands.
+- [`parallel-agent-development.md`](parallel-agent-development.md): worker
+  worktrees, synchronization, review, and guarded integration.
+- [`setup-oauth.md`](setup-oauth.md): local Google OAuth setup.
+
+Update these guides when the development workflow or commands change. Product
+behavior belongs in `docs/PRODUCT.md` or `docs/REQUIREMENTS.md`; production
+release procedures belong in `docs/operations/`.

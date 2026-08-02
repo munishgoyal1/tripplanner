@@ -3251,3 +3251,16 @@ VALIDATION:
   strip or independent layer controls from the other Lab options.
 - Keep rail and flight terminals visible and informational; do not expose them
   as editable itinerary places.
+
+=== 2026-08-02 — Simplify requirements and reference documentation ===
+
+- Rename the maintained capability baseline from `docs/REQUIREMENTS_V2.md` to
+  `docs/REQUIREMENTS.md`; the repository has one evolving requirements baseline,
+  not parallel versioned requirement files.
+- Remove active V2 labels from roadmap and quality-bar headings while preserving
+  the original baseline date and commit.
+- Move original owner notes to `docs/reference/owner-inputs/` and chronological
+  or dated snapshots to `docs/reference/history/`; canonical documents at the
+  `docs/` root govern current truth.
+- Keep one indexed hierarchy with explicit retention status so duplicate or stale
+  references can be reviewed with the owner before removal.

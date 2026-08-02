@@ -65,7 +65,7 @@ Everything below may be completed collaboratively with the AI agent.
 | Owner | Munish Goyal |
 | Created | YYYY-MM-DD |
 | Updated | YYYY-MM-DD |
-| Baseline | `docs/REQUIREMENTS_V2.md` version and commit |
+| Baseline | `docs/REQUIREMENTS.md` commit |
 | Target milestone | TBD |
 | Related capability IDs | TBD |
 
@@ -251,7 +251,7 @@ architecture. Record a recommendation where the agent has enough evidence.
 
 Unless this brief overrides them:
 
-- Treat `docs/REQUIREMENTS_V2.md`, `docs/PRODUCT.md`, `docs/CODEMAP.md`, and
+- Treat `docs/REQUIREMENTS.md`, `docs/PRODUCT.md`, `docs/CODEMAP.md`, and
   `docs/ENGINEERING_LEARNINGS.md` as the current baseline.
 - Preserve unrelated user changes and existing public contracts.
 - Inspect the nearest current implementation and test before editing.

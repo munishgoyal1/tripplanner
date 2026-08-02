@@ -143,7 +143,7 @@ reuses each worker's pull request, merges Worker 1 with a merge commit, updates
 `master`, brings Worker 2 onto that new baseline, and merges Worker 2 separately.
 Each persistent branch finishes synchronized for its next assignment.
 Independent dated additions to
-`PRD/REQUIREMENTS Auto Log.txt` use Git's union merge driver because that file is
+`docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
 To integrate only one lane, double-click `scripts/dev/Merge-Agent-1.cmd` or

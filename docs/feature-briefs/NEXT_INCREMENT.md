@@ -1,9 +1,9 @@
 # Next Increment Working Brief
 
 This is the editable input for the next coherent product milestone. It is seeded
-with the current V2 capabilities so the owner can mark what changes and delete
+with the current capabilities so the owner can mark what changes and delete
 everything irrelevant. It is **not** a second history log and it does not approve
-all ideas listed in the V2 roadmap.
+all ideas listed in the roadmap.
 
 Fastest workflow:
 
@@ -26,7 +26,7 @@ For a large feature, the agent should rename/archive this file as
 | Owner | Munish Goyal |
 | Created | 2026-07-28 |
 | Updated | 2026-07-28 |
-| Baseline | `docs/REQUIREMENTS_V2.md` v2.0 at `f4f4392` |
+| Baseline | `docs/REQUIREMENTS.md` at `f4f4392` |
 | Target milestone | TBD |
 | Related capability IDs | Mark below |
 
@@ -53,7 +53,7 @@ For a large feature, the agent should rename/archive this file as
 
 > OWNER: What must remain unchanged? What should definitely not be built?
 
-## Current V2 capabilities: preserve or change
+## Current capabilities: preserve or change
 
 Change `Preserve` to `Change` or `Remove` only where the new requirement affects
 the current contract. Add a short note describing the delta, not the whole
@@ -189,4 +189,4 @@ Milestone completion also requires:
 
 | Date | Change | Author |
 |---|---|---|
-| 2026-07-28 | Seeded from V2 current capability baseline | GitHub Copilot |
+| 2026-07-28 | Seeded from the current capability baseline | GitHub Copilot |

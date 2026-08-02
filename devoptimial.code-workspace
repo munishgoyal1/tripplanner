@@ -30,7 +30,7 @@
       "editor.suggest.showText": false
     },
     "cSpell.ignorePaths": [
-      "docs/archive/myprompts.txt"
+      "docs/reference/archive/myprompts.txt"
     ],
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",

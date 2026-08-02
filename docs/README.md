@@ -9,26 +9,40 @@ canonical set below instead of reading every file.
 | Document | Purpose | Update when |
 | --- | --- | --- |
 | [`PRODUCT.md`](PRODUCT.md) | Product intent, scope, interaction rules, and design taste | Vision or product taste changes |
-| [`REQUIREMENTS_V2.md`](REQUIREMENTS_V2.md) | Implemented capability baseline, explicit gaps, and near-term roadmap | Shipped capability or status changes |
+| [`REQUIREMENTS.md`](REQUIREMENTS.md) | Implemented capability baseline, explicit gaps, and near-term roadmap | Shipped capability or status changes |
 | [`CODEMAP.md`](CODEMAP.md) | Code ownership, architecture, contracts, and commands | File layout or technical contracts change |
 | [`ENGINEERING_LEARNINGS.md`](ENGINEERING_LEARNINGS.md) | Durable lessons from observed failures | A reusable engineering lesson is proven |
-| [`../PRD/REQUIREMENTS Auto Log.txt`](../PRD/REQUIREMENTS%20Auto%20Log.txt) | Chronological requirement and decision history | A new requirement or decision is made |
 
 ## Product planning
 
 | Location | Purpose |
 | --- | --- |
-| [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md) | Consolidated future feature and enhancement candidates; not implementation approval |
-| [`feature-briefs/NEXT_INCREMENT.md`](feature-briefs/NEXT_INCREMENT.md) | Owner-editable scope for the next coherent milestone |
-| [`feature-briefs/FEATURE_BRIEF_TEMPLATE.md`](feature-briefs/FEATURE_BRIEF_TEMPLATE.md) | Full feature-brief template and acceptance structure |
-| [`roadmap/DEFERRED_DECISIONS.md`](roadmap/DEFERRED_DECISIONS.md) | Deliberately postponed decisions awaiting evidence or approval |
-| [`ux-experiments/`](ux-experiments/) | Bounded UX experiment records and template |
-| [`ux-experiments/STABLE_UI_VERSIONS.md`](ux-experiments/STABLE_UI_VERSIONS.md) | Immutable accepted UI snapshots and safe restoration workflow |
+| [`roadmap/`](roadmap/README.md) | Possible future outcomes and deferred decisions; never implementation approval |
+| [`feature-briefs/`](feature-briefs/README.md) | One owner-approved outcome translated into bounded scope and acceptance criteria |
+| [`ux-experiments/`](ux-experiments/README.md) | Isolated visual decisions tested before production implementation |
+
+## How planning becomes current truth
+
+1. Capture an unselected future idea in `roadmap/`.
+2. When the owner selects an outcome, define its bounded implementation scope in
+  `feature-briefs/`.
+3. If the uncertainty is visual, compare explicit options in `ux-experiments/`
+  and record the owner's selection before changing production UI.
+4. Implement and validate the approved scope.
+5. Update `REQUIREMENTS.md` for shipped capability, `PRODUCT.md` for durable
+  product intent, and `CODEMAP.md` for changed architecture or ownership.
+6. Record reusable failure lessons in `ENGINEERING_LEARNINGS.md` and dated
+  rationale in `reference/history/requirements-log.txt`.
+
+Roadmap entries answer "what might be next." Feature briefs answer "what exactly
+are we approving now." UX experiments answer "which presentation should we
+choose." Canonical documents answer "what is true now."
 
 ## Development
 
 | Document | Purpose |
 | --- | --- |
+| [`development/`](development/README.md) | Scope and index for contributor workflow guides |
 | [`development/dev.md`](development/dev.md) | Local development guidance |
 | [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
@@ -56,18 +70,12 @@ entry point. Release procedures belong in the canonical operations runbook.
 Mobile package-specific setup remains in
 [`../mobile/README.md`](../mobile/README.md).
 
-## Owner and historical artifacts
+## Reference source material
 
-The Word and text files below are owner inputs or historical reference
-material, not current implementation truth:
-
-- [`Requirements.docx`](Requirements.docx) remains at the root while it is an
-  active owner input.
-- [`archive/Bugs to resolve.docx`](archive/Bugs%20to%20resolve.docx)
-- [`archive/AI Trip Planner - Memory Architecture Specification v1.pdf`](archive/AI%20Trip%20Planner%20-%20Memory%20Architecture%20Specification%20v1.pdf)
-- [`archive/key_info_infra.txt`](archive/key_info_infra.txt)
-- [`archive/prompts.txt`](archive/prompts.txt)
-- [`archive/usage.txt`](archive/usage.txt)
+Original owner inputs and chronological context live together under
+[`reference/`](reference/README.md). Its index records every source file, its
+purpose, authority, and whether consolidation or removal still needs owner
+approval. Canonical documents above remain the current implementation truth.
 
 The temporary Office lock file `~$quirements.docx` should not be treated as
 source material and may be removed when no editor owns it. Do not move the
@@ -84,7 +92,8 @@ active Word document while that lock exists.
 - Put deployment, reliability, observability, and performance runbooks in
   `docs/operations/`.
 - Put native-platform testing runbooks in `docs/mobile/`.
-- Put inactive owner inputs and historical artifacts in `docs/archive/`.
+- Put original owner inputs, dated history, and inactive owner-driven artifacts
+  under `docs/reference/`.
 - Move runbook paths only as a coordinated change that updates every script,
   README, agent instruction, and historical reference.
 - Add a new top-level docs folder only when at least two durable documents share

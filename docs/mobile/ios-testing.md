@@ -211,6 +211,6 @@ Before ending a mobile-testing milestone:
 
 1. Update this runbook when a command, SDK, API target, or recurring failure changes.
 2. Update `docs/CODEMAP.md` if ownership or file layout changes.
-3. Update `docs/PRODUCT.md` and `PRD/REQUIREMENTS Auto Log.txt` for product decisions.
+3. Update `docs/PRODUCT.md` and `docs/reference/history/requirements-log.txt` for product decisions.
 4. Run `npx tsc --noEmit`, `npm run lint`, and `npm exec --yes expo-doctor`.
 5. Commit and push the documentation with the code it describes.

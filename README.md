@@ -364,9 +364,9 @@ Assistant pane being open.
 
 ```
 tripplanner/
-├── REQUIREMENTS.txt              # Running log of all requirements & decisions
 ├── docs/README.md                # Documentation index and ownership guide
-├── docs/REQUIREMENTS_V2.md       # Current capability baseline + proposed roadmap
+├── docs/REQUIREMENTS.md          # Current capability baseline + proposed roadmap
+├── docs/reference/               # Owner inputs + chronological history
 ├── docs/roadmap/                 # Consolidated future feature candidates
 ├── docs/feature-briefs/          # Reusable template + editable next increment
 ├── .github/copilot-instructions.md  # Agent context for Copilot/AI sessions
@@ -447,8 +447,8 @@ uv run pytest -v
 
 ## Roadmap
 
-The versioned current capability baseline, explicit gaps, and proposed roadmap
-live in [`docs/REQUIREMENTS_V2.md`](docs/REQUIREMENTS_V2.md). Roadmap entries are
+The current capability baseline, explicit gaps, and proposed roadmap live in
+[`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md). Roadmap entries are
 candidate outcomes, not automatic approval. The consolidated longer-term
 feature backlog lives in
 [`docs/roadmap/FUTURE_FEATURES.md`](docs/roadmap/FUTURE_FEATURES.md). Use
@@ -458,9 +458,9 @@ to scope the next coherent milestone.
 ## Key Files for New Agents/Sessions
 
 If you're an AI agent picking up this project:
-1. Read `docs/README.md`, `docs/CODEMAP.md`, `docs/PRODUCT.md`, and `docs/REQUIREMENTS_V2.md`
+1. Read `docs/README.md`, `docs/CODEMAP.md`, `docs/PRODUCT.md`, and `docs/REQUIREMENTS.md`
 2. Read `.github/copilot-instructions.md` for codebase conventions
-3. Read `REQUIREMENTS.txt` only when historical context is needed
+3. Read `docs/reference/README.md` only when original intent or history is needed
 4. For planned feature work, read the active brief under `docs/feature-briefs/`
 5. The graph is in `src/tripplanner/graph.py` and tools are in `src/tripplanner/tools/`
 6. Always commit AND push after changes (user preference)

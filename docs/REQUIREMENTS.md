@@ -1,10 +1,9 @@
-# Tripplanner V2 Requirements Baseline and Roadmap
+# Tripplanner Requirements
 
 ## Document control
 
 | Field | Value |
 | --- | --- |
-| Version | 2.0 |
 | Baseline date | 2026-07-28 |
 | Baseline commit | `f4f4392` |
 | Status | Current implemented baseline; roadmap items require owner approval |
@@ -14,15 +13,15 @@
 This document is the concise, current product baseline. It answers **what the
 product can do now**, what behavior must be preserved, and which directions are
 proposed next. It replaces the need to reconstruct current scope from the
-chronological `PRD/REQUIREMENTS Auto Log.txt` log.
+chronological `docs/reference/history/requirements-log.txt` log.
 
 Source-of-truth boundaries:
 
 - `docs/README.md`: documentation index, ownership, and structure policy.
-- `docs/REQUIREMENTS_V2.md`: current capabilities, gaps, and roadmap.
+- `docs/REQUIREMENTS.md`: current capabilities, gaps, and roadmap.
 - `docs/PRODUCT.md`: product intent, interaction rules, and design taste.
 - `docs/CODEMAP.md`: implementation ownership, contracts, and commands.
-- `PRD/REQUIREMENTS Auto Log.txt`: chronological decision history; old entries may be obsolete.
+- `docs/reference/history/requirements-log.txt`: chronological decision history; old entries may be obsolete.
 - `docs/ENGINEERING_LEARNINGS.md`: durable lessons from observed failures.
 - `docs/roadmap/FUTURE_FEATURES.md`: consolidated future feature candidates.
 - `docs/feature-briefs/NEXT_INCREMENT.md`: editable scope for the next milestone.
@@ -38,7 +37,7 @@ the same commit. A roadmap entry is not implementation approval by itself.
 | Partially implemented | A compatible foundation exists, but the user-facing workflow is not complete. |
 | Guarded | Implemented, but intentionally constrained by approval, configuration, or environment. |
 | Observing | Current behavior remains in place while usage evidence is gathered. |
-| Proposed | Candidate V2 work; not approved merely because it appears here. |
+| Proposed | Candidate work; not approved merely because it appears here. |
 | Out of scope | Explicitly excluded from the current product. |
 
 ## Product contract
@@ -91,7 +90,7 @@ re-describing the whole product.
 ### CORE-01 - Single authoritative trip agent
 
 - One LangGraph agent owns planning; removed personal-assistant agents are not
-  part of V2.
+  part of the current product.
 - Tool schemas are selected by conversation phase so greetings and preference
   turns do not pay the context cost of every search provider.
 - The agent presents progress as friendly thinking, search, review, and save
@@ -546,7 +545,7 @@ re-describing the whole product.
 - Background email, SMS, or push notifications.
 - Generic chatbot behavior unrelated to planning a trip.
 
-## 8. Proposed V2 roadmap
+## 8. Proposed roadmap
 
 These are ordered candidate outcomes, not an instruction to implement them all.
 Each requires a focused feature brief and owner approval. The broader candidate
@@ -554,7 +553,7 @@ backlog, including Live Trip Mode, reservation import, disruption-aware
 replanning, collaboration, offline mobile essentials, and longer-term verified
 booking, lives in [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md).
 
-### V2.1 - Public MVP readiness (highest priority candidate)
+### Priority 1 - Public MVP readiness
 
 **Outcome:** safely expose the existing planner to early users and measure
 whether they create useful trips and return.
@@ -576,7 +575,7 @@ whether they create useful trips and return.
   itinerary -> export/share/handoff -> return.
 - Set Azure and provider budget alerts before broad sharing.
 
-### V2.2 - Evidence-led product improvement
+### Priority 2 - Evidence-led product improvement
 
 **Outcome:** turn observed friction and user feedback into small, measurable
 increments.
@@ -589,7 +588,7 @@ increments.
 - Revisit exact-place zoom only when usage or feedback triggers the recorded
   decision in `docs/roadmap/DEFERRED_DECISIONS.md`.
 
-### V2.3 - Responsible monetization
+### Priority 3 - Responsible monetization
 
 **Outcome:** test revenue only after the product demonstrates useful traffic.
 
@@ -603,7 +602,7 @@ increments.
 - Measure revenue against activation, task completion, latency, and retention;
   remove the experiment if product harm exceeds value.
 
-### V2.4 - Verified booking handoffs
+### Priority 4 - Verified booking handoffs
 
 **Outcome:** replace simulated execution wording with trustworthy, measurable
 provider actions.
@@ -614,7 +613,7 @@ provider actions.
   cancellation, identity, payment, and support responsibilities are explicit.
 - Never infer successful booking from a link click or local status change.
 
-### V2.5 - Mobile distribution maturity
+### Priority 5 - Mobile distribution maturity
 
 **Outcome:** move from device testing to owner-approved beta and store releases.
 
@@ -623,7 +622,7 @@ provider actions.
 - Validate behavioral parity and public API safeguards before each distribution
   stage.
 
-## 9. V2 quality bar
+## 9. Quality bar
 
 Every increment must:
 

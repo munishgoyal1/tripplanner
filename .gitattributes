@@ -1,2 +1,2 @@
 # Parallel branches only append dated entries to this chronological log.
-"PRD/REQUIREMENTS Auto Log.txt" merge=union
+docs/reference/history/requirements-log.txt merge=union

@@ -5,12 +5,15 @@ Read these canonical sources before changing code:
 - [docs/README.md](../docs/README.md): documentation ownership and navigation.
 - [docs/CODEMAP.md](../docs/CODEMAP.md): architecture, code ownership, contracts, and commands.
 - [docs/PRODUCT.md](../docs/PRODUCT.md): product intent, interaction rules, and design taste.
-- [docs/REQUIREMENTS_V2.md](../docs/REQUIREMENTS_V2.md): current capability baseline, gaps, and roadmap.
+- [docs/REQUIREMENTS.md](../docs/REQUIREMENTS.md): current capability baseline, gaps, and roadmap.
 - [docs/ENGINEERING_LEARNINGS.md](../docs/ENGINEERING_LEARNINGS.md): durable lessons from observed failures.
 
 Use the canonical docs instead of reconstructing intent from broad repository
 searches. The chronological decision history remains in
-[PRD/REQUIREMENTS Auto Log.txt](../PRD/REQUIREMENTS%20Auto%20Log.txt).
+[docs/reference/history/requirements-log.txt](../docs/reference/history/requirements-log.txt).
+Owner-authored source notes in `docs/reference/owner-inputs/` provide original
+intent, while other dated context lives under `docs/reference/history/`. They do
+not override the canonical documents above, which govern current behavior.
 
 ## Agent workflow
 
@@ -104,10 +107,10 @@ Update the existing owner rather than creating another summary:
 | Cross-project preference | `/memories/preferences.md` |
 | Repository-specific fact or landmine | `/memories/repo/tripplanner.md` |
 | Product intent, scope, or design taste | `docs/PRODUCT.md` |
-| Current capability or status | `docs/REQUIREMENTS_V2.md` |
+| Current capability or status | `docs/REQUIREMENTS.md` |
 | File ownership, architecture, or command | `docs/CODEMAP.md` |
 | Durable engineering lesson | `docs/ENGINEERING_LEARNINGS.md` |
-| New dated requirement or decision | `PRD/REQUIREMENTS Auto Log.txt` |
+| New dated requirement or decision | `docs/reference/history/requirements-log.txt` |
 | Active milestone scope | `docs/feature-briefs/` |
 | Candidate or deferred idea | `docs/roadmap/` |
 | Current in-flight session state only | `/memories/session/` |
