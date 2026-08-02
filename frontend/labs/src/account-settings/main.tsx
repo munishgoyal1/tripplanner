@@ -3,9 +3,7 @@ import ReactDOM from "react-dom/client";
 import {
   ArrowLeft,
   BarChart3,
-  Check,
   ChevronDown,
-  ChevronLeft,
   ChevronRight,
   CircleUserRound,
   LogOut,
@@ -23,10 +21,10 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabScope } from "../shared/LabScope";
 import "../shared/experiment-layout.css";
+import { AccountDestination, type AnalyticsPreference, type DestinationId } from "./AccountDestination";
 
 type VariantId = "unified-menu" | "split-ownership" | "account-hub";
 type Surface = "closed" | "account" | "settings";
-type AnalyticsPreference = "granted" | "denied";
 
 interface Variant {
   id: VariantId;
@@ -56,46 +54,6 @@ const variants: Variant[] = [
   },
 ];
 
-function AnalyticsPreferences({
-  preference,
-  onChange,
-  onBack,
-}: {
-  preference: AnalyticsPreference;
-  onChange: (preference: AnalyticsPreference) => void;
-  onBack: () => void;
-}) {
-  return (
-    <div data-lab-change="Working Analytics preferences destination" className="p-4">
-      <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-ink">
-        <ChevronLeft size={13} aria-hidden /> Back
-      </button>
-      <div className="mt-4 flex items-start gap-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-teal-50 text-teal-700"><BarChart3 size={17} aria-hidden /></span>
-        <div>
-          <h3 className="text-sm font-semibold text-ink">Anonymous usage analytics</h3>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">Choose whether anonymous interaction events help improve the planning flow. Trip details, messages, identity, and shared links are never sent.</p>
-        </div>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label="Analytics preference">
-        {(["denied", "granted"] as const).map((value) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => onChange(value)}
-            aria-pressed={preference === value}
-            className={`flex h-10 items-center justify-center gap-1.5 rounded-md text-xs font-semibold ring-1 ${preference === value ? "bg-ink text-white ring-ink" : "bg-white text-slate-600 ring-slate-200 hover:ring-slate-300"}`}
-          >
-            {preference === value && <Check size={13} aria-hidden />}
-            {value === "granted" ? "Allow analytics" : "No thanks"}
-          </button>
-        ))}
-      </div>
-      <p role="status" className="mt-3 text-[11px] text-emerald-700">Preference set to {preference === "granted" ? "allowed" : "not allowed"}. This control remains available even when analytics collection is not configured.</p>
-    </div>
-  );
-}
-
 function MenuRow({ icon: Icon, label, detail, onClick }: { icon: typeof UserRound; label: string; detail?: string; onClick?: () => void }) {
   return (
     <button type="button" onClick={onClick} className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-slate-50">
@@ -115,15 +73,28 @@ function IdentityHeader() {
   );
 }
 
-function UnifiedMenu({ analyticsOpen, openAnalytics, closeAnalytics, preference, setPreference }: { analyticsOpen: boolean; openAnalytics: () => void; closeAnalytics: () => void; preference: AnalyticsPreference; setPreference: (preference: AnalyticsPreference) => void }) {
+interface DestinationProps {
+  destination: DestinationId;
+  openDestination: (destination: Exclude<DestinationId, "menu">) => void;
+  closeDestination: () => void;
+  preference: AnalyticsPreference;
+  setPreference: (preference: AnalyticsPreference) => void;
+}
+
+function DestinationContent({ destination, closeDestination, preference, setPreference }: Pick<DestinationProps, "destination" | "closeDestination" | "preference" | "setPreference">) {
+  if (destination === "menu") return null;
+  return <AccountDestination destination={destination} preference={preference} onPreferenceChange={setPreference} onBack={closeDestination} />;
+}
+
+function UnifiedMenu({ destination, openDestination, closeDestination, preference, setPreference }: DestinationProps) {
   return (
-    <div className="absolute right-3 top-12 z-30 w-80 overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200">
-      {analyticsOpen ? <AnalyticsPreferences preference={preference} onChange={setPreference} onBack={closeAnalytics} /> : <>
+    <div className={`absolute right-3 top-12 z-30 overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200 ${destination === "menu" ? "w-80" : "w-[28rem]"}`}>
+      {destination !== "menu" ? <DestinationContent destination={destination} closeDestination={closeDestination} preference={preference} setPreference={setPreference} /> : <>
         <IdentityHeader />
         <div className="divide-y divide-slate-100">
-          <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" />
-          <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={openAnalytics} />
-          <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" />
+          <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" onClick={() => openDestination("travel-profile")} />
+          <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={() => openDestination("analytics")} />
+          <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" onClick={() => openDestination("privacy")} />
         </div>
         <button type="button" className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-500 hover:bg-slate-50"><LogOut size={14} aria-hidden /> Sign out</button>
       </>}
@@ -131,33 +102,33 @@ function UnifiedMenu({ analyticsOpen, openAnalytics, closeAnalytics, preference,
   );
 }
 
-function SplitMenu({ surface, analyticsOpen, openAnalytics, closeAnalytics, preference, setPreference }: { surface: Surface; analyticsOpen: boolean; openAnalytics: () => void; closeAnalytics: () => void; preference: AnalyticsPreference; setPreference: (preference: AnalyticsPreference) => void }) {
+function SplitMenu({ surface, destination, openDestination, closeDestination, preference, setPreference }: DestinationProps & { surface: Surface }) {
   return (
-    <div className="absolute right-3 top-12 z-30 w-80 overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200">
-      {analyticsOpen ? <AnalyticsPreferences preference={preference} onChange={setPreference} onBack={closeAnalytics} /> : surface === "account" ? <>
+    <div className={`absolute right-3 top-12 z-30 overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200 ${destination === "menu" ? "w-80" : "w-[28rem]"}`}>
+      {destination !== "menu" ? <DestinationContent destination={destination} closeDestination={closeDestination} preference={preference} setPreference={setPreference} /> : surface === "account" ? <>
         <IdentityHeader />
         <button type="button" className="flex w-full items-center gap-2 px-3 py-2.5 text-xs font-semibold text-slate-500 hover:bg-slate-50"><LogOut size={14} aria-hidden /> Sign out</button>
       </> : <>
         <div className="border-b border-slate-100 px-3 py-3"><p className="text-[10px] font-bold uppercase text-brand">Settings</p><h3 className="mt-0.5 text-sm font-semibold text-ink">Personalization and privacy</h3></div>
-        <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" />
-        <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={openAnalytics} />
-        <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" />
+        <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" onClick={() => openDestination("travel-profile")} />
+        <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={() => openDestination("analytics")} />
+        <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" onClick={() => openDestination("privacy")} />
       </>}
     </div>
   );
 }
 
-function AccountHub({ analyticsOpen, openAnalytics, closeAnalytics, preference, setPreference, close }: { analyticsOpen: boolean; openAnalytics: () => void; closeAnalytics: () => void; preference: AnalyticsPreference; setPreference: (preference: AnalyticsPreference) => void; close: () => void }) {
+function AccountHub({ destination, openDestination, closeDestination, preference, setPreference, close }: DestinationProps & { close: () => void }) {
   return (
     <div className="absolute inset-y-0 right-0 z-30 w-[23rem] border-l border-slate-200 bg-white shadow-pop">
       <div className="flex h-12 items-center border-b border-slate-200 px-4"><h3 className="text-sm font-semibold text-ink">Account settings</h3><button type="button" onClick={close} className="ml-auto grid h-7 w-7 place-items-center rounded text-slate-400 hover:bg-slate-100" aria-label="Close account settings"><X size={15} aria-hidden /></button></div>
-      {analyticsOpen ? <AnalyticsPreferences preference={preference} onChange={setPreference} onBack={closeAnalytics} /> : <>
+      {destination !== "menu" ? <DestinationContent destination={destination} closeDestination={closeDestination} preference={preference} setPreference={setPreference} /> : <>
         <IdentityHeader />
         <nav className="divide-y divide-slate-100" aria-label="Account settings sections">
           <MenuRow icon={CircleUserRound} label="Profile and sign-in" detail="Identity and account access" />
-          <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" />
-          <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={openAnalytics} />
-          <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" />
+          <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" onClick={() => openDestination("travel-profile")} />
+          <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={() => openDestination("analytics")} />
+          <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" onClick={() => openDestination("privacy")} />
         </nav>
       </>}
     </div>
@@ -175,11 +146,17 @@ function WorkspaceContext() {
 
 function Preview({ variant }: { variant: VariantId }) {
   const [surface, setSurface] = useState<Surface>(variant === "split-ownership" ? "settings" : "account");
-  const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const [destination, setDestination] = useState<DestinationId>("menu");
   const [preference, setPreference] = useState<AnalyticsPreference>("denied");
-  const closeAnalytics = () => setAnalyticsOpen(false);
+  const destinationProps: DestinationProps = {
+    destination,
+    openDestination: setDestination,
+    closeDestination: () => setDestination("menu"),
+    preference,
+    setPreference,
+  };
   const toggleSurface = (next: Surface) => {
-    setAnalyticsOpen(false);
+    setDestination("menu");
     setSurface((current) => current === next ? "closed" : next);
   };
   return (
@@ -194,9 +171,9 @@ function Preview({ variant }: { variant: VariantId }) {
         </div>
       </header>
       <WorkspaceContext />
-      {surface !== "closed" && variant === "unified-menu" && <UnifiedMenu analyticsOpen={analyticsOpen} openAnalytics={() => setAnalyticsOpen(true)} closeAnalytics={closeAnalytics} preference={preference} setPreference={setPreference} />}
-      {surface !== "closed" && variant === "split-ownership" && <SplitMenu surface={surface} analyticsOpen={analyticsOpen} openAnalytics={() => setAnalyticsOpen(true)} closeAnalytics={closeAnalytics} preference={preference} setPreference={setPreference} />}
-      {surface !== "closed" && variant === "account-hub" && <AccountHub analyticsOpen={analyticsOpen} openAnalytics={() => setAnalyticsOpen(true)} closeAnalytics={closeAnalytics} preference={preference} setPreference={setPreference} close={() => setSurface("closed")} />}
+      {surface !== "closed" && variant === "unified-menu" && <UnifiedMenu {...destinationProps} />}
+      {surface !== "closed" && variant === "split-ownership" && <SplitMenu {...destinationProps} surface={surface} />}
+      {surface !== "closed" && variant === "account-hub" && <AccountHub {...destinationProps} close={() => setSurface("closed")} />}
     </div>
   );
 }
@@ -211,7 +188,7 @@ function Lab() {
           <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a>
           <div className="mt-4 flex items-center gap-2 text-brand"><CircleUserRound size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Account controls</p></div>
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Account and settings ownership</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how identity, travel preferences, analytics consent, privacy, and sign-out should be grouped without duplicating Account and Settings destinations. Each option makes Analytics preferences a working, inspectable destination.</p>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how identity, travel preferences, analytics consent, privacy, and sign-out should be grouped without duplicating Account and Settings destinations. Every option includes complete, interactive Travel Profile, Analytics, and Privacy and Data destinations.</p>
         </header>
 
         <LabScope labId="account-settings" />

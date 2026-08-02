@@ -65,7 +65,7 @@ export const activeLabs: LabRecord[] = [
     id: "account-settings",
     title: "Account and settings ownership",
     category: "Account controls",
-    description: "Compare one unified account menu, a strict profile/settings split, and a sectioned account hub with working analytics preferences.",
+    description: "Compare one unified account menu, a strict profile/settings split, and a sectioned account hub with complete profile, analytics, and privacy destinations.",
     date: "1 Aug 2026",
     status: "In evaluation",
     decision: "Open · Recommended starting point: A · Unified account menu.",

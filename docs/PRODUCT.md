@@ -129,6 +129,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Before its options, every Lab explicitly separates the exact elements being
   changed from realistic surrounding UI that is context only. Selecting an option
   does not implicitly approve changes to other elements visible in its preview.
+  Every option is a production-scale, Figma-level mock of the complete proposed
+  change: all relevant destinations, expanded states, realistic data, controls,
+  and edge or destructive states are inspectable rather than represented by inert
+  labels. The surrounding full-app context remains visible wherever it affects
+  evaluation.
   Optional Lab-only markers outline those exact varied regions without changing
   preview layout, styling, or interaction and can be hidden for an unannotated view.
 - **Density**: information-rich but ordered. The itinerary snapshot should pack

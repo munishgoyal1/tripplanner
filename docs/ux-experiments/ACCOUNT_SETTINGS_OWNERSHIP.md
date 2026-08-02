@@ -19,7 +19,9 @@ because its event could not render the consent surface.
 - Compare ownership and grouping of identity, travel profile, analytics,
   privacy/data controls, and sign-out.
 - Compare one versus two command-bar triggers and compact menu versus settings hub.
-- Keep the Analytics preferences destination interactive in every option.
+- Keep Travel Profile, Analytics, and Privacy and Data complete and interactive
+  in every option, including saved defaults, history/export controls, and
+  destructive-action confirmation states.
 - Preserve authentication, analytics collection, storage, privacy APIs, trip
   controls, pane controls, and workspace content as context only.
 
@@ -37,6 +39,16 @@ because its event could not render the consent surface.
 Start evaluation with **A - Unified account menu**. It removes the redundant
 trigger with the smallest footprint and keeps person-level settings in one
 predictable location. This recommendation is not implementation approval.
+
+## Inspectable destination detail
+
+- **Travel Profile:** home base and airport, trip pace, stay and transport
+  style, food preferences, usual travel party, locale, accessibility, comfort,
+  save state, and the boundary between reusable defaults and trip overrides.
+- **Analytics:** current consent, the event categories included, the personal
+  data excluded, and behavior when collection is not configured.
+- **Privacy and Data:** saved-data inventory, personalization history, retention,
+  portable export, separate history deletion, and permanent account deletion.
 
 ## Independent defect fix
 

@@ -32,7 +32,7 @@ const scopes: Record<string, ScopeDefinition> = {
   "account-settings": {
     changes: [
       "Ownership and grouping of Account, Settings, travel profile, analytics, privacy, and sign-out controls",
-      "The command-bar trigger or triggers and the destination opened by Analytics preferences",
+      "The command-bar trigger or triggers and the complete Travel Profile, Analytics, and Privacy and Data destinations",
     ],
     context: ["Trip selection, pane visibility, and workspace content", "Authentication, analytics collection, preference storage, and privacy API behavior"],
   },
