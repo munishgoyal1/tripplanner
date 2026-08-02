@@ -451,31 +451,46 @@ describe("map stop selection", () => {
       strokeOpacity: 0.85,
       strokeWeight: 3,
     });
-    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb"))
-      .toMatchObject({ strokeColor: "#e11d48", strokeOpacity: 0.9, strokeWeight: 5 });
-    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Bus" }, "#2563eb"))
-      .toMatchObject({ strokeColor: "#0f766e", strokeOpacity: 0.9, strokeWeight: 5 });
-    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Train" }, "#2563eb"))
+    const roadStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb");
+    const busStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Bus" }, "#2563eb");
+    const trainStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Train" }, "#2563eb");
+    const flightStyle = routeStyleForLeg({ ...leg, intercity: true, mode: "Flight" }, "#2563eb");
+
+    expect(roadStyle).toMatchObject({
+      strokeColor: "#111827",
+      strokeOpacity: 0,
+      strokeWeight: 3,
+      icons: [
+        { icon: { strokeColor: "#111827" }, repeat: "10px" },
+        { icon: { fillColor: "#ffffff", strokeColor: "#111827" }, offset: "50%" },
+        { icon: { fillColor: "#111827" }, offset: "50%" },
+      ],
+    });
+    expect(busStyle).toMatchObject({
+      strokeColor: "#111827",
+      strokeOpacity: 0,
+      icons: [{ icon: { strokeColor: "#111827" } }, {}, { icon: { fillColor: "#111827" } }],
+    });
+    expect(trainStyle)
       .toMatchObject({
-        strokeColor: "#e11d48",
-        strokeOpacity: 0,
-        strokeWeight: 4,
-        icons: [{ icon: { strokeColor: "#e11d48" } }],
-      });
-    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Flight" }, "#2563eb"))
-      .toMatchObject({
-        strokeColor: "#0284c7",
+        strokeColor: "#6b7280",
         strokeOpacity: 0,
         strokeWeight: 3,
-        icons: [{ icon: { strokeColor: "#0284c7" } }],
+        icons: [{ icon: { strokeColor: "#6b7280" } }, {}, { icon: { fillColor: "#6b7280" } }],
       });
-    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb", true))
+    expect(flightStyle)
       .toMatchObject({
         strokeColor: "#2563eb",
         strokeOpacity: 0,
         strokeWeight: 3,
-        icons: [{ icon: { strokeColor: "#2563eb" }, repeat: "10px" }],
+        icons: [{ icon: { strokeColor: "#2563eb" } }, {}, { icon: { fillColor: "#2563eb" } }],
       });
+    const modePath = (style: Record<string, unknown>) => (
+      style.icons as Array<{ icon: { path: string } }>
+    )[2].icon.path;
+    expect(new Set([roadStyle, busStyle, trainStyle, flightStyle].map(modePath)).size).toBe(4);
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb", true))
+      .toEqual(roadStyle);
   });
 
   it("retains ordered route geometry when leg metadata is absent", () => {
@@ -834,12 +849,15 @@ describe("map stop selection", () => {
 
     await waitFor(() => expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
       path: [{ lat: 13.1986, lng: 77.7066 }, { lat: 24.6177, lng: 73.8961 }],
-      strokeColor: "#0284c7",
+      strokeColor: "#2563eb",
       strokeOpacity: 0,
+      icons: expect.arrayContaining([
+        expect.objectContaining({ offset: "50%", icon: expect.objectContaining({ fillColor: "#2563eb" }) }),
+      ]),
     })));
     expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
       path: [{ lat: 26.8887, lng: 70.8649 }, { lat: 13.1986, lng: 77.7066 }],
-      strokeColor: "#0284c7",
+      strokeColor: "#2563eb",
       strokeOpacity: 0,
     }));
 

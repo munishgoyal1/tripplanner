@@ -361,8 +361,10 @@ implemented capability baseline.
 - Genuine transfer days instead render one open endpoint-to-endpoint journey in
   itinerary order. The full journey remains visible, while day focus frames the
   useful destination-local circuit or, on departure-only days, the origin-local
-  circuit. Local legs retain the day color; road, rail, bus, and flight connectors
-  use distinct treatment, with `A` airport pins and other terminal pins retained.
+  circuit. Local legs retain the day color. Inter-city connectors are dotted:
+  flights are blue, road and bus travel are black, and rail is gray, with a small
+  airplane, car, bus, or train glyph at the line midpoint. `A` airport pins and
+  other terminal pins remain visible.
 - Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
   and zoom 15. Repeating the action reapplies focus after manual filtering.
 - Airport, railway-station, bus-stand, and other enriched terminal focus uses the
