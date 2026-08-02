@@ -4,6 +4,15 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-02 - Preserve Compose Identity When Moving Files
+
+- Docker Compose derives its project identity from the Compose file directory
+  unless a project name is explicit. Moving a file can make a healthy existing
+  container look unrelated and cause fixed container-name collisions.
+- Preserve both project and volume identities when relocating stateful Compose
+  services. Validate the resolved project and confirm the existing container is
+  discovered before running `up`.
+
 ## 2026-08-01 - Budget Parallel Research Before Synthesis
 
 - A parallel research batch can succeed at every provider and still fail when
