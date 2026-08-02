@@ -129,8 +129,8 @@ One location-aware launcher covers normal parallel work. Run the copy inside the
 worktree that should receive all latest committed code; no lane number is needed.
 
 ```powershell
-.\scripts\user\Sync-Latest.cmd
-.\scripts\user\Sync-Latest.cmd all
+.\scripts\user\Sync-MeTo-Latest.cmd
+.\scripts\user\Sync-MeTo-Latest.cmd all
 ```
 
 From Agent 3, it integrates committed local and remote worker heads into
@@ -153,6 +153,23 @@ are not merged directly into one another.
 Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
+
+To intentionally synchronize every worktree from any Agent 1, Agent 2, or Agent 3
+launcher, run:
+
+```powershell
+.\scripts\user\All-SyncTo-Latest.cmd
+```
+
+This first integrates committed heads through `master`, then updates Agent 3,
+Agent 1, and Agent 2 independently. Each lane's staged, unstaged, and untracked
+files are preserved in an exact safety stash. Git `rerere` automatically applies
+a previously recorded resolution. A novel local-edit conflict retains that
+lane's stash, lists its unresolved paths, and allows the other lanes to continue;
+the command exits nonzero after reporting every lane requiring attention. A novel
+conflict while integrating committed heads must still be resolved before one
+authoritative `master` can be distributed. The script never guesses with blanket
+ours/theirs conflict resolution.
 
 In parallel mode, to synchronize the launcher worktree and immediately restart
 the local application on the merged code, use **Tasks: Run Task** →

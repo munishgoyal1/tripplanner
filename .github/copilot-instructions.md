@@ -30,10 +30,13 @@ not override the canonical documents above, which govern current behavior.
   sizeable, isolated parallel assignments. These names are logical default
   ownership areas; agent numbers, branches, worktree paths, and script arguments
   remain unchanged. Each worker owns one PR-sized change at a time.
-- Run `scripts/user/Sync-Latest.cmd` from the worktree to update. Agent 3 always
+- Run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree to update. Agent 3 always
   integrates all committed worker heads. A worker receives only `master` by
   default; pass `all` to include committed sibling worktree changes through
   `master`. The launcher is the only worktree updated.
+- Use `scripts/user/All-SyncTo-Latest.cmd` only when every worktree should be
+  updated. It may run from any lane, preserves each lane's local edits, reuses
+  recorded `rerere` resolutions, and reports novel conflicts without guessing.
 - Agent 3 in the primary workspace owns local stack startup, stop, restart,
   stale-port cleanup, and health checks for the owner's manual testing. Workers 1
   and 2 must obtain explicit approval before changing the stack lifecycle and use

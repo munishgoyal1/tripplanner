@@ -21,7 +21,9 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
-| `user/Sync-Latest.cmd` | Owner-facing committed-code synchronization launcher |
+| `user/Sync-MeTo-Latest.cmd` | Synchronize committed code into the launcher worktree |
+| `user/All-SyncTo-Latest.cmd` | Integrate committed code, then synchronize master and both workers |
+| `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
