@@ -42,8 +42,7 @@ Use these launchers by outcome:
 | Launcher | Purpose |
 | --- | --- |
 | `Run-Latest-Code.cmd` | Synchronize all worktrees, restore local `master` edits, and start the app. This is the normal one-click choice. |
-| `Sync-All-Worktrees.cmd` | Integrate both workers into `master`, then fast-forward both workers to final `master`; guide new semantic conflicts in the owning worker. |
-| `Sync-Worker-1.cmd` / `Sync-Worker-2.cmd` | Integrate the selected worker into `master`, then synchronize that worker for its next assignment. |
+| `Sync-All-Worktrees.cmd` | Integrate both workers by default, or pass `1` / `2` to synchronize one worker. Guides new semantic conflicts in the owning worker. |
 | `merge-latest-worktrees.ps1` | Merge only committed `HEAD` snapshots from every registered worktree into `master` and update the primary checkout. Dirty worker files are ignored and untouched. |
 | `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 

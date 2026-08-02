@@ -147,13 +147,17 @@ Independent dated additions to
 `PRD/REQUIREMENTS Auto Log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
-To synchronize only one lane, double-click `scripts/dev/Sync-Worker-1.cmd` or
-`scripts/dev/Sync-Worker-2.cmd`. For validation-only preflights, run
-`sync-worker.ps1 -WorkerNumber 1 -ValidateOnly` (or worker 2), or run
-`.\scripts\dev\sync-all-worktrees.ps1 -ValidateOnly` for both. The `.cmd`
-worker launchers call the generic `sync-worker.ps1` engine with the corresponding
-worker number. `Sync-All-Worktrees.cmd -ValidateOnly` forwards the validation flag
-to its shared engine.
+The same command handles one or both lanes. With no argument it synchronizes
+both; pass `1` or `2` as the first argument to select one lane:
+
+```powershell
+.\scripts\dev\sync-all-worktrees.ps1 1
+.\scripts\dev\Sync-All-Worktrees.cmd 2
+```
+
+Add `-ValidateOnly` for a preflight without integration. The `.cmd` launcher
+forwards both parameters to the shared PowerShell orchestrator. The lower-level
+`sync-worker.ps1` remains its internal single-worker engine.
 
 When ongoing worker edits must remain completely untouched, run
 `.\scripts\dev\merge-latest-worktrees.ps1`. It snapshots the current committed

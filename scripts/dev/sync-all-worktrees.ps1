@@ -1,6 +1,10 @@
 #!/usr/bin/env pwsh
 [CmdletBinding()]
 param(
+    [Parameter(Position = 0)]
+    [ValidateSet(1, 2)]
+    [int]$WorkerNumber,
+
     [switch]$ValidateOnly,
 
     [switch]$ResolveConflicts
@@ -8,23 +12,37 @@ param(
 
 $ErrorActionPreference = "Stop"
 $syncWorker = Join-Path $PSScriptRoot "sync-worker.ps1"
+$workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
+    @($WorkerNumber)
+} else {
+    @(1, 2)
+}
+$workerLabel = if ($workerNumbers.Count -eq 1) {
+    "Agent $($workerNumbers[0])"
+} else {
+    "Agent 1 and Agent 2"
+}
 
-Write-Host "Preflighting Agent 1 and Agent 2..." -ForegroundColor Cyan
-& $syncWorker -WorkerNumber 1 -ValidateOnly
-& $syncWorker -WorkerNumber 2 -ValidateOnly
+Write-Host "Preflighting $workerLabel..." -ForegroundColor Cyan
+foreach ($number in $workerNumbers) {
+    & $syncWorker -WorkerNumber $number -ValidateOnly
+}
 
 if ($ValidateOnly) {
-    Write-Host "Ready: both agents can be integrated sequentially."
+    Write-Host "Ready: $workerLabel can be integrated."
     return
 }
 
-Write-Host "Integrating Agent 1..." -ForegroundColor Cyan
-& $syncWorker -WorkerNumber 1 -ResolveConflicts:$ResolveConflicts
-Write-Host "Integrating Agent 2..." -ForegroundColor Cyan
-& $syncWorker -WorkerNumber 2 -ResolveConflicts:$ResolveConflicts
+foreach ($number in $workerNumbers) {
+    Write-Host "Integrating Agent $number..." -ForegroundColor Cyan
+    & $syncWorker -WorkerNumber $number -ResolveConflicts:$ResolveConflicts
+}
 
-Write-Host "Synchronizing both workers to the final master..." -ForegroundColor Cyan
-& $syncWorker -WorkerNumber 1 -SyncOnly
-& $syncWorker -WorkerNumber 2 -SyncOnly
+if ($workerNumbers.Count -gt 1) {
+    Write-Host "Synchronizing selected workers to the final master..." -ForegroundColor Cyan
+    foreach ($number in $workerNumbers) {
+        & $syncWorker -WorkerNumber $number -SyncOnly
+    }
+}
 
-Write-Host "Done: master, Agent 1, and Agent 2 are synchronized." -ForegroundColor Green
+Write-Host "Done: master and $workerLabel are synchronized." -ForegroundColor Green
