@@ -5,7 +5,7 @@
 - Owner: Munish Goyal
 - Date started: 2026-08-01
 - Status: testing
-- Lab: `http://127.0.0.1:5175/destination-guide.html`
+- Lab: `http://127.0.0.1:5175/lab-13-destination-guide.html`
 
 ## Problem
 

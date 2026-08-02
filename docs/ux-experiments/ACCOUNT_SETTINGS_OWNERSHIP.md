@@ -6,7 +6,7 @@
 - Date started: 2026-08-01
 - Status: Implemented - To be reviewed
 - Date implemented: 2026-08-02
-- Lab: `http://127.0.0.1:5175/account-settings.html`
+- Lab: `http://127.0.0.1:5175/lab-12-account-settings.html`
 
 ## Problem
 

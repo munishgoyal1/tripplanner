@@ -2,6 +2,14 @@ import { execFileSync } from "node:child_process";
 import { copyFile, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
+export interface ImplementationRecord {
+  version: number;
+  selection: string;
+  selectionLabel: string;
+  comment: string;
+  recordedAt: string;
+}
+
 export interface LabSelection {
   labId: string;
   labTitle: string;
@@ -9,6 +17,8 @@ export interface LabSelection {
   selectionLabel: string;
   comment: string;
   disposition?: "ready" | "implemented-review" | "parked" | "completed" | "discarded";
+  implementation?: Omit<ImplementationRecord, "version">;
+  implementations?: ImplementationRecord[];
   stateChangedAt?: string;
   updatedAt: string;
 }

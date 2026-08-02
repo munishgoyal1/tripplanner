@@ -93,3 +93,27 @@ appears separately; revisiting Analytics in Account does not recreate that promp
 - [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `presents the four selected account destinations`
 - [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `keeps travel profile and analytics inside the account settings hub`
 - [`frontend/src/components/AnalyticsConsent.test.tsx`](../frontend/src/components/AnalyticsConsent.test.tsx) - `shows the bottom prompt only for first-run consent when analytics is configured`
+
+## UX Labs
+
+### EB-LAB-001 - Revisit and re-implement any Lab
+
+**Trigger:** Open an implemented or completed Lab, inspect another option, revise
+its handoff notes, and save it for implementation.
+
+**Expected:** Every option remains selectable in every lifecycle state. The new
+option and notes become a Ready handoff for another implementation cycle, while
+every implemented version remains visible under What was implemented with its
+selected option, exact saved notes, version number, and recorded time. One final
+summary lists every implemented option and its notes. Saving shows an explicit
+confirmation naming the selected option and next version; the re-implementation
+action is visually distinct and cannot remain indefinitely in a Saving state.
+The permanent Lab
+number appears on the detail page and in its HTML filename.
+
+**Executable proof:**
+
+- [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `keeps every option browsable after loading an implemented choice`
+- [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `starts a re-implementation handoff without losing the completed direction`
+- [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `shows exact notes and a final summary for every implementation version`
+- [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `appends the next implementation version after a reopened Lab`

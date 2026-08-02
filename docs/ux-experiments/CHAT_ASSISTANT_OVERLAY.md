@@ -7,7 +7,7 @@
 - Date started: 2026-07-30
 - Date ended: 2026-07-30
 - Status: implemented
-- Lab: `http://127.0.0.1:5175/chat-assistant.html`
+- Lab: `http://127.0.0.1:5175/lab-4-chat-assistant.html`
 - Full-size preview: choose an option, then use **Open full-size preview**
 
 ## Hypothesis
@@ -38,7 +38,7 @@ map, and details workspace.
 
 Changed experiment files:
 
-- `frontend/labs/chat-assistant.html`
+- `frontend/labs/lab-4-chat-assistant.html`
 - `frontend/labs/src/chat-assistant/main.tsx`
 - `frontend/labs/src/catalog/main.tsx`
 - `frontend/labs/vite.config.ts`

@@ -5,7 +5,7 @@
 - Owner: Munish Goyal
 - Date started: 2026-08-01
 - Status: implemented
-- Lab: `http://127.0.0.1:5175/intercity-map.html`
+- Lab: `http://127.0.0.1:5175/lab-14-intercity-map.html`
 
 ## Problem
 

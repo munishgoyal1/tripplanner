@@ -1,5 +1,10 @@
 import type { Plugin } from "vite";
-import { readSelections, writeSelections, type LabSelection } from "./lab-selection-store";
+import {
+  readSelections,
+  writeSelections,
+  type ImplementationRecord,
+  type LabSelection,
+} from "./lab-selection-store";
 
 const endpoint = "/__labs/selections";
 
@@ -8,6 +13,41 @@ function sendJson(response: import("node:http").ServerResponse, status: number, 
   response.setHeader("Content-Type", "application/json");
   response.setHeader("Cache-Control", "no-store");
   response.end(JSON.stringify(body));
+}
+
+export function buildImplementationHistory(
+  previous: LabSelection | undefined,
+  selection: LabSelection,
+  updatedAt: string,
+): ImplementationRecord[] {
+  const history = previous?.implementations?.length
+    ? previous.implementations
+    : previous?.implementation
+      ? [{ ...previous.implementation, version: 1 }]
+      : previous?.selection && ["implemented-review", "completed"].includes(previous.disposition || "")
+        ? [{
+            version: 1,
+            selection: previous.selection,
+            selectionLabel: previous.selectionLabel,
+            comment: previous.comment,
+            recordedAt: previous.updatedAt,
+          }]
+        : [];
+
+  if (selection.disposition !== "implemented-review") return history;
+
+  const implemented: ImplementationRecord = {
+    version: previous?.disposition === "implemented-review" && history.length
+      ? history[history.length - 1].version
+      : history.length + 1,
+    selection: selection.selection,
+    selectionLabel: selection.selectionLabel,
+    comment: selection.comment,
+    recordedAt: updatedAt,
+  };
+  return previous?.disposition === "implemented-review" && history.length
+    ? [...history.slice(0, -1), implemented]
+    : [...history, implemented];
 }
 
 export function labFeedbackPlugin(): Plugin {
@@ -52,6 +92,16 @@ export function labFeedbackPlugin(): Plugin {
           const stateChangedAt = previous?.disposition === selection.disposition
             ? previous.stateChangedAt || previous.updatedAt
             : updatedAt;
+          const implementations = buildImplementationHistory(previous, selection, updatedAt);
+          const latestImplementation = implementations[implementations.length - 1];
+          const implementation = latestImplementation
+            ? {
+                selection: latestImplementation.selection,
+                selectionLabel: latestImplementation.selectionLabel,
+                comment: latestImplementation.comment,
+                recordedAt: latestImplementation.recordedAt,
+              }
+            : undefined;
           selections[selection.labId] = selection.disposition === "discarded"
             ? {
                 labId: selection.labId,
@@ -63,7 +113,7 @@ export function labFeedbackPlugin(): Plugin {
                 stateChangedAt,
                 updatedAt,
               }
-            : { ...selection, stateChangedAt, updatedAt };
+            : { ...selection, implementation, implementations, stateChangedAt, updatedAt };
           await writeSelections(selections);
           sendJson(response, 200, selections[selection.labId]);
         } catch (error) {

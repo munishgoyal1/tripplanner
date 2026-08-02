@@ -19,7 +19,7 @@ The following remain fixed:
 - **B - Circuit header:** one day-level hotel presentation for an identical departure and return stay.
 - **C - Progressive focus:** quiet default rows with selected-stop disclosure.
 
-The Lab is available at `http://127.0.0.1:5175/itinerary-density.html`.
+The Lab is available at `http://127.0.0.1:5175/lab-11-itinerary-density.html`.
 
 ## Implementation
 

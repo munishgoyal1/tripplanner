@@ -125,12 +125,20 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   review, completed after owner sign-off with the selected decision preserved,
   or discarded from consideration. Production implementation moves a Lab to
   **Implemented - To be reviewed**; only explicit owner sign-off completes it.
+  Lifecycle state never locks a Lab or its alternatives. Every option remains
+  browsable, and an implemented or completed Lab can be revisited with another
+  option, revised comments, or additional input. Saving that handoff starts a new
+  implementation cycle in Ready while preserving a visible record of what was
+  implemented previously. What was implemented retains each implementation as an
+  ordered version with its selected option, exact saved handoff notes, and recorded
+  time, followed by one summary of every implemented option and its notes.
   This review workflow applies to implementations from 2026-08-02 onward;
   implementations completed before that date remain in the Completed archive.
   Every card identifies when the Lab was created and when it entered its current
   lifecycle state. Every Lab also has one permanent integer identifier, displayed
-  as `Lab #N` in every catalog state. New Labs take the next integer; numbers are
-  never changed, reused, or derived from filtering or display order. Machine state
+  as `Lab #N` in every catalog state and on its detail page. Its HTML entry name is
+  prefixed with `lab-N-`. New Labs take the next integer; numbers are never changed,
+  reused, or derived from filtering or display order. Machine state
   overrides committed historical fallback metadata,
   so one Lab cannot appear in conflicting filters.
   Completed Lab cards live only in the dedicated archive reached from the catalog;

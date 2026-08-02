@@ -23,7 +23,7 @@ and distinguish verified facts from personalized suggestions.
 
 Changed Lab surfaces:
 
-- `frontend/labs/itinerary-trip-book.html`
+- `frontend/labs/lab-5-itinerary-trip-book.html`
 - `frontend/labs/src/itinerary-trip-book/main.tsx`
 - `frontend/labs/src/catalog/main.tsx`
 - `frontend/labs/vite.config.ts`
