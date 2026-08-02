@@ -671,9 +671,19 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
   }, [focusName, focusDay, focusStop, focusToken, view]);
 
   useEffect(() => {
-    if (!view || !circuitFocusDay || circuitFocusToken === 0) return;
+    if (!view || circuitFocusToken === 0) return;
     pendingFocusRef.current = null;
     pendingRouteFocusRef.current = null;
+    if (!circuitFocusDay) {
+      pendingCircuitFocusRef.current = null;
+      if (circuitZoomTimerRef.current !== null) {
+        window.clearTimeout(circuitZoomTimerRef.current);
+        circuitZoomTimerRef.current = null;
+      }
+      setSelectedPin(null);
+      setActiveDay(null);
+      return;
+    }
     pendingCircuitFocusRef.current = circuitFocusDay;
     if (activeDay !== circuitFocusDay) {
       setActiveDay(circuitFocusDay);

@@ -665,7 +665,7 @@ describe("map stop selection", () => {
     });
   });
 
-  it("keeps circuit framing after the active-day redraw", async () => {
+  it("restores All days after an externally focused day", async () => {
     const fitBounds = vi.fn();
     const marker = vi.fn(function (_options: { title?: string; icon?: { url?: string } }) {
       return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
@@ -755,6 +755,15 @@ describe("map stop selection", () => {
         repeat: "10px",
       }],
     }));
+
+    rendered.rerender(createElement(MapPanel, { circuitFocusToken: 2 }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+    expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
+      { lat: 16, lng: 74 },
+      { lat: 15.1, lng: 73.1 },
+      { lat: 15.15, lng: 73.15 },
+      { lat: 15.2, lng: 73.2 },
+    ]);
     rendered.unmount();
     delete window.google;
   });
