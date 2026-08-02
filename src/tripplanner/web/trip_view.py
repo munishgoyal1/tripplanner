@@ -1300,9 +1300,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     itinerary_days = {
         int(day["day"]): day for day in build_itinerary(trip).get("days", [])
     }
+    terminal_kinds = {"airport", "station", "bus_station"}
     for pin in pins:
-        if pin["kind"] not in {"airport", "station", "bus_station"}:
-            continue
         rendered_occurrences = [
             {
                 "day": day_num,
@@ -1315,9 +1314,12 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             if str(stop.get("name") or "").strip().lower()
             == str(pin["_source_name"]).strip().lower()
         ]
-        pin["occurrences"] = rendered_occurrences or _terminal_occurrences(
-            trip, str(pin["_source_name"])
-        )
+        if rendered_occurrences:
+            pin["occurrences"] = rendered_occurrences
+        elif pin["kind"] in terminal_kinds:
+            pin["occurrences"] = _terminal_occurrences(
+                trip, str(pin["_source_name"])
+            )
 
     pin_by_name: dict[str, dict[str, Any]] = {}
     for pin in pins:

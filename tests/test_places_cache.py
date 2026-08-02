@@ -65,6 +65,29 @@ def test_details_cached_within_week(_isolate):
     assert calls["lookup"] == 1  # second call served from cache
 
 
+def test_explicit_airport_lookup_ignores_trip_destination(_isolate, monkeypatch):
+    lookups: list[tuple[str, str]] = []
+
+    def fake_lookup(name: str, city: str):
+        lookups.append((name, city))
+        return {"place_id": "blr", "name": "Kempegowda International Airport Bengaluru"}
+
+    monkeypatch.setattr(pc, "_lookup_place", fake_lookup)
+
+    pc.get_details("Bangalore Airport", "Rajasthan")
+    pc.get_details("Bangalore Airport", "")
+    pc.get_details("Airport Hotel", "Rajasthan")
+    pc.get_details("Airport, Jaipur", "Rajasthan")
+    pc.get_details("Bangalore Airport Terminal 1", "Rajasthan")
+
+    assert lookups == [
+        ("Bangalore Airport", ""),
+        ("Airport Hotel", "Rajasthan"),
+        ("Airport, Jaipur", ""),
+        ("Bangalore Airport Terminal 1", ""),
+    ]
+
+
 def test_meta_ttl_is_one_week():
     assert pc._META_TTL_S == 7 * 24 * 60 * 60
 

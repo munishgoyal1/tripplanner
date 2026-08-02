@@ -69,6 +69,7 @@ focus because they are not inspectable places.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `uses the requested occurrence day for a repeated hotel`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `zooms an airport like any exact itinerary stop`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `zooms an itinerary airport without requesting place details`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_flight_airports_to_destination_stay`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focus_zooms_single_item`
 
 ### EB-FOCUS-002 - Focus a day or the whole trip

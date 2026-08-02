@@ -3329,3 +3329,10 @@ VALIDATION:
   framework limit is reached instead of returning a generic retry error.
 - Record model-call latency, prompt size, token use, tool phase, completion-gate
   reason, and remaining-gap count so future optimization uses direct evidence.
+=== 2026-08-02 — Keep itinerary map focus exact ===
+
+- Resolve an explicit airport name independently of the trip destination so
+  Bangalore Airport cannot be substituted with a Rajasthan airport.
+- Use rendered itinerary stop positions for map occurrences so every itinerary
+  stop remains focusable after flight rows expand into departure, flight, and
+  arrival entries.

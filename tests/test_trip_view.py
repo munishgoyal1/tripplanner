@@ -1017,6 +1017,9 @@ def test_map_view_connects_flight_airports_to_destination_stay(
     assert pins["Udaipur Airport"]["occurrences"] == [
         {"day": 1, "stop": 3, "time": ""},
     ]
+    assert pins["Trident Udaipur"]["occurrences"] == [
+        {"day": 1, "stop": 4, "time": "10:30"},
+    ]
     assert view["airport"] is None
     day = view["days"][0]
     assert day["pin_ids"][0] != day["pin_ids"][-1]
