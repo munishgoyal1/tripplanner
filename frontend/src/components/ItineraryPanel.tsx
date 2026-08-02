@@ -244,36 +244,12 @@ function DayCard({
 
       {day.stops.length > 0 && (
         changesHotel && destinationHotelIndex > 0 ? (
-          <div className="border-t border-slate-200 bg-surface px-3 py-3 sm:px-4" aria-label={`Stay handoff from ${firstStop.name} to ${day.stops[destinationHotelIndex].name}`}>
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <p className="text-[10px] font-bold uppercase text-brand">Stay handoff</p>
-              <p className="text-[10px] text-slate-500">Leaving → arriving</p>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <ul className="overflow-hidden rounded-md bg-white ring-1 ring-slate-200">
-                {renderStop(visibleStops[0])}
-              </ul>
-              <ul className="overflow-hidden rounded-md bg-white ring-1 ring-slate-200">
-                {renderStop(visibleStops.find(({ index }) => index === destinationHotelIndex)!)}
-              </ul>
-            </div>
-            {destinationHotelIndex > 1 && (
-              <section className="mt-3 overflow-hidden rounded-md bg-teal-50/70 ring-1 ring-teal-100" aria-label="Journey between stays">
-                <p className="px-3 pt-2 text-[10px] font-bold uppercase text-teal-800">Journey</p>
-                <ul className="divide-y divide-teal-100 px-2 pb-1">
-                  {visibleStops.filter(({ index }) => index > 0 && index < destinationHotelIndex).map(renderStop)}
-                </ul>
-              </section>
-            )}
-            {visibleStops.some(({ index }) => index > destinationHotelIndex) && (
-              <section className="mt-3" aria-label="Plans after check-in">
-                <p className="mb-1 px-1 text-[10px] font-bold uppercase text-slate-500">After check-in</p>
-                <ul className="divide-y divide-slate-100">
-                  {visibleStops.filter(({ index }) => index > destinationHotelIndex).map(renderStop)}
-                </ul>
-              </section>
-            )}
-          </div>
+          <ul
+            aria-label={`Transition day timeline from ${firstStop.name} to ${day.stops[destinationHotelIndex].name}`}
+            className="relative isolate divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 before:absolute before:bottom-4 before:left-20 before:top-4 before:z-0 before:w-px before:bg-brand/25 sm:px-4 sm:before:left-[5.25rem] [&>li]:relative [&>li]:z-10"
+          >
+            {visibleStops.map(renderStop)}
+          </ul>
         ) : (
           <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
             {visibleStops.map(renderStop)}

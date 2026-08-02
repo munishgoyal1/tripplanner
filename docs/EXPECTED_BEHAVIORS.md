@@ -108,6 +108,21 @@ or replace destination-local framing for ordinary day-header focus.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 
+### EB-ITIN-001 - Read a multi-city transition day chronologically
+
+**Trigger:** View an itinerary day that checks out from one hotel, travels to
+another city, and checks in at a different hotel.
+
+**Expected:** Check out, every journey stop, destination check-in, and remaining
+destination plans appear once in one ordered transition spine. The two hotels
+remain distinct `H1` and `H2` endpoints, while a repeated return to the destination
+hotel stays merged into its check-in row. The itinerary does not pair the hotels
+as cards or split the day into Journey and After check-in sections.
+
+**Executable proof:**
+
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a multi-city transfer as one chronological spine without changing stop identity`
+
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
 **Trigger:** View a day whose ordered map route contains two or more distinct

@@ -64,7 +64,7 @@ export const activeLabs: LabRecord[] = [
     defaultDisposition: "implemented-review",
     defaultStateChangedAt: "2026-08-02",
     status: "In evaluation",
-    decision: "Open · Recommended starting point: A · Transition spine.",
+    decision: "A · Transition spine.",
     href: "./lab-15-multi-city-itinerary.html",
     icon: Route,
   },
