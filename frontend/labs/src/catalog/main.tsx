@@ -11,7 +11,7 @@ function LabCatalog() {
   const requestedView = new URLSearchParams(window.location.search).get("view");
   const currentView = requestedView === "active" || requestedView === "implemented-review" || requestedView === "parked" ? requestedView : "catalog";
   const showActive = currentView === "catalog" || currentView === "active";
-  const showReview = currentView === "implemented-review";
+  const showReview = currentView === "catalog" || currentView === "implemented-review";
   const showParked = currentView === "catalog" || currentView === "parked";
   const { selections, status } = useLabSelections();
 
@@ -21,8 +21,8 @@ function LabCatalog() {
   const visibleLabs = labsFor([undefined, "ready"]);
   const reviewLabs = labsFor(["implemented-review"]);
   const parkedLabs = labsFor(["parked"]);
-  const title = currentView === "active" ? "UX Labs in progress" : currentView === "implemented-review" ? "Implemented UX Labs for review" : currentView === "parked" ? "Parked UX Labs" : "Tripplanner UX Labs";
-  const subtitle = currentView === "active" ? "Open evaluations and approved handoffs still in progress." : currentView === "implemented-review" ? "Production implementations waiting for owner review and sign-off." : currentView === "parked" ? "Saved evaluations waiting for a later decision, with their handoff intact." : "Open and parked Labs only; implemented work has its own review or completed view.";
+  const title = currentView === "active" ? "UX Labs in progress" : currentView === "implemented-review" ? "Implemented UX Labs for review" : currentView === "parked" ? "Parked UX Labs" : "All Open UX Labs";
+  const subtitle = currentView === "active" ? "Open evaluations and approved handoffs still in progress." : currentView === "implemented-review" ? "Production implementations waiting for owner review and sign-off." : currentView === "parked" ? "Saved evaluations waiting for a later decision, with their handoff intact." : "Every Lab not yet completed, grouped by its authoritative lifecycle state.";
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_20rem)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">

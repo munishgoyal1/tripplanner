@@ -9,7 +9,8 @@ The regular `scripts/dev/dev-spa.ps1` startup serves UX Labs automatically. Open
 For Lab-only work, run `npm --prefix frontend run dev:ux-lab` instead. The
 workspace has five durable catalog views:
 
-- `catalog.html` is All Labs: in-progress and parked experiments only.
+- `catalog.html` is All Open Labs: in-progress, implemented-review, and parked
+  experiments; only completed experiments are excluded.
 - `catalog.html?view=active` contains choices still being evaluated or currently
   under implementation.
 - `catalog.html?view=implemented-review` contains production implementations
