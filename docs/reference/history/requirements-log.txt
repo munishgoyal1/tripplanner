@@ -3302,3 +3302,11 @@ VALIDATION:
 - Estimate destination-stay arrival only from known airport-transfer timing.
 - Airport row and marker focus uses normal exact-stop zoom without opening place
   Details.
+
+=== 2026-08-02 — Number same-day hotel map markers ===
+
+- Keep a single hotel map marker as `H`.
+- When a day contains distinct hotels, label them `H1`, `H2`, and so on in route
+  order without counting a repeated return to the same hotel twice.
+- Draw a direct hotel-to-hotel leg as a dotted line using that day's circuit
+  color.

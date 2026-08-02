@@ -60,6 +60,21 @@ the trip summary. Neither action requests place Details.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows all circuits and returns itinerary focus to the trip summary`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`
 
+### EB-MAP-001 - Distinguish multiple hotels in one day
+
+**Trigger:** View a day whose ordered map route contains two or more distinct
+hotels.
+
+**Expected:** The unique hotels are labeled `H1`, `H2`, and so on in route order.
+A repeated return to the same hotel does not create another number. A direct
+hotel-to-hotel leg is dotted in the day's circuit color. A day with one unique
+hotel retains the plain `H` marker.
+
+**Executable proof:**
+
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `numbers two hotels in their same-day route order`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
+
 ### EB-STATE-001 - Keep planner surfaces synchronized
 
 **Trigger:** A focus, selection, trip mutation, identity change, or overlapping

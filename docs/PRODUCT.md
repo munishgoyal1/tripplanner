@@ -227,6 +227,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Each mapped destination row also shows a quiet estimated distance/time from
   the previous stop. The selected map day labels each route segment at its
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
+  A day with distinct hotel endpoints numbers its map markers `H1`, `H2`, and so
+  on in route order without counting a repeated return twice. A direct line
+  between those hotels is dotted in the day's circuit color; single-hotel days
+  retain the plain `H` marker.
   Visit times strictly increase in circuit order and leave room for the stated
   duration plus travel. Route optimization/reflow always retimes affected stops;
   duplicate or backwards schedules are invalid source data, not a display concern.

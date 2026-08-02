@@ -353,6 +353,8 @@ The authoritative action-by-action regression contract is
 implemented capability baseline.
 
 - Day-colored pins and route bands represent complete hotel-anchored circuits.
+- Single-hotel days use `H`; days with distinct hotel endpoints use route-ordered
+  `H1`, `H2`, and so on, with a dotted day-colored direct hotel connector.
 - Genuine transfer days instead render one open endpoint-to-endpoint journey in
   itinerary order. The full journey remains visible, while day focus frames the
   useful destination-local circuit or, on departure-only days, the origin-local
