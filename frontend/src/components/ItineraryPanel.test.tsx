@@ -291,6 +291,38 @@ describe("ItineraryPanel", () => {
     );
   });
 
+  it("shows both flight airports with A markers and their local times", async () => {
+    const onStopFocus = vi.fn();
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 4, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...baseStop, name: "Bangalore Airport", kind: "airport", time: "08:00", terminal_role: "departure" },
+          { ...baseStop, name: "Flight: Bangalore Airport to Udaipur Airport", kind: "flight", time: "08:00", departure_time: "09:10" },
+          { ...baseStop, name: "Udaipur Airport", kind: "airport", time: "09:10", terminal_role: "arrival" },
+          { ...baseStop, name: "Trident Udaipur", kind: "hotel", time: "09:45", time_estimated: true },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel onStopFocus={onStopFocus} />);
+
+    expect(await screen.findAllByLabelText("Map stop A")).toHaveLength(2);
+    expect(screen.getByText("Bangalore Airport")).toBeInTheDocument();
+    expect(screen.getByText("Udaipur Airport")).toBeInTheDocument();
+    expect(screen.getAllByText("08:00").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("09:10").length).toBeGreaterThan(0);
+    expect(screen.getByText("09:45 est.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Bangalore Airport: Mark confirmed" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Udaipur Airport: Mark confirmed" })).not.toBeInTheDocument();
+    expect(screen.getByText("1 planned stop")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Bangalore Airport").closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith("airport", "Bangalore Airport", 1, 1);
+  });
+
   it("keeps the combined hotel row addressable from either route endpoint", async () => {
     const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
     fetchItineraryMock.mockResolvedValue({

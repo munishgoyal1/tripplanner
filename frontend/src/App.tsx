@@ -60,9 +60,11 @@ export default function App() {
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
   const [mapFocusToken, setMapFocusToken] = useState(0);
+  const [terminalFocus, setTerminalFocus] = useState<NavRef | null>(null);
   const [circuitFocus, setCircuitFocus] = useState({ day: 0, token: 0 });
   const focus = workspace.activePlace;
-  const stopFocusName = workspace.activePlace?.name ?? null;
+  const stopFocus = terminalFocus ?? focus;
+  const stopFocusName = stopFocus?.name ?? null;
   const tripVersion = workspace.tripRevision;
   const chatReloadToken = workspace.chatRevision;
   const chatTripId = workspace.tripId;
@@ -222,6 +224,10 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    setTerminalFocus(null);
+  }, [tripVersion]);
+
   const handleIdentityChanged = useCallback(async () => {
     const nextSignedIn = !isAnonymousUser();
     setSignedIn(nextSignedIn);
@@ -269,6 +275,7 @@ export default function App() {
 
   const handleFocus = async (kind: string, name: string, context?: DeselectItemOptions) => {
     const f = { kind, name, day: context?.day, stop: context?.stop };
+    setTerminalFocus(null);
     setCircuitFocus({ day: 0, token: 0 });
     dispatchWorkspace({ type: "focus", place: f });
     setMapFocusToken((token) => token + 1);
@@ -286,6 +293,7 @@ export default function App() {
   };
 
   const handleClearFocus = async () => {
+    setTerminalFocus(null);
     dispatchWorkspace({ type: "focus", place: null });
     await refresh(null);
   };
@@ -448,6 +456,12 @@ export default function App() {
 
   const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
+    if (kind === "airport") {
+      setCircuitFocus({ day: 0, token: 0 });
+      setTerminalFocus({ kind, name, day, stop });
+      setMapFocusToken((token) => token + 1);
+      return;
+    }
     if (isPlaceKind(kind)) {
       await handleFocus(focusKind(kind), name, { day, stop });
     }
@@ -455,6 +469,12 @@ export default function App() {
 
   const handleStopMap = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
+    if (kind === "airport") {
+      setCircuitFocus({ day: 0, token: 0 });
+      setTerminalFocus({ kind, name, day, stop });
+      setMapFocusToken((token) => token + 1);
+      return;
+    }
     if (isPlaceKind(kind)) {
       await handleFocus(focusKind(kind), name, { day, stop });
     }
@@ -462,6 +482,7 @@ export default function App() {
 
   const handleDayFocus = (day: number) => {
     setMapOpen(true);
+    setTerminalFocus(null);
     dispatchWorkspace({ type: "focus", place: null });
     setView((current) => current ? { ...current, focus: null } : current);
     setCircuitFocus({ day, token: Date.now() });
@@ -469,6 +490,7 @@ export default function App() {
   };
 
   const handleMapAllDaysFocus = () => {
+    setTerminalFocus(null);
     dispatchWorkspace({ type: "focus", place: null });
     setView((current) => current ? { ...current, focus: null } : current);
     setCircuitFocus({ day: 0, token: Date.now() });
@@ -494,8 +516,8 @@ export default function App() {
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
     focusName: stopFocusName,
-    focusDay: focus?.day,
-    focusStop: focus?.stop,
+    focusDay: stopFocus?.day,
+    focusStop: stopFocus?.stop,
     focusToken: mapFocusToken,
     circuitFocusDay: circuitFocus.day || undefined,
     circuitFocusToken: circuitFocus.token,
@@ -520,8 +542,8 @@ export default function App() {
           overview={view?.overview}
           reloadToken={tripVersion}
           focusName={stopFocusName}
-          focusDay={focus?.day}
-          focusStop={focus?.stop}
+          focusDay={stopFocus?.day}
+          focusStop={stopFocus?.stop}
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
@@ -534,7 +556,7 @@ export default function App() {
       <MapPanel
         reloadToken={tripVersion}
         focusName={stopFocusName}
-        focusDay={focus?.day}
+        focusDay={stopFocus?.day}
         focusToken={mapFocusToken}
         circuitFocusDay={circuitFocus.day || undefined}
         circuitFocusToken={circuitFocus.token}

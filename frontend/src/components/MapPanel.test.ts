@@ -3,9 +3,12 @@ import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   capCircuitZoom,
+  airportIcon,
   focusedDayForPin,
   fitDayCircuit,
   formatLegLabel,
+  hotelIcon,
+  hotelLabelsForDay,
   hotelReturnForDay,
   kindForGooglePlace,
   mapPinFromGooglePlace,
@@ -18,6 +21,7 @@ import {
   routeStyleForLeg,
   syncPinMarkerFocus,
   visitOrdersForDay,
+  zoomToPin,
 } from "./MapPanel";
 import MapPanel from "./MapPanel";
 
@@ -54,6 +58,68 @@ describe("placeNameMatches", () => {
 });
 
 describe("map stop selection", () => {
+  it("uses an A label for airport markers", () => {
+    expect(decodeURIComponent(airportIcon())).toContain(">A</text>");
+  });
+
+  it("numbers two hotels in their same-day route order", () => {
+    const hotel = (id: string, name: string) => ({
+      id,
+      name,
+      kind: "hotel",
+      selected: true,
+      day: 3,
+      lat: 24.5,
+      lng: 73.5,
+      rating: null,
+      address: "Rajasthan",
+      photo: null,
+      occurrences: [{ day: 3, stop: 1, time: "" }],
+    });
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [hotel("udaipur", "Trident Udaipur"), hotel("mount-abu", "Hotel Hillock")],
+      days: [{
+        day: 3,
+        label: "Day 3",
+        color: "#2563eb",
+        pin_ids: ["udaipur", "mount-abu", "udaipur"],
+        route: { distance_km: 0, duration_min: 0, mode: "", distance_display: "", duration_display: "" },
+      }],
+      available_days: [3],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(Object.fromEntries(hotelLabelsForDay(view, 3))).toEqual({
+      udaipur: "H1",
+      "mount-abu": "H2",
+    });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      days: [{ ...view.days[0], pin_ids: ["udaipur"] }],
+    }, 3))).toEqual({ udaipur: "H" });
+    expect(decodeURIComponent(hotelIcon(false, "H1"))).toContain(">H1</text>");
+    expect(decodeURIComponent(hotelIcon(false, "H2"))).toContain(">H2</text>");
+  });
+
+  it("zooms an airport like any exact itinerary stop", () => {
+    const map = { panTo: vi.fn(), setZoom: vi.fn() };
+    zoomToPin(map, {
+      id: "arrival-airport",
+      name: "Udaipur Airport",
+      kind: "airport",
+      lat: 24.6177,
+      lng: 73.8961,
+    });
+
+    expect(map.panTo).toHaveBeenCalledWith({ lat: 24.6177, lng: 73.8961 });
+    expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
   it("numbers pins by itinerary occurrence when route pin order drifts", () => {
     const pin = (id: string, name: string, stop: number) => ({
       id,
@@ -220,6 +286,13 @@ describe("map stop selection", () => {
       .toMatchObject({ strokeColor: "#e11d48", strokeOpacity: 0, strokeWeight: 4 });
     expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Flight" }, "#2563eb"))
       .toMatchObject({ strokeColor: "#0284c7", strokeOpacity: 0, strokeWeight: 3 });
+    expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb", true))
+      .toMatchObject({
+        strokeColor: "#2563eb",
+        strokeOpacity: 0,
+        strokeWeight: 3,
+        icons: [{ icon: { strokeColor: "#2563eb" }, repeat: "10px" }],
+      });
   });
 
   it("retains ordered route geometry when leg metadata is absent", () => {
@@ -298,6 +371,10 @@ describe("map stop selection", () => {
 
   it("keeps circuit framing after the active-day redraw", async () => {
     const fitBounds = vi.fn();
+    const marker = vi.fn(function (_options: { title?: string; icon?: { url?: string } }) {
+      return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+    });
+    const polyline = vi.fn(function () { return { setMap: vi.fn() }; });
     const map = {
       addListener: vi.fn(() => ({ remove: vi.fn() })),
       fitBounds,
@@ -308,8 +385,8 @@ describe("map stop selection", () => {
     window.google = {
       maps: {
         Map: vi.fn(function () { return map; }),
-        Marker: vi.fn(function () { return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() }; }),
-        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Marker: marker,
+        Polyline: polyline,
         Size: vi.fn(function () {}),
         Point: vi.fn(function () {}),
         LatLngBounds: vi.fn(function () {
@@ -338,12 +415,13 @@ describe("map stop selection", () => {
       center: { lat: 15.2, lng: 73.2 },
       pins: [
         { id: "day-1-hotel", name: "North Hotel", kind: "hotel", selected: true, day: 1, lat: 16, lng: 74, rating: null, address: "", photo: null, occurrences: [{ day: 1, stop: 1, time: "" }] },
-        { id: "day-2-hotel", name: "South Hotel", kind: "hotel", selected: true, day: 2, lat: 15.1, lng: 73.1, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 1, time: "" }] },
+        { id: "day-2-origin", name: "Udaipur Hotel", kind: "hotel", selected: true, day: 2, lat: 15.1, lng: 73.1, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 1, time: "" }] },
+        { id: "day-2-destination", name: "Mount Abu Hotel", kind: "hotel", selected: true, day: 2, lat: 15.15, lng: 73.15, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 2, time: "" }] },
         { id: "day-2-beach", name: "South Beach", kind: "attraction", selected: true, day: 2, lat: 15.2, lng: 73.2, rating: null, address: "", photo: null, occurrences: [{ day: 2, stop: 2, time: "" }] },
       ],
       days: [
         { day: 1, label: "Day 1", color: "#e11d48", pin_ids: ["day-1-hotel"], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
-        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: ["day-2-hotel", "day-2-beach", "day-2-hotel"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
+        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: ["day-2-origin", "day-2-destination", "day-2-beach", "day-2-destination"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
       ],
       available_days: [1, 2],
       unscheduled_pin_ids: [],
@@ -359,9 +437,28 @@ describe("map stop selection", () => {
     await waitFor(() => expect(fitBounds).toHaveBeenCalled());
     await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
       { lat: 15.1, lng: 73.1 },
+      { lat: 15.15, lng: 73.15 },
       { lat: 15.2, lng: 73.2 },
-      { lat: 15.1, lng: 73.1 },
+      { lat: 15.15, lng: 73.15 },
     ]));
+    const markerIcon = (title: string) => marker.mock.calls
+      .map(([options]) => options)
+      .find((options) => options.title === title)?.icon?.url ?? "";
+    expect(decodeURIComponent(markerIcon("North Hotel")))
+      .toContain(">H</text>");
+    expect(decodeURIComponent(markerIcon("Udaipur Hotel")))
+      .toContain(">H1</text>");
+    expect(decodeURIComponent(markerIcon("Mount Abu Hotel")))
+      .toContain(">H2</text>");
+    expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
+      path: [{ lat: 15.1, lng: 73.1 }, { lat: 15.15, lng: 73.15 }],
+      strokeColor: "#0d9488",
+      strokeOpacity: 0,
+      icons: [{
+        icon: expect.objectContaining({ strokeColor: "#0d9488" }),
+        repeat: "10px",
+      }],
+    }));
     rendered.unmount();
     delete window.google;
   });

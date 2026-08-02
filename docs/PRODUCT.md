@@ -221,9 +221,16 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   separate and read as Check out and Check in.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
   `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
+  Flight transitions render both airport endpoints as `A` rows with truthful
+  local Depart/Arrive times. The destination stay may show an estimated arrival
+  only when the airport-transfer timing supports it.
   Each mapped destination row also shows a quiet estimated distance/time from
   the previous stop. The selected map day labels each route segment at its
   midpoint; all-days mode omits leg labels to keep overlapping circuits legible.
+  A day with distinct hotel endpoints numbers its map markers `H1`, `H2`, and so
+  on in route order without counting a repeated return twice. A direct line
+  between those hotels is dotted in the day's circuit color; single-hotel days
+  retain the plain `H` marker.
   Visit times strictly increase in circuit order and leave room for the stated
   duration plus travel. Route optimization/reflow always retimes affected stops;
   duplicate or backwards schedules are invalid source data, not a display concern.
@@ -238,9 +245,13 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   authoritative itinerary occurrences even if route pin order drifts, and shorter
   itinerary names still match provider-expanded map names. Repeated clicks refocus
   the same stop after manual map-day changes.
+  Airport rows and terminal markers are map-only focus actions: they pan to the
+  exact airport at zoom 15 without treating the terminal as a place Details item.
   The complete day header is also clickable: it clears any prior exact-place
-  selection, filters the map to that day, and fits the complete route circuit
-  in view. Place-row clicks remain exact-place
+  selection and filters the map to that day. Ordinary days fit the complete route
+  circuit. Transfer days retain the complete connected geometry but frame the
+  useful destination-local circuit, or the origin-local circuit when the day ends
+  at the distant arrival terminal. Place-row clicks remain exact-place
   actions: they synchronize the map number, itinerary row, and Details, then
   pan to zoom 15 while that behavior is evaluated through real usage.
   Focus retains the exact itinerary occurrence, so clicking a repeated hotel on

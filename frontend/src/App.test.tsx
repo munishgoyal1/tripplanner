@@ -50,7 +50,7 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, onDayMap, jumpTo, overview, focusDay, focusStop }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayMap?: (day: number) => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number }) => (
+  default: ({ reloadToken, onStopFocus, onStopMap, onDayMap, jumpTo, overview, focusDay, focusStop }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number) => void; onDayMap?: (day: number) => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number }) => (
     <div>
       <button
         type="button"
@@ -69,14 +69,18 @@ vi.mock("./components/ItineraryPanel", () => ({
       <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
         Focus Day 2 hotel
       </button>
+      <button type="button" onClick={() => onStopMap?.("airport", "Udaipur Airport", 1, 3)}>
+        Show Udaipur Airport on map
+      </button>
       <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
     </div>
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
+      <button type="button" onClick={() => onPinFocus("airport", "Udaipur Airport", 1, 3)}>Focus airport pin</button>
       <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
       <button type="button" onClick={() => onAllDaysFocus?.()}>Focus All days</button>
     </div>
@@ -394,6 +398,37 @@ describe("App responsive workspace", () => {
 
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledTimes(2));
     expect(itinerary).toHaveAttribute("data-reload-token", "0");
+  });
+
+  it("zooms an itinerary airport without requesting place details", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    const fetchesBeforeFocus = fetchTripViewMock.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "Show Udaipur Airport on map" }));
+
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Udaipur Airport");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "1");
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
+    expect(screen.getByText("Destination guide")).toBeInTheDocument();
+    expect(screen.queryByText("Place details")).not.toBeInTheDocument();
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeFocus);
+  });
+
+  it("retains shared occurrence focus from an airport marker", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toBeInTheDocument());
+    const fetchesBeforeFocus = fetchTripViewMock.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "Focus airport pin" }));
+
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Udaipur Airport");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "1");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-focus-stop", "3");
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
+    expect(fetchTripViewMock).toHaveBeenCalledTimes(fetchesBeforeFocus);
   });
 
   it("refreshes itinerary and map as soon as a planning turn completes", async () => {

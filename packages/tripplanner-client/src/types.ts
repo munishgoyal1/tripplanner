@@ -149,6 +149,7 @@ export interface MapDay {
   label: string;
   color: string;
   pin_ids: string[];
+  circuit_pin_ids?: string[];
   route: RouteMetrics;
   schedule?: DaySchedule;
   legs?: MapLeg[];
@@ -178,6 +179,8 @@ export interface ItineraryStop {
   name: string;
   kind: string;
   time: string;
+  arrival_time?: string;
+  terminal_role?: "departure" | "arrival";
   duration_min: number | null;
   note: string;
   booked: boolean;

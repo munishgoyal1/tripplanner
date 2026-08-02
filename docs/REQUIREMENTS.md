@@ -334,6 +334,9 @@ re-describing the whole product.
   actions instead of checkbox presentation.
 - Place stops use day-colored markers matching map circuits: `H` for hotel
   endpoints and sequential numbers for attractions and named meals.
+- Flight transitions expose separate departure and arrival airport rows marked
+  `A`, preserve their persisted local Depart/Arrive times, and estimate the
+  destination-stay arrival only from known transfer timing.
 - Rows show quiet travel distance/time from the previous mapped stop.
 - Generated hotel circuit anchors have no visit duration, In trip badge, or
   single-occurrence removal. Hotel changes use authoritative stay-range actions.
@@ -350,14 +353,19 @@ The authoritative action-by-action regression contract is
 implemented capability baseline.
 
 - Day-colored pins and route bands represent complete hotel-anchored circuits.
+- Single-hotel days use `H`; days with distinct hotel endpoints use route-ordered
+  `H1`, `H2`, and so on, with a dotted day-colored direct hotel connector.
 - Genuine transfer days instead render one open endpoint-to-endpoint journey in
-  itinerary order and fit both city contexts. Local legs retain the day color;
-  road, rail, bus, and flight connectors use distinct treatment, with terminal
-  pins retained around rail and flight travel.
+  itinerary order. The full journey remains visible, while day focus frames the
+  useful destination-local circuit or, on departure-only days, the origin-local
+  circuit. Local legs retain the day color; road, rail, bus, and flight connectors
+  use distinct treatment, with `A` airport pins and other terminal pins retained.
 - Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
   and zoom 15. Repeating the action reapplies focus after manual filtering.
-- Aggregate day focus clears exact-place focus, fits the whole circuit, and
-  aligns the itinerary at the day's summary.
+- Airport terminal focus uses the same zoom 15 map behavior without opening
+  place Details.
+- Aggregate day focus clears exact-place focus, applies the framing rule above,
+  and aligns the itinerary at the day's summary.
 - All-days focus clears exact and single-day focus, fits all circuits, and aligns
   the itinerary at the trip summary.
 - Provider-expanded or differently punctuated place names still resolve to the

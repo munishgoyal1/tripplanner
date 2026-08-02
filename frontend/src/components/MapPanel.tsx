@@ -56,7 +56,22 @@ export function formatLegLabel(leg: { distance_display: string; duration_display
   return `${leg.distance_display} · ${leg.duration_display}`;
 }
 
-export function routeStyleForLeg(leg: MapLeg, dayColor: string): Record<string, unknown> {
+export function routeStyleForLeg(
+  leg: MapLeg,
+  dayColor: string,
+  connectsHotels = false,
+): Record<string, unknown> {
+  if (connectsHotels) {
+    return {
+      strokeColor: dayColor,
+      strokeOpacity: 0,
+      strokeWeight: 3,
+      icons: [{
+        icon: { path: "M 0,-1 0,1", strokeColor: dayColor, strokeOpacity: 0.9, scale: 3 },
+        repeat: "10px",
+      }],
+    };
+  }
   if (!leg.intercity) {
     return { strokeColor: dayColor, strokeOpacity: 0.85, strokeWeight: 3 };
   }
@@ -106,12 +121,15 @@ const AIRPORT_COLOR = "#0f172a";
 const HOTEL_COLOR = "#334155"; // slate — distinct from the day palette
 const SUGGEST_COLOR = "#94a3b8";
 
-function airportIcon(): string {
+export function airportIcon(focused = false): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
         fill="${AIRPORT_COLOR}" stroke="white" stroke-width="2"/>
-  <text x="17" y="22" font-size="15" text-anchor="middle">${"\u2708"}</text>
+  <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
+      stroke="white" stroke-width="${focused ? 2 : 0}"/>
+  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
+        font-weight="700" text-anchor="middle" fill="${focused ? "white" : AIRPORT_COLOR}">A</text>
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -130,17 +148,17 @@ function terminalIcon(kind: string): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-// Hotel/lodging pin — a lettered teardrop ("H") in slate so a place you're
+// Hotel/lodging pin — a lettered teardrop in slate so a place you're
 // staying reads differently from a day-numbered attraction.
-export function hotelIcon(focused = false): string {
+export function hotelIcon(focused = false, label = "H"): string {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"
         fill="${HOTEL_COLOR}" stroke="white" stroke-width="2"/>
     <circle cx="17" cy="16" r="11" fill="${focused ? "#0f172a" : "white"}" fill-opacity="0.97"
       stroke="white" stroke-width="${focused ? 2 : 0}"/>
-  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="13"
-        font-weight="700" text-anchor="middle" fill="${focused ? "white" : HOTEL_COLOR}">H</text>
+  <text x="17" y="21" font-family="Inter,Arial,sans-serif" font-size="${label.length > 1 ? 11 : 13}"
+        font-weight="700" text-anchor="middle" fill="${focused ? "white" : HOTEL_COLOR}">${label}</text>
 </svg>`.trim();
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -195,6 +213,16 @@ export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string,
     return (leftStop ?? Number.MAX_SAFE_INTEGER) - (rightStop ?? Number.MAX_SAFE_INTEGER);
   });
   return new Map(ordered.map((pin, index) => [pin.id, index + 1]));
+}
+
+export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string, string> {
+  const day = view.days.find((candidate) => candidate.day === dayNumber);
+  const hotels = (day?.pin_ids ?? [])
+    .map((id) => view.pins.find((candidate) => candidate.id === id))
+    .filter((pin): pin is MapPin => !!pin && pin.kind === "hotel");
+  const ordered = [...new Map(hotels.map((pin) => [pin.id, pin])).values()];
+  const numbered = ordered.length > 1;
+  return new Map(ordered.map((pin, index) => [pin.id, numbered ? `H${index + 1}` : "H"]));
 }
 
 export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
@@ -263,7 +291,7 @@ export function optionsForStopDay(day: string): SelectItemOptions | undefined {
 export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   if (!day) return [];
-  return day.pin_ids
+  return (day.circuit_pin_ids ?? day.pin_ids)
     .map((id) => view.pins.find((pin) => pin.id === id))
     .filter((pin): pin is MapPin => !!pin);
 }
@@ -294,6 +322,11 @@ export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: n
   pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
   map.fitBounds(bounds, 64);
   return true;
+}
+
+export function zoomToPin(map: any, pin: MapPin | MapAirport): void {
+  map.panTo({ lat: pin.lat, lng: pin.lng });
+  map.setZoom(15);
 }
 
 export function capCircuitZoom(map: any): void {
@@ -525,9 +558,19 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
         if (!visitOrderByPinId.has(id)) visitOrderByPinId.set(id, order);
       });
     });
+    const hotelLabelByPinId = new Map<string, string>();
+    orderDays.forEach((d) => {
+      hotelLabelsForDay(view, d.day).forEach((label, id) => {
+        if (!hotelLabelByPinId.has(id) || hotelLabelByPinId.get(id) === "H") {
+          hotelLabelByPinId.set(id, label);
+        }
+      });
+    });
 
     const activeDayPinIds = new Set(
-      activeDay === null ? [] : pinsForDayCircuit(view, activeDay).map((pin) => pin.id)
+      activeDay === null
+        ? []
+        : view.days.find((day) => day.day === activeDay)?.pin_ids ?? []
     );
     const visible = (p: MapPin) =>
       activeDay === null || activeDayPinIds.has(p.id);
@@ -547,12 +590,12 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
       const iconFor = (isFocused: boolean) => {
         if (p.kind === "hotel") return {
-          url: hotelIcon(isFocused),
+          url: hotelIcon(isFocused, hotelLabelByPinId.get(p.id) ?? "H"),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
         if (["airport", "station", "bus_station"].includes(p.kind)) return {
-          url: terminalIcon(p.kind),
+          url: p.kind === "airport" ? airportIcon(isFocused) : terminalIcon(p.kind),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
@@ -582,12 +625,18 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       });
       marker.addListener("click", () => {
         setCandidatePin(null);
-        if (["hotel", "attraction", "meal", "restaurant"].includes(p.kind)) {
+        if (["hotel", "attraction", "meal", "restaurant", "airport"].includes(p.kind)) {
           const occurrence = p.occurrences.find(
             (candidate) => candidate.day === (activeDay ?? p.day),
           ) ?? p.occurrences[0];
-          onPinFocusRef.current?.(p.kind, p.name, occurrence?.day, occurrence?.stop);
+          onPinFocusRef.current?.(
+            p.kind,
+            p.name,
+            occurrence?.day ?? activeDay ?? p.day ?? undefined,
+            occurrence?.stop,
+          );
         }
+        if (isJourneyTerminal(p)) zoomToPin(map, p);
         setSelectedPin(p);
       });
       pinMarkersRef.current.push({ pin: p, marker, normalIcon, focusedIcon, baseZIndex });
@@ -632,6 +681,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
         zIndex: 200,
       });
       marker.addListener("click", () => {
+        zoomToPin(map, a);
         setSelectedPin(a);
       });
       overlaysRef.current.push(marker);
@@ -659,20 +709,29 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
             { lat: end.lat, lng: end.lng },
           ],
           geodesic: true,
-          ...routeStyleForLeg(leg, d.color),
+          ...routeStyleForLeg(leg, d.color, start.kind === "hotel" && end.kind === "hotel"),
           map,
         });
         overlaysRef.current.push(line);
       }
       if (legs.length === 0) {
-        const path = routePathForPinIds(d.pin_ids, view.pins);
-        if (path.length >= 2) {
+        const routePins = d.pin_ids
+          .map((id) => pinById.get(id))
+          .filter((pin): pin is MapPin => !!pin);
+        for (let index = 1; index < routePins.length; index += 1) {
+          const start = routePins[index - 1];
+          const end = routePins[index];
           const line = new google.maps.Polyline({
-            path,
+            path: [
+              { lat: start.lat, lng: start.lng },
+              { lat: end.lat, lng: end.lng },
+            ],
             geodesic: true,
-            strokeColor: d.color,
-            strokeOpacity: 0.85,
-            strokeWeight: 3,
+            ...routeStyleForLeg(
+              { ...d.route, from_pin_id: start.id, to_pin_id: end.id },
+              d.color,
+              start.kind === "hotel" && end.kind === "hotel",
+            ),
             map,
           });
           overlaysRef.current.push(line);
@@ -730,8 +789,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     const circuitDay = pendingCircuitFocusRef.current;
     const focus = pendingFocusRef.current;
     if (focus) {
-      map.panTo({ lat: focus.lat, lng: focus.lng });
-      map.setZoom(15);
+      zoomToPin(map, focus);
       pendingFocusRef.current = null;
       if (isAirportTarget(focus)) {
         setSelectedPin(focus);
@@ -793,8 +851,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     }
     syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay);
     const map = mapRef.current;
-    map?.panTo({ lat: target.lat, lng: target.lng });
-    map?.setZoom(15);
+    if (map) zoomToPin(map, target);
     setSelectedPin(target);
     if (map && !clearingCandidate) pendingFocusRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
