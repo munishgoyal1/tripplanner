@@ -237,6 +237,27 @@ describe("map stop selection", () => {
     expect(pinMatchesFocus(hotel, "Goa Marriott Resort", 3)).toBe(false);
   });
 
+  it("uses the requested stop to distinguish similarly named pins on one day", () => {
+    const pin = (id: string, name: string, stop: number) => ({
+      id,
+      name,
+      kind: "attraction",
+      selected: true,
+      day: 6,
+      lat: 26.9 + stop / 100,
+      lng: 70.9 + stop / 100,
+      rating: null,
+      address: "Jaisalmer",
+      photo: null,
+      occurrences: [{ day: 6, stop, time: "" }],
+    });
+    const camp = pin("camel-camp", "Camel Safari Camp", 2);
+    const safari = pin("camel-safari", "Camel Safari", 4);
+
+    expect(pinMatchesFocus(camp, "Camel Safari", 6, 4)).toBe(false);
+    expect(pinMatchesFocus(safari, "Camel Safari", 6, 4)).toBe(true);
+  });
+
   it("builds an inspectable candidate only from real Google geometry", () => {
     expect(mapPinFromGooglePlace({ name: "Britto's", types: ["restaurant"] })).toBeNull();
     expect(mapPinFromGooglePlace({

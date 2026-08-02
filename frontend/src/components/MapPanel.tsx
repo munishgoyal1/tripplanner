@@ -225,9 +225,17 @@ export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string,
   return new Map(ordered.map((pin, index) => [pin.id, numbered ? `H${index + 1}` : "H"]));
 }
 
-export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
+export function pinMatchesFocus(
+  pin: MapPin,
+  focusName?: string | null,
+  focusDay?: number,
+  focusStop?: number,
+): boolean {
   if (!focusName || !placeNameMatches(pin.name, focusName)) return false;
-  return focusDay == null || pin.occurrences.some((occurrence) => occurrence.day === focusDay);
+  return (focusDay == null && focusStop == null) || pin.occurrences.some((occurrence) => (
+    (focusDay == null || occurrence.day === focusDay)
+    && (focusStop == null || occurrence.stop === focusStop)
+  ));
 }
 
 interface PinMarkerEntry {
@@ -242,9 +250,10 @@ export function syncPinMarkerFocus(
   entries: PinMarkerEntry[],
   focusName?: string | null,
   focusDay?: number,
+  focusStop?: number,
 ): void {
   entries.forEach(({ pin, marker, normalIcon, focusedIcon, baseZIndex }) => {
-    const focused = pinMatchesFocus(pin, focusName, focusDay);
+    const focused = pinMatchesFocus(pin, focusName, focusDay, focusStop);
     marker.setIcon(focused ? focusedIcon : normalIcon);
     marker.setZIndex(focused ? 1400 : baseZIndex);
   });
@@ -341,6 +350,8 @@ interface Props {
   focusName?: string | null;
   /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
   focusDay?: number;
+  /** Exact itinerary stop position for repeated or similarly named places. */
+  focusStop?: number;
   /** Changes for every focus request, including repeated clicks on the same stop. */
   focusToken?: number;
   /** Itinerary day whose complete circuit should be framed. */
@@ -368,7 +379,7 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -393,8 +404,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
   const circuitZoomTimerRef = useRef<number | null>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
   const pinMarkersRef = useRef<PinMarkerEntry[]>([]);
-  const focusRef = useRef({ name: focusName, day: focusDay });
-  focusRef.current = { name: focusName, day: focusDay };
+  const focusRef = useRef({ name: focusName, day: focusDay, stop: focusStop });
+  focusRef.current = { name: focusName, day: focusDay, stop: focusStop };
   // A pin the itinerary asked us to zoom into. Applied inside draw() so a
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
@@ -585,7 +596,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       // Choose a marker style: hotels get a slate "H" pin (always shown),
       // day-scheduled places get a bold numbered teardrop in their day color,
       // and un-scheduled suggestions get a quiet dot.
-      const focused = pinMatchesFocus(p, currentFocus.name, currentFocus.day);
+      const focused = pinMatchesFocus(p, currentFocus.name, currentFocus.day, currentFocus.stop);
       const visitOrder = visitOrderByPinId.get(p.id);
       const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
       const iconFor = (isFocused: boolean) => {
@@ -829,8 +840,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     }
     pendingCircuitFocusRef.current = null;
     const normalizedFocus = focusName.trim().toLowerCase();
-    let target: MapPin | MapAirport | undefined = view.pins.find((p) =>
-      placeNameMatches(p.name, focusName)
+    let target: MapPin | MapAirport | undefined = view.pins.find((pin) =>
+      pinMatchesFocus(pin, focusName, focusDay, focusStop)
     );
     // Check airport if not found in pins
     if (!target && view.airport && view.airport.name.trim().toLowerCase() === normalizedFocus) {
@@ -849,13 +860,13 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
       setActiveDay(day);
       return;
     }
-    syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay);
+    syncPinMarkerFocus(pinMarkersRef.current, focusName, focusDay, focusStop);
     const map = mapRef.current;
     if (map) zoomToPin(map, target);
     setSelectedPin(target);
     if (map && !clearingCandidate) pendingFocusRef.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusName, focusDay, focusToken, view]);
+  }, [focusName, focusDay, focusStop, focusToken, view]);
 
   useEffect(() => {
     if (!view || !circuitFocusDay || circuitFocusToken === 0) return;

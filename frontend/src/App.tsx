@@ -557,6 +557,7 @@ export default function App() {
         reloadToken={tripVersion}
         focusName={stopFocusName}
         focusDay={stopFocus?.day}
+        focusStop={stopFocus?.stop}
         focusToken={mapFocusToken}
         circuitFocusDay={circuitFocus.day || undefined}
         circuitFocusToken={circuitFocus.token}
