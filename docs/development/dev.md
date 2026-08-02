@@ -29,11 +29,11 @@ coordination cost.
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
-In optional parallel mode, to merge Agent 1 and Agent 2 and restart this local
+In optional parallel mode, to synchronize Agent 1, Agent 2, and `master`, then restart this local
 stack in one click, double-click `scripts/dev/Run-Latest-Code.cmd` from the
 repository root or run the VS Code task **Tripplanner: Run Latest Code** from the
 integration workspace. Existing staged, unstaged, and untracked master work is
-temporarily preserved and restored around both guarded merges before the server
+temporarily preserved and restored around guarded integration before the server
 starts. A worker synchronization conflict is automatically aborted so it cannot
 leave staged or unmerged residue.
 
@@ -41,10 +41,9 @@ Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `Run-Latest-Code.cmd` | Merge both workers, restore local `master` edits, and start the app. This is the normal one-click choice. |
-| `Resolve-Merge-All-Agents.cmd` | Merge both workers without starting the app; reuse known conflict resolutions and guide new semantic resolutions in the correct worker. |
-| `Merge-All-Agents.cmd` | Strict non-interactive merge of both workers; abort on any new conflict. |
-| `Merge-Agent-1.cmd` / `Merge-Agent-2.cmd` | Merge only the selected worker. |
+| `Run-Latest-Code.cmd` | Synchronize all worktrees, restore local `master` edits, and start the app. This is the normal one-click choice. |
+| `Sync-All-Worktrees.cmd` | Integrate both workers into `master`, then fast-forward both workers to final `master`; guide new semantic conflicts in the owning worker. |
+| `Sync-Worker-1.cmd` / `Sync-Worker-2.cmd` | Integrate the selected worker into `master`, then synchronize that worker for its next assignment. |
 | `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 ---
