@@ -4,7 +4,7 @@
 
 - Owner: Munish Goyal
 - Date started: 2026-08-01
-- Status: testing
+- Status: completed
 - Lab: `http://127.0.0.1:5175/multi-city-itinerary.html`
 
 ## Problem
@@ -40,15 +40,17 @@ duration, and endpoint information.
   destination city make the change in place context explicit. It uses neither
   A's continuous spine nor B's paired hotel handoff.
 
-## Current recommendation
+## Owner handoff
 
-Start with **A - Transition spine**. It is closest to the authoritative schedule,
-keeps every endpoint in one scan path, and supports road, rail, and flight without
-turning one calendar day into separate itinerary days. This recommendation is
-not implementation approval.
+Implement **B - Stay handoff**. Keep the itinerary fixed to the decisions already
+made, and defer broader controls for comparing or replacing transport modes,
+attractions, and other choices to a separate interaction design.
 
 ## Decision
 
-- Decision: pending owner evaluation
-- Production implementation status: not implemented
-- Next action: compare all three interactions and save one implementation handoff
+- Decision: B - Stay handoff
+- Production implementation status: implemented 2026-08-02
+- Preserved behavior: stop order and identity, timing, booking state, focus, Map
+  actions, route providers, and planning logic
+- Deferred: a separate interaction for comparing or replacing transport modes,
+  attractions, and other itinerary choices by cost, time, or preference
