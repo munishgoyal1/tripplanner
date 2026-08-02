@@ -433,7 +433,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
       });
       marker.addListener("click", () => {
         setCandidatePin(null);
-        if (["hotel", "attraction", "meal", "restaurant", "airport"].includes(p.kind)) {
+        if (isInspectableMapPin(p)) {
           const occurrence = p.occurrences.find(
             (candidate) => candidate.day === (activeDay ?? p.day),
           ) ?? p.occurrences[0];

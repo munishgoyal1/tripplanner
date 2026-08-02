@@ -3336,3 +3336,11 @@ VALIDATION:
 - Use rendered itinerary stop positions for map occurrences so every itinerary
   stop remains focusable after flight rows expand into departure, flight, and
   arrival entries.
+
+=== 2026-08-02 — Inspect every transport terminal ===
+
+- Treat enriched airport, railway-station, bus-stand, and future transport
+  terminal map pins as inspectable places.
+- Clicking a terminal marker opens its rich map tile and synchronizes contextual
+  Details using the exact itinerary occurrence while retaining travel-only
+  terminal actions.

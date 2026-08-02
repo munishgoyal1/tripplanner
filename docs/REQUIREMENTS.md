@@ -365,10 +365,11 @@ implemented capability baseline.
   use distinct treatment, with `A` airport pins and other terminal pins retained.
 - Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
   and zoom 15. Repeating the action reapplies focus after manual filtering.
-- Airport terminal focus uses the same zoom 15 map behavior and opens contextual
-  place Details with available photos, rating, reviews, address, summary, and
-  website. It resolves the itinerary airport alias and requested occurrence even
-  when the provider returns a different canonical terminal name.
+- Airport, railway-station, bus-stand, and other enriched terminal focus uses the
+  same zoom 15 map behavior and opens contextual place Details with available
+  photos, rating, reviews, address, summary, and website. It resolves the
+  itinerary alias and requested occurrence even when the provider returns a
+  different canonical terminal name.
 - Selecting an inter-city flight or transport row frames the complete ordered
   source-to-destination route and connector without opening place Details or
   changing the destination-local framing used by aggregate day focus.

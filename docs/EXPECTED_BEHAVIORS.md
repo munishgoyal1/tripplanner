@@ -45,18 +45,19 @@ Assistant build its first proposal.
 **Trigger:** Select a place stop in Itinerary, or invoke its Map action. The
 identity is kind, place name, day, and stop position. For example, selecting
 Jag Mandir at Day 2, Stop 1 identifies that occurrence rather than merely every
-place named Jag Mandir. Airport terminal rows and markers invoke exact focus and
-open the terminal as an inspectable place.
+place named Jag Mandir. Transport terminal rows and markers invoke exact focus
+and open the terminal as an inspectable place.
 
 **Expected:**
 
 - Map opens, selects the marker for that exact occurrence, and zooms to level 15.
 - Details opens and shows that place, including itinerary-only places not already
   in the selected-place collection.
-- Airport terminal focus pans and zooms to the requested day occurrence at level
-  15 and opens Details with available Places photos, rating, reviews, address,
-  summary, and website. The itinerary alias remains the focus identity when it
-  differs from the provider-canonical airport name.
+- Airport, railway-station, bus-stand, and other enriched terminal focus pans and
+  zooms to the requested day occurrence at level 15 and opens Details with
+  available Places photos, rating, reviews, address, summary, and website. The
+  itinerary alias remains the focus identity when it differs from the
+  provider-canonical terminal name.
 - Itinerary, Map, and Details retain the same day and stop after the view refresh.
 - Repeating the same action reapplies focus after manual map movement or filtering.
 - A failed refresh leaves the previous usable view in place and reports the error.
@@ -69,6 +70,7 @@ open the terminal as an inspectable place.
 - [`tests/test_trip_view_api.py`](../tests/test_trip_view_api.py) - `test_trip_view_preserves_exact_itinerary_occurrence`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `uses the requested occurrence day for a repeated hotel`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `zooms an airport like any exact itinerary stop`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `opens rich inspection for rail and bus terminal markers`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `opens airport details and keeps its exact map occurrence focused`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_airport_focus_exposes_place_details_and_terminal_occurrence`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_flight_airports_to_destination_stay`

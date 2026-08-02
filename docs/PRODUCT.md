@@ -248,10 +248,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   authoritative itinerary occurrences even if route pin order drifts, and shorter
   itinerary names still match provider-expanded map names. Repeated clicks refocus
   the same stop after manual map-day changes.
-  Airport rows and terminal markers pan to the exact airport occurrence at zoom
-  15 and open contextual place Details with available photos, rating, reviews,
-  address, summary, and website. Itinerary airport names remain valid focus
-  identities when a map provider returns a different canonical airport name.
+  Airport, railway-station, bus-stand, and other enriched terminal markers pan
+  to their exact occurrence at zoom 15 and open contextual place Details with
+  available photos, rating, reviews, address, summary, and website. Itinerary
+  terminal names remain valid focus identities when a map provider returns a
+  different canonical name.
   Clicking an inter-city flight or transport row frames its complete source-to-
   destination route and connector without opening place Details. All-days view
   retains the dotted flight arcs between every airport pair so the complete trip

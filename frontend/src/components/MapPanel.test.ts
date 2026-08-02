@@ -165,6 +165,113 @@ describe("map stop selection", () => {
     })).toBe(false);
   });
 
+  it("opens rich inspection for rail and bus terminal markers", async () => {
+    const markerClicks = new Map<string, () => void>();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds: vi.fn(),
+      getZoom: vi.fn(() => 11),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function (options: { title?: string }) {
+          return {
+            addListener: vi.fn((event: string, callback: () => void) => {
+              if (event === "click" && options.title) markerClicks.set(options.title, callback);
+            }),
+            setMap: vi.fn(),
+            setIcon: vi.fn(),
+            setZIndex: vi.fn(),
+          };
+        }),
+        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: { lat: 25.7, lng: 74.7 },
+      pins: [
+        {
+          id: "rail",
+          name: "Udaipur Railway Station",
+          kind: "station",
+          selected: true,
+          day: 4,
+          lat: 24.5683,
+          lng: 73.6991,
+          rating: 4.2,
+          address: "Udaipur, Rajasthan",
+          photo: "https://example.com/rail.jpg",
+          occurrences: [{ day: 4, stop: 2, time: "09:00" }],
+        },
+        {
+          id: "bus",
+          name: "Jaipur Bus Stand",
+          kind: "bus_station",
+          selected: true,
+          day: 5,
+          lat: 26.92,
+          lng: 75.79,
+          rating: 3.9,
+          address: "Jaipur, Rajasthan",
+          photo: "https://example.com/bus.jpg",
+          occurrences: [{ day: 5, stop: 1, time: "08:30" }],
+        },
+      ],
+      days: [
+        { day: 4, label: "Day 4", color: "#2563eb", pin_ids: ["rail"], route: { distance_km: 0, duration_min: 0, mode: "Train", distance_display: "", duration_display: "" } },
+        { day: 5, label: "Day 5", color: "#e11d48", pin_ids: ["bus"], route: { distance_km: 0, duration_min: 0, mode: "Bus", distance_display: "", duration_display: "" } },
+      ],
+      available_days: [4, 5],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+    const onPinFocus = vi.fn();
+    const rendered = render(createElement(MapPanel, { onPinFocus }));
+
+    await waitFor(() => expect(markerClicks.has("Udaipur Railway Station")).toBe(true));
+    act(() => markerClicks.get("Udaipur Railway Station")?.());
+    expect(await screen.findByAltText("Udaipur Railway Station")).toHaveAttribute(
+      "src",
+      "https://example.com/rail.jpg",
+    );
+    expect(onPinFocus).toHaveBeenLastCalledWith("station", "Udaipur Railway Station", 4, 2);
+
+    act(() => markerClicks.get("Jaipur Bus Stand")?.());
+    expect(await screen.findByAltText("Jaipur Bus Stand")).toHaveAttribute(
+      "src",
+      "https://example.com/bus.jpg",
+    );
+    expect(onPinFocus).toHaveBeenLastCalledWith("bus_station", "Jaipur Bus Stand", 5, 1);
+
+    rendered.unmount();
+    delete window.google;
+  });
+
   it("numbers pins by itinerary occurrence when route pin order drifts", () => {
     const pin = (id: string, name: string, stop: number) => ({
       id,
