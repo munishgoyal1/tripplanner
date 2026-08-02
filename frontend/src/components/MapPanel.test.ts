@@ -12,6 +12,7 @@ import {
   hotelIcon,
   hotelLabelsForDay,
   hotelReturnForDay,
+  isInspectableMapPin,
   kindForGooglePlace,
   mapPinFromGooglePlace,
   optionsForStopDay,
@@ -138,6 +139,30 @@ describe("map stop selection", () => {
 
     expect(map.panTo).toHaveBeenCalledWith({ lat: 24.6177, lng: 73.8961 });
     expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
+  it("treats an enriched itinerary airport as an inspectable map pin", () => {
+    expect(isInspectableMapPin({
+      id: "arrival-airport",
+      name: "Maharana Pratap Airport",
+      source_name: "Udaipur Airport",
+      kind: "airport",
+      selected: true,
+      day: 1,
+      lat: 24.6177,
+      lng: 73.8961,
+      rating: 4.5,
+      address: "Dabok, Rajasthan",
+      photo: "https://example.com/airport.jpg",
+      occurrences: [{ day: 1, stop: 3, time: "10:05" }],
+    })).toBe(true);
+    expect(isInspectableMapPin({
+      id: "airport",
+      name: "Nearby airport",
+      kind: "airport",
+      lat: 24.6177,
+      lng: 73.8961,
+    })).toBe(false);
   });
 
   it("numbers pins by itinerary occurrence when route pin order drifts", () => {

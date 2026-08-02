@@ -76,6 +76,12 @@ function isAirportTarget(pin: MapPin | MapAirport): pin is MapAirport {
   return pin.id === "airport";
 }
 
+export function isInspectableMapPin(
+  pin: MapPin | MapAirport | null,
+): pin is MapPin {
+  return !!pin && !isAirportTarget(pin);
+}
+
 function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
   return ["airport", "station", "bus_station"].includes(pin.kind);
 }
@@ -920,7 +926,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
         <div ref={mapEl} className="h-full w-full" />
         {selectedPin && (
           <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
-            {isPlacePin(selectedPin) && selectedPin.photo && (
+            {isInspectableMapPin(selectedPin) && selectedPin.photo && (
               <img
                 src={selectedPin.photo}
                 alt={selectedPin.name}
@@ -930,10 +936,10 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-ink">{selectedPin.name}</p>
-                {isPlacePin(selectedPin) && selectedPin.rating ? (
+                {isInspectableMapPin(selectedPin) && selectedPin.rating ? (
                   <p className="text-xs text-slate-500">★ {selectedPin.rating}</p>
                 ) : null}
-                {isPlacePin(selectedPin) && selectedPin.address ? (
+                {isInspectableMapPin(selectedPin) && selectedPin.address ? (
                   <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-500">{selectedPin.address}</p>
                 ) : null}
               </div>
