@@ -699,6 +699,7 @@ def _day_for_place(name: str, itinerary: list[Any]) -> int | None:
     needle = (name or "").strip().lower()
     if not needle:
         return None
+    plan_only_entries: list[tuple[int, dict[str, Any]]] = []
     for idx, entry in enumerate(itinerary or []):
         if not isinstance(entry, dict):
             continue
@@ -710,6 +711,9 @@ def _day_for_place(name: str, itinerary: list[Any]) -> int | None:
                 s_name = s.get("name") if isinstance(s, dict) else s
                 if s_name and needle in str(s_name).strip().lower():
                     return day_num
+            continue
+        plan_only_entries.append((day_num, entry))
+    for day_num, entry in plan_only_entries:
         plan_text = str(entry.get("plan") or "").lower()
         if plan_text and needle in plan_text:
             return day_num

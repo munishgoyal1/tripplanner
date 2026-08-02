@@ -6,11 +6,13 @@ import {
   focusedDayForPin,
   fitDayCircuit,
   formatLegLabel,
+  hotelReturnForDay,
   kindForGooglePlace,
   mapPinFromGooglePlace,
   optionsForStopDay,
   pinIcon,
   pinMatchesFocus,
+  pinsForDayCircuit,
   placeNameMatches,
   routePathForPinIds,
   routeStyleForLeg,
@@ -258,6 +260,40 @@ describe("map stop selection", () => {
     expect(extend).toHaveBeenCalledWith({ lat: 15.1, lng: 73.1 });
     expect(extend).toHaveBeenCalledWith({ lat: 15.2, lng: 73.2 });
     expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("limits a selected day to its own circuit and exposes the hotel return time", () => {
+    const hotel = { id: "udaipur-hotel", name: "Trident Udaipur", kind: "hotel", selected: true, day: 1, lat: 24.577, lng: 73.683, rating: null, address: "", photo: null, occurrences: [] };
+    const palace = { id: "udaipur-palace", name: "City Palace Udaipur", kind: "attraction", selected: true, day: 1, lat: 24.576, lng: 73.683, rating: null, address: "", photo: null, occurrences: [] };
+    const otherCityHotel = { id: "jodhpur-hotel", name: "Taj Hari Mahal Jodhpur", kind: "hotel", selected: true, day: 3, lat: 26.269, lng: 73.01, rating: null, address: "", photo: null, occurrences: [] };
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [hotel, palace, otherCityHotel],
+      days: [{
+        day: 1,
+        label: "Day 1",
+        color: "#e11d48",
+        pin_ids: [hotel.id, palace.id, hotel.id],
+        route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" },
+        schedule: { start: "09:00", end: "21:30", duration_min: 750, duration_display: "12 hr 30 min", travel_duration_min: 20, travel_duration_display: "20 min", estimated: true },
+      }],
+      available_days: [1],
+      unscheduled_pin_ids: [otherCityHotel.id],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(pinsForDayCircuit(view, 1).map((pin) => pin.name)).toEqual([
+      "Trident Udaipur",
+      "City Palace Udaipur",
+      "Trident Udaipur",
+    ]);
+    expect(hotelReturnForDay(view, 1)).toEqual({
+      pin: hotel,
+      label: "Return · 21:30 est.",
+    });
   });
 
   it("keeps circuit framing after the active-day redraw", async () => {
