@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   deselectItem,
+  fetchTripView,
   fetchSavedTrips,
   savePreferences,
   streamChat,
@@ -35,6 +36,25 @@ function handlers(): StreamHandlers {
 beforeEach(() => {
   localStorage.clear();
   localStorage.setItem("tripplanner_user_id", "local");
+});
+
+describe("fetchTripView", () => {
+  it("sends the exact itinerary occurrence with place focus", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ has_trip: true }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchTripView({ kind: "attraction", name: "Jag Mandir", day: 2, stop: 1 });
+
+    const url = new URL(String(fetchMock.mock.calls[0][0]), "http://localhost");
+    expect(Object.fromEntries(url.searchParams)).toMatchObject({
+      focus_kind: "attraction",
+      focus_name: "Jag Mandir",
+      focus_day: "2",
+      focus_stop: "1",
+    });
+  });
 });
 
 describe("streamChat", () => {

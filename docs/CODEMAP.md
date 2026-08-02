@@ -3,7 +3,8 @@
 This document answers four questions: where behavior is owned, which contracts
 must remain stable, how data flows, and which commands validate a change. Product
 intent belongs in [PRODUCT.md](PRODUCT.md); capability status belongs in
-[REQUIREMENTS.md](REQUIREMENTS.md); durable failure lessons belong in
+[REQUIREMENTS.md](REQUIREMENTS.md); observable interaction contracts belong in
+[EXPECTED_BEHAVIORS.md](EXPECTED_BEHAVIORS.md); durable failure lessons belong in
 [ENGINEERING_LEARNINGS.md](ENGINEERING_LEARNINGS.md).
 
 ## System Shape
