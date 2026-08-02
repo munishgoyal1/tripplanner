@@ -35,6 +35,8 @@ describe("DecisionCapture", () => {
 
     expect(await screen.findByText("What was implemented")).not.toBeNull();
     expect(screen.getByText("A · Implemented", { selector: "p" })).not.toBeNull();
+    expect(screen.getByText("Implemented in production", { selector: "p.whitespace-pre-wrap" })).not.toBeNull();
+    expect(screen.getByText("Version 1: A · Implemented - Implemented in production")).not.toBeNull();
 
     fireEvent.click(screen.getByRole("radio", { name: "B · Alternative" }));
 
@@ -57,12 +59,13 @@ describe("DecisionCapture", () => {
         selectionLabel: "B · Alternative",
         comment: "Apply this revision",
         disposition: "ready",
-        implementation: {
+        implementations: [{
+          version: 1,
           selection: "a",
           selectionLabel: "A · Implemented",
           comment: "Original implementation",
           recordedAt: "2026-08-02T00:00:00.000Z",
-        },
+        }],
       }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -83,5 +86,41 @@ describe("DecisionCapture", () => {
       disposition: "ready",
     });
     expect(screen.getByText("A · Implemented", { selector: "p" })).not.toBeNull();
+    expect(screen.getByText("Original implementation", { selector: "p.whitespace-pre-wrap" })).not.toBeNull();
+  });
+
+  it("shows exact notes and a final summary for every implementation version", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      "multi-city-itinerary": {
+        selection: "b",
+        selectionLabel: "B · Alternative",
+        comment: "Second exact note",
+        disposition: "completed",
+        implementations: [
+          {
+            version: 1,
+            selection: "a",
+            selectionLabel: "A · Implemented",
+            comment: "First exact note\nKeep this line.",
+            recordedAt: "2026-08-01T00:00:00.000Z",
+          },
+          {
+            version: 2,
+            selection: "b",
+            selectionLabel: "B · Alternative",
+            comment: "Second exact note",
+            recordedAt: "2026-08-02T00:00:00.000Z",
+          },
+        ],
+      },
+    }), { status: 200 })));
+
+    render(<Harness />);
+
+    expect(await screen.findByText("Version 1")).not.toBeNull();
+    expect(screen.getByText("Version 2")).not.toBeNull();
+    expect(screen.getByText((_, element) => element?.textContent === "First exact note\nKeep this line.", { selector: "p.whitespace-pre-wrap" })).not.toBeNull();
+    expect(screen.getByText("Second exact note", { selector: "p.whitespace-pre-wrap" })).not.toBeNull();
+    expect(screen.getByText("Version 1: A · Implemented - First exact note Keep this line. | Version 2: B · Alternative - Second exact note")).not.toBeNull();
   });
 });

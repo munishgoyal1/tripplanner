@@ -12,15 +12,35 @@ interface SavedSelection {
   comment: string;
   disposition?: LabDisposition;
   implementation?: ImplementationRecord;
+  implementations?: ImplementationRecord[];
   stateChangedAt?: string;
   updatedAt?: string;
 }
 
 interface ImplementationRecord {
+  version?: number;
   selection: string;
   selectionLabel: string;
   comment: string;
   recordedAt: string;
+}
+
+function implementationHistory(
+  selection: SavedSelection,
+  options: DecisionOption[],
+): ImplementationRecord[] {
+  if (selection.implementations?.length) return selection.implementations;
+  if (selection.implementation) return [{ ...selection.implementation, version: 1 }];
+  if (!["implemented-review", "completed"].includes(selection.disposition || "")) return [];
+  return [{
+    version: 1,
+    selection: selection.selection,
+    selectionLabel: selection.selectionLabel
+      || options.find((option) => option.id === selection.selection)?.label
+      || selection.selection,
+    comment: selection.comment,
+    recordedAt: selection.updatedAt || new Date().toISOString(),
+  }];
 }
 
 type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
@@ -37,7 +57,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
   const draftKey = `tripplanner-ux-lab-handoff-${labId}`;
   const [comment, setComment] = useState("");
   const [saved, setSaved] = useState<SavedSelection | null>(null);
-  const [implemented, setImplemented] = useState<ImplementationRecord | null>(null);
+  const [implementations, setImplementations] = useState<ImplementationRecord[]>([]);
   const [disposition, setDisposition] = useState<LabDisposition>("ready");
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "offline">("loading");
   const onChooseRef = useRef(onChoose);
@@ -50,19 +70,9 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
     try {
       localDraft = JSON.parse(localStorage.getItem(draftKey) || "null") as SavedSelection | null;
       if (localDraft) {
-        const draftSelection = localDraft.selection;
         setComment(localDraft.comment || "");
         setDisposition(localDraft.disposition || "ready");
-        setImplemented(localDraft.implementation || (
-          ["implemented-review", "completed"].includes(localDraft.disposition || "")
-            ? {
-                selection: draftSelection,
-                selectionLabel: localDraft.selectionLabel || optionsRef.current.find((option) => option.id === draftSelection)?.label || draftSelection,
-                comment: localDraft.comment,
-                recordedAt: localDraft.updatedAt || new Date().toISOString(),
-              }
-            : null
-        ));
+        setImplementations(implementationHistory(localDraft, optionsRef.current));
         onChooseRef.current(localDraft.selection);
       }
     } catch {
@@ -81,16 +91,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           setComment(existing.comment || "");
           setDisposition(existing.disposition || "ready");
           setSaved(existing);
-          setImplemented(existing.implementation || (
-            ["implemented-review", "completed"].includes(existing.disposition || "")
-              ? {
-                  selection: existing.selection,
-                  selectionLabel: existing.selectionLabel || optionsRef.current.find((option) => option.id === existing.selection)?.label || existing.selection,
-                  comment: existing.comment,
-                  recordedAt: existing.updatedAt || new Date().toISOString(),
-                }
-              : null
-          ));
+          setImplementations(implementationHistory(existing, optionsRef.current));
           if (existing.selection) onChooseRef.current(existing.selection);
         }
         setStatus("idle");
@@ -105,7 +106,13 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
   const dirty = saved?.selection !== activeOption || saved?.comment !== comment || saved?.disposition !== disposition;
 
   const keepDraft = (selection: string, nextComment: string, nextDisposition = disposition) => {
-    localStorage.setItem(draftKey, JSON.stringify({ selection, comment: nextComment, disposition: nextDisposition, implementation: implemented, updatedAt: new Date().toISOString() }));
+    localStorage.setItem(draftKey, JSON.stringify({
+      selection,
+      comment: nextComment,
+      disposition: nextDisposition,
+      implementations,
+      updatedAt: new Date().toISOString(),
+    }));
   };
 
   const choose = (optionId: string) => {
@@ -137,7 +144,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         localStorage.removeItem(draftKey);
       }
       setSaved(savedSelection);
-      setImplemented(savedSelection.implementation || implemented);
+      setImplementations(implementationHistory(savedSelection, optionsRef.current));
       setStatus("saved");
     } catch {
       setStatus("offline");
@@ -157,11 +164,32 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         )}
       </div>
 
-      {implemented && (
+      {implementations.length > 0 && (
         <div className="mt-4 rounded-md bg-sky-50 px-3 py-3 ring-1 ring-sky-200">
           <p className="text-[10px] font-bold uppercase text-sky-700">What was implemented</p>
-          <p className="mt-1 text-sm font-semibold text-ink">{implemented.selectionLabel}</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">This records the implemented direction. Every option remains available to inspect and compare; browsing another option does not change the implementation record until you save a new handoff.</p>
+          <div className="mt-2 grid gap-2">
+            {implementations.map((implemented, index) => (
+              <article key={`${implemented.version || index + 1}-${implemented.recordedAt}`} className="rounded-md bg-white px-3 py-2.5 ring-1 ring-sky-200">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-xs font-bold text-sky-800">Version {implemented.version || index + 1}</p>
+                  <time className="text-[10px] text-slate-500" dateTime={implemented.recordedAt}>{new Date(implemented.recordedAt).toLocaleString()}</time>
+                </div>
+                <p className="mt-1 text-sm font-semibold text-ink">{implemented.selectionLabel}</p>
+                <p className="mt-2 text-[10px] font-bold uppercase text-slate-500">Exact saved notes</p>
+                <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-slate-700">{implemented.comment || "No implementation notes were saved."}</p>
+              </article>
+            ))}
+          </div>
+          <div className="mt-3 border-t border-sky-200 pt-3">
+            <p className="text-[10px] font-bold uppercase text-sky-700">Final implementation summary</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-700">
+              {implementations.map((implemented, index) => {
+                const notes = implemented.comment.trim().replace(/\s+/g, " ") || "No implementation notes were saved.";
+                return `Version ${implemented.version || index + 1}: ${implemented.selectionLabel} - ${notes}`;
+              }).join(" | ")}
+            </p>
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-slate-600">Every option remains available to inspect and compare. Browsing another option does not change this history until that implementation reaches review.</p>
         </div>
       )}
 
@@ -197,7 +225,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           <button type="button" onClick={() => save("parked")} disabled={status === "saving"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-amber-800 ring-1 ring-amber-200 hover:bg-amber-50 disabled:opacity-50"><Archive size={13} aria-hidden /> Park for later</button>
           <button type="button" onClick={() => save("implemented-review")} disabled={status === "saving" || !dirty && disposition === "implemented-review"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-sky-700 ring-1 ring-sky-200 hover:bg-sky-50 disabled:opacity-50"><CheckCircle2 size={13} aria-hidden /> Mark implemented - to be reviewed</button>
           <button type="button" onClick={() => save("completed")} disabled={status === "saving" || disposition !== "implemented-review"} className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-50 disabled:opacity-50"><CheckCircle2 size={13} aria-hidden /> Sign off and complete</button>
-          <button type="button" onClick={() => save("ready")} disabled={status === "saving" || !dirty && disposition === "ready"} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> {implemented ? "Start re-implementation" : "Save for implementation"}</button>
+          <button type="button" onClick={() => save("ready")} disabled={status === "saving" || !dirty && disposition === "ready"} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> {implementations.length ? "Start re-implementation" : "Save for implementation"}</button>
         </div>
       </div>
     </section>
