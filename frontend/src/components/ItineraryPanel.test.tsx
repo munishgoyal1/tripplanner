@@ -283,7 +283,8 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
     expect(screen.getByText("Check out")).toBeInTheDocument();
     expect(screen.getByText("Check in")).toBeInTheDocument();
-    expect(screen.getByLabelText("Hotel circuit marker for Hotel Hillock Mount Abu")).toBeInTheDocument();
+    expect(screen.getByLabelText("Hotel map marker")).toHaveTextContent("H1");
+    expect(screen.getByLabelText("Hotel circuit marker for Hotel Hillock Mount Abu")).toHaveTextContent("H2");
     expect(screen.getByLabelText("Travel from previous stop: 1.5 km, 20 min")).toBeInTheDocument();
     expect(document.querySelector('[data-stop-name="hotel hillock mount abu"]')).toHaveAttribute(
       "data-stop-indexes",
@@ -321,6 +322,13 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("1 planned stop")).toBeInTheDocument();
     fireEvent.click(screen.getByText("Bangalore Airport").closest("button")!);
     expect(onStopFocus).toHaveBeenCalledWith("airport", "Bangalore Airport", 1, 1);
+    fireEvent.click(screen.getByText("Flight: Bangalore Airport to Udaipur Airport").closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith(
+      "flight",
+      "Flight: Bangalore Airport to Udaipur Airport",
+      1,
+      2,
+    );
   });
 
   it("keeps the combined hotel row addressable from either route endpoint", async () => {
@@ -356,7 +364,8 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel />);
 
-    expect(await screen.findAllByLabelText("Hotel map marker")).toHaveLength(2);
+    const hotelMarkers = await screen.findAllByLabelText("Hotel map marker");
+    expect(hotelMarkers.map((marker) => marker.textContent)).toEqual(["H1", "H2"]);
     expect(screen.getByText("Hotel Lutetia")).toBeInTheDocument();
     expect(screen.getByText("Le Roch Hotel")).toBeInTheDocument();
     expect(screen.getByText("Check out")).toBeInTheDocument();
@@ -411,6 +420,7 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel />);
 
     expect((await screen.findByText("Schedule duration:")).parentElement).toHaveTextContent("5 hr 30 min · 08:00–13:30");
+    expect(screen.getByText("Gare du Nord").closest("button")).toBeDisabled();
   });
 
   it("requests the complete circuit when the day header is clicked", async () => {

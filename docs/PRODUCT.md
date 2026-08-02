@@ -222,7 +222,8 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   route endpoint or its return-leg evidence. Different endpoint hotels remain
   separate and read as Check out and Check in.
   Place rows carry subtle day-colored sequence markers matching the map circuit:
-  `H` for hotel endpoints and `1, 2, 3...` for attractions and restaurants.
+  `H` for a single hotel, route-ordered `H1`, `H2`, and so on for distinct hotel
+  endpoints, and `1, 2, 3...` for attractions and restaurants.
   Flight transitions render both airport endpoints as `A` rows with truthful
   local Depart/Arrive times. The destination stay may show an estimated arrival
   only when the airport-transfer timing supports it.
@@ -247,12 +248,14 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   authoritative itinerary occurrences even if route pin order drifts, and shorter
   itinerary names still match provider-expanded map names. Repeated clicks refocus
   the same stop after manual map-day changes.
-  Airport rows and terminal markers are map-only focus actions: they pan to the
-  exact airport occurrence at zoom 15 without treating the terminal as a place
-  Details item. Itinerary airport names remain valid focus identities when a map
-  provider returns a different canonical airport name. All-days view retains the
-  dotted flight arcs between every airport pair so the complete trip connection
-  remains visible in the overall itinerary geography.
+  Airport rows and terminal markers pan to the exact airport occurrence at zoom
+  15 and open contextual place Details with available photos, rating, reviews,
+  address, summary, and website. Itinerary airport names remain valid focus
+  identities when a map provider returns a different canonical airport name.
+  Clicking an inter-city flight or transport row frames its complete source-to-
+  destination route and connector without opening place Details. All-days view
+  retains the dotted flight arcs between every airport pair so the complete trip
+  connection remains visible in the overall itinerary geography.
   The complete day header is also clickable: it clears any prior exact-place
   selection and filters the map to that day. Ordinary days fit the complete route
   circuit. Transfer days retain the complete connected geometry but frame the

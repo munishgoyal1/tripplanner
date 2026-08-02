@@ -8,6 +8,7 @@ import ErrorBanner from "./components/ErrorBanner";
 import ExportModal from "./components/ExportModal";
 import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
+import { isIntercityTravel } from "./components/map/routeDerivations";
 import MobileWorkspaceShell from "./components/MobileWorkspaceShell";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
@@ -41,7 +42,8 @@ function isPlaceKind(kind: string): boolean {
 }
 
 function focusKind(kind: string): string {
-  return kind === "hotel" ? "hotel" : "attraction";
+  if (kind === "hotel" || kind === "airport") return kind;
+  return "attraction";
 }
 
 function compactStatus(status?: string): string | undefined {
@@ -65,6 +67,7 @@ export default function App() {
   const [mapFocusToken, setMapFocusToken] = useState(0);
   const [terminalFocus, setTerminalFocus] = useState<NavRef | null>(null);
   const [circuitFocus, setCircuitFocus] = useState({ day: 0, token: 0 });
+  const [routeFocus, setRouteFocus] = useState({ day: 0, token: 0 });
   const focus = workspace.activePlace;
   const stopFocus = terminalFocus ?? focus;
   const stopFocusName = stopFocus?.name ?? null;
@@ -280,6 +283,7 @@ export default function App() {
     const f = { kind, name, day: context?.day, stop: context?.stop };
     setTerminalFocus(null);
     setCircuitFocus({ day: 0, token: 0 });
+    setRouteFocus({ day: 0, token: 0 });
     dispatchWorkspace({ type: "focus", place: f });
     setMapFocusToken((token) => token + 1);
     setView((current) => {
@@ -297,6 +301,7 @@ export default function App() {
 
   const handleClearFocus = async () => {
     setTerminalFocus(null);
+    setRouteFocus({ day: 0, token: 0 });
     dispatchWorkspace({ type: "focus", place: null });
     await refresh(null);
   };
@@ -459,26 +464,26 @@ export default function App() {
 
   const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
-    if (kind === "airport") {
+    if (isIntercityTravel(kind, name) && day) {
+      setTerminalFocus(null);
       setCircuitFocus({ day: 0, token: 0 });
-      setTerminalFocus({ kind, name, day, stop });
-      setMapFocusToken((token) => token + 1);
+      dispatchWorkspace({ type: "focus", place: null });
+      setView((current) => current ? { ...current, focus: null } : current);
+      setRouteFocus({ day, token: Date.now() });
       return;
     }
-    if (isPlaceKind(kind)) {
+    if (isPlaceKind(kind) || kind === "airport") {
       await handleFocus(focusKind(kind), name, { day, stop });
     }
   };
 
   const handleStopMap = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
-    if (kind === "airport") {
-      setCircuitFocus({ day: 0, token: 0 });
-      setTerminalFocus({ kind, name, day, stop });
-      setMapFocusToken((token) => token + 1);
+    if (isIntercityTravel(kind, name)) {
+      await handleStopFocus(kind, name, day, stop);
       return;
     }
-    if (isPlaceKind(kind)) {
+    if (isPlaceKind(kind) || kind === "airport") {
       await handleFocus(focusKind(kind), name, { day, stop });
     }
   };
@@ -486,6 +491,7 @@ export default function App() {
   const handleDayFocus = (day: number) => {
     setMapOpen(true);
     setTerminalFocus(null);
+    setRouteFocus({ day: 0, token: 0 });
     dispatchWorkspace({ type: "focus", place: null });
     setView((current) => current ? { ...current, focus: null } : current);
     setCircuitFocus({ day, token: Date.now() });
@@ -494,6 +500,7 @@ export default function App() {
 
   const handleMapAllDaysFocus = () => {
     setTerminalFocus(null);
+    setRouteFocus({ day: 0, token: 0 });
     dispatchWorkspace({ type: "focus", place: null });
     setView((current) => current ? { ...current, focus: null } : current);
     setCircuitFocus({ day: 0, token: Date.now() });
@@ -524,6 +531,8 @@ export default function App() {
     focusToken: mapFocusToken,
     circuitFocusDay: circuitFocus.day || undefined,
     circuitFocusToken: circuitFocus.token,
+    routeFocusDay: routeFocus.day || undefined,
+    routeFocusToken: routeFocus.token,
     itineraryJump,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
@@ -564,6 +573,8 @@ export default function App() {
         focusToken={mapFocusToken}
         circuitFocusDay={circuitFocus.day || undefined}
         circuitFocusToken={circuitFocus.token}
+        routeFocusDay={routeFocus.day || undefined}
+        routeFocusToken={routeFocus.token}
         onPinFocus={handleStopFocus}
         onDayFocus={handleDayFocus}
         onAllDaysFocus={handleMapAllDaysFocus}

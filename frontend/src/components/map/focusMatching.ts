@@ -1,5 +1,9 @@
 import type { MapPin } from "../../types";
 
+export function focusNameForPin(pin: MapPin): string {
+  return pin.source_name?.trim() || pin.name;
+}
+
 export function placeNameMatches(candidate: string, focusName: string): boolean {
   const normalize = (value: string) => value
     .normalize("NFKD")

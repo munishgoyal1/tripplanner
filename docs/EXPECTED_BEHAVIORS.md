@@ -45,8 +45,8 @@ Assistant build its first proposal.
 **Trigger:** Select a place stop in Itinerary, or invoke its Map action. The
 identity is kind, place name, day, and stop position. For example, selecting
 Jag Mandir at Day 2, Stop 1 identifies that occurrence rather than merely every
-place named Jag Mandir. Airport terminal rows and markers invoke map-only exact
-focus because they are not inspectable places.
+place named Jag Mandir. Airport terminal rows and markers invoke exact focus and
+open the terminal as an inspectable place.
 
 **Expected:**
 
@@ -54,8 +54,9 @@ focus because they are not inspectable places.
 - Details opens and shows that place, including itinerary-only places not already
   in the selected-place collection.
 - Airport terminal focus pans and zooms to the requested day occurrence at level
-  15 without requesting Details, including when the itinerary alias differs from
-  the provider-canonical airport name.
+  15 and opens Details with available Places photos, rating, reviews, address,
+  summary, and website. The itinerary alias remains the focus identity when it
+  differs from the provider-canonical airport name.
 - Itinerary, Map, and Details retain the same day and stop after the view refresh.
 - Repeating the same action reapplies focus after manual map movement or filtering.
 - A failed refresh leaves the previous usable view in place and reports the error.
@@ -68,7 +69,8 @@ focus because they are not inspectable places.
 - [`tests/test_trip_view_api.py`](../tests/test_trip_view_api.py) - `test_trip_view_preserves_exact_itinerary_occurrence`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `uses the requested occurrence day for a repeated hotel`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `zooms an airport like any exact itinerary stop`
-- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `zooms an itinerary airport without requesting place details`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `opens airport details and keeps its exact map occurrence focused`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_airport_focus_exposes_place_details_and_terminal_occurrence`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_flight_airports_to_destination_stay`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focus_zooms_single_item`
 
@@ -84,11 +86,18 @@ days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, and aligns Itinerary to the trip summary. Neither
 action requests place Details.
 
+Selecting an inter-city flight or transport row is a route action rather than
+place focus: Map opens and frames the full ordered day route so both source and
+destination and their connector remain visible. It does not open place Details
+or replace destination-local framing for ordinary day-header focus.
+
 **Executable proof:**
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `gives a map day chip the same aggregate circuit focus as an itinerary day header`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows all circuits and returns itinerary focus to the trip summary`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames the complete inter-city route without opening place details`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
@@ -96,14 +105,15 @@ action requests place Details.
 **Trigger:** View a day whose ordered map route contains two or more distinct
 hotels.
 
-**Expected:** The unique hotels are labeled `H1`, `H2`, and so on in route order.
-A repeated return to the same hotel does not create another number. A direct
-hotel-to-hotel leg is dotted in the day's circuit color. A day with one unique
-hotel retains the plain `H` marker.
+**Expected:** The unique hotels are labeled `H1`, `H2`, and so on in route order
+in both Itinerary and Map. A repeated return to the same hotel does not create
+another number. A direct hotel-to-hotel leg is dotted in the day's circuit
+color. A day with one unique hotel retains the plain `H` marker.
 
 **Executable proof:**
 
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `numbers two hotels in their same-day route order`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps different hotel endpoints as explicit checkout and checkin rows`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
 
 ### EB-STATE-001 - Keep planner surfaces synchronized

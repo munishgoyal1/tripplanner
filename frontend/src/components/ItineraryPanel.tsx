@@ -72,8 +72,16 @@ function DayCard({
   onRemove?: (kind: string, name: string, day: number, stop: number) => void;
 }) {
   let visitOrder = 0;
+  const hotelNames = [...new Set(
+    day.stops
+      .filter((stop) => stop.kind === "hotel")
+      .map((stop) => normalizedPlaceName(stop.name)),
+  )];
+  const hotelLabels = new Map(
+    hotelNames.map((name, index) => [name, hotelNames.length > 1 ? `H${index + 1}` : "H"]),
+  );
   const mapLabels = day.stops.map((stop) => {
-    if (stop.kind === "hotel") return "H";
+    if (stop.kind === "hotel") return hotelLabels.get(normalizedPlaceName(stop.name));
     if (stop.kind === "airport") return "A";
     if (!["attraction", "meal", "restaurant"].includes(stop.kind)) return undefined;
     visitOrder += 1;

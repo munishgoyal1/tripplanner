@@ -6,6 +6,8 @@ import {
   airportIcon,
   focusedDayForPin,
   fitDayCircuit,
+  fitDayRoute,
+  focusNameForPin,
   formatLegLabel,
   hotelIcon,
   hotelLabelsForDay,
@@ -16,6 +18,7 @@ import {
   pinIcon,
   pinMatchesFocus,
   pinsForDayCircuit,
+  pinsForDayRoute,
   placeNameMatches,
   routePathForPinIds,
   routeStyleForLeg,
@@ -49,6 +52,23 @@ describe("placeNameMatches", () => {
       "Britto's Bar & Restaurant",
     )).toBe(true);
     expect(placeNameMatches("Mapusa Municipal Market", "Mapusa Market")).toBe(true);
+  });
+
+  it("uses the itinerary alias as a provider-expanded pin's focus identity", () => {
+    expect(focusNameForPin({
+      id: "udr",
+      name: "Maharana Pratap Airport",
+      source_name: "Udaipur Airport",
+      kind: "airport",
+      selected: true,
+      day: 1,
+      lat: 24.6177,
+      lng: 73.8961,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [],
+    })).toBe("Udaipur Airport");
   });
 
   it("does not match unrelated restaurants or empty names", () => {
@@ -364,6 +384,104 @@ describe("map stop selection", () => {
     expect(extend).toHaveBeenCalledWith({ lat: 15.1, lng: 73.1 });
     expect(extend).toHaveBeenCalledWith({ lat: 15.2, lng: 73.2 });
     expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("fits every endpoint in the requested inter-city route", () => {
+    const extend = vi.fn();
+    const bounds = { extend };
+    const fitBounds = vi.fn();
+    const google = { maps: { LatLngBounds: vi.fn(function () { return bounds; }) } };
+    const pins = [
+      { id: "source", name: "Bengaluru Airport", kind: "airport", selected: false, day: 1, lat: 13.2, lng: 77.7, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "destination", name: "Udaipur Airport", kind: "airport", selected: false, day: 1, lat: 24.6, lng: 73.9, rating: null, address: "", photo: null, occurrences: [] },
+    ];
+    const view = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins,
+      days: [{ day: 1, label: "Day 1", color: "#0284c7", pin_ids: ["source", "destination"], circuit_pin_ids: ["destination"], route: { distance_km: 0, duration_min: 0, mode: "Flight", distance_display: "", duration_display: "" } }],
+      available_days: [1],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(pinsForDayRoute(view, 1).map((pin) => pin.name)).toEqual([
+      "Bengaluru Airport",
+      "Udaipur Airport",
+    ]);
+    expect(fitDayRoute(google, { fitBounds }, view, 1)).toBe(true);
+    expect(extend).toHaveBeenCalledWith({ lat: 13.2, lng: 77.7 });
+    expect(extend).toHaveBeenCalledWith({ lat: 24.6, lng: 73.9 });
+    expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("keeps route framing when the map initializes after the request", async () => {
+    const fitBounds = vi.fn();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds,
+      getZoom: vi.fn(() => 8),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function () {
+          return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+        }),
+        Polyline: vi.fn(function () { return { setMap: vi.fn() }; }),
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            points,
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: { lat: 20, lng: 75 },
+      pins: [
+        { id: "source", name: "Bengaluru Airport", kind: "airport", selected: true, day: 1, lat: 13.2, lng: 77.7, rating: null, address: "", photo: null, occurrences: [] },
+        { id: "destination", name: "Udaipur Airport", kind: "airport", selected: true, day: 1, lat: 24.6, lng: 73.9, rating: null, address: "", photo: null, occurrences: [] },
+        { id: "other", name: "Jaisalmer Fort", kind: "attraction", selected: true, day: 2, lat: 26.9, lng: 70.9, rating: null, address: "", photo: null, occurrences: [] },
+      ],
+      days: [
+        { day: 1, label: "Day 1", color: "#0284c7", pin_ids: ["source", "destination"], circuit_pin_ids: ["destination"], route: { distance_km: 0, duration_min: 0, mode: "Flight", distance_display: "", duration_display: "" } },
+        { day: 2, label: "Day 2", color: "#e11d48", pin_ids: ["other"], route: { distance_km: 0, duration_min: 0, mode: "Walk", distance_display: "", duration_display: "" } },
+      ],
+      available_days: [1, 2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel, { routeFocusDay: 1, routeFocusToken: 1 }));
+
+    await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
+      { lat: 13.2, lng: 77.7 },
+      { lat: 24.6, lng: 73.9 },
+    ]));
+    rendered.unmount();
+    delete window.google;
   });
 
   it("limits a selected day to its own circuit and exposes the hotel return time", () => {

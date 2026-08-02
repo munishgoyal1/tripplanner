@@ -20,6 +20,8 @@ interface Props {
   focusToken?: number;
   circuitFocusDay?: number;
   circuitFocusToken?: number;
+  routeFocusDay?: number;
+  routeFocusToken?: number;
   itineraryJump: ItineraryJump | null;
   onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void;
   onStopMap: (kind: string, name: string, day?: number, stop?: number) => void;
@@ -54,6 +56,8 @@ export default function RightRail({
   focusToken,
   circuitFocusDay,
   circuitFocusToken,
+  routeFocusDay,
+  routeFocusToken,
   itineraryJump,
   onStopFocus,
   onStopMap,
@@ -127,6 +131,8 @@ export default function RightRail({
                 focusToken={focusToken}
                 circuitFocusDay={circuitFocusDay}
                 circuitFocusToken={circuitFocusToken}
+                routeFocusDay={routeFocusDay}
+                routeFocusToken={routeFocusToken}
                 onPinFocus={onStopFocus}
                 onDayFocus={onMapDayFocus}
                 onAllDaysFocus={onMapAllDaysFocus}
