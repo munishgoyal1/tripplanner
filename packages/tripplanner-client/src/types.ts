@@ -108,6 +108,7 @@ export interface ChatMessage {
 export interface MapPin {
   id: string;
   name: string;
+  source_name?: string;
   kind: string;
   selected: boolean;
   day: number | null;

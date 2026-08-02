@@ -959,12 +959,16 @@ def test_map_view_connects_flight_airports_to_destination_stay(
         "Jaisalmer Airport": (26.8887, 70.8649),
         "Suryagarh": (26.9949, 70.8484),
     }
+    canonical_names = {
+        "Bangalore Airport": "Kempegowda International Airport Bengaluru",
+        "Udaipur Airport": "Maharana Pratap Airport",
+    }
     monkeypatch.setattr(
         trip_view.places_cache,
         "get_details",
         lambda name, city: {
             "place_id": f"pid-{name}",
-            "name": name,
+            "name": canonical_names.get(name, name),
             "lat": coords.get(name, (None, None))[0],
             "lng": coords.get(name, (None, None))[1],
         },
@@ -1001,9 +1005,11 @@ def test_map_view_connects_flight_airports_to_destination_stay(
 
     view = trip_view.build_map_view(trip)
 
-    pins = {pin["name"]: pin for pin in view["pins"]}
+    pins = {pin.get("source_name", pin["name"]): pin for pin in view["pins"]}
     assert pins["Bangalore Airport"]["kind"] == "airport"
     assert pins["Udaipur Airport"]["kind"] == "airport"
+    assert pins["Bangalore Airport"]["name"] == "Kempegowda International Airport Bengaluru"
+    assert pins["Udaipur Airport"]["name"] == "Maharana Pratap Airport"
     assert pins["Bangalore Airport"]["occurrences"] == [
         {"day": 1, "stop": 1, "time": "08:00"},
         {"day": 2, "stop": 4, "time": ""},
@@ -1016,9 +1022,13 @@ def test_map_view_connects_flight_airports_to_destination_stay(
     assert day["pin_ids"][0] != day["pin_ids"][-1]
     pins_by_id = {pin["id"]: pin for pin in view["pins"]}
     route_names = [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]]
-    assert route_names == ["Bangalore Airport", "Udaipur Airport", "Trident Udaipur"]
+    assert route_names == [
+        "Kempegowda International Airport Bengaluru",
+        "Maharana Pratap Airport",
+        "Trident Udaipur",
+    ]
     assert [pins_by_id[pin_id]["name"] for pin_id in day["circuit_pin_ids"]] == [
-        "Udaipur Airport",
+        "Maharana Pratap Airport",
         "Trident Udaipur",
     ]
     assert day["route"]["distance_km"] > 0
@@ -1031,10 +1041,16 @@ def test_map_view_connects_flight_airports_to_destination_stay(
     departure_route_names = [
         pins_by_id[pin_id]["name"] for pin_id in departure_day["pin_ids"]
     ]
-    assert departure_route_names == ["Suryagarh", "Jaisalmer Airport", "Bangalore Airport"]
+    assert departure_route_names == [
+        "Suryagarh",
+        "Jaisalmer Airport",
+        "Kempegowda International Airport Bengaluru",
+    ]
     assert [
         pins_by_id[pin_id]["name"] for pin_id in departure_day["circuit_pin_ids"]
     ] == ["Suryagarh", "Jaisalmer Airport"]
+    assert departure_day["legs"][-1]["mode"] == "Flight"
+    assert departure_day["legs"][-1]["intercity"] is True
 
 
 def test_map_view_connects_origin_and_destination_segments_after_road_transfer(

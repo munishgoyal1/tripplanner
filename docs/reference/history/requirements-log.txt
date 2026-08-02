@@ -3310,3 +3310,11 @@ VALIDATION:
   order without counting a repeated return to the same hotel twice.
 - Draw a direct hotel-to-hotel leg as a dotted line using that day's circuit
   color.
+
+=== 2026-08-02 — Preserve complete airport connections ===
+
+- Clicking Bangalore Airport in the itinerary must focus its exact map terminal
+  occurrence on both the arrival and departure day, even when Google returns the
+  canonical Kempegowda International Airport Bengaluru name.
+- Keep dotted Bangalore-to-Udaipur and Jaisalmer-to-Bangalore flight arcs visible
+  in All days as reference geometry for the complete itinerary.

@@ -248,7 +248,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   itinerary names still match provider-expanded map names. Repeated clicks refocus
   the same stop after manual map-day changes.
   Airport rows and terminal markers are map-only focus actions: they pan to the
-  exact airport at zoom 15 without treating the terminal as a place Details item.
+  exact airport occurrence at zoom 15 without treating the terminal as a place
+  Details item. Itinerary airport names remain valid focus identities when a map
+  provider returns a different canonical airport name. All-days view retains the
+  dotted flight arcs between every airport pair so the complete trip connection
+  remains visible in the overall itinerary geography.
   The complete day header is also clickable: it clears any prior exact-place
   selection and filters the map to that day. Ordinary days fit the complete route
   circuit. Transfer days retain the complete connected geometry but frame the

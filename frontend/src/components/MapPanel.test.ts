@@ -304,9 +304,19 @@ describe("map stop selection", () => {
     expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Bus" }, "#2563eb"))
       .toMatchObject({ strokeColor: "#0f766e", strokeOpacity: 0.9, strokeWeight: 5 });
     expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Train" }, "#2563eb"))
-      .toMatchObject({ strokeColor: "#e11d48", strokeOpacity: 0, strokeWeight: 4 });
+      .toMatchObject({
+        strokeColor: "#e11d48",
+        strokeOpacity: 0,
+        strokeWeight: 4,
+        icons: [{ icon: { strokeColor: "#e11d48" } }],
+      });
     expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Flight" }, "#2563eb"))
-      .toMatchObject({ strokeColor: "#0284c7", strokeOpacity: 0, strokeWeight: 3 });
+      .toMatchObject({
+        strokeColor: "#0284c7",
+        strokeOpacity: 0,
+        strokeWeight: 3,
+        icons: [{ icon: { strokeColor: "#0284c7" } }],
+      });
     expect(routeStyleForLeg({ ...leg, intercity: true, mode: "Drive" }, "#2563eb", true))
       .toMatchObject({
         strokeColor: "#2563eb",
@@ -480,6 +490,125 @@ describe("map stop selection", () => {
         repeat: "10px",
       }],
     }));
+    rendered.unmount();
+    delete window.google;
+  });
+
+  it("draws all flight arcs and focuses a repeated airport alias on its requested day", async () => {
+    const panTo = vi.fn();
+    const map = {
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      fitBounds: vi.fn(),
+      getZoom: vi.fn(() => 11),
+      panTo,
+      setZoom: vi.fn(),
+    };
+    const polyline = vi.fn(function (_options: Record<string, unknown>) {
+      return { setMap: vi.fn() };
+    });
+    window.google = {
+      maps: {
+        Map: vi.fn(function () { return map; }),
+        Marker: vi.fn(function () {
+          return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+        }),
+        Polyline: polyline,
+        Size: vi.fn(function () {}),
+        Point: vi.fn(function () {}),
+        LatLngBounds: vi.fn(function () {
+          const points: Array<{ lat: number; lng: number }> = [];
+          return {
+            extend: (point: { lat: number; lng: number }) => points.push(point),
+            isEmpty: () => points.length === 0,
+          };
+        }),
+        places: {
+          Autocomplete: vi.fn(function () {
+            return {
+              addListener: vi.fn(() => ({ remove: vi.fn() })),
+              bindTo: vi.fn(),
+              unbindAll: vi.fn(),
+            };
+          }),
+        },
+      },
+    };
+    fetchMapsConfigMock.mockResolvedValue({ enabled: true, key: "test-key" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: { lat: 21, lng: 74 },
+      pins: [
+        {
+          id: "blr",
+          name: "Kempegowda International Airport Bengaluru",
+          source_name: "Bangalore Airport",
+          kind: "airport",
+          selected: true,
+          day: 1,
+          lat: 13.1986,
+          lng: 77.7066,
+          rating: null,
+          address: "",
+          photo: null,
+          occurrences: [{ day: 1, stop: 1, time: "08:00" }, { day: 7, stop: 4, time: "" }],
+        },
+        { id: "udr", name: "Maharana Pratap Airport", source_name: "Udaipur Airport", kind: "airport", selected: true, day: 1, lat: 24.6177, lng: 73.8961, rating: null, address: "", photo: null, occurrences: [{ day: 1, stop: 3, time: "" }] },
+        { id: "jsa", name: "Jaisalmer Airport", source_name: "Jaisalmer Airport", kind: "airport", selected: true, day: 7, lat: 26.8887, lng: 70.8649, rating: null, address: "", photo: null, occurrences: [{ day: 7, stop: 2, time: "" }] },
+      ],
+      days: [
+        {
+          day: 1,
+          label: "Day 1",
+          color: "#e11d48",
+          pin_ids: ["blr", "udr"],
+          route: { distance_km: 1330, duration_min: 125, mode: "Flight", distance_display: "1,330 km", duration_display: "2 hr 5 min" },
+          legs: [{ from_pin_id: "blr", to_pin_id: "udr", distance_km: 1330, duration_min: 125, mode: "Flight", distance_display: "1,330 km", duration_display: "2 hr 5 min", intercity: true }],
+        },
+        {
+          day: 7,
+          label: "Day 7",
+          color: "#7c3aed",
+          pin_ids: ["jsa", "blr"],
+          route: { distance_km: 1450, duration_min: 140, mode: "Flight", distance_display: "1,450 km", duration_display: "2 hr 20 min" },
+          legs: [{ from_pin_id: "jsa", to_pin_id: "blr", distance_km: 1450, duration_min: 140, mode: "Flight", distance_display: "1,450 km", duration_display: "2 hr 20 min", intercity: true }],
+        },
+      ],
+      available_days: [1, 7],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel));
+
+    await waitFor(() => expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
+      path: [{ lat: 13.1986, lng: 77.7066 }, { lat: 24.6177, lng: 73.8961 }],
+      strokeColor: "#0284c7",
+      strokeOpacity: 0,
+    })));
+    expect(polyline).toHaveBeenCalledWith(expect.objectContaining({
+      path: [{ lat: 26.8887, lng: 70.8649 }, { lat: 13.1986, lng: 77.7066 }],
+      strokeColor: "#0284c7",
+      strokeOpacity: 0,
+    }));
+
+    rendered.rerender(createElement(MapPanel, {
+      focusName: "Bangalore Airport",
+      focusDay: 1,
+      focusToken: 1,
+    }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Day 1" })).toHaveClass("text-white"));
+    expect(panTo).toHaveBeenLastCalledWith({ lat: 13.1986, lng: 77.7066 });
+
+    rendered.rerender(createElement(MapPanel, {
+      focusName: "Bangalore Airport",
+      focusDay: 7,
+      focusToken: 2,
+    }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Day 7" })).toHaveClass("text-white"));
+    expect(panTo).toHaveBeenLastCalledWith({ lat: 13.1986, lng: 77.7066 });
+
     rendered.unmount();
     delete window.google;
   });

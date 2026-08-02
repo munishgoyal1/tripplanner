@@ -80,7 +80,10 @@ export function routeStyleForLeg(
       strokeColor: "#0284c7",
       strokeOpacity: 0,
       strokeWeight: 3,
-      icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.95, scale: 3 }, repeat: "14px" }],
+      icons: [{
+        icon: { path: "M 0,-1 0,1", strokeColor: "#0284c7", strokeOpacity: 0.95, scale: 3 },
+        repeat: "14px",
+      }],
     };
   }
   if (leg.mode === "Train") {
@@ -88,7 +91,10 @@ export function routeStyleForLeg(
       strokeColor: "#e11d48",
       strokeOpacity: 0,
       strokeWeight: 4,
-      icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.9, scale: 3 }, repeat: "10px" }],
+      icons: [{
+        icon: { path: "M 0,-1 0,1", strokeColor: "#e11d48", strokeOpacity: 0.9, scale: 3 },
+        repeat: "10px",
+      }],
     };
   }
   return {
@@ -231,7 +237,13 @@ export function pinMatchesFocus(
   focusDay?: number,
   focusStop?: number,
 ): boolean {
-  if (!focusName || !placeNameMatches(pin.name, focusName)) return false;
+  if (
+    !focusName
+    || !(
+      placeNameMatches(pin.name, focusName)
+      || (pin.source_name && placeNameMatches(pin.source_name, focusName))
+    )
+  ) return false;
   return (focusDay == null && focusStop == null) || pin.occurrences.some((occurrence) => (
     (focusDay == null || occurrence.day === focusDay)
     && (focusStop == null || occurrence.stop === focusStop)
