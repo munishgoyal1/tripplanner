@@ -1,34 +1,35 @@
 #!/usr/bin/env pwsh
 [CmdletBinding()]
 param(
-    [Parameter(Position = 0)]
-    [ValidateSet(1, 2, 3)]
-    [int]$WorkerNumber,
-
     [switch]$ValidateOnly
 )
 
-$arguments = @{}
-if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
-    $arguments.WorkerNumber = $WorkerNumber
+$ErrorActionPreference = "Stop"
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$branch = & git -C $repoRoot branch --show-current
+$gitExitCode = $LASTEXITCODE
+if ($gitExitCode -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) {
+    throw "Could not identify the launcher worktree branch at $repoRoot."
 }
-if ($ValidateOnly) {
-    $arguments.ValidateOnly = $true
-}
+$branch = @($branch)[0].Trim()
 
-Write-Host "Integrating committed worker code into master..." -ForegroundColor Cyan
+$workerNumber = switch ($branch) {
+    "master" { 3 }
+    "agents/worker-1" { 1 }
+    "agents/worker-2" { 2 }
+    default {
+        throw "Sync-Latest supports master, agents/worker-1, or agents/worker-2; found $branch."
+    }
+}
+$laneName = if ($workerNumber -eq 3) { "Agent 3 (master)" } else { "Agent $workerNumber" }
+
+Write-Host "Synchronizing latest committed code into $laneName..." -ForegroundColor Cyan
 & "$PSScriptRoot\merge-worktrees.ps1" -ValidateOnly:$ValidateOnly
 
-if ($PSBoundParameters.ContainsKey("WorkerNumber") -and $WorkerNumber -eq 3) {
+if ($workerNumber -eq 3) {
     Write-Host "Agent 3 is current after worktree integration." -ForegroundColor Green
     return
 }
 
-Write-Host "Applying latest master to the selected worktree lanes..." -ForegroundColor Cyan
-if (-not $PSBoundParameters.ContainsKey("WorkerNumber")) {
-    foreach ($number in 1, 2) {
-        & "$PSScriptRoot\update-from-master.ps1" $number -ValidateOnly:$ValidateOnly
-    }
-    return
-}
-& "$PSScriptRoot\update-from-master.ps1" @arguments
+Write-Host "Applying integrated master to $laneName..." -ForegroundColor Cyan
+& "$PSScriptRoot\update-from-master.ps1" $workerNumber -ValidateOnly:$ValidateOnly

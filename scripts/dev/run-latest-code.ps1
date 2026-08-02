@@ -5,7 +5,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-Write-Host "Synchronizing master, Agent 1, and Agent 2..." -ForegroundColor Cyan
+Write-Host "Synchronizing latest committed code into this worktree..." -ForegroundColor Cyan
 & "$PSScriptRoot\sync-latest.ps1" -ValidateOnly:$ValidateOnly
 
 if ($ValidateOnly) {
@@ -13,5 +13,5 @@ if ($ValidateOnly) {
 	return
 }
 
-Write-Host "Starting the latest local application..." -ForegroundColor Cyan
+Write-Host "Starting the latest local dev stack with dev-spa.ps1..." -ForegroundColor Cyan
 & "$PSScriptRoot\dev-spa.ps1"

@@ -29,20 +29,19 @@ coordination cost.
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
 
-In optional parallel mode, to synchronize Agent 1, Agent 2, and `master`, then restart this local
-stack in one click, double-click `scripts/dev/Run-Latest-Code.cmd` from the
-repository root or run the VS Code task **Tripplanner: Run Latest Code** from the
-integration workspace. Existing staged, unstaged, and untracked work is preserved
-in each worktree while committed code is synchronized.
+In optional parallel mode, run `scripts/dev/Sync-Latest.cmd` from the worktree
+that should receive all latest committed code. To synchronize the launcher
+worktree and then restart its local stack in one click, double-click
+`scripts/dev/Run-Latest-Code.cmd` or run the VS Code task
+**Tripplanner: Run Latest Code**. Existing staged, unstaged, and untracked work
+is preserved in every affected worktree.
 
 Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `Merge-Worktrees.cmd [1\|2]` | Agent 3 only: integrate committed local and remote worker heads into `master`. No argument selects both workers. |
-| `Update-From-Master.cmd [1\|2\|3]` | Merge each selected lane's own remote and latest `master` into that lane. No argument selects all lanes. |
-| `Sync-Latest.cmd [1\|2\|3]` | Integrate all workers through `master`, then update the selected lane. No argument synchronizes all lanes; Agent 3 is already current after integration. |
-| `Run-Latest-Code.cmd` | Run Sync Latest for all lanes, then start the app. |
+| `Sync-Latest.cmd` | Integrate all committed worker code through `master`, then update the worktree containing the launcher. No lane argument is needed. |
+| `Run-Latest-Code.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. |
 | `Sync-All-Worktrees.cmd` | Deliberate clean-worktree PR integration workflow. Guides new semantic conflicts in the owning worker. |
 | `scripts/maintenance/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
