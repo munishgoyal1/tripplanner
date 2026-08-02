@@ -208,10 +208,13 @@ re-describing the whole product.
   persistence.
 - Itinerary rows make timing auditable: hotel endpoints show estimated times
   when needed; visits show departure; transfer rows show estimated arrival,
-  endpoint guidance, and any free buffer or schedule conflict.
-- Route summaries and legs use one Walk and Taxi fallback vocabulary. Metro is
-  shown only when route evidence establishes service; distance alone never
-  implies that a city has a metro. Place rows show Google rating/review evidence
+  endpoint guidance, and any free buffer or schedule conflict. A timed direct
+  road transfer may supply its completion time as the destination hotel check-in;
+  an untimed transfer does not invent one.
+- Route summaries and legs use one Walk and Taxi fallback vocabulary. Straight-line
+  fallback uses Walk only through 1.5 km and Taxi for longer legs. Metro is shown
+  only when route evidence establishes service; distance alone never implies that
+  a city has a metro. Place rows show Google rating/review evidence
   and may show a clearly labeled estimated must-visit score, never a fabricated
   itinerary-inclusion percentage.
 - Route ordering, displayed times, itinerary markers, and map circuit ordering

@@ -122,6 +122,22 @@ as cards or split the day into Journey and After check-in sections.
 **Executable proof:**
 
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a multi-city transfer as one chronological spine without changing stop identity`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_road_transfer_estimates_destination_hotel_check_in`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_untimed_road_transfer_does_not_invent_hotel_check_in`
+
+### EB-ITIN-002 - Use conservative local transfer modes
+
+**Trigger:** Estimate a local route from straight-line distance without verified
+public-transit evidence.
+
+**Expected:** Legs up to 1.5 km may be shown as Walk. A 3 km leg is shown as Taxi,
+and Metro is never inferred from distance alone.
+
+**Executable proof:**
+
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_uses_taxi_for_three_kilometres`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_keeps_short_walks_walkable`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_does_not_invent_unverified_metro_service`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 

@@ -1036,7 +1036,7 @@ def _route_stats_for_day(
 def _route_stats_for_distance(
     distance: float, *, from_name: str = "", to_name: str = ""
 ) -> dict[str, Any]:
-    if distance <= 3:
+    if distance <= 1.5:
         mode, speed = "Walk", 4.5
     elif distance <= 20:
         mode, speed = "Taxi", 25.0
@@ -2327,24 +2327,31 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         _enrich_stop_timing(stops)
         for stop_index, stop in enumerate(stops[1:], start=1):
             previous = stops[stop_index - 1]
-            if (
-                stop.get("kind") == "hotel"
-                and not stop.get("time")
-                and previous.get("kind") == "airport"
-                and (previous_time := _clock_minutes(previous.get("time"))) is not None
-                and isinstance(
+            if stop.get("kind") != "hotel" or stop.get("time"):
+                continue
+            estimated_time: int | None = None
+            if previous.get("kind") == "airport":
+                previous_time = _clock_minutes(previous.get("time"))
+                has_transfer = isinstance(
                     (stop.get("travel_from_previous") or {}).get("duration_min"),
                     (int, float),
+                ) and (stop.get("travel_from_previous") or {}).get("duration_min") > 0
+                if previous_time is not None and has_transfer:
+                    transfer_minutes = int(
+                        (stop.get("travel_from_previous") or {}).get("duration_min") or 0
+                    )
+                    airport_exit_minutes = int(previous.get("duration_min") or 0)
+                    estimated_time = (
+                        previous_time + airport_exit_minutes + transfer_minutes
+                    )
+            elif _intercity_transfer_mode(
+                str(previous.get("name") or ""), str(previous.get("kind") or "")
+            ) == "Drive":
+                estimated_time = _clock_minutes(
+                    previous.get("arrival_time") or previous.get("departure_time")
                 )
-                and (stop.get("travel_from_previous") or {}).get("duration_min") > 0
-            ):
-                transfer_minutes = int(
-                    (stop.get("travel_from_previous") or {}).get("duration_min") or 0
-                )
-                airport_exit_minutes = int(previous.get("duration_min") or 0)
-                stop["time"] = _clock_display(
-                    previous_time + airport_exit_minutes + transfer_minutes
-                )
+            if estimated_time is not None:
+                stop["time"] = _clock_display(estimated_time)
                 stop["time_estimated"] = True
         schedule = _day_schedule(stops, route)
         _apply_hotel_endpoint_times(stops, schedule)
