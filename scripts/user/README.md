@@ -10,9 +10,9 @@ stays under `scripts/dev/` so everyday commands remain easy to find.
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest.cmd` | Synchronize the launcher worktree, then start its local stack |
 
-Run `Sync-MeTo-Latest.cmd all` from a worker to include committed sibling worktree
-changes through `master`. Without `all`, a worker receives only `master`;
-MasterAgent always integrates all committed worker heads.
+By default, `Sync-MeTo-Latest.cmd` integrates all committed worker heads through
+`master`, then updates only the launcher worktree. Pass `onlymaster` to receive
+the latest committed `master` without integrating sibling worktrees.
 
 Run `All-SyncTo-Latest.cmd` from MasterAgent, Agent 1, or Agent 2 when every
 worktree should receive the integrated `master`. Each worktree's staged,

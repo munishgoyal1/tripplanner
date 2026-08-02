@@ -32,9 +32,10 @@ not override the canonical documents above, which govern current behavior.
   positive integers, branches, worktree paths, and numeric script arguments.
   Each worker owns one PR-sized change at a time.
 - Run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree to update. MasterAgent always
-  integrates all committed worker heads. A worker receives only `master` by
-  default; pass `all` to include committed sibling worktree changes through
-  `master`. The launcher is the only worktree updated.
+  integrates all committed worker heads by default. Workers also integrate all
+  committed sibling worktree changes through `master` by default; pass
+  `onlymaster` to receive committed `master` without integrating siblings. The launcher is the
+  only worktree updated.
 - Use `scripts/user/All-SyncTo-Latest.cmd` only when every worktree should be
   updated. It may run from any lane, preserves each lane's local edits, reuses
   recorded `rerere` resolutions, and reports novel conflicts without guessing.
