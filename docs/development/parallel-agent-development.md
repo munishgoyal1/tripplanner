@@ -191,8 +191,8 @@ lower-level merge and target-update PowerShell engines remain internal.
 
 In parallel mode, to synchronize the launcher worktree and immediately restart
 the local application on the merged code, use **Tasks: Run Task** →
-**Tripplanner: Run Latest Code** or double-click
-`scripts/dev/Run-Latest-Code.cmd`. It runs location-aware `Sync Latest`, preserves
+**Tripplanner: Run Latest** or double-click
+`scripts/dev/Run-Latest.cmd`. It runs location-aware `Sync Latest`, preserves
 and restores each affected worktree's local state, and then starts the existing
 `scripts/dev/dev-spa.ps1`. If restored changes overlap synchronized code, it
 stops with the stash retained for explicit conflict resolution.
