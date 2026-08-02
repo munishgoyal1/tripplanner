@@ -52,7 +52,6 @@ a database or fall back to local `.env` credentials.
 | `smoke-hosted.ps1` | Public read-only smoke and explicitly guarded deep smoke |
 | `bootstrap-environments.ps1` | Fresh-subscription orchestration |
 | `provision-aoai.ps1` | Provision or reuse Azure OpenAI resources |
-| `start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `set-cosmos-throughput.ps1` | Guarded throughput correction for old databases |
 | `cleanup-obsolete-resources.ps1` | Approval-gated obsolete-resource cleanup |
 | `queries/application-failures.kql` | Shared production alert and canary analysis query |
@@ -84,9 +83,10 @@ owner approval.
 ## Local Data Backend
 
 Local SPA development defaults to the Docker Cosmos Emulator. The canonical
-startup script sets the emulator endpoint, well-known key, database name, and
-loopback TLS behavior only for its backend process. Persisted emulator data must
-never be reset automatically.
+`scripts/dev/start-cosmos-emulator.ps1` helper and colocated Compose definition
+own its local lifecycle. `dev-spa.ps1` sets the emulator endpoint, well-known key,
+database name, and loopback TLS behavior only for its backend process. Persisted
+emulator data must never be reset automatically.
 
 Azure-backed local development is an explicit override:
 

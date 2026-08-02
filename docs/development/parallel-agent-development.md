@@ -52,8 +52,8 @@ The equivalent PowerShell command, including a validation-only mode, is:
 Create the worker slots once from the primary checkout:
 
 ```powershell
-.\scripts\agent-worktree.ps1 -Create worker-1 -NoOpen
-.\scripts\agent-worktree.ps1 -Create worker-2 -NoOpen
+.\scripts\dev\agent-worktree.ps1 -Create worker-1 -NoOpen
+.\scripts\dev\agent-worktree.ps1 -Create worker-2 -NoOpen
 code --new-window .\tripplanner-worker-1.code-workspace
 code --new-window .\tripplanner-worker-2.code-workspace
 ```
@@ -77,7 +77,7 @@ the persistent branch name identifies the worker slot, not the feature.
 From any tripplanner checkout:
 
 ```powershell
-.\scripts\agent-worktree.ps1 -Create route-cache-fix
+.\scripts\dev\agent-worktree.ps1 -Create route-cache-fix
 ```
 
 This creates:
@@ -90,8 +90,8 @@ This creates:
 Use a short task-oriented name. List or reopen agent worktrees with:
 
 ```powershell
-.\scripts\agent-worktree.ps1
-.\scripts\agent-worktree.ps1 -Open route-cache-fix
+.\scripts\dev\agent-worktree.ps1
+.\scripts\dev\agent-worktree.ps1 -Open route-cache-fix
 ```
 
 Each worktree has isolated ignored files and dependencies. Do not share
@@ -129,8 +129,8 @@ One location-aware launcher covers normal parallel work. Run the copy inside the
 worktree that should receive all latest committed code; no lane number is needed.
 
 ```powershell
-.\scripts\dev\Sync-Latest.cmd
-.\scripts\dev\Sync-Latest.cmd all
+.\scripts\user\Sync-Latest.cmd
+.\scripts\user\Sync-Latest.cmd all
 ```
 
 From Agent 3, it integrates committed local and remote worker heads into
@@ -157,7 +157,7 @@ append-only; both branches' entries are retained.
 In parallel mode, to synchronize the launcher worktree and immediately restart
 the local application on the merged code, use **Tasks: Run Task** →
 **Tripplanner: Run Latest** or double-click
-`scripts/dev/Run-Latest.cmd`. It runs location-aware `Sync Latest`, preserves
+`scripts/user/Run-Latest.cmd`. It runs location-aware `Sync Latest`, preserves
 and restores each affected worktree's local state, and then starts the existing
 `scripts/dev/dev-spa.ps1`. If restored changes overlap synchronized code, it
 stops with the stash retained for explicit conflict resolution.
@@ -167,7 +167,7 @@ stops with the stash retained for explicit conflict resolution.
 After the PR is merged:
 
 ```powershell
-.\scripts\agent-worktree.ps1 -Remove route-cache-fix
+.\scripts\dev\agent-worktree.ps1 -Remove route-cache-fix
 ```
 
 The helper refuses cleanup when the worktree is dirty or its branch is not an

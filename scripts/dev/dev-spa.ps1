@@ -161,7 +161,7 @@ if (-not $BackendOnly) {
 }
 
 if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -eq "emulator") {
-    & "$repoRoot\infra\start-cosmos-emulator.ps1"
+    & "$PSScriptRoot\start-cosmos-emulator.ps1"
     if ($LASTEXITCODE -ne 0) {
         throw "Cosmos DB Emulator startup failed."
     }

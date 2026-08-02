@@ -147,8 +147,10 @@ $workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
     @(1, 2)
 }
 
-Write-Host "Fetching the latest origin/master..." -ForegroundColor Cyan
-Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
+if (-not $ValidateOnly) {
+    Write-Host "Fetching the latest origin/master..." -ForegroundColor Cyan
+    Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
+}
 
 $originMaster = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "origin/master")
 $primaryHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")

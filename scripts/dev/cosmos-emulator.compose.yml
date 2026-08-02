@@ -19,3 +19,4 @@ services:
 
 volumes:
   tripplanner-cosmos-data:
+    name: infra_tripplanner-cosmos-data

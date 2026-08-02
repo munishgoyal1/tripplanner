@@ -208,8 +208,10 @@ $workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
     @(3, 1, 2)
 }
 
-Write-Host "Fetching latest remote branches..." -ForegroundColor Cyan
-Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
+if (-not $ValidateOnly) {
+    Write-Host "Fetching latest remote branches..." -ForegroundColor Cyan
+    Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin") | Out-Null
+}
 
 foreach ($number in $workerNumbers) {
     Update-Lane -Number $number -PrimaryRoot $primaryRoot -ValidateOnly:$ValidateOnly

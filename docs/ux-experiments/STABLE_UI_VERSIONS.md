@@ -23,13 +23,13 @@ revisions and the guarded deployment runbook.
 List snapshots:
 
 ```powershell
-.\scripts\maintenance\ui-snapshot.ps1 -Action List
+.\scripts\dev\ui-snapshot.ps1 -Action List
 ```
 
 Open one beside the primary checkout without switching or modifying `master`:
 
 ```powershell
-.\scripts\maintenance\ui-snapshot.ps1 -Action Open `
+.\scripts\dev\ui-snapshot.ps1 -Action Open `
   -Tag ui-stable/2026-07-31-corner-assistant
 ```
 
@@ -43,7 +43,7 @@ Only create a snapshot after the owner accepts the UI, affected tests/builds pas
 and the milestone is committed and pushed:
 
 ```powershell
-.\scripts\maintenance\ui-snapshot.ps1 -Action Create -Name concise-version-name
+.\scripts\dev\ui-snapshot.ps1 -Action Create -Name concise-version-name
 ```
 
 The helper rejects an uncommitted `HEAD`, creates `ui-stable/<date>-<name>`, and
