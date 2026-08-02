@@ -243,7 +243,7 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
   });
 
-  it("combines a destination hotel return after an intercity transfer", async () => {
+  it("groups a multi-city transfer as a stay handoff without changing stop identity", async () => {
     const baseStop = itinerary.days[0].stops[0];
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,
@@ -275,9 +275,14 @@ describe("ItineraryPanel", () => {
 
     render(<ItineraryPanel />);
 
+    const handoff = await screen.findByLabelText("Stay handoff from Trident Udaipur to Hotel Hillock Mount Abu");
+    expect(handoff).toHaveTextContent("Leaving → arriving");
+    expect(screen.getByLabelText("Journey between stays")).toHaveTextContent("Drive: Udaipur to Mount Abu");
+    expect(screen.getByLabelText("Plans after check-in")).toHaveTextContent("Nakki Lake");
     expect(await screen.findAllByText("Hotel Hillock Mount Abu")).toHaveLength(1);
     expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
     expect(screen.getByText("Check out")).toBeInTheDocument();
+    expect(screen.getByText("Check in")).toBeInTheDocument();
     expect(screen.getByLabelText("Hotel circuit marker for Hotel Hillock Mount Abu")).toBeInTheDocument();
     expect(screen.getByLabelText("Travel from previous stop: 1.5 km, 20 min")).toBeInTheDocument();
     expect(document.querySelector('[data-stop-name="hotel hillock mount abu"]')).toHaveAttribute(

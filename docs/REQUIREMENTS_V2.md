@@ -523,11 +523,11 @@ re-describing the whole product.
   enabling collection. The production custom domain and hosted chat admission
   controls are already present.
 - Exact-place map focus remains at zoom 15 while real usage is observed.
-- Multi-city transfer days preserve checkout, transport, and check-in in the
-  itinerary, but production Map route geometry intentionally omits the inter-city
-  portion and its terminals. Two active Labs separately compare transition-day
-  itinerary hierarchy and complete road, rail, or flight Map framing before any
-  production treatment is approved.
+- Multi-city transfer days group the origin stay, inter-city journey, destination
+  stay, and remaining plans as a stay handoff while preserving authoritative stop
+  identity and behavior. Production Map route geometry still omits the inter-city
+  portion and its terminals; the active Map Lab compares complete road, rail, or
+  flight framing before a production Map treatment is approved.
 - Whole-trip Details still receives one eager, flat collection capped at ten
   places. The active Destination Guide Lab compares contextual city/type browsing
   and progressive results before a paged production contract is approved.
