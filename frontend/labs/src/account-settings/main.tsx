@@ -122,15 +122,15 @@ function AccountHub({ destination, openDestination, closeDestination, preference
   return (
     <div className="absolute inset-y-0 right-0 z-30 w-[23rem] border-l border-slate-200 bg-white shadow-pop">
       <div className="flex h-12 items-center border-b border-slate-200 px-4"><h3 className="text-sm font-semibold text-ink">Account settings</h3><button type="button" onClick={close} className="ml-auto grid h-7 w-7 place-items-center rounded text-slate-400 hover:bg-slate-100" aria-label="Close account settings"><X size={15} aria-hidden /></button></div>
-      {destination !== "menu" ? <DestinationContent destination={destination} closeDestination={closeDestination} preference={preference} setPreference={setPreference} /> : <>
+      <div className="h-[calc(100%-3rem)] overflow-y-auto">{destination !== "menu" ? <DestinationContent destination={destination} closeDestination={closeDestination} preference={preference} setPreference={setPreference} /> : <>
         <IdentityHeader />
         <nav className="divide-y divide-slate-100" aria-label="Account settings sections">
-          <MenuRow icon={CircleUserRound} label="Profile and sign-in" detail="Identity and account access" />
+          <MenuRow icon={CircleUserRound} label="Profile and sign-in" detail="Identity and account access" onClick={() => openDestination("profile")} />
           <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, family, pace, and accessibility" onClick={() => openDestination("travel-profile")} />
           <MenuRow icon={BarChart3} label="Analytics preferences" detail={preference === "granted" ? "Anonymous analytics allowed" : "Anonymous analytics off"} onClick={() => openDestination("analytics")} />
           <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, exports, and deletion" onClick={() => openDestination("privacy")} />
         </nav>
-      </>}
+      </>}</div>
     </div>
   );
 }
@@ -188,7 +188,7 @@ function Lab() {
           <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a>
           <div className="mt-4 flex items-center gap-2 text-brand"><CircleUserRound size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Account controls</p></div>
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Account and settings ownership</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how identity, travel preferences, analytics consent, privacy, and sign-out should be grouped without duplicating Account and Settings destinations. Every option includes complete, interactive Travel Profile, Analytics, and Privacy and Data destinations.</p>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how identity, travel preferences, analytics consent, privacy, and sign-out should be grouped without duplicating Account and Settings destinations. Relevant options include complete, interactive Profile and Sign-in, Travel Profile, Analytics, and Privacy and Data destinations.</p>
         </header>
 
         <LabScope labId="account-settings" />

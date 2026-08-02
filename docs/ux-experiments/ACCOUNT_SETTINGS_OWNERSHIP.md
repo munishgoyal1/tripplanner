@@ -42,6 +42,9 @@ predictable location. This recommendation is not implementation approval.
 
 ## Inspectable destination detail
 
+- **Profile and Sign-in:** verified identity, connected Google account, current
+  web and mobile sessions, display-name editing, provider handoff, and reviewed
+  sign-out across all devices.
 - **Travel Profile:** home base and airport, trip pace, stay and transport
   style, food preferences, usual travel party, locale, accessibility, comfort,
   save state, and the boundary between reusable defaults and trip overrides.

@@ -4,19 +4,23 @@ import {
   BarChart3,
   Check,
   ChevronLeft,
+  CircleUserRound,
   Download,
   Gauge,
   History,
   Hotel,
+  KeyRound,
   Languages,
+  Laptop,
   MapPin,
   ShieldCheck,
+  Smartphone,
   Trash2,
   UsersRound,
   Utensils,
 } from "lucide-react";
 
-export type DestinationId = "menu" | "travel-profile" | "analytics" | "privacy";
+export type DestinationId = "menu" | "profile" | "travel-profile" | "analytics" | "privacy";
 export type AnalyticsPreference = "granted" | "denied";
 
 function DestinationHeader({ icon: Icon, eyebrow, title, description, onBack }: {
@@ -44,6 +48,35 @@ function SettingRow({ icon: Icon, title, detail, children }: { icon: typeof Gaug
 
 function Toggle({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
   return <button type="button" role="switch" aria-checked={checked} aria-label={label} onClick={onChange} className={`relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition ${checked ? "bg-teal-600" : "bg-slate-200"}`}><span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition ${checked ? "left-[18px]" : "left-0.5"}`} /></button>;
+}
+
+function ProfileAndSignIn({ onBack }: { onBack: () => void }) {
+  const [displayName, setDisplayName] = useState("Munish Goyal");
+  const [editingName, setEditingName] = useState(false);
+  const [providerStatus, setProviderStatus] = useState("");
+  const [signOutReview, setSignOutReview] = useState(false);
+  return <div data-lab-change="Complete Profile and sign-in destination" className="p-4">
+    <DestinationHeader icon={CircleUserRound} eyebrow="Identity and access" title="Profile and sign-in" description="Review the identity used across web and mobile, its connected sign-in method, and active sessions." onBack={onBack} />
+    <div className="mt-3 flex items-center gap-3 rounded-md bg-slate-50 p-3 ring-1 ring-slate-200">
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-white">MG</span>
+      <div className="min-w-0 flex-1">{editingName ? <label className="block text-[9px] font-semibold text-slate-500">Display name<input value={displayName} onChange={(event) => setDisplayName(event.target.value)} className="mt-1 h-7 w-full rounded bg-white px-2 text-[10px] text-slate-700 outline-none ring-1 ring-slate-300 focus:ring-brand" /></label> : <p className="text-xs font-semibold text-ink">{displayName}</p>}<p className="mt-0.5 truncate text-[10px] text-slate-500">munish@example.com</p><p className="mt-1 inline-flex items-center gap-1 text-[9px] font-semibold text-emerald-700"><Check size={10} aria-hidden /> Email verified</p></div>
+      <button type="button" onClick={() => setEditingName(!editingName)} className="rounded-md bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-600 ring-1 ring-slate-200">{editingName ? "Save name" : "Edit name"}</button>
+    </div>
+    <div className="mt-3 rounded-md px-3 ring-1 ring-slate-200">
+      <SettingRow icon={KeyRound} title="Google sign-in" detail="Connected as munish@example.com · used for the same account on web, iPhone, and Android.">
+        <button type="button" onClick={() => setProviderStatus("Google account management would open in a secure new tab.")} className="mt-2 text-[10px] font-semibold text-brand">Manage with Google</button>
+        {providerStatus && <p role="status" className="mt-1 text-[9px] text-emerald-700">{providerStatus}</p>}
+      </SettingRow>
+      <SettingRow icon={Laptop} title="This Windows PC" detail="Chrome · New Delhi, India · active now" />
+      <SettingRow icon={Smartphone} title="Mobile session" detail="iPhone · last active 2 hours ago" />
+    </div>
+    <div className="mt-3 rounded-md border border-slate-200 p-3">
+      <p className="text-[11px] font-semibold text-slate-700">Account access</p>
+      <p className="mt-0.5 text-[10px] leading-relaxed text-slate-400">Signing out everywhere ends all web and mobile sessions without deleting trips, chats, or preferences.</p>
+      {signOutReview ? <div className="mt-3 flex items-center justify-between rounded bg-slate-50 p-2 ring-1 ring-slate-200"><p className="text-[10px] font-semibold text-slate-700">Sign out on all devices?</p><div className="flex gap-2"><button type="button" onClick={() => setSignOutReview(false)} className="h-7 px-2 text-[10px] font-semibold text-slate-500">Cancel</button><button type="button" className="h-7 rounded bg-slate-700 px-2.5 text-[10px] font-semibold text-white">Sign out all</button></div></div> : <button type="button" onClick={() => setSignOutReview(true)} className="mt-3 h-7 rounded-md bg-white px-2.5 text-[10px] font-semibold text-slate-600 ring-1 ring-slate-200">Review sign out everywhere</button>}
+    </div>
+    <p className="mt-3 text-[10px] leading-relaxed text-slate-400">Password and two-step verification are managed by Google. Account data export and deletion are available under Privacy and data.</p>
+  </div>;
 }
 
 function TravelProfile({ onBack }: { onBack: () => void }) {
@@ -107,6 +140,7 @@ function PrivacyAndData({ onBack }: { onBack: () => void }) {
 }
 
 export function AccountDestination({ destination, preference, onPreferenceChange, onBack }: { destination: Exclude<DestinationId, "menu">; preference: AnalyticsPreference; onPreferenceChange: (preference: AnalyticsPreference) => void; onBack: () => void }) {
+  if (destination === "profile") return <ProfileAndSignIn onBack={onBack} />;
   if (destination === "travel-profile") return <TravelProfile onBack={onBack} />;
   if (destination === "privacy") return <PrivacyAndData onBack={onBack} />;
   return <AnalyticsPreferences preference={preference} onChange={onPreferenceChange} onBack={onBack} />;
