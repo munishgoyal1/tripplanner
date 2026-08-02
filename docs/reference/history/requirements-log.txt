@@ -3264,3 +3264,12 @@ VALIDATION:
   `docs/` root govern current truth.
 - Keep one indexed hierarchy with explicit retention status so duplicate or stale
   references can be reviewed with the owner before removal.
+=== 2026-08-02 — Synchronize all persistent worktrees ===
+
+- Treat the worker integration workflow as synchronization: update `master`,
+  integrate reviewed worker commits through pull requests, and finish with every
+  persistent worker fast-forwarded to the final `origin/master`.
+- Use Sync terminology for user-facing scripts and tasks rather than Merge,
+  because the expected outcome spans `master` and all worker worktrees.
+- Keep one shared guarded engine per worker and one all-worktree orchestrator;
+  replace overlapping launchers instead of adding parallel script variants.

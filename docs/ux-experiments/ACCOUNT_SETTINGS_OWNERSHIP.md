@@ -40,6 +40,9 @@ because its event could not render the consent surface.
 **C - Account settings hub** was selected and promoted to production. One
 labeled identity command opens a right-side sheet with Profile and Sign-in,
 Travel Profile, Analytics preferences, and Privacy and Data sections.
+Each destination opens within that same sheet so users keep their workspace
+context; Travel Profile and Analytics no longer launch detached modal or
+bottom-banner surfaces from Account settings.
 
 ## Inspectable destination detail
 
@@ -56,9 +59,10 @@ Travel Profile, Analytics preferences, and Privacy and Data sections.
 
 ## Independent defect fix
 
-The production Analytics preferences command now opens an explicit preference
-surface even when analytics collection is not configured. The user can save a
-future preference, while collection remains disabled without a measurement ID.
+The production Analytics preferences destination now remains inside the
+Account settings sheet even when analytics collection is not configured. The
+user can save a future preference, while collection remains disabled without a
+measurement ID.
 
 ## Decision
 

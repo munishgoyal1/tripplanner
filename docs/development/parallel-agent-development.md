@@ -124,14 +124,14 @@ git push -u origin HEAD
 gh pr create --base master --head agents/route-cache-fix --fill
 ```
 
-To integrate both persistent agent lanes, use either one-click entry point from
+To synchronize both persistent agent lanes, use either one-click entry point from
 the primary integration checkout:
 
-- VS Code: **Tasks: Run Task** → **Tripplanner: Merge All Agents**
-- File Explorer: double-click `scripts/dev/Resolve-Merge-All-Agents.cmd`
+- VS Code: **Tasks: Run Task** → **Tripplanner: Sync All Worktrees**
+- File Explorer: double-click `scripts/dev/Sync-All-Worktrees.cmd`
 
-Both use `scripts/dev/merge-all-agents.ps1`. The Resolve launcher is the preferred
-interactive entry point: it refuses dirty or unexpected worktrees, preflights both
+Both use the shared guarded integration engine. The sync command refuses dirty or
+unexpected worktrees, preflights both
 before either merge, and enables Git `rerere` so a previously validated conflict
 resolution is reused automatically. For a new semantic conflict, it pauses in the
 named worker worktree, reports the exact paths, and waits for `RESOLVED` after the
@@ -141,27 +141,45 @@ and resumes integration. `ABORT` restores the worker to its clean pre-merge stat
 It never applies blanket ours/theirs conflict choices. The engine then creates or
 reuses each worker's pull request, merges Worker 1 with a merge commit, updates
 `master`, brings Worker 2 onto that new baseline, and merges Worker 2 separately.
-Each persistent branch finishes synchronized for its next assignment.
+Finally, it fast-forwards both persistent workers to the resulting `master`, so
+all three worktrees finish synchronized for their next assignments.
 Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
-To integrate only one lane, double-click `scripts/dev/Merge-Agent-1.cmd` or
-`scripts/dev/Merge-Agent-2.cmd`. For validation-only preflights, run
-`merge-worker.ps1 -WorkerNumber 1 -ValidateOnly` (or worker 2), or run
-`.\scripts\dev\merge-all-agents.ps1 -ValidateOnly` for both. The `.cmd`
-worker launchers call the generic `merge-worker.ps1` engine with the corresponding
-worker number. `Resolve-Merge-All-Agents.cmd -ValidateOnly` forwards the validation
-flag to its shared engine.
+The same command handles one or both lanes. With no argument it synchronizes
+both; pass `1` or `2` as the first argument to select one lane:
 
-In parallel mode, to merge both workers and immediately restart the local
+```powershell
+.\scripts\dev\sync-all-worktrees.ps1 1
+.\scripts\dev\Sync-All-Worktrees.cmd 2
+```
+
+Add `-ValidateOnly` for a preflight without integration. The `.cmd` launcher
+forwards both parameters to the shared PowerShell orchestrator. The lower-level
+`sync-worker.ps1` remains its internal single-worker engine.
+
+When ongoing worker edits must remain completely untouched, run
+`.\scripts\dev\merge-latest-worktrees.ps1`. It snapshots the current committed
+`HEAD` of every registered non-detached worktree, merges those immutable commits
+in a disposable detached worktree, pushes the result to `master`, and fast-forwards
+the primary checkout. It never checks out, stages, stashes, resets, or updates a
+worker worktree, so staged, unstaged, and untracked worker files do not block it.
+Commits created after the snapshot wait for the next run. A committed-code conflict
+stops the script without modifying any real worker worktree. If the primary checkout
+is dirty, its changes are temporarily stashed and restored around the final
+fast-forward; overlapping primary edits still require explicit resolution.
+If another client updates remote `master` during integration, the push is rejected
+safely; rerun the command against the new baseline.
+
+In parallel mode, to synchronize all worktrees and immediately restart the local
 application on the merged code, use **Tasks: Run Task** → **Tripplanner: Run Latest Code** or double-click
 `scripts/dev/Run-Latest-Code.cmd`. This is the regular local workflow even
 when `master` has staged, unstaged, or untracked work: it temporarily stashes the
 local state, runs both guarded merges against a clean checkout, restores the local
 state with its staged status, and then starts `scripts/dev/dev-spa.ps1`. If restored
 changes overlap the merged code, it stops with the stash retained for explicit
-conflict resolution. The direct **Merge All Agents** command remains clean-only.
+conflict resolution. The direct **Sync All Worktrees** command remains clean-only.
 
 Use a pull request for each optional worker branch. It provides one diff and
 check surface, keeps `master` stable, and makes parallel integration order

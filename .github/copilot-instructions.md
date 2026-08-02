@@ -27,8 +27,9 @@ not override the canonical documents above, which govern current behavior.
 - The primary `master` workspace is the default development lane. Use persistent
   Worker 1 and Worker 2 worktrees only for owner-requested, sizeable, isolated
   parallel assignments. Each worker owns one PR-sized change at a time.
-- Merge reviewed worker pull requests one at a time. Active workers then merge
-  latest `origin/master`, validate the affected behavior, and push.
+- Synchronize reviewed worker pull requests one at a time through the guarded
+  sync scripts. After integration, fast-forward every persistent worker to the
+  final `origin/master`, validate affected behavior, and push.
 - Agent 3 in the primary workspace owns local stack startup, stop, restart,
   stale-port cleanup, and health checks for the owner's manual testing. Workers 1
   and 2 must obtain explicit approval before changing the stack lifecycle and use

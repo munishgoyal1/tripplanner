@@ -23,8 +23,8 @@ if ($masterChanges) {
 }
 
 try {
-	Write-Host "Merging the latest Agent 1 and Agent 2 code..." -ForegroundColor Cyan
-	& "$PSScriptRoot\merge-all-agents.ps1" -ValidateOnly:$ValidateOnly
+	Write-Host "Synchronizing master, Agent 1, and Agent 2..." -ForegroundColor Cyan
+	& "$PSScriptRoot\sync-all-worktrees.ps1" -ValidateOnly:$ValidateOnly
 } finally {
 	if ($stashCreated) {
 		Write-Host "Restoring local master changes..." -ForegroundColor Cyan
@@ -36,7 +36,7 @@ try {
 }
 
 if ($ValidateOnly) {
-	Write-Host "Ready: local master changes can be preserved around two-agent integration."
+	Write-Host "Ready: local master changes can be preserved around worktree synchronization."
 	return
 }
 

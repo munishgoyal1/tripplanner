@@ -28,7 +28,7 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Tripplanner: Merge All Agents",
+        "label": "Tripplanner: Sync All Worktrees",
         "type": "shell",
         "command": "pwsh",
         "args": [
@@ -36,7 +36,8 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}\\scripts\\dev\\merge-all-agents.ps1"
+          "${workspaceFolder}\\scripts\\dev\\sync-all-worktrees.ps1",
+          "-ResolveConflicts"
         ],
         "options": {
           "cwd": "${workspaceFolder}"
