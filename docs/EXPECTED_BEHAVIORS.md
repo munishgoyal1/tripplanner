@@ -27,7 +27,9 @@ focus because they are not inspectable places.
 - Map opens, selects the marker for that exact occurrence, and zooms to level 15.
 - Details opens and shows that place, including itinerary-only places not already
   in the selected-place collection.
-- Airport terminal focus pans and zooms to level 15 without requesting Details.
+- Airport terminal focus pans and zooms to the requested day occurrence at level
+  15 without requesting Details, including when the itinerary alias differs from
+  the provider-canonical airport name.
 - Itinerary, Map, and Details retain the same day and stop after the view refresh.
 - Repeating the same action reapplies focus after manual map movement or filtering.
 - A failed refresh leaves the previous usable view in place and reports the error.
@@ -51,14 +53,16 @@ focus because they are not inspectable places.
 summary. Ordinary days fit their complete circuit. Transfer days keep the full
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
-days clears exact-place and day focus, fits all circuits, and aligns Itinerary to
-the trip summary. Neither action requests place Details.
+days clears exact-place and day focus, fits all circuits and dotted flight arcs
+between every airport pair, and aligns Itinerary to the trip summary. Neither
+action requests place Details.
 
 **Executable proof:**
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `gives a map day chip the same aggregate circuit focus as an itinerary day header`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows all circuits and returns itinerary focus to the trip summary`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 

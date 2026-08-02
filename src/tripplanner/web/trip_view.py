@@ -1509,7 +1509,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         else None
     )
     for pin in pins:
-        pin.pop("_source_name", None)
+        pin["source_name"] = str(pin.pop("_source_name", "") or pin["name"])
 
     return {
         "enabled": key_configured,

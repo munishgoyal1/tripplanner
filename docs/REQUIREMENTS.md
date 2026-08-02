@@ -363,11 +363,12 @@ implemented capability baseline.
 - Exact-stop focus selects one itinerary occurrence, one map marker, its Details,
   and zoom 15. Repeating the action reapplies focus after manual filtering.
 - Airport terminal focus uses the same zoom 15 map behavior without opening
-  place Details.
+  place Details. It resolves the itinerary airport alias and requested occurrence
+  even when the provider returns a different canonical terminal name.
 - Aggregate day focus clears exact-place focus, applies the framing rule above,
   and aligns the itinerary at the day's summary.
-- All-days focus clears exact and single-day focus, fits all circuits, and aligns
-  the itinerary at the trip summary.
+- All-days focus clears exact and single-day focus, fits all circuits and complete
+  dotted flight connections, and aligns the itinerary at the trip summary.
 - Provider-expanded or differently punctuated place names still resolve to the
   authoritative itinerary occurrence.
 - Viewport-biased autocomplete and labeled native map POI clicks create a

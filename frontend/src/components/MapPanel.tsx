@@ -80,7 +80,10 @@ export function routeStyleForLeg(
       strokeColor: "#0284c7",
       strokeOpacity: 0,
       strokeWeight: 3,
-      icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.95, scale: 3 }, repeat: "14px" }],
+      icons: [{
+        icon: { path: "M 0,-1 0,1", strokeColor: "#0284c7", strokeOpacity: 0.95, scale: 3 },
+        repeat: "14px",
+      }],
     };
   }
   if (leg.mode === "Train") {
@@ -88,7 +91,10 @@ export function routeStyleForLeg(
       strokeColor: "#e11d48",
       strokeOpacity: 0,
       strokeWeight: 4,
-      icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.9, scale: 3 }, repeat: "10px" }],
+      icons: [{
+        icon: { path: "M 0,-1 0,1", strokeColor: "#e11d48", strokeOpacity: 0.9, scale: 3 },
+        repeat: "10px",
+      }],
     };
   }
   return {
@@ -226,7 +232,13 @@ export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string,
 }
 
 export function pinMatchesFocus(pin: MapPin, focusName?: string | null, focusDay?: number): boolean {
-  if (!focusName || !placeNameMatches(pin.name, focusName)) return false;
+  if (
+    !focusName
+    || !(
+      placeNameMatches(pin.name, focusName)
+      || (pin.source_name && placeNameMatches(pin.source_name, focusName))
+    )
+  ) return false;
   return focusDay == null || pin.occurrences.some((occurrence) => occurrence.day === focusDay);
 }
 
@@ -829,8 +841,8 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusTo
     }
     pendingCircuitFocusRef.current = null;
     const normalizedFocus = focusName.trim().toLowerCase();
-    let target: MapPin | MapAirport | undefined = view.pins.find((p) =>
-      placeNameMatches(p.name, focusName)
+    let target: MapPin | MapAirport | undefined = view.pins.find((pin) =>
+      pinMatchesFocus(pin, focusName, focusDay)
     );
     // Check airport if not found in pins
     if (!target && view.airport && view.airport.name.trim().toLowerCase() === normalizedFocus) {

@@ -248,6 +248,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Provider-canonical place names may not match itinerary text. Route completion
   must use authoritative occurrence day/stop identity, not global pin insertion
   order, so name enrichment cannot reorder a circuit.
+- Preserve the itinerary source name beside the provider-canonical map name.
+  Exact focus and repeated-terminal occurrences must resolve through that alias;
+  deleting it at serialization breaks cross-surface identity after enrichment.
 
 ## 2026-07-26 - Persisted Services Need Runtime-State Recovery
 
