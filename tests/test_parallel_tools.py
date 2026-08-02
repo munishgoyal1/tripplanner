@@ -129,6 +129,48 @@ def test_llm_allows_token_bucket_recovery(monkeypatch) -> None:
     assert captured["max_retries"] == 5
 
 
+def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    events: list[tuple[str, dict]] = []
+    usage_calls: list[dict] = []
+    ticks = iter([10.0, 10.25])
+    monkeypatch.setattr(graph_mod.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(
+        graph_mod,
+        "app_event",
+        lambda kind, **fields: events.append((kind, fields)),
+    )
+    monkeypatch.setattr(
+        graph_mod,
+        "record_usage",
+        lambda _user_id, **fields: usage_calls.append(fields),
+    )
+    callback = graph_mod._UsageCallback("gpt-4.1-test")
+    callback.on_chat_model_start(
+        {},
+        [[HumanMessage(content="Plan a short Punjab trip")]],
+    )
+    callback.on_llm_end(SimpleNamespace(llm_output={
+        "token_usage": {"prompt_tokens": 1200, "completion_tokens": 300},
+    }))
+
+    assert events == [("llm_call", {
+        "status": "ok",
+        "model": "gpt-4.1-test",
+        "ms": 250.0,
+        "message_count": 1,
+        "prompt_chars": 24,
+        "prompt_tokens": 1200,
+        "completion_tokens": 300,
+    })]
+    assert usage_calls == [{
+        "model": "gpt-4.1-test",
+        "prompt_tokens": 1200,
+        "completion_tokens": 300,
+    }]
+
+
 def test_trip_agent_compacts_tool_results_only_for_model_input(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 
@@ -163,7 +205,7 @@ def test_trip_agent_compacts_tool_results_only_for_model_input(monkeypatch) -> N
         message for message in captured_messages if isinstance(message, ToolMessage)
     ]
     assert len(sent_results) == len(tool_messages)
-    assert sum(len(str(message.content)) for message in sent_results) <= 24_000
+    assert sum(len(str(message.content)) for message in sent_results) <= 12_000
     assert all("truncated for synthesis" in str(message.content) for message in sent_results)
     assert all(message.content == full_result for message in tool_messages)
 
@@ -178,7 +220,7 @@ def test_model_tool_result_budget_is_strict_for_large_batches() -> None:
 
     compacted = graph_mod._messages_for_model(tool_messages)
 
-    assert sum(len(str(message.content)) for message in compacted) <= 24_000
+    assert sum(len(str(message.content)) for message in compacted) <= 12_000
 
 
 def test_trip_agent_forces_initial_itinerary_after_creation(monkeypatch) -> None:
@@ -441,6 +483,30 @@ def test_trip_agent_falls_back_to_google_when_hotel_provider_is_unavailable(
     assert result["messages"][0].tool_calls[0]["name"] == "search_places_with_reviews"
 
 
+def test_hotel_fallback_uses_successful_result_from_parallel_batch() -> None:
+    from tripplanner import graph as graph_mod
+
+    messages = [
+        AIMessage(
+            content="",
+            tool_calls=[
+                {"name": "search_hotels", "args": {}, "id": "hotel-1"},
+                {"name": "search_hotels", "args": {}, "id": "hotel-2"},
+            ],
+        ),
+        ToolMessage(
+            content="No hotels found for Amritsar.",
+            tool_call_id="hotel-1",
+        ),
+        ToolMessage(
+            content='[{"name": "The Oberoi Sukhvilas", "city": "Chandigarh"}]',
+            tool_call_id="hotel-2",
+        ),
+    ]
+
+    assert graph_mod._trip_hotel_fallback_requirement(messages) is None
+
+
 def test_new_trip_requires_enriched_update_after_research(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 
@@ -478,7 +544,7 @@ def test_new_trip_requires_enriched_update_after_research(monkeypatch) -> None:
     assert "strongest real hotel" in requirement
 
 
-def test_new_trip_retries_incomplete_researched_plan_once(monkeypatch) -> None:
+def test_new_trip_does_not_rewrite_incomplete_researched_plan_twice(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 
     monkeypatch.setattr(
@@ -508,10 +574,7 @@ def test_new_trip_retries_incomplete_researched_plan_once(monkeypatch) -> None:
         ),
     ]
 
-    requirement = graph_mod._trip_update_requirement(messages)
-
-    assert requirement is not None
-    assert "No concrete hotel is selected" in requirement
+    assert graph_mod._trip_update_requirement(messages) is None
 
 
 def test_new_trip_completion_retry_is_bounded(monkeypatch) -> None:
@@ -549,6 +612,47 @@ def test_new_trip_completion_retry_is_bounded(monkeypatch) -> None:
     ]
 
     assert graph_mod._trip_update_requirement(messages) is None
+
+
+def test_trip_agent_ends_with_summary_at_tool_phase_budget(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    captured_messages: list[BaseMessage] = []
+
+    class FakeModel:
+        def invoke(self, messages):
+            captured_messages.extend(messages)
+            return AIMessage(content="Saved the best available plan.")
+
+        def bind_tools(self, *_args, **_kwargs):
+            raise AssertionError("tool budget must disable tools")
+
+    monkeypatch.setattr(graph_mod, "_get_llm", lambda: FakeModel())
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Punjab", "day_wise_itinerary": []},
+    )
+    messages: list[BaseMessage] = [HumanMessage(content="Plan Punjab")]
+    for phase in range(graph_mod._MAX_TOOL_PHASES_PER_TURN):
+        call_id = f"tool-{phase}"
+        messages.extend([
+            AIMessage(
+                content="",
+                tool_calls=[{"name": "update_trip_plan", "args": {}, "id": call_id}],
+            ),
+            ToolMessage(content="Saved", tool_call_id=call_id),
+        ])
+
+    result = graph_mod.trip_agent({
+        "messages": messages,
+        "current_agent": "",
+        "proposal_only": False,
+    })
+
+    assert result["messages"][0].content == "Saved the best available plan."
+    assert any("bounded planning-tool budget" in str(message.content)
+               for message in captured_messages)
 
 
 def test_proposal_only_never_forces_initial_itinerary(monkeypatch) -> None:

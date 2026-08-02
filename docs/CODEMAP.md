@@ -29,7 +29,7 @@ trip through shared API contracts.
 
 | Path | Owns |
 | --- | --- |
-| `src/tripplanner/graph.py` | Agent/tool loop, completion gates, and model-facing tool-result budget |
+| `src/tripplanner/graph.py` | Agent/tool loop, semantic phase budget, completion gates, model telemetry, and model-facing tool-result budget |
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
 | `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |

@@ -35,6 +35,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
+from langgraph.errors import GraphRecursionError
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
@@ -64,6 +65,8 @@ setup_logging()
 
 app = FastAPI(title="Personal Assistant API", version="0.1.0")
 
+_CHAT_GRAPH_RECURSION_LIMIT = 24
+
 # CORS — the SPA runs on a different origin in dev (Vite :5173). Override the
 # allowed origins in production via WEB_ALLOWED_ORIGINS (comma-separated).
 # Cookie-based OAuth needs credentials, which browsers forbid alongside the
@@ -85,6 +88,32 @@ def _set_request_user(request: Request, claimed_user_id: str = "local") -> str:
     user_id = resolve_user_id(request, claimed_user_id)
     set_user_id(user_id)
     return user_id
+
+
+def _best_effort_plan_reply() -> tuple[str, int]:
+    from tripplanner.tools.trip_planner import (
+        load_active_trip_dict,
+        planning_completion_gaps,
+    )
+
+    try:
+        trip = load_active_trip_dict() or {}
+        gaps = planning_completion_gaps(trip)
+    except Exception:
+        trip = {}
+        gaps = []
+    destination = str(trip.get("destination") or "your trip").strip()
+    itinerary = trip.get("day_wise_itinerary")
+    if not isinstance(itinerary, list) or not itinerary:
+        return (
+            "Planning reached its safety limit before a usable itinerary was saved. "
+            "Please retry with a shorter trip scope.",
+            len(gaps),
+        )
+    reply = f"I saved the best available {destination} itinerary."
+    if gaps:
+        reply += " It is usable, but these details still need refinement: " + " ".join(gaps)
+    return reply, len(gaps)
 
 
 @app.middleware("http")
@@ -727,6 +756,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     "current_agent": "",
                     "proposal_only": req.proposal_only,
                 },
+                config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT},
                 version="v2",
             ):
                 kind = ev.get("event")
@@ -775,6 +805,14 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                                 )
                     yield _sse("tool", payload)
                     yield _sse("progress", {"stage": "reviewing"})
+        except GraphRecursionError:
+            reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
+            app_event(
+                "api_chat_stream_budget_exhausted",
+                completion_gap_count=gap_count,
+            )
+            reply_parts.append(reply)
+            yield _sse("token", {"text": reply})
         except Exception as exc:  # surface a clean error to the client
             app_event("api_chat_stream_error", error=type(exc).__name__)
             # Persist whatever we have so a tool side-effect during the turn

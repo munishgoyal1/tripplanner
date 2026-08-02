@@ -3318,3 +3318,14 @@ VALIDATION:
   canonical Kempegowda International Airport Bengaluru name.
 - Keep dotted Bangalore-to-Udaipur and Jaisalmer-to-Bangalore flight arcs visible
   in All days as reference geometry for the complete itinerary.
+
+=== 2026-08-02 — Bound and optimize planning turns ===
+
+- Optimize the measured Punjab planning path after it spent 94% of 261.9 seconds
+  outside provider tools and ended at LangGraph's recursion limit.
+- Batch multi-city hotel research, accept partial provider-batch success, perform
+  one enriched persistence pass, and cap each turn at ten semantic tool phases.
+- Preserve and summarize the best persisted itinerary when the semantic or
+  framework limit is reached instead of returning a generic retry error.
+- Record model-call latency, prompt size, token use, tool phase, completion-gate
+  reason, and remaining-gap count so future optimization uses direct evidence.

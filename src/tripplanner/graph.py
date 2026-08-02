@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import operator
 import re
+import time
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.callbacks import BaseCallbackHandler
@@ -24,6 +25,7 @@ from tripplanner.agents.trip_agent import (
     select_tools,
 )
 from tripplanner.config import get_settings
+from tripplanner.observability import app_event
 from tripplanner.tools.trip_planner import load_active_trip_dict, planning_completion_gaps
 from tripplanner.tools_cache import wrap_tools_with_cache
 from tripplanner.usage import record_usage
@@ -52,12 +54,38 @@ class _UsageCallback(BaseCallbackHandler):
 
     def __init__(self, model: str) -> None:
         self._model = model
+        self._started_at: float | None = None
+        self._message_count = 0
+        self._prompt_chars = 0
+
+    def on_chat_model_start(
+        self,
+        _serialized: dict[str, Any],
+        messages: list[list[BaseMessage]],
+        **_: Any,
+    ) -> None:
+        self._started_at = time.monotonic()
+        batch = messages[0] if messages else []
+        self._message_count = len(batch)
+        self._prompt_chars = sum(len(str(message.content or "")) for message in batch)
 
     def on_llm_end(self, response: Any, **_: Any) -> None:  # noqa: D401
         try:
             usage = (response.llm_output or {}).get("token_usage") or {}
             prompt = int(usage.get("prompt_tokens") or 0)
             completion = int(usage.get("completion_tokens") or 0)
+            app_event(
+                "llm_call",
+                status="ok",
+                model=self._model,
+                ms=round((time.monotonic() - self._started_at) * 1000, 2)
+                if self._started_at is not None
+                else None,
+                message_count=self._message_count,
+                prompt_chars=self._prompt_chars,
+                prompt_tokens=prompt,
+                completion_tokens=completion,
+            )
             if prompt == 0 and completion == 0:
                 return
             record_usage(
@@ -68,6 +96,22 @@ class _UsageCallback(BaseCallbackHandler):
             )
         except Exception:
             # Accounting must never break a turn.
+            pass
+
+    def on_llm_error(self, error: BaseException, **_: Any) -> None:
+        try:
+            app_event(
+                "llm_call",
+                status="error",
+                model=self._model,
+                ms=round((time.monotonic() - self._started_at) * 1000, 2)
+                if self._started_at is not None
+                else None,
+                message_count=self._message_count,
+                prompt_chars=self._prompt_chars,
+                error=type(error).__name__,
+            )
+        except Exception:
             pass
 
 
@@ -88,8 +132,8 @@ def _get_llm() -> AzureChatOpenAI:
     )
 
 
-_MAX_MODEL_TOOL_RESULT_CHARS = 2_000
-_MAX_MODEL_TOOL_RESULTS_TOTAL_CHARS = 24_000
+_MAX_MODEL_TOOL_RESULT_CHARS = 1_500
+_MAX_MODEL_TOOL_RESULTS_TOTAL_CHARS = 12_000
 _TOOL_RESULT_TRUNCATION = (
     "\n...[truncated for synthesis; full result remains in graph state]"
 )
@@ -152,8 +196,9 @@ _COMPLETION_RESEARCH_TOOLS = {
     "check_visa_requirements",
     "find_local_events",
 }
-_MAX_POST_RESEARCH_UPDATES = 2
+_MAX_POST_RESEARCH_UPDATES = 1
 _MAX_INITIAL_ITINERARY_UPDATES = 2
+_MAX_TOOL_PHASES_PER_TURN = 10
 _NEW_TRIP_REQUEST_RE = re.compile(
     r"\b(?:plan|create|start|build|organize|organise)\b.{0,40}"
     r"\b(?:trip|vacation|holiday|getaway)\b.{0,24}\b(?:to|in)\b",
@@ -173,6 +218,18 @@ def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
             if name:
                 positions.append((index, name))
     return positions
+
+
+def _current_turn_tool_phases(messages: list[BaseMessage]) -> int:
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    return sum(
+        1
+        for index, message in enumerate(messages)
+        if index > latest_human and bool(getattr(message, "tool_calls", None))
+    )
 
 
 def _tool_result_texts(messages: list[BaseMessage], tool_name: str) -> list[str]:
@@ -268,8 +325,9 @@ def _trip_hotel_search_requirement(messages: list[BaseMessage]) -> str | None:
     return (
         "The saved itinerary still has no concrete hotel: "
         + " ".join(hotel_gaps)
-        + " Search real hotels now so the strongest preference-matched option can be "
-        "selected by default in the next full-plan update."
+        + " Search real hotels for every overnight city in one parallel tool-call batch "
+        "so the strongest preference-matched options can be selected by default in the "
+        "next full-plan update. Do not defer another city's hotel search to a later turn."
     )
 
 
@@ -288,7 +346,10 @@ def _trip_hotel_fallback_requirement(messages: list[BaseMessage]) -> str | None:
         "hotel list error",
         "hotel search error",
     )
-    if not any(marker in result.lower() for result in results for marker in failure_markers):
+    if not all(
+        any(marker in result.lower() for marker in failure_markers)
+        for result in results
+    ):
         return None
     return (
         "The hotel provider returned no usable candidates. Search Google Places for "
@@ -404,6 +465,37 @@ def trip_agent(state: AgentState) -> AgentState:
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
+    tool_phases = _current_turn_tool_phases(state["messages"])
+    if not proposal_only and tool_phases >= _MAX_TOOL_PHASES_PER_TURN:
+        try:
+            gaps = planning_completion_gaps(load_active_trip_dict() or {})
+        except Exception:
+            gaps = []
+        app_event(
+            "agent_model_round",
+            tool_phase=tool_phases,
+            forced_reason="tool_phase_budget",
+            completion_gap_count=len(gaps),
+            message_count=len(state["messages"]),
+        )
+        instructions = [
+            build_trip_system_prompt(),
+            SystemMessage(content=(
+                "The bounded planning-tool budget is exhausted. Do not call another tool. "
+                "Give a concise best-effort summary of the plan already persisted. "
+                + (
+                    "State these unresolved details honestly without discarding the usable "
+                    "itinerary: " + " ".join(gaps)
+                    if gaps
+                    else "Confirm that the best available itinerary has been saved."
+                )
+            )),
+        ]
+        response = _get_llm().invoke(
+            instructions + _messages_for_model(state["messages"])
+        )
+        return {"messages": [response], "current_agent": "trip"}
+
     creation_tool = (
         None if proposal_only else _trip_creation_tool_choice(state["messages"])
     )
@@ -441,6 +533,22 @@ def trip_agent(state: AgentState) -> AgentState:
         else "create_trip_plan"
         if _pending_trip_kickoff_answer(state["messages"])
         else kickoff_tool
+    )
+    forced_reason = (
+        "new_trip_creation" if creation_tool
+        else "hotel_provider_fallback" if hotel_fallback_requirement
+        else "persist_or_repair_plan" if update_requirement
+        else "missing_concrete_hotel" if hotel_search_requirement
+        else "kickoff_answered" if _pending_trip_kickoff_answer(state["messages"])
+        else "trip_kickoff" if kickoff_tool
+        else "model_choice"
+    )
+    app_event(
+        "agent_model_round",
+        tool_phase=tool_phases,
+        forced_tool=forced_tool,
+        forced_reason=forced_reason,
+        message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
     if forced_tool:

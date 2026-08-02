@@ -147,8 +147,10 @@ re-describing the whole product.
   event that triggers the shared pane refresh.
 - New-trip planning is complete-by-default: after research, the graph requires
   an enriched persistence pass with the strongest concrete hotel and a full
-  best-effort itinerary. One bounded correction pass addresses remaining hotel,
-  meal, or empty-day gaps without trapping the turn when providers fail.
+  best-effort itinerary. Research is batched across overnight cities and is
+  followed by one full-plan persistence pass. A ten-tool-phase semantic budget
+  returns the best persisted plan with honest remaining gaps instead of trapping
+  the turn when providers fail or deterministic completion checks remain unmet.
 
 ### PLAN-02 - Grounded providers and enrichment
 
@@ -476,7 +478,8 @@ implemented capability baseline.
   account is shared.
 - Overlapping authenticated HTTP requests verify same-principal chat rejection,
   chat-versus-workspace exclusion, and permit recovery after the active turn.
-- Tool latency, failures, cache hits, structured events, and hosted health are
+- Tool latency, failures, cache hits, model-call latency/tokens/prompt size,
+  forced completion-gate reasons, structured events, and hosted health are
   observable through API metrics and Azure logs.
 - Performance and cost evidence is separated into a hermetic regression gate,
   production SLO/tool telemetry, and Azure billing/Cosmos RU analysis so changes

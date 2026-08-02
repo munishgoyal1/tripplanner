@@ -8,6 +8,7 @@ import re
 from tripplanner import api
 from tripplanner.api import (
     _auto_persist_itinerary,
+    _best_effort_plan_reply,
     _should_auto_persist_itinerary,
     _summarize_tool_input,
 )
@@ -79,3 +80,34 @@ def test_tool_timing_does_not_overwrite_chat_request_start() -> None:
 
     assert "tool_started = tool_starts.pop" in source
     assert re.search(r"^\s*started = tool_starts\.pop", source, re.MULTILINE) is None
+
+
+def test_graph_recursion_uses_explicit_limit_and_best_effort_recovery() -> None:
+    source = inspect.getsource(api.chat_stream)
+
+    assert 'config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT}' in source
+    assert "except GraphRecursionError" in source
+
+
+def test_best_effort_plan_reply_reports_saved_plan_gaps(monkeypatch) -> None:
+    from tripplanner.tools import trip_planner
+
+    monkeypatch.setattr(
+        trip_planner,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "Punjab",
+            "day_wise_itinerary": [{"day": 1, "stops": []}],
+        },
+    )
+    monkeypatch.setattr(
+        trip_planner,
+        "planning_completion_gaps",
+        lambda _trip: ["Day 1 has no planned places beyond the hotel."],
+    )
+
+    reply, gap_count = _best_effort_plan_reply()
+
+    assert "saved the best available Punjab itinerary" in reply
+    assert "Day 1" in reply
+    assert gap_count == 1

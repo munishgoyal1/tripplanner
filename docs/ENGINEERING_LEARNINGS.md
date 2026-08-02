@@ -4,6 +4,21 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-02 - Bound Semantic Work Before Framework Recursion
+
+- Framework recursion limits count graph nodes, not meaningful planning work. A
+  normal agent/tool alternation can exhaust the limit after twelve tool phases
+  even when every tool succeeds.
+- Enforce a smaller domain-level tool-phase budget that reserves a terminal model
+  round. Unexpected framework exhaustion should summarize persisted side effects
+  instead of returning a generic error.
+- A parallel provider batch is usable when any subquery returns grounded choices.
+  Triggering a fallback because one city failed adds research and synthesis rounds
+  without improving successful cities.
+- Log model latency, prompt size, tokens, tool phase, forced-gate reason, and
+  remaining-gap count together. Tool-only timing can misattribute more than 90%
+  of a slow planning turn.
+
 ## 2026-08-02 - Preserve Compose Identity When Moving Files
 
 - Docker Compose derives its project identity from the Compose file directory

@@ -12,6 +12,32 @@ That is enough to identify the full expected outcome below.
 Change an expected behavior only with owner approval. A behavior change must
 update this file and its linked tests in the same commit.
 
+## Assistant planning
+
+### EB-PLAN-001 - Complete a bounded new-trip planning turn
+
+**Trigger:** Submit or skip the structured kickoff for a new trip and let the
+Assistant build its first proposal.
+
+**Expected:**
+
+- The Assistant batches hotel research for every overnight city in one parallel
+  tool phase and accepts usable results when another city-specific query fails.
+- Research is followed by one enriched full-plan persistence pass rather than
+  repeated full-itinerary rewrites.
+- A planning turn uses at most ten tool phases. Reaching that semantic budget
+  disables further tools and produces an honest summary of the best persisted
+  itinerary and any unresolved details.
+- Unexpected graph recursion exhaustion returns the persisted best-effort plan
+  instead of discarding useful side effects behind a generic retry error.
+
+**Executable proof:**
+
+- [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_hotel_fallback_uses_successful_result_from_parallel_batch`
+- [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_new_trip_does_not_rewrite_incomplete_researched_plan_twice`
+- [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
+- [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
+
 ## Planner workspace
 
 ### EB-FOCUS-001 - Focus one itinerary occurrence
