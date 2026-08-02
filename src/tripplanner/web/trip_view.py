@@ -1386,9 +1386,11 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             if pin:
                 pin_id = str(pin["id"])
                 if pending_intercity_mode and route_ids:
-                    intercity_modes_by_day.setdefault(day_num, {})[
-                        (route_ids[-1], pin_id)
-                    ] = pending_intercity_mode
+                    terminal_kinds = {"airport", "station", "bus_station"}
+                    if pin["kind"] not in terminal_kinds:
+                        intercity_modes_by_day.setdefault(day_num, {})[
+                            (route_ids[-1], pin_id)
+                        ] = pending_intercity_mode
                     pending_intercity_mode = None
                 route_ids.append(pin_id)
 

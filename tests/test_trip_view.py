@@ -1331,6 +1331,56 @@ def test_map_view_uses_origin_terminal_when_partial_flight_is_first_stop(
     assert day["legs"][0]["intercity"] is True
 
 
+def test_map_view_does_not_mark_hotel_to_unmatched_airport_as_flight(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Udaipur Hotel": (24.577, 73.683),
+        "Jodhpur Airport": (26.251, 73.049),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Udaipur Hotel"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Udaipur Hotel", "kind": "hotel"},
+                {"name": "Flight: Udaipur to Jodhpur", "kind": "flight"},
+                {"name": "Jodhpur Airport", "kind": "airport"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    day = view["days"][0]
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    mixed_terminal_legs = [
+        leg
+        for leg in day["legs"]
+        if {
+            pins_by_id[leg["from_pin_id"]]["kind"],
+            pins_by_id[leg["to_pin_id"]]["kind"],
+        }
+        != {"airport"}
+    ]
+    assert mixed_terminal_legs
+    assert all(leg.get("intercity") is not True for leg in mixed_terminal_legs)
+    assert all(leg["mode"] != "Flight" for leg in mixed_terminal_legs)
+
+
 # ---------------------------------------------------------------------------
 # build_itinerary (pure, no network)
 # ---------------------------------------------------------------------------
