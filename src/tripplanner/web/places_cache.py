@@ -221,8 +221,33 @@ def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
     return (time.time() - entry.get("__at__", 0.0)) < effective_ttl
 
 
+def _is_explicit_airport_name(name: str) -> bool:
+    normalized = " ".join(str(name or "").strip().lower().split())
+    trimmed = normalized.rstrip(".,;:()[]{}")
+    padded = f" {trimmed} "
+    tokens = trimmed.replace(",", " ").split()
+    airport_index = tokens.index("airport") if "airport" in tokens else -1
+    suffix = tokens[airport_index + 1 :] if airport_index >= 0 else []
+    has_terminal_suffix = bool(suffix) and (
+        suffix[0] in {"terminal", "terminals"}
+        or (suffix[0].startswith("t") and suffix[0][1:].isdigit())
+    )
+    return (
+        trimmed.endswith(" airport")
+        or " international airport " in padded
+        or " domestic airport " in padded
+        or normalized.startswith("airport,")
+        or has_terminal_suffix
+    )
+
+
+def _lookup_city(name: str, city: str) -> str:
+    return "" if _is_explicit_airport_name(name) else city
+
+
 def _key(name: str, city: str) -> str:
-    return f"{(name or '').strip().lower()}|{(city or '').strip().lower()}"
+    lookup_city = _lookup_city(name, city)
+    return f"{(name or '').strip().lower()}|{(lookup_city or '').strip().lower()}"
 
 
 def _key_lock(key: str) -> RLock:
@@ -359,13 +384,14 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
     Always returns a dict — empty `{}` for known-misses so we don't retry
     within the TTL window. Pass ``refresh=True`` to force a re-fetch."""
     cache = _cache()
-    k = _key(name, city)
+    lookup_city = _lookup_city(name, city)
+    k = _key(name, lookup_city)
     with _key_lock(k):
         with _CACHE_LOCK:
             entry = cache.get(k)
             if not refresh and _fresh(entry):
                 return {} if _is_miss(entry) else entry  # type: ignore[return-value]
-        info = _lookup_place(name, city) or {}
+        info = _lookup_place(name, lookup_city) or {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
             cache[k] = info

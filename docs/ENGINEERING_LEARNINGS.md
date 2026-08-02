@@ -251,6 +251,12 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Preserve the itinerary source name beside the provider-canonical map name.
   Exact focus and repeated-terminal occurrences must resolve through that alias;
   deleting it at serialization breaks cross-surface identity after enrichment.
+- Map occurrence indexes must come from the rendered itinerary when presentation
+  expands one persisted stop into multiple rows. Mixing raw indexes with rendered
+  click indexes makes valid exact-stop focus requests silently miss their pin.
+- Explicit airport names are self-locating provider queries. Appending the trip
+  destination can resolve an origin airport to an unrelated destination-region
+  airport, and the cache key must use the same unbiased query context.
 
 ## 2026-07-26 - Persisted Services Need Runtime-State Recovery
 
