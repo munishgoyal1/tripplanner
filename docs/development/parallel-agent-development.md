@@ -136,13 +136,13 @@ worktree that should receive all latest committed code; no lane number is needed
 
 ```powershell
 .\scripts\user\Sync-MeTo-Latest.cmd
-.\scripts\user\Sync-MeTo-Latest.cmd onlymaster
+.\scripts\user\Sync-MeTo-Latest.cmd onlyfrommaster
 ```
 
 From MasterAgent, it integrates committed local and remote worker heads into
 `master`. From Agents 1-3, the no-argument command first integrates
 every committed worker head through `master`, then merges that result into only
-the launcher worktree. Pass `onlymaster` from any lane to receive the latest
+the launcher worktree. Pass `onlyfrommaster` from any lane to receive the latest
 committed `master` without integrating sibling worktrees. The internal merge engine
 starts its disposable integration checkout directly from fetched `origin/master`,
 then updates local `master` only when MasterAgent is the launcher.

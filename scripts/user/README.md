@@ -11,7 +11,7 @@ stays under `scripts/dev/` so everyday commands remain easy to find.
 | `Run-Latest.cmd` | Synchronize the launcher worktree, then start its local stack; optional dev SPA flags are forwarded |
 
 By default, `Sync-MeTo-Latest.cmd` integrates all committed worker heads through
-`master`, then updates only the launcher worktree. Pass `onlymaster` to receive
+`master`, then updates only the launcher worktree. Pass `onlyfrommaster` to receive
 the latest committed `master` without integrating sibling worktrees.
 
 Run `Sync-AllTo-Latest.cmd` from MasterAgent or Agents 1-3 when every

@@ -40,7 +40,7 @@ Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `scripts/user/Sync-MeTo-Latest.cmd` | Integrate every committed worker head through `master`, then update only the launcher worktree. Pass `onlymaster` to skip sibling integration. |
+| `scripts/user/Sync-MeTo-Latest.cmd` | Integrate every committed worker head through `master`, then update only the launcher worktree. Pass `onlyfrommaster` to skip sibling integration. |
 | `scripts/user/Sync-AllTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent and Agents 1-3 while preserving each worktree's local edits. |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. All stack options are optional and forwarded; pass `all` or `-All` to synchronize every worktree first. |

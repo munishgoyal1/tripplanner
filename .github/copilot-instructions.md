@@ -34,7 +34,7 @@ not override the canonical documents above, which govern current behavior.
 - Run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree to update. MasterAgent always
   integrates all committed worker heads by default. Workers also integrate all
   committed sibling worktree changes through `master` by default; pass
-  `onlymaster` to receive committed `master` without integrating siblings. The launcher is the
+  `onlyfrommaster` to receive committed `master` without integrating siblings. The launcher is the
   only worktree updated.
 - Use `scripts/user/Sync-AllTo-Latest.cmd` only when every worktree should be
   updated. It may run from any lane, preserves each lane's local edits, reuses

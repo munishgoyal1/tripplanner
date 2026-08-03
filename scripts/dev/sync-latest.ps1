@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("onlymaster")]
+    [ValidateSet("onlyfrommaster")]
     [string]$Target,
 
     [switch]$ValidateOnly
@@ -30,7 +30,7 @@ $laneName = if ($agentNumber -eq 0) { "MasterAgent (0)" } else { "Agent $agentNu
 
 Write-Host "Synchronizing latest committed code into $laneName..." -ForegroundColor Cyan
 if ($agentNumber -eq 0) {
-    if ($Target -eq "onlymaster") {
+    if ($Target -eq "onlyfrommaster") {
         & "$PSScriptRoot\update-from-master.ps1" 0 -ValidateOnly:$ValidateOnly
         Write-Host "MasterAgent is current with origin/master only." -ForegroundColor Green
     }
@@ -41,7 +41,7 @@ if ($agentNumber -eq 0) {
     return
 }
 
-if ($Target -ne "onlymaster") {
+if ($Target -ne "onlyfrommaster") {
     Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
     & "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
 }
