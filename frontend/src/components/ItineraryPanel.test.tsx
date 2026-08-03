@@ -424,6 +424,27 @@ describe("ItineraryPanel", () => {
     );
   });
 
+  it("uses railway-specific timing labels for train terminals", async () => {
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...baseStop, name: "Madurai Railway Station", kind: "station", terminal_role: "departure" },
+          { ...baseStop, name: "Train: Madurai to Rameswaram", kind: "transport" },
+          { ...baseStop, name: "Rameswaram Railway Station", kind: "station", terminal_role: "arrival" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findByText("Station arrival")).toBeInTheDocument();
+    expect(screen.getByText("Train arrival")).toBeInTheDocument();
+    expect(screen.queryByText("Airport arrival")).not.toBeInTheDocument();
+  });
+
   it("keeps the hotel return endpoint independently addressable", async () => {
     const hotel = { ...itinerary.days[0].stops[0], name: "Hotel Lutetia", kind: "hotel" };
     fetchItineraryMock.mockResolvedValue({
@@ -483,6 +504,30 @@ describe("ItineraryPanel", () => {
     expect((await screen.findAllByLabelText("Hotel map marker")).map((marker) => marker.textContent))
       .toEqual(["H"]);
     expect(screen.getByText("Return to Sparsa Kanyakumari, Kanyakumari")).toBeInTheDocument();
+    expect(screen.queryByText("Check out")).not.toBeInTheDocument();
+    expect(screen.queryByText("Check in")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["Hyatt Place Rameswaram", "Hyatt Place Rameshwaram"],
+    ["Sparsa Kanyakumari", "Sparsa Resorts Kanyakumari"],
+  ])("treats %s and %s as one hotel", async (startName, returnName) => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...itinerary.days[0].stops[0], name: startName, kind: "hotel" },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: returnName, kind: "hotel" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect((await screen.findAllByLabelText("Hotel map marker")).map((marker) => marker.textContent))
+      .toEqual(["H"]);
     expect(screen.queryByText("Check out")).not.toBeInTheDocument();
     expect(screen.queryByText("Check in")).not.toBeInTheDocument();
   });

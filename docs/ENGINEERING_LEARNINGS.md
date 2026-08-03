@@ -14,6 +14,12 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Shared concepts need shared normalization and formatting. Exact hotel strings,
   pin IDs, and duplicate duration formatters create cross-surface regressions even
   when each component looks locally correct.
+- Persisted mode fields and display names are independent evidence. Normalize them
+  once before deriving terminal expansion, clickability, or map edges; requiring a
+  magic `Drive:` prefix makes valid saved car legs disappear from interaction.
+- Transfer chronology crosses day boundaries. If a later transfer omits its origin
+  stay, carry the prior active hotel into both itinerary and map derivation rather
+  than inventing a city origin in one pane or dropping the endpoint in the other.
 
 ## 2026-08-03 - Require Native Environment Selection
 

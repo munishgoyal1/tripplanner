@@ -113,7 +113,8 @@ and open the terminal as an inspectable place.
   provider-canonical terminal name.
 - Timed train and bus journeys expose departure terminal, travel leg, and arrival
   terminal rows. Departure rows include configurable boarding buffers; terminal
-  rows remain operational and non-bookable.
+  rows remain operational and non-bookable. Their timing labels identify railway
+  stations and bus stands rather than describing every departure as an airport arrival.
 - Itinerary, Map, and Details retain the same day and stop after the view refresh.
 - Repeating the same action reapplies focus after manual map movement or filtering.
 - A failed refresh leaves the previous usable view in place and reports the error.
@@ -180,10 +181,14 @@ another city, and checks in at a different hotel.
 **Expected:** Check out, every journey stop, destination check-in, and remaining
 destination plans appear once in one ordered transition spine. The two hotels
 remain distinct `H1` and `H2` endpoints. A repeated return to the destination
-hotel, including a harmless trailing locality/address variant, shares one `H`
+hotel, including harmless locality spelling and generic Hotel/Resort variants,
+shares one `H`
 identity and appears after the final plan as a compact chronological endpoint carrying
 its incoming travel and return time, without duplicating stay controls or hotel
-details. The itinerary does not pair the hotels as cards or split the day into
+details. When a persisted transfer day omits its origin stay, the prior day's
+active hotel is its first endpoint. Mode metadata such as `car` normalizes the
+saved leg into a clickable inter-city route even without a model-authored `Drive:`
+prefix. The itinerary does not pair the hotels as cards or split the day into
 Journey and After check-in sections.
 
 **Executable proof:**
@@ -195,6 +200,7 @@ Journey and After check-in sections.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_estimates_duration_arrival_and_hotel_check_in`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_without_checkout_estimates_duration_but_not_check_in`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_untimed_road_transfer_does_not_invent_hotel_check_in`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_transfer_day_starts_from_prior_rameswaram_hotel`
 
 ### EB-ITIN-002 - Use conservative local transfer modes
 

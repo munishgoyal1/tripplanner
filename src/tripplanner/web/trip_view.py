@@ -818,9 +818,39 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
         return "Train"
     if "bus" in lowered:
         return "Bus"
-    if any(token in lowered for token in ("drive:", "road transfer", "private car")):
+    if any(
+        token in lowered
+        for token in ("drive:", "car:", "car transfer", "road transfer", "private car")
+    ):
         return "Drive"
     return None
+
+
+def _normalized_stop_kind(name: str, kind: str, mode: str = "") -> str:
+    normalized_kind = str(kind or "").strip().lower()
+    normalized_mode = str(mode or "").strip().lower()
+    if normalized_kind == "flight":
+        return normalized_kind
+    if normalized_mode in {"car", "drive", "train", "rail", "bus"} or (
+        _intercity_transfer_mode(name, "transport")
+    ):
+        return "transport"
+    return normalized_kind
+
+
+def _canonical_transport_name(name: str, mode: str = "") -> str:
+    text = str(name or "").strip()
+    normalized_mode = str(mode or "").strip().lower()
+    prefix = {
+        "car": "Drive",
+        "drive": "Drive",
+        "train": "Train",
+        "rail": "Train",
+        "bus": "Bus",
+    }.get(normalized_mode)
+    if not prefix or _intercity_transfer_mode(text, "transport"):
+        return text
+    return f"{prefix}: {text}"
 
 
 _INTERCITY_SPEED_KMH = {
@@ -925,6 +955,9 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
             if isinstance(s, dict):
                 name = str(s.get("name") or "").strip()
                 kind = str(s.get("kind") or "").strip().lower()
+                mode_name = str(s.get("mode") or "")
+                name = _canonical_transport_name(name, mode_name)
+                kind = _normalized_stop_kind(name, kind, mode_name)
             else:
                 name = str(s or "").strip()
                 kind = ""
@@ -1481,6 +1514,9 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         for stop in entry["stops"]:
             name = stop.get("name") if isinstance(stop, dict) else stop
             kind = str(stop.get("kind") or "").strip().lower() if isinstance(stop, dict) else ""
+            mode_name = str(stop.get("mode") or "") if isinstance(stop, dict) else ""
+            name = _canonical_transport_name(str(name or ""), mode_name)
+            kind = _normalized_stop_kind(str(name or ""), kind, mode_name)
             mode = _intercity_transfer_mode(str(name or ""), kind)
             if mode:
                 transfer_days.add(day_num)
@@ -1574,6 +1610,19 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 resolved.append(str(pin["id"]))
         return resolved
 
+    def _carried_stay_id(day: int) -> str | None:
+        itinerary_stops = (itinerary_days.get(day) or {}).get("stops") or []
+        if not itinerary_stops:
+            return None
+        first_stop = itinerary_stops[0]
+        if first_stop.get("kind") != "hotel" or (
+            str(first_stop.get("note") or "").strip().lower()
+            != "start from your stay"
+        ):
+            return None
+        pin = _pin_for_stop(first_stop.get("name"))
+        return str(pin["id"]) if pin else None
+
     stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
     days = []
     for d in sorted(by_day):
@@ -1597,6 +1646,30 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             ids = [stay_id, *(pid for pid in ids if pid != stay_id), stay_id]
         if is_transfer_day:
             route_ids = route_pin_ids_by_day.get(d, [])
+            carried_stay_id = _carried_stay_id(d)
+            if carried_stay_id:
+                if route_ids and pin_by_id[route_ids[0]]["kind"] == "origin":
+                    origin_id = route_ids.pop(0)
+                    intercity_modes = intercity_modes_by_day.get(d) or {}
+                    replacement_edges = {
+                        (carried_stay_id, end_id): mode
+                        for (start_id, end_id), mode in intercity_modes.items()
+                        if start_id == origin_id
+                    }
+                    if replacement_edges:
+                        intercity_modes_by_day.setdefault(d, {}).update(replacement_edges)
+                        intercity_modes_by_day[d] = {
+                            edge: mode
+                            for edge, mode in intercity_modes_by_day[d].items()
+                            if edge[0] != origin_id
+                        }
+                route_ids = [
+                    carried_stay_id,
+                    *(pin_id for pin_id in route_ids if pin_id != carried_stay_id),
+                ]
+                for resolved_stay_id in resolved_stay_ids[1:]:
+                    if resolved_stay_id not in route_ids:
+                        route_ids.append(resolved_stay_id)
             ids = route_ids
         else:
             route_ids = [
@@ -1738,7 +1811,10 @@ def _normalize_stop(
         name = str(raw.get("name") or "").strip()
         if not name:
             return None
-        kind = str(raw.get("kind") or "").strip().lower()
+        name = _canonical_transport_name(name, str(raw.get("mode") or ""))
+        kind = _normalized_stop_kind(
+            name, str(raw.get("kind") or ""), str(raw.get("mode") or "")
+        )
         if kind not in _STOP_KINDS:
             kind = _infer_stop_kind(name, hotels, activities)
         dur = raw.get("duration_min")
@@ -2447,6 +2523,38 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             )
             for stop in stops
         )
+        first_transfer_index = next(
+            (
+                index
+                for index, stop in enumerate(stops)
+                if _intercity_transfer_mode(
+                    str(stop.get("name") or ""), str(stop.get("kind") or "")
+                )
+            ),
+            -1,
+        )
+        first_hotel_index = next(
+            (index for index, stop in enumerate(stops) if stop["kind"] == "hotel"),
+            -1,
+        )
+        if (
+            idx > 0
+            and has_intercity_transfer
+            and current_hotel
+            and first_transfer_index >= 0
+            and (first_hotel_index < 0 or first_transfer_index < first_hotel_index)
+        ):
+            anchor = _normalize_stop(
+                {"name": current_hotel, "kind": "hotel"}, hotels, activities
+            )
+            if anchor:
+                anchor["duration_min"] = None
+                anchor["color"] = _day_color(day_num)
+                anchor["note"] = "Start from your stay"
+                if stops and stops[0]["kind"] == "origin":
+                    stops.pop(0)
+                stops.insert(0, anchor)
+                hotel_stops.insert(0, anchor)
         if (
             not has_intercity_transfer
             and not _is_overnight_travel_day(entry)

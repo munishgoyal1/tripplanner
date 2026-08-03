@@ -3377,3 +3377,8 @@ VALIDATION:
   preserving `H1`/`H2` for genuinely different properties.
 - Replace stale place details with destination/day schedule and route context when
   day-level or all-days map focus is selected.
+- Normalize harmless Hyatt/Sparsa spelling and Hotel/Resort variants before assigning
+  hotel marker numbers, while retaining separate identities for different properties.
+- Carry the prior active hotel into an omitted transfer-day origin in Itinerary and
+  Map, and normalize saved `mode: car` metadata into a clickable Drive leg.
+- Use railway- and bus-specific terminal timing labels instead of airport wording.

@@ -1880,6 +1880,77 @@ def test_timed_surface_transport_adds_terminal_buffer_stops(
     assert "disembark and baggage" in stops[2]["operational_time_display"]
 
 
+def test_transfer_day_starts_from_prior_rameswaram_hotel(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Hyatt Place Rameswaram": (9.2833, 79.3129),
+        "Rameswaram": (9.2876, 79.3129),
+        "Sparsa Kanyakumari": (8.0864, 77.5510),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city, **_kwargs: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Tamil Nadu",
+        "selected_hotels": [
+            {"name": "Hyatt Place Rameswaram"},
+            {"name": "Sparsa Kanyakumari"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hyatt Place Rameswaram", "kind": "hotel"},
+                    {"name": "Ramanathaswamy Temple", "kind": "attraction"},
+                ],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {
+                        "name": "Rameswaram to Kanyakumari",
+                        "kind": "other",
+                        "mode": "car",
+                    },
+                    {"name": "Sparsa Kanyakumari", "kind": "hotel"},
+                ],
+            },
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+    day3_stops = itinerary["days"][1]["stops"]
+    assert [(stop["name"], stop["kind"]) for stop in day3_stops] == [
+        ("Hyatt Place Rameswaram", "hotel"),
+        ("Drive: Rameswaram to Kanyakumari", "transport"),
+        ("Sparsa Kanyakumari", "hotel"),
+    ]
+
+    map_view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in map_view["pins"]}
+    day3 = next(day for day in map_view["days"] if day["day"] == 3)
+    assert [pins_by_id[pin_id]["name"] for pin_id in day3["pin_ids"]] == [
+        "Hyatt Place Rameswaram",
+        "Sparsa Kanyakumari",
+    ]
+    assert day3["legs"][0]["mode"] == "Drive"
+    assert day3["legs"][0]["intercity"] is True
+
+
 def test_arrival_day_local_outing_returns_to_destination_hotel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -51,6 +51,18 @@ function uniqueDetailTexts(...values: Array<string | undefined>): string[] {
   });
 }
 
+function terminalTimingLabel(stop: ItineraryStop): string | null {
+  if (!stop.terminal_role) return null;
+  if (stop.terminal_role === "departure") {
+    if (stop.kind === "station") return "Station arrival";
+    if (stop.kind === "bus_station") return "Bus stand arrival";
+    return "Airport arrival";
+  }
+  if (stop.kind === "station") return "Train arrival";
+  if (stop.kind === "bus_station") return "Bus arrival";
+  return "Land";
+}
+
 export interface ItineraryStopRowProps {
   stop: ItineraryStop;
   day: number;
@@ -101,11 +113,8 @@ export default function ItineraryStopRow({
   );
   const concernTexts = uniqueDetailTexts(stop.concern);
   const driveOrigin = stop.kind === "transport" ? roadOrigin(stop.name) : null;
-  const timingLabel = circuitReturn ? "Return" : hotelTimingLabel || (stop.terminal_role === "departure"
-    ? "Airport arrival"
-    : stop.terminal_role === "arrival"
-      ? "Land"
-      : stop.kind === "hotel" && isFirst && isLast
+  const timingLabel = circuitReturn ? "Return" : hotelTimingLabel || (terminalTimingLabel(stop)
+    ?? (stop.kind === "hotel" && isFirst && isLast
         ? "Stay"
       : stop.kind === "hotel" && isFirst
         ? "Depart"
@@ -117,7 +126,7 @@ export default function ItineraryStopRow({
               ? driveOrigin
               ? `Depart from ${driveOrigin}`
               : "Travel"
-            : "Arrive");
+            : "Arrive"));
   const handleRowClick = () => {
     if (focusable) {
       onFocus();

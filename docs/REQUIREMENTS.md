@@ -240,7 +240,8 @@ re-describing the whole product.
 - Timed train and bus journeys expand into departure terminal, travel, and arrival
   terminal rows. Configurable rail buffers default to 45/15 minutes and bus
   buffers to 30/15 minutes. Terminal rows are inspectable operational context,
-  not bookable itinerary stops.
+  not bookable itinerary stops, and their timing labels remain specific to the
+  actual terminal type.
 - Displayed durations use minutes below 60 and hours plus remaining minutes at
   60 minutes or more across visits, transfers, routes, and schedules.
 - Route summaries and legs use one Walk and Taxi fallback vocabulary. Straight-line
@@ -390,8 +391,12 @@ re-describing the whole product.
   remain separate Check out and Check in rows. A multi-city transition day
   renders checkout, the complete journey, destination check-in, remaining plans,
   and return in one spine.
-- Harmless trailing hotel locality/address variants share the same stay identity;
-  genuinely different properties remain distinct `H1`, `H2` endpoints.
+- Harmless locality spelling, generic Hotel/Resort words, and trailing address
+  variants share the same stay identity; genuinely different properties remain
+  distinct `H1`, `H2` endpoints.
+- A transfer day omitted origin stay is carried forward from the prior day's
+  active hotel in both Itinerary and Map. Saved car/train/bus mode metadata is
+  normalized into a clickable inter-city leg without requiring a name prefix.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 
