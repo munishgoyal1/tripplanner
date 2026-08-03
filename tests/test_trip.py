@@ -331,6 +331,7 @@ from tripplanner.tools.trip_planner import (
     finalize_trip,
     get_trip_plan,
     list_past_trips,
+    planning_completion_gaps,
     remove_selection,
     set_stop_booked,
     update_trip_plan,
@@ -338,6 +339,103 @@ from tripplanner.tools.trip_planner import (
 
 
 class TestTripPlanState:
+    def test_planning_completion_requires_round_trip_intercity_transport(self):
+        base = {
+            "origin": "Bangalore",
+            "destination": "Mysore",
+            "selected_hotels": [{"name": "Radisson Blu Plaza Mysore"}],
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Radisson Blu Plaza Mysore", "kind": "hotel"},
+                        {"name": "Mysore Palace", "kind": "attraction"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Radisson Blu Plaza Mysore", "kind": "hotel"},
+                        {"name": "Taxi to Mysore Palace", "kind": "transport"},
+                    ],
+                },
+            ],
+        }
+
+        gaps = planning_completion_gaps(base)
+
+        assert any("Bangalore to Mysore" in gap for gap in gaps)
+        assert any("Mysore back to Bangalore" in gap for gap in gaps)
+
+        unrelated_transport = {
+            **base,
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Train: Chennai to Mysore", "kind": "transport"},
+                        {"name": "Radisson Blu Plaza Mysore", "kind": "hotel"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Radisson Blu Plaza Mysore", "kind": "hotel"},
+                        {"name": "Bus: Mysore to Chennai", "kind": "transport"},
+                    ],
+                },
+            ],
+        }
+        assert len([
+            gap for gap in planning_completion_gaps(unrelated_transport)
+            if "journey from" in gap
+        ]) == 2
+
+        no_hotel_boundaries = {
+            **base,
+            "day_wise_itinerary": [{
+                "day": 1,
+                "stops": [{"name": "Train: Bangalore to Mysore", "kind": "transport"}],
+            }],
+        }
+        assert len([
+            gap for gap in planning_completion_gaps(no_hotel_boundaries)
+            if "journey from" in gap
+        ]) == 2
+
+        create_trip_plan.invoke({
+            "destination": "Mysore",
+            "departure_date": "2026-08-10",
+            "return_date": "2026-08-11",
+            "origin": "Bangalore",
+        })
+        save_result = update_trip_plan.invoke({"updates_json": json.dumps(base)})
+        assert "Round-trip transport planning incomplete" in save_result
+
+        complete = {
+            **base,
+            "day_wise_itinerary": [
+                {
+                    "day": 1,
+                    "stops": [
+                        {"name": "Train: Bengaluru to Mysuru", "kind": "transport"},
+                        {"name": "Radisson Blu Plaza Mysore", "kind": "hotel"},
+                        {"name": "Mysore Palace", "kind": "attraction"},
+                    ],
+                },
+                {
+                    "day": 2,
+                    "stops": [
+                        {"name": "Radisson Blu Plaza Mysore", "kind": "hotel"},
+                        {"name": "Train: Mysuru to Bengaluru", "kind": "transport"},
+                    ],
+                },
+            ],
+        }
+        complete_gaps = planning_completion_gaps(complete)
+
+        assert not any("journey from" in gap for gap in complete_gaps)
+
     def test_create_trip_plan(self):
         result = create_trip_plan.invoke({
             "destination": "Goa",

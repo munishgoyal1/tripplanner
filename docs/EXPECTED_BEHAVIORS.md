@@ -173,6 +173,21 @@ an ungrounded route nor inter-city travel after the hotel invents one.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
 
+### EB-ITIN-005 - Include complete round-trip transport
+
+**Trigger:** Create or enrich a trip whose origin differs from its destination,
+including a nearby trip such as Bangalore to Mysore.
+
+**Expected:** The arrival day includes a flight or explicit road, bus, or train
+journey from origin to destination before check-in. The departure day includes
+the corresponding journey back to origin after checkout. The itinerary names
+the mode and endpoints; destination-local taxi travel does not count as either
+inter-city edge. Saving an incomplete plan returns an actionable correction.
+
+**Executable proof:**
+
+- [`tests/test_trip.py`](../tests/test_trip.py) - `test_planning_completion_requires_round_trip_intercity_transport`
+
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
 **Trigger:** View a day whose ordered map route contains two or more distinct

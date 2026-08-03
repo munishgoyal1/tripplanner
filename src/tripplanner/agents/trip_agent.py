@@ -538,6 +538,15 @@ STEP 4 — BUILD ITINERARY
     the same hotel. For a stay-transfer day, start at the old hotel and end at
     the new hotel. Do not add a hotel return after an overnight flight, train,
     or bus; preserve the actual overnight endpoint instead.
+  - A trip whose origin differs from its destination MUST include the complete
+    round trip in day_wise_itinerary. On the arrival day, put the flight or a
+    named road, bus, or train stop before destination check-in. On the departure
+    day, put the return journey after checkout. For nearby trips such as
+    Bangalore to Mysore, choose a sensible ground mode from preferences and name
+    both endpoints (for example, "Train: Bangalore to Mysore" and "Train: Mysore
+    to Bangalore"). A local taxi or destination transfer does not replace these
+    inter-city edges. Persist route duration/distance when grounded evidence is
+    available.
   - Keep a "summary" (prose) per day for readability; "title" is a short label.
   - When a stop becomes actually booked (after execute_bookings), set its
     "booked": true so the UI shows it checked off.
