@@ -7,16 +7,16 @@ Single-agent graph focused on trip planning with tool-calling loop:
 from __future__ import annotations
 
 import operator
-import re
 import time
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.callbacks import BaseCallbackHandler
-from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
 
+from tripplanner import graph_policy
 from tripplanner.agents.trip_agent import (
     TRIP_TOOLS,
     build_trip_system_prompt,
@@ -26,7 +26,7 @@ from tripplanner.agents.trip_agent import (
 )
 from tripplanner.config import get_settings
 from tripplanner.observability import app_event
-from tripplanner.tools.trip_planner import load_active_trip_dict, planning_completion_gaps
+from tripplanner.tools.trip_planner import load_active_trip_dict
 from tripplanner.tools_cache import wrap_tools_with_cache
 from tripplanner.usage import record_usage
 from tripplanner.user_context import get_user_id
@@ -184,279 +184,63 @@ def _tool_was_called(messages: list[BaseMessage], tool_name: str) -> bool:
     return False
 
 
-_COMPLETION_RESEARCH_TOOLS = {
-    "search_flights_duffel",
-    "search_flights",
-    "search_hotels",
-    "search_activities",
-    "search_points_of_interest",
-    "search_places_with_reviews",
-    "nearby_restaurants",
-    "get_weather_forecast",
-    "check_visa_requirements",
-    "find_local_events",
-}
-_MAX_POST_RESEARCH_UPDATES = 1
-_MAX_INITIAL_ITINERARY_UPDATES = 2
-_MAX_TOOL_PHASES_PER_TURN = 10
-_NEW_TRIP_REQUEST_RE = re.compile(
-    r"\b(?:plan|create|start|build|organize|organise)\b.{0,40}"
-    r"\b(?:trip|vacation|holiday|getaway)\b.{0,24}\b(?:to|in)\b",
-    re.IGNORECASE,
-)
-
-
-def _tool_call_positions(messages: list[BaseMessage]) -> list[tuple[int, str]]:
-    positions: list[tuple[int, str]] = []
-    for index, message in enumerate(messages):
-        for tool_call in getattr(message, "tool_calls", None) or []:
-            name = (
-                tool_call.get("name")
-                if isinstance(tool_call, dict)
-                else getattr(tool_call, "name", None)
-            )
-            if name:
-                positions.append((index, name))
-    return positions
+_COMPLETION_RESEARCH_TOOLS = graph_policy.COMPLETION_RESEARCH_TOOLS
+_MAX_POST_RESEARCH_UPDATES = graph_policy.MAX_POST_RESEARCH_UPDATES
+_MAX_INITIAL_ITINERARY_UPDATES = graph_policy.MAX_INITIAL_ITINERARY_UPDATES
+_MAX_TOOL_PHASES_PER_TURN = graph_policy.MAX_TOOL_PHASES_PER_TURN
 
 
 def _current_turn_tool_phases(messages: list[BaseMessage]) -> int:
-    latest_human = max(
-        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-        default=-1,
-    )
-    return sum(
-        1
-        for index, message in enumerate(messages)
-        if index > latest_human and bool(getattr(message, "tool_calls", None))
-    )
+    return graph_policy.current_turn_tool_phases(messages)
 
 
-def _tool_result_texts(messages: list[BaseMessage], tool_name: str) -> list[str]:
-    call_ids: set[str] = set()
-    for message in messages:
-        for tool_call in getattr(message, "tool_calls", None) or []:
-            name = (
-                tool_call.get("name")
-                if isinstance(tool_call, dict)
-                else getattr(tool_call, "name", None)
-            )
-            call_id = (
-                tool_call.get("id")
-                if isinstance(tool_call, dict)
-                else getattr(tool_call, "id", None)
-            )
-            if name == tool_name and call_id:
-                call_ids.add(str(call_id))
-    return [
-        str(message.content or "")
-        for message in messages
-        if str(getattr(message, "tool_call_id", "")) in call_ids
-    ]
+def _active_trip_for_policy() -> dict[str, Any]:
+    try:
+        return load_active_trip_dict() or {}
+    except Exception:
+        return {}
 
 
 def _trip_update_requirement(messages: list[BaseMessage]) -> str | None:
-    positions = _tool_call_positions(messages)
-    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
-    try:
-        trip = load_active_trip_dict() or {}
-    except Exception:
-        return None
-    if not trip.get("destination"):
-        return None
-    if not created_this_turn and not latest_user_has_planning_intent(messages):
-        return None
-
-    update_positions = [index for index, name in positions if name == "update_trip_plan"]
-    if (
-        not trip.get("day_wise_itinerary")
-        and len(update_positions) < _MAX_INITIAL_ITINERARY_UPDATES
-    ):
-        return (
-            "The new trip has no itinerary. Save a complete structured day_wise_itinerary "
-            "now, using sensible defaults rather than asking the user to design it. "
-            "A prior update may have failed or saved no days, so include the required "
-            "updates_json argument with the full itinerary."
-        )
-
-    research_positions = [
-        index for index, name in positions if name in _COMPLETION_RESEARCH_TOOLS
-    ]
-    if not research_positions:
-        return None
-    latest_research = max(research_positions)
-    updates_after_research = [index for index in update_positions if index > latest_research]
-    if not updates_after_research:
-        return (
-            "Research is complete but has not been persisted. Save the full enriched "
-            "day_wise_itinerary and the strongest real hotel, activities, meals, costs, "
-            "and other useful researched choices now."
-        )
-
-    gaps = planning_completion_gaps(trip)
-    if gaps and len(updates_after_research) < _MAX_POST_RESEARCH_UPDATES:
-        return (
-            "The saved plan still has completion gaps: "
-            + " ".join(gaps)
-            + " Use the research already returned to choose sensible defaults, replace "
-            "placeholders, and resubmit the full itinerary now."
-        )
-    return None
+    return graph_policy.trip_update_requirement(
+        messages,
+        _active_trip_for_policy(),
+        has_planning_intent=latest_user_has_planning_intent(messages),
+    )
 
 
 def _trip_hotel_search_requirement(messages: list[BaseMessage]) -> str | None:
-    positions = _tool_call_positions(messages)
-    if any(name == "search_hotels" for _, name in positions):
-        return None
-    try:
-        trip = load_active_trip_dict() or {}
-    except Exception:
-        return None
-    if not trip.get("destination") or not trip.get("day_wise_itinerary"):
-        return None
-    created_this_turn = any(name == "create_trip_plan" for _, name in positions)
-    if not created_this_turn and not latest_user_has_planning_intent(messages):
-        return None
-    hotel_gaps = [
-        gap for gap in planning_completion_gaps(trip) if "hotel" in gap.lower()
-    ]
-    if not hotel_gaps:
-        return None
-    return (
-        "The saved itinerary still has no concrete hotel: "
-        + " ".join(hotel_gaps)
-        + " Search real hotels for every overnight city in one parallel tool-call batch "
-        "so the strongest preference-matched options can be selected by default in the "
-        "next full-plan update. Do not defer another city's hotel search to a later turn."
+    return graph_policy.trip_hotel_search_requirement(
+        messages,
+        _active_trip_for_policy(),
+        has_planning_intent=latest_user_has_planning_intent(messages),
     )
 
 
 def _trip_hotel_fallback_requirement(messages: list[BaseMessage]) -> str | None:
-    positions = _tool_call_positions(messages)
-    if not any(name == "search_hotels" for _, name in positions):
-        return None
-    if any(name == "search_places_with_reviews" for _, name in positions):
-        return None
-    results = _tool_result_texts(messages, "search_hotels")
-    if not results:
-        return None
-    failure_markers = (
-        "not configured",
-        "no hotels found",
-        "hotel list error",
-        "hotel search error",
-    )
-    if not all(
-        any(marker in result.lower() for marker in failure_markers)
-        for result in results
-    ):
-        return None
-    return (
-        "The hotel provider returned no usable candidates. Search Google Places for "
-        "preference-matched hotels in the destination, using a hotel-specific query. "
-        "Use its real names, ratings, review counts, addresses, and place IDs to choose "
-        "the strongest sensible default in the next full-plan update."
-    )
-
-
-_NEW_TRIP_INTENT_RE = re.compile(
-    r"\b(?:new|separate|another|different)\s+(?:\w+\s+){0,3}(?:trip|vacation|holiday|getaway)\b",
-    re.I,
-)
+    return graph_policy.trip_hotel_fallback_requirement(messages)
 
 
 def _latest_user_starts_new_trip(messages: list[BaseMessage]) -> bool:
-    for message in reversed(messages):
-        if isinstance(message, HumanMessage):
-            return bool(_NEW_TRIP_INTENT_RE.search(str(message.content or "")))
-    return False
+    return graph_policy.latest_user_starts_new_trip(messages)
 
 
 def _pending_trip_kickoff_answer(messages: list[BaseMessage]) -> bool:
-    positions = _tool_call_positions(messages)
-    latest_create = max(
-        (index for index, name in positions if name == "create_trip_plan"),
-        default=-1,
-    )
-    latest_kickoff = max(
-        (
-            index
-            for index, name in positions
-            if name == "request_trip_input" and index > latest_create
-        ),
-        default=-1,
-    )
-    latest_human = max(
-        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-        default=-1,
-    )
-    return latest_kickoff >= 0 and latest_human > latest_kickoff
+    return graph_policy.pending_trip_kickoff_answer(messages)
 
 
 def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
     """Choose the required preference-aware step before creating a new trip."""
-    try:
-        active_trip = load_active_trip_dict() or {}
-    except Exception:
-        active_trip = {}
-    if active_trip.get("destination") and not _latest_user_starts_new_trip(messages):
-        return None
-
-    positions = _tool_call_positions(messages)
-    latest_create = max(
-        (index for index, name in positions if name == "create_trip_plan"),
-        default=-1,
+    return graph_policy.trip_kickoff_tool_choice(
+        messages,
+        _active_trip_for_policy(),
+        has_planning_intent=latest_user_has_planning_intent(messages),
     )
-    if any(
-        name == "request_trip_input" and index > latest_create
-        for index, name in positions
-    ):
-        return None
-    if not latest_user_has_planning_intent(messages):
-        return None
-
-    latest_human = max(
-        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-        default=-1,
-    )
-    turn_tools = {name for index, name in positions if index > latest_human}
-    if "create_trip_plan" in turn_tools:
-        return None
-    if "get_travel_preferences" not in turn_tools:
-        return "get_travel_preferences"
-    if "recommend_trip_duration" not in turn_tools:
-        return "recommend_trip_duration"
-    return "request_trip_input"
 
 
 def _trip_creation_tool_choice(messages: list[BaseMessage]) -> str | None:
     """Require a fresh plan for an explicit switch away from the active destination."""
-    try:
-        active_trip = load_active_trip_dict() or {}
-    except Exception:
-        return None
-    active_destination = str(active_trip.get("destination") or "").strip()
-    if not active_destination:
-        return None
-
-    latest_human = max(
-        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
-        default=-1,
-    )
-    if latest_human < 0:
-        return None
-    turn_tools = {
-        name for index, name in _tool_call_positions(messages) if index > latest_human
-    }
-    if "create_trip_plan" in turn_tools:
-        return None
-
-    request = str(messages[latest_human].content or "").strip()
-    if "day trip" in request.lower() or not _NEW_TRIP_REQUEST_RE.search(request):
-        return None
-    if active_destination.lower() in request.lower():
-        return None
-    return "create_trip_plan"
+    return graph_policy.trip_creation_tool_choice(messages, _active_trip_for_policy())
 
 
 def trip_agent(state: AgentState) -> AgentState:
@@ -467,16 +251,18 @@ def trip_agent(state: AgentState) -> AgentState:
     # select_tools() binds only the relevant subset (heavy search tools are
     # added only once planning is active) to trim per-turn prompt tokens.
     proposal_only = bool(state.get("proposal_only"))
-    tool_phases = _current_turn_tool_phases(state["messages"])
-    if not proposal_only and tool_phases >= _MAX_TOOL_PHASES_PER_TURN:
-        try:
-            gaps = planning_completion_gaps(load_active_trip_dict() or {})
-        except Exception:
-            gaps = []
+    decision = graph_policy.resolve_completion_policy(
+        messages=state["messages"],
+        active_trip=_active_trip_for_policy(),
+        proposal_only=proposal_only,
+        has_planning_intent=latest_user_has_planning_intent(state["messages"]),
+    )
+    if decision.budget_exhausted:
+        gaps = list(decision.completion_gaps)
         app_event(
             "agent_model_round",
-            tool_phase=tool_phases,
-            forced_reason="tool_phase_budget",
+            tool_phase=decision.tool_phases,
+            forced_reason=decision.forced_reason,
             completion_gap_count=len(gaps),
             message_count=len(state["messages"]),
         )
@@ -498,97 +284,50 @@ def trip_agent(state: AgentState) -> AgentState:
         )
         return {"messages": [response], "current_agent": "trip"}
 
-    creation_tool = (
-        None if proposal_only else _trip_creation_tool_choice(state["messages"])
-    )
-    new_trip_flow = _latest_user_starts_new_trip(
-        state["messages"]
-    ) or _pending_trip_kickoff_answer(state["messages"])
-    hotel_fallback_requirement = (
-        None
-        if proposal_only or creation_tool or new_trip_flow
-        else _trip_hotel_fallback_requirement(state["messages"])
-    )
-    update_requirement = (
-        None
-        if proposal_only or new_trip_flow or hotel_fallback_requirement
-        else _trip_update_requirement(state["messages"])
-    )
-    hotel_search_requirement = (
-        None
-        if proposal_only or new_trip_flow or hotel_fallback_requirement or update_requirement
-        else _trip_hotel_search_requirement(state["messages"])
-    )
-    kickoff_tool = (
-        None if proposal_only or update_requirement or hotel_search_requirement
-        else _trip_kickoff_tool_choice(state["messages"])
-    )
-    forced_tool = (
-        creation_tool
-        if creation_tool
-        else "search_places_with_reviews"
-        if hotel_fallback_requirement
-        else "update_trip_plan"
-        if update_requirement
-        else "search_hotels"
-        if hotel_search_requirement
-        else "create_trip_plan"
-        if _pending_trip_kickoff_answer(state["messages"])
-        else kickoff_tool
-    )
-    forced_reason = (
-        "new_trip_creation" if creation_tool
-        else "hotel_provider_fallback" if hotel_fallback_requirement
-        else "persist_or_repair_plan" if update_requirement
-        else "missing_concrete_hotel" if hotel_search_requirement
-        else "kickoff_answered" if _pending_trip_kickoff_answer(state["messages"])
-        else "trip_kickoff" if kickoff_tool
-        else "model_choice"
-    )
     app_event(
         "agent_model_round",
-        tool_phase=tool_phases,
-        forced_tool=forced_tool,
-        forced_reason=forced_reason,
+        tool_phase=decision.tool_phases,
+        forced_tool=decision.forced_tool,
+        forced_reason=decision.forced_reason,
         message_count=len(state["messages"]),
     )
     tools = select_tools(state["messages"], proposal_only=proposal_only)
-    if forced_tool:
-        tools = [tool for tool in tools if tool.name == forced_tool]
+    if decision.forced_tool:
+        tools = [tool for tool in tools if tool.name == decision.forced_tool]
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
-        **({"tool_choice": forced_tool} if forced_tool else {}),
+        **({"tool_choice": decision.forced_tool} if decision.forced_tool else {}),
     )
     instructions = [build_trip_system_prompt()]
-    if creation_tool:
+    if decision.forced_reason == "new_trip_creation":
         instructions.append(SystemMessage(content=(
             "The user explicitly requested a different whole-trip destination. "
             "Call create_trip_plan now so the existing active trip is not overwritten."
         )))
-    elif hotel_fallback_requirement:
+    elif decision.forced_reason == "hotel_provider_fallback":
         instructions.append(SystemMessage(content=(
-            hotel_fallback_requirement
+            (decision.requirement or "")
             + " Call search_places_with_reviews before writing any final response."
         )))
-    elif update_requirement:
+    elif decision.forced_reason == "persist_or_repair_plan":
         instructions.append(SystemMessage(content=(
-            update_requirement
+            (decision.requirement or "")
             + " Call update_trip_plan before writing any final response."
         )))
-    elif hotel_search_requirement:
+    elif decision.forced_reason == "missing_concrete_hotel":
         instructions.append(SystemMessage(content=(
-            hotel_search_requirement
+            (decision.requirement or "")
             + " Call search_hotels before writing any final response."
         )))
-    elif kickoff_tool == "request_trip_input":
+    elif decision.kickoff_tool == "request_trip_input":
         instructions.append(SystemMessage(content=(
             "Start this new trip with one compact preference review. Call "
             "request_trip_input now. Enumerate the relevant saved preferences and "
             "past-trip signals already applied in known_context_json, and prefill "
             "useful trip-specific choices. Do not call create_trip_plan yet."
         )))
-    elif kickoff_tool == "recommend_trip_duration":
+    elif decision.kickoff_tool == "recommend_trip_duration":
         instructions.append(SystemMessage(content=(
             "Call recommend_trip_duration now. Preserve any explicit user duration. "
             "Otherwise estimate a fitting duration from destination scope, saved pace, "
