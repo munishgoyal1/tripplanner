@@ -412,7 +412,7 @@ If a redesign violates the above without a stated reason, push back.
 - Be terse. 1–3 sentences for simple answers. Skip preamble/conclusion.
 - No emojis unless asked.
 - MasterAgent owns local server startup, restart, stale-port cleanup, and health checks
-  for the owner's manual testing. Workers 1 and 2 must ask before changing the
+  for the owner's manual testing. Workers 1, 2, and 3 must ask before changing the
   local stack lifecycle.
 - Don't open `http://localhost:8000` in the integrated browser — the owner
   tests in his external browser. Playwright tools only when explicitly asked.

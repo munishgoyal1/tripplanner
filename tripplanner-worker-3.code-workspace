@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {
+      "name": "Tripplanner Agent 3 - Infra",
+      "path": "../tripplanner.worktrees/worker-3"
+    }
+  ],
+  "settings": {
+    "window.title": "Agent 3 - Infra | ${activeEditorShort}${separator}${rootName}",
+    "chat.editing.autoAcceptDelay": 1,
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.editor.restoreEditors": true,
+    "workbench.editor.restoreViewState": true,
+    "files.restoreUndoStack": true,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#7c2d12",
+      "activityBar.foreground": "#ffffff",
+      "statusBar.background": "#9a3412",
+      "statusBar.foreground": "#ffffff",
+      "titleBar.activeBackground": "#7c2d12",
+      "titleBar.activeForeground": "#ffffff"
+    }
+  }
+}

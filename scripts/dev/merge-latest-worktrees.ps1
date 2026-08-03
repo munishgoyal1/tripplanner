@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet(1, 2)]
+    [ValidateSet(1, 2, 3)]
     [int]$WorkerNumber,
 
     [switch]$SkipPrimaryUpdate,
@@ -105,7 +105,7 @@ function Get-WorktreeHeads {
     foreach ($line in $worktreeOutput) {
         if (-not $line) {
             if ($record.worktree -and $record.HEAD -and
-                $record.branch -match "^refs/heads/agents/worker-(1|2)$") {
+                $record.branch -match "^refs/heads/agents/worker-(1|2|3)$") {
                 $worktrees.Add([pscustomobject]@{
                     Path = $record.worktree
                     Head = $record.HEAD
@@ -144,7 +144,7 @@ if ($primaryBranch -ne "master") {
 $workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
     @($WorkerNumber)
 } else {
-    @(1, 2)
+    @(1, 2, 3)
 }
 
 if (-not $ValidateOnly) {

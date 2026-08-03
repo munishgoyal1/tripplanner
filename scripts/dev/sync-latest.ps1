@@ -21,8 +21,9 @@ $agentNumber = switch ($branch) {
     "master" { 0 }
     "agents/worker-1" { 1 }
     "agents/worker-2" { 2 }
+    "agents/worker-3" { 3 }
     default {
-        throw "Sync-Latest supports master, agents/worker-1, or agents/worker-2; found $branch."
+        throw "Sync-Latest supports master or agents/worker-1 through agents/worker-3; found $branch."
     }
 }
 $laneName = if ($agentNumber -eq 0) { "MasterAgent (0)" } else { "Agent $agentNumber" }

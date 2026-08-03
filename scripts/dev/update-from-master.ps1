@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet(0, 1, 2)]
+    [ValidateSet(0, 1, 2, 3)]
     [int]$WorkerNumber,
 
     [switch]$ValidateOnly
@@ -264,7 +264,7 @@ $primaryRoot = Split-Path -Parent $commonGitDir
 $workerNumbers = if ($PSBoundParameters.ContainsKey("WorkerNumber")) {
     @($WorkerNumber)
 } else {
-    @(0, 1, 2)
+    @(0, 1, 2, 3)
 }
 
 if (-not $ValidateOnly) {

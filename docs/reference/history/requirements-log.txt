@@ -3344,3 +3344,12 @@ VALIDATION:
 - Clicking a terminal marker opens its rich map tile and synchronizes contextual
   Details using the exact itinerary occurrence while retaining travel-only
   terminal actions.
+
+=== 2026-08-03 — Add persistent infrastructure lane ===
+
+- Add `Agent 3 - Infra` as persistent worker identity `3` on branch
+  `agents/worker-3` in `C:\repos\tripplanner.worktrees\worker-3`.
+- Keep MasterAgent as reserved lane `0` and owner of the canonical local stack;
+  all three worker lanes require approval before changing that stack lifecycle.
+- Rename the owner-facing all-worktree launcher to `Sync-AllTo-Latest.cmd` and
+  include Agent 3 in committed-head integration and all-lane synchronization.

@@ -10,12 +10,13 @@ $laneNames = @{
     0 = "MasterAgent (0)"
     1 = "Agent 1"
     2 = "Agent 2"
+    3 = "Agent 3 - Infra"
 }
 
 Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
 & "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
 
-foreach ($number in @(0, 1, 2)) {
+foreach ($number in @(0, 1, 2, 3)) {
     $laneName = $laneNames[$number]
     Write-Host "`nSynchronizing $laneName..." -ForegroundColor Cyan
     try {

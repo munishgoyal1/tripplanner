@@ -3,8 +3,8 @@
 The default workflow uses one VS Code window in the primary `tripplanner`
 checkout and works directly on `master`. Use this parallel workflow only for
 clear, sizeable, isolated features when the owner explicitly requests concurrent
-assignments. In that mode, `worker-1` and `worker-2` are separate development
-lanes and the primary checkout is the review/integration lane.
+assignments. In that mode, `worker-1`, `worker-2`, and `worker-3` are separate
+development lanes and the primary checkout is the review/integration lane.
 
 ## Persistent agent windows
 
@@ -14,10 +14,12 @@ The standard slots are:
 |---|---|---|---|
 | Agent 1 - Iti-Map | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
 | Agent 2 - Detail-Chat | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
+| Agent 3 - Infra | `C:\repos\tripplanner.worktrees\worker-3` | `agents/worker-3` | `tripplanner-worker-3.code-workspace` |
 | MasterAgent - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
 
 Agent 1 defaults to Itinerary, Map, and their shared focus/view-model contracts.
 Agent 2 defaults to Details, Chat, and their assistant interaction contracts.
+Agent 3 defaults to infrastructure, deployment, and operational tooling.
 These are logical task-routing defaults, not hard code boundaries. MasterAgent
 uses reserved integer `0`; workers use positive integer identities. Keep worker
 branch names, worktree paths, and numeric script arguments stable. Assign
@@ -29,7 +31,7 @@ confirm the branch in the status bar before committing or merging.
 
 When parallel mode is requested, double-click `Open-Tripplanner-All-Agents.cmd`
 from the repository. The command resolves the primary checkout through Git,
-verifies both worker workspaces plus the integration workspace, and opens them
+verifies all three worker workspaces plus the integration workspace, and opens them
 in separate VS Code windows. VS Code restores
 the last window position, editor groups and tabs, cursor/scroll state, undo
 history, and terminal sessions for each workspace. The committed workspace
@@ -40,14 +42,15 @@ buffers across a normal restart.
 
 The launcher does not restart active dev servers or commands after a machine
 reboot. MasterAgent owns the local stack from the primary worktree so multiple
-windows do not compete for ports `5173` and `8000`. Workers 1 and 2 must not
+windows do not compete for ports `5173` and `8000`. Workers 1, 2, and 3 must not
 start, stop, or restart it unless the owner explicitly approves that action.
 
 The equivalent PowerShell command, including a validation-only mode, is:
 
 ```powershell
 .\scripts\open-agent-windows.ps1 -IncludeWorker2
-.\scripts\open-agent-windows.ps1 -IncludeWorker2 -WhatIf
+.\scripts\open-agent-windows.ps1 -IncludeWorker2 -IncludeWorker3
+.\scripts\open-agent-windows.ps1 -IncludeWorker2 -IncludeWorker3 -WhatIf
 ```
 
 Create the worker slots once from the primary checkout:
@@ -55,8 +58,10 @@ Create the worker slots once from the primary checkout:
 ```powershell
 .\scripts\dev\agent-worktree.ps1 -Create worker-1 -NoOpen
 .\scripts\dev\agent-worktree.ps1 -Create worker-2 -NoOpen
+.\scripts\dev\agent-worktree.ps1 -Create worker-3 -NoOpen
 code --new-window .\tripplanner-worker-1.code-workspace
 code --new-window .\tripplanner-worker-2.code-workspace
+code --new-window .\tripplanner-worker-3.code-workspace
 ```
 
 Keep the worktree folders and their isolated dependencies between assignments.
@@ -135,7 +140,7 @@ worktree that should receive all latest committed code; no lane number is needed
 ```
 
 From MasterAgent, it integrates committed local and remote worker heads into
-`master`. From Worker 1 or Worker 2, the no-argument command first integrates
+`master`. From Agents 1-3, the no-argument command first integrates
 every committed worker head through `master`, then merges that result into only
 the launcher worktree. Pass `onlymaster` from any lane to receive the latest
 committed `master` without integrating sibling worktrees. The internal merge engine
@@ -155,15 +160,15 @@ Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
 
-To intentionally synchronize every worktree from MasterAgent, Agent 1, or Agent 2
+To intentionally synchronize every worktree from MasterAgent or Agents 1-3
 launcher, run:
 
 ```powershell
-.\scripts\user\All-SyncTo-Latest.cmd
+.\scripts\user\Sync-AllTo-Latest.cmd
 ```
 
 This first integrates committed heads through `master`, then updates MasterAgent,
-Agent 1, and Agent 2 independently. Each lane's staged, unstaged, and untracked
+Agents 1, 2, and 3 independently. Each lane's staged, unstaged, and untracked
 files are preserved in an exact safety stash. Git `rerere` automatically applies
 a previously recorded resolution. A novel local-edit conflict retains that
 lane's stash, lists its unresolved paths, and allows the other lanes to continue;
