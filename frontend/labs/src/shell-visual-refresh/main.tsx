@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
 import "../../../src/index.css";
 
@@ -182,9 +183,9 @@ function ShellVisualRefreshLab() {
   return (
     <main className="min-h-full bg-[#f4f6f5] px-4 py-7 sm:px-6 lg:px-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <div className="mx-auto max-w-[92rem]">
-        <header className="flex flex-wrap items-end justify-between gap-5 border-b border-[#dce2df] pb-5">
+        <LabNavigation detail labId="shell-visual-refresh" />
+        <header className="mt-4 flex flex-wrap items-end justify-between gap-5 border-b border-[#dce2df] pb-5">
           <div><div className="flex items-center gap-2 text-[#d94d61]"><Sparkles size={16} /><p className="text-[10px] font-bold uppercase">Active UX Lab</p></div><h1 className="mt-2 text-3xl font-semibold text-[#172433]" style={{ fontFamily: "'Newsreader', serif" }}>Workspace visual refresh</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-[#66727d]">Compare a quieter, more modern shell and decide how pane controls should communicate meaning. Production behavior is unchanged by this experiment.</p></div>
-          <a href="./catalog.html" className="inline-flex items-center gap-2 text-xs font-semibold text-[#66727d]"><ArrowLeft size={14} /> Back to All Labs</a>
         </header>
         <LabScope labId="shell-visual-refresh" />
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Shell control variants">

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import {
-  ArrowLeft,
   BedDouble,
   CalendarDays,
   CheckCircle2,
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
 import "../shared/experiment-layout.css";
 
@@ -222,8 +222,8 @@ function Lab() {
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
+        <LabNavigation detail labId="trip-snapshot-hierarchy" />
         <header className="border-b border-slate-200 pb-5">
-          <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a>
           <div className="mt-4 flex items-center gap-2 text-brand"><Sparkles size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Itinerary overview</p></div>
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Trip snapshot hierarchy</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">The standard product term is <strong className="font-semibold text-ink">trip snapshot</strong>: a whole-trip summary band at the top of Itinerary. It is not a generic panel and it is distinct from each day’s Day brief.</p>

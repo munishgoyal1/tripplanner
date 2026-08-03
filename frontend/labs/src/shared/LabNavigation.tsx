@@ -1,14 +1,25 @@
 import { Archive, ArrowLeft, FlaskConical, ListChecks, PauseCircle, ScanSearch } from "lucide-react";
+import { allLabs } from "./labRecords";
 
 type LabSection = "catalog" | "active" | "implemented-review" | "parked" | "completed";
 
-export function LabNavigation({ current = "active", detail = false }: { current?: LabSection; detail?: boolean }) {
+type LabNavigationProps =
+  | { current?: LabSection; detail?: false; labId?: never }
+  | { current?: never; detail: true; labId: string };
+
+export function LabNavigation({ current = "active", detail = false, labId }: LabNavigationProps) {
   if (detail) {
+    const lab = allLabs.find((candidate) => candidate.id === labId);
+    if (!lab) throw new Error(`Unknown Lab: ${labId}`);
+
     return (
-      <nav aria-label="Lab navigation">
+      <nav className="flex w-full items-center justify-between gap-3" aria-label="Lab navigation">
         <a href="./catalog.html" className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-white px-2.5 text-xs font-semibold text-slate-600 shadow-card ring-1 ring-slate-200 transition hover:text-brand hover:ring-brand/30">
           <ArrowLeft size={13} aria-hidden /> Back to All Open Labs
         </a>
+        <span className="inline-flex h-8 items-center rounded-sm bg-ink px-2.5 text-xs font-bold text-white">
+          Lab #{lab.labNumber}
+        </span>
       </nav>
     );
   }
