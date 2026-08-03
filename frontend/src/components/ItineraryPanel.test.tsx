@@ -156,7 +156,8 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Seine cruise rating 4.7 out of 5")).toHaveTextContent("12.5K reviews");
     expect(screen.getByText("Must-visit score 91/100")).toBeInTheDocument();
     expect(screen.getAllByText("Arrive")).toHaveLength(2);
-    expect(screen.getByText("120 min visit")).toBeInTheDocument();
+    expect(screen.getByText("2 hrs visit")).toBeInTheDocument();
+    expect(screen.getByText("1 hr visit")).toBeInTheDocument();
     expect(screen.queryByText("In trip")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
     expect(screen.getByLabelText("Light rain, high 18 degrees Celsius, low 12 degrees Celsius")).toHaveTextContent("18° / 12°C");
@@ -347,6 +348,39 @@ describe("ItineraryPanel", () => {
     expect(onStopFocus).toHaveBeenCalledWith("origin", "Bangalore", 1, 1);
   });
 
+  it("treats a generic car transport row as a clickable travel leg", async () => {
+    const onStopFocus = vi.fn();
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [{
+          ...baseStop,
+          name: "Madurai to Kanyakumari",
+          kind: "transport",
+          time: "09:00",
+          departure_time: "13:30",
+          duration_min: 270,
+          mode: "car",
+        }],
+      }],
+    });
+
+    render(<ItineraryPanel onStopFocus={onStopFocus} />);
+
+    expect(await screen.findByText("Travel")).toBeInTheDocument();
+    expect(screen.getByText("Ends 13:30")).toBeInTheDocument();
+    expect(screen.getByText("4 hrs 30 min transfer")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Madurai to Kanyakumari").closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith(
+      "transport",
+      "Madurai to Kanyakumari",
+      1,
+      1,
+    );
+  });
+
   it("shows both flight airports with A markers and their local times", async () => {
     const onStopFocus = vi.fn();
     const baseStop = itinerary.days[0].stops[0];
@@ -431,6 +465,28 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("Check in")).toBeInTheDocument();
   });
 
+  it("treats a trailing hotel locality as the same stay", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...itinerary.days[0].stops[0], name: "Sparsa Kanyakumari", kind: "hotel" },
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Sparsa Kanyakumari, Kanyakumari", kind: "hotel" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect((await screen.findAllByLabelText("Hotel map marker")).map((marker) => marker.textContent))
+      .toEqual(["H"]);
+    expect(screen.getByText("Return to Sparsa Kanyakumari, Kanyakumari")).toBeInTheDocument();
+    expect(screen.queryByText("Check out")).not.toBeInTheDocument();
+    expect(screen.queryByText("Check in")).not.toBeInTheDocument();
+  });
+
   it("uses the full hotel-to-hotel span for the schedule", async () => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,
@@ -458,6 +514,7 @@ describe("ItineraryPanel", () => {
   });
 
   it("ends the schedule at a final transit arrival", async () => {
+    const onStopFocus = vi.fn();
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,
       days: [{
@@ -476,10 +533,11 @@ describe("ItineraryPanel", () => {
       }],
     });
 
-    render(<ItineraryPanel />);
+    render(<ItineraryPanel onStopFocus={onStopFocus} />);
 
     expect((await screen.findByText("Schedule duration:")).parentElement).toHaveTextContent("5 hr 30 min · 08:00–13:30");
-    expect(screen.getByText("Gare du Nord").closest("button")).toBeDisabled();
+    fireEvent.click(screen.getByText("Gare du Nord").closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith("transport", "Gare du Nord", 1, 2);
   });
 
   it("requests the complete circuit when the day header is clicked", async () => {

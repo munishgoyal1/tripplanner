@@ -59,6 +59,10 @@ class Settings(BaseModel):
     flight_duration_default_min: int = _env_positive_int("FLIGHT_DURATION_DEFAULT_MIN", 90)
     airport_departure_buffer_min: int = _env_positive_int("AIRPORT_DEPARTURE_BUFFER_MIN", 120)
     airport_arrival_buffer_min: int = _env_positive_int("AIRPORT_ARRIVAL_BUFFER_MIN", 45)
+    railway_departure_buffer_min: int = _env_positive_int("RAILWAY_DEPARTURE_BUFFER_MIN", 45)
+    railway_arrival_buffer_min: int = _env_positive_int("RAILWAY_ARRIVAL_BUFFER_MIN", 15)
+    bus_departure_buffer_min: int = _env_positive_int("BUS_DEPARTURE_BUFFER_MIN", 30)
+    bus_arrival_buffer_min: int = _env_positive_int("BUS_ARRIVAL_BUFFER_MIN", 15)
 
     # Read-only Viator tours and activity schedules. Transactional APIs are absent.
     viator_api_key: str = os.getenv("VIATOR_API_KEY", "")

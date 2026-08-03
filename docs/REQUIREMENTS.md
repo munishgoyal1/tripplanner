@@ -237,6 +237,12 @@ re-describing the whole product.
   model used by Map. A known checkout anchors its estimated departure, arrival,
   and destination check-in; without a departure anchor, duration remains visible
   but clock times are not invented.
+- Timed train and bus journeys expand into departure terminal, travel, and arrival
+  terminal rows. Configurable rail buffers default to 45/15 minutes and bus
+  buffers to 30/15 minutes. Terminal rows are inspectable operational context,
+  not bookable itinerary stops.
+- Displayed durations use minutes below 60 and hours plus remaining minutes at
+  60 minutes or more across visits, transfers, routes, and schedules.
 - Route summaries and legs use one Walk and Taxi fallback vocabulary. Straight-line
   fallback uses Walk only through 1.5 km and Taxi for longer legs. Metro is shown
   only when route evidence establishes service; distance alone never implies that
@@ -384,6 +390,8 @@ re-describing the whole product.
   remain separate Check out and Check in rows. A multi-city transition day
   renders checkout, the complete journey, destination check-in, remaining plans,
   and return in one spine.
+- Harmless trailing hotel locality/address variants share the same stay identity;
+  genuinely different properties remain distinct `H1`, `H2` endpoints.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 
@@ -414,7 +422,11 @@ implemented capability baseline.
   source-to-destination route and connector without opening place Details or
   changing the destination-local framing used by aggregate day focus.
 - Aggregate day focus clears exact-place focus, applies the framing rule above,
-  aligns the itinerary at the day's summary, and visibly selects that day card.
+  aligns the itinerary at the day's summary, visibly selects that day card, and
+  replaces any stale place tile with day title/destination, schedule, and route context.
+- Itinerary stop names remain the map identity. Provider metadata may enrich a
+  pin only when the returned place name plausibly matches; a clearly mismatched
+  result must not supply coordinates or relabel the stop.
 - All-days focus clears exact and single-day focus, fits all circuits and complete
   dotted flight connections, aligns the itinerary at the trip summary, and
   visibly selects the clickable Trip Snapshot.

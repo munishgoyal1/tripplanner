@@ -3363,3 +3363,17 @@ VALIDATION:
 - Announce a new itinerary as ready only after its refreshed view loads, then invite
   the user to inspect it. Summarize existing-itinerary changes from the refreshed
   authoritative mutation outcome, and distinguish proposal-only reviews and reload failures.
+
+=== 2026-08-03 — Repair Madurai and Kanyakumari itinerary regressions ===
+
+- Add railway-station and bus-stand timing rows with realistic departure and
+  arrival buffers, matching the operational treatment of airports.
+- Make every transport row a clickable route action and use travel-leg timing
+  language rather than generic place-arrival language for car transfers.
+- Format every displayed duration of at least 60 minutes as hours and minutes.
+- Keep itinerary place identity authoritative on Map; reject clearly mismatched
+  provider coordinates such as a beach resolving to an unrelated palace.
+- Treat harmless locality variants of the same hotel as one `H` identity while
+  preserving `H1`/`H2` for genuinely different properties.
+- Replace stale place details with destination/day schedule and route context when
+  day-level or all-days map focus is selected.
