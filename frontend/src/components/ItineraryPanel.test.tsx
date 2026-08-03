@@ -509,8 +509,8 @@ describe("ItineraryPanel", () => {
   });
 
   it.each([
-    ["Hyatt Place Rameswaram", "Hyatt Place Rameshwaram"],
-    ["Sparsa Kanyakumari", "Sparsa Resorts Kanyakumari"],
+    ["Hyatt Place Rameswaram", "Hyatt Place Rameshwaram (Hotel)"],
+    ["Sparsa Kanyakumari", "Sparsa Resort"],
   ])("treats %s and %s as one hotel", async (startName, returnName) => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,

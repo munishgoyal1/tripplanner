@@ -181,7 +181,8 @@ another city, and checks in at a different hotel.
 **Expected:** Check out, every journey stop, destination check-in, and remaining
 destination plans appear once in one ordered transition spine. The two hotels
 remain distinct `H1` and `H2` endpoints. A repeated return to the destination
-hotel, including harmless locality spelling and generic Hotel/Resort variants,
+hotel, including harmless locality spelling, abbreviated property names, and
+generic Hotel/Resort variants,
 shares one `H`
 identity and appears after the final plan as a compact chronological endpoint carrying
 its incoming travel and return time, without duplicating stay controls or hotel

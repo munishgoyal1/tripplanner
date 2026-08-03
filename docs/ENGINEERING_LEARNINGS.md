@@ -14,6 +14,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Shared concepts need shared normalization and formatting. Exact hotel strings,
   pin IDs, and duplicate duration formatters create cross-surface regressions even
   when each component looks locally correct.
+- Hotel aliases can differ by omitted locality as well as spelling or generic
+  property words. Compare meaningful property-name tokens across every labeling
+  surface while preserving fully qualified same-brand hotels in different cities.
 - Persisted mode fields and display names are independent evidence. Normalize them
   once before deriving terminal expansion, clickability, or map edges; requiring a
   magic `Drive:` prefix makes valid saved car legs disappear from interaction.

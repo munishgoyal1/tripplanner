@@ -163,9 +163,9 @@ describe("map stop selection", () => {
       ...view,
       pins: [
         hotel("hyatt-short", "Hyatt Place Rameswaram"),
-        hotel("hyatt-long", "Hyatt Place Rameshwaram Hotel"),
+        hotel("hyatt-long", "Hyatt Place Rameshwaram (Hotel)"),
         hotel("sparsa-short", "Sparsa Kanyakumari"),
-        hotel("sparsa-long", "Sparsa Resorts Kanyakumari"),
+        hotel("sparsa-long", "Sparsa Resort"),
       ],
       days: [{ ...view.days[0], pin_ids: ["hyatt-short", "hyatt-long", "sparsa-short", "sparsa-long"] }],
     }, 3))).toEqual({
@@ -174,6 +174,11 @@ describe("map stop selection", () => {
       "sparsa-short": "H2",
       "sparsa-long": "H2",
     });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      pins: [hotel("hyatt-rameswaram", "Hyatt Place Rameswaram"), hotel("hyatt-madurai", "Hyatt Place Madurai")],
+      days: [{ ...view.days[0], pin_ids: ["hyatt-rameswaram", "hyatt-madurai"] }],
+    }, 3))).toEqual({ "hyatt-rameswaram": "H1", "hyatt-madurai": "H2" });
     expect(decodeURIComponent(hotelIcon(false, "H1"))).toContain(">H1</text>");
     expect(decodeURIComponent(hotelIcon(false, "H2"))).toContain(">H2</text>");
   });

@@ -5,7 +5,7 @@ import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../ty
 import ItineraryStopRow from "./ItineraryStopRow";
 import TripSnapshot from "./TripSnapshot";
 import WeatherIcon from "./WeatherIcon";
-import { hotelIdentityKey } from "./map/placeIdentity";
+import { hotelIdentityGroups, hotelIdentityMatches } from "./map/placeIdentity";
 
 interface Props {
   overview?: TripOverview | null;
@@ -76,16 +76,17 @@ function DayCard({
   onRemove?: (kind: string, name: string, day: number, stop: number) => void;
 }) {
   let visitOrder = 0;
-  const hotelNames = [...new Set(
-    day.stops
-      .filter((stop) => stop.kind === "hotel")
-      .map((stop) => hotelIdentityKey(stop.name)),
-  )];
+  const hotelNames = hotelIdentityGroups(
+    day.stops.filter((stop) => stop.kind === "hotel").map((stop) => stop.name),
+  );
   const hotelLabels = new Map(
     hotelNames.map((name, index) => [name, hotelNames.length > 1 ? `H${index + 1}` : "H"]),
   );
   const mapLabels = day.stops.map((stop) => {
-    if (stop.kind === "hotel") return hotelLabels.get(hotelIdentityKey(stop.name));
+    if (stop.kind === "hotel") {
+      const hotelName = hotelNames.find((name) => hotelIdentityMatches(name, stop.name));
+      return hotelName ? hotelLabels.get(hotelName) : undefined;
+    }
     if (stop.kind === "airport") return "A";
     if (stop.kind === "origin") return "O";
     if (!["attraction", "meal", "restaurant"].includes(stop.kind)) return undefined;
@@ -102,11 +103,11 @@ function DayCard({
     ? day.stops.findIndex((stop, index) => (
       index < day.stops.length - 1
       && stop.kind === "hotel"
-      && hotelIdentityKey(stop.name) === hotelIdentityKey(lastStop.name)
+      && hotelIdentityMatches(stop.name, lastStop.name)
     ))
     : -1;
   const combinesHotelCircuit = circuitHotelIndex >= 0;
-  const changesHotel = hasHotelEndpoints && hotelIdentityKey(firstStop.name) !== hotelIdentityKey(lastStop.name);
+  const changesHotel = hasHotelEndpoints && !hotelIdentityMatches(firstStop.name, lastStop.name);
   const destinationHotelIndex = changesHotel
     ? combinesHotelCircuit ? circuitHotelIndex : day.stops.length - 1
     : -1;

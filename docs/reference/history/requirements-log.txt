@@ -3382,3 +3382,5 @@ VALIDATION:
 - Carry the prior active hotel into an omitted transfer-day origin in Itinerary and
   Map, and normalize saved `mode: car` metadata into a clickable Drive leg.
 - Use railway- and bus-specific terminal timing labels instead of airport wording.
+- Treat abbreviated hotel property names such as `Sparsa Resort` as the same stay
+  as their locality-qualified form in both Itinerary and Map labels.

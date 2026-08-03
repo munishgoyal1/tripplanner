@@ -1,5 +1,5 @@
 import type { MapLeg, MapPin, MapView } from "../../types";
-import { hotelIdentityKey } from "./placeIdentity";
+import { hotelIdentityGroups, hotelIdentityMatches } from "./placeIdentity";
 
 const FLIGHT_ROUTE_COLOR = "#2563eb";
 const ROAD_ROUTE_COLOR = "#111827";
@@ -143,11 +143,14 @@ export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string,
   const hotels = (day?.pin_ids ?? [])
     .map((id) => view.pins.find((candidate) => candidate.id === id))
     .filter((pin): pin is MapPin => !!pin && pin.kind === "hotel");
-  const identities = [...new Set(hotels.map((pin) => hotelIdentityKey(pin.name)))];
+  const identities = hotelIdentityGroups(hotels.map((pin) => pin.name));
   const labels = new Map(
     identities.map((identity, index) => [identity, identities.length > 1 ? `H${index + 1}` : "H"]),
   );
-  return new Map(hotels.map((pin) => [pin.id, labels.get(hotelIdentityKey(pin.name))!]))
+  return new Map(hotels.map((pin) => {
+    const identity = identities.find((candidate) => hotelIdentityMatches(candidate, pin.name));
+    return [pin.id, labels.get(identity!)!];
+  }));
 }
 
 export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {

@@ -391,9 +391,9 @@ re-describing the whole product.
   remain separate Check out and Check in rows. A multi-city transition day
   renders checkout, the complete journey, destination check-in, remaining plans,
   and return in one spine.
-- Harmless locality spelling, generic Hotel/Resort words, and trailing address
-  variants share the same stay identity; genuinely different properties remain
-  distinct `H1`, `H2` endpoints.
+- Harmless locality spelling, abbreviated property names, generic Hotel/Resort
+  words, and trailing address variants share the same stay identity; genuinely
+  different properties remain distinct `H1`, `H2` endpoints.
 - A transfer day omitted origin stay is carried forward from the prior day's
   active hotel in both Itinerary and Map. Saved car/train/bus mode metadata is
   normalized into a clickable inter-city leg without requiring a name prefix.
