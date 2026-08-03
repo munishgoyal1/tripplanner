@@ -10,7 +10,7 @@ Open <http://localhost:5173> for the app or
 <http://127.0.0.1:5175/catalog.html> for UX Labs in your regular browser
 (Chrome / Edge / Firefox). MasterAgent in the primary workspace owns `dev-spa.ps1`,
 stale-port cleanup, startup, restarts after runtime changes, and health checks
-for manual testing. Workers 1 and 2 must ask the owner before changing the local
+for manual testing. Workers 1, 2, and 3 must ask the owner before changing the local
 stack lifecycle. The owner only refreshes the browser when ready to test a
 feature or Lab.
 
@@ -23,8 +23,8 @@ Only when the owner explicitly requests parallel development, use:
 - `tripplanner-integration.code-workspace` - MasterAgent Review & Integration on `master`
 
 Agent 2 - Detail-Chat on `agents/worker-2` remains available through
-`Open-Tripplanner-All-Agents.cmd` when a third parallel assignment is worth the
-coordination cost.
+`Open-Tripplanner-All-Agents.cmd`. Agent 3 - Infra on `agents/worker-3` owns
+isolated infrastructure assignments when the added coordination is worthwhile.
 
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.
@@ -41,7 +41,7 @@ Use these launchers by outcome:
 | Launcher | Purpose |
 | --- | --- |
 | `scripts/user/Sync-MeTo-Latest.cmd` | Integrate every committed worker head through `master`, then update only the launcher worktree. Pass `onlymaster` to skip sibling integration. |
-| `scripts/user/All-SyncTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent, Agent 1, and Agent 2 while preserving each worktree's local edits. |
+| `scripts/user/Sync-AllTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent and Agents 1-3 while preserving each worktree's local edits. |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. All stack options are optional and forwarded; pass `all` or `-All` to synchronize every worktree first. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |

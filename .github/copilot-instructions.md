@@ -26,8 +26,8 @@ not override the canonical documents above, which govern current behavior.
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
 - The primary `master` workspace is the default development lane. Use persistent
-  Agent 1 - Iti-Map and Agent 2 - Detail-Chat worktrees only for owner-requested,
-  sizeable, isolated parallel assignments. These names are logical default
+  Agent 1 - Iti-Map, Agent 2 - Detail-Chat, and Agent 3 - Infra worktrees only for
+  owner-requested, sizeable, isolated parallel assignments. These names are logical default
   ownership areas. MasterAgent uses reserved integer `0`; worker agents retain
   positive integers, branches, worktree paths, and numeric script arguments.
   Each worker owns one PR-sized change at a time.
@@ -36,12 +36,12 @@ not override the canonical documents above, which govern current behavior.
   committed sibling worktree changes through `master` by default; pass
   `onlymaster` to receive committed `master` without integrating siblings. The launcher is the
   only worktree updated.
-- Use `scripts/user/All-SyncTo-Latest.cmd` only when every worktree should be
+- Use `scripts/user/Sync-AllTo-Latest.cmd` only when every worktree should be
   updated. It may run from any lane, preserves each lane's local edits, reuses
   recorded `rerere` resolutions, and reports novel conflicts without guessing.
 - MasterAgent in the primary workspace owns local stack startup, stop, restart,
-  stale-port cleanup, and health checks for the owner's manual testing. Workers 1
-  and 2 must obtain explicit approval before changing the stack lifecycle and use
+  stale-port cleanup, and health checks for the owner's manual testing. Workers 1,
+  2, and 3 must obtain explicit approval before changing the stack lifecycle and use
   server-free validation by default.
 - Validate once per coherent milestone unless a focused mid-edit check is needed.
   Always commit and push completed changes; do not leave unpushed milestones.

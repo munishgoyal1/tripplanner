@@ -22,7 +22,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Sync-MeTo-Latest.cmd` | Synchronize committed code into the launcher worktree |
-| `user/All-SyncTo-Latest.cmd` | Integrate committed code, then synchronize master and both workers |
+| `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
 

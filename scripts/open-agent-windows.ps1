@@ -7,13 +7,14 @@
   Resolves the primary checkout from Git so the launcher works from the primary
     repository or either persistent worker worktree. VS Code restores each
     workspace's editor groups, tabs, view state, terminal sessions, layout, and
-    window position between launches. Agent 2 remains available through
-    -IncludeWorker2 when a third parallel workstream is useful.
+    window position between launches. Agents 2 and 3 remain available through
+    their include switches when additional parallel workstreams are useful.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-        [switch]$IncludeWorker2
+    [switch]$IncludeWorker2,
+    [switch]$IncludeWorker3
 )
 
 $ErrorActionPreference = "Stop"
@@ -25,14 +26,19 @@ if ($LASTEXITCODE -ne 0 -or -not $commonGitDir) {
 }
 
 $primaryRoot = Split-Path -Parent $commonGitDir.Trim()
-$developmentWorkspace = @{ Name = "Agent 1 - Development"; File = "tripplanner-worker-1.code-workspace"; Root = "$primaryRoot.worktrees\worker-1" }
-$worker2Workspace = @{ Name = "Agent 2 - Worker"; File = "tripplanner-worker-2.code-workspace"; Root = "$primaryRoot.worktrees\worker-2" }
+$developmentWorkspace = @{ Name = "Agent 1 - Iti-Map"; File = "tripplanner-worker-1.code-workspace"; Root = "$primaryRoot.worktrees\worker-1" }
+$worker2Workspace = @{ Name = "Agent 2 - Detail-Chat"; File = "tripplanner-worker-2.code-workspace"; Root = "$primaryRoot.worktrees\worker-2" }
+$worker3Workspace = @{ Name = "Agent 3 - Infra"; File = "tripplanner-worker-3.code-workspace"; Root = "$primaryRoot.worktrees\worker-3" }
 $reviewWorkspace = @{ Name = "MasterAgent - Review & Integration"; File = "tripplanner-integration.code-workspace"; Root = $primaryRoot }
-$workspaces = if ($IncludeWorker2) {
-    @($developmentWorkspace, $worker2Workspace, $reviewWorkspace)
-} else {
-    @($developmentWorkspace, $reviewWorkspace)
+$workspaces = [System.Collections.Generic.List[object]]::new()
+$workspaces.Add($developmentWorkspace)
+if ($IncludeWorker2) {
+    $workspaces.Add($worker2Workspace)
 }
+if ($IncludeWorker3) {
+    $workspaces.Add($worker3Workspace)
+}
+$workspaces.Add($reviewWorkspace)
 
 if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
     throw "VS Code command 'code' is unavailable. Add it to PATH, then rerun."
