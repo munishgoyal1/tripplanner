@@ -3384,3 +3384,8 @@ VALIDATION:
 - Use railway- and bus-specific terminal timing labels instead of airport wording.
 - Treat abbreviated hotel property names such as `Sparsa Resort` as the same stay
   as their locality-qualified form in both Itinerary and Map labels.
+- Keep Northeast road-transfer waypoints and the destination hotel in one dotted
+  Drive circuit; make natural drive labels and toy-train rows route-focusable.
+- Explain same-vehicle continuation, scenic breaks, and long-drive lunch planning
+  in the drive insight while retaining explicit meals as separate itinerary stops.
+- Add breathing room between the saved-trip dropdown and workspace status text.

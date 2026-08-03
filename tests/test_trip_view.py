@@ -1951,6 +1951,112 @@ def test_transfer_day_starts_from_prior_rameswaram_hotel(
     assert day3["legs"][0]["intercity"] is True
 
 
+def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bagdogra": (26.699, 88.311),
+        "Gangtok Hotel": (27.331, 88.613),
+        "Seven Sisters Falls": (27.536, 88.653),
+        "Singhik View Point": (27.529, 88.556),
+        "Lachung Hotel": (27.689, 88.744),
+        "Darjeeling": (27.041, 88.266),
+        "Darjeeling Hotel": (27.047, 88.263),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city, **_kwargs: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Northeast India",
+        "selected_hotels": [
+            {"name": "Gangtok Hotel"},
+            {"name": "Lachung Hotel"},
+            {"name": "Darjeeling Hotel"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Bagdogra to Gangtok drive",
+                        "kind": "other",
+                        "duration_min": 300,
+                    },
+                    {"name": "Gangtok Hotel", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 4,
+                "stops": [
+                    {"name": "Drive from Gangtok to Lachung", "kind": "other"},
+                    {"name": "Seven Sisters Falls", "kind": "attraction"},
+                    {"name": "Singhik View Point", "kind": "attraction"},
+                    {"name": "Lachung Hotel", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 8,
+                "stops": [
+                    {"name": "Toy train ride", "kind": "other"},
+                    {"name": "Drive to Darjeeling", "kind": "other"},
+                    {"name": "Darjeeling Hotel", "kind": "hotel"},
+                ],
+            },
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+    day1_drive = itinerary["days"][0]["stops"][1]
+    assert day1_drive["kind"] == "transport"
+    assert "lunch or substantial snack stop" in day1_drive["insight"]
+    day4_drive = next(
+        stop for stop in itinerary["days"][1]["stops"] if stop["kind"] == "transport"
+    )
+    assert "same taxi or self-drive vehicle" in day4_drive["insight"]
+    assert "Seven Sisters Falls, Singhik View Point" in day4_drive["insight"]
+    day4_stops = itinerary["days"][1]["stops"]
+    assert day4_drive["duration_estimated"] is True
+    assert all(
+        stop["travel_from_previous"]["mode"] == "Drive"
+        and "same vehicle" in stop["travel_from_previous"]["detail"]
+        for stop in day4_stops[2:]
+    )
+    assert [
+        stop["kind"]
+        for stop in itinerary["days"][2]["stops"]
+        if "train" in stop["name"].lower()
+    ] == ["transport"]
+
+    map_view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in map_view["pins"]}
+    day4 = next(day for day in map_view["days"] if day["day"] == 4)
+    assert [pins_by_id[pin_id]["name"] for pin_id in day4["pin_ids"]] == [
+        "Gangtok Hotel",
+        "Seven Sisters Falls",
+        "Singhik View Point",
+        "Lachung Hotel",
+    ]
+    assert day4["legs"] and all(
+        leg.get("intercity") and leg["mode"] == "Drive" for leg in day4["legs"]
+    ), day4
+    for day_number in (1, 8):
+        day = next(candidate for candidate in map_view["days"] if candidate["day"] == day_number)
+        assert day["legs"] and any(leg["intercity"] for leg in day["legs"])
+
+
 def test_arrival_day_local_outing_returns_to_destination_hotel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

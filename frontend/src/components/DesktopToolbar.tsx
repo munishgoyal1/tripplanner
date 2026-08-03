@@ -46,7 +46,7 @@ export default function DesktopToolbar({
   return (
     <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
       <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
-      <div className="mr-auto flex min-w-32 flex-1 items-center gap-2">
+      <div className="mr-auto flex min-w-32 flex-1 items-center gap-2 pl-2">
         <div className="min-w-0 flex-1" aria-live="polite" role="status">
         {visibleStatus ? (
           <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${

@@ -144,7 +144,9 @@ day title/destination with schedule and route context. Ordinary days fit their c
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
 road-transfer days retain the full origin-to-destination drive in day focus so
-the starting city or saved home area and destination stay remain visible. All
+the starting city or saved home area, on-route scenic or meal waypoints, and
+destination stay remain visible. Every waypoint connector retains the same
+dotted Drive treatment rather than reverting to a local taxi leg. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
@@ -272,7 +274,12 @@ the mode and endpoints; destination-local taxi travel does not count as either
 inter-city edge. A road journey that starts the day renders the saved home area
 or origin city as a separate `O` endpoint, labels the drive as departing from
 that origin, formats long durations in hours and minutes, and includes planned
-snack/rest breaks using saved or inferred driving preferences. Saving an
+snack/rest breaks using saved or inferred driving preferences. Its insight says
+that the same taxi or self-drive vehicle continues through authored waypoints,
+calls out scenic breaks, and prompts a meal stop on a long drive when none is
+authored. An explicit meal remains a separately focusable itinerary waypoint.
+Natural labels such as `Bagdogra to Gangtok drive` and `Drive to Darjeeling`
+remain clickable route actions without requiring a `Drive:` prefix. Saving an
 incomplete plan returns an actionable correction.
 
 **Executable proof:**
@@ -280,6 +287,7 @@ incomplete plan returns an actionable correction.
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_planning_completion_requires_round_trip_intercity_transport`
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_city_origin_drive_includes_origin_and_rest_break`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a road-trip city origin as a non-bookable O marker`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day

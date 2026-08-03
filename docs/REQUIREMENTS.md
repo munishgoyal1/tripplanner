@@ -397,6 +397,10 @@ re-describing the whole product.
 - A transfer day omitted origin stay is carried forward from the prior day's
   active hotel in both Itinerary and Map. Saved car/train/bus mode metadata is
   normalized into a clickable inter-city leg without requiring a name prefix.
+- Natural drive wording also normalizes into a clickable route. Scenic and meal
+  waypoints remain within one Drive circuit through the destination hotel, and
+  long-drive insight explains same-vehicle continuation, useful breaks, and the
+  option to add a preferred meal as a separate stop.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 
@@ -410,7 +414,8 @@ implemented capability baseline.
 - Single-hotel days use `H`; days with distinct hotel endpoints use route-ordered
   `H1`, `H2`, and so on, with a dotted day-colored direct hotel connector.
 - Genuine transfer days instead render one open endpoint-to-endpoint journey in
-  itinerary order. The full journey remains visible, while day focus frames the
+  itinerary order. Road waypoints and the destination stay retain the same Drive
+  edge mode across the full journey. The full journey remains visible, while day focus frames the
   useful destination-local circuit or, on departure-only days, the origin-local
   circuit. Local legs retain the day color. Inter-city connectors are dotted:
   flights are blue, road and bus travel are black, and rail is gray, with a small

@@ -818,7 +818,11 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
         return "Train"
     if "bus" in lowered:
         return "Bus"
-    if any(
+    natural_drive = (
+        lowered.startswith(("drive ", "driving "))
+        or bool(re.search(r"\bto\b.+\b(?:drive|driving)\b$", lowered))
+    )
+    if natural_drive or any(
         token in lowered
         for token in ("drive:", "car:", "car transfer", "road transfer", "private car")
     ):
@@ -1292,25 +1296,66 @@ def _enrich_drive_transfer_timing(
             continue
 
         previous = stops[index - 1]
-        following = stops[index + 1]
-        if previous.get("kind") not in {"hotel", "origin"} or following.get("kind") != "hotel":
+        destination_index = next(
+            (
+                candidate_index
+                for candidate_index in range(index + 1, len(stops))
+                if stops[candidate_index].get("kind") == "hotel"
+            ),
+            -1,
+        )
+        if previous.get("kind") not in {"hotel", "origin"} or destination_index < 0:
             continue
+        following = stops[destination_index]
+        waypoints = [
+            candidate
+            for candidate in stops[index + 1 : destination_index]
+            if candidate.get("kind") in {"attraction", "meal", "restaurant"}
+        ]
         duration = stop.get("duration_min")
         duration_estimated = False
         if not isinstance(duration, (int, float)) or duration <= 0:
-            previous_coords = place_coords_map.get(
-                str(previous.get("name") or "").strip().lower()
-            )
-            following_coords = place_coords_map.get(
-                str(following.get("name") or "").strip().lower()
-            )
-            if previous_coords and following_coords:
-                distance = _haversine_km(previous_coords, following_coords)
+            route_stops = [previous, *waypoints, following]
+            route_coords = [
+                place_coords_map.get(str(candidate.get("name") or "").strip().lower())
+                for candidate in route_stops
+            ]
+            if all(route_coords):
+                distance = sum(
+                    _haversine_km(route_coords[leg_index - 1], route_coords[leg_index])
+                    for leg_index in range(1, len(route_coords))
+                )
                 speed = _INTERCITY_SPEED_KMH["Drive"]
                 duration = max(1, int(round((distance / speed) * 60)))
                 stop["duration_min"] = duration
                 stop["duration_estimated"] = True
                 duration_estimated = True
+
+        route_stops = [previous, *waypoints, following]
+        for leg_index in range(1, len(route_stops)):
+            leg_start = route_stops[leg_index - 1]
+            leg_end = route_stops[leg_index]
+            start_coords = place_coords_map.get(
+                str(leg_start.get("name") or "").strip().lower()
+            )
+            end_coords = place_coords_map.get(
+                str(leg_end.get("name") or "").strip().lower()
+            )
+            if not start_coords or not end_coords:
+                continue
+            distance = _haversine_km(start_coords, end_coords)
+            duration_min = int(round((distance / _INTERCITY_SPEED_KMH["Drive"]) * 60))
+            leg = {
+                "distance_km": round(distance, 1),
+                "duration_min": duration_min,
+                "mode": "Drive",
+                "distance_display": f"{distance:.1f} km",
+                "duration_display": _route_duration_display(duration_min),
+            }
+            leg["detail"] = (
+                f"Continue in the same vehicle from {leg_start['name']} to {leg_end['name']}."
+            )
+            leg_end["travel_from_previous"] = leg
 
         duration = stop.get("duration_min")
         if isinstance(duration, (int, float)) and duration > 0:
@@ -1328,6 +1373,38 @@ def _enrich_drive_transfer_timing(
                 stop["operational_time_display"] = (
                     f"{_stop_duration_display(int(duration))} drive incl. {break_text}"
                 )
+
+        scenic_names = [
+            str(waypoint.get("name") or "").strip()
+            for waypoint in waypoints
+            if waypoint.get("kind") == "attraction"
+            and str(waypoint.get("name") or "").strip()
+        ]
+        meal_names = [
+            str(waypoint.get("name") or "").strip()
+            for waypoint in waypoints
+            if waypoint.get("kind") in {"meal", "restaurant"}
+            and str(waypoint.get("name") or "").strip()
+        ]
+        guidance = [
+            "Keep the same taxi or self-drive vehicle through the route stops "
+            f"and continue to {following['name']}."
+        ]
+        if scenic_names:
+            guidance.append(
+                "Use " + ", ".join(scenic_names) + " as short scenic breaks on the way."
+            )
+        if meal_names:
+            guidance.append("The planned meal stop is " + ", ".join(meal_names) + ".")
+        elif isinstance(duration, (int, float)) and duration >= 240:
+            guidance.append(
+                "Plan a lunch or substantial snack stop on the way; add a preferred venue "
+                "as a separate meal stop when timing or dietary needs matter."
+            )
+        existing_insight = str(stop.get("insight") or "").strip()
+        stop["insight"] = " ".join(
+            [text for text in [existing_insight, *guidance] if text]
+        )
 
         if (
             not stop.get("time")
@@ -1503,6 +1580,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     by_day: dict[int, list[str]] = {}
     route_pin_ids_by_day: dict[int, list[str]] = {}
     intercity_modes_by_day: dict[int, dict[tuple[str, str], str]] = {}
+    transfer_mode_by_day: dict[int, str] = {}
     transfer_days: set[int] = set()
     for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
         if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
@@ -1520,6 +1598,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             mode = _intercity_transfer_mode(str(name or ""), kind)
             if mode:
                 transfer_days.add(day_num)
+                transfer_mode_by_day[day_num] = mode
                 terminal_refs = _transport_terminal_refs(str(name or ""), kind)
                 terminal_ids: list[str] = []
                 for _, terminal_name in terminal_refs:
@@ -1555,7 +1634,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                         intercity_modes_by_day.setdefault(day_num, {})[
                             (route_ids[-1], pin_id)
                         ] = pending_intercity_mode
-                    pending_intercity_mode = None
+                    if pending_intercity_mode != "Drive" or pin["kind"] == "hotel":
+                        pending_intercity_mode = None
                 route_ids.append(pin_id)
 
     unscheduled: list[str] = []
@@ -1667,6 +1747,11 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                     carried_stay_id,
                     *(pin_id for pin_id in route_ids if pin_id != carried_stay_id),
                 ]
+                if len(route_ids) >= 2:
+                    first_edge = (route_ids[0], route_ids[1])
+                    intercity_modes_by_day.setdefault(d, {}).setdefault(
+                        first_edge, transfer_mode_by_day[d]
+                    )
                 for resolved_stay_id in resolved_stay_ids[1:]:
                     if resolved_stay_id not in route_ids:
                         route_ids.append(resolved_stay_id)

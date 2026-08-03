@@ -23,6 +23,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Transfer chronology crosses day boundaries. If a later transfer omits its origin
   stay, carry the prior active hotel into both itinerary and map derivation rather
   than inventing a city origin in one pane or dropping the endpoint in the other.
+- A transfer mode applies to an ordered journey, not only the first edge after its
+  label. Preserve it through authored scenic and meal waypoints until the
+  destination stay, and calculate guidance from that same complete path.
 
 ## 2026-08-03 - Require Native Environment Selection
 
