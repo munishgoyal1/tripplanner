@@ -290,8 +290,8 @@ selected option, exact saved notes, version number, and recorded time. One final
 summary lists every implemented option and its notes. Saving shows an explicit
 confirmation naming the selected option and next version; the re-implementation
 action is visually distinct and cannot remain indefinitely in a Saving state.
-The permanent Lab number appears on the detail page and in its HTML filename. The
-top area explicitly shows the authoritative lifecycle status, includes its state
+The permanent Lab number appears explicitly in the detail page's top header area
+and in its HTML filename. The top area shows the authoritative lifecycle status, includes its state
 date when recorded, updates after a save, and reports unavailable state rather
 than guessing.
 
@@ -301,4 +301,5 @@ than guessing.
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `starts a re-implementation handoff without losing the completed direction`
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `shows exact notes and a final summary for every implementation version`
 - [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `appends the next implementation version after a reopened Lab`
+- [`frontend/labs/src/shared/LabNavigation.test.tsx`](../frontend/labs/src/shared/LabNavigation.test.tsx) - `shows the permanent Lab number in detail-page navigation`
 - [`frontend/labs/src/shared/LabScope.test.tsx`](../frontend/labs/src/shared/LabScope.test.tsx) - `shows authoritative status in the top area and updates after a save`

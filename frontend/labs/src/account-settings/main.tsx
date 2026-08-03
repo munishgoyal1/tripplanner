@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import {
-  ArrowLeft,
   BarChart3,
   ChevronDown,
   ChevronRight,
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
+import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
 import "../shared/experiment-layout.css";
 import { AccountDestination, type AnalyticsPreference, type DestinationId } from "./AccountDestination";
@@ -184,8 +184,8 @@ function Lab() {
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_22rem)] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <LabNavigation detail labId="account-settings" />
         <header className="border-b border-slate-200 pb-5">
-          <a href="./catalog.html" className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={14} aria-hidden /> Back to All Labs</a>
           <div className="mt-4 flex items-center gap-2 text-brand"><CircleUserRound size={15} aria-hidden /><p className="text-xs font-bold uppercase">Active experiment · Account controls</p></div>
           <h1 className="display mt-1 text-3xl font-semibold text-ink">Account and settings ownership</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare how identity, travel preferences, analytics consent, privacy, and sign-out should be grouped without duplicating Account and Settings destinations. Relevant options include complete, interactive Profile and Sign-in, Travel Profile, Analytics, and Privacy and Data destinations.</p>

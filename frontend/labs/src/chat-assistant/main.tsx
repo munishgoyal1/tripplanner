@@ -297,13 +297,13 @@ function ChatAssistantLab() {
   return (
     <main className="min-h-full bg-slate-50 px-4 py-7 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[92rem]">
-        <header className="flex flex-wrap items-end justify-between gap-5 border-b border-slate-200 pb-5">
+        <LabNavigation detail labId="chat-assistant-overlay" />
+        <header className="mt-4 flex flex-wrap items-end justify-between gap-5 border-b border-slate-200 pb-5">
           <div>
             <div className="flex items-center gap-2 text-brand"><MessageCircle size={17} /><p className="text-[10px] font-bold uppercase">Active UX Lab</p></div>
             <h1 className="display mt-2 text-3xl font-semibold text-ink">Assistant overlap after planning</h1>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">Compare three minimally intrusive ways to slide Assistant in for prompts and return visual priority to Itinerary, Map, and Details afterward. Build the brief, collapse it, reopen it, and inspect the same live workspace in every option.</p>
           </div>
-          <LabNavigation detail />
         </header>
 
         <LabScope labId="chat-assistant-overlay" />
