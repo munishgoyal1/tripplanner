@@ -183,6 +183,7 @@ conversation or explicit edit
 | Path | Purpose |
 | --- | --- |
 | `.github/copilot-instructions.md` | Durable coding-agent rules and canonical pointers |
+| `devconfigs/` | Portable, secret-free developer settings, apply logic, and configuration history |
 | `docs/README.md` | Documentation index and ownership |
 | `docs/PRODUCT.md` | Product intent and interaction rules |
 | `docs/REQUIREMENTS.md` | Current capabilities, gaps, and roadmap |
