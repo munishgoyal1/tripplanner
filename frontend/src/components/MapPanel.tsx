@@ -138,6 +138,8 @@ export function capCircuitZoom(map: any): void {
 interface Props {
   /** Bump to refetch the map after the trip changes. */
   reloadToken?: number;
+  /** Stable identity used to reset a newly selected trip to All days. */
+  tripId?: string | null;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
   /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
@@ -175,7 +177,7 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+export default function MapPanel({ reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -208,10 +210,22 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
   const pendingRouteFocusRef = useRef<number | null>(null);
+  const previousTripIdRef = useRef(tripId);
 
   useEffect(() => {
     onPinFocusRef.current = onPinFocus;
   }, [onPinFocus]);
+
+  useEffect(() => {
+    if (previousTripIdRef.current === tripId) return;
+    previousTripIdRef.current = tripId;
+    pendingFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
+    setActiveDay(null);
+    setSelectedPin(null);
+    setCandidatePin(null);
+    setNewStopDay("auto");
+  }, [tripId]);
 
   const populateStopFromGooglePlace = useCallback(
     (place: any) => {

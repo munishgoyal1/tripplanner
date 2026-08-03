@@ -12,6 +12,7 @@ interface Props {
   photos: ReactNode;
   /** Bumped when the trip changes so map + itinerary refetch. */
   reloadToken: number;
+  tripId?: string | null;
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
   /** Exact itinerary day when the focused place occurs more than once. */
@@ -50,6 +51,7 @@ export default function RightRail({
   overview,
   photos,
   reloadToken,
+  tripId,
   focusName,
   focusDay,
   focusStop,
@@ -128,6 +130,7 @@ export default function RightRail({
             <div className="min-h-0 w-full flex-1">
               <MapPanel
                 reloadToken={reloadToken}
+                tripId={tripId}
                 focusName={focusName}
                 focusDay={focusDay}
                 focusStop={focusStop}

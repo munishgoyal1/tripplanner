@@ -61,6 +61,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState<string | null>(null);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
+  const [assistantStatus, setAssistantStatus] = useState<string | undefined>();
   const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
@@ -311,6 +312,7 @@ export default function App() {
     refreshController.current?.abort();
     setLoading(false);
     setPlannerReview(null);
+    setAssistantStatus(undefined);
     dispatchWorkspace({ type: "trip-changed", tripId });
     // The switcher already fetched the fresh view — reuse it instead of making
     // the server rebuild the (cache-backed) view a second time.
@@ -322,6 +324,7 @@ export default function App() {
   };
 
   const handleNewTrip = async () => {
+    setAssistantStatus(undefined);
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
   };
@@ -525,6 +528,7 @@ export default function App() {
   const railProps = {
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
+    tripId: chatTripId,
     focusName: stopFocusName,
     focusDay: stopFocus?.day,
     focusStop: stopFocus?.stop,
@@ -570,6 +574,7 @@ export default function App() {
     return (
       <MapPanel
         reloadToken={tripVersion}
+        tripId={chatTripId}
         focusName={stopFocusName}
         focusDay={stopFocus?.day}
         focusStop={stopFocus?.stop}
@@ -614,6 +619,7 @@ export default function App() {
         onImported={handleImported}
         hideGlobalControls
         assistantRequest={assistantRequest}
+        onProgressChange={setAssistantStatus}
       />
     </AssistantModalShell>
   );
@@ -626,7 +632,7 @@ export default function App() {
   const latestStatus = compactStatus(view?.alerts?.[0]);
   const visibleStatus = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
-    : latestStatus;
+    : assistantStatus ?? latestStatus;
   return <>
     <ErrorBanner message={actionError} onDismiss={() => setActionError(null)} />
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}

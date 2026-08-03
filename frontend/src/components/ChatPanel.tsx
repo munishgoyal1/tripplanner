@@ -39,6 +39,8 @@ interface Props {
   hideGlobalControls?: boolean;
   /** A user-approved command-bar escalation into a real Assistant turn. */
   assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
+  /** Mirrors human-readable planning progress into shared workspace chrome. */
+  onProgressChange?: (status?: string) => void;
 }
 
 const GREETING: ChatMessage = {
@@ -75,6 +77,7 @@ export default function ChatPanel({
   onImported,
   hideGlobalControls = false,
   assistantRequest = null,
+  onProgressChange,
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -130,13 +133,21 @@ export default function ChatPanel({
   useEffect(() => {
     if (!progress) {
       setProgressSeconds(0);
+      onProgressChange?.();
       return;
     }
     const update = () => setProgressSeconds(Math.floor((Date.now() - progress.startedAt) / 1000));
     update();
     const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
-  }, [progress]);
+  }, [onProgressChange, progress]);
+
+  useEffect(() => {
+    if (!progress) return;
+    onProgressChange?.(`${progress.label}${progressSeconds >= 2 ? ` · ${progressSeconds}s` : ""}`);
+  }, [onProgressChange, progress, progressSeconds]);
+
+  useEffect(() => () => onProgressChange?.(), [onProgressChange]);
 
   useEffect(() => () => {
     streamControllerRef.current?.abort();
@@ -396,6 +407,7 @@ export default function ChatPanel({
       await streamChat(outgoing, {
         onToken: (text) => {
           setProgress(null);
+          onProgressChange?.();
           pendingTokens += text;
           if (tokenFrame == null) tokenFrame = window.requestAnimationFrame(flushTokens);
         },

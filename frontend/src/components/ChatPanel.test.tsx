@@ -40,22 +40,28 @@ describe("ChatPanel progress", () => {
 
   it("shows immediate and friendly progress while a turn is running", async () => {
     let handlers: StreamHandlers | undefined;
+    const onProgressChange = vi.fn();
     streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
       handlers = nextHandlers;
       return new Promise<void>(() => {});
     });
-    render(<ChatPanel onTurnComplete={vi.fn()} />);
+    render(<ChatPanel onTurnComplete={vi.fn()} onProgressChange={onProgressChange} />);
 
     const input = await readyComposer();
     fireEvent.change(input, { target: { value: "Plan a Goa weekend" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     expect(screen.getByText(/Thinking through your request/)).toBeInTheDocument();
+    expect(onProgressChange).toHaveBeenLastCalledWith("Thinking through your request");
     await waitFor(() => expect(handlers).toBeDefined());
     act(() => handlers?.onTool("search_places_with_reviews", "start"));
 
     expect(screen.getByText(/Checking places and reviews/)).toBeInTheDocument();
+    expect(onProgressChange).toHaveBeenLastCalledWith("Checking places and reviews");
     expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
+
+    act(() => handlers?.onToken("Here is your plan."));
+    await waitFor(() => expect(onProgressChange).toHaveBeenLastCalledWith());
   });
 
   it("stops an active response without presenting it as a failed request", async () => {

@@ -94,7 +94,9 @@ re-describing the whole product.
 - Tool schemas are selected by conversation phase so greetings and preference
   turns do not pay the context cost of every search provider.
 - The agent presents progress as friendly thinking, search, review, and save
-  phases while keeping internal tool names and raw arguments out of the UI.
+  phases in Assistant and the top command bar beside the trip selector, with
+  elapsed time for long turns, while keeping internal tool names and raw
+  arguments out of the UI.
 - GPT-4.1 is the measured default planning model. A slower or costlier model
   requires evidence that it improves a relevant quality failure.
 
@@ -411,6 +413,8 @@ implemented capability baseline.
 - All-days focus clears exact and single-day focus, fits all circuits and complete
   dotted flight connections, aligns the itinerary at the trip summary, and
   visibly selects the clickable Trip Snapshot.
+- Newly created or selected trips default to All days; content-only refreshes keep
+  the user's current day scope.
 - Provider-expanded or differently punctuated place names still resolve to the
   authoritative itinerary occurrence.
 - Viewport-biased autocomplete and labeled native map POI clicks create a

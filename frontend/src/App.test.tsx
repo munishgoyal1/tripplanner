@@ -43,9 +43,11 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest, onTurnComplete }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; onTurnComplete?: (tripId?: string) => void }) => (
+  default: ({ hideGlobalControls, assistantRequest, onTurnComplete, onProgressChange }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; onTurnComplete?: (tripId?: string) => void; onProgressChange?: (status?: string) => void }) => (
     <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""}>
       <button type="button" onClick={() => onTurnComplete?.("khandala-pune-1")}>Complete planning turn</button>
+      <button type="button" onClick={() => onProgressChange?.("Searching hotels · 42s")}>Report planning progress</button>
+      <button type="button" onClick={() => onProgressChange?.()}>Clear planning progress</button>
     </div>
   ),
 }));
@@ -279,6 +281,19 @@ describe("App responsive workspace", () => {
       "line-clamp-2",
       "whitespace-normal",
     );
+  });
+
+  it("shows live Assistant progress near the trip identity and clears it", async () => {
+    fetchTripViewMock.mockResolvedValue(emptyView);
+    setDesktop(true);
+    render(<App />);
+
+    await screen.findByRole("status");
+    fireEvent.click(screen.getByRole("button", { name: "Report planning progress" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Searching hotels · 42s");
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear planning progress" }));
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
   });
 
   it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {
