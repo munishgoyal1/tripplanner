@@ -83,7 +83,7 @@ export function isInspectableMapPin(
 }
 
 function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
-  return ["airport", "station", "bus_station"].includes(pin.kind);
+  return ["airport", "station", "bus_station", "origin"].includes(pin.kind);
 }
 
 interface PinMarkerEntry {
@@ -402,7 +402,7 @@ export default function MapPanel({ reloadToken = 0, focusName, focusDay, focusSt
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),
         };
-        if (["airport", "station", "bus_station"].includes(p.kind)) return {
+        if (["airport", "station", "bus_station", "origin"].includes(p.kind)) return {
           url: p.kind === "airport" ? airportIcon(isFocused) : terminalIcon(p.kind),
           scaledSize: new google.maps.Size(34, 44),
           anchor: new google.maps.Point(17, 44),

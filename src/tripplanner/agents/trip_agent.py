@@ -69,8 +69,9 @@ def get_travel_preferences() -> str:
 def save_travel_preferences(updates_json: str) -> str:
     """Save or update travel preferences. Pass a JSON string with keys to update.
 
-    Top-level keys: family, trip_style, budget_level, hotel_preferences,
-    transport_preferences, food_preferences, accessibility_needs.
+    Top-level keys: profile, family, trip_style, budget_level,
+    hotel_preferences, transport_preferences, food_preferences,
+    accessibility_needs.
 
     Example: '{"family": {"adults": 2, "children": 1, "child_ages": [5]}, "trip_style": "leisure"}'
     """
@@ -337,7 +338,7 @@ WORKFLOW (follow this order every time):
 STEP 1 — LOAD PREFERENCES (silent, automatic)
   Call get_travel_preferences immediately. Never skip this.
   The loaded prefs include:
-    • profile (name, home_city, country, age_band, occupation) — use to
+    • profile (name, home_city, home_area, country, age_band, occupation) — use to
       personalize greetings ("Hi Munish") and infer trip origins
     • family_members (spouse, kids, parents, pets with ages/dietary/mobility)
       — use these counts/needs INSTEAD of asking
@@ -358,7 +359,8 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
                       user submits or skips, infer anything else and proceed to
                       a complete plan with real searches.
     • "interactive" — Use the same one-step kickoff and include any unresolved
-                      critical dates, companions, accessibility, or budget facts.
+                      critical dates, companions, accessibility, budget, or
+                      long-drive mode/break preferences.
   For every NEW trip, call request_trip_input ONCE before create_trip_plan so
   capable clients render pre-filled controls instead of forcing the user to type.
   Include the relevant saved or inferred facts already applied in
@@ -562,8 +564,10 @@ STEP 4 — BUILD ITINERARY
     Bangalore to Mysore, choose a sensible ground mode from preferences and name
     both endpoints (for example, "Train: Bangalore to Mysore" and "Train: Mysore
     to Bangalore"). A local taxi or destination transfer does not replace these
-    inter-city edges. Persist route duration/distance when grounded evidence is
-    available.
+    inter-city edges. Name road journeys "Drive: origin to destination", use the
+    saved home area as the origin when known, and include realistic snack/rest
+    breaks in duration_min using the saved road-break cadence. Persist route
+    duration/distance when grounded evidence is available.
   - Keep a "summary" (prose) per day for readability; "title" is a short label.
   - When a stop becomes actually booked (after execute_bookings), set its
     "booked": true so the UI shows it checked off.

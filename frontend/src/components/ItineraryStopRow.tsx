@@ -5,6 +5,7 @@ import { isIntercityTravel } from "./map/routeDerivations";
 
 const KIND_ICON: Record<string, string> = {
   hotel: "\u{1F3E8}",
+  origin: "\u{1F4CD}",
   attraction: "\u{1F3AF}",
   meal: "\u{1F37D}\uFE0F",
   transport: "\u{1F695}",
@@ -14,7 +15,7 @@ const KIND_ICON: Record<string, string> = {
 };
 
 function canFocus(stop: ItineraryStop): boolean {
-  return ["hotel", "attraction", "meal", "restaurant", "airport"].includes(stop.kind)
+  return ["hotel", "attraction", "meal", "restaurant", "airport", "origin"].includes(stop.kind)
     || isIntercityTravel(stop.kind, stop.name);
 }
 
@@ -27,7 +28,14 @@ function durationLabel(minutes: number): string {
   const rounded = Math.round(minutes);
   const hours = Math.floor(rounded / 60);
   const remaining = rounded % 60;
-  return `${hours} hr${remaining ? ` ${remaining} min` : ""}`;
+  return `${hours} ${hours === 1 ? "hr" : "hrs"}${remaining ? ` ${remaining} min` : ""}`;
+}
+
+function roadOrigin(name: string): string | null {
+  if (!/(drive:|road transfer|private car)/i.test(name)) return null;
+  const route = name.includes(":") ? name.split(":", 2)[1].trim() : name.trim();
+  const endpoints = route.split(/\s+(?:to|->)\s+/i, 2);
+  return endpoints.length === 2 ? endpoints[0].trim() || null : null;
 }
 
 function uniqueDetailTexts(...values: Array<string | undefined>): string[] {
@@ -90,6 +98,7 @@ export default function ItineraryStopRow({
     && !circuitTimingNotes.has(text.toLowerCase())
   );
   const concernTexts = uniqueDetailTexts(stop.concern);
+  const driveOrigin = stop.kind === "transport" ? roadOrigin(stop.name) : null;
   const timingLabel = circuitReturn ? "Return" : hotelTimingLabel || (stop.terminal_role === "departure"
     ? "Airport arrival"
     : stop.terminal_role === "arrival"
@@ -102,6 +111,8 @@ export default function ItineraryStopRow({
           ? "Return"
           : stop.kind === "flight"
             ? "Depart"
+            : driveOrigin
+              ? `Depart from ${driveOrigin}`
             : "Arrive");
   const handleRowClick = () => {
     if (focusable) {
@@ -139,7 +150,7 @@ export default function ItineraryStopRow({
           </p>
         ) : stop.kind !== "hotel" && stop.duration_min ? (
           <p className="mt-0.5 text-[10px] text-slate-500">
-            {stop.kind === "flight" ? durationLabel(stop.duration_min) : `${Math.round(stop.duration_min)} min`} {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
+            {["flight", "transport"].includes(stop.kind) ? durationLabel(stop.duration_min) : `${Math.round(stop.duration_min)} min`} {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
             {stop.duration_estimated ? " est." : ""}
           </p>
         ) : null}
@@ -218,7 +229,7 @@ export default function ItineraryStopRow({
           </div>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1">
-          {!circuitReturn && stop.kind !== "airport" && <button
+          {!circuitReturn && !["airport", "origin"].includes(stop.kind) && <button
             type="button"
             aria-pressed={stop.booked}
             aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}

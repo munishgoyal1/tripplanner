@@ -1645,6 +1645,16 @@ def create_trip_plan(
         planning_recommendation_json: Complete JSON returned by recommend_trip_duration.
     """
     prefs = load_preferences()
+    origin_supplied = bool(origin.strip())
+    profile = prefs.get("profile") or {}
+    if not origin_supplied:
+        home_city = str(profile.get("home_city") or "").strip()
+        home_area = str(profile.get("home_area") or "").strip()
+        origin = (
+            f"{home_area}, {home_city}"
+            if home_area and home_city and home_city.casefold() not in home_area.casefold()
+            else home_area or home_city
+        )
     planning_recommendation: dict[str, Any] | None = None
     if planning_recommendation_json:
         try:
@@ -1674,7 +1684,7 @@ def create_trip_plan(
     )
     existing = _load_history_trip(trip_id)
     if existing:
-        if origin:
+        if origin_supplied or not str(existing.get("origin") or "").strip():
             existing["origin"] = origin
         if notes:
             existing["notes"] = notes

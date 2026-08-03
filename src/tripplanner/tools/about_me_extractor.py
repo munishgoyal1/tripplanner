@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 _TRIP_STYLES = {"balanced", "relaxed", "adventurous", "cultural", "foodie", "luxury", "budget"}
 _BUDGET_LEVELS = {"budget", "moderate", "comfortable", "luxury"}
 _FLIGHT_CLASSES = {"economy", "premium_economy", "business", "first"}
+_ROAD_TRANSPORT = {"own_car", "taxi", "either"}
 _AGE_BANDS = {"under_20", "20-30", "30-40", "40-50", "50-60", "60+"}
 _VALID_RELATIONSHIPS = {
     "self", "spouse", "partner", "child", "parent", "sibling", "friend", "other",
@@ -35,6 +36,7 @@ Allowed keys and types:
 
 - profile.display_name        string (first name)
 - profile.home_city           string
+- profile.home_area           string (neighborhood, suburb, or usual pickup area)
 - profile.home_country        string
 - profile.age_band            one of: "under_20", "20-30", "30-40", "40-50", "50-60", "60+"
 - profile.occupation          string
@@ -47,6 +49,10 @@ Allowed keys and types:
 - food_preferences.cuisine_dislikes    list of strings
 - transport_preferences.flight_class   one of the flight classes above
 - transport_preferences.prefer_direct_flights   boolean
+- transport_preferences.preferred_road_transport one of: "own_car", "taxi", "either"
+- transport_preferences.max_continuous_drive_min integer minutes before a break
+- transport_preferences.road_break_duration_min integer minutes per break
+- transport_preferences.road_break_preferences list of strings (e.g. ["snack", "restroom"])
 - hotel_preferences.star_rating_min    integer 1..5
 - family_members              list of objects with keys:
     - relationship   one of: "self", "spouse", "partner", "child", "parent",
@@ -181,7 +187,7 @@ def _sanitize_extraction(raw: dict[str, Any]) -> dict[str, Any]:
     # profile.*
     profile_in = raw.get("profile") if isinstance(raw.get("profile"), dict) else {}
     profile_out: dict[str, Any] = {}
-    for key in ("display_name", "home_city", "home_country", "occupation"):
+    for key in ("display_name", "home_city", "home_area", "home_country", "occupation"):
         v = _coerce_str(profile_in.get(key))
         if v is not None:
             profile_out[key] = v
@@ -227,6 +233,18 @@ def _sanitize_extraction(raw: dict[str, Any]) -> dict[str, Any]:
         trans_out["flight_class"] = fc
     if "prefer_direct_flights" in trans_in:
         trans_out["prefer_direct_flights"] = bool(trans_in["prefer_direct_flights"])
+    road_transport = _coerce_enum(
+        trans_in.get("preferred_road_transport"), _ROAD_TRANSPORT
+    )
+    if road_transport:
+        trans_out["preferred_road_transport"] = road_transport
+    for key in ("max_continuous_drive_min", "road_break_duration_min"):
+        minutes = _coerce_int(trans_in.get(key))
+        if minutes is not None:
+            trans_out[key] = max(10, min(480, minutes))
+    road_breaks = _coerce_str_list(trans_in.get("road_break_preferences"))
+    if road_breaks:
+        trans_out["road_break_preferences"] = road_breaks
     if trans_out:
         out["transport_preferences"] = trans_out
 

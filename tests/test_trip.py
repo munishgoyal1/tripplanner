@@ -468,6 +468,38 @@ class TestTripPlanState:
         assert "Goa" in result
         assert "DRAFT" in result
 
+    def test_create_trip_plan_defaults_origin_from_saved_home_area(self):
+        update_preferences({
+            "profile": {"home_city": "Bangalore", "home_area": "Whitefield"},
+        })
+
+        create_trip_plan.invoke({
+            "destination": "Coorg",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+
+        parsed = json.loads(get_trip_plan.invoke({}))
+        assert parsed["origin"] == "Whitefield, Bangalore"
+
+    def test_resume_keeps_existing_explicit_origin(self):
+        create_trip_plan.invoke({
+            "destination": "Coorg",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+            "origin": "Mysore",
+        })
+        update_preferences({"profile": {"home_city": "Bangalore"}})
+
+        create_trip_plan.invoke({
+            "destination": "Coorg",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+
+        parsed = json.loads(get_trip_plan.invoke({}))
+        assert parsed["origin"] == "Mysore"
+
     def test_get_trip_plan(self):
         create_trip_plan.invoke({
             "destination": "Goa",

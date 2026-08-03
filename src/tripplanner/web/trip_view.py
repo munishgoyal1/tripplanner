@@ -802,6 +802,8 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
         ]
     if "bus" in lowered:
         return [("bus_station", f"{origin} Bus Stand"), ("bus_station", f"{destination} Bus Stand")]
+    if _intercity_transfer_mode(text, kind) == "Drive":
+        return [("origin", origin)]
     return []
 
 
@@ -895,6 +897,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         stops = entry.get("stops")
         if not isinstance(stops, list):
             continue
+        has_route_anchor = False
         for s in stops:
             if isinstance(s, dict):
                 name = str(s.get("name") or "").strip()
@@ -906,6 +909,8 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 continue
             terminal_refs = _transport_terminal_refs(name, kind)
             if terminal_refs:
+                if _intercity_transfer_mode(name, kind) == "Drive" and has_route_anchor:
+                    continue
                 for terminal_kind, terminal_name in terminal_refs:
                     _add(terminal_kind, terminal_name)
                     explicit_day_by_name.setdefault(terminal_name.lower(), day_num)
@@ -916,6 +921,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 kind = _infer_kind_from_name(name)
             _add(kind, name)
             explicit_day_by_name.setdefault(name.lower(), day_num)
+            has_route_anchor = True
 
     # 2) User selected places (ensure presence even if stops list is absent).
     for h in trip.get("selected_hotels") or []:
@@ -1082,6 +1088,14 @@ def _route_duration_display(duration_min: int) -> str:
     return f"{hours} hr" + (f" {minutes} min" if minutes else "")
 
 
+def _stop_duration_display(duration_min: int) -> str:
+    if duration_min < 60:
+        return f"{duration_min} min"
+    hours, minutes = divmod(duration_min, 60)
+    unit = "hr" if hours == 1 else "hrs"
+    return f"{hours} {unit}" + (f" {minutes} min" if minutes else "")
+
+
 def _clock_minutes(value: Any) -> int | None:
     match = re.fullmatch(r"\s*(\d{1,2}):(\d{2})(?:\s*([ap]m))?\s*", str(value or ""), re.I)
     if not match:
@@ -1196,7 +1210,16 @@ def _enrich_stop_timing(stops: list[dict[str, Any]]) -> None:
 def _enrich_drive_transfer_timing(
     stops: list[dict[str, Any]],
     place_coords_map: dict[str, tuple[float, float]],
+    transport_preferences: dict[str, Any] | None = None,
 ) -> None:
+    preferences = transport_preferences or {}
+    max_continuous_min = int(preferences.get("max_continuous_drive_min") or 180)
+    break_duration_min = int(preferences.get("road_break_duration_min") or 30)
+    break_preferences = [
+        str(value).strip()
+        for value in preferences.get("road_break_preferences") or ["snack", "rest"]
+        if str(value).strip()
+    ]
     for index in range(1, len(stops) - 1):
         stop = stops[index]
         if _intercity_transfer_mode(
@@ -1206,9 +1229,10 @@ def _enrich_drive_transfer_timing(
 
         previous = stops[index - 1]
         following = stops[index + 1]
-        if previous.get("kind") != "hotel" or following.get("kind") != "hotel":
+        if previous.get("kind") not in {"hotel", "origin"} or following.get("kind") != "hotel":
             continue
         duration = stop.get("duration_min")
+        duration_estimated = False
         if not isinstance(duration, (int, float)) or duration <= 0:
             previous_coords = place_coords_map.get(
                 str(previous.get("name") or "").strip().lower()
@@ -1219,8 +1243,27 @@ def _enrich_drive_transfer_timing(
             if previous_coords and following_coords:
                 distance = _haversine_km(previous_coords, following_coords)
                 speed = _INTERCITY_SPEED_KMH["Drive"]
-                stop["duration_min"] = max(1, int(round((distance / speed) * 60)))
+                duration = max(1, int(round((distance / speed) * 60)))
+                stop["duration_min"] = duration
                 stop["duration_estimated"] = True
+                duration_estimated = True
+
+        duration = stop.get("duration_min")
+        if isinstance(duration, (int, float)) and duration > 0:
+            break_count = max(0, (int(duration) - 1) // max(60, max_continuous_min))
+            if break_count:
+                if duration_estimated:
+                    duration = int(duration) + break_count * max(10, break_duration_min)
+                    stop["duration_min"] = duration
+                break_kind = "/".join(break_preferences[:2]) or "rest"
+                break_text = (
+                    f"one {break_duration_min} min {break_kind} break"
+                    if break_count == 1
+                    else f"{break_count} x {break_duration_min} min {break_kind} breaks"
+                )
+                stop["operational_time_display"] = (
+                    f"{_stop_duration_display(int(duration))} drive incl. {break_text}"
+                )
 
         if (
             not stop.get("time")
@@ -1469,6 +1512,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 
     def _local_pin_ids(day: int, route_ids: list[str]) -> list[str]:
         intercity_edges = intercity_modes_by_day.get(day) or {}
+        if "Drive" in intercity_edges.values():
+            return route_ids
         edge_indexes = next(
             (
                 (route_ids.index(start_id), route_ids.index(end_id))
@@ -1595,7 +1640,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 
 # A stop's "kind" decides its chip + whether it can load place photos.
 _STOP_KINDS = {
-    "hotel", "airport", "attraction", "flight", "meal", "restaurant", "transport", "other"
+    "hotel", "airport", "origin", "attraction", "flight", "meal", "restaurant",
+    "transport", "other"
 }
 _DEFAULT_STOP_DURATION_MIN = {
     "hotel": 45,
@@ -1749,6 +1795,28 @@ def _flight_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
             arrival_estimated,
         ),
     ]
+
+
+def _road_origin_stop(stop: dict[str, Any]) -> dict[str, Any] | None:
+    if _intercity_transfer_mode(stop["name"], stop["kind"]) != "Drive":
+        return None
+    refs = _transport_terminal_refs(stop["name"], stop["kind"])
+    if len(refs) != 1:
+        return None
+    return {
+        "name": refs[0][1],
+        "kind": "origin",
+        "time": str(stop.get("time") or ""),
+        "arrival_time": "",
+        "duration_min": None,
+        "note": "Road journey starts here",
+        "booked": False,
+        "selected": False,
+        "opening_hours": "",
+        "cost_display": "",
+        "insight": "",
+        "concern": "",
+    }
 
 
 def _selected_price_map(trip: dict[str, Any] | None) -> dict[str, float]:
@@ -2290,6 +2358,10 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 s["review_count"] = summary.get("review_count") if is_place else None
                 s["popularity_score"] = _popularity_score(summary) if is_place else None
                 rendered_stops = _flight_terminal_stops(s)
+                if not stops:
+                    road_origin = _road_origin_stop(s)
+                    if road_origin:
+                        rendered_stops = [road_origin, *rendered_stops]
                 for rendered_stop in rendered_stops:
                     rendered_stop["color"] = _day_color(day_num)
                     stops.append(rendered_stop)
@@ -2425,11 +2497,14 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 day_coords.append(coords)
                 previous_coords = coords
                 previous_name = str(stop.get("name") or "")
-        total_stops += sum(stop["kind"] != "airport" for stop in stops)
+        total_stops += sum(stop["kind"] not in {"airport", "origin"} for stop in stops)
 
         # Calculate route stats for the day.
         route = _route_stats_for_day_coords(day_coords)
-        _enrich_drive_transfer_timing(stops, place_coords_map)
+        transport_preferences = (
+            (trip.get("preferences_snapshot") or {}).get("transport_preferences") or {}
+        )
+        _enrich_drive_transfer_timing(stops, place_coords_map, transport_preferences)
         _enrich_stop_timing(stops)
         for stop_index, stop in enumerate(stops[1:], start=1):
             previous = stops[stop_index - 1]

@@ -108,7 +108,7 @@ export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string,
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   const pins = (day?.pin_ids ?? [])
     .map((id) => view.pins.find((candidate) => candidate.id === id))
-    .filter((pin): pin is MapPin => !!pin && !["hotel", "airport", "station", "bus_station"].includes(pin.kind));
+    .filter((pin): pin is MapPin => !!pin && !["hotel", "airport", "station", "bus_station", "origin"].includes(pin.kind));
   const ordered = [...new Map(pins.map((pin) => [pin.id, pin])).values()].sort((left, right) => {
     const leftStop = left.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
     const rightStop = right.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
