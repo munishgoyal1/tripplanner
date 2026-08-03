@@ -7,6 +7,7 @@ import type {
   SelectItemOptions,
   TripView,
 } from '@tripplanner/client';
+import { LatestRequestGate, SerializedMutationQueue } from '@tripplanner/client';
 import {
   createContext,
   type PropsWithChildren,
@@ -25,7 +26,10 @@ import {
   tripplannerClient,
   type MobileAccount,
 } from '@/lib/tripplanner';
-import { LatestRequestGate } from '@tripplanner/client';
+
+import { tripErrorMessage } from './trip-provider-utils';
+import { useSavedTripLifecycle } from './use-saved-trip-lifecycle';
+import { useTripMutations } from './use-trip-mutations';
 
 interface TripContextValue {
   view: TripView | null;
@@ -57,10 +61,6 @@ interface TripContextValue {
 
 const TripContext = createContext<TripContextValue | null>(null);
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Something went wrong.';
-}
-
 export function TripProvider({ children }: PropsWithChildren) {
   const [view, setView] = useState<TripView | null>(null);
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
@@ -77,6 +77,7 @@ export function TripProvider({ children }: PropsWithChildren) {
   } | null>(null);
   const [revision, bumpRevision] = useReducer((value: number) => value + 1, 0);
   const [account, setAccount] = useState<MobileAccount | null>(null);
+  const [mutationQueue] = useState(() => new SerializedMutationQueue());
   const refreshRequests = useRef(new LatestRequestGate());
 
   const refresh = useCallback(async () => {
@@ -105,7 +106,7 @@ export function TripProvider({ children }: PropsWithChildren) {
       }
       bumpRevision();
     } catch (caught) {
-      if (request.isCurrent()) setError(errorMessage(caught));
+      if (request.isCurrent()) setError(tripErrorMessage(caught));
     } finally {
       if (request.isCurrent()) setLoading(false);
     }
@@ -117,55 +118,45 @@ export function TripProvider({ children }: PropsWithChildren) {
     return () => refreshRequests.current.abort();
   }, [refresh]);
 
-  const signIn = useCallback(async () => {
+  const signIn = useCallback(() => {
     setLoading(true);
     setError(null);
     setFailedMessage(null);
-    try {
-      setAccount(await loginWithGoogle());
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setLoading(false);
-    }
-  }, [refresh]);
+    return mutationQueue.run(async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        setAccount(await loginWithGoogle());
+        await refresh();
+      } catch (caught) {
+        setError(tripErrorMessage(caught));
+        setLoading(false);
+      }
+    });
+  }, [mutationQueue, refresh]);
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(() => {
     setFailedMessage(null);
-    await logoutMobile();
-    setAccount(null);
-    setView(null);
-    setItinerary(null);
-    setMap(null);
-    setTrips([]);
-    setMessages([]);
-    await refresh();
-  }, [refresh]);
-
-  const switchTrip = useCallback(async (tripId: string) => {
-    setLoading(true);
-    setError(null);
-    setFailedMessage(null);
-    try {
-      await tripplannerClient.switchTrip(tripId);
+    return mutationQueue.run(async () => {
+      await logoutMobile();
+      setAccount(null);
+      setView(null);
+      setItinerary(null);
+      setMap(null);
+      setTrips([]);
+      setMessages([]);
       await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setLoading(false);
-    }
-  }, [refresh]);
+    });
+  }, [mutationQueue, refresh]);
 
-  const startNewTrip = useCallback(async () => {
-    setLoading(true);
-    setFailedMessage(null);
-    try {
-      await tripplannerClient.startNewTrip();
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setLoading(false);
-    }
-  }, [refresh]);
+  const clearFailedMessage = useCallback(() => setFailedMessage(null), []);
+  const { switchTrip, startNewTrip } = useSavedTripLifecycle({
+    mutationQueue,
+    refresh,
+    clearFailedMessage,
+    setError,
+    setLoading,
+  });
 
   const runMessage = useCallback(async (
     message: string,
@@ -211,7 +202,7 @@ export function TripProvider({ children }: PropsWithChildren) {
       }, { requestId });
       await refresh();
     } catch (caught) {
-      setError(errorMessage(caught));
+      setError(tripErrorMessage(caught));
       setFailedMessage({
         message: trimmed,
         requestId,
@@ -236,45 +227,14 @@ export function TripProvider({ children }: PropsWithChildren) {
     );
   }, [failedMessage, runMessage]);
 
-  const removePlace = useCallback(async (
-    kind: string,
-    name: string,
-    options?: DeselectItemOptions,
-  ) => {
-    setFailedMessage(null);
-    try {
-      const result = await tripplannerClient.deselectItem(kind, name, options);
-      setView(result.view);
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    }
-  }, [refresh]);
-
-  const addPlace = useCallback(async (
-    kind: string,
-    name: string,
-    options?: SelectItemOptions,
-  ) => {
-    setFailedMessage(null);
-    try {
-      const result = await tripplannerClient.selectItem(kind, name, options);
-      setView(result.view);
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    }
-  }, [refresh]);
-
-  const setBooked = useCallback(async (day: number, name: string, booked: boolean) => {
-    setFailedMessage(null);
-    try {
-      setItinerary(await tripplannerClient.setStopBooked(day, name, booked));
-      await refresh();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    }
-  }, [refresh]);
+  const { removePlace, addPlace, setBooked } = useTripMutations({
+    mutationQueue,
+    refresh,
+    clearFailedMessage,
+    setError,
+    setItinerary,
+    setView,
+  });
 
   return (
     <TripContext.Provider value={{
