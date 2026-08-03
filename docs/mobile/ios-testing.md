@@ -13,8 +13,7 @@ Verified on 2026-07-24:
 - React Native 0.81.5 and React 19.1.0
 - Expo Doctor: 18/18 checks pass
 - iPhone-only bundle ID: `com.munishgoyal1.tripplanner`
-- Default API: hosted production API from `mobile/lib/tripplanner.ts`
-- Optional API override: `EXPO_PUBLIC_API_BASE_URL`
+- Required API setting: `EXPO_PUBLIC_API_BASE_URL`
 
 The Expo dependency tree currently reports 14 transitive advisories. Do not run
 `npm audit fix --force`: it proposes an incompatible Expo major-version upgrade.
@@ -67,6 +66,7 @@ the iPhone and PC to the same Wi-Fi, then run:
 
 ```powershell
 cd mobile
+$env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run iphone
 ```
 
@@ -101,13 +101,17 @@ network tunnel.
 
 ## Select the backend
 
-The app uses the hosted production API by default. To test against a reachable
-canary or development backend, set the URL before starting Expo:
+The app does not select a backend implicitly. Set a reachable development,
+canary, or production backend before starting Expo:
 
 ```powershell
 $env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run iphone
 ```
+
+Set the same value in the selected EAS build environment for preview, TestFlight,
+or App Store builds. A missing value stops startup instead of routing a
+development build to production.
 
 `localhost` on an iPhone means the iPhone, not the Windows PC. A local backend
 must listen on a LAN-accessible interface, be allowed through Windows Firewall,

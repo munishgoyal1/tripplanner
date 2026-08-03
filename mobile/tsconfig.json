@@ -3,6 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
+      "@tripplanner/client": [
+        "../packages/tripplanner-client/src/index.ts"
+      ],
       "@/*": [
         "./*"
       ]

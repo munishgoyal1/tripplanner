@@ -1,6 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { exactItineraryOccurrence, LatestRequestGate } from "@tripplanner/client";
+import {
+  exactItineraryOccurrence,
+  LatestRequestGate,
+  requireApiBaseUrl,
+  TripplannerClient,
+  type StreamHandlers,
+} from "../../packages/tripplanner-client/src";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+describe("shared API configuration contract", () => {
+  it("normalizes an explicitly configured API URL", () => {
+    expect(requireApiBaseUrl(" https://canary.example/api/// ", "TRIP_API")).toBe(
+      "https://canary.example/api",
+    );
+  });
+
+  it("rejects a missing API URL instead of selecting an environment implicitly", () => {
+    expect(() => requireApiBaseUrl("  ", "TRIP_API")).toThrow(
+      "TRIP_API must be configured.",
+    );
+  });
+});
 
 describe("shared itinerary occurrence contract", () => {
   it("converts repeated itinerary rows to distinct one-based occurrences", () => {
@@ -29,5 +53,50 @@ describe("shared refresh request gate", () => {
     gate.abort();
     expect(second.signal.aborted).toBe(true);
     expect(second.isCurrent()).toBe(false);
+  });
+});
+
+describe("shared chat stream contract", () => {
+  function handlers(): StreamHandlers {
+    return {
+      onToken: vi.fn(),
+      onTool: vi.fn(),
+      onDone: vi.fn(),
+      onError: vi.fn(),
+    };
+  }
+
+  function streamResponse(chunks: string[]): Response {
+    const encoder = new TextEncoder();
+    return new Response(new ReadableStream({
+      start(controller) {
+        chunks.forEach((chunk) => controller.enqueue(encoder.encode(chunk)));
+        controller.close();
+      },
+    }));
+  }
+
+  it("retains split SSE frames until a terminal event arrives", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamResponse([
+      'event: token\r\ndata: {"text":"Hel',
+      'lo"}\r\n\r\nevent: done\r\ndata: {"reply":"Hello","trip_id":"trip-1"}\r\n\r\n',
+    ])));
+    const events = handlers();
+    const client = new TripplannerClient("/api", () => "local-user");
+
+    await client.streamChat("Plan a trip", events, { requestId: "request-1" });
+
+    expect(events.onToken).toHaveBeenCalledWith("Hello");
+    expect(events.onDone).toHaveBeenCalledWith("Hello", "trip-1");
+  });
+
+  it("rejects a stream that closes without done or error", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamResponse([
+      'event: token\ndata: {"text":"Partial"}\n\n',
+    ])));
+    const client = new TripplannerClient("/api", () => "local-user");
+
+    await expect(client.streamChat("Plan a trip", handlers(), { requestId: "request-1" }))
+      .rejects.toThrow("response stream ended before completion");
   });
 });

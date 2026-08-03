@@ -2,15 +2,16 @@ import { randomUUID } from 'expo-crypto';
 import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
-import { TripplannerClient } from '@tripplanner/client';
+import { requireApiBaseUrl, TripplannerClient } from '@tripplanner/client';
 
-const PROD_API =
-  'https://prod-app-f3ddjudq2rdt4.redglacier-42f3888f.eastus2.azurecontainerapps.io/api';
 const IDENTITY_KEY = 'tripplanner.mobile.user-id';
 const ACCOUNT_KEY = 'tripplanner.mobile.account';
 const SESSION_KEY = 'tripplanner.mobile.session';
 
-export const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, '') || PROD_API;
+export const apiBaseUrl = requireApiBaseUrl(
+  process.env.EXPO_PUBLIC_API_BASE_URL,
+  'EXPO_PUBLIC_API_BASE_URL',
+);
 
 export interface MobileAccount {
   user_id: string;

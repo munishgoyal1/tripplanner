@@ -15,6 +15,12 @@ import type {
 export type IdentityProvider = () => string | Promise<string>;
 export type SessionTokenProvider = () => string | null | Promise<string | null>;
 
+export function requireApiBaseUrl(value: string | undefined, settingName: string): string {
+  const normalized = value?.trim().replace(/\/+$/, "");
+  if (!normalized) throw new Error(`${settingName} must be configured.`);
+  return normalized;
+}
+
 function ensureOk(response: Response, action: string): void {
   if (!response.ok) throw new Error(`${action} (${response.status}).`);
 }
