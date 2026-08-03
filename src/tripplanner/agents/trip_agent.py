@@ -544,7 +544,8 @@ STEP 4 — BUILD ITINERARY
   - "stops" is an ORDERED list of the specific places visited that day. Each
     stop is an object with: name (REQUIRED, must match the hotels/attractions
     you selected), kind (one of: hotel, attraction, meal, transport, flight,
-    other), and optionally time ("HH:MM"), duration_min (int), note (short).
+    other), and optionally time ("HH:MM"), duration_min (int), distance_km
+    (number for a transfer route), note (short).
     For a flight, time is the scheduled departure and arrival_time ("HH:MM")
     is required; use the flight's real local airport times and duration_min.
   - Visit times MUST strictly increase in the same order as the stops array and
@@ -566,8 +567,9 @@ STEP 4 — BUILD ITINERARY
     to Bangalore"). A local taxi or destination transfer does not replace these
     inter-city edges. Name road journeys "Drive: origin to destination", use the
     saved home area as the origin when known, and include realistic snack/rest
-    breaks in duration_min using the saved road-break cadence. Persist route
-    duration/distance when grounded evidence is available.
+    breaks in duration_min using the saved road-break cadence. Persist grounded
+    route duration as duration_min and distance as distance_km on the transfer
+    stop; these values are authoritative across the itinerary and map.
   - Keep a "summary" (prose) per day for readability; "title" is a short label.
   - When a stop becomes actually booked (after execute_bookings), set its
     "booked": true so the UI shows it checked off.

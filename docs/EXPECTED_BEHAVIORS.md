@@ -149,7 +149,10 @@ destination stay remain visible. Every waypoint connector retains the same
 dotted Drive treatment rather than reverting to a local taxi leg. Drive, car,
 private-car, road-journey, and road-transfer labels with directional
 endpoints all normalize to the same clickable route action; display wording
-must not determine whether the route works. All
+must not determine whether the route works. Grounded `distance_km` and
+`duration_min` values are persisted on the transfer stop and remain authoritative
+in Itinerary and Map; a waypoint route allocates those exact totals across its
+ordered drive legs instead of replacing them with straight-line estimates. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
@@ -201,7 +204,9 @@ its incoming travel and return time, without duplicating stay controls or hotel
 details. When a persisted transfer day omits its origin stay, the prior day's
 active hotel is its first endpoint. Mode metadata such as `car` normalizes the
 saved leg into a clickable inter-city route even without a model-authored `Drive:`
-prefix. The itinerary does not pair the hotels as cards or split the day into
+prefix. Hotel identity resolution precedes fuzzy partial-name matching, so an
+aliased stay remains both endpoints of an ordinary day's map circuit even when
+other selected hotels share generic name fragments. The itinerary does not pair the hotels as cards or split the day into
 Journey and After check-in sections.
 
 **Executable proof:**

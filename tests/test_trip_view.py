@@ -1990,6 +1990,7 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
         "Singhik View Point": (27.529, 88.556),
         "Lachung Hotel": (27.689, 88.744),
         "Lachung Hotel & Resort": (25.000, 80.000),
+        "Zero Point": (27.977, 88.702),
         "Darjeeling": (27.041, 88.266),
         "Darjeeling Hotel": (27.047, 88.263),
     }
@@ -2031,7 +2032,12 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
             {
                 "day": 4,
                 "stops": [
-                    {"name": "Drive from Gangtok to Lachung", "kind": "other"},
+                    {
+                        "name": "Drive from Gangtok to Lachung",
+                        "kind": "other",
+                        "distance_km": 121,
+                        "duration_min": 360,
+                    },
                     {"name": "Seven Sisters Falls", "kind": "attraction"},
                     {"name": "Singhik View Point", "kind": "attraction"},
                     {"name": "Lachung Hotel", "kind": "hotel"},
@@ -2040,6 +2046,14 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
             {
                 "day": 5,
                 "stops": [
+                    {"name": "Lachung Hotel & Resort", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 7,
+                "stops": [
+                    {"name": "Lachung Hotel & Resort", "kind": "hotel"},
+                    {"name": "Zero Point", "kind": "attraction"},
                     {"name": "Lachung Hotel & Resort", "kind": "hotel"},
                 ],
             },
@@ -2064,12 +2078,22 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     assert "same taxi or self-drive vehicle" in day4_drive["insight"]
     assert "Seven Sisters Falls, Singhik View Point" in day4_drive["insight"]
     day4_stops = itinerary["days"][1]["stops"]
-    assert day4_drive["duration_estimated"] is True
+    assert day4_drive["distance_km"] == 121
+    assert day4_drive["duration_min"] == 360
+    assert "duration_estimated" not in day4_drive
     assert all(
         stop["travel_from_previous"]["mode"] == "Drive"
         and "same vehicle" in stop["travel_from_previous"]["detail"]
         for stop in day4_stops[2:]
     )
+    day4_travel_legs = [
+        stop["travel_from_previous"]
+        for stop in day4_stops
+        if stop.get("travel_from_previous", {}).get("mode") == "Drive"
+    ]
+    assert sum(leg["distance_km"] for leg in day4_travel_legs) == 121
+    assert sum(leg["duration_min"] for leg in day4_travel_legs) == 360
+    assert all(leg["metrics_source"] == "saved" for leg in day4_travel_legs)
     day8_itinerary = next(day for day in itinerary["days"] if day["day"] == 8)
     assert [
         stop["kind"]
@@ -2089,16 +2113,27 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     assert day4["legs"] and all(
         leg.get("intercity") and leg["mode"] == "Drive" for leg in day4["legs"]
     ), day4
+    assert day4["route"]["distance_km"] == 121
+    assert day4["route"]["duration_min"] == 360
+    assert all(leg["metrics_source"] == "saved" for leg in day4["legs"])
     lachung_pins = [pin for pin in map_view["pins"] if "Lachung" in pin["name"]]
     assert len(lachung_pins) == 1
     assert (lachung_pins[0]["lat"], lachung_pins[0]["lng"]) == coords["Lachung Hotel"]
     assert [(item["day"], item["stop"]) for item in lachung_pins[0]["occurrences"]] == [
         (4, 5),
         (5, 1),
+        (7, 1),
+        (7, 3),
         (8, 1),
     ]
     day5 = next(day for day in map_view["days"] if day["day"] == 5)
     assert day5["pin_ids"] == [lachung_pins[0]["id"]]
+    day7 = next(day for day in map_view["days"] if day["day"] == 7)
+    assert [pins_by_id[pin_id]["name"] for pin_id in day7["pin_ids"]] == [
+        "Lachung Hotel",
+        "Zero Point",
+        "Lachung Hotel",
+    ]
     for day_number in (1, 8):
         day = next(candidate for candidate in map_view["days"] if candidate["day"] == day_number)
         assert day["legs"] and all(leg["intercity"] for leg in day["legs"])

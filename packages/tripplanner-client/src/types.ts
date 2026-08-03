@@ -185,6 +185,7 @@ export interface ItineraryStop {
   arrival_time_estimated?: boolean;
   terminal_role?: "departure" | "arrival";
   duration_min: number | null;
+  distance_km?: number | null;
   duration_estimated?: boolean;
   operational_time_display?: string;
   note: string;

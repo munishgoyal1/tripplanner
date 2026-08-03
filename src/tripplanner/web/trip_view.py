@@ -1371,6 +1371,7 @@ def _enrich_drive_transfer_timing(
                 duration_estimated = True
 
         route_stops = [previous, *waypoints, following]
+        drive_legs: list[dict[str, Any]] = []
         for leg_index in range(1, len(route_stops)):
             leg_start = route_stops[leg_index - 1]
             leg_end = route_stops[leg_index]
@@ -1395,6 +1396,16 @@ def _enrich_drive_transfer_timing(
                 f"Continue in the same vehicle from {leg_start['name']} to {leg_end['name']}."
             )
             leg_end["travel_from_previous"] = leg
+            drive_legs.append(leg)
+
+        _apply_saved_transfer_metrics(
+            drive_legs,
+            {
+                metric: float(stop[metric])
+                for metric in ("distance_km", "duration_min")
+                if isinstance(stop.get(metric), (int, float)) and stop[metric] > 0
+            },
+        )
 
         duration = stop.get("duration_min")
         if isinstance(duration, (int, float)) and duration > 0:
@@ -1493,10 +1504,46 @@ def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]
     }
 
 
+def _apply_saved_transfer_metrics(
+    legs: list[dict[str, Any]], transfer_metrics: dict[str, float] | None
+) -> None:
+    if not legs:
+        return
+    saved_distance = (transfer_metrics or {}).get("distance_km")
+    saved_duration = (transfer_metrics or {}).get("duration_min")
+    if not isinstance(saved_distance, (int, float)) and not isinstance(
+        saved_duration, (int, float)
+    ):
+        return
+
+    weights = [max(float(leg["distance_km"]), 0.001) for leg in legs]
+    weight_total = sum(weights)
+    for metric_name, saved_total in (
+        ("distance_km", saved_distance),
+        ("duration_min", saved_duration),
+    ):
+        if not isinstance(saved_total, (int, float)) or saved_total <= 0:
+            continue
+        allocated = 0.0
+        for index, (leg, weight) in enumerate(zip(legs, weights)):
+            if index == len(legs) - 1:
+                value = saved_total - allocated
+            else:
+                value = saved_total * weight / weight_total
+                value = round(value, 1) if metric_name == "distance_km" else round(value)
+                allocated += value
+            leg[metric_name] = round(value, 1) if metric_name == "distance_km" else int(value)
+    for leg in legs:
+        leg["distance_display"] = f'{leg["distance_km"]:.1f} km'
+        leg["duration_display"] = _route_duration_display(leg["duration_min"])
+        leg["metrics_source"] = "saved"
+
+
 def _route_legs_for_day(
     pin_ids: list[str],
     pin_by_id: dict[str, dict[str, Any]],
     intercity_modes: dict[tuple[str, str], str] | None = None,
+    transfer_metrics: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     legs: list[dict[str, Any]] = []
     for from_id, to_id in zip(pin_ids, pin_ids[1:]):
@@ -1529,6 +1576,10 @@ def _route_legs_for_day(
                 to_name=str(end.get("name") or ""),
             )
         legs.append({"from_pin_id": from_id, "to_pin_id": to_id, **metrics})
+
+    _apply_saved_transfer_metrics(
+        [leg for leg in legs if leg.get("intercity")], transfer_metrics
+    )
     return legs
 
 
@@ -1617,23 +1668,25 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         exact = pin_by_name.get(needle)
         if exact:
             return exact
+        if kind_hint == "hotel":
+            hotel_match = next(
+                (
+                    pin
+                    for pin in pins
+                    if pin["kind"] == "hotel"
+                    and _hotel_identity_matches(str(pin["_source_name"]), str(name or ""))
+                ),
+                None,
+            )
+            if hotel_match:
+                return hotel_match
         partial = next(
             (pin for candidate, pin in pin_by_name.items() if needle in candidate or candidate in needle),
             None,
         )
         if partial:
             return partial
-        if kind_hint != "hotel":
-            return None
-        return next(
-            (
-                pin
-                for pin in pins
-                if pin["kind"] == "hotel"
-                and _hotel_identity_matches(str(pin["_source_name"]), str(name or ""))
-            ),
-            None,
-        )
+        return None
 
     # Structured days are authoritative and may reuse the same place on
     # multiple days. A pin has one primary day for display, while day routes
@@ -1641,6 +1694,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     by_day: dict[int, list[str]] = {}
     route_pin_ids_by_day: dict[int, list[str]] = {}
     intercity_modes_by_day: dict[int, dict[tuple[str, str], str]] = {}
+    transfer_metrics_by_day: dict[int, dict[str, float]] = {}
     transfer_mode_by_day: dict[int, str] = {}
     transfer_days: set[int] = set()
     for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
@@ -1660,6 +1714,14 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             if mode:
                 transfer_days.add(day_num)
                 transfer_mode_by_day[day_num] = mode
+                if isinstance(stop, dict):
+                    saved_metrics = {
+                        metric: float(stop[metric])
+                        for metric in ("distance_km", "duration_min")
+                        if isinstance(stop.get(metric), (int, float)) and stop[metric] > 0
+                    }
+                    if saved_metrics:
+                        transfer_metrics_by_day[day_num] = saved_metrics
                 terminal_refs = _transport_terminal_refs(str(name or ""), kind)
                 terminal_ids: list[str] = []
                 for terminal_kind, terminal_name in terminal_refs:
@@ -1826,7 +1888,12 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 if pin_by_id[pid]["kind"] not in {"airport", "station", "bus_station"}
             ]
         intercity_modes = intercity_modes_by_day.get(d)
-        legs = _route_legs_for_day(route_ids, pin_by_id, intercity_modes)
+        legs = _route_legs_for_day(
+            route_ids,
+            pin_by_id,
+            intercity_modes,
+            transfer_metrics_by_day.get(d),
+        )
         route = _route_stats_for_day(route_ids, pin_by_id)
         if intercity_modes:
             distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
@@ -1966,12 +2033,14 @@ def _normalize_stop(
         if kind not in _STOP_KINDS:
             kind = _infer_stop_kind(name, hotels, activities)
         dur = raw.get("duration_min")
+        distance = raw.get("distance_km")
         return {
             "name": name,
             "kind": kind,
             "time": str(raw.get("time") or "").strip(),
             "arrival_time": str(raw.get("arrival_time") or "").strip(),
             "duration_min": dur if isinstance(dur, (int, float)) else None,
+            "distance_km": distance if isinstance(distance, (int, float)) else None,
             "note": str(raw.get("note") or "").strip(),
             "booked": bool(raw.get("booked")),
             "selected": name.lower()

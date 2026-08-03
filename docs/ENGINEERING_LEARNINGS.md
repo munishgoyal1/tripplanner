@@ -29,6 +29,13 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - A transfer mode applies to an ordered journey, not only the first edge after its
   label. Preserve it through authored scenic and meal waypoints until the
   destination stay, and calculate guidance from that same complete path.
+- Grounded route distance and duration are persisted domain data, not display
+  labels. Preserve them through normalization and allocate the same exact totals
+  across itinerary and map waypoint legs; independent geometric estimates make
+  two correct-looking surfaces contradict each other.
+- Resolve typed hotel identity before generic partial-name matching. Shared words
+  such as Hotel, Resort, or a locality can otherwise attach a day's circuit to a
+  different selected stay and silently remove its real endpoints.
 
 ## 2026-08-03 - Require Native Environment Selection
 
