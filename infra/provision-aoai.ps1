@@ -40,7 +40,7 @@ if ([string]::IsNullOrWhiteSpace($ResourceGroup)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($AccountName)) {
-    $AccountName = if ($Environment -eq "prod") { "aoaiprodtripplanner" } else { "aoaicanarytripplanner" }
+    $AccountName = if ($Environment -eq "prod") { "aoaiprodmd1ks" } else { "aoaicanarymd1ks" }
 }
 
 if ([string]::IsNullOrWhiteSpace($DeploymentName)) {
