@@ -36,30 +36,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function Import-DotEnv {
-    param([string]$Path = ".env")
-
-    if (-not (Test-Path $Path)) {
-        return
-    }
-
-    Get-Content $Path | ForEach-Object {
-        if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
-            $name = $matches[1].Trim()
-            $value = $matches[2].Trim()
-
-            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name, 'Process'))) {
-                [Environment]::SetEnvironmentVariable($name, $value, 'Process')
-                Set-Item -Path "Env:$name" -Value $value
-            }
-        }
-    }
-}
-
-if (-not (Test-Path $EnvFile)) {
-    throw "Production environment file not found: $EnvFile"
-}
-Import-DotEnv -Path $EnvFile
+. "$PSScriptRoot/deployment-common.ps1"
+Import-DeploymentEnvironment -Path $EnvFile
 
 # Configuration
 $prodRG = $ResourceGroup
@@ -239,16 +217,8 @@ $rawWhatIf = az deployment group what-if `
 if ($LASTEXITCODE -ne 0) {
     throw "Production infrastructure what-if failed."
 }
-$jsonStart = $rawWhatIf.IndexOf('{')
-$jsonEnd = $rawWhatIf.LastIndexOf('}')
-if ($jsonStart -lt 0 -or $jsonEnd -lt $jsonStart) {
-    throw "Production what-if did not return JSON."
-}
-$whatIf = $rawWhatIf.Substring($jsonStart, $jsonEnd - $jsonStart + 1) | ConvertFrom-Json
-$deletes = @($whatIf.properties.changes | Where-Object { $_.changeType -eq "Delete" })
-if ($deletes.Count -gt 0) {
-    throw "Production what-if contains $($deletes.Count) delete operation(s); review with -DryRun."
-}
+$whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Production what-if"
+Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Production"
 Write-Host "  ✓ What-if contains no deletes`n"
 
 # Optional: build + push only after all no-change paths have exited.
@@ -274,14 +244,7 @@ if ($deployExitCode -ne 0) {
     throw "Production infrastructure deployment failed. Azure CLI output:`n$rawDeploy"
 }
 
-# az may prepend non-JSON info lines (e.g. "Bicep CLI is already installed...")
-# to stdout, so isolate the JSON object before parsing.
-$jsonStart = $rawDeploy.IndexOf('{')
-$jsonEnd = $rawDeploy.LastIndexOf('}')
-if ($jsonStart -lt 0 -or $jsonEnd -lt $jsonStart) {
-    throw "Deployment did not return JSON. Raw output:`n$rawDeploy"
-}
-$deployment = $rawDeploy.Substring($jsonStart, $jsonEnd - $jsonStart + 1) | ConvertFrom-Json
+$deployment = ConvertFrom-AzureCliJson -Output $rawDeploy -Action "Deployment"
 
 if ($deployment.state -ne "Succeeded") {
     throw "Deployment failed: $($deployment.state)"

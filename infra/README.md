@@ -45,6 +45,7 @@ a database or fall back to local `.env` credentials.
 | `canary.bicepparam` | Canary app and database binding |
 | `prod.bicepparam` | Production app, database, domains, and alert binding |
 | `deploy-data.ps1` | Validate, what-if, and deploy the shared data plane |
+| `deployment-common.ps1` | Shared environment loading and Azure CLI JSON/delete guards for hosted deploys |
 | `deploy-canary.ps1` | Build/deploy immutable canary image and run read-only smoke |
 | `deploy-prod.ps1` | Promote the canary-tested image through the production approval gate |
 | `push-image.ps1` | Publish Git-SHA and `latest` image tags to GHCR |

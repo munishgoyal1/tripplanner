@@ -24,8 +24,32 @@ def test_hosted_deployments_do_not_import_local_environment() -> None:
 
     assert '[string]$EnvFile = ".env.canary"' in canary
     assert '[string]$EnvFile = ".env.prod"' in production
-    assert "Import-DotEnv -Path $EnvFile" in canary
-    assert "Import-DotEnv -Path $EnvFile" in production
+    assert "Import-DeploymentEnvironment -Path $EnvFile" in canary
+    assert "Import-DeploymentEnvironment -Path $EnvFile" in production
+
+
+def test_hosted_deployments_use_shared_azure_json_and_delete_guards() -> None:
+    root = Path(__file__).parents[1]
+    canary = (root / "infra" / "deploy-canary.ps1").read_text(encoding="utf-8")
+    production = (root / "infra" / "deploy-prod.ps1").read_text(encoding="utf-8")
+    common = (root / "infra" / "deployment-common.ps1").read_text(encoding="utf-8")
+
+    for script in (canary, production):
+        assert '. "$PSScriptRoot/deployment-common.ps1"' in script
+        assert "ConvertFrom-AzureCliJson" in script
+        assert "Assert-DeploymentHasNoDeletes" in script
+    assert "function ConvertFrom-AzureCliJson" in common
+
+
+def test_azure_openai_provisioning_defaults_match_deployment_accounts() -> None:
+    script = (
+        Path(__file__).parents[1] / "infra" / "provision-aoai.ps1"
+    ).read_text(encoding="utf-8")
+
+    assert '"aoaiprodmd1ks"' in script
+    assert '"aoaicanarymd1ks"' in script
+    assert "aoaiprodtripplanner" not in script
+    assert "aoaicanarytripplanner" not in script
 
 
 def test_hosted_deployments_surface_azure_cli_failures() -> None:
