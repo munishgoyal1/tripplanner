@@ -274,7 +274,7 @@ describe("ItineraryPanel", () => {
         ...itinerary.days[0],
         stops: [
           { ...baseStop, name: "Trident Udaipur", kind: "hotel", note: "Check-out" },
-          { ...baseStop, name: "Drive: Udaipur to Mount Abu", kind: "transport" },
+          { ...baseStop, name: "Drive: Udaipur to Mount Abu", kind: "transport", duration_min: 300 },
           { ...baseStop, name: "Hotel Hillock Mount Abu", kind: "hotel", note: "Check-in" },
           { ...baseStop, name: "Nakki Lake", kind: "attraction" },
           {
@@ -306,6 +306,8 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("Trident Udaipur")).toBeInTheDocument();
     expect(screen.getByText("Check out")).toBeInTheDocument();
     expect(screen.getByText("Check in")).toBeInTheDocument();
+    expect(screen.getByText("Depart from Udaipur")).toBeInTheDocument();
+    expect(screen.getByText("5 hrs transfer")).toBeInTheDocument();
     expect(screen.getAllByLabelText("Hotel map marker").map((marker) => marker.textContent)).toEqual(["H1", "H2"]);
     expect(screen.getByLabelText("Travel from previous stop: 1.5 km, 20 min")).toBeInTheDocument();
     expect(Array.from(timeline.querySelectorAll("[data-stop-name]"), (row) => row.getAttribute("data-stop-name")))
@@ -317,6 +319,32 @@ describe("ItineraryPanel", () => {
         "hotel hillock mount abu",
       ]);
     expect(screen.getAllByRole("button", { name: "Hotel Hillock Mount Abu: Mark confirmed" })).toHaveLength(1);
+  });
+
+  it("shows a road-trip city origin as a non-bookable O marker", async () => {
+    const onStopFocus = vi.fn();
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 2, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...baseStop, name: "Bangalore", kind: "origin", duration_min: null },
+          { ...baseStop, name: "Drive: Bangalore to Coorg", kind: "transport", duration_min: 300 },
+          { ...baseStop, name: "Coorg Wilderness Resort", kind: "hotel", duration_min: null },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel onStopFocus={onStopFocus} />);
+
+    expect(await screen.findByLabelText("Map stop O")).toHaveTextContent("O");
+    expect(screen.getByText("Depart from Bangalore")).toBeInTheDocument();
+    expect(screen.getByText("5 hrs transfer")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Bangalore: Mark confirmed" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("Bangalore").closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith("origin", "Bangalore", 1, 1);
   });
 
   it("shows both flight airports with A markers and their local times", async () => {

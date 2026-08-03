@@ -42,7 +42,7 @@ export function airportIcon(focused = false): string {
 
 export function terminalIcon(kind: string): string {
   if (kind === "airport") return airportIcon();
-  const label = kind === "station" ? "T" : "B";
+  const label = kind === "station" ? "T" : kind === "origin" ? "O" : "B";
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44">
   <path d="M17 0C7.6 0 0 7.6 0 17c0 12 17 27 17 27s17-15 17-27C34 7.6 26.4 0 17 0z"

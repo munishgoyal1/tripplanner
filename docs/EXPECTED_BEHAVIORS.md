@@ -106,6 +106,8 @@ and open the terminal as an inspectable place.
 summary. Ordinary days fit their complete circuit. Transfer days keep the full
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
+road-transfer days retain the full origin-to-destination drive in day focus so
+the starting city or saved home area and destination stay remain visible. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
@@ -204,11 +206,18 @@ including a nearby trip such as Bangalore to Mysore.
 journey from origin to destination before check-in. The departure day includes
 the corresponding journey back to origin after checkout. The itinerary names
 the mode and endpoints; destination-local taxi travel does not count as either
-inter-city edge. Saving an incomplete plan returns an actionable correction.
+inter-city edge. A road journey that starts the day renders the saved home area
+or origin city as a separate `O` endpoint, labels the drive as departing from
+that origin, formats long durations in hours and minutes, and includes planned
+snack/rest breaks using saved or inferred driving preferences. Saving an
+incomplete plan returns an actionable correction.
 
 **Executable proof:**
 
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_planning_completion_requires_round_trip_intercity_transport`
+- [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_city_origin_drive_includes_origin_and_rest_break`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a road-trip city origin as a non-bookable O marker`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
@@ -235,12 +244,15 @@ midpoint in All days, selected-day, and individual-route focus. Selected-day rou
 labels remain offset from that midpoint so they do not cover the glyph. Flight
 connectors are blue with an airplane, road connectors are black with a car or bus
 as applicable, and train connectors are gray with a train. Local route legs retain
-their day color and do not gain an inter-city transport glyph.
+their day color and do not gain an inter-city transport glyph. A road trip that
+starts from a city/home-area point connects that `O` endpoint to the first
+destination place; both endpoints remain in the day circuit and route focus.
 
 **Executable proof:**
 
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_city_origin_to_hotel_for_road_trip`
 
 ### EB-STATE-001 - Keep planner surfaces synchronized
 

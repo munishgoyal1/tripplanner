@@ -90,11 +90,12 @@ function DayCard({
   const mapLabels = day.stops.map((stop) => {
     if (stop.kind === "hotel") return hotelLabels.get(normalizedPlaceName(stop.name));
     if (stop.kind === "airport") return "A";
+    if (stop.kind === "origin") return "O";
     if (!["attraction", "meal", "restaurant"].includes(stop.kind)) return undefined;
     visitOrder += 1;
     return String(visitOrder);
   });
-  const plannedStops = day.stops.filter((stop) => !["hotel", "airport"].includes(stop.kind));
+  const plannedStops = day.stops.filter((stop) => !["hotel", "airport", "origin"].includes(stop.kind));
   const confirmedStops = plannedStops.filter((stop) => stop.booked).length;
   const remainingStops = plannedStops.length - confirmedStops;
   const firstStop = day.stops[0];

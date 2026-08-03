@@ -125,6 +125,26 @@ def test_sanitize_boolean_prefer_direct_flights() -> None:
     assert out["transport_preferences"]["prefer_direct_flights"] is False
 
 
+def test_sanitize_home_area_and_road_break_preferences() -> None:
+    out = _sanitize_extraction({
+        "profile": {"home_area": " Whitefield "},
+        "transport_preferences": {
+            "preferred_road_transport": "own car",
+            "max_continuous_drive_min": 150,
+            "road_break_duration_min": 20,
+            "road_break_preferences": [" snack ", "restroom"],
+        },
+    })
+
+    assert out["profile"]["home_area"] == "Whitefield"
+    assert out["transport_preferences"] == {
+        "preferred_road_transport": "own_car",
+        "max_continuous_drive_min": 150,
+        "road_break_duration_min": 20,
+        "road_break_preferences": ["snack", "restroom"],
+    }
+
+
 def test_extract_about_me_empty_short_circuits(monkeypatch) -> None:
     """Empty input must not call the LLM."""
     from tripplanner.tools import about_me_extractor as mod

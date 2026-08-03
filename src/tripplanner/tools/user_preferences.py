@@ -39,6 +39,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
     "profile": {
         "display_name": None,     # "Munish"
         "home_city": None,        # "Bengaluru"
+        "home_area": None,        # "Whitefield"
         "home_country": None,     # "India"
         "age_band": None,         # "20-30" | "30-40" | "40-50" | "50-60" | "60+"
         "occupation": None,       # "software engineer" | "doctor" | ...
@@ -81,6 +82,10 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "open_to_trains": True,
         "open_to_rental_car": True,
         "open_to_bus": False,
+        "preferred_road_transport": None,  # own_car | taxi | either
+        "max_continuous_drive_min": None,
+        "road_break_duration_min": None,
+        "road_break_preferences": [],  # snack, meal, restroom, stretch, scenic
     },
     "food_preferences": {
         "dietary": [],  # vegetarian, vegan, halal, kosher, gluten-free

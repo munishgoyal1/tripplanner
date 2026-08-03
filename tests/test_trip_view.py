@@ -1152,6 +1152,50 @@ def test_map_view_connects_origin_and_destination_segments_after_road_transfer(
     assert all("intercity" not in leg for leg in day["legs"][1:])
 
 
+def test_map_view_connects_city_origin_to_hotel_for_road_trip(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore": (12.9716, 77.5946),
+        "Coorg Wilderness Resort": (12.3375, 75.8069),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "origin": "Bangalore",
+        "destination": "Coorg",
+        "selected_hotels": [{"name": "Coorg Wilderness Resort"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Drive: Bangalore to Coorg", "kind": "transport"},
+                {"name": "Coorg Wilderness Resort", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    day = view["days"][0]
+    route_names = [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]]
+    assert route_names == ["Bangalore", "Coorg Wilderness Resort"]
+    assert day["circuit_pin_ids"] == day["pin_ids"]
+    assert len(day["legs"]) == 1
+    assert day["legs"][0]["mode"] == "Drive"
+    assert day["legs"][0]["intercity"] is True
+
+
 def test_map_view_connects_train_stations_between_stays(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
@@ -2063,6 +2107,44 @@ def test_timed_road_transfer_estimates_destination_hotel_check_in() -> None:
     hotel = itinerary["days"][0]["stops"][-1]
     assert hotel["time"] == "12:00"
     assert hotel["time_estimated"] is True
+
+
+def test_city_origin_drive_includes_origin_and_rest_break() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "origin": "Bangalore",
+        "destination": "Coorg",
+        "preferences_snapshot": {
+            "transport_preferences": {
+                "max_continuous_drive_min": 180,
+                "road_break_duration_min": 30,
+                "road_break_preferences": ["snack", "restroom"],
+            },
+        },
+        "selected_hotels": [{"name": "Coorg Wilderness Resort"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Drive: Bangalore to Coorg",
+                    "kind": "transport",
+                    "time": "08:00",
+                    "duration_min": 300,
+                },
+                {"name": "Coorg Wilderness Resort", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    origin, drive, hotel = itinerary["days"][0]["stops"]
+    assert (origin["name"], origin["kind"]) == ("Bangalore", "origin")
+    assert drive["duration_min"] == 300
+    assert drive["operational_time_display"] == (
+        "5 hrs drive incl. one 30 min snack/restroom break"
+    )
+    assert hotel["time"] == "13:00"
 
 
 def test_road_transfer_estimates_duration_arrival_and_hotel_check_in(
