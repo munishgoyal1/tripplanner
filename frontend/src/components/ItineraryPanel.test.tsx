@@ -243,6 +243,28 @@ describe("ItineraryPanel", () => {
     expect(screen.getByLabelText("Map stop 3")).toHaveTextContent("3");
   });
 
+  it("shows one stay row without a return for a hotel-only day", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 1, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [{
+          ...itinerary.days[0].stops[0],
+          name: "Radisson Blu Plaza Hotel Mysore",
+          kind: "hotel",
+        }],
+      }],
+    });
+
+    render(<ItineraryPanel />);
+
+    expect(await screen.findAllByText("Radisson Blu Plaza Hotel Mysore")).toHaveLength(1);
+    expect(screen.getByText("Stay")).toBeInTheDocument();
+    expect(screen.queryByText("Return")).not.toBeInTheDocument();
+    expect(screen.queryByText("Return to Radisson Blu Plaza Hotel Mysore")).not.toBeInTheDocument();
+  });
+
   it("shows a multi-city transfer as one chronological spine without changing stop identity", async () => {
     const baseStop = itinerary.days[0].stops[0];
     fetchItineraryMock.mockResolvedValue({

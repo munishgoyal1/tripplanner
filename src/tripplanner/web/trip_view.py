@@ -833,7 +833,9 @@ def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
         index
         for index, stop in enumerate(stops)
         if isinstance(stop, dict)
-        and str(stop.get("kind") or "").strip().lower() in {"flight", "transport"}
+        and _intercity_transfer_mode(
+            str(stop.get("name") or ""), str(stop.get("kind") or "")
+        )
     ]
     if not transfer_indexes:
         return set(range(1, len(stops) + 1))
@@ -1133,8 +1135,11 @@ def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[st
     end = last_time
     if end < first_time:
         end += 24 * 60
-    if stops[last_index].get("kind") not in {"hotel", "flight", "transport"}:
-        end += int(stops[last_index].get("duration_min") or 0)
+    end += sum(
+        int(stop.get("duration_min") or 0)
+        for stop in stops[last_index:]
+        if stop.get("kind") not in {"hotel", "flight", "transport"}
+    )
     end += sum(
         int((stop.get("travel_from_previous") or {}).get("duration_min") or 0)
         for stop in stops[last_index + 1 :]
@@ -2303,7 +2308,10 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             str(stop.get("name") or "").strip().lower() for stop in hotel_stops
         }
         has_intercity_transfer = any(
-            stop["kind"] in {"flight", "transport"} for stop in stops
+            _intercity_transfer_mode(
+                str(stop.get("name") or ""), str(stop.get("kind") or "")
+            )
+            for stop in stops
         )
         if (
             not has_intercity_transfer
@@ -2335,11 +2343,64 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                     anchor["color"] = _day_color(day_num)
             if anchor:
                 middle = [stop for stop in stops if stop["kind"] != "hotel"]
-                hotel_start = dict(anchor)
-                hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
-                hotel_return = dict(hotel_stops[-1] if len(hotel_stops) > 1 else anchor)
-                hotel_return["note"] = hotel_return.get("note") or "Return to your stay"
-                stops = [hotel_start, *middle, hotel_return]
+                if not middle:
+                    stops = [dict(anchor)]
+                else:
+                    hotel_start = dict(anchor)
+                    hotel_start["note"] = hotel_start.get("note") or "Start from your stay"
+                    hotel_return = dict(hotel_stops[-1] if len(hotel_stops) > 1 else anchor)
+                    hotel_return["note"] = hotel_return.get("note") or "Return to your stay"
+                    stops = [hotel_start, *middle, hotel_return]
+
+        if has_intercity_transfer and hotel_stops:
+            last_hotel_index = max(
+                index for index, stop in enumerate(stops) if stop["kind"] == "hotel"
+            )
+            last_transfer_index = max(
+                (
+                    index
+                    for index, stop in enumerate(stops)
+                    if _intercity_transfer_mode(
+                        str(stop.get("name") or ""), str(stop.get("kind") or "")
+                    )
+                ),
+                default=-1,
+            )
+            local_outings_after_hotel = [
+                stop
+                for stop in stops[last_hotel_index + 1 :]
+                if stop["kind"] not in {"hotel", "airport", "flight", "transport"}
+            ]
+            hotel_coords = place_coords_map.get(
+                str(stops[last_hotel_index].get("name") or "").strip().lower()
+            )
+            return_from_coords = (
+                place_coords_map.get(
+                    str(local_outings_after_hotel[-1].get("name") or "").strip().lower()
+                )
+                if local_outings_after_hotel
+                else None
+            )
+            if (
+                last_transfer_index < last_hotel_index
+                and hotel_coords
+                and return_from_coords
+            ):
+                hotel_return = dict(stops[last_hotel_index])
+                for key in (
+                    "time",
+                    "arrival_time",
+                    "departure_time",
+                    "expected_arrival_time",
+                    "buffer_before_min",
+                    "buffer_before_display",
+                    "timing_conflict_min",
+                    "timing_conflict_display",
+                    "concern",
+                ):
+                    hotel_return.pop(key, None)
+                hotel_return["note"] = "Return to your stay"
+                stops.append(hotel_return)
 
         rendered_hotels = [stop for stop in stops if stop["kind"] == "hotel"]
         if rendered_hotels:
