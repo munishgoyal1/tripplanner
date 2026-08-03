@@ -769,6 +769,33 @@ describe("map stop selection", () => {
     delete window.google;
   });
 
+  it("defaults a newly selected trip to All days even when its day numbers overlap", async () => {
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Madurai",
+      center: null,
+      pins: [],
+      days: [
+        { day: 1, label: "Day 1", color: "#e11d48", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: [], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
+      ],
+      available_days: [1, 2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    });
+
+    const rendered = render(createElement(MapPanel, { tripId: "old-trip" }));
+    await screen.findByRole("button", { name: "Day 2" });
+    fireEvent.click(screen.getByRole("button", { name: "Day 2" }));
+    expect(screen.getByRole("button", { name: "Day 2" })).toHaveClass("text-white");
+
+    rendered.rerender(createElement(MapPanel, { tripId: "rameshwaram-madurai" }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+  });
+
   it("draws all flight arcs and focuses a repeated airport alias on its requested day", async () => {
     const panTo = vi.fn();
     const map = {

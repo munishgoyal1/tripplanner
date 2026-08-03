@@ -23,6 +23,11 @@ Assistant build its first proposal.
 
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
+- While planning is active, the top command bar beside the trip selector shows
+  the same friendly current phase and overall elapsed time as Assistant, including
+  the typical 2–4 minute full-build expectation. It remains visible while answer
+  text streams, then reports loading, authoritative completion, or failure. Stop,
+  unmount, and active-trip changes clear in-flight status.
 - Research is followed by one enriched full-plan persistence pass rather than
   repeated full-itinerary rewrites.
 - A planning turn uses at most ten tool phases. Reaching that semantic budget
@@ -34,6 +39,9 @@ Assistant build its first proposal.
 **Executable proof:**
 
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_hotel_fallback_uses_successful_result_from_parallel_batch`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `shows immediate and friendly progress while a turn is running`
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `keeps progress visible while answer text streams`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_new_trip_does_not_rewrite_incomplete_researched_plan_twice`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
@@ -135,7 +143,9 @@ days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
 aggregate-selection treatment. Trip Snapshot itself invokes All days. Neither
-action requests place Details.
+action requests place Details. A newly created or selected trip always starts in
+All days even when its day numbers overlap the previously viewed trip. Ordinary
+content refreshes preserve a deliberate day selection.
 
 Selecting an inter-city flight or transport row is a route action rather than
 place focus: Map opens and frames the full ordered day route so both source and
@@ -148,6 +158,7 @@ or replace destination-local framing for ordinary day-header focus.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows all circuits and returns itinerary focus to the trip summary`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `maps a Trip Snapshot click to the shared All days focus`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `restores All days after an externally focused day`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `defaults a newly selected trip to All days even when its day numbers overlap`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `marks the focused day circuit as selected`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `uses Trip Snapshot as the selected All days map control`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`

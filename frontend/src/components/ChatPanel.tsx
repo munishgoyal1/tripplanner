@@ -187,6 +187,8 @@ export default function ChatPanel({
     if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
   }, []);
 
+  useEffect(() => () => onTurnStatus?.(null), [onTurnStatus]);
+
   useEffect(() => {
     const openAccount = () => setShowAccount(true);
     const openSettings = () => setShowSettings(true);

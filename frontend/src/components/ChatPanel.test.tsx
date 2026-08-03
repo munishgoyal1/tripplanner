@@ -86,6 +86,7 @@ describe("ChatPanel progress", () => {
   });
 
   it("stops an active response without presenting it as a failed request", async () => {
+    const onTurnStatus = vi.fn();
     streamChatMock.mockImplementation(
       (_message: string, handlers: StreamHandlers, options: { signal?: AbortSignal }) => {
         handlers.onToken("Partial itinerary");
@@ -96,7 +97,7 @@ describe("ChatPanel progress", () => {
         });
       },
     );
-    render(<ChatPanel onTurnComplete={vi.fn()} />);
+    render(<ChatPanel onTurnComplete={vi.fn()} onTurnStatus={onTurnStatus} />);
 
     const composer = await readyComposer();
     fireEvent.change(composer, {
@@ -110,6 +111,7 @@ describe("ChatPanel progress", () => {
     expect(await screen.findByText(/Response stopped\./)).toHaveTextContent("Partial itinerary");
     expect(screen.queryByRole("button", { name: "Retry request" })).not.toBeInTheDocument();
     expect(composer).toBeEnabled();
+    expect(onTurnStatus).toHaveBeenLastCalledWith(null);
   });
 
   it("copies messages and loads prior user text for editing and resend", async () => {

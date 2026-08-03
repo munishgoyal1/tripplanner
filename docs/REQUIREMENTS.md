@@ -418,6 +418,8 @@ implemented capability baseline.
 - All-days focus clears exact and single-day focus, fits all circuits and complete
   dotted flight connections, aligns the itinerary at the trip summary, and
   visibly selects the clickable Trip Snapshot.
+- Newly created or selected trips default to All days; content-only refreshes keep
+  the user's current day scope.
 - Provider-expanded or differently punctuated place names still resolve to the
   authoritative itinerary occurrence.
 - Viewport-biased autocomplete and labeled native map POI clicks create a

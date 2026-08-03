@@ -560,6 +560,7 @@ export default function App() {
   const railProps = {
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
+    tripId: chatTripId,
     focusName: stopFocusName,
     focusDay: stopFocus?.day,
     focusStop: stopFocus?.stop,
@@ -605,6 +606,7 @@ export default function App() {
     return (
       <MapPanel
         reloadToken={tripVersion}
+        tripId={chatTripId}
         focusName={stopFocusName}
         focusDay={stopFocus?.day}
         focusStop={stopFocus?.stop}
