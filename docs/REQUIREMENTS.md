@@ -94,9 +94,9 @@ re-describing the whole product.
 - Tool schemas are selected by conversation phase so greetings and preference
   turns do not pay the context cost of every search provider.
 - The agent presents progress as friendly thinking, search, review, and save
-  phases in Assistant and the top command bar beside the trip selector, with
-  elapsed time for long turns, while keeping internal tool names and raw
-  arguments out of the UI.
+  phases while keeping internal tool names and raw arguments out of the UI. The
+  chat and common command bar show one overall elapsed clock, a typical 2–4 minute
+  full-build expectation, and continuing-work reassurance rather than appearing stuck.
 - GPT-4.1 is the measured default planning model. A slower or costlier model
   requires evidence that it improves a relevant quality failure.
 
@@ -120,6 +120,11 @@ re-describing the whole product.
 - Completed user and Assistant messages can be copied. A prior user instruction
   can be loaded into the composer, revised, and sent as a fresh corrective turn;
   existing transcript and itinerary side effects are not falsely presented as undone.
+- Real SSE milestones such as preference review, flight/hotel/place research,
+  routing, review, and persistence update both chat progress and the common command
+  bar. New-trip completion is announced only after every trip pane reloads; existing
+  itinerary changes use the refreshed authoritative mutation summary, and proposal-only
+  reviews explicitly say that the itinerary remains unchanged.
 - Option B is implemented in the web application. A new hosted deployment remains
   pending explicit approval.
 

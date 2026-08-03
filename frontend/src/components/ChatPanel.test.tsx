@@ -40,31 +40,53 @@ describe("ChatPanel progress", () => {
 
   it("shows immediate and friendly progress while a turn is running", async () => {
     let handlers: StreamHandlers | undefined;
-    const onProgressChange = vi.fn();
+    const onTurnStatus = vi.fn();
     streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
       handlers = nextHandlers;
       return new Promise<void>(() => {});
     });
-    render(<ChatPanel onTurnComplete={vi.fn()} onProgressChange={onProgressChange} />);
+    render(<ChatPanel onTurnComplete={vi.fn()} onTurnStatus={onTurnStatus} />);
 
     const input = await readyComposer();
     fireEvent.change(input, { target: { value: "Plan a Goa weekend" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     expect(screen.getByText(/Thinking through your request/)).toBeInTheDocument();
-    expect(onProgressChange).toHaveBeenLastCalledWith("Thinking through your request");
+    expect(screen.getByText(/Full itinerary builds usually take about 2–4 minutes/)).toBeInTheDocument();
     await waitFor(() => expect(handlers).toBeDefined());
     act(() => handlers?.onTool("search_places_with_reviews", "start"));
 
     expect(screen.getByText(/Checking places and reviews/)).toBeInTheDocument();
-    expect(onProgressChange).toHaveBeenLastCalledWith("Checking places and reviews");
     expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
+    await waitFor(() => expect(onTurnStatus).toHaveBeenLastCalledWith(expect.objectContaining({
+      phase: "working",
+      message: expect.stringContaining("Checking places and reviews"),
+    })));
+  });
 
-    act(() => handlers?.onToken("Here is your plan."));
-    await waitFor(() => expect(onProgressChange).toHaveBeenLastCalledWith());
+  it("keeps progress visible while answer text streams", async () => {
+    let handlers: StreamHandlers | undefined;
+    streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
+      handlers = nextHandlers;
+      return new Promise<void>(() => {});
+    });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    const input = await readyComposer();
+    fireEvent.change(input, { target: { value: "Update Day 2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(handlers).toBeDefined());
+    act(() => {
+      handlers?.onProgress?.("reviewing");
+      handlers?.onToken("I found a better route.");
+    });
+
+    expect(await screen.findByText("I found a better route.")).toBeInTheDocument();
+    expect(screen.getByText(/Reviewing the results/)).toBeInTheDocument();
   });
 
   it("stops an active response without presenting it as a failed request", async () => {
+    const onTurnStatus = vi.fn();
     streamChatMock.mockImplementation(
       (_message: string, handlers: StreamHandlers, options: { signal?: AbortSignal }) => {
         handlers.onToken("Partial itinerary");
@@ -75,7 +97,7 @@ describe("ChatPanel progress", () => {
         });
       },
     );
-    render(<ChatPanel onTurnComplete={vi.fn()} />);
+    render(<ChatPanel onTurnComplete={vi.fn()} onTurnStatus={onTurnStatus} />);
 
     const composer = await readyComposer();
     fireEvent.change(composer, {
@@ -89,6 +111,7 @@ describe("ChatPanel progress", () => {
     expect(await screen.findByText(/Response stopped\./)).toHaveTextContent("Partial itinerary");
     expect(screen.queryByRole("button", { name: "Retry request" })).not.toBeInTheDocument();
     expect(composer).toBeEnabled();
+    expect(onTurnStatus).toHaveBeenLastCalledWith(null);
   });
 
   it("copies messages and loads prior user text for editing and resend", async () => {

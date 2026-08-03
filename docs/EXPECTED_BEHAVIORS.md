@@ -24,8 +24,10 @@ Assistant build its first proposal.
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
 - While planning is active, the top command bar beside the trip selector shows
-  the same friendly current phase and elapsed time as Assistant. It clears when
-  the response starts, completes, fails, stops, or the active trip changes.
+  the same friendly current phase and overall elapsed time as Assistant, including
+  the typical 2–4 minute full-build expectation. It remains visible while answer
+  text streams, then reports loading, authoritative completion, or failure. Stop,
+  unmount, and active-trip changes clear in-flight status.
 - Research is followed by one enriched full-plan persistence pass rather than
   repeated full-itinerary rewrites.
 - A planning turn uses at most ten tool phases. Reaching that semantic budget
@@ -37,8 +39,9 @@ Assistant build its first proposal.
 **Executable proof:**
 
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_hotel_fallback_uses_successful_result_from_parallel_batch`
-- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows live Assistant progress near the trip identity and clears it`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
 - [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `shows immediate and friendly progress while a turn is running`
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `keeps progress visible while answer text streams`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_new_trip_does_not_rewrite_incomplete_researched_plan_twice`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
@@ -64,6 +67,29 @@ Assistant build its first proposal.
 - [`tests/test_planning_intelligence.py`](../tests/test_planning_intelligence.py)
 - [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_new_paris_trip_forces_prefilled_kickoff_after_duration_advice`
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_persists_planning_recommendation`
+
+### EB-PLAN-003 - Keep long planning turns visibly active
+
+**Trigger:** Submit a new-trip build, itinerary modification, or planner review.
+
+**Expected:**
+
+- Chat immediately shows a friendly phase, one overall elapsed clock, and a typical
+  2–4 minute expectation for full builds. Real tool events produce timely flight,
+  hotel, attraction, routing, review, and save updates without exposing tool names.
+- The common command bar mirrors current work even when the Assistant pane is hidden.
+  After two minutes it still shows the expected range and says not to refresh.
+- Planning completion first reports that the refreshed itinerary is loading. A new
+  itinerary is declared ready only after the trip view loads and invites inspection.
+- Existing-trip changes summarize the refreshed authoritative mutation. Proposal-only
+  reviews say the itinerary is unchanged; failed reloads retain the prior view and
+  never claim that the new itinerary is ready.
+
+**Executable proof:**
+
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `shows immediate and friendly progress while a turn is running`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `summarizes an itinerary modification after its refreshed view loads`
 
 ## Planner workspace
 
