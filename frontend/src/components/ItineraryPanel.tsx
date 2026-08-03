@@ -339,7 +339,7 @@ export default function ItineraryPanel({
   useEffect(() => {
     if (!jumpTo || !it?.has_itinerary) return;
     if ("summary" in jumpTo) {
-      scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+      scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
       setFlashTarget(null);
       return;
     }
@@ -349,13 +349,14 @@ export default function ItineraryPanel({
     let cancelled = false;
     let attempts = 0;
     let flashTimer: number | undefined;
+    let retryTimer: number | undefined;
 
     const tryScroll = () => {
       if (cancelled) return;
       const el = document.getElementById(targetId);
       if (el) {
         el.scrollIntoView({
-          behavior: "smooth",
+          behavior: jumpTo.name ? "smooth" : "auto",
           block: jumpTo.name ? "center" : "start",
         });
         if (jumpTo.name) {
@@ -367,14 +368,14 @@ export default function ItineraryPanel({
         return;
       }
       if (attempts++ < 8) {
-        window.setTimeout(tryScroll, 90);
+        retryTimer = window.setTimeout(tryScroll, 90);
       }
     };
 
-    const startTimer = window.setTimeout(tryScroll, 30);
+    tryScroll();
     return () => {
       cancelled = true;
-      window.clearTimeout(startTimer);
+      if (retryTimer) window.clearTimeout(retryTimer);
       if (flashTimer) window.clearTimeout(flashTimer);
     };
   }, [jumpTo, it]);

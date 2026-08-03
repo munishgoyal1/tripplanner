@@ -737,11 +737,10 @@ describe("map stop selection", () => {
       { lat: 15.2, lng: 73.2 },
       { lat: 15.15, lng: 73.15 },
     ]));
+    expect(fitBounds.mock.calls.filter(([bounds]) => bounds.points.length === 4)).toHaveLength(1);
     const markerIcon = (title: string) => marker.mock.calls
       .map(([options]) => options)
       .find((options) => options.title === title)?.icon?.url ?? "";
-    expect(decodeURIComponent(markerIcon("North Hotel")))
-      .toContain(">H</text>");
     expect(decodeURIComponent(markerIcon("Udaipur Hotel")))
       .toContain(">H1</text>");
     expect(decodeURIComponent(markerIcon("Mount Abu Hotel")))
@@ -758,6 +757,8 @@ describe("map stop selection", () => {
 
     rendered.rerender(createElement(MapPanel, { circuitFocusToken: 2 }));
     await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
+    expect(decodeURIComponent(markerIcon("North Hotel")))
+      .toContain(">H</text>");
     expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
       { lat: 16, lng: 74 },
       { lat: 15.1, lng: 73.1 },

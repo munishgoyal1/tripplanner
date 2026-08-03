@@ -522,7 +522,7 @@ describe("ItineraryPanel", () => {
     await screen.findByText("Day 2");
     await waitFor(() => expect(scrollIntoViewMock).toHaveBeenCalled());
     expect(scrollIntoViewMock.mock.instances[0]).toBe(document.getElementById("it-day-2"));
-    expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "auto", block: "start" });
   });
 
   it("scrolls an all-days map jump to the trip summary at the top", async () => {
@@ -532,7 +532,7 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel jumpTo={{ summary: true, token: 18 }} />);
 
     await screen.findByText("Museums and river");
-    await waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "smooth" }));
+    await waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "auto" }));
   });
 
   it("does not style concern rows as selected cards", async () => {
