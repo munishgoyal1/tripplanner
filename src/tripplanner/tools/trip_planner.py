@@ -22,6 +22,7 @@ from langchain_core.tools import tool
 
 from tripplanner import storage_cosmos
 from tripplanner.json_store import atomic_write_json
+from tripplanner.planning_intelligence import assess_itinerary_density
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
 from tripplanner.tools.trip_diff import diff_plans, format_diff
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
@@ -388,11 +389,30 @@ def _sync_replaced_hotel_anchors(
 
 def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     """Return actionable gaps that keep a new plan from feeling complete."""
+    density_warnings: list[str] = []
+    recommendation = plan.get("planning_recommendation")
+    if isinstance(recommendation, dict):
+        preferences = dict(plan.get("preferences_snapshot") or {})
+        planning_preferences = dict(preferences.get("planning_preferences") or {})
+        target_minutes = recommendation.get("target_active_minutes_per_full_day")
+        if isinstance(target_minutes, (int, float)):
+            planning_preferences["target_active_minutes_per_full_day"] = target_minutes
+        preferences["planning_preferences"] = planning_preferences
+        assessment = assess_itinerary_density(
+            plan.get("day_wise_itinerary") or [], preferences
+        )
+        if assessment.sparse_days:
+            reasons = "; ".join(day.reason for day in assessment.sparse_days[:3])
+            density_warnings.append(
+                "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
+                "or explicitly label intentional leisure; do not add filler."
+            )
     return [
         *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
+        *density_warnings,
     ]
 
 
@@ -1611,6 +1631,7 @@ def create_trip_plan(
     origin: str = "",
     travelers_summary: str = "",
     notes: str = "",
+    planning_recommendation_json: str = "",
 ) -> str:
     """Create a new trip plan draft. Call this to start planning a trip.
 
@@ -1621,8 +1642,18 @@ def create_trip_plan(
         origin: Departure city (defaults from preferences if not provided).
         travelers_summary: e.g. '2 adults, 1 child (age 5)'.
         notes: Any special requirements or notes.
+        planning_recommendation_json: Complete JSON returned by recommend_trip_duration.
     """
     prefs = load_preferences()
+    planning_recommendation: dict[str, Any] | None = None
+    if planning_recommendation_json:
+        try:
+            parsed_recommendation = json.loads(planning_recommendation_json)
+        except json.JSONDecodeError:
+            return "Error: planning_recommendation_json must be valid JSON."
+        if not isinstance(parsed_recommendation, dict):
+            return "Error: planning_recommendation_json must be a JSON object."
+        planning_recommendation = parsed_recommendation
     fam = prefs["family"]
     if not travelers_summary:
         travelers_summary = f"{fam['adults']} adults"
@@ -1674,8 +1705,10 @@ def create_trip_plan(
         "return_date": return_date,
         "travelers": travelers_summary,
         "notes": notes,
+        "planning_recommendation": planning_recommendation,
         "preferences_snapshot": {
             "trip_style": prefs["trip_style"],
+            "planning_preferences": prefs.get("planning_preferences") or {},
             "budget_level": prefs["budget_level"],
             "hotel_preferences": prefs["hotel_preferences"],
             "transport_preferences": prefs["transport_preferences"],

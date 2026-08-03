@@ -4,6 +4,20 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-03 - Treat Trip Shape as a Deterministic Product Decision
+
+- A global date-range fallback silently becomes a duration recommendation. It can
+  produce sparse plans that satisfy minimum itinerary completeness while feeling
+  obviously worse than manual planning.
+- Keep explicit duration authoritative, but derive flexible duration from ranked
+  place workload, travel overhead, partial-day capacity, destination scope, and
+  the traveler's learned daily capacity. Persist the evidence and reasons.
+- Validate both maximum fullness and minimum usefulness. Exempt genuine transfers,
+  partial days, and deliberate leisure; never solve sparsity with low-value filler.
+- Personal outcomes and platform aggregates are different trust domains. Personal
+  pace can learn from stated post-trip feedback. Cross-user insight must be
+  anonymized, versioned, cohort-gated, confidence-gated, and tightly bounded.
+
 ## 2026-08-02 - Bound Semantic Work Before Framework Recursion
 
 - Framework recursion limits count graph nodes, not meaningful planning work. A

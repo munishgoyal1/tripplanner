@@ -294,6 +294,8 @@ class TestPreferenceTools:
             "rating": 4,
             "what_worked": "beach hotel; private guide",
             "what_didnt": "morning flight; airport hotel",
+            "pace_feedback": "just_right",
+            "actual_active_minutes_per_full_day": 390,
         })
         assert "Post-mortem" in result and "Goa" in result
         prefs = load_preferences()
@@ -301,6 +303,8 @@ class TestPreferenceTools:
         assert trip["rating"] == 4
         assert trip["what_worked"] == ["beach hotel", "private guide"]
         assert trip["what_didnt"] == ["morning flight", "airport hotel"]
+        assert trip["pace_feedback"] == "just_right"
+        assert trip["actual_active_minutes_per_full_day"] == 390
         notes = " | ".join(n["note"] for n in prefs.get("learned_notes", []))
         assert "Liked on Goa trip: beach hotel" in notes
         assert "Disliked on Goa trip: morning flight" in notes
@@ -318,6 +322,24 @@ class TestPreferenceTools:
         assert trip["rating"] == 5
         assert trip["dates"] == "2025-04-01 to 2025-04-08"
         assert trip["what_worked"] == ["ryokan stay"]
+
+    def test_create_trip_persists_planning_recommendation(self):
+        recommendation = {
+            "recommended_days": 3,
+            "target_active_minutes_per_full_day": 360,
+            "reasons": ["Six matching places fit a balanced city break"],
+        }
+
+        create_trip_plan.invoke({
+            "destination": "Mysore",
+            "departure_date": "2026-09-01",
+            "return_date": "2026-09-03",
+            "planning_recommendation_json": json.dumps(recommendation),
+        })
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["planning_recommendation"] == recommendation
+        assert "planning_preferences" in plan["preferences_snapshot"]
 
 
 # ---------------------------------------------------------------------------

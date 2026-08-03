@@ -132,6 +132,19 @@ re-describing the whole product.
   its transcript remain separate.
 - Trip dates, travelers, origin, destination, budget, pace, food, mobility, and
   lodging needs shape the plan.
+- Every new trip runs an explainable duration advisor before the structured
+  kickoff. Explicit user duration remains authoritative; otherwise destination
+  scope, likely preference-matched places, visit/travel workload, arrival and
+  departure capacity, desired free time, and major-attractions-per-day determine
+  a fitting recommendation instead of a universal seven-day fallback.
+- The complete recommendation and its evidence are persisted with the trip.
+  Advisor-enabled plans deterministically flag accidentally sparse full days;
+  transfer, partial, and explicitly intentional leisure days are handled
+  separately, and legacy plans are not retroactively gated.
+- Post-trip pace feedback (`too_rushed`, `just_right`, or `too_sparse`) and
+  observed active minutes may tune later daily capacity. Platform-wide insight
+  enters only as a versioned aggregate cohort prior that meets minimum sample
+  and confidence thresholds and may adjust the evidence estimate by at most one day.
 - One sticky display currency is used throughout a trip. Domestic travel defaults
   to the user's home currency; international plans may use destination currency
   or USD with a home-currency equivalent.
