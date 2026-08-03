@@ -193,6 +193,10 @@ re-describing the whole product.
 - Ordinary days form a circuit from the applicable hotel, through concrete
   attractions and named restaurants, and back to the hotel. Genuine overnight
   flight, train, bus, or transfer days are exempt from the return-to-hotel rule.
+- When origin and destination differ, the itinerary includes both inter-city
+  edges: a flight or named road, bus, or train journey before destination
+  check-in on arrival day, and the return journey after checkout on departure
+  day. A local taxi does not satisfy either edge.
 - Placeholder hotels and generic `TBD` meals do not satisfy completion gates.
 - When one concrete hotel is selected, any remaining placeholder hotel anchors in
   the persisted itinerary are replaced with that hotel while retaining day timing.

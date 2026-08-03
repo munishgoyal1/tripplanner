@@ -194,6 +194,74 @@ def _empty_itinerary_day_warnings(itinerary: Any) -> list[str]:
     return warnings
 
 
+_INTERCITY_GROUND_MODE_RE = re.compile(r"\b(?:drive|road|car|bus|train|rail)\b", re.I)
+_CITY_NAME_ALIASES = {"bengaluru": "bangalore", "mysuru": "mysore"}
+
+
+def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
+    origin = str(plan.get("origin") or "").strip()
+    destination = str(plan.get("destination") or "").strip()
+    itinerary = plan.get("day_wise_itinerary")
+    if not origin or not destination or origin.casefold() == destination.casefold():
+        return []
+    if not isinstance(itinerary, list) or not itinerary:
+        return []
+
+    days = [day for day in itinerary if isinstance(day, dict)]
+    if not days:
+        return []
+    first_stops = days[0].get("stops") if isinstance(days[0].get("stops"), list) else []
+    last_stops = days[-1].get("stops") if isinstance(days[-1].get("stops"), list) else []
+
+    def normalized_text(value: str, *, city_only: bool = False) -> str:
+        text = re.split(r"[,;/]", value, maxsplit=1)[0] if city_only else value
+        text = re.sub(r"[^a-z0-9]+", " ", text.casefold()).strip()
+        for alias, canonical in _CITY_NAME_ALIASES.items():
+            text = re.sub(rf"\b{re.escape(alias)}\b", canonical, text)
+        return text
+
+    def has_direction(stop: Any, source: str, target: str) -> bool:
+        kind = _stop_kind(stop)
+        name = normalized_text(_stop_name(stop))
+        source_name = normalized_text(source, city_only=True)
+        target_name = normalized_text(target, city_only=True)
+        source_index = name.find(source_name)
+        target_index = name.find(target_name, source_index + len(source_name))
+        has_mode = kind == "flight" or (
+            kind == "transport" and bool(_INTERCITY_GROUND_MODE_RE.search(_stop_name(stop)))
+        )
+        return has_mode and source_index >= 0 and target_index > source_index
+
+    first_hotel = next(
+        (index for index, stop in enumerate(first_stops) if _stop_kind(stop) == "hotel"),
+        len(first_stops),
+    )
+    last_hotel = next(
+        (index for index in range(len(last_stops) - 1, -1, -1)
+         if _stop_kind(last_stops[index]) == "hotel"),
+        -1,
+    )
+    has_outbound = first_hotel < len(first_stops) and any(
+        has_direction(stop, origin, destination) for stop in first_stops[:first_hotel]
+    )
+    has_return = last_hotel >= 0 and any(
+        has_direction(stop, destination, origin) for stop in last_stops[last_hotel + 1:]
+    )
+
+    warnings: list[str] = []
+    if not has_outbound:
+        warnings.append(
+            f"Arrival day has no flight or named road, bus, or train journey from "
+            f"{origin} to {destination} before destination check-in."
+        )
+    if not has_return:
+        warnings.append(
+            f"Departure day has no flight or named road, bus, or train journey from "
+            f"{destination} back to {origin} after checkout."
+        )
+    return warnings
+
+
 def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     warnings: list[str] = []
     hotels = plan.get("selected_hotels")
@@ -323,6 +391,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
     return [
         *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
+        *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
     ]
 
@@ -1725,6 +1794,7 @@ def update_trip_plan(updates_json: str) -> str:
     _save_active_trip(plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
     empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
+    transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
     if restaurant_warnings:
@@ -1739,6 +1809,13 @@ def update_trip_plan(updates_json: str) -> str:
             "\nItinerary planning incomplete: "
             + " ".join(empty_day_warnings)
             + " Restore concrete attractions or named restaurants on those days and "
+            "resubmit the full day_wise_itinerary before finishing."
+        )
+    if transport_warnings:
+        warning_text += (
+            "\nRound-trip transport planning incomplete: "
+            + " ".join(transport_warnings)
+            + " Add the explicit inter-city journey stops in itinerary order and "
             "resubmit the full day_wise_itinerary before finishing."
         )
     if hotel_warnings:
