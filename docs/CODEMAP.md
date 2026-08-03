@@ -74,8 +74,8 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/components/ErrorBanner.tsx` | Render-only workspace error alert |
 | `frontend/src/components/AccountSettingsHub.tsx` | Web account/settings section ownership; delegates persisted destinations to existing auth, preferences, analytics, and privacy boundaries |
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
-| `frontend/src/components/MapPanel.tsx` | Google Maps lifecycle, refs, drawing, viewport mutation, focus coordination, and compatibility re-exports |
-| `frontend/src/components/map/` | Pure map icon generation, focus matching, route/day derivation, and Google-place candidate conversion |
+| `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
+| `frontend/src/components/map/` | Map icon generation, focus matching, route/day derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/components/map/placeIdentity.ts` | Conservative hotel identity shared by itinerary and map labels |
