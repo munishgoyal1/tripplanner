@@ -86,6 +86,11 @@ function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
   return ["airport", "station", "bus_station", "origin"].includes(pin.kind);
 }
 
+export function scheduleMapOverlayDraw(draw: () => void): () => void {
+  const frame = window.requestAnimationFrame(draw);
+  return () => window.cancelAnimationFrame(frame);
+}
+
 interface Props {
   /** Bump to refetch the map after the trip changes. */
   reloadToken?: number;
@@ -364,7 +369,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
   }, [view, activeDay, candidatePin]);
 
   useEffect(() => {
-    draw();
+    return scheduleMapOverlayDraw(draw);
   }, [draw, mapReady]);
 
   // ---- focus a pin by name (driven from the itinerary tab) -----------------

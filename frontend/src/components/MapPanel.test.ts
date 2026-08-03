@@ -24,6 +24,7 @@ import {
   placeNameMatches,
   routePathForPinIds,
   routeStyleForLeg,
+  scheduleMapOverlayDraw,
   syncPinMarkerFocus,
   visitOrdersForDay,
   zoomToPin,
@@ -195,6 +196,35 @@ describe("map stop selection", () => {
 
     expect(map.panTo).toHaveBeenCalledWith({ lat: 24.6177, lng: 73.8961 });
     expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
+  it("defers and cancels superseded overlay redraws", () => {
+    const callbacks = new Map<number, FrameRequestCallback>();
+    let nextFrame = 0;
+    const requestFrame = vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
+      nextFrame += 1;
+      callbacks.set(nextFrame, callback);
+      return nextFrame;
+    });
+    const cancelFrame = vi.spyOn(window, "cancelAnimationFrame").mockImplementation((frame) => {
+      callbacks.delete(frame);
+    });
+    const staleDraw = vi.fn();
+    const latestDraw = vi.fn();
+
+    const cancelStale = scheduleMapOverlayDraw(staleDraw);
+    cancelStale();
+    scheduleMapOverlayDraw(latestDraw);
+
+    expect(staleDraw).not.toHaveBeenCalled();
+    expect(latestDraw).not.toHaveBeenCalled();
+    callbacks.forEach((callback) => callback(performance.now()));
+    expect(staleDraw).not.toHaveBeenCalled();
+    expect(latestDraw).toHaveBeenCalledOnce();
+    expect(requestFrame).toHaveBeenCalledTimes(2);
+    expect(cancelFrame).toHaveBeenCalledOnce();
+    requestFrame.mockRestore();
+    cancelFrame.mockRestore();
   });
 
   it("treats an enriched itinerary airport as an inspectable map pin", () => {
@@ -822,9 +852,7 @@ describe("map stop selection", () => {
       { lat: 15.1, lng: 73.1 },
       { lat: 15.15, lng: 73.15 },
       { lat: 15.2, lng: 73.2 },
-      { lat: 15.15, lng: 73.15 },
     ]));
-    expect(fitBounds.mock.calls.filter(([bounds]) => bounds.points.length === 4)).toHaveLength(1);
     const markerIcon = (title: string) => marker.mock.calls
       .map(([options]) => options)
       .find((options) => options.title === title)?.icon?.url ?? "";
@@ -851,12 +879,12 @@ describe("map stop selection", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
     expect(decodeURIComponent(markerIcon("North Hotel")))
       .toContain(">H</text>");
-    expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
+    await waitFor(() => expect(fitBounds.mock.calls[fitBounds.mock.calls.length - 1]?.[0].points).toEqual([
       { lat: 16, lng: 74 },
       { lat: 15.1, lng: 73.1 },
       { lat: 15.15, lng: 73.15 },
       { lat: 15.2, lng: 73.2 },
-    ]);
+    ]));
     rendered.unmount();
     delete window.google;
   });

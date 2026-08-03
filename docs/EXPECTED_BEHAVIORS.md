@@ -153,7 +153,10 @@ Snapshot as selected. The selected day summary receives the same exclusive
 aggregate-selection treatment. Trip Snapshot itself invokes All days. Neither
 action requests place Details. A newly created or selected trip always starts in
 All days even when its day numbers overlap the previously viewed trip. Ordinary
-content refreshes preserve a deliberate day selection.
+content refreshes preserve a deliberate day selection. Focus controls paint
+before map overlays are reconstructed, and rapid focus changes discard
+superseded queued redraws so the latest requested item, day, route, or All days
+scope wins.
 
 Selecting an inter-city flight or transport row is a route action rather than
 place focus: Map opens and frames the full ordered day route so both source and
@@ -166,6 +169,7 @@ or replace destination-local framing for ordinary day-header focus.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows all circuits and returns itinerary focus to the trip summary`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `maps a Trip Snapshot click to the shared All days focus`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `restores All days after an externally focused day`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `defers and cancels superseded overlay redraws`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `defaults a newly selected trip to All days even when its day numbers overlap`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `marks the focused day circuit as selected`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `uses Trip Snapshot as the selected All days map control`

@@ -193,6 +193,12 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - A hermetic in-process benchmark is a regression tripwire, not production
   capacity evidence. Keep real routing, identity, thread offload, and admission
   while replacing network, provider, and persistence variability.
+- Rebuilding map markers, routes, labels, and listeners is synchronous main-thread
+  work even when the underlying data is already loaded. Schedule that work after
+  the focus-state paint and cancel superseded frames so rapid navigation builds
+  only the latest requested scope.
+- Deferred rendering tests should assert final visible state and geographic
+  bounds, not the exact number or ordering of intermediate viewport fits.
 - Use a conservative percentile ceiling with warmups and repeated samples to
   detect gross blocking or accidental network access without optimizing CI noise.
 - Production SLO telemetry, Cosmos RU/throttling metrics, and billing reports
