@@ -4,6 +4,7 @@ import {
   exactItineraryOccurrence,
   LatestRequestGate,
   requireApiBaseUrl,
+  SerializedMutationQueue,
   TripplannerClient,
   type StreamHandlers,
 } from "../../packages/tripplanner-client/src";
@@ -98,5 +99,41 @@ describe("shared chat stream contract", () => {
 
     await expect(client.streamChat("Plan a trip", handlers(), { requestId: "request-1" }))
       .rejects.toThrow("response stream ended before completion");
+  });
+});
+
+describe("shared mutation queue", () => {
+  it("serializes mutations through their authoritative refresh boundary", async () => {
+    const queue = new SerializedMutationQueue();
+    const events: string[] = [];
+    let releaseFirst = () => undefined;
+    const firstBlocked = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+
+    const first = queue.run(async () => {
+      events.push("first:mutation");
+      await firstBlocked;
+      events.push("first:refresh");
+    });
+    const second = queue.run(async () => {
+      events.push("second:mutation");
+    });
+
+    await Promise.resolve();
+    expect(events).toEqual(["first:mutation"]);
+
+    releaseFirst();
+    await Promise.all([first, second]);
+    expect(events).toEqual(["first:mutation", "first:refresh", "second:mutation"]);
+  });
+
+  it("continues after a failed mutation without hiding its rejection", async () => {
+    const queue = new SerializedMutationQueue();
+
+    await expect(queue.run(async () => {
+      throw new Error("conflict");
+    })).rejects.toThrow("conflict");
+    await expect(queue.run(async () => 42)).resolves.toBe(42);
   });
 });

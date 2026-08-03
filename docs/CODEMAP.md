@@ -88,9 +88,12 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/labs/` | Isolated UX experiments only, never production runtime code |
 | `mobile/app/` | Expo Router screens |
 | `mobile/components/` | Native UI components |
-| `mobile/providers/` | Native identity and application providers |
+| `mobile/providers/trip-provider.tsx` | Native trip context composition plus account and chat orchestration |
+| `mobile/providers/use-saved-trip-lifecycle.ts` | Serialized saved-trip switch and new-trip lifecycle |
+| `mobile/providers/use-trip-mutations.ts` | Serialized select, deselect, and booking mutations through authoritative refresh |
 | `mobile/lib/` | Native platform helpers |
 | `packages/tripplanner-client/` | Shared web/native request, response, event, and identity contracts |
+| `packages/tripplanner-client/src/serialized-mutation.ts` | Shared FIFO client mutation serialization and failure recovery |
 
 The React workspace has one owner for current trip revision, identity, selection,
 and focus. Async reads must be aborted, revision-guarded, or identity-guarded so
