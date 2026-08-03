@@ -202,6 +202,55 @@ describe("ChatPanel progress", () => {
     );
   });
 
+  it("recovers an interrupted stream with the same operation id", async () => {
+    streamChatMock
+      .mockRejectedValueOnce(new Error("Connection lost."))
+      .mockImplementationOnce((_message: string, handlers: StreamHandlers) => {
+        handlers.onToken("Recovered after reconnecting.");
+        handlers.onDone("Recovered after reconnecting.", "goa-trip");
+        return Promise.resolve();
+      });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    fireEvent.change(await readyComposer(), { target: { value: "Plan Goa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(await screen.findByText("Warning: Connection lost.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry request" }));
+
+    expect(await screen.findByText("Recovered after reconnecting.")).toBeInTheDocument();
+    expect(streamChatMock.mock.calls[1][2].requestId).toBe(
+      streamChatMock.mock.calls[0][2].requestId,
+    );
+  });
+
+  it("aborts an active stream and clears workspace status when unmounted", async () => {
+    const onTurnStatus = vi.fn();
+    let streamSignal: AbortSignal | undefined;
+    streamChatMock.mockImplementation(
+      (_message: string, _handlers: StreamHandlers, options: { signal?: AbortSignal }) => {
+        streamSignal = options.signal;
+        return new Promise<void>((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () => {
+            reject(new DOMException("Aborted", "AbortError"));
+          });
+        });
+      },
+    );
+    const { unmount } = render(
+      <ChatPanel onTurnComplete={vi.fn()} onTurnStatus={onTurnStatus} />,
+    );
+
+    fireEvent.change(await readyComposer(), { target: { value: "Plan Goa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(streamSignal).toBeDefined());
+
+    unmount();
+
+    expect(streamSignal?.aborted).toBe(true);
+    expect(onTurnStatus).toHaveBeenLastCalledWith(null);
+  });
+
   it("renders and submits a validated trip input request", async () => {
     streamChatMock
       .mockImplementationOnce((_message: string, handlers: StreamHandlers) => {
