@@ -109,6 +109,8 @@ contracts, not component implementations.
 - The production SPA is mounted by FastAPI; Vite is development-only.
 - CORS allowlists and hosted redirect behavior come from environment-specific
   configuration.
+- Native builds require an explicit `EXPO_PUBLIC_API_BASE_URL`; an unconfigured
+  development build must never fall through to production.
 
 ## Persistence Contracts
 

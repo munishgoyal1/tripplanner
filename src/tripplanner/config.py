@@ -10,6 +10,8 @@ from pydantic import BaseModel, Field
 
 load_dotenv()
 
+DEFAULT_AZURE_OPENAI_API_VERSION = "2024-10-21"
+
 
 def _env_positive_int(name: str, default: int) -> int:
     try:
@@ -23,7 +25,11 @@ class Settings(BaseModel):
     azure_openai_endpoint: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
     azure_openai_api_key: str = os.getenv("AZURE_OPENAI_API_KEY", "")
     azure_openai_deployment: str = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
-    azure_openai_api_version: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
+    azure_openai_api_version: str = Field(
+        default_factory=lambda: os.getenv(
+            "AZURE_OPENAI_API_VERSION", DEFAULT_AZURE_OPENAI_API_VERSION
+        )
+    )
 
     # Amadeus Self-Service API (flights, hotels, activities)
     # NOTE: Amadeus Self-Service is being decommissioned on July 17, 2026.

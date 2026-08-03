@@ -17,8 +17,7 @@ Verified on 2026-07-25:
 - Android Hermes export: 1,355 modules, approximately 3.78 MB
 - Expo Doctor: 18/18 checks pass
 - Android package: `com.munishgoyal1.tripplanner`
-- Default API: hosted production API from `mobile/lib/tripplanner.ts`
-- Optional API override: `EXPO_PUBLIC_API_BASE_URL`
+- Required API setting: `EXPO_PUBLIC_API_BASE_URL`
 
 The Expo dependency tree currently reports 14 transitive advisories. Do not run
 `npm audit fix --force`: it proposes an incompatible Expo major-version upgrade.
@@ -71,6 +70,7 @@ Metro's normal port 8081:
 
 ```powershell
 cd mobile
+$env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run android
 ```
 
@@ -103,13 +103,17 @@ instead of changing application dependencies when that happens.
 
 ## Select the backend
 
-The app uses the hosted production API by default. To test a reachable canary
-or development API, set the URL before starting Metro:
+The app does not select a backend implicitly. Set a reachable development,
+canary, or production API before starting Metro:
 
 ```powershell
 $env:EXPO_PUBLIC_API_BASE_URL='https://your-api.example/api'
 npm run android
 ```
+
+Set the same value in the selected EAS build environment for preview or store
+builds. A missing value stops startup instead of routing a development build to
+production.
 
 `localhost` on the phone means the phone itself. A local backend must listen on
 a LAN-accessible interface, be allowed through Windows Firewall, and use the

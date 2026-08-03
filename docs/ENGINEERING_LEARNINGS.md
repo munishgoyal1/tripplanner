@@ -4,6 +4,14 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-03 - Require Native Environment Selection
+
+- A hardcoded production fallback turns missing development configuration into
+  real production traffic. Native builds must select their API environment
+  explicitly and fail during startup when it is absent.
+- Keep public endpoint selection in build configuration, not source code. Test
+  normalization and missing-value behavior at the shared client boundary.
+
 ## 2026-08-03 - Long Agent Work Needs Two Completion Boundaries
 
 - Token streaming alone does not reassure a user during multi-minute tool and model
