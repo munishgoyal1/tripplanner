@@ -94,6 +94,8 @@ export default function ItineraryStopRow({
     ? "Airport arrival"
     : stop.terminal_role === "arrival"
       ? "Land"
+      : stop.kind === "hotel" && isFirst && isLast
+        ? "Stay"
       : stop.kind === "hotel" && isFirst
         ? "Depart"
         : stop.kind === "hotel" && isLast

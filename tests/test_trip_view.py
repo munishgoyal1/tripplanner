@@ -1529,6 +1529,31 @@ def test_structured_itinerary_adds_selected_hotel_as_daily_circuit_anchor() -> N
         assert day["stops"][-1]["note"] == "Return to your stay"
 
 
+def test_structured_hotel_only_day_does_not_add_return_endpoint() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Mysore",
+        "selected_hotels": [{"name": "Radisson Blu Plaza Hotel Mysore"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Radisson Blu Plaza Hotel Mysore",
+                        "kind": "hotel",
+                    }
+                ],
+            }
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    assert [stop["name"] for stop in itinerary["days"][0]["stops"]] == [
+        "Radisson Blu Plaza Hotel Mysore"
+    ]
+
+
 def test_structured_itinerary_preserves_same_hotel_return_metadata() -> None:
     trip = {
         **SAMPLE_TRIP,
@@ -1650,6 +1675,253 @@ def test_structured_itinerary_preserves_arrival_and_departure_flights(
         assert flight["opening_hours"] == ""
         assert flight["duration_min"] > 0
     assert itinerary["stats"]["stops"] == 4
+
+
+def test_arrival_day_local_outing_returns_to_destination_hotel(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Udaipur Airport": (24.6177, 73.8961),
+        "Trident Udaipur": (24.577, 73.683),
+        "Lake Pichola": (24.572, 73.679),
+        "City Palace": (24.576, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Flight: Bangalore to Udaipur",
+                    "kind": "flight",
+                    "time": "08:00",
+                    "arrival_time": "09:30",
+                    "duration_min": 90,
+                },
+                {
+                    "name": "Trident Udaipur",
+                    "kind": "hotel",
+                    "time": "10:55",
+                    "note": "Check-in",
+                },
+                {
+                    "name": "Lake Pichola",
+                    "kind": "attraction",
+                    "time": "15:00",
+                    "duration_min": 90,
+                },
+                {
+                    "name": "City Palace",
+                    "kind": "attraction",
+                    "time": "17:00",
+                    "duration_min": 90,
+                },
+            ],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    day = itinerary["days"][0]
+    hotel_return = day["stops"][-1]
+    assert hotel_return["name"] == "Trident Udaipur"
+    assert hotel_return["note"] == "Return to your stay"
+    assert hotel_return["time"] == day["schedule"]["end"]
+    assert hotel_return["time"] > "18:30"
+    assert hotel_return["time_estimated"] is True
+    assert hotel_return["travel_from_previous"]["duration_min"] > 0
+
+
+def test_arrival_day_local_transport_does_not_suppress_hotel_return(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Udaipur Airport": (24.6177, 73.8961),
+        "Trident Udaipur": (24.577, 73.683),
+        "City Palace": (24.576, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Flight: Bangalore to Udaipur",
+                    "kind": "flight",
+                    "time": "08:00",
+                    "arrival_time": "09:30",
+                    "duration_min": 90,
+                },
+                {
+                    "name": "Trident Udaipur",
+                    "kind": "hotel",
+                    "time": "10:55",
+                    "concern": "Confirm early check-in",
+                },
+                {"name": "Taxi to City Palace", "kind": "transport"},
+                {
+                    "name": "City Palace",
+                    "kind": "attraction",
+                    "time": "17:00",
+                    "duration_min": 90,
+                },
+            ],
+        }],
+    }
+
+    day = trip_view.build_itinerary(trip)["days"][0]
+    stops = day["stops"]
+
+    assert stops[-1]["name"] == "Trident Udaipur"
+    assert stops[-1]["note"] == "Return to your stay"
+    assert stops[-1]["time"] == day["schedule"]["end"]
+    assert stops[-1]["time"] > "18:30"
+    assert stops[-1]["travel_from_previous"]["duration_min"] > 0
+    assert not stops[-1].get("concern")
+
+
+def test_arrival_day_local_transport_alone_does_not_add_hotel_return(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Udaipur Airport": (24.6177, 73.8961),
+        "Trident Udaipur": (24.577, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Flight: Bangalore to Udaipur",
+                    "kind": "flight",
+                    "time": "08:00",
+                    "arrival_time": "09:30",
+                    "duration_min": 90,
+                },
+                {"name": "Trident Udaipur", "kind": "hotel", "time": "10:55"},
+                {"name": "Taxi to dinner", "kind": "transport"},
+            ],
+        }],
+    }
+
+    stops = trip_view.build_itinerary(trip)["days"][0]["stops"]
+
+    assert [stop["kind"] for stop in stops] == [
+        "airport", "flight", "airport", "hotel", "transport"
+    ]
+
+
+def test_arrival_day_does_not_invent_return_without_route_coordinates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(trip_view, "_place_coords", lambda name, destination: None)
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Flight: Bangalore to Udaipur",
+                    "kind": "flight",
+                    "time": "08:00",
+                    "arrival_time": "09:30",
+                    "duration_min": 90,
+                },
+                {"name": "Trident Udaipur", "kind": "hotel", "time": "10:55"},
+                {
+                    "name": "City Palace",
+                    "kind": "attraction",
+                    "time": "17:00",
+                    "duration_min": 90,
+                },
+            ],
+        }],
+    }
+
+    stops = trip_view.build_itinerary(trip)["days"][0]["stops"]
+
+    assert stops[-1]["name"] == "City Palace"
+
+
+def test_arrival_day_return_includes_untimed_local_activity_duration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Udaipur Airport": (24.6177, 73.8961),
+        "Trident Udaipur": (24.577, 73.683),
+        "Lake Pichola": (24.572, 73.679),
+        "City Palace": (24.576, 73.683),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rajasthan",
+        "selected_hotels": [{"name": "Trident Udaipur"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {
+                    "name": "Flight: Bangalore to Udaipur",
+                    "kind": "flight",
+                    "time": "08:00",
+                    "arrival_time": "09:30",
+                    "duration_min": 90,
+                },
+                {"name": "Trident Udaipur", "kind": "hotel", "time": "10:55"},
+                {
+                    "name": "Lake Pichola",
+                    "kind": "attraction",
+                    "time": "15:00",
+                    "duration_min": 90,
+                },
+                {"name": "City Palace", "kind": "attraction", "duration_min": 90},
+            ],
+        }],
+    }
+
+    day = trip_view.build_itinerary(trip)["days"][0]
+    lake, city, hotel_return = day["stops"][-3:]
+    expected_return = (
+        trip_view._clock_minutes(lake["time"])
+        + lake["duration_min"]
+        + city["travel_from_previous"]["duration_min"]
+        + city["duration_min"]
+        + hotel_return["travel_from_previous"]["duration_min"]
+    )
+
+    assert hotel_return["time"] == trip_view._clock_display(expected_return)
 
 
 def test_local_route_does_not_invent_unverified_metro_service() -> None:

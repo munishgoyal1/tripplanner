@@ -144,6 +144,35 @@ and Metro is never inferred from distance alone.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_keeps_short_walks_walkable`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_local_route_does_not_invent_unverified_metro_service`
 
+### EB-ITIN-003 - Do not invent a hotel return without an outing
+
+**Trigger:** View an itinerary day whose only planned stop is the hotel.
+
+**Expected:** The hotel appears once as a `Stay` row. The day does not show a
+separate departure or return endpoint because the traveler has no planned outing.
+
+**Executable proof:**
+
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_hotel_only_day_does_not_add_return_endpoint`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows one stay row without a return for a hotel-only day`
+
+### EB-ITIN-004 - Return after an arrival-day outing
+
+**Trigger:** Arrive by inter-city transport, check in to the destination hotel,
+then visit one or more local places that day.
+
+**Expected:** When the return route can be grounded, the local plan ends with a
+separate return to the destination hotel, including its incoming travel and
+estimated return time. A bare arrival/check-in does not add a return, and neither
+an ungrounded route nor inter-city travel after the hotel invents one.
+
+**Executable proof:**
+
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_day_local_outing_returns_to_destination_hotel`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_day_does_not_invent_return_without_route_coordinates`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
+
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
 **Trigger:** View a day whose ordered map route contains two or more distinct
