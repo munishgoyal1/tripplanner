@@ -11,7 +11,7 @@ development lanes and the primary checkout is the review/integration lane.
 The standard slots are:
 
 | Role | Worktree | Branch | Workspace launcher |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Agent 1 - Iti-Map | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
 | Agent 2 - Detail-Chat | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
 | Agent 3 - Infra | `C:\repos\tripplanner.worktrees\worker-3` | `agents/worker-3` | `tripplanner-worker-3.code-workspace` |
