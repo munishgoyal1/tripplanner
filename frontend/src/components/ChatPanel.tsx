@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, Copy, Pencil, Send, Square } from "lucide-react";
 import {
-  streamChat,
   signIn,
   signOut,
   getDisplayName,
@@ -19,11 +18,18 @@ import {
   getUserId,
   type AuthSession,
 } from "../api";
-import type { ChatMessage, TripInputRequest } from "../types";
+import type { ChatMessage } from "../types";
 import { trackEvent } from "../analytics";
 import AccountSettingsHub from "./AccountSettingsHub";
 import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
+import {
+  elapsedLabel,
+  useChatStream,
+  waitGuidance,
+  type AssistantTurnContext,
+  type AssistantTurnStatus,
+} from "../hooks/useChatStream";
 
 interface Props {
   onTurnComplete: (tripId?: string, context?: AssistantTurnContext) => void | Promise<void>;
@@ -45,55 +51,12 @@ interface Props {
   assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
 }
 
-export interface AssistantTurnStatus {
-  phase: "working" | "loading" | "complete" | "error";
-  message: string;
-}
-
-export interface AssistantTurnContext {
-  proposalOnly: boolean;
-  startedWithoutTrip: boolean;
-}
+export type { AssistantTurnContext, AssistantTurnStatus } from "../hooks/useChatStream";
 
 const GREETING: ChatMessage = {
   role: "assistant",
   text: "Where are you traveling from, where would you like to go, and roughly when? I'll build a complete first plan with sensible defaults, and you can change anything here.",
 };
-
-const PROGRESS_LABELS = {
-  thinking: "Thinking through your request",
-  reviewing: "Reviewing the results",
-  saving: "Saving your trip updates",
-} as const;
-
-function toolProgressLabel(name: string): string {
-  if (/flight/i.test(name)) return "Searching live flights";
-  if (/hotel/i.test(name)) return "Searching hotels";
-  if (/restaurant/i.test(name)) return "Finding restaurants";
-  if (/place|review|activit/i.test(name)) return "Checking places and reviews";
-  if (/route|optimi/i.test(name)) return "Working out routes";
-  if (/weather/i.test(name)) return "Checking the weather";
-  if (/visa/i.test(name)) return "Checking entry requirements";
-  if (/event/i.test(name)) return "Finding local events";
-  if (/preference|memory|profile/i.test(name)) return "Reviewing your preferences";
-  if (/update|create|finalize|plan/i.test(name)) return "Updating your itinerary";
-  if (/web_search/i.test(name)) return "Researching current information";
-  return "Working on your trip";
-}
-
-function waitGuidance(isNewTrip: boolean, seconds: number): string {
-  if (seconds >= 120) {
-    return "Full builds usually take about 2–4 minutes. Still working; no need to refresh.";
-  }
-  return isNewTrip
-    ? "Full itinerary builds usually take about 2–4 minutes."
-    : "Updates are usually quicker; a full rebuild can take about 2–4 minutes.";
-}
-
-function elapsedLabel(seconds: number): string {
-  if (seconds < 60) return `${seconds}s elapsed`;
-  return `${Math.floor(seconds / 60)}m ${seconds % 60}s elapsed`;
-}
 
 export default function ChatPanel({
   onTurnComplete,
@@ -108,16 +71,6 @@ export default function ChatPanel({
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [tripInputRequest, setTripInputRequest] = useState<TripInputRequest | null>(null);
-  const [failedRequest, setFailedRequest] = useState<{
-    message: string;
-    proposalOnly: boolean;
-    requestId: string;
-  } | null>(null);
-  const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
-  const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
-  const [progressSeconds, setProgressSeconds] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [nameInput, setNameInput] = useState(getDisplayName());
@@ -146,12 +99,29 @@ export default function ChatPanel({
   const freshSignInRef = useRef(false);
   const handledAssistantRequestRef = useRef(0);
   const sendRequestedMessageRef = useRef<(message: string, proposalOnly?: boolean) => void>(() => {});
-  const streamControllerRef = useRef<AbortController | null>(null);
-  const turnStartedAtRef = useRef(0);
-  const publishedTurnStatusRef = useRef("");
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const copyTimerRef = useRef<number | null>(null);
+  const onSendStartRef = useRef<() => void>(() => setInput(""));
   const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
+  const {
+    activeTool,
+    busy,
+    clearTurnArtifacts,
+    failedRequest,
+    progress,
+    progressSeconds,
+    retryFailedRequest,
+    sendMessage,
+    stopResponse,
+    tripInputRequest,
+  } = useChatStream({
+    hasActiveTrip,
+    transcriptReady,
+    setMessages,
+    onSendStart: () => onSendStartRef.current(),
+    onTurnComplete,
+    onTurnStatus,
+  });
 
   useEffect(() => {
     if (!assistantRequest || busy || !transcriptReady || handledAssistantRequestRef.current === assistantRequest.id) return;
@@ -159,35 +129,9 @@ export default function ChatPanel({
     sendRequestedMessageRef.current(assistantRequest.message, assistantRequest.proposalOnly);
   }, [assistantRequest, busy, transcriptReady]);
 
-  useEffect(() => {
-    if (!progress) {
-      setProgressSeconds(0);
-      return;
-    }
-    const update = () => setProgressSeconds(Math.floor((Date.now() - progress.startedAt) / 1000));
-    update();
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
-  }, [progress]);
-
-  useEffect(() => {
-    if (!busy || !progress) return;
-    const publishedSeconds = Math.floor(progressSeconds / 10) * 10;
-    const message = `${progress.label}. ${elapsedLabel(publishedSeconds)}. ${waitGuidance(!hasActiveTrip, publishedSeconds)}`;
-    if (publishedTurnStatusRef.current === message) return;
-    publishedTurnStatusRef.current = message;
-    onTurnStatus?.({
-      phase: "working",
-      message,
-    });
-  }, [busy, hasActiveTrip, onTurnStatus, progress, progressSeconds]);
-
   useEffect(() => () => {
-    streamControllerRef.current?.abort();
     if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
   }, []);
-
-  useEffect(() => () => onTurnStatus?.(null), [onTurnStatus]);
 
   useEffect(() => {
     const openAccount = () => setShowAccount(true);
@@ -232,6 +176,11 @@ export default function ChatPanel({
       // already stopped
     }
     setListening(false);
+  };
+
+  onSendStartRef.current = () => {
+    if (listening) stopListening();
+    setInput("");
   };
 
   const toggleListening = () => {
@@ -355,9 +304,8 @@ export default function ChatPanel({
   }, [authChecked, reloadToken, tripIdHint, cacheKey, busy, transcriptRequestKey]);
 
   useEffect(() => {
-    setFailedRequest(null);
-    setTripInputRequest(null);
-  }, [cacheKey, reloadToken, tripIdHint]);
+    clearTurnArtifacts();
+  }, [cacheKey, clearTurnArtifacts, reloadToken, tripIdHint]);
 
   // Keep a fast in-memory snapshot keyed by trip id for instant switches.
   useEffect(() => {
@@ -391,189 +339,19 @@ export default function ChatPanel({
     }
     setMessages([GREETING]);
     setInput("");
-    setFailedRequest(null);
-    setTripInputRequest(null);
+    clearTurnArtifacts();
     onNewTrip?.();
     trackEvent("new_trip_started", { surface: "assistant" });
   }
 
-  async function sendMessage(
-    outgoing: string,
-    proposalOnly = false,
-    requestId: string = crypto.randomUUID(),
-    retrying = false,
-  ) {
-    if (!outgoing.trim() || busy || !transcriptReady) return;
-    if (listening) stopListening();
-    setInput("");
-    setFailedRequest(null);
-    setTripInputRequest(null);
-    setBusy(true);
-    turnStartedAtRef.current = Date.now();
-    publishedTurnStatusRef.current = "";
-    setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
-    const streamController = new AbortController();
-    streamControllerRef.current = streamController;
-    trackEvent("planning_started", { proposal_only: proposalOnly, retry: retrying });
-    setMessages((m) => [
-      ...(retrying ? m.slice(0, -2) : m),
-      { role: "user", text: outgoing },
-      { role: "assistant", text: "" },
-    ]);
-
-    const usedTools = new Set<string>();
-    const toolTrace: { name: string; args?: string; duration_ms?: number }[] = [];
-    let pendingTokens = "";
-    let tokenFrame: number | null = null;
-    const flushTokens = () => {
-      tokenFrame = null;
-      if (!pendingTokens) return;
-      const text = pendingTokens;
-      pendingTokens = "";
-      setMessages((m) => {
-        const copy = [...m];
-        copy[copy.length - 1] = {
-          ...copy[copy.length - 1],
-          text: copy[copy.length - 1].text + text,
-        };
-        return copy;
-      });
-    };
-    let handledError = false;
-    try {
-      await streamChat(outgoing, {
-        onToken: (text) => {
-          pendingTokens += text;
-          if (tokenFrame == null) tokenFrame = window.requestAnimationFrame(flushTokens);
-        },
-      onProgress: (stage) => {
-        setProgress({ label: PROGRESS_LABELS[stage], startedAt: turnStartedAtRef.current });
-      },
-      onInputRequest: (request) => {
-        setTripInputRequest(request);
-      },
-      onTool: (name, phase, extras) => {
-        if (phase === "start") {
-          usedTools.add(name);
-          toolTrace.push({ name, args: extras?.args });
-          setActiveTool({ name, args: extras?.args });
-          setProgress({ label: toolProgressLabel(name), startedAt: turnStartedAtRef.current });
-        } else {
-          // Attach the duration to the most recent matching start entry that
-          // doesn't already have one.
-          for (let i = toolTrace.length - 1; i >= 0; i--) {
-            if (toolTrace[i].name === name && toolTrace[i].duration_ms === undefined) {
-              toolTrace[i].duration_ms = extras?.duration_ms;
-              break;
-            }
-          }
-          setActiveTool(null);
-        }
-      },
-      onDone: (_reply, tripId) => {
-        if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-        flushTokens();
-        setActiveTool(null);
-        setProgress(null);
-        onTurnStatus?.({
-          phase: "loading",
-          message: "The planning work is complete. Loading your updated itinerary now.",
-        });
-        setMessages((m) => {
-          const copy = [...m];
-          copy[copy.length - 1] = {
-            ...copy[copy.length - 1],
-            tools: Array.from(usedTools),
-            tool_trace: toolTrace.slice(),
-          };
-          return copy;
-        });
-        setBusy(false);
-        setFailedRequest(null);
-        trackEvent("planning_completed", { proposal_only: proposalOnly });
-        void onTurnComplete(tripId, {
-          proposalOnly,
-          startedWithoutTrip: !hasActiveTrip,
-        });
-      },
-        onError: (msg) => {
-          if (streamController.signal.aborted) return;
-          handledError = true;
-          pendingTokens = "";
-          if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-          tokenFrame = null;
-          setActiveTool(null);
-          setProgress(null);
-          onTurnStatus?.({ phase: "error", message: "The Assistant hit an error. Your previous itinerary is still available." });
-          setMessages((m) => {
-            const copy = [...m];
-            copy[copy.length - 1] = { role: "assistant", text: `Warning: ${msg}` };
-            return copy;
-          });
-          setFailedRequest({ message: outgoing, proposalOnly, requestId });
-          trackEvent("planning_failed", { proposal_only: proposalOnly });
-        },
-      }, { proposalOnly, requestId, signal: streamController.signal });
-    } catch (error) {
-      if (streamController.signal.aborted) {
-        pendingTokens = "";
-        if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-        tokenFrame = null;
-        setMessages((current) => {
-          const next = [...current];
-          const draft = next[next.length - 1];
-          if (draft?.role === "assistant") {
-            const partial = draft.text.trimEnd();
-            next[next.length - 1] = {
-              ...draft,
-              text: partial ? `${partial}\n\nResponse stopped.` : "Response stopped.",
-            };
-          }
-          return next;
-        });
-      } else if (!handledError) {
-        pendingTokens = "";
-        if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-        tokenFrame = null;
-        setActiveTool(null);
-        setProgress(null);
-        onTurnStatus?.({ phase: "error", message: "The Assistant could not finish that update. Your previous itinerary is still available." });
-        setMessages((m) => {
-          const copy = [...m];
-          copy[copy.length - 1] = {
-            role: "assistant",
-            text: `Warning: ${error instanceof Error ? error.message : "The chat request failed."}`,
-          };
-          return copy;
-        });
-        setFailedRequest({ message: outgoing, proposalOnly, requestId });
-        trackEvent("planning_failed", { proposal_only: proposalOnly });
-      }
-    } finally {
-      if (streamControllerRef.current === streamController) {
-        streamControllerRef.current = null;
-      }
-      setActiveTool(null);
-      setProgress(null);
-      if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
-      flushTokens();
-      setBusy(false);
-    }
-  }
-
   sendRequestedMessageRef.current = (message, proposalOnly) => {
-    void sendMessage(message, proposalOnly);
+    void sendMessage(message, { proposalOnly });
   };
 
   function send() {
-    void sendMessage(input.trim());
-  }
-
-  function stopResponse() {
-    streamControllerRef.current?.abort();
-    setActiveTool(null);
-    setProgress(null);
-    onTurnStatus?.(null);
+    const outgoing = input.trim();
+    if (!outgoing || busy || !transcriptReady) return;
+    void sendMessage(outgoing);
   }
 
   async function copyMessage(text: string, index: number) {
@@ -1041,12 +819,7 @@ export default function ChatPanel({
       <div className="border-t border-slate-100 bg-white p-4">
         {failedRequest && (
           <button
-            onClick={() => void sendMessage(
-              failedRequest.message,
-              failedRequest.proposalOnly,
-              failedRequest.requestId,
-              true,
-            )}
+            onClick={retryFailedRequest}
             disabled={busy}
             className="mb-2 text-xs font-medium text-brand hover:underline disabled:opacity-40"
           >

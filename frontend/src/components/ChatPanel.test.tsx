@@ -242,10 +242,14 @@ describe("ChatPanel progress", () => {
     expect(screen.getByText(/Boutique stays/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("radio", { name: "Easy" }));
     fireEvent.click(screen.getByRole("button", { name: "Increase Travelers" }));
+    fireEvent.change(screen.getByPlaceholderText(/Plan a 5-day trip/), {
+      target: { value: "This draft must not survive the continuation" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Build my trip" }));
 
     await waitFor(() => expect(streamChatMock).toHaveBeenCalledTimes(2));
     expect(streamChatMock.mock.calls[1][0]).toBe("Use these choices for this trip:\n- Pace: Easy\n- Travelers: 3");
+    expect(screen.getByPlaceholderText(/Plan a 5-day trip/)).toHaveValue("");
     expect(screen.queryByText("Anything different for this trip?")).not.toBeInTheDocument();
   });
 });
