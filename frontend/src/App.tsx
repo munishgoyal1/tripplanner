@@ -14,6 +14,7 @@ import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { PlannerReview, TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
@@ -65,13 +66,19 @@ export default function App() {
   const [assistantTurnStatus, setAssistantTurnStatus] = useState<AssistantTurnStatus | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
-  const [mapFocusToken, setMapFocusToken] = useState(0);
-  const [terminalFocus, setTerminalFocus] = useState<NavRef | null>(null);
-  const [circuitFocus, setCircuitFocus] = useState({ day: 0, token: 0 });
-  const [routeFocus, setRouteFocus] = useState({ day: 0, token: 0 });
-  const focus = workspace.activePlace;
-  const stopFocus = terminalFocus ?? focus;
-  const stopFocusName = stopFocus?.name ?? null;
+  const {
+    place: focus,
+    placeToken: mapFocusToken,
+    circuitDay: circuitFocusDay,
+    circuitToken: circuitFocusToken,
+    routeDay: routeFocusDay,
+    routeToken: routeFocusToken,
+    setPlace: setPlaceFocus,
+    setCircuit: setCircuitFocus,
+    setRoute: setRouteFocus,
+    clear: clearFocus,
+  } = useWorkspaceFocus(workspace.focus, dispatchWorkspace);
+  const stopFocusName = focus?.name ?? null;
   const tripVersion = workspace.tripRevision;
   const chatReloadToken = workspace.chatRevision;
   const chatTripId = workspace.tripId;
@@ -233,10 +240,6 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    setTerminalFocus(null);
-  }, [tripVersion]);
-
   const handleIdentityChanged = useCallback(async () => {
     const nextSignedIn = !isAnonymousUser();
     setSignedIn(nextSignedIn);
@@ -284,11 +287,7 @@ export default function App() {
 
   const handleFocus = async (kind: string, name: string, context?: DeselectItemOptions) => {
     const f = { kind, name, day: context?.day, stop: context?.stop };
-    setTerminalFocus(null);
-    setCircuitFocus({ day: 0, token: 0 });
-    setRouteFocus({ day: 0, token: 0 });
-    dispatchWorkspace({ type: "focus", place: f });
-    setMapFocusToken((token) => token + 1);
+    setPlaceFocus(f);
     setView((current) => {
       if (!current) return current;
       const index = current.items.findIndex((item) =>
@@ -303,9 +302,7 @@ export default function App() {
   };
 
   const handleClearFocus = async () => {
-    setTerminalFocus(null);
-    setRouteFocus({ day: 0, token: 0 });
-    dispatchWorkspace({ type: "focus", place: null });
+    clearFocus();
     await refresh(null);
   };
 
@@ -404,7 +401,7 @@ export default function App() {
       setActionError(null);
       const next = await selectItem(kind, name, options);
       const nextKind = focusKind(kind);
-      dispatchWorkspace({ type: "focus", place: { kind: nextKind, name } });
+      setPlaceFocus({ kind: nextKind, name });
       ++refreshGeneration.current;
       refreshController.current?.abort();
       setLoading(false);
@@ -450,7 +447,7 @@ export default function App() {
         day: options.all_occurrences === false ? options.day : undefined,
         stop: options.all_occurrences === false ? options.stop : undefined,
       };
-      dispatchWorkspace({ type: "focus", place: retainedFocus });
+      setPlaceFocus(retainedFocus);
       ++refreshGeneration.current;
       refreshController.current?.abort();
       setLoading(false);
@@ -500,11 +497,8 @@ export default function App() {
   const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
     setMapOpen(true);
     if (isIntercityTravel(kind, name) && day) {
-      setTerminalFocus(null);
-      setCircuitFocus({ day: 0, token: 0 });
-      dispatchWorkspace({ type: "focus", place: null });
+      setRouteFocus(day);
       setView((current) => current ? { ...current, focus: null } : current);
-      setRouteFocus({ day, token: Date.now() });
       return;
     }
     if (isPlaceKind(kind) || kind === "airport") {
@@ -525,20 +519,14 @@ export default function App() {
 
   const handleDayFocus = (day: number) => {
     setMapOpen(true);
-    setTerminalFocus(null);
-    setRouteFocus({ day: 0, token: 0 });
-    dispatchWorkspace({ type: "focus", place: null });
+    setCircuitFocus(day);
     setView((current) => current ? { ...current, focus: null } : current);
-    setCircuitFocus({ day, token: Date.now() });
     dispatchWorkspace({ type: "jump", target: { day, token: Date.now() } });
   };
 
   const handleMapAllDaysFocus = () => {
-    setTerminalFocus(null);
-    setRouteFocus({ day: 0, token: 0 });
-    dispatchWorkspace({ type: "focus", place: null });
+    setCircuitFocus(null);
     setView((current) => current ? { ...current, focus: null } : current);
-    setCircuitFocus({ day: 0, token: Date.now() });
     dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
   };
 
@@ -562,13 +550,13 @@ export default function App() {
     reloadToken: tripVersion,
     tripId: chatTripId,
     focusName: stopFocusName,
-    focusDay: stopFocus?.day,
-    focusStop: stopFocus?.stop,
+    focusDay: focus?.day,
+    focusStop: focus?.stop,
     focusToken: mapFocusToken,
-    circuitFocusDay: circuitFocus.day || undefined,
-    circuitFocusToken: circuitFocus.token,
-    routeFocusDay: routeFocus.day || undefined,
-    routeFocusToken: routeFocus.token,
+    circuitFocusDay: circuitFocusDay ?? undefined,
+    circuitFocusToken,
+    routeFocusDay: routeFocusDay ?? undefined,
+    routeFocusToken,
     itineraryJump,
     onStopFocus: handleStopFocus,
     onStopMap: handleStopMap,
@@ -590,10 +578,10 @@ export default function App() {
           overview={view?.overview}
           reloadToken={tripVersion}
           focusName={stopFocusName}
-          focusDay={stopFocus?.day}
-          focusStop={stopFocus?.stop}
-          circuitFocusDay={circuitFocus.day || undefined}
-          circuitFocusToken={circuitFocus.token}
+          focusDay={focus?.day}
+          focusStop={focus?.stop}
+          circuitFocusDay={circuitFocusDay ?? undefined}
+          circuitFocusToken={circuitFocusToken}
           jumpTo={itineraryJump}
           onStopFocus={handleStopFocus}
           onStopMap={handleStopMap}
@@ -608,13 +596,13 @@ export default function App() {
         reloadToken={tripVersion}
         tripId={chatTripId}
         focusName={stopFocusName}
-        focusDay={stopFocus?.day}
-        focusStop={stopFocus?.stop}
+        focusDay={focus?.day}
+        focusStop={focus?.stop}
         focusToken={mapFocusToken}
-        circuitFocusDay={circuitFocus.day || undefined}
-        circuitFocusToken={circuitFocus.token}
-        routeFocusDay={routeFocus.day || undefined}
-        routeFocusToken={routeFocus.token}
+        circuitFocusDay={circuitFocusDay ?? undefined}
+        circuitFocusToken={circuitFocusToken}
+        routeFocusDay={routeFocusDay ?? undefined}
+        routeFocusToken={routeFocusToken}
         onPinFocus={handleStopFocus}
         onDayFocus={handleDayFocus}
         onAllDaysFocus={handleMapAllDaysFocus}

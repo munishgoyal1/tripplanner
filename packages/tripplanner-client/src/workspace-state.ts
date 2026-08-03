@@ -5,6 +5,12 @@ export interface ActivePlace {
   stop?: number;
 }
 
+export type WorkspaceFocus =
+  | { type: "none" }
+  | { type: "place"; place: ActivePlace; token: number }
+  | { type: "circuit"; day: number | null; token: number }
+  | { type: "route"; day: number; token: number };
+
 export type ItineraryJump =
   | { day: number; name?: string; token: number }
   | { summary: true; token: number };
@@ -13,12 +19,12 @@ export interface WorkspaceState {
   tripId: string | null;
   tripRevision: number;
   chatRevision: number;
-  activePlace: ActivePlace | null;
+  focus: WorkspaceFocus;
   itineraryJump: ItineraryJump | null;
 }
 
 export type WorkspaceAction =
-  | { type: "focus"; place: ActivePlace | null }
+  | { type: "focus"; focus: WorkspaceFocus }
   | { type: "trip-content-changed" }
   | { type: "trip-changed"; tripId?: string | null }
   | { type: "chat-trip-observed"; tripId: string }
@@ -29,7 +35,7 @@ export const initialWorkspaceState: WorkspaceState = {
   tripId: null,
   tripRevision: 0,
   chatRevision: 0,
-  activePlace: null,
+  focus: { type: "none" },
   itineraryJump: null,
 };
 
@@ -39,7 +45,7 @@ export function workspaceReducer(
 ): WorkspaceState {
   switch (action.type) {
     case "focus":
-      return { ...state, activePlace: action.place, itineraryJump: null };
+      return { ...state, focus: action.focus, itineraryJump: null };
     case "trip-content-changed":
       return { ...state, tripRevision: state.tripRevision + 1 };
     case "trip-changed":
@@ -48,7 +54,7 @@ export function workspaceReducer(
         tripId: action.tripId || null,
         tripRevision: state.tripRevision + 1,
         chatRevision: state.chatRevision + 1,
-        activePlace: null,
+        focus: { type: "none" },
         itineraryJump: null,
       };
     case "chat-trip-observed":
@@ -57,7 +63,7 @@ export function workspaceReducer(
         ...state,
         tripId: action.tripId,
         chatRevision: state.tripId ? state.chatRevision + 1 : state.chatRevision,
-        activePlace: null,
+        focus: { type: "none" },
         itineraryJump: null,
       };
     case "jump":
