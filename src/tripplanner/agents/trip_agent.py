@@ -33,6 +33,7 @@ from tripplanner.tools.trip_planner import (
     resume_trip,
     update_trip_plan,
 )
+from tripplanner.tools.trip_shape import recommend_trip_duration
 from tripplanner.tools.user_preferences import (
     add_dislike,
     add_interest,
@@ -102,6 +103,8 @@ def record_trip_postmortem(
     what_worked: str = "",
     what_didnt: str = "",
     dates: str = "",
+  pace_feedback: str = "",
+  actual_active_minutes_per_full_day: int = 0,
 ) -> str:
     """Capture a structured post-mortem after the trip ends.
 
@@ -116,6 +119,8 @@ def record_trip_postmortem(
         what_worked: semicolon-separated bullets the user liked ("private guide; rooftop bar; late checkout").
         what_didnt: semicolon-separated bullets the user disliked ("morning flight; airport hotel").
         dates: optional override for the dates field on the past_trip entry.
+        pace_feedback: one of too_rushed, just_right, or too_sparse.
+        actual_active_minutes_per_full_day: approximate active itinerary minutes.
     """
     worked = [s for s in (what_worked or "").split(";") if s.strip()]
     didnt = [s for s in (what_didnt or "").split(";") if s.strip()]
@@ -125,6 +130,10 @@ def record_trip_postmortem(
         what_worked=worked,
         what_didnt=didnt,
         dates=dates,
+        pace_feedback=pace_feedback,
+        actual_active_minutes_per_full_day=(
+          actual_active_minutes_per_full_day or None
+        ),
     )
     summary = [f"Post-mortem recorded for {destination}."]
     if rating:
@@ -133,6 +142,8 @@ def record_trip_postmortem(
         summary.append(f"Liked: {', '.join(worked)}.")
     if didnt:
         summary.append(f"Disliked: {', '.join(didnt)}.")
+    if pace_feedback:
+      summary.append(f"Pace: {pace_feedback.replace('_', ' ')}.")
     summary.append("Lessons saved to learned_notes for future trips.")
     return " ".join(summary)
 
@@ -316,8 +327,8 @@ TEMPORAL CONTEXT (refreshed each turn — trust this over your training data):
 - TODAY is {today_iso} ({today_human}).
 - Current year: {year}. Current month: {month_name}.
 - Earliest sensible trip start: {min_trip_start} (≈ 1 week out for bookings).
-- Default trip window if user is vague: {default_start} to {default_end}
-  (4-6 weeks out, a comfortable booking horizon).
+- Default trip start if the user is vague: {default_start}
+  (4 weeks out, a comfortable booking horizon). Never assume a fixed trip length.
 
 ═══════════════════════════════════════════════════════════════
 WORKFLOW (follow this order every time):
@@ -336,6 +347,10 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
     • learned_notes — observations from past conversations (fears, quirks,
       must-haves, deal-breakers)
   Use ALL of this to pre-tailor your suggestions instead of asking again.
+  Before the kickoff, call recommend_trip_duration for EVERY new trip. Pass an
+  explicit duration when the user supplied one; otherwise pass 4-12 likely,
+  preference-matched anchor experiences with realistic visit durations and
+  geographic clusters. Use its recommended_days to prefill the kickoff dates.
   CHECK planning_mode in the loaded prefs (default: "direct"):
     • "direct"      — For a NEW trip, show one compact pre-filled kickoff that
                       reviews saved context and sensible trip defaults. Do not
@@ -369,10 +384,12 @@ STEP 2 — UNDERSTAND THE REQUEST
       "in 2 weeks"    → today + 14 days.
       "Diwali", "Christmas break", "Easter" → the next occurrence after today.
     - NEVER suggest a trip start date earlier than {min_trip_start}.
-    - If no dates are given, propose {default_start} to {default_end} and confirm.
+    - If no dates are given, start at {default_start}, apply the advisor's fitting
+      duration, and confirm those prefilled dates in the one-step kickoff.
     - If the user gives a year, use it. If they don't, assume {year} (or {next_year}
       if the implied month has already passed this year).
-  Call create_trip_plan to initialize the plan.
+  Call create_trip_plan to initialize the plan. Copy the complete duration-advisor
+  JSON into planning_recommendation_json so its evidence and reasoning remain auditable.
   RESUMING SAVED TRIPS: trips are remembered across logins. If the user
   references a place they planned before ("continue my Mumbai trip", "back to
   the Vietnam plan") or asks what they were working on, call resume_trip
@@ -724,7 +741,6 @@ def build_trip_system_prompt(today: date | None = None) -> SystemMessage:
     """
     today = today or datetime.now(timezone.utc).date()
     default_start = today + timedelta(weeks=4)
-    default_end = today + timedelta(weeks=4, days=6)
     content = _PROMPT_TEMPLATE.format(
         today_iso=today.isoformat(),
         today_human=today.strftime("%A, %d %B %Y"),
@@ -733,7 +749,6 @@ def build_trip_system_prompt(today: date | None = None) -> SystemMessage:
         month_name=today.strftime("%B"),
         min_trip_start=(today + timedelta(days=7)).isoformat(),
         default_start=default_start.isoformat(),
-        default_end=default_end.isoformat(),
     )
     return SystemMessage(content=content)
 
@@ -765,6 +780,8 @@ _CORE_TOOLS = [
     record_trip_mention,
     # One bounded, prefilled clarification for interactive planning mode
     request_trip_input,
+    # Explainable trip length and daily-capacity advice before plan creation
+    recommend_trip_duration,
     # Semantic-ish recall over the user's persistent memory (BM25-lite, no API)
     recall_relevant_memory,
     # Trip plan management

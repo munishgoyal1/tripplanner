@@ -28,6 +28,16 @@ def test_new_paris_trip_forces_prefilled_kickoff_after_preferences() -> None:
         _tool_message("get_travel_preferences"),
     ]
 
+    assert _trip_kickoff_tool_choice(messages) == "recommend_trip_duration"
+
+
+def test_new_paris_trip_forces_prefilled_kickoff_after_duration_advice() -> None:
+    messages = [
+        HumanMessage(content="Plan Paris from Delhi for five days in October"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
     assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
 
 
@@ -35,6 +45,7 @@ def test_kickoff_is_not_repeated_after_user_answers() -> None:
     messages = [
         HumanMessage(content="Plan Paris from Delhi for five days in October"),
         _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
         _tool_message("request_trip_input"),
         HumanMessage(content="Use these choices for this trip: relaxed pace"),
     ]
@@ -116,6 +127,7 @@ def test_trip_agent_forces_creation_after_kickoff_answer(
     messages = [
         HumanMessage(content="Create a separate new Hawaii trip"),
         _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
         _tool_message("request_trip_input"),
         HumanMessage(content="Use these choices and build it"),
     ]
@@ -184,6 +196,14 @@ def test_new_trip_intent_preempts_incomplete_active_trip_gate(
             [
                 HumanMessage(content="Plan a Paris trip"),
                 _tool_message("get_travel_preferences"),
+            ],
+            "recommend_trip_duration",
+        ),
+        (
+            [
+                HumanMessage(content="Plan a Paris trip"),
+                _tool_message("get_travel_preferences"),
+                _tool_message("recommend_trip_duration"),
             ],
             "request_trip_input",
         ),

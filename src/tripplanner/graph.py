@@ -424,6 +424,8 @@ def _trip_kickoff_tool_choice(messages: list[BaseMessage]) -> str | None:
         return None
     if "get_travel_preferences" not in turn_tools:
         return "get_travel_preferences"
+    if "recommend_trip_duration" not in turn_tools:
+        return "recommend_trip_duration"
     return "request_trip_input"
 
 
@@ -585,6 +587,12 @@ def trip_agent(state: AgentState) -> AgentState:
             "request_trip_input now. Enumerate the relevant saved preferences and "
             "past-trip signals already applied in known_context_json, and prefill "
             "useful trip-specific choices. Do not call create_trip_plan yet."
+        )))
+    elif kickoff_tool == "recommend_trip_duration":
+        instructions.append(SystemMessage(content=(
+            "Call recommend_trip_duration now. Preserve any explicit user duration. "
+            "Otherwise estimate a fitting duration from destination scope, saved pace, "
+            "and a concise set of likely preference-matched anchor experiences."
         )))
     if proposal_only:
         instructions.append(SystemMessage(content=(

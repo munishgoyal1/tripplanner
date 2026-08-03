@@ -61,6 +61,13 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "pets": False,
     },
     "trip_style": "balanced",  # leisure | balanced | packed_sightseeing | adventure
+    "planning_preferences": {
+        "target_active_minutes_per_full_day": None,
+        "preferred_free_time_ratio": None,
+        "major_attractions_per_day": None,
+        "preferred_day_start": None,
+        "preferred_day_end": None,
+    },
     "budget_level": "moderate",  # budget | moderate | premium | luxury
     "hotel_preferences": {
         "star_rating_min": 3,
@@ -478,6 +485,8 @@ def update_past_trip_postmortem(
     what_worked: list[str] | None,
     what_didnt: list[str] | None,
     dates: str = "",
+    pace_feedback: str = "",
+    actual_active_minutes_per_full_day: int | None = None,
 ) -> dict[str, Any]:
     """Attach a structured post-mortem to a past trip.
 
@@ -490,6 +499,15 @@ def update_past_trip_postmortem(
     dest_l = (destination or "").strip().lower()
     worked = [w.strip() for w in (what_worked or []) if isinstance(w, str) and w.strip()]
     didnt = [d.strip() for d in (what_didnt or []) if isinstance(d, str) and d.strip()]
+    normalized_pace = str(pace_feedback or "").strip().lower()
+    if normalized_pace not in {"too_rushed", "just_right", "too_sparse"}:
+        normalized_pace = ""
+    active_minutes = (
+        max(180, min(600, actual_active_minutes_per_full_day))
+        if isinstance(actual_active_minutes_per_full_day, int)
+        and not isinstance(actual_active_minutes_per_full_day, bool)
+        else None
+    )
 
     def apply(prefs: dict[str, Any]) -> dict[str, Any]:
         from datetime import UTC, datetime
@@ -518,6 +536,10 @@ def update_past_trip_postmortem(
             target["what_worked"] = worked
         if didnt:
             target["what_didnt"] = didnt
+        if normalized_pace:
+            target["pace_feedback"] = normalized_pace
+        if active_minutes is not None:
+            target["actual_active_minutes_per_full_day"] = active_minutes
 
         notes = list(prefs.get("learned_notes") or [])
         seen = {

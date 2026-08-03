@@ -38,6 +38,28 @@ Assistant build its first proposal.
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
 
+### EB-PLAN-002 - Recommend a fitting trip shape
+
+**Trigger:** Start a new trip with or without an explicit duration.
+
+**Expected:**
+
+- Preferences load first, then the duration advisor runs before the one-step kickoff.
+- Explicit dates or duration remain authoritative. Otherwise the kickoff uses an
+  auditable recommendation derived from destination scope, likely matching places,
+  daily capacity, desired free time, and learned pace outcomes.
+- The recommendation is persisted with the trip. Accidentally sparse full days
+  must be rebalanced with meaningful choices or labeled as intentional leisure;
+  the planner does not add filler or silently shorten fixed dates.
+- Cross-user aggregate insight is ignored unless its cohort and confidence pass
+  deterministic privacy gates.
+
+**Executable proof:**
+
+- [`tests/test_planning_intelligence.py`](../tests/test_planning_intelligence.py)
+- [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_new_paris_trip_forces_prefilled_kickoff_after_duration_advice`
+- [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_persists_planning_recommendation`
+
 ## Planner workspace
 
 ### EB-FOCUS-001 - Focus one itinerary occurrence

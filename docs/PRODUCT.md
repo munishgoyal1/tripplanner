@@ -26,6 +26,17 @@ fills every day with concrete places and meals, and persists the enriched plan.
 The user refines a useful plan through chat instead of designing one from a blank
 canvas or resolving avoidable `TBD` decisions.
 
+Trip duration is part of the recommendation, not a universal default. When the
+user leaves duration flexible, an explainable planning layer estimates the
+shortest useful stay from preference-matched anchor experiences, visit and travel
+time, destination scope, arrival/departure capacity, desired free time, daily
+attraction tolerance, and relevant past-trip pace outcomes. Explicit dates or
+duration always win. Sparse fixed trips gain meaningful nearby experiences or
+clearly intentional leisure rather than filler or silent shortening. Future
+cross-user learning may influence this estimate only through privacy-safe,
+versioned cohort aggregates with minimum sample and confidence gates; another
+traveler's itinerary is never exposed or copied.
+
 The Assistant is the primary itinerary-building surface. It starts from saved
 preferences and trip history, distinguishes durable defaults from one-trip
 exceptions, and asks at most one consolidated question when an unresolved fact

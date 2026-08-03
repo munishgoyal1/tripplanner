@@ -35,6 +35,9 @@ trip through shared API contracts.
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, production SPA mount |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
+| `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
+| `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
+| `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |
 | `src/tripplanner/request_limits.py` | Chat/replay rate limits, concurrency, and workspace exclusion |
 | `src/tripplanner/cli.py` | Local command-line experience |
