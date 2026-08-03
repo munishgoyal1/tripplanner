@@ -65,7 +65,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 
 | Path | Owns |
 | --- | --- |
-| `frontend/src/App.tsx` | Web application composition; trip state, focus, refresh, mutations, pane/resize state, and panel body ownership |
+| `frontend/src/App.tsx` | Web application composition; trip state, refresh, mutations, pane/resize state, and panel body ownership |
 | `frontend/src/components/ChatPanel.tsx` | Assistant transcript, SSE progress presentation, total turn timing, cancellation, and workspace turn-status publication |
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/CanvasPaneFrame.tsx`, `DetailsPaneShell.tsx`, `AssistantModalShell.tsx` | Render-only desktop pane frames and controls |
@@ -77,6 +77,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/components/map/` | Pure map icon generation, focus matching, route/day derivation, and Google-place candidate conversion |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
 | `frontend/src/components/` | Production UI components and pane interactions |
+| `frontend/src/hooks/useWorkspaceFocus.ts` | Mutually exclusive place, route, day-circuit, and all-days focus transitions and repeat-action tokens |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
 | `frontend/src/types.ts` | Web-local types not owned by the shared client package |
