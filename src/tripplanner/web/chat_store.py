@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Callable
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -42,6 +43,8 @@ _MAX_WRITE_ATTEMPTS = 3
 _LOCAL_LOCKS: dict[str, Lock] = {}
 _LOCAL_LOCKS_GUARD = Lock()
 
+_DocumentMutation = Callable[[dict[str, Any]], dict[str, Any] | None]
+
 
 def _doc_id(trip_id: str | None) -> str:
     return f"chat_{trip_id or _GENERAL}"
@@ -52,6 +55,29 @@ def _resolve_dir() -> Path:
     if uid == "local":
         return _CHATS_DIR
     return Path.home() / ".tripplanner" / "users" / uid / "chats"
+
+
+def _document_path(document_id: str) -> Path:
+    return _resolve_dir() / f"{document_id}.json"
+
+
+def _read_local_document(document_id: str) -> dict[str, Any]:
+    path = _document_path(document_id)
+    if path.exists():
+        try:
+            return dict(json.loads(path.read_text(encoding="utf-8")))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+def _read_document(document_id: str) -> dict[str, Any]:
+    if storage_cosmos.is_enabled():
+        doc = storage_cosmos.read_doc(
+            _COSMOS_USERS_CONTAINER, get_user_id(), document_id
+        )
+        return dict(doc or {})
+    return _read_local_document(document_id)
 
 
 def _serialize(messages: list[BaseMessage], *, bounded: bool = True) -> list[dict[str, str]]:
@@ -82,18 +108,7 @@ def _deserialize(rows: list[dict[str, Any]]) -> list[BaseMessage]:
 
 
 def _read_body(trip_id: str | None) -> dict[str, Any]:
-    if storage_cosmos.is_enabled():
-        doc = storage_cosmos.read_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _doc_id(trip_id)
-        )
-        return dict(doc or {})
-    path = _resolve_dir() / f"{_doc_id(trip_id)}.json"
-    if path.exists():
-        try:
-            return dict(json.loads(path.read_text(encoding="utf-8")))
-        except (json.JSONDecodeError, OSError):
-            return {}
-    return {}
+    return _read_document(_doc_id(trip_id))
 
 
 def _read_rows(trip_id: str | None) -> list[dict[str, Any]]:
@@ -101,18 +116,7 @@ def _read_rows(trip_id: str | None) -> list[dict[str, Any]]:
 
 
 def _read_operations_body() -> dict[str, Any]:
-    if storage_cosmos.is_enabled():
-        doc = storage_cosmos.read_doc(
-            _COSMOS_USERS_CONTAINER, get_user_id(), _OPERATIONS_DOC_ID
-        )
-        return dict(doc or {})
-    path = _resolve_dir() / f"{_OPERATIONS_DOC_ID}.json"
-    if path.exists():
-        try:
-            return dict(json.loads(path.read_text(encoding="utf-8")))
-        except (json.JSONDecodeError, OSError):
-            return {}
-    return {}
+    return _read_document(_OPERATIONS_DOC_ID)
 
 
 def load(trip_id: str | None) -> list[BaseMessage]:
@@ -277,44 +281,10 @@ def _merge_operation_index(
 
 
 def _record_completed_operation(operation: dict[str, str]) -> None:
-    if storage_cosmos.is_enabled():
-        user_id = get_user_id()
-        for attempt in range(_MAX_WRITE_ATTEMPTS):
-            current = storage_cosmos.read_doc_versioned(
-                _COSMOS_USERS_CONTAINER, user_id, _OPERATIONS_DOC_ID
-            )
-            body = current.body if current is not None else {}
-            updated = _merge_operation_index(body, operation)
-            if updated is None:
-                return
-            try:
-                if current is None:
-                    storage_cosmos.create_doc_if_absent(
-                        _COSMOS_USERS_CONTAINER, user_id, _OPERATIONS_DOC_ID, updated
-                    )
-                else:
-                    storage_cosmos.replace_doc_if_version(
-                        _COSMOS_USERS_CONTAINER,
-                        user_id,
-                        _OPERATIONS_DOC_ID,
-                        updated,
-                        current.version,
-                    )
-                return
-            except storage_cosmos.WriteConflictError:
-                if attempt == _MAX_WRITE_ATTEMPTS - 1:
-                    raise
-        return
-
-    path = _resolve_dir() / f"{_OPERATIONS_DOC_ID}.json"
-    with _local_lock(path):
-        try:
-            current = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-        except (json.JSONDecodeError, OSError):
-            current = {}
-        updated = _merge_operation_index(dict(current), operation)
-        if updated is not None:
-            atomic_write_json(path, updated, indent=2)
+    _mutate_document(
+        _OPERATIONS_DOC_ID,
+        lambda current: _merge_operation_index(current, operation),
+    )
 
 
 def ensure_completed_turn(request_id: str, operation: dict[str, str]) -> None:
@@ -339,52 +309,20 @@ def ensure_completed_turn(request_id: str, operation: dict[str, str]) -> None:
 
 def _remove_completed_operations(trip_id: str | None) -> None:
     target = trip_id or ""
-    if storage_cosmos.is_enabled():
-        user_id = get_user_id()
-        for attempt in range(_MAX_WRITE_ATTEMPTS):
-            current = storage_cosmos.read_doc_versioned(
-                _COSMOS_USERS_CONTAINER, user_id, _OPERATIONS_DOC_ID
-            )
-            if current is None:
-                return
-            operations = [
-                operation
-                for operation in current.body.get("recent_operations") or []
-                if str(operation.get("trip_id") or "") != target
-            ]
-            if operations == list(current.body.get("recent_operations") or []):
-                return
-            updated = dict(current.body)
-            updated["recent_operations"] = operations
-            try:
-                storage_cosmos.replace_doc_if_version(
-                    _COSMOS_USERS_CONTAINER,
-                    user_id,
-                    _OPERATIONS_DOC_ID,
-                    updated,
-                    current.version,
-                )
-                return
-            except storage_cosmos.WriteConflictError:
-                if attempt == _MAX_WRITE_ATTEMPTS - 1:
-                    raise
-        return
 
-    path = _resolve_dir() / f"{_OPERATIONS_DOC_ID}.json"
-    with _local_lock(path):
-        try:
-            current = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-        except (json.JSONDecodeError, OSError):
-            return
+    def remove_for_trip(current: dict[str, Any]) -> dict[str, Any] | None:
         operations = [
             operation
             for operation in current.get("recent_operations") or []
             if str(operation.get("trip_id") or "") != target
         ]
-        if operations != list(current.get("recent_operations") or []):
-            updated = dict(current)
-            updated["recent_operations"] = operations
-            atomic_write_json(path, updated, indent=2)
+        if operations == list(current.get("recent_operations") or []):
+            return None
+        updated = dict(current)
+        updated["recent_operations"] = operations
+        return updated
+
+    _mutate_document(_OPERATIONS_DOC_ID, remove_for_trip)
 
 
 def _merge_body(
@@ -526,6 +464,52 @@ def _local_lock(path: Path) -> Lock:
         return _LOCAL_LOCKS.setdefault(key, Lock())
 
 
+def _mutate_document(
+    document_id: str,
+    mutation: _DocumentMutation,
+) -> tuple[dict[str, Any], bool]:
+    """Replay one semantic mutation against fresh versioned document state."""
+    if storage_cosmos.is_enabled():
+        user_id = get_user_id()
+        for attempt in range(_MAX_WRITE_ATTEMPTS):
+            current = storage_cosmos.read_doc_versioned(
+                _COSMOS_USERS_CONTAINER, user_id, document_id
+            )
+            body = dict(current.body) if current is not None else {}
+            updated = mutation(body)
+            if updated is None:
+                return body, False
+            try:
+                if current is None:
+                    storage_cosmos.create_doc_if_absent(
+                        _COSMOS_USERS_CONTAINER, user_id, document_id, updated
+                    )
+                else:
+                    storage_cosmos.replace_doc_if_version(
+                        _COSMOS_USERS_CONTAINER,
+                        user_id,
+                        document_id,
+                        updated,
+                        current.version,
+                    )
+                return updated, True
+            except storage_cosmos.WriteConflictError:
+                if attempt == _MAX_WRITE_ATTEMPTS - 1:
+                    raise
+        raise storage_cosmos.WriteConflictError(
+            f"Chat document {document_id} kept changing"
+        )
+
+    path = _document_path(document_id)
+    with _local_lock(path):
+        body = _read_local_document(document_id)
+        updated = mutation(body)
+        if updated is None:
+            return body, False
+        atomic_write_json(path, updated, indent=2)
+        return updated, True
+
+
 def _append_rows(
     trip_id: str | None,
     base_rows: list[dict[str, Any]],
@@ -544,77 +528,29 @@ def _append_rows(
     )
     if completed_operation_entry is not None:
         _record_completed_operation(completed_operation_entry)
-    if storage_cosmos.is_enabled():
-        user_id = get_user_id()
-        doc_id = _doc_id(trip_id)
-        for attempt in range(_MAX_WRITE_ATTEMPTS):
-            current = storage_cosmos.read_doc_versioned(
-                _COSMOS_USERS_CONTAINER, user_id, doc_id
-            )
-            body = current.body if current is not None else {}
-            updated = _merge_body(
-                body,
-                suffix_rows,
-                write_key,
-                request_key=request_key,
-                completed=completed,
-                agent=agent,
-                trip_id=trip_id,
-            )
-            if updated is None:
-                existing = _operation_result(body, request_key) if request_key else None
-                if existing is not None:
-                    _record_completed_operation(
-                        {
-                            "key": str(request_key),
-                            "status": "completed",
-                            **existing,
-                        }
-                    )
-                return
-            try:
-                if current is None:
-                    storage_cosmos.create_doc_if_absent(
-                        _COSMOS_USERS_CONTAINER, user_id, doc_id, updated
-                    )
-                else:
-                    storage_cosmos.replace_doc_if_version(
-                        _COSMOS_USERS_CONTAINER,
-                        user_id,
-                        doc_id,
-                        updated,
-                        current.version,
-                    )
-                return
-            except storage_cosmos.WriteConflictError:
-                if attempt == _MAX_WRITE_ATTEMPTS - 1:
-                    raise
-        return
-
-    path = _resolve_dir() / f"{_doc_id(trip_id)}.json"
-    with _local_lock(path):
-        current_body = _read_body(trip_id)
-        updated = _merge_body(
-            current_body,
+    body, changed = _mutate_document(
+        _doc_id(trip_id),
+        lambda current: _merge_body(
+            current,
             suffix_rows,
             write_key,
             request_key=request_key,
             completed=completed,
             agent=agent,
             trip_id=trip_id,
+        ),
+    )
+    if changed or not request_key:
+        return
+    existing = _operation_result(body, request_key)
+    if existing is not None:
+        _record_completed_operation(
+            {
+                "key": request_key,
+                "status": "completed",
+                **existing,
+            }
         )
-        if updated is not None:
-            atomic_write_json(path, updated, indent=2)
-        elif request_key:
-            existing = _operation_result(current_body, request_key)
-            if existing is not None:
-                _record_completed_operation(
-                    {
-                        "key": request_key,
-                        "status": "completed",
-                        **existing,
-                    }
-                )
 
 
 def _associate_migrated_operations(
@@ -641,43 +577,12 @@ def _merge_migrated_document(
     *,
     associate_operations: bool = True,
 ) -> None:
-    if storage_cosmos.is_enabled():
-        user_id = get_user_id()
-        doc_id = _doc_id(trip_id)
-        for attempt in range(_MAX_WRITE_ATTEMPTS):
-            current = storage_cosmos.read_doc_versioned(
-                _COSMOS_USERS_CONTAINER, user_id, doc_id
-            )
-            body = current.body if current is not None else {}
-            updated = _merge_migrated_body(body, source)
-            if updated is None:
-                if associate_operations:
-                    _associate_migrated_operations(source, trip_id)
-                return
-            try:
-                if current is None:
-                    storage_cosmos.create_doc_if_absent(
-                        _COSMOS_USERS_CONTAINER, user_id, doc_id, updated
-                    )
-                else:
-                    storage_cosmos.replace_doc_if_version(
-                        _COSMOS_USERS_CONTAINER, user_id, doc_id, updated, current.version
-                    )
-                if associate_operations:
-                    _associate_migrated_operations(source, trip_id)
-                return
-            except storage_cosmos.WriteConflictError:
-                if attempt == _MAX_WRITE_ATTEMPTS - 1:
-                    raise
-        return
-
-    path = _resolve_dir() / f"{_doc_id(trip_id)}.json"
-    with _local_lock(path):
-        updated = _merge_migrated_body(_read_body(trip_id), source)
-        if updated is not None:
-            atomic_write_json(path, updated, indent=2)
-        if associate_operations:
-            _associate_migrated_operations(source, trip_id)
+    _mutate_document(
+        _doc_id(trip_id),
+        lambda current: _merge_migrated_body(current, source),
+    )
+    if associate_operations:
+        _associate_migrated_operations(source, trip_id)
 
 
 def export_state(trip_ids: list[str]) -> dict[str, Any]:

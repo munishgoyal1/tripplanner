@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import importlib
 
 import pytest
@@ -156,6 +157,56 @@ def test_first_trip_append_failure_keeps_general_source(monkeypatch):
         )
 
     assert deleted == []
+
+
+def test_switch_carryover_replays_after_cosmos_create_conflict(monkeypatch):
+    concurrent = [
+        {"role": "user", "text": "concurrent turn"},
+        {"role": "assistant", "text": "concurrent reply"},
+    ]
+    state: dict[str, object] = {"body": None, "version": 0}
+
+    monkeypatch.setattr(chat_store.storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        chat_store.storage_cosmos,
+        "read_doc",
+        lambda *_args: copy.deepcopy(state["body"]),
+    )
+
+    def read_versioned(*_args):
+        if state["body"] is None:
+            return None
+        return storage_cosmos.VersionedDocument(
+            copy.deepcopy(state["body"]), str(state["version"])
+        )
+
+    def create(*_args):
+        state["body"] = {"messages": concurrent}
+        state["version"] = 1
+        raise storage_cosmos.WriteConflictError("created")
+
+    def replace(_container, _user, _doc_id, body, _version):
+        state["body"] = copy.deepcopy(body)
+
+    monkeypatch.setattr(chat_store.storage_cosmos, "read_doc_versioned", read_versioned)
+    monkeypatch.setattr(chat_store.storage_cosmos, "create_doc_if_absent", create)
+    monkeypatch.setattr(chat_store.storage_cosmos, "replace_doc_if_version", replace)
+
+    chat_store.persist_turn(
+        "mexico-trip",
+        "goa-trip",
+        [],
+        [HumanMessage(content="switch to goa"), AIMessage(content="Goa is ready")],
+        carryover_text="Carrying over: 2 adults.",
+    )
+
+    assert [row["text"] for row in state["body"]["messages"]] == [  # type: ignore[index]
+        "concurrent turn",
+        "concurrent reply",
+        "Carrying over: 2 adults.",
+        "switch to goa",
+        "Goa is ready",
+    ]
 
 
 def test_retry_reconciles_general_after_first_trip_append_failure(monkeypatch, tmp_path):

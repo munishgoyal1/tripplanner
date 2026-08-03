@@ -348,6 +348,81 @@ def test_clearing_trip_removes_its_completed_requests() -> None:
     assert chat_store.completed_request("deleted-trip-request") is None
 
 
+def test_document_mutation_replays_intent_after_cosmos_conflict(monkeypatch) -> None:
+    base = [{"role": "user", "text": "first"}]
+    concurrent = {"role": "assistant", "text": "concurrent"}
+    incoming = {"role": "user", "text": "second"}
+    state = {"body": {"messages": base}, "version": 1}
+    observed_bodies: list[dict] = []
+
+    monkeypatch.setattr(chat_store.storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        chat_store.storage_cosmos,
+        "read_doc_versioned",
+        lambda *_args: storage_cosmos.VersionedDocument(
+            copy.deepcopy(state["body"]), str(state["version"])
+        ),
+    )
+
+    def replace(_container, _user, _doc_id, body, _version):
+        if len(observed_bodies) == 1:
+            state["body"] = {"messages": base + [concurrent]}
+            state["version"] = 2
+            raise storage_cosmos.WriteConflictError("changed")
+        state["body"] = copy.deepcopy(body)
+
+    monkeypatch.setattr(chat_store.storage_cosmos, "replace_doc_if_version", replace)
+
+    def append_incoming(body):
+        observed_bodies.append(copy.deepcopy(body))
+        return {**body, "messages": list(body.get("messages") or []) + [incoming]}
+
+    chat_store._mutate_document("chat_t", append_incoming)
+
+    assert observed_bodies == [
+        {"messages": base},
+        {"messages": base + [concurrent]},
+    ]
+    assert state["body"] == {"messages": base + [concurrent, incoming]}
+
+
+def test_migration_merge_replays_against_cosmos_conflict_winner(monkeypatch) -> None:
+    destination = {"role": "assistant", "text": "account reply"}
+    concurrent = {"role": "user", "text": "concurrent destination turn"}
+    source = {"messages": [{"role": "user", "text": "guest turn"}]}
+    state = {"body": {"messages": [destination]}, "version": 1}
+    replace_calls = 0
+
+    monkeypatch.setattr(chat_store.storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        chat_store.storage_cosmos,
+        "read_doc_versioned",
+        lambda *_args: storage_cosmos.VersionedDocument(
+            copy.deepcopy(state["body"]), str(state["version"])
+        ),
+    )
+
+    def replace(_container, _user, _doc_id, body, _version):
+        nonlocal replace_calls
+        replace_calls += 1
+        if replace_calls == 1:
+            state["body"] = {"messages": [destination, concurrent]}
+            state["version"] = 2
+            raise storage_cosmos.WriteConflictError("changed")
+        state["body"] = copy.deepcopy(body)
+
+    monkeypatch.setattr(chat_store.storage_cosmos, "replace_doc_if_version", replace)
+
+    chat_store._merge_migrated_document(
+        "goa-trip",
+        source,
+        associate_operations=False,
+    )
+
+    assert replace_calls == 2
+    assert state["body"]["messages"] == [destination, concurrent, *source["messages"]]
+
+
 def test_cosmos_replace_conflict_rereads_and_preserves_both_suffixes(monkeypatch) -> None:
     base = [
         {"role": "user", "text": "first"},
