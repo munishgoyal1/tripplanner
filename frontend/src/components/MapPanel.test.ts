@@ -11,6 +11,7 @@ import {
   formatLegLabel,
   hotelIcon,
   hotelLabelsForDay,
+  mapContextForScope,
   hotelReturnForDay,
   isInspectableMapPin,
   kindForGooglePlace,
@@ -79,6 +80,36 @@ describe("placeNameMatches", () => {
 });
 
 describe("map stop selection", () => {
+  it("derives aggregate day context instead of a stale place selection", () => {
+    const view = {
+      enabled: true,
+      destination: "Tamil Nadu",
+      center: null,
+      pins: [],
+      days: [{
+        day: 3,
+        label: "Day 3",
+        context_name: "Kanyakumari coast",
+        color: "#2563eb",
+        pin_ids: [],
+        route: { distance_km: 92, duration_min: 150, mode: "car", distance_display: "92 km", duration_display: "2 hrs 30 min" },
+        schedule: { start: "08:00", end: "18:00", duration_min: 600, duration_display: "10 hrs", travel_duration_min: 150, travel_duration_display: "2 hrs 30 min", estimated: false },
+      }],
+      available_days: [3],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(mapContextForScope(view, 3)).toEqual({
+      label: "Day 3",
+      title: "Kanyakumari coast",
+      schedule: "10 hrs · 08:00–18:00",
+      travel: "2 hrs 30 min · 92 km · car",
+    });
+    expect(mapContextForScope(view, "all")?.title).toBe("Tamil Nadu");
+  });
+
   it("uses an A label for airport markers", () => {
     expect(decodeURIComponent(airportIcon())).toContain(">A</text>");
   });
@@ -123,6 +154,11 @@ describe("map stop selection", () => {
       ...view,
       days: [{ ...view.days[0], pin_ids: ["udaipur"] }],
     }, 3))).toEqual({ udaipur: "H" });
+    expect(Object.fromEntries(hotelLabelsForDay({
+      ...view,
+      pins: [hotel("sparsa-short", "Sparsa Kanyakumari"), hotel("sparsa-long", "Sparsa Kanyakumari, Kanyakumari")],
+      days: [{ ...view.days[0], pin_ids: ["sparsa-short", "sparsa-long"] }],
+    }, 3))).toEqual({ "sparsa-short": "H", "sparsa-long": "H" });
     expect(decodeURIComponent(hotelIcon(false, "H1"))).toContain(">H1</text>");
     expect(decodeURIComponent(hotelIcon(false, "H2"))).toContain(">H2</text>");
   });
@@ -667,8 +703,16 @@ describe("map stop selection", () => {
 
   it("restores All days after an externally focused day", async () => {
     const fitBounds = vi.fn();
-    const marker = vi.fn(function (_options: { title?: string; icon?: { url?: string } }) {
-      return { addListener: vi.fn(), setMap: vi.fn(), setIcon: vi.fn(), setZIndex: vi.fn() };
+    const markerClicks = new Map<string, () => void>();
+    const marker = vi.fn(function (options: { title?: string; icon?: { url?: string } }) {
+      return {
+        addListener: vi.fn((event: string, callback: () => void) => {
+          if (event === "click" && options.title) markerClicks.set(options.title, callback);
+        }),
+        setMap: vi.fn(),
+        setIcon: vi.fn(),
+        setZIndex: vi.fn(),
+      };
     });
     const polyline = vi.fn(function () { return { setMap: vi.fn() }; });
     const map = {
@@ -717,7 +761,7 @@ describe("map stop selection", () => {
       ],
       days: [
         { day: 1, label: "Day 1", color: "#e11d48", pin_ids: ["day-1-hotel"], route: { distance_km: 0, duration_min: 0, mode: "walk", distance_display: "0 km", duration_display: "0 min" } },
-        { day: 2, label: "Day 2", color: "#0d9488", pin_ids: ["day-2-origin", "day-2-destination", "day-2-beach", "day-2-destination"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
+        { day: 2, label: "Day 2", context_name: "Udaipur to Mount Abu", color: "#0d9488", pin_ids: ["day-2-origin", "day-2-destination", "day-2-beach", "day-2-destination"], route: { distance_km: 4, duration_min: 20, mode: "car", distance_display: "4 km", duration_display: "20 min" } },
       ],
       available_days: [1, 2],
       unscheduled_pin_ids: [],
@@ -755,7 +799,12 @@ describe("map stop selection", () => {
       }],
     }));
 
-    rendered.rerender(createElement(MapPanel, { circuitFocusToken: 2 }));
+    act(() => markerClicks.get("Mount Abu Hotel")?.());
+    expect(await screen.findByText("Mount Abu Hotel")).toBeInTheDocument();
+    rendered.rerender(createElement(MapPanel, { circuitFocusDay: 2, circuitFocusToken: 2 }));
+    expect(await screen.findByText("Udaipur to Mount Abu")).toBeInTheDocument();
+
+    rendered.rerender(createElement(MapPanel, { circuitFocusToken: 3 }));
     await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
     expect(decodeURIComponent(markerIcon("North Hotel")))
       .toContain(">H</text>");

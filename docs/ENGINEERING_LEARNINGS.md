@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-03 - Keep Display Identity Authoritative Across Surfaces
+
+- Provider metadata may enrich authoritative itinerary places, but a first search
+  result must not rename or relocate a stop without a plausible identity match.
+- Aggregate day focus and exact-place focus are different selection states. Test
+  viewport, itinerary highlight, and details-tile context together so one surface
+  cannot retain stale place state after another moves correctly.
+- Shared concepts need shared normalization and formatting. Exact hotel strings,
+  pin IDs, and duplicate duration formatters create cross-surface regressions even
+  when each component looks locally correct.
+
 ## 2026-08-03 - Require Native Environment Selection
 
 - A hardcoded production fallback turns missing development configuration into

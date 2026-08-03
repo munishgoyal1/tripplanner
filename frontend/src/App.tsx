@@ -39,11 +39,11 @@ function storedPercent(key: string, fallback: number, min: number, max: number):
 }
 
 function isPlaceKind(kind: string): boolean {
-  return ["hotel", "attraction", "activity", "meal", "restaurant"].includes(kind);
+  return ["hotel", "attraction", "activity", "meal", "restaurant", "station", "bus_station"].includes(kind);
 }
 
 function focusKind(kind: string): string {
-  if (kind === "hotel" || kind === "airport") return kind;
+  if (["hotel", "airport", "station", "bus_station"].includes(kind)) return kind;
   return "attraction";
 }
 

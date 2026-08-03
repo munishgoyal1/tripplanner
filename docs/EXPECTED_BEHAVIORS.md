@@ -111,6 +111,9 @@ and open the terminal as an inspectable place.
   available Places photos, rating, reviews, address, summary, and website. The
   itinerary alias remains the focus identity when it differs from the
   provider-canonical terminal name.
+- Timed train and bus journeys expose departure terminal, travel leg, and arrival
+  terminal rows. Departure rows include configurable boarding buffers; terminal
+  rows remain operational and non-bookable.
 - Itinerary, Map, and Details retain the same day and stop after the view refresh.
 - Repeating the same action reapplies focus after manual map movement or filtering.
 - A failed refresh leaves the previous usable view in place and reports the error.
@@ -127,6 +130,7 @@ and open the terminal as an inspectable place.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `opens airport details and keeps its exact map occurrence focused`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_airport_focus_exposes_place_details_and_terminal_occurrence`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_flight_airports_to_destination_stay`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_surface_transport_adds_terminal_buffer_stops`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_focus_zooms_single_item`
 
 ### EB-FOCUS-002 - Focus a day or the whole trip
@@ -134,7 +138,8 @@ and open the terminal as an inspectable place.
 **Trigger:** Select a day scope from Itinerary or Map, or select All days.
 
 **Expected:** Day focus clears exact-place focus and aligns Itinerary to that day
-summary. Ordinary days fit their complete circuit. Transfer days keep the full
+summary. The map details tile changes from any previously selected place to the
+day title/destination with schedule and route context. Ordinary days fit their complete circuit. Transfer days keep the full
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
 road-transfer days retain the full origin-to-destination drive in day focus so
@@ -164,6 +169,7 @@ or replace destination-local framing for ordinary day-header focus.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames the complete inter-city route without opening place details`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `derives aggregate day context instead of a stale place selection`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 
 ### EB-ITIN-001 - Read a multi-city transition day chronologically
@@ -174,7 +180,8 @@ another city, and checks in at a different hotel.
 **Expected:** Check out, every journey stop, destination check-in, and remaining
 destination plans appear once in one ordered transition spine. The two hotels
 remain distinct `H1` and `H2` endpoints. A repeated return to the destination
-hotel appears after the final plan as a compact chronological endpoint carrying
+hotel, including a harmless trailing locality/address variant, shares one `H`
+identity and appears after the final plan as a compact chronological endpoint carrying
 its incoming travel and return time, without duplicating stay controls or hotel
 details. The itinerary does not pair the hotels as cards or split the day into
 Journey and After check-in sections.
@@ -183,6 +190,7 @@ Journey and After check-in sections.
 
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a multi-city transfer as one chronological spine without changing stop identity`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps the hotel return endpoint independently addressable`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `treats a trailing hotel locality as the same stay`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_timed_road_transfer_estimates_destination_hotel_check_in`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_estimates_duration_arrival_and_hotel_check_in`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_road_transfer_without_checkout_estimates_duration_but_not_check_in`

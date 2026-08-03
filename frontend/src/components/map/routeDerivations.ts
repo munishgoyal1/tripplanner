@@ -1,4 +1,5 @@
 import type { MapLeg, MapPin, MapView } from "../../types";
+import { hotelIdentityKey } from "./placeIdentity";
 
 const FLIGHT_ROUTE_COLOR = "#2563eb";
 const ROAD_ROUTE_COLOR = "#111827";
@@ -62,16 +63,36 @@ function intercityRouteStyle(mode: string): Record<string, unknown> {
   };
 }
 
-export function isIntercityTravel(kind: string, name: string): boolean {
+export function isIntercityTravel(kind: string, _name: string): boolean {
   if (kind === "flight") return true;
-  if (kind !== "transport") return false;
-  const normalizedName = name.trim().toLowerCase();
-  return ["train", "rail", "bus", "drive:", "road transfer", "private car"]
-    .some((token) => normalizedName.includes(token));
+  return kind === "transport";
 }
 
 export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {
   return `${leg.distance_display} · ${leg.duration_display}`;
+}
+
+export function mapContextForScope(view: MapView, scope: number | "all" | null) {
+  if (scope === null) return null;
+  if (scope === "all") {
+    return {
+      label: "All days",
+      title: view.destination,
+      schedule: `${view.days.length} ${view.days.length === 1 ? "day" : "days"}`,
+      travel: "Complete trip",
+    };
+  }
+  const day = view.days.find((candidate) => candidate.day === scope);
+  if (!day) return null;
+  const schedule = day.schedule;
+  return {
+    label: day.label,
+    title: day.context_name || view.destination,
+    schedule: schedule
+      ? `${schedule.duration_display} · ${schedule.start}–${schedule.end}${schedule.estimated ? " est." : ""}`
+      : "Schedule unavailable",
+    travel: `${day.route.duration_display} · ${day.route.distance_display} · ${day.route.mode}`,
+  };
 }
 
 export function routeStyleForLeg(
@@ -122,9 +143,11 @@ export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string,
   const hotels = (day?.pin_ids ?? [])
     .map((id) => view.pins.find((candidate) => candidate.id === id))
     .filter((pin): pin is MapPin => !!pin && pin.kind === "hotel");
-  const ordered = [...new Map(hotels.map((pin) => [pin.id, pin])).values()];
-  const numbered = ordered.length > 1;
-  return new Map(ordered.map((pin, index) => [pin.id, numbered ? `H${index + 1}` : "H"]));
+  const identities = [...new Set(hotels.map((pin) => hotelIdentityKey(pin.name)))];
+  const labels = new Map(
+    identities.map((identity, index) => [identity, identities.length > 1 ? `H${index + 1}` : "H"]),
+  );
+  return new Map(hotels.map((pin) => [pin.id, labels.get(hotelIdentityKey(pin.name))!]))
 }
 
 export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {

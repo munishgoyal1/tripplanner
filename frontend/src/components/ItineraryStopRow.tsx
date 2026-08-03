@@ -11,11 +11,13 @@ const KIND_ICON: Record<string, string> = {
   transport: "\u{1F695}",
   flight: "\u2708\uFE0F",
   airport: "\u{1F6EB}",
+  station: "\u{1F686}",
+  bus_station: "\u{1F68F}",
   other: "\u{1F4CD}",
 };
 
 function canFocus(stop: ItineraryStop): boolean {
-  return ["hotel", "attraction", "meal", "restaurant", "airport", "origin"].includes(stop.kind)
+  return ["hotel", "attraction", "meal", "restaurant", "airport", "station", "bus_station", "origin"].includes(stop.kind)
     || isIntercityTravel(stop.kind, stop.name);
 }
 
@@ -111,8 +113,10 @@ export default function ItineraryStopRow({
           ? "Return"
           : stop.kind === "flight"
             ? "Depart"
-            : driveOrigin
+            : stop.kind === "transport"
+              ? driveOrigin
               ? `Depart from ${driveOrigin}`
+              : "Travel"
             : "Arrive");
   const handleRowClick = () => {
     if (focusable) {
@@ -150,13 +154,13 @@ export default function ItineraryStopRow({
           </p>
         ) : stop.kind !== "hotel" && stop.duration_min ? (
           <p className="mt-0.5 text-[10px] text-slate-500">
-            {["flight", "transport"].includes(stop.kind) ? durationLabel(stop.duration_min) : `${Math.round(stop.duration_min)} min`} {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
+            {durationLabel(stop.duration_min)} {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
             {stop.duration_estimated ? " est." : ""}
           </p>
         ) : null}
         {stop.departure_time && (
           <p className="mt-0.5 text-[10px] font-medium tabular-nums text-slate-600">
-            {stop.kind === "flight" || stop.kind === "transport" ? "Arrive" : "Leave"} {stop.departure_time}
+            {stop.kind === "flight" ? "Arrive" : stop.kind === "transport" ? "Ends" : "Leave"} {stop.departure_time}
           </p>
         )}
       </div>
@@ -229,7 +233,7 @@ export default function ItineraryStopRow({
           </div>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1">
-          {!circuitReturn && !["airport", "origin"].includes(stop.kind) && <button
+          {!circuitReturn && !["airport", "station", "bus_station", "origin"].includes(stop.kind) && <button
             type="button"
             aria-pressed={stop.booked}
             aria-label={`${stop.name}: ${stop.booked ? "Mark as needing booking" : "Mark confirmed"}`}

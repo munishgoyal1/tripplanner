@@ -19,6 +19,7 @@ from __future__ import annotations
 import math
 import re
 from datetime import date
+from difflib import SequenceMatcher
 from typing import Any
 from urllib.parse import quote
 
@@ -855,6 +856,28 @@ def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
     return set(range(1, transfer_indexes[0] + 1))
 
 
+def _provider_name_matches(source_name: str, provider_name: str) -> bool:
+    def _tokens(value: str) -> set[str]:
+        return {
+            token
+            for token in re.findall(r"[a-z0-9]+", value.lower())
+            if len(token) > 2
+        }
+
+    source_tokens = _tokens(source_name)
+    provider_tokens = _tokens(provider_name)
+    if not source_tokens or not provider_tokens:
+        return False
+    ignored = {"airport", "hotel", "resort", "station", "stand", "temple"}
+    source_identity = source_tokens - ignored or source_tokens
+    provider_identity = provider_tokens - ignored or provider_tokens
+    return any(
+        SequenceMatcher(None, source_token, provider_token).ratio() >= 0.75
+        for source_token in source_identity
+        for provider_token in provider_identity
+    )
+
+
 def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
     """Geocoded pins for selected items + destination top-places (suggestions)."""
     itinerary = trip.get("day_wise_itinerary") or []
@@ -947,6 +970,13 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
     pins: list[dict[str, Any]] = []
     for i, (kind, name) in enumerate(refs):
         info = places_cache.get_details(name, destination) or {}
+        provider_name = str(info.get("name") or "").strip()
+        if (
+            provider_name
+            and kind not in {"airport", "station", "bus_station"}
+            and not _provider_name_matches(name, provider_name)
+        ):
+            continue
         lat, lng = info.get("lat"), info.get("lng")
         if lat is None or lng is None:
             continue
@@ -958,7 +988,8 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         pins.append(
             {
                 "id": f"p{i}",
-                "name": info.get("name") or name,
+                "name": name,
+                "provider_name": provider_name or None,
                 "_source_name": name,
                 "kind": kind,
                 "selected": is_sel,
@@ -1593,6 +1624,9 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             {
                 "day": d,
                 "label": f"Day {d}",
+                "context_name": str(
+                    (itinerary_days.get(d) or {}).get("title") or destination
+                ),
                 "color": _day_color(d),
                 "pin_ids": ids,
                 "circuit_pin_ids": _local_pin_ids(d, route_ids),
@@ -1726,16 +1760,17 @@ def _normalize_stop(
     return None
 
 
-def _flight_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
+def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
     terminal_refs = _transport_terminal_refs(stop["name"], stop["kind"])
-    if stop["kind"] != "flight" or len(terminal_refs) != 2:
+    mode = _intercity_transfer_mode(stop["name"], stop["kind"])
+    if len(terminal_refs) != 2 or mode not in {"Flight", "Train", "Bus"}:
         return [stop]
 
     settings = get_settings()
     departure = str(stop.get("time") or "")
     arrival = str(stop.get("arrival_time") or "")
     duration = stop.get("duration_min")
-    if not isinstance(duration, (int, float)) or duration <= 0:
+    if mode == "Flight" and (not isinstance(duration, (int, float)) or duration <= 0):
         duration = settings.flight_duration_default_min
         stop["duration_min"] = duration
         stop["duration_estimated"] = True
@@ -1751,26 +1786,41 @@ def _flight_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
         )
         arrival_estimated = True
 
-    def _airport_stop(
+    if mode == "Flight":
+        departure_buffer = settings.airport_departure_buffer_min
+        arrival_buffer = settings.airport_arrival_buffer_min
+        departure_operation = "check-in and security"
+        arrival_operation = "baggage and airport exit"
+    elif mode == "Train":
+        departure_buffer = settings.railway_departure_buffer_min
+        arrival_buffer = settings.railway_arrival_buffer_min
+        departure_operation = "baggage and boarding"
+        arrival_operation = "disembark and baggage"
+    else:
+        departure_buffer = settings.bus_departure_buffer_min
+        arrival_buffer = settings.bus_arrival_buffer_min
+        departure_operation = "baggage and boarding"
+        arrival_operation = "disembark and baggage"
+
+    def _terminal_stop(
         name: str,
+        kind: str,
         time: str,
         role: str,
         duration_min: int,
         time_estimated: bool,
     ) -> dict[str, Any]:
-        operation = (
-            f"{_route_duration_display(duration_min)} check-in and security"
-            if role == "departure"
-            else f"{_route_duration_display(duration_min)} baggage and airport exit"
-        )
+        operation = departure_operation if role == "departure" else arrival_operation
         return {
             "name": name,
-            "kind": "airport",
+            "kind": kind,
             "time": time,
             "arrival_time": "",
             "duration_min": duration_min,
             "duration_estimated": True,
-            "operational_time_display": operation,
+            "operational_time_display": (
+                f"{_route_duration_display(duration_min)} {operation}"
+            ),
             "time_estimated": time_estimated,
             "note": "",
             "booked": False,
@@ -1782,26 +1832,28 @@ def _flight_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
             "terminal_role": role,
         }
 
-    stop["name"] = f"Flight: {terminal_refs[0][1]} to {terminal_refs[1][1]}"
-    departure_airport_time = (
-        _clock_display(departure_minutes - settings.airport_departure_buffer_min)
+    stop["name"] = f"{mode}: {terminal_refs[0][1]} to {terminal_refs[1][1]}"
+    departure_terminal_time = (
+        _clock_display(departure_minutes - departure_buffer)
         if departure_minutes is not None
         else ""
     )
     return [
-        _airport_stop(
+        _terminal_stop(
             terminal_refs[0][1],
-            departure_airport_time,
+            terminal_refs[0][0],
+            departure_terminal_time,
             "departure",
-            settings.airport_departure_buffer_min,
-            bool(departure_airport_time),
+            departure_buffer,
+            bool(departure_terminal_time),
         ),
         stop,
-        _airport_stop(
+        _terminal_stop(
             terminal_refs[1][1],
+            terminal_refs[1][0],
             arrival,
             "arrival",
-            settings.airport_arrival_buffer_min,
+            arrival_buffer,
             arrival_estimated,
         ),
     ]
@@ -2367,7 +2419,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 s["rating"] = summary.get("rating") if is_place else None
                 s["review_count"] = summary.get("review_count") if is_place else None
                 s["popularity_score"] = _popularity_score(summary) if is_place else None
-                rendered_stops = _flight_terminal_stops(s)
+                rendered_stops = _transport_terminal_stops(s)
                 if not stops:
                     road_origin = _road_origin_stop(s)
                     if road_origin:
@@ -2507,7 +2559,10 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                 day_coords.append(coords)
                 previous_coords = coords
                 previous_name = str(stop.get("name") or "")
-        total_stops += sum(stop["kind"] not in {"airport", "origin"} for stop in stops)
+        total_stops += sum(
+            stop["kind"] not in {"airport", "station", "bus_station", "origin"}
+            for stop in stops
+        )
 
         # Calculate route stats for the day.
         route = _route_stats_for_day_coords(day_coords)

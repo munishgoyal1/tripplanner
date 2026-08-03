@@ -148,6 +148,7 @@ export interface MapLeg extends RouteMetrics {
 export interface MapDay {
   day: number;
   label: string;
+  context_name?: string;
   color: string;
   pin_ids: string[];
   circuit_pin_ids?: string[];

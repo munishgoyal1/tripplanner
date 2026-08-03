@@ -14,6 +14,7 @@ import {
   zoomToPin,
   type PinMarkerEntry,
 } from "./map/viewportSync";
+import { mapContextForScope } from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
 
 export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
@@ -23,6 +24,7 @@ export {
   formatLegLabel,
   hotelLabelsForDay,
   hotelReturnForDay,
+  mapContextForScope,
   pinsForDayCircuit,
   pinsForDayRoute,
   routePathForPinIds,
@@ -134,6 +136,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
   const [error, setError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null); // null = all days
   const [selectedPin, setSelectedPin] = useState<MapPin | MapAirport | null>(null);
+  const [contextScope, setContextScope] = useState<number | "all" | null>(null);
   const [candidatePin, setCandidatePin] = useState<MapPin | null>(null);
   const [newStopName, setNewStopName] = useState("");
   const [newStopKind, setNewStopKind] = useState<"" | "attraction" | "hotel" | "meal">("");
@@ -172,6 +175,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     pendingRouteFocusRef.current = null;
     setActiveDay(null);
     setSelectedPin(null);
+    setContextScope(null);
     setCandidatePin(null);
     setNewStopDay("auto");
   }, [tripId]);
@@ -185,6 +189,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       setStopKindAutoFilled(true);
       setCandidatePin(candidate);
       setSelectedPin(candidate);
+      setContextScope(null);
       pendingFocusRef.current = candidate;
       onPinFocusRef.current?.(candidate.kind, candidate.name);
       stopInputRef.current?.focus();
@@ -386,6 +391,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     }
     if (!target) return;
     pendingFocusRef.current = target;
+    setContextScope(null);
     const clearingCandidate = candidatePin !== null;
     setCandidatePin(null);
     // Reveal the pin's day so it isn't filtered out. Changing activeDay
@@ -415,9 +421,12 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
         circuitZoomTimerRef.current = null;
       }
       setSelectedPin(null);
+      setContextScope("all");
       setActiveDay(null);
       return;
     }
+    setSelectedPin(null);
+    setContextScope(circuitFocusDay);
     if (activeDay !== circuitFocusDay) {
       setActiveDay(circuitFocusDay);
       return;
@@ -443,6 +452,8 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     }
     pendingFocusRef.current = null;
     pendingRouteFocusRef.current = routeFocusDay;
+    setSelectedPin(null);
+    setContextScope(routeFocusDay);
     if (activeDay !== routeFocusDay) {
       setActiveDay(routeFocusDay);
       return;
@@ -519,6 +530,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
           : null;
   const activeDayObj =
     view && activeDay != null ? view.days.find((d) => d.day === activeDay) : null;
+  const selectedMapContext = view ? mapContextForScope(view, contextScope) : null;
   const dayScopeControls = view ? (
     <div className="flex min-w-0 items-center gap-1 overflow-x-auto" aria-label="Map day scope">
       <button
@@ -532,6 +544,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
           pendingRouteFocusRef.current = null;
           setActiveDay(null);
           setSelectedPin(null);
+          setContextScope("all");
           setNewStopDay("auto");
           onAllDaysFocus?.();
         }}
@@ -553,6 +566,8 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
             pendingFocusRef.current = null;
             pendingRouteFocusRef.current = null;
             setActiveDay(day.day);
+            setSelectedPin(null);
+            setContextScope(day.day);
             setNewStopDay(String(day.day));
             onDayFocus?.(day.day);
           }}
@@ -664,6 +679,26 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       )}
       <div className="relative min-h-0 flex-1">
         <div ref={mapEl} className="h-full w-full" />
+        {!selectedPin && selectedMapContext && (
+          <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-md border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase text-brand">{selectedMapContext.label}</p>
+                <p className="truncate text-sm font-semibold text-ink">{selectedMapContext.title}</p>
+                <p className="mt-1 text-[11px] text-slate-600">Schedule {selectedMapContext.schedule}</p>
+                <p className="text-[11px] text-slate-600">Travel {selectedMapContext.travel}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setContextScope(null)}
+                className="grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+          </aside>
+        )}
         {selectedPin && (
           <aside className="pointer-events-auto absolute right-3 top-3 z-20 w-[18.5rem] rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-pop backdrop-blur">
             {isInspectableMapPin(selectedPin) && selectedPin.photo && (
