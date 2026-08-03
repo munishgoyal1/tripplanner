@@ -63,9 +63,13 @@ function intercityRouteStyle(mode: string): Record<string, unknown> {
   };
 }
 
-export function isIntercityTravel(kind: string, _name: string): boolean {
+export function isIntercityTravel(kind: string, name: string): boolean {
   if (kind === "flight") return true;
-  return kind === "transport";
+  if (kind === "transport") return true;
+  const normalizedName = name.trim().toLowerCase();
+  return /^(?:drive|driving)(?::|\s).+\s+to\s+.+/.test(normalizedName)
+    || /^.+\s+to\s+.+\s+(?:drive|driving)$/.test(normalizedName)
+    || /^(?:toy\s+train|train):?\s+.+\s+to\s+.+/.test(normalizedName);
 }
 
 export function formatLegLabel(leg: { distance_display: string; duration_display: string }): string {

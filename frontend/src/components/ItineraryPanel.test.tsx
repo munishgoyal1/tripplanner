@@ -381,6 +381,30 @@ describe("ItineraryPanel", () => {
     );
   });
 
+  it("routes legacy drive and toy-train rows to the complete day route", async () => {
+    const onStopFocus = vi.fn();
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...baseStop, name: "Drive: Bagdogra to Gangtok", kind: "other" },
+          { ...baseStop, name: "Toy Train: Darjeeling to Ghum", kind: "other" },
+          { ...baseStop, name: "Marine Drive", kind: "attraction" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel onStopFocus={onStopFocus} />);
+
+    fireEvent.click((await screen.findByText("Drive: Bagdogra to Gangtok")).closest("button")!);
+    fireEvent.click(screen.getByText("Toy Train: Darjeeling to Ghum").closest("button")!);
+    expect(onStopFocus).toHaveBeenNthCalledWith(1, "other", "Drive: Bagdogra to Gangtok", 1, 1);
+    expect(onStopFocus).toHaveBeenNthCalledWith(2, "other", "Toy Train: Darjeeling to Ghum", 1, 2);
+    expect(screen.getByText("Marine Drive").closest("button")).toHaveAttribute("title", "Show photos & reviews");
+  });
+
   it("shows both flight airports with A markers and their local times", async () => {
     const onStopFocus = vi.fn();
     const baseStop = itinerary.days[0].stops[0];

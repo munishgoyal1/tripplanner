@@ -620,6 +620,29 @@ describe("map stop selection", () => {
     expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
   });
 
+  it("matches an abbreviated hotel alias only at its requested occurrence", () => {
+    const pin = {
+      id: "lachung-hotel",
+      name: "The Lachung Inn Hotel & Resort",
+      source_name: "Lachung Inn",
+      kind: "hotel",
+      selected: true,
+      day: 4,
+      lat: 27.69,
+      lng: 88.74,
+      rating: null,
+      address: "Lachung",
+      photo: null,
+      occurrences: [
+        { day: 4, stop: 4, time: "18:00" },
+        { day: 5, stop: 1, time: "08:00" },
+      ],
+    };
+
+    expect(pinMatchesFocus(pin, "Lachung Inn Resort", 5, 1)).toBe(true);
+    expect(pinMatchesFocus(pin, "Lachung Inn Resort", 5, 2)).toBe(false);
+  });
+
   it("keeps route framing when the map initializes after the request", async () => {
     const fitBounds = vi.fn();
     const map = {

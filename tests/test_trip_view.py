@@ -1960,6 +1960,7 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
         "Seven Sisters Falls": (27.536, 88.653),
         "Singhik View Point": (27.529, 88.556),
         "Lachung Hotel": (27.689, 88.744),
+        "Lachung Hotel & Resort": (25.000, 80.000),
         "Darjeeling": (27.041, 88.266),
         "Darjeeling Hotel": (27.047, 88.263),
     }
@@ -2008,6 +2009,12 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
                 ],
             },
             {
+                "day": 5,
+                "stops": [
+                    {"name": "Lachung Hotel & Resort", "kind": "hotel"},
+                ],
+            },
+            {
                 "day": 8,
                 "stops": [
                     {"name": "Toy train ride", "kind": "other"},
@@ -2034,9 +2041,10 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
         and "same vehicle" in stop["travel_from_previous"]["detail"]
         for stop in day4_stops[2:]
     )
+    day8_itinerary = next(day for day in itinerary["days"] if day["day"] == 8)
     assert [
         stop["kind"]
-        for stop in itinerary["days"][2]["stops"]
+        for stop in day8_itinerary["stops"]
         if "train" in stop["name"].lower()
     ] == ["transport"]
 
@@ -2052,6 +2060,16 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     assert day4["legs"] and all(
         leg.get("intercity") and leg["mode"] == "Drive" for leg in day4["legs"]
     ), day4
+    lachung_pins = [pin for pin in map_view["pins"] if "Lachung" in pin["name"]]
+    assert len(lachung_pins) == 1
+    assert (lachung_pins[0]["lat"], lachung_pins[0]["lng"]) == coords["Lachung Hotel"]
+    assert [(item["day"], item["stop"]) for item in lachung_pins[0]["occurrences"]] == [
+        (4, 5),
+        (5, 1),
+        (8, 1),
+    ]
+    day5 = next(day for day in map_view["days"] if day["day"] == 5)
+    assert day5["pin_ids"] == [lachung_pins[0]["id"]]
     for day_number in (1, 8):
         day = next(candidate for candidate in map_view["days"] if candidate["day"] == day_number)
         assert day["legs"] and any(leg["intercity"] for leg in day["legs"])

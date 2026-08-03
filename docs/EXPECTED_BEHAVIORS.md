@@ -298,11 +298,14 @@ hotels.
 **Expected:** The unique hotels are labeled `H1`, `H2`, and so on in route order
 in both Itinerary and Map. A repeated return to the same hotel does not create
 another number. A direct hotel-to-hotel leg is dotted in the day's circuit
-color. A day with one unique hotel retains the plain `H` marker.
+color. A day with one unique hotel retains the plain `H` marker. Equivalent
+hotel spellings share one geocoded pin and all of its day/stop occurrences;
+selecting the hotel zooms to that pin for the requested occurrence.
 
 **Executable proof:**
 
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `numbers two hotels in their same-day route order`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `matches an abbreviated hotel alias only at its requested occurrence`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps different hotel endpoints as explicit checkout and checkin rows`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
 
@@ -318,11 +321,14 @@ as applicable, and train connectors are gray with a train. Local route legs reta
 their day color and do not gain an inter-city transport glyph. A road trip that
 starts from a city/home-area point connects that `O` endpoint to the first
 destination place; both endpoints remain in the day circuit and route focus.
+Clicking a route-shaped drive or toy-train itinerary row frames the complete
+dotted day route, including for legacy rows persisted with a generic kind.
 
 **Executable proof:**
 
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `distinguishes local, road, bus, rail, and flight route geometry`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_connects_city_origin_to_hotel_for_road_trip`
 
 ### EB-STATE-001 - Keep planner surfaces synchronized

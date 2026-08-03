@@ -912,6 +912,19 @@ def _provider_name_matches(source_name: str, provider_name: str) -> bool:
     )
 
 
+def _hotel_identity_matches(left: str, right: str) -> bool:
+    def _identity_tokens(name: str) -> set[str]:
+        normalized = re.sub(r"\brameshwaram\b", "rameswaram", name, flags=re.IGNORECASE)
+        tokens = set(re.findall(r"[a-z0-9]+", normalized.lower()))
+        return tokens - {"hotel", "hotels", "resort", "resorts"}
+
+    left_tokens = _identity_tokens(left)
+    right_tokens = _identity_tokens(right)
+    if not left_tokens or not right_tokens:
+        return False
+    return left_tokens <= right_tokens or right_tokens <= left_tokens
+
+
 def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
     """Geocoded pins for selected items + destination top-places (suggestions)."""
     itinerary = trip.get("day_wise_itinerary") or []
@@ -932,6 +945,11 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
 
     def _add(kind: str, name: str) -> None:
         key = (name or "").strip().lower()
+        if kind == "hotel" and any(
+            existing_kind == "hotel" and _hotel_identity_matches(existing_name, name)
+            for existing_kind, existing_name in refs
+        ):
+            return
         if name and key not in seen:
             seen.add(key)
             refs.append((kind, name))
@@ -1547,8 +1565,17 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             for day_num, day in itinerary_days.items()
             for stop_index, stop in enumerate(day.get("stops") or [], start=1)
             if isinstance(stop, dict)
-            if str(stop.get("name") or "").strip().lower()
-            == str(pin["_source_name"]).strip().lower()
+            if (
+                str(stop.get("name") or "").strip().lower()
+                == str(pin["_source_name"]).strip().lower()
+                or (
+                    pin["kind"] == "hotel"
+                    and str(stop.get("kind") or "").strip().lower() == "hotel"
+                    and _hotel_identity_matches(
+                        str(stop.get("name") or ""), str(pin["_source_name"])
+                    )
+                )
+            )
         ]
         if rendered_occurrences:
             pin["occurrences"] = rendered_occurrences
@@ -1562,15 +1589,28 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         pin_by_name[str(pin["name"]).strip().lower()] = pin
         pin_by_name[str(pin["_source_name"]).strip().lower()] = pin
 
-    def _pin_for_stop(name: Any) -> dict[str, Any] | None:
+    def _pin_for_stop(name: Any, kind_hint: str = "") -> dict[str, Any] | None:
         needle = str(name or "").strip().lower()
         if not needle:
             return None
         exact = pin_by_name.get(needle)
         if exact:
             return exact
-        return next(
+        partial = next(
             (pin for candidate, pin in pin_by_name.items() if needle in candidate or candidate in needle),
+            None,
+        )
+        if partial:
+            return partial
+        if kind_hint != "hotel":
+            return None
+        return next(
+            (
+                pin
+                for pin in pins
+                if pin["kind"] == "hotel"
+                and _hotel_identity_matches(str(pin["_source_name"]), str(name or ""))
+            ),
             None,
         )
 
@@ -1601,8 +1641,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 transfer_mode_by_day[day_num] = mode
                 terminal_refs = _transport_terminal_refs(str(name or ""), kind)
                 terminal_ids: list[str] = []
-                for _, terminal_name in terminal_refs:
-                    terminal_pin = _pin_for_stop(terminal_name)
+                for terminal_kind, terminal_name in terminal_refs:
+                    terminal_pin = _pin_for_stop(terminal_name, terminal_kind)
                     if terminal_pin:
                         terminal_ids.append(str(terminal_pin["id"]))
                 if len(terminal_ids) == len(terminal_refs) and len(terminal_ids) >= 2:
@@ -1615,7 +1655,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                     ] = mode
                 else:
                     if not route_ids and terminal_refs:
-                        origin_pin = _pin_for_stop(terminal_refs[0][1])
+                        origin_pin = _pin_for_stop(terminal_refs[0][1], terminal_refs[0][0])
                         if origin_pin:
                             origin_id = str(origin_pin["id"])
                             if origin_id not in by_day.setdefault(day_num, []):
@@ -1623,7 +1663,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                             route_ids.append(origin_id)
                     pending_intercity_mode = mode
                 continue
-            pin = _pin_for_stop(name)
+            pin = _pin_for_stop(name, kind)
             if pin and pin["id"] not in by_day.setdefault(day_num, []):
                 by_day[day_num].append(pin["id"])
             if pin:
@@ -1724,6 +1764,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         )
         if stay_id and not is_transfer_day:
             ids = [stay_id, *(pid for pid in ids if pid != stay_id), stay_id]
+            if len(set(ids)) == 1:
+                ids = [stay_id]
         if is_transfer_day:
             route_ids = route_pin_ids_by_day.get(d, [])
             carried_stay_id = _carried_stay_id(d)

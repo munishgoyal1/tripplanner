@@ -1,4 +1,5 @@
 import type { MapPin } from "../../types";
+import { hotelIdentityMatches } from "./placeIdentity";
 
 export function focusNameForPin(pin: MapPin): string {
   return pin.source_name?.trim() || pin.name;
@@ -31,12 +32,14 @@ export function pinMatchesFocus(
   focusDay?: number,
   focusStop?: number,
 ): boolean {
+  const nameMatches = !!focusName && (
+    placeNameMatches(pin.name, focusName)
+    || (pin.source_name && placeNameMatches(pin.source_name, focusName))
+    || (pin.kind === "hotel" && hotelIdentityMatches(pin.name, focusName))
+    || (pin.kind === "hotel" && !!pin.source_name && hotelIdentityMatches(pin.source_name, focusName))
+  );
   if (
-    !focusName
-    || !(
-      placeNameMatches(pin.name, focusName)
-      || (pin.source_name && placeNameMatches(pin.source_name, focusName))
-    )
+    !nameMatches
   ) return false;
   return (focusDay == null && focusStop == null) || pin.occurrences.some((occurrence) => (
     (focusDay == null || occurrence.day === focusDay)
