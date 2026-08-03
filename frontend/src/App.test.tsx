@@ -43,9 +43,18 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest, onTurnComplete }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; onTurnComplete?: (tripId?: string) => void }) => (
+  default: ({ hideGlobalControls, assistantRequest, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
     <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""}>
       <button type="button" onClick={() => onTurnComplete?.("khandala-pune-1")}>Complete planning turn</button>
+      <button type="button" onClick={() => onTurnStatus?.({ phase: "working", message: "Searching hotels. 45s elapsed. Full itinerary builds usually take about 2–4 minutes." })}>Report planning progress</button>
+      <button type="button" onClick={() => {
+        onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: true });
+      }}>Finish new itinerary</button>
+      <button type="button" onClick={() => {
+        onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false });
+      }}>Finish itinerary update</button>
     </div>
   ),
 }));
@@ -279,6 +288,38 @@ describe("App responsive workspace", () => {
       "line-clamp-2",
       "whitespace-normal",
     );
+  });
+
+  it("keeps timely build progress in the top bar until the refreshed itinerary is ready", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Report planning progress" }));
+    expect(screen.getByText(/Searching hotels\. 45s elapsed/)).toHaveClass("text-brand");
+
+    fireEvent.click(screen.getByRole("button", { name: "Finish new itinerary" }));
+    expect(screen.getByText("Loading your updated itinerary now.")).toBeInTheDocument();
+    expect(await screen.findByText(/Done building your itinerary/)).toHaveClass("text-emerald-700");
+  });
+
+  it("summarizes an itinerary modification after its refreshed view loads", async () => {
+    fetchTripViewMock
+      .mockResolvedValueOnce({ ...emptyView, has_trip: true })
+      .mockResolvedValueOnce({
+        ...emptyView,
+        has_trip: true,
+        alerts: ["Rebalanced Day 3 itinerary around the museum closure."],
+      });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole("button", { name: "Finish itinerary update" }));
+
+    expect(await screen.findByText(
+      "Itinerary refreshed. Everything is loaded and ready for a look.",
+    )).toHaveClass("text-emerald-700");
   });
 
   it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {

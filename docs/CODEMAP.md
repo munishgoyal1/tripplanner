@@ -66,6 +66,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | Path | Owns |
 | --- | --- |
 | `frontend/src/App.tsx` | Web application composition; trip state, focus, refresh, mutations, pane/resize state, and panel body ownership |
+| `frontend/src/components/ChatPanel.tsx` | Assistant transcript, SSE progress presentation, total turn timing, cancellation, and workspace turn-status publication |
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/CanvasPaneFrame.tsx`, `DetailsPaneShell.tsx`, `AssistantModalShell.tsx` | Render-only desktop pane frames and controls |
 | `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx` | Render-only responsive workspace chrome |

@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-03 - Long Agent Work Needs Two Completion Boundaries
+
+- Token streaming alone does not reassure a user during multi-minute tool and model
+  work. Surface truthful domain milestones, one total elapsed clock, and a measured
+  expected range in both the initiating pane and persistent workspace status.
+- Agent completion and usable-screen completion are different events. Report loading
+  after the terminal SSE event, and declare success only after the authoritative view
+  refresh succeeds; otherwise retain the prior view and report the reload failure.
+- Restarting elapsed time on every subtask hides the true wait. Keep one turn start,
+  change only the milestone label, and never fabricate percentage-complete estimates.
+
 ## 2026-08-03 - Treat Trip Shape as a Deterministic Product Decision
 
 - A global date-range fallback silently becomes a duration recommendation. It can

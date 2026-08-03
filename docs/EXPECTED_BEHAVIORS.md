@@ -60,6 +60,29 @@ Assistant build its first proposal.
 - [`tests/test_trip_kickoff.py`](../tests/test_trip_kickoff.py) - `test_new_paris_trip_forces_prefilled_kickoff_after_duration_advice`
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_persists_planning_recommendation`
 
+### EB-PLAN-003 - Keep long planning turns visibly active
+
+**Trigger:** Submit a new-trip build, itinerary modification, or planner review.
+
+**Expected:**
+
+- Chat immediately shows a friendly phase, one overall elapsed clock, and a typical
+  2–4 minute expectation for full builds. Real tool events produce timely flight,
+  hotel, attraction, routing, review, and save updates without exposing tool names.
+- The common command bar mirrors current work even when the Assistant pane is hidden.
+  After two minutes it still shows the expected range and says not to refresh.
+- Planning completion first reports that the refreshed itinerary is loading. A new
+  itinerary is declared ready only after the trip view loads and invites inspection.
+- Existing-trip changes summarize the refreshed authoritative mutation. Proposal-only
+  reviews say the itinerary is unchanged; failed reloads retain the prior view and
+  never claim that the new itinerary is ready.
+
+**Executable proof:**
+
+- [`frontend/src/components/ChatPanel.test.tsx`](../frontend/src/components/ChatPanel.test.tsx) - `shows immediate and friendly progress while a turn is running`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `summarizes an itinerary modification after its refreshed view loads`
+
 ## Planner workspace
 
 ### EB-FOCUS-001 - Focus one itinerary occurrence

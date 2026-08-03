@@ -40,6 +40,32 @@ describe("ChatPanel progress", () => {
 
   it("shows immediate and friendly progress while a turn is running", async () => {
     let handlers: StreamHandlers | undefined;
+    const onTurnStatus = vi.fn();
+    streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
+      handlers = nextHandlers;
+      return new Promise<void>(() => {});
+    });
+    render(<ChatPanel onTurnComplete={vi.fn()} onTurnStatus={onTurnStatus} />);
+
+    const input = await readyComposer();
+    fireEvent.change(input, { target: { value: "Plan a Goa weekend" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(screen.getByText(/Thinking through your request/)).toBeInTheDocument();
+    expect(screen.getByText(/Full itinerary builds usually take about 2–4 minutes/)).toBeInTheDocument();
+    await waitFor(() => expect(handlers).toBeDefined());
+    act(() => handlers?.onTool("search_places_with_reviews", "start"));
+
+    expect(screen.getByText(/Checking places and reviews/)).toBeInTheDocument();
+    expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
+    await waitFor(() => expect(onTurnStatus).toHaveBeenLastCalledWith(expect.objectContaining({
+      phase: "working",
+      message: expect.stringContaining("Checking places and reviews"),
+    })));
+  });
+
+  it("keeps progress visible while answer text streams", async () => {
+    let handlers: StreamHandlers | undefined;
     streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
       handlers = nextHandlers;
       return new Promise<void>(() => {});
@@ -47,15 +73,16 @@ describe("ChatPanel progress", () => {
     render(<ChatPanel onTurnComplete={vi.fn()} />);
 
     const input = await readyComposer();
-    fireEvent.change(input, { target: { value: "Plan a Goa weekend" } });
+    fireEvent.change(input, { target: { value: "Update Day 2" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
-
-    expect(screen.getByText(/Thinking through your request/)).toBeInTheDocument();
     await waitFor(() => expect(handlers).toBeDefined());
-    act(() => handlers?.onTool("search_places_with_reviews", "start"));
+    act(() => {
+      handlers?.onProgress?.("reviewing");
+      handlers?.onToken("I found a better route.");
+    });
 
-    expect(screen.getByText(/Checking places and reviews/)).toBeInTheDocument();
-    expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
+    expect(await screen.findByText("I found a better route.")).toBeInTheDocument();
+    expect(screen.getByText(/Reviewing the results/)).toBeInTheDocument();
   });
 
   it("stops an active response without presenting it as a failed request", async () => {

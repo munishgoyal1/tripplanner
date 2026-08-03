@@ -3353,3 +3353,13 @@ VALIDATION:
   all three worker lanes require approval before changing that stack lifecycle.
 - Rename the owner-facing all-worktree launcher to `Sync-AllTo-Latest.cmd` and
   include Agent 3 in committed-head integration and all-lane synchronization.
+
+=== 2026-08-03 — Keep multi-minute itinerary builds visibly active ===
+
+- Mirror truthful Assistant milestones into the common command-bar notification
+  so progress remains visible when the chat pane is hidden.
+- Show one overall elapsed clock and a typical 2–4 minute full-build expectation;
+  after two minutes explicitly reassure the user not to refresh.
+- Announce a new itinerary as ready only after its refreshed view loads, then invite
+  the user to inspect it. Summarize existing-itinerary changes from the refreshed
+  authoritative mutation outcome, and distinguish proposal-only reviews and reload failures.

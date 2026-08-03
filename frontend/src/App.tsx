@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import AssistantModalShell from "./components/AssistantModalShell";
 import CanvasPaneFrame from "./components/CanvasPaneFrame";
-import ChatPanel from "./components/ChatPanel";
+import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
 import DetailsPaneShell from "./components/DetailsPaneShell";
 import DesktopToolbar from "./components/DesktopToolbar";
 import ErrorBanner from "./components/ErrorBanner";
@@ -62,6 +62,7 @@ export default function App() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
   const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(null);
+  const [assistantTurnStatus, setAssistantTurnStatus] = useState<AssistantTurnStatus | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
   const [mapFocusToken, setMapFocusToken] = useState(0);
@@ -212,11 +213,13 @@ export default function App() {
         if (generation !== refreshGeneration.current) return;
         applyView(v, f);
         setActionError(null);
+        return v;
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           console.error("Could not refresh trip view", error);
           setActionError("Could not refresh the trip. Your previous view is still available.");
         }
+        return null;
       } finally {
         if (generation === refreshGeneration.current) setLoading(false);
       }
@@ -311,6 +314,7 @@ export default function App() {
     refreshController.current?.abort();
     setLoading(false);
     setPlannerReview(null);
+    setAssistantTurnStatus(null);
     dispatchWorkspace({ type: "trip-changed", tripId });
     // The switcher already fetched the fresh view — reuse it instead of making
     // the server rebuild the (cache-backed) view a second time.
@@ -322,6 +326,7 @@ export default function App() {
   };
 
   const handleNewTrip = async () => {
+    setAssistantTurnStatus(null);
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
   };
@@ -346,12 +351,40 @@ export default function App() {
   // destination switch (the agent created a NEW trip → server returns a new
   // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
   // transcript replaces the previous trip's conversation.
-  const handleTurnComplete = (tripId?: string) => {
+  const handleTurnComplete = async (tripId?: string, context?: AssistantTurnContext) => {
     const tripChanged = Boolean(tripId && tripId !== chatTripId);
     dispatchWorkspace({ type: "trip-content-changed" });
-    refresh(tripChanged ? null : focus);
+    const refreshed = await refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
     if (tripChanged) trackEvent("trip_created");
+    if (!refreshed) {
+      setAssistantTurnStatus({
+        phase: "error",
+        message: "The planning work finished, but the updated itinerary could not be loaded. Your previous view is still available.",
+      });
+      return;
+    }
+    if (context?.proposalOnly) {
+      setAssistantTurnStatus({
+        phase: "complete",
+        message: "Review complete. Your itinerary is unchanged and ready for your decision.",
+      });
+      return;
+    }
+    if (context?.startedWithoutTrip) {
+      setAssistantTurnStatus({
+        phase: "complete",
+        message: "Done building your itinerary. Your trip is ready to explore; start checking it out.",
+      });
+      return;
+    }
+    const updateSummary = compactStatus(refreshed.alerts?.[0]);
+    setAssistantTurnStatus({
+      phase: "complete",
+      message: updateSummary
+        ? `${updateSummary} Everything is loaded and ready for a look.`
+        : "Done updating your itinerary. Everything is loaded and ready for a look.",
+    });
   };
 
   const focusIndex = focus
@@ -367,6 +400,7 @@ export default function App() {
 
   const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
     try {
+      setAssistantTurnStatus(null);
       setActionError(null);
       const next = await selectItem(kind, name, options);
       const nextKind = focusKind(kind);
@@ -407,6 +441,7 @@ export default function App() {
     if (pendingDeselects.current.has(mutationKey)) return false;
     pendingDeselects.current.add(mutationKey);
     try {
+      setAssistantTurnStatus(null);
       setActionError(null);
       const next = await deselectItem(kind, name, options);
       const retainedFocus = {
@@ -608,8 +643,10 @@ export default function App() {
     <AssistantModalShell open={chatOpen} onClose={() => setDockPaneOpen("assistant", false)}>
       <ChatPanel
         onTurnComplete={handleTurnComplete}
+        onTurnStatus={setAssistantTurnStatus}
         reloadToken={chatReloadToken}
         tripIdHint={chatTripId}
+        hasActiveTrip={Boolean(view?.has_trip)}
         onNewTrip={handleNewTrip}
         onImported={handleImported}
         hideGlobalControls
@@ -624,9 +661,9 @@ export default function App() {
   }, [isDesktop, mobileTripOpen]);
 
   const latestStatus = compactStatus(view?.alerts?.[0]);
-  const visibleStatus = plannerReview
+  const visibleStatus = assistantTurnStatus?.message ?? (plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
-    : latestStatus;
+    : latestStatus);
   return <>
     <ErrorBanner message={actionError} onDismiss={() => setActionError(null)} />
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
@@ -636,6 +673,7 @@ export default function App() {
           tripVersion={tripVersion}
           onTripSwitched={handleSwitched}
           visibleStatus={visibleStatus}
+          statusPhase={assistantTurnStatus?.phase}
           reviewPending={plannerReview !== null}
           loading={loading}
           onReviewWithPlanner={reviewWithPlanner}
@@ -739,8 +777,10 @@ export default function App() {
           chat={(
             <ChatPanel
               onTurnComplete={handleTurnComplete}
+              onTurnStatus={setAssistantTurnStatus}
               reloadToken={chatReloadToken}
               tripIdHint={chatTripId}
+              hasActiveTrip={Boolean(view?.has_trip)}
               onNewTrip={handleNewTrip}
               onImported={handleImported}
             />

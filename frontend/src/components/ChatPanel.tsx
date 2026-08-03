@@ -26,11 +26,15 @@ import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 
 interface Props {
-  onTurnComplete: (tripId?: string) => void;
+  onTurnComplete: (tripId?: string, context?: AssistantTurnContext) => void | Promise<void>;
+  /** Mirrors live Assistant work into workspace-level status surfaces. */
+  onTurnStatus?: (status: AssistantTurnStatus | null) => void;
   /** Bump to reload the persisted transcript (e.g. after switching trips). */
   reloadToken?: number;
   /** Explicit trip id to load chat for (set during saved-trip switching). */
   tripIdHint?: string | null;
+  /** Whether an authoritative trip existed when the turn began. */
+  hasActiveTrip?: boolean;
   /** Start a fresh planning chat (clears the active trip + general chat). */
   onNewTrip?: () => void;
   /** Called after a successful guest-data import so the App can refresh trip panel. */
@@ -39,6 +43,16 @@ interface Props {
   hideGlobalControls?: boolean;
   /** A user-approved command-bar escalation into a real Assistant turn. */
   assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
+}
+
+export interface AssistantTurnStatus {
+  phase: "working" | "loading" | "complete" | "error";
+  message: string;
+}
+
+export interface AssistantTurnContext {
+  proposalOnly: boolean;
+  startedWithoutTrip: boolean;
 }
 
 const GREETING: ChatMessage = {
@@ -67,10 +81,26 @@ function toolProgressLabel(name: string): string {
   return "Working on your trip";
 }
 
+function waitGuidance(isNewTrip: boolean, seconds: number): string {
+  if (seconds >= 120) {
+    return "Full builds usually take about 2–4 minutes. Still working; no need to refresh.";
+  }
+  return isNewTrip
+    ? "Full itinerary builds usually take about 2–4 minutes."
+    : "Updates are usually quicker; a full rebuild can take about 2–4 minutes.";
+}
+
+function elapsedLabel(seconds: number): string {
+  if (seconds < 60) return `${seconds}s elapsed`;
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s elapsed`;
+}
+
 export default function ChatPanel({
   onTurnComplete,
+  onTurnStatus,
   reloadToken = 0,
   tripIdHint = null,
+  hasActiveTrip = false,
   onNewTrip,
   onImported,
   hideGlobalControls = false,
@@ -117,6 +147,8 @@ export default function ChatPanel({
   const handledAssistantRequestRef = useRef(0);
   const sendRequestedMessageRef = useRef<(message: string, proposalOnly?: boolean) => void>(() => {});
   const streamControllerRef = useRef<AbortController | null>(null);
+  const turnStartedAtRef = useRef(0);
+  const publishedTurnStatusRef = useRef("");
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const copyTimerRef = useRef<number | null>(null);
   const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
@@ -137,6 +169,18 @@ export default function ChatPanel({
     const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
   }, [progress]);
+
+  useEffect(() => {
+    if (!busy || !progress) return;
+    const publishedSeconds = Math.floor(progressSeconds / 10) * 10;
+    const message = `${progress.label}. ${elapsedLabel(publishedSeconds)}. ${waitGuidance(!hasActiveTrip, publishedSeconds)}`;
+    if (publishedTurnStatusRef.current === message) return;
+    publishedTurnStatusRef.current = message;
+    onTurnStatus?.({
+      phase: "working",
+      message,
+    });
+  }, [busy, hasActiveTrip, onTurnStatus, progress, progressSeconds]);
 
   useEffect(() => () => {
     streamControllerRef.current?.abort();
@@ -363,7 +407,9 @@ export default function ChatPanel({
     setFailedRequest(null);
     setTripInputRequest(null);
     setBusy(true);
-    setProgress({ label: PROGRESS_LABELS.thinking, startedAt: Date.now() });
+    turnStartedAtRef.current = Date.now();
+    publishedTurnStatusRef.current = "";
+    setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
     const streamController = new AbortController();
     streamControllerRef.current = streamController;
     trackEvent("planning_started", { proposal_only: proposalOnly, retry: retrying });
@@ -395,12 +441,11 @@ export default function ChatPanel({
     try {
       await streamChat(outgoing, {
         onToken: (text) => {
-          setProgress(null);
           pendingTokens += text;
           if (tokenFrame == null) tokenFrame = window.requestAnimationFrame(flushTokens);
         },
       onProgress: (stage) => {
-        setProgress({ label: PROGRESS_LABELS[stage], startedAt: Date.now() });
+        setProgress({ label: PROGRESS_LABELS[stage], startedAt: turnStartedAtRef.current });
       },
       onInputRequest: (request) => {
         setTripInputRequest(request);
@@ -410,7 +455,7 @@ export default function ChatPanel({
           usedTools.add(name);
           toolTrace.push({ name, args: extras?.args });
           setActiveTool({ name, args: extras?.args });
-          setProgress({ label: toolProgressLabel(name), startedAt: Date.now() });
+          setProgress({ label: toolProgressLabel(name), startedAt: turnStartedAtRef.current });
         } else {
           // Attach the duration to the most recent matching start entry that
           // doesn't already have one.
@@ -428,6 +473,10 @@ export default function ChatPanel({
         flushTokens();
         setActiveTool(null);
         setProgress(null);
+        onTurnStatus?.({
+          phase: "loading",
+          message: "The planning work is complete. Loading your updated itinerary now.",
+        });
         setMessages((m) => {
           const copy = [...m];
           copy[copy.length - 1] = {
@@ -440,7 +489,10 @@ export default function ChatPanel({
         setBusy(false);
         setFailedRequest(null);
         trackEvent("planning_completed", { proposal_only: proposalOnly });
-        onTurnComplete(tripId);
+        void onTurnComplete(tripId, {
+          proposalOnly,
+          startedWithoutTrip: !hasActiveTrip,
+        });
       },
         onError: (msg) => {
           if (streamController.signal.aborted) return;
@@ -450,6 +502,7 @@ export default function ChatPanel({
           tokenFrame = null;
           setActiveTool(null);
           setProgress(null);
+          onTurnStatus?.({ phase: "error", message: "The Assistant hit an error. Your previous itinerary is still available." });
           setMessages((m) => {
             const copy = [...m];
             copy[copy.length - 1] = { role: "assistant", text: `Warning: ${msg}` };
@@ -482,6 +535,7 @@ export default function ChatPanel({
         tokenFrame = null;
         setActiveTool(null);
         setProgress(null);
+        onTurnStatus?.({ phase: "error", message: "The Assistant could not finish that update. Your previous itinerary is still available." });
         setMessages((m) => {
           const copy = [...m];
           copy[copy.length - 1] = {
@@ -517,6 +571,7 @@ export default function ChatPanel({
     streamControllerRef.current?.abort();
     setActiveTool(null);
     setProgress(null);
+    onTurnStatus?.(null);
   }
 
   async function copyMessage(text: string, index: number) {
@@ -959,11 +1014,13 @@ export default function ChatPanel({
           </div>
         ))}
         {busy && progress && (
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <div className="flex items-start gap-2 rounded-md border border-brand/15 bg-brand/[0.04] px-3 py-2.5 text-xs text-muted" role="status" aria-live="polite">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
-            <span>
-              <span className="font-medium text-ink">{progress.label}</span>
-              {progressSeconds >= 2 ? ` · ${progressSeconds}s` : ""}…
+            <span className="min-w-0">
+              <span className="block font-medium text-ink">{progress.label}…</span>
+              <span className="mt-0.5 block leading-relaxed">
+                {elapsedLabel(progressSeconds)} · {waitGuidance(!hasActiveTrip, progressSeconds)}
+              </span>
             </span>
           </div>
         )}

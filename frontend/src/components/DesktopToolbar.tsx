@@ -1,5 +1,6 @@
 import { List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
 import type { TripView } from "../types";
+import type { AssistantTurnStatus } from "./ChatPanel";
 import TripActionsMenu from "./TripActionsMenu";
 import TripSwitcher from "./TripSwitcher";
 
@@ -9,6 +10,7 @@ interface Props {
   tripVersion: number;
   onTripSwitched: (tripId?: string, view?: TripView | null) => void;
   visibleStatus?: string;
+  statusPhase?: AssistantTurnStatus["phase"];
   reviewPending: boolean;
   loading: boolean;
   onReviewWithPlanner: () => void;
@@ -27,6 +29,7 @@ export default function DesktopToolbar({
   tripVersion,
   onTripSwitched,
   visibleStatus,
+  statusPhase,
   reviewPending,
   loading,
   onReviewWithPlanner,
@@ -46,7 +49,15 @@ export default function DesktopToolbar({
       <div className="mr-auto flex min-w-32 flex-1 items-center gap-2">
         <div className="min-w-0 flex-1" aria-live="polite" role="status">
         {visibleStatus ? (
-          <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${reviewPending ? "text-amber-800" : "text-emerald-700"}`} title={visibleStatus}>
+          <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${
+            reviewPending
+              ? "text-amber-800"
+              : statusPhase === "working" || statusPhase === "loading"
+                ? "text-brand"
+                : statusPhase === "error"
+                  ? "text-rose-700"
+                  : "text-emerald-700"
+          }`} title={visibleStatus}>
             {visibleStatus}
           </p>
         ) : loading ? (

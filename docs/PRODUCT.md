@@ -186,9 +186,14 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   switches; an old trip response must never overwrite the selected trip.
 - **Assistant responsiveness**: a submitted turn immediately shows a concise
   thinking state, then friendly work phases for live searches, reviewing, and
-  saving. Work lasting at least two seconds shows elapsed time. Internal tool
-  names and raw arguments stay out of the primary experience; streamed answer
-  text replaces progress as soon as it arrives. GPT-4.1 remains the planning
+  saving. The Assistant and common command bar share those truthful milestones.
+  One overall elapsed clock and a typical 2–4 minute full-build expectation remain
+  visible throughout long planning turns; after two minutes the copy explicitly
+  reassures the user that work continues and no refresh is needed. Internal tool
+  names and raw arguments stay out of the primary experience. A completion message
+  appears only after the refreshed itinerary has loaded, invites the user to inspect
+  a new plan, and summarizes the authoritative outcome of an existing-plan update.
+  Streamed answer text does not hide workspace-level progress. GPT-4.1 remains the planning
   model unless measured quality failures justify a slower or costlier model.
   While streaming, Send becomes Stop; cancellation preserves useful partial text,
   restores the composer, and does not masquerade as a failed retry. Message Copy
