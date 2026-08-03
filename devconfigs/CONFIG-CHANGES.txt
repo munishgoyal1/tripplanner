@@ -1,0 +1,41 @@
+Portable Developer Configuration Change Log
+===========================================
+
+This is the plain-English running history of changes under devconfigs. Add the
+newest dated entry at the top. Record what changed, why it changed, how to apply
+it, and any manual recovery step that could help on a new or broken machine.
+
+2026-08-03 - Created the portable developer configuration bundle
+----------------------------------------------------------------
+What changed:
+- Added a stable VS Code layout and persistence baseline based on the owner's
+  current user settings.
+- Added a global GitHub Copilot instruction that keeps the current 4-5 word task
+  visible through the chat title or progress updates.
+- Added an idempotent PowerShell apply script. It merges owned VS Code settings,
+  backs up the prior file, and preserves unrelated settings.
+- Added an optional winget manifest for common Windows development tools.
+- Added an opt-in curated VS Code extension manifest for the repository's core
+  Python, web, container, Azure, Markdown, and source-control tooling.
+
+Why:
+The same working layout and agent visibility rules need to be portable across
+machines without copying secrets, Azure account selections, local extension
+paths, or permissive command approvals.
+
+How to apply:
+Run .\devconfigs\Apply-DevConfigs.ps1 from the repository root. Add
+-InstallTools only when software installation is intended. Use -WhatIf to
+preview changes. Add -InstallExtensions to install the curated VS Code extension
+set; this can be combined with -InstallTools.
+
+Recovery:
+The apply script writes timestamped settings.json backups beside the VS Code
+user settings file before changing it. Close VS Code, replace settings.json with
+the desired backup, and reopen VS Code. If a Copilot instruction causes trouble,
+remove agent-workspace.instructions.md from the VS Code User\prompts folder.
+
+Known limitation:
+VS Code currently has no portable setting that always opens a new chat in an
+editor tab or lets every agent host rename the active chat. Open a new chat in
+the editor once per new workspace; the restored editor state should retain it.
