@@ -5,24 +5,15 @@ import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectIte
 import type { MapAirport, MapView, MapPin } from "../types";
 import { focusedDayForPin, focusNameForPin, pinMatchesFocus } from "./map/focusMatching";
 import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
+import { clearMapOverlays, synchronizeMapOverlays } from "./map/overlaySync";
 import {
-  airportIcon,
-  dotIcon,
-  hotelIcon,
-  pinIcon,
-  routeLegIcon,
-  SUGGEST_COLOR,
-  terminalIcon,
-} from "./map/mapIcons";
-import {
-  formatLegLabel,
-  hotelLabelsForDay,
-  hotelReturnForDay,
-  pinsForDayCircuit,
-  pinsForDayRoute,
-  routeStyleForLeg,
-  visitOrdersForDay,
-} from "./map/routeDerivations";
+  capCircuitZoom,
+  fitDayCircuit,
+  fitDayRoute,
+  syncPinMarkerFocus,
+  zoomToPin,
+  type PinMarkerEntry,
+} from "./map/viewportSync";
 import PlaceTripActions from "./PlaceTripActions";
 
 export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
@@ -38,6 +29,13 @@ export {
   routeStyleForLeg,
   visitOrdersForDay,
 } from "./map/routeDerivations";
+export {
+  capCircuitZoom,
+  fitDayCircuit,
+  fitDayRoute,
+  syncPinMarkerFocus,
+  zoomToPin,
+} from "./map/viewportSync";
 
 // Google Maps JS isn't typed (we don't ship @types/google.maps), so we lean on
 // `any` for the map objects. The browser key is referrer-restricted server-side.
@@ -85,55 +83,6 @@ export function isInspectableMapPin(
 function isJourneyTerminal(pin: MapPin | MapAirport): boolean {
   return ["airport", "station", "bus_station", "origin"].includes(pin.kind);
 }
-
-interface PinMarkerEntry {
-  pin: MapPin;
-  marker: any;
-  normalIcon: any;
-  focusedIcon: any;
-  baseZIndex: number;
-}
-
-export function syncPinMarkerFocus(
-  entries: PinMarkerEntry[],
-  focusName?: string | null,
-  focusDay?: number,
-  focusStop?: number,
-): void {
-  entries.forEach(({ pin, marker, normalIcon, focusedIcon, baseZIndex }) => {
-    const focused = pinMatchesFocus(pin, focusName, focusDay, focusStop);
-    marker.setIcon(focused ? focusedIcon : normalIcon);
-    marker.setZIndex(focused ? 1400 : baseZIndex);
-  });
-}
-
-export function fitDayCircuit(google: any, map: any, view: MapView, dayNumber: number): boolean {
-  const pins = pinsForDayCircuit(view, dayNumber);
-  if (pins.length === 0) return false;
-  const bounds = new google.maps.LatLngBounds();
-  pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
-  map.fitBounds(bounds, 64);
-  return true;
-}
-
-export function fitDayRoute(google: any, map: any, view: MapView, dayNumber: number): boolean {
-  const pins = pinsForDayRoute(view, dayNumber);
-  if (pins.length === 0) return false;
-  const bounds = new google.maps.LatLngBounds();
-  pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
-  map.fitBounds(bounds, 64);
-  return true;
-}
-
-export function zoomToPin(map: any, pin: MapPin | MapAirport): void {
-  map.panTo({ lat: pin.lat, lng: pin.lng });
-  map.setZoom(15);
-}
-
-export function capCircuitZoom(map: any): void {
-  if ((map.getZoom() ?? 0) > 14) map.setZoom(14);
-}
-
 
 interface Props {
   /** Bump to refetch the map after the trip changes. */
@@ -355,6 +304,9 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       if (circuitZoomTimerRef.current !== null) {
         window.clearTimeout(circuitZoomTimerRef.current);
       }
+      clearMapOverlays(overlaysRef.current);
+      overlaysRef.current = [];
+      pinMarkersRef.current = [];
       mapRef.current = null;
     };
   }, []);
@@ -364,266 +316,46 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     const google = window.google;
     const map = mapRef.current;
     if (!google || !map || !view) return;
-
-    overlaysRef.current.forEach((o) => o.setMap(null));
-    overlaysRef.current = [];
-    pinMarkersRef.current = [];
-
-    const dayColor = new Map<number, string>();
-    view.days.forEach((d) => dayColor.set(d.day, d.color));
-    const visitOrderByPinId = new Map<string, number>();
-    const orderDays = activeDay == null
-      ? view.days
-      : view.days.filter((day) => day.day === activeDay);
-    orderDays.forEach((d) => {
-      visitOrdersForDay(view, d.day).forEach((order, id) => {
-        if (!visitOrderByPinId.has(id)) visitOrderByPinId.set(id, order);
-      });
-    });
-    const hotelLabelByPinId = new Map<string, string>();
-    orderDays.forEach((d) => {
-      hotelLabelsForDay(view, d.day).forEach((label, id) => {
-        if (!hotelLabelByPinId.has(id) || hotelLabelByPinId.get(id) === "H") {
-          hotelLabelByPinId.set(id, label);
-        }
-      });
-    });
-
-    const activeDayPinIds = new Set(
-      activeDay === null
-        ? []
-        : view.days.find((day) => day.day === activeDay)?.pin_ids ?? []
-    );
-    const visible = (p: MapPin) =>
-      activeDay === null || activeDayPinIds.has(p.id);
-    const bounds = new google.maps.LatLngBounds();
-    let any = false;
-
-    const pinById = new Map(view.pins.map((p) => [p.id, p] as const));
-    const currentFocus = focusRef.current;
-
-    for (const p of view.pins) {
-      if (!visible(p)) continue;
-      // Choose a marker style: hotels get a slate "H" pin (always shown),
-      // day-scheduled places get a bold numbered teardrop in their day color,
-      // and un-scheduled suggestions get a quiet dot.
-      const focused = pinMatchesFocus(p, currentFocus.name, currentFocus.day, currentFocus.stop);
-      const visitOrder = visitOrderByPinId.get(p.id);
-      const markerDay = activeDay !== null && activeDayPinIds.has(p.id) ? activeDay : p.day;
-      const iconFor = (isFocused: boolean) => {
-        if (p.kind === "hotel") return {
-          url: hotelIcon(isFocused, hotelLabelByPinId.get(p.id) ?? "H"),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
-        };
-        if (["airport", "station", "bus_station", "origin"].includes(p.kind)) return {
-          url: p.kind === "airport" ? airportIcon(isFocused) : terminalIcon(p.kind),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
-        };
-        if (markerDay && visitOrder) {
-          const color = dayColor.get(markerDay) || "#64748b";
-          return {
-            url: pinIcon(color, String(visitOrder), isFocused),
-            scaledSize: new google.maps.Size(34, 44),
-            anchor: new google.maps.Point(17, 44),
-          };
-        }
-        return {
-          url: dotIcon(p.selected ? "#0d9488" : SUGGEST_COLOR, isFocused),
-          scaledSize: new google.maps.Size(isFocused ? 24 : 18, isFocused ? 24 : 18),
-          anchor: new google.maps.Point(isFocused ? 12 : 9, isFocused ? 12 : 9),
-        };
-      };
-      const normalIcon = iconFor(false);
-      const focusedIcon = iconFor(true);
-      const baseZIndex = p.selected ? 1000 : p.day ? 600 : 400;
-      const marker = new google.maps.Marker({
-        position: { lat: p.lat, lng: p.lng },
-        map,
-        title: p.name,
-        icon: focused ? focusedIcon : normalIcon,
-        zIndex: focused ? 1400 : baseZIndex,
-      });
-      marker.addListener("click", () => {
+    const result = synchronizeMapOverlays({
+      google,
+      map,
+      view,
+      activeDay,
+      candidatePin,
+      focus: focusRef.current,
+      pendingFocus: pendingFocusRef.current,
+      pendingRouteFocus: pendingRouteFocusRef.current,
+      previousOverlays: overlaysRef.current,
+      onPinClick: (pin) => {
         setCandidatePin(null);
-        if (isInspectableMapPin(p)) {
-          const occurrence = p.occurrences.find(
-            (candidate) => candidate.day === (activeDay ?? p.day),
-          ) ?? p.occurrences[0];
+        if (isInspectableMapPin(pin)) {
+          const occurrence = pin.occurrences.find(
+            (candidate) => candidate.day === (activeDay ?? pin.day),
+          ) ?? pin.occurrences[0];
           onPinFocusRef.current?.(
-            p.kind,
-            focusNameForPin(p),
-            occurrence?.day ?? activeDay ?? p.day ?? undefined,
+            pin.kind,
+            focusNameForPin(pin),
+            occurrence?.day ?? activeDay ?? pin.day ?? undefined,
             occurrence?.stop,
           );
         }
-        if (isJourneyTerminal(p)) zoomToPin(map, p);
-        setSelectedPin(p);
-      });
-      pinMarkersRef.current.push({ pin: p, marker, normalIcon, focusedIcon, baseZIndex });
-      overlaysRef.current.push(marker);
-      bounds.extend({ lat: p.lat, lng: p.lng });
-      any = true;
-    }
-
-    if (candidatePin) {
-      const marker = new google.maps.Marker({
-        position: { lat: candidatePin.lat, lng: candidatePin.lng },
-        map,
-        title: candidatePin.name,
-        icon: {
-          url: dotIcon("#e11d48"),
-          scaledSize: new google.maps.Size(24, 24),
-          anchor: new google.maps.Point(12, 12),
-        },
-        zIndex: 1200,
-      });
-      marker.addListener("click", () => {
-        setSelectedPin(candidatePin);
-        onPinFocusRef.current?.(candidatePin.kind, candidatePin.name);
-      });
-      overlaysRef.current.push(marker);
-      bounds.extend({ lat: candidatePin.lat, lng: candidatePin.lng });
-      any = true;
-    }
-
-    // Airport pin (always shown for context).
-    if (view.airport) {
-      const a = view.airport;
-      const marker = new google.maps.Marker({
-        position: { lat: a.lat, lng: a.lng },
-        map,
-        title: a.name,
-        icon: {
-          url: airportIcon(),
-          scaledSize: new google.maps.Size(34, 44),
-          anchor: new google.maps.Point(17, 44),
-        },
-        zIndex: 200,
-      });
-      marker.addListener("click", () => {
-        zoomToPin(map, a);
-        setSelectedPin(a);
-      });
-      overlaysRef.current.push(marker);
-      // Only include airport in bounds when viewing all days (for context);
-      // when a specific day is selected, omit it so fitBounds zooms to day pins only.
-      if (activeDay === null) {
-        bounds.extend({ lat: a.lat, lng: a.lng });
-        any = true;
-      }
-    }
-
-    // Geodesic route lines connecting each day's stops in order. Local legs
-    // keep the day color; the inter-city leg uses mode-specific treatment.
-    // These remain straight arcs to avoid the billed Directions API.
-    for (const d of view.days) {
-      if (activeDay !== null && d.day !== activeDay) continue;
-      const legs = d.legs ?? [];
-      for (const leg of legs) {
-        const start = pinById.get(leg.from_pin_id);
-        const end = pinById.get(leg.to_pin_id);
-        if (!start || !end) continue;
-        const line = new google.maps.Polyline({
-          path: [
-            { lat: start.lat, lng: start.lng },
-            { lat: end.lat, lng: end.lng },
-          ],
-          geodesic: true,
-          ...routeStyleForLeg(leg, d.color, start.kind === "hotel" && end.kind === "hotel"),
-          map,
-        });
-        overlaysRef.current.push(line);
-      }
-      if (legs.length === 0) {
-        const routePins = d.pin_ids
-          .map((id) => pinById.get(id))
-          .filter((pin): pin is MapPin => !!pin);
-        for (let index = 1; index < routePins.length; index += 1) {
-          const start = routePins[index - 1];
-          const end = routePins[index];
-          const line = new google.maps.Polyline({
-            path: [
-              { lat: start.lat, lng: start.lng },
-              { lat: end.lat, lng: end.lng },
-            ],
-            geodesic: true,
-            ...routeStyleForLeg(
-              { ...d.route, from_pin_id: start.id, to_pin_id: end.id },
-              d.color,
-              start.kind === "hotel" && end.kind === "hotel",
-            ),
-            map,
-          });
-          overlaysRef.current.push(line);
-        }
-      }
-
-      if (activeDay === d.day) {
-        for (const leg of d.legs ?? []) {
-          const start = pinById.get(leg.from_pin_id);
-          const end = pinById.get(leg.to_pin_id);
-          if (!start || !end) continue;
-          const label = formatLegLabel(leg);
-          const labelOffset = leg.intercity ? 0.35 : 0.5;
-          const marker = new google.maps.Marker({
-            position: {
-              lat: start.lat + (end.lat - start.lat) * labelOffset,
-              lng: start.lng + (end.lng - start.lng) * labelOffset,
-            },
-            map,
-            clickable: false,
-            title: `${label} · ${leg.mode}`,
-            icon: {
-              url: routeLegIcon(label, d.color),
-              scaledSize: new google.maps.Size(112, 26),
-              anchor: new google.maps.Point(56, 13),
-            },
-            zIndex: 500,
-          });
-          overlaysRef.current.push(marker);
-        }
-      }
-    }
-
-    if (activeDay !== null) {
-      const hotelReturn = hotelReturnForDay(view, activeDay);
-      const activeDayView = view.days.find((day) => day.day === activeDay);
-      if (hotelReturn && activeDayView) {
-        const marker = new google.maps.Marker({
-          position: { lat: hotelReturn.pin.lat, lng: hotelReturn.pin.lng },
-          map,
-          clickable: false,
-          title: `${hotelReturn.label} to ${hotelReturn.pin.name}`,
-          icon: {
-            url: routeLegIcon(hotelReturn.label, activeDayView.color),
-            scaledSize: new google.maps.Size(112, 26),
-            anchor: new google.maps.Point(56, 52),
-          },
-          zIndex: 1100,
-        });
-        overlaysRef.current.push(marker);
-      }
-    }
-
-    // If the itinerary asked to focus a pin, zoom into it instead of fitting
-    // all bounds — and do it here so a redraw can't undo the zoom.
-    const routeDay = pendingRouteFocusRef.current;
-    const focus = pendingFocusRef.current;
-    if (focus) {
-      zoomToPin(map, focus);
-      pendingFocusRef.current = null;
-      if (isAirportTarget(focus)) {
-        setSelectedPin(focus);
-      } else {
-        setSelectedPin(focus);
-      }
-    } else if (routeDay && fitDayRoute(google, map, view, routeDay)) {
-      pendingRouteFocusRef.current = null;
-    } else if (any && !bounds.isEmpty()) {
-      map.fitBounds(bounds, 64);
-    }
+        if (isJourneyTerminal(pin)) zoomToPin(map, pin);
+        setSelectedPin(pin);
+      },
+      onCandidateClick: (pin) => {
+        setSelectedPin(pin);
+        onPinFocusRef.current?.(pin.kind, pin.name);
+      },
+      onAirportClick: (airport) => {
+        zoomToPin(map, airport);
+        setSelectedPin(airport);
+      },
+    });
+    overlaysRef.current = result.overlays;
+    pinMarkersRef.current = result.pinMarkers;
+    if (result.consumedPendingFocus) pendingFocusRef.current = null;
+    if (result.consumedPendingRouteFocus) pendingRouteFocusRef.current = null;
+    if (result.focusedPin) setSelectedPin(result.focusedPin);
   }, [view, activeDay, candidatePin]);
 
   useEffect(() => {
