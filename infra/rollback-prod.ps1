@@ -37,7 +37,7 @@ if ([string]::IsNullOrWhiteSpace($AppName)) {
     throw "No Container App found in $prodRG with prefix '$AppNamePrefix'."
   }
   if ($appNames.Count -gt 1) {
-    throw "Multiple Container Apps match prefix '$AppNamePrefix' in $prodRG: $($appNames -join ', '). Pass -AppName explicitly."
+    throw "Multiple Container Apps match prefix '$AppNamePrefix' in ${prodRG}: $($appNames -join ', '). Pass -AppName explicitly."
   }
   $prodApp = $appNames[0]
 } else {

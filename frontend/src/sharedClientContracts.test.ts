@@ -106,7 +106,7 @@ describe("shared mutation queue", () => {
   it("serializes mutations through their authoritative refresh boundary", async () => {
     const queue = new SerializedMutationQueue();
     const events: string[] = [];
-    let releaseFirst = () => undefined;
+    let releaseFirst: () => void = () => undefined;
     const firstBlocked = new Promise<void>((resolve) => {
       releaseFirst = resolve;
     });
