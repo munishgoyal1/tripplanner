@@ -67,8 +67,9 @@ export function isIntercityTravel(kind: string, name: string): boolean {
   if (kind === "flight") return true;
   if (kind === "transport") return true;
   const normalizedName = name.trim().toLowerCase();
-  return /^(?:drive|driving)(?::|\s).+\s+to\s+.+/.test(normalizedName)
-    || /^.+\s+to\s+.+\s+(?:drive|driving)$/.test(normalizedName)
+  const directionalGroundTravel = /\b(?:drive|driving|car|road (?:journey|transfer))\b/.test(normalizedName)
+    && /\bto\b|->|→/.test(normalizedName);
+  return directionalGroundTravel
     || /^(?:toy\s+train|train):?\s+.+\s+to\s+.+/.test(normalizedName);
 }
 

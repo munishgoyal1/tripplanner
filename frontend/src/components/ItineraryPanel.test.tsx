@@ -390,6 +390,9 @@ describe("ItineraryPanel", () => {
         ...itinerary.days[0],
         stops: [
           { ...baseStop, name: "Drive: Bagdogra to Gangtok", kind: "other" },
+          { ...baseStop, name: "Car ride from Gangtok to Lachung", kind: "other" },
+          { ...baseStop, name: "Private car: Lachung to Gangtok", kind: "other" },
+          { ...baseStop, name: "Road transfer from Gangtok to Darjeeling", kind: "other" },
           { ...baseStop, name: "Toy Train: Darjeeling to Ghum", kind: "other" },
           { ...baseStop, name: "Marine Drive", kind: "attraction" },
         ],
@@ -399,9 +402,15 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel onStopFocus={onStopFocus} />);
 
     fireEvent.click((await screen.findByText("Drive: Bagdogra to Gangtok")).closest("button")!);
+    fireEvent.click(screen.getByText("Car ride from Gangtok to Lachung").closest("button")!);
+    fireEvent.click(screen.getByText("Private car: Lachung to Gangtok").closest("button")!);
+    fireEvent.click(screen.getByText("Road transfer from Gangtok to Darjeeling").closest("button")!);
     fireEvent.click(screen.getByText("Toy Train: Darjeeling to Ghum").closest("button")!);
     expect(onStopFocus).toHaveBeenNthCalledWith(1, "other", "Drive: Bagdogra to Gangtok", 1, 1);
-    expect(onStopFocus).toHaveBeenNthCalledWith(2, "other", "Toy Train: Darjeeling to Ghum", 1, 2);
+    expect(onStopFocus).toHaveBeenNthCalledWith(2, "other", "Car ride from Gangtok to Lachung", 1, 2);
+    expect(onStopFocus).toHaveBeenNthCalledWith(3, "other", "Private car: Lachung to Gangtok", 1, 3);
+    expect(onStopFocus).toHaveBeenNthCalledWith(4, "other", "Road transfer from Gangtok to Darjeeling", 1, 4);
+    expect(onStopFocus).toHaveBeenNthCalledWith(5, "other", "Toy Train: Darjeeling to Ghum", 1, 5);
     expect(screen.getByText("Marine Drive").closest("button")).toHaveAttribute("title", "Show photos & reviews");
   });
 

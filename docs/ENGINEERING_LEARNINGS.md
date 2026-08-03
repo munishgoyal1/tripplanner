@@ -20,6 +20,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Persisted mode fields and display names are independent evidence. Normalize them
   once before deriving terminal expansion, clickability, or map edges; requiring a
   magic `Drive:` prefix makes valid saved car legs disappear from interaction.
+- Parse transport wording before splitting route endpoints. Otherwise labels such
+  as `Drive from A to B` create a fake `Drive from A` origin and only appear to
+  work on days where a carried hotel later happens to replace that bad endpoint.
 - Transfer chronology crosses day boundaries. If a later transfer omits its origin
   stay, carry the prior active hotel into both itinerary and map derivation rather
   than inventing a city origin in one pane or dropping the endpoint in the other.

@@ -771,6 +771,30 @@ def _trip_day_count(trip: dict[str, Any]) -> int:
     return 0
 
 
+def _transport_route_endpoints(name: str) -> tuple[str, str] | None:
+    route = str(name or "").strip()
+    route = re.sub(
+        r"^(?:(?:drive|driving|road journey|road transfer|transfer|private car|"
+        r"car(?: ride| transfer)?|taxi|flight|toy train|train|rail|bus)(?::|\s+))+(?:from\s+)?",
+        "",
+        route,
+        flags=re.I,
+    )
+    route = re.sub(
+        r"\s+(?:drive|driving|road journey|road transfer|by (?:private )?car|by road)$",
+        "",
+        route,
+        flags=re.I,
+    )
+    endpoints = re.split(r"\s+(?:to|->|→)\s+", route, maxsplit=1, flags=re.I)
+    if len(endpoints) != 2:
+        return None
+    origin, destination = (endpoint.strip() for endpoint in endpoints)
+    if not origin or not destination:
+        return None
+    return origin, destination
+
+
 def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
     text = str(name or "").strip()
     lowered = text.lower()
@@ -785,11 +809,10 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
             return [("bus_station", text)]
         return []
 
-    route = text.split(":", 1)[-1].strip()
-    endpoints = re.split(r"\s+(?:to|->)\s+", route, maxsplit=1, flags=re.I)
-    if len(endpoints) != 2:
+    endpoints = _transport_route_endpoints(text)
+    if not endpoints:
         return []
-    origin, destination = (endpoint.strip() for endpoint in endpoints)
+    origin, destination = endpoints
     if kind == "flight":
         origin = origin if "airport" in origin.lower() else f"{origin} Airport"
         destination = (
@@ -818,14 +841,12 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
         return "Train"
     if "bus" in lowered:
         return "Bus"
-    natural_drive = (
-        lowered.startswith(("drive ", "driving "))
-        or bool(re.search(r"\bto\b.+\b(?:drive|driving)\b$", lowered))
+    drive_terms = r"drive|driving|car|road (?:journey|transfer)"
+    directional_drive = bool(
+        re.search(rf"\b(?:{drive_terms})\b", lowered)
+        and (re.search(r"\bto\b|->|→", lowered) or lowered.startswith(("drive ", "driving ")))
     )
-    if natural_drive or any(
-        token in lowered
-        for token in ("drive:", "car:", "car transfer", "road transfer", "private car")
-    ):
+    if directional_drive:
         return "Drive"
     return None
 

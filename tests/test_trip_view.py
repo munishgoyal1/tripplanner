@@ -1951,6 +1951,35 @@ def test_transfer_day_starts_from_prior_rameswaram_hotel(
     assert day3["legs"][0]["intercity"] is True
 
 
+@pytest.mark.parametrize(
+    ("name", "origin", "destination"),
+    [
+        ("Drive: Bagdogra to Gangtok", "Bagdogra", "Gangtok"),
+        ("Drive from Gangtok to Lachung", "Gangtok", "Lachung"),
+        ("Bagdogra to Gangtok drive", "Bagdogra", "Gangtok"),
+        ("Car ride from Bagdogra to Gangtok", "Bagdogra", "Gangtok"),
+        ("Private car: Lachung to Gangtok", "Lachung", "Gangtok"),
+        ("Road transfer from Gangtok to Darjeeling", "Gangtok", "Darjeeling"),
+        ("Transfer from Pelling to Darjeeling by car", "Pelling", "Darjeeling"),
+    ],
+)
+def test_drive_labels_share_transport_normalization_and_route_endpoints(
+    name: str,
+    origin: str,
+    destination: str,
+) -> None:
+    assert trip_view._normalized_stop_kind(name, "other") == "transport"
+    assert trip_view._transport_route_endpoints(name) == (origin, destination)
+    assert trip_view._transport_terminal_refs(name, "transport") == [("origin", origin)]
+
+
+def test_destination_only_drive_remains_transport_without_inventing_an_origin() -> None:
+    name = "Drive to Darjeeling"
+    assert trip_view._normalized_stop_kind(name, "other") == "transport"
+    assert trip_view._transport_route_endpoints(name) is None
+    assert trip_view._transport_terminal_refs(name, "transport") == []
+
+
 def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -2072,7 +2101,7 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     assert day5["pin_ids"] == [lachung_pins[0]["id"]]
     for day_number in (1, 8):
         day = next(candidate for candidate in map_view["days"] if candidate["day"] == day_number)
-        assert day["legs"] and any(leg["intercity"] for leg in day["legs"])
+        assert day["legs"] and all(leg["intercity"] for leg in day["legs"])
 
 
 def test_arrival_day_local_outing_returns_to_destination_hotel(

@@ -89,6 +89,9 @@ vi.mock("./components/ItineraryPanel", () => ({
       <button type="button" onClick={() => onStopMap?.("flight", "Flight: Bengaluru to Udaipur", 1, 2)}>
         Map inter-city flight
       </button>
+      <button type="button" onClick={() => onStopFocus("other", "Car ride from Gangtok to Lachung", 4, 2)}>
+        Focus legacy car drive
+      </button>
       <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
       <button type="button" onClick={() => onAllDaysMap?.()}>Show all days from snapshot</button>
     </div>
@@ -512,6 +515,10 @@ describe("App responsive workspace", () => {
     const firstRouteToken = screen.getByTestId("map-panel").getAttribute("data-route-token");
     fireEvent.click(screen.getByRole("button", { name: "Map inter-city flight" }));
     expect(screen.getByTestId("map-panel")).not.toHaveAttribute("data-route-token", firstRouteToken);
+
+    fireEvent.click(screen.getByRole("button", { name: "Focus legacy car drive" }));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-route-day", "4");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
   });
 
   it("refreshes itinerary and map as soon as a planning turn completes", async () => {

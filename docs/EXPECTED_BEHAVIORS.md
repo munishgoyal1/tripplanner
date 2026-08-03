@@ -146,7 +146,10 @@ or the origin-local circuit when no substantive destination stop remains. All
 road-transfer days retain the full origin-to-destination drive in day focus so
 the starting city or saved home area, on-route scenic or meal waypoints, and
 destination stay remain visible. Every waypoint connector retains the same
-dotted Drive treatment rather than reverting to a local taxi leg. All
+dotted Drive treatment rather than reverting to a local taxi leg. Drive, car,
+private-car, road-journey, and road-transfer labels with directional
+endpoints all normalize to the same clickable route action; display wording
+must not determine whether the route works. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
@@ -178,6 +181,9 @@ or replace destination-local framing for ordinary day-header focus.
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `derives aggregate day context instead of a stale place selection`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_drive_labels_share_transport_normalization_and_route_endpoints`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
 
 ### EB-ITIN-001 - Read a multi-city transition day chronologically
 
