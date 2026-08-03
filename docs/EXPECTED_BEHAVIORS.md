@@ -231,7 +231,21 @@ an ungrounded route nor inter-city travel after the hotel invents one.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
 
-### EB-ITIN-005 - Include complete round-trip transport
+### EB-ITIN-005 - Keep daily hotels synchronized across views
+
+**Trigger:** View a non-transfer day whose itinerary carries forward the active
+hotel while its prose mentions other selected hotels as alternatives.
+
+**Expected:** Itinerary and Map use the same rendered hotel for that day's route.
+Prose-only hotel alternatives do not replace or join the active stay. A genuine
+multi-hotel transfer day keeps its distinct hotel endpoints.
+
+**Executable proof:**
+
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_uses_rendered_stay_over_prose_hotel_alternatives`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_carries_forward_hotel_after_transition`
+
+### EB-ITIN-006 - Include complete round-trip transport
 
 **Trigger:** Create or enrich a trip whose origin differs from its destination,
 including a nearby trip such as Bangalore to Mysore.

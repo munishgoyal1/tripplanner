@@ -958,6 +958,70 @@ def test_map_view_carries_forward_hotel_after_transition(
     ]
 
 
+def test_map_view_uses_rendered_stay_over_prose_hotel_alternatives(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Hyatt Place Rameswaram": (9.2833, 79.3129),
+        "Daiwik Hotels Rameswaram": (9.2868, 79.3120),
+        "The Residency Towers Rameswaram": (9.2890, 79.3105),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Rameswaram",
+        "selected_hotels": [
+            {"name": "Hyatt Place Rameswaram"},
+            {"name": "Daiwik Hotels Rameswaram"},
+            {"name": "The Residency Towers Rameswaram"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [{"name": "Hyatt Place Rameswaram", "kind": "hotel"}],
+            },
+            {
+                "day": 2,
+                "plan": (
+                    "Continue from Hyatt; Daiwik Hotels Rameswaram and The Residency "
+                    "Towers Rameswaram are nearby alternatives."
+                ),
+            },
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+    view = trip_view.build_map_view(trip)
+
+    itinerary_day2 = next(day for day in itinerary["days"] if day["day"] == 2)
+    assert {
+        stop["name"] for stop in itinerary_day2["stops"] if stop["kind"] == "hotel"
+    } == {"Hyatt Place Rameswaram"}
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    day2 = next(day for day in view["days"] if day["day"] == 2)
+    hotel_names = {
+        pins_by_id[pin_id]["name"]
+        for pin_id in day2["pin_ids"]
+        if pins_by_id[pin_id]["kind"] == "hotel"
+    }
+    assert hotel_names == {"Hyatt Place Rameswaram"}
+
+
 def test_map_view_includes_restaurant_in_day_circuit(_map_geo: None) -> None:
     trip = {
         **SAMPLE_TRIP,
