@@ -19,7 +19,6 @@ from __future__ import annotations
 import math
 import re
 from datetime import date
-from difflib import SequenceMatcher
 from typing import Any
 from urllib.parse import quote
 
@@ -39,14 +38,42 @@ from tripplanner.web.budget import (  # noqa: F401
     traveler_count,
 )
 
-# Transport-name helpers live in ``transport`` (tech-debt #7), a leaf module
-# shared by the gallery and map-pin builders; re-exported here for callers/tests.
-from tripplanner.web.transport import (  # noqa: F401
-    _canonical_transport_name,
-    _intercity_transfer_mode,
-    _normalized_stop_kind,
-    _transport_route_endpoints,
-    _transport_terminal_refs,
+# Gallery selection and itinerary occurrence indexing live in ``gallery``
+# (tech-debt #7), a leaf module; re-exported here for callers/tests.
+from tripplanner.web.gallery import (  # noqa: F401
+    _FALLBACK_ATTRACTIONS,
+    _FALLBACK_HOTELS,
+    _MAX_GALLERY_ITEMS,
+    _itinerary_names,
+    _place_occurrence_index,
+    _place_occurrences,
+    _planned_place_names,
+    _selected_names,
+    _terminal_occurrence_index,
+    _terminal_occurrences,
+    itinerary_items,
+)
+
+# Map pin construction and per-day route estimation live in ``map_pins``
+# (tech-debt #7), a leaf module; re-exported here for callers/tests.
+from tripplanner.web.map_pins import (  # noqa: F401
+    _DAY_COLORS,
+    _MAX_OVERVIEW_ATTRACTIONS,
+    _airport_pin,
+    _day_color,
+    _day_for_place,
+    _hotel_identity_matches,
+    _local_route_stop_indexes,
+    _map_pins,
+    _maps_browser_key,
+    _normalize_map_stops,
+    _provider_name_matches,
+    _resolve_road_circuit_pin_ids,
+    _route_circuit_id,
+    _route_legs_for_day,
+    _route_stats_for_day_coords,
+    _trip_day_count,
+    build_map_url,
 )
 
 # Route-metric and stop-timing helpers live in ``schedule`` (tech-debt #7), a
@@ -68,11 +95,18 @@ from tripplanner.web.schedule import (  # noqa: F401
     _stop_duration_display,
 )
 
-_MAX_GALLERY_ITEMS = 10
+# Transport-name helpers live in ``transport`` (tech-debt #7), a leaf module
+# shared by the gallery and map-pin builders; re-exported here for callers/tests.
+from tripplanner.web.transport import (  # noqa: F401
+    _canonical_transport_name,
+    _intercity_transfer_mode,
+    _normalized_stop_kind,
+    _transport_route_endpoints,
+    _transport_terminal_refs,
+)
+
 _MAX_PHOTOS_PER_ITEM = 3
 _MAX_REVIEWS_PER_ITEM = 2
-_FALLBACK_HOTELS = 2
-_FALLBACK_ATTRACTIONS = 8
 
 # Lab 13 — paged destination guide.
 _BROWSE_KINDS = ("hotel", "attraction", "restaurant")
@@ -159,125 +193,6 @@ def family_pills(prefs: dict[str, Any] | None) -> list[str]:
             out.append(f"\u267f {a.title()}")
 
     return out
-
-
-def itinerary_items(
-    trip: dict[str, Any] | None, focus: dict[str, Any] | None
-) -> list[dict[str, str]]:
-    """Return ``[{kind, name}, ...]`` for the things to show.
-
-    User's selected hotels and activities come first, followed by the destination's top hotels &
-    attractions that aren't already selected — so adding something to the trip
-    never hides the rest of the places you can still browse.
-
-    When focused, keep the broader list but move the focused place to the top
-    so the details pane can still surface alternatives for quick edits.
-    """
-    if not trip:
-        return []
-
-    items: list[dict[str, str]] = []
-    seen: set[tuple[str, str]] = set()
-
-    def _add(kind: str, name: str) -> None:
-        key = (kind, name.strip().lower())
-        if name and key not in seen:
-            seen.add(key)
-            items.append({"kind": kind, "name": name})
-
-    for h in trip.get("selected_hotels") or []:
-        if isinstance(h, dict) and h.get("name"):
-            _add("hotel", str(h["name"]))
-    for a in trip.get("selected_activities") or []:
-        if isinstance(a, dict) and a.get("name"):
-            _add("attraction", str(a["name"]))
-
-    for day in trip.get("day_wise_itinerary") or []:
-        if not isinstance(day, dict):
-            continue
-        for stop in day.get("stops") or []:
-            if isinstance(stop, dict):
-                name = str(stop.get("name") or "").strip()
-                kind = str(stop.get("kind") or "attraction").strip().lower()
-            else:
-                name = str(stop or "").strip()
-                kind = "attraction"
-            if name:
-                _add(kind or "attraction", name)
-
-    destination = str(trip.get("destination") or "").strip()
-    if destination and len(items) < _MAX_GALLERY_ITEMS:
-        for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
-            _add("hotel", name)
-        remaining = max(0, _MAX_GALLERY_ITEMS - len(items))
-        for name in places_cache.top_places(
-            destination, "attraction", n=min(_FALLBACK_ATTRACTIONS, remaining)
-        ):
-            _add("attraction", name)
-
-    if focus and focus.get("name"):
-        fk = str(focus.get("kind") or "attraction").strip().lower() or "attraction"
-        fn = str(focus.get("name") or "").strip()
-        if fn:
-            # Ensure focus target exists and appears first.
-            _add(fk, fn)
-            key = (fk, fn.lower())
-            items.sort(key=lambda it: 0 if (it["kind"], it["name"].strip().lower()) == key else 1)
-
-    return items
-
-
-def _selected_names(trip: dict[str, Any] | None, kind: str) -> set[str]:
-    if not trip:
-        return set()
-    key = "selected_hotels" if kind == "hotel" else "selected_activities"
-    out: set[str] = set()
-    for it in trip.get(key) or []:
-        if isinstance(it, dict) and it.get("name"):
-            out.add(str(it["name"]).strip().lower())
-    return out
-
-
-def _itinerary_names(trip: dict[str, Any] | None) -> set[str]:
-    """Lowercased names of every place already woven into the day-by-day
-    itinerary. A place can be part of the itinerary without sitting in the
-    ``selected_*`` buckets (e.g. the agent placed it directly), and the UI
-    should treat those as already in the trip — showing "Remove", not "Add".
-    """
-    if not trip:
-        return set()
-    out: set[str] = set()
-    for day in trip.get("day_wise_itinerary") or []:
-        if not isinstance(day, dict):
-            continue
-        stops = day.get("stops")
-        if not isinstance(stops, list):
-            continue
-        for s in stops:
-            if isinstance(s, dict):
-                name = str(s.get("name") or "").strip()
-            else:
-                name = str(s or "").strip()
-            if name:
-                out.add(name.lower())
-    return out
-
-
-def _planned_place_names(trip: dict[str, Any]) -> set[str]:
-    names = _selected_names(trip, "attraction")
-    for day in trip.get("day_wise_itinerary") or []:
-        if not isinstance(day, dict):
-            continue
-        for stop in day.get("stops") or []:
-            if isinstance(stop, dict):
-                kind = str(stop.get("kind") or "attraction").strip().lower()
-                name = str(stop.get("name") or "").strip()
-            else:
-                kind = "attraction"
-                name = str(stop or "").strip()
-            if kind in {"attraction", "activity", "meal", "restaurant"} and name:
-                names.add(name.lower())
-    return names
 
 
 def _weather_condition(summary: str) -> str:
@@ -451,82 +366,6 @@ def _build_item(
         "reviews": reviews,
         "occurrences": occurrences or [],
     }
-
-
-def _place_occurrence_index(trip: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    """Map each lowercased stop name to its ordered occurrences.
-
-    Built once per view so per-item / per-pin lookups avoid rescanning the
-    whole itinerary.
-    """
-    index: dict[str, list[dict[str, Any]]] = {}
-    for day_index, entry in enumerate(trip.get("day_wise_itinerary") or []):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else day_index + 1
-        for stop_index, raw_stop in enumerate(entry.get("stops") or []):
-            stop_name = raw_stop.get("name") if isinstance(raw_stop, dict) else raw_stop
-            index.setdefault(str(stop_name or "").strip().lower(), []).append(
-                {
-                    "day": day_num,
-                    "stop": stop_index + 1,
-                    "time": str(raw_stop.get("time") or "").strip()
-                    if isinstance(raw_stop, dict)
-                    else "",
-                }
-            )
-    return index
-
-
-def _place_occurrences(
-    trip: dict[str, Any],
-    name: str,
-    index: dict[str, list[dict[str, Any]]] | None = None,
-) -> list[dict[str, Any]]:
-    idx = index if index is not None else _place_occurrence_index(trip)
-    return [dict(occurrence) for occurrence in idx.get(name.strip().lower(), [])]
-
-
-def _terminal_occurrence_index(trip: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    """Map each lowercased transport-terminal name to its ordered occurrences."""
-    index: dict[str, list[dict[str, Any]]] = {}
-    for day_index, entry in enumerate(trip.get("day_wise_itinerary") or []):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else day_index + 1
-        for stop_index, raw_stop in enumerate(entry.get("stops") or [], start=1):
-            if not isinstance(raw_stop, dict):
-                continue
-            refs = _transport_terminal_refs(
-                str(raw_stop.get("name") or ""),
-                str(raw_stop.get("kind") or "").strip().lower(),
-            )
-            if not refs:
-                continue
-            occurrence = {
-                "day": day_num,
-                "stop": stop_index,
-                "time": str(raw_stop.get("time") or "").strip(),
-            }
-            seen: set[str] = set()
-            for _, terminal_name in refs:
-                key = terminal_name.strip().lower()
-                if key in seen:
-                    continue
-                seen.add(key)
-                index.setdefault(key, []).append(occurrence)
-    return index
-
-
-def _terminal_occurrences(
-    trip: dict[str, Any],
-    name: str,
-    index: dict[str, list[dict[str, Any]]] | None = None,
-) -> list[dict[str, Any]]:
-    idx = index if index is not None else _terminal_occurrence_index(trip)
-    return [dict(occurrence) for occurrence in idx.get(name.strip().lower(), [])]
 
 
 def browse_kind(kind: str | None) -> str:
@@ -967,538 +806,7 @@ def build_view(
     }
 
 
-_MAX_OVERVIEW_ATTRACTIONS = 6
 _MAX_NEWS_ITEMS = 4
-
-
-def build_map_url(destination: str, highlights: list[str] | None = None) -> str:
-    """Return a Google Maps Embed iframe URL for ``destination``.
-
-    Returns an empty string when ``GOOGLE_PLACES_API_KEY`` is not configured —
-    the frontend simply hides the map in that case. Uses the Embed API "place"
-    mode keyed on a free-text query (destination + first highlight) which
-    needs no Place IDs and works for any city/country string.
-    """
-    destination = (destination or "").strip()
-    if not destination:
-        return ""
-    try:
-        from tripplanner.config import get_settings
-
-        key = get_settings().google_places_api_key
-    except Exception:
-        key = ""
-    if not key:
-        return ""
-    query = destination
-    if highlights:
-        first = next((h for h in highlights if h), "")
-        if first:
-            query = f"{first}, {destination}"
-    return (
-        "https://www.google.com/maps/embed/v1/place"
-        f"?key={quote(key, safe='')}&q={quote(query, safe='')}"
-    )
-
-
-# Day-pin palette — distinct, reasonably color-blind-safe hues, cycled per day.
-_DAY_COLORS = (
-    "#e11d48",  # coral (brand)
-    "#0d9488",  # teal (accent)
-    "#2563eb",  # blue
-    "#d97706",  # amber
-    "#7c3aed",  # violet
-    "#db2777",  # pink
-    "#059669",  # emerald
-    "#0891b2",  # cyan
-)
-
-
-def _maps_browser_key() -> str:
-    try:
-        from tripplanner.config import get_settings
-
-        return get_settings().google_maps_browser_key or ""
-    except Exception:
-        return ""
-
-
-def _day_color(day: int) -> str:
-    return _DAY_COLORS[(day - 1) % len(_DAY_COLORS)]
-
-
-def _day_for_place(name: str, itinerary: list[Any]) -> int | None:
-    """Return the 1-based day number a place belongs to, or ``None``.
-
-    "Both" strategy: prefer a structured ``stops`` list on a day entry; fall
-    back to scanning the free-form ``plan`` prose for the place name.
-    """
-    needle = (name or "").strip().lower()
-    if not needle:
-        return None
-    plan_only_entries: list[tuple[int, dict[str, Any]]] = []
-    for idx, entry in enumerate(itinerary or []):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        stops = entry.get("stops")
-        if isinstance(stops, list):
-            for s in stops:
-                s_name = s.get("name") if isinstance(s, dict) else s
-                if s_name and needle in str(s_name).strip().lower():
-                    return day_num
-            continue
-        plan_only_entries.append((day_num, entry))
-    for day_num, entry in plan_only_entries:
-        plan_text = str(entry.get("plan") or "").lower()
-        if plan_text and needle in plan_text:
-            return day_num
-    return None
-
-
-def _trip_day_count(trip: dict[str, Any]) -> int:
-    """Number of days in the trip, for fallback day-clustering on the map.
-
-    Prefers the structured itinerary length, then the date span, else 0.
-    """
-    itin = trip.get("day_wise_itinerary") or []
-    if itin:
-        return len(itin)
-    dep = str(trip.get("departure_date") or "").strip()
-    ret = str(trip.get("return_date") or "").strip()
-    try:
-        from datetime import date
-
-        nights = (date.fromisoformat(ret) - date.fromisoformat(dep)).days
-        if nights > 0:
-            return nights
-    except (ValueError, TypeError):
-        pass
-    return 0
-
-
-def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
-    transfer_indexes = [
-        index
-        for index, stop in enumerate(stops)
-        if isinstance(stop, dict)
-        and _intercity_transfer_mode(
-            str(stop.get("name") or ""), str(stop.get("kind") or "")
-        )
-    ]
-    if not transfer_indexes:
-        return set(range(1, len(stops) + 1))
-
-    first_after_transfer = transfer_indexes[-1] + 1
-    after_transfer = set(range(first_after_transfer + 1, len(stops) + 1))
-    has_destination_stop = any(
-        isinstance(stop, dict)
-        and str(stop.get("kind") or "").strip().lower()
-        not in {"airport", "station", "bus_station", "flight", "transport"}
-        for stop in stops[first_after_transfer:]
-    )
-    if has_destination_stop:
-        return after_transfer
-    return set(range(1, transfer_indexes[0] + 1))
-
-
-def _provider_name_matches(source_name: str, provider_name: str) -> bool:
-    def _tokens(value: str) -> set[str]:
-        return {
-            token
-            for token in re.findall(r"[a-z0-9]+", value.lower())
-            if len(token) > 2
-        }
-
-    source_tokens = _tokens(source_name)
-    provider_tokens = _tokens(provider_name)
-    if not source_tokens or not provider_tokens:
-        return False
-    ignored = {"airport", "hotel", "resort", "station", "stand", "temple"}
-    source_identity = source_tokens - ignored or source_tokens
-    provider_identity = provider_tokens - ignored or provider_tokens
-    return any(
-        SequenceMatcher(None, source_token, provider_token).ratio() >= 0.75
-        for source_token in source_identity
-        for provider_token in provider_identity
-    )
-
-
-def _hotel_identity_matches(left: str, right: str) -> bool:
-    def _identity_tokens(name: str) -> set[str]:
-        normalized = re.sub(r"\brameshwaram\b", "rameswaram", name, flags=re.IGNORECASE)
-        tokens = set(re.findall(r"[a-z0-9]+", normalized.lower()))
-        return tokens - {"hotel", "hotels", "resort", "resorts"}
-
-    left_tokens = _identity_tokens(left)
-    right_tokens = _identity_tokens(right)
-    if not left_tokens or not right_tokens:
-        return False
-    return left_tokens <= right_tokens or right_tokens <= left_tokens
-
-
-def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
-    """Geocoded pins for selected items + destination top-places (suggestions)."""
-    itinerary = trip.get("day_wise_itinerary") or []
-    selected = {
-        "hotel": _selected_names(trip, "hotel"),
-        "attraction": _selected_names(trip, "attraction"),
-    }
-    itinerary_names = _itinerary_names(trip)
-
-    # Structured itinerary stops are authoritative for what should appear on
-    # the map and in which order/day. Keep an explicit day map so duplicated
-    # names across sources don't lose their itinerary day assignment.
-    explicit_day_by_name: dict[str, int] = {}
-
-    # (kind, name) in display order: user picks first, then suggestions.
-    refs: list[tuple[str, str]] = []
-    seen: set[str] = set()
-
-    def _add(kind: str, name: str) -> None:
-        key = (name or "").strip().lower()
-        if kind == "hotel" and any(
-            existing_kind == "hotel" and _hotel_identity_matches(existing_name, name)
-            for existing_kind, existing_name in refs
-        ):
-            return
-        if name and key not in seen:
-            seen.add(key)
-            refs.append((kind, name))
-
-    def _infer_kind_from_name(name: str) -> str:
-        n = (name or "").strip().lower()
-        if n in selected["hotel"]:
-            return "hotel"
-        if n in selected["attraction"]:
-            return "attraction"
-        return "attraction"
-
-    # 1) Structured itinerary stops first, preserving day/stop order so route
-    #    lines follow the actual itinerary sequence.
-    for idx, entry in enumerate(itinerary):
-        if not isinstance(entry, dict):
-            continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        stops = entry.get("stops")
-        if not isinstance(stops, list):
-            continue
-        has_route_anchor = False
-        for s in stops:
-            if isinstance(s, dict):
-                name = str(s.get("name") or "").strip()
-                kind = str(s.get("kind") or "").strip().lower()
-                mode_name = str(s.get("mode") or "")
-                name = _canonical_transport_name(name, mode_name)
-                kind = _normalized_stop_kind(name, kind, mode_name)
-            else:
-                name = str(s or "").strip()
-                kind = ""
-            if not name:
-                continue
-            terminal_refs = _transport_terminal_refs(name, kind)
-            if terminal_refs:
-                if _intercity_transfer_mode(name, kind) == "Drive" and has_route_anchor:
-                    continue
-                for terminal_kind, terminal_name in terminal_refs:
-                    _add(terminal_kind, terminal_name)
-                    explicit_day_by_name.setdefault(terminal_name.lower(), day_num)
-                continue
-            if kind in {"flight", "transport"}:
-                continue
-            if kind not in {"hotel", "attraction", "meal", "restaurant"}:
-                kind = _infer_kind_from_name(name)
-            _add(kind, name)
-            explicit_day_by_name.setdefault(name.lower(), day_num)
-            has_route_anchor = True
-
-    # 2) User selected places (ensure presence even if stops list is absent).
-    for h in trip.get("selected_hotels") or []:
-        if isinstance(h, dict) and h.get("name"):
-            _add("hotel", str(h["name"]))
-    for a in trip.get("selected_activities") or []:
-        if isinstance(a, dict) and a.get("name"):
-            _add("attraction", str(a["name"]))
-
-    # 3) Destination suggestions to fill context around the chosen items.
-    if destination and len(refs) < 3:
-        for name in places_cache.top_places(destination, "hotel", n=_FALLBACK_HOTELS):
-            _add("hotel", name)
-        for name in places_cache.top_places(
-            destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
-        ):
-            _add("attraction", name)
-
-    places_cache.prefetch(
-        [n for _, n in refs], destination, max_photos=1, with_reviews=False
-    )
-
-    place_occurrences = _place_occurrence_index(trip)
-    pins: list[dict[str, Any]] = []
-    for i, (kind, name) in enumerate(refs):
-        info = places_cache.get_details(name, destination) or {}
-        provider_name = str(info.get("name") or "").strip()
-        if (
-            provider_name
-            and kind not in {"airport", "station", "bus_station"}
-            and not _provider_name_matches(name, provider_name)
-        ):
-            continue
-        lat, lng = info.get("lat"), info.get("lng")
-        if lat is None or lng is None:
-            continue
-        photos = places_cache.get_photos(name, destination, max_photos=1)
-        is_sel = (
-            name.strip().lower() in selected.get(kind, set())
-            or name.strip().lower() in itinerary_names
-        )
-        pins.append(
-            {
-                "id": f"p{i}",
-                "name": name,
-                "provider_name": provider_name or None,
-                "_source_name": name,
-                "kind": kind,
-                "selected": is_sel,
-                "day": explicit_day_by_name.get(name.strip().lower())
-                or _day_for_place(name, itinerary),
-                "lat": lat,
-                "lng": lng,
-                "rating": info.get("rating"),
-                "address": info.get("address") or "",
-                "photo": photos[0] if photos else None,
-                "occurrences": _place_occurrences(trip, name, place_occurrences),
-            }
-        )
-
-    # Fallback day-clustering: any SELECTED attraction the itinerary text didn't
-    # explicitly place still deserves a day so it shows a bold, numbered marker
-    # and joins a per-day route line. Spread them evenly across the trip's days,
-    # continuing after whatever the itinerary already assigned.
-    day_count = _trip_day_count(trip)
-    if day_count > 0:
-        used_days = sorted({p["day"] for p in pins if p["day"]})
-        cursor = 0
-        for p in pins:
-            if p["kind"] != "attraction" or not p["selected"] or p["day"]:
-                continue
-            # Prefer days that have nothing assigned yet, then round-robin.
-            target = None
-            for d in range(1, day_count + 1):
-                if d not in used_days:
-                    target = d
-                    used_days.append(d)
-                    break
-            if target is None:
-                target = (cursor % day_count) + 1
-                cursor += 1
-            p["day"] = target
-    return pins
-
-
-
-def _airport_pin(destination: str) -> dict[str, Any] | None:
-    """A single 'arrival airport' pin for Day-1 context, if geocodable."""
-    if not destination:
-        return None
-    info = places_cache.get_details(f"{destination} International Airport", destination)
-    if not info or info.get("lat") is None or info.get("lng") is None:
-        return None
-    return {
-        "id": "airport",
-        "name": info.get("name") or f"{destination} Airport",
-        "kind": "airport",
-        "lat": info["lat"],
-        "lng": info["lng"],
-    }
-
-
-def _route_legs_for_day(
-    pin_ids: list[str],
-    pin_by_id: dict[str, dict[str, Any]],
-    intercity_modes: dict[tuple[str, str], str] | None = None,
-    route_circuit_ids: dict[tuple[str, str], str] | None = None,
-    transfer_metrics: dict[str, dict[str, float]] | None = None,
-) -> list[dict[str, Any]]:
-    legs: list[dict[str, Any]] = []
-    for from_id, to_id in zip(pin_ids, pin_ids[1:]):
-        start = pin_by_id.get(from_id) or {}
-        end = pin_by_id.get(to_id) or {}
-        start_coords = (start.get("lat"), start.get("lng"))
-        end_coords = (end.get("lat"), end.get("lng"))
-        if not all(isinstance(value, (int, float)) for value in (*start_coords, *end_coords)):
-            continue
-        distance = _haversine_km(
-            (float(start_coords[0]), float(start_coords[1])),
-            (float(end_coords[0]), float(end_coords[1])),
-        )
-        intercity_mode = (intercity_modes or {}).get((from_id, to_id))
-        if intercity_mode:
-            speed = _INTERCITY_SPEED_KMH[intercity_mode]
-            duration = int(round((distance / speed) * 60))
-            metrics = {
-                "distance_km": round(distance, 1),
-                "duration_min": duration,
-                "mode": intercity_mode,
-                "distance_display": f"{distance:.1f} km",
-                "duration_display": _route_duration_display(duration),
-            }
-            metrics["intercity"] = True
-        else:
-            metrics = _route_stats_for_distance(
-                distance,
-                from_name=str(start.get("name") or ""),
-                to_name=str(end.get("name") or ""),
-            )
-        circuit_id = (route_circuit_ids or {}).get((from_id, to_id))
-        legs.append({
-            "from_pin_id": from_id,
-            "to_pin_id": to_id,
-            **metrics,
-            **({"route_circuit_id": circuit_id} if circuit_id else {}),
-        })
-
-    for circuit_id, saved_metrics in (transfer_metrics or {}).items():
-        _apply_saved_transfer_metrics(
-            [leg for leg in legs if leg.get("route_circuit_id") == circuit_id],
-            saved_metrics,
-        )
-    return legs
-
-
-def _route_circuit_id(day: int, stop: int, mode: str) -> str:
-    return f"day-{day}-stop-{stop}-{mode.strip().lower()}"
-
-
-def _normalize_map_stops(stops: list[Any]) -> list[dict[str, str | None]]:
-    """Canonical (name, kind, transfer-mode) per raw stop, preserving order.
-
-    Mirrors how ``build_itinerary`` normalizes each stop so drive-circuit
-    construction sees the same names/kinds (and thus the same circuit ids).
-    """
-    normalized: list[dict[str, str | None]] = []
-    for stop in stops:
-        if isinstance(stop, dict):
-            raw_name = str(stop.get("name") or "")
-            raw_kind = str(stop.get("kind") or "").strip().lower()
-            mode_name = str(stop.get("mode") or "")
-        else:
-            raw_name = str(stop or "")
-            raw_kind = ""
-            mode_name = ""
-        name = _canonical_transport_name(raw_name, mode_name)
-        kind = _normalized_stop_kind(name, raw_kind, mode_name)
-        normalized.append(
-            {"name": name, "kind": kind, "mode": _intercity_transfer_mode(name, kind)}
-        )
-    return normalized
-
-
-def _resolve_road_circuit_pin_ids(
-    normalized: list[dict[str, str | None]],
-    transfer_index: int,
-    resolve_pin: Any,
-    origin_fallbacks: list[str],
-) -> list[str]:
-    """Ordered pin ids ``[origin, *waypoints, destination]`` for a road row.
-
-    Drive circuits use the prior place and next hotel/terminal. Bus circuits use
-    their named bus terminals and include only scenic/meal stops before check-in,
-    so destination-local sightseeing cannot leak into the transfer circuit.
-    """
-    transfer = normalized[transfer_index]
-    mode = str(transfer["mode"] or "")
-    terminal_refs = _transport_terminal_refs(
-        str(transfer["name"] or ""), str(transfer["kind"] or "")
-    )
-    if mode == "Bus" and len(terminal_refs) == 2:
-        terminal_pins = [resolve_pin(name, kind) for kind, name in terminal_refs]
-        if all(terminal_pins):
-            origin_id = str(terminal_pins[0]["id"])
-            destination_id = str(terminal_pins[1]["id"])
-            waypoint_ids: list[str] = []
-            for candidate in normalized[transfer_index + 1:]:
-                if candidate["mode"] or candidate["kind"] == "hotel":
-                    break
-                if candidate["kind"] not in {"attraction", "meal", "restaurant"}:
-                    continue
-                pin = resolve_pin(candidate["name"], candidate["kind"])
-                if pin:
-                    pin_id = str(pin["id"])
-                    if pin_id not in {origin_id, destination_id} and pin_id not in waypoint_ids:
-                        waypoint_ids.append(pin_id)
-            return [origin_id, *waypoint_ids, destination_id]
-
-    endpoints = _transport_route_endpoints(str(transfer["name"] or ""))
-    parsed_origin, parsed_dest = endpoints if endpoints else (None, None)
-
-    origin_id: str | None = None
-    for prev in reversed(normalized[:transfer_index]):
-        if prev["mode"] or not prev["name"]:
-            continue
-        pin = resolve_pin(prev["name"], prev["kind"])
-        if pin:
-            origin_id = str(pin["id"])
-            break
-    if origin_id is None:
-        origin_id = next((pid for pid in origin_fallbacks if pid), None)
-    if origin_id is None and parsed_origin:
-        pin = resolve_pin(parsed_origin, "origin") or resolve_pin(parsed_origin, "")
-        if pin:
-            origin_id = str(pin["id"])
-
-    waypoint_ids: list[str] = []
-    destination_id: str | None = None
-    for nxt in normalized[transfer_index + 1:]:
-        if nxt["mode"]:
-            refs = _transport_terminal_refs(str(nxt["name"] or ""), str(nxt["kind"] or ""))
-            if refs:
-                pin = resolve_pin(refs[0][1], refs[0][0])
-                if pin and str(pin["id"]) != origin_id:
-                    destination_id = str(pin["id"])
-            break
-        if not nxt["name"]:
-            continue
-        pin = resolve_pin(nxt["name"], nxt["kind"])
-        if not pin:
-            continue
-        pin_id = str(pin["id"])
-        if pin["kind"] == "hotel":
-            destination_id = pin_id
-            break
-        if pin_id != origin_id and pin_id not in waypoint_ids:
-            waypoint_ids.append(pin_id)
-    if destination_id is None and parsed_dest:
-        for hint, candidate in (
-            ("airport", f"{parsed_dest} Airport"),
-            ("airport", parsed_dest),
-            ("station", f"{parsed_dest} Railway Station"),
-            ("bus_station", f"{parsed_dest} Bus Stand"),
-            ("", parsed_dest),
-        ):
-            pin = resolve_pin(candidate, hint)
-            if pin and str(pin["id"]) != origin_id:
-                destination_id = str(pin["id"])
-                break
-    if destination_id is None and waypoint_ids:
-        destination_id = waypoint_ids.pop()
-
-    ordered: list[str] = []
-    for pin_id in [origin_id, *waypoint_ids, destination_id]:
-        if pin_id and (not ordered or ordered[-1] != pin_id):
-            ordered.append(pin_id)
-    return ordered
-
-
-def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
-    """Estimate day route metrics from an ordered list of (lat, lng) tuples.
-
-    Same logic as _route_stats_for_day, but takes pre-computed coordinates
-    instead of pin_ids. Used by build_itinerary to calculate per-day routes.
-    """
-    return _route_stats_for_coords(coords)
 
 
 def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
