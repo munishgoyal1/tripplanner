@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 interface Props {
   label: "Itinerary" | "Map";
   maximized: boolean;
-  hideDisabled: boolean;
   onHide: () => void;
   onToggleMaximize: () => void;
   headerTargetRef?: (node: HTMLDivElement | null) => void;
@@ -14,7 +13,6 @@ interface Props {
 export default function CanvasPaneFrame({
   label,
   maximized,
-  hideDisabled,
   onHide,
   onToggleMaximize,
   headerTargetRef,
@@ -29,10 +27,9 @@ export default function CanvasPaneFrame({
           <button
             type="button"
             onClick={onHide}
-            className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm disabled:opacity-30"
+            className="grid h-7 w-7 place-items-center rounded-[5px] text-slate-500 transition hover:bg-white hover:text-ink hover:shadow-sm"
             aria-label={`Hide ${label}`}
             title={`Hide ${label}`}
-            disabled={hideDisabled}
           >
             <EyeOff size={14} aria-hidden />
           </button>
