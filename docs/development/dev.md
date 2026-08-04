@@ -44,7 +44,7 @@ Use these launchers by outcome:
 | `scripts/user/Sync-AllTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent and Agents 1-3 while preserving each worktree's local edits. |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. All stack options are optional and forwarded; pass `all` or `-All` to synchronize every worktree first. |
-| `scripts/dev/resume-merge.ps1` | Finish any sync merge that stopped with `SYNC_CONFLICT_PENDING`, after the conflicted files are resolved. Reads `logs/sync/pending-merge.json`, then commits, pushes, and cleans up non-interactively. |
+| `scripts/dev/resume-merge.ps1` | Finish any sync merge that stopped with `SYNC_CONFLICT_PENDING` once the conflicted files are resolved, then propagate the integrated `master` into every worktree. Reads `logs/sync/pending-merge.json` and runs non-interactively; the sync launchers also finish resolved pending merges automatically at the start of their next run. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 ---

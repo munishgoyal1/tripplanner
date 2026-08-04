@@ -13,6 +13,8 @@ $ErrorActionPreference = "Stop"
 $syncLogOwned = Start-SyncLog -Component "sync-latest"
 try {
 
+if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
+
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $branch = & git -C $repoRoot branch --show-current
 $gitExitCode = $LASTEXITCODE

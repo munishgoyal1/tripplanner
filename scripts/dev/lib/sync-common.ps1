@@ -255,3 +255,134 @@ function Restore-LaneStash {
     $marked = @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
     Write-SyncLog -Level Warn "$Label local changes conflict with the new base; the safety stash was retained. Resolve: $($marked -join ', ')"
 }
+
+function Complete-PendingMerges {
+    # Finishes every merge recorded as pending once its conflicted files are
+    # marker-free. Returns how many are still pending and whether an integration
+    # merge completed (so callers can propagate the new master into every lane).
+    param([switch]$KeepIntegrationWorktree)
+
+    $paths = Get-SyncPaths
+    $pending = @(Get-PendingMerges)
+    if ($pending.Count -eq 0) {
+        return [pscustomobject]@{ StillPending = 0; IntegrationCompleted = $false }
+    }
+
+    Write-SyncLog "Finishing $($pending.Count) pending merge(s)..."
+    $stillPending = [System.Collections.Generic.List[object]]::new()
+    $integrationCompleted = $false
+
+    foreach ($entry in $pending) {
+        $wd = [string]$entry.workingDirectory
+        Write-SyncLog "Resuming $($entry.kind) merge for $($entry.label) in $wd"
+
+        if (-not (Test-Path $wd -PathType Container)) {
+            Write-SyncLog -Level Error "Working directory is missing: $wd. Dropping this entry."
+            continue
+        }
+
+        $marked = @(Get-FilesWithConflictMarkers -WorkingDirectory $wd -Files @($entry.conflictedFiles))
+        if ($marked.Count -gt 0) {
+            Write-SyncLog -Level Error "Conflict markers still present in: $($marked -join ', '). Resolve them, then re-run."
+            $stillPending.Add($entry)
+            continue
+        }
+
+        & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+        $midMerge = ($LASTEXITCODE -eq 0)
+        if ($midMerge) {
+            & git -C $wd rerere 2>&1 | Out-Host
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments (@("add", "--") + @($entry.conflictedFiles)) | Out-Null
+            $unresolved = @(Invoke-SyncGit -WorkingDirectory $wd -Arguments @("diff", "--name-only", "--diff-filter=U"))
+            if ($unresolved.Count -gt 0) {
+                Write-SyncLog -Level Error "Still unresolved after staging: $($unresolved -join ', ')."
+                $stillPending.Add($entry)
+                continue
+            }
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments @("diff", "--cached", "--check") | Out-Null
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments @("commit", "--no-edit") | Out-Null
+            Write-SyncLog "Committed the resolved merge for $($entry.label)."
+        } else {
+            Write-SyncLog "No merge in progress in $wd; assuming the resolution was already committed."
+        }
+
+        if ($entry.kind -eq "integration") {
+            $resultHead = Invoke-SyncGit -WorkingDirectory $wd -Arguments @("rev-parse", "HEAD")
+            Write-SyncLog "Pushing integrated result $($resultHead.Substring(0, 7)) to master..."
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments @("push", "origin", "${resultHead}:refs/heads/master") | Out-Null
+
+            if (-not $KeepIntegrationWorktree) {
+                & git -C $paths.PrimaryRoot worktree remove --force $wd 2>$null
+                if ($LASTEXITCODE -ne 0) {
+                    Write-SyncLog -Level Warn "Could not remove temporary integration worktree: $wd"
+                }
+            }
+
+            try {
+                Invoke-SyncGit -WorkingDirectory $paths.PrimaryRoot -Arguments @("fetch", "origin") | Out-Null
+                $primaryBranch = Invoke-SyncGit -WorkingDirectory $paths.PrimaryRoot -Arguments @("branch", "--show-current")
+                if ($primaryBranch -eq "master") {
+                    Invoke-SyncGit -WorkingDirectory $paths.PrimaryRoot -Arguments @("merge", "origin/master", "--ff-only") | Out-Null
+                    Write-SyncLog "Fast-forwarded primary master to the integrated result."
+                }
+            } catch {
+                Write-SyncLog -Level Warn "Primary fast-forward skipped: $($_.Exception.Message)"
+            }
+            $integrationCompleted = $true
+        } else {
+            $branch = [string]$entry.branch
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments @("push", "-u", "origin", "HEAD:refs/heads/$branch") | Out-Null
+            Write-SyncLog "Pushed $($entry.label) to $branch."
+            if ($entry.stashCommit) {
+                Restore-LaneStash -WorkingDirectory $wd -Label $entry.label -StashCommit ([string]$entry.stashCommit)
+            }
+        }
+
+        Write-SyncLog "Resolved pending merge for $($entry.label)."
+    }
+
+    Save-PendingList -Entries @($stillPending)
+    return [pscustomobject]@{
+        StillPending         = $stillPending.Count
+        IntegrationCompleted = $integrationCompleted
+    }
+}
+
+function Invoke-PendingMergeHeal {
+    # Called at the start of a sync run: if a prior run left resolved-but-unfinished
+    # merges, finish them in-flow so no separate resume step or re-run is needed.
+    # Throws only when files still carry conflict markers (a real semantic decision).
+    $pending = @(Get-PendingMerges)
+    if ($pending.Count -eq 0) {
+        return
+    }
+    Write-SyncLog "Detected $($pending.Count) pending merge(s); finishing before synchronizing..."
+    $healed = Complete-PendingMerges
+    if ($healed.StillPending -gt 0) {
+        throw "SYNC_CONFLICT_PENDING: $($healed.StillPending) merge(s) still carry conflict markers. Resolve the files listed above; the next sync finishes them automatically."
+    }
+    Write-SyncLog "All previously pending merges finished."
+}
+
+function Invoke-LanePropagation {
+    # Pushes the freshly integrated master into every worktree so the run ends
+    # with all lanes current. Resilient: a novel per-lane conflict is recorded and
+    # reported without stopping the other lanes.
+    param([Parameter(Mandatory = $true)][string]$ScriptRoot)
+
+    Write-SyncLog "Propagating integrated master into every worktree..."
+    $laneNames = @{ 0 = "MasterAgent (0)"; 1 = "Agent 1"; 2 = "Agent 2"; 3 = "Agent 3 - Infra" }
+    $failures = 0
+    foreach ($number in 0, 1, 2, 3) {
+        try {
+            & "$ScriptRoot\update-from-master.ps1" $number
+        } catch {
+            $failures++
+            Write-SyncLog -Level Warn "$($laneNames[$number]) needs attention: $($_.Exception.Message)"
+        }
+    }
+    if ($failures -gt 0) {
+        throw "$failures worktree(s) still need resolution; resolve the files listed above, then re-run."
+    }
+    Write-SyncLog "Every worktree is current."
+}

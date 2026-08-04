@@ -17,6 +17,8 @@ $laneNames = @{
 $syncLogOwned = Start-SyncLog -Component "all-worktrees-sync"
 try {
 
+if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
+
 Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
 & "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
 

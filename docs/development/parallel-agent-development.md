@@ -153,10 +153,15 @@ state. Git `rerere` attempts a previously validated merge resolution. A new
 semantic conflict does not prompt or block: the sync engine records the exact
 paths, the resolution worktree, and a diff report under `logs/sync/`, preserves
 the in-progress merge (and any safety stash), and stops with a
-`SYNC_CONFLICT_PENDING` message rather than choosing blanket ours/theirs. After
-the conflicted files are edited to remove every marker, run
-`pwsh -File scripts/dev/resume-merge.ps1` to finish, commit, push, clean up the
-integration worktree, and restore any retained lane stash. The internal merge engine uses its disposable integration
+`SYNC_CONFLICT_PENDING` message rather than choosing blanket ours/theirs.
+
+Finishing a pending merge needs no separate command or manual re-run. Every sync
+launcher first calls the in-flow heal step: once the conflicted files are
+marker-free, the next launcher run (or `resume-merge.ps1`) automatically commits,
+pushes, cleans up the integration worktree, restores any retained lane stash, and
+propagates the integrated `master` into every worktree. Only a file that still
+carries conflict markers stops the run, because that is the one case needing a
+real semantic decision. The internal merge engine uses its disposable integration
 worktree; the launcher update engine keeps local changes in a safety stash until
 the merge finishes. Sibling code always reaches a worker through `master`; worker
 branches are not merged directly into one another.
@@ -169,8 +174,9 @@ Every sync launcher writes a timestamped transcript to
 outermost script owns the transcript; nested engines log into the same file. When
 a conflict is pending, `logs/sync/pending-merge.json` holds the resumable entries
 and `logs/sync/conflict-<kind>-<stamp>.md` holds the human-readable diff. The
-`logs/` tree is git-ignored, so these never enter a commit. `resume-merge.ps1`
-clears each entry as it completes and reports any that still hold conflict markers.
+`logs/` tree is git-ignored, so these never enter a commit. The heal step and
+`resume-merge.ps1` clear each entry as it completes and report only files that
+still hold conflict markers.
 Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
 append-only; both branches' entries are retained.
@@ -188,8 +194,9 @@ files are preserved in an exact safety stash. Git `rerere` automatically applies
 a previously recorded resolution. A novel local-edit conflict retains that
 lane's stash, records a resumable entry under `logs/sync/`, lists its unresolved
 paths, and allows the other lanes to continue; the command exits nonzero after
-reporting every lane requiring attention. Resolve the listed files and run
-`scripts/dev/resume-merge.ps1` to finish those lanes. A novel conflict while
+reporting every lane requiring attention. Resolve the listed files; the next
+launcher run (or `scripts/dev/resume-merge.ps1`) finishes and propagates them
+automatically. A novel conflict while
 integrating committed heads must still be resolved before one authoritative
 `master` can be distributed. The script never guesses with blanket ours/theirs
 conflict resolution.
