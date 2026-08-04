@@ -93,6 +93,23 @@ Assistant build its first proposal.
 
 ## Planner workspace
 
+### EB-TRIPS-001 - Delete selected saved trips
+
+**Trigger:** Open the saved-trip menu, choose Delete trips, select one or more
+trips, and confirm deletion.
+
+**Expected:** Delete mode shows one checkbox per saved trip, Select all/Clear all,
+the selected count, Cancel, and a count-aware delete action. Selecting one trip
+deletes only that trip; selecting every trip offers Delete all. One confirmation
+covers the selected set, each deleted trip also loses its related chat history,
+and the workspace refreshes after the operation. Outside delete mode, selecting
+a trip continues to switch to it.
+
+**Executable proof:**
+
+- [`frontend/src/components/TripSwitcher.test.tsx`](../frontend/src/components/TripSwitcher.test.tsx) - `deletes only the checked trip`
+- [`frontend/src/components/TripSwitcher.test.tsx`](../frontend/src/components/TripSwitcher.test.tsx) - `selects and deletes all saved trips`
+
 ### EB-FOCUS-001 - Focus one itinerary occurrence
 
 **Trigger:** Select a place stop in Itinerary, or invoke its Map action. The
