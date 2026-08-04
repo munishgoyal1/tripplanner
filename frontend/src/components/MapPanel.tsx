@@ -551,6 +551,16 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       ? mapContextForRoadCircuit(view, routeFocusId) ?? mapContextForScope(view, contextScope)
       : mapContextForScope(view, contextScope)
     : null;
+  const scheduleLabel = selectedMapContext
+    && "scheduleLabel" in selectedMapContext
+    && typeof selectedMapContext.scheduleLabel === "string"
+    ? selectedMapContext.scheduleLabel
+    : "Schedule";
+  const travelLabel = selectedMapContext
+    && "travelLabel" in selectedMapContext
+    && typeof selectedMapContext.travelLabel === "string"
+    ? selectedMapContext.travelLabel
+    : "Travel";
   const dayScopeControls = view ? (
     <div className="flex min-w-0 items-center gap-1 overflow-x-auto" aria-label="Map day scope">
       <button
@@ -705,8 +715,8 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase text-brand">{selectedMapContext.label}</p>
                 <p className="truncate text-sm font-semibold text-ink">{selectedMapContext.title}</p>
-                <p className="mt-1 text-[11px] text-slate-600">{"scheduleLabel" in selectedMapContext ? selectedMapContext.scheduleLabel : "Schedule"} {selectedMapContext.schedule}</p>
-                <p className="text-[11px] text-slate-600">{"travelLabel" in selectedMapContext ? selectedMapContext.travelLabel : "Travel"} {selectedMapContext.travel}</p>
+                <p className="mt-1 text-[11px] text-slate-600">{scheduleLabel} {selectedMapContext.schedule}</p>
+                <p className="text-[11px] text-slate-600">{travelLabel} {selectedMapContext.travel}</p>
               </div>
               <button
                 type="button"
