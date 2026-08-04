@@ -24,10 +24,28 @@ from tripplanner import storage_cosmos
 from tripplanner.json_store import atomic_write_json
 from tripplanner.planning_intelligence import assess_itinerary_density
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
+from tripplanner.tools.trip_common import (  # noqa: F401
+    _HOTEL_PLACEHOLDER_RE,
+    _MAX_DAY_DISTANCE_KM,
+    _MAX_DAY_DURATION_MIN,
+    _MAX_DAY_STOPS,
+    _MEAL_PLACEHOLDER_RE,
+    _canonical_place_kind,
+    _coords_from_summary,
+    _day_stats,
+    _fmt_hhmm,
+    _haversine_km,
+    _is_place_kind,
+    _parse_hhmm,
+    _stop_kind,
+    _stop_name,
+    _style_caps,
+    _summary_for_place,
+)
 from tripplanner.tools.trip_diff import diff_plans, format_diff
 from tripplanner.tools.user_preferences import add_past_trip, load_preferences
 from tripplanner.user_context import get_user_id
-from tripplanner.web import places_cache
+from tripplanner.web import places_cache  # noqa: F401  (test monkeypatch target)
 
 _TRIPS_DIR = Path.home() / ".tripplanner"
 _ACTIVE_TRIP_FILE = _TRIPS_DIR / "active_trip.json"
@@ -36,20 +54,7 @@ _TRIP_HISTORY_DIR = _TRIPS_DIR / "trips"
 _COSMOS_USERS_CONTAINER = "users"
 _COSMOS_TRIPS_CONTAINER = "trips"
 _ACTIVE_TRIP_DOC_ID = "active_trip"
-_MAX_DAY_STOPS = 5
-_MAX_DAY_DISTANCE_KM = 18.0
-_MAX_DAY_DURATION_MIN = 360
 _MUTATION_LOCKS = tuple(RLock() for _ in range(64))
-_MEAL_PLACEHOLDER_RE = re.compile(
-    r"\b(tbd|to be decided|restaurant option|restaurant recommendation|"
-    r"lunch stop|dinner stop|breakfast stop|meal stop)\b",
-    re.I,
-)
-_HOTEL_PLACEHOLDER_RE = re.compile(
-    r"\b(tbd|to be decided|hotel option|hotel recommendation|"
-    r"accommodation option|accommodation recommendation)\b",
-    re.I,
-)
 
 
 def _serialized_mutation(func):
@@ -99,58 +104,6 @@ def _resolve_trip_history_dir() -> Path:
 def _ensure_dirs() -> None:
     _resolve_active_trip_path().parent.mkdir(parents=True, exist_ok=True)
     _resolve_trip_history_dir().mkdir(parents=True, exist_ok=True)
-
-
-def _is_place_kind(kind: str) -> bool:
-    return kind in {"hotel", "attraction", "activity", "meal", "restaurant"}
-
-
-def _canonical_place_kind(kind: str) -> str:
-    if kind == "hotel":
-        return "hotel"
-    if kind in {"meal", "restaurant"}:
-        return "meal"
-    return "attraction"
-
-
-def _summary_for_place(name: str, destination: str) -> dict[str, Any]:
-    info = places_cache.get_summary(name, destination) or {}
-    return info if isinstance(info, dict) else {}
-
-
-def _coords_from_summary(summary: dict[str, Any]) -> tuple[float, float] | None:
-    lat = summary.get("lat")
-    lng = summary.get("lng")
-    if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
-        return float(lat), float(lng)
-    return None
-
-
-def _haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
-    from math import asin, cos, radians, sin, sqrt
-
-    lat1, lng1 = radians(a[0]), radians(a[1])
-    lat2, lng2 = radians(b[0]), radians(b[1])
-    dlat = lat2 - lat1
-    dlng = lng2 - lng1
-    h = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlng / 2) ** 2
-    return 6371.0 * 2 * asin(sqrt(h))
-
-
-def _stop_name(raw: Any) -> str:
-    if isinstance(raw, dict):
-        return str(raw.get("name") or "").strip()
-    return str(raw or "").strip()
-
-
-def _stop_kind(raw: Any, default_kind: str = "attraction") -> str:
-    if isinstance(raw, dict):
-        kind = str(raw.get("kind") or "").strip().lower()
-        if kind == "restaurant":
-            return "meal"
-        if kind in {"hotel", "attraction", "meal", "transport", "flight", "other"}:
-            return kind
-    return _canonical_place_kind(default_kind)
 
 
 def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
@@ -430,23 +383,6 @@ def _make_stop(name: str, kind: str, summary: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _parse_hhmm(value: str) -> int | None:
-    text = str(value or "").strip()
-    m = re.match(r"^(\d{1,2}):(\d{2})$", text)
-    if not m:
-        return None
-    hh = int(m.group(1))
-    mm = int(m.group(2))
-    if hh < 0 or hh > 23 or mm < 0 or mm > 59:
-        return None
-    return hh * 60 + mm
-
-
-def _fmt_hhmm(minutes: int) -> str:
-    m = max(0, min(minutes, 23 * 60 + 59))
-    return f"{m // 60:02d}:{m % 60:02d}"
-
-
 def _itinerary_time_errors(itinerary: Any) -> list[str]:
     errors: list[str] = []
     if not isinstance(itinerary, list):
@@ -545,72 +481,6 @@ def _infer_stop_time(stops: list[Any], insert_at: int, kind: str) -> str:
     if kind == "hotel":
         return "15:00"
     return "11:00"
-
-
-def _style_caps(plan: dict[str, Any] | None) -> tuple[int, int, float]:
-    """Per-day fullness caps tuned to the trip's style.
-
-    A trip tagged ``relaxed``/``leisure`` should feel unhurried, so it packs
-    fewer stops and less driving per day before the rebalancer trims a
-    low-value stop; a ``packed`` style tolerates more. Returns
-    ``(max_stops, max_duration_min, max_distance_km)``.
-    """
-    style = str((plan or {}).get("trip_style") or "").strip().lower()
-    if style in {"relaxed", "leisure"}:
-        return (4, 300, 14.0)
-    if style in {"packed", "packed_sightseeing", "adventure", "adventurous"}:
-        return (6, 420, 22.0)
-    return (_MAX_DAY_STOPS, _MAX_DAY_DURATION_MIN, _MAX_DAY_DISTANCE_KM)
-
-
-def _day_stats(
-    day: dict[str, Any],
-    destination: str,
-    caps: tuple[int, int, float] | None = None,
-) -> dict[str, Any]:
-    stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-    coords: list[tuple[float, float]] = []
-    selected_attractions = 0
-    booked = 0
-    duration = 0
-    for raw in stops:
-        name = _stop_name(raw)
-        if not name:
-            continue
-        kind = _stop_kind(raw)
-        summary = _summary_for_place(name, destination)
-        coords_value = _coords_from_summary(summary)
-        if coords_value:
-            coords.append(coords_value)
-        if kind == "attraction":
-            selected_attractions += 1
-        if isinstance(raw, dict) and raw.get("booked"):
-            booked += 1
-        dur = raw.get("duration_min") if isinstance(raw, dict) else None
-        if isinstance(dur, (int, float)):
-            duration += int(dur)
-        elif kind == "hotel":
-            duration += 45
-        else:
-            duration += 90
-
-    route_km = 0.0
-    for idx in range(1, len(coords)):
-        route_km += _haversine_km(coords[idx - 1], coords[idx])
-
-    max_stops, max_duration, max_km = caps or (
-        _MAX_DAY_STOPS,
-        _MAX_DAY_DURATION_MIN,
-        _MAX_DAY_DISTANCE_KM,
-    )
-    return {
-        "count": len(stops),
-        "selected_attractions": selected_attractions,
-        "booked": booked,
-        "duration_min": duration,
-        "route_km": route_km,
-        "packed": len(stops) >= max_stops or duration >= max_duration or route_km >= max_km,
-    }
 
 
 def assess_itinerary_change(
