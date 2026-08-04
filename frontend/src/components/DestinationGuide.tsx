@@ -1,23 +1,14 @@
-import { BedDouble, ChevronRight, Compass, MapPin, Search, Sparkles, Star, Utensils } from "lucide-react";
+import { BedDouble, ChevronRight, Compass, MapPin, Star, Utensils } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchPlaceGuide } from "../api";
 import type { PlaceRow } from "../types";
+import type { KindTab } from "./GuideScopeBar";
 
 // Lab 13 — paged "Contextual explorer" destination guide (option A + search).
-// Mixed highlights balanced across the route by default; city + place-type scopes
-// and a search box refine the list; focusing a place surfaces same-city, same-type
-// alternatives. Selection stays in the focused inspector (ItemCard), matching the
-// lab mock — rows here are navigational.
-
-type BrowseKind = "hotel" | "attraction" | "restaurant";
-type KindTab = "highlights" | BrowseKind;
-
-const KIND_TABS: { id: KindTab; label: string; icon: typeof Compass }[] = [
-  { id: "highlights", label: "Highlights", icon: Sparkles },
-  { id: "hotel", label: "Hotels", icon: BedDouble },
-  { id: "attraction", label: "Attractions", icon: Compass },
-  { id: "restaurant", label: "Food", icon: Utensils },
-];
+// Mixed highlights balanced across the route by default; the scope (city, place
+// type, search) is owned by TripPanel so it stays visible while a place is
+// focused. Focusing a place surfaces same-city, same-type alternatives.
+// Selection stays in the focused inspector (ItemCard) — rows here are navigational.
 
 const KIND_ICON: Record<string, typeof Compass> = {
   hotel: BedDouble,
@@ -37,6 +28,10 @@ interface Props {
   /** When set, render same-city/same-kind alternatives instead of the browser. */
   focus?: { kind: string; name: string; city?: string } | null;
   onFocus: (kind: string, name: string) => void;
+  city?: string;
+  kind?: KindTab;
+  query?: string;
+  onCities?: (cities: string[]) => void;
 }
 
 function GuideRow({ row, onFocus }: { row: PlaceRow; onFocus: (kind: string, name: string) => void }) {
@@ -81,17 +76,22 @@ function GuideRow({ row, onFocus }: { row: PlaceRow; onFocus: (kind: string, nam
   );
 }
 
-export default function DestinationGuide({ destination, tripVersion, focus, onFocus }: Props) {
+export default function DestinationGuide({
+  destination,
+  tripVersion,
+  focus,
+  onFocus,
+  city = "all",
+  kind = "highlights",
+  query: rawQuery = "",
+  onCities,
+}: Props) {
   const alternatives = !!focus?.name;
-  const [city, setCity] = useState("all");
-  const [kind, setKind] = useState<KindTab>("highlights");
-  const [rawQuery, setRawQuery] = useState("");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(rawQuery.trim());
   const [rows, setRows] = useState<PlaceRow[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [remaining, setRemaining] = useState(0);
   const [total, setTotal] = useState(0);
-  const [cities, setCities] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const controller = useRef<AbortController | null>(null);
 
@@ -128,7 +128,7 @@ export default function DestinationGuide({ destination, tripVersion, focus, onFo
         setCursor(page.cursor);
         setRemaining(page.remaining_count);
         setTotal(page.total_count);
-        if (!alternatives) setCities(page.available_cities);
+        if (!alternatives) onCities?.(page.available_cities);
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           console.error("Could not load destination guide", error);
@@ -137,7 +137,7 @@ export default function DestinationGuide({ destination, tripVersion, focus, onFo
         if (controller.current === ctrl) setLoading(false);
       }
     },
-    [alternatives, city, kind, query, focus],
+    [alternatives, city, kind, query, focus, onCities],
   );
 
   // Reset and fetch the first page whenever the scope, focus or trip changes.
@@ -181,53 +181,6 @@ export default function DestinationGuide({ destination, tripVersion, focus, onFo
   const cityLabel = city === "all" ? "" : city;
   return (
     <div data-guide="browse">
-      <label className="flex h-9 items-center gap-2 rounded-md bg-slate-50 px-3 ring-1 ring-inset ring-slate-200">
-        <Search size={14} className="text-slate-400" aria-hidden />
-        <input
-          value={rawQuery}
-          onChange={(event) => setRawQuery(event.target.value)}
-          placeholder="Search all trip places"
-          className="min-w-0 flex-1 bg-transparent text-xs outline-none"
-          aria-label="Search all trip places"
-        />
-      </label>
-
-      <div className="mt-3 border-b border-slate-100 pb-3">
-        {cities.length > 1 && (
-          <div className="flex gap-1 overflow-x-auto pb-1">
-            {["all", ...cities].map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setCity(item)}
-                aria-pressed={city === item}
-                className={`h-7 shrink-0 rounded-md px-2.5 text-[11px] font-semibold ${
-                  city === item ? "bg-ink text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
-                }`}
-              >
-                {item === "all" ? "All cities" : item}
-              </button>
-            ))}
-          </div>
-        )}
-        <div className="mt-2 grid grid-cols-4 gap-1 rounded-md bg-slate-50 p-1">
-          {KIND_TABS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setKind(id)}
-              aria-pressed={kind === id}
-              className={`flex h-8 items-center justify-center gap-1 rounded-[5px] text-[10px] font-semibold ${
-                kind === id ? "bg-white text-ink shadow-sm" : "text-slate-500"
-              }`}
-            >
-              <Icon size={12} aria-hidden />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="py-3">
         <p className="text-[10px] font-bold uppercase text-brand">
           {kind === "highlights" ? "Curated across your route" : cityLabel || "Across your route"}

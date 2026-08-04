@@ -1,9 +1,10 @@
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { TripItem, TripView } from "../types";
 import DestinationGuide from "./DestinationGuide";
 import DestinationOverview from "./DestinationOverview";
+import GuideScopeBar, { type KindTab } from "./GuideScopeBar";
 import Lightbox from "./Lightbox";
 import PlaceTripActions from "./PlaceTripActions";
 import TripSwitcher from "./TripSwitcher";
@@ -221,7 +222,7 @@ function ItemCard({
                   aria-label={`Choose day to add ${item.name}`}
                   className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
                 >
-                  <option value="auto">Auto day</option>
+                  <option value="auto">Best day</option>
                   {availableDays.map((day) => (
                     <option key={day} value={day}>Day {day}</option>
                   ))}
@@ -289,6 +290,16 @@ export default function TripPanel({
   const openPhoto = (photos: string[], index: number, alt: string) =>
     setLb({ photos, index, alt });
   const [pendingHotel, setPendingHotel] = useState<string | null>(null);
+  const [cities, setCities] = useState<string[]>([]);
+  const [city, setCity] = useState("all");
+  const [kind, setKind] = useState<KindTab>("highlights");
+  const [query, setQuery] = useState("");
+  const handleCities = useCallback((next: string[]) => setCities(next), []);
+  // Retuning the scope means "show me that list", so it also leaves the focused place.
+  const rescope = <T,>(apply: (value: T) => void) => (value: T) => {
+    apply(value);
+    if (view?.focus) onClearFocus();
+  };
 
   if (loading && !view) {
     return (
@@ -330,39 +341,56 @@ export default function TripPanel({
 
   return (
     <div className="flex h-full flex-col bg-white">
-      {!focused && !hideSwitcher && (
-        <div className="sticky top-0 z-10 flex items-center border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
-          <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
-        </div>
-      )}
-      {focused && (
-        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
-          <button onClick={onClearFocus} className="btn-ghost">
-            <ArrowLeft size={15} aria-hidden /> Whole trip
-          </button>
-          {total > 1 && (
-            <div className="ml-auto flex items-center gap-1.5">
-              <button
-                onClick={() => onStep(-1)}
-                className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
-                title="Previous"
-              >
-                <ChevronLeft size={17} aria-hidden />
-              </button>
-              <span className="text-xs font-medium text-muted">
-                {focusIndex >= 0 ? focusIndex + 1 : "–"} / {total}
-              </span>
-              <button
-                onClick={() => onStep(1)}
-                className="grid h-8 w-8 place-items-center rounded-full bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
-                title="Next"
-              >
-                <ChevronRight size={17} aria-hidden />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="sticky top-0 z-10 border-b border-slate-100 bg-white/85 px-4 py-2.5 backdrop-blur">
+        {!hideSwitcher && (
+          <div className="mb-2.5 flex items-center">
+            <TripSwitcher version={tripVersion} onSwitched={onSwitched} />
+          </div>
+        )}
+        <GuideScopeBar
+          cities={cities}
+          city={city}
+          kind={kind}
+          query={query}
+          onCity={rescope(setCity)}
+          onKind={rescope(setKind)}
+          onQuery={rescope(setQuery)}
+        />
+        {focused && (
+          <div className="mt-2.5 flex items-center gap-2">
+            <button
+              onClick={onClearFocus}
+              className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md bg-slate-50 px-2.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              <LayoutGrid size={12} aria-hidden /> All places
+            </button>
+            <span className="truncate text-[11px] font-semibold text-ink">
+              {view.items[0]?.name ?? view.focus?.name}
+            </span>
+            {total > 1 && (
+              <div className="ml-auto flex shrink-0 items-center gap-1">
+                <button
+                  onClick={() => onStep(-1)}
+                  className="grid h-7 w-7 place-items-center rounded-full text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
+                  title="Previous"
+                >
+                  <ChevronLeft size={15} aria-hidden />
+                </button>
+                <span className="text-[11px] font-medium text-muted">
+                  {focusIndex >= 0 ? focusIndex + 1 : "–"} / {total}
+                </span>
+                <button
+                  onClick={() => onStep(1)}
+                  className="grid h-7 w-7 place-items-center rounded-full text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
+                  title="Next"
+                >
+                  <ChevronRight size={15} aria-hidden />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="flex-1 overflow-y-auto">
         {view.is_fallback && (
@@ -417,6 +445,10 @@ export default function TripPanel({
               tripVersion={tripVersion}
               focus={null}
               onFocus={onFocus}
+              city={city}
+              kind={kind}
+              query={query}
+              onCities={handleCities}
             />
           </div>
         </section>

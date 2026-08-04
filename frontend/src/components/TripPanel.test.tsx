@@ -276,4 +276,30 @@ describe("TripPanel place removal", () => {
 
     expect(screen.getByRole("button", { name: "Remove Le Comptoir from trip" })).toBeInTheDocument();
   });
+
+  it("keeps the place filters visible while focused and re-scoping returns to browsing", () => {
+    const onClearFocus = vi.fn();
+    render(
+      <TripPanel
+        view={view}
+        loading={false}
+        navList={[{ kind: "attraction", name: "Eiffel Tower" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={onClearFocus}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByLabelText("Search all trip places")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "All places" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Food" }));
+    expect(onClearFocus).toHaveBeenCalled();
+  });
 });
