@@ -1707,6 +1707,8 @@ def test_hotel_search_uses_google_fallback_when_amadeus_unconfigured(monkeypatch
         def invoke(args):
             return json.dumps([{"name": "Grounded Hotel", "rating": 4.7, **args}])
 
+    # No live provider configured, so best-effort falls through to Amadeus then Google.
+    monkeypatch.setattr(hotel_search, "get_hotel_provider", lambda: None)
     monkeypatch.setattr(hotel_search.amadeus_client, "is_configured", lambda: False)
     monkeypatch.setattr(hotel_search, "search_places_with_reviews", FakeGoogleSearch())
 
@@ -1821,6 +1823,8 @@ class TestDuffelHelpers:
 
     def test_not_configured_returns_friendly_message(self, monkeypatch):
         from tripplanner import config
+        # No live provider configured, so the friendly Duffel setup message surfaces.
+        monkeypatch.setattr(duffel_flights, "get_flight_provider", lambda: None)
         monkeypatch.setattr(
             config, "get_settings",
             lambda: type("S", (), {"duffel_api_key": ""})(),
@@ -2145,9 +2149,8 @@ class TestSystemPromptDateInjection:
 
     def test_includes_default_window(self):
         msg = build_trip_system_prompt(today=date(2026, 6, 2))
-        # default = +4 weeks ... +4 weeks + 6 days
+        # default start = today + 4 weeks; no fixed trip length is assumed
         assert "2026-06-30" in msg.content
-        assert "2026-07-06" in msg.content
 
     def test_includes_current_and_next_year(self):
         msg = build_trip_system_prompt(today=date(2026, 6, 2))
