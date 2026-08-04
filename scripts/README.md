@@ -35,9 +35,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Recycle-Sandbox.cmd` | Claim the parked sandbox under a new slug, keeping its installed dependencies |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes and their ports |
+| `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
+| `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
+| `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,
-regular owner-facing launchers under `user/`, and sandbox launchers under
-`sandbox/`. Do not move cloud-mutating
-operations out of `infra/` merely because they are implemented in PowerShell.
+regular owner-facing launchers under `user/`, sandbox launchers under
+`sandbox/`, and the hosted deployment launchers under `canary/` and `prod/`.
+Do not move cloud-mutating
+operations out of `infra/` merely because they are implemented in PowerShell;
+`canary/` and `prod/` hold only launchers for the gated scripts that live there.
