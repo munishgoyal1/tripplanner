@@ -35,9 +35,11 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Recycle-Sandbox.cmd` | Claim the parked sandbox under a new slug, keeping its installed dependencies |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes and their ports |
+| `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,
-regular owner-facing launchers under `user/`, and sandbox launchers under
-`sandbox/`. Do not move cloud-mutating
-operations out of `infra/` merely because they are implemented in PowerShell.
+regular owner-facing launchers under `user/`, sandbox launchers under
+`sandbox/`, and the production launcher under `prod/`. Do not move cloud-mutating
+operations out of `infra/` merely because they are implemented in PowerShell;
+`prod/` holds only a launcher for the approval-gated script that lives there.
