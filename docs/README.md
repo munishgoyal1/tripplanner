@@ -44,6 +44,7 @@ choose." Canonical documents answer "what is true now."
 | Document | Purpose |
 | --- | --- |
 | [`development/`](development/README.md) | Scope and index for contributor workflow guides |
+| [`development/architecture-onboarding.md`](development/architecture-onboarding.md) | Guided architecture and codebase onboarding for new engineers |
 | [`development/dev.md`](development/dev.md) | Local development guidance |
 | [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
