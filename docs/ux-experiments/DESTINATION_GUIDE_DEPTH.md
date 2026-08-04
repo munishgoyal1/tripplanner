@@ -4,7 +4,7 @@
 
 - Owner: Munish Goyal
 - Date started: 2026-08-01
-- Status: testing
+- Status: selected — A (Contextual explorer), implemented in sandbox
 - Lab: `http://127.0.0.1:5175/lab-13-destination-guide.html`
 
 ## Problem
@@ -69,6 +69,18 @@ free-form destination label such as `Rajasthan`.
 
 ## Decision
 
-- Decision: pending owner evaluation
-- Production implementation status: not implemented
-- Next action: compare all three interactions and save one implementation handoff
+- Decision: selected **A - Contextual explorer** (with a search box layered on
+  top of the scope controls) — 2026-08-04.
+- Production implementation status: implemented in sandbox `sandbox/lab-13` for
+  owner evaluation (not yet merged).
+- Implementation summary: added a paged place-discovery contract
+  `GET /trip/places` → `trip_view.paged_places(...)` returning lightweight browse
+  rows plus `cursor`, total/remaining counts, and available cities/kinds. The
+  whole-trip Details list is replaced by a `DestinationGuide` explorer (search +
+  city chips + Highlights/Hotels/Attractions/Food tabs, six-item batches);
+  focusing a place keeps its rich inspector and appends same-city, same-kind
+  alternatives. City identity comes from structured itinerary/place evidence, and
+  restaurants are a first-class kind. `GET /trip/view` and the App focus state
+  machine are unchanged.
+- Next action: owner runs the sandbox (`scripts/dev/sandbox.ps1 -Run lab-13`) and
+  confirms before promotion to `master`.

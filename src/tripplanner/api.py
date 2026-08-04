@@ -31,7 +31,7 @@ import time
 from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from fastapi import FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response, StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
@@ -921,6 +921,7 @@ async def chat_history(request: Request, user_id: str = "local", trip_id: str = 
 @app.get("/trip/view")
 async def trip_view_endpoint(
     request: Request,
+    background: BackgroundTasks,
     user_id: str = "local",
     focus_kind: str = "",
     focus_name: str = "",
@@ -941,7 +942,45 @@ async def trip_view_endpoint(
         if focus_name
         else None
     )
-    return await asyncio.to_thread(trip_operations.build_view, focus)
+    view = await asyncio.to_thread(trip_operations.build_view, focus)
+    # Warm the destination-guide dataset after responding so the first city/kind
+    # switch is instant while the user is still reading the itinerary.
+    if focus is None:
+        background.add_task(trip_operations.warm_guide)
+    return view
+
+
+@app.get("/trip/places")
+async def trip_places_endpoint(
+    request: Request,
+    user_id: str = "local",
+    city: str = "",
+    kind: str = "",
+    query: str = "",
+    cursor: str = "",
+    limit: int = 6,
+    focus_kind: str = "",
+    focus_name: str = "",
+) -> dict:
+    """Cursor-paged destination-guide place discovery (Lab 13).
+
+    Filters the balanced place pool by ``city``/``kind``/``query`` and returns one
+    lightweight page plus counts and available filter values. With ``focus_name``
+    set, returns same-city, same-kind alternatives to the focused place.
+    """
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    return await asyncio.to_thread(
+        trip_operations.paged_places,
+        city=city or None,
+        kind=kind or None,
+        query=query or None,
+        cursor=cursor or None,
+        limit=limit,
+        focus_kind=focus_kind or None,
+        focus_name=focus_name or None,
+    )
 
 
 @app.get("/maps/config")

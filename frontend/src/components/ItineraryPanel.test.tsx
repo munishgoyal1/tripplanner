@@ -783,6 +783,14 @@ describe("ItineraryPanel", () => {
     expect(scrollIntoViewMock.mock.instances[0]).toBe(dayTwoRow);
   });
 
+  it("scrolls to the row again when the same place is re-picked", async () => {
+    const { rerender } = render(<ItineraryPanel focusName="Louvre Museum" focusToken={1} />);
+
+    await waitFor(() => expect(scrollIntoViewMock).toHaveBeenCalledTimes(1));
+    rerender(<ItineraryPanel focusName="Louvre Museum" focusToken={2} />);
+    await waitFor(() => expect(scrollIntoViewMock).toHaveBeenCalledTimes(2));
+  });
+
   it("scrolls a map day jump to the start of the itinerary day summary", async () => {
     fetchItineraryMock.mockResolvedValue({
       ...itinerary,

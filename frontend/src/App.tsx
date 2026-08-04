@@ -656,6 +656,7 @@ export default function App() {
           focusName={stopFocusName}
           focusDay={focus?.day}
           focusStop={focus?.stop}
+          focusToken={mapFocusToken}
           circuitFocusDay={circuitFocusDay ?? undefined}
           circuitFocusToken={circuitFocusToken}
           jumpTo={itineraryJump}
