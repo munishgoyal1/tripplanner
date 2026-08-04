@@ -238,6 +238,70 @@ def test_concurrent_cache_updates_and_snapshots_remain_valid(_isolate):
     assert set(persisted["entries"]) == {pc._key(name, "Goa") for name in names}
 
 
+def test_live_snapshot_drops_expired_and_photo_urls(_isolate):
+    now = time.time()
+    with pc._CACHE_LOCK:
+        pc._CACHE.clear()
+        pc._CACHE[pc._key("Fresh", "Goa")] = {
+            "__at__": now,
+            "name": "Fresh",
+            "photo_urls": ["u"],
+            "__photos_at__": now,
+        }
+        pc._CACHE[pc._key("Stale", "Goa")] = {
+            "__at__": now - pc._META_TTL_S - 1,
+            "name": "Stale",
+        }
+        snap = pc._live_snapshot()
+    assert pc._key("Fresh", "Goa") in snap
+    assert pc._key("Stale", "Goa") not in snap  # expired entries are never served
+    fresh = snap[pc._key("Fresh", "Goa")]
+    assert "photo_urls" not in fresh and "__photos_at__" not in fresh
+
+
+def test_bounded_for_cosmos_passthrough_under_cap(_isolate):
+    snapshot = {"a": {"__at__": 1.0, "name": "A"}}
+    assert pc._bounded_for_cosmos(snapshot) == snapshot
+
+
+def test_bounded_for_cosmos_drops_oldest_over_cap(_isolate, monkeypatch):
+    import json
+
+    monkeypatch.setattr(pc, "_COSMOS_MAX_BYTES", 400)
+    snapshot = {f"k{i}": {"__at__": float(i), "blob": "x" * 100} for i in range(6)}
+    bounded = pc._bounded_for_cosmos(snapshot)
+    doc_bytes = len(json.dumps({"entries": bounded}, separators=(",", ":")).encode())
+    assert doc_bytes <= pc._COSMOS_MAX_BYTES
+    assert bounded  # keeps at least the newest entries
+    assert "k5" in bounded  # newest survive
+    assert "k0" not in bounded  # oldest dropped
+    assert set(bounded).issubset(set(snapshot))
+
+
+def test_persist_stays_under_cosmos_cap(_isolate, monkeypatch):
+    import json
+
+    from tripplanner import storage_cosmos
+
+    monkeypatch.setattr(pc, "_COSMOS_MAX_BYTES", 500)
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    captured: dict = {}
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda container, partition, doc_id, doc: captured.__setitem__("doc", doc),
+    )
+    now = time.time()
+    with pc._CACHE_LOCK:
+        for i in range(10):
+            pc._CACHE[f"k{i}"] = {"__at__": now + i, "blob": "y" * 80}
+    pc._persist_retry_after = 0.0
+    pc._persist()
+    body = json.dumps(captured["doc"], separators=(",", ":")).encode()
+    assert len(body) <= pc._COSMOS_MAX_BYTES
+
+
+
 def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
     original_lookup = pc._lookup_place
 

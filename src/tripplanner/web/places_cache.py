@@ -53,6 +53,8 @@ _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 _COSMOS_CONTAINER = "places_cache"
 _COSMOS_PARTITION = "_shared"  # places are global, not per-user
 _COSMOS_DOC_ID = "cache"
+# Cosmos rejects any item over 2 MiB; persist a size-bounded snapshot with margin.
+_COSMOS_MAX_BYTES = 1_900_000
 
 # Process-wide cache shared across FastAPI request and prefetch threads.
 _CACHE: dict[str, dict[str, Any]] = {}
@@ -119,6 +121,55 @@ def _persist() -> None:
         _persist_snapshot()
 
 
+def _live_snapshot() -> dict[str, dict[str, Any]]:
+    """Persist-ready copy of the cache.
+
+    Drops volatile photo URLs (they expire within ~1h and are re-resolved from
+    the long-lived ``photo_refs``) and skips entries whose TTL has already
+    lapsed — those are never served, so persisting them only bloats the doc.
+    Must be called while holding ``_CACHE_LOCK``.
+    """
+    now = time.time()
+    snapshot: dict[str, dict[str, Any]] = {}
+    for k, v in _CACHE.items():
+        ttl = _MISS_TTL_S if _is_miss(v) else _META_TTL_S
+        if (now - v.get("__at__", 0.0)) >= ttl:
+            continue
+        snapshot[k] = {
+            kk: vv for kk, vv in v.items() if kk not in ("photo_urls", "__photos_at__")
+        }
+    return snapshot
+
+
+def _bounded_for_cosmos(
+    snapshot: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Return a snapshot guaranteed to fit under Cosmos's per-item size cap.
+
+    Cosmos rejects any item over 2 MiB (``RequestEntityTooLarge``). Reviews and
+    photo refs can push the single shared cache doc past that, so when the
+    serialized doc would exceed ``_COSMOS_MAX_BYTES`` we keep the most recently
+    used entries (by ``__at__``) and drop the oldest. Dropped entries remain in
+    the in-memory cache and are simply re-warmed after a restart, so no served
+    data changes.
+    """
+    doc = {"entries": snapshot}
+    if len(json.dumps(doc, separators=(",", ":")).encode("utf-8")) <= _COSMOS_MAX_BYTES:
+        return snapshot
+    ordered = sorted(
+        snapshot.items(), key=lambda kv: kv[1].get("__at__", 0.0), reverse=True
+    )
+    kept: dict[str, dict[str, Any]] = {}
+    total = len(b'{"entries":{}}')
+    for k, v in ordered:
+        added = len(json.dumps({k: v}, separators=(",", ":")).encode("utf-8")) - 1
+        if total + added > _COSMOS_MAX_BYTES:
+            continue
+        kept[k] = v
+        total += added
+    return kept
+
+
 def _persist_snapshot() -> None:
     """Write ``_CACHE`` to the durable store. Best-effort; never raises.
 
@@ -129,14 +180,7 @@ def _persist_snapshot() -> None:
     with _CACHE_LOCK:
         if _suppress_persist:
             return
-        snapshot = {
-            k: {
-                kk: vv
-                for kk, vv in v.items()
-                if kk not in ("photo_urls", "__photos_at__")
-            }
-            for k, v in _CACHE.items()
-        }
+        snapshot = _live_snapshot()
         retry_after = _persist_retry_after
     now = time.time()
     try:
@@ -148,7 +192,7 @@ def _persist_snapshot() -> None:
                     _COSMOS_CONTAINER,
                     _COSMOS_PARTITION,
                     _COSMOS_DOC_ID,
-                    {"entries": snapshot},
+                    {"entries": _bounded_for_cosmos(snapshot)},
                 )
                 return
             except Exception as exc:  # noqa: BLE001
