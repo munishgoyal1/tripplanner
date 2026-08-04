@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Create, run, update, promote, and discard isolated trip-planner sandboxes.
+  Create, run, update, promote, ship, and discard isolated trip-planner sandboxes.
 
   A sandbox is a throwaway feature environment: its own git branch
   (sandbox/<slug>), its own worktree (sbx-<slug>), its own isolated ports, and
@@ -13,6 +13,7 @@
     .\scripts\dev\sandbox.ps1 -Run route-experiment
     .\scripts\dev\sandbox.ps1 -Update route-experiment
     .\scripts\dev\sandbox.ps1 -Promote route-experiment
+    .\scripts\dev\sandbox.ps1 -Ship route-experiment -Approve
     .\scripts\dev\sandbox.ps1 -Discard route-experiment
     .\scripts\dev\sandbox.ps1 -List
 #>
@@ -31,6 +32,9 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = "Update")]
     [string]$Update,
 
+    [Parameter(Mandatory = $true, ParameterSetName = "Ship")]
+    [string]$Ship,
+
     [Parameter(Mandatory = $true, ParameterSetName = "Discard")]
     [string]$Discard,
 
@@ -39,10 +43,20 @@ param(
 
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
+    [Parameter(ParameterSetName = "Ship")]
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
+
+    [Parameter(ParameterSetName = "Ship")]
+    [switch]$Approve,
+
+    [Parameter(ParameterSetName = "Ship")]
+    [switch]$SkipValidation,
+
+    [Parameter(ParameterSetName = "Ship")]
+    [switch]$KeepSandbox,
 
     [Parameter(ParameterSetName = "Discard")]
     [switch]$Force,
@@ -116,6 +130,39 @@ function Get-VenvPython {
     return "python"
 }
 
+function Invoke-SandboxValidation {
+    param([Parameter(Mandatory = $true)][string]$Worktree)
+
+    Write-Host "[check]   pytest" -ForegroundColor Cyan
+    $python = Get-VenvPython
+    # The shared venv installs tripplanner from the primary checkout, so without
+    # PYTHONPATH the suite silently imports the wrong tree and "passes".
+    $previousPythonPath = $env:PYTHONPATH
+    $env:PYTHONPATH = Join-Path $Worktree "src"
+    Push-Location $Worktree
+    try {
+        & $python -m pytest tests -q
+        if ($LASTEXITCODE -ne 0) { throw "pytest failed; fix it before shipping." }
+    } finally {
+        Pop-Location
+        $env:PYTHONPATH = $previousPythonPath
+    }
+
+    $frontend = Join-Path $Worktree "frontend"
+    if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+    Push-Location $frontend
+    try {
+        Write-Host "[check]   tsc" -ForegroundColor Cyan
+        & npx tsc --noEmit
+        if ($LASTEXITCODE -ne 0) { throw "tsc failed; fix it before shipping." }
+        Write-Host "[check]   vitest" -ForegroundColor Cyan
+        & npx vitest run
+        if ($LASTEXITCODE -ne 0) { throw "vitest failed; fix it before shipping." }
+    } finally {
+        Pop-Location
+    }
+}
+
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
     "rev-parse", "--path-format=absolute", "--git-common-dir"
@@ -136,7 +183,8 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
     return
 }
 
-$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } elseif ($Update) { $Update } else { $Discard }
+$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } `
+    elseif ($Update) { $Update } elseif ($Ship) { $Ship } else { $Discard }
 Assert-Slug -Name $slug
 $branchName = "sandbox/$slug"
 $worktreePath = Join-Path $worktreesRoot "sbx-$slug"
@@ -328,6 +376,85 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         Write-Host "  gh pr create --base $BaseBranch --head $($entry.branch) --fill"
         Write-Host "Run validation (pytest / npm run build) before merging."
     }
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Ship") {
+    if (-not (Test-Path $entry.worktree -PathType Container)) {
+        throw "Sandbox worktree is missing: $($entry.worktree)."
+    }
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        throw "GitHub CLI 'gh' is required by -Ship. Install it, or use -Promote and merge the PR yourself."
+    }
+    $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
+    if ($changes) {
+        throw "Sandbox has uncommitted changes. Commit them before shipping."
+    }
+    $action = if ($Approve) {
+        "Sync, validate, merge into $BaseBranch, and discard the sandbox"
+    } else {
+        "Sync, validate, and open a pull request into $BaseBranch"
+    }
+    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
+
+    Write-Host "== 1/5 sync with origin/$BaseBranch ==" -ForegroundColor Green
+    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -Confirm:$false
+    $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
+        "diff", "--name-only", "--diff-filter=U"
+    )
+    if ($conflicts) {
+        throw "Resolve and commit these conflicts, then re-run -Ship ${slug}:`n$($conflicts -join "`n")"
+    }
+
+    Write-Host "== 2/5 validate ==" -ForegroundColor Green
+    if ($SkipValidation) {
+        Write-Warning "Validation skipped (-SkipValidation)."
+    } else {
+        Invoke-SandboxValidation -Worktree $entry.worktree
+    }
+
+    Write-Host "== 3/5 push $($entry.branch) ==" -ForegroundColor Green
+    Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
+
+    Write-Host "== 4/5 pull request ==" -ForegroundColor Green
+    Push-Location $entry.worktree
+    try {
+        $prNumber = (& gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        if ($LASTEXITCODE -ne 0) { throw "gh pr list failed." }
+        if (-not $prNumber) {
+            & gh pr create --base $BaseBranch --head $entry.branch --fill
+            if ($LASTEXITCODE -ne 0) { throw "gh pr create failed." }
+            $prNumber = (& gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        }
+        if (-not $prNumber) { throw "Could not determine the pull request number for $($entry.branch)." }
+        Write-Host "[pr]      #$prNumber -> $BaseBranch"
+
+        if (-not $Approve) {
+            Write-Host "Review the PR, then merge and clean up with:" -ForegroundColor Yellow
+            Write-Host "  .\scripts\dev\sandbox.ps1 -Ship $slug -Approve"
+            return
+        }
+
+        Write-Host "== 5/5 merge and discard ==" -ForegroundColor Green
+        & gh pr merge $prNumber --merge
+        if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
+        Write-Host "[merged]  #$prNumber into $BaseBranch"
+    } finally {
+        Pop-Location
+    }
+
+    if ($KeepSandbox) {
+        Write-Host "[kept]    sandbox '$slug' (-KeepSandbox)"
+        return
+    }
+    # Discard refuses to run from inside the worktree it is about to remove.
+    Push-Location $primaryRoot
+    try {
+        & $PSCommandPath -Discard $slug -Force -DeleteRemoteBranch -Confirm:$false
+    } finally {
+        Pop-Location
+    }
+    Write-Host "Sync your other lanes so they pick up $BaseBranch." -ForegroundColor Cyan
     return
 }
 
