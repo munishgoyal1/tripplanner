@@ -72,6 +72,13 @@ foreach ($tool in $tools) {
     Install-MissingTool $tool
 }
 
+# Safe, self-healing merges for parallel worktree development: record and replay
+# conflict resolutions (rerere) and show the common ancestor in every conflict.
+& git -C $repoRoot config rerere.enabled true
+& git -C $repoRoot config rerere.autoupdate true
+& git -C $repoRoot config merge.conflictstyle zdiff3
+Write-Host "[ok] Git configured for rerere + zdiff3 conflict style"
+
 function Resolve-Python313 {
     if (Get-Command py -ErrorAction SilentlyContinue) {
         $resolved = & py -3.13 -c "import sys; print(sys.executable)" 2>$null

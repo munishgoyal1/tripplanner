@@ -165,6 +165,7 @@ function Update-Lane {
     try {
         Invoke-Git -WorkingDirectory $workingDirectory -Arguments @("config", "rerere.enabled", "true") | Out-Null
         Invoke-Git -WorkingDirectory $workingDirectory -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
+        Invoke-Git -WorkingDirectory $workingDirectory -Arguments @("config", "merge.conflictstyle", "zdiff3") | Out-Null
 
         $ownRemote = "origin/$branch"
         & git -C $workingDirectory rev-parse --verify --quiet $ownRemote | Out-Null

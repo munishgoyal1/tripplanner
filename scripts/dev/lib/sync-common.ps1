@@ -62,6 +62,7 @@ function Start-SyncLog {
         return $false
     }
     $global:TripplannerSyncPending = $false
+    $global:TripplannerSyncValidationFailed = $false
     $paths = Get-SyncPaths
     New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
     $stamp = (Get-Date).ToString("yyyyMMdd-HHmmss")
@@ -256,6 +257,188 @@ function Restore-LaneStash {
     Write-SyncLog -Level Warn "$Label local changes conflict with the new base; the safety stash was retained. Resolve: $($marked -join ', ')"
 }
 
+function Save-ValidationReport {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string[]]$Failures
+    )
+    $paths = Get-SyncPaths
+    New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
+    $stamp = (Get-Date).ToString("yyyyMMdd-HHmmss")
+    $reportPath = Join-Path $paths.LogDir ("validation-{0}.md" -f $stamp)
+    $lines = @(
+        "# Sync validation failed",
+        "",
+        "- When (UTC): $((Get-Date).ToUniversalTime().ToString('u'))",
+        "- Merged tree: $WorkingDirectory",
+        "",
+        "## Failing checks",
+        ""
+    )
+    foreach ($failure in $Failures) { $lines += "- $failure" }
+    $lines += @(
+        "",
+        "The integrated result was NOT published; master is unchanged. Fix the",
+        "merged tree above (or the offending commit), then re-run the sync. The",
+        "integration worktree was preserved for inspection."
+    )
+    Set-Content -Path $reportPath -Value $lines -Encoding UTF8
+    return $reportPath
+}
+
+function Get-PytestFailureIds {
+    param([AllowEmptyCollection()][AllowEmptyString()][string[]]$Lines = @())
+    $ids = [System.Collections.Generic.List[string]]::new()
+    foreach ($line in $Lines) {
+        if ($line -match '^\s*(?:FAILED|ERROR)\s+(\S+)') {
+            [void]$ids.Add($Matches[1])
+        }
+    }
+    return @($ids | Select-Object -Unique)
+}
+
+function Get-ValidationBaseline {
+    # Returns the recorded set of known-failing pytest node ids, or $null when no
+    # baseline exists yet (the first run seeds it and does not block).
+    $path = Join-Path (Get-SyncPaths).LogDir "validation-baseline.json"
+    if (-not (Test-Path $path)) { return $null }
+    try {
+        $data = Get-Content $path -Raw | ConvertFrom-Json
+        return @($data.failures)
+    } catch {
+        return @()
+    }
+}
+
+function Set-ValidationBaseline {
+    param([string[]]$Ids)
+    $paths = Get-SyncPaths
+    New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
+    $path = Join-Path $paths.LogDir "validation-baseline.json"
+    $payload = [pscustomobject]@{
+        updatedUtc = (Get-Date).ToUniversalTime().ToString("u")
+        failures   = @($Ids | Select-Object -Unique)
+    }
+    ($payload | ConvertTo-Json -Depth 4) | Set-Content -Path $path -Encoding UTF8
+}
+
+function Invoke-IntegrationValidation {
+    # Verifies a merged tree BEFORE it is published to master so a clean-but-broken
+    # merge cannot become the base everyone builds on. Dependencies are reused from
+    # the primary worktree (frontend node_modules via a junction; the primary .venv
+    # for Python) with PYTHONPATH pointed at the merged src, so nothing is
+    # reinstalled. Frontend vitest is a HARD gate (it is hermetic). Python is a
+    # REGRESSION gate: it blocks only on failures that are NEW versus a
+    # self-updating baseline, so pre-existing environmental/date-dependent failures
+    # never block a merge. A check whose toolchain is absent is skipped, not failed.
+    # Set TRIPPLANNER_SKIP_SYNC_VALIDATION=1 to bypass entirely.
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$PrimaryRoot
+    )
+
+    if ($env:TRIPPLANNER_SKIP_SYNC_VALIDATION) {
+        Write-SyncLog -Level Warn "Validation skipped (TRIPPLANNER_SKIP_SYNC_VALIDATION set); the merged code was NOT verified."
+        return $true
+    }
+
+    Write-SyncLog "Validating the merged tree before publishing to master..."
+    $blocking = [System.Collections.Generic.List[string]]::new()
+
+    # Python unit suite: regression gate against a self-updating baseline.
+    $pytestDir = Join-Path $WorkingDirectory "tests"
+    $python = Join-Path $PrimaryRoot ".venv/Scripts/python.exe"
+    if (-not (Test-Path $python)) {
+        $onPath = Get-Command python -ErrorAction SilentlyContinue
+        $python = if ($onPath) { $onPath.Source } else { $null }
+    }
+    if ((Test-Path $pytestDir -PathType Container) -and $python) {
+        & $python -c "import pytest, pydantic" 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-SyncLog "Running pytest on the merged tree..."
+            $priorPythonPath = $env:PYTHONPATH
+            $env:PYTHONPATH = (Join-Path $WorkingDirectory "src")
+            Push-Location $WorkingDirectory
+            try {
+                $pytestOutput = & $python -m pytest -q 2>&1
+                $code = $LASTEXITCODE
+            } finally {
+                Pop-Location
+                $env:PYTHONPATH = $priorPythonPath
+            }
+            $pytestOutput | Out-Host
+            $current = @(Get-PytestFailureIds -Lines @($pytestOutput | ForEach-Object { [string]$_ }))
+            if ($code -notin @(0, 5) -and $current.Count -eq 0) {
+                $current = @("pytest:run-error(exit $code)")
+            }
+            $baseline = Get-ValidationBaseline
+            if ($null -eq $baseline) {
+                Set-ValidationBaseline -Ids $current
+                if ($current.Count -gt 0) {
+                    Write-SyncLog -Level Warn "Python baseline established with $($current.Count) pre-existing failure(s); these won't block merges. Fix them to tighten the gate: $($current -join ', ')"
+                } else {
+                    Write-SyncLog "pytest passed (clean baseline established)."
+                }
+            } else {
+                $new = @($current | Where-Object { $_ -notin $baseline })
+                if ($new.Count -gt 0) {
+                    foreach ($id in $new) { $blocking.Add("pytest regression: $id") }
+                } else {
+                    Set-ValidationBaseline -Ids $current
+                    if ($current.Count -gt 0) {
+                        Write-SyncLog -Level Warn "$($current.Count) known pre-existing Python failure(s) ignored via baseline."
+                    } else {
+                        Write-SyncLog "pytest passed; no regressions."
+                    }
+                }
+            }
+        } else {
+            Write-SyncLog -Level Warn "Skipping pytest: $python lacks test dependencies (import pytest/pydantic failed)."
+        }
+    }
+
+    # Frontend unit suite (vitest on jsdom): hard gate, it is hermetic.
+    $frontendDir = Join-Path $WorkingDirectory "frontend"
+    if ((Test-Path (Join-Path $frontendDir "package.json")) -and
+        (Get-Command npm -ErrorAction SilentlyContinue)) {
+        $primaryModules = Join-Path $PrimaryRoot "frontend/node_modules"
+        $mergedModules = Join-Path $frontendDir "node_modules"
+        $linkedModules = $false
+        if ((Test-Path $primaryModules -PathType Container) -and -not (Test-Path $mergedModules)) {
+            New-Item -ItemType Junction -Path $mergedModules -Target $primaryModules -ErrorAction SilentlyContinue | Out-Null
+            $linkedModules = Test-Path $mergedModules
+        }
+        if (Test-Path $mergedModules) {
+            Write-SyncLog "Running frontend vitest on the merged tree..."
+            try {
+                & npm --prefix $frontendDir run test 2>&1 | Out-Host
+                $code = $LASTEXITCODE
+            } finally {
+                if ($linkedModules) {
+                    # Remove only the junction link; never recurse into the primary's modules.
+                    & cmd /c rmdir "$mergedModules" 2>$null
+                }
+            }
+            if ($code -ne 0) {
+                $blocking.Add("frontend vitest (exit $code)")
+            } else {
+                Write-SyncLog "Frontend vitest passed."
+            }
+        } else {
+            Write-SyncLog -Level Warn "Skipping frontend tests: node_modules was unavailable to link."
+        }
+    }
+
+    if ($blocking.Count -gt 0) {
+        $report = Save-ValidationReport -WorkingDirectory $WorkingDirectory -Failures @($blocking)
+        $global:TripplannerSyncValidationFailed = $true
+        Write-SyncLog -Level Error "Validation failed: $($blocking -join '; '). Report: $report"
+        return $false
+    }
+    Write-SyncLog "Validation passed; the merged tree is safe to publish."
+    return $true
+}
+
 function Complete-PendingMerges {
     # Finishes every merge recorded as pending once its conflicted files are
     # marker-free. Returns how many are still pending and whether an integration
@@ -307,6 +490,11 @@ function Complete-PendingMerges {
         }
 
         if ($entry.kind -eq "integration") {
+            if (-not (Invoke-IntegrationValidation -WorkingDirectory $wd -PrimaryRoot $paths.PrimaryRoot)) {
+                Write-SyncLog -Level Error "Not publishing $($entry.label): the merged tree failed validation. Kept pending."
+                $stillPending.Add($entry)
+                continue
+            }
             $resultHead = Invoke-SyncGit -WorkingDirectory $wd -Arguments @("rev-parse", "HEAD")
             Write-SyncLog "Pushing integrated result $($resultHead.Substring(0, 7)) to master..."
             Invoke-SyncGit -WorkingDirectory $wd -Arguments @("push", "origin", "${resultHead}:refs/heads/master") | Out-Null
@@ -359,7 +547,7 @@ function Invoke-PendingMergeHeal {
     Write-SyncLog "Detected $($pending.Count) pending merge(s); finishing before synchronizing..."
     $healed = Complete-PendingMerges
     if ($healed.StillPending -gt 0) {
-        throw "SYNC_CONFLICT_PENDING: $($healed.StillPending) merge(s) still carry conflict markers. Resolve the files listed above; the next sync finishes them automatically."
+        throw "SYNC_PENDING: $($healed.StillPending) merge(s) still need attention (unresolved conflict markers or a failed validation gate). See the reports above; the next sync retries automatically once they are fixed."
     }
     Write-SyncLog "All previously pending merges finished."
 }

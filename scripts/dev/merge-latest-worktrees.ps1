@@ -144,6 +144,7 @@ try {
     $integrationAdded = $true
     Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("config", "rerere.enabled", "true") | Out-Null
     Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
+    Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("config", "merge.conflictstyle", "zdiff3") | Out-Null
 
     foreach ($source in $sources) {
         & git -C $integrationRoot merge-base --is-ancestor $source.Head HEAD
@@ -165,6 +166,9 @@ try {
 
     $resultHead = Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("rev-parse", "HEAD")
     if ($resultHead -ne $originMaster) {
+        if (-not (Invoke-IntegrationValidation -WorkingDirectory $integrationRoot -PrimaryRoot $primaryRoot)) {
+            throw "SYNC_VALIDATION_FAILED: the merged tree failed validation and was NOT published; master is unchanged. See the validation report above, fix the merged tree at $integrationRoot (or the offending commit), then re-run."
+        }
         Write-Host "Pushing the integrated result to master..." -ForegroundColor Cyan
         Invoke-Git -WorkingDirectory $integrationRoot -Arguments @(
             "push", "origin", "${resultHead}:refs/heads/master"
@@ -173,12 +177,12 @@ try {
         Write-Host "No committed worktree changes need integration."
     }
 } finally {
-    if ($integrationAdded -and -not $global:TripplannerSyncPending) {
+    if ($integrationAdded -and -not ($global:TripplannerSyncPending -or $global:TripplannerSyncValidationFailed)) {
         & git -C $primaryRoot worktree remove --force $integrationRoot 2>$null
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "Could not remove temporary integration worktree: $integrationRoot"
         }
-    } elseif ($integrationAdded -and $global:TripplannerSyncPending) {
+    } elseif ($integrationAdded) {
         Write-SyncLog -Level Warn "Preserved integration worktree for resolution: $integrationRoot"
     }
 }

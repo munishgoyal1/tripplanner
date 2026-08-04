@@ -166,6 +166,31 @@ worktree; the launcher update engine keeps local changes in a safety stash until
 the merge finishes. Sibling code always reaches a worker through `master`; worker
 branches are not merged directly into one another.
 
+Every conflict is shown in `zdiff3` style (the repository sets
+`merge.conflictstyle=zdiff3`), so both sides and their common ancestor are visible
+in the markers. That base context makes each resolution far less likely to drop a
+side by accident.
+
+### Pre-publish validation gate
+
+An integrated result is verified before it is published to `master`, so a
+clean-but-broken merge cannot become the base everyone builds on. Dependencies are
+reused from the primary worktree (frontend `node_modules` via a junction; the
+primary `.venv` for Python) with `PYTHONPATH` pointed at the merged tree, so
+nothing is reinstalled.
+
+- **Frontend (`vitest`)** is a hard gate: any failure stops publication.
+- **Python (`pytest`)** is a regression gate. It blocks only on failures that are
+  new versus a self-updating baseline in `logs/sync/validation-baseline.json`, so
+  pre-existing environmental or date-dependent failures never block a merge, while
+  a genuinely new failure does.
+
+When validation fails the integrated result is not pushed, `master` stays
+unchanged, the merged worktree is preserved for inspection, and a report lands in
+`logs/sync/validation-<stamp>.md`. Fix the merged tree (or the offending commit)
+and re-run; a passing run publishes. A check whose toolchain is absent is skipped,
+never failed. Set `TRIPPLANNER_SKIP_SYNC_VALIDATION=1` to bypass the gate for a run.
+
 ### Run logs and pending state
 
 Every sync launcher writes a timestamped transcript to
