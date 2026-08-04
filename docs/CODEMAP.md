@@ -210,7 +210,7 @@ conversation or explicit edit
 | `scripts/user/` | Owner-facing sync and run launchers |
 | `scripts/sandbox/` | Owner-facing sandbox launchers (new, run, update, promote, ship, recycle, discard, list) |
 | `scripts/canary/` | Owner-facing launcher for the canary deployment |
-| `scripts/prod/` | Owner-facing launcher for the approval-gated production deployment |
+| `scripts/prod/` | Owner-facing launchers for the approval-gated production deployment and rollback |
 | `scripts/dev/` | Local stack, worktree sync, feature sandbox, and UI snapshot engines |
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
 | `tests/` | Python unit and integration tests |
