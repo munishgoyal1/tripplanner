@@ -20,3 +20,6 @@ Create one file contianing all features' summary with one-liners/short summary p
 and create individual feature level propsoal files. create and maintain 2-3 folders if too many files gettign accumulated in this root folder
 
 Last request - now onward maintain the prompts_executed.txt simply with exact my prompts copied in a tail appended log and numbered . just put one liner or few words title summary for each prompt. i want to use it to refer what all interaaction i have done with agent and re-use some prompts.
+
+[004] Sandbox workflow proposal for parallel feature eval
+Create a proposal plan on how can you create a setup that allows to execute on such proposals and create a fully functional actual features but in a parallel environment and may be in a parallel code branch etc. so that i can evaluate new features there and decide which ones to keep or which ones to revert. Without complexity and in a clean manner - I can simply say develop this new feature or improvement in the sandbox. then I can run the sandbox and experience that feature and then come and tell you now propagate that to main product, or discard it, or make few more changes.

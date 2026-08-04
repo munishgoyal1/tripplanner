@@ -12,11 +12,13 @@ in [FUTURE_FEATURES.md](../../roadmap/FUTURE_FEATURES.md) and the consent rule i
 | --- | --- |
 | [`feature-proposals/`](feature-proposals/) | New product feature proposals — value, UX, editing, chat, performance, and insight. |
 | [`tech-debt/`](tech-debt/) | Performance, race-condition, and maintainability improvement plans. |
+| [`dev-workflow/`](dev-workflow/) | Developer workflow and tooling proposals — how features get built, evaluated, and shipped. |
 
 ## Start here
 
 - Feature set overview (one-liners): [`feature-proposals/2026-08-04-feature-proposals-summary.md`](feature-proposals/2026-08-04-feature-proposals-summary.md)
 - Tech-debt plan: [`tech-debt/2026-08-04-tech-debt-improvement-plan.md`](tech-debt/2026-08-04-tech-debt-improvement-plan.md)
+- Feature sandbox workflow: [`dev-workflow/2026-08-04-feature-sandbox-workflow.md`](dev-workflow/2026-08-04-feature-sandbox-workflow.md)
 
 ## Conventions
 
