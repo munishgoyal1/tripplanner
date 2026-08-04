@@ -91,10 +91,11 @@ foreach ($t in $tags) {
 Write-Host "  ✓ Pushed`n"
 
 # Log it.
-$logDir = "logs"
-if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
+. "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
+$historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/image-pushes.log"
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Add-Content "logs/image-pushes.log" "[$timestamp] Pushed $($tags -join ', ') | By: $env:USERNAME"
+Add-Content $historyLog "[$timestamp] Pushed $($tags -join ', ') | By: $env:USERNAME"
 
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ IMAGE PUSHED                                          ║"

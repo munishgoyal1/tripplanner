@@ -6,20 +6,16 @@
 
 $MarkerPattern = "^(<<<<<<< |\|\|\|\|\|\|\| |=======$|>>>>>>> )"
 
+. "$PSScriptRoot/run-log.ps1"
+
 function Get-SyncPaths {
-    $common = & git -C $PSScriptRoot rev-parse --path-format=absolute --git-common-dir 2>$null
-    if ($LASTEXITCODE -eq 0 -and $common) {
-        $primaryRoot = Split-Path -Parent (@($common)[0])
-    } else {
-        # scripts/dev/lib -> scripts/dev -> scripts -> repo root
-        $primaryRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
-    }
+    $primaryRoot = Get-PrimaryRepoRoot
     $logDir = Join-Path $primaryRoot "logs/sync"
     [pscustomobject]@{
         PrimaryRoot = $primaryRoot
         LogDir      = $logDir
         PendingFile = Join-Path $logDir "pending-merge.json"
-        RunsIndex   = Join-Path $logDir "runs.log"
+        RunsIndex   = Join-Path $primaryRoot "logs/last-run/runs.log"
     }
 }
 
@@ -31,7 +27,7 @@ function Add-SyncRunIndex {
     )
     try {
         $paths = Get-SyncPaths
-        New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $paths.RunsIndex) | Out-Null
         $line = "{0}`t{1}`t{2}`t{3}" -f ((Get-Date).ToUniversalTime().ToString("u")), $Component, $Outcome, $LogPath
         Add-Content -Path $paths.RunsIndex -Value $line
     } catch {
@@ -65,11 +61,11 @@ function Start-SyncLog {
     $global:TripplannerSyncValidationFailed = $false
     $paths = Get-SyncPaths
     New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
-    $stamp = (Get-Date).ToString("yyyyMMdd-HHmmss")
-    $logPath = Join-Path $paths.LogDir ("{0}-{1}.log" -f $Component, $stamp)
+    # One overwritten file per component: the last run is what anyone debugs.
+    $logPath = Join-Path (Get-RunLogDirectory) "$Component.log"
     $transcript = $false
     try {
-        Start-Transcript -Path $logPath -Append -ErrorAction Stop | Out-Null
+        Start-Transcript -Path $logPath -Force -ErrorAction Stop | Out-Null
         $transcript = $true
     } catch {
         Set-Content -Path $logPath -Value ("[{0}] [INFO] Transcript unavailable; milestone logging only." -f ((Get-Date).ToUniversalTime().ToString("u")))

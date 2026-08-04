@@ -1,8 +1,16 @@
+. "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
+
 function Import-DeploymentEnvironment {
     param([Parameter(Mandatory)][string]$Path)
 
     if (-not (Test-Path $Path)) {
-        throw "Deployment environment file not found: $Path"
+        # Worktrees and sandboxes never carry .env.*; fall back to the primary checkout.
+        $shared = Join-Path (Get-PrimaryRepoRoot) (Split-Path -Leaf $Path)
+        if (-not (Test-Path $shared)) {
+            throw "Deployment environment file not found: $Path (also looked in $shared)"
+        }
+        Write-Host "[env]     $shared"
+        $Path = $shared
     }
 
     Get-Content $Path | ForEach-Object {

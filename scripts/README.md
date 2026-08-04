@@ -21,6 +21,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/sandbox.ps1` | Create, run, update, promote, ship, recycle, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
+| `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Sync-MeTo-Latest.cmd` | Synchronize committed code into the launcher worktree |
@@ -38,6 +39,11 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 | `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
+
+Every entry point above writes its latest run to
+`<primary-checkout>/logs/last-run/<name>.log`, overwritten each run, next to an
+append-only `runs.log` index. Any lane, worker, or sandbox reads the same files,
+so the last run of any script can be debugged from anywhere.
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,

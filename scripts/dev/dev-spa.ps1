@@ -57,6 +57,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/run-log.ps1"
+Start-RunLog -Name "dev-spa" | Out-Null
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $sharedRepoRoot = $repoRoot
 if (Get-Command git -ErrorAction SilentlyContinue) {

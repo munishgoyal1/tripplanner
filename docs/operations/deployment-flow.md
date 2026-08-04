@@ -47,9 +47,10 @@ callback bases are resolved by the deployment scripts.
 | Source and release commit | GitHub private repository |
 | Container image | `ghcr.io/munishgoyal1/tripplanner:<short-sha>` |
 | Convenience image pointer | `ghcr.io/munishgoyal1/tripplanner:latest` |
-| Image push history | Local ignored `logs/image-pushes.log` |
-| Canary deployment history | Local ignored `logs/deployments-canary.log` |
-| Production/rollback history | Local ignored `logs/deployments-prod.log` |
+| Image push history | Local ignored `logs/image-pushes.log` in the primary checkout |
+| Canary deployment history | Local ignored `logs/deployments-canary.log` in the primary checkout |
+| Production/rollback history | Local ignored `logs/deployments-prod.log` in the primary checkout |
+| Last run of any script | Local ignored `logs/last-run/<script>.log` in the primary checkout, overwritten per run |
 | App infrastructure | `infra/main.bicep` plus environment `.bicepparam` |
 | Production DNS | Namecheap records for `aitripplanner.co` and `www` |
 | Production TLS/domain bindings | Existing Azure managed certificates declared by `infra/main.bicep` |
