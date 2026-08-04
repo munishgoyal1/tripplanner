@@ -27,6 +27,47 @@ from tripplanner.config import get_settings
 from tripplanner.tools import user_preferences
 from tripplanner.web import places_cache
 
+# Budget/money helpers live in ``budget`` (tech-debt #7); re-exported here so
+# existing ``trip_view.*`` callers and tests are unaffected.
+from tripplanner.web.budget import (  # noqa: F401
+    _PRICE_KEYS,
+    _sum_item_prices,
+    _to_number,
+    build_budget,
+    currency_symbol,
+    fmt_money,
+    traveler_count,
+)
+
+# Transport-name helpers live in ``transport`` (tech-debt #7), a leaf module
+# shared by the gallery and map-pin builders; re-exported here for callers/tests.
+from tripplanner.web.transport import (  # noqa: F401
+    _canonical_transport_name,
+    _intercity_transfer_mode,
+    _normalized_stop_kind,
+    _transport_route_endpoints,
+    _transport_terminal_refs,
+)
+
+# Route-metric and stop-timing helpers live in ``schedule`` (tech-debt #7), a
+# pure-computation leaf module; re-exported here for callers/tests.
+from tripplanner.web.schedule import (  # noqa: F401
+    _INTERCITY_SPEED_KMH,
+    _apply_hotel_endpoint_times,
+    _apply_saved_transfer_metrics,
+    _clock_display,
+    _clock_minutes,
+    _day_schedule,
+    _enrich_drive_transfer_timing,
+    _enrich_stop_timing,
+    _haversine_km,
+    _route_duration_display,
+    _route_stats_for_coords,
+    _route_stats_for_day,
+    _route_stats_for_distance,
+    _stop_duration_display,
+)
+
 _MAX_GALLERY_ITEMS = 10
 _MAX_PHOTOS_PER_ITEM = 3
 _MAX_REVIEWS_PER_ITEM = 2
@@ -47,27 +88,6 @@ _TRANSPORT_KINDS = {"flight", "transport", "train", "bus", "car", "drive", "taxi
 _TRANSPORT_PREFIXES = {"flight", "drive", "train", "bus", "cab", "taxi", "ferry", "car"}
 _ROUTE_RE = re.compile(r":\s*.+\bto\b\s+(.+)$", re.I)
 
-# ISO code → display symbol. Anything not listed is shown verbatim (already a
-# symbol, or an exotic code we just print as-is).
-_CURRENCY_SYMBOLS = {
-    "INR": "\u20b9",
-    "USD": "$",
-    "EUR": "\u20ac",
-    "GBP": "\u00a3",
-    "JPY": "\u00a5",
-    "THB": "\u0e3f",
-    "AED": "AED ",
-    "AUD": "A$",
-    "SGD": "S$",
-    "CAD": "C$",
-    "CHF": "CHF ",
-}
-_PRICE_KEYS = ("price", "total_price", "total", "cost", "amount", "fare")
-_TRAVELER_RE = re.compile(
-    r"(\d+)\s*(adults?|children|child|kids?|elderly|seniors?|infants?|people|travell?ers?|pax)",
-    re.I,
-)
-
 
 # ---------------------------------------------------------------------------
 # pure helpers (no network) — safe to unit-test without stubs
@@ -86,130 +106,6 @@ def is_fallback(trip: dict[str, Any] | None, focus: dict[str, Any] | None) -> bo
     if focus and focus.get("name"):
         return False
     return bool(trip and trip.get("destination")) and not has_selections(trip)
-
-
-def fmt_money(value: Any, symbol: str = "\u20b9") -> str:
-    if isinstance(value, (int, float)) and value:
-        return f"{symbol}{value:,.0f}"
-    return "\u2014"
-
-
-def currency_symbol(trip: dict[str, Any] | None) -> str:
-    """Resolve the plan's sticky display currency to a render-ready symbol.
-
-    The trip agent stores its chosen currency on the plan (``currency``) as
-    either an ISO code (``"USD"``) or a symbol (``"$"``). Defaults to ₹ to match
-    the agent's domestic-India default.
-    """
-    raw = str((trip or {}).get("currency") or "").strip()
-    if not raw:
-        return "\u20b9"
-    return _CURRENCY_SYMBOLS.get(raw.upper(), raw)
-
-
-def _to_number(value: Any) -> float:
-    """Best-effort numeric coercion ("₹8,500", "8500", 8500.0 → 8500.0)."""
-    if isinstance(value, bool):
-        return 0.0
-    if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, str):
-        cleaned = re.sub(r"[^\d.]", "", value.replace(",", ""))
-        try:
-            return float(cleaned) if cleaned else 0.0
-        except ValueError:
-            return 0.0
-    return 0.0
-
-
-def _sum_item_prices(items: Any) -> float:
-    """Sum the first price-like field on each selected item dict."""
-    total = 0.0
-    for it in items or []:
-        if not isinstance(it, dict):
-            continue
-        for k in _PRICE_KEYS:
-            if k in it:
-                n = _to_number(it[k])
-                if n:
-                    total += n
-                    break
-    return total
-
-
-def traveler_count(travelers: Any) -> int:
-    """Headcount from a free-form travelers string ("2 adults, 1 child" → 3).
-
-    Only counts numbers that precede a traveler word so trailing ages
-    ("(ages 5)") don't inflate the total. Falls back to 1.
-    """
-    if isinstance(travelers, (int, float)) and not isinstance(travelers, bool):
-        return int(travelers) or 1
-    matches = _TRAVELER_RE.findall(str(travelers or ""))
-    count = sum(int(m[0]) for m in matches)
-    return count or 1
-
-
-def build_budget(trip: dict[str, Any] | None) -> dict[str, Any] | None:
-    """Live budget meter view-model: spend, per-traveler split, remaining-vs-target.
-
-    Pure aggregation over the active trip — no network. Returns ``None`` when
-    there's nothing to show (no spend recorded and no target set), so the
-    frontend can hide the meter entirely.
-
-    ``spent`` prefers the agent-maintained ``total_cost`` (authoritative) and
-    falls back to summing per-item prices. ``target`` comes from the optional
-    ``budget`` field the agent sets when the user states a budget for the trip.
-    """
-    if not trip:
-        return None
-
-    symbol = currency_symbol(trip)
-    breakdown = {
-        "flights": round(_sum_item_prices(trip.get("selected_flights")), 2),
-        "hotels": round(_sum_item_prices(trip.get("selected_hotels")), 2),
-        "activities": round(_sum_item_prices(trip.get("selected_activities")), 2),
-    }
-    from_items = sum(breakdown.values())
-    total_cost = _to_number(trip.get("total_cost"))
-    spent = round(total_cost if total_cost else from_items, 2)
-    target = _to_number(trip.get("budget"))
-
-    if spent <= 0 and target <= 0:
-        return None
-
-    heads = traveler_count(trip.get("travelers"))
-    per_traveler = round(spent / heads, 2) if heads else spent
-
-    out: dict[str, Any] = {
-        "currency": symbol,
-        "spent": spent,
-        "spent_display": fmt_money(spent, symbol),
-        "travelers": heads,
-        "per_traveler": per_traveler,
-        "per_traveler_display": fmt_money(per_traveler, symbol),
-        "breakdown": {k: v for k, v in breakdown.items() if v > 0},
-        "target": None,
-        "target_display": "",
-        "remaining": None,
-        "remaining_display": "",
-        "pct_used": None,
-        "over_budget": False,
-    }
-
-    if target > 0:
-        remaining = round(target - spent, 2)
-        out.update(
-            {
-                "target": round(target, 2),
-                "target_display": fmt_money(target, symbol),
-                "remaining": remaining,
-                "remaining_display": fmt_money(abs(remaining), symbol),
-                "pct_used": int(round(min(spent / target, 9.99) * 100)),
-                "over_budget": spent > target,
-            }
-        )
-    return out
 
 
 def family_pills(prefs: dict[str, Any] | None) -> list[str]:
@@ -1182,121 +1078,6 @@ def _trip_day_count(trip: dict[str, Any]) -> int:
     return 0
 
 
-def _transport_route_endpoints(name: str) -> tuple[str, str] | None:
-    route = str(name or "").strip()
-    route = re.sub(
-        r"^(?:(?:drive|driving|road journey|road transfer|transfer|private car|"
-        r"car(?: ride| transfer)?|taxi|flight|toy train|train|rail|bus)(?::|\s+))+(?:from\s+)?",
-        "",
-        route,
-        flags=re.I,
-    )
-    route = re.sub(
-        r"\s+(?:drive|driving|road journey|road transfer|by (?:private )?car|by road)$",
-        "",
-        route,
-        flags=re.I,
-    )
-    endpoints = re.split(r"\s+(?:to|->|→)\s+", route, maxsplit=1, flags=re.I)
-    if len(endpoints) != 2:
-        return None
-    origin, destination = (endpoint.strip() for endpoint in endpoints)
-    if not origin or not destination:
-        return None
-    return origin, destination
-
-
-def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
-    text = str(name or "").strip()
-    lowered = text.lower()
-    if not text:
-        return []
-    if kind not in {"flight", "transport"}:
-        if "airport" in lowered:
-            return [("airport", text)]
-        if "railway station" in lowered or "train station" in lowered:
-            return [("station", text)]
-        if "bus stand" in lowered or "bus station" in lowered:
-            return [("bus_station", text)]
-        return []
-
-    endpoints = _transport_route_endpoints(text)
-    if not endpoints:
-        return []
-    origin, destination = endpoints
-    if kind == "flight":
-        origin = origin if "airport" in origin.lower() else f"{origin} Airport"
-        destination = (
-            destination if "airport" in destination.lower() else f"{destination} Airport"
-        )
-        return [("airport", origin), ("airport", destination)]
-    if "train" in lowered or "rail" in lowered:
-        return [
-            ("station", f"{origin} Railway Station"),
-            ("station", f"{destination} Railway Station"),
-        ]
-    if "bus" in lowered:
-        return [("bus_station", f"{origin} Bus Stand"), ("bus_station", f"{destination} Bus Stand")]
-    if _intercity_transfer_mode(text, kind) == "Drive":
-        return [("origin", origin)]
-    return []
-
-
-def _intercity_transfer_mode(name: str, kind: str) -> str | None:
-    lowered = str(name or "").strip().lower()
-    if kind == "flight":
-        return "Flight"
-    if kind != "transport":
-        return None
-    if "train" in lowered or "rail" in lowered:
-        return "Train"
-    if "bus" in lowered:
-        return "Bus"
-    drive_terms = r"drive|driving|car|road (?:journey|transfer)"
-    directional_drive = bool(
-        re.search(rf"\b(?:{drive_terms})\b", lowered)
-        and (re.search(r"\bto\b|->|→", lowered) or lowered.startswith(("drive ", "driving ")))
-    )
-    if directional_drive:
-        return "Drive"
-    return None
-
-
-def _normalized_stop_kind(name: str, kind: str, mode: str = "") -> str:
-    normalized_kind = str(kind or "").strip().lower()
-    normalized_mode = str(mode or "").strip().lower()
-    if normalized_kind == "flight" or normalized_mode == "flight":
-        return "flight"
-    if normalized_mode in {"car", "drive", "train", "rail", "bus"} or (
-        _intercity_transfer_mode(name, "transport")
-    ):
-        return "transport"
-    return normalized_kind
-
-
-def _canonical_transport_name(name: str, mode: str = "") -> str:
-    text = str(name or "").strip()
-    normalized_mode = str(mode or "").strip().lower()
-    prefix = {
-        "car": "Drive",
-        "drive": "Drive",
-        "train": "Train",
-        "rail": "Train",
-        "bus": "Bus",
-    }.get(normalized_mode)
-    if not prefix or _intercity_transfer_mode(text, "transport"):
-        return text
-    return f"{prefix}: {text}"
-
-
-_INTERCITY_SPEED_KMH = {
-    "Flight": 650.0,
-    "Train": 80.0,
-    "Bus": 50.0,
-    "Drive": 65.0,
-}
-
-
 def _local_route_stop_indexes(stops: list[Any]) -> set[int]:
     transfer_indexes = [
         index
@@ -1532,423 +1313,6 @@ def _airport_pin(destination: str) -> dict[str, Any] | None:
         "lat": info["lat"],
         "lng": info["lng"],
     }
-
-
-def _haversine_km(a: tuple[float, float], b: tuple[float, float]) -> float:
-    """Great-circle distance in km between two (lat, lng) points."""
-    lat1, lng1 = math.radians(a[0]), math.radians(a[1])
-    lat2, lng2 = math.radians(b[0]), math.radians(b[1])
-    dlat = lat2 - lat1
-    dlng = lng2 - lng1
-    h = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(lat1) * math.cos(lat2) * math.sin(dlng / 2) ** 2
-    )
-    return 6371.0 * 2 * math.asin(math.sqrt(h))
-
-
-def _route_stats_for_day(
-    pin_ids: list[str], pin_by_id: dict[str, dict[str, Any]]
-) -> dict[str, Any]:
-    """Estimate day route metrics from ordered pins.
-
-    We avoid billed routing calls in this view-model. Distances are straight-
-    line totals along the day path; durations are coarse estimates by likely
-    local transfer mode.
-    """
-    coords: list[tuple[float, float]] = []
-    for pid in pin_ids:
-        p = pin_by_id.get(pid)
-        if not p:
-            continue
-        lat, lng = p.get("lat"), p.get("lng")
-        if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
-            coords.append((float(lat), float(lng)))
-
-    return _route_stats_for_coords(coords)
-
-
-def _route_stats_for_distance(
-    distance: float, *, from_name: str = "", to_name: str = ""
-) -> dict[str, Any]:
-    if distance <= 1.5:
-        mode, speed = "Walk", 4.5
-    elif distance <= 20:
-        mode, speed = "Taxi", 25.0
-    else:
-        mode, speed = "Taxi", 35.0
-
-    duration_min = int(round((distance / speed) * 60)) if speed > 0 else 0
-    distance_1 = round(distance, 1)
-    result = {
-        "distance_km": distance_1,
-        "duration_min": duration_min,
-        "mode": mode,
-        "distance_display": f"{distance_1:.1f} km",
-        "duration_display": _route_duration_display(duration_min),
-    }
-    if from_name and to_name:
-        if mode == "Walk":
-            result["detail"] = f"Walk from {from_name} to {to_name}."
-        elif mode == "Metro":
-            result["detail"] = (
-                f"Take the Metro from near {from_name} toward {to_name}; "
-                "walk to and from the nearest stations."
-            )
-        else:
-            result["detail"] = f"Take a taxi from {from_name} to {to_name}."
-    return result
-
-
-def _route_duration_display(duration_min: int) -> str:
-    if duration_min < 60:
-        return f"{duration_min} min"
-    hours, minutes = divmod(duration_min, 60)
-    return f"{hours} hr" + (f" {minutes} min" if minutes else "")
-
-
-def _stop_duration_display(duration_min: int) -> str:
-    if duration_min < 60:
-        return f"{duration_min} min"
-    hours, minutes = divmod(duration_min, 60)
-    unit = "hr" if hours == 1 else "hrs"
-    return f"{hours} {unit}" + (f" {minutes} min" if minutes else "")
-
-
-def _clock_minutes(value: Any) -> int | None:
-    match = re.fullmatch(r"\s*(\d{1,2}):(\d{2})(?:\s*([ap]m))?\s*", str(value or ""), re.I)
-    if not match:
-        return None
-    hours = int(match.group(1))
-    minutes = int(match.group(2))
-    meridiem = (match.group(3) or "").lower()
-    if minutes > 59 or hours > (12 if meridiem else 23):
-        return None
-    if meridiem:
-        hours %= 12
-        if meridiem == "pm":
-            hours += 12
-    return hours * 60 + minutes
-
-
-def _clock_display(minutes: int) -> str:
-    minutes %= 24 * 60
-    return f"{minutes // 60:02d}:{minutes % 60:02d}"
-
-
-def _day_schedule(stops: list[dict[str, Any]], route: dict[str, Any]) -> dict[str, Any]:
-    timed = [
-        (index, minutes)
-        for index, stop in enumerate(stops)
-        if (minutes := _clock_minutes(stop.get("time"))) is not None
-    ]
-    travel_minutes = int(route.get("duration_min") or 0)
-    if not timed:
-        visit_minutes = sum(
-            int(stop.get("duration_min") or 0)
-            for stop in stops
-            if stop.get("kind") != "hotel"
-        )
-        total = visit_minutes + travel_minutes
-        return {
-            "start": "",
-            "end": "",
-            "duration_min": total,
-            "duration_display": _route_duration_display(total),
-            "travel_duration_min": travel_minutes,
-            "travel_duration_display": _route_duration_display(travel_minutes),
-            "estimated": True,
-        }
-
-    first_index, first_time = timed[0]
-    last_index, last_time = timed[-1]
-    start = first_time - int(
-        (stops[first_index].get("travel_from_previous") or {}).get("duration_min") or 0
-    )
-    end = last_time
-    if end < first_time:
-        end += 24 * 60
-    end += sum(
-        int(stop.get("duration_min") or 0)
-        for stop in stops[last_index:]
-        if stop.get("kind") not in {"hotel", "flight", "transport"}
-    )
-    end += sum(
-        int((stop.get("travel_from_previous") or {}).get("duration_min") or 0)
-        for stop in stops[last_index + 1 :]
-    )
-    return {
-        "start": _clock_display(start),
-        "end": _clock_display(end),
-        "duration_min": max(0, end - start),
-        "duration_display": _route_duration_display(max(0, end - start)),
-        "travel_duration_min": travel_minutes,
-        "travel_duration_display": _route_duration_display(travel_minutes),
-        "estimated": any(stop.get("kind") == "hotel" and not stop.get("time") for stop in stops),
-    }
-
-
-def _enrich_stop_timing(stops: list[dict[str, Any]]) -> None:
-    for index, stop in enumerate(stops):
-        arrival = _clock_minutes(stop.get("time"))
-        if arrival is None:
-            continue
-
-        duration = int(stop.get("duration_min") or 0)
-        if stop.get("kind") == "flight" and stop.get("arrival_time"):
-            stop["departure_time"] = str(stop["arrival_time"])
-        elif duration > 0 and stop.get("kind") not in {"hotel", "flight"}:
-            stop["departure_time"] = _clock_display(arrival + duration)
-
-        if index == 0:
-            continue
-        previous = stops[index - 1]
-        previous_arrival = _clock_minutes(previous.get("time"))
-        if previous_arrival is None:
-            continue
-        previous_duration = int(previous.get("duration_min") or 0)
-        if previous.get("kind") == "hotel":
-            previous_duration = 0
-        travel_minutes = int(
-            (stop.get("travel_from_previous") or {}).get("duration_min") or 0
-        )
-        expected_arrival = previous_arrival + previous_duration + travel_minutes
-        actual_arrival = arrival
-        while actual_arrival < previous_arrival:
-            actual_arrival += 24 * 60
-        buffer_minutes = actual_arrival - expected_arrival
-        stop["expected_arrival_time"] = _clock_display(expected_arrival)
-        if buffer_minutes > 0:
-            stop["buffer_before_min"] = buffer_minutes
-            stop["buffer_before_display"] = _route_duration_display(buffer_minutes)
-        elif buffer_minutes < 0:
-            stop["timing_conflict_min"] = abs(buffer_minutes)
-            stop["timing_conflict_display"] = _route_duration_display(abs(buffer_minutes))
-
-
-def _enrich_drive_transfer_timing(
-    stops: list[dict[str, Any]],
-    place_coords_map: dict[str, tuple[float, float]],
-    transport_preferences: dict[str, Any] | None = None,
-) -> None:
-    preferences = transport_preferences or {}
-    max_continuous_min = int(preferences.get("max_continuous_drive_min") or 180)
-    break_duration_min = int(preferences.get("road_break_duration_min") or 30)
-    break_preferences = [
-        str(value).strip()
-        for value in preferences.get("road_break_preferences") or ["snack", "rest"]
-        if str(value).strip()
-    ]
-    for index in range(1, len(stops) - 1):
-        stop = stops[index]
-        if _intercity_transfer_mode(
-            str(stop.get("name") or ""), str(stop.get("kind") or "")
-        ) != "Drive":
-            continue
-
-        previous = stops[index - 1]
-        destination_index = next(
-            (
-                candidate_index
-                for candidate_index in range(index + 1, len(stops))
-                if stops[candidate_index].get("kind") == "hotel"
-            ),
-            -1,
-        )
-        if previous.get("kind") not in {"hotel", "origin"} or destination_index < 0:
-            continue
-        following = stops[destination_index]
-        waypoints = [
-            candidate
-            for candidate in stops[index + 1 : destination_index]
-            if candidate.get("kind") in {"attraction", "meal", "restaurant"}
-        ]
-        duration = stop.get("duration_min")
-        duration_estimated = False
-        if not isinstance(duration, (int, float)) or duration <= 0:
-            route_stops = [previous, *waypoints, following]
-            route_coords = [
-                place_coords_map.get(str(candidate.get("name") or "").strip().lower())
-                for candidate in route_stops
-            ]
-            if all(route_coords):
-                distance = sum(
-                    _haversine_km(route_coords[leg_index - 1], route_coords[leg_index])
-                    for leg_index in range(1, len(route_coords))
-                )
-                speed = _INTERCITY_SPEED_KMH["Drive"]
-                duration = max(1, int(round((distance / speed) * 60)))
-                stop["duration_min"] = duration
-                stop["duration_estimated"] = True
-                duration_estimated = True
-
-        route_stops = [previous, *waypoints, following]
-        drive_legs: list[dict[str, Any]] = []
-        for leg_index in range(1, len(route_stops)):
-            leg_start = route_stops[leg_index - 1]
-            leg_end = route_stops[leg_index]
-            start_coords = place_coords_map.get(
-                str(leg_start.get("name") or "").strip().lower()
-            )
-            end_coords = place_coords_map.get(
-                str(leg_end.get("name") or "").strip().lower()
-            )
-            if not start_coords or not end_coords:
-                continue
-            distance = _haversine_km(start_coords, end_coords)
-            duration_min = int(round((distance / _INTERCITY_SPEED_KMH["Drive"]) * 60))
-            leg = {
-                "distance_km": round(distance, 1),
-                "duration_min": duration_min,
-                "mode": "Drive",
-                "distance_display": f"{distance:.1f} km",
-                "duration_display": _route_duration_display(duration_min),
-            }
-            leg["detail"] = (
-                f"Continue in the same vehicle from {leg_start['name']} to {leg_end['name']}."
-            )
-            leg_end["travel_from_previous"] = leg
-            drive_legs.append(leg)
-
-        _apply_saved_transfer_metrics(
-            drive_legs,
-            {
-                metric: float(stop[metric])
-                for metric in ("distance_km", "duration_min")
-                if isinstance(stop.get(metric), (int, float)) and stop[metric] > 0
-            },
-        )
-
-        duration = stop.get("duration_min")
-        if isinstance(duration, (int, float)) and duration > 0:
-            break_count = max(0, (int(duration) - 1) // max(60, max_continuous_min))
-            if break_count:
-                if duration_estimated:
-                    duration = int(duration) + break_count * max(10, break_duration_min)
-                    stop["duration_min"] = duration
-                break_kind = "/".join(break_preferences[:2]) or "rest"
-                break_text = (
-                    f"one {break_duration_min} min {break_kind} break"
-                    if break_count == 1
-                    else f"{break_count} x {break_duration_min} min {break_kind} breaks"
-                )
-                stop["operational_time_display"] = (
-                    f"{_stop_duration_display(int(duration))} drive incl. {break_text}"
-                )
-
-        scenic_names = [
-            str(waypoint.get("name") or "").strip()
-            for waypoint in waypoints
-            if waypoint.get("kind") == "attraction"
-            and str(waypoint.get("name") or "").strip()
-        ]
-        meal_names = [
-            str(waypoint.get("name") or "").strip()
-            for waypoint in waypoints
-            if waypoint.get("kind") in {"meal", "restaurant"}
-            and str(waypoint.get("name") or "").strip()
-        ]
-        guidance = [
-            "Keep the same taxi or self-drive vehicle through the route stops "
-            f"and continue to {following['name']}."
-        ]
-        if scenic_names:
-            guidance.append(
-                "Use " + ", ".join(scenic_names) + " as short scenic breaks on the way."
-            )
-        if meal_names:
-            guidance.append("The planned meal stop is " + ", ".join(meal_names) + ".")
-        elif isinstance(duration, (int, float)) and duration >= 240:
-            guidance.append(
-                "Plan a lunch or substantial snack stop on the way; add a preferred venue "
-                "as a separate meal stop when timing or dietary needs matter."
-            )
-        existing_insight = str(stop.get("insight") or "").strip()
-        stop["insight"] = " ".join(
-            [text for text in [existing_insight, *guidance] if text]
-        )
-
-        if (
-            not stop.get("time")
-            and previous.get("kind") == "hotel"
-            and _clock_minutes(previous.get("time")) is not None
-        ):
-            stop["time"] = str(previous["time"])
-            stop["time_estimated"] = True
-
-
-def _apply_hotel_endpoint_times(
-    stops: list[dict[str, Any]], schedule: dict[str, Any]
-) -> None:
-    if not stops:
-        return
-    endpoints = ((stops[0], schedule.get("start")), (stops[-1], schedule.get("end")))
-    for stop, endpoint_time in endpoints:
-        if (
-            stop is stops[-1]
-            and len(stops) > 1
-            and stops[-2].get("kind") == "airport"
-            and not (stop.get("travel_from_previous") or {}).get("duration_min")
-        ):
-            continue
-        if stop.get("kind") == "hotel" and not stop.get("time") and endpoint_time:
-            stop["time"] = str(endpoint_time)
-            stop["time_estimated"] = True
-
-
-def _route_stats_for_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
-    legs = [
-        _route_stats_for_distance(_haversine_km(coords[i - 1], coords[i]))
-        for i in range(1, len(coords))
-    ]
-    if not legs:
-        return _route_stats_for_distance(0.0)
-    distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
-    duration = sum(int(leg["duration_min"]) for leg in legs)
-    modes = list(dict.fromkeys(str(leg["mode"]) for leg in legs))
-    mode = modes[0] if len(modes) == 1 else " + ".join(modes)
-    return {
-        "distance_km": distance,
-        "duration_min": duration,
-        "mode": mode,
-        "distance_display": f"{distance:.1f} km",
-        "duration_display": _route_duration_display(duration),
-    }
-
-
-def _apply_saved_transfer_metrics(
-    legs: list[dict[str, Any]], transfer_metrics: dict[str, float] | None
-) -> None:
-    if not legs:
-        return
-    saved_distance = (transfer_metrics or {}).get("distance_km")
-    saved_duration = (transfer_metrics or {}).get("duration_min")
-    if not isinstance(saved_distance, (int, float)) and not isinstance(
-        saved_duration, (int, float)
-    ):
-        return
-
-    weights = [max(float(leg["distance_km"]), 0.001) for leg in legs]
-    weight_total = sum(weights)
-    for metric_name, saved_total in (
-        ("distance_km", saved_distance),
-        ("duration_min", saved_duration),
-    ):
-        if not isinstance(saved_total, (int, float)) or saved_total <= 0:
-            continue
-        allocated = 0.0
-        for index, (leg, weight) in enumerate(zip(legs, weights)):
-            if index == len(legs) - 1:
-                value = saved_total - allocated
-            else:
-                value = saved_total * weight / weight_total
-                value = round(value, 1) if metric_name == "distance_km" else round(value)
-                allocated += value
-            leg[metric_name] = round(value, 1) if metric_name == "distance_km" else int(value)
-    for leg in legs:
-        leg["distance_display"] = f'{leg["distance_km"]:.1f} km'
-        leg["duration_display"] = _route_duration_display(leg["duration_min"])
-        leg["metrics_source"] = "saved"
 
 
 def _route_legs_for_day(
