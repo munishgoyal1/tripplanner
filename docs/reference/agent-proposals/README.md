@@ -25,7 +25,7 @@ in [FUTURE_FEATURES.md](../../roadmap/FUTURE_FEATURES.md) and the consent rule i
 
 - **Numbering:** every new proposal takes the next value from a single incremental
   counter shared across all folders (`feature-proposals/`, `tech-debt/`, `implemented/`).
-  **Next number: `ap-13`.** Bump this line whenever you claim a number.
+  **Next number: `ap-14`.** Bump this line whenever you claim a number.
 - Name each new proposal `ap-<num>-title.md` and put the `ap-<num>` id on the
   first line of the document (e.g. `# ap-13 — <title>`).
 - Pre-convention files (`01`–`09` and dated `YYYY-MM-DD-*`) are grandfathered — leave

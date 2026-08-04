@@ -205,13 +205,20 @@ def test_evict_keeps_under_cap(_isolate, monkeypatch):
 def test_persist_throttling_falls_back_to_local(_isolate, monkeypatch):
     from tripplanner import storage_cosmos
 
-    class FakeThrottle(Exception):
+    class ThrottleError(Exception):
         status_code = 429
 
-    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
-    monkeypatch.setattr(storage_cosmos, "upsert_doc", lambda *args, **kwargs: (_ for _ in ()).throw(FakeThrottle("throttled")))
     warnings: list[str] = []
-    monkeypatch.setattr(pc.log, "warning", lambda msg, *args: warnings.append(msg % args if args else msg))
+
+    def _throttled_upsert(*args, **kwargs):
+        raise ThrottleError("throttled")
+
+    def _capture_warning(msg, *args):
+        warnings.append(msg % args if args else msg)
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(storage_cosmos, "upsert_doc", _throttled_upsert)
+    monkeypatch.setattr(pc.log, "warning", _capture_warning)
 
     pc._CACHE[pc._key("Throttle Place", "Goa")] = {"__at__": time.time(), "name": "Throttle Place"}
     pc._persist_retry_after = 0.0
@@ -236,6 +243,83 @@ def test_concurrent_cache_updates_and_snapshots_remain_valid(_isolate):
 
     persisted = json.loads(pc._local_path().read_text(encoding="utf-8"))
     assert set(persisted["entries"]) == {pc._key(name, "Goa") for name in names}
+
+
+def test_live_snapshot_drops_expired_and_photo_urls(_isolate):
+    now = time.time()
+    with pc._CACHE_LOCK:
+        pc._CACHE.clear()
+        pc._CACHE[pc._key("Fresh", "Goa")] = {
+            "__at__": now,
+            "name": "Fresh",
+            "photo_urls": ["u"],
+            "__photos_at__": now,
+        }
+        pc._CACHE[pc._key("Stale", "Goa")] = {
+            "__at__": now - pc._META_TTL_S - 1,
+            "name": "Stale",
+        }
+        snap = pc._live_snapshot()
+    assert pc._key("Fresh", "Goa") in snap
+    assert pc._key("Stale", "Goa") not in snap  # expired entries are never served
+    fresh = snap[pc._key("Fresh", "Goa")]
+    assert "photo_urls" not in fresh and "__photos_at__" not in fresh
+
+
+def _fake_cosmos(monkeypatch, store: dict) -> None:
+    """Point the durable layer at an in-memory sharded store keyed by doc id."""
+    from tripplanner import storage_cosmos
+
+    monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: True)
+    monkeypatch.setattr(
+        storage_cosmos,
+        "upsert_doc",
+        lambda container, partition, doc_id, body: store.__setitem__(doc_id, body),
+    )
+    monkeypatch.setattr(
+        storage_cosmos,
+        "read_doc",
+        lambda container, partition, doc_id: store.get(doc_id),
+    )
+    monkeypatch.setattr(
+        storage_cosmos,
+        "delete_doc",
+        lambda container, partition, doc_id: store.pop(doc_id, None),
+    )
+
+
+def test_cosmos_persists_one_document_per_key(_isolate, monkeypatch):
+    store: dict = {}
+    _fake_cosmos(monkeypatch, store)
+    pc.get_summary("Taj", "Goa")
+    pc.get_summary("Oberoi", "Goa")
+    # One small Cosmos item per place key — not a single shared document.
+    assert pc._doc_id(pc._key("Taj", "Goa")) in store
+    assert pc._doc_id(pc._key("Oberoi", "Goa")) in store
+    assert pc._COSMOS_DOC_ID not in store  # no monolithic doc
+    body = store[pc._doc_id(pc._key("Taj", "Goa"))]
+    assert body["key"] == pc._key("Taj", "Goa")
+    assert body["entry"]["place_id"] == "id-Taj"
+
+
+def test_lazy_load_serves_from_cosmos_without_google(_isolate, monkeypatch):
+    store: dict = {}
+    _fake_cosmos(monkeypatch, store)
+    pc.get_summary("Taj", "Goa")
+    calls_before = _isolate["lookup"]
+    pc.clear_cache()  # simulate a fresh process with an empty L1 cache
+    result = pc.get_details("Taj", "Goa")
+    assert result and result["place_id"] == "id-Taj"
+    assert _isolate["lookup"] == calls_before  # served from Cosmos, no Google lookup
+
+
+def test_legacy_monolithic_doc_deleted_after_shard_write(_isolate, monkeypatch):
+    store: dict = {pc._COSMOS_DOC_ID: {"entries": {"old": {"__at__": time.time()}}}}
+    _fake_cosmos(monkeypatch, store)
+    pc.get_details("Taj", "Goa")
+    assert pc._COSMOS_DOC_ID not in store  # legacy doc cleaned up after migration
+
+
 
 
 def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
