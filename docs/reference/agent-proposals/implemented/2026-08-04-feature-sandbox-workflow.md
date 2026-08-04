@@ -1,9 +1,20 @@
 # Feature Sandbox Workflow — Proposal
 
 - **Date:** 2026-08-04
-- **Status:** Proposed — awaiting owner sign-off. Not implemented.
+- **Status:** **Implemented** (v1 scripts landed). Kept here for provenance.
 - **Type:** Dev-workflow / infrastructure (no product-behavior change).
 - **Suggested owner lane:** Agent 3 (Infra). Scripts only; no `src/` or `frontend/src/` product code.
+
+> **Implemented as:**
+> - `scripts/dev/sandbox.ps1` — `-New` / `-Run` / `-Promote` / `-Discard` / `-List` engine.
+> - `scripts/user/{New,Run,Promote,Discard,List}-Sandbox*.cmd` — owner-facing launchers.
+> - `scripts/dev/sandbox_seed.py` — emulator seed / drop / capture (guards `tripplanner-sbx-*`).
+> - `scripts/dev/dev-spa.ps1` — added `-CosmosDatabase` emulator override.
+> - `scripts/dev/sandbox-seed/README.md` — representative seed set (S1–S4) + capture guide.
+>
+> Deferred out of v1: product-level trip `schema_version` + migration path, tracked in
+> [`../tech-debt/2026-08-04-trip-schema-version-and-migration.md`](../tech-debt/2026-08-04-trip-schema-version-and-migration.md).
+> The sandbox uses a sandbox-local seed marker instead (proposal §8).
 
 ## 1. The ask
 
@@ -133,12 +144,41 @@ When the owner says *"develop feature X in the sandbox"*:
 
 ## 8. Data isolation & seeding
 
-- **Default:** dedicated emulator database `tripplanner-sbx-<slug>` (empty).
-- **Optional realistic seed:** copy trips from `tripplanner-local` (or a canary
-  snapshot) via `scripts/cosmos_copy.py` so the owner tests against real-looking
-  itineraries. Sandbox writes stay in the sandbox DB.
+Building a trip from scratch through the agent takes minutes, so a fast seed is the
+real performance win of reuse. But the repo has **no trip schema version and no
+migration framework** (schema is implicit in the Pydantic / view-model shape), so
+*stale* data can silently mismatch a feature that changes trip shape. Resolve both
+with a small, **shape-complete, regenerable** seed rather than inherited live state:
+
+- **Default:** dedicated emulator database `tripplanner-sbx-<slug>`, seeded from a
+  small curated snapshot. Loads in seconds — no multi-minute agent build.
+- **Representative seed set (small in volume, complete in shape):**
+  - **S1 — single-destination:** one city, round-trip flight + hotel + a few day
+    activities (the simplest common shape).
+  - **S2 — multi-city:** three cities with mixed inter-city transport (e.g. rail +
+    short-haul flight) and a stay per city.
+  - **S3 — complex multi-modal:** international flight in, an inter-city **train**
+    leg, and a self-**drive** road leg across a multi-day itinerary — exercises the
+    richest shape (air + train + road + lodging + activities).
+  - **S4 — minimal/empty:** destination chosen with a sparse itinerary, for
+    empty-state and trip-creation-path testing.
+  Keep each trip small: representative in *shape*, not bulk in *volume*.
+- **Seed source, not live carryover:** seed from checked-in fixtures (or a one-time
+  export of `tripplanner-local` via `scripts/cosmos_copy.py`), **not** the previous
+  feature's accumulated writes.
+- **Freshness guard (sandbox-local, not a product change):** stamp the seed with a
+  marker derived from the trip-shape model files (a hash, or the generating commit);
+  `New-Sandbox` / `Run-Sandbox` warn when the seed predates the current models and
+  offer to **regenerate** it. Convention: **a feature that changes trip shape
+  regenerates the seed**. This marker lives with the seed tooling — it does **not**
+  add a `schema_version` field to product trip documents.
 - **Hard guard:** never point a sandbox at production/canary write targets; the
   wrapper refuses non-sandbox database names.
+
+> **Product schema versioning is out of scope for this build-out.** Adding a durable
+> `schema_version` + migration path to trip documents is a separate, larger data-model
+> decision (it would also help canary/prod migrations) and needs explicit owner
+> consent — it is intentionally *not* bundled into the sandbox.
 
 ## 9. Feature flags (optional, complementary — not in v1)
 
@@ -203,3 +243,55 @@ wants staged rollouts — it is not needed for "keep or discard".
 3. **Concurrency:** one sandbox at a time for v1 (recommended) vs. multiple from day one.
 4. **Feature flags:** include the optional flag layer now or defer (recommended defer).
 5. **Branch namespace:** `sandbox/<slug>` (recommended) vs. reuse `agents/<slug>`.
+
+## 16. Addendum — multiple features per sandbox & reusing a sandbox
+
+Two owner optimization questions, with recommendations.
+
+### 16.1 More than one feature on the same sandbox branch?
+
+**Recommend: one feature per branch by default.** The sandbox's whole value is an
+*independent* keep-or-revert decision. Two features sharing a branch cannot be
+cleanly separated later — `git merge` promotes the whole branch, and cherry-picking
+intertwined commits is exactly the error-prone, regression-risky surgery to avoid.
+Keep each independently-decidable feature on its own `sandbox/<slug>` branch.
+
+Allow multiple on one branch only when they are decided together:
+
+- **Bundle:** features that are logically one change and will be kept or dropped as a
+  set.
+- **Stacked/dependent:** feature B genuinely builds on unpromoted feature A — branch
+  B off A (or share a branch), accepting they promote together.
+
+To *experience* several independent features at once without coupling their fate,
+use an optional **integration sandbox**: a throwaway branch that merges several
+`sandbox/*` branches purely to run them together, while each feature keeps its own
+branch for independent promote/discard. Optional/advanced — adds a little complexity,
+not part of v1.
+
+### 16.2 Reuse a sandbox for the next feature after promotion?
+
+**Recommend: reuse the environment, refresh the feature.** Separate two things:
+
+- **Slot (durable, reuse it):** the worktree + `.venv` + `node_modules` + allocated
+  ports + data database. This is the expensive part (per-worktree setup, disk); keep
+  it.
+- **Feature (ephemeral, refresh per feature):** the branch identity + working data.
+
+After a feature is **promoted** (branch now equals `master`) or **discarded**, before
+starting the next feature in the same slot:
+
+1. Sync the slot to latest `master` (which now contains the promoted feature), then
+   start a fresh `sandbox/<newslug>` from `master` in the same worktree (or reset the
+   branch hard to `origin/master`).
+2. Re-seed a fresh data database `tripplanner-sbx-<newslug>` from the small curated
+   snapshot (see §8), **not** the previous feature's live writes — this keeps the
+   multi-minute trip-build savings without inheriting stale or dirty state. If the
+   new feature changes trip shape, regenerate the seed first.
+3. Update the registry/label to the new slug.
+
+**Only reuse from a clean state** (previous feature promoted or discarded). Never
+start a new, unrelated feature on top of an un-decided one — that recreates the 16.1
+coupling problem. For data specifically, reuse a small curated seed for speed but
+never the previous feature's live writes, and regenerate it on schema changes (§8).
+Net: reuse saves setup cost while preserving clean keep/revert.

@@ -23,3 +23,26 @@ Last request - now onward maintain the prompts_executed.txt simply with exact my
 
 [004] Sandbox workflow proposal for parallel feature eval
 Create a proposal plan on how can you create a setup that allows to execute on such proposals and create a fully functional actual features but in a parallel environment and may be in a parallel code branch etc. so that i can evaluate new features there and decide which ones to keep or which ones to revert. Without complexity and in a clean manner - I can simply say develop this new feature or improvement in the sandbox. then I can run the sandbox and experience that feature and then come and tell you now propagate that to main product, or discard it, or make few more changes.
+
+
+[005] [4-Aug-2026] Robust parallel dev environment without Merge conflicts worry
+I hope you did it in such a way that never drops a code part, merges properly after due dilligence and does not cause regressions.
+
+[006] [4-Aug-2026] Multi-feature sandbox, reuse, and prompt-log propagation
+Can you allow for more than one features also on the same sandbox branch. Should we do that ?
+And should we reuse sandbox for fruther features, let's say after propagation it is matching the main. so we could continue building next features on same sandbox or will you not recommend that. I am just trying to optimize.
+
+Why is the prompts_executed.txt log maintianeance rule not propoageated to all the runnign agent instances yet ? Do the vscode instances (github agent) need to reload to effect. 
+
+THis will help me in faster parallel development without worrying about regressions. Is it possible to keep running 3-4 or more agents in paralle with improvement fixes etc. on each without worrying to keep their code area speerate, even they may change same fiels but you will be able ot o figure out the merge as you will end up maintaining approriate metadata of each change to each file that will give you proper context to seamlessly merge. 
+COnfirmt o me if this si sthe case or if you want to impopprove and strenghten thsi further. 
+After you confirm i want to start full throttle paralle develolpment and spin up many agents in apralle on same codebase.
+
+[007] [4-Aug-2026] Sandbox data reuse vs stale-schema tradeoff
+On #2 sandbox reuse - The data reuse is the one that could be imporant for performance, because it takes few minutes to create a new trip otherwise for a completely fresh sandbox. But i agree dont mix much, just minimal data part could be enough helpful. But also do take care that sometiems testing on old / stale data may be a problem in itself. as the new features may eb expecting data schema changes . What do you think
+
+[008] [4-Aug-2026] Representative seed set + schema-version scope
+For the data seed, the seed should be represenative of all key scenarios example - single destination trip, multi-city trip, complex trip itineary covering flight, train , road drive for inter city etc. so chose some such set of seed data. Are you intending to add schema version also as part of this sandbox build out
+
+[009] [4-Aug-2026] Implement sandbox; log schema proposal; move to implemented
+ok log the schema proposal seperately to be taken later. For now go implement the sandbox feature. Also when you implement then move those propsals into implemented folder
