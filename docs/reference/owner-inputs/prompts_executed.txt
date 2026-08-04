@@ -72,5 +72,38 @@ in this sbx 13 , city filters are not showing. bhiopal jn and rock shelters are 
 Quite slow to switch clicks across this details panel.
 Also - the new and top of must-visit / popular stack items that are not in trip should be shown towards top, order it that way.
 
-[015] [4-Aug-2026] Create downloadable architecture onboarding document
+[015] [4-Aug-2026] Map preview for guide picks; prewarm guide data
+
+[016] [4-Aug-2026] Fix day-row hang; details-pane add-to-trip day picker
+
+[017] [4-Aug-2026] Add sandbox -Update sync command
+
+[018] [4-Aug-2026] Itinerary jumps to row from details
+for in-trip places clicked in detail tab , do same movement to go to that item row in itiinerary , just consistent behaviour nothing else
+[019] [4-Aug-2026] Details card trip actions inconsistent
+why is the intrip + remove. and add to trip / add stay + day dropdown not consistently shwoing on the details card
+
+[020] [4-Aug-2026] Best day rename; reimagine details focus UX
+name Auto Day to Best Day for consistency with Map. 
+Clicking an item shows its details but why it moves out of the Whole Trip and start showing Whole Trip as a going back pointer. Also the city and place type filters stop showing. Reimagine the UX to amke it mroe friendly intuitive and breezy
+
+[021] [4-Aug-2026] Propagate lab-13 to master
+ok this looks good. propage it to master and this sandbox is done
+
+[022] [4-Aug-2026] End-to-end sandbox promotion script
+also add a new script that does this end to end promotion , merging and discarding etc.
+
+[023] [4-Aug-2026] Fix sandbox sync failure after ship
+i see this error [INFO] Resuming lane merge for Sandbox 'lab-13' in C:\repos\tripplanner.worktrees\sbx-lab-13 ... fatal: not a git repository ... git push -u origin HEAD:refs/heads/sandbox/lab-13 failed in C:\repos\tripplanner.worktrees\sbx-lab-13
+
+[024] [4-Aug-2026] Reuse sandbox after shipping question
+so are we going to reuse sandbox in some way for a new feature after done shipping a feature
+
+[025] [4-Aug-2026] Add sandbox recycle verb
+Yes add that, in case New is very slow I can use this
+
+[026] [4-Aug-2026] Park sandbox on ship, claim later
+at time of shipping i may nto know name of new slug so by default dont discard, just recycle and remmeber with the sandbox state. when i know the name i will run recycle again that time you can detect and just take the new slug name
+
+[027] [4-Aug-2026] Create downloadable architecture onboarding document
 create a pdf or word  or md doc out of this that i will download, and also commmit it to repo
