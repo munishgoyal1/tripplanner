@@ -538,9 +538,13 @@ def _build_item(
     }
 
 
-def _place_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any]]:
-    target = name.strip().lower()
-    occurrences: list[dict[str, Any]] = []
+def _place_occurrence_index(trip: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    """Map each lowercased stop name to its ordered occurrences.
+
+    Built once per view so per-item / per-pin lookups avoid rescanning the
+    whole itinerary.
+    """
+    index: dict[str, list[dict[str, Any]]] = {}
     for day_index, entry in enumerate(trip.get("day_wise_itinerary") or []):
         if not isinstance(entry, dict):
             continue
@@ -548,9 +552,7 @@ def _place_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any]]:
         day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else day_index + 1
         for stop_index, raw_stop in enumerate(entry.get("stops") or []):
             stop_name = raw_stop.get("name") if isinstance(raw_stop, dict) else raw_stop
-            if str(stop_name or "").strip().lower() != target:
-                continue
-            occurrences.append(
+            index.setdefault(str(stop_name or "").strip().lower(), []).append(
                 {
                     "day": day_num,
                     "stop": stop_index + 1,
@@ -559,12 +561,21 @@ def _place_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any]]:
                     else "",
                 }
             )
-    return occurrences
+    return index
 
 
-def _terminal_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any]]:
-    target = name.strip().lower()
-    occurrences: list[dict[str, Any]] = []
+def _place_occurrences(
+    trip: dict[str, Any],
+    name: str,
+    index: dict[str, list[dict[str, Any]]] | None = None,
+) -> list[dict[str, Any]]:
+    idx = index if index is not None else _place_occurrence_index(trip)
+    return [dict(occurrence) for occurrence in idx.get(name.strip().lower(), [])]
+
+
+def _terminal_occurrence_index(trip: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    """Map each lowercased transport-terminal name to its ordered occurrences."""
+    index: dict[str, list[dict[str, Any]]] = {}
     for day_index, entry in enumerate(trip.get("day_wise_itinerary") or []):
         if not isinstance(entry, dict):
             continue
@@ -577,15 +588,30 @@ def _terminal_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any
                 str(raw_stop.get("name") or ""),
                 str(raw_stop.get("kind") or "").strip().lower(),
             )
-            if any(terminal_name.strip().lower() == target for _, terminal_name in refs):
-                occurrences.append(
-                    {
-                        "day": day_num,
-                        "stop": stop_index,
-                        "time": str(raw_stop.get("time") or "").strip(),
-                    }
-                )
-    return occurrences
+            if not refs:
+                continue
+            occurrence = {
+                "day": day_num,
+                "stop": stop_index,
+                "time": str(raw_stop.get("time") or "").strip(),
+            }
+            seen: set[str] = set()
+            for _, terminal_name in refs:
+                key = terminal_name.strip().lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                index.setdefault(key, []).append(occurrence)
+    return index
+
+
+def _terminal_occurrences(
+    trip: dict[str, Any],
+    name: str,
+    index: dict[str, list[dict[str, Any]]] | None = None,
+) -> list[dict[str, Any]]:
+    idx = index if index is not None else _terminal_occurrence_index(trip)
+    return [dict(occurrence) for occurrence in idx.get(name.strip().lower(), [])]
 
 
 def build_view(
@@ -626,15 +652,17 @@ def build_view(
     places_cache.prefetch(
         [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
     )
+    place_occurrences = _place_occurrence_index(trip)
+    terminal_occurrences = _terminal_occurrence_index(trip)
     items = [
         _build_item(
             ref,
             destination,
             selected_names,
             itinerary_names,
-            _terminal_occurrences(trip, ref["name"])
+            _terminal_occurrences(trip, ref["name"], terminal_occurrences)
             if ref["kind"] in {"airport", "station", "bus_station"}
-            else _place_occurrences(trip, ref["name"]),
+            else _place_occurrences(trip, ref["name"], place_occurrences),
         )
         for ref in refs
     ]
@@ -1043,6 +1071,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
         [n for _, n in refs], destination, max_photos=1, with_reviews=False
     )
 
+    place_occurrences = _place_occurrence_index(trip)
     pins: list[dict[str, Any]] = []
     for i, (kind, name) in enumerate(refs):
         info = places_cache.get_details(name, destination) or {}
@@ -1076,7 +1105,7 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 "rating": info.get("rating"),
                 "address": info.get("address") or "",
                 "photo": photos[0] if photos else None,
-                "occurrences": _place_occurrences(trip, name),
+                "occurrences": _place_occurrences(trip, name, place_occurrences),
             }
         )
 
@@ -1760,6 +1789,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         int(day["day"]): day for day in build_itinerary(trip).get("days", [])
     }
     terminal_kinds = {"airport", "station", "bus_station"}
+    terminal_occurrences = _terminal_occurrence_index(trip)
     for pin in pins:
         rendered_occurrences = [
             {
@@ -1786,7 +1816,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             pin["occurrences"] = rendered_occurrences
         elif pin["kind"] in terminal_kinds:
             pin["occurrences"] = _terminal_occurrences(
-                trip, str(pin["_source_name"])
+                trip, str(pin["_source_name"]), terminal_occurrences
             )
 
     pin_by_name: dict[str, dict[str, Any]] = {}
