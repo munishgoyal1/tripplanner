@@ -261,6 +261,11 @@ if (-not $BackendOnly) {
         $env:VITE_API_TARGET = "http://localhost:$ApiPort"
         $env:VITE_PORT = "$FrontendPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
+        # Stable guest identity for emulator dev; the sandbox seed re-owns the
+        # owner's data under this id (keep in sync with sandbox_seed.py).
+        if ($configuredCosmosBackend -eq "emulator") {
+            $env:VITE_DEV_GUEST_ID = "web-00000000-0000-4000-8000-000000000001"
+        }
         npm run dev
     }
     finally {
