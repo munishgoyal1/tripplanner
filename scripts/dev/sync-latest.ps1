@@ -9,6 +9,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/sync-common.ps1"
+$syncLogOwned = Start-SyncLog -Component "sync-latest"
+try {
+
+if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
+
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $branch = & git -C $repoRoot branch --show-current
 $gitExitCode = $LASTEXITCODE
@@ -48,3 +54,8 @@ if ($Target -ne "onlyfrommaster") {
 
 Write-Host "Applying latest master to $laneName..." -ForegroundColor Cyan
 & "$PSScriptRoot\update-from-master.ps1" $agentNumber -ValidateOnly:$ValidateOnly
+
+}
+finally {
+    if ($syncLogOwned) { Stop-SyncLog }
+}

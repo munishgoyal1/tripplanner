@@ -23,17 +23,23 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/sync-common.ps1"
 $syncParameters = @{}
 if ($ValidateOnly) {
 	$syncParameters.ValidateOnly = $true
 }
 
-if ($Target -eq "all" -or $AllWorktrees) {
-	Write-Host "Synchronizing latest committed code into all worktrees..." -ForegroundColor Cyan
-	& "$PSScriptRoot\all-worktrees-sync.ps1" @syncParameters
-} else {
-	Write-Host "Synchronizing latest committed code into this worktree..." -ForegroundColor Cyan
-	& "$PSScriptRoot\sync-latest.ps1" @syncParameters
+$syncLogOwned = Start-SyncLog -Component "run-latest"
+try {
+    if ($Target -eq "all" -or $AllWorktrees) {
+        Write-Host "Synchronizing latest committed code into all worktrees..." -ForegroundColor Cyan
+        & "$PSScriptRoot\all-worktrees-sync.ps1" @syncParameters
+    } else {
+        Write-Host "Synchronizing latest committed code into this worktree..." -ForegroundColor Cyan
+        & "$PSScriptRoot\sync-latest.ps1" @syncParameters
+    }
+} finally {
+    if ($syncLogOwned) { Stop-SyncLog }
 }
 
 if ($ValidateOnly) {

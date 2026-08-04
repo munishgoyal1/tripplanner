@@ -41,9 +41,10 @@ Use these launchers by outcome:
 | Launcher | Purpose |
 | --- | --- |
 | `scripts/user/Sync-MeTo-Latest.cmd` | Integrate every committed worker head through `master`, then update only the launcher worktree. Pass `onlyfrommaster` to skip sibling integration. |
-| `scripts/user/Sync-AllTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent and Agents 1-3 while preserving each worktree's local edits. |
+| `scripts/user/Sync-AllTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, then update MasterAgent and Agents 1-3 while preserving each worktree's local edits. Verifies the merged tree (frontend `vitest` hard gate; `pytest` regression gate vs `logs/sync/validation-baseline.json`) before publishing to `master`. |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. All stack options are optional and forwarded; pass `all` or `-All` to synchronize every worktree first. |
+| `scripts/dev/resume-merge.ps1` | Finish any sync merge that stopped with `SYNC_CONFLICT_PENDING` once the conflicted files are resolved, then propagate the integrated `master` into every worktree. Reads `logs/sync/pending-merge.json` and runs non-interactively; the sync launchers also finish resolved pending merges automatically at the start of their next run. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 ---

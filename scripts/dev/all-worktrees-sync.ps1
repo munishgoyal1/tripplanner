@@ -5,6 +5,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/sync-common.ps1"
 $failures = [System.Collections.Generic.List[object]]::new()
 $laneNames = @{
     0 = "MasterAgent (0)"
@@ -12,6 +13,11 @@ $laneNames = @{
     2 = "Agent 2"
     3 = "Agent 3 - Infra"
 }
+
+$syncLogOwned = Start-SyncLog -Component "all-worktrees-sync"
+try {
+
+if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
 
 Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
 & "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
@@ -44,3 +50,8 @@ if ($ValidateOnly) {
 }
 
 Write-Host "`nDone: master and every worker worktree are synchronized." -ForegroundColor Green
+
+}
+finally {
+    if ($syncLogOwned) { Stop-SyncLog }
+}
