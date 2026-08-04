@@ -113,6 +113,7 @@ export default function RightRail({
               focusName={focusName}
               focusDay={focusDay}
               focusStop={focusStop}
+              focusToken={focusToken}
               circuitFocusDay={circuitFocusDay}
               circuitFocusToken={circuitFocusToken}
               jumpTo={itineraryJump}
