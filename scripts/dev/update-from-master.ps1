@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/sync-common.ps1"
 
 function Invoke-Git {
     param(
@@ -26,68 +27,6 @@ function Invoke-Git {
     return $output
 }
 
-function Complete-MergeConflict {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$WorkingDirectory,
-
-        [Parameter(Mandatory = $true)]
-        [string]$LaneName
-    )
-
-    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
-    $remaining = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
-        "diff", "--name-only", "--diff-filter=U"
-    ))
-    if ($remaining.Count -eq 0) {
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
-        Write-Host "Reused a recorded conflict resolution in $LaneName." -ForegroundColor Green
-        return
-    }
-
-    Write-Host "`n$LaneName has new conflicts that need a semantic decision:" -ForegroundColor Yellow
-    $remaining | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
-    Write-Host "Resolve them in: $WorkingDirectory"
-
-    while ($true) {
-        $confirmation = Read-Host "Type RESOLVED to verify and continue, or ABORT to restore the pre-merge state"
-        if ($confirmation -eq "ABORT") {
-            Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("merge", "--abort") | Out-Null
-            throw "$LaneName merge was aborted."
-        }
-        if ($confirmation -ne "RESOLVED") {
-            Write-Host "Enter exactly RESOLVED or ABORT." -ForegroundColor Yellow
-            continue
-        }
-
-        $markers = & git -C $WorkingDirectory grep -n `
-            -e "^<<<<<<< " -e "^||||||| " -e "^=======$" -e "^>>>>>>> " `
-            -- @remaining
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "Conflict markers remain:`n$($markers -join [Environment]::NewLine)" -ForegroundColor Yellow
-            continue
-        }
-        if ($LASTEXITCODE -ne 1) {
-            throw "Could not scan resolved files for conflict markers."
-        }
-
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments (@("add", "--") + $remaining) | Out-Null
-        $unresolved = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
-            "diff", "--name-only", "--diff-filter=U"
-        ))
-        if ($unresolved.Count -gt 0) {
-            Write-Host "Still unresolved:`n$($unresolved -join [Environment]::NewLine)" -ForegroundColor Yellow
-            continue
-        }
-
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--cached", "--check") | Out-Null
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
-        Write-Host "Recorded the conflict resolution in $LaneName." -ForegroundColor Green
-        return
-    }
-}
-
 function Merge-RemoteRef {
     param(
         [Parameter(Mandatory = $true)]
@@ -97,7 +36,12 @@ function Merge-RemoteRef {
         [string]$RemoteRef,
 
         [Parameter(Mandatory = $true)]
-        [string]$LaneName
+        [string]$LaneName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Branch,
+
+        [string]$StashCommit = ""
     )
 
     & git -C $WorkingDirectory merge --no-edit $RemoteRef
@@ -110,7 +54,8 @@ function Merge-RemoteRef {
         throw "Could not merge $RemoteRef into $LaneName."
     }
 
-    Complete-MergeConflict -WorkingDirectory $WorkingDirectory -LaneName $LaneName
+    Complete-MergeConflict -WorkingDirectory $WorkingDirectory -Label $LaneName `
+        -Kind "lane" -Branch $Branch -StashCommit $StashCommit
 }
 
 function Restore-SafetyStash {
@@ -224,13 +169,15 @@ function Update-Lane {
         $ownRemote = "origin/$branch"
         & git -C $workingDirectory rev-parse --verify --quiet $ownRemote | Out-Null
         if ($LASTEXITCODE -eq 0) {
-            Merge-RemoteRef -WorkingDirectory $workingDirectory -RemoteRef $ownRemote -LaneName $laneName
+            Merge-RemoteRef -WorkingDirectory $workingDirectory -RemoteRef $ownRemote `
+                -LaneName $laneName -Branch $branch -StashCommit $stashCommit
         } elseif ($LASTEXITCODE -ne 1) {
             throw "Could not inspect $ownRemote."
         }
 
         if ($Number -ne 0) {
-            Merge-RemoteRef -WorkingDirectory $workingDirectory -RemoteRef "origin/master" -LaneName $laneName
+            Merge-RemoteRef -WorkingDirectory $workingDirectory -RemoteRef "origin/master" `
+                -LaneName $laneName -Branch $branch -StashCommit $stashCommit
         }
 
         Invoke-Git -WorkingDirectory $workingDirectory -Arguments @(
@@ -256,6 +203,9 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw "Git is not available on PATH."
 }
 
+$syncLogOwned = Start-SyncLog -Component "update-from-master"
+try {
+
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = Invoke-Git -WorkingDirectory $repoRoot -Arguments @(
     "rev-parse", "--path-format=absolute", "--git-common-dir"
@@ -274,4 +224,9 @@ if (-not $ValidateOnly) {
 
 foreach ($number in $workerNumbers) {
     Update-Lane -Number $number -PrimaryRoot $primaryRoot -ValidateOnly:$ValidateOnly
+}
+
+}
+finally {
+    if ($syncLogOwned) { Stop-SyncLog }
 }

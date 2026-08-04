@@ -11,6 +11,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/sync-common.ps1"
 
 function Invoke-Git {
     param(
@@ -26,68 +27,6 @@ function Invoke-Git {
         throw "git $($Arguments -join ' ') failed in $WorkingDirectory."
     }
     return $output
-}
-
-function Complete-MergeConflict {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$WorkingDirectory,
-
-        [Parameter(Mandatory = $true)]
-        [string]$SourceName
-    )
-
-    Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
-    $remaining = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
-        "diff", "--name-only", "--diff-filter=U"
-    ))
-    if ($remaining.Count -eq 0) {
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
-        Write-Host "Reused a recorded conflict resolution for $SourceName." -ForegroundColor Green
-        return
-    }
-
-    Write-Host "`n$SourceName has new conflicts that need a semantic decision:" -ForegroundColor Yellow
-    $remaining | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
-    Write-Host "Resolve them in the temporary integration worktree: $WorkingDirectory"
-
-    while ($true) {
-        $confirmation = Read-Host "Type RESOLVED to verify and continue, or ABORT to leave master unchanged"
-        if ($confirmation -eq "ABORT") {
-            Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("merge", "--abort") | Out-Null
-            throw "Integration of $SourceName was aborted. No real worktree was modified."
-        }
-        if ($confirmation -ne "RESOLVED") {
-            Write-Host "Enter exactly RESOLVED or ABORT." -ForegroundColor Yellow
-            continue
-        }
-
-        $markers = & git -C $WorkingDirectory grep -n `
-            -e "^<<<<<<< " -e "^||||||| " -e "^=======$" -e "^>>>>>>> " `
-            -- @remaining
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "Conflict markers remain:`n$($markers -join [Environment]::NewLine)" -ForegroundColor Yellow
-            continue
-        }
-        if ($LASTEXITCODE -ne 1) {
-            throw "Could not scan resolved files for conflict markers."
-        }
-
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("rerere") | Out-Host
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments (@("add", "--") + $remaining) | Out-Null
-        $unresolved = @(Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @(
-            "diff", "--name-only", "--diff-filter=U"
-        ))
-        if ($unresolved.Count -gt 0) {
-            Write-Host "Still unresolved:`n$($unresolved -join [Environment]::NewLine)" -ForegroundColor Yellow
-            continue
-        }
-
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--cached", "--check") | Out-Null
-        Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("commit", "--no-edit") | Out-Null
-        Write-Host "Recorded the conflict resolution for $SourceName." -ForegroundColor Green
-        return
-    }
 }
 
 function Get-WorktreeHeads {
@@ -131,6 +70,9 @@ function Get-WorktreeHeads {
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw "Git is not available on PATH."
 }
+
+$syncLogOwned = Start-SyncLog -Component "merge-latest-worktrees"
+try {
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = Invoke-Git -WorkingDirectory $repoRoot -Arguments @(
@@ -213,10 +155,11 @@ try {
             throw "Could not compare $($source.Branch) with the integration head."
         }
 
-        Write-Host "Merging committed $($source.Branch) head $($source.Head.Substring(0, 7))..." -ForegroundColor Cyan
+        Write-SyncLog "Merging committed $($source.Branch) head $($source.Head.Substring(0, 7)) into the integration worktree..."
         & git -C $integrationRoot merge --no-edit --no-ff $source.Head
         if ($LASTEXITCODE -ne 0) {
-            Complete-MergeConflict -WorkingDirectory $integrationRoot -SourceName $source.Branch
+            Complete-MergeConflict -WorkingDirectory $integrationRoot -Label $source.Branch `
+                -Kind "integration" -Branch "master" -SourceHead $source.Head
         }
     }
 
@@ -230,11 +173,13 @@ try {
         Write-Host "No committed worktree changes need integration."
     }
 } finally {
-    if ($integrationAdded) {
+    if ($integrationAdded -and -not $global:TripplannerSyncPending) {
         & git -C $primaryRoot worktree remove --force $integrationRoot 2>$null
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "Could not remove temporary integration worktree: $integrationRoot"
         }
+    } elseif ($integrationAdded -and $global:TripplannerSyncPending) {
+        Write-SyncLog -Level Warn "Preserved integration worktree for resolution: $integrationRoot"
     }
 }
 
@@ -268,3 +213,8 @@ try {
 
 $updatedHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")
 Write-Host "Done: master is current at $($updatedHead.Substring(0, 7)); worker worktrees were untouched." -ForegroundColor Green
+
+}
+finally {
+    if ($syncLogOwned) { Stop-SyncLog }
+}
