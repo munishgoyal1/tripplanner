@@ -133,10 +133,25 @@ When the owner says *"develop feature X in the sandbox"*:
 
 ## 8. Data isolation & seeding
 
-- **Default:** dedicated emulator database `tripplanner-sbx-<slug>` (empty).
-- **Optional realistic seed:** copy trips from `tripplanner-local` (or a canary
-  snapshot) via `scripts/cosmos_copy.py` so the owner tests against real-looking
-  itineraries. Sandbox writes stay in the sandbox DB.
+Building a trip from scratch through the agent takes minutes, so a fast seed is the
+real performance win of reuse. But the repo has **no trip schema version and no
+migration framework** (schema is implicit in the Pydantic / view-model shape), so
+*stale* data can silently mismatch a feature that changes trip shape. Resolve both
+with a small, regenerable seed rather than inherited live state:
+
+- **Default:** dedicated emulator database `tripplanner-sbx-<slug>`, seeded from a
+  **small curated snapshot** (1–2 representative trips: multi-day itinerary + map +
+  details + a short chat transcript). Loads in seconds — no multi-minute agent build.
+- **Seed source, not live carryover:** seed from a checked-in fixture (or a one-time
+  export of `tripplanner-local` via `scripts/cosmos_copy.py`), **not** the previous
+  feature's accumulated writes. Realistic data without dragging one feature's mutated
+  state into the next evaluation.
+- **Freshness guard (the drift remedy):** stamp the seed with a version / commit
+  marker; `New-Sandbox` / `Run-Sandbox` warn when the seed predates the current
+  models and offer to **regenerate** it — the clean fix, since there is no document
+  migration path. Convention: **a feature that changes trip shape regenerates the
+  seed** as part of its work.
+- **Keep it minimal:** a couple of trips is enough; do not seed bulk data.
 - **Hard guard:** never point a sandbox at production/canary write targets; the
   wrapper refuses non-sandbox database names.
 
@@ -244,10 +259,14 @@ starting the next feature in the same slot:
 1. Sync the slot to latest `master` (which now contains the promoted feature), then
    start a fresh `sandbox/<newslug>` from `master` in the same worktree (or reset the
    branch hard to `origin/master`).
-2. Reset/rename the data database to `tripplanner-sbx-<newslug>` so the previous
-   feature's trips do not leak into the new evaluation.
+2. Re-seed a fresh data database `tripplanner-sbx-<newslug>` from the small curated
+   snapshot (see §8), **not** the previous feature's live writes — this keeps the
+   multi-minute trip-build savings without inheriting stale or dirty state. If the
+   new feature changes trip shape, regenerate the seed first.
 3. Update the registry/label to the new slug.
 
 **Only reuse from a clean state** (previous feature promoted or discarded). Never
 start a new, unrelated feature on top of an un-decided one — that recreates the 16.1
-coupling problem. Net: reuse saves setup cost while preserving clean keep/revert.
+coupling problem. For data specifically, reuse a small curated seed for speed but
+never the previous feature's live writes, and regenerate it on schema changes (§8).
+Net: reuse saves setup cost while preserving clean keep/revert.

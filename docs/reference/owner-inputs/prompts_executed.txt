@@ -37,3 +37,6 @@ Why is the prompts_executed.txt log maintianeance rule not propoageated to all t
 THis will help me in faster parallel development without worrying about regressions. Is it possible to keep running 3-4 or more agents in paralle with improvement fixes etc. on each without worrying to keep their code area speerate, even they may change same fiels but you will be able ot o figure out the merge as you will end up maintaining approriate metadata of each change to each file that will give you proper context to seamlessly merge. 
 COnfirmt o me if this si sthe case or if you want to impopprove and strenghten thsi further. 
 After you confirm i want to start full throttle paralle develolpment and spin up many agents in apralle on same codebase.
+
+[007] [4-Aug-2026] Sandbox data reuse vs stale-schema tradeoff
+On #2 sandbox reuse - The data reuse is the one that could be imporant for performance, because it takes few minutes to create a new trip otherwise for a completely fresh sandbox. But i agree dont mix much, just minimal data part could be enough helpful. But also do take care that sometiems testing on old / stale data may be a problem in itself. as the new features may eb expecting data schema changes . What do you think
