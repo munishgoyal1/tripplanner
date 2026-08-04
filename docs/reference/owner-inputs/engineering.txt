@@ -1,0 +1,6 @@
+1. analyze performance issues 
+2. analyze any race conditions or potential high probablity bugs
+3. other architectural or code maintenance related issues - read through the principles file used for this repo and analyze that code quality should hold to those principles. this is 
+periodic tech debt fixing window.
+
+suggest an improvement plan, i will review and signoff for you to implement
