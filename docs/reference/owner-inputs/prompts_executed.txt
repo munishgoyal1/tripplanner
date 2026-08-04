@@ -40,3 +40,6 @@ After you confirm i want to start full throttle paralle develolpment and spin up
 
 [007] [4-Aug-2026] Sandbox data reuse vs stale-schema tradeoff
 On #2 sandbox reuse - The data reuse is the one that could be imporant for performance, because it takes few minutes to create a new trip otherwise for a completely fresh sandbox. But i agree dont mix much, just minimal data part could be enough helpful. But also do take care that sometiems testing on old / stale data may be a problem in itself. as the new features may eb expecting data schema changes . What do you think
+
+[008] [4-Aug-2026] Representative seed set + schema-version scope
+For the data seed, the seed should be represenative of all key scenarios example - single destination trip, multi-city trip, complex trip itineary covering flight, train , road drive for inter city etc. so chose some such set of seed data. Are you intending to add schema version also as part of this sandbox build out

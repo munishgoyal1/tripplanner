@@ -137,23 +137,37 @@ Building a trip from scratch through the agent takes minutes, so a fast seed is 
 real performance win of reuse. But the repo has **no trip schema version and no
 migration framework** (schema is implicit in the Pydantic / view-model shape), so
 *stale* data can silently mismatch a feature that changes trip shape. Resolve both
-with a small, regenerable seed rather than inherited live state:
+with a small, **shape-complete, regenerable** seed rather than inherited live state:
 
 - **Default:** dedicated emulator database `tripplanner-sbx-<slug>`, seeded from a
-  **small curated snapshot** (1–2 representative trips: multi-day itinerary + map +
-  details + a short chat transcript). Loads in seconds — no multi-minute agent build.
-- **Seed source, not live carryover:** seed from a checked-in fixture (or a one-time
+  small curated snapshot. Loads in seconds — no multi-minute agent build.
+- **Representative seed set (small in volume, complete in shape):**
+  - **S1 — single-destination:** one city, round-trip flight + hotel + a few day
+    activities (the simplest common shape).
+  - **S2 — multi-city:** three cities with mixed inter-city transport (e.g. rail +
+    short-haul flight) and a stay per city.
+  - **S3 — complex multi-modal:** international flight in, an inter-city **train**
+    leg, and a self-**drive** road leg across a multi-day itinerary — exercises the
+    richest shape (air + train + road + lodging + activities).
+  - **S4 — minimal/empty:** destination chosen with a sparse itinerary, for
+    empty-state and trip-creation-path testing.
+  Keep each trip small: representative in *shape*, not bulk in *volume*.
+- **Seed source, not live carryover:** seed from checked-in fixtures (or a one-time
   export of `tripplanner-local` via `scripts/cosmos_copy.py`), **not** the previous
-  feature's accumulated writes. Realistic data without dragging one feature's mutated
-  state into the next evaluation.
-- **Freshness guard (the drift remedy):** stamp the seed with a version / commit
-  marker; `New-Sandbox` / `Run-Sandbox` warn when the seed predates the current
-  models and offer to **regenerate** it — the clean fix, since there is no document
-  migration path. Convention: **a feature that changes trip shape regenerates the
-  seed** as part of its work.
-- **Keep it minimal:** a couple of trips is enough; do not seed bulk data.
+  feature's accumulated writes.
+- **Freshness guard (sandbox-local, not a product change):** stamp the seed with a
+  marker derived from the trip-shape model files (a hash, or the generating commit);
+  `New-Sandbox` / `Run-Sandbox` warn when the seed predates the current models and
+  offer to **regenerate** it. Convention: **a feature that changes trip shape
+  regenerates the seed**. This marker lives with the seed tooling — it does **not**
+  add a `schema_version` field to product trip documents.
 - **Hard guard:** never point a sandbox at production/canary write targets; the
   wrapper refuses non-sandbox database names.
+
+> **Product schema versioning is out of scope for this build-out.** Adding a durable
+> `schema_version` + migration path to trip documents is a separate, larger data-model
+> decision (it would also help canary/prod migrations) and needs explicit owner
+> consent — it is intentionally *not* bundled into the sandbox.
 
 ## 9. Feature flags (optional, complementary — not in v1)
 
