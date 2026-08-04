@@ -149,6 +149,7 @@ export function synchronizeMapOverlays({
       map,
       title: pin.name,
       icon: focused ? focusedIcon : normalIcon,
+      optimized: false,
       zIndex: focused ? 1400 : baseZIndex,
     });
     marker.addListener("click", () => onPinClick(pin));
@@ -168,6 +169,7 @@ export function synchronizeMapOverlays({
         scaledSize: new google.maps.Size(24, 24),
         anchor: new google.maps.Point(12, 12),
       },
+      optimized: false,
       zIndex: 1200,
     });
     marker.addListener("click", () => onCandidateClick(candidatePin));
@@ -187,6 +189,7 @@ export function synchronizeMapOverlays({
         scaledSize: new google.maps.Size(34, 44),
         anchor: new google.maps.Point(17, 44),
       },
+      optimized: false,
       zIndex: 200,
     });
     marker.addListener("click", () => onAirportClick(airport));
@@ -266,6 +269,7 @@ export function synchronizeMapOverlays({
             scaledSize: new google.maps.Size(112, 26),
             anchor: new google.maps.Point(56, 13),
           },
+          optimized: false,
           zIndex: 500,
         }));
       }
@@ -286,6 +290,7 @@ export function synchronizeMapOverlays({
           scaledSize: new google.maps.Size(112, 26),
           anchor: new google.maps.Point(56, 52),
         },
+        optimized: false,
         zIndex: 1100,
       }));
     }
