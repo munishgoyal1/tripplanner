@@ -338,6 +338,7 @@ incomplete plan returns an actionable correction.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_city_origin_drive_includes_origin_and_rest_break`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_bus_transfer_builds_separate_road_circuit_with_route_breaks`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_mode_tagged_gangtok_flights_expand_with_both_airports`
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_prompt_requires_grounded_ordered_road_breaks`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a road-trip city origin as a non-bookable O marker`
 
@@ -358,6 +359,7 @@ returns Map to All days. Selecting another trip clears the filters.
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shares unioned itinerary filters with the map`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `filters by union while preserving the original stop position`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `keeps both airport endpoints when filtering to flights`
 - [`frontend/src/lib/itineraryFilters.test.ts`](../frontend/src/lib/itineraryFilters.test.ts) - `keeps selected transport endpoints and complete drive waypoints on the map`
 - [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `does not invent fallback connectors for an explicitly filtered day`
 

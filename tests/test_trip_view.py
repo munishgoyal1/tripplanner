@@ -1820,6 +1820,69 @@ def test_structured_itinerary_preserves_arrival_and_departure_flights(
     assert itinerary["stats"]["stops"] == 4
 
 
+def test_mode_tagged_gangtok_flights_expand_with_both_airports(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    trip = {
+        "destination": "Gangtok",
+        "origin": "Bangalore",
+        "start_date": "2026-10-10",
+        "end_date": "2026-10-16",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Bangalore to Bagdogra",
+                        "kind": "transport",
+                        "mode": "flight",
+                        "departure_airport": "Bangalore Airport",
+                        "arrival_airport": "Bagdogra Airport",
+                        "departure_time": "06:30",
+                        "arrival_time": "09:20",
+                    },
+                    {"name": "Drive from Bagdogra Airport to Gangtok", "kind": "transport"},
+                    {"name": "Gangtok Hotel", "kind": "hotel"},
+                ],
+            },
+            {
+                "day": 7,
+                "stops": [
+                    {"name": "Gangtok Hotel", "kind": "hotel"},
+                    {"name": "Drive from Gangtok to Bagdogra Airport", "kind": "transport"},
+                    {
+                        "name": "Bagdogra to Bangalore",
+                        "kind": "transport",
+                        "mode": "Flight",
+                        "departure_airport": "Bagdogra Airport",
+                        "arrival_airport": "Bangalore Airport",
+                        "departure_time": "18:10",
+                        "arrival_time": "21:00",
+                    },
+                ],
+            },
+        ],
+    }
+    monkeypatch.setattr(trip_view, "_place_coords", lambda *args: None)
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    assert [(stop["kind"], stop["name"]) for stop in itinerary["days"][0]["stops"][:4]] == [
+        ("airport", "Bangalore Airport"),
+        ("flight", "Flight: Bangalore Airport to Bagdogra Airport"),
+        ("airport", "Bagdogra Airport"),
+        ("transport", "Drive from Bagdogra Airport to Gangtok"),
+    ]
+    assert [
+        (stop["kind"], stop["name"]) for stop in itinerary["days"][1]["stops"][1:]
+    ] == [
+        ("transport", "Drive from Gangtok to Bagdogra Airport"),
+        ("airport", "Bagdogra Airport"),
+        ("flight", "Flight: Bagdogra Airport to Bangalore Airport"),
+        ("airport", "Bangalore Airport"),
+    ]
+
+
 @pytest.mark.parametrize(
     ("name", "terminal_kind", "departure_terminal", "arrival_terminal", "buffer_min"),
     [

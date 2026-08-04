@@ -854,8 +854,8 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
 def _normalized_stop_kind(name: str, kind: str, mode: str = "") -> str:
     normalized_kind = str(kind or "").strip().lower()
     normalized_mode = str(mode or "").strip().lower()
-    if normalized_kind == "flight":
-        return normalized_kind
+    if normalized_kind == "flight" or normalized_mode == "flight":
+        return "flight"
     if normalized_mode in {"car", "drive", "train", "rail", "bus"} or (
         _intercity_transfer_mode(name, "transport")
     ):
