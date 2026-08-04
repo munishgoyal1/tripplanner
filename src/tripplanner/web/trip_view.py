@@ -537,7 +537,10 @@ def _build_item(
         if (r.get("text") or "").strip()
     ]
     key = name.strip().lower()
-    selected = key in selected_names.get(kind, set()) or key in (itinerary_names or set())
+    # Buckets are hotel/attraction only, so map every other kind (restaurant,
+    # meal, activity, ...) the same way the guide's IN TRIP badge does.
+    bucket = "hotel" if browse_kind(kind) == "hotel" else "attraction"
+    selected = key in selected_names.get(bucket, set()) or key in (itinerary_names or set())
     return {
         "kind": kind,
         "name": info.get("name") or name,

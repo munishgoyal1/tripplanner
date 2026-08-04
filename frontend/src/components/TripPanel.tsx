@@ -44,9 +44,17 @@ const ICONS: Record<string, string> = {
   flight: "\u2708\uFE0F",
 };
 
-// Both "activity" and "attraction" map to the same trip bucket server-side.
+// Mirrors browse_kind() server-side: hotel aliases get the stay picker, every
+// other real place (attraction, restaurant, meal, ...) gets add/remove actions.
+const HOTEL_KINDS = ["hotel", "lodging", "stay", "accommodation"];
+const PLACE_KINDS = ["activity", "attraction", "restaurant", "meal", "food", "dining", "cafe", "eatery"];
+
+function isHotel(kind: string): boolean {
+  return HOTEL_KINDS.includes(kind);
+}
+
 function isSelectable(kind: string): boolean {
-  return kind === "hotel" || kind === "activity" || kind === "attraction";
+  return isHotel(kind) || PLACE_KINDS.includes(kind);
 }
 
 function Stars({ rating, count }: { rating: number | null; count: number | null }) {
@@ -197,7 +205,7 @@ function ItemCard({
                 onMove={onSelect}
                 onRemove={onDeselect}
               />
-            ) : item.kind === "hotel" ? (
+            ) : isHotel(item.kind) ? (
               <button
                 onClick={() => onHotelStay(item.name)}
                 title="Save this to your trip so the agent keeps it in the plan"

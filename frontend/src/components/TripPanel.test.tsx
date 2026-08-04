@@ -217,4 +217,63 @@ describe("TripPanel place removal", () => {
       { day: 3, stop: 1, all_occurrences: false },
     ));
   });
+
+  it("offers the same add controls for a focused restaurant", () => {
+    const onSelect = vi.fn();
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          focus: { kind: "restaurant", name: "Le Comptoir" },
+          items: [{ ...view.items[0], kind: "restaurant", name: "Le Comptoir", selected: false, occurrences: [] }],
+        }}
+        loading={false}
+        navList={[{ kind: "restaurant", name: "Le Comptoir" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={onSelect}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByRole("combobox", { name: "Choose day to add Le Comptoir" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "+ Add to trip" }));
+    expect(onSelect).toHaveBeenCalledWith("restaurant", "Le Comptoir", undefined);
+  });
+
+  it("offers remove controls for a restaurant already in the trip", () => {
+    render(
+      <TripPanel
+        view={{
+          ...view,
+          focus: { kind: "restaurant", name: "Le Comptoir" },
+          items: [{
+            ...view.items[0],
+            kind: "restaurant",
+            name: "Le Comptoir",
+            selected: true,
+            occurrences: [{ day: 2, stop: 1, time: "20:00" }],
+          }],
+        }}
+        loading={false}
+        navList={[{ kind: "restaurant", name: "Le Comptoir" }]}
+        focusIndex={0}
+        onFocus={vi.fn()}
+        onClearFocus={vi.fn()}
+        onStep={vi.fn()}
+        onSelect={vi.fn()}
+        onDeselect={vi.fn()}
+        tripVersion={0}
+        onSwitched={vi.fn()}
+        hideSwitcher
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Remove Le Comptoir from trip" })).toBeInTheDocument();
+  });
 });
