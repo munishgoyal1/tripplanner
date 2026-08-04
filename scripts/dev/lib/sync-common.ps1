@@ -464,6 +464,12 @@ function Complete-PendingMerges {
             continue
         }
 
+        & git -C $wd rev-parse --git-dir 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-SyncLog -Level Error "$wd is no longer a git worktree (removed?). Dropping this entry."
+            continue
+        }
+
         $marked = @(Get-FilesWithConflictMarkers -WorkingDirectory $wd -Files @($entry.conflictedFiles))
         if ($marked.Count -gt 0) {
             Write-SyncLog -Level Error "Conflict markers still present in: $($marked -join ', '). Resolve them, then re-run."
