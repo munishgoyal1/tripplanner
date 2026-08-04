@@ -482,7 +482,17 @@ function Complete-PendingMerges {
                 $stillPending.Add($entry)
                 continue
             }
-            Invoke-SyncGit -WorkingDirectory $wd -Arguments @("diff", "--cached", "--check") | Out-Null
+            # --check also flags benign whitespace nits; only leftover markers may block the merge.
+            $checkOutput = @(& git -C $wd diff --cached --check 2>&1)
+            $leftoverMarkers = @($checkOutput | Where-Object { $_ -match "conflict marker" })
+            if ($leftoverMarkers.Count -gt 0) {
+                Write-SyncLog -Level Error "Leftover conflict markers staged: $($leftoverMarkers -join '; ')"
+                $stillPending.Add($entry)
+                continue
+            }
+            if ($checkOutput.Count -gt 0) {
+                Write-SyncLog -Level Warn "Whitespace nits in the merged result (not blocking): $($checkOutput.Count) line(s)."
+            }
             Invoke-SyncGit -WorkingDirectory $wd -Arguments @("commit", "--no-edit") | Out-Null
             Write-SyncLog "Committed the resolved merge for $($entry.label)."
         } else {
