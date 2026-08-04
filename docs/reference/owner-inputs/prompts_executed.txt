@@ -46,3 +46,9 @@ For the data seed, the seed should be represenative of all key scenarios example
 
 [009] [4-Aug-2026] Implement sandbox; log schema proposal; move to implemented
 ok log the schema proposal seperately to be taken later. For now go implement the sandbox feature. Also when you implement then move those propsals into implemented folder
+
+[010] [4-Aug-2026] Implement Lab 13 destination guide in sandbox
+Ok now implement lab 13 in a sandbox .
+
+[011] [4-Aug-2026] Fix Lab 13 sandbox errors; move sandbox cmds
+why are there errors in running this lab. check the website opened in this vs code one of the tabs itself. Also you created cmd also for sandbox related. how to use them. and may be move them under the sandbox folder paralell to user

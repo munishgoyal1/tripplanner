@@ -230,6 +230,7 @@ if (-not $FrontendOnly) {
         Write-Host "  LOG_LEVEL=DEBUG (verbose backend logs)" -ForegroundColor DarkGray
     }
     $py = Join-Path $repoRoot ".venv\Scripts\python.exe"
+    if (-not (Test-Path $py)) { $py = Join-Path $sharedRepoRoot ".venv\Scripts\python.exe" }
     if (-not (Test-Path $py)) { $py = "python" }
     # src-layout project: make imports work even if pip install -e . was not run.
     $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--app-dir", "src", "--port", "$ApiPort")
