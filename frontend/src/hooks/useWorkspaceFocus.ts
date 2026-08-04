@@ -19,8 +19,8 @@ export function useWorkspaceFocus(
     dispatch({ type: "focus", focus: { type: "circuit", day, token: nextToken() } });
   }, [dispatch, nextToken]);
 
-  const setRoute = useCallback((day: number) => {
-    dispatch({ type: "focus", focus: { type: "route", day, token: nextToken() } });
+  const setRoute = useCallback((day: number, circuitId?: string) => {
+    dispatch({ type: "focus", focus: { type: "route", day, circuitId, token: nextToken() } });
   }, [dispatch, nextToken]);
 
   const clear = useCallback(() => {
@@ -33,6 +33,7 @@ export function useWorkspaceFocus(
     circuitDay: focus.type === "circuit" ? focus.day : null,
     circuitToken: focus.type === "circuit" ? focus.token : 0,
     routeDay: focus.type === "route" ? focus.day : null,
+    routeCircuitId: focus.type === "route" ? focus.circuitId : null,
     routeToken: focus.type === "route" ? focus.token : 0,
     setPlace,
     setCircuit,

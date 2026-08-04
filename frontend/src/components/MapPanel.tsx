@@ -10,6 +10,7 @@ import {
   capCircuitZoom,
   fitDayCircuit,
   fitDayRoute,
+  fitDriveCircuit,
   syncPinMarkerFocus,
   zoomToPin,
   type PinMarkerEntry,
@@ -35,6 +36,7 @@ export {
   capCircuitZoom,
   fitDayCircuit,
   fitDayRoute,
+  fitDriveCircuit,
   syncPinMarkerFocus,
   zoomToPin,
 } from "./map/viewportSync";
@@ -110,6 +112,8 @@ interface Props {
   circuitFocusToken?: number;
   /** Itinerary day whose complete inter-city route should be framed. */
   routeFocusDay?: number;
+  /** Exact persisted drive circuit whose stops and legs should be framed. */
+  routeFocusId?: string;
   /** Changes for every route framing request, including repeated clicks. */
   routeFocusToken?: number;
   /** User clicked a pin and wants other sections synced to that place. */
@@ -133,7 +137,7 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+export default function MapPanel({ reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -166,7 +170,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
   // redraw (e.g. lazy map mount or day-filter change) can't fight the zoom by
   // re-running fitBounds. Survives the async map init.
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
-  const pendingRouteFocusRef = useRef<number | null>(null);
+  const pendingRouteFocusRef = useRef<{ day: number; circuitId?: string } | null>(null);
   const previousTripIdRef = useRef(tripId);
 
   useEffect(() => {
@@ -331,6 +335,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       map,
       view,
       activeDay,
+      activeRouteCircuitId: routeFocusDay === activeDay ? routeFocusId : null,
       candidatePin,
       focus: focusRef.current,
       pendingFocus: pendingFocusRef.current,
@@ -366,7 +371,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     if (result.consumedPendingFocus) pendingFocusRef.current = null;
     if (result.consumedPendingRouteFocus) pendingRouteFocusRef.current = null;
     if (result.focusedPin) setSelectedPin(result.focusedPin);
-  }, [view, activeDay, candidatePin]);
+  }, [view, activeDay, candidatePin, routeFocusDay, routeFocusId]);
 
   useEffect(() => {
     return scheduleMapOverlayDraw(draw);
@@ -456,7 +461,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       return;
     }
     pendingFocusRef.current = null;
-    pendingRouteFocusRef.current = routeFocusDay;
+    pendingRouteFocusRef.current = { day: routeFocusDay, circuitId: routeFocusId };
     setSelectedPin(null);
     setContextScope(routeFocusDay);
     if (activeDay !== routeFocusDay) {
@@ -465,10 +470,13 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     }
     const google = window.google;
     const map = mapRef.current;
-    if (google && map && fitDayRoute(google, map, view, routeFocusDay)) {
+    const fitted = routeFocusId
+      ? google && map && fitDriveCircuit(google, map, view, routeFocusId)
+      : google && map && fitDayRoute(google, map, view, routeFocusDay);
+    if (fitted) {
       pendingRouteFocusRef.current = null;
     }
-  }, [activeDay, routeFocusDay, routeFocusToken, view]);
+  }, [activeDay, routeFocusDay, routeFocusId, routeFocusToken, view]);
 
   const isPlacePin = (p: MapPin | MapAirport | null): p is MapPin => {
     return !!p && !isAirportTarget(p) && !isJourneyTerminal(p);

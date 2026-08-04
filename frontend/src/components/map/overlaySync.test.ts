@@ -178,4 +178,65 @@ describe("synchronizeMapOverlays", () => {
       { lat: destination.lat, lng: destination.lng },
     ]);
   });
+
+  it("renders only the selected drive circuit pins, legs, and labels", () => {
+    const source: MapPin = {
+      id: "source", name: "Gangtok Hotel", kind: "hotel", selected: true, day: 4,
+      lat: 27.33, lng: 88.61, rating: null, address: "", photo: null, occurrences: [],
+    };
+    const destination: MapPin = {
+      ...source, id: "destination", name: "Lachung Hotel", lat: 27.69, lng: 88.74,
+    };
+    const unrelated: MapPin = {
+      ...source, id: "unrelated", name: "Gangtok Monastery", kind: "attraction", lat: 27.34, lng: 88.62,
+    };
+    const circuitId = "drive-day-4-gangtok-to-lachung";
+    const circuitLeg = {
+      from_pin_id: source.id, to_pin_id: destination.id, route_circuit_id: circuitId,
+      distance_km: 121, duration_min: 360, mode: "car", distance_display: "121 km", duration_display: "6 hrs",
+    };
+    const unrelatedLeg = {
+      from_pin_id: source.id, to_pin_id: unrelated.id, route_circuit_id: "drive-day-4-local",
+      distance_km: 2, duration_min: 10, mode: "car", distance_display: "2 km", duration_display: "10 min",
+    };
+    const baseView = mapView([source, destination, unrelated], [source.id, destination.id, unrelated.id]);
+    const view: MapView = {
+      ...baseView,
+      days: [{ ...baseView.days[0], day: 4, legs: [circuitLeg, unrelatedLeg] }],
+      drive_circuits: [{
+        id: circuitId,
+        day: 4,
+        mode: "Drive",
+        label: "Gangtok to Lachung",
+        pin_ids: [source.id, destination.id],
+        legs: [circuitLeg],
+        route: circuitLeg,
+      }],
+    };
+    const map = { fitBounds: vi.fn(), panTo: vi.fn(), setZoom: vi.fn() };
+    const { google, markers, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map,
+      view,
+      activeDay: 4,
+      activeRouteCircuitId: circuitId,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(markers.map((marker) => marker.options.title)).toEqual([
+      "Gangtok Hotel",
+      "Lachung Hotel",
+      "121 km · 6 hrs · car",
+    ]);
+    expect(polylines).toHaveLength(1);
+  });
 });

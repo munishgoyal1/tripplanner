@@ -143,6 +143,17 @@ export interface MapLeg extends RouteMetrics {
   from_pin_id: string;
   to_pin_id: string;
   intercity?: boolean;
+  route_circuit_id?: string;
+}
+
+export interface MapDriveCircuit {
+  id: string;
+  day: number;
+  mode: "Drive";
+  label: string;
+  pin_ids: string[];
+  legs: MapLeg[];
+  route: RouteMetrics;
 }
 
 export interface MapDay {
@@ -171,6 +182,7 @@ export interface MapView {
   center: { lat: number; lng: number } | null;
   pins: MapPin[];
   days: MapDay[];
+  drive_circuits?: MapDriveCircuit[];
   available_days: number[];
   unscheduled_pin_ids: string[];
   airport: MapAirport | null;
@@ -186,6 +198,7 @@ export interface ItineraryStop {
   terminal_role?: "departure" | "arrival";
   duration_min: number | null;
   distance_km?: number | null;
+  route_circuit_id?: string;
   duration_estimated?: boolean;
   operational_time_display?: string;
   note: string;

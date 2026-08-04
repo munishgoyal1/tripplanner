@@ -2116,6 +2116,22 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     assert day4["route"]["distance_km"] == 121
     assert day4["route"]["duration_min"] == 360
     assert all(leg["metrics_source"] == "saved" for leg in day4["legs"])
+    drive_circuit = next(
+        circuit for circuit in map_view["drive_circuits"] if circuit["day"] == 4
+    )
+    assert drive_circuit["id"] == day4_drive["route_circuit_id"]
+    assert [pins_by_id[pin_id]["name"] for pin_id in drive_circuit["pin_ids"]] == [
+        "Gangtok Hotel",
+        "Seven Sisters Falls",
+        "Singhik View Point",
+        "Lachung Hotel",
+    ]
+    assert drive_circuit["route"]["distance_km"] == 121
+    assert drive_circuit["route"]["duration_min"] == 360
+    assert all(
+        leg["route_circuit_id"] == drive_circuit["id"]
+        for leg in drive_circuit["legs"]
+    )
     lachung_pins = [pin for pin in map_view["pins"] if "Lachung" in pin["name"]]
     assert len(lachung_pins) == 1
     assert (lachung_pins[0]["lat"], lachung_pins[0]["lng"]) == coords["Lachung Hotel"]

@@ -12,9 +12,9 @@ interface Props {
   /** Bump to refetch the itinerary after the trip changes. */
   reloadToken?: number;
   /** Click a stop to focus it (loads its photos + highlights its map pin). */
-  onStopFocus?: (kind: string, name: string, day: number, stop: number) => void;
+  onStopFocus?: (kind: string, name: string, day: number, stop: number, routeCircuitId?: string) => void;
   /** Jump to the map focused on a stop (and optionally details). */
-  onStopMap?: (kind: string, name: string, day: number, stop: number) => void;
+  onStopMap?: (kind: string, name: string, day: number, stop: number, routeCircuitId?: string) => void;
   /** Show the complete route circuit for one itinerary day. */
   onDayMap?: (day: number) => void;
   /** Show all itinerary day circuits on the map. */
@@ -65,8 +65,8 @@ function DayCard({
   active: boolean;
   circuitActive: boolean;
   onToggleBooked: (day: number, name: string, next: boolean) => void;
-  onFocus: (kind: string, name: string, day: number, stop: number) => void;
-  onMap: (kind: string, name: string, day: number, stop: number) => void;
+  onFocus: (kind: string, name: string, day: number, stop: number, routeCircuitId?: string) => void;
+  onMap: (kind: string, name: string, day: number, stop: number, routeCircuitId?: string) => void;
   onDayMap: (day: number) => void;
   focusName?: string | null;
   focusDay?: number;
@@ -144,8 +144,12 @@ function DayCard({
         jumpActive={jumpActive}
         rowId={rowId}
         onToggleBooked={(next) => onToggleBooked(day.day, stop.name, next)}
-        onFocus={() => onFocus(stop.kind, stop.name, day.day, i + 1)}
-        onMap={() => onMap(stop.kind, stop.name, day.day, i + 1)}
+        onFocus={() => stop.route_circuit_id
+          ? onFocus(stop.kind, stop.name, day.day, i + 1, stop.route_circuit_id)
+          : onFocus(stop.kind, stop.name, day.day, i + 1)}
+        onMap={() => stop.route_circuit_id
+          ? onMap(stop.kind, stop.name, day.day, i + 1, stop.route_circuit_id)
+          : onMap(stop.kind, stop.name, day.day, i + 1)}
         onRemove={onRemove ? () => onRemove(stop.kind, stop.name, day.day, i + 1) : undefined}
       />
     );
@@ -461,8 +465,12 @@ export default function ItineraryPanel({
             jumpTo={jumpTo && "day" in jumpTo ? { day: jumpTo.day, name: jumpTo.name } : null}
             jumpToken={flashTarget?.token || 0}
             onToggleBooked={handleToggleBooked}
-            onFocus={(kind, name, focusDay, stop) => onStopFocus?.(kind, name, focusDay, stop)}
-            onMap={(kind, name, mapDay, stop) => onStopMap?.(kind, name, mapDay, stop)}
+            onFocus={(kind, name, focusDay, stop, circuitId) => circuitId
+              ? onStopFocus?.(kind, name, focusDay, stop, circuitId)
+              : onStopFocus?.(kind, name, focusDay, stop)}
+            onMap={(kind, name, mapDay, stop, circuitId) => circuitId
+              ? onStopMap?.(kind, name, mapDay, stop, circuitId)
+              : onStopMap?.(kind, name, mapDay, stop)}
             onDayMap={(mapDay) => onDayMap?.(mapDay)}
             onRemove={onStopRemove}
           />

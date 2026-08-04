@@ -76,11 +76,11 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/components/AccountSettingsHub.tsx` | Web account/settings section ownership; delegates persisted destinations to existing auth, preferences, analytics, and privacy boundaries |
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
-| `frontend/src/components/map/` | Map icon generation, focus matching, route/day derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
+| `frontend/src/components/map/` | Map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/components/map/placeIdentity.ts` | Conservative hotel identity shared by itinerary and map labels |
-| `frontend/src/hooks/useWorkspaceFocus.ts` | Mutually exclusive place, route, day-circuit, and all-days focus transitions and repeat-action tokens |
+| `frontend/src/hooks/useWorkspaceFocus.ts` | Mutually exclusive place, identified drive/route, day-circuit, and all-days focus transitions and repeat-action tokens |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
 | `frontend/src/types.ts` | Web-local types not owned by the shared client package |

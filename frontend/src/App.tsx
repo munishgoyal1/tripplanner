@@ -72,6 +72,7 @@ export default function App() {
     circuitDay: circuitFocusDay,
     circuitToken: circuitFocusToken,
     routeDay: routeFocusDay,
+    routeCircuitId: routeFocusId,
     routeToken: routeFocusToken,
     setPlace: setPlaceFocus,
     setCircuit: setCircuitFocus,
@@ -494,10 +495,16 @@ export default function App() {
     if (!open && pane === "details" && maximizedPane === pane) setMaximizedPane(null);
   };
 
-  const handleStopFocus = async (kind: string, name: string, day?: number, stop?: number) => {
+  const handleStopFocus = async (
+    kind: string,
+    name: string,
+    day?: number,
+    stop?: number,
+    routeCircuitId?: string,
+  ) => {
     setMapOpen(true);
     if (isIntercityTravel(kind, name) && day) {
-      setRouteFocus(day);
+      setRouteFocus(day, routeCircuitId);
       setView((current) => current ? { ...current, focus: null } : current);
       return;
     }
@@ -506,10 +513,16 @@ export default function App() {
     }
   };
 
-  const handleStopMap = async (kind: string, name: string, day?: number, stop?: number) => {
+  const handleStopMap = async (
+    kind: string,
+    name: string,
+    day?: number,
+    stop?: number,
+    routeCircuitId?: string,
+  ) => {
     setMapOpen(true);
     if (isIntercityTravel(kind, name)) {
-      await handleStopFocus(kind, name, day, stop);
+      await handleStopFocus(kind, name, day, stop, routeCircuitId);
       return;
     }
     if (isPlaceKind(kind) || kind === "airport") {
@@ -556,6 +569,7 @@ export default function App() {
     circuitFocusDay: circuitFocusDay ?? undefined,
     circuitFocusToken,
     routeFocusDay: routeFocusDay ?? undefined,
+    routeFocusId: routeFocusId ?? undefined,
     routeFocusToken,
     itineraryJump,
     onStopFocus: handleStopFocus,
@@ -602,6 +616,7 @@ export default function App() {
         circuitFocusDay={circuitFocusDay ?? undefined}
         circuitFocusToken={circuitFocusToken}
         routeFocusDay={routeFocusDay ?? undefined}
+        routeFocusId={routeFocusId ?? undefined}
         routeFocusToken={routeFocusToken}
         onPinFocus={handleStopFocus}
         onDayFocus={handleDayFocus}

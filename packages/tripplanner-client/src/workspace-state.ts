@@ -9,7 +9,7 @@ export type WorkspaceFocus =
   | { type: "none" }
   | { type: "place"; place: ActivePlace; token: number }
   | { type: "circuit"; day: number | null; token: number }
-  | { type: "route"; day: number; token: number };
+  | { type: "route"; day: number; circuitId?: string; token: number };
 
 export type ItineraryJump =
   | { day: number; name?: string; token: number }

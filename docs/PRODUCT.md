@@ -272,8 +272,11 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   available photos, rating, reviews, address, summary, and website. Itinerary
   terminal names remain valid focus identities when a map provider returns a
   different canonical name.
-  Clicking an inter-city flight or transport row frames its complete source-to-
-  destination route and connector without opening place Details. All-days view
+  Clicking an inter-city flight or transport row frames its source-to-destination
+  route and connector without opening place Details. A saved drive is a separate
+  circuit with stable identity, ordered intermediate stops, legs, and route
+  metrics; focusing it excludes unrelated same-day map geometry. Legacy transport
+  rows without that identity retain complete-day route framing. All-days view
   retains the dotted flight arcs between every airport pair so the complete trip
   connection remains visible in the overall itinerary geography. Inter-city
   connectors are dotted and visually identify their mode: blue with an airplane

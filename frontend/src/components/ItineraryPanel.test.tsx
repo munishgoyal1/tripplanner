@@ -381,6 +381,35 @@ describe("ItineraryPanel", () => {
     );
   });
 
+  it("forwards a first-class drive circuit when its travel row is clicked", async () => {
+    const onStopFocus = vi.fn();
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [{
+          ...baseStop,
+          name: "Gangtok to Lachung",
+          kind: "transport",
+          mode: "car",
+          route_circuit_id: "drive-day-4-gangtok-to-lachung",
+        }],
+      }],
+    });
+
+    render(<ItineraryPanel onStopFocus={onStopFocus} />);
+
+    fireEvent.click((await screen.findByText("Gangtok to Lachung")).closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith(
+      "transport",
+      "Gangtok to Lachung",
+      1,
+      1,
+      "drive-day-4-gangtok-to-lachung",
+    );
+  });
+
   it("routes legacy drive and toy-train rows to the complete day route", async () => {
     const onStopFocus = vi.fn();
     const baseStop = itinerary.days[0].stops[0];

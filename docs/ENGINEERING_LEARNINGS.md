@@ -33,6 +33,9 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   labels. Preserve them through normalization and allocate the same exact totals
   across itinerary and map waypoint legs; independent geometric estimates make
   two correct-looking surfaces contradict each other.
+- A drive is independently focusable domain data, not a day-number display mode.
+  Give each drive a stable identity plus ordered pins, legs, and route metrics;
+  day-only focus cannot distinguish one drive from unrelated same-day geometry.
 - Resolve typed hotel identity before generic partial-name matching. Shared words
   such as Hotel, Resort, or a locality can otherwise attach a day's circuit to a
   different selected stay and silently remove its real endpoints.

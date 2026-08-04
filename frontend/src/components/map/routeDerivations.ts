@@ -192,3 +192,11 @@ export function hotelReturnForDay(
     label: end ? `Return · ${end}${day.schedule?.estimated ? " est." : ""}` : "Return",
   };
 }
+
+export function pinsForDriveCircuit(view: MapView, circuitId: string): MapPin[] {
+  const circuit = view.drive_circuits?.find((candidate) => candidate.id === circuitId);
+  if (!circuit) return [];
+  return circuit.pin_ids
+    .map((id) => view.pins.find((pin) => pin.id === id))
+    .filter((pin): pin is MapPin => !!pin);
+}

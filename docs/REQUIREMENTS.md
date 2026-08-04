@@ -252,6 +252,10 @@ re-describing the whole product.
   itinerary-inclusion percentage.
 - Route ordering, displayed times, itinerary markers, and map circuit ordering
   are treated as one schedule contract.
+- Each persisted drive is exposed as a stable map circuit with its ordered pins,
+  legs, and authoritative route metrics. Selecting that drive frames only its
+  circuit; transport data without a circuit identity retains full-day route
+  compatibility.
 
 ### PLAN-04 - Reflow and planner review
 

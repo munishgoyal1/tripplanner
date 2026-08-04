@@ -7,6 +7,7 @@ import {
   focusedDayForPin,
   fitDayCircuit,
   fitDayRoute,
+  fitDriveCircuit,
   focusNameForPin,
   formatLegLabel,
   hotelIcon,
@@ -647,6 +648,41 @@ describe("map stop selection", () => {
     expect(fitDayRoute(google, { fitBounds }, view, 1)).toBe(true);
     expect(extend).toHaveBeenCalledWith({ lat: 13.2, lng: 77.7 });
     expect(extend).toHaveBeenCalledWith({ lat: 24.6, lng: 73.9 });
+    expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
+  });
+
+  it("fits only the ordered points in the requested drive circuit", () => {
+    const extend = vi.fn();
+    const bounds = { extend };
+    const fitBounds = vi.fn();
+    const google = { maps: { LatLngBounds: vi.fn(function () { return bounds; }) } };
+    const pins = [
+      { id: "gangtok", name: "Gangtok Hotel", kind: "hotel", selected: true, day: 4, lat: 27.33, lng: 88.61, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "falls", name: "Seven Sisters Falls", kind: "attraction", selected: true, day: 4, lat: 27.47, lng: 88.61, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "singhik", name: "Singhik View Point", kind: "attraction", selected: true, day: 4, lat: 27.53, lng: 88.56, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "lachung", name: "Lachung Hotel", kind: "hotel", selected: true, day: 4, lat: 27.69, lng: 88.74, rating: null, address: "", photo: null, occurrences: [] },
+      { id: "monastery", name: "Gangtok Monastery", kind: "attraction", selected: true, day: 4, lat: 27.34, lng: 88.62, rating: null, address: "", photo: null, occurrences: [] },
+    ];
+    const view = {
+      enabled: true,
+      destination: "Sikkim",
+      center: null,
+      pins,
+      days: [{ day: 4, label: "Day 4", color: "#0284c7", pin_ids: pins.map((pin) => pin.id), route: { distance_km: 121, duration_min: 360, mode: "car", distance_display: "121 km", duration_display: "6 hrs" } }],
+      drive_circuits: [{ id: "drive-day-4-gangtok-to-lachung", day: 4, mode: "Drive" as const, label: "Gangtok to Lachung", pin_ids: ["gangtok", "falls", "singhik", "lachung"], legs: [], route: { distance_km: 121, duration_min: 360, mode: "car", distance_display: "121 km", duration_display: "6 hrs" } }],
+      available_days: [4],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+    };
+
+    expect(fitDriveCircuit(google, { fitBounds }, view, "drive-day-4-gangtok-to-lachung")).toBe(true);
+    expect(extend.mock.calls.map(([point]) => point)).toEqual([
+      { lat: 27.33, lng: 88.61 },
+      { lat: 27.47, lng: 88.61 },
+      { lat: 27.53, lng: 88.56 },
+      { lat: 27.69, lng: 88.74 },
+    ]);
     expect(fitBounds).toHaveBeenCalledWith(bounds, 64);
   });
 

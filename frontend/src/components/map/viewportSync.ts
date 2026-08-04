@@ -1,6 +1,6 @@
 import type { MapAirport, MapPin, MapView } from "../../types";
 import { pinMatchesFocus } from "./focusMatching";
-import { pinsForDayCircuit, pinsForDayRoute } from "./routeDerivations";
+import { pinsForDayCircuit, pinsForDayRoute, pinsForDriveCircuit } from "./routeDerivations";
 
 export interface PinMarkerEntry {
   pin: MapPin;
@@ -58,4 +58,18 @@ export function zoomToPin(map: any, pin: MapPin | MapAirport): void {
 
 export function capCircuitZoom(map: any): void {
   if ((map.getZoom() ?? 0) > 14) map.setZoom(14);
+}
+
+export function fitDriveCircuit(
+  google: any,
+  map: any,
+  view: MapView,
+  circuitId: string,
+): boolean {
+  const pins = pinsForDriveCircuit(view, circuitId);
+  if (pins.length === 0) return false;
+  const bounds = new google.maps.LatLngBounds();
+  pins.forEach((pin) => bounds.extend({ lat: pin.lat, lng: pin.lng }));
+  map.fitBounds(bounds, 64);
+  return true;
 }

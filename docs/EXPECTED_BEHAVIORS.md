@@ -165,9 +165,13 @@ superseded queued redraws so the latest requested item, day, route, or All days
 scope wins.
 
 Selecting an inter-city flight or transport row is a route action rather than
-place focus: Map opens and frames the full ordered day route so both source and
-destination and their connector remain visible. It does not open place Details
-or replace destination-local framing for ordinary day-header focus.
+place focus. A first-class drive opens Map on its own stable drive circuit and
+frames only that circuit's ordered source, intermediate stops, destination,
+legs, and authoritative route metrics; unrelated stops and legs from the same
+day remain outside the focused circuit. Legacy transport rows without a circuit
+identity continue to frame the full ordered day route. Neither action opens
+place Details or replaces destination-local framing for ordinary day-header
+focus.
 
 **Executable proof:**
 
@@ -182,9 +186,12 @@ or replace destination-local framing for ordinary day-header focus.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames an itinerary day circuit without converting it into place focus`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames the complete inter-city route without opening place details`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits only the ordered points in the requested drive circuit`
+- [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `renders only the selected drive circuit pins, legs, and labels`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `derives aggregate day context instead of a stale place selection`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `forwards a first-class drive circuit when its travel row is clicked`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_drive_labels_share_transport_normalization_and_route_endpoints`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
 

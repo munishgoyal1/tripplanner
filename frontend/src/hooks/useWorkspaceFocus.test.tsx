@@ -31,8 +31,13 @@ describe("useWorkspaceFocus", () => {
     expect(result.current.workspace.focus).toMatchObject({ type: "circuit", day: 3 });
     expect(result.current.controller.place).toBeNull();
 
-    act(() => result.current.controller.setRoute(1));
-    expect(result.current.workspace.focus).toMatchObject({ type: "route", day: 1 });
+    act(() => result.current.controller.setRoute(1, "drive-day-1-airport-to-hotel"));
+    expect(result.current.workspace.focus).toMatchObject({
+      type: "route",
+      day: 1,
+      circuitId: "drive-day-1-airport-to-hotel",
+    });
+    expect(result.current.controller.routeCircuitId).toBe("drive-day-1-airport-to-hotel");
     expect(result.current.controller.circuitToken).toBe(0);
 
     act(() => result.current.controller.setCircuit(null));

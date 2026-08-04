@@ -59,7 +59,7 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+  default: ({ reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div>
       <button
         type="button"
@@ -92,14 +92,17 @@ vi.mock("./components/ItineraryPanel", () => ({
       <button type="button" onClick={() => onStopFocus("other", "Car ride from Gangtok to Lachung", 4, 2)}>
         Focus legacy car drive
       </button>
+      <button type="button" onClick={() => onStopFocus("transport", "Gangtok to Lachung", 4, 2, "drive-day-4-gangtok-to-lachung")}>
+        Focus exact Gangtok drive
+      </button>
       <button type="button" onClick={() => onDayMap?.(3)}>Show complete Day 3 circuit</button>
       <button type="button" onClick={() => onAllDaysMap?.()}>Show all days from snapshot</button>
     </div>
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusToken?: number }) => (
-    <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-token={routeFocusToken ?? 0}>
+  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusId, routeFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusId?: string; routeFocusToken?: number }) => (
+    <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-id={routeFocusId ?? ""} data-route-token={routeFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onPinFocus("airport", "Udaipur Airport", 1, 3)}>Focus airport pin</button>
       <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
@@ -519,6 +522,12 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Focus legacy car drive" }));
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-route-day", "4");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "");
+
+    fireEvent.click(screen.getByRole("button", { name: "Focus exact Gangtok drive" }));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute(
+      "data-route-id",
+      "drive-day-4-gangtok-to-lachung",
+    );
   });
 
   it("refreshes itinerary and map as soon as a planning turn completes", async () => {

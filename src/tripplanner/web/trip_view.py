@@ -1543,7 +1543,8 @@ def _route_legs_for_day(
     pin_ids: list[str],
     pin_by_id: dict[str, dict[str, Any]],
     intercity_modes: dict[tuple[str, str], str] | None = None,
-    transfer_metrics: dict[str, float] | None = None,
+    route_circuit_ids: dict[tuple[str, str], str] | None = None,
+    transfer_metrics: dict[str, dict[str, float]] | None = None,
 ) -> list[dict[str, Any]]:
     legs: list[dict[str, Any]] = []
     for from_id, to_id in zip(pin_ids, pin_ids[1:]):
@@ -1575,12 +1576,24 @@ def _route_legs_for_day(
                 from_name=str(start.get("name") or ""),
                 to_name=str(end.get("name") or ""),
             )
-        legs.append({"from_pin_id": from_id, "to_pin_id": to_id, **metrics})
+        circuit_id = (route_circuit_ids or {}).get((from_id, to_id))
+        legs.append({
+            "from_pin_id": from_id,
+            "to_pin_id": to_id,
+            **metrics,
+            **({"route_circuit_id": circuit_id} if circuit_id else {}),
+        })
 
-    _apply_saved_transfer_metrics(
-        [leg for leg in legs if leg.get("intercity")], transfer_metrics
-    )
+    for circuit_id, saved_metrics in (transfer_metrics or {}).items():
+        _apply_saved_transfer_metrics(
+            [leg for leg in legs if leg.get("route_circuit_id") == circuit_id],
+            saved_metrics,
+        )
     return legs
+
+
+def _route_circuit_id(day: int, stop: int, mode: str) -> str:
+    return f"day-{day}-stop-{stop}-{mode.strip().lower()}"
 
 
 def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
@@ -1694,7 +1707,9 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     by_day: dict[int, list[str]] = {}
     route_pin_ids_by_day: dict[int, list[str]] = {}
     intercity_modes_by_day: dict[int, dict[tuple[str, str], str]] = {}
-    transfer_metrics_by_day: dict[int, dict[str, float]] = {}
+    route_circuit_ids_by_day: dict[int, dict[tuple[str, str], str]] = {}
+    transfer_metrics_by_circuit: dict[str, dict[str, float]] = {}
+    drive_circuit_meta: dict[str, dict[str, Any]] = {}
     transfer_mode_by_day: dict[int, str] = {}
     transfer_days: set[int] = set()
     for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
@@ -1704,7 +1719,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
         route_ids = route_pin_ids_by_day.setdefault(day_num, [])
         pending_intercity_mode: str | None = None
-        for stop in entry["stops"]:
+        pending_route_circuit_id: str | None = None
+        for stop_index, stop in enumerate(entry["stops"], start=1):
             name = stop.get("name") if isinstance(stop, dict) else stop
             kind = str(stop.get("kind") or "").strip().lower() if isinstance(stop, dict) else ""
             mode_name = str(stop.get("mode") or "") if isinstance(stop, dict) else ""
@@ -1714,6 +1730,14 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             if mode:
                 transfer_days.add(day_num)
                 transfer_mode_by_day[day_num] = mode
+                circuit_id = _route_circuit_id(day_num, stop_index, mode)
+                if mode == "Drive":
+                    drive_circuit_meta[circuit_id] = {
+                        "id": circuit_id,
+                        "day": day_num,
+                        "mode": mode,
+                        "label": str(name or "Drive"),
+                    }
                 if isinstance(stop, dict):
                     saved_metrics = {
                         metric: float(stop[metric])
@@ -1721,7 +1745,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                         if isinstance(stop.get(metric), (int, float)) and stop[metric] > 0
                     }
                     if saved_metrics:
-                        transfer_metrics_by_day[day_num] = saved_metrics
+                        transfer_metrics_by_circuit[circuit_id] = saved_metrics
                 terminal_refs = _transport_terminal_refs(str(name or ""), kind)
                 terminal_ids: list[str] = []
                 for terminal_kind, terminal_name in terminal_refs:
@@ -1736,6 +1760,9 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                     intercity_modes_by_day.setdefault(day_num, {})[
                         (terminal_ids[0], terminal_ids[-1])
                     ] = mode
+                    route_circuit_ids_by_day.setdefault(day_num, {})[
+                        (terminal_ids[0], terminal_ids[-1])
+                    ] = circuit_id
                 else:
                     if not route_ids and terminal_refs:
                         origin_pin = _pin_for_stop(terminal_refs[0][1], terminal_refs[0][0])
@@ -1745,6 +1772,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                                 by_day[day_num].append(origin_id)
                             route_ids.append(origin_id)
                     pending_intercity_mode = mode
+                    pending_route_circuit_id = circuit_id
                 continue
             pin = _pin_for_stop(name, kind)
             if pin and pin["id"] not in by_day.setdefault(day_num, []):
@@ -1757,8 +1785,13 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                         intercity_modes_by_day.setdefault(day_num, {})[
                             (route_ids[-1], pin_id)
                         ] = pending_intercity_mode
+                        if pending_route_circuit_id:
+                            route_circuit_ids_by_day.setdefault(day_num, {})[
+                                (route_ids[-1], pin_id)
+                            ] = pending_route_circuit_id
                     if pending_intercity_mode != "Drive" or pin["kind"] == "hotel":
                         pending_intercity_mode = None
+                        pending_route_circuit_id = None
                 route_ids.append(pin_id)
 
     unscheduled: list[str] = []
@@ -1868,6 +1901,21 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                             for edge, mode in intercity_modes_by_day[d].items()
                             if edge[0] != origin_id
                         }
+                    route_circuit_ids = route_circuit_ids_by_day.get(d) or {}
+                    replacement_circuit_edges = {
+                        (carried_stay_id, end_id): circuit_id
+                        for (start_id, end_id), circuit_id in route_circuit_ids.items()
+                        if start_id == origin_id
+                    }
+                    if replacement_circuit_edges:
+                        route_circuit_ids_by_day.setdefault(d, {}).update(
+                            replacement_circuit_edges
+                        )
+                        route_circuit_ids_by_day[d] = {
+                            edge: circuit_id
+                            for edge, circuit_id in route_circuit_ids_by_day[d].items()
+                            if edge[0] != origin_id
+                        }
                 route_ids = [
                     carried_stay_id,
                     *(pin_id for pin_id in route_ids if pin_id != carried_stay_id),
@@ -1892,7 +1940,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             route_ids,
             pin_by_id,
             intercity_modes,
-            transfer_metrics_by_day.get(d),
+            route_circuit_ids_by_day.get(d),
+            transfer_metrics_by_circuit,
         )
         route = _route_stats_for_day(route_ids, pin_by_id)
         if intercity_modes:
@@ -1927,6 +1976,33 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         if itinerary_day:
             day["schedule"] = itinerary_day.get("schedule")
 
+    drive_circuits: list[dict[str, Any]] = []
+    for circuit_id, metadata in drive_circuit_meta.items():
+        day = next((item for item in days if item["day"] == metadata["day"]), None)
+        if not day:
+            continue
+        circuit_legs = [
+            leg for leg in day["legs"] if leg.get("route_circuit_id") == circuit_id
+        ]
+        if not circuit_legs:
+            continue
+        pin_ids = [circuit_legs[0]["from_pin_id"]]
+        pin_ids.extend(leg["to_pin_id"] for leg in circuit_legs)
+        distance = round(sum(float(leg["distance_km"]) for leg in circuit_legs), 1)
+        duration = sum(int(leg["duration_min"]) for leg in circuit_legs)
+        drive_circuits.append({
+            **metadata,
+            "pin_ids": pin_ids,
+            "legs": circuit_legs,
+            "route": {
+                "distance_km": distance,
+                "duration_min": duration,
+                "mode": "Drive",
+                "distance_display": f"{distance:.1f} km",
+                "duration_display": _route_duration_display(duration),
+            },
+        })
+
     scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
     unscheduled = [pin_id for pin_id in unscheduled if pin_id not in scheduled_ids]
 
@@ -1950,6 +2026,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         "center": center,
         "pins": pins,
         "days": days,
+        "drive_circuits": drive_circuits,
         "available_days": [
             int(day.get("day") or index + 1)
             for index, day in enumerate(trip.get("day_wise_itinerary") or [])
@@ -2680,9 +2757,14 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
         stops = []
         day_coords: list[tuple[float, float]] = []
-        for raw in entry.get("stops") or []:
+        for raw_stop_index, raw in enumerate(entry.get("stops") or [], start=1):
             s = _normalize_stop(raw, hotels, activities)
             if s:
+                route_mode = _intercity_transfer_mode(s["name"], s["kind"])
+                if route_mode == "Drive":
+                    s["route_circuit_id"] = _route_circuit_id(
+                        day_num, raw_stop_index, route_mode
+                    )
                 is_place = s["kind"] not in {"flight", "transport"}
                 summary = (
                     places_cache.get_details(s["name"], destination) or {}
