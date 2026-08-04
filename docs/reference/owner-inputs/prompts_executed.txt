@@ -1,0 +1,25 @@
+# prompts_executed — mugoy
+# Tail-appended log of my exact prompts to the agent, numbered, each with a short
+# title. Newest entries are appended at the bottom. Purpose: recall past
+# interactions and re-use prompts. Prompt text is preserved verbatim.
+# Format:
+#   [NNN] [Date] <short title>
+#   <exact prompt text, verbatim>
+#   (blank line between entries)
+
+[001] Save tech-debt plan under agent proposals
+copy this proposal to an appropriately named new file under agent proposals folder, keep it saved with all needed context for later execution.
+
+[002] Confirm proposals folder under reference
+folder is alreay under reference folder
+
+[003] New high-impact feature proposals + prompt log
+create another proposal high impact and high quality from your side with new top 5-10 feature suggestions with details to implement that will add maximum value addressing the market needs and pain points the customers underrgo today, making this tripplanner a breeze to use with easy UX, easy to make chanegs to looking at the itinerary, details and map ux, working with chat agent, and performant enough to make it breezy than laggy and traking long time, and insightful actual itinerary final outcome.
+
+Create one file contianing all features' summary with one-liners/short summary per feature.
+and create individual feature level propsoal files. create and maintain 2-3 folders if too many files gettign accumulated in this root folder
+
+Last request - now onward maintain the prompts_executed.txt simply with exact my prompts copied in a tail appended log and numbered . just put one liner or few words title summary for each prompt. i want to use it to refer what all interaaction i have done with agent and re-use some prompts.
+
+[004] Sandbox workflow proposal for parallel feature eval
+Create a proposal plan on how can you create a setup that allows to execute on such proposals and create a fully functional actual features but in a parallel environment and may be in a parallel code branch etc. so that i can evaluate new features there and decide which ones to keep or which ones to revert. Without complexity and in a clean manner - I can simply say develop this new feature or improvement in the sandbox. then I can run the sandbox and experience that feature and then come and tell you now propagate that to main product, or discard it, or make few more changes.
