@@ -102,7 +102,7 @@ def _ensure_dirs() -> None:
 
 
 def _is_place_kind(kind: str) -> bool:
-    return kind in {"hotel", "attraction", "meal"}
+    return kind in {"hotel", "attraction", "activity", "meal", "restaurant"}
 
 
 def _canonical_place_kind(kind: str) -> str:

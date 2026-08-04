@@ -68,6 +68,9 @@ dont limit the max width of different panels. user may want to hide others or si
 also all panels can get hidden too or any combination could be hidden or shown . allow all that. suggest if you think differently on this
 
 [014] [4-Aug-2026] Fix Lab 13 guide city filters, kind filter, ordering, speed
+in this sbx 13 , city filters are not showing. bhiopal jn and rock shelters are showing irrespective of chosen hotels or food filters.
+Quite slow to switch clicks across this details panel.
+Also - the new and top of must-visit / popular stack items that are not in trip should be shown towards top, order it that way.
 
 [015] [4-Aug-2026] Map preview for guide picks; prewarm guide data
 
@@ -101,3 +104,6 @@ Yes add that, in case New is very slow I can use this
 
 [026] [4-Aug-2026] Park sandbox on ship, claim later
 at time of shipping i may nto know name of new slug so by default dont discard, just recycle and remmeber with the sandbox state. when i know the name i will run recycle again that time you can detect and just take the new slug name
+
+[027] [4-Aug-2026] Create downloadable architecture onboarding document
+create a pdf or word  or md doc out of this that i will download, and also commmit it to repo

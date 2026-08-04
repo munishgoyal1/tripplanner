@@ -5,6 +5,8 @@ local setup and collaboration procedures, not product requirements, architecture
 or deployment policy.
 
 - [`dev.md`](dev.md): local application, test, and UX Lab commands.
+- [`architecture-onboarding.md`](architecture-onboarding.md): guided system
+  architecture, ownership map, data flows, invariants, and first-week reading plan.
 - [`parallel-agent-development.md`](parallel-agent-development.md): worker
   worktrees, synchronization, review, and guarded integration.
 - [`setup-oauth.md`](setup-oauth.md): local Google OAuth setup.

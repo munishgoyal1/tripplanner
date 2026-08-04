@@ -32,6 +32,8 @@ interface Props {
   /** Exact focused occurrence for places repeated across days or within a circuit. */
   focusDay?: number;
   focusStop?: number;
+  /** Bumped on every focus click so re-picking the same place scrolls again. */
+  focusToken?: number;
   /** Programmatic jump target after add-to-trip actions. */
   jumpTo?: { day: number; name?: string; token: number } | { summary: true; token: number } | null;
   /** Remove a stop from the itinerary / trip. */
@@ -286,6 +288,7 @@ export default function ItineraryPanel({
   focusName,
   focusDay,
   focusStop,
+  focusToken = 0,
   jumpTo,
   onStopRemove,
 }: Props) {
@@ -411,7 +414,7 @@ export default function ItineraryPanel({
     );
     if (!row) return;
     row.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [focusName, focusDay, focusStop, it]);
+  }, [focusName, focusDay, focusStop, focusToken, it]);
 
   if (loading && !it) {
     return (
