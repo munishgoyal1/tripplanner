@@ -416,6 +416,8 @@ re-describing the whole product.
   filters. Active filters union across Itinerary and Map; no active filters show
   the complete trip. Filtering preserves authoritative day/stop identity, full
   selected journey geometry, and Trip Snapshot while hiding unmatched days.
+  Flight mode remains authoritative filter evidence for legacy map legs that
+  omit the optional inter-city marker.
 
 ### MAP-01 - Map behavior
 

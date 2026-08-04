@@ -997,6 +997,51 @@ describe("map stop selection", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "All days" })).toHaveClass("text-white"));
   });
 
+  it("shows arrival and departure days for legacy flight legs", async () => {
+    fetchMapsConfigMock.mockResolvedValue({ enabled: false, key: "" });
+    const airport = (id: string, day: number) => ({
+      id,
+      name: `${id.toUpperCase()} Airport`,
+      kind: "airport",
+      selected: true,
+      day,
+      lat: day,
+      lng: day,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [{ day, stop: 1, time: "09:00" }],
+    });
+    const flightRoute = {
+      distance_km: 1000,
+      duration_min: 120,
+      mode: "Flight",
+      distance_display: "1,000 km",
+      duration_display: "2 hr",
+    };
+    fetchMapViewMock.mockResolvedValue({
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [airport("blr", 1), airport("udr", 1), airport("jsa", 8)],
+      days: [
+        { day: 1, label: "Day 1", color: "#2563eb", pin_ids: ["blr", "udr"], route: flightRoute, legs: [{ ...flightRoute, from_pin_id: "blr", to_pin_id: "udr" }] },
+        { day: 2, label: "Day 2", color: "#e11d48", pin_ids: [], route: { ...flightRoute, mode: "Walk" }, legs: [] },
+        { day: 8, label: "Day 8", color: "#6b7280", pin_ids: ["jsa", "blr"], route: flightRoute, legs: [{ ...flightRoute, from_pin_id: "jsa", to_pin_id: "blr" }] },
+      ],
+      available_days: [1, 2, 8],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: null,
+    });
+
+    render(createElement(MapPanel, { filters: ["flight"] }));
+
+    expect(await screen.findByRole("button", { name: "Day 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Day 8" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Day 2" })).not.toBeInTheDocument();
+  });
+
   it("draws all flight arcs and focuses a repeated airport alias on its requested day", async () => {
     const panTo = vi.fn();
     const map = {
