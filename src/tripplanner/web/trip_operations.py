@@ -38,6 +38,28 @@ def build_view(focus: dict[str, str] | None = None) -> dict[str, Any]:
     return trip_view.build_view(trip_planner.load_active_trip_dict(), focus)
 
 
+def paged_places(
+    *,
+    city: str | None = None,
+    kind: str | None = None,
+    query: str | None = None,
+    cursor: str | None = None,
+    limit: int = 6,
+    focus_name: str | None = None,
+    focus_kind: str | None = None,
+) -> dict[str, Any]:
+    return trip_view.paged_places(
+        trip_planner.load_active_trip_dict(),
+        city=city,
+        kind=kind,
+        query=query,
+        cursor=cursor,
+        limit=limit,
+        focus_name=focus_name,
+        focus_kind=focus_kind,
+    )
+
+
 def build_map() -> dict[str, Any]:
     return trip_view.build_map_view(trip_planner.load_active_trip_dict())
 

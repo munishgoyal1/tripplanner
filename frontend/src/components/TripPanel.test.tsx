@@ -3,6 +3,14 @@ import { describe, expect, it, vi } from "vitest";
 import type { TripView } from "../types";
 import TripPanel from "./TripPanel";
 
+// The paged destination guide fetches its own data; stub it so TripPanel tests
+// stay focused on the panel's own behavior.
+vi.mock("./DestinationGuide", () => ({
+  default: ({ focus }: { focus?: { name?: string } | null }) => (
+    <div data-testid="destination-guide" data-focus={focus?.name ?? ""} />
+  ),
+}));
+
 const view: TripView = {
   has_trip: true,
   title: "Paris",
@@ -65,7 +73,7 @@ describe("TripPanel place removal", () => {
     expect(screen.queryByText("Itinerary refreshed.")).not.toBeInTheDocument();
   });
 
-  it("keeps alternatives compact when one place is focused", () => {
+  it("surfaces contextual alternatives through the destination guide when focused", () => {
     render(
       <TripPanel
         view={{
@@ -96,8 +104,10 @@ describe("TripPanel place removal", () => {
       />,
     );
 
-    expect(screen.getByText("More places")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Louvre Museum" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Eiffel Tower" })).toBeInTheDocument();
+    expect(screen.getByTestId("destination-guide")).toHaveAttribute("data-focus", "Eiffel Tower");
+    // The focused card shows only the focused place — alternatives (and their
+    // reviews) live in the guide, not inline.
     expect(screen.queryByText("Alternative review")).not.toBeInTheDocument();
   });
 

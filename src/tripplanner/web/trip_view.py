@@ -33,6 +33,14 @@ _MAX_REVIEWS_PER_ITEM = 2
 _FALLBACK_HOTELS = 2
 _FALLBACK_ATTRACTIONS = 8
 
+# Lab 13 — paged destination guide.
+_BROWSE_KINDS = ("hotel", "attraction", "restaurant")
+_FALLBACK_CITY_PLACES = 6
+_GUIDE_PAGE_SIZE = 6
+_GUIDE_MAX_LIMIT = 24
+_HOTEL_ALIASES = {"hotel", "lodging", "stay", "accommodation"}
+_RESTAURANT_ALIASES = {"restaurant", "meal", "food", "dining", "cafe", "eatery"}
+
 # ISO code → display symbol. Anything not listed is shown verbatim (already a
 # symbol, or an exotic code we just print as-is).
 _CURRENCY_SYMBOLS = {
@@ -507,6 +515,7 @@ def _build_item(
     selected_names: dict[str, set[str]],
     itinerary_names: set[str] | None = None,
     occurrences: list[dict[str, Any]] | None = None,
+    city: str = "",
 ) -> dict[str, Any]:
     name = ref["name"]
     kind = ref.get("kind", "place")
@@ -526,6 +535,7 @@ def _build_item(
     return {
         "kind": kind,
         "name": info.get("name") or name,
+        "city": city,
         "selected": selected,
         "rating": info.get("rating"),
         "review_count": info.get("review_count"),
@@ -588,6 +598,272 @@ def _terminal_occurrences(trip: dict[str, Any], name: str) -> list[dict[str, Any
     return occurrences
 
 
+def browse_kind(kind: str | None) -> str:
+    """Normalize a raw place kind into one of the three browse buckets."""
+    value = str(kind or "").strip().lower()
+    if value in _HOTEL_ALIASES:
+        return "hotel"
+    if value in _RESTAURANT_ALIASES:
+        return "restaurant"
+    return "attraction"
+
+
+def _clean_city(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _place_cities(trip: dict[str, Any]) -> dict[str, str]:
+    """Map ``place-name-lower -> city`` from structured itinerary/place evidence.
+
+    City identity comes from explicit ``city`` fields on itinerary days, stops
+    and selected items — never by parsing the free-form destination label. Places
+    without structured evidence are left unmapped (resolved to destination later).
+    """
+    mapping: dict[str, str] = {}
+
+    def _record(name: Any, city: Any) -> None:
+        n = str(name or "").strip().lower()
+        c = _clean_city(city)
+        if n and c and n not in mapping:
+            mapping[n] = c
+
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        day_city = day.get("city") or day.get("location")
+        for stop in day.get("stops") or []:
+            if isinstance(stop, dict):
+                _record(stop.get("name"), stop.get("city") or day_city)
+            else:
+                _record(stop, day_city)
+    for bucket in ("selected_hotels", "selected_activities"):
+        for item in trip.get(bucket) or []:
+            if isinstance(item, dict):
+                _record(item.get("name"), item.get("city") or item.get("location"))
+    return mapping
+
+
+def _trip_cities(trip: dict[str, Any]) -> list[str]:
+    """Ordered, unique cities the trip actually visits (day/stop evidence)."""
+    ordered: list[str] = []
+    seen: set[str] = set()
+
+    def _push(city: Any) -> None:
+        c = _clean_city(city)
+        key = c.lower()
+        if c and key not in seen:
+            seen.add(key)
+            ordered.append(c)
+
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        _push(day.get("city") or day.get("location"))
+        for stop in day.get("stops") or []:
+            if isinstance(stop, dict):
+                _push(stop.get("city"))
+    return ordered
+
+
+def discovery_pool(trip: dict[str, Any]) -> list[dict[str, str]]:
+    """Ordered ``[{kind, name, city}]`` candidate pool for the destination guide.
+
+    Combines the user's own picks and planned stops with per-city top hotels,
+    attractions and restaurants — deduped and round-robined across city × kind so
+    the mixed-highlights default stays balanced across the whole route.
+    """
+    destination = _clean_city(trip.get("destination"))
+    city_of = _place_cities(trip)
+    cities = _trip_cities(trip) or ([destination] if destination else [])
+
+    pool: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+
+    def _resolve_city(name: str) -> str:
+        return city_of.get(name.strip().lower()) or destination
+
+    def _add(kind: str, name: str, city: str = "") -> None:
+        name = str(name or "").strip()
+        if not name:
+            return
+        bk = browse_kind(kind)
+        key = (bk, name.lower())
+        if key in seen:
+            return
+        seen.add(key)
+        pool.append({"kind": bk, "name": name, "city": city or _resolve_city(name)})
+
+    for h in trip.get("selected_hotels") or []:
+        if isinstance(h, dict) and h.get("name"):
+            _add("hotel", str(h["name"]), _clean_city(h.get("city") or h.get("location")))
+    for a in trip.get("selected_activities") or []:
+        if isinstance(a, dict) and a.get("name"):
+            _add(
+                a.get("kind") or "attraction",
+                str(a["name"]),
+                _clean_city(a.get("city") or a.get("location")),
+            )
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        day_city = _clean_city(day.get("city") or day.get("location"))
+        for stop in day.get("stops") or []:
+            if isinstance(stop, dict):
+                _add(
+                    stop.get("kind") or "attraction",
+                    str(stop.get("name") or ""),
+                    _clean_city(stop.get("city")) or day_city,
+                )
+
+    fallback_sources = cities or ([destination] if destination else [])
+    ranked: dict[tuple[str, str], list[str]] = {}
+    depth = 0
+    for city in fallback_sources:
+        for kind in _BROWSE_KINDS:
+            names = places_cache.top_places(city, kind, n=_FALLBACK_CITY_PLACES)
+            ranked[(city, kind)] = names
+            depth = max(depth, len(names))
+    for rank in range(depth):
+        for city in fallback_sources:
+            for kind in _BROWSE_KINDS:
+                names = ranked.get((city, kind), [])
+                if rank < len(names):
+                    _add(kind, names[rank], city)
+    return pool
+
+
+def _build_row(
+    ref: dict[str, str],
+    destination: str,
+    selected_names: dict[str, set[str]],
+    itinerary_names: set[str],
+) -> dict[str, Any]:
+    """Lightweight browse row — one photo, no reviews (rich data is focus-only)."""
+    name = ref["name"]
+    kind = browse_kind(ref.get("kind"))
+    city = ref.get("city") or destination
+    info = places_cache.get_details(name, city or destination) or {}
+    photos = places_cache.get_photos(name, city or destination, max_photos=1)
+    key = name.strip().lower()
+    bucket = "hotel" if kind == "hotel" else "attraction"
+    selected = key in selected_names.get(bucket, set()) or key in itinerary_names
+    return {
+        "kind": kind,
+        "name": info.get("name") or name,
+        "city": city,
+        "selected": selected,
+        "rating": info.get("rating"),
+        "review_count": info.get("review_count"),
+        "address": info.get("address") or "",
+        "summary": info.get("editorial_summary") or "",
+        "photo": photos[0] if photos else None,
+        "website": info.get("website") or "",
+    }
+
+
+def paged_places(
+    trip: dict[str, Any] | None,
+    *,
+    city: str | None = None,
+    kind: str | None = None,
+    query: str | None = None,
+    cursor: str | None = None,
+    limit: int = _GUIDE_PAGE_SIZE,
+    focus_name: str | None = None,
+    focus_kind: str | None = None,
+) -> dict[str, Any]:
+    """Cursor-paged place discovery for the Lab 13 destination guide.
+
+    Filters the balanced :func:`discovery_pool` by ``city``/``kind``/``query`` and
+    returns one lightweight page plus counts and the available filter values. When
+    ``focus_name`` is set, returns same-city, same-kind alternatives to that place
+    (excluding it) so the focused inspector can offer contextual comparisons.
+    """
+    empty = {
+        "items": [],
+        "cursor": None,
+        "total_count": 0,
+        "remaining_count": 0,
+        "available_cities": [],
+        "available_kinds": [],
+    }
+    if not trip:
+        return empty
+
+    destination = _clean_city(trip.get("destination"))
+    pool = discovery_pool(trip)
+
+    available_cities: list[str] = []
+    seen_city: set[str] = set()
+    for entry in pool:
+        c = entry.get("city") or ""
+        k = c.lower()
+        if c and k not in seen_city:
+            seen_city.add(k)
+            available_cities.append(c)
+    available_kinds = [k for k in _BROWSE_KINDS if any(e["kind"] == k for e in pool)]
+
+    focus_name = (focus_name or "").strip()
+    if focus_name:
+        fk = browse_kind(focus_kind)
+        fcity = ""
+        for entry in pool:
+            if entry["name"].strip().lower() == focus_name.lower():
+                fcity = entry.get("city") or ""
+                break
+        if not fcity:
+            fcity = _place_cities(trip).get(focus_name.lower()) or destination
+        filtered = [
+            e
+            for e in pool
+            if e["kind"] == fk
+            and (e.get("city") or "").lower() == fcity.lower()
+            and e["name"].strip().lower() != focus_name.lower()
+        ]
+    else:
+        want_city = _clean_city(city)
+        if want_city.lower() in ("", "all", "all cities"):
+            want_city = ""
+        raw_kind = (kind or "").strip().lower()
+        want_kind = "" if raw_kind in ("", "highlights", "all") else browse_kind(kind)
+        q = (query or "").strip().lower()
+        filtered = []
+        for e in pool:
+            if want_city and (e.get("city") or "").lower() != want_city.lower():
+                continue
+            if want_kind and e["kind"] != want_kind:
+                continue
+            if q and q not in f"{e['name']} {e.get('city', '')}".lower():
+                continue
+            filtered.append(e)
+
+    total = len(filtered)
+    try:
+        start = max(0, int(cursor)) if cursor else 0
+    except (TypeError, ValueError):
+        start = 0
+    page_size = max(1, min(int(limit or _GUIDE_PAGE_SIZE), _GUIDE_MAX_LIMIT))
+    page = filtered[start : start + page_size]
+    next_start = start + page_size
+    next_cursor = str(next_start) if next_start < total else None
+    remaining = max(0, total - next_start)
+
+    selected_names = {
+        "hotel": _selected_names(trip, "hotel"),
+        "attraction": _selected_names(trip, "attraction"),
+    }
+    itinerary_names = _itinerary_names(trip)
+    items = [_build_row(e, destination, selected_names, itinerary_names) for e in page]
+    return {
+        "items": items,
+        "cursor": next_cursor,
+        "total_count": total,
+        "remaining_count": remaining,
+        "available_cities": available_cities,
+        "available_kinds": available_kinds,
+    }
+
+
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
@@ -623,6 +899,7 @@ def build_view(
         "attraction": _selected_names(trip, "attraction"),
     }
     itinerary_names = _itinerary_names(trip)
+    city_map = _place_cities(trip)
     places_cache.prefetch(
         [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
     )
@@ -635,6 +912,7 @@ def build_view(
             _terminal_occurrences(trip, ref["name"])
             if ref["kind"] in {"airport", "station", "bus_station"}
             else _place_occurrences(trip, ref["name"]),
+            city=city_map.get(ref["name"].strip().lower(), destination),
         )
         for ref in refs
     ]

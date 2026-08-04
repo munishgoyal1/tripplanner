@@ -2,6 +2,7 @@ import type {
   DeselectItemOptions,
   Itinerary,
   MapView,
+  PlaceGuidePage,
   PlannerReview,
   SavedTrip,
   SelectItemOptions,
@@ -120,6 +121,32 @@ export class TripplannerClient {
     const response = await this.request(this.url("/trip/view", params), { signal });
     ensureOk(response, "Could not load the trip");
     return response.json() as Promise<TripView>;
+  }
+
+  async fetchPlaceGuide(
+    opts: {
+      city?: string;
+      kind?: string;
+      query?: string;
+      cursor?: string | null;
+      limit?: number;
+      focus?: { kind: string; name: string } | null;
+    } = {},
+    signal?: AbortSignal,
+  ): Promise<PlaceGuidePage> {
+    const params: Record<string, string> = { user_id: await this.userId() };
+    if (opts.city) params.city = opts.city;
+    if (opts.kind) params.kind = opts.kind;
+    if (opts.query) params.query = opts.query;
+    if (opts.cursor) params.cursor = opts.cursor;
+    if (opts.limit != null) params.limit = String(opts.limit);
+    if (opts.focus?.name) {
+      params.focus_kind = opts.focus.kind;
+      params.focus_name = opts.focus.name;
+    }
+    const response = await this.request(this.url("/trip/places", params), { signal });
+    ensureOk(response, "Could not load places");
+    return response.json() as Promise<PlaceGuidePage>;
   }
 
   async fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {

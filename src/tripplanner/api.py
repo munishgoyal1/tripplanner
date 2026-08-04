@@ -944,6 +944,39 @@ async def trip_view_endpoint(
     return await asyncio.to_thread(trip_operations.build_view, focus)
 
 
+@app.get("/trip/places")
+async def trip_places_endpoint(
+    request: Request,
+    user_id: str = "local",
+    city: str = "",
+    kind: str = "",
+    query: str = "",
+    cursor: str = "",
+    limit: int = 6,
+    focus_kind: str = "",
+    focus_name: str = "",
+) -> dict:
+    """Cursor-paged destination-guide place discovery (Lab 13).
+
+    Filters the balanced place pool by ``city``/``kind``/``query`` and returns one
+    lightweight page plus counts and available filter values. With ``focus_name``
+    set, returns same-city, same-kind alternatives to the focused place.
+    """
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    return await asyncio.to_thread(
+        trip_operations.paged_places,
+        city=city or None,
+        kind=kind or None,
+        query=query or None,
+        cursor=cursor or None,
+        limit=limit,
+        focus_kind=focus_kind or None,
+        focus_name=focus_name or None,
+    )
+
+
 @app.get("/maps/config")
 async def maps_config_endpoint() -> dict:
     """Expose whether the interactive map is enabled + its browser key.

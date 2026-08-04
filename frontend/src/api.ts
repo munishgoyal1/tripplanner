@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary } from "./types";
+import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage } from "./types";
 import {
   TripplannerClient,
   type DeselectItemOptions,
@@ -338,6 +338,20 @@ export async function fetchTripView(focus?: {
   stop?: number;
 }, signal?: AbortSignal): Promise<TripView> {
   return sharedClient.fetchTripView(focus, signal);
+}
+
+export async function fetchPlaceGuide(
+  opts: {
+    city?: string;
+    kind?: string;
+    query?: string;
+    cursor?: string | null;
+    limit?: number;
+    focus?: { kind: string; name: string } | null;
+  } = {},
+  signal?: AbortSignal,
+): Promise<PlaceGuidePage> {
+  return sharedClient.fetchPlaceGuide(opts, signal);
 }
 
 export type { DeselectItemOptions, SelectItemOptions, SelectionPlacement };

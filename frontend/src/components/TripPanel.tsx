@@ -2,6 +2,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { TripItem, TripView } from "../types";
+import DestinationGuide from "./DestinationGuide";
 import DestinationOverview from "./DestinationOverview";
 import Lightbox from "./Lightbox";
 import PlaceTripActions from "./PlaceTripActions";
@@ -334,67 +335,43 @@ export default function TripPanel({
         )}
 
         <section className="border-t border-slate-100 px-4 py-4">
-          {!focused && (
-            <div className="mb-1">
-              <h2 className="text-xs font-semibold uppercase text-slate-500">Places</h2>
-            </div>
-          )}
-          {view.items.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-muted">
-              {focused
-                ? "Nothing to show for this item."
-                : "No hotels or activities saved yet. Ask the agent for options, then add the ones you like."}
-            </p>
-          ) : focused ? (
-            <>
-              <ItemCard
-                item={view.items[0]}
-                focused
-                onFocus={onFocus}
-                onSelect={onSelect}
-                onHotelStay={(name) => setPendingHotel(name)}
-                onDeselect={onDeselect}
-                focusContext={focusContext}
-                availableDays={view.available_days}
-                onOpenPhoto={openPhoto}
-              />
-              {view.items.length > 1 && (
-                <div className="mt-5 border-t border-slate-100 pt-4">
-                  <h2 className="mb-1 text-xs font-semibold uppercase text-slate-500">More places</h2>
-                  {view.items.slice(1).map((item) => (
-                    <ItemCard
-                      key={`${item.kind}:${item.name.toLowerCase()}`}
-                      item={item}
-                      focused={false}
-                      onFocus={onFocus}
-                      onSelect={onSelect}
-                      onHotelStay={(name) => setPendingHotel(name)}
-                      onDeselect={onDeselect}
-                      focusContext={focusContext}
-                      availableDays={view.available_days}
-                      onOpenPhoto={openPhoto}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+          {focused ? (
+            view.items.length === 0 ? (
+              <p className="px-3 py-6 text-center text-sm text-muted">
+                Nothing to show for this item.
+              </p>
+            ) : (
+              <>
+                <ItemCard
+                  item={view.items[0]}
+                  focused
+                  onFocus={onFocus}
+                  onSelect={onSelect}
+                  onHotelStay={(name) => setPendingHotel(name)}
+                  onDeselect={onDeselect}
+                  focusContext={focusContext}
+                  availableDays={view.available_days}
+                  onOpenPhoto={openPhoto}
+                />
+                <DestinationGuide
+                  destination={ov.destination}
+                  tripVersion={tripVersion}
+                  focus={{
+                    kind: view.items[0].kind,
+                    name: view.items[0].name,
+                    city: view.items[0].city,
+                  }}
+                  onFocus={onFocus}
+                />
+              </>
+            )
           ) : (
-            <div className="divide-y divide-slate-100">
-            {view.items.map((it) => (
-              <ItemCard
-                key={`${it.kind}:${it.name.toLowerCase()}`}
-                item={it}
-                focused={false}
-                onFocus={onFocus}
-                onSelect={onSelect}
-                onHotelStay={(name) => setPendingHotel(name)}
-                onDeselect={onDeselect}
-                focusContext={focusContext}
-                availableDays={view.available_days}
-                onOpenPhoto={openPhoto}
-              />
-            ))}
-            </div>
+            <DestinationGuide
+              destination={ov.destination}
+              tripVersion={tripVersion}
+              focus={null}
+              onFocus={onFocus}
+            />
           )}
         </section>
       </div>

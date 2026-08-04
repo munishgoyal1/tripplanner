@@ -485,12 +485,12 @@ def place_coords(name: str, city: str = "") -> tuple[float, float] | None:
 
 
 def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False) -> list[str]:
-    """Return the names of the top ``n`` hotels/attractions in ``destination``.
+    """Return the names of the top ``n`` hotels/attractions/restaurants in ``destination``.
 
     Used by the sidebar as a fallback so the panels fill in with the
     destination's highlights *before* the user has locked any selections.
-    ``kind`` is ``"hotel"`` or ``"attraction"``. Results are cached per
-    ``(destination, kind)`` so we only hit Places once.
+    ``kind`` is ``"hotel"``, ``"attraction"`` or ``"restaurant"``. Results are
+    cached per ``(destination, kind)`` so we only hit Places once.
     """
     if not is_configured() or not destination:
         return []
@@ -502,11 +502,12 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
             if not refresh and _fresh(entry):
                 return entry.get("names", [])  # type: ignore[union-attr]
 
-        query = (
-            f"best hotels in {destination}"
-            if kind == "hotel"
-            else f"top tourist attractions in {destination}"
-        )
+        if kind == "hotel":
+            query = f"best hotels in {destination}"
+        elif kind == "restaurant":
+            query = f"best restaurants in {destination}"
+        else:
+            query = f"top tourist attractions in {destination}"
         names: list[str] = []
         try:
             resp = httpx.post(

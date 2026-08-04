@@ -13,6 +13,7 @@ export interface PlaceOccurrence {
 export interface TripItem {
   kind: string;
   name: string;
+  city?: string;
   selected: boolean;
   rating: number | null;
   review_count: number | null;
@@ -22,6 +23,30 @@ export interface TripItem {
   photos: string[];
   reviews: Review[];
   occurrences: PlaceOccurrence[];
+}
+
+// Lab 13 — lightweight browse row for the paged destination guide. Rich fields
+// (multiple photos, reviews) are only fetched when a place is focused.
+export interface PlaceRow {
+  kind: string;
+  name: string;
+  city: string;
+  selected: boolean;
+  rating: number | null;
+  review_count: number | null;
+  address: string;
+  summary: string;
+  photo: string | null;
+  website: string;
+}
+
+export interface PlaceGuidePage {
+  items: PlaceRow[];
+  cursor: string | null;
+  total_count: number;
+  remaining_count: number;
+  available_cities: string[];
+  available_kinds: string[];
 }
 
 export interface Budget {
