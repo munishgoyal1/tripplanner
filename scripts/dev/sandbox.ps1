@@ -451,6 +451,12 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
     Push-Location $primaryRoot
     try {
         & $PSCommandPath -Discard $slug -Force -DeleteRemoteBranch -Confirm:$false
+    } catch {
+        # A running sandbox stack or an open editor window keeps the files locked.
+        Write-Warning "Merged into $BaseBranch, but the sandbox could not be removed: $($_.Exception.Message)"
+        Write-Host "Stop 'Run-Sandbox $slug', close the sandbox window, then run:" -ForegroundColor Yellow
+        Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug -Force -DeleteRemoteBranch"
+        return
     } finally {
         Pop-Location
     }
