@@ -34,7 +34,9 @@ export function itineraryStopMatchesFilters(
 }
 
 function filterForLeg(leg: MapLeg): ItineraryFilter | null {
-  return leg.intercity ? filterForMode(leg.mode) : null;
+  const filter = filterForMode(leg.mode);
+  if (filter === "flight") return filter;
+  return leg.intercity ? filter : null;
 }
 
 export function filterMapView(

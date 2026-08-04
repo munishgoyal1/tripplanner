@@ -75,4 +75,55 @@ describe("itinerary union filters", () => {
     expect(filtered.days[0].legs).toHaveLength(2);
     expect(filtered.days[1].legs?.[0]?.mode).toBe("Train");
   });
+
+  it("keeps arrival and departure flight days when legacy legs omit intercity", () => {
+    const view: MapView = {
+      enabled: true,
+      destination: "Rajasthan",
+      center: null,
+      pins: [
+        pin("blr", "airport", 1),
+        pin("udr", "airport", 1),
+        pin("hotel", "hotel", 2),
+        pin("jsa", "airport", 8),
+      ],
+      days: [
+        {
+          day: 1,
+          label: "Day 1",
+          color: "#2563eb",
+          pin_ids: ["blr", "udr"],
+          route: { ...route, mode: "Flight" },
+          legs: [{ ...route, mode: "Flight", from_pin_id: "blr", to_pin_id: "udr" }],
+        },
+        {
+          day: 2,
+          label: "Day 2",
+          color: "#e11d48",
+          pin_ids: ["hotel"],
+          route,
+          legs: [],
+        },
+        {
+          day: 8,
+          label: "Day 8",
+          color: "#6b7280",
+          pin_ids: ["jsa", "blr"],
+          route: { ...route, mode: "Flight" },
+          legs: [{ ...route, mode: "Flight", from_pin_id: "jsa", to_pin_id: "blr" }],
+        },
+      ],
+      drive_circuits: [],
+      available_days: [1, 2, 8],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: null,
+    };
+
+    const filtered = filterMapView(view, ["flight"]);
+
+    expect(filtered.days.map((day) => day.day)).toEqual([1, 8]);
+    expect(filtered.available_days).toEqual([1, 8]);
+    expect(filtered.pins.map((candidate) => candidate.id)).toEqual(["blr", "udr", "jsa"]);
+  });
 });
