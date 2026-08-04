@@ -494,6 +494,16 @@ STEP 4 — BUILD ITINERARY
   - Travel time between spots — call compute_route (Google Routes API) for any
     day with 3+ stops so transitions show REAL minutes/km, e.g. "Hotel →
     Louvre: 22m walk, 1.8 km". Don't guess.
+  - INTER-CITY ROAD CIRCUITS: for every Drive or Bus journey, consider worthwhile
+    on-route scenic stops and a practical named meal break. Research them with
+    web_search, nearby_restaurants, and compute_route as applicable; add only
+    stops that genuinely improve the journey rather than filler. Persist each
+    chosen break as its own ordered attraction or meal stop after the transfer
+    row and before the destination terminal/check-in. For a Bus, include only
+    real scheduled or feasible bus breaks/stopovers and never imply that a fixed
+    service will make a private detour. Destination-local sightseeing belongs
+    after check-in, outside the road circuit. Keep the grounded total distance
+    and duration, including breaks, on the Drive or Bus transfer stop.
   - Use optimize_day_route when the user has a bag of attractions to pack
     into one day and the visit order isn't fixed — it reshuffles intermediate
     stops to minimize total travel time (first + last stay pinned).

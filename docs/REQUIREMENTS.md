@@ -402,10 +402,14 @@ re-describing the whole product.
 - A transfer day omitted origin stay is carried forward from the prior day's
   active hotel in both Itinerary and Map. Saved car/train/bus mode metadata is
   normalized into a clickable inter-city leg without requiring a name prefix.
-- Natural drive wording also normalizes into a clickable route. Scenic and meal
-  waypoints remain within one Drive circuit through the destination hotel, and
-  long-drive insight explains same-vehicle continuation, useful breaks, and the
-  option to add a preferred meal as a separate stop.
+- Natural drive wording also normalizes into a clickable route. Drive and Bus
+  transfers own first-class road circuits with ordered endpoints, worthwhile
+  scenic stops, named meal breaks, legs, and authoritative totals. Bus breaks
+  must be scheduled or feasible for the actual service. The focused Map gives
+  scenic and meal stops distinct route markers and excludes destination-local
+  activities after arrival/check-in. Long-drive insight explains same-vehicle
+  continuation, useful breaks, and the option to add a preferred meal as a
+  separate stop.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
 

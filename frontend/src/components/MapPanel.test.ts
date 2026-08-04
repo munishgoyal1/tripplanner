@@ -12,6 +12,7 @@ import {
   formatLegLabel,
   hotelIcon,
   hotelLabelsForDay,
+  mapContextForRoadCircuit,
   mapContextForScope,
   hotelReturnForDay,
   isInspectableMapPin,
@@ -110,6 +111,50 @@ describe("map stop selection", () => {
       travel: "2 hrs 30 min · 92 km · car",
     });
     expect(mapContextForScope(view, "all")?.title).toBe("Tamil Nadu");
+  });
+
+  it("summarizes a focused road circuit and its useful breaks", () => {
+    const view = {
+      enabled: true,
+      destination: "New York",
+      center: null,
+      pins: [],
+      days: [],
+      available_days: [2],
+      unscheduled_pin_ids: [],
+      airport: null,
+      empty_message: "",
+      road_circuits: [{
+        id: "day-2-stop-2-bus",
+        day: 2,
+        mode: "Bus" as const,
+        label: "Bus: Boston to New York",
+        pin_ids: ["origin", "scenic", "meal", "destination"],
+        waypoints: [
+          { pin_id: "origin", role: "origin" as const },
+          { pin_id: "scenic", role: "scenic" as const },
+          { pin_id: "meal", role: "meal" as const },
+          { pin_id: "destination", role: "destination" as const },
+        ],
+        legs: [],
+        route: {
+          distance_km: 350,
+          duration_min: 300,
+          mode: "Bus",
+          distance_display: "350 km",
+          duration_display: "5 hrs",
+        },
+      }],
+    };
+
+    expect(mapContextForRoadCircuit(view, "day-2-stop-2-bus")).toEqual({
+      label: "Bus transfer · Day 2",
+      title: "Bus: Boston to New York",
+      scheduleLabel: "Stops",
+      schedule: "1 scenic stop · 1 meal break",
+      travelLabel: "Road",
+      travel: "5 hrs · 350 km",
+    });
   });
 
   it("uses an A label for airport markers", () => {

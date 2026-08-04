@@ -293,4 +293,98 @@ describe("synchronizeMapOverlays", () => {
     ]);
     expect(polylines).toHaveLength(1);
   });
+
+  it("renders a selected bus road circuit from its own ordered breaks", () => {
+    const source: MapPin = {
+      id: "boston-bus", name: "Boston Bus Stand", kind: "bus_station", selected: true, day: 2,
+      lat: 42.3472, lng: -71.0756, rating: null, address: "", photo: null, occurrences: [],
+    };
+    const scenic: MapPin = {
+      ...source, id: "scenic", name: "Scenic Hudson Overlook", kind: "attraction",
+      lat: 41.7004, lng: -73.9290,
+    };
+    const meal: MapPin = {
+      ...source, id: "meal", name: "Roadside Kitchen", kind: "meal",
+      lat: 41.3083, lng: -72.9279,
+    };
+    const destination: MapPin = {
+      ...source, id: "new-york-bus", name: "New York Bus Stand",
+      lat: 40.7569, lng: -73.9903,
+    };
+    const unrelated: MapPin = {
+      ...source, id: "central-park", name: "Central Park", kind: "attraction",
+      lat: 40.7812, lng: -73.9665,
+    };
+    const circuitId = "day-2-stop-2-bus";
+    const circuitPins = [source, scenic, meal, destination];
+    const circuitLegs = circuitPins.slice(1).map((pin, index) => ({
+      from_pin_id: circuitPins[index].id,
+      to_pin_id: pin.id,
+      route_circuit_id: circuitId,
+      distance_km: 116.7,
+      duration_min: 100,
+      mode: "Bus",
+      distance_display: "116.7 km",
+      duration_display: "1 hr 40 min",
+      intercity: true,
+    }));
+    const baseView = mapView(
+      [...circuitPins, unrelated],
+      [source.id, destination.id, unrelated.id],
+    );
+    const view: MapView = {
+      ...baseView,
+      days: [{ ...baseView.days[0], day: 2, legs: [] }],
+      road_circuits: [{
+        id: circuitId,
+        day: 2,
+        mode: "Bus",
+        label: "Bus: Boston to New York",
+        pin_ids: circuitPins.map((pin) => pin.id),
+        waypoints: [
+          { pin_id: source.id, role: "origin" },
+          { pin_id: scenic.id, role: "scenic" },
+          { pin_id: meal.id, role: "meal" },
+          { pin_id: destination.id, role: "destination" },
+        ],
+        legs: circuitLegs,
+        route: {
+          distance_km: 350,
+          duration_min: 300,
+          mode: "Bus",
+          distance_display: "350 km",
+          duration_display: "5 hrs",
+        },
+      }],
+    };
+    const map = { fitBounds: vi.fn(), panTo: vi.fn(), setZoom: vi.fn() };
+    const { google, markers, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map,
+      view,
+      activeDay: 2,
+      activeRouteCircuitId: circuitId,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(markers.map((marker) => marker.options.title)).toEqual([
+      "Boston Bus Stand",
+      "Scenic Hudson Overlook",
+      "Roadside Kitchen",
+      "New York Bus Stand",
+      "116.7 km · 1 hr 40 min · Bus",
+      "116.7 km · 1 hr 40 min · Bus",
+      "116.7 km · 1 hr 40 min · Bus",
+    ]);
+    expect(polylines).toHaveLength(3);
+  });
 });

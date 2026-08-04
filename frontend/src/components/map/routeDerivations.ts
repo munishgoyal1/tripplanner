@@ -1,4 +1,4 @@
-import type { MapLeg, MapPin, MapView } from "../../types";
+import type { MapLeg, MapPin, MapRoadCircuit, MapView } from "../../types";
 import { hotelIdentityGroups, hotelIdentityMatches } from "./placeIdentity";
 
 const FLIGHT_ROUTE_COLOR = "#2563eb";
@@ -100,6 +100,33 @@ export function mapContextForScope(view: MapView, scope: number | "all" | null) 
   };
 }
 
+export function roadCircuitsForView(view: MapView): MapRoadCircuit[] {
+  return view.road_circuits ?? view.drive_circuits ?? [];
+}
+
+export function roadCircuitForId(view: MapView, circuitId: string): MapRoadCircuit | null {
+  return roadCircuitsForView(view).find((candidate) => candidate.id === circuitId) ?? null;
+}
+
+export function mapContextForRoadCircuit(view: MapView, circuitId: string) {
+  const circuit = roadCircuitForId(view, circuitId);
+  if (!circuit) return null;
+  const scenicCount = circuit.waypoints?.filter((waypoint) => waypoint.role === "scenic").length ?? 0;
+  const mealCount = circuit.waypoints?.filter((waypoint) => waypoint.role === "meal").length ?? 0;
+  const stopParts = [
+    scenicCount ? `${scenicCount} scenic ${scenicCount === 1 ? "stop" : "stops"}` : "",
+    mealCount ? `${mealCount} meal ${mealCount === 1 ? "break" : "breaks"}` : "",
+  ].filter(Boolean);
+  return {
+    label: `${circuit.mode} transfer · Day ${circuit.day}`,
+    title: circuit.label,
+    scheduleLabel: "Stops",
+    schedule: stopParts.join(" · ") || "Direct road transfer",
+    travelLabel: "Road",
+    travel: `${circuit.route.duration_display} · ${circuit.route.distance_display}`,
+  };
+}
+
 export function routeStyleForLeg(
   leg: MapLeg,
   dayColor: string,
@@ -193,10 +220,12 @@ export function hotelReturnForDay(
   };
 }
 
-export function pinsForDriveCircuit(view: MapView, circuitId: string): MapPin[] {
-  const circuit = view.drive_circuits?.find((candidate) => candidate.id === circuitId);
+export function pinsForRoadCircuit(view: MapView, circuitId: string): MapPin[] {
+  const circuit = roadCircuitForId(view, circuitId);
   if (!circuit) return [];
   return circuit.pin_ids
     .map((id) => view.pins.find((pin) => pin.id === id))
     .filter((pin): pin is MapPin => !!pin);
 }
+
+export const pinsForDriveCircuit = pinsForRoadCircuit;

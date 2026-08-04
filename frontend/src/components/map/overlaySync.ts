@@ -14,9 +14,10 @@ import {
   hotelLabelsForDay,
   hotelReturnForDay,
   routeStyleForLeg,
+  roadCircuitForId,
   visitOrdersForDay,
 } from "./routeDerivations";
-import { fitDayRoute, fitDriveCircuit, zoomToPin, type PinMarkerEntry } from "./viewportSync";
+import { fitDayRoute, fitRoadCircuit, zoomToPin, type PinMarkerEntry } from "./viewportSync";
 
 interface RouteFocus {
   day: number;
@@ -96,18 +97,22 @@ export function synchronizeMapOverlays({
     });
   });
 
-  const focusedDriveCircuit = activeRouteCircuitId
-    ? view.drive_circuits?.find((circuit) => circuit.id === activeRouteCircuitId)
+  const focusedRoadCircuit = activeRouteCircuitId
+    ? roadCircuitForId(view, activeRouteCircuitId)
     : null;
   const activeDayPinIds = new Set(activeDay === null
     ? []
-    : focusedDriveCircuit?.pin_ids
+    : focusedRoadCircuit?.pin_ids
       ?? view.days.find((day) => day.day === activeDay)?.pin_ids
       ?? []);
   const visible = (pin: MapPin) => activeDay === null || activeDayPinIds.has(pin.id);
   const bounds = new google.maps.LatLngBounds();
   let hasBounds = false;
   const pinById = new Map(view.pins.map((pin) => [pin.id, pin] as const));
+  const roadWaypointRoleByPinId = new Map(
+    focusedRoadCircuit?.waypoints?.map((waypoint) => [waypoint.pin_id, waypoint.role] as const)
+      ?? [],
+  );
 
   for (const pin of view.pins) {
     if (!visible(pin)) continue;
@@ -124,6 +129,12 @@ export function synchronizeMapOverlays({
       };
       if (["airport", "station", "bus_station", "origin"].includes(pin.kind)) return {
         url: pin.kind === "airport" ? airportIcon(isFocused) : terminalIcon(pin.kind),
+        scaledSize: new google.maps.Size(34, 44),
+        anchor: new google.maps.Point(17, 44),
+      };
+      const roadRole = roadWaypointRoleByPinId.get(pin.id);
+      if (roadRole === "scenic" || roadRole === "meal") return {
+        url: pinIcon("#111827", roadRole === "scenic" ? "S" : "M", isFocused),
         scaledSize: new google.maps.Size(34, 44),
         anchor: new google.maps.Point(17, 44),
       };
@@ -199,7 +210,9 @@ export function synchronizeMapOverlays({
 
   for (const day of view.days) {
     if (activeDay !== null && day.day !== activeDay) continue;
-    const legs = activeRouteCircuitId
+    const legs = focusedRoadCircuit?.day === day.day
+      ? focusedRoadCircuit.legs
+      : activeRouteCircuitId
       ? (day.legs ?? []).filter((leg) => leg.route_circuit_id === activeRouteCircuitId)
       : day.legs ?? [];
     for (const leg of legs) {
@@ -221,8 +234,8 @@ export function synchronizeMapOverlays({
       }));
     }
     if (legs.length === 0) {
-      const routePinIds = focusedDriveCircuit?.day === day.day
-        ? focusedDriveCircuit.pin_ids
+      const routePinIds = focusedRoadCircuit?.day === day.day
+        ? focusedRoadCircuit.pin_ids
         : day.pin_ids;
       const routePins = routePinIds
         .map((id) => pinById.get(id))
@@ -305,11 +318,11 @@ export function synchronizeMapOverlays({
     const focusCircuitId = typeof pendingRouteFocus === "number"
       ? undefined
       : pendingRouteFocus.circuitId;
-    // Prefer the tight drive-circuit fit; fall back to the whole-day route so a
+    // Prefer the tight road-circuit fit; fall back to the whole-day route so a
     // missing/unbuilt circuit still consumes the pending focus instead of
     // silently retrying every redraw.
     if (
-      (focusCircuitId && fitDriveCircuit(google, map, view, focusCircuitId))
+      (focusCircuitId && fitRoadCircuit(google, map, view, focusCircuitId))
       || fitDayRoute(google, map, view, focusDay)
     ) {
       consumedPendingRouteFocus = true;
