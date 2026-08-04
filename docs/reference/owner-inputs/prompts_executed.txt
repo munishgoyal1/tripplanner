@@ -46,3 +46,13 @@ For the data seed, the seed should be represenative of all key scenarios example
 
 [009] [4-Aug-2026] Implement sandbox; log schema proposal; move to implemented
 ok log the schema proposal seperately to be taken later. For now go implement the sandbox feature. Also when you implement then move those propsals into implemented folder
+
+[010] [4-Aug-2026] Explain places_cache 2 MiB Cosmos error; ap-number convention
+I keep getting these errrors 
+
+rger than the maximum entity size (2 MiB). Entity size: 2492867 bytes.\nCode: RequestEntityTooLarge\nMessage: Entity with the specified id is larger than the maximum entity size (2 MiB). Entity size: 2492867 bytes."}
+{"ts": "2026-08-04T10:08:55.145Z", "level": "WARNING", "logger": "tripplanner.web.places_cache", "msg": "places_cache cosmos persist failed: (RequestEntityTooLarge) Entity with the specified id is larger than the maximum
+
+The tech debt improvement plan identified this issue - explain me about this and i can signoff for implementaiton. 
+
+Next time also assign an  incremental number for each agent proposal - add it in top of document and the name should start with ap-<number> under agent-propsals folder, should be single incremental counter across categories
