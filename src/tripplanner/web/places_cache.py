@@ -19,6 +19,7 @@ longer blocks on dozens of sequential round-trips.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -49,12 +50,13 @@ _PHOTO_TTL_S = 50 * 60  # re-sign photo URLs before Google's ~1h expiry
 _MAX_WORKERS = 8
 _MAX_ENTRIES = 800  # soft cap; evict the oldest beyond this
 
-# Durable L2 store so warm data survives container restarts.
+# Durable L2 store so warm data survives container restarts. Each place is one
+# small Cosmos item (keyed by a hash of the cache key) so the store scales well
+# past Cosmos's 2 MiB per-item limit; ``_COSMOS_DOC_ID`` is the legacy monolithic
+# document we delete once after migrating to the sharded layout.
 _COSMOS_CONTAINER = "places_cache"
 _COSMOS_PARTITION = "_shared"  # places are global, not per-user
-_COSMOS_DOC_ID = "cache"
-# Cosmos rejects any item over 2 MiB; persist a size-bounded snapshot with margin.
-_COSMOS_MAX_BYTES = 1_900_000
+_COSMOS_DOC_ID = "cache"  # legacy single-document store; deleted after first shard write
 
 # Process-wide cache shared across FastAPI request and prefetch threads.
 _CACHE: dict[str, dict[str, Any]] = {}
@@ -64,7 +66,9 @@ _LOAD_LOCK = RLock()
 _PERSIST_LOCK = RLock()
 _loaded = False
 _suppress_persist = 0  # >0 while a batch is in flight (one write at the end)
+_dirty_keys: set[str] = set()  # keys awaiting a durable write while a batch is in flight
 _persist_retry_after = 0.0
+_legacy_doc_cleaned = False
 
 
 def _local_path() -> Path:
@@ -78,24 +82,25 @@ def _load() -> None:
 
 
 def _load_once() -> None:
-    """Populate ``_CACHE`` from the durable store once per process."""
+    """Populate ``_CACHE`` from the durable store once per process.
+
+    With Cosmos enabled the durable layer is sharded (one item per key) and read
+    lazily on demand, so there is no bulk load here. The single-file local store
+    (dev / Cosmos disabled) is still loaded eagerly.
+    """
     global _loaded
     with _CACHE_LOCK:
         if _loaded:
             return
-    raw: Any = None
     try:
         from tripplanner import storage_cosmos
 
-        if storage_cosmos.is_enabled():
-            doc = storage_cosmos.read_doc(
-                _COSMOS_CONTAINER, _COSMOS_PARTITION, _COSMOS_DOC_ID
-            )
-            raw = (doc or {}).get("entries")
+        cosmos_enabled = storage_cosmos.is_enabled()
     except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
         log.warning("places_cache cosmos load failed: %s", exc)
-        raw = None
-    if raw is None:
+        cosmos_enabled = False
+    raw: Any = None
+    if not cosmos_enabled:
         try:
             p = _local_path()
             if p.exists():
@@ -116,18 +121,23 @@ def _load_once() -> None:
         _loaded = True
 
 
-def _persist() -> None:
-    with _PERSIST_LOCK:
-        _persist_snapshot()
+def _doc_id(key: str) -> str:
+    """Cosmos-safe item id for a cache key (keys contain spaces, '/', '|')."""
+    return hashlib.sha1(key.encode("utf-8")).hexdigest()
+
+
+def _persistable(entry: dict[str, Any]) -> dict[str, Any]:
+    """Drop volatile signed-photo fields before persisting; they expire within
+    ~1h and are re-resolved from the long-lived ``photo_refs`` on reload."""
+    return {k: v for k, v in entry.items() if k not in ("photo_urls", "__photos_at__")}
 
 
 def _live_snapshot() -> dict[str, dict[str, Any]]:
-    """Persist-ready copy of the cache.
+    """Full persist-ready copy of the cache for the single-file local store.
 
-    Drops volatile photo URLs (they expire within ~1h and are re-resolved from
-    the long-lived ``photo_refs``) and skips entries whose TTL has already
-    lapsed — those are never served, so persisting them only bloats the doc.
-    Must be called while holding ``_CACHE_LOCK``.
+    Drops volatile photo URLs and skips entries whose TTL has already lapsed —
+    those are never served, so persisting them only bloats the file. Must be
+    called while holding ``_CACHE_LOCK``.
     """
     now = time.time()
     snapshot: dict[str, dict[str, Any]] = {}
@@ -135,92 +145,112 @@ def _live_snapshot() -> dict[str, dict[str, Any]]:
         ttl = _MISS_TTL_S if _is_miss(v) else _META_TTL_S
         if (now - v.get("__at__", 0.0)) >= ttl:
             continue
-        snapshot[k] = {
-            kk: vv for kk, vv in v.items() if kk not in ("photo_urls", "__photos_at__")
-        }
+        snapshot[k] = _persistable(v)
     return snapshot
 
 
-def _bounded_for_cosmos(
-    snapshot: dict[str, dict[str, Any]],
-) -> dict[str, dict[str, Any]]:
-    """Return a snapshot guaranteed to fit under Cosmos's per-item size cap.
+def _durable_read(key: str) -> dict[str, Any] | None:
+    """Point-read one key's entry from the sharded Cosmos store (or None)."""
+    try:
+        from tripplanner import storage_cosmos
 
-    Cosmos rejects any item over 2 MiB (``RequestEntityTooLarge``). Reviews and
-    photo refs can push the single shared cache doc past that, so when the
-    serialized doc would exceed ``_COSMOS_MAX_BYTES`` we keep the most recently
-    used entries (by ``__at__``) and drop the oldest. Dropped entries remain in
-    the in-memory cache and are simply re-warmed after a restart, so no served
-    data changes.
-    """
-    doc = {"entries": snapshot}
-    if len(json.dumps(doc, separators=(",", ":")).encode("utf-8")) <= _COSMOS_MAX_BYTES:
-        return snapshot
-    ordered = sorted(
-        snapshot.items(), key=lambda kv: kv[1].get("__at__", 0.0), reverse=True
-    )
-    kept: dict[str, dict[str, Any]] = {}
-    total = len(b'{"entries":{}}')
-    for k, v in ordered:
-        added = len(json.dumps({k: v}, separators=(",", ":")).encode("utf-8")) - 1
-        if total + added > _COSMOS_MAX_BYTES:
-            continue
-        kept[k] = v
-        total += added
-    return kept
+        if not storage_cosmos.is_enabled():
+            return None
+        doc = storage_cosmos.read_doc(_COSMOS_CONTAINER, _COSMOS_PARTITION, _doc_id(key))
+    except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
+        log.warning("places_cache cosmos load failed: %s", exc)
+        return None
+    entry = doc.get("entry") if isinstance(doc, dict) else None
+    return entry if isinstance(entry, dict) else None
 
 
-def _persist_snapshot() -> None:
-    """Write ``_CACHE`` to the durable store. Best-effort; never raises.
+def _cleanup_legacy_doc() -> None:
+    """One-time best-effort delete of the pre-sharding monolithic cache doc."""
+    global _legacy_doc_cleaned
+    if _legacy_doc_cleaned:
+        return
+    _legacy_doc_cleaned = True
+    try:
+        from tripplanner import storage_cosmos
 
-    Signed photo URLs are dropped before persisting — they expire within ~1h,
-    so re-resolving from the long-lived ``photo_refs`` on reload is correct.
+        storage_cosmos.delete_doc(_COSMOS_CONTAINER, _COSMOS_PARTITION, _COSMOS_DOC_ID)
+    except Exception:  # noqa: BLE001 - orphan cleanup must never break a write
+        pass
+
+
+def _persist_entry(key: str) -> None:
+    """Persist a single touched key. Batched writes defer to the block's end."""
+    with _CACHE_LOCK:
+        if _suppress_persist:
+            _dirty_keys.add(key)
+            return
+    with _PERSIST_LOCK:
+        _write_durable({key})
+
+
+def _persist() -> None:
+    """Persist every currently cached key (used at the end of a batch)."""
+    with _CACHE_LOCK:
+        keys = set(_CACHE.keys())
+    with _PERSIST_LOCK:
+        _write_durable(keys)
+
+
+def _write_durable(keys: set[str]) -> None:
+    """Write the given keys durably. Best-effort; never raises.
+
+    Cosmos: one small item per key, so the store scales past the 2 MiB per-item
+    limit. On success the legacy monolithic doc is cleaned up once. On throttling
+    (429) we back off briefly; on any Cosmos failure we fall back to the
+    single-file local store. When Cosmos is disabled (dev) we write only local.
     """
     global _persist_retry_after
     with _CACHE_LOCK:
-        if _suppress_persist:
-            return
-        snapshot = _live_snapshot()
+        entries = {k: _persistable(_CACHE[k]) for k in keys if k in _CACHE}
         retry_after = _persist_retry_after
     now = time.time()
     try:
         from tripplanner import storage_cosmos
 
         if storage_cosmos.is_enabled() and now >= retry_after:
-            try:
-                storage_cosmos.upsert_doc(
-                    _COSMOS_CONTAINER,
-                    _COSMOS_PARTITION,
-                    _COSMOS_DOC_ID,
-                    {"entries": _bounded_for_cosmos(snapshot)},
-                )
+            ok = True
+            for k, entry in entries.items():
+                try:
+                    storage_cosmos.upsert_doc(
+                        _COSMOS_CONTAINER,
+                        _COSMOS_PARTITION,
+                        _doc_id(k),
+                        {"key": k, "entry": entry},
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    if getattr(exc, "status_code", None) == 429:
+                        # Throttled: keep the cache warm locally and pause Cosmos
+                        # retries so a burst of warming doesn't spam warnings.
+                        with _CACHE_LOCK:
+                            _persist_retry_after = now + 5 * 60
+                    else:
+                        log.warning("places_cache cosmos persist failed: %s", exc)
+                    ok = False
+                    break
+            if ok:
+                _cleanup_legacy_doc()
                 return
-            except Exception as exc:  # noqa: BLE001
-                status_code = getattr(exc, "status_code", None)
-                if status_code == 429:
-                    # Cosmos throttled us. Keep the cache warm locally and
-                    # pause Cosmos retries for a short window so a burst of
-                    # photo/detail warming doesn't spam warnings.
-                    with _CACHE_LOCK:
-                        _persist_retry_after = now + 5 * 60
-                else:
-                    log.warning("places_cache cosmos persist failed: %s", exc)
-                # Fall through to local persistence either way.
     except Exception as exc:  # noqa: BLE001
         log.warning("places_cache cosmos persist failed: %s", exc)
     try:
-        p = _local_path()
-        atomic_write_json(p, {"entries": snapshot})
+        with _CACHE_LOCK:
+            snapshot = _live_snapshot()
+        atomic_write_json(_local_path(), {"entries": snapshot})
     except Exception as exc:  # noqa: BLE001
         log.warning("places_cache local persist failed: %s", exc)
 
 
 @contextmanager
 def _batched_persist():
-    """Suppress per-entry writes inside the block, then persist once at the end.
+    """Suppress per-key writes inside the block, then flush them together.
 
-    Warming a destination touches many places; without this each miss would
-    rewrite the whole durable doc. Batch them into a single trailing write.
+    Warming a destination touches many places; batching collapses the trailing
+    per-key persists into one flush of the dirty keys.
     """
     global _suppress_persist
     with _CACHE_LOCK:
@@ -231,8 +261,12 @@ def _batched_persist():
         with _CACHE_LOCK:
             _suppress_persist -= 1
             should_persist = _suppress_persist == 0
-    if should_persist:
-        _persist()
+            keys = set(_dirty_keys) if should_persist else set()
+            if should_persist:
+                _dirty_keys.clear()
+    if keys:
+        with _PERSIST_LOCK:
+            _write_durable(keys)
 
 
 def _evict_if_needed() -> None:
@@ -435,12 +469,19 @@ def _ensure(name: str, city: str, *, refresh: bool = False) -> dict[str, Any]:
             entry = cache.get(k)
             if not refresh and _fresh(entry):
                 return {} if _is_miss(entry) else entry  # type: ignore[return-value]
+        if not refresh:
+            durable = _durable_read(k)
+            if durable is not None and _fresh(durable):
+                with _CACHE_LOCK:
+                    cache[k] = durable
+                    _evict_if_needed()
+                return {} if _is_miss(durable) else durable
         info = _lookup_place(name, lookup_city) or {}
         info["__at__"] = time.time()
         with _CACHE_LOCK:
             cache[k] = info
             _evict_if_needed()
-        _persist()
+        _persist_entry(k)
         return {} if _is_miss(info) else info
 
 
@@ -509,7 +550,7 @@ def get_summary(name: str, city: str, *, refresh: bool = False) -> dict[str, Any
         reviews = _fetch_reviews(place_id)
         with _CACHE_LOCK:
             info["reviews"] = reviews
-        _persist()
+        _persist_entry(_key(name, _lookup_city(name, city)))
     return info
 
 
@@ -545,6 +586,13 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
             entry = cache.get(ck)
             if not refresh and _fresh(entry):
                 return entry.get("names", [])  # type: ignore[union-attr]
+        if not refresh:
+            durable = _durable_read(ck)
+            if durable is not None and _fresh(durable):
+                with _CACHE_LOCK:
+                    cache[ck] = durable
+                    _evict_if_needed()
+                return durable.get("names", [])
 
         query = (
             f"best hotels in {destination}"
@@ -570,14 +618,17 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
         with _CACHE_LOCK:
             cache[ck] = {"names": names, "__at__": time.time()}
             _evict_if_needed()
-        _persist()
+        _persist_entry(ck)
         return names
 
 
 def clear_cache() -> None:
     """Drop every cached entry. Useful for tests."""
-    global _loaded
+    global _loaded, _legacy_doc_cleaned, _persist_retry_after
     with _CACHE_LOCK:
         _CACHE.clear()
+        _dirty_keys.clear()
         _loaded = False
+        _legacy_doc_cleaned = False
+        _persist_retry_after = 0.0
 
