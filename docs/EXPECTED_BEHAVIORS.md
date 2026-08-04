@@ -93,6 +93,23 @@ Assistant build its first proposal.
 
 ## Planner workspace
 
+### EB-WORKSPACE-001 - Arrange visible desktop panes freely
+
+**Trigger:** Toggle Itinerary, Map, Details, or Assistant from the desktop
+command bar, use a pane-local Hide action, or resize a separator.
+
+**Expected:** Every pane is independently visible or hidden, including an
+all-hidden workspace. The command bar remains available to restore any pane, and
+the chosen combination persists locally across reloads. Visible docked panes may
+grow to all space not reserved for the minimum usable widths of visible siblings;
+there is no separate maximum-width cap. Separators appear only between panes that
+are currently shown and expose their actual adjustable range to assistive input.
+
+**Executable proof:**
+
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `lets panes use available width and allows every pane to be hidden and restored`
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `supports every desktop pane visibility combination`
+
 ### EB-TRIPS-001 - Delete selected saved trips
 
 **Trigger:** Open the saved-trip menu, choose Delete trips, select one or more

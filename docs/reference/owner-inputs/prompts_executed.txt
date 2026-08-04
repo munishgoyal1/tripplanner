@@ -62,3 +62,7 @@ rger than the maximum entity size (2 MiB). Entity size: 2492867 bytes.\nCode: Re
 The tech debt improvement plan identified this issue - explain me about this and i can signoff for implementaiton. 
 
 Next time also assign an  incremental number for each agent proposal - add it in top of document and the name should start with ap-<number> under agent-propsals folder, should be single incremental counter across categories
+
+[013] [4-Aug-2026] Flexible widths and independent pane visibility
+dont limit the max width of different panels. user may want to hide others or simply have more width on some panel. what do you think to allow them.
+also all panels can get hidden too or any combination could be hidden or shown . allow all that. suggest if you think differently on this

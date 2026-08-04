@@ -30,6 +30,10 @@ type CanvasPane = "itinerary" | "map";
 type WorkspacePane = CanvasPane | "details";
 type ResizeTarget = "itinerary" | "inspector" | null;
 
+const ITINERARY_MIN_PCT = 18;
+const MAP_MIN_PCT = 20;
+const INSPECTOR_MIN_PCT = 24;
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
@@ -37,6 +41,13 @@ function clamp(value: number, min: number, max: number): number {
 function storedPercent(key: string, fallback: number, min: number, max: number): number {
   const value = Number(localStorage.getItem(key));
   return Number.isFinite(value) && value >= min && value <= max ? value : fallback;
+}
+
+function storedBoolean(key: string, fallback: boolean): boolean {
+  const value = localStorage.getItem(key);
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
 }
 
 function isPlaceKind(kind: string): boolean {
@@ -86,27 +97,30 @@ export default function App() {
   const chatTripId = workspace.tripId;
   const itineraryJump = workspace.itineraryJump;
 
-  const [mapOpen, setMapOpen] = useState<boolean>(() => {
-    const saved = localStorage.getItem("tripplanner_map_open");
-    return saved ? JSON.parse(saved) : true;
-  });
+  const [mapOpen, setMapOpen] = useState(() => storedBoolean("tripplanner_map_open", true));
   const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
   const [itineraryHeaderTarget, setItineraryHeaderTarget] = useState<HTMLDivElement | null>(null);
   const [mapHeaderTarget, setMapHeaderTarget] = useState<HTMLDivElement | null>(null);
   const [itineraryFilters, setItineraryFilters] = useState<ItineraryFilter[]>([]);
-  const [itineraryOpen, setItineraryOpen] = useState(true);
-  const [inspectorOpen, setInspectorOpen] = useState(true);
-  const [chatOpen, setChatOpen] = useState(true);
+  const [itineraryOpen, setItineraryOpen] = useState(() => (
+    storedBoolean("tripplanner_itinerary_open", true)
+  ));
+  const [inspectorOpen, setInspectorOpen] = useState(() => (
+    storedBoolean("tripplanner_details_open", true)
+  ));
+  const [chatOpen, setChatOpen] = useState(() => (
+    storedBoolean("tripplanner_assistant_open", true)
+  ));
   const [showExport, setShowExport] = useState(false);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
   const dockOpen = inspectorOpen;
   const canvasMaximized = maximizedPane === "itinerary" || maximizedPane === "map";
   const dockMaximized = maximizedPane === "details";
   const [itineraryPct, setItineraryPct] = useState(() =>
-    storedPercent("tripplanner_itinerary_pct", 24, 18, 55)
+    storedPercent("tripplanner_itinerary_pct", 24, ITINERARY_MIN_PCT, 100 - MAP_MIN_PCT)
   );
   const [inspectorPct, setInspectorPct] = useState(() =>
-    storedPercent("tripplanner_inspector_pct", 31, 24, 40)
+    storedPercent("tripplanner_inspector_pct", 31, INSPECTOR_MIN_PCT, 100 - ITINERARY_MIN_PCT)
   );
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
@@ -121,6 +135,21 @@ export default function App() {
   const workspaceRef = useRef<HTMLElement>(null);
   const inspectorRef = useRef<HTMLElement>(null);
   const resizeTarget = useRef<ResizeTarget>(null);
+  const canvasOpen = itineraryOpen || mapOpen;
+  const inspectorMaxPct = 100
+    - (itineraryOpen ? ITINERARY_MIN_PCT : 0)
+    - (mapOpen ? MAP_MIN_PCT : 0);
+  const effectiveInspectorPct = canvasOpen
+    ? clamp(inspectorPct, INSPECTOR_MIN_PCT, inspectorMaxPct)
+    : 100;
+  const itineraryMaxPct = 100
+    - MAP_MIN_PCT
+    - (isWideDesktop && dockOpen ? effectiveInspectorPct : 0);
+  const effectiveItineraryPct = clamp(
+    itineraryPct,
+    ITINERARY_MIN_PCT,
+    itineraryMaxPct,
+  );
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -153,6 +182,13 @@ export default function App() {
   }, [inspectorPct, itineraryPct]);
 
   useEffect(() => {
+    localStorage.setItem("tripplanner_itinerary_open", String(itineraryOpen));
+    localStorage.setItem("tripplanner_map_open", String(mapOpen));
+    localStorage.setItem("tripplanner_details_open", String(inspectorOpen));
+    localStorage.setItem("tripplanner_assistant_open", String(chatOpen));
+  }, [chatOpen, inspectorOpen, itineraryOpen, mapOpen]);
+
+  useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       const target = resizeTarget.current;
       if (!target) return;
@@ -161,10 +197,10 @@ export default function App() {
       const rect = workspaceRef.current.getBoundingClientRect();
       if (target === "itinerary") {
         const next = ((event.clientX - rect.left) / rect.width) * 100;
-        setItineraryPct(clamp(next, 18, 100 - inspectorPct - 20));
+        setItineraryPct(clamp(next, ITINERARY_MIN_PCT, itineraryMaxPct));
       } else {
         const next = ((rect.right - event.clientX) / rect.width) * 100;
-        setInspectorPct(clamp(next, 24, Math.min(40, 100 - itineraryPct - 20)));
+        setInspectorPct(clamp(next, INSPECTOR_MIN_PCT, inspectorMaxPct));
       }
     };
 
@@ -181,7 +217,7 @@ export default function App() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [inspectorPct, itineraryPct]);
+  }, [inspectorMaxPct, itineraryMaxPct]);
 
   const startResize = (target: Exclude<ResizeTarget, null>) => {
     resizeTarget.current = target;
@@ -196,11 +232,17 @@ export default function App() {
     const growing = key === "ArrowRight" || key === "ArrowDown";
     const delta = growing ? 2 : -2;
     if (target === "itinerary" && (key === "ArrowLeft" || key === "ArrowRight")) {
-      setItineraryPct((value) => clamp(value + delta, 18, 100 - inspectorPct - 20));
+      setItineraryPct(clamp(
+        effectiveItineraryPct + delta,
+        ITINERARY_MIN_PCT,
+        itineraryMaxPct,
+      ));
     } else if (target === "inspector" && (key === "ArrowLeft" || key === "ArrowRight")) {
-      setInspectorPct((value) =>
-        clamp(value + (growing ? -2 : 2), 24, Math.min(40, 100 - itineraryPct - 20))
-      );
+      setInspectorPct(clamp(
+        effectiveInspectorPct + (growing ? -2 : 2),
+        INSPECTOR_MIN_PCT,
+        inspectorMaxPct,
+      ));
     } else {
       return false;
     }
@@ -486,7 +528,6 @@ export default function App() {
   };
 
   const setCanvasOpen = (pane: CanvasPane, open: boolean) => {
-    if (!open && ((pane === "itinerary" && !mapOpen) || (pane === "map" && !itineraryOpen))) return;
     if (pane === "itinerary") setItineraryOpen(open);
     else setMapOpen(open);
     if (!open && maximizedPane === pane) setMaximizedPane(null);
@@ -731,20 +772,19 @@ export default function App() {
           style={{
             gridTemplateColumns: maximizedPane
               ? "minmax(0, 1fr)"
-              : !itineraryOpen || !mapOpen
-                ? isWideDesktop && dockOpen
-                  ? `minmax(0, ${100 - inspectorPct}fr) 0.375rem minmax(0, ${inspectorPct}fr)`
-                  : "minmax(0, 1fr)"
-              : isWideDesktop && dockOpen
-                ? `${itineraryPct}fr 0.375rem ${100 - itineraryPct - inspectorPct}fr 0.375rem ${inspectorPct}fr`
-                : `${itineraryPct}fr 0.375rem ${100 - itineraryPct}fr`,
+              : isWideDesktop && dockOpen && canvasOpen
+                ? itineraryOpen && mapOpen
+                  ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct - effectiveInspectorPct}fr 0.375rem ${effectiveInspectorPct}fr`
+                  : `minmax(0, ${100 - effectiveInspectorPct}fr) 0.375rem minmax(0, ${effectiveInspectorPct}fr)`
+                : itineraryOpen && mapOpen
+                  ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct}fr`
+                  : "minmax(0, 1fr)",
           }}
         >
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>
             <CanvasPaneFrame
               label="Itinerary"
               maximized={maximizedPane === "itinerary"}
-              hideDisabled={!mapOpen}
               onHide={() => setCanvasOpen("itinerary", false)}
               onToggleMaximize={() => toggleMaxPane("itinerary")}
               headerTargetRef={setItineraryHeaderTarget}
@@ -758,7 +798,9 @@ export default function App() {
               tabIndex={0}
               aria-label="Resize itinerary and map"
               aria-orientation="vertical"
-              aria-valuenow={Math.round(itineraryPct)}
+              aria-valuemin={ITINERARY_MIN_PCT}
+              aria-valuemax={Math.round(itineraryMaxPct)}
+              aria-valuenow={Math.round(effectiveItineraryPct)}
               onMouseDown={() => startResize("itinerary")}
               onKeyDown={(event) => {
                 if (resizeWithKeyboard("itinerary", event.key)) event.preventDefault();
@@ -772,7 +814,6 @@ export default function App() {
             <CanvasPaneFrame
               label="Map"
               maximized={maximizedPane === "map"}
-              hideDisabled={!itineraryOpen}
               onHide={() => setCanvasOpen("map", false)}
               onToggleMaximize={() => toggleMaxPane("map")}
               headerTargetRef={setMapHeaderTarget}
@@ -784,9 +825,11 @@ export default function App() {
             <div
               role="separator"
               tabIndex={0}
-              aria-label="Resize map and details"
+              aria-label={`Resize ${mapOpen ? "map" : "itinerary"} and details`}
               aria-orientation="vertical"
-              aria-valuenow={Math.round(inspectorPct)}
+              aria-valuemin={INSPECTOR_MIN_PCT}
+              aria-valuemax={Math.round(inspectorMaxPct)}
+              aria-valuenow={Math.round(effectiveInspectorPct)}
               onMouseDown={() => startResize("inspector")}
               onKeyDown={(event) => {
                 if (resizeWithKeyboard("inspector", event.key)) event.preventDefault();

@@ -372,6 +372,77 @@ describe("App responsive workspace", () => {
     expect(screen.getByRole("button", { name: /New trip/ })).toBeInTheDocument();
   });
 
+  it("lets panes use available width and allows every pane to be hidden and restored", async () => {
+    setDesktop(true);
+    const rendered = render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    const detailsSeparator = screen.getByRole("separator", { name: "Resize map and details" });
+    for (let index = 0; index < 10; index += 1) {
+      fireEvent.keyDown(detailsSeparator, { key: "ArrowLeft" });
+    }
+    expect(detailsSeparator).toHaveAttribute("aria-valuenow", "51");
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
+    const itinerarySeparator = screen.getByRole("separator", { name: "Resize itinerary and map" });
+    for (let index = 0; index < 20; index += 1) {
+      fireEvent.keyDown(itinerarySeparator, { key: "ArrowRight" });
+    }
+    expect(itinerarySeparator).toHaveAttribute("aria-valuenow", "64");
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Itinerary" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Map" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close Assistant" }));
+
+    for (const title of [
+      "Show or hide itinerary",
+      "Show or hide map",
+      "Show or hide trip details",
+      "Show or hide the trip assistant",
+    ]) {
+      expect(screen.getByTitle(title)).toHaveAttribute("aria-pressed", "false");
+    }
+    expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(localStorage.getItem("tripplanner_itinerary_open")).toBe("false");
+      expect(localStorage.getItem("tripplanner_map_open")).toBe("false");
+      expect(localStorage.getItem("tripplanner_details_open")).toBe("false");
+      expect(localStorage.getItem("tripplanner_assistant_open")).toBe("false");
+    });
+    rendered.unmount();
+    render(<App />);
+    expect(screen.getByTitle("Show or hide map")).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(screen.getByTitle("Show or hide map"));
+    expect(screen.getByTitle("Show or hide map")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("map-panel").closest("section")).not.toHaveClass("hidden");
+  });
+
+  it("supports every desktop pane visibility combination", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
+    const panes = [
+      ["Show or hide itinerary", "itinerary"],
+      ["Show or hide map", "map"],
+      ["Show or hide trip details", "details"],
+      ["Show or hide the trip assistant", "assistant"],
+    ] as const;
+
+    for (let mask = 0; mask < 16; mask += 1) {
+      panes.forEach(([title], index) => {
+        const shouldOpen = Boolean(mask & (1 << index));
+        const control = screen.getByTitle(title);
+        if ((control.getAttribute("aria-pressed") === "true") !== shouldOpen) {
+          fireEvent.click(control);
+        }
+        expect(control).toHaveAttribute("aria-pressed", String(shouldOpen));
+      });
+    }
+  });
+
   it("uses direct meaning-first controls for workspace surfaces", async () => {
     setDesktop(true);
     render(<App />);
