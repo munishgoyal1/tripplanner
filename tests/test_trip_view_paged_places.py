@@ -129,3 +129,53 @@ def test_focus_with_no_alternatives_is_empty() -> None:
     )
     assert page["items"] == []
     assert page["total_count"] == 0
+
+
+def test_route_cities_fallback_excludes_transport_legs() -> None:
+    """Trips without structured city fields still yield per-city filters, and the
+    transport legs used to infer them are not themselves listed as places."""
+    trip = {
+        "destination": "Madhya Pradesh",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Flight: Bangalore to Indore", "kind": "flight"},
+                    {"name": "Rajwada Palace", "kind": "attraction"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Drive: Indore to Ujjain", "kind": "transport"},
+                    {"name": "Mahakaleshwar Temple", "kind": "attraction"},
+                ],
+            },
+        ],
+    }
+    page = trip_view.paged_places(trip)
+    assert page["available_cities"] == ["Indore", "Ujjain"]
+    assert set(_names(page)) == {"Rajwada Palace", "Mahakaleshwar Temple"}
+    rajwada = next(row for row in page["items"] if row["name"] == "Rajwada Palace")
+    assert rajwada["city"] == "Indore"
+    maha = next(row for row in page["items"] if row["name"] == "Mahakaleshwar Temple")
+    assert maha["city"] == "Ujjain"
+
+
+def test_discovery_items_rank_above_in_trip(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fresh must-visit/popular places not yet in the trip sort to the top."""
+    from tripplanner.web import places_cache
+
+    monkeypatch.setattr(
+        places_cache,
+        "top_places",
+        lambda city, kind, n=6: (
+            ["Nahargarh Fort"] if kind == "attraction" and city == "Jaipur" else []
+        ),
+    )
+    page = trip_view.paged_places(_trip(), city="Jaipur", kind="attraction")
+    names = _names(page)
+    assert names[0] == "Nahargarh Fort"  # not-in-trip discovery leads
+    assert {"Amber Fort", "Hawa Mahal"}.issubset(set(names))
+    fresh = next(row for row in page["items"] if row["name"] == "Nahargarh Fort")
+    assert fresh["selected"] is False

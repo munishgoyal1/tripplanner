@@ -40,6 +40,12 @@ _GUIDE_PAGE_SIZE = 6
 _GUIDE_MAX_LIMIT = 24
 _HOTEL_ALIASES = {"hotel", "lodging", "stay", "accommodation"}
 _RESTAURANT_ALIASES = {"restaurant", "meal", "food", "dining", "cafe", "eatery"}
+# Transport legs ("Flight: Bangalore to Indore", "Drive: Indore to Ujjain") are not
+# places to discover — they're excluded from the guide pool, but their arrival city
+# tells us which city the stops that follow belong to when no structured city exists.
+_TRANSPORT_KINDS = {"flight", "transport", "train", "bus", "car", "drive", "taxi", "ferry", "cab"}
+_TRANSPORT_PREFIXES = {"flight", "drive", "train", "bus", "cab", "taxi", "ferry", "car"}
+_ROUTE_RE = re.compile(r":\s*.+\bto\b\s+(.+)$", re.I)
 
 # ISO code → display symbol. Anything not listed is shown verbatim (already a
 # symbol, or an exotic code we just print as-is).
@@ -612,12 +618,57 @@ def _clean_city(value: Any) -> str:
     return str(value or "").strip()
 
 
+def _is_transport_stop(name: str, kind: str) -> bool:
+    """True for flights/drives/trains etc. — movement between places, not a place."""
+    if kind in _TRANSPORT_KINDS:
+        return True
+    prefix = name.split(":", 1)[0].strip().lower() if ":" in name else ""
+    return prefix in _TRANSPORT_PREFIXES
+
+
+def _arrival_city(name: str) -> str:
+    """Extract the arrival city from a transport leg name ("... to <City>")."""
+    match = _ROUTE_RE.search(name or "")
+    if not match:
+        return ""
+    return re.split(r"[(\[]", match.group(1))[0].strip().strip(".,").strip()
+
+
+def _derive_route_cities(trip: dict[str, Any]) -> dict[str, str]:
+    """Attribute each non-transport stop to a city inferred from transport legs.
+
+    A fallback used only when stops carry no structured ``city``: the arrival city
+    of the most recent ``... to <City>`` leg becomes the current city for the stops
+    that follow it, so a multi-city route still yields per-city filters.
+    """
+    mapping: dict[str, str] = {}
+    current = ""
+    for day in trip.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        for stop in day.get("stops") or []:
+            name = str((stop.get("name") if isinstance(stop, dict) else stop) or "").strip()
+            kind = str((stop.get("kind") if isinstance(stop, dict) else "") or "").strip().lower()
+            if not name:
+                continue
+            if _is_transport_stop(name, kind):
+                arrival = _arrival_city(name)
+                if arrival:
+                    current = arrival
+                continue
+            key = name.lower()
+            if current and key not in mapping:
+                mapping[key] = current
+    return mapping
+
+
 def _place_cities(trip: dict[str, Any]) -> dict[str, str]:
     """Map ``place-name-lower -> city`` from structured itinerary/place evidence.
 
     City identity comes from explicit ``city`` fields on itinerary days, stops
     and selected items — never by parsing the free-form destination label. Places
-    without structured evidence are left unmapped (resolved to destination later).
+    without structured evidence fall back to route-derived cities (arrival city of
+    the preceding transport leg) so multi-city trips without city fields still work.
     """
     mapping: dict[str, str] = {}
 
@@ -640,6 +691,8 @@ def _place_cities(trip: dict[str, Any]) -> dict[str, str]:
         for item in trip.get(bucket) or []:
             if isinstance(item, dict):
                 _record(item.get("name"), item.get("city") or item.get("location"))
+    for name, city in _derive_route_cities(trip).items():
+        mapping.setdefault(name, city)
     return mapping
 
 
@@ -662,6 +715,11 @@ def _trip_cities(trip: dict[str, Any]) -> list[str]:
         for stop in day.get("stops") or []:
             if isinstance(stop, dict):
                 _push(stop.get("city"))
+    if ordered:
+        return ordered
+    # No structured city evidence — infer the visit order from transport legs.
+    for city in _derive_route_cities(trip).values():
+        _push(city)
     return ordered
 
 
@@ -709,9 +767,13 @@ def discovery_pool(trip: dict[str, Any]) -> list[dict[str, str]]:
         day_city = _clean_city(day.get("city") or day.get("location"))
         for stop in day.get("stops") or []:
             if isinstance(stop, dict):
+                stop_name = str(stop.get("name") or "")
+                stop_kind = str(stop.get("kind") or "").strip().lower()
+                if _is_transport_stop(stop_name, stop_kind):
+                    continue  # a flight/drive/train leg, not a place to discover
                 _add(
                     stop.get("kind") or "attraction",
-                    str(stop.get("name") or ""),
+                    stop_name,
                     _clean_city(stop.get("city")) or day_city,
                 )
 
@@ -837,6 +899,21 @@ def paged_places(
                 continue
             filtered.append(e)
 
+    selected_names = {
+        "hotel": _selected_names(trip, "hotel"),
+        "attraction": _selected_names(trip, "attraction"),
+    }
+    itinerary_names = _itinerary_names(trip)
+
+    def _in_trip(entry: dict[str, str]) -> bool:
+        key = entry["name"].strip().lower()
+        bucket = "hotel" if browse_kind(entry.get("kind")) == "hotel" else "attraction"
+        return key in selected_names.get(bucket, set()) or key in itinerary_names
+
+    # New / not-yet-in-trip discoveries surface first; stable within each group so
+    # paging stays deterministic across "show more" calls.
+    filtered.sort(key=lambda e: 1 if _in_trip(e) else 0)
+
     total = len(filtered)
     try:
         start = max(0, int(cursor)) if cursor else 0
@@ -848,11 +925,6 @@ def paged_places(
     next_cursor = str(next_start) if next_start < total else None
     remaining = max(0, total - next_start)
 
-    selected_names = {
-        "hotel": _selected_names(trip, "hotel"),
-        "attraction": _selected_names(trip, "attraction"),
-    }
-    itinerary_names = _itinerary_names(trip)
     items = [_build_row(e, destination, selected_names, itinerary_names) for e in page]
     return {
         "items": items,

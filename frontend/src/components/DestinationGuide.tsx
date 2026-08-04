@@ -108,6 +108,9 @@ export default function DestinationGuide({ destination, tripVersion, focus, onFo
       controller.current?.abort();
       const ctrl = new AbortController();
       controller.current = ctrl;
+      // Clear rows the instant the scope changes so a slow fetch never leaves the
+      // previous filter's places on screen (they'd look like they ignore the filter).
+      if (!append) setRows([]);
       setLoading(true);
       try {
         const page = await fetchPlaceGuide(
@@ -241,6 +244,18 @@ export default function DestinationGuide({ destination, tripVersion, focus, onFo
 
       {rows.length === 0 && !loading ? (
         <p className="px-3 py-6 text-center text-sm text-muted">No places match these filters.</p>
+      ) : rows.length === 0 && loading ? (
+        <div aria-hidden>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 border-b border-slate-100 py-3 last:border-b-0">
+              <span className="h-[4.5rem] w-[4.5rem] animate-pulse rounded-md bg-slate-100" />
+              <span className="flex flex-col justify-center gap-2">
+                <span className="h-3 w-2/3 animate-pulse rounded bg-slate-100" />
+                <span className="h-2.5 w-1/2 animate-pulse rounded bg-slate-100" />
+              </span>
+            </div>
+          ))}
+        </div>
       ) : (
         <div>
           {rows.map((row) => (
