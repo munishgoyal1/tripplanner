@@ -647,6 +647,42 @@ describe("ItineraryPanel", () => {
     expect(onStopFocus).toHaveBeenCalledWith("transport", "Gare du Nord", 1, 2);
   });
 
+  it("filters by union while preserving the original stop position", async () => {
+    const onStopFocus = vi.fn();
+    const onFilterToggle = vi.fn();
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      stats: { days: 1, stops: 4, booked: 0 },
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          itinerary.days[0].stops[0],
+          { ...itinerary.days[0].stops[0], name: "Flight: Paris to Lyon", kind: "flight" },
+          { ...itinerary.days[0].stops[0], name: "Train: Lyon to Avignon", kind: "transport" },
+          { ...itinerary.days[0].stops[0], name: "Hotel Crillon", kind: "hotel" },
+        ],
+      }],
+    });
+
+    render(
+      <ItineraryPanel
+        filters={["train", "hotel"]}
+        onFilterToggle={onFilterToggle}
+        onStopFocus={onStopFocus}
+      />,
+    );
+
+    expect(await screen.findByText("Train: Lyon to Avignon")).toBeInTheDocument();
+    expect(screen.getByText("Hotel Crillon")).toBeInTheDocument();
+    expect(screen.queryByText("Louvre Museum")).not.toBeInTheDocument();
+    expect(screen.queryByText("Flight: Paris to Lyon")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Filter by Inter-city Train" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Filter by Flights" }));
+    expect(onFilterToggle).toHaveBeenCalledWith("flight");
+    fireEvent.click(screen.getByText("Train: Lyon to Avignon").closest("button")!);
+    expect(onStopFocus).toHaveBeenCalledWith("transport", "Train: Lyon to Avignon", 1, 3);
+  });
+
   it("requests the complete circuit when the day header is clicked", async () => {
     const onDayMap = vi.fn();
     fetchItineraryMock.mockResolvedValue({

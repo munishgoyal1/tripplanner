@@ -77,6 +77,79 @@ describe("synchronizeMapOverlays", () => {
     overlays.forEach((overlay) => expect(overlay.setMap).toHaveBeenCalledWith(null));
   });
 
+  it("does not invent fallback connectors for an explicitly filtered day", () => {
+    const pins: MapPin[] = ["hotel-a", "hotel-b"].map((id, index) => ({
+      id,
+      name: id,
+      kind: "hotel",
+      selected: true,
+      day: 1,
+      lat: index,
+      lng: index,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [{ day: 1, stop: index + 1, time: "09:00" }],
+    }));
+    const view = mapView(pins, pins.map((pin) => pin.id));
+    view.days[0].legs = [];
+    const { google, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map: { fitBounds: vi.fn(), getZoom: vi.fn(() => 10), setZoom: vi.fn() },
+      view,
+      suppressFallbackRoutes: true,
+      activeDay: null,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(polylines).toHaveLength(0);
+  });
+
+  it("keeps fallback connectors for an unfiltered legacy day", () => {
+    const pins: MapPin[] = ["place-a", "place-b"].map((id, index) => ({
+      id,
+      name: id,
+      kind: "attraction",
+      selected: true,
+      day: 1,
+      lat: index,
+      lng: index,
+      rating: null,
+      address: "",
+      photo: null,
+      occurrences: [{ day: 1, stop: index + 1, time: "09:00" }],
+    }));
+    const view = mapView(pins, pins.map((pin) => pin.id));
+    view.days[0].legs = [];
+    const { google, polylines } = createGoogleMapsDouble();
+
+    synchronizeMapOverlays({
+      google,
+      map: { fitBounds: vi.fn(), getZoom: vi.fn(() => 10), setZoom: vi.fn() },
+      view,
+      activeDay: null,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      pendingRouteFocus: null,
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(polylines).toHaveLength(1);
+  });
+
   it("clears stale overlays and lets pending exact focus win over aggregate bounds", () => {
     const pin: MapPin = {
       id: "palace",

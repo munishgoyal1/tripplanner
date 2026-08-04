@@ -341,6 +341,26 @@ incomplete plan returns an actionable correction.
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_prompt_requires_grounded_ordered_road_breaks`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a road-trip city origin as a non-bookable O marker`
 
+### EB-ITIN-007 - Filter itinerary structure across panes
+
+**Trigger:** Toggle Flights, Inter-city Road, Inter-city Train, or Hotels beside
+the Itinerary pane title.
+
+**Expected:** Itinerary and Map immediately show the union of all selected
+categories. An empty selection shows the complete trip. Unmatched itinerary days
+disappear without renumbering days or stop identities, and Trip Snapshot remains
+visible. Map results retain complete selected journey endpoints, connectors, and
+road waypoints while excluding unrelated places, suggestions, local taxis, and
+synthetic hotel connectors. A filter change clears stale place/route focus and
+returns Map to All days. Selecting another trip clears the filters.
+
+**Executable proof:**
+
+- [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shares unioned itinerary filters with the map`
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `filters by union while preserving the original stop position`
+- [`frontend/src/lib/itineraryFilters.test.ts`](../frontend/src/lib/itineraryFilters.test.ts) - `keeps selected transport endpoints and complete drive waypoints on the map`
+- [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `does not invent fallback connectors for an explicitly filtered day`
+
 ### EB-MAP-001 - Distinguish multiple hotels in one day
 
 **Trigger:** View a day whose ordered map route contains two or more distinct

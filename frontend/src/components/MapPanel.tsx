@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Search } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
+import { filterMapView, type ItineraryFilter } from "../lib/itineraryFilters";
 import { focusedDayForPin, focusNameForPin, pinMatchesFocus } from "./map/focusMatching";
 import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
 import { clearMapOverlays, synchronizeMapOverlays } from "./map/overlaySync";
@@ -96,6 +97,7 @@ export function scheduleMapOverlayDraw(draw: () => void): () => void {
 }
 
 interface Props {
+  filters?: readonly ItineraryFilter[];
   /** Bump to refetch the map after the trip changes. */
   reloadToken?: number;
   /** Stable identity used to reset a newly selected trip to All days. */
@@ -139,8 +141,12 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
-  const [view, setView] = useState<MapView | null>(null);
+export default function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+  const [sourceView, setView] = useState<MapView | null>(null);
+  const view = useMemo(
+    () => sourceView ? filterMapView(sourceView, filters) : null,
+    [sourceView, filters],
+  );
   const [key, setKey] = useState<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -174,6 +180,8 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
   const pendingRouteFocusRef = useRef<{ day: number; circuitId?: string } | null>(null);
   const previousTripIdRef = useRef(tripId);
+  const filterKey = filters.join(",");
+  const previousFilterKeyRef = useRef(filterKey);
 
   useEffect(() => {
     onPinFocusRef.current = onPinFocus;
@@ -190,6 +198,18 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     setCandidatePin(null);
     setNewStopDay("auto");
   }, [tripId]);
+
+  useEffect(() => {
+    if (previousFilterKeyRef.current === filterKey) return;
+    previousFilterKeyRef.current = filterKey;
+    pendingFocusRef.current = null;
+    pendingRouteFocusRef.current = null;
+    setActiveDay(null);
+    setSelectedPin(null);
+    setContextScope("all");
+    setCandidatePin(null);
+    setNewStopDay("auto");
+  }, [filterKey]);
 
   const populateStopFromGooglePlace = useCallback(
     (place: any) => {
@@ -336,6 +356,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
       google,
       map,
       view,
+      suppressFallbackRoutes: filters.length > 0,
       activeDay,
       activeRouteCircuitId: routeFocusDay === activeDay ? routeFocusId : null,
       candidatePin,
@@ -373,7 +394,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     if (result.consumedPendingFocus) pendingFocusRef.current = null;
     if (result.consumedPendingRouteFocus) pendingRouteFocusRef.current = null;
     if (result.focusedPin) setSelectedPin(result.focusedPin);
-  }, [view, activeDay, candidatePin, routeFocusDay, routeFocusId]);
+  }, [view, filters.length, activeDay, candidatePin, routeFocusDay, routeFocusId]);
 
   useEffect(() => {
     return scheduleMapOverlayDraw(draw);

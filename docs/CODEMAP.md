@@ -80,6 +80,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/components/ItineraryPanel.tsx`, `ItineraryStopRow.tsx` | Itinerary loading, mutation, day composition, and stop-row presentation ownership |
 | `frontend/src/components/` | Production UI components and pane interactions |
 | `frontend/src/components/map/placeIdentity.ts` | Conservative hotel identity shared by itinerary and map labels |
+| `frontend/src/lib/itineraryFilters.ts` | Shared presentation-only classification and union filtering for Itinerary rows and Map geometry |
 | `frontend/src/hooks/useWorkspaceFocus.ts` | Mutually exclusive place, identified drive/route, day-circuit, and all-days focus transitions and repeat-action tokens |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |

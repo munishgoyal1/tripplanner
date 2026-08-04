@@ -412,6 +412,10 @@ re-describing the whole product.
   separate stop.
 - Exact occurrence identity controls scroll, selection, booking state, and
   removal for repeated places.
+- Flights, Inter-city Road, Inter-city Train, and Hotels are independent pane-header
+  filters. Active filters union across Itinerary and Map; no active filters show
+  the complete trip. Filtering preserves authoritative day/stop identity, full
+  selected journey geometry, and Trip Snapshot while hiding unmatched days.
 
 ### MAP-01 - Map behavior
 
@@ -464,6 +468,8 @@ implemented capability baseline.
   the selected day's schedule span from route-only duration, distance, and mode.
 - Itinerary, Map, and Details group pane-local Hide and Maximize/Restore icons in
   a restrained pair. Existing behavior, disabled states, and recovery remain unchanged.
+- Itinerary filters are shared with Map. Filter changes return Map to All days and
+  remove stale exact/route focus; trip changes clear the presentation-only filters.
 
 ### PLACE-01 and MUT-01 - Details and coherent mutations
 

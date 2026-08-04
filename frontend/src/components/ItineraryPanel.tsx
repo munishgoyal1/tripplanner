@@ -2,12 +2,17 @@ import { ExternalLink, MapPin, Route } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../types";
+import { itineraryStopMatchesFilters, type ItineraryFilter } from "../lib/itineraryFilters";
+import ItineraryFilterControls from "./ItineraryFilterControls";
 import ItineraryStopRow from "./ItineraryStopRow";
 import TripSnapshot from "./TripSnapshot";
 import WeatherIcon from "./WeatherIcon";
 import { hotelIdentityGroups, hotelIdentityMatches } from "./map/placeIdentity";
 
 interface Props {
+  filters?: readonly ItineraryFilter[];
+  onFilterToggle?: (filter: ItineraryFilter) => void;
+  headerTarget?: HTMLElement | null;
   overview?: TripOverview | null;
   /** Bump to refetch the itinerary after the trip changes. */
   reloadToken?: number;
@@ -48,6 +53,7 @@ function dayDateLabel(date: string): string {
 
 function DayCard({
   day,
+  filters,
   active,
   circuitActive,
   onToggleBooked,
@@ -62,6 +68,7 @@ function DayCard({
   onRemove,
 }: {
   day: ItineraryDay;
+  filters: readonly ItineraryFilter[];
   active: boolean;
   circuitActive: boolean;
   onToggleBooked: (day: number, name: string, next: boolean) => void;
@@ -111,7 +118,9 @@ function DayCard({
   const destinationHotelIndex = changesHotel
     ? combinesHotelCircuit ? circuitHotelIndex : day.stops.length - 1
     : -1;
-  const visibleStops = day.stops.map((stop, index) => ({ stop, index }));
+  const visibleStops = day.stops
+    .map((stop, index) => ({ stop, index }))
+    .filter(({ stop }) => itineraryStopMatchesFilters(stop, filters));
   const renderStop = ({ stop, index: i }: { stop: ItineraryStop; index: number }) => {
     const circuitReturn = combinesHotelCircuit && i === day.stops.length - 1;
     const representedStopIndexes = [i + 1];
@@ -263,6 +272,9 @@ function DayCard({
 }
 
 export default function ItineraryPanel({
+  filters = [],
+  onFilterToggle,
+  headerTarget,
   overview,
   reloadToken = 0,
   onStopFocus,
@@ -284,6 +296,9 @@ export default function ItineraryPanel({
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const allDaysActive = circuitFocusToken > 0 && circuitFocusDay == null;
+  const filterControls = onFilterToggle
+    ? <ItineraryFilterControls filters={filters} onToggle={onFilterToggle} target={headerTarget} />
+    : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -401,6 +416,7 @@ export default function ItineraryPanel({
   if (loading && !it) {
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+        {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} />}
         <div className="grid min-h-40 place-items-center p-6 text-sm text-slate-400">
           Loading itinerary…
@@ -412,6 +428,7 @@ export default function ItineraryPanel({
   if (!it || !it.has_itinerary) {
     return (
       <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+        {filterControls}
         {overview && <TripSnapshot overview={overview} active={allDaysActive} onAllDaysMap={onAllDaysMap} />}
         <div className="grid min-h-48 place-items-center p-6 text-center">
           <div className="max-w-xs text-sm text-slate-500">
@@ -424,8 +441,12 @@ export default function ItineraryPanel({
   }
 
   const { stats } = it;
+  const visibleDays = filters.length === 0
+    ? it.days
+    : it.days.filter((day) => day.stops.some((stop) => itineraryStopMatchesFilters(stop, filters)));
   return (
     <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
+      {filterControls}
       {overview && (
         <TripSnapshot
           overview={overview}
@@ -453,10 +474,14 @@ export default function ItineraryPanel({
           )}
         </header>
         <div className="space-y-3 pb-6">
-        {it.days.map((day) => (
+        {visibleDays.length === 0 && (
+          <div className="py-8 text-center text-sm text-slate-500">No itinerary items match these filters.</div>
+        )}
+        {visibleDays.map((day) => (
           <DayCard
             key={day.day}
             day={day}
+            filters={filters}
             active
             circuitActive={circuitFocusToken > 0 && circuitFocusDay === day.day}
             focusName={focusName}
