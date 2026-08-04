@@ -1968,7 +1968,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 
     def _local_pin_ids(day: int, route_ids: list[str]) -> list[str]:
         intercity_edges = intercity_modes_by_day.get(day) or {}
-        if "Drive" in intercity_edges.values():
+        if any(mode in {"Drive", "Bus"} for mode in intercity_edges.values()):
             return route_ids
         edge_indexes = next(
             (

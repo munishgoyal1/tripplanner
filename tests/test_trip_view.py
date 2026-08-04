@@ -2265,6 +2265,7 @@ def test_bus_transfer_builds_separate_road_circuit_with_route_breaks(
     ) < map_day_names.index("Roadside Kitchen") < map_day_names.index(
         "New York Bus Stand"
     )
+    assert map_day["circuit_pin_ids"] == map_day["pin_ids"]
     circuit_legs = [
         leg for leg in map_day["legs"] if leg.get("route_circuit_id") == circuit["id"]
     ]
