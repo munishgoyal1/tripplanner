@@ -50,7 +50,10 @@ param(
     [switch]$Logs,
     [ValidateSet("azure", "emulator")]
     [string]$CosmosBackend,
-    [switch]$UseCanaryData
+    [switch]$UseCanaryData,
+    # Emulator-only: run against a custom isolated database (e.g. a sandbox DB)
+    # instead of the default tripplanner-local. Live database names are refused.
+    [string]$CosmosDatabase
 )
 
 $ErrorActionPreference = "Stop"
@@ -109,6 +112,9 @@ if ($configuredCosmosBackend -notin @("azure", "emulator")) {
 if ($UseCanaryData -and $PSBoundParameters.ContainsKey("CosmosBackend") -and $CosmosBackend -eq "emulator") {
     throw "-UseCanaryData cannot be combined with -CosmosBackend emulator."
 }
+if ($PSBoundParameters.ContainsKey("CosmosDatabase") -and $configuredCosmosBackend -ne "emulator") {
+    throw "-CosmosDatabase is only supported with -CosmosBackend emulator."
+}
 
 function Clear-ListeningPort {
     param(
@@ -166,11 +172,18 @@ if (-not $FrontendOnly -and -not $UseCanaryData -and $configuredCosmosBackend -e
         throw "Cosmos DB Emulator startup failed."
     }
 
+    $emulatorDatabase = "tripplanner-local"
+    if (-not [string]::IsNullOrWhiteSpace($CosmosDatabase)) {
+        if ($CosmosDatabase.Trim().ToLowerInvariant() -in @("tripplanner-canary", "tripplanner-prod")) {
+            throw "-CosmosDatabase must not be a live canary or production database."
+        }
+        $emulatorDatabase = $CosmosDatabase.Trim()
+    }
     $env:COSMOS_ENDPOINT = "https://localhost:8081"
     $env:COSMOS_KEY = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-    $env:COSMOS_DATABASE = "tripplanner-local"
+    $env:COSMOS_DATABASE = $emulatorDatabase
     $env:COSMOS_EMULATOR = "1"
-    Write-Host "Using isolated local Cosmos DB Emulator." -ForegroundColor DarkGray
+    Write-Host "Using isolated local Cosmos DB Emulator (database $emulatorDatabase)." -ForegroundColor DarkGray
 }
 
 if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "azure")) {

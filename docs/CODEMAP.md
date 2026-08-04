@@ -207,8 +207,8 @@ conversation or explicit edit
 | `docs/development/parallel-agent-development.md` | Primary/worker synchronization and integration workflow |
 | `infra/` | Azure IaC and approval-gated operational scripts |
 | `scripts/README.md` | Developer workflow and utility script ownership |
-| `scripts/user/` | Owner-facing sync and run launchers |
-| `scripts/dev/` | Local stack, worktree synchronization, and UI snapshot engines |
+| `scripts/user/` | Owner-facing sync, run, and sandbox launchers |
+| `scripts/dev/` | Local stack, worktree sync, feature sandbox, and UI snapshot engines |
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
 | `tests/` | Python unit and integration tests |
 | `docs/reference/` | Indexed owner inputs, decision history, and dated technical snapshots |

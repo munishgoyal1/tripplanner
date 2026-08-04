@@ -1,9 +1,20 @@
 # Feature Sandbox Workflow — Proposal
 
 - **Date:** 2026-08-04
-- **Status:** Proposed — awaiting owner sign-off. Not implemented.
+- **Status:** **Implemented** (v1 scripts landed). Kept here for provenance.
 - **Type:** Dev-workflow / infrastructure (no product-behavior change).
 - **Suggested owner lane:** Agent 3 (Infra). Scripts only; no `src/` or `frontend/src/` product code.
+
+> **Implemented as:**
+> - `scripts/dev/sandbox.ps1` — `-New` / `-Run` / `-Promote` / `-Discard` / `-List` engine.
+> - `scripts/user/{New,Run,Promote,Discard,List}-Sandbox*.cmd` — owner-facing launchers.
+> - `scripts/dev/sandbox_seed.py` — emulator seed / drop / capture (guards `tripplanner-sbx-*`).
+> - `scripts/dev/dev-spa.ps1` — added `-CosmosDatabase` emulator override.
+> - `scripts/dev/sandbox-seed/README.md` — representative seed set (S1–S4) + capture guide.
+>
+> Deferred out of v1: product-level trip `schema_version` + migration path, tracked in
+> [`../tech-debt/2026-08-04-trip-schema-version-and-migration.md`](../tech-debt/2026-08-04-trip-schema-version-and-migration.md).
+> The sandbox uses a sandbox-local seed marker instead (proposal §8).
 
 ## 1. The ask
 

@@ -43,3 +43,6 @@ On #2 sandbox reuse - The data reuse is the one that could be imporant for perfo
 
 [008] [4-Aug-2026] Representative seed set + schema-version scope
 For the data seed, the seed should be represenative of all key scenarios example - single destination trip, multi-city trip, complex trip itineary covering flight, train , road drive for inter city etc. so chose some such set of seed data. Are you intending to add schema version also as part of this sandbox build out
+
+[009] [4-Aug-2026] Implement sandbox; log schema proposal; move to implemented
+ok log the schema proposal seperately to be taken later. For now go implement the sandbox feature. Also when you implement then move those propsals into implemented folder
