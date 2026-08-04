@@ -230,6 +230,7 @@ if (-not $FrontendOnly) {
         Write-Host "  LOG_LEVEL=DEBUG (verbose backend logs)" -ForegroundColor DarkGray
     }
     $py = Join-Path $repoRoot ".venv\Scripts\python.exe"
+    if (-not (Test-Path $py)) { $py = Join-Path $sharedRepoRoot ".venv\Scripts\python.exe" }
     if (-not (Test-Path $py)) { $py = "python" }
     # src-layout project: make imports work even if pip install -e . was not run.
     $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--app-dir", "src", "--port", "$ApiPort")
@@ -260,6 +261,11 @@ if (-not $BackendOnly) {
         $env:VITE_API_TARGET = "http://localhost:$ApiPort"
         $env:VITE_PORT = "$FrontendPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
+        # Stable guest identity for emulator dev; the sandbox seed re-owns the
+        # owner's data under this id (keep in sync with sandbox_seed.py).
+        if ($configuredCosmosBackend -eq "emulator") {
+            $env:VITE_DEV_GUEST_ID = "web-00000000-0000-4000-8000-000000000001"
+        }
         npm run dev
     }
     finally {

@@ -34,6 +34,10 @@ EMULATOR_KEY = (
 )
 
 DEFAULT_SOURCE_DATABASE = "tripplanner-local"
+# By default a sandbox is seeded with the owner's own account data, re-owned
+# under a stable guest identity so guest-mode testing opens with real trips.
+DEFAULT_SEED_OWNER = "google-101851654028336975901"
+SANDBOX_GUEST_USER = "web-00000000-0000-4000-8000-000000000001"
 SANDBOX_PREFIX = "tripplanner-sbx-"
 LIVE_DATABASE_NAMES = {"tripplanner-canary", "tripplanner-prod"}
 
@@ -126,17 +130,31 @@ def _trip_count(database) -> int:
         return 0
 
 
-def _seed_from_local(client, target: str, source_db: str) -> None:
+def _read_owner(database, container: str, owner: str) -> list[dict[str, Any]]:
+    from azure.cosmos import exceptions
+
+    try:
+        items = database.get_container_client(container).query_items(
+            query="SELECT * FROM c WHERE c.user_id=@u",
+            parameters=[{"name": "@u", "value": owner}],
+            enable_cross_partition_query=True,
+        )
+        return [_strip_system_fields(dict(item)) for item in items]
+    except exceptions.CosmosResourceNotFoundError:
+        return []
+
+
+def _seed_from_local(client, target: str, source_db: str, owner: str, as_user: str) -> None:
     source = client.get_database_client(source_db)
     database = client.create_database_if_not_exists(id=target)
     _ensure_containers(database)
     total = 0
     for container in CONTENT_CONTAINERS:
-        docs = _read_all(source, container)
+        docs = [{**doc, "user_id": as_user} for doc in _read_owner(source, container, owner)]
         written = _upsert_all(database, container, docs)
         total += written
         print(f"  {container}: copied {written} docs")
-    print(f"Seeded {target} from {source_db} ({total} docs).")
+    print(f"Seeded {target}: {owner} -> {as_user} ({total} docs).")
 
 
 def _seed_from_fixtures(client, target: str, fixtures_dir: Path) -> None:
@@ -171,7 +189,7 @@ def cmd_seed(args: argparse.Namespace) -> int:
     if args.source == "fixtures":
         _seed_from_fixtures(client, target, args.fixtures_dir)
     else:
-        _seed_from_local(client, target, args.source_database)
+        _seed_from_local(client, target, args.source_database, args.owner, args.as_user)
     return 0
 
 
@@ -252,6 +270,8 @@ def build_parser() -> argparse.ArgumentParser:
     seed.add_argument("--database", required=True)
     seed.add_argument("--source", choices=["local", "fixtures"], default="local")
     seed.add_argument("--if-empty", action="store_true")
+    seed.add_argument("--owner", default=DEFAULT_SEED_OWNER)
+    seed.add_argument("--as-user", default=SANDBOX_GUEST_USER)
     _add_common(seed)
     seed.set_defaults(func=cmd_seed)
 
