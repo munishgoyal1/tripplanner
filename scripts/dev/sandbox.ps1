@@ -105,7 +105,8 @@ function Save-Registry {
     $json = if (-not $Entries -or $Entries.Count -eq 0) {
         "[]"
     } else {
-        ConvertTo-Json -InputObject $Entries -Depth 6 -AsArray
+        # Pipe rather than -InputObject: -AsArray wraps an array argument in a second array.
+        $Entries | ConvertTo-Json -Depth 6 -AsArray
     }
     Set-Content -Path $registryPath -Value $json -Encoding UTF8
 }
@@ -161,6 +162,31 @@ function Invoke-SandboxValidation {
     } finally {
         Pop-Location
     }
+}
+
+function Stop-SandboxProcesses {
+    # A live sandbox stack keeps node/esbuild/python binaries locked, which makes
+    # `git worktree remove` fail halfway through. Only this sandbox's own processes match.
+    param([Parameter(Mandatory = $true)][string]$Worktree)
+
+    $escaped = [regex]::Escape($Worktree)
+    $running = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -and $_.CommandLine -match $escaped })
+    foreach ($process in $running) {
+        Write-Host "[stop]    $($process.Name) ($($process.ProcessId))"
+        Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+    if ($running.Count -gt 0) { Start-Sleep -Milliseconds 500 }
+}
+
+function Remove-PendingMergesFor {
+    # An interrupted -Update records a resumable merge; a discarded sandbox must not
+    # leave one behind, or every later sync fails against the missing worktree.
+    param([Parameter(Mandatory = $true)][string]$WorkingDirectory)
+
+    $target = $WorkingDirectory.TrimEnd("\")
+    $remaining = @(Get-PendingMerges | Where-Object { ([string]$_.workingDirectory).TrimEnd("\") -ne $target })
+    Save-PendingList -Entries $remaining
 }
 
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -482,12 +508,23 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     }
 
     if (Test-Path $entry.worktree) {
+        Stop-SandboxProcesses -Worktree $entry.worktree
         $removeArgs = @("worktree", "remove", $entry.worktree)
         if ($Force) { $removeArgs += "--force" }
-        Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments $removeArgs
+        try {
+            Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments $removeArgs
+        } catch {
+            # git may unregister the worktree yet fail to delete locked files; finish the
+            # rest of the teardown so the registry never disagrees with reality.
+            Write-Warning "Could not fully delete $($entry.worktree): $($_.Exception.Message)"
+            Write-Warning "Close any window or terminal using that folder, then delete it manually."
+            & git -C $scriptRepoRoot worktree prune
+        }
     } else {
         Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("worktree", "prune")
     }
+
+    Remove-PendingMergesFor -WorkingDirectory $entry.worktree
 
     & git -C $scriptRepoRoot branch -D $entry.branch
     if ($LASTEXITCODE -ne 0) {
