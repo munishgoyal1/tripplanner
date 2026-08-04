@@ -27,13 +27,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `user/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) |
-| `user/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports |
-| `user/Promote-Sandbox.cmd` | Push a sandbox branch for review (never auto-merges) |
-| `user/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
-| `user/List-Sandboxes.cmd` | List active sandboxes and their ports |
+| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) |
+| `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports |
+| `sandbox/Promote-Sandbox.cmd` | Push a sandbox branch for review (never auto-merges) |
+| `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
+| `sandbox/List-Sandboxes.cmd` | List active sandboxes and their ports |
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
-entry points. Put implementation and source-control workflow under `dev/`, and
-regular owner-facing launchers under `user/`. Do not move cloud-mutating
+entry points. Put implementation and source-control workflow under `dev/`,
+regular owner-facing launchers under `user/`, and sandbox launchers under
+`sandbox/`. Do not move cloud-mutating
 operations out of `infra/` merely because they are implemented in PowerShell.

@@ -118,6 +118,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   Map, and Details can each be maximized and restored. On narrower desktops
   the inspector overlays the map on demand. Mobile mounts chat plus an on-demand
   trip-details sheet.
+  Desktop pane visibility is fully independent: any combination, including all
+  panes hidden, is valid and persists locally; the command bar always remains as
+  the recovery surface. A visible docked pane has no arbitrary maximum width and
+  may use all space not required by the minimum usable widths of visible siblings.
 - **Color**: coral `brand` (#e11d48) as the single accent for primary action +
   active state; teal `accent` for secondary surfaces; ink/muted/surface
   neutrals everywhere else. No rainbow.

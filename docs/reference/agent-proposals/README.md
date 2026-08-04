@@ -23,7 +23,13 @@ in [FUTURE_FEATURES.md](../../roadmap/FUTURE_FEATURES.md) and the consent rule i
 
 ## Conventions
 
-- One dated file per proposal: `YYYY-MM-DD-<slug>.md`.
+- **Numbering:** every new proposal takes the next value from a single incremental
+  counter shared across all folders (`feature-proposals/`, `tech-debt/`, `implemented/`).
+  **Next number: `ap-14`.** Bump this line whenever you claim a number.
+- Name each new proposal `ap-<num>-title.md` and put the `ap-<num>` id on the
+  first line of the document (e.g. `# ap-13 — <title>`).
+- Pre-convention files (`01`–`09` and dated `YYYY-MM-DD-*`) are grandfathered — leave
+  their names as-is.
 - Keep folder count small (2–3); group rather than scatter loose files at the root.
 - Each feature proposal states the user pain, bounded first version, implementation
   notes against real files, risk, and acceptance — enough to execute later without
