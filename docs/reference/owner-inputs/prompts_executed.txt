@@ -3,7 +3,7 @@
 # title. Newest entries are appended at the bottom. Purpose: recall past
 # interactions and re-use prompts. Prompt text is preserved verbatim.
 # Format:
-#   [NNN] <short title>
+#   [NNN] [Date] <short title>
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
