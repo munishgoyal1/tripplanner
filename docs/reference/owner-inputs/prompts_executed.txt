@@ -66,3 +66,5 @@ Next time also assign an  incremental number for each agent proposal - add it in
 [013] [4-Aug-2026] Flexible widths and independent pane visibility
 dont limit the max width of different panels. user may want to hide others or simply have more width on some panel. what do you think to allow them.
 also all panels can get hidden too or any combination could be hidden or shown . allow all that. suggest if you think differently on this
+
+[014] [4-Aug-2026] Fix Lab 13 guide city filters, kind filter, ordering, speed

@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Create, run, promote, and discard isolated trip-planner sandboxes.
+  Create, run, update, promote, and discard isolated trip-planner sandboxes.
 
   A sandbox is a throwaway feature environment: its own git branch
   (sandbox/<slug>), its own worktree (sbx-<slug>), its own isolated ports, and
@@ -11,6 +11,7 @@
 .EXAMPLE
     .\scripts\dev\sandbox.ps1 -New route-experiment
     .\scripts\dev\sandbox.ps1 -Run route-experiment
+    .\scripts\dev\sandbox.ps1 -Update route-experiment
     .\scripts\dev\sandbox.ps1 -Promote route-experiment
     .\scripts\dev\sandbox.ps1 -Discard route-experiment
     .\scripts\dev\sandbox.ps1 -List
@@ -27,6 +28,9 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = "Promote")]
     [string]$Promote,
 
+    [Parameter(Mandatory = $true, ParameterSetName = "Update")]
+    [string]$Update,
+
     [Parameter(Mandatory = $true, ParameterSetName = "Discard")]
     [string]$Discard,
 
@@ -34,6 +38,7 @@ param(
     [switch]$List,
 
     [Parameter(ParameterSetName = "New")]
+    [Parameter(ParameterSetName = "Update")]
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New")]
@@ -131,7 +136,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
     return
 }
 
-$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } else { $Discard }
+$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } elseif ($Update) { $Update } else { $Discard }
 Assert-Slug -Name $slug
 $branchName = "sandbox/$slug"
 $worktreePath = Join-Path $worktreesRoot "sbx-$slug"
@@ -236,6 +241,74 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         -LabsPort $entry.labsPort `
         -CosmosBackend emulator `
         -CosmosDatabase $entry.database
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Update") {
+    if (-not (Test-Path $entry.worktree -PathType Container)) {
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+    }
+    # Reuse the worker sync machinery: rerere-backed healing + resumable pending state.
+    . "$PSScriptRoot/lib/sync-common.ps1"
+
+    $wd = $entry.worktree
+    $label = "Sandbox '$slug'"
+    $actualBranch = (Invoke-Git -WorkingDirectory $wd -Arguments @("branch", "--show-current")).Trim()
+    if ($actualBranch -ne $entry.branch) {
+        throw "$label must be on $($entry.branch), not $actualBranch."
+    }
+    $remoteRef = "origin/$BaseBranch"
+
+    if (-not $PSCmdlet.ShouldProcess($entry.branch, "Merge $remoteRef into the sandbox")) {
+        return
+    }
+
+    $syncLogOwned = Start-SyncLog -Component "sandbox-update"
+    try {
+        Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "origin", $BaseBranch) | Out-Null
+        Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.enabled", "true") | Out-Null
+        Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
+        Invoke-Git -WorkingDirectory $wd -Arguments @("config", "merge.conflictstyle", "zdiff3") | Out-Null
+
+        # Preserve any uncommitted sandbox edits behind a safety stash, restored
+        # (or retained on conflict) after the merge.
+        $stashCommit = ""
+        $changes = Invoke-Git -WorkingDirectory $wd -Arguments @("status", "--porcelain")
+        if ($changes) {
+            Write-Host "Preserving uncommitted $label changes..." -ForegroundColor Cyan
+            Invoke-Git -WorkingDirectory $wd -Arguments @(
+                "stash", "push", "--include-untracked", "--message", "sandbox-update temporary $slug changes"
+            ) | Out-Null
+            $stashCommit = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "refs/stash")
+        }
+
+        try {
+            & git -C $wd merge --no-edit $remoteRef
+            if ($LASTEXITCODE -ne 0) {
+                & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Could not merge $remoteRef into $label."
+                }
+                Complete-MergeConflict -WorkingDirectory $wd -Label $label -Kind "lane" `
+                    -Branch $entry.branch -StashCommit $stashCommit
+            }
+        } finally {
+            if ($stashCommit) {
+                & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Warning "$label local changes remain in the safety stash until the merge conflict is resolved."
+                } else {
+                    Restore-LaneStash -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
+                }
+            }
+        }
+
+        $head = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "--short", "HEAD")
+        Write-Host "[updated] $label is current with $remoteRef at $head." -ForegroundColor Green
+        Write-Host "Push when ready: git -C `"$wd`" push origin $($entry.branch)"
+    } finally {
+        if ($syncLogOwned) { Stop-SyncLog }
+    }
     return
 }
 
