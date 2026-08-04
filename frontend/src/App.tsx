@@ -15,6 +15,7 @@ import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
+import type { ItineraryFilter } from "./lib/itineraryFilters";
 import type { PlannerReview, TripView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
@@ -90,7 +91,9 @@ export default function App() {
     return saved ? JSON.parse(saved) : true;
   });
   const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
+  const [itineraryHeaderTarget, setItineraryHeaderTarget] = useState<HTMLDivElement | null>(null);
   const [mapHeaderTarget, setMapHeaderTarget] = useState<HTMLDivElement | null>(null);
+  const [itineraryFilters, setItineraryFilters] = useState<ItineraryFilter[]>([]);
   const [itineraryOpen, setItineraryOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
@@ -543,6 +546,19 @@ export default function App() {
     dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
   };
 
+  const handleItineraryFilterToggle = (filter: ItineraryFilter) => {
+    setItineraryFilters((current) => current.includes(filter)
+      ? current.filter((candidate) => candidate !== filter)
+      : [...current, filter]);
+    clearFocus();
+    setView((current) => current ? { ...current, focus: null } : current);
+    dispatchWorkspace({ type: "jump", target: { summary: true, token: Date.now() } });
+  };
+
+  useEffect(() => {
+    setItineraryFilters([]);
+  }, [chatTripId]);
+
   const tripPanelProps = {
     view,
     loading,
@@ -559,6 +575,8 @@ export default function App() {
   };
 
   const railProps = {
+    filters: itineraryFilters,
+    onFilterToggle: handleItineraryFilterToggle,
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
     tripId: chatTripId,
@@ -589,6 +607,9 @@ export default function App() {
     if (pane === "itinerary") {
       return (
         <ItineraryPanel
+          filters={itineraryFilters}
+          onFilterToggle={handleItineraryFilterToggle}
+          headerTarget={itineraryHeaderTarget}
           overview={view?.overview}
           reloadToken={tripVersion}
           focusName={stopFocusName}
@@ -607,6 +628,7 @@ export default function App() {
     }
     return (
       <MapPanel
+        filters={itineraryFilters}
         reloadToken={tripVersion}
         tripId={chatTripId}
         focusName={stopFocusName}
@@ -725,6 +747,7 @@ export default function App() {
               hideDisabled={!mapOpen}
               onHide={() => setCanvasOpen("itinerary", false)}
               onToggleMaximize={() => toggleMaxPane("itinerary")}
+              headerTargetRef={setItineraryHeaderTarget}
             >
               {renderCanvasBody("itinerary")}
             </CanvasPaneFrame>

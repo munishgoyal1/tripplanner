@@ -33,6 +33,7 @@ interface SynchronizeMapOverlaysOptions {
   google: any;
   map: any;
   view: MapView;
+  suppressFallbackRoutes?: boolean;
   activeDay: number | null;
   activeRouteCircuitId?: string | null;
   candidatePin: MapPin | null;
@@ -61,6 +62,7 @@ export function synchronizeMapOverlays({
   google,
   map,
   view,
+  suppressFallbackRoutes = false,
   activeDay,
   activeRouteCircuitId,
   candidatePin,
@@ -220,7 +222,7 @@ export function synchronizeMapOverlays({
         map,
       }));
     }
-    if (legs.length === 0) {
+    if (legs.length === 0 && !suppressFallbackRoutes) {
       const routePinIds = focusedDriveCircuit?.day === day.day
         ? focusedDriveCircuit.pin_ids
         : day.pin_ids;

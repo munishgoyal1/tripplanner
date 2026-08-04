@@ -59,11 +59,12 @@ vi.mock("./components/ChatPanel", () => ({
   ),
 }));
 vi.mock("./components/ItineraryPanel", () => ({
-  default: ({ reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
+  default: ({ filters = [], onFilterToggle, reloadToken, onStopFocus, onStopMap, onDayMap, onAllDaysMap, jumpTo, overview, focusDay, focusStop, circuitFocusDay, circuitFocusToken }: { filters?: string[]; onFilterToggle?: (filter: "flight" | "road" | "train" | "hotel") => void; reloadToken: number; onStopFocus: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onStopMap?: (kind: string, name: string, day?: number, stop?: number, routeCircuitId?: string) => void; onDayMap?: (day: number) => void; onAllDaysMap?: () => void; jumpTo?: { day: number; name?: string } | { summary: true } | null; overview?: typeof emptyView.overview | null; focusDay?: number; focusStop?: number; circuitFocusDay?: number; circuitFocusToken?: number }) => (
     <div>
       <button
         type="button"
         data-testid="itinerary-panel"
+        data-filters={filters.join(",")}
         data-reload-token={reloadToken}
         data-jump-day={jumpTo && "day" in jumpTo ? jumpTo.day : ""}
         data-jump-name={jumpTo && "day" in jumpTo ? jumpTo.name ?? "" : ""}
@@ -77,6 +78,8 @@ vi.mock("./components/ItineraryPanel", () => ({
         data-circuit-token={circuitFocusToken ?? 0}
         onClick={() => onStopFocus("attraction", "Louvre Museum", 2, 1)}
       />
+      <button type="button" onClick={() => onFilterToggle?.("flight")}>Toggle Flights filter</button>
+      <button type="button" onClick={() => onFilterToggle?.("hotel")}>Toggle Hotels filter</button>
       <button type="button" onClick={() => onStopFocus("hotel", "Goa Marriott", 2, 1)}>
         Focus Day 2 hotel
       </button>
@@ -101,8 +104,8 @@ vi.mock("./components/ItineraryPanel", () => ({
   ),
 }));
 vi.mock("./components/MapPanel", () => ({
-  default: ({ reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusId, routeFocusToken }: { reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusId?: string; routeFocusToken?: number }) => (
-    <div data-testid="map-panel" data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-id={routeFocusId ?? ""} data-route-token={routeFocusToken ?? 0}>
+  default: ({ filters = [], reloadToken, onPinFocus, onDayFocus, onAllDaysFocus, focusName, focusDay, focusToken, circuitFocusDay, circuitFocusToken, routeFocusDay, routeFocusId, routeFocusToken }: { filters?: string[]; reloadToken?: number; onPinFocus: (kind: string, name: string, day?: number, stop?: number) => void; onDayFocus?: (day: number) => void; onAllDaysFocus?: () => void; focusName?: string | null; focusDay?: number; focusToken?: number; circuitFocusDay?: number; circuitFocusToken?: number; routeFocusDay?: number; routeFocusId?: string; routeFocusToken?: number }) => (
+    <div data-testid="map-panel" data-filters={filters.join(",")} data-reload-token={reloadToken ?? 0} data-focus-name={focusName ?? ""} data-focus-day={focusDay ?? ""} data-focus-token={focusToken ?? 0} data-circuit-day={circuitFocusDay ?? ""} data-circuit-token={circuitFocusToken ?? 0} data-route-day={routeFocusDay ?? ""} data-route-id={routeFocusId ?? ""} data-route-token={routeFocusToken ?? 0}>
       <button type="button" onClick={() => onPinFocus("attraction", "Louvre Museum")}>Focus pin</button>
       <button type="button" onClick={() => onPinFocus("airport", "Udaipur Airport", 1, 3)}>Focus airport pin</button>
       <button type="button" onClick={() => onDayFocus?.(2)}>Focus Day 2</button>
@@ -172,6 +175,29 @@ describe("App responsive workspace", () => {
     selectItemMock.mockReset();
     deselectItemMock.mockReset();
     isAnonymousUserMock.mockReset().mockReturnValue(true);
+  });
+
+  it("shares unioned itinerary filters with the map", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await screen.findByTestId("itinerary-panel");
+    fireEvent.click(screen.getByRole("button", { name: "Focus Day 2" }));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "2");
+    fireEvent.click(screen.getByRole("button", { name: "Toggle Flights filter" }));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "");
+    fireEvent.click(screen.getByRole("button", { name: "Toggle Hotels filter" }));
+
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-filters", "flight,hotel");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-filters", "flight,hotel");
+
+    fireEvent.click(screen.getByRole("button", { name: "Toggle Flights filter" }));
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-filters", "hotel");
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-filters", "hotel");
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to Rome" }));
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-filters", ""));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-filters", "");
   });
 
   it.each([

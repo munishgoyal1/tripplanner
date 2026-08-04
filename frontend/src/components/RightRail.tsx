@@ -5,8 +5,11 @@ import TripSwitcher from "./TripSwitcher";
 import type { DeselectItemOptions, SelectItemOptions } from "../api";
 import type { TripView } from "../types";
 import type { ItineraryJump } from "../workspaceState";
+import type { ItineraryFilter } from "../lib/itineraryFilters";
 
 interface Props {
+  filters: readonly ItineraryFilter[];
+  onFilterToggle: (filter: ItineraryFilter) => void;
   overview: TripView["overview"];
   /** The Photos / overview content (the existing TripPanel). */
   photos: ReactNode;
@@ -48,6 +51,8 @@ interface Props {
 }
 
 export default function RightRail({
+  filters,
+  onFilterToggle,
   overview,
   photos,
   reloadToken,
@@ -101,6 +106,8 @@ export default function RightRail({
         <section className="flex min-h-0 basis-2/5 flex-col border-b border-slate-100">
           <div className="min-h-0 w-full flex-1">
             <ItineraryPanel
+              filters={filters}
+              onFilterToggle={onFilterToggle}
               overview={overview}
               reloadToken={reloadToken}
               focusName={focusName}
@@ -129,6 +136,7 @@ export default function RightRail({
           <section className="flex h-72 min-h-0 flex-col border-b border-slate-100">
             <div className="min-h-0 w-full flex-1">
               <MapPanel
+                filters={filters}
                 reloadToken={reloadToken}
                 tripId={tripId}
                 focusName={focusName}
