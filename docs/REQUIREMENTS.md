@@ -303,7 +303,8 @@ re-describing the whole product.
 
 - Stable trip IDs distinguish destination/date combinations and allow same-trip
   resume without discarding prior selections.
-- Users can list, switch, resume, and delete saved trips.
+- Users can list, switch, and resume saved trips. The saved-trip menu supports
+  confirmed deletion of one checked trip, multiple checked trips, or all trips.
 - The active trip is mirrored into saved trips on each authoritative save.
 - Chat history is stored per trip, survives refresh, and follows trip switches.
 - New-trip creation clears the active pointer without deleting saved history.
