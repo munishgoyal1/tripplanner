@@ -160,16 +160,16 @@ summary. The map details tile changes from any previously selected place to the
 day title/destination with schedule and route context. Ordinary days fit their complete circuit. Transfer days keep the full
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
-road-transfer days retain the full origin-to-destination journey in day focus so
+road-transfer days retain the full origin-to-destination drive in day focus so
 the starting city or saved home area, on-route scenic or meal waypoints, and
 destination stay remain visible. Every waypoint connector retains the same
-dotted Drive or Bus treatment rather than reverting to a local taxi leg. Drive, car,
+dotted Drive treatment rather than reverting to a local taxi leg. Drive, car,
 private-car, road-journey, and road-transfer labels with directional
 endpoints all normalize to the same clickable route action; display wording
 must not determine whether the route works. Grounded `distance_km` and
 `duration_min` values are persisted on the transfer stop and remain authoritative
 in Itinerary and Map; a waypoint route allocates those exact totals across its
-ordered road legs instead of replacing them with straight-line estimates. All
+ordered drive legs instead of replacing them with straight-line estimates. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
