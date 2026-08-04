@@ -21,7 +21,10 @@ export function getUserId(): string {
   const KEY = "tripplanner_user_id";
   let id = localStorage.getItem(KEY);
   if (!id) {
-    id = `web-${crypto.randomUUID()}`;
+    // In local/emulator dev, VITE_DEV_GUEST_ID pins a stable guest identity that
+    // the sandbox seed populates, so guest-mode testing opens with real data.
+    const devGuest = import.meta.env.VITE_DEV_GUEST_ID as string | undefined;
+    id = devGuest && devGuest.startsWith("web-") ? devGuest : `web-${crypto.randomUUID()}`;
     localStorage.setItem(KEY, id);
   }
   return id;
