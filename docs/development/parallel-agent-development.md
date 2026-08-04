@@ -171,6 +171,14 @@ Every conflict is shown in `zdiff3` style (the repository sets
 in the markers. That base context makes each resolution far less likely to drop a
 side by accident.
 
+For a novel conflict you can either resolve the marked files by hand (then let the
+next launcher run or `resume-merge.ps1` finish them) or run
+`scripts/user/Resolve-Conflicts.cmd` to have the GitHub Copilot CLI clear the
+markers automatically before the same finish path runs. The CLI only edits the
+conflicted files and is denied `git push`, so the pre-publish validation gate
+still guards every resolution. It requires `npm install -g @github/copilot` and a
+signed-in CLI; pass `-ResolveOnly` to inspect the edits before validating.
+
 ### Pre-publish validation gate
 
 An integrated result is verified before it is published to `master`, so a
