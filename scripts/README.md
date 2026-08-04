@@ -18,7 +18,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/agent-worktree.ps1` | Create, open, list, or remove coding-agent worktrees |
-| `dev/sandbox.ps1` | Create, run, promote, discard, or list isolated feature sandboxes |
+| `dev/sandbox.ps1` | Create, run, update, promote, ship, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
@@ -29,7 +29,9 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
 | `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports |
+| `sandbox/Update-Sandbox.cmd` | Merge the latest `master` into a sandbox branch |
 | `sandbox/Promote-Sandbox.cmd` | Push a sandbox branch for review (never auto-merges) |
+| `sandbox/Ship-Sandbox.cmd` | Sync, validate, and open the PR; `-Approve` also merges and discards |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes and their ports |
 
