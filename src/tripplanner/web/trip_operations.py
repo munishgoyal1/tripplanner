@@ -38,6 +38,11 @@ def build_view(focus: dict[str, str] | None = None) -> dict[str, Any]:
     return trip_view.build_view(trip_planner.load_active_trip_dict(), focus)
 
 
+def warm_guide() -> None:
+    """Background warm of the destination-guide dataset for the active trip."""
+    trip_view.warm_guide(trip_planner.load_active_trip_dict())
+
+
 def paged_places(
     *,
     city: str | None = None,

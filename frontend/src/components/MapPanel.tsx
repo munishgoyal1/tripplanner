@@ -169,6 +169,7 @@ export default function MapPanel({ filters = [], reloadToken = 0, tripId = null,
   const autocompleteRef = useRef<any>(null);
   const autocompleteListenerRef = useRef<any>(null);
   const mapClickListenerRef = useRef<any>(null);
+  const placesServiceRef = useRef<any>(null);
   const circuitZoomTimerRef = useRef<number | null>(null);
   const overlaysRef = useRef<any[]>([]); // markers + polylines to clear on redraw
   const pinMarkersRef = useRef<PinMarkerEntry[]>([]);
@@ -224,6 +225,38 @@ export default function MapPanel({ filters = [], reloadToken = 0, tripId = null,
       pendingFocusRef.current = candidate;
       onPinFocusRef.current?.(candidate.kind, candidate.name);
       stopInputRef.current?.focus();
+    },
+    []
+  );
+
+  // Preview a place that isn't one of the trip's pins (a guide/discovery click)
+  // as a candidate marker, so not-in-trip items surface on the map exactly like
+  // in-trip selections do. Looks the place up via Places, biased to the trip area.
+  const previewPlaceOnMap = useCallback(
+    (name: string, bias?: { lat: number; lng: number } | null) => {
+      const service = placesServiceRef.current;
+      const map = mapRef.current;
+      const google = window.google;
+      if (!service || !map || !google?.maps?.places) return;
+      const requested = name.trim().toLowerCase();
+      service.findPlaceFromQuery(
+        {
+          query: name,
+          fields: ["place_id", "name", "types", "geometry", "formatted_address", "rating", "photos"],
+          ...(bias ? { locationBias: bias } : {}),
+        },
+        (results: any[], status: string) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.length) return;
+          // Ignore a stale response if focus moved on while we were fetching.
+          if (focusRef.current.name?.trim().toLowerCase() !== requested) return;
+          const candidate = mapPinFromGooglePlace(results[0]);
+          if (!candidate) return;
+          setContextScope(null);
+          setCandidatePin(candidate);
+          setSelectedPin(candidate);
+          pendingFocusRef.current = candidate;
+        }
+      );
     },
     []
   );
@@ -297,6 +330,7 @@ export default function MapPanel({ filters = [], reloadToken = 0, tripId = null,
         }
         if (google.maps.places?.PlacesService) {
           const placesService = new google.maps.places.PlacesService(mapRef.current);
+          placesServiceRef.current = placesService;
           mapClickListenerRef.current = mapRef.current.addListener("click", (event: any) => {
             if (!event.placeId) return;
             event.stop?.();
@@ -422,7 +456,12 @@ export default function MapPanel({ filters = [], reloadToken = 0, tripId = null,
     if (!target && view.airport && view.airport.name.trim().toLowerCase() === normalizedFocus) {
       target = view.airport;
     }
-    if (!target) return;
+    if (!target) {
+      // Not a trip pin — preview it on the map as a candidate marker so guide /
+      // discovery clicks synchronize to the map like in-trip selections do.
+      previewPlaceOnMap(focusName, view.center ?? null);
+      return;
+    }
     pendingFocusRef.current = target;
     setContextScope(null);
     const clearingCandidate = candidatePin !== null;

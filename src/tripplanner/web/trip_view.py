@@ -936,6 +936,36 @@ def paged_places(
     }
 
 
+_warmed_guides: set[str] = set()
+
+
+def warm_guide(trip: dict[str, Any] | None) -> None:
+    """Eagerly warm the destination-guide dataset so the first city/kind switch
+    is instant instead of blocking on cold Places lookups.
+
+    Builds the discovery pool (which warms the per-city ``top_places`` lists) then
+    prefetches each candidate's details + one photo — matching what ``_build_row``
+    needs. A no-op when Places is unconfigured; guarded so a trip version warms once.
+    Intended to run fire-and-forget from a background task while the user reads the
+    itinerary.
+    """
+    if not trip or not places_cache.is_configured():
+        return
+    sig = f"{trip.get('trip_id') or trip.get('id') or ''}|{trip.get('updated_at') or ''}"
+    if sig in _warmed_guides:
+        return
+    _warmed_guides.add(sig)
+    if len(_warmed_guides) > 64:  # crude bound — warming is idempotent anyway
+        _warmed_guides.clear()
+        _warmed_guides.add(sig)
+
+    by_city: dict[str, list[str]] = {}
+    for entry in discovery_pool(trip):
+        by_city.setdefault(entry.get("city") or "", []).append(entry["name"])
+    for city, names in by_city.items():
+        places_cache.prefetch(names, city, max_photos=1, with_reviews=False)
+
+
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
