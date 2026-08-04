@@ -120,7 +120,7 @@ function DayCard({
     : -1;
   const visibleStops = day.stops
     .map((stop, index) => ({ stop, index }))
-    .filter(({ stop }) => itineraryStopMatchesFilters(stop, filters));
+    .filter(({ stop, index }) => itineraryStopMatchesFilters(stop, filters, day.stops, index));
   const renderStop = ({ stop, index: i }: { stop: ItineraryStop; index: number }) => {
     const circuitReturn = combinesHotelCircuit && i === day.stops.length - 1;
     const representedStopIndexes = [i + 1];
@@ -443,7 +443,9 @@ export default function ItineraryPanel({
   const { stats } = it;
   const visibleDays = filters.length === 0
     ? it.days
-    : it.days.filter((day) => day.stops.some((stop) => itineraryStopMatchesFilters(stop, filters)));
+    : it.days.filter((day) => day.stops.some((stop, index) => (
+      itineraryStopMatchesFilters(stop, filters, day.stops, index)
+    )));
   return (
     <div ref={scrollRef} className="h-full overflow-y-auto bg-white">
       {filterControls}

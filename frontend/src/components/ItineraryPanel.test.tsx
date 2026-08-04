@@ -486,6 +486,31 @@ describe("ItineraryPanel", () => {
     );
   });
 
+  it("keeps both airport endpoints when filtering to flights", async () => {
+    const baseStop = itinerary.days[0].stops[0];
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [
+          { ...baseStop, name: "Bangalore Airport", kind: "airport", terminal_role: "departure" },
+          { ...baseStop, name: "Flight: Bangalore Airport to Bagdogra Airport", kind: "flight" },
+          { ...baseStop, name: "Bagdogra Airport", kind: "airport", terminal_role: "arrival" },
+          { ...baseStop, name: "Drive from Bagdogra Airport to Gangtok", kind: "transport" },
+          { ...baseStop, name: "Gangtok Hotel", kind: "hotel" },
+        ],
+      }],
+    });
+
+    render(<ItineraryPanel filters={["flight"]} />);
+
+    expect(await screen.findByText("Bangalore Airport")).toBeInTheDocument();
+    expect(screen.getByText("Flight: Bangalore Airport to Bagdogra Airport")).toBeInTheDocument();
+    expect(screen.getByText("Bagdogra Airport")).toBeInTheDocument();
+    expect(screen.queryByText("Drive from Bagdogra Airport to Gangtok")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gangtok Hotel")).not.toBeInTheDocument();
+  });
+
   it("uses railway-specific timing labels for train terminals", async () => {
     const baseStop = itinerary.days[0].stops[0];
     fetchItineraryMock.mockResolvedValue({

@@ -27,10 +27,24 @@ export function filterForItineraryStop(stop: ItineraryStop): ItineraryFilter | n
 export function itineraryStopMatchesFilters(
   stop: ItineraryStop,
   filters: readonly ItineraryFilter[],
+  dayStops?: readonly ItineraryStop[],
+  stopIndex?: number,
 ): boolean {
   if (filters.length === 0) return true;
   const filter = filterForItineraryStop(stop);
-  return filter != null && filters.includes(filter);
+  if (filter != null) return filters.includes(filter);
+  if (
+    dayStops == null
+    || stopIndex == null
+    || !["airport", "station", "bus_station", "origin"].includes(stop.kind)
+  ) {
+    return false;
+  }
+  return [dayStops[stopIndex - 1], dayStops[stopIndex + 1]].some((adjacentStop) => {
+    if (adjacentStop == null) return false;
+    const adjacentFilter = filterForItineraryStop(adjacentStop);
+    return adjacentFilter != null && adjacentFilter !== "hotel" && filters.includes(adjacentFilter);
+  });
 }
 
 function filterForLeg(leg: MapLeg): ItineraryFilter | null {
