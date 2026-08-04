@@ -2179,6 +2179,15 @@ class TestSystemPromptDateInjection:
         assert "never ask again" in msg.content
 
 
+class TestRoadCircuitPromptRules:
+    def test_prompt_requires_grounded_ordered_road_breaks(self):
+        msg = build_trip_system_prompt(today=date(2026, 6, 2))
+        assert "INTER-CITY ROAD CIRCUITS" in msg.content
+        assert "worthwhile\n    on-route scenic stops" in msg.content
+        assert "real scheduled or feasible bus breaks/stopovers" in msg.content
+        assert "outside the road circuit" in msg.content
+
+
 # ---------------------------------------------------------------------------
 # Passive learning — learned_notes + remember_about_user tool
 # ---------------------------------------------------------------------------

@@ -33,17 +33,19 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   labels. Preserve them through normalization and allocate the same exact totals
   across itinerary and map waypoint legs; independent geometric estimates make
   two correct-looking surfaces contradict each other.
-- A drive is independently focusable domain data, not a day-number display mode.
-  Give each drive a stable identity plus ordered pins, legs, and route metrics;
-  day-only focus cannot distinguish one drive from unrelated same-day geometry.
-- Build each drive circuit from its own resolved endpoints, not from
+- An inter-city road journey is independently focusable domain data, not a
+  day-number display mode. Give every Drive or Bus circuit a stable identity,
+  explicit scenic/meal waypoint roles, ordered pins and legs, and authoritative
+  route metrics. Filtering a day route cannot reliably distinguish that journey
+  from destination-local geometry.
+- Build each road circuit from its own resolved endpoints, not from
   opportunistically tagged day-route legs. Reconstructing a circuit from legs that
   only get tagged when a following non-terminal place pin appears silently drops
-  every drive whose destination is a terminal (hotel-to-airport departures) or the
+  every journey whose destination is a terminal (hotel-to-airport departures) or the
   next transfer (chained drives), so the circuit never maps and never zooms.
   Resolve origin (prior place pin, carried stay, or parsed origin), on-the-way
   waypoints, and destination (next hotel, the next transfer's origin terminal, or
-  parsed destination) directly for every drive row.
+  parsed destination) directly for every road-transfer row.
 - A focus fit must always be consumed. When a drive-circuit fit can fail because
   the circuit is missing or unbuilt, fall back to the day-route fit instead of
   leaving the pending focus set, or the map silently retries the same failure on

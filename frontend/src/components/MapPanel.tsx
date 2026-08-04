@@ -10,12 +10,12 @@ import {
   capCircuitZoom,
   fitDayCircuit,
   fitDayRoute,
-  fitDriveCircuit,
+  fitRoadCircuit,
   syncPinMarkerFocus,
   zoomToPin,
   type PinMarkerEntry,
 } from "./map/viewportSync";
-import { mapContextForScope } from "./map/routeDerivations";
+import { mapContextForRoadCircuit, mapContextForScope } from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
 
 export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
@@ -25,6 +25,7 @@ export {
   formatLegLabel,
   hotelLabelsForDay,
   hotelReturnForDay,
+  mapContextForRoadCircuit,
   mapContextForScope,
   pinsForDayCircuit,
   pinsForDayRoute,
@@ -37,6 +38,7 @@ export {
   fitDayCircuit,
   fitDayRoute,
   fitDriveCircuit,
+  fitRoadCircuit,
   syncPinMarkerFocus,
   zoomToPin,
 } from "./map/viewportSync";
@@ -471,7 +473,7 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     const google = window.google;
     const map = mapRef.current;
     const fitted = google && map
-      ? (!!routeFocusId && fitDriveCircuit(google, map, view, routeFocusId))
+      ? (!!routeFocusId && fitRoadCircuit(google, map, view, routeFocusId))
         || fitDayRoute(google, map, view, routeFocusDay)
       : false;
     if (fitted) {
@@ -544,7 +546,11 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
           : null;
   const activeDayObj =
     view && activeDay != null ? view.days.find((d) => d.day === activeDay) : null;
-  const selectedMapContext = view ? mapContextForScope(view, contextScope) : null;
+  const selectedMapContext = view
+    ? routeFocusId && routeFocusDay === activeDay
+      ? mapContextForRoadCircuit(view, routeFocusId) ?? mapContextForScope(view, contextScope)
+      : mapContextForScope(view, contextScope)
+    : null;
   const dayScopeControls = view ? (
     <div className="flex min-w-0 items-center gap-1 overflow-x-auto" aria-label="Map day scope">
       <button
@@ -699,8 +705,8 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase text-brand">{selectedMapContext.label}</p>
                 <p className="truncate text-sm font-semibold text-ink">{selectedMapContext.title}</p>
-                <p className="mt-1 text-[11px] text-slate-600">Schedule {selectedMapContext.schedule}</p>
-                <p className="text-[11px] text-slate-600">Travel {selectedMapContext.travel}</p>
+                <p className="mt-1 text-[11px] text-slate-600">{"scheduleLabel" in selectedMapContext ? selectedMapContext.scheduleLabel : "Schedule"} {selectedMapContext.schedule}</p>
+                <p className="text-[11px] text-slate-600">{"travelLabel" in selectedMapContext ? selectedMapContext.travelLabel : "Travel"} {selectedMapContext.travel}</p>
               </div>
               <button
                 type="button"

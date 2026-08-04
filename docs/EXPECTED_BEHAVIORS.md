@@ -160,16 +160,16 @@ summary. The map details tile changes from any previously selected place to the
 day title/destination with schedule and route context. Ordinary days fit their complete circuit. Transfer days keep the full
 ordered inter-city geometry visible but fit the useful destination-local circuit,
 or the origin-local circuit when no substantive destination stop remains. All
-road-transfer days retain the full origin-to-destination drive in day focus so
+road-transfer days retain the full origin-to-destination journey in day focus so
 the starting city or saved home area, on-route scenic or meal waypoints, and
 destination stay remain visible. Every waypoint connector retains the same
-dotted Drive treatment rather than reverting to a local taxi leg. Drive, car,
+dotted Drive or Bus treatment rather than reverting to a local taxi leg. Drive, car,
 private-car, road-journey, and road-transfer labels with directional
 endpoints all normalize to the same clickable route action; display wording
 must not determine whether the route works. Grounded `distance_km` and
 `duration_min` values are persisted on the transfer stop and remain authoritative
 in Itinerary and Map; a waypoint route allocates those exact totals across its
-ordered drive legs instead of replacing them with straight-line estimates. All
+ordered road legs instead of replacing them with straight-line estimates. All
 days clears exact-place and day focus, fits all circuits and dotted flight arcs
 between every airport pair, aligns Itinerary to the trip summary, and marks Trip
 Snapshot as selected. The selected day summary receives the same exclusive
@@ -182,9 +182,12 @@ superseded queued redraws so the latest requested item, day, route, or All days
 scope wins.
 
 Selecting an inter-city flight or transport row is a route action rather than
-place focus. A first-class drive opens Map on its own stable drive circuit and
+place focus. A first-class Drive or Bus journey opens Map on its own stable road circuit and
 frames only that circuit's ordered source, intermediate stops, destination,
-legs, and authoritative route metrics; unrelated stops and legs from the same
+legs, and authoritative route metrics. Scenic and meal waypoints receive distinct
+route markers, and the selected-route context summarizes those breaks plus total
+time and distance. Destination-local activities after arrival/check-in and other
+unrelated stops or legs from the same
 day remain outside the focused circuit. Legacy transport rows without a circuit
 identity continue to frame the full ordered day route. Neither action opens
 place Details or replaces destination-local framing for ordinary day-header
@@ -204,7 +207,9 @@ focus.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `frames the complete inter-city route without opening place details`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits every endpoint in the requested inter-city route`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `fits only the ordered points in the requested drive circuit`
+- [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `summarizes a focused road circuit and its useful breaks`
 - [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `renders only the selected drive circuit pins, legs, and labels`
+- [`frontend/src/components/map/overlaySync.test.ts`](../frontend/src/components/map/overlaySync.test.ts) - `renders a selected bus road circuit from its own ordered breaks`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `derives aggregate day context instead of a stale place selection`
 - [`frontend/src/components/MapPanel.test.ts`](../frontend/src/components/MapPanel.test.ts) - `draws all flight arcs and focuses a repeated airport alias on its requested day`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `routes legacy drive and toy-train rows to the complete day route`
@@ -317,6 +322,11 @@ snack/rest breaks using saved or inferred driving preferences. Its insight says
 that the same taxi or self-drive vehicle continues through authored waypoints,
 calls out scenic breaks, and prompts a meal stop on a long drive when none is
 authored. An explicit meal remains a separately focusable itinerary waypoint.
+For Drive and Bus transfers, worthwhile researched scenic and named meal breaks
+are explicit ordered stops before the destination terminal/check-in. A fixed bus
+service includes only real scheduled or feasible breaks and never implies a
+private detour. The itinerary and Map use the same order, while destination-local
+sightseeing begins after arrival and remains outside the road circuit.
 Natural labels such as `Bagdogra to Gangtok drive` and `Drive to Darjeeling`
 remain clickable route actions without requiring a `Drive:` prefix. Saving an
 incomplete plan returns an actionable correction.
@@ -327,6 +337,8 @@ incomplete plan returns an actionable correction.
 - [`tests/test_trip.py`](../tests/test_trip.py) - `test_create_trip_plan_defaults_origin_from_saved_home_area`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_city_origin_drive_includes_origin_and_rest_break`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_bus_transfer_builds_separate_road_circuit_with_route_breaks`
+- [`tests/test_trip.py`](../tests/test_trip.py) - `test_prompt_requires_grounded_ordered_road_breaks`
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `shows a road-trip city origin as a non-bookable O marker`
 
 ### EB-MAP-001 - Distinguish multiple hotels in one day

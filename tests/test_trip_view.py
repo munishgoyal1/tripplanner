@@ -2155,6 +2155,128 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
         assert day["legs"] and all(leg["intercity"] for leg in day["legs"])
 
 
+def test_bus_transfer_builds_separate_road_circuit_with_route_breaks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Boston Hotel": (42.3601, -71.0589),
+        "Boston Bus Stand": (42.3472, -71.0756),
+        "Scenic Hudson Overlook": (41.7004, -73.9290),
+        "Roadside Kitchen": (41.3083, -72.9279),
+        "New York Bus Stand": (40.7569, -73.9903),
+        "New York Hotel": (40.7580, -73.9855),
+        "Central Park": (40.7812, -73.9665),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city, **_kwargs: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "New York",
+        "selected_hotels": [
+            {"name": "Boston Hotel"},
+            {"name": "New York Hotel"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 2,
+                "title": "Boston to New York by road",
+                "stops": [
+                    {"name": "Boston Hotel", "kind": "hotel"},
+                    {
+                        "name": "Bus: Boston to New York",
+                        "kind": "transport",
+                        "distance_km": 350,
+                        "duration_min": 300,
+                    },
+                    {
+                        "name": "Scenic Hudson Overlook",
+                        "kind": "attraction",
+                        "note": "On-route scenic stop",
+                    },
+                    {
+                        "name": "Roadside Kitchen",
+                        "kind": "meal",
+                        "note": "On-route meal break",
+                    },
+                    {"name": "New York Hotel", "kind": "hotel"},
+                    {"name": "Central Park", "kind": "attraction"},
+                    {"name": "New York Hotel", "kind": "hotel"},
+                ],
+            },
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+    bus_stop = next(
+        stop for stop in itinerary["days"][0]["stops"]
+        if stop["kind"] == "transport" and stop["name"].startswith("Bus:")
+    )
+    assert bus_stop["route_circuit_id"] == "day-2-stop-2-bus"
+    assert [stop["name"] for stop in itinerary["days"][0]["stops"][:7]] == [
+        "Boston Hotel",
+        "Boston Bus Stand",
+        "Bus: Boston Bus Stand to New York Bus Stand",
+        "Scenic Hudson Overlook",
+        "Roadside Kitchen",
+        "New York Bus Stand",
+        "New York Hotel",
+    ]
+
+    map_view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in map_view["pins"]}
+    circuit = map_view["road_circuits"][0]
+    assert circuit["id"] == bus_stop["route_circuit_id"]
+    assert circuit["mode"] == "Bus"
+    assert [pins_by_id[pin_id]["name"] for pin_id in circuit["pin_ids"]] == [
+        "Boston Bus Stand",
+        "Scenic Hudson Overlook",
+        "Roadside Kitchen",
+        "New York Bus Stand",
+    ]
+    assert [waypoint["role"] for waypoint in circuit["waypoints"]] == [
+        "origin",
+        "scenic",
+        "meal",
+        "destination",
+    ]
+    assert circuit["route"]["distance_km"] == 350
+    assert circuit["route"]["duration_min"] == 300
+    assert all(leg["mode"] == "Bus" and leg["intercity"] for leg in circuit["legs"])
+    assert "Central Park" not in {
+        pins_by_id[pin_id]["name"] for pin_id in circuit["pin_ids"]
+    }
+    map_day = map_view["days"][0]
+    map_day_names = [pins_by_id[pin_id]["name"] for pin_id in map_day["pin_ids"]]
+    assert map_day_names.index("Boston Bus Stand") < map_day_names.index(
+        "Scenic Hudson Overlook"
+    ) < map_day_names.index("Roadside Kitchen") < map_day_names.index(
+        "New York Bus Stand"
+    )
+    assert map_day["circuit_pin_ids"] == map_day["pin_ids"]
+    circuit_legs = [
+        leg for leg in map_day["legs"] if leg.get("route_circuit_id") == circuit["id"]
+    ]
+    assert [(leg["from_pin_id"], leg["to_pin_id"]) for leg in circuit_legs] == [
+        (start_id, end_id)
+        for start_id, end_id in zip(circuit["pin_ids"], circuit["pin_ids"][1:])
+    ]
+    assert sum(leg["distance_km"] for leg in circuit_legs) == 350
+    assert sum(leg["duration_min"] for leg in circuit_legs) == 300
+
+
 def test_departure_drive_to_airport_builds_zoomable_drive_circuit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

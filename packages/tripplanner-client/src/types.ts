@@ -146,15 +146,23 @@ export interface MapLeg extends RouteMetrics {
   route_circuit_id?: string;
 }
 
-export interface MapDriveCircuit {
+export interface MapRoadWaypoint {
+  pin_id: string;
+  role: "origin" | "scenic" | "meal" | "destination";
+}
+
+export interface MapRoadCircuit {
   id: string;
   day: number;
-  mode: "Drive";
+  mode: "Drive" | "Bus";
   label: string;
   pin_ids: string[];
+  waypoints?: MapRoadWaypoint[];
   legs: MapLeg[];
   route: RouteMetrics;
 }
+
+export type MapDriveCircuit = Omit<MapRoadCircuit, "mode"> & { mode: "Drive" };
 
 export interface MapDay {
   day: number;
@@ -182,6 +190,7 @@ export interface MapView {
   center: { lat: number; lng: number } | null;
   pins: MapPin[];
   days: MapDay[];
+  road_circuits?: MapRoadCircuit[];
   drive_circuits?: MapDriveCircuit[];
   available_days: number[];
   unscheduled_pin_ids: string[];
