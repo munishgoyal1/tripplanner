@@ -208,7 +208,7 @@ conversation or explicit edit
 | `infra/` | Azure IaC and approval-gated operational scripts |
 | `scripts/README.md` | Developer workflow and utility script ownership |
 | `scripts/user/` | Owner-facing sync and run launchers |
-| `scripts/sandbox/` | Owner-facing sandbox launchers (new, run, update, promote, ship, discard, list) |
+| `scripts/sandbox/` | Owner-facing sandbox launchers (new, run, update, promote, ship, recycle, discard, list) |
 | `scripts/dev/` | Local stack, worktree sync, feature sandbox, and UI snapshot engines |
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
 | `tests/` | Python unit and integration tests |
