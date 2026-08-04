@@ -3,6 +3,10 @@
     {
       "name": "Tripplanner MasterAgent",
       "path": "."
+    },
+    {
+      "name": "Tripplanner worktrees (Agents 1-3)",
+      "path": "../tripplanner.worktrees"
     }
   ],
   "settings": {
