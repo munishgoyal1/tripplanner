@@ -1596,6 +1596,106 @@ def _route_circuit_id(day: int, stop: int, mode: str) -> str:
     return f"day-{day}-stop-{stop}-{mode.strip().lower()}"
 
 
+def _normalize_map_stops(stops: list[Any]) -> list[dict[str, str | None]]:
+    """Canonical (name, kind, transfer-mode) per raw stop, preserving order.
+
+    Mirrors how ``build_itinerary`` normalizes each stop so drive-circuit
+    construction sees the same names/kinds (and thus the same circuit ids).
+    """
+    normalized: list[dict[str, str | None]] = []
+    for stop in stops:
+        if isinstance(stop, dict):
+            raw_name = str(stop.get("name") or "")
+            raw_kind = str(stop.get("kind") or "").strip().lower()
+            mode_name = str(stop.get("mode") or "")
+        else:
+            raw_name = str(stop or "")
+            raw_kind = ""
+            mode_name = ""
+        name = _canonical_transport_name(raw_name, mode_name)
+        kind = _normalized_stop_kind(name, raw_kind, mode_name)
+        normalized.append(
+            {"name": name, "kind": kind, "mode": _intercity_transfer_mode(name, kind)}
+        )
+    return normalized
+
+
+def _resolve_drive_circuit_pin_ids(
+    normalized: list[dict[str, str | None]],
+    drive_index: int,
+    resolve_pin: Any,
+    origin_fallbacks: list[str],
+) -> list[str]:
+    """Ordered pin ids ``[origin, *waypoints, destination]`` for one drive row.
+
+    A drive is a first-class construct: it starts at the prior location, may pass
+    through on-the-way stops, and ends at the next hotel, terminal, or parsed
+    destination. Resolving each end independently (instead of relying on
+    opportunistically tagged day-route legs) means a drive still maps when its
+    destination is an airport/station or when no intermediate place is planned.
+    """
+    drive = normalized[drive_index]
+    endpoints = _transport_route_endpoints(str(drive["name"] or ""))
+    parsed_origin, parsed_dest = endpoints if endpoints else (None, None)
+
+    origin_id: str | None = None
+    for prev in reversed(normalized[:drive_index]):
+        if prev["mode"] or not prev["name"]:
+            continue
+        pin = resolve_pin(prev["name"], prev["kind"])
+        if pin:
+            origin_id = str(pin["id"])
+            break
+    if origin_id is None:
+        origin_id = next((pid for pid in origin_fallbacks if pid), None)
+    if origin_id is None and parsed_origin:
+        pin = resolve_pin(parsed_origin, "origin") or resolve_pin(parsed_origin, "")
+        if pin:
+            origin_id = str(pin["id"])
+
+    waypoint_ids: list[str] = []
+    destination_id: str | None = None
+    for nxt in normalized[drive_index + 1:]:
+        if nxt["mode"]:
+            refs = _transport_terminal_refs(str(nxt["name"] or ""), str(nxt["kind"] or ""))
+            if refs:
+                pin = resolve_pin(refs[0][1], refs[0][0])
+                if pin and str(pin["id"]) != origin_id:
+                    destination_id = str(pin["id"])
+            break
+        if not nxt["name"]:
+            continue
+        pin = resolve_pin(nxt["name"], nxt["kind"])
+        if not pin:
+            continue
+        pin_id = str(pin["id"])
+        if pin["kind"] == "hotel":
+            destination_id = pin_id
+            break
+        if pin_id != origin_id and pin_id not in waypoint_ids:
+            waypoint_ids.append(pin_id)
+    if destination_id is None and parsed_dest:
+        for hint, candidate in (
+            ("airport", f"{parsed_dest} Airport"),
+            ("airport", parsed_dest),
+            ("station", f"{parsed_dest} Railway Station"),
+            ("bus_station", f"{parsed_dest} Bus Stand"),
+            ("", parsed_dest),
+        ):
+            pin = resolve_pin(candidate, hint)
+            if pin and str(pin["id"]) != origin_id:
+                destination_id = str(pin["id"])
+                break
+    if destination_id is None and waypoint_ids:
+        destination_id = waypoint_ids.pop()
+
+    ordered: list[str] = []
+    for pin_id in [origin_id, *waypoint_ids, destination_id]:
+        if pin_id and (not ordered or ordered[-1] != pin_id):
+            ordered.append(pin_id)
+    return ordered
+
+
 def _route_stats_for_day_coords(coords: list[tuple[float, float]]) -> dict[str, Any]:
     """Estimate day route metrics from an ordered list of (lat, lng) tuples.
 
@@ -1709,7 +1809,6 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
     intercity_modes_by_day: dict[int, dict[tuple[str, str], str]] = {}
     route_circuit_ids_by_day: dict[int, dict[tuple[str, str], str]] = {}
     transfer_metrics_by_circuit: dict[str, dict[str, float]] = {}
-    drive_circuit_meta: dict[str, dict[str, Any]] = {}
     transfer_mode_by_day: dict[int, str] = {}
     transfer_days: set[int] = set()
     for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
@@ -1731,13 +1830,6 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 transfer_days.add(day_num)
                 transfer_mode_by_day[day_num] = mode
                 circuit_id = _route_circuit_id(day_num, stop_index, mode)
-                if mode == "Drive":
-                    drive_circuit_meta[circuit_id] = {
-                        "id": circuit_id,
-                        "day": day_num,
-                        "mode": mode,
-                        "label": str(name or "Drive"),
-                    }
                 if isinstance(stop, dict):
                     saved_metrics = {
                         metric: float(stop[metric])
@@ -1977,31 +2069,61 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             day["schedule"] = itinerary_day.get("schedule")
 
     drive_circuits: list[dict[str, Any]] = []
-    for circuit_id, metadata in drive_circuit_meta.items():
-        day = next((item for item in days if item["day"] == metadata["day"]), None)
-        if not day:
+    days_by_number = {int(day["day"]): day for day in days}
+    for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
+        if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
             continue
-        circuit_legs = [
-            leg for leg in day["legs"] if leg.get("route_circuit_id") == circuit_id
-        ]
-        if not circuit_legs:
+        raw_day = entry.get("day")
+        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
+        normalized = _normalize_map_stops(entry["stops"])
+        if not any(stop["mode"] == "Drive" for stop in normalized):
             continue
-        pin_ids = [circuit_legs[0]["from_pin_id"]]
-        pin_ids.extend(leg["to_pin_id"] for leg in circuit_legs)
-        distance = round(sum(float(leg["distance_km"]) for leg in circuit_legs), 1)
-        duration = sum(int(leg["duration_min"]) for leg in circuit_legs)
-        drive_circuits.append({
-            **metadata,
-            "pin_ids": pin_ids,
-            "legs": circuit_legs,
-            "route": {
-                "distance_km": distance,
-                "duration_min": duration,
+        day = days_by_number.get(day_num)
+        origin_fallbacks: list[str] = []
+        carried_stay = _carried_stay_id(day_num)
+        if carried_stay:
+            origin_fallbacks.append(carried_stay)
+        if day and day["pin_ids"]:
+            first_pin = pin_by_id.get(day["pin_ids"][0])
+            if first_pin and first_pin["kind"] in {"hotel", "origin"}:
+                origin_fallbacks.append(str(first_pin["id"]))
+        for stop_index, stop in enumerate(normalized, start=1):
+            if stop["mode"] != "Drive":
+                continue
+            circuit_id = _route_circuit_id(day_num, stop_index, "Drive")
+            ordered = _resolve_drive_circuit_pin_ids(
+                normalized, stop_index - 1, _pin_for_stop, origin_fallbacks
+            )
+            if len(ordered) < 2:
+                continue
+            edges = list(zip(ordered, ordered[1:]))
+            saved_metrics = transfer_metrics_by_circuit.get(circuit_id)
+            legs = _route_legs_for_day(
+                ordered,
+                pin_by_id,
+                intercity_modes={edge: "Drive" for edge in edges},
+                route_circuit_ids={edge: circuit_id for edge in edges},
+                transfer_metrics={circuit_id: saved_metrics} if saved_metrics else None,
+            )
+            if not legs:
+                continue
+            distance = round(sum(float(leg["distance_km"]) for leg in legs), 1)
+            duration = sum(int(leg["duration_min"]) for leg in legs)
+            drive_circuits.append({
+                "id": circuit_id,
+                "day": day_num,
                 "mode": "Drive",
-                "distance_display": f"{distance:.1f} km",
-                "duration_display": _route_duration_display(duration),
-            },
-        })
+                "label": str(stop["name"] or "Drive"),
+                "pin_ids": [legs[0]["from_pin_id"], *(leg["to_pin_id"] for leg in legs)],
+                "legs": legs,
+                "route": {
+                    "distance_km": distance,
+                    "duration_min": duration,
+                    "mode": "Drive",
+                    "distance_display": f"{distance:.1f} km",
+                    "duration_display": _route_duration_display(duration),
+                },
+            })
 
     scheduled_ids = {pin_id for day in days for pin_id in day["pin_ids"]}
     unscheduled = [pin_id for pin_id in unscheduled if pin_id not in scheduled_ids]

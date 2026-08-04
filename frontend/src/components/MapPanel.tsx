@@ -470,9 +470,10 @@ export default function MapPanel({ reloadToken = 0, tripId = null, focusName, fo
     }
     const google = window.google;
     const map = mapRef.current;
-    const fitted = routeFocusId
-      ? google && map && fitDriveCircuit(google, map, view, routeFocusId)
-      : google && map && fitDayRoute(google, map, view, routeFocusDay);
+    const fitted = google && map
+      ? (!!routeFocusId && fitDriveCircuit(google, map, view, routeFocusId))
+        || fitDayRoute(google, map, view, routeFocusDay)
+      : false;
     if (fitted) {
       pendingRouteFocusRef.current = null;
     }

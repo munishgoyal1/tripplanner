@@ -2155,6 +2155,174 @@ def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
         assert day["legs"] and all(leg["intercity"] for leg in day["legs"])
 
 
+def test_departure_drive_to_airport_builds_zoomable_drive_circuit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A hotel->airport departure drive must map even though the next stop is a
+    flight (its terminal never tags a following place pin)."""
+    coords = {
+        "Darjeeling Hotel": (27.047, 88.263),
+        "Bagdogra Airport": (26.699, 88.311),
+        "Bangalore Airport": (13.199, 77.707),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city, **_kwargs: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Northeast India",
+        "selected_hotels": [{"name": "Darjeeling Hotel"}],
+        "day_wise_itinerary": [
+            {
+                "day": 6,
+                "stops": [
+                    {"name": "Darjeeling Hotel", "kind": "hotel"},
+                    {
+                        "name": "Darjeeling to Bagdogra",
+                        "kind": "other",
+                        "mode": "car",
+                        "distance_km": 92,
+                        "duration_min": 150,
+                    },
+                    {
+                        "name": "Flight: Bagdogra to Bangalore",
+                        "kind": "flight",
+                        "time": "14:00",
+                        "arrival_time": "16:30",
+                        "duration_min": 150,
+                    },
+                ],
+            }
+        ],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+    drive_row = next(
+        stop
+        for stop in itinerary["days"][0]["stops"]
+        if stop["kind"] == "transport"
+    )
+    assert drive_row["route_circuit_id"]
+
+    map_view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in map_view["pins"]}
+    drive_circuit = next(
+        circuit for circuit in map_view["drive_circuits"] if circuit["day"] == 6
+    )
+    assert drive_circuit["id"] == drive_row["route_circuit_id"]
+    assert [pins_by_id[pin_id]["name"] for pin_id in drive_circuit["pin_ids"]] == [
+        "Darjeeling Hotel",
+        "Bagdogra Airport",
+    ]
+    assert len(drive_circuit["pin_ids"]) == 2
+    assert drive_circuit["route"]["duration_min"] == 150
+    assert drive_circuit["route"]["distance_km"] == 92
+    assert all(
+        leg["route_circuit_id"] == drive_circuit["id"] for leg in drive_circuit["legs"]
+    )
+
+
+def test_chained_drives_build_one_circuit_per_leg_through_waypoint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A day with two car drives around a mid-way palace must yield two
+    independently focusable drive circuits (Rameshwaram -> Padmanabhapuram ->
+    Kanyakumari), not a single merged or missing route."""
+    coords = {
+        "Hyatt Place Rameswaram": (9.2833, 79.3129),
+        "Rameshwaram": (9.2876, 79.3129),
+        "Padmanabhapuram Palace": (8.2445, 77.3269),
+        "Sparsa Kanyakumari": (8.0864, 77.5510),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city, **_kwargs: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "place_coords",
+        lambda name, city: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Tamil Nadu",
+        "selected_hotels": [
+            {"name": "Hyatt Place Rameswaram"},
+            {"name": "Sparsa Kanyakumari"},
+        ],
+        "day_wise_itinerary": [
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hyatt Place Rameswaram", "kind": "hotel"},
+                    {"name": "Ramanathaswamy Temple", "kind": "attraction"},
+                ],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {
+                        "name": "Rameshwaram to Padmanabhapuram",
+                        "kind": "other",
+                        "mode": "car",
+                    },
+                    {"name": "Padmanabhapuram Palace", "kind": "attraction"},
+                    {
+                        "name": "Padmanabhapuram to Kanyakumari",
+                        "kind": "other",
+                        "mode": "car",
+                    },
+                    {"name": "Sparsa Kanyakumari", "kind": "hotel"},
+                ],
+            },
+        ],
+    }
+
+    map_view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in map_view["pins"]}
+    day3_circuits = [
+        circuit for circuit in map_view["drive_circuits"] if circuit["day"] == 3
+    ]
+    circuit_names = [
+        [pins_by_id[pin_id]["name"] for pin_id in circuit["pin_ids"]]
+        for circuit in day3_circuits
+    ]
+    assert circuit_names == [
+        ["Hyatt Place Rameswaram", "Padmanabhapuram Palace"],
+        ["Padmanabhapuram Palace", "Sparsa Kanyakumari"],
+    ]
+    itinerary = trip_view.build_itinerary(trip)
+    drive_ids = [
+        stop["route_circuit_id"]
+        for stop in itinerary["days"][1]["stops"]
+        if stop.get("route_circuit_id")
+    ]
+    assert [circuit["id"] for circuit in day3_circuits] == drive_ids
+    for circuit in day3_circuits:
+        assert len(circuit["pin_ids"]) >= 2
+        assert all(
+            leg["route_circuit_id"] == circuit["id"] for leg in circuit["legs"]
+        )
+
+
 def test_arrival_day_local_outing_returns_to_destination_hotel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -179,6 +179,60 @@ describe("synchronizeMapOverlays", () => {
     ]);
   });
 
+  it("falls back to the day route when the focused drive circuit is missing", () => {
+    const source: MapPin = {
+      id: "source",
+      name: "Darjeeling Hotel",
+      kind: "hotel",
+      selected: true,
+      day: 1,
+      lat: 27.047,
+      lng: 88.263,
+      rating: null,
+      address: "Darjeeling",
+      photo: null,
+      occurrences: [{ day: 1, stop: 1, time: "08:00" }],
+    };
+    const destination: MapPin = {
+      ...source,
+      id: "destination",
+      name: "Bagdogra Airport",
+      kind: "airport",
+      lat: 26.699,
+      lng: 88.311,
+      occurrences: [{ day: 1, stop: 2, time: "10:30" }],
+    };
+    const map = {
+      fitBounds: vi.fn(),
+      panTo: vi.fn(),
+      setZoom: vi.fn(),
+    };
+    const { google } = createGoogleMapsDouble();
+
+    const result = synchronizeMapOverlays({
+      google,
+      map,
+      view: mapView([source, destination], [source.id, destination.id]),
+      activeDay: 1,
+      candidatePin: null,
+      focus: {},
+      pendingFocus: null,
+      // A circuit id that was never built (e.g. an older cached view-model).
+      pendingRouteFocus: { day: 1, circuitId: "day-1-stop-2-drive" },
+      previousOverlays: [],
+      onPinClick: vi.fn(),
+      onCandidateClick: vi.fn(),
+      onAirportClick: vi.fn(),
+    });
+
+    expect(result.consumedPendingRouteFocus).toBe(true);
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(map.fitBounds.mock.calls[0][0].points).toEqual([
+      { lat: source.lat, lng: source.lng },
+      { lat: destination.lat, lng: destination.lng },
+    ]);
+  });
+
   it("renders only the selected drive circuit pins, legs, and labels", () => {
     const source: MapPin = {
       id: "source", name: "Gangtok Hotel", kind: "hotel", selected: true, day: 4,

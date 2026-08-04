@@ -36,6 +36,18 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - A drive is independently focusable domain data, not a day-number display mode.
   Give each drive a stable identity plus ordered pins, legs, and route metrics;
   day-only focus cannot distinguish one drive from unrelated same-day geometry.
+- Build each drive circuit from its own resolved endpoints, not from
+  opportunistically tagged day-route legs. Reconstructing a circuit from legs that
+  only get tagged when a following non-terminal place pin appears silently drops
+  every drive whose destination is a terminal (hotel-to-airport departures) or the
+  next transfer (chained drives), so the circuit never maps and never zooms.
+  Resolve origin (prior place pin, carried stay, or parsed origin), on-the-way
+  waypoints, and destination (next hotel, the next transfer's origin terminal, or
+  parsed destination) directly for every drive row.
+- A focus fit must always be consumed. When a drive-circuit fit can fail because
+  the circuit is missing or unbuilt, fall back to the day-route fit instead of
+  leaving the pending focus set, or the map silently retries the same failure on
+  every redraw and never frames the drive.
 - Resolve typed hotel identity before generic partial-name matching. Shared words
   such as Hotel, Resort, or a locality can otherwise attach a day's circuit to a
   different selected stay and silently remove its real endpoints.

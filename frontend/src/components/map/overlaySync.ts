@@ -298,17 +298,24 @@ export function synchronizeMapOverlays({
     zoomToPin(map, pendingFocus);
     consumedPendingFocus = true;
     focusedPin = pendingFocus;
-  } else if (pendingRouteFocus && (
-    typeof pendingRouteFocus !== "number" && pendingRouteFocus.circuitId
-      ? fitDriveCircuit(google, map, view, pendingRouteFocus.circuitId)
-      : fitDayRoute(
-          google,
-          map,
-          view,
-          typeof pendingRouteFocus === "number" ? pendingRouteFocus : pendingRouteFocus.day,
-        )
-  )) {
-    consumedPendingRouteFocus = true;
+  } else if (pendingRouteFocus !== null) {
+    const focusDay = typeof pendingRouteFocus === "number"
+      ? pendingRouteFocus
+      : pendingRouteFocus.day;
+    const focusCircuitId = typeof pendingRouteFocus === "number"
+      ? undefined
+      : pendingRouteFocus.circuitId;
+    // Prefer the tight drive-circuit fit; fall back to the whole-day route so a
+    // missing/unbuilt circuit still consumes the pending focus instead of
+    // silently retrying every redraw.
+    if (
+      (focusCircuitId && fitDriveCircuit(google, map, view, focusCircuitId))
+      || fitDayRoute(google, map, view, focusDay)
+    ) {
+      consumedPendingRouteFocus = true;
+    } else if (hasBounds && !bounds.isEmpty()) {
+      map.fitBounds(bounds, 64);
+    }
   } else if (hasBounds && !bounds.isEmpty()) {
     map.fitBounds(bounds, 64);
   }
