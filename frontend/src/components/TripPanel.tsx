@@ -90,6 +90,7 @@ function ItemCard({
 }) {
   const icon = ICONS[item.kind] ?? "\u{1F4CD}";
   const photos = item.photos;
+  const [addDay, setAddDay] = useState<string>("auto");
   return (
     <article className={focused
       ? "group overflow-hidden bg-white"
@@ -196,15 +197,48 @@ function ItemCard({
                 onMove={onSelect}
                 onRemove={onDeselect}
               />
-            ) : (
+            ) : item.kind === "hotel" ? (
               <button
-                onClick={() =>
-                  item.kind === "hotel" ? onHotelStay(item.name) : onSelect(item.kind, item.name)
-                }
+                onClick={() => onHotelStay(item.name)}
                 title="Save this to your trip so the agent keeps it in the plan"
                 className="btn-primary px-4 py-1.5 text-xs"
               >
-                {item.kind === "hotel" ? "+ Add stay" : "+ Add to trip"}
+                + Add stay
+              </button>
+            ) : focused && availableDays.length > 0 ? (
+              <div className="flex items-center gap-2">
+                <select
+                  value={addDay}
+                  onChange={(event) => setAddDay(event.target.value)}
+                  aria-label={`Choose day to add ${item.name}`}
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                >
+                  <option value="auto">Auto day</option>
+                  {availableDays.map((day) => (
+                    <option key={day} value={day}>Day {day}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() =>
+                    onSelect(
+                      item.kind,
+                      item.name,
+                      addDay === "auto" ? undefined : { day: Number(addDay) },
+                    )
+                  }
+                  title="Save this to your trip so the agent keeps it in the plan"
+                  className="btn-primary px-4 py-1.5 text-xs"
+                >
+                  + Add to trip
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => onSelect(item.kind, item.name)}
+                title="Save this to your trip so the agent keeps it in the plan"
+                className="btn-primary px-4 py-1.5 text-xs"
+              >
+                + Add to trip
               </button>
             ))}
 
@@ -335,7 +369,7 @@ export default function TripPanel({
         )}
 
         <section className="border-t border-slate-100 px-4 py-4">
-          {focused ? (
+          {focused && (
             view.items.length === 0 ? (
               <p className="px-3 py-6 text-center text-sm text-muted">
                 Nothing to show for this item.
@@ -365,14 +399,18 @@ export default function TripPanel({
                 />
               </>
             )
-          ) : (
+          )}
+          {/* Keep the browse guide mounted (hidden while a place is focused) so
+              returning to it — e.g. clicking a day row after a stop — is instant
+              instead of blanking out and refetching the whole guide. */}
+          <div className={focused ? "hidden" : ""}>
             <DestinationGuide
               destination={ov.destination}
               tripVersion={tripVersion}
               focus={null}
               onFocus={onFocus}
             />
-          )}
+          </div>
         </section>
       </div>
 

@@ -105,7 +105,10 @@ describe("TripPanel place removal", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Eiffel Tower" })).toBeInTheDocument();
-    expect(screen.getByTestId("destination-guide")).toHaveAttribute("data-focus", "Eiffel Tower");
+    // The browse guide stays mounted (hidden) alongside the focused alternatives
+    // guide, so one of the guides carries the focused place's name.
+    const guides = screen.getAllByTestId("destination-guide");
+    expect(guides.some((guide) => guide.getAttribute("data-focus") === "Eiffel Tower")).toBe(true);
     // The focused card shows only the focused place — alternatives (and their
     // reviews) live in the guide, not inline.
     expect(screen.queryByText("Alternative review")).not.toBeInTheDocument();
