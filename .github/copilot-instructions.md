@@ -20,6 +20,10 @@ not override the canonical documents above, which govern current behavior.
 
 - Keep the current chat title to a concrete 4-5 word summary of the latest task.
   Reconsider it after every prompt in every primary and worker VS Code window.
+- After each owner prompt, append it verbatim to
+  [prompts_executed.txt](../docs/reference/owner-inputs/prompts_executed.txt) as a
+  numbered, tail-appended entry (`[NNN] [Date] <short title>`) so any window can
+  recall and reuse past prompts.
 - Read 50-200 line chunks and batch independent reads. Start from the owning file,
   nearby test, or documented contract instead of mapping the whole repository.
 - Before every new code change, require a clean worktree, fetch `origin`, and

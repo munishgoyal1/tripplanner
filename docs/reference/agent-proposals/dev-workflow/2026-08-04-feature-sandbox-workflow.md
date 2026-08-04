@@ -203,3 +203,51 @@ wants staged rollouts — it is not needed for "keep or discard".
 3. **Concurrency:** one sandbox at a time for v1 (recommended) vs. multiple from day one.
 4. **Feature flags:** include the optional flag layer now or defer (recommended defer).
 5. **Branch namespace:** `sandbox/<slug>` (recommended) vs. reuse `agents/<slug>`.
+
+## 16. Addendum — multiple features per sandbox & reusing a sandbox
+
+Two owner optimization questions, with recommendations.
+
+### 16.1 More than one feature on the same sandbox branch?
+
+**Recommend: one feature per branch by default.** The sandbox's whole value is an
+*independent* keep-or-revert decision. Two features sharing a branch cannot be
+cleanly separated later — `git merge` promotes the whole branch, and cherry-picking
+intertwined commits is exactly the error-prone, regression-risky surgery to avoid.
+Keep each independently-decidable feature on its own `sandbox/<slug>` branch.
+
+Allow multiple on one branch only when they are decided together:
+
+- **Bundle:** features that are logically one change and will be kept or dropped as a
+  set.
+- **Stacked/dependent:** feature B genuinely builds on unpromoted feature A — branch
+  B off A (or share a branch), accepting they promote together.
+
+To *experience* several independent features at once without coupling their fate,
+use an optional **integration sandbox**: a throwaway branch that merges several
+`sandbox/*` branches purely to run them together, while each feature keeps its own
+branch for independent promote/discard. Optional/advanced — adds a little complexity,
+not part of v1.
+
+### 16.2 Reuse a sandbox for the next feature after promotion?
+
+**Recommend: reuse the environment, refresh the feature.** Separate two things:
+
+- **Slot (durable, reuse it):** the worktree + `.venv` + `node_modules` + allocated
+  ports + data database. This is the expensive part (per-worktree setup, disk); keep
+  it.
+- **Feature (ephemeral, refresh per feature):** the branch identity + working data.
+
+After a feature is **promoted** (branch now equals `master`) or **discarded**, before
+starting the next feature in the same slot:
+
+1. Sync the slot to latest `master` (which now contains the promoted feature), then
+   start a fresh `sandbox/<newslug>` from `master` in the same worktree (or reset the
+   branch hard to `origin/master`).
+2. Reset/rename the data database to `tripplanner-sbx-<newslug>` so the previous
+   feature's trips do not leak into the new evaluation.
+3. Update the registry/label to the new slug.
+
+**Only reuse from a clean state** (previous feature promoted or discarded). Never
+start a new, unrelated feature on top of an un-decided one — that recreates the 16.1
+coupling problem. Net: reuse saves setup cost while preserving clean keep/revert.
