@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage } from "./types";
+import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
@@ -209,8 +209,9 @@ export async function fetchSavedTrips(): Promise<SavedTrip[]> {
   return sharedClient.fetchSavedTrips();
 }
 
-/** Make a saved trip active (auto-saving whatever was active). */
-export async function switchTrip(tripId: string): Promise<TripView | null> {
+/** Make a saved trip active (auto-saving whatever was active). Returns every
+ * panel's view-model so the workspace swaps in one atomic update. */
+export async function switchTrip(tripId: string): Promise<TripWorkspaceView | null> {
   return sharedClient.switchTrip(tripId);
 }
 

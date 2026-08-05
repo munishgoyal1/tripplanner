@@ -279,6 +279,13 @@ export interface Itinerary {
   stats: { days: number; stops: number; booked: number };
 }
 
+/** Every panel's view-model for one trip, returned together on a trip switch. */
+export interface TripWorkspaceView {
+  view: TripView;
+  map: MapView | null;
+  itinerary: Itinerary | null;
+}
+
 export interface SavedTrip {
   trip_id: string;
   destination: string;

@@ -33,8 +33,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `sandbox/Update-Sandbox.cmd` | Merge the latest `master` into a sandbox branch |
-| `sandbox/Promote-Sandbox.cmd` | Push a sandbox branch for review (never auto-merges) |
-| `sandbox/Ship-Sandbox.cmd` | Sync, validate, and open the PR; `-Approve` also merges and discards the sandbox |
+| `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, and merge into `master` (keeps the sandbox) |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes, their ports, and whether they are serving |
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |

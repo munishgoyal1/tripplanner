@@ -1,6 +1,6 @@
 import { List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
-import type { TripView } from "../types";
-import type { AssistantTurnStatus } from "./ChatPanel";
+import type { TripWorkspaceView } from "../types";
+import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
 import TripSwitcher from "./TripSwitcher";
 
@@ -8,11 +8,8 @@ type Pane = "itinerary" | "map" | "details" | "assistant";
 
 interface Props {
   tripVersion: number;
-  onTripSwitched: (tripId?: string, view?: TripView | null) => void;
-  visibleStatus?: string;
-  statusPhase?: AssistantTurnStatus["phase"];
+  onTripSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
   reviewPending: boolean;
-  loading: boolean;
   onReviewWithPlanner: () => void;
   onKeepReview: () => void;
   onStartNewTrip: () => void;
@@ -28,10 +25,7 @@ interface Props {
 export default function DesktopToolbar({
   tripVersion,
   onTripSwitched,
-  visibleStatus,
-  statusPhase,
   reviewPending,
-  loading,
   onReviewWithPlanner,
   onKeepReview,
   onStartNewTrip,
@@ -46,24 +40,9 @@ export default function DesktopToolbar({
   return (
     <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
       <TripSwitcher version={tripVersion} onSwitched={onTripSwitched} />
-      <div className="mr-auto flex min-w-32 flex-1 items-center gap-2 pl-2">
-        <div className="min-w-0 flex-1" aria-live="polite" role="status">
-        {visibleStatus ? (
-          <p className={`line-clamp-2 whitespace-normal text-xs font-medium leading-tight ${
-            reviewPending
-              ? "text-amber-800"
-              : statusPhase === "working" || statusPhase === "loading"
-                ? "text-brand"
-                : statusPhase === "error"
-                  ? "text-rose-700"
-                  : "text-emerald-700"
-          }`} title={visibleStatus}>
-            {visibleStatus}
-          </p>
-        ) : loading ? (
-          <p className="text-xs text-slate-400">Refreshing trip…</p>
-        ) : null}
-        </div>
+      <div className="ml-3 h-5 w-px shrink-0 bg-slate-200" aria-hidden />
+      <div className="mr-auto flex min-w-32 flex-1 items-center gap-2 pl-3">
+        <StatusBar />
         {reviewPending && (
           <div className="flex shrink-0 items-center gap-1" aria-label="Planner review choices">
             <button type="button" onClick={onReviewWithPlanner} className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-200">
