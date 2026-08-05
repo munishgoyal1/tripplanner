@@ -8,6 +8,15 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[057] [5-Aug-2026] Merge promote and ship verbs
+yes for now i dont need  promote or ship to be seperate, both mean the same. so make the changes and simplify
+
+[056] [5-Aug-2026] Explain promote versus ship
+wait, do you distinguish between promote and ship.. explain that
+
+[055] [5-Aug-2026] Promote means end-to-end merge
+when i say promote means do it end to end, merge to master, validate and when everything good, finally ask if sandbox should be discarded. 
+
 [054] [5-Aug-2026] Promote lab-14 sandbox
 perf panel fioxes given to orignal agent to own. so you can drop that. pomote lab14 sandbox
 
