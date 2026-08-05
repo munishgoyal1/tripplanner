@@ -95,9 +95,17 @@ Nothing in the conversation should require dismissing the plan to read it.
 
 ## Decision
 
-- Decision: pending owner selection.
-- Implementation: not started; no production code changed by this Lab.
-- Rationale: pending.
-- Next action: owner selects an option in the Lab, then the required-in-every-option
-  behaviors ship first as a standalone fix to `ChatPanel.tsx`, `useChatStream.ts`, and the
-  transcript history contract.
+- Decision: Option A · Conversation dock, selected by the owner in the Lab, with two saved
+  modifications — the dock expands on the left side and keeps hide/maximize controls, and
+  the maximized view carries Option C's per-turn timing and detail.
+- Implementation: in sandbox `sbx-lab16-chat-dock` (branch `sandbox/lab16-chat-dock`),
+  awaiting owner inspection. Production code touched: `App.tsx` (resident Assistant column
+  and turn-effect plumbing), `ChatPanel.tsx` (day grouping, reading position, timing badges,
+  changed-stop chips), `CanvasPaneFrame.tsx` (Assistant pane label), `useChatStream.ts`
+  (turn timing), plus new `turnEffects.ts` and `turnMetadata.ts`.
+- Rationale: the dock gives the core panes their full width while keeping the conversation
+  resident instead of a sheet that covers the workspace.
+- Next action: owner inspects the sandbox at a window at least 1200px wide, then promotes
+  or discards it. Deferred and still owner decisions: the server transcript keeps only the
+  last 80 turns, and turn timing plus changed-stop links are stored per browser rather than
+  in the transcript contract, so they do not follow the owner to another device.

@@ -124,11 +124,25 @@ export interface ToolTraceEntry {
   duration_ms?: number;
 }
 
+/** A stop a reply changed, so the conversation can navigate the workspace. */
+export interface TurnEffect {
+  kind: string;
+  name: string;
+  day?: number;
+  stop?: number;
+  change: "added" | "removed" | "moved";
+}
+
 export interface ChatMessage {
   role: ChatRole;
   text: string;
   tools?: string[];
   tool_trace?: ToolTraceEntry[];
+  /** Epoch ms the turn was recorded at; groups the transcript by day. */
+  ts?: number;
+  /** Wall-clock seconds the reply took, retained after the turn settles. */
+  seconds?: number;
+  effects?: TurnEffect[];
 }
 
 export interface MapPin {

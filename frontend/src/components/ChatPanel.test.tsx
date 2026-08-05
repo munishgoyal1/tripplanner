@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { StreamHandlers } from "../api";
+import { fetchChatHistory, type StreamHandlers } from "../api";
+import { saveTurnMeta } from "../turnMetadata";
 import ChatPanel from "./ChatPanel";
 
 const { streamChatMock } = vi.hoisted(() => ({ streamChatMock: vi.fn() }));
@@ -26,6 +27,7 @@ vi.mock("../api", () => ({
 describe("ChatPanel progress", () => {
   beforeEach(() => {
     streamChatMock.mockReset();
+    localStorage.clear();
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
       configurable: true,
       value: vi.fn(),
@@ -300,5 +302,111 @@ describe("ChatPanel progress", () => {
     expect(streamChatMock.mock.calls[1][0]).toBe("Use these choices for this trip:\n- Pace: Easy\n- Travelers: 3");
     expect(screen.getByPlaceholderText(/Plan a 5-day trip/)).toHaveValue("");
     expect(screen.queryByText("Anything different for this trip?")).not.toBeInTheDocument();
+  });
+
+  it("settles the live counter into a duration badge the answered turn keeps", async () => {
+    let handlers: StreamHandlers | undefined;
+    streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
+      handlers = nextHandlers;
+      return new Promise<void>(() => {});
+    });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    fireEvent.change(await readyComposer(), { target: { value: "Plan Goa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(handlers).toBeDefined());
+    expect(screen.queryByTitle(/This reply took/)).not.toBeInTheDocument();
+
+    act(() => {
+      handlers?.onToken("Here is the plan.");
+      handlers?.onDone("Here is the plan.");
+    });
+
+    const badge = await screen.findByTitle(/This reply took/);
+    expect(badge).toHaveTextContent(/^\d+s$/);
+  });
+
+  it("leaves the reading position alone and offers a jump to the newest reply", async () => {
+    let handlers: StreamHandlers | undefined;
+    streamChatMock.mockImplementation((_message: string, nextHandlers: StreamHandlers) => {
+      handlers = nextHandlers;
+      return new Promise<void>(() => {});
+    });
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+    const transcript = screen.getByTestId("chat-transcript");
+    Object.defineProperty(transcript, "scrollHeight", { configurable: true, value: 2000 });
+    Object.defineProperty(transcript, "clientHeight", { configurable: true, value: 500 });
+    transcript.scrollTop = 0;
+    fireEvent.scroll(transcript);
+
+    fireEvent.change(await readyComposer(), { target: { value: "Plan Goa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await waitFor(() => expect(handlers).toBeDefined());
+    act(() => {
+      handlers?.onToken("Here is the plan.");
+      handlers?.onDone("Here is the plan.");
+    });
+
+    const jump = await screen.findByRole("button", { name: /Jump to latest/ });
+    const scrolls = vi.mocked(HTMLElement.prototype.scrollIntoView);
+    scrolls.mockClear();
+    fireEvent.click(jump);
+
+    expect(scrolls).toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByRole("button", { name: /Jump to latest/ })).not.toBeInTheDocument());
+  });
+
+  it("lists the stops a reply changed and moves the workspace to one", async () => {
+    const onEffectSelect = vi.fn();
+    streamChatMock.mockImplementation((_message: string, handlers: StreamHandlers) => {
+      handlers.onToken("Rebuilt day 3.");
+      handlers.onDone("Rebuilt day 3.");
+      return Promise.resolve();
+    });
+    const { rerender } = render(
+      <ChatPanel onTurnComplete={vi.fn()} onEffectSelect={onEffectSelect} turnEffects={null} />,
+    );
+
+    fireEvent.change(await readyComposer(), { target: { value: "Rebuild day 3" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByText("Rebuilt day 3.");
+
+    rerender(
+      <ChatPanel
+        onTurnComplete={vi.fn()}
+        onEffectSelect={onEffectSelect}
+        turnEffects={{
+          token: 1,
+          effects: [
+            { kind: "attraction", name: "Louvre", day: 3, stop: 1, change: "moved" },
+            { kind: "attraction", name: "Orsay", day: 2, stop: 4, change: "removed" },
+          ],
+        }}
+      />,
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: /Louvre/ }));
+    expect(onEffectSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Louvre", day: 3, stop: 1 }),
+    );
+    expect(screen.queryByRole("button", { name: /Orsay/ })).not.toBeInTheDocument();
+    expect(screen.getByText("Orsay")).toBeInTheDocument();
+  });
+
+  it("groups a session by when each turn happened", async () => {
+    const yesterday = Date.now() - 86_400_000;
+    vi.mocked(fetchChatHistory).mockResolvedValueOnce([
+      { role: "user", text: "Plan Goa" },
+      { role: "assistant", text: "Here is Goa." },
+    ]);
+    saveTurnMeta("__active__", [
+      { role: "user", text: "Plan Goa", ts: yesterday },
+      { role: "assistant", text: "Here is Goa.", ts: yesterday, seconds: 12 },
+    ]);
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    expect(await screen.findByText("Here is Goa.")).toBeInTheDocument();
+    expect(screen.getByRole("separator", { name: "Yesterday" })).toBeInTheDocument();
+    expect(screen.getByTitle(/This reply took/)).toHaveTextContent("12s");
   });
 });

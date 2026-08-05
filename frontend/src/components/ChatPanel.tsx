@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, Copy, Pencil, Send, Square } from "lucide-react";
+import { ArrowDown, Check, Clock, Copy, MapPin, Pencil, Send, Square } from "lucide-react";
 import {
   signIn,
   signOut,
@@ -18,8 +18,9 @@ import {
   getUserId,
   type AuthSession,
 } from "../api";
-import type { ChatMessage } from "../types";
+import type { ChatMessage, TurnEffect } from "../types";
 import { trackEvent } from "../analytics";
+import { saveTurnMeta, withStoredTurnMeta } from "../turnMetadata";
 import AccountSettingsHub from "./AccountSettingsHub";
 import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
@@ -49,6 +50,12 @@ interface Props {
   hideGlobalControls?: boolean;
   /** A user-approved command-bar escalation into a real Assistant turn. */
   assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
+  /** Renders turns as full cards when the Assistant owns the whole workspace. */
+  maximized?: boolean;
+  /** Stops the last completed turn changed, published by the workspace. */
+  turnEffects?: { token: number; effects: TurnEffect[] } | null;
+  /** Move Itinerary, Map, and Details to a stop named by a reply. */
+  onEffectSelect?: (effect: TurnEffect) => void;
 }
 
 export type { AssistantTurnContext, AssistantTurnStatus } from "../hooks/useChatStream";
@@ -57,6 +64,29 @@ const GREETING: ChatMessage = {
   role: "assistant",
   text: "Where are you traveling from, where would you like to go, and roughly when? I'll build a complete first plan with sensible defaults, and you can change anything here.",
 };
+
+function startOfDay(value: Date): number {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+}
+
+/** Label a turn by when it happened, so a multi-day session reads as a ledger. */
+export function turnGroupLabel(ts: number, now: number = Date.now()): string {
+  const when = new Date(ts);
+  const days = Math.round((startOfDay(new Date(now)) - startOfDay(when)) / 86_400_000);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return when.toLocaleDateString(undefined, { weekday: "long" });
+  return when.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+export function turnDurationLabel(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+}
+
+function clockLabel(ts: number): string {
+  return new Date(ts).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
 
 export default function ChatPanel({
   onTurnComplete,
@@ -68,6 +98,9 @@ export default function ChatPanel({
   onImported,
   hideGlobalControls = false,
   assistantRequest = null,
+  maximized = false,
+  turnEffects = null,
+  onEffectSelect,
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -90,6 +123,12 @@ export default function ChatPanel({
   const [transcriptReady, setTranscriptReady] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Reading position belongs to the reader: only follow the stream when the
+  // reader is already at the bottom, and advertise new content otherwise.
+  const atBottomRef = useRef(true);
+  const [hasNewBelow, setHasNewBelow] = useState(false);
+  const appliedEffectsTokenRef = useRef(0);
   const accountRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
   const loadedTranscriptRequestRef = useRef<string | null>(null);
@@ -284,7 +323,7 @@ export default function ChatPanel({
     fetchChatHistory(tripIdHint || undefined)
       .then((rows) => {
         if (cancelled) return;
-        const next = rows.length ? rows.map((r) => ({ role: r.role, text: r.text })) : [GREETING];
+        const next = rows.length ? withStoredTurnMeta(cacheKey, rows) : [GREETING];
         transcriptCacheRef.current.set(cacheKey, next);
         setMessages(next);
       })
@@ -313,8 +352,56 @@ export default function ChatPanel({
   }, [cacheKey, messages]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (atBottomRef.current) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    setHasNewBelow(true);
   }, [messages, activeTool]);
+
+  // Retain each turn's timing and stop links across a reload; the persisted
+  // transcript itself is role + text only.
+  useEffect(() => {
+    if (!transcriptReady) return;
+    saveTurnMeta(cacheKey, messages);
+  }, [cacheKey, messages, transcriptReady]);
+
+  useEffect(() => {
+    if (!turnEffects || !turnEffects.effects.length) return;
+    if (appliedEffectsTokenRef.current === turnEffects.token) return;
+    appliedEffectsTokenRef.current = turnEffects.token;
+    setMessages((current) => {
+      const index = current.map((m) => m.role).lastIndexOf("assistant");
+      if (index < 0) return current;
+      const next = [...current];
+      next[index] = { ...next[index], effects: turnEffects.effects };
+      return next;
+    });
+  }, [turnEffects]);
+
+  const handleTranscriptScroll = () => {
+    const node = scrollRef.current;
+    if (!node) return;
+    const atBottom = node.scrollHeight - node.scrollTop - node.clientHeight < 48;
+    atBottomRef.current = atBottom;
+    if (atBottom) setHasNewBelow(false);
+  };
+
+  const jumpToLatest = () => {
+    atBottomRef.current = true;
+    setHasNewBelow(false);
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const renderedTurns = useMemo(() => {
+    let currentGroup: string | null = null;
+    return messages.map((message, index) => {
+      const label = message.ts ? turnGroupLabel(message.ts) : null;
+      const group = label && label !== currentGroup ? label : null;
+      if (label) currentGroup = label;
+      return { message, index, group };
+    });
+  }, [messages]);
 
   // When the import banner appears, scroll to the top so it's immediately visible.
   useEffect(() => {
@@ -649,7 +736,13 @@ export default function ChatPanel({
         </div>
       </header>
 
-      <div className="flex-1 space-y-4 overflow-y-auto bg-surface px-5 py-5">
+      <div className="relative min-h-0 flex-1">
+      <div
+        ref={scrollRef}
+        data-testid="chat-transcript"
+        onScroll={handleTranscriptScroll}
+        className="h-full space-y-4 overflow-y-auto bg-surface px-5 py-5"
+      >
         {/* Guest-import banner: shown once after OAuth sign-in when guest had data */}
         {guestBanner && (
           <div ref={topRef} className="flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm shadow-card">
@@ -720,13 +813,27 @@ export default function ChatPanel({
             </div>
           </div>
         )}
-        {messages.map((m, i) => (
+        {renderedTurns.map(({ message: m, index: i, group }) => (
+          <Fragment key={i}>
+          {group && (
+            <div className="flex items-center gap-3 pt-1" role="separator" aria-label={group}>
+              <span className="h-px flex-1 bg-slate-200" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{group}</span>
+              <span className="h-px flex-1 bg-slate-200" />
+            </div>
+          )}
           <div
-            key={i}
             className={`group flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
           >
+            {maximized && m.role === "assistant" && (m.ts !== undefined || m.seconds !== undefined) && (
+              <div className="mb-1 flex items-center gap-2 px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                <span>Assistant</span>
+                {m.ts !== undefined && <span>{clockLabel(m.ts)}</span>}
+                {m.seconds !== undefined && <span>· took {turnDurationLabel(m.seconds)}</span>}
+              </div>
+            )}
             <div
-              className={`max-w-[82%] whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
+              className={`${maximized ? "max-w-[min(56rem,94%)]" : "max-w-[82%]"} whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
                 m.role === "user"
                   ? "bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
                   : "bg-white text-ink ring-slate-100"
@@ -766,6 +873,42 @@ export default function ChatPanel({
                 </div>
               )}
             </div>
+            {m.role === "assistant" && (m.seconds !== undefined || Boolean(m.effects?.length)) && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 px-1">
+                {m.seconds !== undefined && (
+                  <span
+                    title={`This reply took ${turnDurationLabel(m.seconds)}`}
+                    className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500"
+                  >
+                    <Clock size={10} aria-hidden /> {turnDurationLabel(m.seconds)}
+                  </span>
+                )}
+                {m.effects?.map((effect, effectIndex) =>
+                  effect.change === "removed" ? (
+                    <span
+                      key={`${effect.name}-${effectIndex}`}
+                      title={`${effect.name} was removed from the plan`}
+                      className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-400 line-through"
+                    >
+                      <MapPin size={10} aria-hidden />
+                      {effect.name}
+                    </span>
+                  ) : (
+                    <button
+                      key={`${effect.name}-${effectIndex}`}
+                      type="button"
+                      onClick={() => onEffectSelect?.(effect)}
+                      title={`Go to ${effect.name}${effect.day ? ` on day ${effect.day}` : ""}`}
+                      className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand transition hover:bg-brand/20"
+                    >
+                      <MapPin size={10} aria-hidden />
+                      {effect.name}
+                      {effect.day ? <span className="text-brand/70">D{effect.day}</span> : null}
+                    </button>
+                  ),
+                )}
+              </div>
+            )}
             {m.text && !(busy && i === messages.length - 1) && (
               <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-slate-400 opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
                 <button
@@ -792,6 +935,7 @@ export default function ChatPanel({
               </div>
             )}
           </div>
+          </Fragment>
         ))}
         {busy && progress && (
           <div className="flex items-start gap-2 rounded-md border border-brand/15 bg-brand/[0.04] px-3 py-2.5 text-xs text-muted" role="status" aria-live="polite">
@@ -814,6 +958,16 @@ export default function ChatPanel({
           />
         )}
         <div ref={endRef} />
+      </div>
+      {hasNewBelow && (
+        <button
+          type="button"
+          onClick={jumpToLatest}
+          className="absolute bottom-3 left-1/2 z-20 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-white shadow-pop"
+        >
+          <ArrowDown size={13} aria-hidden /> Jump to latest
+        </button>
+      )}
       </div>
 
       <div className="border-t border-slate-100 bg-white p-4">

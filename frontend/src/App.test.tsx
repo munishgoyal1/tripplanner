@@ -44,9 +44,10 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
-    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""}>
+  default: ({ hideGlobalControls, assistantRequest, maximized, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; maximized?: boolean; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
+    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-maximized={maximized ? "true" : "false"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
       <button type="button" onClick={() => onTurnComplete?.("khandala-pune-1")}>Complete planning turn</button>
+      <button type="button" onClick={() => onEffectSelect?.({ kind: "attraction", name: "Louvre Museum", day: 2, stop: 1, change: "added" })}>Open turn effect</button>
       <button type="button" onClick={() => onTurnStatus?.({ phase: "working", message: "Searching hotels. 45s elapsed. Full itinerary builds usually take about 2–4 minutes." })}>Report planning progress</button>
       <button type="button" onClick={() => {
         onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
@@ -416,7 +417,7 @@ describe("App responsive workspace", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Itinerary" }));
     fireEvent.click(screen.getByRole("button", { name: "Hide Map" }));
-    fireEvent.click(screen.getByRole("button", { name: "Close Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
 
     for (const title of [
       "Show or hide itinerary",
@@ -492,16 +493,16 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getAllByTestId("chat-panel")).toHaveLength(1));
-    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
-    fireEvent.click(screen.getByRole("button", { name: "Close Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
   });
 
@@ -510,7 +511,7 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
-    for (const label of ["Itinerary", "Map", "Details"]) {
+    for (const label of ["Itinerary", "Map", "Details", "Assistant"]) {
       const controls = screen.getByRole("group", { name: `${label} pane controls` });
       expect(controls).toHaveClass("bg-slate-50", "ring-inset");
       expect(screen.getByRole("button", { name: `Hide ${label}` })).toHaveClass("rounded-[5px]");
@@ -526,42 +527,67 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Maximize Details" }));
     expect(screen.getByRole("button", { name: "Restore Details" })).toBeInTheDocument();
     expect(screen.getByTestId("map-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByRole("button", { name: "Restore Details" }));
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
   });
 
-  it("opens Assistant as a lower-right conversation sheet over the usable workspace", async () => {
+  it("docks Assistant as a resident column that can be maximized over the workspace", async () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByTestId("assistant-modal")).toBeInTheDocument());
-    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass(
-      "bottom-4",
-      "right-4",
-      "h-[68%]",
-      "w-[min(30rem,calc(100vw-2rem))]",
-      "flex",
-    );
-    expect(screen.getByTestId("assistant-modal")).not.toHaveAttribute("aria-modal");
-    expect(screen.getByTestId("assistant-modal")).toHaveClass("rounded-md");
-    expect(screen.queryByRole("button", { name: "Close Assistant" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
+    const workspace = screen.getByTestId("chat-panel").closest("main");
+    expect(workspace?.getAttribute("style") ?? "").toContain("23rem");
+    expect(workspace?.firstElementChild).toBe(screen.getByTestId("chat-panel").closest("section"));
+    expect(screen.queryByTestId("assistant-modal")).not.toBeInTheDocument();
     expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
+
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-maximized", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Maximize Assistant" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-maximized", "true");
+    expect(screen.getByTestId("itinerary-panel").closest("section")).toHaveClass("hidden");
+    expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
+
+    fireEvent.click(screen.getByRole("button", { name: "Restore Assistant" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-maximized", "false");
+    expect(screen.getByTestId("itinerary-panel").closest("section")).not.toHaveClass("hidden");
+  });
+
+  it("moves the workspace to a stop named by an Assistant reply", async () => {
+    setDesktop(true);
+    fetchTripViewMock
+      .mockResolvedValueOnce(emptyView)
+      .mockResolvedValueOnce({
+        ...emptyView,
+        focus: { kind: "attraction", name: "Louvre Museum", day: 2, stop: 1 },
+        items: [{ name: "Louvre Museum", kind: "attraction", selected: true }],
+      });
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Open turn effect" }));
+
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Louvre Museum"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "2");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-focus-stop", "1");
+    expect(screen.getByTitle("Show or hide map")).toHaveAttribute("aria-pressed", "true");
   });
 
   it("closes and reopens Assistant from the command bar without unmounting chat", async () => {
     setDesktop(true);
     render(<App />);
 
-    await waitFor(() => expect(screen.getByTestId("assistant-modal")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "Close Assistant" }));
-    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("hidden");
+    await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
     fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
-    expect(screen.getByTestId("assistant-modal-layer")).toHaveClass("flex");
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
   });
 
@@ -828,7 +854,7 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Hide Details" }));
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
-    expect(screen.getByTestId("assistant-modal-layer")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
   });
