@@ -5,3 +5,12 @@
 
 [2026-08-05 17:05] [worker-2] ! Keep prompt logs out of merge contention
 prompts_executed and rleated files that get modified in each lane on each task and itneraxction usually runs into conflicts to merge. find some better way to keep it out of contention. it is not such a ciritcal file buit taking away preciosu time and cost cycles.
+
+[2026-08-05 18:04] [worker-2] Count active sandboxes
+how many sandboxes are active
+
+[2026-08-05 18:04] [worker-2] Show named sandboxes
+lab 16 is not a sandbox yet. it is just a UX lab. Show the named sandboxes
+
+[2026-08-05 18:04] [worker-2] Review refactor sandbox deltas
+anything from refactor sandbox to be promoted. are there any deltas compared to master. sumarize it
