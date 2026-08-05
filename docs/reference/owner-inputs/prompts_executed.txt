@@ -107,3 +107,25 @@ at time of shipping i may nto know name of new slug so by default dont discard, 
 
 [027] [4-Aug-2026] Create downloadable architecture onboarding document
 create a pdf or word  or md doc out of this that i will download, and also commmit it to repo
+
+[028] [4-Aug-2026] Diagnose repeated sync conflict behavior
+getting these errorres despite callign resolve conflicts and runlatest .cmd twice on second run it should have helped to auto resolvemerge conflicts, right ?
+mitted agents/worker-2 head 8944534 into the integration worktree...
+Auto-merging src/tripplanner/web/trip_view.py
+CONFLICT (content): Merge conflict in src/tripplanner/web/trip_view.py
+Recorded preimage for 'src/tripplanner/web/trip_view.py'
+Automatic merge failed; fix conflicts and then commit the result.
+Recorded preimage for 'src/tripplanner/web/trip_view.py'
+[2026-08-04 16:16:11Z] [WARN] agents/worker-2 has conflicts needing a semantic decision: src/tripplanner/web/trip_view.py
+[2026-08-04 16:16:11Z] [WARN] Conflict report: C:\repos\tripplanner\logs\sync\conflict-integration-20260804-214610.md
+[2026-08-04 16:16:11Z] [WARN] Preserved integration worktree for resolution: C:\Users\mugoy\AppData\Local\Temp\tripplanner-merge-73e7680c8a9e48b48bcaf352597110f6
+[2026-08-04 16:16:11Z] [INFO] Sync log completed for run-latest
+Exception: C:\repos\tripplanner\scripts\dev\lib\sync-common.ps1:237:5
+Line |
+ 237 |      throw "SYNC_CONFLICT_PENDING: $Label. Resolve the files under '$W …
+	 |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 | SYNC_CONFLICT_PENDING:
+	 | agents/worker-2. Resolve the
+	 | files under
+	 | 'C:\Users\mugoy\AppData\Local\Temp\tripplanner-merge-73e7680c8a9e48b48bcaf352597110f6', then run 'pwsh -File scripts/dev/resume-merge.ps1'. Details: C:\repos\tripplanner\logs\sync\conflict-integration-20260804-214610.md
+Press any key to continue . . .
