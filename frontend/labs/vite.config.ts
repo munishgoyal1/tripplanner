@@ -26,6 +26,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         accountSettings: resolve(__dirname, "lab-12-account-settings.html"),
+        agenticPlanning: resolve(__dirname, "lab-19-agentic-planning.html"),
         catalog: resolve(__dirname, "catalog.html"),
         chatAgentWorkspace: resolve(__dirname, "lab-16-chat-agent-workspace.html"),
         chatAssistant: resolve(__dirname, "lab-4-chat-assistant.html"),

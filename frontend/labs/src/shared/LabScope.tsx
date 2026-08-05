@@ -10,6 +10,19 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "agentic-planning": {
+    changes: [
+      "Where the authority to write the trip lives: a deterministic plan engine that owns placement, validation, and persistence, with the model reduced to intent in and explanation out",
+      "What a change owes the owner before and after it lands: a chosen slot with its reasons, the slots ruled out, a declared blast radius, and a reversible receipt",
+      "How much autonomy the agent keeps for safe edits versus where it must stop and ask",
+      "That every channel — chat, map, itinerary, and details — issues the same typed operation and receives the same verdict",
+    ],
+    context: [
+      "The trip data model, the LangGraph agent's phases and tool set, and the model's ability to converse and rank preferences",
+      "Visual design of the itinerary, map, and details panes, which appear here only as production-scale context",
+      "Provider search, geocoding, booking handoff, and server-side persistence",
+    ],
+  },
   "itinerary-canvas": {
     changes: [
       "The visual hierarchy of a stop row: which of its facts are loud, which are quiet chips, and which open in place",
