@@ -169,9 +169,18 @@ worker through `master`; worker branches are not merged directly into one anothe
 Every conflict is shown in `zdiff3` style (the repository sets
 `merge.conflictstyle=zdiff3`), so both sides and their common ancestor are visible
 in the markers. That base context makes each resolution far less likely to drop a
-side by accident. The append-only owner prompt and requirements logs use Git's
-union merge driver so concurrent tail appends are retained without semantic
-conflict handling.
+side by accident.
+
+Agent-written logs are kept out of contention structurally rather than merged. The
+owner prompt log is partitioned per lane under
+[`docs/reference/owner-inputs/prompts/`](../reference/owner-inputs/prompts/): each
+lane tail-appends only to its own file, so two lanes can never touch the same file
+and no merge is possible. The logs that must stay shared —
+`docs/reference/history/requirements-log.txt` and `docs/ENGINEERING_LEARNINGS.md` —
+use Git's union merge driver, and if a conflict still surfaces in a union-declared
+file the sync scripts resolve it deterministically by keeping both sides. That
+resolution never reaches the Copilot CLI, because concatenating two appends is not
+a semantic decision and paying a model to re-derive it every run is waste.
 
 A novel conflict is resolved automatically. When a launcher run stops on one, it
 invokes the GitHub Copilot CLI to clear the markers and then retries the sync in
@@ -221,7 +230,14 @@ and `logs/sync/conflict-<kind>-<stamp>.md` holds the human-readable diff. The
 still hold conflict markers.
 Independent dated additions to
 `docs/reference/history/requirements-log.txt` use Git's union merge driver because that file is
-append-only; both branches' entries are retained.
+append-only; both branches' entries are retained. The owner prompt log needs no
+merge driver at all, because each lane owns a separate file under
+`docs/reference/owner-inputs/prompts/`. Read the merged view with:
+
+```powershell
+.\scripts\user\Show-Prompts.cmd            # all lanes, newest first
+.\scripts\user\Show-Prompts.cmd -Important # only prompts marked !
+```
 
 To intentionally synchronize every worktree from MasterAgent or Agents 1-3
 launcher, run:

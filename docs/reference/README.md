@@ -15,8 +15,9 @@ files.
 | File | Purpose | Retention status |
 | --- | --- | --- |
 | [`owner-inputs/Requirements.docx`](owner-inputs/Requirements.docx) | Active owner-authored requirements input | Keep until the owner confirms it is superseded |
-| [`owner-inputs/prompts_executed.txt`](owner-inputs/prompts_executed.txt) | Complete exact owner prompt history, newest-first with stable IDs | Retain the full history |
-| [`owner-inputs/prompts_executed_imp.txt`](owner-inputs/prompts_executed_imp.txt) | Feature work, bug fixes, critical owner input or direction, and reusable workflows; newest-first with stable IDs | Retain as the reusable subset of the complete history |
+| [`owner-inputs/prompts/`](owner-inputs/prompts/) | Live owner prompt log, one tail-appended file per agent lane so parallel lanes never conflict; read with `scripts/dev/show-prompts.ps1` | Active; the only place new prompts are written |
+| [`owner-inputs/prompts_executed.txt`](owner-inputs/prompts_executed.txt) | Owner prompt history `[001]`-`[050]`, newest-first with stable IDs | Frozen 5-Aug-2026; retain the full history, never append |
+| [`owner-inputs/prompts_executed_imp.txt`](owner-inputs/prompts_executed_imp.txt) | Curated important subset of `[001]`-`[050]` | Frozen 5-Aug-2026; superseded by the `!` marker in the lane files |
 | [`owner-inputs/Overall.txt`](owner-inputs/Overall.txt) | Truncated note containing only `-Extra row at top of` | Removal candidate; owner approval required |
 | [`owner-inputs/TripPlanner.txt`](owner-inputs/TripPlanner.txt) | Early top-level planner goal | Duplicate candidate; owner approval required before removal |
 | [`owner-inputs/ChatAssistant.txt`](owner-inputs/ChatAssistant.txt) | Early Assistant journey and UX ideas | Historical design input; owner approval required before consolidation |

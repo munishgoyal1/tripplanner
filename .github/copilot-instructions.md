@@ -20,14 +20,15 @@ not override the canonical documents above, which govern current behavior.
 
 - Keep the current chat title to a concrete 4-5 word summary of the latest task.
   Reconsider it after every prompt in every primary and worker VS Code window.
-- After each owner prompt, add it verbatim near the top of
-  [prompts_executed.txt](../docs/reference/owner-inputs/prompts_executed.txt) as a
-  numbered newest-first entry (`[NNN] [Date] <short title>`). Keep the highest
-  number first so recent prompts are immediately visible.
-- Also copy prompts about feature work, bug fixes, critical owner input or
-  direction, and reusable workflows into
-  [prompts_executed_imp.txt](../docs/reference/owner-inputs/prompts_executed_imp.txt),
-  preserving the same entry number, title, verbatim body, and newest-first order.
+- After each owner prompt, append it verbatim to the **bottom** of your own lane's
+  file in [docs/reference/owner-inputs/prompts/](../docs/reference/owner-inputs/prompts/)
+  (`master.txt`, `worker-1.txt`, `worker-2.txt`, or `worker-3.txt`). One lane writes
+  one file, so these logs never conflict. Entry header:
+  `[YYYY-MM-DD HH:MM] [lane] <short title>`, with ` !` after the lane for feature
+  work, bug fixes, critical owner direction, or reusable workflows. Do not read the
+  file first, do not number entries, and never write another lane's file.
+  `prompts_executed.txt` and `prompts_executed_imp.txt` are frozen archives.
+  Read the log back with `pwsh -File scripts/dev/show-prompts.ps1`.
 - Read 50-200 line chunks and batch independent reads. Start from the owning file,
   nearby test, or documented contract instead of mapping the whole repository.
 - Before every new code change, require a clean worktree, fetch `origin`, and
@@ -138,16 +139,26 @@ than a concise pointer to the canonical owner.
 
 ### Append-only logs
 
-`docs/ENGINEERING_LEARNINGS.md`, `docs/reference/history/requirements-log.txt`,
-and `docs/reference/owner-inputs/prompts_executed.txt` are declared `merge=union`
-in `.gitattributes`, so parallel lanes never conflict on them. That guarantee
-depends on how you write them:
+Prefer **partitioning over merging**: if only one lane ever writes a file, no merge
+is possible. The owner prompt log is split per lane under
+`docs/reference/owner-inputs/prompts/` for exactly this reason. Use the same pattern
+for any new agent-written log.
 
+For the logs that must stay shared — `docs/ENGINEERING_LEARNINGS.md` and
+`docs/reference/history/requirements-log.txt` — `merge=union` in `.gitattributes` is
+the safety net, and the sync scripts resolve any residual conflict in a
+union-declared file by keeping both sides without calling the Copilot resolver.
+That guarantee depends on how you write them:
+
+- **Append at the tail.** Adding at the top makes two lanes edit the same region,
+  which forces a read of the file, produces colliding entry numbers, and eats the
+  blank line between entries even when union succeeds.
+- **Do not number entries.** Use a timestamp; a global counter cannot be allocated
+  without reading the shared file and still collides across lanes.
 - Only ever add a new dated entry. Never edit, reorder, reflow, or delete an
   existing one; union merge would silently keep both versions of a rewritten line.
 - Keep each entry a self-contained block separated by a blank line, so
   concatenating two lanes' entries always yields a valid document.
-- Do not renumber prompt entries to close gaps. Numbers may collide or skip
-  across lanes; that is expected and harmless.
 - Before adding a file to the union list, confirm it is genuinely append-only.
   Structured documents such as `docs/REQUIREMENTS.md` must stay conflict-visible.
+  A file left off the list is the usual cause of a surprise conflict.

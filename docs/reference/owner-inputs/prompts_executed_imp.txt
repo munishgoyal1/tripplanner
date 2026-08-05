@@ -1,4 +1,7 @@
 # prompts_executed_imp — mugoy
+# FROZEN on 5-Aug-2026 at entry [050]. Do not append here. Important prompts are now
+# marked with `!` inline in the lane files under prompts/, and read back with
+# `pwsh -File scripts/dev/show-prompts.ps1 -Important`.
 # Curated reusable subset of feature work, bug fixes, critical owner input or
 # direction, and reusable workflows. The complete source is prompts_executed.txt.
 # Entry IDs remain stable, and entries are ordered newest-first. Legacy entries

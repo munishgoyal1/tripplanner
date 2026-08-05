@@ -9,6 +9,7 @@ stays under `scripts/dev/` so everyday commands remain easy to find.
 | `Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize MasterAgent and all three worker worktrees |
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest.cmd` | Synchronize the launcher worktree, then start its local stack; optional dev SPA flags are forwarded |
+| `Show-Prompts.cmd` | Read the owner prompt log back across all agent lanes, newest first |
 
 By default, `Sync-MeTo-Latest.cmd` integrates all committed worker heads through
 `master`, then updates only the launcher worktree. Pass `onlyfrommaster` to receive

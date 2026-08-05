@@ -1,0 +1,4 @@
+# Owner prompts executed in the MasterAgent lane (primary `master` workspace).
+# Tail-appended, newest at the bottom. Only this lane writes this file.
+# Format: [YYYY-MM-DD HH:MM] [master] [!] <short title> / verbatim prompt / blank line.
+# See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
