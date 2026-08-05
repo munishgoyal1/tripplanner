@@ -10,6 +10,17 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "chat-agent-workspace": {
+    changes: [
+      "Where the Assistant lives in the workspace, what it costs the other panels at rest, and how it is opened or dismissed",
+      "How one turn presents its question, its answer, the time that answer took, and the stops it changed",
+      "How a whole planning session is navigated, grouped, and read without losing the reader's scroll position",
+    ],
+    context: [
+      "Itinerary, Map, and Details content design, their fixture trip, and their independent Hide and Maximize behavior",
+      "The trip agent, its tools and phases, the SSE contract, and server-side transcript persistence",
+    ],
+  },
   "intercity-map": {
     changes: [
       "Whether and how an inter-city transfer appears with local route circuits on the selected day's Map",

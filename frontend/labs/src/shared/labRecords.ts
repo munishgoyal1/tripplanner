@@ -24,7 +24,7 @@ export interface LabSelectionState {
 
 export type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
 
-export const LAST_ASSIGNED_LAB_NUMBER = 15;
+export const LAST_ASSIGNED_LAB_NUMBER = 16;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition | undefined {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -42,6 +42,18 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    labNumber: 16,
+    id: "chat-agent-workspace",
+    title: "Reimagining the chat agent",
+    category: "Assistant and workspace layout",
+    description: "Compare a resident conversation column, a full-width focus composer, and a right-rail turn thread for where the Assistant lives and how a turn, its time, and its effects are read.",
+    createdAt: "2026-08-05",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: C · Turn thread.",
+    href: "./lab-16-chat-agent-workspace.html",
+    icon: MessageCircle,
+  },
   {
     labNumber: 14,
     id: "intercity-map",

@@ -8,6 +8,10 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[050] [5-Aug-2026] Reimagine chat agent workspace UX
+create a lab reimagingin the chat agent from UX point of view. Overall UX layout of all panels with respect to how user will interact. I rely on your UI sklills.
+Also the chat agent currently has a scroll limit probnably older chats not visible in same session. It should retain a short time taken for each response
+
 [049] [5-Aug-2026] Park recycle, keep sandboxes fresh
 there could be more than 1 sandbox running in paraellel , i would say remove the complexity of recycle. just keep it simple fresh from scratch creation for now. Park the recycle scripts, dont delete but keep them seperately and dont bring any of it in main flow. will delete later if not required
 
