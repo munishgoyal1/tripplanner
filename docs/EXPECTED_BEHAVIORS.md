@@ -303,7 +303,10 @@ then visit one or more local places that day.
 **Expected:** When the return route can be grounded, the local plan ends with a
 separate return to the destination hotel, including its incoming travel and
 estimated return time. A bare arrival/check-in does not add a return, and neither
-an ungrounded route nor inter-city travel after the hotel invents one.
+an ungrounded route nor inter-city travel after the hotel invents one. The
+destination check-in time is estimated from any grounded arrival terminal -
+airport, railway station, or bus stand - plus its exit buffer and the timed
+transfer to the hotel, so a mid-day check-in is not left blank.
 
 **Executable proof:**
 
@@ -311,6 +314,7 @@ an ungrounded route nor inter-city travel after the hotel invents one.
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_day_does_not_invent_return_without_route_coordinates`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_structured_itinerary_preserves_arrival_and_departure_flights`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_arrival_hotel_time_requires_airport_transfer_evidence`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_train_arrival_estimates_destination_hotel_check_in`
 
 ### EB-ITIN-005 - Keep daily hotels synchronized across views
 

@@ -2301,7 +2301,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
             if stop.get("kind") != "hotel" or stop.get("time"):
                 continue
             estimated_time: int | None = None
-            if previous.get("kind") == "airport":
+            if previous.get("kind") in {"airport", "station", "bus_station"}:
                 previous_time = _clock_minutes(previous.get("time"))
                 has_transfer = isinstance(
                     (stop.get("travel_from_previous") or {}).get("duration_min"),
@@ -2311,9 +2311,9 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
                     transfer_minutes = int(
                         (stop.get("travel_from_previous") or {}).get("duration_min") or 0
                     )
-                    airport_exit_minutes = int(previous.get("duration_min") or 0)
+                    terminal_exit_minutes = int(previous.get("duration_min") or 0)
                     estimated_time = (
-                        previous_time + airport_exit_minutes + transfer_minutes
+                        previous_time + terminal_exit_minutes + transfer_minutes
                     )
             elif _intercity_transfer_mode(
                 str(previous.get("name") or ""), str(previous.get("kind") or "")
