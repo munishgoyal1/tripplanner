@@ -45,6 +45,7 @@ trip through shared API contracts.
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
+| `src/tripplanner/http_client.py` | Process-wide pooled outbound HTTP client (connection and TLS reuse) |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view model and display semantics |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
 | `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
@@ -73,7 +74,8 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/CanvasPaneFrame.tsx`, `DetailsPaneShell.tsx`, `AssistantModalShell.tsx` | Render-only desktop pane frames and controls |
 | `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx` | Render-only responsive workspace chrome |
-| `frontend/src/components/ErrorBanner.tsx` | Render-only workspace error alert |
+| `frontend/src/lib/notices.ts` | Global notice channel: id-keyed upsert, tone priority, and success auto-expiry |
+| `frontend/src/components/StatusBar.tsx` | Render-only toolbar and mobile presentation of the single active notice |
 | `frontend/src/components/AccountSettingsHub.tsx` | Web account/settings section ownership; delegates persisted destinations to existing auth, preferences, analytics, and privacy boundaries |
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |

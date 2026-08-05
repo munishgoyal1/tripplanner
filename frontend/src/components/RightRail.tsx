@@ -3,7 +3,7 @@ import ItineraryPanel from "./ItineraryPanel";
 import MapPanel from "./MapPanel";
 import TripSwitcher from "./TripSwitcher";
 import type { DeselectItemOptions, SelectItemOptions } from "../api";
-import type { TripView } from "../types";
+import type { Itinerary, MapView, TripView, TripWorkspaceView } from "../types";
 import type { ItineraryJump } from "../workspaceState";
 import type { ItineraryFilter } from "../lib/itineraryFilters";
 
@@ -16,6 +16,9 @@ interface Props {
   /** Bumped when the trip changes so map + itinerary refetch. */
   reloadToken: number;
   tripId?: string | null;
+  /** View-models handed over by a trip switch, so the panels skip a refetch. */
+  mapSeed?: MapView | null;
+  itinerarySeed?: Itinerary | null;
   /** Name of the stop to highlight (drives both itinerary + map). */
   focusName: string | null;
   /** Exact itinerary day when the focused place occurs more than once. */
@@ -44,7 +47,7 @@ interface Props {
   ) => void | Promise<boolean>;
   /** Persistent saved-trips switcher (always visible). */
   tripVersion: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
+  onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
   /** Map is lazy (Google Maps JS bills per load) — opt-in, stays mounted. */
   mapOpen: boolean;
   onToggleMap: (open: boolean) => void;
@@ -57,6 +60,8 @@ export default function RightRail({
   photos,
   reloadToken,
   tripId,
+  mapSeed,
+  itinerarySeed,
   focusName,
   focusDay,
   focusStop,
@@ -110,6 +115,8 @@ export default function RightRail({
               onFilterToggle={onFilterToggle}
               overview={overview}
               reloadToken={reloadToken}
+              tripId={tripId}
+              seed={itinerarySeed}
               focusName={focusName}
               focusDay={focusDay}
               focusStop={focusStop}
@@ -140,6 +147,7 @@ export default function RightRail({
                 filters={filters}
                 reloadToken={reloadToken}
                 tripId={tripId}
+                seed={mapSeed}
                 focusName={focusName}
                 focusDay={focusDay}
                 focusStop={focusStop}

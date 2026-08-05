@@ -1,7 +1,9 @@
 import { ChevronDown, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { deleteTrip, fetchSavedTrips, switchTrip } from "../api";
-import type { SavedTrip, TripView } from "../types";
+import { ApiError } from "@tripplanner/client";
+import { dismissNotice, notify } from "../lib/notices";
+import type { SavedTrip, TripWorkspaceView } from "../types";
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-slate-100 text-slate-600",
@@ -9,12 +11,14 @@ const STATUS_BADGE: Record<string, string> = {
   booked: "bg-brand/10 text-brand",
 };
 
+const SWITCH_NOTICE = "trip-switch";
+
 export default function TripSwitcher({
   version,
   onSwitched,
 }: {
   version: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
+  onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
 }) {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [open, setOpen] = useState(false);
@@ -24,6 +28,9 @@ export default function TripSwitcher({
   const [selectedTripIds, setSelectedTripIds] = useState<Set<string>>(() => new Set());
   const [deleting, setDeleting] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const switching = useRef(false);
+
+  useEffect(() => () => dismissNotice(SWITCH_NOTICE), []);
 
   useEffect(() => {
     let alive = true;
@@ -64,11 +71,38 @@ export default function TripSwitcher({
     setOpen(false);
     setDeleteMode(false);
     setSelectedTripIds(new Set());
+    if (switching.current) return;
+    switching.current = true;
+    const label = trips.find((trip) => trip.trip_id === tripId)?.destination ?? "trip";
+    notify({ id: SWITCH_NOTICE, tone: "progress", message: `Switching to ${label}\u2026` });
     try {
-      const view = await switchTrip(tripId);
-      if (view) onSwitched(tripId, view);
-    } catch {
-      setError("Could not switch trips.");
+      let workspace: TripWorkspaceView | null;
+      try {
+        workspace = await switchTrip(tripId);
+      } catch (error) {
+        // The workspace lock is held for a moment by another mutation; one
+        // polite retry turns a scary failure into a slightly slower switch.
+        if (!(error instanceof ApiError) || error.status !== 409) throw error;
+        await new Promise((resolve) => setTimeout(resolve, error.retryAfterMs ?? 1000));
+        workspace = await switchTrip(tripId);
+      }
+      if (workspace) {
+        onSwitched(tripId, workspace);
+        notify({ id: SWITCH_NOTICE, tone: "success", message: `Switched to ${label}.` });
+      } else {
+        notify({ id: SWITCH_NOTICE, tone: "error", message: `Could not open ${label}.` });
+      }
+    } catch (error) {
+      notify({
+        id: SWITCH_NOTICE,
+        tone: "error",
+        message:
+          error instanceof ApiError && error.status === 409
+            ? `${label} is busy finishing another update. Try again in a moment.`
+            : `Could not switch to ${label}.`,
+      });
+    } finally {
+      switching.current = false;
     }
   };
 

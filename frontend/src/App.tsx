@@ -4,19 +4,20 @@ import CanvasPaneFrame from "./components/CanvasPaneFrame";
 import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
 import DetailsPaneShell from "./components/DetailsPaneShell";
 import DesktopToolbar from "./components/DesktopToolbar";
-import ErrorBanner from "./components/ErrorBanner";
 import ExportModal from "./components/ExportModal";
 import ItineraryPanel from "./components/ItineraryPanel";
 import MapPanel from "./components/MapPanel";
 import { isIntercityTravel } from "./components/map/routeDerivations";
 import MobileWorkspaceShell from "./components/MobileWorkspaceShell";
+import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
-import type { PlannerReview, TripView } from "./types";
+import { dismissNotice, notify } from "./lib/notices";
+import type { PlannerReview, TripView, TripWorkspaceView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
 interface NavRef {
@@ -71,8 +72,10 @@ function compactStatus(status?: string): string | undefined {
 
 export default function App() {
   const [view, setView] = useState<TripView | null>(null);
+  // Map + itinerary view-models handed over by a trip switch, so those panels
+  // can render the new trip without a second and third round-trip.
+  const [panelSeed, setPanelSeed] = useState<TripWorkspaceView | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionError, setActionError] = useState<string | null>(null);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
   const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(null);
   const [assistantTurnStatus, setAssistantTurnStatus] = useState<AssistantTurnStatus | null>(null);
@@ -255,26 +258,33 @@ export default function App() {
   }, []);
 
   const refresh = useCallback(
-    async (f: NavRef | null = focus) => {
+    async (f: NavRef | null = focus, options: { silent?: boolean } = {}) => {
       const generation = ++refreshGeneration.current;
       refreshController.current?.abort();
       const controller = new AbortController();
       refreshController.current = controller;
-      setLoading(true);
+      // A focus change only reorders an already-rendered gallery, so it refreshes
+      // silently — flipping the panel into its loading state made the round-trip
+      // feel like the app had stalled.
+      if (!options.silent) setLoading(true);
       try {
         const v = await fetchTripView(f ?? undefined, controller.signal);
         if (generation !== refreshGeneration.current) return;
         applyView(v, f);
-        setActionError(null);
+        dismissNotice("action-error");
         return v;
       } catch (error) {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           console.error("Could not refresh trip view", error);
-          setActionError("Could not refresh the trip. Your previous view is still available.");
+          notify({
+            id: "action-error",
+            tone: "error",
+            message: "Could not refresh the trip. Your previous view is still available.",
+          });
         }
         return null;
       } finally {
-        if (generation === refreshGeneration.current) setLoading(false);
+        if (generation === refreshGeneration.current && !options.silent) setLoading(false);
       }
     },
     [focus, applyView]
@@ -344,25 +354,36 @@ export default function App() {
       return { ...current, focus: f, items };
     });
     if (isDesktop) setInspectorOpen(true);
-    await refresh(f);
+    await refresh(f, { silent: true });
   };
 
   const handleClearFocus = async () => {
     clearFocus();
-    await refresh(null);
+    await refresh(null, { silent: true });
   };
 
-  const handleSwitched = async (tripId?: string, view?: TripView | null) => {
+  const handleSwitched = async (
+    tripId?: string,
+    payload?: TripWorkspaceView | TripView | null,
+  ) => {
     ++refreshGeneration.current;
     refreshController.current?.abort();
     setLoading(false);
     setPlannerReview(null);
     setAssistantTurnStatus(null);
+    const workspace: TripWorkspaceView | null = payload
+      ? "view" in payload
+        ? payload
+        : { view: payload, map: null, itinerary: null }
+      : null;
     dispatchWorkspace({ type: "trip-changed", tripId });
-    // The switcher already fetched the fresh view — reuse it instead of making
-    // the server rebuild the (cache-backed) view a second time.
-    if (view) {
-      applyView(view, null);
+    // The switch response already carries every panel's view-model — seed them
+    // all from it so the map and itinerary swap with the trip panel instead of
+    // each re-fetching and settling one after another. A missing payload must
+    // still drop the previous trip's seed, or a remounted panel would restore it.
+    setPanelSeed(workspace);
+    if (workspace) {
+      applyView(workspace.view, null);
     } else {
       await handleClearFocus();
     }
@@ -370,19 +391,24 @@ export default function App() {
 
   const handleNewTrip = async () => {
     setAssistantTurnStatus(null);
+    setPanelSeed(null);
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
   };
   const handleStartNewTrip = async () => {
     try {
-      setActionError(null);
+      dismissNotice("action-error");
       await startNewTrip();
       await handleNewTrip();
       setInspectorOpen(true);
       setChatOpen(true);
       trackEvent("new_trip_started", { surface: "desktop" });
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not start a new trip.");
+      notify({
+        id: "action-error",
+        tone: "error",
+        message: error instanceof Error ? error.message : "Could not start a new trip.",
+      });
     }
   };
   const handleImported = async () => {
@@ -444,7 +470,7 @@ export default function App() {
   const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
     try {
       setAssistantTurnStatus(null);
-      setActionError(null);
+      dismissNotice("action-error");
       const next = await selectItem(kind, name, options);
       const nextKind = focusKind(kind);
       setPlaceFocus({ kind: nextKind, name });
@@ -465,7 +491,11 @@ export default function App() {
       trackEvent("place_added", { exact_day: Boolean(options?.day) });
       return true;
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not add the place.");
+      notify({
+        id: "action-error",
+        tone: "error",
+        message: error instanceof Error ? error.message : "Could not add the place.",
+      });
       return false;
     }
   };
@@ -485,7 +515,7 @@ export default function App() {
     pendingDeselects.current.add(mutationKey);
     try {
       setAssistantTurnStatus(null);
-      setActionError(null);
+      dismissNotice("action-error");
       const next = await deselectItem(kind, name, options);
       const retainedFocus = {
         kind: focusKind(kind),
@@ -504,7 +534,11 @@ export default function App() {
       trackEvent("place_removed", { scope: options.all_occurrences === false ? "occurrence" : "all" });
       return true;
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Could not remove the place.");
+      notify({
+        id: "action-error",
+        tone: "error",
+        message: error instanceof Error ? error.message : "Could not remove the place.",
+      });
       return false;
     } finally {
       pendingDeselects.current.delete(mutationKey);
@@ -621,6 +655,8 @@ export default function App() {
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
     tripId: chatTripId,
+    mapSeed: panelSeed?.map ?? null,
+    itinerarySeed: panelSeed?.itinerary ?? null,
     focusName: stopFocusName,
     focusDay: focus?.day,
     focusStop: focus?.stop,
@@ -653,6 +689,8 @@ export default function App() {
           headerTarget={itineraryHeaderTarget}
           overview={view?.overview}
           reloadToken={tripVersion}
+          tripId={chatTripId}
+          seed={panelSeed?.itinerary ?? null}
           focusName={stopFocusName}
           focusDay={focus?.day}
           focusStop={focus?.stop}
@@ -673,6 +711,7 @@ export default function App() {
         filters={itineraryFilters}
         reloadToken={tripVersion}
         tripId={chatTripId}
+        seed={panelSeed?.map ?? null}
         focusName={stopFocusName}
         focusDay={focus?.day}
         focusStop={focus?.stop}
@@ -730,21 +769,59 @@ export default function App() {
   }, [isDesktop, mobileTripOpen]);
 
   const latestStatus = compactStatus(view?.alerts?.[0]);
-  const visibleStatus = assistantTurnStatus?.message ?? (plannerReview
+  const reviewSummary = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
-    : latestStatus);
+    : null;
+
+  // One notification channel for the whole workspace: progress while long work
+  // runs, the outcome when it lands, failures until dismissed, and decisions
+  // until answered. Effect order matters — equal-priority notices break the tie
+  // by recency, and the assistant is the most current voice.
+  useEffect(() => {
+    if (loading) notify({ id: "trip-refresh", tone: "progress", message: "Refreshing trip…" });
+    else dismissNotice("trip-refresh");
+  }, [loading]);
+
+  useEffect(() => {
+    if (latestStatus && !reviewSummary) {
+      notify({ id: "trip-alert", tone: "success", message: latestStatus });
+    } else {
+      dismissNotice("trip-alert");
+    }
+  }, [latestStatus, reviewSummary]);
+
+  useEffect(() => {
+    if (reviewSummary) notify({ id: "planner-review", tone: "decision", message: reviewSummary });
+    else dismissNotice("planner-review");
+  }, [reviewSummary]);
+
+  useEffect(() => {
+    if (!assistantTurnStatus?.message) {
+      dismissNotice("assistant");
+      return;
+    }
+    const { phase, message } = assistantTurnStatus;
+    notify({
+      id: "assistant",
+      tone:
+        phase === "working" || phase === "loading"
+          ? "progress"
+          : phase === "error"
+            ? "error"
+            : "success",
+      message,
+    });
+  }, [assistantTurnStatus]);
+
   return <>
-    <ErrorBanner message={actionError} onDismiss={() => setActionError(null)} />
+    {!isDesktop && <FloatingStatusBar />}
     {showExport && <ExportModal onClose={() => setShowExport(false)} />}
     {isDesktop ? (
       <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-surface">
         <DesktopToolbar
           tripVersion={tripVersion}
           onTripSwitched={handleSwitched}
-          visibleStatus={visibleStatus}
-          statusPhase={assistantTurnStatus?.phase}
           reviewPending={plannerReview !== null}
-          loading={loading}
           onReviewWithPlanner={reviewWithPlanner}
           onKeepReview={() => setPlannerReview(null)}
           onStartNewTrip={handleStartNewTrip}

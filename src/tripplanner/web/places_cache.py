@@ -14,11 +14,15 @@ re-resolved on demand from the long-lived photo references.
 
 Lookups are parallelized: ``prefetch`` warms many places at once and photos
 for a single place are fetched concurrently, so switching destinations no
-longer blocks on dozens of sequential round-trips.
+longer blocks on dozens of sequential round-trips. Outbound calls share the
+process-wide pooled HTTP client, and durable (L2) writes are handed to a
+background writer, so neither TLS setup nor a slow store shows up as
+user-visible latency.
 """
 
 from __future__ import annotations
 
+import atexit
 import hashlib
 import json
 import logging
@@ -27,11 +31,13 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
-from threading import RLock
+from queue import Empty, Queue
+from threading import Condition, RLock, Thread
 from typing import Any
 
 import httpx
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 from tripplanner.json_store import atomic_write_json
 from tripplanner.tools.google_places import _BASE, is_configured
@@ -69,6 +75,14 @@ _suppress_persist = 0  # >0 while a batch is in flight (one write at the end)
 _dirty_keys: set[str] = set()  # keys awaiting a durable write while a batch is in flight
 _persist_retry_after = 0.0
 _legacy_doc_cleaned = False
+
+# Durable writes are best-effort, so they run on a single background thread: a
+# slow or stalled store must never add latency to the request that warmed the
+# cache (a Cosmos read timeout once added ~65s to a destination switch).
+_WRITE_QUEUE: Queue[set[str]] = Queue()
+_WRITE_CV = Condition()
+_writer: Thread | None = None
+_queued_writes = 0
 
 
 def _local_path() -> Path:
@@ -178,22 +192,68 @@ def _cleanup_legacy_doc() -> None:
         pass
 
 
+def _writer_loop() -> None:
+    global _queued_writes
+    while True:
+        try:
+            keys = _WRITE_QUEUE.get(timeout=1.0)
+        except Empty:
+            continue
+        try:
+            with _PERSIST_LOCK:
+                _write_durable(keys)
+        except Exception as exc:  # noqa: BLE001 - durable cache is best-effort
+            log.warning("places_cache durable write failed: %s", exc)
+        finally:
+            with _WRITE_CV:
+                _queued_writes -= 1
+                _WRITE_CV.notify_all()
+
+
+def _schedule_durable(keys: set[str]) -> None:
+    """Hand the keys to the background writer; never blocks the caller."""
+    global _writer, _queued_writes
+    if not keys:
+        return
+    with _WRITE_CV:
+        if _writer is None:
+            _writer = Thread(target=_writer_loop, name="places-cache-writer", daemon=True)
+            _writer.start()
+            atexit.register(flush_writes)
+        _queued_writes += 1
+    _WRITE_QUEUE.put(set(keys))
+
+
+def flush_writes(timeout: float = 10.0) -> bool:
+    """Block until queued durable writes drain. Returns False on timeout.
+
+    Used by tests (which assert on the durable store right after a lookup) and
+    at interpreter exit so a pending write isn't lost on shutdown.
+    """
+    deadline = time.time() + timeout
+    with _WRITE_CV:
+        while _queued_writes:
+            remaining = deadline - time.time()
+            if remaining <= 0:
+                return False
+            _WRITE_CV.wait(remaining)
+    return True
+
+
 def _persist_entry(key: str) -> None:
     """Persist a single touched key. Batched writes defer to the block's end."""
     with _CACHE_LOCK:
         if _suppress_persist:
             _dirty_keys.add(key)
             return
-    with _PERSIST_LOCK:
-        _write_durable({key})
+    _schedule_durable({key})
 
 
 def _persist() -> None:
     """Persist every currently cached key (used at the end of a batch)."""
     with _CACHE_LOCK:
         keys = set(_CACHE.keys())
-    with _PERSIST_LOCK:
-        _write_durable(keys)
+    _schedule_durable(keys)
 
 
 def _write_durable(keys: set[str]) -> None:
@@ -264,9 +324,7 @@ def _batched_persist():
             keys = set(_dirty_keys) if should_persist else set()
             if should_persist:
                 _dirty_keys.clear()
-    if keys:
-        with _PERSIST_LOCK:
-            _write_durable(keys)
+    _schedule_durable(keys)
 
 
 def _evict_if_needed() -> None:
@@ -352,7 +410,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         "places.regularOpeningHours.weekdayDescriptions"
     )
     try:
-        resp = httpx.post(
+        resp = http_client.post(
             f"{_BASE}/places:searchText",
             headers=_headers(field_mask),
             json={"textQuery": f"{name} {city}".strip(), "pageSize": 1},
@@ -411,7 +469,7 @@ def _photo_uri(photo_ref: str, max_width_px: int = 800) -> str | None:
     if not photo_ref or not is_configured():
         return None
     try:
-        resp = httpx.get(
+        resp = http_client.get(
             f"{_BASE}/{photo_ref}/media",
             params={
                 "key": get_settings().google_places_api_key,
@@ -431,7 +489,7 @@ def _fetch_reviews(place_id: str) -> list[dict[str, Any]]:
     if not place_id or not is_configured():
         return []
     try:
-        resp = httpx.get(
+        resp = http_client.get(
             f"{_BASE}/places/{place_id}",
             headers=_headers("reviews"),
             timeout=_HTTP_TIMEOUT_S,
@@ -602,7 +660,7 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
             query = f"top tourist attractions in {destination}"
         names: list[str] = []
         try:
-            resp = httpx.post(
+            resp = http_client.post(
                 f"{_BASE}/places:searchText",
                 headers=_headers("places.displayName,places.rating"),
                 json={"textQuery": query, "pageSize": max(n, 1)},
@@ -626,6 +684,7 @@ def top_places(destination: str, kind: str, n: int = 4, *, refresh: bool = False
 def clear_cache() -> None:
     """Drop every cached entry. Useful for tests."""
     global _loaded, _legacy_doc_cleaned, _persist_retry_after
+    flush_writes()
     with _CACHE_LOCK:
         _CACHE.clear()
         _dirty_keys.clear()
