@@ -263,3 +263,9 @@ check the latest sync all and resolve scripts log , there are some warnings. see
 
 [040] [5-Aug-2026] Enforce canary before production
 make the Prod deployment script check if canary latest is deployed or not to ensure it can notify owner and call canary deployment and verificaiton first if not dpeloyed,
+
+[041] [5-Aug-2026] Fix three persistent test failures
+cant you fix thse 3 pre existing test failures always warning us
+
+[042] [5-Aug-2026] Debug canary deployment failure
+debug and fix the canary deployment failure
