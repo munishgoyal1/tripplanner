@@ -824,6 +824,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 HumanMessage(content=req.message),
                 AIMessage(content=partial or "(interrupted)"),
             ]
+            partial_save_failed = False
             try:
                 _save_chat(
                     history_tid,
@@ -832,8 +833,13 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     req.request_id,
                     False,
                 )
-            except Exception:
-                pass
+            except Exception as save_exc:
+                partial_save_failed = True
+                app_event(
+                    "api_chat_stream_partial_save_error",
+                    error=type(save_exc).__name__,
+                    turn_error=type(exc).__name__,
+                )
             _record_chat_operation(
                 started,
                 user_id=user_id,
@@ -841,7 +847,13 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 outcome="error",
                 exception=exc,
             )
-            yield _sse("error", {"message": "The assistant hit an error. Please retry."})
+            message = "The assistant hit an error. Please retry."
+            if partial_save_failed:
+                message = (
+                    "The assistant hit an error, and the interrupted conversation could not "
+                    "be saved. Trip changes may still have been applied. Please retry."
+                )
+            yield _sse("error", {"message": message})
             return
 
         reply = "".join(reply_parts)

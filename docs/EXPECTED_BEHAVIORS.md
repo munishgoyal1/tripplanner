@@ -35,6 +35,8 @@ Assistant build its first proposal.
   itinerary and any unresolved details.
 - Unexpected graph recursion exhaustion returns the persisted best-effort plan
   instead of discarding useful side effects behind a generic retry error.
+- If a failed turn also cannot persist its interrupted transcript, the client
+  warns that trip changes may still have applied instead of hiding the partial-save failure.
 
 **Executable proof:**
 
@@ -45,6 +47,7 @@ Assistant build its first proposal.
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_new_trip_does_not_rewrite_incomplete_researched_plan_twice`
 - [`tests/test_parallel_tools.py`](../tests/test_parallel_tools.py) - `test_trip_agent_ends_with_summary_at_tool_phase_budget`
 - [`tests/test_sse_tool_summary.py`](../tests/test_sse_tool_summary.py) - `test_best_effort_plan_reply_reports_saved_plan_gaps`
+- [`tests/test_usage.py`](../tests/test_usage.py) - `test_stream_surfaces_partial_turn_save_failure`
 
 ### EB-PLAN-002 - Recommend a fitting trip shape
 
