@@ -533,3 +533,45 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - PostgreSQL lock cleanup is safe only after proving no server process exists.
   Remove the complete runtime lock set, restart once, and preserve all database
   files; never turn automatic local startup into automatic data deletion.
+
+## 2026-08-05 - Atomic Panel Switch And One Notice Channel
+
+- A panel that intentionally keeps prior content while refetching becomes the
+  visible tear in an otherwise atomic trip switch. Reset such caches during
+  render when the identity prop changes; an effect-based clear still paints one
+  stale frame after every other panel has already swapped.
+- Long workspace operations need a single global notice channel with explicit
+  ids, tone-based priority, and outcome replacement. Per-surface banners cannot
+  express in-progress state and compete for the same screen space.
+- Hold a workspace lock only across the state flip. Building read-only view
+  models inside the lock lengthens the window enough for unrelated requests to
+  collide, and the client should still retry once on a 409 using Retry-After.
+
+## 2026-08-05 - Per-Call HTTP Clients Dominated Trip Switch Latency
+
+- A cold trip switch spent 14.1s server-side. Profiling attributed 6.7s of
+  self-time to TLS context setup: warming one destination issues ~60 Places
+  calls, and `httpx.get`/`httpx.post` build, verify, and discard a client per
+  call. A process-wide pooled client with keep-alive cut that path to 0.05s and
+  the live switch to 0.3-1.4s. Route outbound HTTP through the shared client
+  rather than the module-level convenience functions.
+- Best-effort persistence must never run on the request thread. A single stalled
+  cache upsert against the local emulator added 65s to a switch that had already
+  produced its answer. Hand durable cache writes to a background writer and
+  expose an explicit drain hook so tests can still assert on the store.
+- Measure through the running endpoint, not the profiler alone: the profile
+  named the hot function, but only the live switch showed how much of the wall
+  clock the user actually felt.
+
+## 2026-08-05 - Render-Phase State Resets Need A State Tracker, Not A Ref
+
+- Resetting derived state when a prop changes must compare against a `useState`
+  tracker, not a `useRef`. A ref mutates immediately, but React can discard a
+  concurrent render and replay it from the last committed state: the queued
+  `setState` resets are thrown away while the ref keeps the new value, so the
+  reset never fires again. Console tracing showed exactly that - the retry render
+  saw the cleared value, and a later render was back to the stale one.
+- Unit tests passed on the ref version because React Testing Library renders
+  synchronously and never discards a render. The bug only appeared in the running
+  app during a trip switch, so verify render-timing fixes live, not just in
+  vitest.

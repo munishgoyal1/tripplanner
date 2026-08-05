@@ -11,6 +11,7 @@ import type {
   StreamOptions,
   TripInputRequest,
   TripView,
+  TripWorkspaceView,
 } from "./types";
 
 export type IdentityProvider = () => string | Promise<string>;
@@ -22,8 +23,29 @@ export function requireApiBaseUrl(value: string | undefined, settingName: string
   return normalized;
 }
 
+/** Carries the HTTP status so callers can react to retryable failures (409). */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly retryAfterMs: number | null;
+
+  constructor(message: string, status: number, retryAfterMs: number | null) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.retryAfterMs = retryAfterMs;
+  }
+}
+
+function retryAfterMs(response: Response): number | null {
+  const header = response.headers?.get?.("Retry-After");
+  const seconds = header ? Number(header) : NaN;
+  return Number.isFinite(seconds) ? Math.max(0, seconds) * 1000 : null;
+}
+
 function ensureOk(response: Response, action: string): void {
-  if (!response.ok) throw new Error(`${action} (${response.status}).`);
+  if (!response.ok) {
+    throw new ApiError(`${action} (${response.status}).`, response.status, retryAfterMs(response));
+  }
 }
 
 function parseFrame(frame: string): { event: string; data: Record<string, unknown> } | null {
@@ -191,11 +213,17 @@ export class TripplannerClient {
     return data.messages ?? [];
   }
 
-  async switchTrip(tripId: string): Promise<TripView | null> {
+  async switchTrip(tripId: string): Promise<TripWorkspaceView | null> {
     const response = await this.post("/trips/switch", { trip_id: tripId });
     ensureOk(response, "Could not switch trips");
-    const data = (await response.json()) as { ok?: boolean; view?: TripView };
-    return data.ok && data.view ? data.view : null;
+    const data = (await response.json()) as {
+      ok?: boolean;
+      view?: TripView;
+      map?: MapView;
+      itinerary?: Itinerary;
+    };
+    if (!data.ok || !data.view) return null;
+    return { view: data.view, map: data.map ?? null, itinerary: data.itinerary ?? null };
   }
 
   async startNewTrip(): Promise<void> {

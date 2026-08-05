@@ -6,6 +6,132 @@
 
 [050] [5-Aug-2026] Sandbox code refactoring improvements
 standup a new sandbox and implement code refacotring improvements in that
+[061] [5-Aug-2026] Ship perf-panels sandbox
+ship perf-panels
+
+[059] [5-Aug-2026] Diagnosis of remaining switch staleness
+Updated todo list
+
+**Current task: Fix Trip Switch Guide Staleness** 
+
+Ran terminal command: Get-Content c:\repos\tripplanner.worktrees\sandboxes.json | ConvertFrom-Json | Where-Object { $_.slug -like 'perf*' } | Format-List; cd C:\repos\tripplanner.worktrees\sbx-perf-panels; git log --oneline origin/master..HEAD; "--- status ---"; git status --porcelain
+
+Ran terminal command: git log -1 --format=%B; "--- files ---"; git diff --stat origin/master...HEAD
+
+Ran terminal command: git diff origin/master...HEAD -- frontend/src/App.tsx frontend/src/components/RightRail.tsx
+
+Searched for regex `DESTINATION GUIDE|Destination guide|destination-guide` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/frontend/src/**`), 7 results
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/DestinationGuide.tsx#1-1), lines 1 to 200
+
+Searched for regex `WHAT TRAVELERS SAY|What travelers say|travelers say` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/frontend/src/components/**`), 1 result
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/DestinationOverview.tsx#1-1), lines 1 to 120
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/TripPanel.tsx#1-1), lines 1 to 200
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/TripPanel.tsx#255-255), lines 255 to 400
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/TripPanel.tsx#400-400), lines 400 to 470
+
+Searched for regex `fetchDestinationOverview|getCachedOverview|overviewCache` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/frontend/src/**`), 10 results
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/api.ts#440-440), lines 440 to 505
+
+Ran terminal command: git diff origin/master...HEAD -- src/tripplanner/api.py src/tripplanner/web/trip_operations.py src/tripplanner/web/trip_view.py packages/tripplanner-client/src/client.ts packages/tripplanner-client/src/types.ts frontend/src/api.ts frontend/src/components/TripSwitcher.tsx
+
+Read [](file:///c%3A/Users/mugoy/AppData/Roaming/Code/User/workspaceStorage/2bb4d6322b91a588726146054afc7e8a/GitHub.copilot-chat/chat-session-resources/56c30869-3a1a-4e6d-9bd1-d9b9c5fce05a/toolu_01Wj3RbPKH4aiMXFF2MDaUCm__vscode-1785911570483/content.txt)
+
+Searched for regex `destination/overview|def destination_overview|build_destination_overview` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/src/tripplanner/**`), 5 results
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/src/tripplanner/api.py#1035-1035), lines 1035 to 1070
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/src/tripplanner/web/trip_view.py#2370-2370), lines 2370 to 2440
+
+Searched for regex `actionError|assistantTurnStatus|StatusBar|Toast|notification` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/frontend/src/**`), 34 results
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/lib/notices.ts#1-1), lines 1 to 80
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/StatusBar.tsx)
+
+Searched for regex `from "../lib/notices"|from "./lib/notices"|notify\(` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/frontend/src/**`), 2 results
+
+Searched for regex `trips/switch` (`Tripplanner worktrees (Agents 1-3)` · `sbx-perf-panels/src/tripplanner/api.py`), 1 result
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/src/tripplanner/api.py#1138-1138), lines 1138 to 1165
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/components/DesktopToolbar.tsx#1-1), lines 1 to 80
+
+Read [](file:///c%3A/repos/tripplanner.worktrees/sbx-perf-panels/frontend/src/App.tsx#740-740), lines 740 to 800
+
+Ran terminal command: git diff origin/master...HEAD -- frontend/src/components/DesktopToolbar.tsx; git log --oneline -3 -- frontend/src/components/StatusBar.tsx frontend/src/lib/notices.ts
+
+Ran terminal command: git status --porcelain; "--- head vs disk ---"; git diff --stat; "--- branch ---"; git log --oneline -3
+
+Ran terminal command: git diff -- frontend/src/App.tsx
+
+Analyzing your answers...
+
+Ran terminal command: git diff origin/master...HEAD -- frontend/src/components/MapPanel.tsx frontend/src/components/ItineraryPanel.tsx
+
+**Current task: Diagnose Perf Sandbox Trip Switch**
+
+Staying read-only. Here is the diagnosis to hand to the sandbox window.
+
+## 1. Why the top of Details keeps the old trip
+
+The hero photo/summary and the city chips are the only two things in the workspace that are **not** part of the atomic switch payload, and both actively prefer stale data.
+
+**Hero** — DestinationOverview.tsx is explicitly designed to keep the previous destination on screen:
+
+- comment: *"we keep the prior content visible while the new destination loads so the panel never blanks out mid-switch"*
+- on a cache miss it does **not** clear `data`; it just sets `loading` and fetches (DestinationOverview.tsx)
+- the only visual cue is `stale` → `opacity-70` (DestinationOverview.tsx)
+- `.catch()` is a deliberate no-op: *"keep prior content on transient failure"*
+
+That was a good nicety when a destination change meant "user flipped focus"; after the atomic-switch work it is the one panel that lies about which trip is loaded. It also has its own 30-min module cache and its own `GET /destination/overview` round-trip (api.ts) — `TripWorkspaceView` carries only `view`, `map`, `itinerary` (types.ts), so nothing seeds it.
+
+**City chips** — `cities` lives in TripPanel.tsx and is only ever written by `DestinationGuide`'s `onCities` callback after `fetchPlaceGuide` resolves. `city` / `kind` / `query` also survive the switch, so a filter scoped to the old trip's city stays selected.
+
+The screenshot confirms the split precisely: the amber banner already reads "Popular spots in Punjab (Chandigarh…)" — that comes from `ov.destination`, which *was* seeded atomically — while the hero and chips are still Tamil Nadu.
+
+**Suggested fix (cheap, honest):**
+- `DestinationOverview`: keep the `getCachedOverview` seed, but when the incoming `destination` differs from `data.destination`, `setData(null)` before fetching. The `stale` dimming branch then becomes dead and can go.
+- `TripPanel`: reset `cities` / `city` / `kind` / `query` on `tripVersion` change (or key the guide subtree by trip id).
+- Resist putting the overview into the switch payload — `build_destination_overview` (trip_view.py) does a Places `top_places` + prefetch + Tavily news, i.e. it would land the slowest call in the workspace directly on the critical path you are already trying to shorten.
+
+## 2. Why the switch got slower
+
+- `switch_trip` now builds three view-models sequentially inside one `asyncio.to_thread`, under the workspace-exclusive lock (trip_operations.py + api.py). Time-to-first-panel went from `max(view, map, itinerary)` (three parallel client fetches) to `view + map + itinerary`. Everything now lands together, but later.
+- `/trips/switch` enqueues **no** background warm, unlike `trip_view_endpoint` which backgrounds `warm_guide` (api.py). So immediately after a switch, the guide *and* the overview both fetch cold — which is exactly the tail the owner is watching.
+- Suggested: add `background: BackgroundTasks` to `trips_switch` and enqueue `warm_guide` plus a new `warm_destination_overview` for the newly active trip. That makes the hero a cache hit without lengthening the response.
+
+## 3. Notifications — the channel you are already building fits
+
+notices.ts + `StatusBar` are the right home; nothing publishes to them yet beyond the `action-error` conversions in your working tree. For the switch specifically:
+
+- post `notify({ id: "trip-switch", tone: "progress", message: 'Switching to "<name>"…' })` in `TripSwitcher.choose()` **before** `await switchTrip(tripId)`
+- resolve it in `App.handleSwitched` after `applyView` — same id, `tone: "success"`, `"Now planning <name>"` (auto-dismisses at 4s), or `tone: "error"` in the switcher's `catch`
+
+Reusing one id keeps a single slot, and resolving in `App` rather than the switcher is what makes the notice span the whole operation instead of ending when the fetch returns.
+
+## Side note while you are in there
+
+`panelSeed` in App.tsx is never cleared. `consumedSeedRef` makes re-application safe within a mounted panel, but `handleNewTrip` / `handleStartNewTrip` leave the previous trip's seed in state — remounting the map or itinerary pane after starting a new trip would seed it from the old trip. Clearing `panelSeed` on trip-change (or keying it by trip id) closes that.
+
+Created 4 todos
+
+[056] [5-Aug-2026] Reimagine the global notification bar
+Can you reimagine the ntoificaiotn bar - both from UX UI control and when and what should it show. what is best for user experience
+
+[055] [5-Aug-2026] Space notification bar from switcher
+Also i asked you to give moroe space between ntoificaiotn text panel with the trip switcher dropdown. they both fdeel sticking.
+
+[054] [5-Aug-2026] Notify progress for long switches
+the switch time is now even longer. there hsould be some notificaiton on global notificaiton bar about switch requested to X traip ands it is in progress etc. and shoudl update notifc. once swithc ocmpeltes. Use gloabl top row text ntoificaiton for all these kind of long runnign operation notificaitons.
+
+[053] [5-Aug-2026] Details hero lags atomic switch
+it switches atomically the itinerary and map panel and below part of details panel, but the top main pic and detial in details still remains old before full switch happens - screenshot attached
 
 [057] [5-Aug-2026] Merge promote and ship verbs
 yes for now i dont need  promote or ship to be seperate, both mean the same. so make the changes and simplify

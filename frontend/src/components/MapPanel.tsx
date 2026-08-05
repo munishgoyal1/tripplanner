@@ -102,6 +102,8 @@ interface Props {
   reloadToken?: number;
   /** Stable identity used to reset a newly selected trip to All days. */
   tripId?: string | null;
+  /** Map view-model handed over by a trip switch; consumed once, then refetches. */
+  seed?: MapView | null;
   /** When set, highlight the pin with this name (filter to its day, pan, open info). */
   focusName?: string | null;
   /** Exact itinerary occurrence day for repeated places such as a multi-day hotel. */
@@ -141,7 +143,7 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
   const view = useMemo(
     () => sourceView ? filterMapView(sourceView, filters) : null,
@@ -181,6 +183,10 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, foc
   const pendingFocusRef = useRef<MapPin | MapAirport | null>(null);
   const pendingRouteFocusRef = useRef<{ day: number; circuitId?: string } | null>(null);
   const previousTripIdRef = useRef(tripId);
+  const seedRef = useRef(seed);
+  seedRef.current = seed;
+  const consumedSeedRef = useRef<MapView | null>(null);
+  const configLoadedRef = useRef(false);
   const filterKey = filters.join(",");
   const previousFilterKeyRef = useRef(filterKey);
 
@@ -193,6 +199,13 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, foc
     previousTripIdRef.current = tripId;
     pendingFocusRef.current = null;
     pendingRouteFocusRef.current = null;
+    // Drop the outgoing trip's geometry immediately. Keeping it on screen while
+    // the new trip loaded made the map look like it had switched to the wrong
+    // trip for as long as the request took.
+    clearMapOverlays(overlaysRef.current);
+    overlaysRef.current = [];
+    pinMarkersRef.current = [];
+    setView(null);
     setActiveDay(null);
     setSelectedPin(null);
     setContextScope(null);
@@ -265,6 +278,18 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, foc
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
+    // A trip switch already returned this panel's view-model. Use it instead of
+    // asking the server to rebuild the same thing a second time.
+    const seeded = seedRef.current;
+    if (seeded && seeded !== consumedSeedRef.current) {
+      consumedSeedRef.current = seeded;
+      if (configLoadedRef.current) {
+        setView(seeded);
+        setError(null);
+        setLoading(false);
+        return;
+      }
+    }
     (async () => {
       setLoading(true);
       setError(null);
@@ -273,6 +298,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, foc
         if (cancelled) return;
         setView(mv);
         setKey(cfg.enabled ? cfg.key : null);
+        configLoadedRef.current = true;
       } catch (requestError) {
         if (!cancelled && !(requestError instanceof DOMException && requestError.name === "AbortError")) {
           setError("Could not load the map.");
@@ -285,7 +311,9 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, foc
       cancelled = true;
       controller.abort();
     };
-  }, [reloadToken, retryToken]);
+    // tripId participates so the eager clear above always has a matching
+    // reload, even when the caller switches trips without bumping reloadToken.
+  }, [reloadToken, retryToken, tripId]);
 
   useEffect(() => {
     if (!view) return;
@@ -398,6 +426,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, foc
       pendingFocus: pendingFocusRef.current,
       pendingRouteFocus: pendingRouteFocusRef.current,
       previousOverlays: overlaysRef.current,
+      previousPinMarkers: pinMarkersRef.current,
       onPinClick: (pin) => {
         setCandidatePin(null);
         if (isInspectableMapPin(pin)) {
