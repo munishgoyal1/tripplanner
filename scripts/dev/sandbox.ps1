@@ -343,6 +343,22 @@ function Stop-SandboxStack {
     }
 }
 
+function Remove-SandboxLeftovers {
+    # npm workspaces link @tripplanner/client into frontend/node_modules, and
+    # `git worktree remove` leaves that reparse point plus its parents on disk.
+    # Unlink before deleting: nothing may recurse through a junction.
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+    Get-ChildItem -LiteralPath $Path -Force -Recurse -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.Attributes.HasFlag([IO.FileAttributes]::ReparsePoint) } |
+        ForEach-Object { & cmd /c rmdir "$($_.FullName)" }
+    Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
+    if (Test-Path -LiteralPath $Path) {
+        Write-Warning "$Path still exists; close anything using it and delete it manually."
+    }
+}
+
 function Remove-PendingMergesFor {
     # An interrupted -Update records a resumable merge; a discarded sandbox must not
     # leave one behind, or every later sync fails against the missing worktree.
@@ -681,6 +697,7 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
             Write-Warning "Close any window or terminal using that folder, then delete it manually."
             & git -C $scriptRepoRoot worktree prune
         }
+        Remove-SandboxLeftovers -Path $entry.worktree
     } else {
         Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("worktree", "prune")
     }
