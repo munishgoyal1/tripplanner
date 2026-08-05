@@ -46,6 +46,7 @@ trip through shared API contracts.
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view model and display semantics |
+| `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
