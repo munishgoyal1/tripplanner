@@ -107,6 +107,19 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open Chat Agent Workspace Experiment (2026-08-05)
+
+The chat-agent rethink lab is available at
+`http://127.0.0.1:5175/lab-16-chat-agent-workspace.html`. It revisits the decision
+recorded below by asking where the Assistant should live in the workspace, and how a
+single turn, the time it took, and the stops it changed should be presented. It compares
+a resident conversation column, a full-width focus composer with an expanding reading
+sheet, and a right-rail turn thread that displaces Details into a map overlay. Complete
+session history, reader-owned scroll position, and a retained per-reply duration are
+required in every option rather than selectable, because they are current defects. No
+production code is changed by this Lab. See
+[`CHAT_AGENT_WORKSPACE.md`](CHAT_AGENT_WORKSPACE.md).
+
 ## Decided Assistant Experiment (2026-07-30)
 
 The Assistant-led trip kickoff lab is available at

@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Create, run, update, promote, ship, and discard isolated trip-planner sandboxes.
+  Create, run, update, promote, and discard isolated trip-planner sandboxes.
 
   A sandbox is a throwaway feature environment: its own git branch
   (sandbox/<slug>), its own worktree (sbx-<slug>), its own isolated ports, and
@@ -15,7 +15,6 @@
     .\scripts\dev\sandbox.ps1 -Stop route-experiment
     .\scripts\dev\sandbox.ps1 -Update route-experiment
     .\scripts\dev\sandbox.ps1 -Promote route-experiment
-    .\scripts\dev\sandbox.ps1 -Ship route-experiment -Approve
     .\scripts\dev\sandbox.ps1 -Discard route-experiment
     .\scripts\dev\sandbox.ps1 -List
 
@@ -24,9 +23,12 @@
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
   -New serves automatically unless you pass -NoServe.
 
-  Sandboxes are always created fresh and discarded when shipped: a fresh one
+  -Promote is end to end: sync, validate, push, open the PR, and merge into the
+  base branch. It never discards the sandbox, so the work stays runnable until
+  you decide otherwise. -Ship is an alias of the same verb.
+
+  Sandboxes are always created fresh and discarded after promotion: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
-  The parked reuse variant lives in scripts/parked/sandbox-recycle.ps1.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "List")]
@@ -44,13 +46,11 @@ param(
     [string]$Stop,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Promote")]
+    [Alias("Ship")]
     [string]$Promote,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Update")]
     [string]$Update,
-
-    [Parameter(Mandatory = $true, ParameterSetName = "Ship")]
-    [string]$Ship,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Discard")]
     [string]$Discard,
@@ -60,7 +60,7 @@ param(
 
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
-    [Parameter(ParameterSetName = "Ship")]
+    [Parameter(ParameterSetName = "Promote")]
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New")]
@@ -69,14 +69,8 @@ param(
     [Parameter(ParameterSetName = "New")]
     [switch]$NoServe,
 
-    [Parameter(ParameterSetName = "Ship")]
-    [switch]$Approve,
-
-    [Parameter(ParameterSetName = "Ship")]
+    [Parameter(ParameterSetName = "Promote")]
     [switch]$SkipValidation,
-
-    [Parameter(ParameterSetName = "Ship")]
-    [switch]$KeepSandbox,
 
     [Parameter(ParameterSetName = "Discard")]
     [switch]$Force,
@@ -92,7 +86,7 @@ $ErrorActionPreference = "Stop"
 # a file lock. The slug is sanitised because it reaches the log path before
 # Assert-Slug has had a chance to reject it.
 $runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
-$runSlug = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Ship, $Discard) |
+$runSlug = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Discard) |
     Where-Object { $_ } | Select-Object -First 1
 $runLogName = if ($runSlug) {
     "sandbox-$($runSlug -replace '[^A-Za-z0-9._-]', '-')-$runVerb"
@@ -342,7 +336,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
 
 $slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Serve) { $Serve } `
     elseif ($Stop) { $Stop } elseif ($Promote) { $Promote } `
-    elseif ($Update) { $Update } elseif ($Ship) { $Ship } else { $Discard }
+    elseif ($Update) { $Update } else { $Discard }
 Assert-Slug -Name $slug
 $branchName = "sandbox/$slug"
 $worktreePath = Join-Path $worktreesRoot "sbx-$slug"
@@ -541,37 +535,15 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        throw "GitHub CLI 'gh' is required by -Promote. Install it, or open and merge the PR yourself."
+    }
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."
     }
-    if ($PSCmdlet.ShouldProcess($entry.branch, "Fetch origin/$BaseBranch and push branch for review")) {
-        Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("fetch", "origin", $BaseBranch)
-        Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
-        Write-Host "[pushed]  $($entry.branch)"
-        Write-Host "Open a pull request to merge into $BaseBranch (never auto-merged):"
-        Write-Host "  gh pr create --base $BaseBranch --head $($entry.branch) --fill"
-        Write-Host "Run validation (pytest / npm run build) before merging."
-    }
-    return
-}
-
-if ($PSCmdlet.ParameterSetName -eq "Ship") {
-    if (-not (Test-Path $entry.worktree -PathType Container)) {
-        throw "Sandbox worktree is missing: $($entry.worktree)."
-    }
-    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        throw "GitHub CLI 'gh' is required by -Ship. Install it, or use -Promote and merge the PR yourself."
-    }
-    $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
-    if ($changes) {
-        throw "Sandbox has uncommitted changes. Commit them before shipping."
-    }
-    $action = if ($Approve) {
-        "Sync, validate, merge into $BaseBranch, and discard the sandbox"
-    } else {
-        "Sync, validate, and open a pull request into $BaseBranch"
-    }    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
+    $action = "Sync, validate, merge into $BaseBranch, and keep the sandbox"
+    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
     Write-Host "== 1/5 sync with origin/$BaseBranch ==" -ForegroundColor Green
     & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -Confirm:$false
@@ -579,7 +551,7 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         "diff", "--name-only", "--diff-filter=U"
     )
     if ($conflicts) {
-        throw "Resolve and commit these conflicts, then re-run -Ship ${slug}:`n$($conflicts -join "`n")"
+        throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
 
     Write-Host "== 2/5 validate ==" -ForegroundColor Green
@@ -605,13 +577,7 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         if (-not $prNumber) { throw "Could not determine the pull request number for $($entry.branch)." }
         Write-Host "[pr]      #$prNumber -> $BaseBranch"
 
-        if (-not $Approve) {
-            Write-Host "Review the PR, then merge and clean up with:" -ForegroundColor Yellow
-            Write-Host "  .\scripts\dev\sandbox.ps1 -Ship $slug -Approve"
-            return
-        }
-
-        Write-Host "== 5/5 merge and discard ==" -ForegroundColor Green
+        Write-Host "== 5/5 merge ==" -ForegroundColor Green
         & gh pr merge $prNumber --merge
         if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
         Write-Host "[merged]  #$prNumber into $BaseBranch"
@@ -619,23 +585,10 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         Pop-Location
     }
 
-    if ($KeepSandbox) {
-        Write-Host "[kept]    sandbox '$slug' (-KeepSandbox)"
-        return
-    }
-    # Discard refuses to run from inside the worktree it is about to remove.
-    Push-Location $primaryRoot
-    try {
-        & $PSCommandPath -Discard $slug -Force -DeleteRemoteBranch -Confirm:$false
-    } catch {
-        # A running sandbox stack or an open editor window keeps the files locked.
-        Write-Warning "Merged into $BaseBranch, but the sandbox could not be cleaned up: $($_.Exception.Message)"
-        Write-Host "Stop 'Run-Sandbox $slug', close the sandbox window, then run:" -ForegroundColor Yellow
-        Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
-        return
-    } finally {
-        Pop-Location
-    }
+    # Discarding is a separate, deliberate step: the merged sandbox stays runnable
+    # until its owner says otherwise.
+    Write-Host "[kept]    sandbox '$slug' is still running; discard it when you are done:" -ForegroundColor Yellow
+    Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
     Write-Host "Sync your other lanes so they pick up $BaseBranch." -ForegroundColor Cyan
     return
 }

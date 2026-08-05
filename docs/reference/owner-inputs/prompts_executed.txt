@@ -8,6 +8,12 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[061] [5-Aug-2026] Ship perf-panels sandbox
+ship perf-panels
+
+[060] [5-Aug-2026] Update sandbox stack for inspection
+update the stack for this sandbox for me to inspect
+
 [059] [5-Aug-2026] Diagnosis of remaining switch staleness
 Updated todo list
 
@@ -137,12 +143,44 @@ the switch time is now even longer. there hsould be some notificaiton on global 
 
 [053] [5-Aug-2026] Details hero lags atomic switch
 it switches atomically the itinerary and map panel and below part of details panel, but the top main pic and detial in details still remains old before full switch happens - screenshot attached
+[048] [5-Aug-2026] Implement Lab 14 in sandbox
+implemenmt lab14 in a sandbox
+[057] [5-Aug-2026] Merge promote and ship verbs
+yes for now i dont need  promote or ship to be seperate, both mean the same. so make the changes and simplify
+
+[056] [5-Aug-2026] Explain promote versus ship
+wait, do you distinguish between promote and ship.. explain that
+
+[055] [5-Aug-2026] Promote means end-to-end merge
+when i say promote means do it end to end, merge to master, validate and when everything good, finally ask if sandbox should be discarded. 
+
+[054] [5-Aug-2026] Promote lab-14 sandbox
+perf panel fioxes given to orignal agent to own. so you can drop that. pomote lab14 sandbox
+
+[053] [5-Aug-2026] Delete sandbox recycle scripts
+remove the redundancet sandbox recycle scriopts and functioanlity.  its no longe rneeded
 
 [052] [5-Aug-2026] Per-sandbox run logs avoid collision
 sandbox scripts should log their last runs to respective named sandbox logs to avoid collision
 
 [051] [5-Aug-2026] Auto-serve sandbox endpoints for verification
 you should automatically bring up the hosted endpoints also of a sandbox for some evrificaiton
+[050] [5-Aug-2026] Reimagine chat agent workspace UX
+create a lab reimagingin the chat agent from UX point of view. Overall UX layout of all panels with respect to how user will interact. I rely on your UI sklills.
+Also the chat agent currently has a scroll limit probnably older chats not visible in same session. It should retain a short time taken for each response
+[053] [5-Aug-2026] Do all three tiers fresh sandbox
+Do all 3 tiers together ina fresh sandbox and bring the stack up for my inspection
+
+[052] [5-Aug-2026] Lab difference and switching delays
+i cant make out any difference what new is implemented in this lab compared to whats alreayd existing in master.
+
+Also the switching in from day to day level or to trip level from a item row in itinerary takes noticeable delay sometimes feeling stuck or taking too long. Also switching between trips take noticeable delay and the data change happens panel by panel, map and itinerary taking time to update and continues to stay with previous trip data for that duraiton. Any way to improve those ?
+
+[051] [5-Aug-2026] Seed sandbox data for signed-in account
+but my google account linked dtaa is not seeded mapped to my google account. I can see 14 trips for local not signed in user
+
+[050] [5-Aug-2026] Question sandbox Cosmos seed data
+why is there no data in cosmos of this sandbox. does it not put in seed data as last decided automatically ?
 
 [049] [5-Aug-2026] Park recycle, keep sandboxes fresh
 there could be more than 1 sandbox running in paraellel , i would say remove the complexity of recycle. just keep it simple fresh from scratch creation for now. Park the recycle scripts, dont delete but keep them seperately and dont bring any of it in main flow. will delete later if not required
