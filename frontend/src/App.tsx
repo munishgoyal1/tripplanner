@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import AssistantModalShell from "./components/AssistantModalShell";
 import CanvasPaneFrame from "./components/CanvasPaneFrame";
 import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
 import DetailsPaneShell from "./components/DetailsPaneShell";
@@ -29,15 +28,15 @@ interface NavRef {
 }
 
 type CanvasPane = "itinerary" | "map";
-type WorkspacePane = CanvasPane | "details" | "assistant";
+type WorkspacePane = CanvasPane | "details";
 type ResizeTarget = "itinerary" | "inspector" | null;
+// The Assistant lives in a bottom dock: a single composer row by default, an
+// expanded reading sheet above it, or the full workspace height.
+type AssistantView = "bar" | "sheet" | "full";
 
 const ITINERARY_MIN_PCT = 18;
 const MAP_MIN_PCT = 20;
 const INSPECTOR_MIN_PCT = 24;
-// The Assistant dock keeps a fixed, readable column so the core panes keep the
-// whole remaining width; maximize is the way to give it more room.
-const ASSISTANT_DOCK_WIDTH = "23rem";
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -120,6 +119,7 @@ export default function App() {
   ));
   const [showExport, setShowExport] = useState(false);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
+  const [assistantView, setAssistantView] = useState<AssistantView>("bar");
   const [turnEffects, setTurnEffects] = useState<{ token: number; effects: TurnEffect[] } | null>(null);
   const dockOpen = inspectorOpen;
   const canvasMaximized = maximizedPane !== null && maximizedPane !== "details";
@@ -421,6 +421,36 @@ export default function App() {
     await refresh(null);
   };
 
+  // A turn that changed the plan selects what it changed, so the Itinerary,
+  // Map, and Details all land on the same subject without a manual click. The
+  // scope follows the shape of the change: one touched place is selected
+  // outright, a change spread across days (a new city, a reshuffle) keeps the
+  // whole trip in view instead of leaving one day scoped.
+  const applyTurnSelection = async (effects: TurnEffect[], tripChanged: boolean) => {
+    const applied = effects.filter((effect) => effect.change !== "removed");
+    if (!applied.length) {
+      if (tripChanged) handleMapAllDaysFocus();
+      return;
+    }
+    const days = new Set(
+      applied.map((effect) => effect.day).filter((day): day is number => typeof day === "number"),
+    );
+    if (tripChanged || days.size > 1) {
+      handleMapAllDaysFocus();
+      return;
+    }
+    const primary = applied.find((effect) => effect.kind === "hotel") ?? applied[0];
+    // Focus first: a focus dispatch clears any pending itinerary jump, so the
+    // scroll target has to be set after the Map and Details have landed.
+    await handleStopFocus(primary.kind, primary.name, primary.day, primary.stop);
+    if (primary.day) {
+      dispatchWorkspace({
+        type: "jump",
+        target: { day: primary.day, name: primary.name, token: Date.now() },
+      });
+    }
+  };
+
   // After every chat turn: refresh every trip pane, and detect a mid-chat
   // destination switch (the agent created a NEW trip → server returns a new
   // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
@@ -448,6 +478,7 @@ export default function App() {
       });
       return;
     }
+    await applyTurnSelection(effects, tripChanged);
     if (context?.startedWithoutTrip) {
       setAssistantTurnStatus({
         phase: "complete",
@@ -755,9 +786,6 @@ export default function App() {
     </DetailsPaneShell>
   );
 
-  const assistantDocked = isWideDesktop;
-  const assistantColumnVisible = assistantDocked && chatOpen && !maximizedPane;
-  const assistantSharesRow = assistantColumnVisible && (canvasOpen || dockOpen);
   const coreColumns = isWideDesktop && dockOpen && canvasOpen
     ? itineraryOpen && mapOpen
       ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct - effectiveInspectorPct}fr 0.375rem ${effectiveInspectorPct}fr`
@@ -765,13 +793,7 @@ export default function App() {
     : itineraryOpen && mapOpen
       ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct}fr`
       : "minmax(0, 1fr)";
-  const workspaceColumns = maximizedPane
-    ? "minmax(0, 1fr)"
-    : assistantSharesRow
-      ? `${ASSISTANT_DOCK_WIDTH} 0.375rem ${coreColumns}`
-      : assistantColumnVisible
-        ? "minmax(0, 1fr)"
-        : coreColumns;
+  const workspaceColumns = maximizedPane ? "minmax(0, 1fr)" : coreColumns;
   const assistantPanel = (
     <ChatPanel
       onTurnComplete={handleTurnComplete}
@@ -783,7 +805,9 @@ export default function App() {
       onImported={handleImported}
       hideGlobalControls
       assistantRequest={assistantRequest}
-      maximized={maximizedPane === "assistant"}
+      layout={assistantView}
+      onChangeLayout={setAssistantView}
+      onHide={() => setDockPaneOpen("assistant", false)}
       turnEffects={turnEffects}
       onEffectSelect={(effect) => {
         void handleStopFocus(effect.kind, effect.name, effect.day, effect.stop);
@@ -791,27 +815,14 @@ export default function App() {
     />
   );
 
+  // Hiding the dock must not unmount the Assistant: an in-flight turn and the
+  // loaded transcript have to survive a hide/show round trip.
   const assistantDock = (
     <section
-      className={`min-h-0 min-w-0 ${
-        !chatOpen || (maximizedPane && maximizedPane !== "assistant") ? "hidden" : ""
-      }`}
+      className={`relative z-30 shrink-0 border-t border-slate-200 bg-white${chatOpen ? "" : " hidden"}`}
     >
-      <CanvasPaneFrame
-        label="Assistant"
-        maximized={maximizedPane === "assistant"}
-        onHide={() => setDockPaneOpen("assistant", false)}
-        onToggleMaximize={() => toggleMaxPane("assistant")}
-      >
-        {assistantPanel}
-      </CanvasPaneFrame>
-    </section>
-  );
-
-  const assistantModal = (
-    <AssistantModalShell open={chatOpen} onClose={() => setDockPaneOpen("assistant", false)}>
       {assistantPanel}
-    </AssistantModalShell>
+    </section>
   );
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
@@ -819,12 +830,11 @@ export default function App() {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
   }, [isDesktop, mobileTripOpen]);
 
-  // Maximizing the Assistant only means anything while it is a docked column.
-  // Narrowing back to the modal must not leave the workspace with every pane
-  // hidden behind it.
+  // Hiding the Assistant must not leave it remembering a full-height sheet the
+  // next time it is opened.
   useEffect(() => {
-    if (!assistantDocked && maximizedPane === "assistant") setMaximizedPane(null);
-  }, [assistantDocked, maximizedPane]);
+    if (!chatOpen) setAssistantView("bar");
+  }, [chatOpen]);
 
   const latestStatus = compactStatus(view?.alerts?.[0]);
   const reviewSummary = plannerReview
@@ -907,8 +917,6 @@ export default function App() {
           className="relative grid min-h-0 flex-1 overflow-hidden p-2"
           style={{ gridTemplateColumns: workspaceColumns }}
         >
-          {assistantDocked && assistantDock}
-          {assistantSharesRow && <div aria-hidden className="pointer-events-none" />}
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>
             <CanvasPaneFrame
               label="Itinerary"
@@ -968,8 +976,8 @@ export default function App() {
             </div>
           )}
           {inspector}
-          {!assistantDocked && assistantModal}
         </main>
+        {assistantDock}
       </div>
         ) : (
         <MobileWorkspaceShell

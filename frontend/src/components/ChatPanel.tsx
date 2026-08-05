@@ -1,6 +1,20 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowDown, Check, Clock, Copy, MapPin, Pencil, Send, Square } from "lucide-react";
+import {
+  ArrowDown,
+  Check,
+  Clock,
+  Copy,
+  Maximize2,
+  MapPin,
+  MessageSquare,
+  Minimize2,
+  Pencil,
+  Send,
+  Sparkles,
+  Square,
+  X,
+} from "lucide-react";
 import {
   signIn,
   signOut,
@@ -50,8 +64,16 @@ interface Props {
   hideGlobalControls?: boolean;
   /** A user-approved command-bar escalation into a real Assistant turn. */
   assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
-  /** Renders turns as full cards when the Assistant owns the whole workspace. */
-  maximized?: boolean;
+  /**
+   * Desktop dock shape: a single composer row (`bar`), a reading sheet above
+   * that row (`sheet`), or the whole workspace height (`full`). `panel` is the
+   * self-contained column used by mobile.
+   */
+  layout?: "panel" | "bar" | "sheet" | "full";
+  /** Switch between the docked shapes from the dock's own controls. */
+  onChangeLayout?: (layout: "bar" | "sheet" | "full") => void;
+  /** Close the dock entirely. */
+  onHide?: () => void;
   /** Stops the last completed turn changed, published by the workspace. */
   turnEffects?: { token: number; effects: TurnEffect[] } | null;
   /** Move Itinerary, Map, and Details to a stop named by a reply. */
@@ -98,7 +120,9 @@ export default function ChatPanel({
   onImported,
   hideGlobalControls = false,
   assistantRequest = null,
-  maximized = false,
+  layout = "panel",
+  onChangeLayout,
+  onHide,
   turnEffects = null,
   onEffectSelect,
 }: Props) {
@@ -522,8 +546,20 @@ export default function ChatPanel({
     }
   }
 
-  return (
-    <div className="flex h-full flex-col bg-white">
+  // A question from the agent lives in the transcript, so a collapsed dock has
+  // to open far enough to answer it.
+  useEffect(() => {
+    if (tripInputRequest && layout === "bar") onChangeLayout?.("sheet");
+  }, [tripInputRequest, layout, onChangeLayout]);
+
+  const docked = layout !== "panel";
+  const wideTurns = layout === "full";
+  const lastReply = useMemo(
+    () => [...messages].reverse().find((m) => m.role === "assistant" && m.text) ?? null,
+    [messages],
+  );
+
+  const brandHeader = (
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/85 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-brand to-brand-700 text-base text-white shadow-sm">
@@ -735,7 +771,9 @@ export default function ChatPanel({
           </button>}
         </div>
       </header>
+  );
 
+  const transcriptBlock = (
       <div className="relative min-h-0 flex-1">
       <div
         ref={scrollRef}
@@ -825,21 +863,38 @@ export default function ChatPanel({
           <div
             className={`group flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
           >
-            {maximized && m.role === "assistant" && (m.ts !== undefined || m.seconds !== undefined) && (
-              <div className="mb-1 flex items-center gap-2 px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                <span>Assistant</span>
-                {m.ts !== undefined && <span>{clockLabel(m.ts)}</span>}
-                {m.seconds !== undefined && <span>· took {turnDurationLabel(m.seconds)}</span>}
-              </div>
+            {m.role === "user" && m.ts !== undefined && (
+              <div className="mb-1 px-1 text-[10px] text-slate-400">{clockLabel(m.ts)}</div>
             )}
             <div
-              className={`${maximized ? "max-w-[min(56rem,94%)]" : "max-w-[82%]"} whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
+              className={`${wideTurns ? "max-w-[min(56rem,94%)]" : "max-w-[88%]"} rounded-lg px-3.5 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
                 m.role === "user"
-                  ? "bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
-                  : "bg-white text-ink ring-slate-100"
+                  ? "rounded-br-sm bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
+                  : "bg-white text-ink ring-slate-200"
               }`}
             >
+              {m.role === "assistant" && (
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <Sparkles size={11} className="shrink-0 text-brand" aria-hidden />
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    Assistant
+                  </span>
+                  {m.ts !== undefined && (
+                    <span className="text-[10px] text-slate-400">{clockLabel(m.ts)}</span>
+                  )}
+                  {m.seconds !== undefined && (
+                    <span
+                      title={`This reply took ${turnDurationLabel(m.seconds)}`}
+                      className="ml-auto inline-flex items-center gap-1 rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500"
+                    >
+                      <Clock size={10} aria-hidden /> {turnDurationLabel(m.seconds)}
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className="whitespace-pre-wrap">
               {m.text || (busy && i === messages.length - 1 ? "…" : "")}
+              </div>
               {m.tools && m.tools.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {m.tools.map((t) => {
@@ -873,16 +928,8 @@ export default function ChatPanel({
                 </div>
               )}
             </div>
-            {m.role === "assistant" && (m.seconds !== undefined || Boolean(m.effects?.length)) && (
+            {m.role === "assistant" && Boolean(m.effects?.length) && (
               <div className="mt-1.5 flex flex-wrap items-center gap-1.5 px-1">
-                {m.seconds !== undefined && (
-                  <span
-                    title={`This reply took ${turnDurationLabel(m.seconds)}`}
-                    className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500"
-                  >
-                    <Clock size={10} aria-hidden /> {turnDurationLabel(m.seconds)}
-                  </span>
-                )}
                 {m.effects?.map((effect, effectIndex) =>
                   effect.change === "removed" ? (
                     <span
@@ -969,8 +1016,10 @@ export default function ChatPanel({
         </button>
       )}
       </div>
+  );
 
-      <div className="border-t border-slate-100 bg-white p-4">
+  const composerBlock = (
+      <div className={docked ? "min-w-0 flex-1" : "border-t border-slate-100 bg-white p-4"}>
         {failedRequest && (
           <button
             onClick={retryFailedRequest}
@@ -1005,7 +1054,7 @@ export default function ChatPanel({
           <textarea
             ref={composerRef}
             className="flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-            rows={2}
+            rows={docked ? 1 : 2}
             placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -1031,7 +1080,10 @@ export default function ChatPanel({
           </button>
         </div>
       </div>
+  );
 
+  const modals = (
+    <>
       {showSettings && createPortal(
         <SettingsModal onClose={() => setShowSettings(false)} />,
         document.body,
@@ -1067,6 +1119,89 @@ export default function ChatPanel({
         />,
         document.body,
       )}
+    </>
+  );
+
+  if (!docked) {
+    return (
+      <div className="flex h-full flex-col bg-white">
+        {brandHeader}
+        {transcriptBlock}
+        {composerBlock}
+        {modals}
+      </div>
+    );
+  }
+
+  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-sm px-2 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-ink";
+  const dockControls = (
+    <>
+      {layout === "bar" ? (
+        <button type="button" onClick={() => onChangeLayout?.("sheet")} className={dockButton}>
+          <MessageSquare size={12} aria-hidden /> Conversation
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onChangeLayout?.("bar")}
+          title="Minimize the conversation back to the bottom row"
+          className={dockButton}
+        >
+          <Minimize2 size={12} aria-hidden /> Minimize
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => onChangeLayout?.(layout === "full" ? "sheet" : "full")}
+        title={layout === "full" ? "Restore the conversation sheet" : "Maximize the conversation"}
+        className={dockButton}
+      >
+        {layout === "full" ? <Minimize2 size={12} aria-hidden /> : <Maximize2 size={12} aria-hidden />}
+        {layout === "full" ? "Restore" : "Maximize"}
+      </button>
+      {onHide && (
+        <button type="button" onClick={onHide} title="Hide the assistant" aria-label="Hide Assistant" className={dockButton}>
+          <X size={12} aria-hidden />
+        </button>
+      )}
+    </>
+  );
+
+  return (
+    <div className="relative bg-white">
+      {layout !== "bar" && (
+        <div
+          className={`absolute inset-x-0 bottom-full z-30 flex flex-col border-t border-slate-200 bg-white shadow-pop ${
+            layout === "full" ? "h-[calc(100dvh-7.5rem)]" : "h-[58vh]"
+          }`}
+        >
+          <div className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2">
+            <MessageSquare size={13} className="text-brand" aria-hidden />
+            <p className="text-[12px] font-semibold text-ink">Assistant</p>
+            <div className="ml-auto flex items-center gap-1">{dockControls}</div>
+          </div>
+          {transcriptBlock}
+        </div>
+      )}
+      <div className="flex items-center gap-2 px-3 py-2">
+        <div className="flex shrink-0 items-center gap-1">{layout === "bar" ? dockControls : null}</div>
+        {layout === "bar" && (
+          <p className="hidden min-w-0 flex-1 truncate text-[11px] text-slate-500 lg:block">
+            {busy && progress ? (
+              <>
+                <span className="font-semibold text-ink">{progress.label}…</span>{" "}
+                {elapsedLabel(progressSeconds)}
+              </>
+            ) : lastReply ? (
+              <>
+                <span className="font-semibold text-slate-600">Last reply</span> · {lastReply.text}
+              </>
+            ) : null}
+          </p>
+        )}
+        {composerBlock}
+      </div>
+      {modals}
     </div>
   );
 }

@@ -409,4 +409,71 @@ describe("ChatPanel progress", () => {
     expect(screen.getByRole("separator", { name: "Yesterday" })).toBeInTheDocument();
     expect(screen.getByTitle(/This reply took/)).toHaveTextContent("12s");
   });
+
+  it("stamps each turn with the time it happened", async () => {
+    const at = new Date();
+    at.setHours(9, 5, 0, 0);
+    vi.mocked(fetchChatHistory).mockResolvedValueOnce([
+      { role: "user", text: "Plan Goa" },
+      { role: "assistant", text: "Here is Goa." },
+    ]);
+    saveTurnMeta("__active__", [
+      { role: "user", text: "Plan Goa", ts: at.getTime() },
+      { role: "assistant", text: "Here is Goa.", ts: at.getTime(), seconds: 12 },
+    ]);
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    await screen.findByText("Here is Goa.");
+    const clock = at.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    expect(screen.getAllByText(clock)).toHaveLength(2);
+    expect(screen.getByText("Assistant")).toBeInTheDocument();
+  });
+
+  it("keeps the docked assistant on one row and expands only when asked", async () => {
+    const onChangeLayout = vi.fn();
+    const onHide = vi.fn();
+    const { rerender } = render(
+      <ChatPanel onTurnComplete={vi.fn()} layout="bar" onChangeLayout={onChangeLayout} onHide={onHide} />,
+    );
+
+    expect(await readyComposer()).toHaveAttribute("rows", "1");
+    expect(screen.queryByTestId("chat-transcript")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Conversation/ }));
+    expect(onChangeLayout).toHaveBeenCalledWith("sheet");
+
+    rerender(
+      <ChatPanel onTurnComplete={vi.fn()} layout="sheet" onChangeLayout={onChangeLayout} onHide={onHide} />,
+    );
+    expect(screen.getByTestId("chat-transcript")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Maximize/ }));
+    expect(onChangeLayout).toHaveBeenCalledWith("full");
+    fireEvent.click(screen.getByRole("button", { name: /Minimize/ }));
+    expect(onChangeLayout).toHaveBeenCalledWith("bar");
+    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    expect(onHide).toHaveBeenCalled();
+  });
+
+  it("opens the docked assistant when the agent asks a question", async () => {
+    const onChangeLayout = vi.fn();
+    streamChatMock.mockImplementation((_message: string, handlers: StreamHandlers) => {
+      handlers.onInputRequest?.({
+        version: 1,
+        request_id: "trip-input-2",
+        question: "Anything different for this trip?",
+        known_context: [],
+        fields: [{ id: "travelers", label: "Travelers", kind: "number", value: 2, min: 1, max: 6 }],
+        submit_label: "Build my trip",
+        allow_skip: true,
+      });
+      handlers.onDone("Choose what differs.");
+      return Promise.resolve();
+    });
+    render(<ChatPanel onTurnComplete={vi.fn()} layout="bar" onChangeLayout={onChangeLayout} />);
+
+    fireEvent.change(await readyComposer(), { target: { value: "Plan Paris" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    await waitFor(() => expect(onChangeLayout).toHaveBeenCalledWith("sheet"));
+  });
 });

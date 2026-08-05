@@ -44,8 +44,12 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest, maximized, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; maximized?: boolean; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
-    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-maximized={maximized ? "true" : "false"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
+  default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
+    <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-layout={layout ?? "panel"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
+      <button type="button" onClick={() => onHide?.()}>Hide Assistant</button>
+      <button type="button" onClick={() => onChangeLayout?.("sheet")}>Conversation</button>
+      <button type="button" onClick={() => onChangeLayout?.("full")}>Maximize conversation</button>
+      <button type="button" onClick={() => onChangeLayout?.("bar")}>Minimize conversation</button>
       <button type="button" onClick={() => onTurnComplete?.("khandala-pune-1")}>Complete planning turn</button>
       <button type="button" onClick={() => onEffectSelect?.({ kind: "attraction", name: "Louvre Museum", day: 2, stop: 1, change: "added" })}>Open turn effect</button>
       <button type="button" onClick={() => onTurnStatus?.({ phase: "working", message: "Searching hotels. 45s elapsed. Full itinerary builds usually take about 2–4 minutes." })}>Report planning progress</button>
@@ -511,7 +515,7 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("context-inspector")).toBeInTheDocument());
-    for (const label of ["Itinerary", "Map", "Details", "Assistant"]) {
+    for (const label of ["Itinerary", "Map", "Details"]) {
       const controls = screen.getByRole("group", { name: `${label} pane controls` });
       expect(controls).toHaveClass("bg-slate-50", "ring-inset");
       expect(screen.getByRole("button", { name: `Hide ${label}` })).toHaveClass("rounded-[5px]");
@@ -527,35 +531,51 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Maximize Details" }));
     expect(screen.getByRole("button", { name: "Restore Details" })).toBeInTheDocument();
     expect(screen.getByTestId("map-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
+    // The composer is the way out of a maximized pane, so the dock stays put.
+    expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
 
     fireEvent.click(screen.getByRole("button", { name: "Restore Details" }));
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
     expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
   });
 
-  it("docks Assistant as a resident column that can be maximized over the workspace", async () => {
+  it("docks Assistant as a bottom row that expands over the workspace", async () => {
     setDesktop(true);
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
-    const workspace = screen.getByTestId("chat-panel").closest("main");
-    expect(workspace?.getAttribute("style") ?? "").toContain("23rem");
-    expect(workspace?.firstElementChild).toBe(screen.getByTestId("chat-panel").closest("section"));
+    const dock = screen.getByTestId("chat-panel").closest("section");
+    const workspace = screen.getByTestId("itinerary-panel").closest("main");
+    expect(workspace?.getAttribute("style") ?? "").not.toContain("23rem");
+    expect(dock?.previousElementSibling).toBe(workspace);
     expect(screen.queryByTestId("assistant-modal")).not.toBeInTheDocument();
-    expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument();
     expect(screen.getByTestId("map-panel")).toBeInTheDocument();
     expect(screen.getByTestId("context-inspector")).toBeInTheDocument();
 
-    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-maximized", "false");
-    fireEvent.click(screen.getByRole("button", { name: "Maximize Assistant" }));
-    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-maximized", "true");
-    expect(screen.getByTestId("itinerary-panel").closest("section")).toHaveClass("hidden");
-    expect(screen.getByTestId("context-inspector").parentElement).toHaveClass("hidden");
-
-    fireEvent.click(screen.getByRole("button", { name: "Restore Assistant" }));
-    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-maximized", "false");
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
+    fireEvent.click(screen.getByRole("button", { name: "Conversation" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "sheet");
+    fireEvent.click(screen.getByRole("button", { name: "Maximize conversation" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "full");
+    // Expanding the conversation never costs the user a pane.
     expect(screen.getByTestId("itinerary-panel").closest("section")).not.toHaveClass("hidden");
+    expect(screen.getByTestId("context-inspector").parentElement).not.toHaveClass("hidden");
+
+    fireEvent.click(screen.getByRole("button", { name: "Minimize conversation" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
+  });
+
+  it("reopens the Assistant dock at its single-row default", async () => {
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Maximize conversation" }));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "full");
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
   });
 
   it("moves the workspace to a stop named by an Assistant reply", async () => {
@@ -688,6 +708,61 @@ describe("App responsive workspace", () => {
 
     expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "1");
     expect(screen.getByTestId("map-panel")).toHaveAttribute("data-reload-token", "1");
+  });
+
+  it("selects the stop a reply changed across every panel", async () => {
+    setDesktop(true);
+    const base = { ...emptyView, trip_id: "khandala-pune-1", has_trip: true, items: [] };
+    const hotelSwapped = {
+      ...base,
+      items: [{
+        name: "Budget Inn Indore",
+        kind: "hotel",
+        selected: true,
+        occurrences: [{ day: 2, stop: 1 }],
+      }],
+    };
+    fetchTripViewMock.mockReset().mockResolvedValue(base);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument());
+    // First turn adopts the trip id; the swap itself is the turn under test.
+    fireEvent.click(screen.getByRole("button", { name: "Complete planning turn" }));
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "1"));
+
+    fetchTripViewMock.mockResolvedValue(hotelSwapped);
+    fireEvent.click(screen.getByRole("button", { name: "Complete planning turn" }));
+
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-day", "2"));
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-name", "Budget Inn Indore");
+    expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-summary", "false");
+    expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-turn-effects", "Budget Inn Indore:added");
+    await waitFor(() => expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-day", "2"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-focus-name", "Budget Inn Indore");
+  });
+
+  it("widens the selection to the whole trip when a reply changes several days", async () => {
+    setDesktop(true);
+    const base = { ...emptyView, trip_id: "khandala-pune-1", has_trip: true, items: [] };
+    const cityAdded = {
+      ...base,
+      items: [
+        { name: "Mandu Fort", kind: "attraction", selected: true, occurrences: [{ day: 3, stop: 1 }] },
+        { name: "Rewa Kund", kind: "attraction", selected: true, occurrences: [{ day: 4, stop: 2 }] },
+      ],
+    };
+    fetchTripViewMock.mockReset().mockResolvedValue(base);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Complete planning turn" }));
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-reload-token", "1"));
+
+    fetchTripViewMock.mockResolvedValue(cityAdded);
+    fireEvent.click(screen.getByRole("button", { name: "Complete planning turn" }));
+
+    await waitFor(() => expect(screen.getByTestId("itinerary-panel")).toHaveAttribute("data-jump-summary", "true"));
+    expect(screen.getByTestId("map-panel")).toHaveAttribute("data-circuit-day", "");
   });
 
   it("gives a map day chip the same aggregate circuit focus as an itinerary day header", async () => {

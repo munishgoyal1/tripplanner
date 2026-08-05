@@ -98,11 +98,25 @@ Nothing in the conversation should require dismissing the plan to read it.
 - Decision: Option A · Conversation dock, selected by the owner in the Lab, with two saved
   modifications — the dock expands on the left side and keeps hide/maximize controls, and
   the maximized view carries Option C's per-turn timing and detail.
+- Revision after hands-on use: the owner rejected the left column and asked for Option B's
+  resting shape. The dock now lives at the bottom of the workspace as a single composer row
+  (`layout="bar"`), expands upward into a 58vh conversation sheet or a near-full-height view
+  over the workspace, and minimizes back to the single row. Nothing in the core columns moves
+  when it expands. The Assistant is always mounted and only hidden with `hidden`, so an
+  in-flight turn and the loaded transcript survive a hide/show round trip, and an agent
+  question arriving while collapsed opens the sheet automatically.
+- Also revised: each turn now renders as a card — the user bubble carries a clock time, and
+  the assistant card carries a `Sparkles` + `Assistant` header, the same clock time, and the
+  reply duration chip — because the shipped flat list did not match the Lab.
 - Implementation: in sandbox `sbx-lab16-chat-dock` (branch `sandbox/lab16-chat-dock`),
-  awaiting owner inspection. Production code touched: `App.tsx` (resident Assistant column
-  and turn-effect plumbing), `ChatPanel.tsx` (day grouping, reading position, timing badges,
-  changed-stop chips), `CanvasPaneFrame.tsx` (Assistant pane label), `useChatStream.ts`
-  (turn timing), plus new `turnEffects.ts` and `turnMetadata.ts`.
+  awaiting owner inspection. Production code touched: `App.tsx` (bottom dock, `assistantView`
+  state, post-turn selection scope, turn-effect plumbing), `ChatPanel.tsx` (layout modes, turn
+  cards, day grouping, reading position, timing badges, changed-stop chips), `useChatStream.ts`
+  (turn timing), plus new `turnEffects.ts` and `turnMetadata.ts`. `CanvasPaneFrame.tsx` still
+  carries an `Assistant` pane label that the bottom dock no longer uses.
+- Selection scope after a turn: a reply that touched one place selects it in Itinerary, Map,
+  and Details (a hotel wins over other stops in the same turn); a change spread across days,
+  or a brand-new trip, falls back to the all-days summary instead of leaving one day scoped.
 - Rationale: the dock gives the core panes their full width while keeping the conversation
   resident instead of a sheet that covers the workspace.
 - Next action: owner inspects the sandbox at a window at least 1200px wide, then promotes
