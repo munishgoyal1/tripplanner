@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type DeselectItemOptions, type SelectItemOptions } from "../api";
-import type { TripItem, TripView } from "../types";
+import type { TripItem, TripView, TripWorkspaceView } from "../types";
 import DestinationGuide from "./DestinationGuide";
 import DestinationOverview from "./DestinationOverview";
 import GuideScopeBar, { type KindTab } from "./GuideScopeBar";
@@ -33,7 +33,7 @@ interface Props {
   ) => void | Promise<boolean>;
   focusContext?: { day?: number; stop?: number } | null;
   tripVersion: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
+  onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
   /** Hide the internal saved-trips switcher (RightRail renders it persistently). */
   hideSwitcher?: boolean;
 }

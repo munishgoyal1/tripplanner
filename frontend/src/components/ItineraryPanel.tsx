@@ -16,6 +16,10 @@ interface Props {
   overview?: TripOverview | null;
   /** Bump to refetch the itinerary after the trip changes. */
   reloadToken?: number;
+  /** Stable identity of the active trip; a change clears the outgoing itinerary. */
+  tripId?: string | null;
+  /** Itinerary handed over by a trip switch; consumed once, then refetches. */
+  seed?: Itinerary | null;
   /** Click a stop to focus it (loads its photos + highlights its map pin). */
   onStopFocus?: (kind: string, name: string, day: number, stop: number, routeCircuitId?: string) => void;
   /** Jump to the map focused on a stop (and optionally details). */
@@ -279,6 +283,8 @@ export default function ItineraryPanel({
   headerTarget,
   overview,
   reloadToken = 0,
+  tripId = null,
+  seed = null,
   onStopFocus,
   onStopMap,
   onDayMap,
@@ -298,14 +304,34 @@ export default function ItineraryPanel({
   const [retryToken, setRetryToken] = useState(0);
   const [flashTarget, setFlashTarget] = useState<{ day: number; name: string; token: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const previousTripIdRef = useRef(tripId);
+  const seedRef = useRef(seed);
+  seedRef.current = seed;
+  const consumedSeedRef = useRef<Itinerary | null>(null);
   const allDaysActive = circuitFocusToken > 0 && circuitFocusDay == null;
   const filterControls = onFilterToggle
     ? <ItineraryFilterControls filters={filters} onToggle={onFilterToggle} target={headerTarget} />
     : null;
 
+  // Drop the outgoing trip's days as soon as the trip changes; leaving them on
+  // screen while the new itinerary loaded looked like the switch had failed.
+  if (previousTripIdRef.current !== tripId) {
+    previousTripIdRef.current = tripId;
+    if (it) setIt(null);
+  }
+
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
+    // A trip switch already returned this panel's view-model — use it directly.
+    const seeded = seedRef.current;
+    if (seeded && seeded !== consumedSeedRef.current) {
+      consumedSeedRef.current = seeded;
+      setIt(seeded);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     fetchItinerary(controller.signal)
@@ -322,7 +348,7 @@ export default function ItineraryPanel({
       cancelled = true;
       controller.abort();
     };
-  }, [reloadToken, retryToken]);
+  }, [reloadToken, retryToken, tripId]);
 
   const handleToggleBooked = useCallback(
     async (day: number, name: string, next: boolean) => {

@@ -959,6 +959,10 @@ async def trip_view_endpoint(
     # switch is instant while the user is still reading the itinerary.
     if focus is None:
         background.add_task(trip_operations.warm_guide)
+    else:
+        # A focus response only blocks on the focused place; top up the rest of
+        # the gallery afterwards so the next focus stays a cache hit.
+        background.add_task(trip_operations.warm_view_items)
     return view
 
 

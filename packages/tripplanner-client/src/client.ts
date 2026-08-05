@@ -11,6 +11,7 @@ import type {
   StreamOptions,
   TripInputRequest,
   TripView,
+  TripWorkspaceView,
 } from "./types";
 
 export type IdentityProvider = () => string | Promise<string>;
@@ -191,11 +192,17 @@ export class TripplannerClient {
     return data.messages ?? [];
   }
 
-  async switchTrip(tripId: string): Promise<TripView | null> {
+  async switchTrip(tripId: string): Promise<TripWorkspaceView | null> {
     const response = await this.post("/trips/switch", { trip_id: tripId });
     ensureOk(response, "Could not switch trips");
-    const data = (await response.json()) as { ok?: boolean; view?: TripView };
-    return data.ok && data.view ? data.view : null;
+    const data = (await response.json()) as {
+      ok?: boolean;
+      view?: TripView;
+      map?: MapView;
+      itinerary?: Itinerary;
+    };
+    if (!data.ok || !data.view) return null;
+    return { view: data.view, map: data.map ?? null, itinerary: data.itinerary ?? null };
   }
 
   async startNewTrip(): Promise<void> {

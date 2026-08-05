@@ -1,7 +1,7 @@
 import { ChevronDown, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { deleteTrip, fetchSavedTrips, switchTrip } from "../api";
-import type { SavedTrip, TripView } from "../types";
+import type { SavedTrip, TripWorkspaceView } from "../types";
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-slate-100 text-slate-600",
@@ -14,7 +14,7 @@ export default function TripSwitcher({
   onSwitched,
 }: {
   version: number;
-  onSwitched: (tripId?: string, view?: TripView | null) => void;
+  onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
 }) {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [open, setOpen] = useState(false);
@@ -65,8 +65,8 @@ export default function TripSwitcher({
     setDeleteMode(false);
     setSelectedTripIds(new Set());
     try {
-      const view = await switchTrip(tripId);
-      if (view) onSwitched(tripId, view);
+      const workspace = await switchTrip(tripId);
+      if (workspace) onSwitched(tripId, workspace);
     } catch {
       setError("Could not switch trips.");
     }

@@ -42,6 +42,8 @@ interface SynchronizeMapOverlaysOptions {
   pendingFocus: MapPin | MapAirport | null;
   pendingRouteFocus: RouteFocus | number | null;
   previousOverlays: any[];
+  /** Markers from the last draw, reused when a pin's position and icons match. */
+  previousPinMarkers?: PinMarkerEntry[];
   onPinClick: (pin: MapPin) => void;
   onCandidateClick: (pin: MapPin) => void;
   onAirportClick: (airport: MapAirport) => void;
@@ -71,11 +73,18 @@ export function synchronizeMapOverlays({
   pendingFocus,
   pendingRouteFocus,
   previousOverlays,
+  previousPinMarkers,
   onPinClick,
   onCandidateClick,
   onAirportClick,
 }: SynchronizeMapOverlaysOptions): MapOverlaySyncResult {
-  clearMapOverlays(previousOverlays);
+  // Day filters and trip switches redraw the whole map. Rebuilding every
+  // unoptimized marker meant tearing down and re-creating a DOM node per pin,
+  // which is what made day-to-day switching feel like it hung. Markers whose
+  // position and icons are unchanged are kept and only re-styled.
+  const reusable = new Map<string, PinMarkerEntry>();
+  previousPinMarkers?.forEach((entry) => reusable.set(entry.pin.id, entry));
+  const retained = new Set<any>();
   const overlays: any[] = [];
   const pinMarkers: PinMarkerEntry[] = [];
 
@@ -157,20 +166,42 @@ export function synchronizeMapOverlays({
     const normalIcon = iconFor(false);
     const focusedIcon = iconFor(true);
     const baseZIndex = pin.selected ? 1000 : pin.day ? 600 : 400;
-    const marker = new google.maps.Marker({
-      position: { lat: pin.lat, lng: pin.lng },
-      map,
-      title: pin.name,
-      icon: focused ? focusedIcon : normalIcon,
-      optimized: false,
-      zIndex: focused ? 1400 : baseZIndex,
-    });
+    const previous = reusable.get(pin.id);
+    const reusableMarker = previous
+      && previous.pin.lat === pin.lat
+      && previous.pin.lng === pin.lng
+      && previous.pin.name === pin.name
+      && previous.normalIcon.url === normalIcon.url
+      && previous.focusedIcon.url === focusedIcon.url
+      ? previous.marker
+      : null;
+    let marker: any;
+    if (reusableMarker) {
+      marker = reusableMarker;
+      marker.setIcon(focused ? focusedIcon : normalIcon);
+      marker.setZIndex(focused ? 1400 : baseZIndex);
+      marker.setMap(map);
+      google.maps.event?.clearListeners?.(marker, "click");
+      retained.add(marker);
+    } else {
+      marker = new google.maps.Marker({
+        position: { lat: pin.lat, lng: pin.lng },
+        map,
+        title: pin.name,
+        icon: focused ? focusedIcon : normalIcon,
+        optimized: false,
+        zIndex: focused ? 1400 : baseZIndex,
+      });
+    }
     marker.addListener("click", () => onPinClick(pin));
     pinMarkers.push({ pin, marker, normalIcon, focusedIcon, baseZIndex });
     overlays.push(marker);
     bounds.extend({ lat: pin.lat, lng: pin.lng });
     hasBounds = true;
   }
+
+  // Everything not carried over is detached now that the replacements exist.
+  clearMapOverlays(previousOverlays.filter((overlay) => !retained.has(overlay)));
 
   if (candidatePin) {
     const marker = new google.maps.Marker({

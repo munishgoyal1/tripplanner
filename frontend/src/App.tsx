@@ -16,7 +16,7 @@ import { trackEvent } from "./analytics";
 import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
-import type { PlannerReview, TripView } from "./types";
+import type { PlannerReview, TripView, TripWorkspaceView } from "./types";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
 interface NavRef {
@@ -71,6 +71,9 @@ function compactStatus(status?: string): string | undefined {
 
 export default function App() {
   const [view, setView] = useState<TripView | null>(null);
+  // Map + itinerary view-models handed over by a trip switch, so those panels
+  // can render the new trip without a second and third round-trip.
+  const [panelSeed, setPanelSeed] = useState<TripWorkspaceView | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState<string | null>(null);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
@@ -255,12 +258,15 @@ export default function App() {
   }, []);
 
   const refresh = useCallback(
-    async (f: NavRef | null = focus) => {
+    async (f: NavRef | null = focus, options: { silent?: boolean } = {}) => {
       const generation = ++refreshGeneration.current;
       refreshController.current?.abort();
       const controller = new AbortController();
       refreshController.current = controller;
-      setLoading(true);
+      // A focus change only reorders an already-rendered gallery, so it refreshes
+      // silently — flipping the panel into its loading state made the round-trip
+      // feel like the app had stalled.
+      if (!options.silent) setLoading(true);
       try {
         const v = await fetchTripView(f ?? undefined, controller.signal);
         if (generation !== refreshGeneration.current) return;
@@ -274,7 +280,7 @@ export default function App() {
         }
         return null;
       } finally {
-        if (generation === refreshGeneration.current) setLoading(false);
+        if (generation === refreshGeneration.current && !options.silent) setLoading(false);
       }
     },
     [focus, applyView]
@@ -344,25 +350,35 @@ export default function App() {
       return { ...current, focus: f, items };
     });
     if (isDesktop) setInspectorOpen(true);
-    await refresh(f);
+    await refresh(f, { silent: true });
   };
 
   const handleClearFocus = async () => {
     clearFocus();
-    await refresh(null);
+    await refresh(null, { silent: true });
   };
 
-  const handleSwitched = async (tripId?: string, view?: TripView | null) => {
+  const handleSwitched = async (
+    tripId?: string,
+    payload?: TripWorkspaceView | TripView | null,
+  ) => {
     ++refreshGeneration.current;
     refreshController.current?.abort();
     setLoading(false);
     setPlannerReview(null);
     setAssistantTurnStatus(null);
+    const workspace: TripWorkspaceView | null = payload
+      ? "view" in payload
+        ? payload
+        : { view: payload, map: null, itinerary: null }
+      : null;
     dispatchWorkspace({ type: "trip-changed", tripId });
-    // The switcher already fetched the fresh view — reuse it instead of making
-    // the server rebuild the (cache-backed) view a second time.
-    if (view) {
-      applyView(view, null);
+    // The switch response already carries every panel's view-model — seed them
+    // all from it so the map and itinerary swap with the trip panel instead of
+    // each re-fetching and settling one after another.
+    if (workspace) {
+      setPanelSeed(workspace);
+      applyView(workspace.view, null);
     } else {
       await handleClearFocus();
     }
@@ -621,6 +637,8 @@ export default function App() {
     overview: view?.overview ?? null,
     reloadToken: tripVersion,
     tripId: chatTripId,
+    mapSeed: panelSeed?.map ?? null,
+    itinerarySeed: panelSeed?.itinerary ?? null,
     focusName: stopFocusName,
     focusDay: focus?.day,
     focusStop: focus?.stop,
@@ -653,6 +671,8 @@ export default function App() {
           headerTarget={itineraryHeaderTarget}
           overview={view?.overview}
           reloadToken={tripVersion}
+          tripId={chatTripId}
+          seed={panelSeed?.itinerary ?? null}
           focusName={stopFocusName}
           focusDay={focus?.day}
           focusStop={focus?.stop}
@@ -673,6 +693,7 @@ export default function App() {
         filters={itineraryFilters}
         reloadToken={tripVersion}
         tripId={chatTripId}
+        seed={panelSeed?.map ?? null}
         focusName={stopFocusName}
         focusDay={focus?.day}
         focusStop={focus?.stop}

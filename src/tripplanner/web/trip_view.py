@@ -730,6 +730,22 @@ def warm_guide(trip: dict[str, Any] | None) -> None:
         places_cache.prefetch(names, city, max_photos=1, with_reviews=False)
 
 
+def warm_view_items(trip: dict[str, Any] | None) -> None:
+    """Warm the trip-panel gallery for the whole unfocused item set.
+
+    Focus requests only block on the focused place; this runs afterwards from a
+    background task so the rest of the gallery is warm for the next focus.
+    """
+    if not trip or not places_cache.is_configured():
+        return
+    refs = itinerary_items(trip, None)[:_MAX_GALLERY_ITEMS]
+    places_cache.prefetch(
+        [r["name"] for r in refs],
+        str(trip.get("destination") or ""),
+        max_photos=_MAX_PHOTOS_PER_ITEM,
+    )
+
+
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
@@ -767,9 +783,13 @@ def build_view(
     }
     itinerary_names = _itinerary_names(trip)
     city_map = _place_cities(trip)
-    places_cache.prefetch(
-        [r["name"] for r in refs], destination, max_photos=_MAX_PHOTOS_PER_ITEM
-    )
+    # A focus change re-renders a gallery the unfocused view already warmed, so
+    # only the focused place blocks the response; the rest is warmed off-request.
+    focus_name = str((focus or {}).get("name") or "").strip().lower()
+    warm_names = [r["name"] for r in refs]
+    if focus_name:
+        warm_names = [n for n in warm_names if n.strip().lower() == focus_name] or warm_names[:1]
+    places_cache.prefetch(warm_names, destination, max_photos=_MAX_PHOTOS_PER_ITEM)
     place_occurrences = _place_occurrence_index(trip)
     terminal_occurrences = _terminal_occurrence_index(trip)
     items = [

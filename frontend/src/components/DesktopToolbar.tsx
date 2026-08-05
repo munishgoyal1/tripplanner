@@ -1,5 +1,5 @@
 import { List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
-import type { TripView } from "../types";
+import type { TripWorkspaceView } from "../types";
 import type { AssistantTurnStatus } from "./ChatPanel";
 import TripActionsMenu from "./TripActionsMenu";
 import TripSwitcher from "./TripSwitcher";
@@ -8,7 +8,7 @@ type Pane = "itinerary" | "map" | "details" | "assistant";
 
 interface Props {
   tripVersion: number;
-  onTripSwitched: (tripId?: string, view?: TripView | null) => void;
+  onTripSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
   visibleStatus?: string;
   statusPhase?: AssistantTurnStatus["phase"];
   reviewPending: boolean;
