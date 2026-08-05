@@ -17,6 +17,17 @@ you should automatically bring up the hosted endpoints also of a sandbox for som
 create a lab reimagingin the chat agent from UX point of view. Overall UX layout of all panels with respect to how user will interact. I rely on your UI sklills.
 Also the chat agent currently has a scroll limit probnably older chats not visible in same session. It should retain a short time taken for each response
 
+[053] [5-Aug-2026] Do all three tiers fresh sandbox
+Do all 3 tiers together ina fresh sandbox and bring the stack up for my inspection
+
+[052] [5-Aug-2026] Lab difference and switching delays
+i cant make out any difference what new is implemented in this lab compared to whats alreayd existing in master.
+
+Also the switching in from day to day level or to trip level from a item row in itinerary takes noticeable delay sometimes feeling stuck or taking too long. Also switching between trips take noticeable delay and the data change happens panel by panel, map and itinerary taking time to update and continues to stay with previous trip data for that duraiton. Any way to improve those ?
+
+[051] [5-Aug-2026] Seed sandbox data for signed-in account
+but my google account linked dtaa is not seeded mapped to my google account. I can see 14 trips for local not signed in user
+
 [049] [5-Aug-2026] Park recycle, keep sandboxes fresh
 there could be more than 1 sandbox running in paraellel , i would say remove the complexity of recycle. just keep it simple fresh from scratch creation for now. Park the recycle scripts, dont delete but keep them seperately and dont bring any of it in main flow. will delete later if not required
 
