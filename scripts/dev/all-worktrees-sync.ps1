@@ -41,6 +41,31 @@ foreach ($number in @(0, 1, 2, 3)) {
     }
 }
 
+# Sandboxes drift the same way worker lanes do, and their branches are the ones
+# that live longest without seeing master. The env guard stops the sandbox
+# updater from calling this script back.
+$registryPath = Join-Path "$((Get-SyncPaths).PrimaryRoot).worktrees" "sandboxes.json"
+if (-not $ValidateOnly -and (Test-Path $registryPath -PathType Leaf)) {
+    $raw = Get-Content -Raw -Path $registryPath
+    $sandboxes = if ([string]::IsNullOrWhiteSpace($raw)) { @() } else { @($raw | ConvertFrom-Json) }
+    foreach ($sandbox in $sandboxes) {
+        if (-not (Test-Path $sandbox.worktree -PathType Container)) { continue }
+        Write-Host "`nSynchronizing sandbox '$($sandbox.slug)'..." -ForegroundColor Cyan
+        $env:TRIPPLANNER_SANDBOX_NO_SYNC = "1"
+        try {
+            & "$scriptRoot\sandbox.ps1" -Update $sandbox.slug -Confirm:$false
+        } catch {
+            $failures.Add([pscustomobject]@{
+                Lane = "Sandbox '$($sandbox.slug)'"
+                Error = $_.Exception.Message
+            })
+            Write-Warning "Sandbox '$($sandbox.slug)' could not be fully synchronized."
+        } finally {
+            Remove-Item Env:\TRIPPLANNER_SANDBOX_NO_SYNC -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 if ($failures.Count -gt 0) {
     $global:TripplannerSyncFailed = $true
     Write-Host "`nWorktrees requiring attention:" -ForegroundColor Yellow
@@ -55,7 +80,7 @@ if ($ValidateOnly) {
     return
 }
 
-Write-Host "`nDone: master and every worker worktree are synchronized." -ForegroundColor Green
+Write-Host "`nDone: master, every worker worktree, and every sandbox are synchronized." -ForegroundColor Green
 
 }
 
