@@ -614,6 +614,23 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
 
+    $unmerged = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
+        "log", "--oneline", "origin/$BaseBranch..HEAD"
+    )
+    if (-not $unmerged) {
+        Write-Host "== 2/3 push $($entry.branch) ==" -ForegroundColor Green
+        Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
+        Write-Host "== 3/3 verify ==" -ForegroundColor Green
+        $outstanding = Get-SandboxOutstandingWork -Entry $entry -Base $BaseBranch
+        if ($outstanding) {
+            throw "Sandbox '$slug' is already in origin/$BaseBranch but is not safe to discard:`n$($outstanding -join "`n")"
+        }
+        Write-Host "[verified] origin/$BaseBranch already contains every commit and the worktree is clean." -ForegroundColor Green
+        Write-Host "[kept]    sandbox '$slug' is still running; discard it when you are done:" -ForegroundColor Yellow
+        Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
+        return
+    }
+
     Write-Host "== 2/6 validate ==" -ForegroundColor Green
     if ($SkipValidation) {
         Write-Warning "Validation skipped (-SkipValidation)."

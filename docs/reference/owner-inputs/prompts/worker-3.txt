@@ -8,3 +8,6 @@ syncme to latest has an error when run on the worker3 launcher
 
 [2026-08-05 18:49] [worker-3] ! Read last-run logs first
 you should read the last run logs. why do you have to reprosuce it again yourself
+
+[2026-08-05 19:03] [worker-3] ! Check perf-panels promotion failure
+check the sandbox prmotion failure for perf-panels
