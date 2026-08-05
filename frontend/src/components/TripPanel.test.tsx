@@ -12,6 +12,7 @@ vi.mock("./DestinationGuide", () => ({
 }));
 
 const view: TripView = {
+  trip_id: "paris-trip",
   has_trip: true,
   title: "Paris",
   destination: "Paris",

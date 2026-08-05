@@ -741,6 +741,7 @@ def build_view(
     """
     if not trip:
         return {
+            "trip_id": None,
             "has_trip": False,
             "title": "Trip planner",
             "destination": "",
@@ -790,6 +791,7 @@ def build_view(
         title = f"{title} \u2014 {focus['name']}"
 
     return {
+        "trip_id": str(trip.get("trip_id") or "") or None,
         "has_trip": True,
         "title": title,
         "destination": destination,

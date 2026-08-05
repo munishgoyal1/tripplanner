@@ -103,6 +103,7 @@ export interface TripOverview {
 }
 
 export interface TripView {
+  trip_id: string | null;
   has_trip: boolean;
   title: string;
   destination: string;
