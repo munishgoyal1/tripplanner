@@ -20,3 +20,6 @@ why do i not see sandbox worktrees in the git graph here . its showing only the 
 
 [2026-08-05 18:13] [worker-2] Detail refactor sandbox changes
 what are the exact delta changes made in this sbx
+
+[2026-08-05 18:16] [worker-2] Show sandbox pointers in graph
+show em how exactly to enable seeing all sandbox treee pointers just like worker branches in the git graph
