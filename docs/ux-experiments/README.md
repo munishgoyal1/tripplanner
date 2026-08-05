@@ -62,11 +62,11 @@ under `frontend/labs/`; they must never be added to production components.
 - Stable baseline: `master`
 - Immutable accepted UI baselines: `ui-stable/*` tags documented in
   [`STABLE_UI_VERSIONS.md`](STABLE_UI_VERSIONS.md)
-- Preserved pre-scroll baseline: `preserve/pre-vertical-scroll` (from commit `3e7df9c`)
-- Active experiment branches:
-  - `exp/ux-shell-a-map-first`
-  - `exp/ux-shell-b-story-first`
-  - `exp/ux-shell-c-compact-mobile`
+- Retired workspace-shell experiments: branches A, B, and C were deleted after
+  the selected direction was integrated. Their history remains documented in
+  [`WORKSPACE_SHELL_LAYOUT.md`](WORKSPACE_SHELL_LAYOUT.md).
+- Retired pre-scroll baseline: branch `preserve/pre-vertical-scroll` was deleted;
+  its original commit remains available as `3e7df9c`.
 
 Use stable UI tags, not new long-lived branches or copied frontend folders, for
 future accepted restoration points. A Lab does not become stable merely because it
@@ -77,8 +77,8 @@ exists or has a selected option; the owner must accept the implemented UI first.
 Layout C is the selected working direction: map-first canvas on the left,
 details-first rail on the right, and chat in the compact lower-right pane.
 The experiment badge and dashboard-style move/hide controls were removed;
-resizing and maximize remain. Keep the other branches until C is accepted on
-canary, then merge C and delete discarded experiment branches.
+resizing and maximize remain. The direction was integrated and the discarded
+experiment branches were retired.
 
 ## Decided Component Experiments (2026-07-29)
 
@@ -248,16 +248,6 @@ scope until a direction is selected and separately approved. See
   A realistic preview is not permission to redesign every element it happens to show.
 9. Mark each varied preview region with `data-lab-change`; keep annotations out of
   production UI and ensure marker overlays take no layout space or pointer input.
-
-## Fast Commands
-
-```powershell
-git switch exp/ux-shell-a-map-first
-git switch exp/ux-shell-b-story-first
-git switch exp/ux-shell-c-compact-mobile
-git switch preserve/pre-vertical-scroll
-git switch master
-```
 
 ## Compare Checklist
 
