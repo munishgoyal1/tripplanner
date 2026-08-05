@@ -229,6 +229,44 @@ def test_completed_stream_request_replays_when_over_cap(monkeypatch):
     ]
 
 
+def test_stream_surfaces_partial_turn_save_failure(monkeypatch):
+    import asyncio
+
+    from fastapi.testclient import TestClient
+
+    from tripplanner import api
+    from tripplanner.graph import app_graph
+    from tripplanner.request_limits import chat_admission
+
+    async def fail_stream(*_args, **_kwargs):
+        raise RuntimeError("model interrupted")
+        yield
+
+    events: list[tuple[str, dict]] = []
+    monkeypatch.setattr(app_graph, "astream_events", fail_stream)
+    monkeypatch.setattr(api, "_completed_chat_request", lambda _request_id: None)
+    monkeypatch.setattr(api, "_load_chat_request", lambda _request_id: (None, [], None))
+    monkeypatch.setattr(api, "_save_chat", lambda *_args, **_kwargs: 1 / 0)
+    monkeypatch.setattr(api, "app_event", lambda name, **fields: events.append((name, fields)))
+    monkeypatch.setattr(usage_mod, "is_over_cap", lambda _user_id: (False, {}))
+    asyncio.run(chat_admission.reset())
+
+    try:
+        response = TestClient(api.app).post(
+            "/chat/stream",
+            json={"user_id": "alice", "message": "plan goa", "request_id": "request-1"},
+        )
+    finally:
+        asyncio.run(chat_admission.reset())
+
+    assert response.status_code == 200
+    assert "Trip changes may still have been applied" in response.text
+    assert (
+        "api_chat_stream_partial_save_error",
+        {"error": "ZeroDivisionError", "turn_error": "RuntimeError"},
+    ) in events
+
+
 def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
     from fastapi.testclient import TestClient
     from langchain_core.messages import AIMessage
