@@ -129,3 +129,105 @@ Line |
 	 | files under
 	 | 'C:\Users\mugoy\AppData\Local\Temp\tripplanner-merge-73e7680c8a9e48b48bcaf352597110f6', then run 'pwsh -File scripts/dev/resume-merge.ps1'. Details: C:\repos\tripplanner\logs\sync\conflict-integration-20260804-214610.md
 Press any key to continue . . .
+
+[029] [4-Aug-2026] Fix canary Docker TLS build failure
+debug and fix the canary deployment error here is the log
+
+ites...
+	✓ Files exist
+
+✓ Step 2: Validating Bicep template...
+	✓ Template is valid
+
+✓ Step 3: Checking infrastructure changes...
+	✓ What-if contains no deletes
+
+✓ Step 0: Building & pushing image from current code...
+
+╔═══════════════════════════════════════════════════════════╗
+║  📦 BUILD & PUSH IMAGE → GHCR                            ║
+╚═══════════════════════════════════════════════════════════╝
+
+Image:    ghcr.io/munishgoyal1/tripplanner
+Tags:     ghcr.io/munishgoyal1/tripplanner:f483545, ghcr.io/munishgoyal1/tripplanner:latest
+
+ℹ No GHCR_TOKEN/CR_PAT/GITHUB_TOKEN set — assuming an existing
+	'docker login ghcr.io' session. If push fails with auth, set a
+	PAT in GHCR_TOKEN and retry.
+
+✓ Building image ...
+[+] Building 20.6s (20/23)  docker:deskto
+ => [internal] load build definiti  0.1s
+ => => transferring dockerf 1.61kB  0.1s
+ => resolve image config for docke  1.7s
+ => [auth] docker/dockerfile:pull   0.0s
+ => CACHED docker-image://docker.i  0.1s
+ => => resolve docker.io/docker/do  0.1s
+ => [internal] load metadata for d  1.4s
+ => [internal] load metadata for d  1.4s
+ => [auth] library/python:pull tok  0.0s
+ => [auth] library/node:pull token  0.0s
+ => [internal] load .dockerignore   0.1s
+ => => transferring context: 554B   0.0s
+ => [frontend 1/7] FROM docker.io/  0.1s
+ => => resolve docker.io/library/n  0.1s
+ => [stage-1 1/6] FROM docker.io/l  0.1s
+ => => resolve docker.io/library/p  0.1s
+ => [internal] load build context   0.6s
+ => => transferring context 1.97MB  0.6s
+ => CACHED [frontend 2/7] WORKDIR   0.0s
+ => CACHED [frontend 3/7] COPY fro  0.0s
+ => CACHED [stage-1 2/6] WORKDIR /  0.0s
+ => CACHED [stage-1 3/6] COPY pypr  0.0s
+ => [frontend 4/7] COPY packages/t  0.1s
+ => [stage-1 4/6] COPY src/ src/    0.3s
+ => CANCELED [frontend 5/7] RUN n  15.8s
+ => ERROR [stage-1 5/6] RUN pip i  15.4s
+------
+ > [stage-1 5/6] RUN pip install --no-cache-dir ".":
+2.910 Processing /app
+2.920   Installing build dependencies: started
+14.31   Installing build dependencies: finished with status 'error'
+14.32   error: subprocess-exited-with-error
+14.32
+14.32   × pip subprocess to install build dependencies did not run successfully.
+14.32   │ exit code: 1
+14.32   ╰─> [8 lines of output]
+14.32       Collecting setuptools>=40.8.0
+14.32         WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1010)'))': /packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl.metadata
+14.32         WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1010)'))': /packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl.metadata
+14.32         WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1010)'))': /packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl.metadata
+14.32         WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1010)'))': /packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl.metadata
+14.32         WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1010)'))': /packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl.metadata
+14.32       ERROR: Could not install packages due to an OSError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Max retries exceeded with url: /packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl.metadata (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1010)')))
+14.32
+14.32       [end of output]
+14.32
+14.32   note: This error originates from a subprocess, and is likely not a problemwith pip.
+14.32 error: subprocess-exited-with-error
+14.32
+14.32 × pip subprocess to install build dependencies did not run successfully.
+14.32 │ exit code: 1
+14.32 ╰─> See above for output.
+14.32
+14.32 note: This error originates from a subprocess, and is likely not a problem with pip.
+------
+Dockerfile:34
+--------------------
+	32 |     COPY pyproject.toml ./
+	33 |     COPY src/ src/
+	34 | >>> RUN pip install --no-cache-dir "."
+	35 |
+	36 |     # Built SPA from stage 1 — served by FastAPI at the root origin.
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c pip install --no-cache-dir \".\"" did not complete successfully: exit code: 1
+
+What's next:
+		Debug this build failure with Gordon → docker ai "help me fix this build failure"
+Exception: C:\repos\tripplanner\infra\push-image.ps1:82:28
+Line |
+	82 |  if ($LASTEXITCODE -ne 0) { throw "docker build failed." }
+		 |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		 | docker build failed.
+Press any key to continue . . .
+(.venv) PS C:\repos\tripplanner\scripts\user>
