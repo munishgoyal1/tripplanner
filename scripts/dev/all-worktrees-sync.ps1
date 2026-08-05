@@ -12,7 +12,7 @@ $laneNames = @{
     0 = "MasterAgent (0)"
     1 = "Agent 1"
     2 = "Agent 2"
-    3 = "Agent 3 - Infra"
+    3 = "Agent 3 - Sandbox"
 }
 
 $syncLogOwned = Start-SyncLog -Component "all-worktrees-sync"

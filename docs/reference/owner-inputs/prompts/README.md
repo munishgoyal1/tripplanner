@@ -11,7 +11,7 @@ disputes.
 | `master.txt` | MasterAgent in the primary `master` workspace |
 | `worker-1.txt` | Agent 1 - Iti-Map |
 | `worker-2.txt` | Agent 2 - UXlabs |
-| `worker-3.txt` | Agent 3 - Infra |
+| `worker-3.txt` | Agent 3 - Sandbox |
 
 ## Entry format
 

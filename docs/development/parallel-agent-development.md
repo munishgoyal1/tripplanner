@@ -14,12 +14,12 @@ The standard slots are:
 | --- | --- | --- | --- |
 | Agent 1 - Iti-Map | `C:\repos\tripplanner.worktrees\worker-1` | `agents/worker-1` | `tripplanner-worker-1.code-workspace` |
 | Agent 2 - UXlabs | `C:\repos\tripplanner.worktrees\worker-2` | `agents/worker-2` | `tripplanner-worker-2.code-workspace` |
-| Agent 3 - Infra | `C:\repos\tripplanner.worktrees\worker-3` | `agents/worker-3` | `tripplanner-worker-3.code-workspace` |
+| Agent 3 - Sandbox | `C:\repos\tripplanner.worktrees\worker-3` | `agents/worker-3` | `tripplanner-worker-3.code-workspace` |
 | MasterAgent - Review & Integration | `C:\repos\tripplanner` | `master` | `tripplanner-integration.code-workspace` |
 
 Agent 1 defaults to Itinerary, Map, and their shared focus/view-model contracts.
 Agent 2 defaults to UX Labs and their production implementation handoffs.
-Agent 3 defaults to infrastructure, deployment, and operational tooling.
+Agent 3 defaults to sandbox workflows, deployment, and operational tooling.
 These are logical task-routing defaults, not hard code boundaries. MasterAgent
 uses reserved integer `0`; workers use positive integer identities. Keep worker
 branch names, worktree paths, and numeric script arguments stable. Assign
