@@ -26,7 +26,6 @@
 
   Sandboxes are always created fresh and discarded when shipped: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
-  The parked reuse variant lives in scripts/parked/sandbox-recycle.ps1.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "List")]
