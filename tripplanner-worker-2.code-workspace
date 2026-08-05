@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "Tripplanner Agent 2 - Detail-Chat",
+      "name": "Tripplanner Agent 2 - UXlabs",
       "path": "../tripplanner.worktrees/worker-2"
     }
   ],
   "settings": {
-    "window.title": "Agent 2 - Detail-Chat | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 2 - UXlabs | ${activeEditorShort}${separator}${rootName}",
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",
     "workbench.editor.showTabs": "multiple",
