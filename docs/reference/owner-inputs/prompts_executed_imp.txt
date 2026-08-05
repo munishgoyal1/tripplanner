@@ -1,12 +1,8 @@
-# prompts_executed — mugoy
-# Complete exact prompt history, with newest entries at the top. Entry IDs remain
-# stable when reordered, and prompt bodies are preserved verbatim.
-# Legacy entries 001-004 predate the date convention; 015-017 have no body in
-# the source history. These gaps are preserved rather than reconstructed.
-# Format:
-#   [NNN] [Date] <short title>
-#   <exact prompt text, verbatim>
-#   (blank line between entries)
+# prompts_executed_imp — mugoy
+# Curated reusable subset of feature work, bug fixes, critical owner input or
+# direction, and reusable workflows. The complete source is prompts_executed.txt.
+# Entry IDs remain stable, and entries are ordered newest-first. Legacy entries
+# 001-004 predate the date convention; 015-017 have no body in the source history.
 
 [043] [5-Aug-2026] Keep latest and important prompts
 keep the latest prompts at the top in prompts_executed. and copy the prompots related to feature work, critical inputs and direction i give, bug fix and related important prompts that i dont want to lose or may need to re-use in a seperate prompts_executed_imp.txt
@@ -174,9 +170,6 @@ Line |
 	 | 'C:\Users\mugoy\AppData\Local\Temp\tripplanner-merge-73e7680c8a9e48b48bcaf352597110f6', then run 'pwsh -File scripts/dev/resume-merge.ps1'. Details: C:\repos\tripplanner\logs\sync\conflict-integration-20260804-214610.md
 Press any key to continue . . .
 
-[027] [4-Aug-2026] Create downloadable architecture onboarding document
-create a pdf or word  or md doc out of this that i will download, and also commmit it to repo
-
 [026] [4-Aug-2026] Park sandbox on ship, claim later
 at time of shipping i may nto know name of new slug so by default dont discard, just recycle and remmeber with the sandbox state. when i know the name i will run recycle again that time you can detect and just take the new slug name
 
@@ -205,14 +198,6 @@ why is the intrip + remove. and add to trip / add stay + day dropdown not consis
 [018] [4-Aug-2026] Itinerary jumps to row from details
 for in-trip places clicked in detail tab , do same movement to go to that item row in itiinerary , just consistent behaviour nothing else
 
-[042] [5-Aug-2026] Debug canary deployment failure
-debug and fix the canary deployment failure
-
-[043] [5-Aug-2026] Improve Lab 14 detail quality
-Inspect lab14 if it is well formed. It is not so clear to me what im,provement will it make. Study it and update it to make it detailed.
-
-[044] [5-Aug-2026] Reduce agent doc merge conflicts
-The ENGINEERING_LEARNINGS.md and other similar docs always run into merge conflicts, athough they are still simpler text based nto code files. Can you strenghten this conflcit reoslution or even the way these are updated by you, i never touch these manually or for that matter mostly no file in repo, its the agent that always updates these, so working across multiple workspaces, see how you can reduce these conflcits and keep things productive and fast paced development overall.
 [017] [4-Aug-2026] Add sandbox -Update sync command
 
 [016] [4-Aug-2026] Fix day-row hang; details-pane add-to-trip day picker
@@ -277,17 +262,5 @@ and create individual feature level propsoal files. create and maintain 2-3 fold
 
 Last request - now onward maintain the prompts_executed.txt simply with exact my prompts copied in a tail appended log and numbered . just put one liner or few words title summary for each prompt. i want to use it to refer what all interaaction i have done with agent and re-use some prompts.
 
-[002] Confirm proposals folder under reference
-folder is alreay under reference folder
-
 [001] Save tech-debt plan under agent proposals
 copy this proposal to an appropriately named new file under agent proposals folder, keep it saved with all needed context for later execution.
-[030] [5-Aug-2026] Proceed with state and persistence fixes
-proceed with a, and dont need to take my OK, i trust you on this one
-
-[031] [5-Aug-2026] Fix missing script log output and timestamps
-Why is this log that i see not getting written in script logs entirely. check the canary dpeloyment log to file has very less info. 
-and hwy the scripts are not spitting out the datetime that is so critical to know whene it was run for debugging
-
-[032] [5-Aug-2026] Fix missing day 3 check-in time
-The day3 hotel in madhya pradesh trip doesnt show checkin time 

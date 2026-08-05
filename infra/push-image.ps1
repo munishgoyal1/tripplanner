@@ -33,6 +33,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
+Start-RunLog -Name "push-image" | Out-Null
+
 # Always run from the repo root (one level up from infra/).
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
@@ -78,20 +81,17 @@ Write-Host "✓ Building image ..."
 $buildArgs = @("build")
 foreach ($t in $tags) { $buildArgs += @("-t", $t) }
 $buildArgs += "."
-docker @buildArgs
-if ($LASTEXITCODE -ne 0) { throw "docker build failed." }
+Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs -FailureMessage "docker build failed."
 Write-Host "  ✓ Built`n"
 
 # Push every tag.
 Write-Host "✓ Pushing image ..."
 foreach ($t in $tags) {
-    docker push $t
-    if ($LASTEXITCODE -ne 0) { throw "docker push failed for $t" }
+    Invoke-LoggedNative -FilePath "docker" -ArgumentList @("push", $t) -FailureMessage "docker push failed for $t"
 }
 Write-Host "  ✓ Pushed`n"
 
 # Log it.
-. "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
 $historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/image-pushes.log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -101,3 +101,4 @@ Write-Host "╔═════════════════════�
 Write-Host "║  ✓ IMAGE PUSHED                                          ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n"
 Write-Host "Next: ./infra/deploy-canary.ps1 -NoBuild -ImageTag $sha`n"
+Stop-RunLog
