@@ -23,9 +23,14 @@
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
   -New serves automatically unless you pass -NoServe.
 
-  -Promote is end to end: sync, validate, push, open the PR, and merge into the
-  base branch. It never discards the sandbox, so the work stays runnable until
-  you decide otherwise. -Ship is an alias of the same verb.
+  -Promote is end to end: sync, validate, push, open the PR, merge into the base
+  branch, and then verify that the base branch really contains every commit and
+  that the worktree is clean. It never discards the sandbox, so the work stays
+  runnable until you decide otherwise. -Ship is an alias of the same verb.
+
+  Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
+  to drop a worktree that still holds uncommitted, unpushed or unmerged work
+  unless you pass -Force.
 
   Sandboxes are always created fresh and discarded after promotion: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
@@ -61,6 +66,7 @@ param(
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
     [Parameter(ParameterSetName = "Promote")]
+    [Parameter(ParameterSetName = "Discard")]
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New")]
@@ -190,6 +196,44 @@ function Invoke-SandboxValidation {
     } finally {
         Pop-Location
     }
+}
+
+function Get-SandboxOutstandingWork {
+    # Everything that would be silently lost if the worktree disappeared right
+    # now. Promotion asserts this is empty after the merge; discard refuses while
+    # it is not. Both need the same answer, so they ask the same question.
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Base
+    )
+
+    $outstanding = @()
+    $changes = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("status", "--porcelain")
+    if ($changes) {
+        $outstanding += "uncommitted changes:`n  $($changes -join "`n  ")"
+    }
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("fetch", "-q", "origin") | Out-Null
+    $remoteRef = "origin/$($Entry.branch)"
+    $hasRemote = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+        "ls-remote", "--heads", "origin", $Entry.branch
+    )
+    if ($hasRemote) {
+        $unpushed = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+            "log", "--oneline", "$remoteRef..HEAD"
+        )
+        if ($unpushed) {
+            $outstanding += "commits not pushed to ${remoteRef}:`n  $($unpushed -join "`n  ")"
+        }
+    } else {
+        $outstanding += "branch $($Entry.branch) was never pushed to origin."
+    }
+    $unmerged = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+        "log", "--oneline", "origin/$Base..HEAD"
+    )
+    if ($unmerged) {
+        $outstanding += "commits not in origin/${Base}:`n  $($unmerged -join "`n  ")"
+    }
+    return $outstanding
 }
 
 function Stop-SandboxProcesses {
@@ -545,7 +589,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     $action = "Sync, validate, merge into $BaseBranch, and keep the sandbox"
     if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
-    Write-Host "== 1/5 sync with origin/$BaseBranch ==" -ForegroundColor Green
+    Write-Host "== 1/6 sync with origin/$BaseBranch ==" -ForegroundColor Green
     & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -Confirm:$false
     $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
         "diff", "--name-only", "--diff-filter=U"
@@ -554,17 +598,17 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
 
-    Write-Host "== 2/5 validate ==" -ForegroundColor Green
+    Write-Host "== 2/6 validate ==" -ForegroundColor Green
     if ($SkipValidation) {
         Write-Warning "Validation skipped (-SkipValidation)."
     } else {
         Invoke-SandboxValidation -Worktree $entry.worktree
     }
 
-    Write-Host "== 3/5 push $($entry.branch) ==" -ForegroundColor Green
+    Write-Host "== 3/6 push $($entry.branch) ==" -ForegroundColor Green
     Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
 
-    Write-Host "== 4/5 pull request ==" -ForegroundColor Green
+    Write-Host "== 4/6 pull request ==" -ForegroundColor Green
     Push-Location $entry.worktree
     try {
         $prNumber = (& gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
@@ -577,13 +621,24 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         if (-not $prNumber) { throw "Could not determine the pull request number for $($entry.branch)." }
         Write-Host "[pr]      #$prNumber -> $BaseBranch"
 
-        Write-Host "== 5/5 merge ==" -ForegroundColor Green
+        Write-Host "== 5/6 merge ==" -ForegroundColor Green
         & gh pr merge $prNumber --merge
         if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
         Write-Host "[merged]  #$prNumber into $BaseBranch"
     } finally {
         Pop-Location
     }
+
+    # A merge that gh reports as done is not proof: branch protection can queue
+    # it, and validation takes long enough for the worktree to be dirtied while
+    # it runs. Promotion is only complete once the base branch demonstrably
+    # contains everything and nothing is left behind here.
+    Write-Host "== 6/6 verify ==" -ForegroundColor Green
+    $outstanding = Get-SandboxOutstandingWork -Entry $entry -Base $BaseBranch
+    if ($outstanding) {
+        throw "#$prNumber merged but sandbox '$slug' is not clean, so it is NOT safe to discard:`n$($outstanding -join "`n")"
+    }
+    Write-Host "[verified] origin/$BaseBranch contains every commit and the worktree is clean."
 
     # Discarding is a separate, deliberate step: the merged sandbox stays runnable
     # until its owner says otherwise.
@@ -600,9 +655,12 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
         if ($currentPath -eq $resolved -or $currentPath.StartsWith("$resolved\")) {
             throw "Run -Discard from the primary checkout, not from inside the sandbox worktree."
         }
-        $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
-        if ($changes -and -not $Force) {
-            throw "Sandbox has uncommitted changes. Commit/push them, or pass -Force to discard anyway."
+        $outstanding = Get-SandboxOutstandingWork -Entry $entry -Base $BaseBranch
+        if ($outstanding -and -not $Force) {
+            throw "Sandbox '$slug' still holds work that origin/$BaseBranch does not have. Promote it first, or pass -Force to discard anyway:`n$($outstanding -join "`n")"
+        }
+        if ($outstanding) {
+            Write-Warning "Discarding sandbox '$slug' with outstanding work (-Force):`n$($outstanding -join "`n")"
         }
     }
 

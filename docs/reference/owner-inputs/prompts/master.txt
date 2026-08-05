@@ -2,3 +2,6 @@
 # Tail-appended, newest at the bottom. Only this lane writes this file.
 # Format: [YYYY-MM-DD HH:MM] [master] [!] <short title> / verbatim prompt / blank line.
 # See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-05 18:55] [master] ! Harden sandbox promote/discard confidence
+why did you ask me whether you should discard, when there are still uncommited files and the Ship/promote is not fully validated and clean. Fix the scripts and your handling to make sure it is high confidence

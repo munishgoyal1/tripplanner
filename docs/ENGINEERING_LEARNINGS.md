@@ -607,3 +607,18 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   behaviour, no resurrected code.
 - The signal to look for before merging is a semantic collision rather than a
   textual one: grep the incoming branch for identifiers the base branch deleted.
+
+## 2026-08-05 - A Merge Reported As Done Is Not A Merge Verified
+
+- Promotion printed the discard hint straight after `gh pr merge` returned 0, so
+  the agent asked the owner to discard a sandbox it had never re-inspected. The
+  CLI's exit code only says the request was accepted: branch protection can queue
+  the merge, and the validation step runs long enough for an editor or formatter
+  to dirty the worktree after the initial clean-tree check.
+- The last step of promotion now asks git, not the tool that did the work: the
+  worktree is clean, the branch is pushed, and `origin/<base>..HEAD` is empty.
+  Anything outstanding throws instead of printing the discard hint.
+- Discard refuses on the same three conditions unless `-Force`, so the
+  destructive verb re-derives safety itself rather than trusting that whoever
+  called it had already promoted. Both verbs share one function, which is what
+  keeps the two answers from drifting apart.

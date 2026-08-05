@@ -18,7 +18,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/agent-worktree.ps1` | Create, open, list, or remove coding-agent worktrees |
-| `dev/sandbox.ps1` | Create, run, update, promote, ship, discard, or list isolated feature sandboxes |
+| `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
@@ -33,8 +33,8 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `sandbox/Update-Sandbox.cmd` | Merge the latest `master` into a sandbox branch |
-| `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, and merge into `master` (keeps the sandbox) |
-| `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
+| `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, and verify the merge landed (keeps the sandbox) |
+| `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database (refuses while work is not in `master`) |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes, their ports, and whether they are serving |
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
