@@ -43,7 +43,10 @@ function Write-SyncLog {
     $line = "[{0}] [{1}] {2}" -f ((Get-Date).ToUniversalTime().ToString("u")), $Level.ToUpper(), $Message
     switch ($Level) {
         "Warn" { Write-Host $line -ForegroundColor Yellow }
-        "Error" { Write-Host $line -ForegroundColor Red }
+        "Error" {
+            $global:TripplannerSyncFailed = $true
+            Write-Host $line -ForegroundColor Red
+        }
         default { Write-Host $line -ForegroundColor DarkGray }
     }
     $log = $global:TripplannerSyncLog
@@ -59,6 +62,7 @@ function Start-SyncLog {
     }
     $global:TripplannerSyncPending = $false
     $global:TripplannerSyncValidationFailed = $false
+    $global:TripplannerSyncFailed = $false
     $paths = Get-SyncPaths
     New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
     # One overwritten file per component: the last run is what anyone debugs.
@@ -79,10 +83,14 @@ function Start-SyncLog {
 }
 
 function Stop-SyncLog {
-    param([string]$Outcome = "completed")
+    param([string]$Outcome = "")
     $log = $global:TripplannerSyncLog
     if (-not $log) {
         return
+    }
+    if (-not $Outcome) {
+        $Outcome = if ($global:TripplannerSyncFailed -or $global:TripplannerSyncPending -or
+            $global:TripplannerSyncValidationFailed) { "failed" } else { "completed" }
     }
     Write-SyncLog "Sync log $Outcome for $($log.Component)"
     Add-SyncRunIndex -Component $log.Component -Outcome $Outcome -LogPath $log.Path
@@ -152,7 +160,7 @@ function Save-PendingList {
 
 function Save-PendingMerge {
     param(
-        [Parameter(Mandatory = $true)][ValidateSet("integration", "lane")][string]$Kind,
+        [Parameter(Mandatory = $true)][ValidateSet("integration", "lane", "stash")][string]$Kind,
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
         [Parameter(Mandatory = $true)][string]$Label,
         [string]$Branch = "",
@@ -201,16 +209,75 @@ function Save-PendingMerge {
         createdUtc       = (Get-Date).ToUniversalTime().ToString("u")
         resumeCommand    = "pwsh -File scripts/dev/resume-merge.ps1"
     }
-    $list = @(Get-PendingMerges) + $entry
+    $list = @(
+        Get-PendingMerges |
+            Where-Object { ([string]$_.workingDirectory).TrimEnd("\") -ne $WorkingDirectory.TrimEnd("\") }
+    ) + $entry
     Save-PendingList -Entries $list
     return $entry
+}
+
+function Get-SafetyStashCommit {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$Branch
+    )
+    $suffix = "update-from-master temporary " + $(if ($Branch -eq "master") { "MasterAgent (0) changes" } else {
+        "Agent $($Branch -replace '^agents/worker-', '') changes"
+    })
+    foreach ($line in @(& git -C $WorkingDirectory stash list --format="%H`t%gs" 2>$null)) {
+        $parts = $line -split "`t", 2
+        if ($parts.Count -eq 2 -and $parts[1].EndsWith($suffix)) { return $parts[0] }
+    }
+    return ""
+}
+
+function Remove-SafetyStash {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$StashCommit
+    )
+    foreach ($line in @(& git -C $WorkingDirectory stash list --format="%gd`t%H" 2>$null)) {
+        $parts = $line -split "`t", 2
+        if ($parts.Count -eq 2 -and $parts[1] -eq $StashCommit) {
+            Invoke-SyncGit -WorkingDirectory $WorkingDirectory -Arguments @("stash", "drop", $parts[0]) | Out-Null
+            return
+        }
+    }
+    Write-SyncLog -Level Warn "Safety stash $($StashCommit.Substring(0, 7)) was already absent; continuing."
+}
+
+function Register-OrphanedLaneConflicts {
+    # Git's index is authoritative if pending-merge.json was absent or stale.
+    $paths = Get-SyncPaths
+    $known = @(Get-PendingMerges)
+    $roots = @($paths.PrimaryRoot) + @(1..3 | ForEach-Object { "$($paths.PrimaryRoot).worktrees\worker-$_" })
+    foreach ($wd in $roots) {
+        if (-not (Test-Path $wd -PathType Container)) { continue }
+        $unmerged = @(& git -C $wd diff --name-only --diff-filter=U 2>$null)
+        if ($unmerged.Count -eq 0) { continue }
+        if ($known | Where-Object { ([string]$_.workingDirectory).TrimEnd("\") -eq $wd.TrimEnd("\") }) { continue }
+
+        $branch = [string](@(& git -C $wd branch --show-current 2>$null)[0])
+        if ([string]::IsNullOrWhiteSpace($branch)) { continue }
+        $label = if ($branch -eq "master") { "MasterAgent (0)" } else {
+            "Agent $($branch -replace '^agents/worker-', '')"
+        }
+        $mergeHead = [string](@(& git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null)[0])
+        $kind = if ($mergeHead) { "lane" } else { "stash" }
+        $stashCommit = Get-SafetyStashCommit -WorkingDirectory $wd -Branch $branch
+        $entry = Save-PendingMerge -Kind $kind -WorkingDirectory $wd -Label $label -Branch $branch `
+            -SourceHead $mergeHead -StashCommit $stashCommit -ConflictedFiles $unmerged
+        $known += $entry
+        Write-SyncLog -Level Warn "Recovered unrecorded $kind conflict for ${label}: $($unmerged -join ', ')"
+    }
 }
 
 function Complete-MergeConflict {
     param(
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
         [Parameter(Mandatory = $true)][string]$Label,
-        [Parameter(Mandatory = $true)][ValidateSet("integration", "lane")][string]$Kind,
+        [Parameter(Mandatory = $true)][ValidateSet("integration", "lane", "stash")][string]$Kind,
         [string]$Branch = "",
         [string]$SourceHead = "",
         [string]$StashCommit = ""
@@ -473,6 +540,22 @@ function Complete-PendingMerges {
             continue
         }
 
+        if ($entry.kind -eq "stash") {
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments (@("add", "--") + @($entry.conflictedFiles)) | Out-Null
+            $unresolved = @(Invoke-SyncGit -WorkingDirectory $wd -Arguments @("diff", "--name-only", "--diff-filter=U"))
+            if ($unresolved.Count -gt 0) {
+                Write-SyncLog -Level Error "Stash restore is still unresolved: $($unresolved -join ', ')."
+                $stillPending.Add($entry)
+                continue
+            }
+            if ($entry.stashCommit) {
+                Remove-SafetyStash -WorkingDirectory $wd -StashCommit ([string]$entry.stashCommit)
+            }
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments (@("reset", "--") + @($entry.conflictedFiles)) | Out-Null
+            Write-SyncLog "Restored local changes for $($entry.label); no commit or push was created."
+            continue
+        }
+
         & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
         $midMerge = ($LASTEXITCODE -eq 0)
         if ($midMerge) {
@@ -552,6 +635,7 @@ function Invoke-PendingMergeHeal {
     # Called at the start of a sync run: if a prior run left resolved-but-unfinished
     # merges, finish them in-flow so no separate resume step or re-run is needed.
     # Throws only when files still carry conflict markers (a real semantic decision).
+    Register-OrphanedLaneConflicts
     $pending = @(Get-PendingMerges)
     if ($pending.Count -eq 0) {
         return

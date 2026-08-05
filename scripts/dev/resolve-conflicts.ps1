@@ -72,6 +72,7 @@ $copilot = Resolve-CopilotCli -Override $CopilotPath
 
 $logOwned = Start-SyncLog -Component "resolve-conflicts"
 try {
+    Register-OrphanedLaneConflicts
     $pending = @(Get-PendingMerges)
     if ($pending.Count -eq 0) {
         Write-SyncLog "No pending merges recorded; nothing to resolve."

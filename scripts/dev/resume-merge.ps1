@@ -19,6 +19,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 
 $logOwned = Start-SyncLog -Component "resume-merge"
 try {
+    Register-OrphanedLaneConflicts
     if (@(Get-PendingMerges).Count -eq 0) {
         Write-SyncLog "No pending merges recorded; nothing to resume."
         return

@@ -4,6 +4,17 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - Reconcile Sync State With Git State
+
+- A successful branch update can still fail while restoring a safety stash. That
+  leaves unmerged index entries without `MERGE_HEAD`, so recovery must model stash
+  conflicts separately and must not commit or push the restored local edits.
+- A sidecar pending-state file is a recovery aid, not the source of truth. Before
+  syncing or resolving, reconcile it with Git's unmerged indexes so interruption
+  or stale metadata cannot make the resolver falsely report that nothing is pending.
+- Concurrent tail appends to owner-authored chronological logs should use Git's
+  union driver; semantic resolution adds risk without useful conflict information.
+
 ## 2026-08-03 - Keep Display Identity Authoritative Across Surfaces
 
 - Provider metadata may enrich authoritative itinerary places, but a first search
