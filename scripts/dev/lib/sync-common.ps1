@@ -675,6 +675,20 @@ function Complete-PendingMerges {
         }
 
         if ($entry.kind -eq "integration") {
+            Invoke-SyncGit -WorkingDirectory $wd -Arguments @("fetch", "origin") | Out-Null
+            $originMaster = Invoke-SyncGit -WorkingDirectory $wd -Arguments @("rev-parse", "origin/master")
+            & git -C $wd merge-base --is-ancestor $originMaster HEAD
+            if ($LASTEXITCODE -eq 1) {
+                Write-SyncLog "Refreshing the pending integration with latest origin/master..."
+                & git -C $wd merge --no-edit --no-ff $originMaster
+                if ($LASTEXITCODE -ne 0) {
+                    Complete-MergeConflict -WorkingDirectory $wd -Label "latest origin/master" `
+                        -Kind "integration" -Branch "master" -SourceHead $originMaster
+                }
+            } elseif ($LASTEXITCODE -ne 0) {
+                throw "Could not compare the pending integration with origin/master."
+            }
+
             if (-not (Invoke-IntegrationValidation -WorkingDirectory $wd -PrimaryRoot $paths.PrimaryRoot)) {
                 Write-SyncLog -Level Error "Not publishing $($entry.label): the merged tree failed validation. Kept pending."
                 $stillPending.Add($entry)

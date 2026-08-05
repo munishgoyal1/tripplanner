@@ -2,3 +2,9 @@
 # Tail-appended, newest at the bottom. Only this lane writes this file.
 # Format: [YYYY-MM-DD HH:MM] [worker-3] [!] <short title> / verbatim prompt / blank line.
 # See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-05 18:47] [worker-3] ! Fix Worker3 sync error
+syncme to latest has an error when run on the worker3 launcher
+
+[2026-08-05 18:49] [worker-3] ! Read last-run logs first
+you should read the last run logs. why do you have to reprosuce it again yourself
