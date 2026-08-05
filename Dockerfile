@@ -24,6 +24,9 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_INDEX_URL=https://ms-feed-2.pkgs.visualstudio.com/1es-public/_packaging/pypi-public/pypi/simple/ \
+    PIP_DEFAULT_TIMEOUT=60 \
+    PIP_RETRIES=5 \
     SPA_DIST_DIR=/app/frontend/dist
 
 WORKDIR /app
