@@ -27,6 +27,7 @@ export default defineConfig({
       input: {
         accountSettings: resolve(__dirname, "lab-12-account-settings.html"),
         catalog: resolve(__dirname, "catalog.html"),
+        chatAgentWorkspace: resolve(__dirname, "lab-16-chat-agent-workspace.html"),
         chatAssistant: resolve(__dirname, "lab-4-chat-assistant.html"),
         completedLabs: resolve(__dirname, "completed-labs.html"),
         destinationGuide: resolve(__dirname, "lab-13-destination-guide.html"),
