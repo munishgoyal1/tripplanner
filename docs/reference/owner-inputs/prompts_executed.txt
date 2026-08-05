@@ -237,3 +237,6 @@ proceed with a, and dont need to take my OK, i trust you on this one
 [031] [5-Aug-2026] Fix missing script log output and timestamps
 Why is this log that i see not getting written in script logs entirely. check the canary dpeloyment log to file has very less info. 
 and hwy the scripts are not spitting out the datetime that is so critical to know whene it was run for debugging
+
+[032] [5-Aug-2026] Fix missing day 3 check-in time
+The day3 hotel in madhya pradesh trip doesnt show checkin time 

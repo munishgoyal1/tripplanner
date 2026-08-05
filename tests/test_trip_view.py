@@ -2866,6 +2866,53 @@ def test_arrival_hotel_time_requires_airport_transfer_evidence(
     assert "time_estimated" not in hotel
 
 
+def test_train_arrival_estimates_destination_hotel_check_in(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bhopal Railway Station": (23.2683, 77.4045),
+        "Jehan Numa Palace Hotel": (23.2455, 77.3937),
+        "Upper Lake": (23.2469, 77.3606),
+    }
+    monkeypatch.setattr(
+        trip_view,
+        "_place_coords",
+        lambda name, destination: coords.get(name),
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "selected_hotels": [{"name": "Jehan Numa Palace Hotel"}],
+        "day_wise_itinerary": [{
+            "day": 3,
+            "stops": [
+                {
+                    "name": "Train: Delhi to Bhopal",
+                    "kind": "transport",
+                    "time": "06:00",
+                    "arrival_time": "14:00",
+                },
+                {"name": "Jehan Numa Palace Hotel", "kind": "hotel"},
+                {"name": "Upper Lake", "kind": "attraction"},
+            ],
+        }],
+    }
+
+    itinerary = trip_view.build_itinerary(trip)
+
+    stops = itinerary["days"][0]["stops"]
+    arrival_station = next(stop for stop in stops if stop.get("terminal_role") == "arrival")
+    hotel = next(stop for stop in stops if stop["kind"] == "hotel")
+    assert arrival_station["kind"] == "station"
+    assert arrival_station["time"] == "14:00"
+    expected_check_in = (
+        trip_view._clock_minutes("14:00")
+        + int(arrival_station["duration_min"])
+        + int(hotel["travel_from_previous"]["duration_min"])
+    )
+    assert hotel["time"] == trip_view._clock_display(expected_check_in)
+    assert hotel["time_estimated"] is True
+
+
 def test_timed_road_transfer_estimates_destination_hotel_check_in() -> None:
     trip = {
         **SAMPLE_TRIP,
