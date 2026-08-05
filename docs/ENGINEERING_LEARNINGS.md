@@ -4,6 +4,19 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - An Empty Gate State Must Not Read as an Absent One
+
+- A regression gate has three distinct states — no baseline, green baseline, and
+  known failures — and collapsing the middle one into the first turns the gate off
+  exactly when it should be strictest. The clean run seeds; the next real
+  regression is then absorbed as "pre-existing" and never blocks.
+- In PowerShell this happened silently: `return @($data.failures)` unrolls an empty
+  array to `$null`, so a green baseline read back as "no baseline". Return `, $ids`
+  when a collection's emptiness carries meaning.
+- The visible symptom was a recurring warning about failures that already passed.
+  The warning was the artifact; the real defect was a gate that had stopped
+  blocking. Treat a nagging false warning as a signal to check what it guards.
+
 ## 2026-08-05 - Pin Every Package Source the Image Build Touches
 
 - The corporate network TLS-blocks the PyPI CDN (`files.pythonhosted.org`) while

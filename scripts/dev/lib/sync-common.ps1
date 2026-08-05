@@ -362,14 +362,18 @@ function Get-PytestFailureIds {
 
 function Get-ValidationBaseline {
     # Returns the recorded set of known-failing pytest node ids, or $null when no
-    # baseline exists yet (the first run seeds it and does not block).
+    # baseline exists yet (the first run seeds it and does not block). A green
+    # baseline is an EMPTY set, not $null: returning it bare would unroll to $null
+    # and make every clean run look like a first run, silently absorbing the next
+    # real regression as "pre-existing".
     $path = Join-Path (Get-SyncPaths).LogDir "validation-baseline.json"
     if (-not (Test-Path $path)) { return $null }
     try {
         $data = Get-Content $path -Raw | ConvertFrom-Json
-        return @($data.failures)
+        $ids = @($data.failures | Where-Object { $_ })
+        return , $ids
     } catch {
-        return @()
+        return , @()
     }
 }
 
