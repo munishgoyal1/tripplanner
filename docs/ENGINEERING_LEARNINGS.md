@@ -575,3 +575,18 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   synchronously and never discards a render. The bug only appeared in the running
   app during a trip switch, so verify render-timing fixes live, not just in
   vitest.
+
+## 2026-08-05 - Colliding Refactors Are Redone On The Merged Base, Not Picked
+
+- Two sandboxes split the same 520-line `build_map_view` in different
+  directions: lab 14 pulled out `day_journey` and deleted the pending-intercity
+  state machine, while the refactor sandbox moved the whole body, state machine
+  included, into `map_view`. Git offered ours-or-theirs, and both answers were
+  wrong: ours reintroduced deleted code, theirs threw away the extraction.
+- The resolution that works is to take the already-merged side as the base and
+  re-perform the other side's mechanical move on top of it. Here that meant
+  keeping `trip_view`'s facade, then rewriting `map_view` to plan journeys
+  through `day_journey` and keep only the pure assembly. Same tests, same
+  behaviour, no resurrected code.
+- The signal to look for before merging is a semantic collision rather than a
+  textual one: grep the incoming branch for identifiers the base branch deleted.
