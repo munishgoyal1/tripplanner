@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "Tripplanner Agent 3 - Infra",
+      "name": "Tripplanner Agent 3 - Sandbox",
       "path": "../tripplanner.worktrees/worker-3"
     }
   ],
   "settings": {
-    "window.title": "Agent 3 - Infra | ${activeEditorShort}${separator}${rootName}",
+    "window.title": "Agent 3 - Sandbox | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
     "workbench.sideBar.location": "left",
     "workbench.panel.defaultLocation": "right",

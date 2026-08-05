@@ -35,7 +35,7 @@ not override the canonical documents above, which govern current behavior.
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
 - The primary `master` workspace is the default development lane. Use persistent
-  Agent 1 - Iti-Map, Agent 2 - Detail-Chat, and Agent 3 - Infra worktrees only for
+  Agent 1 - Iti-Map, Agent 2 - Detail-Chat, and Agent 3 - Sandbox worktrees only for
   owner-requested, sizeable, isolated parallel assignments. These names are logical default
   ownership areas. MasterAgent uses reserved integer `0`; worker agents retain
   positive integers, branches, worktree paths, and numeric script arguments.

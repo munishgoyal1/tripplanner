@@ -28,7 +28,7 @@ if ($LASTEXITCODE -ne 0 -or -not $commonGitDir) {
 $primaryRoot = Split-Path -Parent $commonGitDir.Trim()
 $developmentWorkspace = @{ Name = "Agent 1 - Iti-Map"; File = "tripplanner-worker-1.code-workspace"; Root = "$primaryRoot.worktrees\worker-1" }
 $worker2Workspace = @{ Name = "Agent 2 - Detail-Chat"; File = "tripplanner-worker-2.code-workspace"; Root = "$primaryRoot.worktrees\worker-2" }
-$worker3Workspace = @{ Name = "Agent 3 - Infra"; File = "tripplanner-worker-3.code-workspace"; Root = "$primaryRoot.worktrees\worker-3" }
+$worker3Workspace = @{ Name = "Agent 3 - Sandbox"; File = "tripplanner-worker-3.code-workspace"; Root = "$primaryRoot.worktrees\worker-3" }
 $reviewWorkspace = @{ Name = "MasterAgent - Review & Integration"; File = "tripplanner-integration.code-workspace"; Root = $primaryRoot }
 $workspaces = [System.Collections.Generic.List[object]]::new()
 $workspaces.Add($developmentWorkspace)
