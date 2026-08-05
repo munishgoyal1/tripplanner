@@ -11,3 +11,6 @@ you should read the last run logs. why do you have to reprosuce it again yoursel
 
 [2026-08-05 19:03] [worker-3] ! Check perf-panels promotion failure
 check the sandbox prmotion failure for perf-panels
+
+[2026-08-05 19:24] [worker-3] ! Diagnose sandbox discard cleanup
+why the sbx discard didnt clear the worktrees cleanly from here: C:\repos\tripplanner.worktrees
