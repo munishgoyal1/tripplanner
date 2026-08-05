@@ -192,10 +192,12 @@ def set_stop_booked(day: int, name: str, booked: bool) -> dict[str, Any]:
     return {"ok": ok, "itinerary": build_itinerary()}
 
 
-def switch_trip(trip_id: str) -> dict[str, Any]:
-    plan = trip_planner.switch_active_trip(trip_id)
-    if plan is None:
-        return {"ok": False, "error": "trip not found"}
+def activate_trip(trip_id: str) -> Any:
+    """Flip the active trip. Kept minimal so the workspace lock is held briefly."""
+    return trip_planner.switch_active_trip(trip_id)
+
+
+def workspace_payload(plan: Any) -> dict[str, Any]:
     # One payload for every panel. The plan is already loaded here, so the map
     # and itinerary cost no extra reads and all three panels swap together
     # instead of each fetching its own copy and settling one after another.
@@ -205,3 +207,10 @@ def switch_trip(trip_id: str) -> dict[str, Any]:
         "map": trip_view.build_map_view(plan),
         "itinerary": trip_view.build_itinerary(plan),
     }
+
+
+def switch_trip(trip_id: str) -> dict[str, Any]:
+    plan = activate_trip(trip_id)
+    if plan is None:
+        return {"ok": False, "error": "trip not found"}
+    return workspace_payload(plan)

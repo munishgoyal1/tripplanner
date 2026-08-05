@@ -1149,9 +1149,15 @@ async def trips_switch(req: TripIdRequest, request: Request) -> dict:
     user_id = _set_request_user(request, req.user_id)
     workspace = await acquire_workspace_exclusive(user_id)
     try:
-        return await asyncio.to_thread(trip_operations.switch_trip, req.trip_id)
+        plan = await asyncio.to_thread(trip_operations.activate_trip, req.trip_id)
     finally:
         await release_workspace_exclusive(workspace)
+    if plan is None:
+        return {"ok": False, "error": "trip not found"}
+    # Building the three panel view-models is pure work on an already-loaded
+    # plan, so it happens after the lock is released; holding it that long made
+    # concurrent requests collide with a 409.
+    return await asyncio.to_thread(trip_operations.workspace_payload, plan)
 
 
 @app.post("/trips/delete")

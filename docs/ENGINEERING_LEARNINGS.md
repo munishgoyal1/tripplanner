@@ -517,3 +517,16 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - PostgreSQL lock cleanup is safe only after proving no server process exists.
   Remove the complete runtime lock set, restart once, and preserve all database
   files; never turn automatic local startup into automatic data deletion.
+
+## 2026-08-05 - Atomic Panel Switch And One Notice Channel
+
+- A panel that intentionally keeps prior content while refetching becomes the
+  visible tear in an otherwise atomic trip switch. Reset such caches during
+  render when the identity prop changes; an effect-based clear still paints one
+  stale frame after every other panel has already swapped.
+- Long workspace operations need a single global notice channel with explicit
+  ids, tone-based priority, and outcome replacement. Per-surface banners cannot
+  express in-progress state and compete for the same screen space.
+- Hold a workspace lock only across the state flip. Building read-only view
+  models inside the lock lengthens the window enough for unrelated requests to
+  collide, and the client should still retry once on a 409 using Retry-After.

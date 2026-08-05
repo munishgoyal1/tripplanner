@@ -1,6 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ApiError } from "@tripplanner/client";
+import { clearNotices } from "../lib/notices";
 import type { SavedTrip } from "../types";
+import StatusBar from "./StatusBar";
 import TripSwitcher from "./TripSwitcher";
 
 const { deleteTripMock, fetchSavedTripsMock, switchTripMock } = vi.hoisted(() => ({
@@ -80,5 +83,55 @@ describe("TripSwitcher deletion", () => {
       "Delete all 2 saved trips and their chat history? This cannot be undone.",
     );
     expect(onSwitched).toHaveBeenCalledOnce();
+  });
+});
+describe("TripSwitcher notifications", () => {
+  beforeEach(() => {
+    fetchSavedTripsMock.mockResolvedValue([GOA_TRIP, ROME_TRIP]);
+    deleteTripMock.mockReset();
+    switchTripMock.mockReset();
+    clearNotices();
+  });
+
+  const openAndPickRome = async () => {
+    fireEvent.click(await screen.findByTitle("Switch between your saved trips"));
+    fireEvent.click(screen.getByRole("button", { name: /Rome/ }));
+  };
+
+  it("announces the switch on the status bar and confirms when it lands", async () => {
+    let resolveSwitch: (value: null) => void = () => {};
+    switchTripMock.mockReturnValue(new Promise<null>((resolve) => { resolveSwitch = resolve; }));
+    render(<><StatusBar /><TripSwitcher version={1} onSwitched={vi.fn()} /></>);
+
+    await openAndPickRome();
+    expect(await screen.findByText("Switching to Rome…")).toBeInTheDocument();
+
+    resolveSwitch({ view: {}, map: null, itinerary: null } as never);
+    expect(await screen.findByText("Switched to Rome.")).toBeInTheDocument();
+  });
+
+  it("retries once when the workspace is briefly locked", async () => {
+    const onSwitched = vi.fn();
+    switchTripMock
+      .mockRejectedValueOnce(new ApiError("Could not switch trips (409).", 409, 0))
+      .mockResolvedValueOnce({ view: {}, map: null, itinerary: null });
+    render(<><StatusBar /><TripSwitcher version={1} onSwitched={onSwitched} /></>);
+
+    await openAndPickRome();
+
+    await waitFor(() => expect(switchTripMock).toHaveBeenCalledTimes(2));
+    expect(onSwitched).toHaveBeenCalledWith("rome-trip", { view: {}, map: null, itinerary: null });
+    expect(await screen.findByText("Switched to Rome.")).toBeInTheDocument();
+  });
+
+  it("explains a busy workspace instead of a generic failure", async () => {
+    switchTripMock.mockRejectedValue(new ApiError("Could not switch trips (409).", 409, 0));
+    render(<><StatusBar /><TripSwitcher version={1} onSwitched={vi.fn()} /></>);
+
+    await openAndPickRome();
+
+    expect(
+      await screen.findByText("Rome is busy finishing another update. Try again in a moment."),
+    ).toBeInTheDocument();
   });
 });
