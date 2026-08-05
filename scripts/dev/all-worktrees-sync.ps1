@@ -1,12 +1,13 @@
 #!/usr/bin/env pwsh
 [CmdletBinding()]
 param(
-    [switch]$ValidateOnly
+    [switch]$ValidateOnly,
+    [switch]$NoAutoResolve
 )
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/sync-common.ps1"
-$failures = [System.Collections.Generic.List[object]]::new()
+$scriptRoot = $PSScriptRoot
 $laneNames = @{
     0 = "MasterAgent (0)"
     1 = "Agent 1"
@@ -17,16 +18,20 @@ $laneNames = @{
 $syncLogOwned = Start-SyncLog -Component "all-worktrees-sync"
 try {
 
+Invoke-SyncWithAutoResolve -NoAutoResolve:$NoAutoResolve -Body {
+
+$failures = [System.Collections.Generic.List[object]]::new()
+
 if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
 
 Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
-& "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
+& "$scriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
 
 foreach ($number in @(0, 1, 2, 3)) {
     $laneName = $laneNames[$number]
     Write-Host "`nSynchronizing $laneName..." -ForegroundColor Cyan
     try {
-        & "$PSScriptRoot\update-from-master.ps1" $number -ValidateOnly:$ValidateOnly
+        & "$scriptRoot\update-from-master.ps1" $number -ValidateOnly:$ValidateOnly
     } catch {
         $failures.Add([pscustomobject]@{
             Lane = $laneName
@@ -51,6 +56,8 @@ if ($ValidateOnly) {
 }
 
 Write-Host "`nDone: master and every worker worktree are synchronized." -ForegroundColor Green
+
+}
 
 }
 finally {

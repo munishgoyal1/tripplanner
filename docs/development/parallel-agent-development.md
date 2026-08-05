@@ -173,13 +173,20 @@ side by accident. The append-only owner prompt and requirements logs use Git's
 union merge driver so concurrent tail appends are retained without semantic
 conflict handling.
 
-For a novel conflict you can either resolve the marked files by hand (then let the
-next launcher run or `resume-merge.ps1` finish them) or run
-`scripts/user/Resolve-Conflicts.cmd` to have the GitHub Copilot CLI clear the
-markers automatically before the same finish path runs. The CLI only edits the
-conflicted files and is denied `git push`, so the pre-publish validation gate
-still guards every resolution. It requires `npm install -g @github/copilot` and a
-signed-in CLI; pass `-ResolveOnly` to inspect the edits before validating.
+A novel conflict is resolved automatically. When a launcher run stops on one, it
+invokes the GitHub Copilot CLI to clear the markers and then retries the sync in
+the same run, so no separate command is needed. The CLI only edits the conflicted
+files and is denied `git push`, so the pre-publish validation gate still guards
+every resolution, and a failure that is *not* a conflict (a failed validation
+gate, for example) is re-raised untouched instead of being retried. Automatic
+resolution requires `npm install -g @github/copilot` and a signed-in CLI; without
+it the run reports the conflict and stops as before.
+
+To opt out, pass `-NoAutoResolve` to the launcher or set
+`TRIPPLANNER_NO_AUTO_RESOLVE=1`. You can then resolve the marked files by hand
+(the next launcher run or `resume-merge.ps1` finishes them) or run
+`scripts/user/Resolve-Conflicts.cmd`, which performs the same resolution on
+demand; pass `-ResolveOnly` to inspect the edits before validating.
 
 ### Pre-publish validation gate
 

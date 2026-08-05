@@ -5,17 +5,21 @@ param(
     [ValidateSet("onlyfrommaster")]
     [string]$Target,
 
-    [switch]$ValidateOnly
+    [switch]$ValidateOnly,
+    [switch]$NoAutoResolve
 )
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/sync-common.ps1"
+$scriptRoot = $PSScriptRoot
 $syncLogOwned = Start-SyncLog -Component "sync-latest"
 try {
 
+Invoke-SyncWithAutoResolve -NoAutoResolve:$NoAutoResolve -Body {
+
 if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
 
-$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$repoRoot = Split-Path -Parent (Split-Path -Parent $scriptRoot)
 $branch = & git -C $repoRoot branch --show-current
 $gitExitCode = $LASTEXITCODE
 if ($gitExitCode -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) {
@@ -37,11 +41,11 @@ $laneName = if ($agentNumber -eq 0) { "MasterAgent (0)" } else { "Agent $agentNu
 Write-Host "Synchronizing latest committed code into $laneName..." -ForegroundColor Cyan
 if ($agentNumber -eq 0) {
     if ($Target -eq "onlyfrommaster") {
-        & "$PSScriptRoot\update-from-master.ps1" 0 -ValidateOnly:$ValidateOnly
+        & "$scriptRoot\update-from-master.ps1" 0 -ValidateOnly:$ValidateOnly
         Write-Host "MasterAgent is current with origin/master only." -ForegroundColor Green
     }
     else {
-        & "$PSScriptRoot\merge-latest-worktrees.ps1" -ValidateOnly:$ValidateOnly
+        & "$scriptRoot\merge-latest-worktrees.ps1" -ValidateOnly:$ValidateOnly
         Write-Host "MasterAgent is current after worktree integration." -ForegroundColor Green
     }
     return
@@ -49,11 +53,13 @@ if ($agentNumber -eq 0) {
 
 if ($Target -ne "onlyfrommaster") {
     Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
-    & "$PSScriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
+    & "$scriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
 }
 
 Write-Host "Applying latest master to $laneName..." -ForegroundColor Cyan
-& "$PSScriptRoot\update-from-master.ps1" $agentNumber -ValidateOnly:$ValidateOnly
+& "$scriptRoot\update-from-master.ps1" $agentNumber -ValidateOnly:$ValidateOnly
+
+}
 
 }
 finally {

@@ -9,6 +9,7 @@ param(
 	[switch]$AllWorktrees,
 
 	[switch]$ValidateOnly,
+	[switch]$NoAutoResolve,
 	[int]$ApiPort = 8000,
 	[int]$FrontendPort = 5173,
 	[int]$LabsPort = 5175,
@@ -29,6 +30,9 @@ Start-RunLog -Name "run-latest" | Out-Null
 $syncParameters = @{}
 if ($ValidateOnly) {
 	$syncParameters.ValidateOnly = $true
+}
+if ($NoAutoResolve) {
+	$syncParameters.NoAutoResolve = $true
 }
 
 $syncLogOwned = Start-SyncLog -Component "run-latest"

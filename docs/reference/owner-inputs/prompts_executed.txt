@@ -8,6 +8,15 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[047] [5-Aug-2026] Resume queued request after stop
+by mistake i stopped and sent last request but i wanted to add it to queue whiule previous task was in progress. Can you resume
+
+[046] [5-Aug-2026] Auto-resolve conflicts in Run-Latest
+why did i have to manually run resolve conflicts file, as part of Run Latest cmd it shoudl have automatically been called and conflicts resolved. How can yuou strenghten in spiriti of more automaiton and productivity needing less of my involvement.
+
+[045] [5-Aug-2026] Maintain multiple script run logs
+Maintain 2-3 run logs for scripts if that will help you debug issue faster.
+
 [043] [5-Aug-2026] Keep latest and important prompts
 keep the latest prompts at the top in prompts_executed. and copy the prompots related to feature work, critical inputs and direction i give, bug fix and related important prompts that i dont want to lose or may need to re-use in a seperate prompts_executed_imp.txt
 

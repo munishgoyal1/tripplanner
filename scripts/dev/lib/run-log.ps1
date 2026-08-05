@@ -21,6 +21,34 @@ function Get-RunLogDirectory {
     return $dir
 }
 
+function Backup-RunLog {
+    # Keeps <name>.1.log and <name>.2.log beside the current transcript. Diagnosing
+    # a failed run usually needs the run before it, which a bare overwrite destroys.
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [int]$Keep = 3
+    )
+    try {
+        if (-not (Test-Path $Path)) { return }
+        $dir = Split-Path -Parent $Path
+        $stem = [System.IO.Path]::GetFileNameWithoutExtension($Path)
+        $ext = [System.IO.Path]::GetExtension($Path)
+        $oldest = $Keep - 1
+        for ($i = $oldest; $i -ge 1; $i--) {
+            $rolling = Join-Path $dir "$stem.$i$ext"
+            if (-not (Test-Path $rolling)) { continue }
+            if ($i -eq $oldest) {
+                Remove-Item $rolling -Force -ErrorAction SilentlyContinue
+            } else {
+                Move-Item $rolling (Join-Path $dir "$stem.$($i + 1)$ext") -Force -ErrorAction SilentlyContinue
+            }
+        }
+        Move-Item $Path (Join-Path $dir "$stem.1$ext") -Force -ErrorAction SilentlyContinue
+    } catch {
+        # Logging must never break a run.
+    }
+}
+
 function Write-RunLog {
     param([Parameter(Mandatory = $true)][string]$Message)
     Write-Host ("[{0}] {1}" -f ((Get-Date).ToUniversalTime().ToString("u")), $Message) -ForegroundColor DarkGray
@@ -70,6 +98,7 @@ function Start-RunLog {
         return $null   # a nested script keeps writing to the outer transcript
     }
     $path = Join-Path (Get-RunLogDirectory) "$Name.log"
+    Backup-RunLog -Path $path
     try {
         Start-Transcript -Path $path -Force -ErrorAction Stop | Out-Null
     } catch {

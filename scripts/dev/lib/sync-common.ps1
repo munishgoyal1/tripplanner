@@ -65,8 +65,10 @@ function Start-SyncLog {
     $global:TripplannerSyncFailed = $false
     $paths = Get-SyncPaths
     New-Item -ItemType Directory -Force -Path $paths.LogDir | Out-Null
-    # One overwritten file per component: the last run is what anyone debugs.
+    # Keep the two previous runs beside the current one; a sync failure is usually
+    # only explainable by comparing it against the run before it.
     $logPath = Join-Path (Get-RunLogDirectory) "$Component.log"
+    Backup-RunLog -Path $logPath
     $transcript = $false
     try {
         Start-Transcript -Path $logPath -Force -ErrorAction Stop | Out-Null
@@ -297,7 +299,7 @@ function Complete-MergeConflict {
     $global:TripplannerSyncPending = $true
     Write-SyncLog -Level Warn "$Label has conflicts needing a semantic decision: $($remaining -join ', ')"
     Write-SyncLog -Level Warn "Conflict report: $($entry.reportPath)"
-    throw "SYNC_CONFLICT_PENDING: $Label. Resolve the files under '$WorkingDirectory', then run 'pwsh -File scripts/dev/resume-merge.ps1'. Details: $($entry.reportPath)"
+    throw "SYNC_CONFLICT_PENDING: $Label. Automatic resolution runs next; if it cannot finish, resolve the files under '$WorkingDirectory' and run 'pwsh -File scripts/dev/resume-merge.ps1'. Details: $($entry.reportPath)"
 }
 
 function Restore-LaneStash {
@@ -696,4 +698,182 @@ function Invoke-LanePropagation {
         throw "$failures worktree(s) still need resolution; resolve the files listed above, then re-run."
     }
     Write-SyncLog "Every worktree is current."
+}
+
+function Resolve-CopilotCli {
+    # Returns the Copilot CLI path, or $null when it is not installed. Callers that
+    # resolve automatically must degrade quietly; only the manual entry point throws.
+    param([string]$Override)
+
+    if ($Override) {
+        if (-not (Test-Path $Override)) { throw "Copilot CLI not found at: $Override" }
+        return $Override
+    }
+    if ($env:COPILOT_CLI -and (Test-Path $env:COPILOT_CLI)) { return $env:COPILOT_CLI }
+    # Prefer the npm global install; the VS Code shim loops on an install prompt.
+    try {
+        $npmPrefix = (& npm prefix -g 2>$null)
+        if ($npmPrefix) {
+            $prefix = ([string]@($npmPrefix)[0]).Trim()
+            foreach ($name in @("copilot.cmd", "copilot")) {
+                $candidate = Join-Path $prefix $name
+                if (Test-Path $candidate) { return $candidate }
+            }
+        }
+    } catch { }
+    $onPath = Get-Command copilot -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty Source
+    if ($onPath) { return $onPath }
+    return $null
+}
+
+function Build-ConflictResolutionPrompt {
+    param([Parameter(Mandatory = $true)][string[]]$Files)
+
+    $fileList = ($Files -join ", ")
+    return (
+        "You are resolving Git MERGE CONFLICTS in this repository checkout. The " +
+        "working tree is mid-merge and these files ONLY contain conflict markers " +
+        "(<<<<<<<, |||||||, =======, >>>>>>>) shown with the common ancestor " +
+        "(zdiff3): $fileList. Resolve every conflict with a correct SEMANTIC merge " +
+        "that PRESERVES the intent of BOTH sides; never blanket-pick one side and " +
+        "discard the other; prefer the additive or superset outcome when both " +
+        "changes must coexist. Rules: edit ONLY those files; remove ALL conflict " +
+        "markers and leave valid, compilable code; do NOT run git add, commit, " +
+        "merge, or push and do NOT create branches (only edit files); do NOT " +
+        "change unrelated code, imports, or formatting beyond what the merge needs."
+    )
+}
+
+function Invoke-CopilotConflictResolution {
+    # Clears conflict markers in every pending merge using the Copilot CLI.
+    # Returns $true only when no pending merge carries markers afterwards.
+    # Never throws: automatic callers rethrow the original sync failure instead.
+    param(
+        [string]$CopilotPath,
+        [string]$Model,
+        [switch]$AllowAllPaths
+    )
+
+    $copilot = Resolve-CopilotCli -Override $CopilotPath
+    if (-not $copilot) {
+        Write-SyncLog -Level Warn "GitHub Copilot CLI not found; skipping automatic resolution. Install with: npm install -g @github/copilot"
+        return $false
+    }
+
+    Register-OrphanedLaneConflicts
+    $pending = @(Get-PendingMerges)
+    if ($pending.Count -eq 0) {
+        Write-SyncLog "No pending merges recorded; nothing to resolve."
+        return $true
+    }
+
+    Write-SyncLog "Using Copilot CLI: $copilot"
+    Write-SyncLog "Attempting Copilot resolution for $($pending.Count) pending merge(s)..."
+    $unresolved = 0
+
+    foreach ($entry in $pending) {
+        $wd = [string]$entry.workingDirectory
+        $label = [string]$entry.label
+        if (-not (Test-Path $wd -PathType Container)) {
+            Write-SyncLog -Level Warn "Working directory missing for ${label}: $wd. Skipping."
+            $unresolved++
+            continue
+        }
+
+        $files = @(Get-FilesWithConflictMarkers -WorkingDirectory $wd -Files @($entry.conflictedFiles))
+        if ($files.Count -eq 0) {
+            Write-SyncLog "$label is already marker-free; nothing for Copilot to do."
+            continue
+        }
+
+        Write-SyncLog "Asking Copilot to resolve $($files.Count) file(s) for ${label}: $($files -join ', ')"
+        $prompt = Build-ConflictResolutionPrompt -Files $files
+        $copilotArgs = @("-p", $prompt, "--allow-all-tools", "--deny-tool=shell(git push)")
+        if ($AllowAllPaths) { $copilotArgs += "--allow-all-paths" }
+        if ($Model) { $copilotArgs += @("--model", $Model) }
+
+        Push-Location $wd
+        try {
+            & $copilot @copilotArgs
+            $copilotExit = $LASTEXITCODE
+        } catch {
+            Write-SyncLog -Level Warn "Copilot CLI failed for ${label}: $($_.Exception.Message)"
+            $copilotExit = 1
+        } finally {
+            Pop-Location
+        }
+        if ($copilotExit -ne 0) {
+            Write-SyncLog -Level Warn "Copilot exited with code $copilotExit for $label (continuing to marker check)."
+        }
+
+        $still = @(Get-FilesWithConflictMarkers -WorkingDirectory $wd -Files @($files))
+        if ($still.Count -gt 0) {
+            Write-SyncLog -Level Error "Copilot did not clear all markers for ${label}: $($still -join ', '). Left for manual or chat resolution."
+            $unresolved++
+        } else {
+            Write-SyncLog "Copilot cleared all conflict markers for $label."
+        }
+    }
+
+    return ($unresolved -eq 0)
+}
+
+function Test-ConflictPending {
+    # State-based conflict detection. Message matching alone is unreliable because
+    # all-worktrees-sync aggregates per-lane errors into its own summary message.
+    try {
+        Register-OrphanedLaneConflicts
+        foreach ($entry in @(Get-PendingMerges)) {
+            $wd = [string]$entry.workingDirectory
+            if (-not (Test-Path $wd -PathType Container)) { continue }
+            $files = @(Get-FilesWithConflictMarkers -WorkingDirectory $wd -Files @($entry.conflictedFiles))
+            if ($files.Count -gt 0) { return $true }
+        }
+    } catch {
+        return $false
+    }
+    return $false
+}
+
+function Invoke-SyncWithAutoResolve {
+    # Runs a sync body and, when it stops on a novel semantic conflict, resolves it
+    # with the Copilot CLI and retries in-flow. Without this the owner has to notice
+    # the failure and run Resolve-Conflicts.cmd by hand for a routine conflict.
+    # Safety is unchanged: Copilot only edits files, and the retried sync still runs
+    # the staging, validation, and publish gates.
+    param(
+        [Parameter(Mandatory = $true)][scriptblock]$Body,
+        [switch]$NoAutoResolve
+    )
+
+    if ($global:TripplannerAutoResolveActive) {
+        return & $Body   # a nested sync script lets the outermost one own the retry
+    }
+    $disabled = $NoAutoResolve -or ($env:TRIPPLANNER_NO_AUTO_RESOLVE -in @("1", "true", "True"))
+    $global:TripplannerAutoResolveActive = $true
+    try {
+        try {
+            return & $Body
+        } catch {
+            if ($disabled -or -not (Test-ConflictPending)) { throw }
+
+            Write-SyncLog -Level Warn "Sync stopped on a conflict; attempting automatic resolution before giving up..."
+            $resolved = $false
+            try {
+                $resolved = Invoke-CopilotConflictResolution
+            } catch {
+                Write-SyncLog -Level Warn "Automatic resolution failed: $($_.Exception.Message)"
+            }
+            if (-not $resolved) {
+                Write-SyncLog -Level Error "Automatic resolution could not clear every conflict; manual resolution is needed."
+                throw
+            }
+
+            Write-SyncLog "Conflicts resolved automatically; resuming synchronization..."
+            return & $Body   # the retry heals the pending merge, then validates and publishes
+        }
+    } finally {
+        $global:TripplannerAutoResolveActive = $false
+    }
 }

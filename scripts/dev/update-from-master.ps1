@@ -99,7 +99,7 @@ function Restore-SafetyStash {
             -StashCommit $StashCommit -ConflictedFiles $remaining
         $global:TripplannerSyncPending = $true
         Write-SyncLog -Level Warn "$LaneName local changes need semantic resolution: $($remaining -join ', ')"
-        throw "SYNC_CONFLICT_PENDING: $LaneName stash restore. Run scripts/user/Resolve-Conflicts.cmd. Details: $($entry.reportPath)"
+        throw "SYNC_CONFLICT_PENDING: $LaneName stash restore. Automatic resolution runs next; if it cannot finish, run scripts/user/Resolve-Conflicts.cmd. Details: $($entry.reportPath)"
     }
 
     Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--check") | Out-Null

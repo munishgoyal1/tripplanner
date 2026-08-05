@@ -4,6 +4,33 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - Recovery Belongs in the Flow That Broke
+
+- A recovery step that exists only as a separate command is a step the owner has
+  to notice, remember, and run. The conflict resolver was already scripted and
+  non-interactive, yet every routine conflict still stalled a sync until someone
+  invoked it by hand. Automation is not finished when the capability exists; it
+  is finished when the failing flow calls it.
+- Retry on state, not on an error message. The all-worktrees launcher aggregates
+  per-lane errors into its own summary, so matching `SYNC_CONFLICT_PENDING` in
+  the exception text silently missed the very case that needed help. Asking git
+  whether unresolved markers exist works no matter who rewrapped the message.
+- Automatic retry must be narrow enough to stay honest. A retry that fires on any
+  failure would re-run a merge whose validation gate just failed and eventually
+  let it through. Retrying only when a conflict is actually pending keeps the
+  test gate authoritative, and Copilot stays denied `git push` so it can never
+  publish what it edited.
+
+## 2026-08-05 - Keep the Run Before the One That Failed
+
+- Every launcher transcript was written with `Start-Transcript -Force`, so each
+  run destroyed the only record of the previous one. Debugging a sync usually
+  means comparing the failing run against the last good one, which is exactly the
+  file the failing run had just overwritten.
+- Two generations of history are cheap and enough. Rotating `<name>.log` to
+  `.1.log` and `.2.log` costs nothing and removes a whole class of "please run it
+  again so I can see the error" round trips.
+
 ## 2026-08-05 - A Gate Must Reproduce the Environment It Judges
 
 - Integration validation ran pytest in a fresh merge worktree, where git-ignored
