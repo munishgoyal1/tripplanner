@@ -517,3 +517,21 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - PostgreSQL lock cleanup is safe only after proving no server process exists.
   Remove the complete runtime lock set, restart once, and preserve all database
   files; never turn automatic local startup into automatic data deletion.
+
+## 2026-08-05 - Partition Agent Logs Instead of Merging Them
+
+- The shared owner prompt log conflicted on almost every parallel task, and each
+  conflict invoked the Copilot CLI resolver to re-derive an answer nobody
+  disputed. A log with no semantic content should never cost a model call.
+- Union merge is a safety net, not a design. It survives concurrent appends, but
+  it cannot stop two lanes from allocating the same entry number, and prepending
+  newest-first forces every lane to read the shared file before writing.
+- Partitioning removes the merge entirely: one file per lane means two lanes can
+  never touch the same file. Prefer that over any merge strategy for a new
+  agent-written log.
+- Tail-append plus a timestamp identifier makes a log write a pure append. No
+  read, no counter, no coordination, so the cheapest write is also the one that
+  cannot conflict.
+- The real conflicts came from the one file that was left off the union list.
+  When a strategy depends on an allowlist, the omission is the defect, so derive
+  the allowlist from a single source and have the tooling read it.

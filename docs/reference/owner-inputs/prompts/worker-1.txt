@@ -1,0 +1,4 @@
+# Owner prompts executed in the Agent 1 - Iti-Map lane.
+# Tail-appended, newest at the bottom. Only this lane writes this file.
+# Format: [YYYY-MM-DD HH:MM] [worker-1] [!] <short title> / verbatim prompt / blank line.
+# See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.

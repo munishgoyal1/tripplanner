@@ -1,0 +1,7 @@
+# Owner prompts executed in the Agent 2 - Detail-Chat lane.
+# Tail-appended, newest at the bottom. Only this lane writes this file.
+# Format: [YYYY-MM-DD HH:MM] [worker-2] [!] <short title> / verbatim prompt / blank line.
+# See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-05 17:05] [worker-2] ! Keep prompt logs out of merge contention
+prompts_executed and rleated files that get modified in each lane on each task and itneraxction usually runs into conflicts to merge. find some better way to keep it out of contention. it is not such a ciritcal file buit taking away preciosu time and cost cycles.

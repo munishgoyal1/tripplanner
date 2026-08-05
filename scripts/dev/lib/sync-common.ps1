@@ -275,6 +275,57 @@ function Register-OrphanedLaneConflicts {
     }
 }
 
+function Test-UnionMergeFile {
+    # Ask Git itself, so the answer always matches the .gitattributes that governs
+    # this working tree and no glob semantics are re-implemented here.
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$Path
+    )
+    $answer = & git -C $WorkingDirectory check-attr merge -- $Path 2>$null
+    return ($LASTEXITCODE -eq 0 -and "$answer" -match ':\s*merge:\s*union\s*$')
+}
+
+function Resolve-AppendOnlyConflicts {
+    # Append-only logs are never a semantic decision: both lanes only added entries,
+    # so keeping both sides is always correct. Resolving them here keeps them out of
+    # the pending-conflict report and away from the Copilot resolver, which costs
+    # real time and tokens to re-derive the same answer every run.
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [string[]]$Files
+    )
+    if (-not $Files -or $Files.Count -eq 0) { return @() }
+
+    $resolved = [System.Collections.Generic.List[string]]::new()
+    foreach ($file in $Files) {
+        $relative = ($file -replace '\\', '/')
+        if (-not (Test-UnionMergeFile -WorkingDirectory $WorkingDirectory -Path $relative)) { continue }
+
+        $full = Join-Path $WorkingDirectory $relative
+        if (-not (Test-Path -LiteralPath $full)) { continue }
+
+        $kept = [System.Collections.Generic.List[string]]::new()
+        $section = "both"
+        foreach ($line in Get-Content -LiteralPath $full) {
+            if ($line -match '^<{7}') { $section = "ours"; continue }
+            if ($line -match '^\|{7}') { $section = "base"; continue }
+            if ($line -match '^={7}\s*$') { $section = "theirs"; continue }
+            if ($line -match '^>{7}') { $section = "both"; continue }
+            if ($section -eq "base") { continue }   # drop the merge base, keep both edits
+            $kept.Add($line)
+        }
+        Set-Content -LiteralPath $full -Value ($kept -join [Environment]::NewLine)
+        & git -C $WorkingDirectory add -- $relative | Out-Null
+        if ($LASTEXITCODE -eq 0) { $resolved.Add($relative) }
+    }
+
+    if ($resolved.Count -gt 0) {
+        Write-SyncLog "Auto-resolved append-only log conflict(s) by keeping both sides: $($resolved -join ', ')"
+    }
+    return @($resolved)
+}
+
 function Complete-MergeConflict {
     param(
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
@@ -285,6 +336,10 @@ function Complete-MergeConflict {
         [string]$StashCommit = ""
     )
     & git -C $WorkingDirectory rerere 2>&1 | Out-Host
+    $unmerged = @(Invoke-SyncGit -WorkingDirectory $WorkingDirectory -Arguments @(
+            "diff", "--name-only", "--diff-filter=U"
+        ))
+    Resolve-AppendOnlyConflicts -WorkingDirectory $WorkingDirectory -Files $unmerged | Out-Null
     $remaining = @(Invoke-SyncGit -WorkingDirectory $WorkingDirectory -Arguments @(
             "diff", "--name-only", "--diff-filter=U"
         ))
@@ -319,6 +374,12 @@ function Restore-LaneStash {
         return
     }
     $marked = @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
+    Resolve-AppendOnlyConflicts -WorkingDirectory $WorkingDirectory -Files $marked | Out-Null
+    $marked = @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
+    if ($marked.Count -eq 0) {
+        Write-SyncLog "$Label local changes restored; append-only log conflicts kept both sides."
+        return
+    }
     Write-SyncLog -Level Warn "$Label local changes conflict with the new base; the safety stash was retained. Resolve: $($marked -join ', ')"
 }
 

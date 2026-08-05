@@ -2,6 +2,12 @@
 # concatenating both sides is always the correct merge and Git resolves it without
 # a conflict. Never list a file here that agents edit in place: union merge would
 # silently keep both versions of a rewritten line.
+#
+# Union is the safety net, not the strategy. The owner prompt log is split per lane
+# under docs/reference/owner-inputs/prompts/ so two lanes never write the same file
+# and no merge is needed at all. Prefer that pattern for any new agent-written log.
 docs/reference/history/requirements-log.txt merge=union
 docs/reference/owner-inputs/prompts_executed.txt merge=union
+docs/reference/owner-inputs/prompts_executed_imp.txt merge=union
+docs/reference/owner-inputs/prompts/*.txt merge=union
 docs/ENGINEERING_LEARNINGS.md merge=union

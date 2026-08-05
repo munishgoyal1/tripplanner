@@ -1,4 +1,7 @@
 # prompts_executed — mugoy
+# FROZEN on 5-Aug-2026 at entry [050]. Do not append here. New prompts are
+# tail-appended to the writing lane's own file under prompts/ (see prompts/README.md),
+# so parallel lanes never contend on one shared log.
 # Complete exact prompt history, with newest entries at the top. Entry IDs remain
 # stable when reordered, and prompt bodies are preserved verbatim.
 # Legacy entries 001-004 predate the date convention; 015-017 have no body in
