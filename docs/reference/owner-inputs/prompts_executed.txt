@@ -233,3 +233,33 @@ Press any key to continue . . .
 (.venv) PS C:\repos\tripplanner\scripts\user>
 [030] [5-Aug-2026] Proceed with state and persistence fixes
 proceed with a, and dont need to take my OK, i trust you on this one
+
+[031] [4-Aug-2026] Add prod deployment cmd launcher
+do we have a cmnaary and production deployment scripts. create one cmd for prod but keep it scripts/prod folder
+
+[032] [4-Aug-2026] Add canary deployment cmd launcher
+do we need launcher for canary deployment also
+
+[033] [4-Aug-2026] Add rollback launcher and merge
+yes create that and then merge to master
+
+[034] [4-Aug-2026] Single last-run logs for scripts
+only create last run log we dont need too many log files to manage. also create log of each launcher script and other important scripts
+
+[035] [4-Aug-2026] Direct production deployment without canary
+can i directly deploy to prod without deploying to canary latest first
+
+[036] [4-Aug-2026] Debug canary deployment failure
+debug and fix the canary deployment failure
+
+[037] [4-Aug-2026] Share deployment logs across lanes
+can you fix the deployment scripts to add logs so any lane and worker can debug from logs of last run
+
+[038] [5-Aug-2026] Verify conflict automation integration
+are the conflict reoslutiosn latest higher automation not integrated into Sync Latest scripts?
+
+[039] [5-Aug-2026] Improve sync conflict recovery
+check the latest sync all and resolve scripts log , there are some warnings. see how you can fix/avoid them from occuring and keep things green. On the next sync either the previously recorded conflicts were not detected or it still couldnt resolve. either case, see how you can impriove it
+
+[040] [5-Aug-2026] Enforce canary before production
+make the Prod deployment script check if canary latest is deployed or not to ensure it can notify owner and call canary deployment and verificaiton first if not dpeloyed,

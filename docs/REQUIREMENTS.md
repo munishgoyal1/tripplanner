@@ -594,8 +594,10 @@ implemented capability baseline.
   Azure login or deployment authority. Guarded PowerShell scripts exclusively
   own canary and production deployment.
 - Deep canary smoke verifies Azure OpenAI through an isolated write.
-- Production promotes the exact canary-tested image only after manual validation,
-  bake evidence, and the explicit approval phrase.
+- Production resolves the current Git SHA by default and verifies that exact
+  image is both live in canary and represented in successful smoke history. A
+  missing gate automatically runs canary deployment and read-only verification
+  before manual validation, bake evidence, and the explicit approval phrase.
 - Production smoke, normalized chat outcome/latency telemetry, explicit SLO
   queries, release monitoring, and guarded revision rollback complete the flow.
 - Production deployment and mobile store submission are never automatic.

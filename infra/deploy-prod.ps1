@@ -30,7 +30,8 @@ param(
     [string]$AzureOpenAIAccountName = "aoaiprodmd1ks",
     [string]$OAuthRedirectBase = "https://aitripplanner.co/api",
     [string]$CanaryResourceGroup = "rg-tripplanner-canary",
-    [string]$CanaryAppNamePrefix = "canary-app-",
+    [string]$CanaryNamePrefix = "canary",
+    [string]$CanaryAppNamePrefix = "",
     [string]$EnvFile = ".env.prod"
 )
 
@@ -38,6 +39,108 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/deployment-common.ps1"
 Start-RunLog -Name "prod-deploy" | Out-Null
+
+if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+    az account set --subscription $SubscriptionId
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not select Azure subscription $SubscriptionId."
+    }
+}
+
+$imageTagWasExplicit = -not [string]::IsNullOrWhiteSpace($ImageTag)
+if (-not $imageTagWasExplicit) {
+    $ImageTag = (git rev-parse --short HEAD 2>$null)
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($ImageTag)) {
+        throw "Could not resolve the current Git commit for the immutable image tag."
+    }
+}
+if ($ImageTag -eq "latest") {
+    throw "Production requires an immutable image tag. Deploy a SHA to canary or pass -ImageTag <sha>."
+}
+if ($Build) {
+    throw "Production cannot rebuild an image after canary verification. Let the canary gate build the current SHA or pass an existing -ImageTag <sha>."
+}
+if ([string]::IsNullOrWhiteSpace($CanaryAppNamePrefix)) {
+    $CanaryAppNamePrefix = "${CanaryNamePrefix}-app-"
+} elseif (-not $PSBoundParameters.ContainsKey("CanaryNamePrefix") -and $CanaryAppNamePrefix -match '^(.*)-app-$') {
+    $CanaryNamePrefix = $matches[1]
+} elseif ($CanaryAppNamePrefix -ne "${CanaryNamePrefix}-app-") {
+    throw "CanaryNamePrefix and CanaryAppNamePrefix identify different Container Apps."
+}
+
+$imagePrefix = "ghcr.io/munishgoyal1/tripplanner:"
+$canaryHistoryLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-canary.log"
+
+function Get-CanaryImages {
+    $images = @(az containerapp list `
+        --resource-group $CanaryResourceGroup `
+        --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
+        --output tsv)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect canary images in $CanaryResourceGroup."
+    }
+    return @($images | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+}
+
+function Test-CanaryImageVerified {
+    if (-not (Test-Path $canaryHistoryLog)) {
+        return $false
+    }
+    return [bool](Select-String `
+        -Path $canaryHistoryLog `
+        -SimpleMatch "Image: ${imagePrefix}${ImageTag}" `
+        -Quiet)
+}
+
+$canaryImages = @(Get-CanaryImages)
+$canaryImageMatches = $canaryImages.Count -eq 1 -and $canaryImages[0] -eq "${imagePrefix}${ImageTag}"
+$canarySmokeVerified = Test-CanaryImageVerified
+
+if ($canaryImageMatches -and $canarySmokeVerified) {
+    Write-Host "[canary] Current release $ImageTag is deployed and has passing smoke evidence."
+} else {
+    $reasons = @()
+    if (-not $canaryImageMatches) {
+        $deployed = if ($canaryImages.Count -eq 0) { "none" } else { $canaryImages -join ", " }
+        $reasons += "deployed image is $deployed"
+    }
+    if (-not $canarySmokeVerified) {
+        $reasons += "passing smoke evidence is missing"
+    }
+    Write-Host -ForegroundColor Yellow "[canary] Release $ImageTag is not ready: $($reasons -join '; ')."
+
+    if ($DryRun) {
+        throw "Dry run cannot repair the canary gate. Deploy and verify $ImageTag in canary, then retry."
+    }
+
+    Write-Host "[canary] Deploying and verifying $ImageTag before production approval..."
+    $canaryArguments = @(
+        "-NoProfile",
+        "-File", "$PSScriptRoot/deploy-canary.ps1",
+        "-ImageTag", $ImageTag,
+        "-ResourceGroup", $CanaryResourceGroup,
+        "-NamePrefix", $CanaryNamePrefix
+    )
+    if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
+        $canaryArguments += @("-SubscriptionId", $SubscriptionId)
+    }
+    if ($imageTagWasExplicit -or $canaryImageMatches) {
+        $canaryArguments += "-NoBuild"
+    }
+
+    & pwsh @canaryArguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "Canary deployment or smoke verification failed. Production promotion is blocked."
+    }
+
+    $canaryImages = @(Get-CanaryImages)
+    $canaryImageMatches = $canaryImages.Count -eq 1 -and $canaryImages[0] -eq "${imagePrefix}${ImageTag}"
+    if (-not $canaryImageMatches -or -not (Test-CanaryImageVerified)) {
+        throw "Canary did not retain verified image ${imagePrefix}${ImageTag}. Production promotion is blocked."
+    }
+    Write-Host "[canary] Deployment and smoke verification passed for $ImageTag."
+}
+
 Import-DeploymentEnvironment -Path $EnvFile
 
 # Configuration
@@ -45,29 +148,6 @@ $prodRG = $ResourceGroup
 $prodPrefix = $NamePrefix
 $bicepFile = $BicepFile
 $bicepParams = $BicepParams
-
-if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
-    az account set --subscription $SubscriptionId
-}
-
-if ([string]::IsNullOrWhiteSpace($ImageTag)) {
-    $canaryImages = @(az containerapp list `
-        --resource-group $CanaryResourceGroup `
-        --query "[?starts_with(name, '$CanaryAppNamePrefix')].properties.template.containers[0].image" `
-        --output tsv)
-    $canaryImages = @($canaryImages | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-    if ($canaryImages.Count -ne 1) {
-        throw "Expected exactly one canary image in $CanaryResourceGroup; found $($canaryImages.Count). Pass -ImageTag <sha> explicitly."
-    }
-    $imagePrefix = "ghcr.io/munishgoyal1/tripplanner:"
-    if (-not $canaryImages[0].StartsWith($imagePrefix)) {
-        throw "Canary uses an unexpected image: $($canaryImages[0])"
-    }
-    $ImageTag = $canaryImages[0].Substring($imagePrefix.Length)
-}
-if ($ImageTag -eq "latest") {
-    throw "Production requires an immutable image tag. Deploy a SHA to canary or pass -ImageTag <sha>."
-}
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ⚠️  PRODUCTION DEPLOYMENT — APPROVAL GATE               ║"
@@ -221,14 +301,6 @@ if ($LASTEXITCODE -ne 0) {
 $whatIf = ConvertFrom-AzureCliJson -Output $rawWhatIf -Action "Production what-if"
 Assert-DeploymentHasNoDeletes -WhatIf $whatIf -EnvironmentName "Production"
 Write-Host "  ✓ What-if contains no deletes`n"
-
-# Optional: build + push only after all no-change paths have exited.
-if ($Build) {
-    Write-Host "✓ Step 0: Building & pushing image (-Build)..."
-    & "$PSScriptRoot/push-image.ps1"
-    if ($LASTEXITCODE -ne 0) { throw "Image build/push failed." }
-    Write-Host "  ✓ Image ready`n"
-}
 
 # Step 4: Deploy
 Write-Host "✓ Step 3: Deploying to PRODUCTION..."

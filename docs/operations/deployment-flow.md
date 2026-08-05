@@ -43,7 +43,7 @@ callback bases are resolved by the deployment scripts.
 ## Artifact and Resource Ownership
 
 | Item | Authoritative location |
-|---|---|
+| --- | --- |
 | Source and release commit | GitHub private repository |
 | Container image | `ghcr.io/munishgoyal1/tripplanner:<short-sha>` |
 | Convenience image pointer | `ghcr.io/munishgoyal1/tripplanner:latest` |
@@ -132,14 +132,19 @@ does not satisfy the production checklist.
 .\infra\deploy-prod.ps1
 ```
 
-The script displays the readiness checklist and requires the exact interactive
-phrase `APPROVE_PROD_DEPLOYMENT`. It resolves the immutable image currently
-deployed to canary, rejects `latest`, applies production Bicep parameters,
-blocks infrastructure deletes through what-if, updates production to that SHA
-image, runs read-only hosted smoke, and logs the approver and result.
-`-ImageTag <sha>` remains available for an explicit replay.
-Do not use `-Build` for normal promotion because that creates a new artifact
-after canary validation.
+The script resolves the current Git SHA by default, checks that the exact image
+is currently deployed to canary, and checks the primary checkout's successful
+canary history for smoke evidence. If either check is missing, it tells the owner
+why and runs the canary deployment and read-only smoke before displaying the
+production readiness checklist. An explicit `-ImageTag <sha>` replays that
+immutable artifact through the same gate without rebuilding it. `-DryRun` reports
+an unmet canary gate without changing canary. `-Build` is rejected because a
+production-side rebuild would invalidate canary evidence.
+
+After the canary gate passes, the script requires the exact interactive phrase
+`APPROVE_PROD_DEPLOYMENT`, applies production Bicep parameters, blocks
+infrastructure deletes through what-if, updates production to that SHA image,
+runs read-only hosted smoke, and logs the approver and result.
 
 Production parameters preserve `aitripplanner.co` and `www.aitripplanner.co`
 with Azure-managed TLS and set `OAUTH_REDIRECT_BASE` to

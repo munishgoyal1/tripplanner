@@ -62,3 +62,21 @@ def test_hosted_deployments_surface_azure_cli_failures() -> None:
         assert "--output json 2>&1 | Out-String" in deploy_block
         assert "$deployExitCode = $LASTEXITCODE" in deploy_block
         assert "if ($deployExitCode -ne 0)" in deploy_block
+
+
+def test_production_repairs_missing_canary_gate_before_approval() -> None:
+    production = (
+        Path(__file__).parents[1] / "infra" / "deploy-prod.ps1"
+    ).read_text(encoding="utf-8")
+
+    git_resolution = production.index("git rev-parse --short HEAD")
+    canary_check = production.index("$canaryImageMatches")
+    canary_deploy = production.index('"$PSScriptRoot/deploy-canary.ps1"')
+    approval = production.index('$approval = Read-Host "Enter approval code"')
+
+    assert git_resolution < canary_check < canary_deploy < approval
+    assert "Test-CanaryImageVerified" in production
+    assert "Canary deployment or smoke verification failed" in production
+    assert "Dry run cannot repair the canary gate" in production
+    assert "Production cannot rebuild an image after canary verification" in production
+    assert '"-NamePrefix", $CanaryNamePrefix' in production
