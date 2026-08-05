@@ -710,6 +710,10 @@ function Resolve-CopilotCli {
         return $Override
     }
     if ($env:COPILOT_CLI -and (Test-Path $env:COPILOT_CLI)) { return $env:COPILOT_CLI }
+    # Cached: the preflight and the resolver both ask, and `npm prefix -g` is slow.
+    if ($global:TripplannerCopilotCliProbed) { return $global:TripplannerCopilotCli }
+    $global:TripplannerCopilotCliProbed = $true
+    $global:TripplannerCopilotCli = $null
     # Prefer the npm global install; the VS Code shim loops on an install prompt.
     try {
         $npmPrefix = (& npm prefix -g 2>$null)
@@ -717,13 +721,19 @@ function Resolve-CopilotCli {
             $prefix = ([string]@($npmPrefix)[0]).Trim()
             foreach ($name in @("copilot.cmd", "copilot")) {
                 $candidate = Join-Path $prefix $name
-                if (Test-Path $candidate) { return $candidate }
+                if (Test-Path $candidate) {
+                    $global:TripplannerCopilotCli = $candidate
+                    return $candidate
+                }
             }
         }
     } catch { }
     $onPath = Get-Command copilot -ErrorAction SilentlyContinue |
         Select-Object -First 1 -ExpandProperty Source
-    if ($onPath) { return $onPath }
+    if ($onPath) {
+        $global:TripplannerCopilotCli = $onPath
+        return $onPath
+    }
     return $null
 }
 
@@ -809,7 +819,8 @@ function Invoke-CopilotConflictResolution {
 
         $still = @(Get-FilesWithConflictMarkers -WorkingDirectory $wd -Files @($files))
         if ($still.Count -gt 0) {
-            Write-SyncLog -Level Error "Copilot did not clear all markers for ${label}: $($still -join ', '). Left for manual or chat resolution."
+            $hint = if ($copilotExit -ne 0) { " Copilot itself failed (exit $copilotExit); check that the CLI is signed in." } else { "" }
+            Write-SyncLog -Level Error "Copilot did not clear all markers for ${label}: $($still -join ', ').$hint Left for manual or chat resolution."
             $unresolved++
         } else {
             Write-SyncLog "Copilot cleared all conflict markers for $label."
@@ -851,6 +862,11 @@ function Invoke-SyncWithAutoResolve {
         return & $Body   # a nested sync script lets the outermost one own the retry
     }
     $disabled = $NoAutoResolve -or ($env:TRIPPLANNER_NO_AUTO_RESOLVE -in @("1", "true", "True"))
+    if (-not $disabled -and -not (Resolve-CopilotCli)) {
+        # Surface this at the start, not mid-conflict: knowing the safety net is
+        # missing is only useful before you need it.
+        Write-SyncLog -Level Warn "Automatic conflict resolution is unavailable (GitHub Copilot CLI not found). A novel conflict will stop this run. Install with: npm install -g @github/copilot"
+    }
     $global:TripplannerAutoResolveActive = $true
     try {
         try {
