@@ -4,6 +4,22 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - A Transcript Only Sees What PowerShell Writes
+
+- `Start-Transcript` records the PowerShell host's own output. An unpiped native
+  process inherits the console handles and writes past the transcript, so the
+  failing output an operator reads on screen never reaches the log file.
+- Stream long external tools through PowerShell (`Invoke-LoggedNative`) so their
+  merged stdout and stderr land in the run log. Docker and the Azure CLI degrade
+  to line-oriented output when they are not attached to a terminal, which is the
+  better form for a log anyway.
+- Redirecting native stderr with `2>&1` yields error records, so a caller running
+  under `$ErrorActionPreference = "Stop"` terminates on the first progress line.
+  Capture wrappers must relax that preference locally and check the exit code.
+- A log without a start stamp, an outcome, and an elapsed time cannot answer when
+  a run happened or how far it got. Emit those from the shared logging entry
+  point, not per script.
+
 ## 2026-08-03 - Keep Display Identity Authoritative Across Surfaces
 
 - Provider metadata may enrich authoritative itinerary places, but a first search

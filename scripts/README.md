@@ -43,7 +43,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 Every entry point above writes its latest run to
 `<primary-checkout>/logs/last-run/<name>.log`, overwritten each run, next to an
 append-only `runs.log` index. Any lane, worker, or sandbox reads the same files,
-so the last run of any script can be debugged from anywhere.
+so the last run of any script can be debugged from anywhere. Each log opens with
+a `[time]` start stamp and closes with the outcome and elapsed time.
+
+A transcript only records what PowerShell itself writes, so an unpiped native
+process (`docker`, `az`, `npm`) writes past it to the console and leaves nothing
+in the log. Run long external tools through `Invoke-LoggedNative` from
+`dev/lib/run-log.ps1`, which streams both output streams through PowerShell and
+records the command, exit code, and duration.
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,
