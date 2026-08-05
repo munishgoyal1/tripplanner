@@ -38,6 +38,16 @@ from tripplanner.web.budget import (  # noqa: F401
     traveler_count,
 )
 
+# Transfer-day journey semantics live in ``day_journey`` (UX Lab #14), a leaf
+# module that owns what an inter-city travel day means for the map.
+from tripplanner.web.day_journey import (
+    TERMINAL_KINDS,
+    DayJourney,
+    frame_pin_ids,
+    plan_day_journeys,
+    start_journey_from_stay,
+)
+
 # Gallery selection and itinerary occurrence indexing live in ``gallery``
 # (tech-debt #7), a leaf module; re-exported here for callers/tests.
 from tripplanner.web.gallery import (  # noqa: F401
@@ -910,129 +920,19 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 
     # Structured days are authoritative and may reuse the same place on
     # multiple days. A pin has one primary day for display, while day routes
-    # can reference it wherever the itinerary includes it.
+    # can reference it wherever the itinerary includes it. ``day_journey`` owns
+    # what a transfer day is; here we only collect the pins it puts on the map.
+    journeys, transfer_metrics_by_circuit = plan_day_journeys(
+        trip.get("day_wise_itinerary"), resolve_pin=_pin_for_stop
+    )
     by_day: dict[int, list[str]] = {}
-    route_pin_ids_by_day: dict[int, list[str]] = {}
-    intercity_modes_by_day: dict[int, dict[tuple[str, str], str]] = {}
-    route_circuit_ids_by_day: dict[int, dict[tuple[str, str], str]] = {}
-    transfer_metrics_by_circuit: dict[str, dict[str, float]] = {}
-    transfer_mode_by_day: dict[int, str] = {}
-    transfer_days: set[int] = set()
-    for idx, entry in enumerate(trip.get("day_wise_itinerary") or []):
-        if not isinstance(entry, dict) or not isinstance(entry.get("stops"), list):
+    for day_num, journey in journeys.items():
+        if not journey.map_pin_ids:
             continue
-        raw_day = entry.get("day")
-        day_num = raw_day if isinstance(raw_day, int) and raw_day > 0 else idx + 1
-        route_ids = route_pin_ids_by_day.setdefault(day_num, [])
-        pending_intercity_mode: str | None = None
-        pending_route_circuit_id: str | None = None
-        pending_bus_destination_id: str | None = None
-        for stop_index, stop in enumerate(entry["stops"], start=1):
-            name = stop.get("name") if isinstance(stop, dict) else stop
-            kind = str(stop.get("kind") or "").strip().lower() if isinstance(stop, dict) else ""
-            mode_name = str(stop.get("mode") or "") if isinstance(stop, dict) else ""
-            name = _canonical_transport_name(str(name or ""), mode_name)
-            kind = _normalized_stop_kind(str(name or ""), kind, mode_name)
-            mode = _intercity_transfer_mode(str(name or ""), kind)
-            if mode:
-                if pending_bus_destination_id and route_ids:
-                    edge = (route_ids[-1], pending_bus_destination_id)
-                    intercity_modes_by_day.setdefault(day_num, {})[edge] = "Bus"
-                    if pending_route_circuit_id:
-                        route_circuit_ids_by_day.setdefault(day_num, {})[
-                            edge
-                        ] = pending_route_circuit_id
-                    route_ids.append(pending_bus_destination_id)
-                    pending_bus_destination_id = None
-                    pending_intercity_mode = None
-                    pending_route_circuit_id = None
-                transfer_days.add(day_num)
-                transfer_mode_by_day[day_num] = mode
-                circuit_id = _route_circuit_id(day_num, stop_index, mode)
-                if isinstance(stop, dict):
-                    saved_metrics = {
-                        metric: float(stop[metric])
-                        for metric in ("distance_km", "duration_min")
-                        if isinstance(stop.get(metric), (int, float)) and stop[metric] > 0
-                    }
-                    if saved_metrics:
-                        transfer_metrics_by_circuit[circuit_id] = saved_metrics
-                terminal_refs = _transport_terminal_refs(str(name or ""), kind)
-                terminal_ids: list[str] = []
-                for terminal_kind, terminal_name in terminal_refs:
-                    terminal_pin = _pin_for_stop(terminal_name, terminal_kind)
-                    if terminal_pin:
-                        terminal_ids.append(str(terminal_pin["id"]))
-                if len(terminal_ids) == len(terminal_refs) and len(terminal_ids) >= 2:
-                    for terminal_id in terminal_ids:
-                        if terminal_id not in by_day.setdefault(day_num, []):
-                            by_day[day_num].append(terminal_id)
-                    route_ids.append(terminal_ids[0])
-                    if mode == "Bus":
-                        pending_intercity_mode = mode
-                        pending_route_circuit_id = circuit_id
-                        pending_bus_destination_id = terminal_ids[-1]
-                    else:
-                        route_ids.append(terminal_ids[-1])
-                        intercity_modes_by_day.setdefault(day_num, {})[
-                            (terminal_ids[0], terminal_ids[-1])
-                        ] = mode
-                        route_circuit_ids_by_day.setdefault(day_num, {})[
-                            (terminal_ids[0], terminal_ids[-1])
-                        ] = circuit_id
-                else:
-                    if not route_ids and terminal_refs:
-                        origin_pin = _pin_for_stop(terminal_refs[0][1], terminal_refs[0][0])
-                        if origin_pin:
-                            origin_id = str(origin_pin["id"])
-                            if origin_id not in by_day.setdefault(day_num, []):
-                                by_day[day_num].append(origin_id)
-                            route_ids.append(origin_id)
-                    pending_intercity_mode = mode
-                    pending_route_circuit_id = circuit_id
-                continue
-            if (
-                pending_bus_destination_id
-                and kind not in {"attraction", "meal", "restaurant"}
-                and route_ids
-            ):
-                edge = (route_ids[-1], pending_bus_destination_id)
-                intercity_modes_by_day.setdefault(day_num, {})[edge] = "Bus"
-                if pending_route_circuit_id:
-                    route_circuit_ids_by_day.setdefault(day_num, {})[
-                        edge
-                    ] = pending_route_circuit_id
-                route_ids.append(pending_bus_destination_id)
-                pending_bus_destination_id = None
-                pending_intercity_mode = None
-                pending_route_circuit_id = None
-            pin = _pin_for_stop(name, kind)
-            if pin and pin["id"] not in by_day.setdefault(day_num, []):
-                by_day[day_num].append(pin["id"])
-            if pin:
-                pin_id = str(pin["id"])
-                if pending_intercity_mode and route_ids:
-                    terminal_kinds = {"airport", "station", "bus_station"}
-                    if pin["kind"] not in terminal_kinds:
-                        intercity_modes_by_day.setdefault(day_num, {})[
-                            (route_ids[-1], pin_id)
-                        ] = pending_intercity_mode
-                        if pending_route_circuit_id:
-                            route_circuit_ids_by_day.setdefault(day_num, {})[
-                                (route_ids[-1], pin_id)
-                            ] = pending_route_circuit_id
-                    if pending_intercity_mode not in {"Drive", "Bus"} or pin["kind"] == "hotel":
-                        pending_intercity_mode = None
-                        pending_route_circuit_id = None
-                route_ids.append(pin_id)
-        if pending_bus_destination_id and route_ids:
-            edge = (route_ids[-1], pending_bus_destination_id)
-            intercity_modes_by_day.setdefault(day_num, {})[edge] = "Bus"
-            if pending_route_circuit_id:
-                route_circuit_ids_by_day.setdefault(day_num, {})[
-                    edge
-                ] = pending_route_circuit_id
-            route_ids.append(pending_bus_destination_id)
+        day_ids = by_day.setdefault(day_num, [])
+        for pin_id in journey.map_pin_ids:
+            if pin_id not in day_ids:
+                day_ids.append(pin_id)
 
     unscheduled: list[str] = []
     for p in pins:
@@ -1053,27 +953,8 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
         )
         return int(occurrence.get("stop")) if occurrence and occurrence.get("stop") else 10_000
 
-    def _local_pin_ids(day: int, route_ids: list[str]) -> list[str]:
-        intercity_edges = intercity_modes_by_day.get(day) or {}
-        if "Drive" in intercity_edges.values():
-            return route_ids
-        edge_indexes = next(
-            (
-                (route_ids.index(start_id), route_ids.index(end_id))
-                for start_id, end_id in intercity_edges
-                if start_id in route_ids and end_id in route_ids
-            ),
-            None,
-        )
-        if not edge_indexes:
-            return route_ids
-        start_index, end_index = edge_indexes
-        destination_ids = route_ids[end_index:]
-        has_destination_stop = any(
-            pin_by_id[pin_id]["kind"] not in {"airport", "station", "bus_station"}
-            for pin_id in destination_ids
-        )
-        return destination_ids if has_destination_stop else route_ids[: start_index + 1]
+    def _pin_kind(pin_id: str) -> str:
+        return str(pin_by_id[pin_id]["kind"])
 
     def _resolved_stay_ids(day: int) -> list[str]:
         itinerary_day = itinerary_days.get(day) or {}
@@ -1101,9 +982,11 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
 
     stay_ids = [p["id"] for p in pins if p["kind"] == "hotel" and p["selected"]]
     days = []
+    empty_journey = DayJourney(day=0)
     for d in sorted(by_day):
         ids = sorted(by_day[d], key=lambda pin_id: _occurrence_stop(pin_id, d))
-        is_transfer_day = d in transfer_days
+        journey = journeys.get(d, empty_journey)
+        is_transfer_day = journey.is_transfer
         resolved_stay_ids = _resolved_stay_ids(d)
         if resolved_stay_ids and not is_transfer_day:
             resolved_stay_set = set(resolved_stay_ids)
@@ -1123,64 +1006,24 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             if len(set(ids)) == 1:
                 ids = [stay_id]
         if is_transfer_day:
-            route_ids = route_pin_ids_by_day.get(d, [])
             carried_stay_id = _carried_stay_id(d)
             if carried_stay_id:
-                if route_ids and pin_by_id[route_ids[0]]["kind"] == "origin":
-                    origin_id = route_ids.pop(0)
-                    intercity_modes = intercity_modes_by_day.get(d) or {}
-                    replacement_edges = {
-                        (carried_stay_id, end_id): mode
-                        for (start_id, end_id), mode in intercity_modes.items()
-                        if start_id == origin_id
-                    }
-                    if replacement_edges:
-                        intercity_modes_by_day.setdefault(d, {}).update(replacement_edges)
-                        intercity_modes_by_day[d] = {
-                            edge: mode
-                            for edge, mode in intercity_modes_by_day[d].items()
-                            if edge[0] != origin_id
-                        }
-                    route_circuit_ids = route_circuit_ids_by_day.get(d) or {}
-                    replacement_circuit_edges = {
-                        (carried_stay_id, end_id): circuit_id
-                        for (start_id, end_id), circuit_id in route_circuit_ids.items()
-                        if start_id == origin_id
-                    }
-                    if replacement_circuit_edges:
-                        route_circuit_ids_by_day.setdefault(d, {}).update(
-                            replacement_circuit_edges
-                        )
-                        route_circuit_ids_by_day[d] = {
-                            edge: circuit_id
-                            for edge, circuit_id in route_circuit_ids_by_day[d].items()
-                            if edge[0] != origin_id
-                        }
-                route_ids = [
+                start_journey_from_stay(
+                    journey,
                     carried_stay_id,
-                    *(pin_id for pin_id in route_ids if pin_id != carried_stay_id),
-                ]
-                if len(route_ids) >= 2:
-                    first_edge = (route_ids[0], route_ids[1])
-                    intercity_modes_by_day.setdefault(d, {}).setdefault(
-                        first_edge, transfer_mode_by_day[d]
-                    )
-                for resolved_stay_id in resolved_stay_ids[1:]:
-                    if resolved_stay_id not in route_ids:
-                        route_ids.append(resolved_stay_id)
+                    kind_of=_pin_kind,
+                    extra_stay_ids=resolved_stay_ids[1:],
+                )
+            route_ids = journey.route_ids
             ids = route_ids
         else:
-            route_ids = [
-                pid
-                for pid in ids
-                if pin_by_id[pid]["kind"] not in {"airport", "station", "bus_station"}
-            ]
-        intercity_modes = intercity_modes_by_day.get(d)
+            route_ids = [pid for pid in ids if pin_by_id[pid]["kind"] not in TERMINAL_KINDS]
+        intercity_modes = journey.intercity_edges or None
         legs = _route_legs_for_day(
             route_ids,
             pin_by_id,
             intercity_modes,
-            route_circuit_ids_by_day.get(d),
+            journey.circuit_edges or None,
             transfer_metrics_by_circuit,
         )
         route = _route_stats_for_day(route_ids, pin_by_id)
@@ -1206,7 +1049,9 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
                 ),
                 "color": _day_color(d),
                 "pin_ids": ids,
-                "circuit_pin_ids": _local_pin_ids(d, route_ids),
+                "circuit_pin_ids": frame_pin_ids(
+                    route_ids, journey.intercity_edges, kind_of=_pin_kind
+                ),
                 "route": route,
                 "legs": legs,
             }
