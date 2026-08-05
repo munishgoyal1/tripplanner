@@ -379,9 +379,10 @@ export default function App() {
     dispatchWorkspace({ type: "trip-changed", tripId });
     // The switch response already carries every panel's view-model — seed them
     // all from it so the map and itinerary swap with the trip panel instead of
-    // each re-fetching and settling one after another.
+    // each re-fetching and settling one after another. A missing payload must
+    // still drop the previous trip's seed, or a remounted panel would restore it.
+    setPanelSeed(workspace);
     if (workspace) {
-      setPanelSeed(workspace);
       applyView(workspace.view, null);
     } else {
       await handleClearFocus();
@@ -390,6 +391,7 @@ export default function App() {
 
   const handleNewTrip = async () => {
     setAssistantTurnStatus(null);
+    setPanelSeed(null);
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
   };

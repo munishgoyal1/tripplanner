@@ -295,6 +295,22 @@ export default function TripPanel({
   const [kind, setKind] = useState<KindTab>("highlights");
   const [query, setQuery] = useState("");
   const handleCities = useCallback((next: string[]) => setCities(next), []);
+
+  // The guide scope belongs to the trip that was showing. Reset it during
+  // render when the trip changes: an effect would paint one frame of the old
+  // trip's city chips and filter, which reads as a half-finished switch. The
+  // tracker must be state, not a ref — React can discard a concurrent render,
+  // and a mutated ref would then swallow the reset that went with it.
+  const destination = view?.overview?.destination ?? "";
+  const [scopedDestination, setScopedDestination] = useState(destination);
+  if (scopedDestination !== destination) {
+    setScopedDestination(destination);
+    setCities([]);
+    setCity("all");
+    setKind("highlights");
+    setQuery("");
+  }
+
   // Retuning the scope means "show me that list", so it also leaves the focused place.
   const rescope = <T,>(apply: (value: T) => void) => (value: T) => {
     apply(value);

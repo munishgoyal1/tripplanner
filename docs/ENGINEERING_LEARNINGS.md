@@ -546,3 +546,16 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Measure through the running endpoint, not the profiler alone: the profile
   named the hot function, but only the live switch showed how much of the wall
   clock the user actually felt.
+
+## 2026-08-05 - Render-Phase State Resets Need A State Tracker, Not A Ref
+
+- Resetting derived state when a prop changes must compare against a `useState`
+  tracker, not a `useRef`. A ref mutates immediately, but React can discard a
+  concurrent render and replay it from the last committed state: the queued
+  `setState` resets are thrown away while the ref keeps the new value, so the
+  reset never fires again. Console tracing showed exactly that - the retry render
+  saw the cleared value, and a later render was back to the stale one.
+- Unit tests passed on the ref version because React Testing Library renders
+  synchronously and never discards a render. The bug only appeared in the running
+  app during a trip switch, so verify render-timing fixes live, not just in
+  vitest.

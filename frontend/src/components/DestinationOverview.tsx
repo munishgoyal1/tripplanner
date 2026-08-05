@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchDestinationOverview, getCachedOverview } from "../api";
 import type { DestinationOverview as Overview } from "../types";
 import Lightbox from "./Lightbox";
@@ -19,12 +19,14 @@ export default function DestinationOverview({ destination }: Props) {
   );
   const [loading, setLoading] = useState(false);
   const [lb, setLb] = useState(-1);
-  const shownDestination = useRef(destination);
+  const [shownDestination, setShownDestination] = useState(destination);
 
   // Render-phase reset: an effect would let one frame paint the previous trip's
-  // hero photo and title, which is exactly what looked broken mid-switch.
-  if (shownDestination.current.toLowerCase() !== destination.toLowerCase()) {
-    shownDestination.current = destination;
+  // hero photo and title, which is exactly what looked broken mid-switch. The
+  // tracker is state, not a ref — React can discard a concurrent render, and a
+  // mutated ref would then swallow the reset that was queued with it.
+  if (shownDestination.toLowerCase() !== destination.toLowerCase()) {
+    setShownDestination(destination);
     const cached = destination ? getCachedOverview(destination) : null;
     setData(cached);
     setLoading(Boolean(destination) && !cached);
