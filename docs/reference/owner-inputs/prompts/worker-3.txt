@@ -17,3 +17,6 @@ why the sbx discard didnt clear the worktrees cleanly from here: C:\repos\trippl
 
 [2026-08-05 19:31] [worker-3] ! Rename Agent 3 lane
 rename agent3 to Sandbox instead of Infra
+
+[2026-08-05 19:44] [worker-3] ! Implement Lab 16 in sandbox
+Implement lab16 in a sandbox and bring it up for inspection
