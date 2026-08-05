@@ -4,4 +4,5 @@
 # silently keep both versions of a rewritten line.
 docs/reference/history/requirements-log.txt merge=union
 docs/reference/owner-inputs/prompts_executed.txt merge=union
+docs/reference/owner-inputs/prompts_executed_imp.txt merge=union
 docs/ENGINEERING_LEARNINGS.md merge=union
