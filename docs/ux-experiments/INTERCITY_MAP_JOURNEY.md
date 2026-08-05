@@ -41,6 +41,48 @@ transfers around a visually distinct airport-to-airport arc.
   by default, with separate visibility controls for each scale. Unlike B, the
   inter-city leg remains geometry on the dual-scale map.
 
+## How to review the Lab
+
+The Lab renders each option inside a production-scale workspace shell (command
+bar, itinerary rail, map canvas, route rail) so an option is judged in the
+context it would ship into, not as an isolated map card.
+
+- **Measured improvement band.** Stops reaching the map, route legs drawn,
+  terminal pins, and city contexts are counted from the same fixture that both
+  previews render, so the gain is verifiable rather than asserted.
+- **Baseline comparison.** `Compare with today` renders today's production
+  behavior beside the option. The itinerary rail flags every stop the current Map
+  drops with `Not on the map`, which is the concrete thing this Lab removes.
+- **Five scenarios.** Road with on-route stops, rail with stations, flight with
+  airports, a departure day with no destination stop, and an ordinary
+  sightseeing day.
+- **Regression guard.** The ordinary sightseeing day must render identically
+  before and after in every option: no journey strip, no layer controls, no
+  reframing, no restyling. An option that changes it fails.
+- **Full size.** `?preview=<full-journey|journey-strip|layer-toggle>&scenario=<road|rail|flight|departure|ordinary>`
+  opens one option full window.
+
+## Evaluation criteria
+
+1. Can the complete transfer day be read without leaving the Map?
+2. Is road, rail, or flight identifiable without reading the itinerary?
+3. Does the destination stay work remain usable at a normal working scale?
+4. Does an ordinary sightseeing day stay exactly as it is today?
+
+## Non-goals
+
+- No billed routing provider; travel facts stay endpoint-based estimates.
+- Terminal pins are informational only and are not selectable place stops.
+- No change to itinerary order, timing, persistence, or mutation behavior.
+- No change to ordinary closed hotel circuits.
+
+## Lab source
+
+- `frontend/labs/src/intercity-map/scenarios.ts` - fixtures and derived counts
+- `frontend/labs/src/intercity-map/JourneyMap.tsx` - data-driven mock canvas
+- `frontend/labs/src/intercity-map/IntercityWorkspace.tsx` - workspace shell
+- `frontend/labs/src/intercity-map/main.tsx` - Lab page
+
 ## Selected direction
 
 **A - Connected day journey, with local selected-day framing**. It makes
@@ -67,3 +109,6 @@ The production handoff is intentionally limited to the selected option:
   destination- or origin-side framing for selected transfer days
 - Production implementation status: implemented
 - Validation: focused road, rail, and flight view-model tests plus the MapPanel unit suite
+- Lab lifecycle note: the machine handoff record still reads `ready`, so the Lab
+  page shows `In progress`. It needs the owner's `Implemented - To be reviewed`
+  disposition to match this document.
