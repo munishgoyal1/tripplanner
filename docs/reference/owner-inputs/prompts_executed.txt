@@ -8,6 +8,12 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[051] [5-Aug-2026] Seed sandbox data for signed-in account
+but my google account linked dtaa is not seeded mapped to my google account. I can see 14 trips for local not signed in user
+
+[050] [5-Aug-2026] Question sandbox Cosmos seed data
+why is there no data in cosmos of this sandbox. does it not put in seed data as last decided automatically ?
+
 [049] [5-Aug-2026] Park recycle, keep sandboxes fresh
 there could be more than 1 sandbox running in paraellel , i would say remove the complexity of recycle. just keep it simple fresh from scratch creation for now. Park the recycle scripts, dont delete but keep them seperately and dont bring any of it in main flow. will delete later if not required
 
