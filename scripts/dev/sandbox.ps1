@@ -85,6 +85,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/run-log.ps1"
+Start-RunLog -Name "sandbox" | Out-Null
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100

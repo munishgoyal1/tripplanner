@@ -37,6 +37,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/deployment-common.ps1"
+Start-RunLog -Name "prod-deploy" | Out-Null
 Import-DeploymentEnvironment -Path $EnvFile
 
 # Configuration
@@ -291,13 +292,13 @@ Write-Host "Container App: $($deployment.containerAppName)"
 Write-Host "Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag`n"
 
 # Log deployment
-$logDir = "logs"
-if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
+$historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-prod.log"
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $approver = $env:USERNAME
-Add-Content "logs/deployments-prod.log" "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | Status: SUCCESS"
+Add-Content $historyLog "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | Status: SUCCESS"
 
-Write-Host "✓ Logged to logs/deployments-prod.log"
+Write-Host "✓ Logged to $historyLog"
 Write-Host "✓ All users can now access the production deployment`n"
 
 # Post-deployment validation hint
@@ -305,4 +306,5 @@ Write-Host "Next steps:"
 Write-Host "  1. Monitor production logs: az containerapp logs show -g $prodRG -n $($deployment.containerAppName)"
 Write-Host "  2. Test critical flows (chat, map, email)"
 Write-Host "  3. If issues arise, run: ./infra/rollback-prod.ps1`n"
+Stop-RunLog
 

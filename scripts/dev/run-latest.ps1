@@ -23,6 +23,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/run-log.ps1"
+Start-RunLog -Name "run-latest" | Out-Null
 . "$PSScriptRoot/lib/sync-common.ps1"
 $syncParameters = @{}
 if ($ValidateOnly) {

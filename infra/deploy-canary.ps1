@@ -33,6 +33,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/deployment-common.ps1"
+Start-RunLog -Name "canary-deploy" | Out-Null
 Import-DeploymentEnvironment -Path $EnvFile
 
 if (-not $NoBuild -and $ImageTag -eq "latest") {
@@ -231,9 +232,10 @@ Write-Host "`nNext: Test the canary app, then use ./infra/deploy-prod.ps1 to pro
 Write-Host "       if all tests pass and you're ready for production.`n"
 
 # Log deployment
-$logDir = "logs"
-if (-not (Test-Path $logDir)) { mkdir $logDir -Force | Out-Null }
+$historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-canary.log"
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Add-Content "logs/deployments-canary.log" "[$timestamp] Deployed canary | RG: $canaryRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | By: $env:USERNAME"
-Write-Host "✓ Logged to logs/deployments-canary.log`n"
+Add-Content $historyLog "[$timestamp] Deployed canary | RG: $canaryRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | By: $env:USERNAME"
+Write-Host "✓ Logged to $historyLog`n"
+Stop-RunLog
 
