@@ -389,6 +389,27 @@ function Set-ValidationBaseline {
     ($payload | ConvertTo-Json -Depth 4) | Set-Content -Path $path -Encoding UTF8
 }
 
+function Copy-LocalConfigForValidation {
+    # A merge worktree is a fresh checkout, so git-ignored local configuration is
+    # absent. Settings-dependent tests then fail for reasons that have nothing to
+    # do with the merge, and at the gate that is indistinguishable from a real
+    # regression: it blocks the merge and poisons the baseline with phantom ids.
+    # Seed the worktree from the primary checkout so the gate measures the merge.
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$PrimaryRoot
+    )
+
+    foreach ($name in @(".env")) {
+        $source = Join-Path $PrimaryRoot $name
+        $target = Join-Path $WorkingDirectory $name
+        if ((Test-Path $source -PathType Leaf) -and -not (Test-Path $target)) {
+            Copy-Item -Path $source -Destination $target -Force
+            Write-SyncLog "Seeded $name into the merge worktree so validation matches the primary checkout."
+        }
+    }
+}
+
 function Invoke-IntegrationValidation {
     # Verifies a merged tree BEFORE it is published to master so a clean-but-broken
     # merge cannot become the base everyone builds on. Dependencies are reused from
@@ -408,6 +429,8 @@ function Invoke-IntegrationValidation {
         Write-SyncLog -Level Warn "Validation skipped (TRIPPLANNER_SKIP_SYNC_VALIDATION set); the merged code was NOT verified."
         return $true
     }
+
+    Copy-LocalConfigForValidation -WorkingDirectory $WorkingDirectory -PrimaryRoot $PrimaryRoot
 
     Write-SyncLog "Validating the merged tree before publishing to master..."
     $blocking = [System.Collections.Generic.List[string]]::new()

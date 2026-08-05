@@ -1,3 +1,7 @@
-# Parallel branches only append dated entries to this chronological log.
+# Agent-authored, append-only logs. Parallel lanes only add new dated entries, so
+# concatenating both sides is always the correct merge and Git resolves it without
+# a conflict. Never list a file here that agents edit in place: union merge would
+# silently keep both versions of a rewritten line.
 docs/reference/history/requirements-log.txt merge=union
 docs/reference/owner-inputs/prompts_executed.txt merge=union
+docs/ENGINEERING_LEARNINGS.md merge=union

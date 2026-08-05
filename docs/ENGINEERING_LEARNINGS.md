@@ -4,6 +4,34 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - A Gate Must Reproduce the Environment It Judges
+
+- Integration validation ran pytest in a fresh merge worktree, where git-ignored
+  local configuration like `.env` does not exist. Settings-dependent tests failed
+  there and passed everywhere else, so the gate reported confident regressions
+  that no commit had caused. Seed a validation sandbox from the primary checkout.
+- A false regression is worse than a noisy one: it blocks the merge and, on the
+  next clean pass, writes phantom ids into the baseline that then mask real
+  failures. Verify a suspected regression against the same code in a known-good
+  checkout before attributing it to the change under test.
+- The bisect that matters is environment versus code. Swapping only `src` between
+  the two trees, holding the test file and working directory constant, disproved
+  the code theory in one run and pointed straight at the missing config.
+
+## 2026-08-05 - A Merge Driver Only Helps Once It Is Declared
+
+- Append-only logs kept conflicting even though the repository already used Git's
+  union driver, because the attribute named only two of the three files. Union is
+  not a policy the tooling infers; it applies strictly per declared path. Confirm
+  coverage with `git check-attr merge -- <path>` rather than assuming it.
+- Union is correct only while every writer appends. The moment an agent edits or
+  reflows an existing entry, union keeps both versions silently, which is a
+  quieter and worse failure than a conflict. Pair the attribute with a written
+  rule that entries are immutable once recorded.
+- Structured documents that agents genuinely revise must stay conflict-visible.
+  The safe test is whether two lanes' versions of the file are always meant to be
+  concatenated; if not, the file does not belong in the union list.
+
 ## 2026-08-05 - An Empty Gate State Must Not Read as an Absent One
 
 - A regression gate has three distinct states — no baseline, green baseline, and

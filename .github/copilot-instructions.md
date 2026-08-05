@@ -131,3 +131,19 @@ Update the existing owner rather than creating another summary:
 
 Keep the latest rule only. Stale memory or duplicated documentation is worse
 than a concise pointer to the canonical owner.
+
+### Append-only logs
+
+`docs/ENGINEERING_LEARNINGS.md`, `docs/reference/history/requirements-log.txt`,
+and `docs/reference/owner-inputs/prompts_executed.txt` are declared `merge=union`
+in `.gitattributes`, so parallel lanes never conflict on them. That guarantee
+depends on how you write them:
+
+- Only ever add a new dated entry. Never edit, reorder, reflow, or delete an
+  existing one; union merge would silently keep both versions of a rewritten line.
+- Keep each entry a self-contained block separated by a blank line, so
+  concatenating two lanes' entries always yields a valid document.
+- Do not renumber prompt entries to close gaps. Numbers may collide or skip
+  across lanes; that is expected and harmless.
+- Before adding a file to the union list, confirm it is genuinely append-only.
+  Structured documents such as `docs/REQUIREMENTS.md` must stay conflict-visible.
