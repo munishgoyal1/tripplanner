@@ -530,3 +530,19 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Hold a workspace lock only across the state flip. Building read-only view
   models inside the lock lengthens the window enough for unrelated requests to
   collide, and the client should still retry once on a 409 using Retry-After.
+
+## 2026-08-05 - Per-Call HTTP Clients Dominated Trip Switch Latency
+
+- A cold trip switch spent 14.1s server-side. Profiling attributed 6.7s of
+  self-time to TLS context setup: warming one destination issues ~60 Places
+  calls, and `httpx.get`/`httpx.post` build, verify, and discard a client per
+  call. A process-wide pooled client with keep-alive cut that path to 0.05s and
+  the live switch to 0.3-1.4s. Route outbound HTTP through the shared client
+  rather than the module-level convenience functions.
+- Best-effort persistence must never run on the request thread. A single stalled
+  cache upsert against the local emulator added 65s to a switch that had already
+  produced its answer. Hand durable cache writes to a background writer and
+  expose an explicit drain hook so tests can still assert on the store.
+- Measure through the running endpoint, not the profiler alone: the profile
+  named the hot function, but only the live switch showed how much of the wall
+  clock the user actually felt.

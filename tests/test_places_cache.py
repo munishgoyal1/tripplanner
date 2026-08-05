@@ -124,6 +124,7 @@ def test_transient_lookup_miss_retries_after_short_ttl(_isolate, monkeypatch):
 def test_persist_then_reload_restores_details(_isolate, tmp_path):
     pc.get_summary("Taj", "Goa")
     # File written under the tmp TRIPPLANNER_HOME.
+    assert pc.flush_writes()
     assert pc._local_path().exists()
     # Simulate a fresh process: wipe in-memory + allow reload.
     pc.clear_cache()
@@ -140,6 +141,7 @@ def test_photo_urls_not_persisted_but_reresolved(_isolate):
     # Persisted snapshot must not carry the signed URLs.
     import json
 
+    assert pc.flush_writes()
     raw = json.loads(pc._local_path().read_text(encoding="utf-8"))["entries"]
     entry = raw[pc._key("Taj", "Goa")]
     assert "photo_urls" not in entry
@@ -187,7 +189,7 @@ def test_top_places_cached_and_refreshable(_isolate, monkeypatch):
         seen["n"] += 1
         return FakeResp()
 
-    monkeypatch.setattr(pc.httpx, "post", fake_post)
+    monkeypatch.setattr(pc.http_client, "post", fake_post)
     assert pc.top_places("Goa", "hotel") == ["Hotel A"]
     assert pc.top_places("Goa", "hotel") == ["Hotel A"]
     assert seen["n"] == 1  # cached
@@ -225,6 +227,7 @@ def test_persist_throttling_falls_back_to_local(_isolate, monkeypatch):
 
     pc._persist()
 
+    assert pc.flush_writes()
     assert pc._local_path().exists()
     assert warnings == []
     assert pc._persist_retry_after > time.time()
@@ -241,6 +244,7 @@ def test_concurrent_cache_updates_and_snapshots_remain_valid(_isolate):
 
     import json
 
+    assert pc.flush_writes()
     persisted = json.loads(pc._local_path().read_text(encoding="utf-8"))
     assert set(persisted["entries"]) == {pc._key(name, "Goa") for name in names}
 
@@ -294,6 +298,7 @@ def test_cosmos_persists_one_document_per_key(_isolate, monkeypatch):
     pc.get_summary("Taj", "Goa")
     pc.get_summary("Oberoi", "Goa")
     # One small Cosmos item per place key — not a single shared document.
+    assert pc.flush_writes()
     assert pc._doc_id(pc._key("Taj", "Goa")) in store
     assert pc._doc_id(pc._key("Oberoi", "Goa")) in store
     assert pc._COSMOS_DOC_ID not in store  # no monolithic doc
@@ -317,6 +322,7 @@ def test_legacy_monolithic_doc_deleted_after_shard_write(_isolate, monkeypatch):
     store: dict = {pc._COSMOS_DOC_ID: {"entries": {"old": {"__at__": time.time()}}}}
     _fake_cosmos(monkeypatch, store)
     pc.get_details("Taj", "Goa")
+    assert pc.flush_writes()
     assert pc._COSMOS_DOC_ID not in store  # legacy doc cleaned up after migration
 
 
