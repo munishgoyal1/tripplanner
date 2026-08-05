@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Search } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
@@ -141,7 +141,7 @@ interface Props {
   headerTarget?: HTMLElement | null;
 }
 
-export default function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
   const view = useMemo(
     () => sourceView ? filterMapView(sourceView, filters) : null,
@@ -889,3 +889,5 @@ export default function MapPanel({ filters = [], reloadToken = 0, tripId = null,
     </div>
   );
 }
+
+export default memo(MapPanel);

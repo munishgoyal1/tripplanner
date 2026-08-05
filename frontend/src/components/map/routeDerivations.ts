@@ -157,7 +157,16 @@ export function routePathForPinIds(pinIds: string[], pins: MapPin[]): Array<{ la
     .map((pin) => ({ lat: pin.lat, lng: pin.lng }));
 }
 
+const visitOrdersCache = new WeakMap<MapView, Map<number, Map<string, number>>>();
+
 export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string, number> {
+  let byDay = visitOrdersCache.get(view);
+  if (!byDay) {
+    byDay = new Map();
+    visitOrdersCache.set(view, byDay);
+  }
+  const memoized = byDay.get(dayNumber);
+  if (memoized) return memoized;
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   const pins = (day?.pin_ids ?? [])
     .map((id) => view.pins.find((candidate) => candidate.id === id))
@@ -167,10 +176,21 @@ export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string,
     const rightStop = right.occurrences.find((occurrence) => occurrence.day === dayNumber)?.stop;
     return (leftStop ?? Number.MAX_SAFE_INTEGER) - (rightStop ?? Number.MAX_SAFE_INTEGER);
   });
-  return new Map(ordered.map((pin, index) => [pin.id, index + 1]));
+  const result = new Map(ordered.map((pin, index) => [pin.id, index + 1]));
+  byDay.set(dayNumber, result);
+  return result;
 }
 
+const hotelLabelsCache = new WeakMap<MapView, Map<number, Map<string, string>>>();
+
 export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string, string> {
+  let byDay = hotelLabelsCache.get(view);
+  if (!byDay) {
+    byDay = new Map();
+    hotelLabelsCache.set(view, byDay);
+  }
+  const memoized = byDay.get(dayNumber);
+  if (memoized) return memoized;
   const day = view.days.find((candidate) => candidate.day === dayNumber);
   const hotels = (day?.pin_ids ?? [])
     .map((id) => view.pins.find((candidate) => candidate.id === id))
@@ -179,10 +199,12 @@ export function hotelLabelsForDay(view: MapView, dayNumber: number): Map<string,
   const labels = new Map(
     identities.map((identity, index) => [identity, identities.length > 1 ? `H${index + 1}` : "H"]),
   );
-  return new Map(hotels.map((pin) => {
+  const result = new Map(hotels.map((pin) => {
     const identity = identities.find((candidate) => hotelIdentityMatches(candidate, pin.name));
     return [pin.id, labels.get(identity!)!];
   }));
+  byDay.set(dayNumber, result);
+  return result;
 }
 
 export function pinsForDayCircuit(view: MapView, dayNumber: number): MapPin[] {
