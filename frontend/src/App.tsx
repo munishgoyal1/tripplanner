@@ -400,7 +400,7 @@ export default function App() {
     const refreshed = await refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
     if (tripChanged) trackEvent("trip_created");
-    if (!refreshed) {
+    if (!refreshed || (tripId && refreshed.trip_id !== tripId)) {
       setAssistantTurnStatus({
         phase: "error",
         message: "The planning work finished, but the updated itinerary could not be loaded. Your previous view is still available.",

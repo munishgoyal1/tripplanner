@@ -8,6 +8,7 @@ const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonym
   isAnonymousUserMock: vi.fn(() => true),
   shareActiveTripMock: vi.fn(),
   emptyView: {
+  trip_id: null,
   has_trip: false,
   title: "",
   destination: "",
@@ -306,6 +307,25 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "");
   });
 
+  it("rejects a stale trip view after a new-trip turn completes", async () => {
+    const parisView = {
+      ...emptyView,
+      trip_id: "paris-trip",
+      has_trip: true,
+      destination: "Paris",
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
+    };
+    fetchTripViewMock.mockResolvedValue(parisView);
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower"));
+    fireEvent.click(screen.getByRole("button", { name: "Finish new itinerary" }));
+
+    expect(await screen.findByText(/updated itinerary could not be loaded/i)).toBeInTheDocument();
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower");
+  });
+
   it("shows a concise wrapping update near the trip identity", async () => {
     fetchTripViewMock.mockResolvedValue({
       ...emptyView,
@@ -323,6 +343,9 @@ describe("App responsive workspace", () => {
   });
 
   it("keeps timely build progress in the top bar until the refreshed itinerary is ready", async () => {
+    fetchTripViewMock
+      .mockResolvedValueOnce(emptyView)
+      .mockResolvedValueOnce({ ...emptyView, trip_id: "khandala-pune-1", has_trip: true });
     setDesktop(true);
     render(<App />);
 
@@ -337,9 +360,10 @@ describe("App responsive workspace", () => {
 
   it("summarizes an itinerary modification after its refreshed view loads", async () => {
     fetchTripViewMock
-      .mockResolvedValueOnce({ ...emptyView, has_trip: true })
+      .mockResolvedValueOnce({ ...emptyView, trip_id: "khandala-pune-1", has_trip: true })
       .mockResolvedValueOnce({
         ...emptyView,
+        trip_id: "khandala-pune-1",
         has_trip: true,
         alerts: ["Rebalanced Day 3 itinerary around the museum closure."],
       });
