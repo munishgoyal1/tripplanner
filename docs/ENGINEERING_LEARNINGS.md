@@ -4,6 +4,20 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - Pin Every Package Source the Image Build Touches
+
+- The corporate network TLS-blocks the PyPI CDN (`files.pythonhosted.org`) while
+  `pypi.org` itself still answers, so a package index that resolves is not proof
+  that its downloads will. Verify the download host, not just the index.
+- This is host-wide, not container-specific. Reproducing the failure on the host
+  before blaming Docker avoids a long detour through image and cache theories.
+- The build reached the same failure twice because only npm had been routed to
+  the 1ES public mirror. When one ecosystem needs a mirror, route every ecosystem
+  the image build touches; a partial fix reads as fixed until the next clean build.
+- Read `logs/last-run/<script>.log` first. The canary transcript named the failing
+  step immediately, but not the underlying tool output, so rerun the tool directly
+  with plain progress to get the real error.
+
 ## 2026-08-05 - Reconcile Sync State With Git State
 
 - A successful branch update can still fail while restoring a safety stash. That
