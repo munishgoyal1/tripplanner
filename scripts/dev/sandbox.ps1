@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Create, run, update, promote, ship, recycle, and discard isolated trip-planner sandboxes.
+  Create, run, update, promote, ship, and discard isolated trip-planner sandboxes.
 
   A sandbox is a throwaway feature environment: its own git branch
   (sandbox/<slug>), its own worktree (sbx-<slug>), its own isolated ports, and
@@ -11,17 +11,21 @@
 .EXAMPLE
     .\scripts\dev\sandbox.ps1 -New route-experiment
     .\scripts\dev\sandbox.ps1 -Run route-experiment
+    .\scripts\dev\sandbox.ps1 -Serve route-experiment
+    .\scripts\dev\sandbox.ps1 -Stop route-experiment
     .\scripts\dev\sandbox.ps1 -Update route-experiment
     .\scripts\dev\sandbox.ps1 -Promote route-experiment
     .\scripts\dev\sandbox.ps1 -Ship route-experiment -Approve
-    .\scripts\dev\sandbox.ps1 -Recycle next-idea
     .\scripts\dev\sandbox.ps1 -Discard route-experiment
     .\scripts\dev\sandbox.ps1 -List
 
 .NOTES
-  Shipping parks the sandbox instead of deleting it: the worktree stays on disk
-  with its installed dependencies, reset to a fresh base branch and listed as
-  idle. Claim it for the next feature with -Recycle <new-slug>.
+  -Run holds the terminal; -Serve starts the same stack detached and waits for
+  the endpoints to answer, so a sandbox is verifiable the moment it is created.
+  -New serves automatically unless you pass -NoServe.
+
+  Sandboxes are always created fresh and discarded when shipped: a fresh one
+  costs about 29 seconds, which is not worth a second lifecycle to manage.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "List")]
@@ -31,6 +35,12 @@ param(
 
     [Parameter(Mandatory = $true, ParameterSetName = "Run")]
     [string]$Run,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Serve")]
+    [string]$Serve,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Stop")]
+    [string]$Stop,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Promote")]
     [string]$Promote,
@@ -44,24 +54,19 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = "Discard")]
     [string]$Discard,
 
-    [Parameter(Mandatory = $true, ParameterSetName = "Recycle")]
-    [string]$Recycle,
-
-    [Parameter(ParameterSetName = "Recycle")]
-    [string]$As,
-
     [Parameter(ParameterSetName = "List")]
     [switch]$List,
 
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
     [Parameter(ParameterSetName = "Ship")]
-    [Parameter(ParameterSetName = "Recycle")]
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New")]
-    [Parameter(ParameterSetName = "Recycle")]
     [switch]$NoOpen,
+
+    [Parameter(ParameterSetName = "New")]
+    [switch]$NoServe,
 
     [Parameter(ParameterSetName = "Ship")]
     [switch]$Approve,
@@ -72,21 +77,28 @@ param(
     [Parameter(ParameterSetName = "Ship")]
     [switch]$KeepSandbox,
 
-    [Parameter(ParameterSetName = "Ship")]
-    [switch]$DiscardSandbox,
-
     [Parameter(ParameterSetName = "Discard")]
-    [Parameter(ParameterSetName = "Recycle")]
     [switch]$Force,
 
     [Parameter(ParameterSetName = "Discard")]
-    [Parameter(ParameterSetName = "Recycle")]
     [switch]$DeleteRemoteBranch
 )
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
-Start-RunLog -Name "sandbox" | Out-Null
+# One transcript per sandbox and verb. A served sandbox holds its -Run transcript
+# open for hours, so a single shared "sandbox" name loses every concurrent run to
+# a file lock. The slug is sanitised because it reaches the log path before
+# Assert-Slug has had a chance to reject it.
+$runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
+$runSlug = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Ship, $Discard) |
+    Where-Object { $_ } | Select-Object -First 1
+$runLogName = if ($runSlug) {
+    "sandbox-$($runSlug -replace '[^A-Za-z0-9._-]', '-')-$runVerb"
+} else {
+    "sandbox-$runVerb"
+}
+Start-RunLog -Name $runLogName | Out-Null
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -200,6 +212,98 @@ function Stop-SandboxProcesses {
     if ($running.Count -gt 0) { Start-Sleep -Milliseconds 500 }
 }
 
+function Test-SandboxEndpoint {
+    param([Parameter(Mandatory = $true)][string]$Url)
+    try {
+        return (Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200
+    } catch {
+        return $false
+    }
+}
+
+function Wait-SandboxEndpoint {
+    param(
+        [Parameter(Mandatory = $true)][string]$Url,
+        [int]$TimeoutSeconds = 150
+    )
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        if (Test-SandboxEndpoint -Url $Url) { return $true }
+        Start-Sleep -Seconds 2
+    }
+    return $false
+}
+
+function Start-SandboxStack {
+    # -Run holds the terminal it is launched from, which makes a freshly created
+    # sandbox unverifiable without a second window. Serving detaches that same
+    # runner and waits until the endpoints actually answer.
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    # Vite binds ::1 only while uvicorn binds 127.0.0.1, so probe by name and let
+    # the resolver try both families.
+    $apiHealth = "http://localhost:$($Entry.apiPort)/health"
+    $frontendUrl = "http://localhost:$($Entry.frontendPort)/"
+
+    if (Test-SandboxEndpoint -Url $apiHealth) {
+        Write-Host "[serve]   already listening on :$($Entry.apiPort)" -ForegroundColor DarkGray
+    } else {
+        $logDir = Join-Path $primaryRoot "logs\sandbox"
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        $log = Join-Path $logDir "$($Entry.slug).log"
+        Start-Process -FilePath "pwsh" -WindowStyle Hidden `
+            -RedirectStandardOutput $log -RedirectStandardError "$log.err" `
+            -ArgumentList @(
+                "-NoProfile", "-File", (Join-Path $PSScriptRoot "sandbox.ps1"), "-Run", $Entry.slug
+            ) | Out-Null
+        Write-Host "[serve]   detached runner started; log: $log"
+    }
+
+    $apiReady = Wait-SandboxEndpoint -Url $apiHealth
+    # A fresh sandbox installs frontend dependencies before Vite binds, so the SPA
+    # needs a far longer budget than the API on the first serve.
+    $frontendReady = Wait-SandboxEndpoint -Url $frontendUrl -TimeoutSeconds 300
+
+    $apiMark = if ($apiReady) { "ok" } else { "NOT READY" }
+    $frontendMark = if ($frontendReady) { "ok" } else { "NOT READY" }
+    Write-Host "[api]     http://localhost:$($Entry.apiPort)  ($apiMark)" `
+        -ForegroundColor $(if ($apiReady) { "Green" } else { "Yellow" })
+    Write-Host "[spa]     http://localhost:$($Entry.frontendPort)  ($frontendMark)" `
+        -ForegroundColor $(if ($frontendReady) { "Green" } else { "Yellow" })
+    Write-Host "[labs]    http://localhost:$($Entry.labsPort)/catalog.html"
+    Write-Host "[stop]    .\scripts\dev\sandbox.ps1 -Stop $($Entry.slug)"
+
+    if (-not ($apiReady -and $frontendReady)) {
+        Write-Warning "Sandbox endpoints did not come up. Check the log above, or run -Run $($Entry.slug) in a terminal to watch it start."
+    }
+    return ($apiReady -and $frontendReady)
+}
+
+function Stop-SandboxStack {
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    foreach ($port in @($Entry.apiPort, $Entry.frontendPort, $Entry.labsPort)) {
+        $listeners = @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue)
+        $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+        foreach ($processId in $processIds) {
+            Write-Host "[stop]    :$port (PID $processId)"
+            & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
+        }
+    }
+    # The detached runner's command line carries the slug, not the worktree path,
+    # so Stop-SandboxProcesses alone would leave it behind.
+    $pattern = "sandbox\.ps1.+-Run\s+$([regex]::Escape($Entry.slug))(\s|$)"
+    $launchers = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -and $_.CommandLine -match $pattern })
+    foreach ($launcher in $launchers) {
+        Write-Host "[stop]    runner ($($launcher.ProcessId))"
+        Stop-Process -Id $launcher.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $Entry.worktree -PathType Container) {
+        Stop-SandboxProcesses -Worktree $Entry.worktree
+    }
+}
+
 function Remove-PendingMergesFor {
     # An interrupted -Update records a resumable merge; a discarded sandbox must not
     # leave one behind, or every later sync fails against the missing worktree.
@@ -209,67 +313,6 @@ function Remove-PendingMergesFor {
     $target = $WorkingDirectory.TrimEnd("\")
     $remaining = @(Get-PendingMerges | Where-Object { ([string]$_.workingDirectory).TrimEnd("\") -ne $target })
     Save-PendingList -Entries $remaining
-}
-
-function Reset-Sandbox {
-    # Reuse a sandbox worktree for fresh work: keep the slot, ports, and installed
-    # dependencies (all untracked), and swap the folder, branch, and database.
-    param(
-        [Parameter(Mandatory = $true)][object]$Entry,
-        [Parameter(Mandatory = $true)][string]$NewSlug,
-        [Parameter(Mandatory = $true)][string]$Base,
-        [Parameter(Mandatory = $true)][ValidateSet("active", "idle")][string]$State,
-        [switch]$DropRemoteBranch
-    )
-
-    $newBranch = "sandbox/$NewSlug"
-    $newWorktree = Join-Path $worktreesRoot "sbx-$NewSlug"
-
-    # Out-Null/Out-Host keeps git and python chatter out of this function's return value.
-    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "origin", $Base) | Out-Null
-    Stop-SandboxProcesses -Worktree $Entry.worktree
-    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
-        "worktree", "move", $Entry.worktree, $newWorktree
-    ) | Out-Null
-    Invoke-Git -WorkingDirectory $newWorktree -Arguments @(
-        "checkout", "-B", $newBranch, "origin/$Base"
-    ) | Out-Null
-    Invoke-Git -WorkingDirectory $newWorktree -Arguments @("reset", "--hard", "origin/$Base") | Out-Null
-    Remove-PendingMergesFor -WorkingDirectory $Entry.worktree
-
-    & git -C $scriptRepoRoot branch -D $Entry.branch | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warning "Could not delete local branch $($Entry.branch); delete it manually if needed."
-    }
-    if ($DropRemoteBranch) {
-        & git -C $scriptRepoRoot push origin --delete $Entry.branch | Out-Host
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Could not delete remote branch $($Entry.branch)."
-        }
-    }
-
-    $seedScript = Join-Path $newWorktree "scripts\dev\sandbox_seed.py"
-    if ($Entry.database -and (Test-Path $seedScript -PathType Leaf)) {
-        & (Get-VenvPython) $seedScript drop --database $Entry.database | Out-Host
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Could not drop $($Entry.database); drop it manually if the emulator is running."
-        }
-    }
-
-    $updated = [pscustomobject]@{
-        slug         = $NewSlug
-        state        = $State
-        slot         = $Entry.slot
-        branch       = $newBranch
-        worktree     = $newWorktree
-        apiPort      = $Entry.apiPort
-        frontendPort = $Entry.frontendPort
-        labsPort     = $Entry.labsPort
-        database     = "tripplanner-sbx-$NewSlug"
-        createdUtc   = (Get-Date).ToUniversalTime().ToString("o")
-    }
-    Save-Registry -Entries (@(Get-Registry | Where-Object { $_.slug -ne $Entry.slug }) + $updated)
-    return $updated
 }
 
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -287,13 +330,18 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         return
     }
     $entries |
-        Select-Object slug, state, slot, apiPort, frontendPort, labsPort, database, branch |
+        Select-Object slug, slot,
+            @{ Name = "serving"; Expression = {
+                if (Test-SandboxEndpoint -Url "http://localhost:$($_.apiPort)/health") { "yes" } else { "no" }
+            } },
+            apiPort, frontendPort, labsPort, database, branch |
         Format-Table -AutoSize
     return
 }
 
-$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } `
-    elseif ($Update) { $Update } elseif ($Ship) { $Ship } elseif ($Recycle) { $Recycle } else { $Discard }
+$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Serve) { $Serve } `
+    elseif ($Stop) { $Stop } elseif ($Promote) { $Promote } `
+    elseif ($Update) { $Update } elseif ($Ship) { $Ship } else { $Discard }
 Assert-Slug -Name $slug
 $branchName = "sandbox/$slug"
 $worktreePath = Join-Path $worktreesRoot "sbx-$slug"
@@ -314,11 +362,6 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     if (-not $NoOpen -and -not (Get-Command code -ErrorAction SilentlyContinue)) {
         throw "VS Code command 'code' is unavailable. Add it to PATH or pass -NoOpen."
     }
-    $parked = @($existing | Where-Object { $_.state -eq "idle" })
-    if ($parked.Count -gt 0) {
-        Write-Host "[hint]    parked sandbox available; reuse it instead with: -Recycle $slug" -ForegroundColor Yellow
-    }
-
     $slot = Get-FreeSlot -Entries $existing
     $apiPort = $ApiBase + ($slot * $Step)
     $frontendPort = $FrontendBase + ($slot * $Step)
@@ -344,7 +387,6 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
 
     $entry = [pscustomobject]@{
         slug         = $slug
-        state        = "active"
         slot         = $slot
         branch       = $branchName
         worktree     = $worktreePath
@@ -360,7 +402,6 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     Write-Host "[path]    $worktreePath"
     Write-Host "[ports]   api=$apiPort  frontend=$frontendPort  labs=$labsPort"
     Write-Host "[db]      $database (emulator)"
-    Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Run $slug"
 
     if (-not $NoOpen) {
         & code --new-window $worktreePath
@@ -368,80 +409,11 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
             throw "Sandbox was created, but VS Code could not open $worktreePath."
         }
     }
-    return
-}
 
-if ($PSCmdlet.ParameterSetName -eq "Recycle") {
-    $registry = Get-Registry
-    $source = $registry | Where-Object { $_.slug -eq $slug } | Select-Object -First 1
-    if ($As) {
-        Assert-Slug -Name $As
-        if (-not $source) { throw "Unknown sandbox '$slug'. See: .\scripts\dev\sandbox.ps1 -List" }
-        $targetSlug = $As
-        $targetState = "active"
-    } elseif ($source) {
-        # Park it: the next feature's name is usually unknown at shipping time.
-        $targetSlug = "idle-$($source.slot)"
-        $targetState = "idle"
+    if ($NoServe) {
+        Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Serve $slug"
     } else {
-        $idle = @($registry | Where-Object { $_.state -eq "idle" })
-        if ($idle.Count -eq 0) {
-            throw "No sandbox '$slug' and none parked. Create one with: .\scripts\dev\sandbox.ps1 -New $slug"
-        }
-        if ($idle.Count -gt 1) {
-            throw "Several parked sandboxes ($($idle.slug -join ', ')). Pick one: .\scripts\dev\sandbox.ps1 -Recycle <parked-slug> -As $slug"
-        }
-        $source = $idle[0]
-        $targetSlug = $slug
-        $targetState = "active"
-    }
-
-    if ($targetSlug -ne $source.slug) {
-        if ($registry | Where-Object { $_.slug -eq $targetSlug }) {
-            throw "Sandbox '$targetSlug' already exists. Pick another slug or discard it first."
-        }
-        & git -C $scriptRepoRoot show-ref --verify --quiet "refs/heads/sandbox/$targetSlug"
-        if ($LASTEXITCODE -eq 0) { throw "Local branch already exists: sandbox/$targetSlug." }
-        if (Test-Path (Join-Path $worktreesRoot "sbx-$targetSlug")) {
-            throw "Path already exists: $(Join-Path $worktreesRoot "sbx-$targetSlug")."
-        }
-    }
-    if (-not (Test-Path $source.worktree -PathType Container)) {
-        throw "Sandbox worktree is missing: $($source.worktree). Use -New $targetSlug instead."
-    }
-    $currentPath = (Get-Location).Path.TrimEnd("\")
-    $resolved = (Resolve-Path $source.worktree).Path.TrimEnd("\")
-    if ($currentPath -eq $resolved -or $currentPath.StartsWith("$resolved\")) {
-        throw "Run -Recycle from the primary checkout, not from inside the sandbox worktree."
-    }
-    $changes = Invoke-Git -WorkingDirectory $source.worktree -Arguments @("status", "--porcelain")
-    if ($changes -and -not $Force) {
-        throw "Sandbox '$($source.slug)' has uncommitted changes. Commit/push them, or pass -Force to drop them."
-    }
-
-    $action = if ($targetState -eq "idle") { "Park" } else { "Recycle into '$targetSlug'" }
-    if (-not $PSCmdlet.ShouldProcess($source.worktree, "$action on origin/$BaseBranch")) {
-        return
-    }
-
-    $recycled = Reset-Sandbox -Entry $source -NewSlug $targetSlug -Base $BaseBranch `
-        -State $targetState -DropRemoteBranch:$DeleteRemoteBranch
-
-    if ($targetState -eq "idle") {
-        Write-Host "[parked]  '$($source.slug)' is now idle as '$targetSlug', reset to origin/$BaseBranch"
-        Write-Host "[keeps]   slot $($recycled.slot), its ports, and its installed dependencies"
-        Write-Host "[claim]   .\scripts\dev\sandbox.ps1 -Recycle <new-slug>"
-        return
-    }
-
-    Write-Host "[recycled] $($source.branch) -> $($recycled.branch) (fresh from origin/$BaseBranch)"
-    Write-Host "[path]     $($recycled.worktree)"
-    Write-Host "[ports]    api=$($recycled.apiPort)  frontend=$($recycled.frontendPort)  labs=$($recycled.labsPort)"
-    Write-Host "[db]       $($recycled.database) (emulator)"
-    Write-Host "[run]      .\scripts\dev\sandbox.ps1 -Run $targetSlug"
-
-    if (-not $NoOpen -and (Get-Command code -ErrorAction SilentlyContinue)) {
-        & code --new-window $recycled.worktree
+        Start-SandboxStack -Entry $entry | Out-Null
     }
     return
 }
@@ -478,6 +450,21 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         -LabsPort $entry.labsPort `
         -CosmosBackend emulator `
         -CosmosDatabase $entry.database
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Serve") {
+    if (-not (Test-Path $entry.worktree -PathType Container)) {
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+    }
+    $ready = Start-SandboxStack -Entry $entry
+    if (-not $ready) { exit 1 }
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Stop") {
+    Stop-SandboxStack -Entry $entry
+    Write-Host "[stopped] sandbox '$slug'"
     return
 }
 
@@ -583,8 +570,7 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         "Sync, validate, merge into $BaseBranch, and discard the sandbox"
     } else {
         "Sync, validate, and open a pull request into $BaseBranch"
-    }
-    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
+    }    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
     Write-Host "== 1/5 sync with origin/$BaseBranch ==" -ForegroundColor Green
     & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -Confirm:$false
@@ -624,7 +610,7 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
             return
         }
 
-        Write-Host "== 5/5 merge and park ==" -ForegroundColor Green
+        Write-Host "== 5/5 merge and discard ==" -ForegroundColor Green
         & gh pr merge $prNumber --merge
         if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
         Write-Host "[merged]  #$prNumber into $BaseBranch"
@@ -636,19 +622,15 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         Write-Host "[kept]    sandbox '$slug' (-KeepSandbox)"
         return
     }
-    # Both verbs refuse to run from inside the worktree they are about to move or remove.
+    # Discard refuses to run from inside the worktree it is about to remove.
     Push-Location $primaryRoot
     try {
-        if ($DiscardSandbox) {
-            & $PSCommandPath -Discard $slug -Force -DeleteRemoteBranch -Confirm:$false
-        } else {
-            & $PSCommandPath -Recycle $slug -BaseBranch $BaseBranch -DeleteRemoteBranch -Confirm:$false
-        }
+        & $PSCommandPath -Discard $slug -Force -DeleteRemoteBranch -Confirm:$false
     } catch {
         # A running sandbox stack or an open editor window keeps the files locked.
         Write-Warning "Merged into $BaseBranch, but the sandbox could not be cleaned up: $($_.Exception.Message)"
         Write-Host "Stop 'Run-Sandbox $slug', close the sandbox window, then run:" -ForegroundColor Yellow
-        Write-Host "  .\scripts\sandbox\Recycle-Sandbox.cmd $slug"
+        Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
         return
     } finally {
         Pop-Location
@@ -675,7 +657,7 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     }
 
     if (Test-Path $entry.worktree) {
-        Stop-SandboxProcesses -Worktree $entry.worktree
+        Stop-SandboxStack -Entry $entry
         $removeArgs = @("worktree", "remove", $entry.worktree)
         if ($Force) { $removeArgs += "--force" }
         try {

@@ -4,6 +4,36 @@
 # Entry IDs remain stable, and entries are ordered newest-first. Legacy entries
 # 001-004 predate the date convention; 015-017 have no body in the source history.
 
+[053] [5-Aug-2026] Delete sandbox recycle scripts
+remove the redundancet sandbox recycle scriopts and functioanlity.  its no longe rneeded
+
+[052] [5-Aug-2026] Per-sandbox run logs avoid collision
+sandbox scripts should log their last runs to respective named sandbox logs to avoid collision
+
+[051] [5-Aug-2026] Auto-serve sandbox endpoints for verification
+you should automatically bring up the hosted endpoints also of a sandbox for some evrificaiton
+
+[050] [5-Aug-2026] Reimagine chat agent workspace UX
+create a lab reimagingin the chat agent from UX point of view. Overall UX layout of all panels with respect to how user will interact. I rely on your UI sklills.
+Also the chat agent currently has a scroll limit probnably older chats not visible in same session. It should retain a short time taken for each response
+
+[053] [5-Aug-2026] Do all three tiers fresh sandbox
+Do all 3 tiers together ina fresh sandbox and bring the stack up for my inspection
+
+[052] [5-Aug-2026] Lab difference and switching delays
+i cant make out any difference what new is implemented in this lab compared to whats alreayd existing in master.
+
+Also the switching in from day to day level or to trip level from a item row in itinerary takes noticeable delay sometimes feeling stuck or taking too long. Also switching between trips take noticeable delay and the data change happens panel by panel, map and itinerary taking time to update and continues to stay with previous trip data for that duraiton. Any way to improve those ?
+
+[051] [5-Aug-2026] Seed sandbox data for signed-in account
+but my google account linked dtaa is not seeded mapped to my google account. I can see 14 trips for local not signed in user
+
+[049] [5-Aug-2026] Park recycle, keep sandboxes fresh
+there could be more than 1 sandbox running in paraellel , i would say remove the complexity of recycle. just keep it simple fresh from scratch creation for now. Park the recycle scripts, dont delete but keep them seperately and dont bring any of it in main flow. will delete later if not required
+
+[048] [5-Aug-2026] Simplify sandbox reuse and measure setup
+can you simplify usage of sandbox re-use / recycle  scripts and when i ask you to implement something in sandbox you should automatically see if some recycled sandbox is available to be used and use that. Just to save the intial setup time we asked you to implement recycle otherwise simple discard and fresh creation would have been simpler. How much time it really takes to set up from scratch
+
 [048] [5-Aug-2026] Implement Lab 14 in sandbox
 implemenmt lab14 in a sandbox
 

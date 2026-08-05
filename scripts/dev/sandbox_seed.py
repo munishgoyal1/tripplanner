@@ -34,8 +34,9 @@ EMULATOR_KEY = (
 )
 
 DEFAULT_SOURCE_DATABASE = "tripplanner-local"
-# By default a sandbox is seeded with the owner's own account data, re-owned
-# under a stable guest identity so guest-mode testing opens with real trips.
+# A sandbox is seeded with the owner's own account data twice: once under the
+# real signed-in identity and once under a stable guest identity, so both
+# signed-in and guest testing open with real trips.
 DEFAULT_SEED_OWNER = "google-101851654028336975901"
 SANDBOX_GUEST_USER = "web-00000000-0000-4000-8000-000000000001"
 SANDBOX_PREFIX = "tripplanner-sbx-"
@@ -150,11 +151,14 @@ def _seed_from_local(client, target: str, source_db: str, owner: str, as_user: s
     _ensure_containers(database)
     total = 0
     for container in CONTENT_CONTAINERS:
-        docs = [{**doc, "user_id": as_user} for doc in _read_owner(source, container, owner)]
+        originals = _read_owner(source, container, owner)
+        docs = list(originals)
+        if as_user and as_user != owner:
+            docs += [{**doc, "user_id": as_user} for doc in originals]
         written = _upsert_all(database, container, docs)
         total += written
         print(f"  {container}: copied {written} docs")
-    print(f"Seeded {target}: {owner} -> {as_user} ({total} docs).")
+    print(f"Seeded {target}: {owner} + {as_user} ({total} docs).")
 
 
 def _seed_from_fixtures(client, target: str, fixtures_dir: Path) -> None:
