@@ -7,6 +7,11 @@
 # Entry IDs remain stable, and entries are ordered newest-first. Legacy entries
 # 001-004 predate the date convention; 015-017 have no body in the source history.
 
+[063] [5-Aug-2026] Rebase refactor sandbox onto master
+pick #1  option
+
+[050] [5-Aug-2026] Sandbox code refactoring improvements
+standup a new sandbox and implement code refacotring improvements in that
 [061] [5-Aug-2026] Ship perf-panels sandbox
 ship perf-panels
 

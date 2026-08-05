@@ -11,6 +11,14 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[063] [5-Aug-2026] Rebase refactor sandbox onto master
+pick #1  option
+
+[062] [5-Aug-2026] Show exact refactor sandbox delta
+what is there in refactor sbx . show exact delta
+
+[050] [5-Aug-2026] Sandbox code refactoring improvements
+standup a new sandbox and implement code refacotring improvements in that
 [061] [5-Aug-2026] Ship perf-panels sandbox
 ship perf-panels
 

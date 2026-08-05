@@ -28,6 +28,7 @@ import json
 import os
 import re
 import time
+from collections.abc import AsyncIterator
 from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -377,6 +378,23 @@ def _record_chat_operation(
     )
 
 
+def _record_chat_error(
+    started: float,
+    *,
+    user_id: str,
+    transport: Literal["json", "sse"],
+    exc: BaseException,
+) -> None:
+    """Record an admission/setup failure before it propagates to the client."""
+    _record_chat_operation(
+        started,
+        user_id=user_id,
+        transport=transport,
+        outcome="error",
+        error=type(exc).__name__,
+    )
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONResponse:
     from tripplanner.graph import app_graph
@@ -389,13 +407,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
     try:
         replay_permit = await acquire_replay_access(user_id)
     except Exception as exc:
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="json",
-            outcome="error",
-            error=type(exc).__name__,
-        )
+        _record_chat_error(started, user_id=user_id, transport="json", exc=exc)
         raise
     try:
         await check_replay_lookup(request, user_id)
@@ -412,13 +424,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             )
         permit = await acquire_chat(request, user_id)
     except Exception as exc:
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="json",
-            outcome="error",
-            error=type(exc).__name__,
-        )
+        _record_chat_error(started, user_id=user_id, transport="json", exc=exc)
         raise
     finally:
         await release_replay_access(replay_permit)
@@ -518,6 +524,27 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
 
 def _sse(event: str, data: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+# Proxies must not buffer or cache an event stream, or the SPA sees the whole
+# turn arrive at once instead of token by token.
+_SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+
+
+async def _sse_replay_stream(
+    replay: dict[str, Any], started: float, user_id: str
+) -> AsyncIterator[str]:
+    """Re-emit an already-completed turn as a single-token event stream."""
+    yield _sse("token", {"text": replay["reply"]})
+    _record_chat_operation(started, user_id=user_id, transport="sse", outcome="replayed")
+    yield _sse(
+        "done",
+        {
+            "reply": replay["reply"],
+            "agent": replay["agent"],
+            "trip_id": replay["trip_id"] or None,
+        },
+    )
 
 
 def _summarize_tool_input(raw: Any, max_len: int = 160) -> str:
@@ -628,48 +655,21 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     try:
         replay_permit = await acquire_replay_access(user_id)
     except Exception as exc:
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="sse",
-            outcome="error",
-            error=type(exc).__name__,
-        )
+        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
         raise
     try:
         await check_replay_lookup(request, user_id)
         replay = await asyncio.to_thread(_completed_chat_request, req.request_id)
         if replay is not None:
             await _repair_completed_chat(req.request_id, replay)
-
-            async def _replay():
-                yield _sse("token", {"text": replay["reply"]})
-                _record_chat_operation(
-                    started, user_id=user_id, transport="sse", outcome="replayed"
-                )
-                yield _sse(
-                    "done",
-                    {
-                        "reply": replay["reply"],
-                        "agent": replay["agent"],
-                        "trip_id": replay["trip_id"] or None,
-                    },
-                )
-
             return StreamingResponse(
-                _replay(),
+                _sse_replay_stream(replay, started, user_id),
                 media_type="text/event-stream",
-                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+                headers=_SSE_HEADERS,
             )
         permit = await acquire_chat(request, user_id)
     except Exception as exc:
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="sse",
-            outcome="error",
-            error=type(exc).__name__,
-        )
+        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
         raise
     finally:
         await release_replay_access(replay_permit)
@@ -678,50 +678,24 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             _load_chat_request, req.request_id
         )
         if replay is not None:
-            async def _replay_after_admission():
-                yield _sse("token", {"text": replay["reply"]})
-                _record_chat_operation(
-                    started, user_id=user_id, transport="sse", outcome="replayed"
-                )
-                yield _sse(
-                    "done",
-                    {
-                        "reply": replay["reply"],
-                        "agent": replay["agent"],
-                        "trip_id": replay["trip_id"] or None,
-                    },
-                )
-
             return StreamingResponse(
-                _replay_after_admission(),
+                _sse_replay_stream(replay, started, user_id),
                 media_type="text/event-stream",
-                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+                headers=_SSE_HEADERS,
                 background=BackgroundTask(release_chat, permit),
             )
         base_history = list(history)
         history.append(HumanMessage(content=req.message))
     except Exception as exc:
         await release_chat(permit)
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="sse",
-            outcome="error",
-            error=type(exc).__name__,
-        )
+        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
         raise
 
     try:
         over, usage = is_over_cap(user_id)
     except Exception as exc:
         await release_chat(permit)
-        _record_chat_operation(
-            started,
-            user_id=user_id,
-            transport="sse",
-            outcome="error",
-            error=type(exc).__name__,
-        )
+        _record_chat_error(started, user_id=user_id, transport="sse", exc=exc)
         raise
     if over:
         msg = cap_message(usage)
@@ -737,7 +711,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         return StreamingResponse(
             _capped(),
             media_type="text/event-stream",
-            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+            headers=_SSE_HEADERS,
             background=BackgroundTask(release_chat, permit),
         )
 
@@ -909,7 +883,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
     return StreamingResponse(
         gen(),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        headers=_SSE_HEADERS,
         background=BackgroundTask(release_chat, permit),
     )
 
