@@ -156,20 +156,22 @@ the in-progress merge (and any safety stash), and stops with a
 `SYNC_CONFLICT_PENDING` message rather than choosing blanket ours/theirs.
 
 Finishing a pending merge needs no separate command or manual re-run. Every sync
-launcher first calls the in-flow heal step: once the conflicted files are
-marker-free, the next launcher run (or `resume-merge.ps1`) automatically commits,
-pushes, cleans up the integration worktree, restores any retained lane stash, and
-propagates the integrated `master` into every worktree. Only a file that still
-carries conflict markers stops the run, because that is the one case needing a
-real semantic decision. The internal merge engine uses its disposable integration
-worktree; the launcher update engine keeps local changes in a safety stash until
-the merge finishes. Sibling code always reaches a worker through `master`; worker
-branches are not merged directly into one another.
+launcher first reconciles the pending file with Git's unmerged indexes, so an
+interrupted or previously unrecorded lane/stash conflict is recovered rather than
+failing at the next stash attempt. Once the conflicted files are marker-free, the
+next launcher run (or `resume-merge.ps1`) automatically finishes the merge or
+stash restore, validates and publishes committed integration work, restores any
+retained local edits, and propagates integrated `master` into every worktree.
+Only a file that still carries conflict markers stops the run, because that is
+the one case needing a real semantic decision. Sibling code always reaches a
+worker through `master`; worker branches are not merged directly into one another.
 
 Every conflict is shown in `zdiff3` style (the repository sets
 `merge.conflictstyle=zdiff3`), so both sides and their common ancestor are visible
 in the markers. That base context makes each resolution far less likely to drop a
-side by accident.
+side by accident. The append-only owner prompt and requirements logs use Git's
+union merge driver so concurrent tail appends are retained without semantic
+conflict handling.
 
 For a novel conflict you can either resolve the marked files by hand (then let the
 next launcher run or `resume-merge.ps1` finish them) or run

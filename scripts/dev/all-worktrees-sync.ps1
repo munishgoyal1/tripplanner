@@ -37,6 +37,7 @@ foreach ($number in @(0, 1, 2, 3)) {
 }
 
 if ($failures.Count -gt 0) {
+    $global:TripplannerSyncFailed = $true
     Write-Host "`nWorktrees requiring attention:" -ForegroundColor Yellow
     foreach ($failure in $failures) {
         Write-Host "  $($failure.Lane): $($failure.Error)" -ForegroundColor Yellow

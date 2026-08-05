@@ -94,9 +94,12 @@ function Restore-SafetyStash {
     }
 
     if ($remaining.Count -gt 0) {
-        Write-Host "$LaneName has new local-edit conflicts:" -ForegroundColor Yellow
-        $remaining | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
-        throw "$LaneName local changes need semantic resolution; the safety stash was retained."
+        $entry = Save-PendingMerge -Kind "stash" -WorkingDirectory $WorkingDirectory `
+            -Label $LaneName -Branch (& git -C $WorkingDirectory branch --show-current) `
+            -StashCommit $StashCommit -ConflictedFiles $remaining
+        $global:TripplannerSyncPending = $true
+        Write-SyncLog -Level Warn "$LaneName local changes need semantic resolution: $($remaining -join ', ')"
+        throw "SYNC_CONFLICT_PENDING: $LaneName stash restore. Run scripts/user/Resolve-Conflicts.cmd. Details: $($entry.reportPath)"
     }
 
     Invoke-Git -WorkingDirectory $WorkingDirectory -Arguments @("diff", "--check") | Out-Null
