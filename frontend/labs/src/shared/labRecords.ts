@@ -24,7 +24,7 @@ export interface LabSelectionState {
 
 export type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
 
-export const LAST_ASSIGNED_LAB_NUMBER = 16;
+export const LAST_ASSIGNED_LAB_NUMBER = 18;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition | undefined {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -42,6 +42,30 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    labNumber: 18,
+    id: "map-canvas",
+    title: "Map canvas, reimagined",
+    category: "Map interaction",
+    description: "Compare a floating control deck, a bottom route dock with the day's stop timeline, and a single command ribbon for how much of the map pane is actually geography.",
+    createdAt: "2026-08-05",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Route dock.",
+    href: "./lab-18-map-canvas.html",
+    icon: Map,
+  },
+  {
+    labNumber: 17,
+    id: "itinerary-canvas",
+    title: "Itinerary canvas, reimagined",
+    category: "Itinerary layout",
+    description: "Compare a continuous journey spine, layered stop cards with in-place notes, and an editorial agenda for reading a five-day plan quickly without losing a single production fact.",
+    createdAt: "2026-08-05",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Layered stop cards.",
+    href: "./lab-17-itinerary-canvas.html",
+    icon: ListChecks,
+  },
   {
     labNumber: 16,
     id: "chat-agent-workspace",

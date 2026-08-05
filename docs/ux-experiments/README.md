@@ -107,6 +107,28 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open Itinerary and Map Canvas Experiments (2026-08-05)
+
+Two paired labs reimagine the two panes the owner reads most, using one shared four-day
+Lisbon fixture so both argue over the presentation of identical facts.
+
+The itinerary canvas lab is available at
+`http://127.0.0.1:5175/lab-17-itinerary-canvas.html`. It compares a continuous journey
+spine, layered stop cards that open notes in place, and an editorial agenda grouped by
+Morning, Afternoon and Evening. Every production stop, day and trip fact is required in
+every option; only its ranking changes. See
+[`ITINERARY_CANVAS.md`](ITINERARY_CANVAS.md).
+
+The map canvas lab is available at
+`http://127.0.0.1:5175/lab-18-map-canvas.html`. It compares a floating control deck, a
+bottom route dock that carries the day's stop timeline, and a single command ribbon,
+against how much of the pane today's three stacked control rows consume. Day scope,
+all three add-stop inputs, the day fact line, the pin card and the failure state are
+required in every option. See [`MAP_CANVAS.md`](MAP_CANVAS.md).
+
+Both labs include a *Compare with today* toggle and a full-viewport production-scale
+preview. No production code is changed by either Lab.
+
 ## Open Chat Agent Workspace Experiment (2026-08-05)
 
 The chat-agent rethink lab is available at
