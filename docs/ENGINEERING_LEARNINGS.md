@@ -20,6 +20,36 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Duplicated accumulation is a reliable dead-code signal. The per-day coordinate
   list was built twice and the first result was unconditionally discarded before
   use — visible only once the enclosing 371-line function was read end to end.
+## 2026-08-05 - A Shared "Last Run" Log Is a Lock, Not a Log
+
+- Every entry-point script wrote its transcript to one fixed `logs/last-run/<script>.log`.
+  That held while runs were serial. The moment a sandbox could be served in the
+  background, its transcript stayed open for hours and every other invocation of the
+  same script lost its log to a file lock — including the runs most likely to need
+  diagnosing.
+- Key the transcript by whatever makes the run distinct, not by the script name:
+  sandbox runs by slug plus verb, the dev stack by API port. The canonical stack keeps
+  its original name so existing habits and docs still point at the right file.
+- Anything reaching a filesystem path before validation must be sanitised there.
+  The sandbox slug names the log file before `Assert-Slug` ever sees it.
+
+## 2026-08-05 - Verify Against a Running Endpoint, Not Just the Suite
+
+- A blocking runner is not servable. `dev-spa.ps1` holds the terminal on
+  `npm run dev` and tears the stack down in its `finally`, so the sandbox
+  workflow could create an environment nobody could probe without a second
+  window. Wrapping the existing runner in a detached process and waiting on its
+  endpoints beat modifying the runner to background itself.
+- Probe local dev servers by name, never by literal `127.0.0.1`. Vite binds
+  `::1` only while uvicorn binds `127.0.0.1`, so a hardcoded IPv4 health check
+  reported a perfectly healthy SPA as down. `localhost` lets the resolver try
+  both families.
+- Readiness budgets must match the slowest first-run path. A fresh sandbox
+  installs frontend dependencies before Vite binds, so a timeout tuned to a warm
+  start reports a false failure on exactly the run that matters most.
+- Unit tests proved the refactored view-model assembly was consistent; only the
+  live endpoints proved the day routes, legs, schedules, and hotel anchors it
+  produces are still complete. Both are needed.
 
 ## 2026-08-05 - Recovery Belongs in the Flow That Broke
 

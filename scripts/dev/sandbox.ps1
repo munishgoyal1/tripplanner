@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Create, run, update, promote, ship, and discard isolated trip-planner sandboxes.
+  Create, run, update, promote, and discard isolated trip-planner sandboxes.
 
   A sandbox is a throwaway feature environment: its own git branch
   (sandbox/<slug>), its own worktree (sbx-<slug>), its own isolated ports, and
@@ -11,16 +11,24 @@
 .EXAMPLE
     .\scripts\dev\sandbox.ps1 -New route-experiment
     .\scripts\dev\sandbox.ps1 -Run route-experiment
+    .\scripts\dev\sandbox.ps1 -Serve route-experiment
+    .\scripts\dev\sandbox.ps1 -Stop route-experiment
     .\scripts\dev\sandbox.ps1 -Update route-experiment
     .\scripts\dev\sandbox.ps1 -Promote route-experiment
-    .\scripts\dev\sandbox.ps1 -Ship route-experiment -Approve
     .\scripts\dev\sandbox.ps1 -Discard route-experiment
     .\scripts\dev\sandbox.ps1 -List
 
 .NOTES
-  Sandboxes are always created fresh and discarded when shipped: a fresh one
+  -Run holds the terminal; -Serve starts the same stack detached and waits for
+  the endpoints to answer, so a sandbox is verifiable the moment it is created.
+  -New serves automatically unless you pass -NoServe.
+
+  -Promote is end to end: sync, validate, push, open the PR, and merge into the
+  base branch. It never discards the sandbox, so the work stays runnable until
+  you decide otherwise. -Ship is an alias of the same verb.
+
+  Sandboxes are always created fresh and discarded after promotion: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
-  The parked reuse variant lives in scripts/parked/sandbox-recycle.ps1.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "List")]
@@ -31,14 +39,18 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = "Run")]
     [string]$Run,
 
+    [Parameter(Mandatory = $true, ParameterSetName = "Serve")]
+    [string]$Serve,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Stop")]
+    [string]$Stop,
+
     [Parameter(Mandatory = $true, ParameterSetName = "Promote")]
+    [Alias("Ship")]
     [string]$Promote,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Update")]
     [string]$Update,
-
-    [Parameter(Mandatory = $true, ParameterSetName = "Ship")]
-    [string]$Ship,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Discard")]
     [string]$Discard,
@@ -48,20 +60,17 @@ param(
 
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
-    [Parameter(ParameterSetName = "Ship")]
+    [Parameter(ParameterSetName = "Promote")]
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
 
-    [Parameter(ParameterSetName = "Ship")]
-    [switch]$Approve,
+    [Parameter(ParameterSetName = "New")]
+    [switch]$NoServe,
 
-    [Parameter(ParameterSetName = "Ship")]
+    [Parameter(ParameterSetName = "Promote")]
     [switch]$SkipValidation,
-
-    [Parameter(ParameterSetName = "Ship")]
-    [switch]$KeepSandbox,
 
     [Parameter(ParameterSetName = "Discard")]
     [switch]$Force,
@@ -72,7 +81,19 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
-Start-RunLog -Name "sandbox" | Out-Null
+# One transcript per sandbox and verb. A served sandbox holds its -Run transcript
+# open for hours, so a single shared "sandbox" name loses every concurrent run to
+# a file lock. The slug is sanitised because it reaches the log path before
+# Assert-Slug has had a chance to reject it.
+$runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
+$runSlug = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Discard) |
+    Where-Object { $_ } | Select-Object -First 1
+$runLogName = if ($runSlug) {
+    "sandbox-$($runSlug -replace '[^A-Za-z0-9._-]', '-')-$runVerb"
+} else {
+    "sandbox-$runVerb"
+}
+Start-RunLog -Name $runLogName | Out-Null
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -186,6 +207,98 @@ function Stop-SandboxProcesses {
     if ($running.Count -gt 0) { Start-Sleep -Milliseconds 500 }
 }
 
+function Test-SandboxEndpoint {
+    param([Parameter(Mandatory = $true)][string]$Url)
+    try {
+        return (Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200
+    } catch {
+        return $false
+    }
+}
+
+function Wait-SandboxEndpoint {
+    param(
+        [Parameter(Mandatory = $true)][string]$Url,
+        [int]$TimeoutSeconds = 150
+    )
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        if (Test-SandboxEndpoint -Url $Url) { return $true }
+        Start-Sleep -Seconds 2
+    }
+    return $false
+}
+
+function Start-SandboxStack {
+    # -Run holds the terminal it is launched from, which makes a freshly created
+    # sandbox unverifiable without a second window. Serving detaches that same
+    # runner and waits until the endpoints actually answer.
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    # Vite binds ::1 only while uvicorn binds 127.0.0.1, so probe by name and let
+    # the resolver try both families.
+    $apiHealth = "http://localhost:$($Entry.apiPort)/health"
+    $frontendUrl = "http://localhost:$($Entry.frontendPort)/"
+
+    if (Test-SandboxEndpoint -Url $apiHealth) {
+        Write-Host "[serve]   already listening on :$($Entry.apiPort)" -ForegroundColor DarkGray
+    } else {
+        $logDir = Join-Path $primaryRoot "logs\sandbox"
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        $log = Join-Path $logDir "$($Entry.slug).log"
+        Start-Process -FilePath "pwsh" -WindowStyle Hidden `
+            -RedirectStandardOutput $log -RedirectStandardError "$log.err" `
+            -ArgumentList @(
+                "-NoProfile", "-File", (Join-Path $PSScriptRoot "sandbox.ps1"), "-Run", $Entry.slug
+            ) | Out-Null
+        Write-Host "[serve]   detached runner started; log: $log"
+    }
+
+    $apiReady = Wait-SandboxEndpoint -Url $apiHealth
+    # A fresh sandbox installs frontend dependencies before Vite binds, so the SPA
+    # needs a far longer budget than the API on the first serve.
+    $frontendReady = Wait-SandboxEndpoint -Url $frontendUrl -TimeoutSeconds 300
+
+    $apiMark = if ($apiReady) { "ok" } else { "NOT READY" }
+    $frontendMark = if ($frontendReady) { "ok" } else { "NOT READY" }
+    Write-Host "[api]     http://localhost:$($Entry.apiPort)  ($apiMark)" `
+        -ForegroundColor $(if ($apiReady) { "Green" } else { "Yellow" })
+    Write-Host "[spa]     http://localhost:$($Entry.frontendPort)  ($frontendMark)" `
+        -ForegroundColor $(if ($frontendReady) { "Green" } else { "Yellow" })
+    Write-Host "[labs]    http://localhost:$($Entry.labsPort)/catalog.html"
+    Write-Host "[stop]    .\scripts\dev\sandbox.ps1 -Stop $($Entry.slug)"
+
+    if (-not ($apiReady -and $frontendReady)) {
+        Write-Warning "Sandbox endpoints did not come up. Check the log above, or run -Run $($Entry.slug) in a terminal to watch it start."
+    }
+    return ($apiReady -and $frontendReady)
+}
+
+function Stop-SandboxStack {
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    foreach ($port in @($Entry.apiPort, $Entry.frontendPort, $Entry.labsPort)) {
+        $listeners = @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue)
+        $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+        foreach ($processId in $processIds) {
+            Write-Host "[stop]    :$port (PID $processId)"
+            & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
+        }
+    }
+    # The detached runner's command line carries the slug, not the worktree path,
+    # so Stop-SandboxProcesses alone would leave it behind.
+    $pattern = "sandbox\.ps1.+-Run\s+$([regex]::Escape($Entry.slug))(\s|$)"
+    $launchers = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -and $_.CommandLine -match $pattern })
+    foreach ($launcher in $launchers) {
+        Write-Host "[stop]    runner ($($launcher.ProcessId))"
+        Stop-Process -Id $launcher.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $Entry.worktree -PathType Container) {
+        Stop-SandboxProcesses -Worktree $Entry.worktree
+    }
+}
+
 function Remove-PendingMergesFor {
     # An interrupted -Update records a resumable merge; a discarded sandbox must not
     # leave one behind, or every later sync fails against the missing worktree.
@@ -212,13 +325,18 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         return
     }
     $entries |
-        Select-Object slug, slot, apiPort, frontendPort, labsPort, database, branch |
+        Select-Object slug, slot,
+            @{ Name = "serving"; Expression = {
+                if (Test-SandboxEndpoint -Url "http://localhost:$($_.apiPort)/health") { "yes" } else { "no" }
+            } },
+            apiPort, frontendPort, labsPort, database, branch |
         Format-Table -AutoSize
     return
 }
 
-$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } `
-    elseif ($Update) { $Update } elseif ($Ship) { $Ship } else { $Discard }
+$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Serve) { $Serve } `
+    elseif ($Stop) { $Stop } elseif ($Promote) { $Promote } `
+    elseif ($Update) { $Update } else { $Discard }
 Assert-Slug -Name $slug
 $branchName = "sandbox/$slug"
 $worktreePath = Join-Path $worktreesRoot "sbx-$slug"
@@ -279,13 +397,18 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     Write-Host "[path]    $worktreePath"
     Write-Host "[ports]   api=$apiPort  frontend=$frontendPort  labs=$labsPort"
     Write-Host "[db]      $database (emulator)"
-    Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Run $slug"
 
     if (-not $NoOpen) {
         & code --new-window $worktreePath
         if ($LASTEXITCODE -ne 0) {
             throw "Sandbox was created, but VS Code could not open $worktreePath."
         }
+    }
+
+    if ($NoServe) {
+        Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Serve $slug"
+    } else {
+        Start-SandboxStack -Entry $entry | Out-Null
     }
     return
 }
@@ -322,6 +445,21 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         -LabsPort $entry.labsPort `
         -CosmosBackend emulator `
         -CosmosDatabase $entry.database
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Serve") {
+    if (-not (Test-Path $entry.worktree -PathType Container)) {
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+    }
+    $ready = Start-SandboxStack -Entry $entry
+    if (-not $ready) { exit 1 }
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Stop") {
+    Stop-SandboxStack -Entry $entry
+    Write-Host "[stopped] sandbox '$slug'"
     return
 }
 
@@ -397,37 +535,15 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        throw "GitHub CLI 'gh' is required by -Promote. Install it, or open and merge the PR yourself."
+    }
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."
     }
-    if ($PSCmdlet.ShouldProcess($entry.branch, "Fetch origin/$BaseBranch and push branch for review")) {
-        Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("fetch", "origin", $BaseBranch)
-        Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
-        Write-Host "[pushed]  $($entry.branch)"
-        Write-Host "Open a pull request to merge into $BaseBranch (never auto-merged):"
-        Write-Host "  gh pr create --base $BaseBranch --head $($entry.branch) --fill"
-        Write-Host "Run validation (pytest / npm run build) before merging."
-    }
-    return
-}
-
-if ($PSCmdlet.ParameterSetName -eq "Ship") {
-    if (-not (Test-Path $entry.worktree -PathType Container)) {
-        throw "Sandbox worktree is missing: $($entry.worktree)."
-    }
-    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        throw "GitHub CLI 'gh' is required by -Ship. Install it, or use -Promote and merge the PR yourself."
-    }
-    $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
-    if ($changes) {
-        throw "Sandbox has uncommitted changes. Commit them before shipping."
-    }
-    $action = if ($Approve) {
-        "Sync, validate, merge into $BaseBranch, and discard the sandbox"
-    } else {
-        "Sync, validate, and open a pull request into $BaseBranch"
-    }    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
+    $action = "Sync, validate, merge into $BaseBranch, and keep the sandbox"
+    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
     Write-Host "== 1/5 sync with origin/$BaseBranch ==" -ForegroundColor Green
     & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -Confirm:$false
@@ -435,7 +551,7 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         "diff", "--name-only", "--diff-filter=U"
     )
     if ($conflicts) {
-        throw "Resolve and commit these conflicts, then re-run -Ship ${slug}:`n$($conflicts -join "`n")"
+        throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
 
     Write-Host "== 2/5 validate ==" -ForegroundColor Green
@@ -461,13 +577,7 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         if (-not $prNumber) { throw "Could not determine the pull request number for $($entry.branch)." }
         Write-Host "[pr]      #$prNumber -> $BaseBranch"
 
-        if (-not $Approve) {
-            Write-Host "Review the PR, then merge and clean up with:" -ForegroundColor Yellow
-            Write-Host "  .\scripts\dev\sandbox.ps1 -Ship $slug -Approve"
-            return
-        }
-
-        Write-Host "== 5/5 merge and discard ==" -ForegroundColor Green
+        Write-Host "== 5/5 merge ==" -ForegroundColor Green
         & gh pr merge $prNumber --merge
         if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
         Write-Host "[merged]  #$prNumber into $BaseBranch"
@@ -475,23 +585,10 @@ if ($PSCmdlet.ParameterSetName -eq "Ship") {
         Pop-Location
     }
 
-    if ($KeepSandbox) {
-        Write-Host "[kept]    sandbox '$slug' (-KeepSandbox)"
-        return
-    }
-    # Discard refuses to run from inside the worktree it is about to remove.
-    Push-Location $primaryRoot
-    try {
-        & $PSCommandPath -Discard $slug -Force -DeleteRemoteBranch -Confirm:$false
-    } catch {
-        # A running sandbox stack or an open editor window keeps the files locked.
-        Write-Warning "Merged into $BaseBranch, but the sandbox could not be cleaned up: $($_.Exception.Message)"
-        Write-Host "Stop 'Run-Sandbox $slug', close the sandbox window, then run:" -ForegroundColor Yellow
-        Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
-        return
-    } finally {
-        Pop-Location
-    }
+    # Discarding is a separate, deliberate step: the merged sandbox stays runnable
+    # until its owner says otherwise.
+    Write-Host "[kept]    sandbox '$slug' is still running; discard it when you are done:" -ForegroundColor Yellow
+    Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
     Write-Host "Sync your other lanes so they pick up $BaseBranch." -ForegroundColor Cyan
     return
 }
@@ -514,7 +611,7 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     }
 
     if (Test-Path $entry.worktree) {
-        Stop-SandboxProcesses -Worktree $entry.worktree
+        Stop-SandboxStack -Entry $entry
         $removeArgs = @("worktree", "remove", $entry.worktree)
         if ($Force) { $removeArgs += "--force" }
         try {
