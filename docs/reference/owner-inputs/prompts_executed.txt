@@ -8,6 +8,9 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[052] [5-Aug-2026] Per-sandbox run logs avoid collision
+sandbox scripts should log their last runs to respective named sandbox logs to avoid collision
+
 [051] [5-Aug-2026] Auto-serve sandbox endpoints for verification
 you should automatically bring up the hosted endpoints also of a sandbox for some evrificaiton
 

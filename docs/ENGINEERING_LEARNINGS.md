@@ -4,6 +4,19 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - A Shared "Last Run" Log Is a Lock, Not a Log
+
+- Every entry-point script wrote its transcript to one fixed `logs/last-run/<script>.log`.
+  That held while runs were serial. The moment a sandbox could be served in the
+  background, its transcript stayed open for hours and every other invocation of the
+  same script lost its log to a file lock — including the runs most likely to need
+  diagnosing.
+- Key the transcript by whatever makes the run distinct, not by the script name:
+  sandbox runs by slug plus verb, the dev stack by API port. The canonical stack keeps
+  its original name so existing habits and docs still point at the right file.
+- Anything reaching a filesystem path before validation must be sanitised there.
+  The sandbox slug names the log file before `Assert-Slug` ever sees it.
+
 ## 2026-08-05 - Verify Against a Running Endpoint, Not Just the Suite
 
 - A blocking runner is not servable. `dev-spa.ps1` holds the terminal on

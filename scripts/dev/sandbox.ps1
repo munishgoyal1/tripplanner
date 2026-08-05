@@ -87,7 +87,19 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
-Start-RunLog -Name "sandbox" | Out-Null
+# One transcript per sandbox and verb. A served sandbox holds its -Run transcript
+# open for hours, so a single shared "sandbox" name loses every concurrent run to
+# a file lock. The slug is sanitised because it reaches the log path before
+# Assert-Slug has had a chance to reject it.
+$runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
+$runSlug = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Ship, $Discard) |
+    Where-Object { $_ } | Select-Object -First 1
+$runLogName = if ($runSlug) {
+    "sandbox-$($runSlug -replace '[^A-Za-z0-9._-]', '-')-$runVerb"
+} else {
+    "sandbox-$runVerb"
+}
+Start-RunLog -Name $runLogName | Out-Null
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100

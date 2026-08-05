@@ -58,7 +58,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
-Start-RunLog -Name "dev-spa" | Out-Null
+# Sandboxes run this script concurrently on their own ports; keying the transcript
+# by API port keeps a second stack from losing its log to the first one's lock.
+$devSpaLogName = if ($ApiPort -eq 8000) { "dev-spa" } else { "dev-spa-$ApiPort" }
+Start-RunLog -Name $devSpaLogName | Out-Null
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $sharedRepoRoot = $repoRoot
 if (Get-Command git -ErrorAction SilentlyContinue) {
