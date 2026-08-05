@@ -4,6 +4,9 @@
 # Entry IDs remain stable, and entries are ordered newest-first. Legacy entries
 # 001-004 predate the date convention; 015-017 have no body in the source history.
 
+[051] [5-Aug-2026] Auto-serve sandbox endpoints for verification
+you should automatically bring up the hosted endpoints also of a sandbox for some evrificaiton
+
 [049] [5-Aug-2026] Park recycle, keep sandboxes fresh
 there could be more than 1 sandbox running in paraellel , i would say remove the complexity of recycle. just keep it simple fresh from scratch creation for now. Park the recycle scripts, dont delete but keep them seperately and dont bring any of it in main flow. will delete later if not required
 

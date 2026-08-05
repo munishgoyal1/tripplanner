@@ -11,6 +11,8 @@
 .EXAMPLE
     .\scripts\dev\sandbox.ps1 -New route-experiment
     .\scripts\dev\sandbox.ps1 -Run route-experiment
+    .\scripts\dev\sandbox.ps1 -Serve route-experiment
+    .\scripts\dev\sandbox.ps1 -Stop route-experiment
     .\scripts\dev\sandbox.ps1 -Update route-experiment
     .\scripts\dev\sandbox.ps1 -Promote route-experiment
     .\scripts\dev\sandbox.ps1 -Ship route-experiment -Approve
@@ -18,6 +20,10 @@
     .\scripts\dev\sandbox.ps1 -List
 
 .NOTES
+  -Run holds the terminal; -Serve starts the same stack detached and waits for
+  the endpoints to answer, so a sandbox is verifiable the moment it is created.
+  -New serves automatically unless you pass -NoServe.
+
   Sandboxes are always created fresh and discarded when shipped: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
   The parked reuse variant lives in scripts/parked/sandbox-recycle.ps1.
@@ -30,6 +36,12 @@ param(
 
     [Parameter(Mandatory = $true, ParameterSetName = "Run")]
     [string]$Run,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Serve")]
+    [string]$Serve,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Stop")]
+    [string]$Stop,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Promote")]
     [string]$Promote,
@@ -53,6 +65,9 @@ param(
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
+
+    [Parameter(ParameterSetName = "New")]
+    [switch]$NoServe,
 
     [Parameter(ParameterSetName = "Ship")]
     [switch]$Approve,
@@ -186,6 +201,98 @@ function Stop-SandboxProcesses {
     if ($running.Count -gt 0) { Start-Sleep -Milliseconds 500 }
 }
 
+function Test-SandboxEndpoint {
+    param([Parameter(Mandatory = $true)][string]$Url)
+    try {
+        return (Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200
+    } catch {
+        return $false
+    }
+}
+
+function Wait-SandboxEndpoint {
+    param(
+        [Parameter(Mandatory = $true)][string]$Url,
+        [int]$TimeoutSeconds = 150
+    )
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        if (Test-SandboxEndpoint -Url $Url) { return $true }
+        Start-Sleep -Seconds 2
+    }
+    return $false
+}
+
+function Start-SandboxStack {
+    # -Run holds the terminal it is launched from, which makes a freshly created
+    # sandbox unverifiable without a second window. Serving detaches that same
+    # runner and waits until the endpoints actually answer.
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    # Vite binds ::1 only while uvicorn binds 127.0.0.1, so probe by name and let
+    # the resolver try both families.
+    $apiHealth = "http://localhost:$($Entry.apiPort)/health"
+    $frontendUrl = "http://localhost:$($Entry.frontendPort)/"
+
+    if (Test-SandboxEndpoint -Url $apiHealth) {
+        Write-Host "[serve]   already listening on :$($Entry.apiPort)" -ForegroundColor DarkGray
+    } else {
+        $logDir = Join-Path $primaryRoot "logs\sandbox"
+        New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+        $log = Join-Path $logDir "$($Entry.slug).log"
+        Start-Process -FilePath "pwsh" -WindowStyle Hidden `
+            -RedirectStandardOutput $log -RedirectStandardError "$log.err" `
+            -ArgumentList @(
+                "-NoProfile", "-File", (Join-Path $PSScriptRoot "sandbox.ps1"), "-Run", $Entry.slug
+            ) | Out-Null
+        Write-Host "[serve]   detached runner started; log: $log"
+    }
+
+    $apiReady = Wait-SandboxEndpoint -Url $apiHealth
+    # A fresh sandbox installs frontend dependencies before Vite binds, so the SPA
+    # needs a far longer budget than the API on the first serve.
+    $frontendReady = Wait-SandboxEndpoint -Url $frontendUrl -TimeoutSeconds 300
+
+    $apiMark = if ($apiReady) { "ok" } else { "NOT READY" }
+    $frontendMark = if ($frontendReady) { "ok" } else { "NOT READY" }
+    Write-Host "[api]     http://localhost:$($Entry.apiPort)  ($apiMark)" `
+        -ForegroundColor $(if ($apiReady) { "Green" } else { "Yellow" })
+    Write-Host "[spa]     http://localhost:$($Entry.frontendPort)  ($frontendMark)" `
+        -ForegroundColor $(if ($frontendReady) { "Green" } else { "Yellow" })
+    Write-Host "[labs]    http://localhost:$($Entry.labsPort)/catalog.html"
+    Write-Host "[stop]    .\scripts\dev\sandbox.ps1 -Stop $($Entry.slug)"
+
+    if (-not ($apiReady -and $frontendReady)) {
+        Write-Warning "Sandbox endpoints did not come up. Check the log above, or run -Run $($Entry.slug) in a terminal to watch it start."
+    }
+    return ($apiReady -and $frontendReady)
+}
+
+function Stop-SandboxStack {
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    foreach ($port in @($Entry.apiPort, $Entry.frontendPort, $Entry.labsPort)) {
+        $listeners = @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue)
+        $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+        foreach ($processId in $processIds) {
+            Write-Host "[stop]    :$port (PID $processId)"
+            & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
+        }
+    }
+    # The detached runner's command line carries the slug, not the worktree path,
+    # so Stop-SandboxProcesses alone would leave it behind.
+    $pattern = "sandbox\.ps1.+-Run\s+$([regex]::Escape($Entry.slug))(\s|$)"
+    $launchers = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -and $_.CommandLine -match $pattern })
+    foreach ($launcher in $launchers) {
+        Write-Host "[stop]    runner ($($launcher.ProcessId))"
+        Stop-Process -Id $launcher.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $Entry.worktree -PathType Container) {
+        Stop-SandboxProcesses -Worktree $Entry.worktree
+    }
+}
+
 function Remove-PendingMergesFor {
     # An interrupted -Update records a resumable merge; a discarded sandbox must not
     # leave one behind, or every later sync fails against the missing worktree.
@@ -212,12 +319,17 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         return
     }
     $entries |
-        Select-Object slug, slot, apiPort, frontendPort, labsPort, database, branch |
+        Select-Object slug, slot,
+            @{ Name = "serving"; Expression = {
+                if (Test-SandboxEndpoint -Url "http://localhost:$($_.apiPort)/health") { "yes" } else { "no" }
+            } },
+            apiPort, frontendPort, labsPort, database, branch |
         Format-Table -AutoSize
     return
 }
 
-$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Promote) { $Promote } `
+$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Serve) { $Serve } `
+    elseif ($Stop) { $Stop } elseif ($Promote) { $Promote } `
     elseif ($Update) { $Update } elseif ($Ship) { $Ship } else { $Discard }
 Assert-Slug -Name $slug
 $branchName = "sandbox/$slug"
@@ -279,13 +391,18 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     Write-Host "[path]    $worktreePath"
     Write-Host "[ports]   api=$apiPort  frontend=$frontendPort  labs=$labsPort"
     Write-Host "[db]      $database (emulator)"
-    Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Run $slug"
 
     if (-not $NoOpen) {
         & code --new-window $worktreePath
         if ($LASTEXITCODE -ne 0) {
             throw "Sandbox was created, but VS Code could not open $worktreePath."
         }
+    }
+
+    if ($NoServe) {
+        Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Serve $slug"
+    } else {
+        Start-SandboxStack -Entry $entry | Out-Null
     }
     return
 }
@@ -322,6 +439,21 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
         -LabsPort $entry.labsPort `
         -CosmosBackend emulator `
         -CosmosDatabase $entry.database
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Serve") {
+    if (-not (Test-Path $entry.worktree -PathType Container)) {
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+    }
+    $ready = Start-SandboxStack -Entry $entry
+    if (-not $ready) { exit 1 }
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Stop") {
+    Stop-SandboxStack -Entry $entry
+    Write-Host "[stopped] sandbox '$slug'"
     return
 }
 
@@ -514,7 +646,7 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     }
 
     if (Test-Path $entry.worktree) {
-        Stop-SandboxProcesses -Worktree $entry.worktree
+        Stop-SandboxStack -Entry $entry
         $removeArgs = @("worktree", "remove", $entry.worktree)
         if ($Force) { $removeArgs += "--force" }
         try {

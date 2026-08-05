@@ -4,6 +4,24 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - Verify Against a Running Endpoint, Not Just the Suite
+
+- A blocking runner is not servable. `dev-spa.ps1` holds the terminal on
+  `npm run dev` and tears the stack down in its `finally`, so the sandbox
+  workflow could create an environment nobody could probe without a second
+  window. Wrapping the existing runner in a detached process and waiting on its
+  endpoints beat modifying the runner to background itself.
+- Probe local dev servers by name, never by literal `127.0.0.1`. Vite binds
+  `::1` only while uvicorn binds `127.0.0.1`, so a hardcoded IPv4 health check
+  reported a perfectly healthy SPA as down. `localhost` lets the resolver try
+  both families.
+- Readiness budgets must match the slowest first-run path. A fresh sandbox
+  installs frontend dependencies before Vite binds, so a timeout tuned to a warm
+  start reports a false failure on exactly the run that matters most.
+- Unit tests proved the refactored view-model assembly was consistent; only the
+  live endpoints proved the day routes, legs, schedules, and hotel anchors it
+  produces are still complete. Both are needed.
+
 ## 2026-08-05 - Recovery Belongs in the Flow That Broke
 
 - A recovery step that exists only as a separate command is a step the owner has
