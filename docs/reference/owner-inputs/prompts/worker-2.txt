@@ -17,3 +17,6 @@ anything from refactor sandbox to be promoted. are there any deltas compared to 
 
 [2026-08-05 18:11] [worker-2] Explain missing sandbox Git graphs
 why do i not see sandbox worktrees in the git graph here . its showing only the worker trees
+
+[2026-08-05 18:13] [worker-2] Detail refactor sandbox changes
+what are the exact delta changes made in this sbx
