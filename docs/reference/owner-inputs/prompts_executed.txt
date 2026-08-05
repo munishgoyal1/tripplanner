@@ -8,6 +8,14 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[053] [5-Aug-2026] Do all three tiers fresh sandbox
+Do all 3 tiers together ina fresh sandbox and bring the stack up for my inspection
+
+[052] [5-Aug-2026] Lab difference and switching delays
+i cant make out any difference what new is implemented in this lab compared to whats alreayd existing in master.
+
+Also the switching in from day to day level or to trip level from a item row in itinerary takes noticeable delay sometimes feeling stuck or taking too long. Also switching between trips take noticeable delay and the data change happens panel by panel, map and itinerary taking time to update and continues to stay with previous trip data for that duraiton. Any way to improve those ?
+
 [051] [5-Aug-2026] Seed sandbox data for signed-in account
 but my google account linked dtaa is not seeded mapped to my google account. I can see 14 trips for local not signed in user
 
