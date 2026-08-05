@@ -18,7 +18,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/agent-worktree.ps1` | Create, open, list, or remove coding-agent worktrees |
-| `dev/sandbox.ps1` | Create, run, update, promote, ship, recycle, discard, or list isolated feature sandboxes |
+| `dev/sandbox.ps1` | Create, run, update, promote, ship, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
@@ -32,10 +32,10 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports |
 | `sandbox/Update-Sandbox.cmd` | Merge the latest `master` into a sandbox branch |
 | `sandbox/Promote-Sandbox.cmd` | Push a sandbox branch for review (never auto-merges) |
-| `sandbox/Ship-Sandbox.cmd` | Sync, validate, and open the PR; `-Approve` also merges and parks the sandbox |
-| `sandbox/Recycle-Sandbox.cmd` | Claim the parked sandbox under a new slug, keeping its installed dependencies |
+| `sandbox/Ship-Sandbox.cmd` | Sync, validate, and open the PR; `-Approve` also merges and discards the sandbox |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes and their ports |
+| `parked/Recycle-Sandbox.cmd` | Parked, not wired into any flow: reuse a shipped sandbox instead of creating one |
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 | `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
