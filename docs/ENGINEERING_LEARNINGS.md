@@ -4,6 +4,22 @@ Durable architectural and travel-domain lessons learned while building tripplann
 This is a joint working log for decisions that should shape future features and
 fixes. Keep entries concise, generalizable, and tied to observed behavior.
 
+## 2026-08-05 - Split Modules at the Substitution Boundary
+
+- A module can only be split where its callers do not reach inside it. Tests
+  substitute `_place_coords`, `_airport_pin`, `_maps_browser_key` and
+  `get_settings` on `trip_view`'s own namespace, so any extracted module that
+  called them directly would silently bypass the substitution. The facade must
+  resolve those dependencies itself and pass the resolved values in; the
+  extracted module then does pure assembly and needs no test seams of its own.
+- Prefer in-module helper extraction when a function's dependencies are mostly
+  private helpers of the same module. Moving `build_itinerary` to a new file
+  would have required importing a dozen private names across a new boundary;
+  decomposing it in place into named steps removed the same complexity with
+  none of the coupling.
+- Duplicated accumulation is a reliable dead-code signal. The per-day coordinate
+  list was built twice and the first result was unconditionally discarded before
+  use — visible only once the enclosing 371-line function was read end to end.
 ## 2026-08-05 - A Shared "Last Run" Log Is a Lock, Not a Log
 
 - Every entry-point script wrote its transcript to one fixed `logs/last-run/<script>.log`.

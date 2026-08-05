@@ -8,6 +8,8 @@
 #   <exact prompt text, verbatim>
 #   (blank line between entries)
 
+[050] [5-Aug-2026] Sandbox code refactoring improvements
+standup a new sandbox and implement code refacotring improvements in that
 [061] [5-Aug-2026] Ship perf-panels sandbox
 ship perf-panels
 
