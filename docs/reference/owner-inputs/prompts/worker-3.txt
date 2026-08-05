@@ -1,4 +1,4 @@
-# Owner prompts executed in the Agent 3 - Infra lane.
+# Owner prompts executed in the Agent 3 - Sandbox lane.
 # Tail-appended, newest at the bottom. Only this lane writes this file.
 # Format: [YYYY-MM-DD HH:MM] [worker-3] [!] <short title> / verbatim prompt / blank line.
 # See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
@@ -11,3 +11,12 @@ you should read the last run logs. why do you have to reprosuce it again yoursel
 
 [2026-08-05 19:03] [worker-3] ! Check perf-panels promotion failure
 check the sandbox prmotion failure for perf-panels
+
+[2026-08-05 19:24] [worker-3] ! Diagnose sandbox discard cleanup
+why the sbx discard didnt clear the worktrees cleanly from here: C:\repos\tripplanner.worktrees
+
+[2026-08-05 19:31] [worker-3] ! Rename Agent 3 lane
+rename agent3 to Sandbox instead of Infra
+
+[2026-08-05 19:44] [worker-3] ! Implement Lab 16 in sandbox
+Implement lab16 in a sandbox and bring it up for inspection

@@ -759,7 +759,7 @@ function Invoke-LanePropagation {
     param([Parameter(Mandatory = $true)][string]$ScriptRoot)
 
     Write-SyncLog "Propagating integrated master into every worktree..."
-    $laneNames = @{ 0 = "MasterAgent (0)"; 1 = "Agent 1"; 2 = "Agent 2"; 3 = "Agent 3 - Infra" }
+    $laneNames = @{ 0 = "MasterAgent (0)"; 1 = "Agent 1"; 2 = "Agent 2"; 3 = "Agent 3 - Sandbox" }
     $failures = 0
     foreach ($number in 0, 1, 2, 3) {
         try {

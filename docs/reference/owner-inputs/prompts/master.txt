@@ -5,3 +5,6 @@
 
 [2026-08-05 18:55] [master] ! Harden sandbox promote/discard confidence
 why did you ask me whether you should discard, when there are still uncommited files and the Ship/promote is not fully validated and clean. Fix the scripts and your handling to make sure it is high confidence
+
+[2026-08-05 20:05] [master] ! Sandboxes sync through master like lanes
+before implementing a task on a new sandbox, try to sync all worktrees to latest through master (synalltolatest script) and then base sanbox tree from latest master. and what does the Update sandbox do. Is there some provision alreayd where sandbox branch needs to sync latest from all main worker tres through master (again syncalltolatest ) kind of.. because we see over time those branches will move forward and sandbox branch will remain far behind.

@@ -23,6 +23,12 @@
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
   -New serves automatically unless you pass -NoServe.
 
+  -New and -Update first integrate every committed worker lane through master
+  (the same pass Sync-AllTo-Latest runs) and only then branch from, or merge,
+  origin/master — so a sandbox never starts or sits behind work that is already
+  committed elsewhere. Pass -NoSync to skip that pass. The reverse direction is
+  covered too: Sync-AllTo-Latest updates every registered sandbox at its end.
+
   -Promote is end to end: sync, validate, push, open the PR, merge into the base
   branch, and then verify that the base branch really contains every commit and
   that the worktree is clean. It never discards the sandbox, so the work stays
@@ -74,6 +80,11 @@ param(
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoServe,
+
+    [Parameter(ParameterSetName = "New")]
+    [Parameter(ParameterSetName = "Update")]
+    [Parameter(ParameterSetName = "Promote")]
+    [switch]$NoSync,
 
     [Parameter(ParameterSetName = "Promote")]
     [switch]$SkipValidation,
@@ -343,6 +354,28 @@ function Stop-SandboxStack {
     }
 }
 
+function Sync-LanesThroughMaster {
+    # A sandbox is only "latest" if master already holds what the worker lanes
+    # committed; branching from origin/master alone leaves it behind whatever has
+    # not been integrated yet. The env guard breaks the cycle when the reverse
+    # direction runs — all-worktrees-sync updates sandboxes at its end.
+    param([string]$Reason)
+
+    if ($NoSync) {
+        Write-Host "[sync]    skipped (-NoSync); master may be behind the worker lanes." -ForegroundColor Yellow
+        return
+    }
+    if ($env:TRIPPLANNER_SANDBOX_NO_SYNC -eq "1") { return }
+
+    Write-Host "[sync]    integrating every committed lane through master ($Reason)" -ForegroundColor Cyan
+    $env:TRIPPLANNER_SANDBOX_NO_SYNC = "1"
+    try {
+        & "$PSScriptRoot\all-worktrees-sync.ps1"
+    } finally {
+        Remove-Item Env:\TRIPPLANNER_SANDBOX_NO_SYNC -ErrorAction SilentlyContinue
+    }
+}
+
 function Remove-SandboxLeftovers {
     # npm workspaces link @tripplanner/client into frontend/node_modules, and
     # `git worktree remove` leaves that reparse point plus its parents on disk.
@@ -426,6 +459,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
         return
     }
 
+    Sync-LanesThroughMaster -Reason "new sandbox '$slug'"
     Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "origin", $BaseBranch)
     New-Item -ItemType Directory -Path $worktreesRoot -Force | Out-Null
     Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
@@ -544,6 +578,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
 
     $syncLogOwned = Start-SyncLog -Component "sandbox-update"
     try {
+        Sync-LanesThroughMaster -Reason "update sandbox '$slug'"
         Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "origin", $BaseBranch) | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.enabled", "true") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
@@ -606,7 +641,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
     Write-Host "== 1/6 sync with origin/$BaseBranch ==" -ForegroundColor Green
-    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -Confirm:$false
+    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -NoSync:$NoSync -Confirm:$false
     $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
         "diff", "--name-only", "--diff-filter=U"
     )

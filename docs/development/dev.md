@@ -22,9 +22,9 @@ Only when the owner explicitly requests parallel development, use:
 - `tripplanner-worker-1.code-workspace` - Agent 1 - Iti-Map on `agents/worker-1`
 - `tripplanner-integration.code-workspace` - MasterAgent Review & Integration on `master`
 
-Agent 2 - Detail-Chat on `agents/worker-2` remains available through
-`Open-Tripplanner-All-Agents.cmd`. Agent 3 - Infra on `agents/worker-3` owns
-isolated infrastructure assignments when the added coordination is worthwhile.
+Agent 2 - UXlabs on `agents/worker-2` remains available through
+`Open-Tripplanner-All-Agents.cmd`. Agent 3 - Sandbox on `agents/worker-3` owns
+isolated sandbox and operational assignments when the added coordination is worthwhile.
 
 See [parallel-agent-development.md](parallel-agent-development.md) for worker
 assignment, PR, synchronization, and merge rules.

@@ -28,11 +28,11 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) |
+| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master` |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
-| `sandbox/Update-Sandbox.cmd` | Merge the latest `master` into a sandbox branch |
+| `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, then merge it into a sandbox branch |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, and verify the merge landed (keeps the sandbox) |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database (refuses while work is not in `master`) |
 | `sandbox/List-Sandboxes.cmd` | List active sandboxes, their ports, and whether they are serving |

@@ -10,6 +10,28 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "itinerary-canvas": {
+    changes: [
+      "The visual hierarchy of a stop row: which of its facts are loud, which are quiet chips, and which open in place",
+      "How a day announces itself, and whether its schedule, route, weather, and readiness read as one header or a stack of lines",
+      "How the trip header presents cost, readiness, weather, packing, constraints, and budget without owning half the pane",
+    ],
+    context: [
+      "Every production fact on a stop, a day, and the trip; each option must retain all of them",
+      "Map, Details, and Assistant panes, the toolbar, persisted stop order, booking state, and itinerary mutation logic",
+    ],
+  },
+  "map-canvas": {
+    changes: [
+      "Where day scope, place search, stop type, target day, and Add live relative to the map surface",
+      "How much of the pane is geography once controls, day facts, and the selected-pin card are placed",
+      "Whether the map also carries the day's stop sequence, times, and travel legs",
+    ],
+    context: [
+      "Route colour, marker numbering, and day identity, which must keep matching the itinerary pane",
+      "Google Maps implementation, provider search, geocoding, place data, and trip mutation behavior",
+    ],
+  },
   "chat-agent-workspace": {
     changes: [
       "Where the Assistant lives in the workspace, what it costs the other panels at rest, and how it is opened or dismissed",
