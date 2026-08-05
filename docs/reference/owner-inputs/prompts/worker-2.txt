@@ -23,3 +23,6 @@ what are the exact delta changes made in this sbx
 
 [2026-08-05 18:16] [worker-2] Show sandbox pointers in graph
 show em how exactly to enable seeing all sandbox treee pointers just like worker branches in the git graph
+
+[2026-08-05 18:29] [worker-2] ! Audit stale unused branches
+which are the stale unused git branches in this repo, present that and then i will signoff if you can delete those branches
