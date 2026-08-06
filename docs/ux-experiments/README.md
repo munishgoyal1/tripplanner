@@ -107,6 +107,22 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open Agentic Planning Experiment (2026-08-05)
+
+The agentic planning lab is available at
+`http://127.0.0.1:5175/lab-19-agentic-planning.html`. It is the first lab about agent
+*behaviour* rather than presentation, and it answers two defects the owner reported: a new
+attraction placed on day 5 after the flight home, and a hotel-class change that silently
+deleted the return leg to Bengaluru. Both are reproduced live from a deterministic model of
+the production heuristics in `src/tripplanner/tools/trip_planner.py`.
+
+Its answer is that a separate intelligence layer is required beside the model: a
+deterministic plan engine that owns placement, validation and persistence under eight
+invariants, leaving the model to parse intent and explain the resulting diff. It compares
+proposal-first review, guarded autonomy with reversible receipts, and a persistent plan
+console, and it applies the same operation and verdict from all four channels — chat, map,
+itinerary and details. See [`AGENTIC_PLANNING.md`](AGENTIC_PLANNING.md).
+
 ## Open Itinerary and Map Canvas Experiments (2026-08-05)
 
 Two paired labs reimagine the two panes the owner reads most, using one shared four-day

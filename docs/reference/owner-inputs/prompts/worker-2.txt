@@ -37,3 +37,9 @@ rename agent 2 from Detail-Chat to UXlabs
 forget the preiovus sandbox.
 
 Create a single or 2 UX lab reimagingin the itinerary, maps panel to make it more elegant and easy UX while still retaining all key info and proviidng a breezy and modern User experience. Keep pverall color scheme and UX theme consistent across the entire app. Think of it like a 100million user web app.
+
+[2026-08-05 22:01] [worker-2] ! Lab for intelligent agent behaviour
+Create a lab proposing good chanegs to chat agent behaviour (not only UI) including UI. Especially the semantics, example how it intelligently builds itinerary.
+Some issues seen: sometimes adding a new attraciton to best day was added after the last day departure flight , after returning to banglaore, that is weird. So the items placement logic should be very very robust and intelligenmt. Is there a seperate intelligence layer required, which works on top or along with the LLM model ?
+Asking it to update a hotel of indore city to 3star , did that but also weirdly removed the bangalore flgith conenction also, and that too sielently without coneyiong.
+So reimagine a strong and intelligent agency chat (I mean not only chat but update interactions happenignn through any channel - map, itinerary, details or chat anywhere )
