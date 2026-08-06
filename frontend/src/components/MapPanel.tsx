@@ -1,6 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { Plus, Search } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Route, Search, X } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
 import { filterMapView, type ItineraryFilter } from "../lib/itineraryFilters";
@@ -16,7 +15,13 @@ import {
   zoomToPin,
   type PinMarkerEntry,
 } from "./map/viewportSync";
-import { mapContextForRoadCircuit, mapContextForScope } from "./map/routeDerivations";
+import {
+  hotelLabelsForDay,
+  mapContextForRoadCircuit,
+  mapContextForScope,
+  pinsForDayRoute,
+  visitOrdersForDay,
+} from "./map/routeDerivations";
 import PlaceTripActions from "./PlaceTripActions";
 
 export { focusedDayForPin, focusNameForPin, pinMatchesFocus, placeNameMatches } from "./map/focusMatching";
@@ -140,10 +145,9 @@ interface Props {
     name: string,
     options?: DeselectItemOptions,
   ) => void | Promise<boolean>;
-  headerTarget?: HTMLElement | null;
 }
 
-function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
   const view = useMemo(
     () => sourceView ? filterMapView(sourceView, filters) : null,
@@ -163,6 +167,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
   const [newStopDay, setNewStopDay] = useState("auto");
   const [addingStop, setAddingStop] = useState(false);
   const [retryToken, setRetryToken] = useState(0);
+  const [sequenceOpen, setSequenceOpen] = useState(false);
 
   const mapEl = useRef<HTMLDivElement>(null);
   const stopInputRef = useRef<HTMLInputElement>(null);
@@ -594,6 +599,32 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     }
   };
 
+  const clearComposer = () => {
+    setNewStopName("");
+    setNewStopKind("");
+    setStopKindAutoFilled(false);
+    setCandidatePin(null);
+    setSelectedPin((pin) => (pin?.id.startsWith("candidate:") ? null : pin));
+    stopInputRef.current?.focus();
+  };
+
+  // A sequence card stands in for its pin, so it focuses the itinerary and the
+  // map exactly like clicking that pin does.
+  const handleSequenceSelect = (pin: MapPin) => {
+    setCandidatePin(null);
+    const occurrence = pin.occurrences.find(
+      (candidate) => candidate.day === (activeDay ?? pin.day),
+    ) ?? pin.occurrences[0];
+    onPinFocusRef.current?.(
+      pin.kind,
+      focusNameForPin(pin),
+      occurrence?.day ?? activeDay ?? pin.day ?? undefined,
+      occurrence?.stop,
+    );
+    if (mapRef.current) zoomToPin(mapRef.current, pin);
+    setSelectedPin(pin);
+  };
+
   const handleAddSelected = async () => {
     if (!isPlacePin(selectedPin)) return;
     setAddingStop(true);
@@ -635,6 +666,12 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           : null;
   const activeDayObj =
     view && activeDay != null ? view.days.find((d) => d.day === activeDay) : null;
+  // The composer stays a plain search field until a place is named, so the
+  // resting dock states what it does instead of promising a form.
+  const composerOpen = newStopName.trim().length > 0 || candidatePin != null;
+  const sequencePins = view && activeDay != null ? pinsForDayRoute(view, activeDay) : [];
+  const sequenceOrders = view && activeDay != null ? visitOrdersForDay(view, activeDay) : null;
+  const sequenceHotels = view && activeDay != null ? hotelLabelsForDay(view, activeDay) : null;
   const selectedMapContext = view
     ? routeFocusId && routeFocusDay === activeDay
       ? mapContextForRoadCircuit(view, routeFocusId) ?? mapContextForScope(view, contextScope)
@@ -711,89 +748,6 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
               Retry
             </button>
           )}
-        </div>
-      )}
-      {view && (
-        <div className="border-b border-slate-200 bg-white/95" aria-label="Map commands">
-          {headerTarget ? createPortal(dayScopeControls, headerTarget) : (
-            <div className="border-b border-slate-100 px-3 py-1.5">{dayScopeControls}</div>
-          )}
-          <div className="px-3 py-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative min-w-[9rem] flex-1">
-                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
-                <input
-                  ref={stopInputRef}
-                  type="text"
-                  value={newStopName}
-                  onChange={(event) => {
-                    setNewStopName(event.target.value);
-                    if (stopKindAutoFilled) {
-                      setNewStopKind("");
-                      setStopKindAutoFilled(false);
-                    }
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") void handleAddStop();
-                  }}
-                  className="w-full rounded-md border border-slate-200 py-1.5 pl-8 pr-3 text-xs text-slate-700 placeholder:text-slate-400"
-                  placeholder="Search places on this map…"
-                  title="Search Google Maps places near the current map view"
-                />
-              </div>
-              <select
-                value={newStopKind}
-                onChange={(event) => {
-                  setNewStopKind(event.target.value as "" | "attraction" | "hotel" | "meal");
-                  setStopKindAutoFilled(false);
-                }}
-                className={`rounded-md border px-3 py-1.5 text-xs ${stopKindAutoFilled ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}
-                title={stopKindAutoFilled ? "Type auto-filled from Google; change it if needed" : "Stop type is optional"}
-                aria-label="Stop type (optional)"
-              >
-                <option value="">Type (optional)</option>
-                <option value="attraction">Attraction{stopKindAutoFilled && newStopKind === "attraction" ? " · auto-filled" : ""}</option>
-                <option value="hotel">Hotel{stopKindAutoFilled && newStopKind === "hotel" ? " · auto-filled" : ""}</option>
-                <option value="meal">Restaurant{stopKindAutoFilled && newStopKind === "meal" ? " · auto-filled" : ""}</option>
-              </select>
-              {view.days.length > 0 && (
-                <select
-                  value={newStopDay}
-                  onChange={(event) => setNewStopDay(event.target.value)}
-                  className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
-                  title="Choose which itinerary day receives this stop"
-                  aria-label="Add stop to day"
-                >
-                  <option value="auto">Best day</option>
-                  {view.days.map((day) => (
-                    <option key={day.day} value={day.day}>Day {day.day}</option>
-                  ))}
-                </select>
-              )}
-              <button
-                type="button"
-                onClick={handleAddStop}
-                disabled={!newStopName.trim() || addingStop}
-                className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Plus className="h-3.5 w-3.5" aria-hidden />
-                {addingStop ? "Adding…" : "Add"}
-              </button>
-            </div>
-          </div>
-          <div className="flex min-h-6 items-center gap-1.5 border-t border-slate-100 px-3 py-1 text-[10px] text-slate-500">
-            {activeDayObj ? (
-              <>
-                <span className="font-semibold text-slate-700">{activeDayObj.label}</span>
-                <span aria-hidden>·</span>
-                <span>Schedule {activeDayObj.schedule?.duration_display || "unavailable"}{activeDayObj.schedule?.start && activeDayObj.schedule?.end ? `, ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""}</span>
-                <span aria-hidden>·</span>
-                <span>Travel {activeDayObj.route.duration_display}, {activeDayObj.route.distance_display}, {activeDayObj.route.mode}</span>
-              </>
-            ) : (
-              <span>Choose a day for schedule and route-only travel.</span>
-            )}
-          </div>
         </div>
       )}
       <div className="relative min-h-0 flex-1">
@@ -915,6 +869,191 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           </div>
         )}
       </div>
+      {view && (
+        <div className="shrink-0 border-t border-slate-200 bg-white/95" aria-label="Map commands">
+          <div className="px-3 py-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[9rem] flex-1">
+                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+                <input
+                  ref={stopInputRef}
+                  type="text"
+                  value={newStopName}
+                  onChange={(event) => {
+                    setNewStopName(event.target.value);
+                    if (stopKindAutoFilled) {
+                      setNewStopKind("");
+                      setStopKindAutoFilled(false);
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void handleAddStop();
+                  }}
+                  className="w-full rounded-md border border-slate-200 py-1.5 pl-8 pr-8 text-xs text-slate-700 placeholder:text-slate-400"
+                  placeholder="Search a place, or tap one on the map…"
+                  title="Search Google Maps places near the current map view"
+                />
+                {newStopName && (
+                  <button
+                    type="button"
+                    onClick={clearComposer}
+                    className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                    title="Clear the search"
+                    aria-label="Clear the search"
+                  >
+                    <X className="h-3 w-3" aria-hidden />
+                  </button>
+                )}
+              </div>
+              {composerOpen ? (
+                <>
+                  {candidatePin?.rating ? (
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                      ★ {candidatePin.rating}
+                    </span>
+                  ) : null}
+                  <select
+                    value={newStopKind}
+                    onChange={(event) => {
+                      setNewStopKind(event.target.value as "" | "attraction" | "hotel" | "meal");
+                      setStopKindAutoFilled(false);
+                    }}
+                    className={`rounded-md border px-3 py-1.5 text-xs ${stopKindAutoFilled ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}
+                    title={stopKindAutoFilled ? "Type auto-filled from Google; change it if needed" : "Stop type is optional"}
+                    aria-label="Stop type (optional)"
+                  >
+                    <option value="">Type (optional)</option>
+                    <option value="attraction">Attraction{stopKindAutoFilled && newStopKind === "attraction" ? " · auto-filled" : ""}</option>
+                    <option value="hotel">Hotel{stopKindAutoFilled && newStopKind === "hotel" ? " · auto-filled" : ""}</option>
+                    <option value="meal">Restaurant{stopKindAutoFilled && newStopKind === "meal" ? " · auto-filled" : ""}</option>
+                  </select>
+                  {view.days.length > 0 && (
+                    <select
+                      value={newStopDay}
+                      onChange={(event) => setNewStopDay(event.target.value)}
+                      className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
+                      title="Choose which itinerary day receives this stop"
+                      aria-label="Add stop to day"
+                    >
+                      <option value="auto">Best day</option>
+                      {view.days.map((day) => (
+                        <option key={day.day} value={day.day}>Day {day.day}</option>
+                      ))}
+                    </select>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleAddStop}
+                    disabled={!newStopName.trim() || addingStop}
+                    className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Plus className="h-3.5 w-3.5" aria-hidden />
+                    {addingStop ? "Adding…" : "Add"}
+                  </button>
+                </>
+              ) : (
+                <span className="hidden shrink-0 pr-1 text-[11px] text-slate-400 md:inline">
+                  or tap a place on the map
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 border-t border-slate-100 px-3 py-1.5">
+            {dayScopeControls}
+            <button
+              type="button"
+              onClick={() => setSequenceOpen((open) => !open)}
+              aria-pressed={sequenceOpen}
+              disabled={sequencePins.length === 0}
+              className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition disabled:opacity-40 ${
+                sequenceOpen ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100 hover:text-ink"
+              }`}
+              title="The day's stop order also lives in the itinerary pane"
+            >
+              <Route className="h-3 w-3" aria-hidden />
+              Sequence
+              {sequenceOpen
+                ? <ChevronDown className="h-3 w-3" aria-hidden />
+                : <ChevronUp className="h-3 w-3" aria-hidden />}
+            </button>
+          </div>
+          <div className="flex min-h-6 items-center gap-1.5 border-t border-slate-100 px-3 py-1 text-[10px] text-slate-500">
+            {activeDayObj ? (
+              <>
+                <span className="font-semibold text-slate-700">{activeDayObj.label}</span>
+                <span aria-hidden>·</span>
+                <span>Schedule {activeDayObj.schedule?.duration_display || "unavailable"}{activeDayObj.schedule?.start && activeDayObj.schedule?.end ? `, ${activeDayObj.schedule.start}–${activeDayObj.schedule.end}${activeDayObj.schedule.estimated ? " est." : ""}` : ""}</span>
+                <span aria-hidden>·</span>
+                <span>Travel {activeDayObj.route.duration_display}, {activeDayObj.route.distance_display}, {activeDayObj.route.mode}</span>
+              </>
+            ) : (
+              <span>Choose a day for schedule and route-only travel.</span>
+            )}
+          </div>
+          {sequenceOpen && activeDayObj && sequencePins.length > 0 && (
+            <ol
+              className="flex items-stretch gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2"
+              aria-label={`${activeDayObj.label} stop sequence`}
+            >
+              {sequencePins.map((pin, index) => {
+                const previous = index > 0 ? sequencePins[index - 1] : null;
+                const leg = previous
+                  ? activeDayObj.legs?.find(
+                    (candidate) =>
+                      candidate.from_pin_id === previous.id && candidate.to_pin_id === pin.id,
+                  )
+                  : null;
+                const occurrences = pin.occurrences.filter(
+                  (occurrence) => occurrence.day === activeDayObj.day,
+                );
+                const occurrence = index === sequencePins.length - 1 && occurrences.length > 1
+                  ? occurrences[occurrences.length - 1]
+                  : occurrences[0];
+                const marker = sequenceOrders?.get(pin.id)
+                  ?? sequenceHotels?.get(pin.id)
+                  ?? "•";
+                const selected = selectedPin?.id === pin.id;
+                return (
+                  <li key={`${pin.id}-${index}`} className="flex shrink-0 items-center gap-1">
+                    {leg && (
+                      <span className="whitespace-nowrap px-1 text-[10px] font-medium text-accent">
+                        {leg.duration_display}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleSequenceSelect(pin)}
+                      className={`flex min-w-[7.5rem] max-w-[11rem] items-center gap-1.5 rounded-md border px-2 py-1.5 text-left transition ${
+                        selected
+                          ? "border-transparent bg-ink text-white"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                      }`}
+                    >
+                      <span
+                        className="grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[10px] font-bold"
+                        style={{
+                          borderColor: activeDayObj.color,
+                          color: selected ? "#fff" : activeDayObj.color,
+                        }}
+                      >
+                        {marker}
+                      </span>
+                      <span className="min-w-0">
+                        {occurrence?.time && (
+                          <span className={`block text-[10px] tabular-nums ${selected ? "text-white/70" : "text-slate-400"}`}>
+                            {occurrence.time}
+                          </span>
+                        )}
+                        <span className="block truncate text-[11px] font-semibold">{pin.name}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      )}
     </div>
   );
 }

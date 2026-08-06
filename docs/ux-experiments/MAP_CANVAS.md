@@ -128,9 +128,30 @@ geographic sense" before it answers anything else.
 
 ## Decision
 
-- Decision: pending owner selection. The bottom-bar placement from B is provisionally
-  preferred; whether the route timeline stays resident is deferred to a sandbox round.
-- Implementation: not started; no production code changed by this Lab.
-- Rationale: pending.
-- Next action: owner selects an option in the Lab; the selection is then promoted with its
-  defining interaction behavior intact, not only its visual shell.
+- Decision: Option D · Search-first dock, built in a sandbox so the deferred questions can
+  be judged on the real map instead of a fixture. The Lab still records the owner selection
+  as pending; B's bottom placement is kept, and whether the sequence strip earns its space
+  is exactly what the sandbox is for.
+- Implementation: in sandbox `sbx-4-lab18-map` (branch `sandbox/4-lab18-map`), awaiting
+  owner inspection. Production code touched: `frontend/src/components/MapPanel.tsx` (the
+  whole command block moved below the map, so the map now starts at the top of the pane;
+  the composer rests as a single search field and only reveals type, target day and Add
+  once a place is named or resolved; a clear affordance resets the field and drops the
+  candidate pin; a *Sequence* toggle opens the active day's stop order — marker, time, name
+  and the travel duration between stops — as a horizontal strip, and tapping a card selects
+  the pin and focuses the itinerary exactly like tapping the pin does).
+- Facts preserved: day scope with *All days* and every day in its route colour, all three
+  add-stop inputs including *Best day*, the auto-filled type marker, the day context line
+  with schedule, `est.` marker and route-only travel, the day and pin context cards with
+  with their actions, and the failure toast with Retry. Day scope now lives in the
+  dock beside the sequence toggle rather than in the pane header, so every map
+  command sits in one place under the map.
+- Not carried over: the Lab's dashed discovery pins. Production already resolves a place
+  by typing into the field or tapping a Google POI on the map — both fill the same
+  composer — so a separate discovery layer would be new place data, which the Lab lists as
+  a non-goal. The booking dot on the sequence strip is also absent because the map view
+  model does not carry booking state.
+- Rationale: the pane reads as a map with commands under it rather than a form with a map
+  underneath, and the add affordance now looks like what it is.
+- Next action: owner runs `.\scripts\sandbox\Run-Sandbox.cmd 4`, judges the map surface,
+  the add flow and whether *Sequence* is worth its space, then promotes or discards.
