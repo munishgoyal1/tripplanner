@@ -1,4 +1,4 @@
-import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal } from "lucide-react";
+import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -24,7 +24,7 @@ export interface LabSelectionState {
 
 export type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
 
-export const LAST_ASSIGNED_LAB_NUMBER = 18;
+export const LAST_ASSIGNED_LAB_NUMBER = 19;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition | undefined {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -42,6 +42,18 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    labNumber: 19,
+    id: "agentic-planning",
+    title: "An itinerary that cannot be edited into nonsense",
+    category: "Agent behaviour",
+    description: "A deterministic plan engine between intent and the trip: envelope, presence, anchors, blast radius and receipts, so a change from chat, map, itinerary or details can never place a stop after the flight home or silently delete a booked leg.",
+    createdAt: "2026-08-05",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Guarded autonomy.",
+    href: "./lab-19-agentic-planning.html",
+    icon: Workflow,
+  },
   {
     labNumber: 18,
     id: "map-canvas",
