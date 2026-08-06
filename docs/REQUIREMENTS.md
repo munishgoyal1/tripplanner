@@ -52,6 +52,16 @@ rounds. "Bookable" currently means concrete choices, prices when providers retur
 them, itinerary details, and verified handoff material. The product does **not**
 currently complete provider-side purchases or charge a payment method.
 
+Two goals rank above every other requirement, in this order. First, produce the
+most intelligent itinerary available inside the user's preferences, tastes,
+budget, pace, and constraints. Second, get that same trip at the best achievable
+total cost and hand the user into booking with verified, pre-filled material.
+The second goal may later use consent-gated payment context, such as which cards
+or loyalty programs a user holds, to compare offers before the handoff; it stores
+program and card identity only, never card numbers, and never charges a payment
+method. Neither goal may make the product slow: price and offer work is
+background and time-boxed, and the planner always renders the plan it already has.
+
 ## Capability index
 
 Future feature briefs should reference these stable capability IDs rather than
@@ -82,6 +92,7 @@ re-describing the whole product.
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Partially implemented; privacy-safe analytics implemented |
+| DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Proposed |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |
 | BOOK-01 | Real provider-side booking and payment | Out of scope |
 
@@ -640,6 +651,13 @@ implemented capability baseline.
 - Structured Assistant input is not yet rendered in production web or native UI.
   The selectable overlay/control prototype is active in UX Labs; production wiring
   requires an owner-selected direction.
+- No cost-optimization layer (DEAL-01). Provider prices are shown as returned;
+  there is no cross-source comparison for the same choice, no re-check of a
+  finalized-but-unbooked price, no total-trip cost model the user can act on, and
+  no loyalty, card-benefit, or portal-offer modeling.
+- No server-rendered public edge. One FastAPI process serves the API and the
+  client-rendered SPA, so landing, destination-content, and shared-trip URLs are
+  not indexable and not first-paint-fast for anonymous visitors.
 
 ### Out of scope unless explicitly reopened
 
@@ -679,6 +697,9 @@ whether they create useful trips and return.
   always-visible survey.
 - Define the activation funnel: visit -> first prompt -> trip created -> complete
   itinerary -> export/share/handoff -> return.
+- Give the public edge a server-rendered or prerendered surface (landing,
+  destination content, shared trips) with real link previews, while the planner
+  workspace stays the SPA.
 - Set Azure and provider budget alerts before broad sharing.
 
 ### Priority 2 - Evidence-led product improvement
@@ -719,7 +740,26 @@ provider actions.
   cancellation, identity, payment, and support responsibilities are explicit.
 - Never infer successful booking from a link click or local status change.
 
-### Priority 5 - Mobile distribution maturity
+### Priority 5 - Trip cost intelligence and deal optimization
+
+**Outcome:** the same approved itinerary costs less, and the user can see why.
+
+- Model total trip cost as one number the user can act on: flights, stay,
+  activities, ground travel, and known fees, each carrying its currency, provider,
+  and quote time.
+- Compare more than one source for the same choice before recommending it, and
+  keep provider, price, and fetch time attached to every claim.
+- Re-check prices for a finalized-but-unbooked trip on an explicit, time-boxed
+  schedule; never silently mutate the plan because a price moved.
+- Treat loyalty programs, card benefits, and portal offers as consent-gated
+  preference data. Store program and card identity only, never card numbers, and
+  link every offer claim to its terms.
+- Report savings honestly: state what was compared and what was not, and never
+  present an unverified discount as a held price.
+- Keep it fast. Optimization is background and time-boxed; the plan renders from
+  what is already known.
+
+### Priority 6 - Mobile distribution maturity
 
 **Outcome:** move from device testing to owner-approved beta and store releases.
 
