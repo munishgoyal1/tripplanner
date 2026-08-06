@@ -3395,3 +3395,19 @@ Traveller document details live in Account and are reused by every trip; a trip 
 The original photo or text is read once and discarded: only allowlisted fields are stored, and identity numbers are reduced to their last four digits before any write.
 New: web/travel_documents.py, web/document_readiness.py, web/document_extract.py, components/TravelDocumentsVault.tsx, and a documents container in cosmos-data.bicep.
 PDFs are refused with an explicit message; photo and pasted text are the supported inputs. /account/privacy deletes these records.
+
+[2026-03-25] Document readiness only speaks when the trip crosses a border
+Passport, visa and IDP checks were firing on domestic trips, showing a red "1 document
+to fix" for a weekend in Goa. The deciding fact is the trip origin, which is already
+persisted and already learned opportunistically from the chat; origin and destination are
+each resolved to a country through the keyless Open-Meteo geocoder (web/place_country.py)
+and the border-dependent checks run only when the two differ. Unknown on either side means
+silence, not a guess. Citizenship is deliberately not collected - that is a visa question
+and tools/visa.py already answers it grounded.
+Second rule, applied to every type: absence warns, arithmetic blocks. A missing passport
+record is a warning worded as what it is, because crossing a border is not the same as
+needing a passport (Schengen, India-Nepal, UK-Ireland CTA). Only a stored date failing a
+comparison can raise a blocker; the toolbar badge is rose for blockers, amber for warnings.
+Also: the latest of several passports is the one measured, a visa naming another country is
+ignored, an untagged visa can only warn, a licence issued by the destination needs no IDP,
+and a lapsed loyalty tier is not worth a badge.

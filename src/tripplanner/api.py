@@ -1861,22 +1861,34 @@ async def trip_documents_readiness(request: Request, user_id: str = "local") -> 
     """Whether the active trip's paperwork is ready.
 
     Every check is arithmetic over stored fields and trip dates. This endpoint
-    answers one question and does not become a third place documents live.
+    answers one question and does not become a third place documents live. It
+    resolves the trip's origin and destination to countries first, because the
+    passport, visa, and IDP checks stay silent unless the trip is known to
+    cross a border.
     """
     from tripplanner.tools import trip_planner
     from tripplanner.tools import user_preferences as prefs_store
-    from tripplanner.web import document_readiness, travel_documents
+    from tripplanner.web import document_readiness, place_country, travel_documents
 
     _document_user(request, user_id)
 
     def _evaluate() -> dict:
         trip = trip_planner.load_active_trip_dict()
         if not trip:
-            return {"checks": [], "blockers": 0, "warnings": 0, "badge": "", "reason": "no_trip"}
+            return {
+                "checks": [],
+                "blockers": 0,
+                "warnings": 0,
+                "badge": "",
+                "badge_tone": "",
+                "reason": "no_trip",
+            }
         return document_readiness.evaluate(
             trip,
             travel_documents.list_documents("traveler"),
             prefs_store.load_preferences(),
+            origin_country=place_country.resolve_country(trip.get("origin")),
+            destination_country=place_country.resolve_country(trip.get("destination")),
         )
 
     return await asyncio.to_thread(_evaluate)

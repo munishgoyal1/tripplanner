@@ -612,6 +612,10 @@ export interface DocumentReadiness {
   blockers: number;
   warnings: number;
   badge: string;
+  badge_tone?: "blocker" | "warning" | "";
+  origin_country?: string;
+  destination_country?: string;
+  crosses_border?: boolean;
   reason?: string;
 }
 

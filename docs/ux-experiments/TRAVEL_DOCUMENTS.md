@@ -202,3 +202,36 @@ worse than the refusal; photographing the page or pasting the text both work. An
 passport margin check names the six-month margin it used and asks the owner to confirm
 the destination's exact rule, rather than claiming a per-country rule the product does not
 actually hold.
+
+### What the first build got wrong, and the rule that replaced it
+
+The passport check fired on every trip that had dates. A weekend in Goa, planned from
+Bengaluru, showed a red "1 document to fix" for a passport the trip did not need. It was
+also the only check that alarmed on an *absence*: visa, insurance and permit checks all
+required a record to exist before they said anything.
+
+Two rules now govern every check:
+
+- **Silent unless the trip is known to cross a border.** The deciding fact is the trip's
+  own `origin` — already persisted, already learned opportunistically when the owner says
+  "I'll fly in from Bangalore", already falling back to the profile's home area. Origin and
+  destination are each resolved to a country through `place_country.py`, and the passport,
+  visa and IDP checks run only when the two differ. Unknown on either side is treated as
+  no border, so a geocoder outage produces silence rather than a false alarm. Citizenship
+  is deliberately not collected: it is a visa question, and `tools/visa.py` already answers
+  grounded visa questions properly.
+- **Absence warns, arithmetic blocks.** A missing passport record is now a warning worded
+  as what it actually is — "this trip leaves India, and nothing on this account records a
+  passport for this traveller, so no expiry check can run" — because crossing a border is
+  not the same as needing a passport (Schengen, India–Nepal, the UK–Ireland CTA). Only a
+  stored date that fails a comparison can raise a blocker. The toolbar badge is rose for
+  blockers and amber for warnings, so red keeps meaning "we proved something is wrong".
+
+The same rigour was applied to the other types rather than to passports alone. A dual
+national's lapsed second passport no longer raises a blocker: the latest expiry is the one
+measured. A visa naming another country is ignored entirely; a visa naming no country is
+still read, but only as a warning that says it may not be the visa that matters here. A
+licence issued by the destination country needs no International Driving Permit, and the
+IDP prompt no longer appears on domestic trips. Insurance and stored expiry dates stay
+active everywhere, because they are arithmetic over records the owner chose to keep, and
+they matter at home too. A lapsed loyalty tier is not worth a badge.

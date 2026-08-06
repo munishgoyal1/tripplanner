@@ -21,6 +21,7 @@ interface Props {
   accountLabel: string;
   onOpenAccount: () => void;
   documentBadge: string;
+  documentBadgeTone: "blocker" | "warning";
   onOpenDocuments: () => void;
 }
 
@@ -39,6 +40,7 @@ export default function DesktopToolbar({
   accountLabel,
   onOpenAccount,
   documentBadge,
+  documentBadgeTone,
   onOpenDocuments,
 }: Props) {
   return (
@@ -51,7 +53,11 @@ export default function DesktopToolbar({
           <button
             type="button"
             onClick={onOpenDocuments}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-rose-50 px-2.5 text-xs font-semibold text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100"
+            className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold ring-1 ${
+              documentBadgeTone === "blocker"
+                ? "bg-rose-50 text-rose-700 ring-rose-200 hover:bg-rose-100"
+                : "bg-amber-50 text-amber-800 ring-amber-200 hover:bg-amber-100"
+            }`}
             title="Open your travel documents for this trip"
           >
             <AlertTriangle size={13} aria-hidden /> {documentBadge}

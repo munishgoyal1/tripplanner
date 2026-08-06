@@ -118,6 +118,7 @@ export default function App() {
   ));
   const [showExport, setShowExport] = useState(false);
   const [documentBadge, setDocumentBadge] = useState("");
+  const [documentBadgeTone, setDocumentBadgeTone] = useState<"blocker" | "warning">("warning");
   const [documentsRevision, setDocumentsRevision] = useState(0);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
   const [assistantView, setAssistantView] = useState<AssistantView>("bar");
@@ -181,7 +182,10 @@ export default function App() {
   useEffect(() => {
     const controller = new AbortController();
     fetchDocumentReadiness(controller.signal)
-      .then((readiness) => setDocumentBadge(readiness.badge || ""))
+      .then((readiness) => {
+        setDocumentBadge(readiness.badge || "");
+        setDocumentBadgeTone(readiness.badge_tone === "blocker" ? "blocker" : "warning");
+      })
       .catch(() => undefined);
     return () => controller.abort();
   }, [tripVersion, documentsRevision]);
@@ -927,6 +931,7 @@ export default function App() {
           accountLabel={signedIn ? getDisplayName() || "Account" : "Guest"}
           onOpenAccount={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
           documentBadge={documentBadge}
+          documentBadgeTone={documentBadgeTone}
           onOpenDocuments={() => window.dispatchEvent(
             new CustomEvent("tripplanner:open-account", { detail: { destination: "documents" } }),
           )}

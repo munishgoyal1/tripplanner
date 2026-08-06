@@ -496,6 +496,13 @@ export default function TravelDocumentsVault() {
         </section>
       )}
 
+      {attention.length === 0 && readiness?.crosses_border === false && readiness.origin_country && (
+        <p className="mt-4 rounded-md bg-slate-50 px-2.5 py-2 text-[11px] text-slate-600">
+          This trip stays inside {readiness.origin_country}, so no passport, visa, or driving
+          permit checks apply to it.
+        </p>
+      )}
+
       {travellers.map((traveller) => {
         const owned = documents
           .filter((document) => document.traveller_key === traveller.key)
@@ -514,7 +521,7 @@ export default function TravelDocumentsVault() {
                 )}
               </div>
               {!hasPassport && (
-                <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] font-medium text-rose-700 ring-1 ring-rose-200">
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-slate-200">
                   Nothing on file
                 </span>
               )}

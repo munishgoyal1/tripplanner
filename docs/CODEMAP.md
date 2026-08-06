@@ -51,7 +51,8 @@ trip through shared API contracts.
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
 | `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
 | `src/tripplanner/web/travel_documents.py` | Traveller document field vault: allowlist, identity-number masking, and persistence. Never stores a file |
-| `src/tripplanner/web/document_readiness.py` | Deterministic passport, visa, insurance, and permit checks against the active trip |
+| `src/tripplanner/web/document_readiness.py` | Deterministic passport, visa, insurance, and permit checks against the active trip; silent unless the trip is known to cross a border |
+| `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
 | `src/tripplanner/web/document_extract.py` | Single-pass field extraction from a photo or pasted text; keeps nothing |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
