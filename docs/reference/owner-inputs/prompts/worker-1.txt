@@ -47,3 +47,7 @@ In C:\repos\tripplanner.worktrees\worker-1, complete this task cautiously.
 
 [2026-08-06 16:34] [worker-1 !] Create Second Lab17 Sandbox
 In C:\repos\tripplanner.worktrees\worker-1, create the fresh sandbox exactly with: .\scripts\sandbox\New-Sandbox.cmd lab17-canvas-2 "Lab 17 itinerary canvas: second independent sandbox" -NoSync -NoServe -NoOpen. This is explicitly owner-approved. Do not start servers, open VS Code, sync other worktrees, edit code, commit implementation, or touch existing sandbox 1-lab17-canvas. After creation, report exact branch, worktree, base commit, ports, DB, registry state, and verify both sandboxes exist and the new worktree is clean.
+
+[2026-08-06 19:32] [worker-1 !] Version Lab Handoff States
+why lab 20 doesnt have a versioned record of chosen choice and notes. already i saved a handoff with option B. Now relooking after few hrs it is hard to make whether i intentionally save dsomething or not (really speakign whether design was reviewed or not) Also make the state transitions bit more proper.
+Allow me to put it to any state anytime. After it is implemented by agent it should change state to implemented, after i save handoff / re-save a new handoff it should create a version of choices, including a record for what got implemented.

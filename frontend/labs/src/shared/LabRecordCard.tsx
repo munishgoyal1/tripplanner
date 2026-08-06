@@ -20,9 +20,7 @@ export function LabRecordCard({
   selection?: LabSelectionState;
 }) {
   const Icon = lab.icon;
-  const stateDate = state === lab.defaultDisposition && lab.defaultStateChangedAt
-    ? lab.defaultStateChangedAt
-    : selection?.stateChangedAt || selection?.updatedAt || lab.defaultStateChangedAt;
+  const stateDate = selection?.stateChangedAt || selection?.updatedAt || lab.defaultStateChangedAt;
   const stateLabel = LAB_STATUS_LABELS[state ?? lab.defaultDisposition];
   if (compact) {
     return (

@@ -9,10 +9,11 @@ import { useLabSelections } from "../shared/useLabSelections";
 
 function LabCatalog() {
   const requestedView = new URLSearchParams(window.location.search).get("view");
-  const currentView = requestedView === "active" || requestedView === "implemented-review" || requestedView === "parked" ? requestedView : "catalog";
+  const currentView = requestedView === "active" || requestedView === "implemented-review" || requestedView === "parked" || requestedView === "discarded" ? requestedView : "catalog";
   const showActive = currentView === "catalog" || currentView === "active";
   const showReview = currentView === "catalog" || currentView === "implemented-review";
   const showParked = currentView === "catalog" || currentView === "parked";
+  const showDiscarded = currentView === "catalog" || currentView === "discarded";
   const { selections, status } = useLabSelections();
 
   const labsFor = (dispositions: LabDisposition[]) => status === "loaded"
@@ -23,8 +24,9 @@ function LabCatalog() {
   const visibleLabs = labsFor(["ready"]);
   const reviewLabs = labsFor(["implemented-review"]);
   const parkedLabs = labsFor(["parked"]);
-  const title = currentView === "active" ? "UX Labs in progress" : currentView === "implemented-review" ? "Implemented UX Labs for review" : currentView === "parked" ? "Parked UX Labs" : "All Open UX Labs";
-  const subtitle = currentView === "active" ? "Open evaluations and approved handoffs still in progress." : currentView === "implemented-review" ? "Production implementations waiting for owner review and sign-off." : currentView === "parked" ? "Saved evaluations waiting for a later decision, with their handoff intact." : "Every Lab not yet completed, grouped by its authoritative lifecycle state.";
+  const discardedLabs = labsFor(["discarded"]);
+  const title = currentView === "active" ? "UX Labs in progress" : currentView === "implemented-review" ? "Implemented UX Labs for review" : currentView === "parked" ? "Parked UX Labs" : currentView === "discarded" ? "Discarded UX Labs" : "All Open UX Labs";
+  const subtitle = currentView === "active" ? "Open evaluations and approved handoffs still in progress." : currentView === "implemented-review" ? "Production implementations waiting for owner review and sign-off." : currentView === "parked" ? "Saved evaluations waiting for a later decision, with their handoff intact." : currentView === "discarded" ? "Discarded directions remain auditable and can be moved to any lifecycle state." : "Every Lab not yet completed, grouped by its authoritative lifecycle state.";
   return (
     <main className="min-h-full bg-[linear-gradient(180deg,#f8fafc_0,#fafaf9_20rem)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -74,6 +76,16 @@ function LabCatalog() {
               {parkedLabs.map((lab) => <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} compact state="parked" selection={selections[lab.id]} />)}
             </div>
           </section>}
+
+        {showDiscarded && status === "loaded" && (currentView === "discarded" || discardedLabs.length > 0) && <section className={currentView === "discarded" ? "mt-7" : "mt-10"} aria-labelledby="discarded-labs-title">
+          <div className="flex items-end justify-between gap-4">
+            <div><p className="text-[10px] font-bold uppercase text-slate-500">Preserved history</p><h2 id="discarded-labs-title" className="mt-0.5 text-lg font-semibold text-ink">Discarded experiments</h2></div>
+            <span className="text-xs text-slate-400">{discardedLabs.length} discarded</span>
+          </div>
+          <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
+            {discardedLabs.map((lab) => <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} compact state="discarded" selection={selections[lab.id]} />)}
+          </div>
+        </section>}
       </div>
     </main>
   );

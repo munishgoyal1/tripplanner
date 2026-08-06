@@ -1,7 +1,7 @@
-import { Archive, ArrowLeft, FlaskConical, ListChecks, PauseCircle, ScanSearch } from "lucide-react";
+import { Archive, ArrowLeft, FlaskConical, ListChecks, PauseCircle, ScanSearch, Trash2 } from "lucide-react";
 import { allLabs } from "./labRecords";
 
-type LabSection = "catalog" | "active" | "implemented-review" | "parked" | "completed";
+type LabSection = "catalog" | "active" | "implemented-review" | "parked" | "discarded" | "completed";
 
 type LabNavigationProps =
   | { current?: LabSection; detail?: false; labId?: never }
@@ -29,6 +29,7 @@ export function LabNavigation({ current = "active", detail = false, labId }: Lab
     { id: "active", label: "In progress", href: "./catalog.html?view=active", icon: ListChecks },
     { id: "implemented-review", label: "Implemented review", href: "./catalog.html?view=implemented-review", icon: ScanSearch },
     { id: "parked", label: "Parked", href: "./catalog.html?view=parked", icon: PauseCircle },
+    { id: "discarded", label: "Discarded", href: "./catalog.html?view=discarded", icon: Trash2 },
     { id: "completed", label: "Completed", href: "./completed-labs.html", icon: Archive },
   ] as const;
 
