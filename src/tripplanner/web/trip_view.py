@@ -120,7 +120,6 @@ _RESTAURANT_ALIASES = {"restaurant", "meal", "food", "dining", "cafe", "eatery"}
 # tells us which city the stops that follow belong to when no structured city exists.
 _TRANSPORT_KINDS = {"flight", "transport", "train", "bus", "car", "drive", "taxi", "ferry", "cab"}
 _TRANSPORT_PREFIXES = {"flight", "drive", "train", "bus", "cab", "taxi", "ferry", "car"}
-_ROUTE_RE = re.compile(r":\s*.+\bto\b\s+(.+)$", re.I)
 
 
 # ---------------------------------------------------------------------------
@@ -392,10 +391,10 @@ def _is_transport_stop(name: str, kind: str) -> bool:
 
 def _arrival_city(name: str) -> str:
     """Extract the arrival city from a transport leg name ("... to <City>")."""
-    match = _ROUTE_RE.search(name or "")
-    if not match:
+    endpoints = _transport_route_endpoints(name)
+    if not endpoints:
         return ""
-    return re.split(r"[(\[]", match.group(1))[0].strip().strip(".,").strip()
+    return re.split(r"[(\[]", endpoints[1])[0].strip().strip(".,").strip()
 
 
 def _derive_route_cities(trip: dict[str, Any]) -> dict[str, str]:
