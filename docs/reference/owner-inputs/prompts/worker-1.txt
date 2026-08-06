@@ -1,7 +1,20 @@
-# Owner prompts executed in the Agent 1 - Iti-Map lane.
+# Owner prompts executed in the Agent 1 - SmallFixes lane.
 # Tail-appended, newest at the bottom. Only this lane writes this file.
 # Format: [YYYY-MM-DD HH:MM] [worker-1] [!] <short title> / verbatim prompt / blank line.
 # See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
 
 [2026-08-06 00:00] [worker-1 !] Fix Destination City Filters
 why are the cities filters not showing on the destination guide in madhya pradesh trip case. it is a bug , sometimes it shows sometimes not
+
+[2026-08-06 00:00] [worker-1 !] Rename Agent To SmallFixes
+ranem this agent as from Iti-Map to SmallFixes
+
+[2026-08-06 00:00] [worker-1 !] Validate Publish Agent Rename
+In C:\repos\tripplanner.worktrees\worker-1, validate and publish the Agent 1 label rename. Requirements:
+1. `tripplanner-worker-1.code-workspace` parses as JSON and its folder name/window title say `Agent 1 - SmallFixes`.
+2. `scripts/open-agent-windows.ps1` parses with the PowerShell parser and its worker-1 display Name is `Agent 1 - SmallFixes`.
+3. Current workflow references in `.github/copilot-instructions.md`, `docs/development/dev.md`, `docs/development/parallel-agent-development.md`, `docs/reference/owner-inputs/prompts/README.md`, and the header of `docs/reference/owner-inputs/prompts/worker-1.txt` say SmallFixes. The worker log's newest entry must contain the latest owner prompt verbatim at the bottom.
+4. Stable identifiers remain unchanged: `worker-1`, `agents/worker-1`, and `tripplanner-worker-1.code-workspace` filename/references.
+5. Historical references under agent proposals and `docs/reference/history/requirements-log.txt` may retain Iti-Map. No active/current reference outside those historical records should retain Iti-Map.
+6. Git status must contain exactly the seven edited files from this task; run `git diff --check`.
+If all checks pass, stage exactly those seven files, commit `Rename Agent 1 to SmallFixes`, push the current branch to configured upstream, and report validation, commit SHA, push result, divergence, and final porcelain. Do not modify content or touch master. Stop before commit if any check fails.

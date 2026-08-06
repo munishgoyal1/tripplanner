@@ -19,7 +19,7 @@ feature or Lab.
 The default workflow uses this single primary workspace directly on `master`.
 Only when the owner explicitly requests parallel development, use:
 
-- `tripplanner-worker-1.code-workspace` - Agent 1 - Iti-Map on `agents/worker-1`
+- `tripplanner-worker-1.code-workspace` - Agent 1 - SmallFixes on `agents/worker-1`
 - `tripplanner-integration.code-workspace` - MasterAgent Review & Integration on `master`
 
 Agent 2 - UXlabs on `agents/worker-2` remains available through
