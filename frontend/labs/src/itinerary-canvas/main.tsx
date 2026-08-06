@@ -17,18 +17,18 @@ const LAB_ID = "itinerary-canvas";
 
 const variants: Array<{ id: ItineraryOption; label: string; summary: string; delta: string }> = [
   {
-    id: "spine",
-    label: "A · Journey spine",
-    summary:
-      "One continuous time rail carries the whole trip. Travel legs sit on the line between stops, so the day reads as a single movement instead of a stack of rows.",
-    delta: "Best for feeling the shape of a day; the rail costs about 5rem of horizontal space.",
-  },
-  {
     id: "cards",
     label: "B · Layered stop cards",
     summary:
       "Each stop is a calm card. Time, name, and booking status are the only always-loud facts; costs, hours and ratings sit in one quiet chip row, and long notes open in place.",
     delta: "Highest scan speed. Notes and tips are one click away rather than always printed.",
+  },
+  {
+    id: "spine",
+    label: "A · Journey spine",
+    summary:
+      "One continuous time rail carries the whole trip. Travel legs sit on the line between stops, so the day reads as a single movement instead of a stack of rows.",
+    delta: "Best for feeling the shape of a day; the rail costs about 5rem of horizontal space.",
   },
   {
     id: "editorial",

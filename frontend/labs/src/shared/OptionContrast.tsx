@@ -15,6 +15,8 @@ interface ContrastDefinition {
   /** The single sentence naming what the options genuinely disagree about. */
   axis: string;
   rows: ContrastRow[];
+  /** Plain prose saying why the ranking lands where it does, in one paragraph. */
+  verdict: string;
   /** What every option holds identical, so the table above is the whole difference. */
   same: string;
   /** Option label that was selected, for Labs that are already decided. */
@@ -52,6 +54,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "The retention rule, the Lisbon fixture and its travellers, and every deterministic check.",
+    verdict:
+      "B wins because it splits the problem the way your life already splits it: a passport belongs to a person and outlives every trip, while a booking reference belongs to one trip and dies with it. A puts both inside the trip, which is easier to explain but spends the Details pane and turns a planner into a document manager. C is the only option that solves batch intake, and it pays for that with a second queue that goes stale and a trip that looks ready while unsorted paper sits behind it. Take B, and borrow C's drop-anything intake later if attachments ever arrive six at a time.",
   },
   "agentic-planning": {
     axis:
@@ -83,6 +87,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "The trip data model, the agent's phases and tools, and the verdict every channel receives.",
+    verdict:
+      "B wins because it sorts edits by how much damage they can do instead of treating every edit as equally dangerous, so routine changes stay fast and the destructive class becomes impossible. A is safer on paper and is the right answer while you still distrust the agent, but it charges an approval for the many changes that were never risky. C gives the best long-term audit trail and earns its 20rem rail only on a trip you keep arguing with for weeks. Start at B; C's ledger can be added behind it if history turns out to be the thing you miss.",
   },
   "map-canvas": {
     axis:
@@ -114,6 +120,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Google Maps behaviour, provider search, geocoding, and every trip mutation.",
+    verdict:
+      "B wins because it turns the map from something you look at into somewhere you arrange a day, and the bottom dock is the only place a route timeline can sit without covering pins. A gives the most geography per pixel and is better if you only ever read the map, but its floating cards start hiding the markers they describe as soon as the pane narrows. C is the smallest and safest change, fixes the clutter, and adds no capability whatsoever. Pay B's 7rem to get sequence planning on the canvas; fall back to C only if the dock proves too tall in practice.",
   },
   "itinerary-canvas": {
     axis:
@@ -145,6 +153,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "All 31 facts, the 20-stop fixture, and the 16-minute ferry conflict staying visible without a click.",
+    verdict:
+      "B wins on the job you do most often: finding one stop inside a twenty-stop trip. Keeping only time, name and booking status loud, and demoting the rest to a chip row, is what makes a long day scan rather than read. A is the only option that makes travel time between stops feel real, which matters if that is what you keep getting wrong, but it spends 5rem of width on a rail that never holds a fact. C is the most pleasant end-to-end read and the worst for hunting, because every stop is compressed into one dense meta line. Choose B; the spine's travel legs can be folded into it later.",
   },
   "chat-agent-workspace": {
     axis:
@@ -176,6 +186,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Itinerary, Map and Details content, the fixture trip, the agent's tools, and the SSE contract.",
+    verdict:
+      "C wins because it answers the question you ask after every agent turn - what exactly did that change - by binding each turn to the stops it touched. B costs nothing while you are silent and is right if the Assistant is an occasional question, but the conversation can never sit beside the map. A never has to be reopened and charges 22rem of workspace width for that, used or not. Take C and accept Details becoming an on-demand overlay; take B instead if you would rather give up the trail than the rail.",
   },
   "intercity-map": {
     axis:
@@ -207,6 +219,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Itinerary timing, hotel endpoints, route facts, place order, and provider routing.",
+    verdict:
+      "A wins because a day that moves between cities is one journey, and only A draws it as one: both circuits and the leg between them stay real geometry, in itinerary order. C keeps that same honesty and lets you choose the scale, which is genuinely better on some days, but it buys the choice with two more permanent map controls. B keeps the destination city at a comfortable zoom and pays by never showing the origin circuit or the terminals as geometry at all. Ship A; add C's layer toggles if the combined frame turns out to be too small too often.",
   },
   "multi-city-itinerary": {
     axis:
@@ -238,6 +252,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Every event, every stop fact, and the order they occur in.",
+    verdict:
+      "A wins because a transition day is judged on whether the sequence is right - checkout, travel, arrival, check-in - and the chronological chain is the only one you can audit step by step. B makes the change of base the loudest thing on the day, which reads better if hotels are where these days go wrong for you, but it turns everything else into context. C is the clearest about changing city and the weakest about continuity, because it cuts one day into three blocks. A was implemented for exactly that reason: order is the thing that has to survive.",
   },
   "destination-guide": {
     axis:
@@ -269,6 +285,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Place data, ratings, review counts, and the trip fixture behind them.",
+    verdict:
+      "A wins because browsing almost always starts from a stop you are already questioning, and it keeps you there while offering same-type alternatives. C can find anything and puts the widest coverage on screen, but only once you know what to ask for. B is the most predictable structure and the most awkward the moment you want to compare across cities. A was implemented with search added, which folds C's one real advantage into A's context.",
   },
   "account-settings": {
     axis:
@@ -300,6 +318,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Which settings exist, and what each one does.",
+    verdict:
+      "A wins because the settings list is small, and one door means no destination is ever reachable two ways. B is the more scalable arrangement and the right move once preferences outgrow identity, but until then it makes you remember which of two icons holds a thing. C has the most room to grow and charges a full sheet for flipping one toggle. Take A now and treat B as the upgrade path rather than a competitor.",
   },
   "shell-visual-refresh": {
     axis:
@@ -332,6 +352,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Which surfaces the bar exposes and what each one opens.",
+    verdict:
+      "A wins because a command bar is glanced at, not studied: an icon plus a word is unambiguous the first time and still fast the hundredth. B is narrower and leaves more room for the workspace, but the meaning moves into hover, which does not exist on touch. C cannot be misread and scans slowest, because text without shape gives the eye nothing to aim at. A was selected and applied to the desktop top command bar only.",
   },
   "workspace-command-bar": {
     axis:
@@ -364,6 +386,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Which panes exist, and the pane-local Hide and Maximize controls.",
+    verdict:
+      "A wins because pane visibility is toggled many times a day, and a direct switch is the shortest path on every one of those times. B reads the whole layout as one legible state, which is the nicer mental model, and makes changing a single pane less direct than it should be. C gives the calmest top row and puts a menu in front of every change. A was selected, leaving the pane-local controls untouched.",
   },
   "trip-snapshot-hierarchy": {
     axis:
@@ -396,6 +420,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Which trip facts are available to show.",
+    verdict:
+      "B wins because the header's job is to say what still needs attention, not only to print numbers. A scans fastest once you already know what every figure means, and leaves no room for that guidance. C protects the most itinerary space by hiding constraints behind a click, which is the one thing a header must never do. B was selected, with the duplicated Trip fit block removed.",
   },
   "map-controls": {
     axis:
@@ -428,6 +454,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Which map commands exist and what route facts they can show.",
+    verdict:
+      "A wins because route evidence is checked constantly, and standing evidence beats summoned evidence for anything you look at that often. B gives the most map whenever the commands are idle, and a gesture every time they are not. C is the best way to compare days and timing, and moves the commands away from the top edge to get it. A was selected, changing only the Map command hierarchy.",
   },
   "pane-control-polish": {
     axis:
@@ -460,6 +488,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "The two commands themselves and what they do.",
+    verdict:
+      "B wins because Hide and Maximize are learned in a day and then used constantly, so the header should carry them quietly rather than announce them. A never has to be learned and repeats its width in every pane header, forever. C is the quietest of the three and charges an extra click for a command you use all the time. B was selected and applied to the Itinerary, Map and Details pane headers.",
   },
   "itinerary-trip-book": {
     axis:
@@ -491,6 +521,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Every operational fact, and the complete appendix behind all three.",
+    verdict:
+      "B wins because a printed packet gets asked two kinds of question - what now, and is this actually booked - and the layered book is the only one that answers both, for four pages more than the binder. A is the least to carry and the fastest to reprint, with almost nothing around the facts to reassure you. C is the one you would keep afterwards and the most to print. Take B; A is right only if the packet is purely operational.",
   },
   "itinerary-density": {
     axis:
@@ -523,6 +555,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Every production detail on a stop, and exact endpoint behaviour.",
+    verdict:
+      "B wins because the problem was repetition, not detail: two identical hotel endpoints a day were spending rows to repeat something the day already knew. A keeps every row and therefore keeps the problem. C is the calmest default and makes booking and route facts wait for a selection. B was implemented, adapted so production detail and exact endpoint behaviour survived the consolidation.",
   },
   "chat-assistant-overlay": {
     axis:
@@ -555,6 +589,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "The mounted conversation, its history, and its continuity across opens.",
+    verdict:
+      "B wins because most Assistant use is a short follow-up asked while you are comparing the map, and a corner sheet leaves that comparison on screen. A has the most room for a long transcript and covers Details for as long as it stays open. C protects the three panes best and makes finished planning recede immediately. B was selected, preserving the mounted conversation and a usable workspace.",
   },
   "itinerary-row-design": {
     axis:
@@ -587,6 +623,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "Every fact on every stop.",
+    verdict:
+      "B wins on density: time-first rows put the most stops on screen legibly, which is what matters once you know the trip and are hunting for one row. C is the clearest for a first read and shows the fewest stops at a time. A makes the movement between places explicit, and lets transport compete with the stops for attention. B was selected, paired with the Compact Brief summary above it.",
   },
   "itinerary-summary-design": {
     axis:
@@ -619,6 +657,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "The narrative, the journey line, and the readiness facts.",
+    verdict:
+      "C wins because all three say the same things about a day, so the only live question is what that costs in vertical space above the agenda. B keeps story and logistics in a comfortable order and is still a tall header on every single day. A gives the strongest sense of the day's character and delays the first stop the longest. C was selected, with explicit travel rhythm, day plan and booking readiness.",
   },
   "workspace-shell": {
     axis:
@@ -651,6 +691,8 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
     ],
     same: "The four surfaces themselves and what each one is responsible for.",
+    verdict:
+      "C wins because the four surfaces are used together rather than in turns, and it is the only layout where none of them has to be switched to. A keeps geography permanent and demotes the plan to a support lane. B leads with the plan at full width and stops the map being a working surface. C was chosen: itinerary left, dominant map centre, details right, Assistant lower-right.",
   },
 };
 
@@ -723,6 +765,10 @@ export function OptionContrast({ labId }: { labId: string }) {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="border-t border-slate-100 px-4 py-3">
+        <p className="text-[10px] font-bold uppercase text-brand">Reading the three against each other</p>
+        <p className="mt-1 max-w-4xl text-xs leading-relaxed text-slate-600">{contrast.verdict}</p>
       </div>
       <p className="border-t border-slate-100 bg-slate-50/60 px-4 py-2.5 text-xs leading-relaxed text-slate-600">
         <span className="font-semibold text-ink">Identical in every option:</span> {contrast.same} If it is not in the

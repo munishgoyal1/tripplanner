@@ -9,12 +9,12 @@ export interface Variant {
 
 export const variants: Variant[] = [
   {
-    id: "conversation-dock",
-    label: "A · Conversation dock",
+    id: "turn-thread",
+    label: "C · Turn thread",
     summary:
-      "The Assistant becomes a permanent full-height left column beside Itinerary, Map, and Details. It never overlaps the plan and never has to be reopened.",
+      "The Assistant takes the right rail as a thread of turn cards. Each card carries its own timing, tools, and the exact stops it changed. Details opens over the Map on demand.",
     delta:
-      "The Assistant is a fourth resident column that permanently costs about 22rem of workspace width. Unlike B it is never dismissed, and unlike C it does not displace Details.",
+      "Every turn is a card that links to the stops it changed, and Details loses its permanent rail to an on-demand overlay. Unlike A the conversation replaces a panel rather than adding one, and unlike B it stays visible while you work the map.",
   },
   {
     id: "focus-composer",
@@ -25,12 +25,12 @@ export const variants: Variant[] = [
       "The resting Assistant is a 4rem input strip with zero column cost, and the transcript is a temporary reading sheet over the workspace. Unlike A nothing is permanently reserved, and unlike C the conversation is never side by side with the map.",
   },
   {
-    id: "turn-thread",
-    label: "C · Turn thread",
+    id: "conversation-dock",
+    label: "A · Conversation dock",
     summary:
-      "The Assistant takes the right rail as a thread of turn cards. Each card carries its own timing, tools, and the exact stops it changed. Details opens over the Map on demand.",
+      "The Assistant becomes a permanent full-height left column beside Itinerary, Map, and Details. It never overlaps the plan and never has to be reopened.",
     delta:
-      "Every turn is a card that links to the stops it changed, and Details loses its permanent rail to an on-demand overlay. Unlike A the conversation replaces a panel rather than adding one, and unlike B it stays visible while you work the map.",
+      "The Assistant is a fourth resident column that permanently costs about 22rem of workspace width. Unlike B it is never dismissed, and unlike C it does not displace Details.",
   },
 ];
 

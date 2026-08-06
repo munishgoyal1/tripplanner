@@ -15,20 +15,20 @@ const LAB_ID = "travel-documents";
 
 const variants: Array<{ id: DocumentsOption; label: string; summary: string; delta: string }> = [
   {
-    id: "readiness",
-    label: "A · Trip readiness rail",
-    summary:
-      "The trip's third pane becomes Readiness. Blockers first, then every traveller with what is on file, then the checks that already pass. You add a document from the row that is missing it, and review it in place without leaving the trip.",
-    delta:
-      "The trip owns the whole subject. One place to look, nothing to manage elsewhere — at the cost of the Details pane, which is where you decide about the place you are looking at.",
-  },
-  {
     id: "vault",
     label: "B · Account vault, trip shows gaps",
     summary:
       "Traveller details live permanently in Account, because they outlive any trip. The trip carries one honest badge — two documents to fix — that opens the vault focused on this trip's gaps. Details stays where it was.",
     delta:
       "Two homes matched to two lifetimes: a passport is yours, a booking reference is the trip's. The trip never turns into a document manager, but the answer is one click away instead of already on screen.",
+  },
+  {
+    id: "readiness",
+    label: "A · Trip readiness rail",
+    summary:
+      "The trip's third pane becomes Readiness. Blockers first, then every traveller with what is on file, then the checks that already pass. You add a document from the row that is missing it, and review it in place without leaving the trip.",
+    delta:
+      "The trip owns the whole subject. One place to look, nothing to manage elsewhere — at the cost of the Details pane, which is where you decide about the place you are looking at.",
   },
   {
     id: "inbox",

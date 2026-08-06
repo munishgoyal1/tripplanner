@@ -57,7 +57,11 @@ it buys, what it costs, and when to choose it - and closes by naming what is
 identical in all of them. Every option carries a 0-100 fit score and the rows
 render best first, so the recommendation is an ordering rather than a sentence.
 The score ranks only the options within one Lab. Option letters stay fixed
-because decision records refer to them; ranking never renames an option.
+because decision records refer to them; ranking never renames an option. In a
+Lab that is still open, list the option cards themselves in the same descending
+order, so the page and the table agree; a decided Lab keeps its recorded order.
+Close the block with one plain-prose paragraph reading the three options against
+each other and saying why the ranking lands where it does.
 Content lives in `frontend/labs/src/shared/OptionContrast.tsx`, keyed by Lab id,
 so a new Lab adds one record and renders `<OptionContrast labId={LAB_ID} />`.
 

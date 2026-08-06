@@ -26,8 +26,8 @@ type Variant = "binder" | "layered" | "visual";
 type Section = "contents" | "overview" | "day" | "documents" | "guide";
 
 const variants: Array<{ id: Variant; label: string; note: string; pages: number }> = [
-  { id: "binder", label: "A · Operations binder", note: "Dense, checklist-led, and optimized for the shortest printable packet.", pages: 14 },
   { id: "layered", label: "B · Layered Trip Book", note: "Recommended: quick trip control, executable day spreads, then evidence and documents.", pages: 18 },
+  { id: "binder", label: "A · Operations binder", note: "Dense, checklist-led, and optimized for the shortest printable packet.", pages: 14 },
   { id: "visual", label: "C · Visual journey book", note: "More photography and destination context while retaining the complete operational appendix.", pages: 24 },
 ];
 
