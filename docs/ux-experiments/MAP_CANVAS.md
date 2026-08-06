@@ -8,7 +8,7 @@
 - Date ended: pending
 - Status: In evaluation
 - Lab: `http://127.0.0.1:5175/lab-18-map-canvas.html`
-- Full-size preview: append `?preview=deck`, `?preview=dock`, or `?preview=ribbon`
+- Full-size preview: append `?preview=deck`, `?preview=dock`, `?preview=ribbon`, or `?preview=compose`
 
 ## Hypothesis
 
@@ -35,6 +35,33 @@ carry the day's sequence, which is the one thing a map is uniquely good at showi
 - **C · Command ribbon.** Today's three stacked rows collapse into one command row plus a
   single day-coloured fact ribbon, and the map takes everything below. *Exact delta:* the
   smallest change from today and the safest to ship; adds no new capability.
+- **D · Search-first dock.** B's bottom dock without the resident stop list. A real search
+  field lives in the dock at all times; type and target day appear only once a place is
+  resolved; tapping a dashed pin — a place not yet in the trip — writes its name into that
+  same field. The route timeline moves behind a *Sequence* toggle. *Exact delta:* keeps B's
+  bottom placement without duplicating the itinerary, and makes the add affordance state its
+  own behaviour.
+
+### Open questions D answers
+
+Raised by the owner after reviewing B, and unresolved by A, B or C:
+
+1. **B's route timeline repeats the itinerary and eats the dock.** D drops it from the
+   resting state and puts it behind a *Sequence* toggle in the same dock. The strip is
+   identical when opened, so a sandbox round can settle whether it earns its space —
+   especially when the map is maximised and the itinerary is not on screen.
+2. **A button labelled *Add a place* does not say you can type into it.** The owner is
+   right. That pill reads as *open a form* or *add something now*. D replaces it with a
+   control that already looks like a search box — magnifier, placeholder, live results — so
+   the affordance states its behaviour instead of promising it.
+3. **A place picked on the map must feed the same composer, not a parallel one.** In D the
+   dashed pins are places not yet in the trip; tapping one fills the search field and
+   reveals type, day and Add. Typing and tapping become two ways to fill one control, so
+   there is only ever one add flow to learn.
+
+None of this is settled by the Lab. D exists so the bottom-bar placement can be kept while
+the duplication and the add affordance are argued separately, and so the sandbox round has
+something concrete to iterate on.
 
 Each option is comparable against a *Compare with today* toggle, and a *Failure state*
 toggle renders the load-failure message with its Retry affordance in any option.
@@ -43,13 +70,16 @@ toggle renders the load-failure message with its Retry affordance in any option.
 
 1. Day scope keeps *All days* plus every day, each in its own route colour.
 2. Adding a place keeps all three inputs — free-text search, optional type, and target day
-   including *Best day* — plus the Add action.
+   including *Best day* — plus the Add action. An option may reveal them progressively, but
+   none may be dropped.
 3. The day context line keeps the day label, schedule duration, start and end with the
    `est.` marker, and route-only travel duration, distance and mode.
 4. A selected pin keeps its photo, name, rating, address and *Open details*, plus move-day
    and remove for planned stops or day select and *Add to trip* for new ones.
 5. Route colour and numbered markers keep matching the itinerary pane exactly.
 6. The load-failure state keeps its message and Retry affordance.
+7. An affordance must describe what it does: a control that accepts typing must look like it
+   accepts typing.
 
 ## Scope
 
@@ -79,20 +109,27 @@ geographic sense" before it answers anything else.
 4. Toggle the failure state in each option and confirm the message and Retry stay usable.
 5. Narrow the window until Map is the secondary pane and repeat steps 1 and 2.
 6. Compare a pin's colour and number against the same stop in the itinerary pane.
+7. In D, add a place by typing *market*, then clear it and add the same place by tapping its
+   dashed pin; both should land in the same composer in the same state.
+8. In D, toggle *Sequence* on and off with the itinerary visible, then again with the map
+   maximised, and judge whether the strip is worth its space in either case.
 
 ## Scorecard (1-5)
 
-| Criterion | A · Deck | B · Dock | C · Ribbon |
-| --- | --- | --- | --- |
-| Map surface | | | |
-| Time to add a stop | | | |
-| Day comprehension | | | |
-| Itinerary agreement | | | |
-| Narrow-pane survival | | | |
+| Criterion | A · Deck | B · Dock | C · Ribbon | D · Composer |
+| --- | --- | --- | --- | --- |
+| Map surface | | | | |
+| Time to add a stop | | | | |
+| Add affordance clarity | | | | |
+| Day comprehension | | | | |
+| Itinerary agreement | | | | |
+| Duplication with the itinerary | | | | |
+| Narrow-pane survival | | | | |
 
 ## Decision
 
-- Decision: pending owner selection.
+- Decision: pending owner selection. The bottom-bar placement from B is provisionally
+  preferred; whether the route timeline stays resident is deferred to a sandbox round.
 - Implementation: not started; no production code changed by this Lab.
 - Rationale: pending.
 - Next action: owner selects an option in the Lab; the selection is then promoted with its
