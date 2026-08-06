@@ -173,9 +173,13 @@ On macOS, reopen them with:
 ```
 
 MasterAgent owns local stack startup. Start the application from the primary
-checkout with `scripts/user/Run-Latest.cmd` on Windows or
-`pwsh -File scripts/dev/dev-spa.ps1` on macOS; workers use server-free
-validation unless the owner explicitly assigns stack lifecycle work.
+checkout with `scripts/user/Run-Latest.cmd` on Windows. The macOS setup,
+dependency, build/test, and four-agent paths are available, but the full local
+`dev-spa.ps1` lifecycle is not yet qualified because Windows-specific process
+and npm hooks remain. Use direct Python/npm commands or the hosted canary for
+Mac integration testing until that workflow has a passing Mac host smoke.
+Workers use server-free validation unless the owner explicitly assigns stack
+lifecycle work.
 
 ## Recovery
 

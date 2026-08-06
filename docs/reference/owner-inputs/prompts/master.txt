@@ -14,3 +14,7 @@ how to setup entire dev environment as it is including vscode and github copilot
 
 [2026-08-06 18:33] [master] ! Add Mac environment setup
 how about setting up Mac
+
+[2026-08-06 18:44] [master] ! Define cross-platform support policy
+So will this repository work both either on Mac or a windows ? Everything here is setup to work on either platforms ? 
+And I am nto sure which environment will be my dominant one, but will you continue to maintain for both for any changes ? That might be an overhead - what is the standrard practice, one thing to think is different team memebrs could be on mac or windows 

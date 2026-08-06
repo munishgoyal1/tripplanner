@@ -54,6 +54,12 @@ not override the canonical documents above, which govern current behavior.
   server-free validation by default.
 - Validate once per coherent milestone unless a focused mid-edit check is needed.
   Always commit and push completed changes; do not leave unpushed milestones.
+- Preserve Windows and macOS support for core development: setup, dependency
+  restore, VS Code/Copilot configuration, build, test, lint, and persistent
+  worktrees. Prefer shared PowerShell 7, Python, Node.js, and Docker engines with
+  thin platform-specific launchers. Do not duplicate every convenience wrapper
+  or claim platform parity without a host-level check; document unverified or
+  intentionally platform-specific operational workflows explicitly.
 - Never revert unrelated owner or agent work. Work with relevant concurrent edits
   and ignore unrelated ones.
 - Do not add docstrings, type hints, or comments to code you did not otherwise touch.

@@ -14,6 +14,36 @@ for manual testing. Workers 1, 2, and 3 must ask the owner before changing the l
 stack lifecycle. The owner only refreshes the browser when ready to test a
 feature or Lab.
 
+## Platform support policy
+
+Tripplanner supports Windows and macOS for core application development. Core
+means machine setup, dependency restore, VS Code and Copilot configuration,
+Python/frontend/mobile build and test commands, and the persistent MasterAgent
+plus three-worker layout. Application code and shared developer engines should
+remain platform-neutral.
+
+Support is evidence-based rather than assumed:
+
+| Workflow | Windows | macOS |
+| --- | --- | --- |
+| Setup, dependencies, VS Code/Copilot | Verified | Installer and configuration available; host smoke pending |
+| Python, frontend, and mobile build/test | Verified | Supported through standard Python/npm commands; host smoke pending |
+| Four agent worktrees and windows | Verified | Setup and launchers available; host smoke pending |
+| Full `dev-spa.ps1` local stack | Verified | Not yet qualified; Windows process and `npm.cmd` hooks remain |
+| Sandbox lifecycle and `.cmd` convenience launchers | Verified | Not currently supported |
+| iOS simulator/build tooling | Not available | macOS/Xcode only |
+| Azure release scripts | Verified release environment | PowerShell may run, but macOS release is not qualified |
+
+The maintenance rule is not “duplicate every script.” Prefer one
+cross-platform PowerShell 7, Python, Node.js, or Docker implementation and add
+small `.cmd` or `.command` entry points only where the operating system needs
+one. A change to a core workflow must preserve both platforms or explicitly
+update this matrix and provide a fallback. Platform-specific capabilities such
+as Xcode and Windows process management remain scoped to their native platform.
+
+Linux remains the container and CI runtime, not a supported interactive
+developer workstation.
+
 ## Optional parallel coding windows
 
 The default workflow uses this single primary workspace directly on `master`.
