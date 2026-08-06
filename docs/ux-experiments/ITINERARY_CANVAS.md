@@ -95,8 +95,27 @@ else is reference material that should be available in one gesture and silent un
 
 ## Decision
 
-- Decision: pending owner selection.
-- Implementation: not started; no production code changed by this Lab.
-- Rationale: pending.
-- Next action: owner selects an option in the Lab; the selection is then promoted with its
-  defining interaction behavior intact, not only its visual shell.
+- Decision: Option B · Layered stop cards, built in a sandbox for hands-on judgement. The
+  Lab still records the owner selection as pending; B was the recommended starting point
+  and scored 87/100 against A (74) and C (68) in the cross-lab contrast.
+- Implementation: in sandbox `sbx-1-lab17-canvas` (branch `sandbox/1-lab17-canvas`),
+  awaiting owner inspection. Production code touched:
+  `frontend/src/components/ItineraryStopRow.tsx` (each stop is now a card; time, name and
+  booking state are the only always-loud facts; timing label, kind, visit or transfer
+  duration and the leave time moved into one quiet meta line; cost, opening hours, rating
+  and must-visit score stay in the chip row; notes and insights open in place behind
+  *Notes & tips*; map and remove reveal on hover from `sm` upward and stay visible on
+  touch widths) and `frontend/src/components/ItineraryPanel.tsx` (the day's stop list is a
+  spaced list on `surface` instead of divided rows, and the transition-day rail is gone
+  because the cards no longer share a time gutter).
+- Facts preserved: every stop, day and trip fact listed above still renders. Concerns are
+  never collapsed, the estimated-time marker, travel detail, estimated arrival and the
+  buffer or conflict still print above the card, and no new colour was introduced.
+- Not carried over: the Lab's flat sticky day header. The production day card keeps its
+  labelled meta block (`Schedule duration:`, `Day's travel:`, `Travel rhythm:`) because
+  that is shared by all three options rather than what distinguishes B, and it is covered
+  by existing tests. It can follow in the same sandbox if the owner wants it.
+- Rationale: the pane reads at a glance — what is happening, what is at risk, what still
+  needs booking — while long-form guidance stays one click away instead of always printed.
+- Next action: owner runs `.\scripts\sandbox\Run-Sandbox.cmd 1`, inspects the itinerary
+  pane (including at about 20 rem wide), then promotes or discards the sandbox.

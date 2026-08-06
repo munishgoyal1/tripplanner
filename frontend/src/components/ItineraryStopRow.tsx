@@ -1,4 +1,4 @@
-import { CalendarCheck2, Check, Loader2, MapPin, Route, Trash2 } from "lucide-react";
+import { CalendarCheck2, Check, ChevronDown, Loader2, MapPin, Route, Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { ItineraryStop } from "../types";
 import { isIntercityTravel } from "./map/routeDerivations";
@@ -104,6 +104,7 @@ export default function ItineraryStopRow({
   const routeFocusable = isIntercityTravel(stop.kind, stop.name);
   const removable = !!onRemove && ["attraction", "activity", "meal", "restaurant"].includes(stop.kind);
   const [removing, setRemoving] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const circuitTimingNotes = new Set(["start from your stay", "return to your stay"]);
   const insightTexts = uniqueDetailTexts(stop.insight);
   const insightKeys = new Set(insightTexts.map((text) => text.toLowerCase()));
@@ -127,6 +128,17 @@ export default function ItineraryStopRow({
               ? `Depart from ${driveOrigin}`
               : "Travel"
             : "Arrive"));
+  const durationText = stop.operational_time_display
+    ? stop.operational_time_display
+    : stop.kind !== "hotel" && stop.duration_min
+      ? `${durationLabel(stop.duration_min)} ${
+        stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"
+      }${stop.duration_estimated ? " est." : ""}`
+      : null;
+  const departureText = stop.departure_time
+    ? `${stop.kind === "flight" ? "Arrive" : stop.kind === "transport" ? "Ends" : "Leave"} ${stop.departure_time}`
+    : null;
+  const hasNotes = noteTexts.length > 0 || (!circuitReturn && insightTexts.length > 0);
   const handleRowClick = () => {
     if (focusable) {
       onFocus();
@@ -140,45 +152,14 @@ export default function ItineraryStopRow({
       data-stop-index={stopIndex}
       data-stop-indexes={(representedStopIndexes || [stopIndex]).join(",")}
       onClick={handleRowClick}
-      className={`group grid grid-cols-[3.75rem_minmax(0,1fr)] gap-2 px-1 py-1.5 transition ${
-        jumpActive
-          ? "bg-amber-50 ring-2 ring-amber-300"
-          : active
-            ? "bg-brand/5 ring-1 ring-brand/20"
-            : focusable
-              ? "cursor-pointer hover:bg-slate-50"
-              : "hover:bg-slate-50"
-                  }`}
+      className="group"
     >
-      <div className="pt-0.5 text-left">
-        <p className="text-[10px] font-bold uppercase text-slate-400">{timingLabel}</p>
-        {stop.time && (
-          <p className="text-xs font-bold tabular-nums text-ink">
-            {stop.time}{stop.time_estimated ? " est." : ""}
-          </p>
-        )}
-        {stop.operational_time_display ? (
-          <p className="mt-0.5 text-[10px] leading-tight text-slate-500">
-            {stop.operational_time_display}
-          </p>
-        ) : stop.kind !== "hotel" && stop.duration_min ? (
-          <p className="mt-0.5 text-[10px] text-slate-500">
-            {durationLabel(stop.duration_min)} {stop.kind === "flight" ? "flight" : stop.kind === "transport" ? "transfer" : "visit"}
-            {stop.duration_estimated ? " est." : ""}
-          </p>
-        ) : null}
-        {stop.departure_time && (
-          <p className="mt-0.5 text-[10px] font-medium tabular-nums text-slate-600">
-            {stop.kind === "flight" ? "Arrive" : stop.kind === "transport" ? "Ends" : "Leave"} {stop.departure_time}
-          </p>
-        )}
-      </div>
-
-      <div className="min-w-0">
-        {stop.travel_from_previous && (
+      {stop.travel_from_previous && (
+        <div className="flex items-start gap-2 py-1.5 pl-3">
+          <span className="mt-2 h-px w-4 flex-shrink-0 bg-slate-200" aria-hidden />
           <div
             aria-label={`Travel from previous stop: ${stop.travel_from_previous.distance_display}, ${stop.travel_from_previous.duration_display}`}
-            className="mb-1 flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
+            className="flex flex-wrap items-center gap-x-1.5 text-[10px] font-medium text-accent"
             title={`${stop.travel_from_previous.mode} estimate`}
           >
             <Route size={11} aria-hidden />
@@ -200,15 +181,27 @@ export default function ItineraryStopRow({
               </span>
             )}
           </div>
-        )}
-        <div className="flex items-start gap-1.5">
-          {mapLabel && (
+        </div>
+      )}
+      <article
+        className={`rounded-2xl p-3 shadow-card ring-1 transition ${
+          jumpActive
+            ? "bg-amber-50 ring-2 ring-amber-300"
+            : active
+              ? "bg-brand/5 ring-brand/30"
+              : focusable
+                ? "cursor-pointer bg-white ring-slate-200/80 hover:ring-slate-300"
+                : "bg-white ring-slate-200/80"
+        }`}
+      >
+        <div className="flex items-start gap-2.5">
+          {mapLabel ? (
             <span
               aria-label={mapLabel.startsWith("H")
                 ? "Hotel map marker"
                 : `Map stop ${mapLabel}`}
               aria-current={active ? "location" : undefined}
-              className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border text-[10px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-white"}`}
+              className={`mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full border text-[11px] font-semibold tabular-nums transition ${active ? "scale-110 text-white shadow-sm" : "bg-white"}`}
               style={{
                 borderColor: stop.color,
                 color: active ? "white" : stop.color,
@@ -217,31 +210,58 @@ export default function ItineraryStopRow({
             >
               {mapLabel}
             </span>
+          ) : (
+            <span
+              aria-hidden
+              className="mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-[11px]"
+            >
+              {KIND_ICON[stop.kind] || KIND_ICON.other}
+            </span>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase text-slate-400">{circuitReturn ? "Hotel return" : stop.kind}</p>
-            <button
-              type="button"
-              disabled={!focusable}
-              onClick={(event) => {
-                event.stopPropagation();
-                onFocus();
-              }}
-              className={`block max-w-full truncate text-left text-sm font-semibold ${
-                focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
-              }`}
-              title={routeFocusable
-                ? "Show complete route"
-                : stop.kind === "airport"
-                  ? "Show airport details"
-                  : focusable ? "Show photos & reviews" : undefined}
-            >
-              <span className="mr-1" aria-hidden>{KIND_ICON[stop.kind] || KIND_ICON.other}</span>
-              {circuitReturn ? `Return to ${stop.name}` : stop.name}
-            </button>
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
+              {stop.time && (
+                <span className="text-sm font-semibold tabular-nums text-ink">
+                  {stop.time}{stop.time_estimated ? " est." : ""}
+                </span>
+              )}
+              <button
+                type="button"
+                disabled={!focusable}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onFocus();
+                }}
+                className={`block max-w-full truncate text-left text-sm font-semibold ${
+                  focusable ? "text-ink hover:text-brand" : "cursor-default text-ink"
+                }`}
+                title={routeFocusable
+                  ? "Show complete route"
+                  : stop.kind === "airport"
+                    ? "Show airport details"
+                    : focusable ? "Show photos & reviews" : undefined}
+              >
+                {circuitReturn ? `Return to ${stop.name}` : stop.name}
+              </button>
+            </div>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[11px] text-slate-500">
+              <span className="font-bold uppercase text-slate-400">{timingLabel}</span>
+              <span aria-hidden>·</span>
+              <span className="font-bold uppercase text-slate-400">{circuitReturn ? "Hotel return" : stop.kind}</span>
+              {durationText && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>{durationText}</span>
+                </>
+              )}
+              {departureText && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="font-medium tabular-nums text-slate-600">{departureText}</span>
+                </>
+              )}
+            </p>
           </div>
-        </div>
-        <div className="mt-1 flex flex-wrap items-center gap-1">
           {!circuitReturn && !["airport", "station", "bus_station", "origin"].includes(stop.kind) && <button
             type="button"
             aria-pressed={stop.booked}
@@ -250,15 +270,51 @@ export default function ItineraryStopRow({
               event.stopPropagation();
               onToggleBooked(!stop.booked);
             }}
-            className={`inline-flex h-6 items-center gap-1 rounded-full px-2 text-[10px] font-semibold ring-1 transition ${
+            className={`inline-flex h-6 flex-shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-semibold ring-1 transition ${
               stop.booked
                 ? "bg-emerald-50 text-emerald-700 ring-emerald-200 hover:bg-emerald-100"
-                : "bg-white text-slate-600 ring-slate-200 hover:text-brand hover:ring-brand/30"
+                : "bg-amber-50 text-amber-800 ring-amber-200 hover:text-brand hover:ring-brand/30"
             }`}
           >
             {stop.booked ? <Check size={11} aria-hidden /> : <CalendarCheck2 size={11} aria-hidden />}
             {stop.booked ? "Confirmed" : "Needs booking"}
           </button>}
+          <div className="flex flex-shrink-0 items-center gap-0.5 transition sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onMap();
+              }}
+              aria-label={`Show ${stop.name} on the map`}
+              className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-brand"
+              title={routeFocusable ? "Show complete route" : "Show on map"}
+            >
+              <MapPin size={13} aria-hidden />
+            </button>
+            {!circuitReturn && removable && (
+              <button
+                type="button"
+                disabled={removing}
+                onClick={async (event) => {
+                  event.stopPropagation();
+                  setRemoving(true);
+                  try {
+                    await onRemove?.();
+                  } finally {
+                    setRemoving(false);
+                  }
+                }}
+                aria-label={`Remove ${stop.name} from itinerary`}
+                className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-rose-600"
+                title="Remove from itinerary"
+              >
+                {removing ? <Loader2 size={12} className="animate-spin" aria-hidden /> : <Trash2 size={13} aria-hidden />}
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-1 pl-[2.375rem]">
           {!circuitReturn && stop.cost_display && <span className="chip">{stop.cost_display}</span>}
           {!circuitReturn && stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
           {!circuitReturn && typeof stop.rating === "number" && (
@@ -277,48 +333,35 @@ export default function ItineraryStopRow({
               Must-visit score {stop.popularity_score}/100
             </span>
           )}
-          {!circuitReturn && removable && (
-            <button
-              type="button"
-              disabled={removing}
-              onClick={async (event) => {
-                event.stopPropagation();
-                setRemoving(true);
-                try {
-                  await onRemove?.();
-                } finally {
-                  setRemoving(false);
-                }
-              }}
-              aria-label={`Remove ${stop.name} from itinerary`}
-              className="grid h-6 w-6 place-items-center rounded-full bg-slate-50 text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100"
-              title="Remove from itinerary"
-            >
-              {removing ? <Loader2 size={12} className="animate-spin" aria-hidden /> : <Trash2 size={12} aria-hidden />}
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onMap();
-            }}
-            aria-label={`Show ${stop.name} on the map`}
-            className="grid h-6 w-6 place-items-center rounded-full text-slate-400 transition hover:bg-white hover:text-brand"
-            title={routeFocusable ? "Show complete route" : "Show on map"}
-          >
-            <MapPin size={13} aria-hidden />
-          </button>
         </div>
-        {(concernTexts.length > 0 || noteTexts.length > 0 || (!circuitReturn && insightTexts.length > 0)) && (
-          <div className="mt-1 space-y-0.5">
+        {concernTexts.length > 0 && (
+          <div className="mt-2 space-y-0.5 pl-[2.375rem]">
             {concernTexts.map((text) => <p key={text} className="text-xs font-medium text-rose-700">{text}</p>)}
-            {noteTexts.map((text) => <p key={text} className="text-xs text-slate-500">{text}</p>)}
-            {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-xs text-slate-600">{text}</p>)}
           </div>
         )}
-      </div>
-
+        {hasNotes && (
+          <div className="pl-[2.375rem]">
+            <button
+              type="button"
+              aria-expanded={notesOpen}
+              onClick={(event) => {
+                event.stopPropagation();
+                setNotesOpen((open) => !open);
+              }}
+              className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 transition hover:text-ink"
+            >
+              {notesOpen ? "Hide notes" : "Notes & tips"}
+              <ChevronDown size={12} className={`transition ${notesOpen ? "rotate-180" : ""}`} aria-hidden />
+            </button>
+            {notesOpen && (
+              <div className="mt-1 space-y-0.5 border-l-2 border-slate-100 pl-2.5">
+                {noteTexts.map((text) => <p key={text} className="text-xs text-slate-500">{text}</p>)}
+                {!circuitReturn && insightTexts.map((text) => <p key={text} className="text-xs text-slate-600">{text}</p>)}
+              </div>
+            )}
+          </div>
+        )}
+      </article>
     </li>
   );
 }

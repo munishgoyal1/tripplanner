@@ -235,6 +235,7 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("20:00")).toBeInTheDocument();
     expect(screen.getByLabelText("Travel from previous stop: 3.4 km, 18 min")).toBeInTheDocument();
     expect(screen.getByText("Taxi from Seine cruise to Hotel Lutetia.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Notes & tips" }));
     expect(screen.getByText("Collect stored bags at reception.")).toBeInTheDocument();
     expect(screen.getByText("Confirm late front-desk access.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Hotel Lutetia: Mark confirmed" })).toBeInTheDocument();
@@ -545,7 +546,7 @@ describe("ItineraryPanel", () => {
     const returnLabel = await screen.findByText("Return to Hotel Lutetia");
     const returnRow = returnLabel.closest("li");
     expect(returnRow).toHaveAttribute("data-stop-indexes", "3");
-    expect(returnRow).toHaveClass("ring-1", "ring-brand/20");
+    expect(returnRow?.querySelector("article")).toHaveClass("bg-brand/5", "ring-brand/30");
     expect(scrollIntoViewMock.mock.instances[0]).toBe(returnRow);
   });
 
@@ -834,8 +835,8 @@ describe("ItineraryPanel", () => {
     render(<ItineraryPanel focusName="Louvre Museum" focusDay={1} focusStop={1} />);
 
     await screen.findByText("Museums and river");
-    const louvre = document.querySelector('[data-stop-name="louvre museum"]');
-    const cruise = document.querySelector('[data-stop-name="seine cruise"]');
+    const louvre = document.querySelector('[data-stop-name="louvre museum"] article');
+    const cruise = document.querySelector('[data-stop-name="seine cruise"] article');
     expect(louvre).toHaveClass("bg-brand/5");
     expect(cruise).not.toHaveClass("bg-brand/5");
     expect(cruise).not.toHaveClass("bg-rose-50/60");
