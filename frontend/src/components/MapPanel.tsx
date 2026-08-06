@@ -1,5 +1,4 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { ChevronDown, ChevronUp, Plus, Route, Search, X } from "lucide-react";
 import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { MapAirport, MapView, MapPin } from "../types";
@@ -146,10 +145,9 @@ interface Props {
     name: string,
     options?: DeselectItemOptions,
   ) => void | Promise<boolean>;
-  headerTarget?: HTMLElement | null;
 }
 
-function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect, headerTarget }: Props) {
+function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
   const view = useMemo(
     () => sourceView ? filterMapView(sourceView, filters) : null,
@@ -752,7 +750,6 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           )}
         </div>
       )}
-      {view && headerTarget ? createPortal(dayScopeControls, headerTarget) : null}
       <div className="relative min-h-0 flex-1">
         <div ref={mapEl} className="h-full w-full" />
         {!selectedPin && selectedMapContext && (
@@ -962,7 +959,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
             </div>
           </div>
           <div className="flex items-center gap-2 border-t border-slate-100 px-3 py-1.5">
-            {headerTarget ? null : dayScopeControls}
+            {dayScopeControls}
             <button
               type="button"
               onClick={() => setSequenceOpen((open) => !open)}

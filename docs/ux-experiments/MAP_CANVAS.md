@@ -143,8 +143,9 @@ geographic sense" before it answers anything else.
 - Facts preserved: day scope with *All days* and every day in its route colour, all three
   add-stop inputs including *Best day*, the auto-filled type marker, the day context line
   with schedule, `est.` marker and route-only travel, the day and pin context cards with
-  their actions, and the failure toast with Retry. The header portal for day scope still
-  works when the workspace supplies one.
+  with their actions, and the failure toast with Retry. Day scope now lives in the
+  dock beside the sequence toggle rather than in the pane header, so every map
+  command sits in one place under the map.
 - Not carried over: the Lab's dashed discovery pins. Production already resolves a place
   by typing into the field or tapping a Google POI on the map — both fill the same
   composer — so a separate discovery layer would be new place data, which the Lab lists as

@@ -106,7 +106,6 @@ export default function App() {
   const [mapOpen, setMapOpen] = useState(() => storedBoolean("tripplanner_map_open", true));
   const [maximizedPane, setMaximizedPane] = useState<WorkspacePane | null>(null);
   const [itineraryHeaderTarget, setItineraryHeaderTarget] = useState<HTMLDivElement | null>(null);
-  const [mapHeaderTarget, setMapHeaderTarget] = useState<HTMLDivElement | null>(null);
   const [itineraryFilters, setItineraryFilters] = useState<ItineraryFilter[]>([]);
   const [itineraryOpen, setItineraryOpen] = useState(() => (
     storedBoolean("tripplanner_itinerary_open", true)
@@ -765,7 +764,6 @@ export default function App() {
         onAllDaysFocus={handleMapAllDaysFocus}
         onSelect={handleSelect}
         onDeselect={handleDeselect}
-        headerTarget={mapHeaderTarget}
       />
     );
   };
@@ -952,7 +950,6 @@ export default function App() {
               maximized={maximizedPane === "map"}
               onHide={() => setCanvasOpen("map", false)}
               onToggleMaximize={() => toggleMaxPane("map")}
-              headerTargetRef={setMapHeaderTarget}
             >
               {renderCanvasBody("map")}
             </CanvasPaneFrame>

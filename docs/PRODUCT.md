@@ -105,9 +105,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   show/hide controls. Assistant opens as a compact lower-right conversation sheet
   over the still-usable workspace and stays mounted while hidden so its conversation
   state survives. Only panes scroll; the page never does.
-  Map commands use the pane header efficiently: All days/day scope lives beside
-  the Map title, the Add stop form stays directly visible below it, and one compact
-  line separates schedule span from route-only travel. This hierarchy does not
+  Map commands sit below the map so the pane reads as a map first: a resting search
+  field that reveals stop type, target day and Add once a place is named or tapped,
+  then All days/day scope beside an optional stop-sequence strip, then one compact
+  line separating schedule span from route-only travel. This hierarchy does not
   change map focus, placement, pin, route, or mutation behavior. Itinerary, Map,
   and Details group their pane-local Hide and Maximize/Restore icons in a quiet
   restrained pair without changing behavior, disabled states, or recovery.
