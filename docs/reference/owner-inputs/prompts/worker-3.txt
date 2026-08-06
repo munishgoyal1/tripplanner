@@ -68,3 +68,6 @@ add these scores and one additional text writeup contrasting the options clearly
 
 [2026-08-06 15:55] [worker-3 !] Implement lab 17 in sandbox
 implement lab17 in  a sandbox
+
+[2026-08-06 16:20] [worker-3 !] Implement lab18 in a new sandbox
+Implement lab18 in a new sandbox
