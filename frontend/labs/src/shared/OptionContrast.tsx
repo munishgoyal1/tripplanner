@@ -3,6 +3,8 @@ import { allLabs } from "./labRecords";
 
 interface ContrastRow {
   option: string;
+  /** 0-100 fit for this product. Rows are authored A-C but always render best first. */
+  score: number;
   idea: string;
   buys: string;
   costs: string;
@@ -26,6 +28,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Trip readiness rail",
+        score: 71,
         idea: "The trip owns the whole subject, in its third pane.",
         buys: "One place to look, and nothing to manage anywhere else.",
         costs: "The Details pane, which is where you decide about a place.",
@@ -33,6 +36,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Account vault, trip shows gaps",
+        score: 82,
         idea: "Two homes for two lifetimes: passports are yours, references are the trip's.",
         buys: "The trip never turns into a document manager, and Details stays.",
         costs: "The answer is one click away instead of already on screen.",
@@ -40,6 +44,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Document inbox",
+        score: 64,
         idea: "Intake is separated from placement; items route themselves afterwards.",
         buys: "Six email attachments emptied in one gesture, triaged later.",
         costs: "A second queue that goes stale, and a trip that looks ready while it does.",
@@ -54,6 +59,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Proposal first",
+        score: 74,
         idea: "Nothing is written until you apply it.",
         buys: "Zero silent damage, and the reasoning arrives before the change.",
         costs: "One extra interaction on every change that was always safe.",
@@ -61,6 +67,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Guarded autonomy",
+        score: 86,
         idea: "Safe edits land with an Undo receipt; dangerous ones hard-stop into a proposal.",
         buys: "Today's speed for ordinary edits, with the damaging class made impossible.",
         costs: "You are trusting the invariant list to be complete.",
@@ -68,6 +75,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Plan console",
+        score: 63,
         idea: "A standing rail holds your declared rules, live invariants, and a revertible ledger.",
         buys: "A readable history and per-entry revert across a long editing life.",
         costs: "A permanent 20rem rail, even on a trip you never argue with.",
@@ -82,6 +90,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Floating deck",
+        score: 72,
         idea: "The map runs edge to edge; controls float over it as glass cards.",
         buys: "The most map per pixel, and controls that feel weightless.",
         costs: "Floating cards can cover pins once the pane is narrow.",
@@ -89,6 +98,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Route dock",
+        score: 84,
         idea: "A bottom dock carries day tabs, day facts, and the day's route timeline.",
         buys: "The map becomes a place to plan the sequence, not just see it.",
         costs: "About 7rem of the pane, permanently, at the bottom.",
@@ -96,6 +106,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Command ribbon",
+        score: 66,
         idea: "Today's three stacked control rows collapse into one row and one fact ribbon.",
         buys: "The smallest change from today and the safest to ship.",
         costs: "The least new capability of the three.",
@@ -110,6 +121,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Journey spine",
+        score: 74,
         idea: "One continuous time rail runs the whole trip, with travel legs on the line.",
         buys: "You feel the shape of a day, and the gaps between stops are visible.",
         costs: "About 5rem of horizontal space that never holds a fact.",
@@ -117,6 +129,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Layered stop cards",
+        score: 87,
         idea: "Time, name, and booking status are loud; everything else is a quiet chip row.",
         buys: "The fastest scan of a long day, with notes opening in place.",
         costs: "Notes and tips are one click away rather than always printed.",
@@ -124,6 +137,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Editorial agenda",
+        score: 68,
         idea: "Morning, Afternoon and Evening chapters under Fraunces titles.",
         buys: "The most pleasant read from beginning to end.",
         costs: "The densest single meta line of facts per stop.",
@@ -138,6 +152,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Conversation dock",
+        score: 65,
         idea: "A fourth permanent column beside Itinerary, Map, and Details.",
         buys: "Never reopened, never overlapping the plan.",
         costs: "About 22rem of workspace width, whether you are using it or not.",
@@ -145,6 +160,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Focus composer",
+        score: 76,
         idea: "A 4rem command line at rest; the transcript rises only when asked for.",
         buys: "Zero column cost when you are not talking.",
         costs: "The conversation is never side by side with the map.",
@@ -152,6 +168,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Turn thread",
+        score: 83,
         idea: "The right rail becomes turn cards, each linked to the stops it changed.",
         buys: "An auditable trail that stays visible while you work the map.",
         costs: "Details loses its permanent rail to an on-demand overlay.",
@@ -166,6 +183,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Connected day journey",
+        score: 85,
         idea: "Both city circuits and the leg between them share one canvas.",
         buys: "Every transfer endpoint stays real geometry, in itinerary order.",
         costs: "The destination circuit is smaller, because the frame must hold both cities.",
@@ -173,6 +191,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Journey strip + local map",
+        score: 64,
         idea: "The leg moves off the canvas into a pinned strip above it.",
         buys: "The map stays at the scale of the city you are actually in.",
         costs: "The origin circuit and terminals never appear as geometry at all.",
@@ -180,6 +199,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Optional inter-city layer",
+        score: 71,
         idea: "Both scales render together, with independent visibility controls.",
         buys: "You choose what to see, and the leg stays real geometry either way.",
         costs: "Two more persistent controls on the map.",
@@ -194,6 +214,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Transition spine",
+        score: 84,
         idea: "One chronological chain: checkout, travel, arrival, check-in.",
         buys: "The handoff is auditable step by step, in true order.",
         costs: "Nothing is emphasised; it reads as one long timeline.",
@@ -201,6 +222,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Stay handoff",
+        score: 72,
         idea: "The old and new stays frame one prominent transfer object.",
         buys: "The change of base is the most visible thing on the day.",
         costs: "The rest of the day reads as context around that object.",
@@ -208,6 +230,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · City chapters",
+        score: 66,
         idea: "Morning, Journey and Evening sections split the day by city context.",
         buys: "The change of destination is unmissable.",
         costs: "The continuous order is broken into three blocks.",
@@ -222,6 +245,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Contextual explorer",
+        score: 83,
         idea: "Mixed trip highlights, narrowing to same-type alternatives once focused.",
         buys: "Relevant alternatives without leaving the stop you are questioning.",
         costs: "There is no single complete index to browse.",
@@ -229,6 +253,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · City chapters",
+        score: 66,
         idea: "One destination at a time, in Hotels, Attractions and Food sections.",
         buys: "The same predictable structure in every city.",
         costs: "Comparing across cities means switching chapters.",
@@ -236,6 +261,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Filtered directory",
+        score: 72,
         idea: "Search plus city and category filters over one dense index.",
         buys: "It can find anything, with the widest coverage on screen.",
         costs: "You have to know what to ask for.",
@@ -250,6 +276,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Unified account menu",
+        score: 82,
         idea: "One avatar owns identity, travel profile, analytics, privacy and sign-out.",
         buys: "One door, and no destination reachable two ways.",
         costs: "That single menu grows every time a setting is added.",
@@ -257,6 +284,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Clear account/settings split",
+        score: 70,
         idea: "Profile owns identity; Settings owns preferences, analytics and privacy.",
         buys: "Two familiar icons, with every duplicated destination removed.",
         costs: "You have to remember which icon holds which thing.",
@@ -264,6 +292,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Account settings hub",
+        score: 65,
         idea: "One labelled command opens a larger, sectioned sheet.",
         buys: "The most room to grow without redesigning anything.",
         costs: "A heavier interaction than a popover, for small changes too.",
@@ -279,6 +308,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Semantic icon + text",
+        score: 87,
         idea: "Every surface gets a meaning-first icon and a short label.",
         buys: "Unambiguous at a glance, with nothing depending on hover.",
         costs: "The widest command row of the three.",
@@ -286,6 +316,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Compact control rail",
+        score: 72,
         idea: "Persistent surfaces become icon buttons; commands keep text where it matters.",
         buys: "The narrowest row, and the most space left for the workspace.",
         costs: "Meaning depends on recognising the icon or hovering it.",
@@ -293,6 +324,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Text-led command bar",
+        score: 65,
         idea: "Surface names do the navigation; icons are reserved for unambiguous actions.",
         buys: "No icon can be misread.",
         costs: "It reads as a text menu, which scans more slowly.",
@@ -308,6 +340,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Direct pane toggles",
+        score: 85,
         idea: "One toggle per pane, always present.",
         buys: "The fastest path for someone who does this many times a day.",
         costs: "The most controls in the top row.",
@@ -315,6 +348,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Segmented view group",
+        score: 78,
         idea: "Pane visibility reads as one coherent workspace mode.",
         buys: "The current layout is legible as a single state.",
         costs: "Changing one pane is less direct than a dedicated switch.",
@@ -322,6 +356,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Layout popover",
+        score: 63,
         idea: "One Layout command opens visibility and focus together.",
         buys: "The calmest top row by a wide margin.",
         costs: "Every pane change begins by opening a menu.",
@@ -337,6 +372,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Scan ledger",
+        score: 72,
         idea: "Dense facts in a stable left-to-right hierarchy.",
         buys: "The fastest repeat scan once you know where things sit.",
         costs: "No room for trip character or for guidance.",
@@ -344,6 +380,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Decision brief",
+        score: 86,
         idea: "Identity, readiness, weather and budget form one planning brief.",
         buys: "Context plus a clear story about what still needs attention.",
         costs: "Taller than a pure ledger.",
@@ -351,6 +388,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Progressive summary",
+        score: 66,
         idea: "Core identity stays compact; secondary context expands on demand.",
         buys: "The most itinerary space protected.",
         costs: "Important constraints can stay hidden behind a click.",
@@ -366,6 +404,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Unified route ribbon",
+        score: 86,
         idea: "Scope, Add stop and a structured route brief share two stable rows.",
         buys: "The fastest scan, with the fewest moving parts.",
         costs: "Two rows are always present, used or not.",
@@ -373,6 +412,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Contextual command deck",
+        score: 71,
         idea: "A quiet primary bar opens focused drawers for adding and evidence.",
         buys: "The maximum map area whenever commands are idle.",
         costs: "Evidence has to be summoned before it can be read.",
@@ -380,6 +420,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Schedule-first strip",
+        score: 66,
         idea: "A bottom timeline makes day sequence and timing the dominant control.",
         buys: "The best day-to-day comparison and travel rhythm.",
         costs: "Bottom space, and commands move away from the top edge.",
@@ -395,6 +436,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Compact semantic actions",
+        score: 73,
         idea: "Short icon-and-text actions state both commands outright.",
         buys: "Nothing has to be learned or hovered.",
         costs: "The most header width, repeated in every pane.",
@@ -402,6 +444,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Restrained icon pair",
+        score: 86,
         idea: "Two quiet icons in a light local group, with precise tooltips.",
         buys: "Readable without competing with the pane's content.",
         costs: "First use depends on a tooltip.",
@@ -409,6 +452,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Pane action menu",
+        score: 62,
         idea: "One calm trigger reveals clearly labelled actions.",
         buys: "The quietest possible pane header.",
         costs: "Every hide or maximize costs an extra click.",
@@ -423,6 +467,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Operations binder",
+        score: 72,
         idea: "Checklist-led and as short as it can be. 14 pages.",
         buys: "The least to carry and the fastest to reprint.",
         costs: "Almost no context or reassurance around the facts.",
@@ -430,6 +475,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Layered Trip Book",
+        score: 85,
         idea: "Trip control first, then day spreads, then evidence and documents. 18 pages.",
         buys: "Executable in the moment, with proof sitting behind it.",
         costs: "Four more pages than the binder.",
@@ -437,6 +483,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Visual journey book",
+        score: 67,
         idea: "Photography and destination context around the full appendix. 24 pages.",
         buys: "Something worth keeping after the trip ends.",
         costs: "The most pages, and the most printing.",
@@ -452,6 +499,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · One-line ledger",
+        score: 70,
         idea: "Every circuit endpoint stays its own row.",
         buys: "The most detail visible at once, with nothing to open.",
         costs: "The most vertical space, spent on rows that repeat.",
@@ -459,6 +507,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Circuit header",
+        score: 88,
         idea: "Hotel endpoints move into one truthful day-level circuit line.",
         buys: "Rows recovered without losing a single fact.",
         costs: "The endpoint becomes a line rather than a row you can act on.",
@@ -466,6 +515,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Progressive focus",
+        score: 64,
         idea: "Rows stay quiet until one stop is selected and expands.",
         buys: "The calmest default view of a long day.",
         costs: "Booking and route detail require a selection first.",
@@ -481,6 +531,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Collapsible edge drawer",
+        score: 76,
         idea: "A full-height right drawer over Details, collapsing to a slim rail. 420 px.",
         buys: "The most room for a long conversation.",
         costs: "Details is covered for as long as it is open.",
@@ -488,6 +539,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Corner conversation sheet",
+        score: 85,
         idea: "A lower-right sheet over one corner, collapsing to a button. 480 px.",
         buys: "Most of the map and itinerary stay visible while you ask.",
         costs: "Less room for a transcript you want to read back.",
@@ -495,6 +547,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Prompt popover + rail",
+        score: 64,
         idea: "Only the active prompt opens beside a 48 px persistent rail.",
         buys: "The three panes keep the highest possible priority.",
         costs: "Completed planning recedes immediately.",
@@ -510,6 +563,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Journey timeline",
+        score: 66,
         idea: "Transport becomes the connector between destinations.",
         buys: "The movement between stops is explicit rather than implied.",
         costs: "Transport competes with the stops for attention.",
@@ -517,6 +571,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Compact agenda",
+        score: 85,
         idea: "Time-first rows, tuned for scanning and density.",
         buys: "The most stops legible at once.",
         costs: "The least guidance for someone reading it for the first time.",
@@ -524,6 +579,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Guided place cards",
+        score: 71,
         idea: "Labelled sections put the place first.",
         buys: "The clearest read for first-time use.",
         costs: "The fewest stops on screen at any moment.",
@@ -539,6 +595,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Editorial brief",
+        score: 65,
         idea: "A spacious narrative opening leads with the character of the day.",
         buys: "The strongest sense of what the day will feel like.",
         costs: "The most space before the first stop appears.",
@@ -546,6 +603,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Balanced brief",
+        score: 76,
         idea: "Narrative first, then the journey line and readiness signals.",
         buys: "Story and logistics both present, in that order.",
         costs: "Still a tall header above every day.",
@@ -553,6 +611,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Compact brief",
+        score: 86,
         idea: "The same narrative and logistics, in a denser header.",
         buys: "Identical facts for noticeably less space.",
         costs: "The least room for tone to breathe.",
@@ -568,6 +627,7 @@ const contrasts: Record<string, ContrastDefinition> = {
     rows: [
       {
         option: "A · Map-first",
+        score: 70,
         idea: "Map and Details stay persistent; Itinerary and Chat share a support column.",
         buys: "Geography is never more than a glance away.",
         costs: "The itinerary is demoted to a secondary lane.",
@@ -575,6 +635,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "B · Story-first",
+        score: 64,
         idea: "Itinerary becomes dominant, with Map and Chat in a secondary lane.",
         buys: "The plan itself leads, at full width.",
         costs: "The map stops being a working surface.",
@@ -582,6 +643,7 @@ const contrasts: Record<string, ContrastDefinition> = {
       },
       {
         option: "C · Spatial workspace",
+        score: 88,
         idea: "Itinerary left, dominant Map centre, Details right, Assistant lower-right.",
         buys: "All four reachable at once, with nothing to switch between.",
         costs: "Every pane is narrower than it would be alone.",
@@ -597,6 +659,8 @@ export function OptionContrast({ labId }: { labId: string }) {
   const lab = allLabs.find((candidate) => candidate.id === labId);
   if (!contrast || !lab) return null;
 
+  const ranked = [...contrast.rows].sort((a, b) => b.score - a.score);
+
   return (
     <section
       className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200"
@@ -610,12 +674,16 @@ export function OptionContrast({ labId }: { labId: string }) {
           What the options actually disagree about
         </h2>
         <p className="mt-1 max-w-4xl text-xs leading-relaxed text-slate-500">{contrast.axis}</p>
+        <p className="mt-1.5 max-w-4xl text-xs leading-relaxed text-slate-500">
+          Ranked best first. The score is a 0-100 judgement of how well an option serves the job named above once its
+          cost is subtracted. It ranks these three against each other and means nothing outside this Lab.
+        </p>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[46rem] text-left text-xs">
+        <table className="w-full min-w-[48rem] text-left text-xs">
           <thead className="bg-slate-50 text-[10px] font-bold uppercase text-slate-500">
             <tr>
-              <th scope="col" className="px-4 py-2">Option</th>
+              <th scope="col" className="px-4 py-2">Rank · Option</th>
               <th scope="col" className="px-4 py-2">The idea</th>
               <th scope="col" className="px-4 py-2">What it buys</th>
               <th scope="col" className="px-4 py-2">What it costs</th>
@@ -623,15 +691,29 @@ export function OptionContrast({ labId }: { labId: string }) {
             </tr>
           </thead>
           <tbody>
-            {contrast.rows.map((row) => (
+            {ranked.map((row, index) => (
               <tr key={row.option} className="border-t border-slate-100 align-top">
                 <th scope="row" className="px-4 py-2.5 text-left font-semibold text-ink">
-                  {row.option}
-                  {contrast.chosen === row.option ? (
-                    <span className="mt-1 block w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 ring-1 ring-emerald-200">
-                      Selected
+                  <span className="flex items-baseline gap-2">
+                    <span className="text-[11px] font-bold text-slate-400">{index + 1}</span>
+                    <span>{row.option}</span>
+                  </span>
+                  <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ${index === 0 ? "bg-brand/10 text-brand-600 ring-brand/30" : "bg-slate-50 text-slate-600 ring-slate-200"}`}
+                    >
+                      {row.score}/100
                     </span>
-                  ) : null}
+                    {contrast.chosen === row.option ? (
+                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 ring-1 ring-emerald-200">
+                        Selected
+                      </span>
+                    ) : index === 0 ? (
+                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 ring-1 ring-emerald-200">
+                        Most recommended
+                      </span>
+                    ) : null}
+                  </span>
                 </th>
                 <td className="px-4 py-2.5 leading-relaxed text-slate-700">{row.idea}</td>
                 <td className="px-4 py-2.5 leading-relaxed text-emerald-800">{row.buys}</td>
