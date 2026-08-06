@@ -115,11 +115,18 @@ if ($PSCmdlet.ParameterSetName -eq "Create") {
         return
     }
 
-    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "origin", $BaseBranch)
+    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "origin", "--prune")
     New-Item -ItemType Directory -Path $worktreesRoot -Force | Out-Null
-    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
-        "worktree", "add", "-b", $branchName, $worktreePath, "origin/$BaseBranch"
-    )
+    & git -C $scriptRepoRoot show-ref --verify --quiet "refs/remotes/origin/$branchName"
+    if ($LASTEXITCODE -eq 0) {
+        Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
+            "worktree", "add", "--track", "-b", $branchName, $worktreePath, "origin/$branchName"
+        )
+    } else {
+        Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
+            "worktree", "add", "-b", $branchName, $worktreePath, "origin/$BaseBranch"
+        )
+    }
 
     $sourceEnv = Join-Path $primaryRoot ".env"
     if (Test-Path $sourceEnv -PathType Leaf) {

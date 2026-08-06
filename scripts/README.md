@@ -9,7 +9,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 
 | Path | Purpose |
 | --- | --- |
-| `setup-dev-machine.ps1` | Install or restore local development prerequisites |
+| `setup-dev-machine.ps1` | Restore app prerequisites; `-FullAgentEnvironment` also configures VS Code/Copilot and all three workers |
 | `open-agent-windows.ps1` | Open the persistent agent workspaces |
 | `analyze-errors.ps1` | Generate local or canary error reports |
 | `cosmos_copy.py` | Guarded Cosmos data copy and verification utility |
@@ -17,7 +17,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `performance_baseline.py` | Hermetic endpoint performance baseline |
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
-| `dev/agent-worktree.ps1` | Create, open, list, or remove coding-agent worktrees |
+| `dev/agent-worktree.ps1` | Create, restore from a remote branch, open, list, or remove coding-agent worktrees |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
