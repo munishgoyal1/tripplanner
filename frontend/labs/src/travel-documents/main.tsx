@@ -5,6 +5,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 import { DocumentsWorkspace } from "./DocumentsWorkspace";
 import type { DocumentsOption } from "./DocumentsWorkspace";
@@ -190,6 +191,7 @@ function Lab() {
         </header>
 
         <LabScope labId={LAB_ID} />
+        <OptionContrast labId={LAB_ID} />
 
         <section className="mt-8">
           <p className="text-[10px] font-bold uppercase text-brand">The retention rule</p>

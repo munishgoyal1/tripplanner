@@ -20,6 +20,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 
 type Variant = "binder" | "layered" | "visual";
 type Section = "contents" | "overview" | "day" | "documents" | "guide";
@@ -236,6 +237,7 @@ function App() {
         </div>
 
         <LabScope labId="itinerary-trip-book" />
+        <OptionContrast labId="itinerary-trip-book" />
 
         <div className="mt-5 grid gap-2 lg:grid-cols-3">{variants.map((item) => <button key={item.id} type="button" onClick={() => setVariant(item.id)} className={`rounded-md p-4 text-left ring-1 transition ${variant === item.id ? "bg-white shadow-card ring-brand/40" : "bg-white/60 ring-slate-200 hover:bg-white"}`}><div className="flex items-center justify-between gap-2"><strong className="text-sm text-ink">{item.label}</strong><span className="text-[10px] font-semibold text-slate-400">{item.pages}p</span></div><span className="mt-1.5 block text-xs leading-relaxed text-slate-500">{item.note}</span></button>)}</div>
 
