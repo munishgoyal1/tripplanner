@@ -34,10 +34,9 @@
   committed elsewhere. Pass -NoSync to skip that pass. The reverse direction is
   covered too: Sync-AllTo-Latest updates every registered sandbox at its end.
 
-  -Promote is end to end: sync, validate, push, open the PR, merge into the base
-  branch, and then verify that the base branch really contains every commit and
-  that the worktree is clean. It never discards the sandbox, so the work stays
-  runnable until you decide otherwise. -Ship is an alias of the same verb.
+    -Promote is end to end: sync, validate, push, open the PR, merge into the base
+    branch, verify that the base branch really contains every commit and that the
+    worktree is clean, then discard the sandbox. -Ship is an alias of the same verb.
 
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
@@ -258,20 +257,6 @@ function Get-SandboxOutstandingWork {
         $outstanding += "uncommitted changes:`n  $($changes -join "`n  ")"
     }
     Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("fetch", "-q", "origin") | Out-Null
-    $remoteRef = "origin/$($Entry.branch)"
-    $hasRemote = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
-        "ls-remote", "--heads", "origin", $Entry.branch
-    )
-    if ($hasRemote) {
-        $unpushed = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
-            "log", "--oneline", "$remoteRef..HEAD"
-        )
-        if ($unpushed) {
-            $outstanding += "commits not pushed to ${remoteRef}:`n  $($unpushed -join "`n  ")"
-        }
-    } else {
-        $outstanding += "branch $($Entry.branch) was never pushed to origin."
-    }
     $unmerged = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
         "log", "--oneline", "origin/$Base..HEAD"
     )
@@ -279,6 +264,46 @@ function Get-SandboxOutstandingWork {
         $outstanding += "commits not in origin/${Base}:`n  $($unmerged -join "`n  ")"
     }
     return $outstanding
+}
+
+function Save-SandboxPromotion {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Base,
+        [string]$PrNumber = ""
+    )
+
+    $entries = @(Get-Registry)
+    $saved = $entries | Where-Object { $_.slug -eq $Entry.slug } | Select-Object -First 1
+    if (-not $saved) { throw "Sandbox '$($Entry.slug)' disappeared from the registry." }
+    $commit = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("rev-parse", "HEAD")
+    $saved | Add-Member -NotePropertyName promotedUtc -NotePropertyValue `
+        (Get-Date).ToUniversalTime().ToString("o") -Force
+    $saved | Add-Member -NotePropertyName promotedBase -NotePropertyValue $Base -Force
+    $saved | Add-Member -NotePropertyName promotedCommit -NotePropertyValue $commit -Force
+    if ($PrNumber) {
+        $saved | Add-Member -NotePropertyName promotionPrNumber -NotePropertyValue ([int]$PrNumber) -Force
+    }
+    Save-Registry -Entries $entries
+}
+
+function Get-SandboxPromotionLabel {
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    if ($Entry.promotedUtc) {
+        $pr = if ($Entry.promotionPrNumber) { " via PR #$($Entry.promotionPrNumber)" } else { "" }
+        $cleanup = if ($Entry.cleanupIssues) { " (cleanup incomplete)" } else { "" }
+        return "promoted$pr$cleanup"
+    }
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { return "unknown (gh unavailable)" }
+    $base = if ($Entry.promotedBase) { [string]$Entry.promotedBase } else { "master" }
+    $mergedPr = (& gh pr list --repo (Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
+            "config", "--get", "remote.origin.url"
+        )) --head $Entry.branch --base $base --state merged --limit 1 --json number --jq ".[0].number" |
+        Out-String).Trim()
+    if ($LASTEXITCODE -ne 0) { return "unknown (GitHub query failed)" }
+    if ($mergedPr) { return "promoted via PR #$mergedPr (legacy)" }
+    return "not promoted"
 }
 
 function Stop-SandboxProcesses {
@@ -423,14 +448,16 @@ function Remove-SandboxLeftovers {
     # Unlink before deleting: nothing may recurse through a junction.
     param([Parameter(Mandatory = $true)][string]$Path)
 
-    if (-not (Test-Path -LiteralPath $Path)) { return }
+    if (-not (Test-Path -LiteralPath $Path)) { return $true }
     Get-ChildItem -LiteralPath $Path -Force -Recurse -Directory -ErrorAction SilentlyContinue |
         Where-Object { $_.Attributes.HasFlag([IO.FileAttributes]::ReparsePoint) } |
         ForEach-Object { & cmd /c rmdir "$($_.FullName)" }
     Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
     if (Test-Path -LiteralPath $Path) {
         Write-Warning "$Path still exists; close anything using it and delete it manually."
+        return $false
     }
+    return $true
 }
 
 function Remove-PendingMergesFor {
@@ -488,6 +515,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         Write-Host ("#{0}  {1}" -f $number, $item.slug) -ForegroundColor Cyan -NoNewline
         Write-Host ("   {0}  {1}" -f $state, $age) -ForegroundColor $(if ($serving) { "Green" } else { "DarkGray" })
         Write-Host ("    purpose   {0}" -f $purpose)
+        Write-Host ("    promotion {0}" -f (Get-SandboxPromotionLabel -Entry $item))
         Write-Host ("    app       http://localhost:{0}" -f $item.frontendPort) `
             -ForegroundColor $(if ($serving) { "Green" } else { "Gray" })
         Write-Host ("    api       http://localhost:{0}/health" -f $item.apiPort)
@@ -716,7 +744,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."
     }
-    $action = "Sync, validate, merge into $BaseBranch, and keep the sandbox"
+    $action = "Sync, validate, merge into $BaseBranch, verify, and discard the sandbox"
     if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
     Write-Host "== 1/6 sync with origin/$BaseBranch ==" -ForegroundColor Green
@@ -739,9 +767,14 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         if ($outstanding) {
             throw "Sandbox '$slug' is already in origin/$BaseBranch but is not safe to discard:`n$($outstanding -join "`n")"
         }
+        Save-SandboxPromotion -Entry $entry -Base $BaseBranch
         Write-Host "[verified] origin/$BaseBranch already contains every commit and the worktree is clean." -ForegroundColor Green
-        Write-Host "[kept]    sandbox '$slug' is still running; discard it when you are done:" -ForegroundColor Yellow
-        Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
+        Push-Location $scriptRepoRoot
+        try {
+            & $PSCommandPath -Discard $slug -BaseBranch $BaseBranch -Confirm:$false
+        } finally {
+            Pop-Location
+        }
         return
     }
 
@@ -785,12 +818,14 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($outstanding) {
         throw "#$prNumber merged but sandbox '$slug' is not clean, so it is NOT safe to discard:`n$($outstanding -join "`n")"
     }
+    Save-SandboxPromotion -Entry $entry -Base $BaseBranch -PrNumber $prNumber
     Write-Host "[verified] origin/$BaseBranch contains every commit and the worktree is clean."
-
-    # Discarding is a separate, deliberate step: the merged sandbox stays runnable
-    # until its owner says otherwise.
-    Write-Host "[kept]    sandbox '$slug' is still running; discard it when you are done:" -ForegroundColor Yellow
-    Write-Host "  .\scripts\sandbox\Discard-Sandbox.cmd $slug"
+    Push-Location $scriptRepoRoot
+    try {
+        & $PSCommandPath -Discard $slug -BaseBranch $BaseBranch -Confirm:$false
+    } finally {
+        Pop-Location
+    }
     Write-Host "Sync your other lanes so they pick up $BaseBranch." -ForegroundColor Cyan
     return
 }
@@ -815,6 +850,8 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
         return
     }
 
+    $cleanupIssues = @()
+    try {
     if (Test-Path $entry.worktree) {
         Stop-SandboxStack -Entry $entry
         $removeArgs = @("worktree", "remove", $entry.worktree)
@@ -828,16 +865,23 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
             Write-Warning "Close any window or terminal using that folder, then delete it manually."
             & git -C $scriptRepoRoot worktree prune
         }
-        Remove-SandboxLeftovers -Path $entry.worktree
+        if (-not (Remove-SandboxLeftovers -Path $entry.worktree)) {
+            $cleanupIssues += "worktree directory still exists: $($entry.worktree)"
+        }
     } else {
         Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("worktree", "prune")
     }
 
     Remove-PendingMergesFor -WorkingDirectory $entry.worktree
 
-    & git -C $scriptRepoRoot branch -D $entry.branch
+    $localBranch = & git -C $scriptRepoRoot branch --list $entry.branch
     if ($LASTEXITCODE -ne 0) {
-        Write-Warning "Could not delete local branch $($entry.branch); delete it manually if needed."
+        $cleanupIssues += "could not query local branch $($entry.branch)"
+    } elseif ($localBranch) {
+        & git -C $scriptRepoRoot branch -D $entry.branch
+        if ($LASTEXITCODE -ne 0) {
+            $cleanupIssues += "could not delete local branch $($entry.branch)"
+        }
     }
 
     $python = Get-VenvPython
@@ -845,15 +889,35 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     if (Test-Path $seedScript -PathType Leaf) {
         & $python $seedScript drop --database $entry.database
         if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Could not drop $($entry.database); drop it manually if the emulator is running."
+            $cleanupIssues += "could not drop database $($entry.database)"
         }
     }
 
     if ($DeleteRemoteBranch) {
-        & git -C $scriptRepoRoot push origin --delete $entry.branch
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Could not delete remote branch $($entry.branch)."
+        $remoteBranch = Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
+            "ls-remote", "--heads", "origin", $entry.branch
+        )
+        if ($remoteBranch) {
+            & git -C $scriptRepoRoot push origin --delete $entry.branch
+            if ($LASTEXITCODE -ne 0) {
+                $cleanupIssues += "could not delete remote branch $($entry.branch)"
+            }
         }
+    }
+    } catch {
+        $cleanupIssues += $_.Exception.Message
+    }
+
+    if ($cleanupIssues) {
+        $entries = @(Get-Registry)
+        $saved = $entries | Where-Object { $_.slug -eq $slug } | Select-Object -First 1
+        if ($saved) {
+            $saved | Add-Member -NotePropertyName cleanupAttemptUtc -NotePropertyValue `
+                (Get-Date).ToUniversalTime().ToString("o") -Force
+            $saved | Add-Member -NotePropertyName cleanupIssues -NotePropertyValue $cleanupIssues -Force
+            Save-Registry -Entries $entries
+        }
+        throw "Sandbox '$slug' was promoted but cleanup is incomplete; it remains listed for retry:`n  $($cleanupIssues -join "`n  ")"
     }
 
     $remaining = Get-Registry | Where-Object { $_.slug -ne $slug }
