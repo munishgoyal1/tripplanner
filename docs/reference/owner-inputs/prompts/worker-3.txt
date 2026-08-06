@@ -32,3 +32,6 @@ Few comments on lab16:
 [2026-08-06 10:40] [worker-3 !] Fix sandbox log lock and naming
 fix this log file lock issue forom happening. 
 name the sandboxes smaller, prefix them with an incremental counter again. example 1-lab16-chatdock, 2-lab18-map etc. and hopefully list sandbox lists down all active sandboxes with name, purpose url etc.
+
+[2026-08-06 10:52] [worker-3] Evaluate chat steering queue
+should we provide a steer , add to queue functionalities in chat ?
