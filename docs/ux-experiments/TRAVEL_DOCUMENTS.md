@@ -39,15 +39,22 @@ stops the product asking for the same passport twice.
 | Date of birth | Child fares, age limits, minor-consent rules | Kept |
 | Visa type, window, entries | Whether this trip fits an existing visa | Kept |
 | Insurance cover, assistance line | Destination medical minimum, a number to call | Kept |
-| Document number | No check needs it; only form-filling does | Kept masked |
+| Document number | No check needs it; only form-filling does | Last four only |
 | The photo, scan or PDF | Nothing, once the fields are read | **Never stored** |
 
-Two consequences are worth stating plainly. A breach of this application leaks a masked
-number and an expiry date rather than a scan of someone's identity. And there is no blob
-store to secure, expire, rotate or reason about in the privacy-deletion path.
+Two consequences are worth stating plainly. A breach of this application leaks four
+digits and an expiry date rather than a scan of someone's identity. And there is no
+blob store to secure, expire, rotate or reason about in the privacy-deletion path.
 
 `.docx` is out of v1. PDF, JPEG, PNG, HEIC and pasted text cover every case the owner
 actually encounters.
+
+Two further decisions landed on 6-Aug-2026. Identity documents require a signed-in
+account, which makes the security boundary and the sign-up incentive the same line.
+And all five additional types ship in v1 — insurance, vaccination, driving licence,
+International Driving Permit, loyalty — because each answers a check the planner can
+actually run. Emergency contacts and medical notes stay profile fields; they have no
+document to extract from.
 
 ## Two lifetimes hiding inside one word
 
@@ -96,8 +103,8 @@ that can look ready while unreviewed items sit in the dock.
 
 ## Required in every option
 
-1. The original file is read once and discarded. Only extracted fields persist, and the
-   document number persists masked.
+1. The original file is read once and discarded. Only extracted fields persist, and an
+   identity number persists as its last four digits.
 2. Extraction never writes to the trip on its own. Every field is confirmed first, with the
    confidence that produced it.
 3. Details captured once are reused on the next trip without asking, and the reuse is visible
@@ -119,14 +126,21 @@ the checks have real answers rather than decorative badges:
 | Priya's passport expires 20 Nov 2026 | **Blocker** — 38 days after exit, against a 3-month rule | Computed |
 | Aarav has no passport on file | **Blocker** — he is on the flight and the hotel booking | Computed |
 | Aarav has no Schengen visa | **Blocker** — Indian passport requires a Type C visa | Grounded |
+| Indian licence, no International Driving Permit | **Warning** — day 3 is a Sintra drive; the rental desk refuses the car | Grounded |
 | Munish's visa 1 Jun – 15 Dec 2026 | Clear — 63 days of margin | Computed |
 | Insurance €50,000 medical | Clear — against a €30,000 Schengen minimum | Grounded |
+
+The licence row exists to answer a fair question: why store a driving licence at
+all? Because the licence alone is not the check. A non-EU licence is accepted in
+Portugal only alongside an International Driving Permit, and that is a same-day
+errand at home and an impossible one at the rental desk.
 
 ## Guardrails
 
 - No original document is written to storage, so there is nothing to leak, expire or rotate.
-- Document numbers are stored masked and print masked; revealing them in an export requires a
-  deliberate second confirmation.
+- Only the last four digits of an identity number are stored, so no export, reveal or breach
+  can produce the rest. Provider references — booking, policy, loyalty — stay whole, because
+  being quoted is their purpose.
 - `sanitize_plan` in `src/tripplanner/web/share.py` stays an allowlist. No document field is
   ever added to it, so share links cannot regress into leaking identity data.
 - `/account/privacy` must delete these records too. A privacy wipe that reports success while
