@@ -18,7 +18,12 @@ IDs, private keys, or machine-specific paths.
 
 ## Apply on a new Windows machine
 
-Clone the repository, open PowerShell in its root, and run:
+For the full application, VS Code/Copilot, and four-agent environment, use the
+canonical [new-machine setup guide](../docs/development/new-machine-setup.md) or
+run `Setup-Tripplanner-Dev.cmd` from the repository root.
+
+To apply only the portable user configuration, open PowerShell in the repository
+root and run:
 
 ```powershell
 .\devconfigs\Apply-DevConfigs.ps1

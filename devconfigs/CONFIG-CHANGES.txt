@@ -5,6 +5,26 @@ This is the plain-English running history of changes under devconfigs. Add the
 newest dated entry at the top. Record what changed, why it changed, how to apply
 it, and any manual recovery step that could help on a new or broken machine.
 
+2026-08-06 - Added full agent-environment setup
+------------------------------------------------
+What changed:
+- Added GitHub Copilot, Copilot Chat, and VS Code Speech to the curated extension
+  set used by full machine setup.
+- Connected portable settings and instructions to the one-click repository setup
+  that also restores all three persistent worker worktrees.
+
+Why:
+A new machine should reproduce the four-agent VS Code environment from declared,
+secret-free repository state instead of requiring several independent scripts.
+
+How to apply:
+Run Setup-Tripplanner-Dev.cmd from the repository root. Use
+devconfigs\Apply-DevConfigs.ps1 -InstallExtensions for configuration-only setup.
+
+Recovery:
+Re-run either entry point after an interrupted install. Existing VS Code settings
+backups remain beside the user settings file.
+
 2026-08-03 - Created the portable developer configuration bundle
 ----------------------------------------------------------------
 What changed:

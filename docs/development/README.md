@@ -5,6 +5,8 @@ local setup and collaboration procedures, not product requirements, architecture
 or deployment policy.
 
 - [`dev.md`](dev.md): local application, test, and UX Lab commands.
+- [`new-machine-setup.md`](new-machine-setup.md): one-click Windows toolchain,
+  VS Code/Copilot configuration, persistent workers, and manual sign-ins.
 - [`architecture-onboarding.md`](architecture-onboarding.md): guided system
   architecture, ownership map, data flows, invariants, and first-week reading plan.
 - [`parallel-agent-development.md`](parallel-agent-development.md): worker

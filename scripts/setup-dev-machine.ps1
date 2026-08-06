@@ -6,14 +6,18 @@
 .DESCRIPTION
   Installs missing prerequisites with winget, creates the Python environment,
   restores web dependencies, and reports authentication still required for
-  canary or production. It never starts servers, logs in, or overwrites .env.
+    canary or production. Full agent mode also applies the portable VS Code and
+    Copilot configuration and initializes the three persistent worker worktrees.
+    It never starts servers, logs in, or overwrites .env.
 #>
 
 [CmdletBinding()]
 param(
     [switch]$SkipToolInstall,
     [switch]$IncludeMobile,
-    [switch]$SkipDependencyInstall
+        [switch]$SkipDependencyInstall,
+        [switch]$FullAgentEnvironment,
+        [switch]$OpenAgentWindows
 )
 
 $ErrorActionPreference = "Stop"
@@ -26,6 +30,13 @@ $tools = @(
     @{ Name = "Docker Desktop"; Command = "docker"; Package = "Docker.DockerDesktop" },
     @{ Name = "Azure CLI"; Command = "az"; Package = "Microsoft.AzureCLI" }
 )
+if ($FullAgentEnvironment) {
+    $tools += @(
+        @{ Name = "Visual Studio Code"; Command = "code"; Package = "Microsoft.VisualStudioCode" },
+        @{ Name = "PowerShell"; Command = "pwsh"; Package = "Microsoft.PowerShell" },
+        @{ Name = "GitHub CLI"; Command = "gh"; Package = "GitHub.cli" }
+    )
+}
 
 function Refresh-ProcessPath {
     $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
@@ -70,6 +81,19 @@ function Assert-LastCommandSucceeded {
 Write-Host "`nTripplanner developer-machine setup`n"
 foreach ($tool in $tools) {
     Install-MissingTool $tool
+}
+
+if ($FullAgentEnvironment) {
+    & "$repoRoot\devconfigs\Apply-DevConfigs.ps1" -InstallExtensions
+    Write-Host "[ok] Portable VS Code and Copilot configuration applied"
+
+    if (-not (Get-Command copilot -ErrorAction SilentlyContinue)) {
+        Write-Host "[install] GitHub Copilot CLI"
+        npm install --global @github/copilot
+        Assert-LastCommandSucceeded "GitHub Copilot CLI install"
+    } else {
+        Write-Host "[ok] GitHub Copilot CLI"
+    }
 }
 
 # Safe, self-healing merges for parallel worktree development: record and replay
@@ -161,6 +185,27 @@ Assert-LastCommandSucceeded "Python environment verification"
 npm --prefix frontend run build
 Assert-LastCommandSucceeded "frontend production build"
 
+if ($FullAgentEnvironment) {
+    foreach ($workerName in @("worker-1", "worker-2", "worker-3")) {
+        $workerPath = "$repoRoot.worktrees\$workerName"
+        if (-not (Test-Path $workerPath -PathType Container)) {
+            & "$repoRoot\scripts\dev\agent-worktree.ps1" -Create $workerName -NoOpen
+        } else {
+            Write-Host "[ok] Persistent worktree $workerName"
+        }
+
+        & "$workerPath\scripts\setup-dev-machine.ps1" `
+            -SkipToolInstall `
+            -IncludeMobile:$IncludeMobile `
+            -SkipDependencyInstall:$SkipDependencyInstall
+        Write-Host "[ok] Worker environment $workerName"
+    }
+
+    if ($OpenAgentWindows) {
+        & "$repoRoot\scripts\open-agent-windows.ps1" -IncludeWorker2 -IncludeWorker3
+    }
+}
+
 $dockerReady = $false
 try {
     docker info *> $null
@@ -175,6 +220,10 @@ Write-Host "Canary release:  .\infra\deploy-canary.ps1"
 Write-Host "Prod promotion:  .\infra\deploy-prod.ps1"
 Write-Host "Azure access:    run 'az login' before deployment."
 Write-Host "GHCR access:     run 'docker login ghcr.io' with a write:packages PAT."
+if ($FullAgentEnvironment) {
+    Write-Host "GitHub access:   run 'gh auth login' and sign into GitHub in VS Code."
+    Write-Host "Agent windows:   .\Open-Tripplanner-All-Agents.cmd"
+}
 if (-not $dockerReady) {
     Write-Host "Docker Desktop is installed but its daemon is not running; start it before local Cosmos or image builds."
 }
