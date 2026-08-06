@@ -28,14 +28,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master` |
+| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`: `New-Sandbox.cmd <short-name> "<purpose>"` |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, then merge it into a sandbox branch |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, and verify the merge landed (keeps the sandbox) |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, branch, and emulator database (refuses while work is not in `master`) |
-| `sandbox/List-Sandboxes.cmd` | List active sandboxes, their ports, and whether they are serving |
+| `sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, URLs, branch, worktree, database, and whether it is serving |
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 | `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
@@ -51,6 +51,28 @@ process (`docker`, `az`, `npm`) writes past it to the console and leaves nothing
 in the log. Run long external tools through `Invoke-LoggedNative` from
 `dev/lib/run-log.ps1`, which streams both output streams through PowerShell and
 records the command, exit code, and duration.
+
+One process owns a transcript for as long as it runs, so a second run of the same
+script cannot open that file. `Start-RunLog` falls back to `<name>.pid<id>.log`
+rather than losing the transcript, and prunes those private files after three
+days. A script that already redirects its own output (the detached sandbox
+runner) sets `TRIPPLANNER_RUN_LOG=0` so it never holds the shared file open.
+
+## Sandboxes
+
+A sandbox is numbered when it is created, and the number is its port slot: `#1`
+serves 8100/5273/5275, `#2` serves 8110/5283/5285. The name is
+`<number>-<short-name>`, which also names the branch, the worktree, and the
+emulator database. Keep the short name under 20 characters.
+
+```powershell
+.\scripts\sandbox\New-Sandbox.cmd lab16-chatdock "Assistant dock rework"
+.\scripts\sandbox\List-Sandboxes.cmd
+.\scripts\sandbox\Serve-Sandbox.cmd 1
+```
+
+Every verb except `New-Sandbox` accepts the number, the full name, or the short
+name without its number prefix.
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,

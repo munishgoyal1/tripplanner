@@ -3,22 +3,27 @@
 .SYNOPSIS
   Create, run, update, promote, and discard isolated trip-planner sandboxes.
 
-  A sandbox is a throwaway feature environment: its own git branch
-  (sandbox/<slug>), its own worktree (sbx-<slug>), its own isolated ports, and
-  its own Cosmos DB Emulator database (tripplanner-sbx-<slug>). Sandboxes never
-  touch the canonical dev stack (ports 8000/5173/5175) or live databases.
+  A sandbox is a throwaway feature environment. Each one gets the next free
+  number, and that number is its port slot: #1 serves 8100/5273/5275, #2 serves
+  8110/5283/5285. Its name is `<number>-<short-name>`, which names the branch
+  (sandbox/2-lab16-chatdock), the worktree (sbx-2-lab16-chatdock), and the Cosmos
+  DB Emulator database (tripplanner-sbx-2-lab16-chatdock). Sandboxes never touch
+  the canonical dev stack (ports 8000/5173/5175) or live databases.
 
 .EXAMPLE
-    .\scripts\dev\sandbox.ps1 -New route-experiment
-    .\scripts\dev\sandbox.ps1 -Run route-experiment
-    .\scripts\dev\sandbox.ps1 -Serve route-experiment
-    .\scripts\dev\sandbox.ps1 -Stop route-experiment
-    .\scripts\dev\sandbox.ps1 -Update route-experiment
-    .\scripts\dev\sandbox.ps1 -Promote route-experiment
-    .\scripts\dev\sandbox.ps1 -Discard route-experiment
+    .\scripts\dev\sandbox.ps1 -New lab16-chatdock "Assistant dock rework"
+    .\scripts\dev\sandbox.ps1 -Run 2
+    .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock
+    .\scripts\dev\sandbox.ps1 -Stop 2
+    .\scripts\dev\sandbox.ps1 -Update 2
+    .\scripts\dev\sandbox.ps1 -Promote 2
+    .\scripts\dev\sandbox.ps1 -Discard 2
     .\scripts\dev\sandbox.ps1 -List
 
 .NOTES
+  Every verb except -New takes the number, the full name, or the short name
+  without its number prefix.
+
   -Run holds the terminal; -Serve starts the same stack detached and waits for
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
   -New serves automatically unless you pass -NoServe.
@@ -75,6 +80,9 @@ param(
     [Parameter(ParameterSetName = "Discard")]
     [string]$BaseBranch = "master",
 
+    [Parameter(ParameterSetName = "New", Position = 0)]
+    [string]$Purpose = "",
+
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
 
@@ -98,19 +106,6 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
-# One transcript per sandbox and verb. A served sandbox holds its -Run transcript
-# open for hours, so a single shared "sandbox" name loses every concurrent run to
-# a file lock. The slug is sanitised because it reaches the log path before
-# Assert-Slug has had a chance to reject it.
-$runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
-$runSlug = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Discard) |
-    Where-Object { $_ } | Select-Object -First 1
-$runLogName = if ($runSlug) {
-    "sandbox-$($runSlug -replace '[^A-Za-z0-9._-]', '-')-$runVerb"
-} else {
-    "sandbox-$runVerb"
-}
-Start-RunLog -Name $runLogName | Out-Null
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -118,6 +113,7 @@ $FrontendBase = 5273
 $LabsBase = 5275
 $Step = 10
 $MaxSlots = 8
+$MaxNameLength = 20
 
 function Invoke-Git {
     param(
@@ -131,11 +127,49 @@ function Invoke-Git {
     return $output
 }
 
-function Assert-Slug {
+function Assert-ShortName {
     param([Parameter(Mandatory = $true)][string]$Name)
     if ($Name -notmatch "^[a-z0-9][a-z0-9-]*$") {
-        throw "Sandbox slug must use lowercase letters, numbers, and hyphens (for example: route-experiment)."
+        throw "Sandbox name must use lowercase letters, numbers, and hyphens (for example: lab16-chatdock)."
     }
+    if ($Name.Length -gt $MaxNameLength) {
+        throw "Sandbox name '$Name' is $($Name.Length) characters. Keep it to $MaxNameLength so the worktree, branch, and database names stay readable."
+    }
+}
+
+function Get-SandboxNumber {
+    # The number is the port slot: #1 serves 8100/5273/5275, #2 serves 8110/5283/5285.
+    param([Parameter(Mandatory = $true)][object]$Entry)
+    return ([int]$Entry.slot) + 1
+}
+
+function Get-ShortName {
+    param([Parameter(Mandatory = $true)][string]$Name)
+    return ($Name -replace "^\d+-", "")
+}
+
+function Resolve-SandboxEntry {
+    # "2", "2-lab16-chatdock", and "lab16-chatdock" all reach the same sandbox,
+    # so nobody has to remember which number a name was given.
+    param([Parameter(Mandatory = $true)][string]$Reference)
+
+    $entries = @(Get-Registry)
+    if ($entries.Count -eq 0) {
+        throw "No sandboxes are registered. Create one with: .\scripts\sandbox\New-Sandbox.cmd <name> `"<purpose>`""
+    }
+    $match = @($entries | Where-Object { $_.slug -eq $Reference })
+    if ($match.Count -eq 0 -and $Reference -match "^\d+$") {
+        $match = @($entries | Where-Object { (Get-SandboxNumber -Entry $_) -eq [int]$Reference })
+    }
+    if ($match.Count -eq 0) {
+        $match = @($entries | Where-Object { (Get-ShortName -Name $_.slug) -eq (Get-ShortName -Name $Reference) })
+    }
+    if ($match.Count -eq 1) { return $match[0] }
+    if ($match.Count -gt 1) {
+        throw "'$Reference' matches more than one sandbox: $(($match | ForEach-Object { $_.slug }) -join ', '). Use the number instead."
+    }
+    $known = ($entries | ForEach-Object { "#$(Get-SandboxNumber -Entry $_) $($_.slug)" }) -join ", "
+    throw "Unknown sandbox '$Reference'. Registered: $known."
 }
 
 function Get-Registry {
@@ -162,7 +196,7 @@ function Get-FreeSlot {
     for ($i = 0; $i -lt $MaxSlots; $i++) {
         if ($used -notcontains $i) { return $i }
     }
-    throw "All $MaxSlots sandbox port slots are in use. Discard a sandbox before creating another."
+    throw "All $MaxSlots sandbox numbers are in use. Discard a sandbox before creating another."
 }
 
 function Get-VenvPython {
@@ -301,11 +335,18 @@ function Start-SandboxStack {
         $logDir = Join-Path $primaryRoot "logs\sandbox"
         New-Item -ItemType Directory -Path $logDir -Force | Out-Null
         $log = Join-Path $logDir "$($Entry.slug).log"
-        Start-Process -FilePath "pwsh" -WindowStyle Hidden `
-            -RedirectStandardOutput $log -RedirectStandardError "$log.err" `
-            -ArgumentList @(
-                "-NoProfile", "-File", (Join-Path $PSScriptRoot "sandbox.ps1"), "-Run", $Entry.slug
-            ) | Out-Null
+        # The runner already redirects both streams here, so it must not also hold
+        # the shared -Run transcript open for the hours it serves.
+        $env:TRIPPLANNER_RUN_LOG = "0"
+        try {
+            Start-Process -FilePath "pwsh" -WindowStyle Hidden `
+                -RedirectStandardOutput $log -RedirectStandardError "$log.err" `
+                -ArgumentList @(
+                    "-NoProfile", "-File", (Join-Path $PSScriptRoot "sandbox.ps1"), "-Run", $Entry.slug
+                ) | Out-Null
+        } finally {
+            Remove-Item Env:\TRIPPLANNER_RUN_LOG -ErrorAction SilentlyContinue
+        }
         Write-Host "[serve]   detached runner started; log: $log"
     }
 
@@ -411,35 +452,73 @@ $primaryRoot = Split-Path -Parent $commonGitDir
 $worktreesRoot = "$primaryRoot.worktrees"
 $registryPath = Join-Path $worktreesRoot "sandboxes.json"
 
+# One transcript per sandbox and verb. The reference is resolved first so that
+# -Run 2 and -Run 2-lab16-chatdock write to the same log instead of two.
+$runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
+$reference = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Discard) |
+    Where-Object { $_ } | Select-Object -First 1
+$runLogSlug = $reference
+if ($reference -and $runVerb -ne "new") {
+    try { $runLogSlug = (Resolve-SandboxEntry -Reference $reference).slug } catch { }
+}
+$runLogName = if ($runLogSlug) {
+    "sandbox-$($runLogSlug -replace '[^A-Za-z0-9._-]', '-')-$runVerb"
+} else {
+    "sandbox-$runVerb"
+}
+Start-RunLog -Name $runLogName | Out-Null
+
 if ($PSCmdlet.ParameterSetName -eq "List") {
-    $entries = Get-Registry
+    $entries = @(Get-Registry)
     if ($entries.Count -eq 0) {
-        Write-Host "No sandboxes. Create one with: .\scripts\dev\sandbox.ps1 -New <slug>"
+        Write-Host "No sandboxes. Create one with: .\scripts\sandbox\New-Sandbox.cmd <name> `"<purpose>`""
         return
     }
-    $entries |
-        Select-Object slug, slot,
-            @{ Name = "serving"; Expression = {
-                if (Test-SandboxEndpoint -Url "http://localhost:$($_.apiPort)/health") { "yes" } else { "no" }
-            } },
-            apiPort, frontendPort, labsPort, database, branch |
-        Format-Table -AutoSize
+    foreach ($item in ($entries | Sort-Object { [int]$_.slot })) {
+        $number = Get-SandboxNumber -Entry $item
+        $serving = Test-SandboxEndpoint -Url "http://localhost:$($item.apiPort)/health"
+        $state = if ($serving) { "serving" } else { "stopped" }
+        $age = ""
+        if ($item.createdUtc) {
+            $span = (Get-Date).ToUniversalTime() - [datetime]::Parse($item.createdUtc).ToUniversalTime()
+            $age = if ($span.TotalDays -ge 1) { "{0:N0}d old" -f $span.TotalDays } else { "{0:N0}h old" -f $span.TotalHours }
+        }
+        $purpose = if ([string]::IsNullOrWhiteSpace($item.purpose)) { "(no purpose recorded)" } else { $item.purpose }
+        Write-Host ""
+        Write-Host ("#{0}  {1}" -f $number, $item.slug) -ForegroundColor Cyan -NoNewline
+        Write-Host ("   {0}  {1}" -f $state, $age) -ForegroundColor $(if ($serving) { "Green" } else { "DarkGray" })
+        Write-Host ("    purpose   {0}" -f $purpose)
+        Write-Host ("    app       http://localhost:{0}" -f $item.frontendPort) `
+            -ForegroundColor $(if ($serving) { "Green" } else { "Gray" })
+        Write-Host ("    api       http://localhost:{0}/health" -f $item.apiPort)
+        Write-Host ("    labs      http://localhost:{0}/catalog.html" -f $item.labsPort)
+        Write-Host ("    branch    {0}" -f $item.branch)
+        Write-Host ("    worktree  {0}" -f $item.worktree)
+        Write-Host ("    database  {0}" -f $item.database)
+    }
+    Write-Host ""
+    Write-Host "Any verb takes the number, the full name, or the short name:" -ForegroundColor DarkGray
+    Write-Host "  .\scripts\sandbox\Serve-Sandbox.cmd <n>     .\scripts\sandbox\Stop-Sandbox.cmd <n>" -ForegroundColor DarkGray
+    Write-Host "  .\scripts\sandbox\Update-Sandbox.cmd <n>    .\scripts\sandbox\Promote-Sandbox.cmd <n>" -ForegroundColor DarkGray
     return
 }
 
-$slug = if ($New) { $New } elseif ($Run) { $Run } elseif ($Serve) { $Serve } `
-    elseif ($Stop) { $Stop } elseif ($Promote) { $Promote } `
-    elseif ($Update) { $Update } else { $Discard }
-Assert-Slug -Name $slug
-$branchName = "sandbox/$slug"
-$worktreePath = Join-Path $worktreesRoot "sbx-$slug"
-$database = "tripplanner-sbx-$slug"
-
 if ($PSCmdlet.ParameterSetName -eq "New") {
-    $existing = Get-Registry
-    if ($existing | Where-Object { $_.slug -eq $slug }) {
-        throw "Sandbox '$slug' already exists. Use -Run $slug or -List."
+    # A caller who types the number back gets the number they are actually given.
+    $shortName = (Get-ShortName -Name $New).ToLowerInvariant()
+    Assert-ShortName -Name $shortName
+    $existing = @(Get-Registry)
+    $clash = @($existing | Where-Object { (Get-ShortName -Name $_.slug) -eq $shortName })
+    if ($clash.Count -gt 0) {
+        throw "Sandbox '$($clash[0].slug)' already covers '$shortName'. Use -List to see it."
     }
+    $slot = Get-FreeSlot -Entries $existing
+    $number = $slot + 1
+    $slug = "$number-$shortName"
+    $branchName = "sandbox/$slug"
+    $worktreePath = Join-Path $worktreesRoot "sbx-$slug"
+    $database = "tripplanner-sbx-$slug"
+
     & git -C $scriptRepoRoot show-ref --verify --quiet "refs/heads/$branchName"
     if ($LASTEXITCODE -eq 0) {
         throw "Local branch already exists: $branchName."
@@ -450,7 +529,6 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     if (-not $NoOpen -and -not (Get-Command code -ErrorAction SilentlyContinue)) {
         throw "VS Code command 'code' is unavailable. Add it to PATH or pass -NoOpen."
     }
-    $slot = Get-FreeSlot -Entries $existing
     $apiPort = $ApiBase + ($slot * $Step)
     $frontendPort = $FrontendBase + ($slot * $Step)
     $labsPort = $LabsBase + ($slot * $Step)
@@ -477,6 +555,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     $entry = [pscustomobject]@{
         slug         = $slug
         slot         = $slot
+        purpose      = $Purpose.Trim()
         branch       = $branchName
         worktree     = $worktreePath
         apiPort      = $apiPort
@@ -487,7 +566,8 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     }
     Save-Registry -Entries (@($existing) + $entry)
 
-    Write-Host "[created] $branchName"
+    Write-Host "[created] #$number $slug on $branchName"
+    if ($entry.purpose) { Write-Host "[purpose] $($entry.purpose)" }
     Write-Host "[path]    $worktreePath"
     Write-Host "[ports]   api=$apiPort  frontend=$frontendPort  labs=$labsPort"
     Write-Host "[db]      $database (emulator)"
@@ -500,21 +580,20 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     }
 
     if ($NoServe) {
-        Write-Host "[run]     .\scripts\dev\sandbox.ps1 -Serve $slug"
+        Write-Host "[run]     .\scripts\sandbox\Serve-Sandbox.cmd $number"
     } else {
         Start-SandboxStack -Entry $entry | Out-Null
     }
     return
 }
 
-$entry = Get-Registry | Where-Object { $_.slug -eq $slug } | Select-Object -First 1
-if (-not $entry) {
-    throw "Unknown sandbox '$slug'. Create it with: .\scripts\dev\sandbox.ps1 -New $slug"
-}
+$entry = Resolve-SandboxEntry -Reference $reference
+$slug = $entry.slug
+$shortName = Get-ShortName -Name $slug
 
 if ($PSCmdlet.ParameterSetName -eq "Run") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
-        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $shortName."
     }
 
     & "$PSScriptRoot\start-cosmos-emulator.ps1"
@@ -544,7 +623,7 @@ if ($PSCmdlet.ParameterSetName -eq "Run") {
 
 if ($PSCmdlet.ParameterSetName -eq "Serve") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
-        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $shortName."
     }
     $ready = Start-SandboxStack -Entry $entry
     if (-not $ready) { exit 1 }
@@ -559,7 +638,7 @@ if ($PSCmdlet.ParameterSetName -eq "Stop") {
 
 if ($PSCmdlet.ParameterSetName -eq "Update") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
-        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $slug."
+        throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $shortName."
     }
     # Reuse the worker sync machinery: rerere-backed healing + resumable pending state.
     . "$PSScriptRoot/lib/sync-common.ps1"

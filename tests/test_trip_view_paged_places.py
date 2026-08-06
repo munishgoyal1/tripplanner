@@ -147,19 +147,24 @@ def test_route_cities_fallback_excludes_transport_legs() -> None:
             {
                 "day": 2,
                 "stops": [
-                    {"name": "Drive: Indore to Ujjain", "kind": "transport"},
-                    {"name": "Mahakaleshwar Temple", "kind": "attraction"},
+                    {
+                        "name": "Road transfer from Indore to Bhopal",
+                        "kind": "transport",
+                    },
+                    {"name": "Bhimbetka Rock Shelters", "kind": "attraction"},
                 ],
             },
         ],
     }
     page = trip_view.paged_places(trip)
-    assert page["available_cities"] == ["Indore", "Ujjain"]
-    assert set(_names(page)) == {"Rajwada Palace", "Mahakaleshwar Temple"}
+    assert page["available_cities"] == ["Indore", "Bhopal"]
+    assert set(_names(page)) == {"Rajwada Palace", "Bhimbetka Rock Shelters"}
     rajwada = next(row for row in page["items"] if row["name"] == "Rajwada Palace")
     assert rajwada["city"] == "Indore"
-    maha = next(row for row in page["items"] if row["name"] == "Mahakaleshwar Temple")
-    assert maha["city"] == "Ujjain"
+    bhimbetka = next(
+        row for row in page["items"] if row["name"] == "Bhimbetka Rock Shelters"
+    )
+    assert bhimbetka["city"] == "Bhopal"
 
 
 def test_discovery_items_rank_above_in_trip(monkeypatch: pytest.MonkeyPatch) -> None:

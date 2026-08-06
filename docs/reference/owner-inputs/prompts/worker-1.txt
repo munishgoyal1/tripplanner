@@ -2,3 +2,6 @@
 # Tail-appended, newest at the bottom. Only this lane writes this file.
 # Format: [YYYY-MM-DD HH:MM] [worker-1] [!] <short title> / verbatim prompt / blank line.
 # See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-06 00:00] [worker-1 !] Fix Destination City Filters
+why are the cities filters not showing on the destination guide in madhya pradesh trip case. it is a bug , sometimes it shows sometimes not

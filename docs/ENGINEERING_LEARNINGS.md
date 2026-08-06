@@ -640,3 +640,20 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - The general rule for any destructive tool write: decide replace-versus-merge from
   the payload's relationship to the stored value, never from the fact that the key
   was present.
+## 2026-08-06 - A Held Transcript Silently Files Output Under Another Name
+
+- A served sandbox holds its `-Run` transcript open for hours. A second run of
+  the same verb could not open the file, `Start-RunLog` returned `$null` without
+  registering anything, and the nested `dev-spa.ps1` then opened its own
+  transcript. The run was not merely unlogged: its output was filed under
+  `dev-spa-8110.log`, so the log that was read while debugging belonged to a
+  different script.
+- Registration and transcription are now separate. `Start-RunLog` always records
+  a marker in `$global:TripplannerRunLog`, with a `Transcript` flag saying
+  whether a transcript actually opened, so the nested-script guard holds even
+  when logging fails. A locked shared file falls back to `<name>.pid<id>.log`
+  instead of dropping the transcript, and those private files are pruned after
+  three days.
+- A process that already redirects its own output must opt out rather than
+  compete for the shared file. `TRIPPLANNER_RUN_LOG=0` is set for the detached
+  sandbox runner, which writes to `logs/sandbox/<name>.log` regardless.
