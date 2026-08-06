@@ -358,6 +358,71 @@ from tripplanner.tools.trip_planner import (
     set_stop_booked,
     update_trip_plan,
 )
+from tripplanner.tools.trip_planner import _merge_itinerary_days
+
+
+class TestPartialItineraryMerge:
+    """A single-stop edit must not delete the days the model did not resend."""
+
+    def _days(self, *numbers: int) -> list[dict]:
+        return [{"day": n, "stops": [{"name": f"Stop {n}", "kind": "attraction"}]} for n in numbers]
+
+    def test_subset_of_planned_days_is_merged_in_place(self):
+        existing = self._days(1, 2, 3)
+        incoming = [{"day": 2, "stops": [{"name": "Budget Inn Indore", "kind": "hotel"}]}]
+
+        merged, partial = _merge_itinerary_days(existing, incoming)
+
+        assert partial is True
+        assert [day["day"] for day in merged] == [1, 2, 3]
+        assert merged[1] == incoming[0]
+        assert merged[0] == existing[0]
+
+    def test_full_resubmit_replaces_the_itinerary(self):
+        existing = self._days(1, 2, 3)
+        incoming = self._days(1, 2)
+        incoming.append({"day": 3, "stops": []})
+
+        merged, partial = _merge_itinerary_days(existing, incoming)
+
+        assert partial is False
+        assert merged == incoming
+
+    def test_shorter_itinerary_with_a_new_day_replaces(self):
+        merged, partial = _merge_itinerary_days(self._days(1, 2, 3), self._days(4))
+
+        assert partial is False
+        assert [day["day"] for day in merged] == [4]
+
+    def test_unnumbered_days_replace(self):
+        incoming = [{"stops": []}]
+
+        merged, partial = _merge_itinerary_days(self._days(1, 2), incoming)
+
+        assert partial is False
+        assert merged == incoming
+
+    def test_hotel_swap_keeps_the_other_planned_days(self):
+        create_trip_plan.invoke({
+            "destination": "Indore",
+            "departure_date": "2026-08-10",
+            "return_date": "2026-08-12",
+            "origin": "Bangalore",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": self._days(1, 2, 3),
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "day_wise_itinerary": [
+                {"day": 2, "stops": [{"name": "Budget Inn Indore", "kind": "hotel"}]},
+            ],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert [day["day"] for day in plan["day_wise_itinerary"]] == [1, 2, 3]
+        assert plan["day_wise_itinerary"][1]["stops"][0]["name"] == "Budget Inn Indore"
+        assert "Partial itinerary update merged" in result
 
 
 class TestTripPlanState:

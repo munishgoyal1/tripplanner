@@ -623,6 +623,23 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   called it had already promoted. Both verbs share one function, which is what
   keeps the two answers from drifting apart.
 
+## 2026-08-08 - A Partial Tool Payload Must Merge, Not Replace
+
+- `update_trip_plan` wrote `plan[key] = val` for every key, so when the model
+  resubmitted only the day it had edited, `day_wise_itinerary` lost every other
+  day. The owner saw a three-day trip collapse to Day 1 after asking for a cheaper
+  hotel, and the obvious suspect was a stray UI filter — the frontend was innocent.
+- A tool argument that names a whole collection is a claim about the whole
+  collection only when the model means it to be. `_merge_itinerary_days` now
+  treats a strictly shorter incoming list whose day numbers are a subset of the
+  planned days as a partial edit, replaces those days in place, and keeps the rest.
+  A same-length or longer list, an unnumbered day, or a day the plan does not have
+  still replaces outright, because those are the shapes that mean "the trip changed".
+- The merge is announced back to the model in the tool reply, so a genuine
+  shortening is not silently refused: it reads the note and resends the full list.
+- The general rule for any destructive tool write: decide replace-versus-merge from
+  the payload's relationship to the stored value, never from the fact that the key
+  was present.
 ## 2026-08-06 - A Held Transcript Silently Files Output Under Another Name
 
 - A served sandbox holds its `-Run` transcript open for hours. A second run of

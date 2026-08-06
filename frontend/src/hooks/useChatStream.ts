@@ -131,12 +131,13 @@ export function useChatStream({
     trackEvent("planning_started", { proposal_only: proposalOnly, retry: retrying });
     setMessages((messages) => [
       ...(retrying ? messages.slice(0, -2) : messages),
-      { role: "user", text: outgoing },
+      { role: "user", text: outgoing, ts: turnStartedAtRef.current },
       { role: "assistant", text: "" },
     ]);
 
     const usedTools = new Set<string>();
     const toolTrace: { name: string; args?: string; duration_ms?: number }[] = [];
+    const turnSeconds = () => Math.max(1, Math.round((Date.now() - turnStartedAtRef.current) / 1000));
     let pendingTokens = "";
     let tokenFrame: number | null = null;
     const flushTokens = () => {
@@ -201,6 +202,8 @@ export function useChatStream({
               ...copy[copy.length - 1],
               tools: Array.from(usedTools),
               tool_trace: toolTrace.slice(),
+              ts: Date.now(),
+              seconds: turnSeconds(),
             };
             return copy;
           });
@@ -224,7 +227,12 @@ export function useChatStream({
           });
           setMessages((messages) => {
             const copy = [...messages];
-            copy[copy.length - 1] = { role: "assistant", text: `Warning: ${message}` };
+            copy[copy.length - 1] = {
+              role: "assistant",
+              text: `Warning: ${message}`,
+              ts: Date.now(),
+              seconds: turnSeconds(),
+            };
             return copy;
           });
           setFailedRequest({ message: outgoing, proposalOnly, requestId });
@@ -242,6 +250,8 @@ export function useChatStream({
             next[next.length - 1] = {
               ...draft,
               text: partial ? `${partial}\n\nResponse stopped.` : "Response stopped.",
+              ts: Date.now(),
+              seconds: turnSeconds(),
             };
           }
           return next;
@@ -259,6 +269,8 @@ export function useChatStream({
           copy[copy.length - 1] = {
             role: "assistant",
             text: `Warning: ${error instanceof Error ? error.message : "The chat request failed."}`,
+            ts: Date.now(),
+            seconds: turnSeconds(),
           };
           return copy;
         });

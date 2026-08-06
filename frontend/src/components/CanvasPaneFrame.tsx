@@ -2,7 +2,7 @@ import { EyeOff, Maximize2, Minimize2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface Props {
-  label: "Itinerary" | "Map";
+  label: "Itinerary" | "Map" | "Assistant";
   maximized: boolean;
   onHide: () => void;
   onToggleMaximize: () => void;

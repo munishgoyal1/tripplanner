@@ -1300,6 +1300,44 @@ def get_trip_plan() -> str:
     return json.dumps(plan, indent=2)
 
 
+def _itinerary_day_number(day: Any) -> int | None:
+    if not isinstance(day, dict):
+        return None
+    try:
+        return int(day.get("day"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _merge_itinerary_days(
+    existing: list[Any], incoming: list[Any]
+) -> tuple[list[Any], bool]:
+    """Fold a partial ``day_wise_itinerary`` update into the saved itinerary.
+
+    The tool contract asks for the whole itinerary on every update, but a
+    single-stop edit ("swap the Indore hotel") often comes back carrying only
+    the day that changed. Assigning that wholesale silently deletes every other
+    day, so a strict subset of already-planned day numbers is merged in place
+    instead. A full resubmit, an added day, or a renumbered itinerary still
+    replaces the list.
+    """
+    if not existing or not incoming:
+        return incoming, False
+    incoming_numbers = [_itinerary_day_number(day) for day in incoming]
+    if any(number is None for number in incoming_numbers):
+        return incoming, False
+    if len(incoming) >= len(existing):
+        return incoming, False
+    existing_numbers = {_itinerary_day_number(day) for day in existing}
+    if not set(incoming_numbers).issubset(existing_numbers):
+        return incoming, False
+    replacements = dict(zip(incoming_numbers, incoming))
+    merged = [
+        replacements.get(_itinerary_day_number(day), day) for day in existing
+    ]
+    return merged, True
+
+
 @tool
 @_serialized_mutation
 def update_trip_plan(updates_json: str) -> str:
@@ -1362,6 +1400,7 @@ def update_trip_plan(updates_json: str) -> str:
         "origin", "budget", "currency", "weather", "trip_constraints",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
+    merged_partial_itinerary = False
     for key, val in updates.items():
         if key in allowed_keys:
             if key == "selected_hotels" and isinstance(val, list):
@@ -1370,6 +1409,10 @@ def update_trip_plan(updates_json: str) -> str:
                     for hotel in val
                     if not _HOTEL_PLACEHOLDER_RE.search(_stop_name(hotel))
                 ]
+            if key == "day_wise_itinerary" and isinstance(val, list):
+                val, merged_partial_itinerary = _merge_itinerary_days(
+                    plan.get("day_wise_itinerary") or [], val
+                )
             plan[key] = val
 
     if "selected_hotels" in updates and _sync_replaced_hotel_anchors(
@@ -1385,8 +1428,14 @@ def update_trip_plan(updates_json: str) -> str:
     transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
+    if merged_partial_itinerary:
+        warning_text += (
+            "\nPartial itinerary update merged: only the days you sent were replaced, "
+            "the other planned days were kept. Send the full day_wise_itinerary when "
+            "you mean to change the shape of the trip."
+        )
     if restaurant_warnings:
-        warning_text = (
+        warning_text += (
             "\nRestaurant planning incomplete: "
             + " ".join(restaurant_warnings)
             + " Call nearby_restaurants, choose preference-matched options, and update "

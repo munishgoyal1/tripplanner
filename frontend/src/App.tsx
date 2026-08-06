@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import AssistantModalShell from "./components/AssistantModalShell";
 import CanvasPaneFrame from "./components/CanvasPaneFrame";
 import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
 import DetailsPaneShell from "./components/DetailsPaneShell";
@@ -17,7 +16,8 @@ import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selec
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
-import type { PlannerReview, TripView, TripWorkspaceView } from "./types";
+import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
+import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
 
 interface NavRef {
@@ -30,6 +30,9 @@ interface NavRef {
 type CanvasPane = "itinerary" | "map";
 type WorkspacePane = CanvasPane | "details";
 type ResizeTarget = "itinerary" | "inspector" | null;
+// The Assistant lives in a bottom dock: a single composer row by default, an
+// expanded reading sheet above it, or the full workspace height.
+type AssistantView = "bar" | "sheet" | "full";
 
 const ITINERARY_MIN_PCT = 18;
 const MAP_MIN_PCT = 20;
@@ -116,8 +119,10 @@ export default function App() {
   ));
   const [showExport, setShowExport] = useState(false);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
+  const [assistantView, setAssistantView] = useState<AssistantView>("bar");
+  const [turnEffects, setTurnEffects] = useState<{ token: number; effects: TurnEffect[] } | null>(null);
   const dockOpen = inspectorOpen;
-  const canvasMaximized = maximizedPane === "itinerary" || maximizedPane === "map";
+  const canvasMaximized = maximizedPane !== null && maximizedPane !== "details";
   const dockMaximized = maximizedPane === "details";
   const [itineraryPct, setItineraryPct] = useState(() =>
     storedPercent("tripplanner_itinerary_pct", 24, ITINERARY_MIN_PCT, 100 - MAP_MIN_PCT)
@@ -416,12 +421,43 @@ export default function App() {
     await refresh(null);
   };
 
+  // A turn that changed the plan selects what it changed, so the Itinerary,
+  // Map, and Details all land on the same subject without a manual click. The
+  // scope follows the shape of the change: one touched place is selected
+  // outright, a change spread across days (a new city, a reshuffle) keeps the
+  // whole trip in view instead of leaving one day scoped.
+  const applyTurnSelection = async (effects: TurnEffect[], tripChanged: boolean) => {
+    const applied = effects.filter((effect) => effect.change !== "removed");
+    if (!applied.length) {
+      if (tripChanged) handleMapAllDaysFocus();
+      return;
+    }
+    const days = new Set(
+      applied.map((effect) => effect.day).filter((day): day is number => typeof day === "number"),
+    );
+    if (tripChanged || days.size > 1) {
+      handleMapAllDaysFocus();
+      return;
+    }
+    const primary = applied.find((effect) => effect.kind === "hotel") ?? applied[0];
+    // Focus first: a focus dispatch clears any pending itinerary jump, so the
+    // scroll target has to be set after the Map and Details have landed.
+    await handleStopFocus(primary.kind, primary.name, primary.day, primary.stop);
+    if (primary.day) {
+      dispatchWorkspace({
+        type: "jump",
+        target: { day: primary.day, name: primary.name, token: Date.now() },
+      });
+    }
+  };
+
   // After every chat turn: refresh every trip pane, and detect a mid-chat
   // destination switch (the agent created a NEW trip → server returns a new
   // trip_id). On a real switch we reload the chat so the fresh, carryover-seeded
   // transcript replaces the previous trip's conversation.
   const handleTurnComplete = async (tripId?: string, context?: AssistantTurnContext) => {
     const tripChanged = Boolean(tripId && tripId !== chatTripId);
+    const beforeTurn = view;
     dispatchWorkspace({ type: "trip-content-changed" });
     const refreshed = await refresh(tripChanged ? null : focus);
     if (tripId) dispatchWorkspace({ type: "chat-trip-observed", tripId });
@@ -433,6 +469,8 @@ export default function App() {
       });
       return;
     }
+    const effects = diffTurnEffects(tripChanged ? null : beforeTurn, refreshed);
+    if (effects.length) setTurnEffects({ token: Date.now(), effects });
     if (context?.proposalOnly) {
       setAssistantTurnStatus({
         phase: "complete",
@@ -440,6 +478,7 @@ export default function App() {
       });
       return;
     }
+    await applyTurnSelection(effects, tripChanged);
     if (context?.startedWithoutTrip) {
       setAssistantTurnStatus({
         phase: "complete",
@@ -570,7 +609,7 @@ export default function App() {
   const setDockPaneOpen = (pane: "details" | "assistant", open: boolean) => {
     if (pane === "details") setInspectorOpen(open);
     else setChatOpen(open);
-    if (!open && pane === "details" && maximizedPane === pane) setMaximizedPane(null);
+    if (!open && maximizedPane === pane) setMaximizedPane(null);
   };
 
   const handleStopFocus = async (
@@ -747,26 +786,55 @@ export default function App() {
     </DetailsPaneShell>
   );
 
-  const assistantModal = (
-    <AssistantModalShell open={chatOpen} onClose={() => setDockPaneOpen("assistant", false)}>
-      <ChatPanel
-        onTurnComplete={handleTurnComplete}
-        onTurnStatus={setAssistantTurnStatus}
-        reloadToken={chatReloadToken}
-        tripIdHint={chatTripId}
-        hasActiveTrip={Boolean(view?.has_trip)}
-        onNewTrip={handleNewTrip}
-        onImported={handleImported}
-        hideGlobalControls
-        assistantRequest={assistantRequest}
-      />
-    </AssistantModalShell>
+  const coreColumns = isWideDesktop && dockOpen && canvasOpen
+    ? itineraryOpen && mapOpen
+      ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct - effectiveInspectorPct}fr 0.375rem ${effectiveInspectorPct}fr`
+      : `minmax(0, ${100 - effectiveInspectorPct}fr) 0.375rem minmax(0, ${effectiveInspectorPct}fr)`
+    : itineraryOpen && mapOpen
+      ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct}fr`
+      : "minmax(0, 1fr)";
+  const workspaceColumns = maximizedPane ? "minmax(0, 1fr)" : coreColumns;
+  const assistantPanel = (
+    <ChatPanel
+      onTurnComplete={handleTurnComplete}
+      onTurnStatus={setAssistantTurnStatus}
+      reloadToken={chatReloadToken}
+      tripIdHint={chatTripId}
+      hasActiveTrip={Boolean(view?.has_trip)}
+      onNewTrip={handleNewTrip}
+      onImported={handleImported}
+      hideGlobalControls
+      assistantRequest={assistantRequest}
+      layout={assistantView}
+      onChangeLayout={setAssistantView}
+      onHide={() => setDockPaneOpen("assistant", false)}
+      turnEffects={turnEffects}
+      onEffectSelect={(effect) => {
+        void handleStopFocus(effect.kind, effect.name, effect.day, effect.stop);
+      }}
+    />
+  );
+
+  // Hiding the dock must not unmount the Assistant: an in-flight turn and the
+  // loaded transcript have to survive a hide/show round trip.
+  const assistantDock = (
+    <section
+      className={`relative z-30 shrink-0 border-t border-slate-200 bg-white${chatOpen ? "" : " hidden"}`}
+    >
+      {assistantPanel}
+    </section>
   );
 
   const [mobileTripOpen, setMobileTripOpen] = useState(false);
   useEffect(() => {
     if (isDesktop && mobileTripOpen) setMobileTripOpen(false);
   }, [isDesktop, mobileTripOpen]);
+
+  // Hiding the Assistant must not leave it remembering a full-height sheet the
+  // next time it is opened.
+  useEffect(() => {
+    if (!chatOpen) setAssistantView("bar");
+  }, [chatOpen]);
 
   const latestStatus = compactStatus(view?.alerts?.[0]);
   const reviewSummary = plannerReview
@@ -847,17 +915,7 @@ export default function App() {
         <main
           ref={workspaceRef}
           className="relative grid min-h-0 flex-1 overflow-hidden p-2"
-          style={{
-            gridTemplateColumns: maximizedPane
-              ? "minmax(0, 1fr)"
-              : isWideDesktop && dockOpen && canvasOpen
-                ? itineraryOpen && mapOpen
-                  ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct - effectiveInspectorPct}fr 0.375rem ${effectiveInspectorPct}fr`
-                  : `minmax(0, ${100 - effectiveInspectorPct}fr) 0.375rem minmax(0, ${effectiveInspectorPct}fr)`
-                : itineraryOpen && mapOpen
-                  ? `${effectiveItineraryPct}fr 0.375rem ${100 - effectiveItineraryPct}fr`
-                  : "minmax(0, 1fr)",
-          }}
+          style={{ gridTemplateColumns: workspaceColumns }}
         >
           <section className={`min-h-0 min-w-0 ${!itineraryOpen || maximizedPane && maximizedPane !== "itinerary" ? "hidden" : ""}`}>
             <CanvasPaneFrame
@@ -918,8 +976,8 @@ export default function App() {
             </div>
           )}
           {inspector}
-          {assistantModal}
         </main>
+        {assistantDock}
       </div>
         ) : (
         <MobileWorkspaceShell

@@ -1,6 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, Copy, Pencil, Send, Square } from "lucide-react";
+import {
+  ArrowDown,
+  Check,
+  Clock,
+  Copy,
+  Maximize2,
+  MapPin,
+  MessageSquare,
+  Minimize2,
+  Pencil,
+  Send,
+  Sparkles,
+  Square,
+  X,
+} from "lucide-react";
 import {
   signIn,
   signOut,
@@ -18,8 +32,9 @@ import {
   getUserId,
   type AuthSession,
 } from "../api";
-import type { ChatMessage } from "../types";
+import type { ChatMessage, TurnEffect } from "../types";
 import { trackEvent } from "../analytics";
+import { saveTurnMeta, withStoredTurnMeta } from "../turnMetadata";
 import AccountSettingsHub from "./AccountSettingsHub";
 import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
@@ -49,6 +64,20 @@ interface Props {
   hideGlobalControls?: boolean;
   /** A user-approved command-bar escalation into a real Assistant turn. */
   assistantRequest?: { id: number; message: string; proposalOnly?: boolean } | null;
+  /**
+   * Desktop dock shape: a single composer row (`bar`), a reading sheet above
+   * that row (`sheet`), or the whole workspace height (`full`). `panel` is the
+   * self-contained column used by mobile.
+   */
+  layout?: "panel" | "bar" | "sheet" | "full";
+  /** Switch between the docked shapes from the dock's own controls. */
+  onChangeLayout?: (layout: "bar" | "sheet" | "full") => void;
+  /** Close the dock entirely. */
+  onHide?: () => void;
+  /** Stops the last completed turn changed, published by the workspace. */
+  turnEffects?: { token: number; effects: TurnEffect[] } | null;
+  /** Move Itinerary, Map, and Details to a stop named by a reply. */
+  onEffectSelect?: (effect: TurnEffect) => void;
 }
 
 export type { AssistantTurnContext, AssistantTurnStatus } from "../hooks/useChatStream";
@@ -57,6 +86,29 @@ const GREETING: ChatMessage = {
   role: "assistant",
   text: "Where are you traveling from, where would you like to go, and roughly when? I'll build a complete first plan with sensible defaults, and you can change anything here.",
 };
+
+function startOfDay(value: Date): number {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+}
+
+/** Label a turn by when it happened, so a multi-day session reads as a ledger. */
+export function turnGroupLabel(ts: number, now: number = Date.now()): string {
+  const when = new Date(ts);
+  const days = Math.round((startOfDay(new Date(now)) - startOfDay(when)) / 86_400_000);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return when.toLocaleDateString(undefined, { weekday: "long" });
+  return when.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+export function turnDurationLabel(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+}
+
+function clockLabel(ts: number): string {
+  return new Date(ts).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
 
 export default function ChatPanel({
   onTurnComplete,
@@ -68,6 +120,11 @@ export default function ChatPanel({
   onImported,
   hideGlobalControls = false,
   assistantRequest = null,
+  layout = "panel",
+  onChangeLayout,
+  onHide,
+  turnEffects = null,
+  onEffectSelect,
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -90,6 +147,12 @@ export default function ChatPanel({
   const [transcriptReady, setTranscriptReady] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Reading position belongs to the reader: only follow the stream when the
+  // reader is already at the bottom, and advertise new content otherwise.
+  const atBottomRef = useRef(true);
+  const [hasNewBelow, setHasNewBelow] = useState(false);
+  const appliedEffectsTokenRef = useRef(0);
   const accountRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
   const loadedTranscriptRequestRef = useRef<string | null>(null);
@@ -284,7 +347,7 @@ export default function ChatPanel({
     fetchChatHistory(tripIdHint || undefined)
       .then((rows) => {
         if (cancelled) return;
-        const next = rows.length ? rows.map((r) => ({ role: r.role, text: r.text })) : [GREETING];
+        const next = rows.length ? withStoredTurnMeta(cacheKey, rows) : [GREETING];
         transcriptCacheRef.current.set(cacheKey, next);
         setMessages(next);
       })
@@ -313,8 +376,56 @@ export default function ChatPanel({
   }, [cacheKey, messages]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (atBottomRef.current) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    setHasNewBelow(true);
   }, [messages, activeTool]);
+
+  // Retain each turn's timing and stop links across a reload; the persisted
+  // transcript itself is role + text only.
+  useEffect(() => {
+    if (!transcriptReady) return;
+    saveTurnMeta(cacheKey, messages);
+  }, [cacheKey, messages, transcriptReady]);
+
+  useEffect(() => {
+    if (!turnEffects || !turnEffects.effects.length) return;
+    if (appliedEffectsTokenRef.current === turnEffects.token) return;
+    appliedEffectsTokenRef.current = turnEffects.token;
+    setMessages((current) => {
+      const index = current.map((m) => m.role).lastIndexOf("assistant");
+      if (index < 0) return current;
+      const next = [...current];
+      next[index] = { ...next[index], effects: turnEffects.effects };
+      return next;
+    });
+  }, [turnEffects]);
+
+  const handleTranscriptScroll = () => {
+    const node = scrollRef.current;
+    if (!node) return;
+    const atBottom = node.scrollHeight - node.scrollTop - node.clientHeight < 48;
+    atBottomRef.current = atBottom;
+    if (atBottom) setHasNewBelow(false);
+  };
+
+  const jumpToLatest = () => {
+    atBottomRef.current = true;
+    setHasNewBelow(false);
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const renderedTurns = useMemo(() => {
+    let currentGroup: string | null = null;
+    return messages.map((message, index) => {
+      const label = message.ts ? turnGroupLabel(message.ts) : null;
+      const group = label && label !== currentGroup ? label : null;
+      if (label) currentGroup = label;
+      return { message, index, group };
+    });
+  }, [messages]);
 
   // When the import banner appears, scroll to the top so it's immediately visible.
   useEffect(() => {
@@ -435,8 +546,20 @@ export default function ChatPanel({
     }
   }
 
-  return (
-    <div className="flex h-full flex-col bg-white">
+  // A question from the agent lives in the transcript, so a collapsed dock has
+  // to open far enough to answer it.
+  useEffect(() => {
+    if (tripInputRequest && layout === "bar") onChangeLayout?.("sheet");
+  }, [tripInputRequest, layout, onChangeLayout]);
+
+  const docked = layout !== "panel";
+  const wideTurns = layout === "full";
+  const lastReply = useMemo(
+    () => [...messages].reverse().find((m) => m.role === "assistant" && m.text) ?? null,
+    [messages],
+  );
+
+  const brandHeader = (
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/85 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-brand to-brand-700 text-base text-white shadow-sm">
@@ -648,8 +771,16 @@ export default function ChatPanel({
           </button>}
         </div>
       </header>
+  );
 
-      <div className="flex-1 space-y-4 overflow-y-auto bg-surface px-5 py-5">
+  const transcriptBlock = (
+      <div className="relative min-h-0 flex-1">
+      <div
+        ref={scrollRef}
+        data-testid="chat-transcript"
+        onScroll={handleTranscriptScroll}
+        className="h-full space-y-4 overflow-y-auto bg-surface px-5 py-5"
+      >
         {/* Guest-import banner: shown once after OAuth sign-in when guest had data */}
         {guestBanner && (
           <div ref={topRef} className="flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm shadow-card">
@@ -720,19 +851,50 @@ export default function ChatPanel({
             </div>
           </div>
         )}
-        {messages.map((m, i) => (
+        {renderedTurns.map(({ message: m, index: i, group }) => (
+          <Fragment key={i}>
+          {group && (
+            <div className="flex items-center gap-3 pt-1" role="separator" aria-label={group}>
+              <span className="h-px flex-1 bg-slate-200" />
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{group}</span>
+              <span className="h-px flex-1 bg-slate-200" />
+            </div>
+          )}
           <div
-            key={i}
             className={`group flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
           >
+            {m.role === "user" && m.ts !== undefined && (
+              <div className="mb-1 px-1 text-[10px] text-slate-400">{clockLabel(m.ts)}</div>
+            )}
             <div
-              className={`max-w-[82%] whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
+              className={`${wideTurns ? "max-w-[min(56rem,94%)]" : "max-w-[88%]"} rounded-lg px-3.5 py-2.5 text-sm leading-relaxed shadow-card ring-1 ${
                 m.role === "user"
-                  ? "bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
-                  : "bg-white text-ink ring-slate-100"
+                  ? "rounded-br-sm bg-gradient-to-br from-brand to-brand-600 text-white ring-brand/30"
+                  : "bg-white text-ink ring-slate-200"
               }`}
             >
+              {m.role === "assistant" && (
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <Sparkles size={11} className="shrink-0 text-brand" aria-hidden />
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    Assistant
+                  </span>
+                  {m.ts !== undefined && (
+                    <span className="text-[10px] text-slate-400">{clockLabel(m.ts)}</span>
+                  )}
+                  {m.seconds !== undefined && (
+                    <span
+                      title={`This reply took ${turnDurationLabel(m.seconds)}`}
+                      className="ml-auto inline-flex items-center gap-1 rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500"
+                    >
+                      <Clock size={10} aria-hidden /> {turnDurationLabel(m.seconds)}
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className="whitespace-pre-wrap">
               {m.text || (busy && i === messages.length - 1 ? "…" : "")}
+              </div>
               {m.tools && m.tools.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {m.tools.map((t) => {
@@ -766,6 +928,34 @@ export default function ChatPanel({
                 </div>
               )}
             </div>
+            {m.role === "assistant" && Boolean(m.effects?.length) && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 px-1">
+                {m.effects?.map((effect, effectIndex) =>
+                  effect.change === "removed" ? (
+                    <span
+                      key={`${effect.name}-${effectIndex}`}
+                      title={`${effect.name} was removed from the plan`}
+                      className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-400 line-through"
+                    >
+                      <MapPin size={10} aria-hidden />
+                      {effect.name}
+                    </span>
+                  ) : (
+                    <button
+                      key={`${effect.name}-${effectIndex}`}
+                      type="button"
+                      onClick={() => onEffectSelect?.(effect)}
+                      title={`Go to ${effect.name}${effect.day ? ` on day ${effect.day}` : ""}`}
+                      className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand transition hover:bg-brand/20"
+                    >
+                      <MapPin size={10} aria-hidden />
+                      {effect.name}
+                      {effect.day ? <span className="text-brand/70">D{effect.day}</span> : null}
+                    </button>
+                  ),
+                )}
+              </div>
+            )}
             {m.text && !(busy && i === messages.length - 1) && (
               <div className="mt-1 flex min-h-7 items-center gap-0.5 px-1 text-slate-400 opacity-60 transition group-focus-within:opacity-100 group-hover:opacity-100">
                 <button
@@ -792,6 +982,7 @@ export default function ChatPanel({
               </div>
             )}
           </div>
+          </Fragment>
         ))}
         {busy && progress && (
           <div className="flex items-start gap-2 rounded-md border border-brand/15 bg-brand/[0.04] px-3 py-2.5 text-xs text-muted" role="status" aria-live="polite">
@@ -815,8 +1006,20 @@ export default function ChatPanel({
         )}
         <div ref={endRef} />
       </div>
+      {hasNewBelow && (
+        <button
+          type="button"
+          onClick={jumpToLatest}
+          className="absolute bottom-3 left-1/2 z-20 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-white shadow-pop"
+        >
+          <ArrowDown size={13} aria-hidden /> Jump to latest
+        </button>
+      )}
+      </div>
+  );
 
-      <div className="border-t border-slate-100 bg-white p-4">
+  const composerBlock = (
+      <div className={docked ? "min-w-0 flex-1" : "border-t border-slate-100 bg-white p-4"}>
         {failedRequest && (
           <button
             onClick={retryFailedRequest}
@@ -851,7 +1054,7 @@ export default function ChatPanel({
           <textarea
             ref={composerRef}
             className="flex-1 resize-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-            rows={2}
+            rows={docked ? 1 : 2}
             placeholder="e.g. Plan a 5-day trip to Goa in December for 2 people"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -877,7 +1080,10 @@ export default function ChatPanel({
           </button>
         </div>
       </div>
+  );
 
+  const modals = (
+    <>
       {showSettings && createPortal(
         <SettingsModal onClose={() => setShowSettings(false)} />,
         document.body,
@@ -913,6 +1119,89 @@ export default function ChatPanel({
         />,
         document.body,
       )}
+    </>
+  );
+
+  if (!docked) {
+    return (
+      <div className="flex h-full flex-col bg-white">
+        {brandHeader}
+        {transcriptBlock}
+        {composerBlock}
+        {modals}
+      </div>
+    );
+  }
+
+  const dockButton = "inline-flex shrink-0 items-center gap-1.5 rounded-sm px-2 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-ink";
+  const dockControls = (
+    <>
+      {layout === "bar" ? (
+        <button type="button" onClick={() => onChangeLayout?.("sheet")} className={dockButton}>
+          <MessageSquare size={12} aria-hidden /> Conversation
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onChangeLayout?.("bar")}
+          title="Minimize the conversation back to the bottom row"
+          className={dockButton}
+        >
+          <Minimize2 size={12} aria-hidden /> Minimize
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => onChangeLayout?.(layout === "full" ? "sheet" : "full")}
+        title={layout === "full" ? "Restore the conversation sheet" : "Maximize the conversation"}
+        className={dockButton}
+      >
+        {layout === "full" ? <Minimize2 size={12} aria-hidden /> : <Maximize2 size={12} aria-hidden />}
+        {layout === "full" ? "Restore" : "Maximize"}
+      </button>
+      {onHide && (
+        <button type="button" onClick={onHide} title="Hide the assistant" aria-label="Hide Assistant" className={dockButton}>
+          <X size={12} aria-hidden />
+        </button>
+      )}
+    </>
+  );
+
+  return (
+    <div className="relative bg-white">
+      {layout !== "bar" && (
+        <div
+          className={`absolute inset-x-0 bottom-full z-30 flex flex-col border-t border-slate-200 bg-white shadow-pop ${
+            layout === "full" ? "h-[calc(100dvh-7.5rem)]" : "h-[58vh]"
+          }`}
+        >
+          <div className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2">
+            <MessageSquare size={13} className="text-brand" aria-hidden />
+            <p className="text-[12px] font-semibold text-ink">Assistant</p>
+            <div className="ml-auto flex items-center gap-1">{dockControls}</div>
+          </div>
+          {transcriptBlock}
+        </div>
+      )}
+      <div className="flex items-center gap-2 px-3 py-2">
+        <div className="flex shrink-0 items-center gap-1">{layout === "bar" ? dockControls : null}</div>
+        {layout === "bar" && (
+          <p className="hidden min-w-0 flex-1 truncate text-[11px] text-slate-500 lg:block">
+            {busy && progress ? (
+              <>
+                <span className="font-semibold text-ink">{progress.label}…</span>{" "}
+                {elapsedLabel(progressSeconds)}
+              </>
+            ) : lastReply ? (
+              <>
+                <span className="font-semibold text-slate-600">Last reply</span> · {lastReply.text}
+              </>
+            ) : null}
+          </p>
+        )}
+        {composerBlock}
+      </div>
+      {modals}
     </div>
   );
 }
