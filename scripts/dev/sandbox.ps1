@@ -40,7 +40,8 @@
 
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
-  unless you pass -Force.
+    unless you pass -Force. Discard removes the local and remote sandbox branches;
+    pass -DeleteRemoteBranch:$false only when the remote branch must be retained.
 
   Sandboxes are always created fresh and discarded after promotion: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
@@ -100,7 +101,7 @@ param(
     [switch]$Force,
 
     [Parameter(ParameterSetName = "Discard")]
-    [switch]$DeleteRemoteBranch
+    [switch]$DeleteRemoteBranch = $true
 )
 
 $ErrorActionPreference = "Stop"
@@ -846,7 +847,8 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
         }
     }
 
-    if (-not $PSCmdlet.ShouldProcess($slug, "Remove sandbox worktree, branch, and emulator database")) {
+    $remoteAction = if ($DeleteRemoteBranch) { ", local and remote branches," } else { ", local branch," }
+    if (-not $PSCmdlet.ShouldProcess($slug, "Remove sandbox worktree$remoteAction and emulator database")) {
         return
     }
 

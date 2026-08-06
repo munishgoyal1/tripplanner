@@ -34,3 +34,13 @@ In C:\repos\tripplanner.worktrees\worker-1, validate the final sandbox workflow 
 4. Inspect code/diff and confirm: discard blocks dirty or origin/base-unique work; sandbox remote lag alone does not block; promotion saves metadata and invokes discard only after verification; listing shows saved or legacy promoted status and cleanup-incomplete suffix; failed cleanup retains registry; local/remote deletion retries are idempotent; unexpected cleanup exceptions are recorded.
 5. `git diff --check` passes. Scope is exactly four modified files: scripts/dev/sandbox.ps1, scripts/README.md, docs/ENGINEERING_LEARNINGS.md, docs/reference/owner-inputs/prompts/worker-1.txt. Prompt entries are at the tail. No unrelated changes.
 If all pass, stage exactly those four files, commit with message `Fix sandbox promotion cleanup`, and push current agents/worker-1 branch to configured upstream. Do not touch master or real sandbox resources. Report validation, commit SHA, push result, divergence, and final porcelain. Stop before commit if any check fails.
+
+[2026-08-06 00:00] [worker-1 !] Delete Discarded Sandbox Branches
+remote branch is not deleted as part of discard script. is that an oversight, seems obvious thing you missed
+
+[2026-08-06 14:45] [worker-1 !] Commit Sandbox Branch Cleanup
+In C:\repos\tripplanner.worktrees\worker-1, complete this task cautiously.
+1. Review the full diff and require exactly three modified files: scripts/dev/sandbox.ps1, scripts/README.md, docs/reference/owner-inputs/prompts/worker-1.txt. Confirm the prompt is at the true tail, PowerShell parses, switch default is true, explicit `-DeleteRemoteBranch:$false` remains possible, both promotion recursive discard calls inherit the default, remote deletion is idempotent, and `git diff --check` passes.
+2. If clean, stage exactly those files, commit `Delete remote sandbox branches by default`, and push current agents/worker-1 to its configured upstream.
+3. Then fetch origin and verify remote branch `sandbox/lab16-chat-dock` exists and every commit on it is contained in `origin/master` (`origin/master..origin/sandbox/lab16-chat-dock` empty). Only if both are true, delete that remote branch with `git push origin --delete sandbox/lab16-chat-dock`. If it has unique work, do not delete it and report the blocker.
+4. Report commit SHA, code push, stale branch cleanup result, final divergence, and porcelain. Do not touch master, other branches, registry, worktrees, or databases.
