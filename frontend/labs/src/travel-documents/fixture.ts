@@ -98,7 +98,7 @@ export const travellerDocuments: TravellerDocument[] = [
     reusedFrom: "Kyoto, Mar 2026",
     fields: [
       { label: "Issuing country", value: "India", confidence: 0.99 },
-      { label: "Document number", value: "Z••••••4", masked: true, confidence: 0.98 },
+      { label: "Document number", value: "••••4821", masked: true, confidence: 0.98 },
       { label: "Date of birth", value: "11 Feb 1984", confidence: 0.99 },
       { label: "Expiry", value: "18 Apr 2031", confidence: 0.99 },
     ],
@@ -132,7 +132,7 @@ export const travellerDocuments: TravellerDocument[] = [
     reusedFrom: "Kyoto, Mar 2026",
     fields: [
       { label: "Issuing country", value: "India", confidence: 0.99 },
-      { label: "Document number", value: "Z••••••1", masked: true, confidence: 0.97 },
+      { label: "Document number", value: "••••9036", masked: true, confidence: 0.97 },
       { label: "Date of birth", value: "30 Sep 1986", confidence: 0.99 },
       { label: "Expiry", value: "20 Nov 2026", confidence: 0.99 },
     ],
@@ -149,7 +149,7 @@ export const travellerDocuments: TravellerDocument[] = [
     reusedFrom: "Kyoto, Mar 2026",
     fields: [
       { label: "Issuing country", value: "India", confidence: 0.98 },
-      { label: "Licence number", value: "KA••••••319", masked: true, confidence: 0.94 },
+      { label: "Licence number", value: "••••4319", masked: true, confidence: 0.94 },
       { label: "Categories", value: "LMV · MCWG", confidence: 0.91 },
       { label: "Expiry", value: "22 Aug 2029", confidence: 0.97 },
     ],
@@ -159,12 +159,13 @@ export const travellerDocuments: TravellerDocument[] = [
     travellerId: "self",
     kind: "insurance",
     title: "Travel insurance · family",
-    issuer: "ICICI Lombard · policy TR••••882",
+    issuer: "ICICI Lombard · policy TR8827431",
     expiry: "2026-10-20",
     expiryLabel: "20 Oct 2026",
     capturedOn: "28 Jul 2026",
     fields: [
       { label: "Medical cover", value: "€50,000", confidence: 0.95 },
+      { label: "Policy number", value: "TR8827431", confidence: 0.98 },
       { label: "Covers", value: "8–20 Oct 2026", confidence: 0.97 },
       { label: "Assistance line", value: "+91 22 6787 2000", confidence: 0.99 },
       { label: "Insured", value: "3 travellers", confidence: 0.94 },
@@ -285,7 +286,7 @@ export const readinessChecks: ReadinessCheck[] = [
 
 export const pendingExtraction: ExtractedField[] = [
   { label: "Issuing country", value: "India", confidence: 0.99 },
-  { label: "Document number", value: "Z••••••7", masked: true, confidence: 0.96 },
+  { label: "Document number", value: "••••5178", masked: true, confidence: 0.96 },
   { label: "Surname", value: "Goyal", confidence: 0.99 },
   { label: "Given name", value: "Aarav", confidence: 0.98 },
   { label: "Date of birth", value: "14 Jun 2017", confidence: 0.97 },

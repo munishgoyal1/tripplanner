@@ -66,9 +66,14 @@ const kept = [
     keep: "Kept",
   },
   {
-    field: "Document number",
-    why: "Needed by no check. Only useful when you are filling a form yourself.",
-    keep: "Kept masked",
+    field: "Identity document number",
+    why: "Needed by no check. The last four are enough to tell two passports apart.",
+    keep: "Last four only",
+  },
+  {
+    field: "Provider references",
+    why: "Booking, policy and loyalty numbers exist to be quoted, so they are kept whole.",
+    keep: "Kept",
   },
   {
     field: "The photo, scan or PDF",
@@ -91,7 +96,7 @@ const lifetimes = [
 ];
 
 const requirements = [
-  "The original file is read once and discarded. Only the extracted fields persist, and the document number persists masked.",
+  "The original file is read once and discarded. Only the extracted fields persist, and an identity number persists as its last four digits.",
   "Extraction never writes to the trip on its own. Every field is shown for confirmation first, with the confidence that produced it.",
   "Details captured once are reused on the next trip without asking again, and the reuse is visible — 'Reused from Kyoto, Mar 2026'.",
   "Deterministic checks — validity windows, cover amounts, date arithmetic — are computed in code, never inferred by the model.",
@@ -112,7 +117,7 @@ const criteria = [
 
 const guardrails = [
   "No original document is written to storage, so there is nothing to leak, expire or rotate.",
-  "Document numbers are stored masked and print masked; revealing them in an export needs a deliberate, second confirmation.",
+  "Only the last four digits of an identity number are stored, so no export, reveal or breach can produce the rest. Provider references stay whole, because quoting them is their purpose.",
   "sanitize_plan stays an allowlist. No document field is ever added to it, so share links cannot regress into leaking identity data.",
   "Account privacy deletion must remove these records too; a privacy wipe that reports success while details survive is worse than no wipe.",
   "Guests cannot store identity details. A capability credential is not an identity.",
@@ -178,8 +183,8 @@ function Lab() {
             <span>
               <span className="font-semibold">Decided: we never store the document.</span> A passport photo is read
               once, the fields we can actually use are kept, and the file is deleted. Those fields are what get reused
-              next year, so you are never asked to upload the same passport twice — and a breach of this app leaks a
-              masked number and an expiry date, not a scan of your identity.
+              next year, so you are never asked to upload the same passport twice — and a breach of this app leaks four
+              digits and an expiry date, not a scan of your identity.
             </span>
           </p>
         </header>
@@ -208,7 +213,7 @@ function Lab() {
                         className={`pill ${
                           row.keep === "Never stored"
                             ? "bg-rose-50 text-rose-700"
-                            : row.keep === "Kept masked"
+                            : row.keep === "Last four only"
                               ? "bg-amber-50 text-amber-800"
                               : "bg-emerald-50 text-emerald-700"
                         }`}

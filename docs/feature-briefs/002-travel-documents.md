@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Brief ID | `002` |
-| Status | Scope decided - one export decision open, UX direction in evaluation |
+| Status | Scope decided - UX direction in evaluation |
 | Owner | Munish Goyal |
 | Created | 2026-08-06 |
 | Updated | 2026-08-06 |
@@ -53,6 +53,11 @@ These are settled. They are constraints on every option, not variables.
 5. **All five additional types ship in v1**, because each one answers a check the
    planner can actually run. Emergency contacts and medical notes stay profile
    fields on `family_members` and do not become documents.
+6. **Only the last four digits of an identity number are stored.** Not encrypted,
+   not revealable - simply never captured. No check in this brief needs the rest,
+   and it is the one field that turns a modest leak into a serious one.
+   Provider references - booking confirmations, insurance policy numbers, loyalty
+   numbers - are stored whole, because being quoted is their entire purpose.
 
 The consequences are worth stating, because they simplify the rest of this brief
 considerably: there is no blob container to secure, no SAS issuance, no lifecycle
@@ -224,7 +229,7 @@ id, user_id, scope ("traveler" | "trip"), trip_id?, traveler_key?,
 type ("passport" | "visa" | "insurance" | "vaccination" | "licence" |
       "loyalty" | "booking"),
 status ("ready" | "failed" | "superseded"),
-fields { issuing_country, number_masked, expiry, date_of_birth, ... },
+fields { issuing_country, number_last4, expiry, date_of_birth, ... },
 booking { provider, reference, occurrence_day, occurrence_index, amount, currency },
 provenance { captured_at, source_kind ("pdf" | "image" | "text"), confidence,
              confirmed_by_user },
@@ -254,9 +259,9 @@ There is no `blob_path`. A record that cannot point at a file cannot leak one.
 - Reject SVG, HTML, and archives. Cap request size and per-account record count.
 - The uploaded bytes are never persisted, never logged, and never written to a
   temporary file. Image EXIF and GPS data are discarded with the rest of the file.
-- Document numbers are displayed masked everywhere. Whether the full number is
-  stored at all is the one open decision below; if it is not stored, no code path
-  can reveal it, which is the stronger position.
+- Identity numbers are stored as their last four digits only. There is no reveal
+  control, no encryption key to manage, and no access log to keep, because there
+  is nothing further to reveal.
 - Never include document fields in analytics, structured logs, share snapshots,
   or passive learning. Log document events by type and outcome only.
 - Rate-limit uploads and extraction on the existing admission boundary.
@@ -275,34 +280,31 @@ Three levels, deliberately different:
 |---|---|---|
 | Public share link | Never, under any setting | Not a setting. `sanitize_plan` is an allowlist |
 | Exported PDF or emailed packet | Off by default, opt in per export | A checkbox on the export sheet |
-| Full document numbers inside that export | See the open decision below | A second, separate confirmation |
+| Full identity numbers anywhere | Never. Only the last four exist | Nothing. There is no control, because there is nothing to control |
 
 Booking references are treated separately from identity details. A confirmation
 number is the point of the packet, so it is included by default; a passport number
 is not, so it is not.
 
-Email delivery of an unmasked identity number would require its own confirmation,
-because email is not a private channel.
+The decision that collapsed the third row is worth restating, because it removed
+a whole feature rather than adding one. Storing an identity number and exporting
+one were the same question: a number that is never captured can never be
+exported, revealed, leaked, or subpoenaed. Choosing last-four-only deletes the
+encryption, the key rotation, the access auditing, the reveal path, and the
+second email confirmation that the alternative would all have required.
 
-## Open owner decision
+What an export can still carry: traveler names, expiry dates, visa windows,
+insurance cover and assistance line, every booking reference, and `••••4821`.
+Enough to recognise the right passport; not enough to misuse it.
 
-One decision remains, and it is narrower than it first appeared. Storing a
-document number and exporting one are the same question, because a number that is
-never stored can never be exported.
+The only capability lost is transcribing a number into an airline or visa form
+without fetching the physical passport - a desk-side task, where the passport is
+usually within reach.
 
-**Does the product store the full document number, or only the last four digits?**
+## Open owner decisions
 
-| | Store last four only | Store the full number |
-|---|---|---|
-| What the export can carry | Names, expiry dates, visa windows, insurance cover, booking references, and `••••••4821` | All of that, plus the real number behind a second confirmation |
-| What it enables | Every planning check in this brief. All of them work on country, expiry, and dates | Filling an airline or visa form without fetching the physical passport |
-| What a breach exposes | Four digits and an expiry date | Identity-theft-grade data for the whole family |
-| What it costs to build | Nothing extra | Field-level encryption, key rotation, access auditing, and a reveal path to defend forever |
-
-**Recommendation: last four only.** No check in this brief needs the full number.
-Its only real use is transcribing into a form, which happens at a desk where the
-passport is usually within reach, and it is the single field that turns a modest
-leak into a serious one. It also keeps v1 simple, which is the stated goal.
+None. Retention, accepted file types, guest access, document types, and identity
+number storage are all settled above.
 
 The placement question - whether documents live in the trip, in the account, or in
 an intake queue - is being answered by

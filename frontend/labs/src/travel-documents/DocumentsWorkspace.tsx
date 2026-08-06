@@ -173,7 +173,7 @@ function DocumentRow({
               <dt className="text-[11px] text-slate-500">{field.label}</dt>
               <dd className="text-[11px] font-semibold text-ink">
                 {field.value}
-                {field.masked ? <span className="ml-1 font-normal text-slate-400">masked</span> : null}
+                {field.masked ? <span className="ml-1 font-normal text-slate-400">last 4</span> : null}
               </dd>
             </div>
           ))}
@@ -279,7 +279,7 @@ function CaptureCard({
         </button>
         <p className="mt-2 flex items-start gap-1.5 text-[10px] leading-relaxed text-slate-500">
           <Lock size={11} className="mt-px shrink-0" aria-hidden />
-          The file is deleted when you save. Only the fields above are kept, and the document number is stored masked.
+          The file is deleted when you save. Only the fields above are kept, and the number keeps its last four digits.
         </p>
         <div className="mt-2.5 flex items-center gap-2">
           <button type="button" onClick={onSave} className="btn-primary h-8 flex-1 text-xs">
@@ -296,15 +296,11 @@ function CaptureCard({
 
 function ExportSheet({
   include,
-  reveal,
   onToggleInclude,
-  onToggleReveal,
   onClose,
 }: {
   include: boolean;
-  reveal: boolean;
   onToggleInclude: () => void;
-  onToggleReveal: () => void;
   onClose: () => void;
 }) {
   return (
@@ -351,36 +347,17 @@ function ExportSheet({
             </span>
           </button>
           {include ? (
-            <div className="mt-2 rounded-2xl bg-amber-50 p-3 ring-1 ring-amber-200">
-              <button
-                type="button"
-                onClick={onToggleReveal}
-                className="flex w-full items-start gap-2 text-left"
-                aria-pressed={reveal}
-              >
-                <span
-                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-                    reveal ? "border-amber-600 bg-amber-600 text-white" : "border-amber-400 bg-white"
-                  }`}
-                  aria-hidden
-                >
-                  {reveal ? <Check size={11} /> : null}
-                </span>
-                <span>
-                  <span className="block text-[11px] font-semibold text-amber-900">Show full document numbers</span>
-                  <span className="block text-[11px] leading-relaxed text-amber-800">
-                    {reveal
-                      ? "Z1234567 will be printed in full. Anyone holding this PDF holds the number."
-                      : "Numbers print as Z••••••7. Enough to recognise, not enough to misuse."}
-                  </span>
-                </span>
-              </button>
-              {reveal ? (
-                <p className="mt-2 flex items-start gap-1.5 border-t border-amber-200 pt-2 text-[10px] leading-relaxed text-amber-900">
-                  <AlertTriangle size={11} className="mt-px shrink-0" aria-hidden />
-                  Emailing this file will ask you to confirm a second time.
-                </p>
-              ) : null}
+            <div className="mt-2 rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
+              <p className="text-[11px] font-semibold text-ink">Numbers print as ••••4821</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+                Enough to recognise the right passport, not enough to misuse it. There is no
+                setting to print the rest, because the rest was never stored.
+              </p>
+              <p className="mt-2 flex items-start gap-1.5 border-t border-slate-200 pt-2 text-[10px] leading-relaxed text-slate-500">
+                <Lock size={11} className="mt-px shrink-0" aria-hidden />
+                Expiry dates, visa windows and insurance cover print in full. Those are what a
+                border officer or a hospital will ask you for.
+              </p>
             </div>
           ) : null}
           <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
@@ -787,7 +764,6 @@ export function DocumentsWorkspace({ option }: { option: DocumentsOption }) {
   const [inboxOpen, setInboxOpen] = useState(true);
   const [exportOpen, setExportOpen] = useState(false);
   const [includeDocs, setIncludeDocs] = useState(false);
-  const [reveal, setReveal] = useState(false);
 
   useEffect(() => {
     setDocs(travellerDocuments);
@@ -797,7 +773,6 @@ export function DocumentsWorkspace({ option }: { option: DocumentsOption }) {
     setInboxOpen(true);
     setExportOpen(false);
     setIncludeDocs(false);
-    setReveal(false);
   }, [option]);
 
   useEffect(() => {
@@ -927,9 +902,7 @@ export function DocumentsWorkspace({ option }: { option: DocumentsOption }) {
       {exportOpen ? (
         <ExportSheet
           include={includeDocs}
-          reveal={reveal}
           onToggleInclude={() => setIncludeDocs((value) => !value)}
-          onToggleReveal={() => setReveal((value) => !value)}
           onClose={() => setExportOpen(false)}
         />
       ) : null}
