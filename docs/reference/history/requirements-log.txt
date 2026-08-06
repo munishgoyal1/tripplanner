@@ -3389,3 +3389,9 @@ VALIDATION:
 - Explain same-vehicle continuation, scenic breaks, and long-drive lunch planning
   in the drive insight while retaining explicit meals as separate itinerary stops.
 - Add breathing room between the saved-trip dropdown and workspace status text.
+
+[2026-08-07 18:55] Lab 20 travel documents implemented (Option B).
+Traveller document details live in Account and are reused by every trip; a trip only shows a gap badge.
+The original photo or text is read once and discarded: only allowlisted fields are stored, and identity numbers are reduced to their last four digits before any write.
+New: web/travel_documents.py, web/document_readiness.py, web/document_extract.py, components/TravelDocumentsVault.tsx, and a documents container in cosmos-data.bicep.
+PDFs are refused with an explicit message; photo and pasted text are the supported inputs. /account/privacy deletes these records.

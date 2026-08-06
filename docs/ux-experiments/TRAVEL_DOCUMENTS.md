@@ -5,8 +5,8 @@
 - Branch: `agents/worker-3`
 - Owner: Munish Goyal
 - Date started: 6-Aug-2026
-- Date ended: pending
-- Status: In evaluation
+- Date ended: 7-Aug-2026
+- Status: Selected — B · Account vault, trip shows gaps
 - Lab: `http://127.0.0.1:5175/lab-20-travel-documents.html`
 - Full-size preview: append `?preview=readiness`, `?preview=vault`, or `?preview=inbox`
 - Feature brief: [`../feature-briefs/002-travel-documents.md`](../feature-briefs/002-travel-documents.md)
@@ -176,4 +176,29 @@ capability on 6-Aug-2026; the direction is what this Lab now selects.
 
 ## Decision
 
-Pending owner selection.
+**B · Account vault, trip shows gaps.** Details live in Account, permanently and once. A
+trip never owns a document; it carries a single badge naming how many documents need
+fixing, and that badge opens the vault already scrolled to this trip's gaps. B is the only
+option where the second trip costs nothing, which was the criterion that mattered most.
+
+### What shipped
+
+Three backend modules, deliberately separated by lifetime rather than by layer:
+`travel_documents.py` decides what may be stored, `document_readiness.py` decides what to
+say about it, and `document_extract.py` reads a photo or pasted text once and returns
+proposals it does not persist. Endpoints are `GET /documents`, `POST /documents`,
+`POST /documents/extract`, `POST /documents/delete`, `POST /documents/clear`, and
+`GET /trip/documents/readiness`.
+
+The guardrails are enforced in code, not documented as intentions. Any field outside the
+per-type allowlist is dropped on save; `number`, `document_number` and `identity_number`
+are all folded into `number_last4` before anything is written, so a caller cannot store a
+full identity number even by asking. `/account/privacy` deletes these records and reports
+the count. `sanitize_plan` was not touched.
+
+Two scope decisions worth stating. PDFs are refused with an explicit message rather than
+silently failing, because no PDF reader is a dependency and pretending otherwise would be
+worse than the refusal; photographing the page or pasting the text both work. And the
+passport margin check names the six-month margin it used and asks the owner to confirm
+the destination's exact rule, rather than claiming a per-country rule the product does not
+actually hold.

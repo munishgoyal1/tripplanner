@@ -41,6 +41,7 @@ vi.mock("./api", () => ({
   tripIcsUrl: vi.fn(() => "/api/trip/export.ics"),
   isAnonymousUser: isAnonymousUserMock,
   getDisplayName: vi.fn(() => "Munish"),
+  fetchDocumentReadiness: vi.fn(() => Promise.resolve({ checks: [], blockers: 0, warnings: 0, badge: "" })),
 }));
 
 vi.mock("./components/ChatPanel", () => ({

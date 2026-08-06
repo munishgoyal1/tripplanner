@@ -12,6 +12,9 @@ Endpoints
 * ``POST /chat/stream``  — Server-Sent Events: tokens + tool steps in real time.
 * ``GET  /trip/view``    — the trip-panel view-model JSON.
 * ``POST /trip/select``  — add a hotel/attraction to the active trip.
+* ``GET  /documents``    — stored traveller document fields (never the file).
+* ``POST /documents/extract`` — propose fields from a photo or pasted text.
+* ``GET  /trip/documents/readiness`` — deterministic paperwork checks for the trip.
 * ``GET  /health``       — liveness probe.
 
 Per-user conversation history is kept in a small in-memory store keyed by the
@@ -336,6 +339,34 @@ class PrivacyActionRequest(BaseModel):
     action: Literal["delete_trip_history", "clear_all_data", "delete_account"]
     # For destructive actions we require explicit typed confirmation text.
     confirm_text: str = ""
+
+
+class DocumentExtractRequest(BaseModel):
+    user_id: str = "local"
+    type: str
+    # Exactly one of these. The bytes live for this request only — they are
+    # never persisted, never logged, and no path is ever returned.
+    content_base64: str = ""
+    text: str = ""
+
+
+class DocumentSaveRequest(BaseModel):
+    user_id: str = "local"
+    id: str = ""
+    type: str
+    scope: Literal["traveler", "trip"] = "traveler"
+    traveller_key: str = "self"
+    traveller_name: str = ""
+    trip_id: str | None = None
+    # Only the fields the person confirmed. Anything outside the type's
+    # allowlist is dropped by the store rather than saved.
+    fields: dict[str, Any] = Field(default_factory=dict)
+    provenance: dict[str, Any] = Field(default_factory=dict)
+
+
+class DocumentDeleteRequest(BaseModel):
+    user_id: str = "local"
+    id: str
 
 
 class GuestMigrateRequest(BaseModel):
@@ -1704,6 +1735,153 @@ async def regenerate_profile_summary(req: SelectRequest, request: Request) -> di
         "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
     }
 
+def _document_user(request: Request, claimed_user_id: str) -> str:
+    """Identity for the document vault.
+
+    Traveller documents are tied to a real account: hosted callers must be
+    signed in, so a guest capability cannot accumulate identity details. Local
+    development keeps the ordinary single-user identity.
+    """
+    if is_hosted():
+        user_id = require_signed_user(request)
+        set_user_id(user_id)
+        return user_id
+    return _set_request_user(request, claimed_user_id)
+
+
+@app.get("/documents")
+async def documents_list(request: Request, user_id: str = "local") -> dict:
+    """Every stored traveller document detail for this account.
+
+    Returns the extracted fields only — there is no original file to return,
+    because none was kept.
+    """
+    from tripplanner.web import travel_documents
+
+    _document_user(request, user_id)
+    documents = await asyncio.to_thread(travel_documents.list_documents, "traveler")
+    return {"documents": documents, "type_labels": travel_documents.TYPE_LABELS}
+
+
+@app.post("/documents/extract")
+async def documents_extract(req: DocumentExtractRequest, request: Request) -> dict:
+    """Read one document and propose its fields for confirmation.
+
+    Nothing is written here. The response is a proposal the person must accept
+    before ``POST /documents`` stores anything.
+    """
+    from tripplanner.web import document_extract
+
+    _document_user(request, req.user_id)
+    try:
+        result = await asyncio.to_thread(
+            document_extract.extract,
+            req.type,
+            content_base64=req.content_base64,
+            text=req.text,
+        )
+    except document_extract.ExtractionError as exc:
+        app_event("api_document_extract", document_type=req.type, outcome="rejected")
+        return JSONResponse({"ok": False, "message": str(exc)}, status_code=422)
+
+    app_event(
+        "api_document_extract",
+        document_type=req.type,
+        source_kind=result["source_kind"],
+        field_count=len(result["fields"]),
+        outcome="proposed",
+    )
+    return {"ok": True, **result}
+
+
+@app.post("/documents")
+async def documents_save(req: DocumentSaveRequest, request: Request) -> dict:
+    """Store the fields a person confirmed for one document."""
+    from tripplanner.web import travel_documents
+
+    user_id = _document_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        stored = await asyncio.to_thread(
+            travel_documents.save_document,
+            {
+                "id": req.id,
+                "type": req.type,
+                "scope": req.scope,
+                "traveller_key": req.traveller_key,
+                "traveller_name": req.traveller_name,
+                "trip_id": req.trip_id,
+                "fields": req.fields,
+                "provenance": req.provenance,
+            },
+        )
+    except travel_documents.DocumentError as exc:
+        return JSONResponse({"ok": False, "message": str(exc)}, status_code=422)
+    finally:
+        await release_workspace_exclusive(workspace)
+
+    app_event("api_document_saved", document_type=stored["type"], scope=stored["scope"])
+    return {"ok": True, "document": stored}
+
+
+@app.post("/documents/delete")
+async def documents_delete(req: DocumentDeleteRequest, request: Request) -> dict:
+    """Delete one stored document detail."""
+    from tripplanner.web import travel_documents
+
+    user_id = _document_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        deleted = await asyncio.to_thread(travel_documents.delete_document, req.id)
+    finally:
+        await release_workspace_exclusive(workspace)
+
+    app_event("api_document_deleted", deleted=deleted)
+    return {"ok": deleted}
+
+
+@app.post("/documents/clear")
+async def documents_clear(req: UserRequest, request: Request) -> dict:
+    """Delete every stored document detail for this account."""
+    from tripplanner.web import travel_documents
+
+    user_id = _document_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        deleted = await asyncio.to_thread(travel_documents.clear_all_documents)
+    finally:
+        await release_workspace_exclusive(workspace)
+
+    app_event("api_documents_cleared", deleted=deleted)
+    return {"ok": True, "deleted": deleted}
+
+
+@app.get("/trip/documents/readiness")
+async def trip_documents_readiness(request: Request, user_id: str = "local") -> dict:
+    """Whether the active trip's paperwork is ready.
+
+    Every check is arithmetic over stored fields and trip dates. This endpoint
+    answers one question and does not become a third place documents live.
+    """
+    from tripplanner.tools import trip_planner
+    from tripplanner.tools import user_preferences as prefs_store
+    from tripplanner.web import document_readiness, travel_documents
+
+    _document_user(request, user_id)
+
+    def _evaluate() -> dict:
+        trip = trip_planner.load_active_trip_dict()
+        if not trip:
+            return {"checks": [], "blockers": 0, "warnings": 0, "badge": "", "reason": "no_trip"}
+        return document_readiness.evaluate(
+            trip,
+            travel_documents.list_documents("traveler"),
+            prefs_store.load_preferences(),
+        )
+
+    return await asyncio.to_thread(_evaluate)
+
+
 @app.post("/account/privacy")
 async def account_privacy_action(req: PrivacyActionRequest, request: Request) -> dict:
     """Run user-requested privacy actions (GDPR-style controls).
@@ -1716,7 +1894,7 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
     from tripplanner.tools import trip_planner
     from tripplanner.tools import user_preferences as prefs_store
     from tripplanner.usage import clear_usage
-    from tripplanner.web import chat_store
+    from tripplanner.web import chat_store, travel_documents
     import tripplanner.tools_cache as tools_cache
 
     user_id = _set_request_user(request, req.user_id)
@@ -1736,9 +1914,11 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
 
         deleted_usage = 0
         deleted_cache = 0
+        deleted_documents = 0
         reset_prefs = False
 
         if req.action in {"clear_all_data", "delete_account"}:
+            deleted_documents = await asyncio.to_thread(travel_documents.clear_all_documents)
             await asyncio.to_thread(prefs_store.reset_preferences)
             reset_prefs = True
             deleted_usage = await asyncio.to_thread(clear_usage, user_id)
@@ -1753,6 +1933,7 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
         deleted_chats=deleted_chats,
         deleted_usage=deleted_usage,
         deleted_cache=deleted_cache,
+        deleted_documents=deleted_documents,
     )
 
     return {
@@ -1762,6 +1943,7 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
         "deleted_chats": deleted_chats,
         "deleted_usage": deleted_usage,
         "deleted_cache": deleted_cache,
+        "deleted_documents": deleted_documents,
         "preferences_reset": reset_prefs,
         "message": (
             "Trip history deleted."

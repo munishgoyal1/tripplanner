@@ -74,6 +74,21 @@ resource tripsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
   }
 }]
 
+// Traveller document details — extracted fields only, never an original file.
+resource documentsContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
+  parent: databases[index]
+  name: 'documents'
+  properties: {
+    resource: {
+      id: 'documents'
+      partitionKey: {
+        paths: ['/user_id']
+        kind: 'Hash'
+      }
+    }
+  }
+}]
+
 resource placesCacheContainers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [for (databaseName, index) in databaseNames: {
   parent: databases[index]
   name: 'places_cache'

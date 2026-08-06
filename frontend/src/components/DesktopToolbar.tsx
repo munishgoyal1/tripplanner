@@ -1,4 +1,4 @@
-import { List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
+import { AlertTriangle, List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
@@ -20,6 +20,8 @@ interface Props {
   signedIn: boolean;
   accountLabel: string;
   onOpenAccount: () => void;
+  documentBadge: string;
+  onOpenDocuments: () => void;
 }
 
 export default function DesktopToolbar({
@@ -36,6 +38,8 @@ export default function DesktopToolbar({
   signedIn,
   accountLabel,
   onOpenAccount,
+  documentBadge,
+  onOpenDocuments,
 }: Props) {
   return (
     <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
@@ -43,6 +47,16 @@ export default function DesktopToolbar({
       <div className="ml-3 h-5 w-px shrink-0 bg-slate-200" aria-hidden />
       <div className="mr-auto flex min-w-32 flex-1 items-center gap-2 pl-3">
         <StatusBar />
+        {documentBadge && (
+          <button
+            type="button"
+            onClick={onOpenDocuments}
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-rose-50 px-2.5 text-xs font-semibold text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100"
+            title="Open your travel documents for this trip"
+          >
+            <AlertTriangle size={13} aria-hidden /> {documentBadge}
+          </button>
+        )}
         {reviewPending && (
           <div className="flex shrink-0 items-center gap-1" aria-label="Planner review choices">
             <button type="button" onClick={onReviewWithPlanner} className="rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-200">

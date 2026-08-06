@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleUserRound,
+  FileText,
   LogOut,
   ShieldCheck,
   SlidersHorizontal,
@@ -13,8 +14,9 @@ import {
 import type { AuthSession } from "../api";
 import { AnalyticsPreferences } from "./AnalyticsConsent";
 import SettingsModal from "./SettingsModal";
+import TravelDocumentsVault from "./TravelDocumentsVault";
 
-type Destination = "menu" | "profile" | "travel" | "analytics" | "privacy";
+export type AccountDestination = "menu" | "profile" | "travel" | "documents" | "analytics" | "privacy";
 
 interface Props {
   auth: AuthSession;
@@ -22,6 +24,7 @@ interface Props {
   localIdentityActive: boolean;
   nameInput: string;
   privacyBusy: boolean;
+  initialDestination?: AccountDestination;
   onNameInputChange: (value: string) => void;
   onClose: () => void;
   onGoogleSignIn: () => void;
@@ -60,6 +63,7 @@ export default function AccountSettingsHub({
   localIdentityActive,
   nameInput,
   privacyBusy,
+  initialDestination = "menu",
   onNameInputChange,
   onClose,
   onGoogleSignIn,
@@ -69,7 +73,7 @@ export default function AccountSettingsHub({
   onClearAllData,
   onDeleteAccount,
 }: Props) {
-  const [destination, setDestination] = useState<Destination>("menu");
+  const [destination, setDestination] = useState<AccountDestination>(initialDestination);
 
   return (
     <aside aria-label="Account settings" className="fixed inset-y-0 right-0 z-[100] flex w-full max-w-sm flex-col border-l border-slate-200 bg-white shadow-xl">
@@ -87,6 +91,7 @@ export default function AccountSettingsHub({
           <nav className="divide-y divide-slate-100" aria-label="Account settings sections">
             <MenuRow icon={CircleUserRound} label="Profile and sign-in" detail="Identity and account access" onClick={() => setDestination("profile")} />
             <MenuRow icon={SlidersHorizontal} label="Travel profile" detail="Preferences, travel style, and accessibility" onClick={() => setDestination("travel")} />
+            <MenuRow icon={FileText} label="Travel documents" detail="Passports, visas, and details reused by every trip" onClick={() => setDestination("documents")} />
             <MenuRow icon={BarChart3} label="Analytics preferences" detail="Anonymous product analytics choice" onClick={() => setDestination("analytics")} />
             <MenuRow icon={ShieldCheck} label="Privacy and data" detail="History, erasure, and account deletion" onClick={() => setDestination("privacy")} />
           </nav>
@@ -112,6 +117,12 @@ export default function AccountSettingsHub({
           <BackButton onClick={() => setDestination("menu")} />
           <div className="mt-4 flex items-start gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-teal-50 text-teal-700"><SlidersHorizontal size={17} aria-hidden /></span><div><p className="text-[10px] font-bold uppercase text-brand">Reusable defaults</p><h3 className="mt-0.5 text-sm font-semibold text-ink">Travel profile</h3><p className="mt-1 text-xs leading-relaxed text-slate-500">Keep your travel style and preferences available for future plans.</p></div></div>
           <div className="mt-4"><SettingsModal embedded onClose={() => setDestination("menu")} /></div>
+        </div>}
+
+        {destination === "documents" && <div className="flex min-h-full flex-col p-4">
+          <BackButton onClick={() => setDestination("menu")} />
+          <div className="mt-4 flex items-start gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-teal-50 text-teal-700"><FileText size={17} aria-hidden /></span><div><p className="text-[10px] font-bold uppercase text-brand">Account · used by every trip</p><h3 className="mt-0.5 text-sm font-semibold text-ink">Travel documents</h3><p className="mt-1 text-xs leading-relaxed text-slate-500">Details belong to you, not to one trip. Each trip only shows the gaps.</p></div></div>
+          <div className="mt-4 flex min-h-0 flex-1 flex-col"><TravelDocumentsVault /></div>
         </div>}
 
         {destination === "analytics" && <AnalyticsPreferences onBack={() => setDestination("menu")} />}
