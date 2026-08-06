@@ -123,6 +123,22 @@ proposal-first review, guarded autonomy with reversible receipts, and a persiste
 console, and it applies the same operation and verdict from all four channels — chat, map,
 itinerary and details. See [`AGENTIC_PLANNING.md`](AGENTIC_PLANNING.md).
 
+## Open Travel Documents Experiment (2026-08-06)
+
+The travel documents lab is available at
+`http://127.0.0.1:5175/lab-20-travel-documents.html`. The owner approved the capability on
+6-Aug-2026, which supersedes the earlier non-goal below that kept travel-document upload out
+of scope pending approval.
+
+Its retention rule was decided before the lab opened and is context, not a variable: the
+original photo or PDF is **never stored**. A document is read once, the fields that answer a
+planning question are kept, the document number is kept masked, and the file is discarded.
+Those kept fields are what get reused on the next trip, so the same passport is never
+requested twice. The lab compares a trip readiness rail, an account vault that the trip only
+reports gaps against, and a drop-anything inbox that routes items after the fact. Its Lisbon
+fixture is built so every check has a real answer, including a passport that fails Portugal's
+three-month validity rule. See [`TRAVEL_DOCUMENTS.md`](TRAVEL_DOCUMENTS.md).
+
 ## Open Itinerary and Map Canvas Experiments (2026-08-05)
 
 Two paired labs reimagine the two panes the owner reads most, using one shared four-day
@@ -264,7 +280,10 @@ book using the same family-trip facts. The experiment tests packet structure,
 navigation, document readiness, and evidence-labeled personalization only;
 secure document ingestion and merged-PDF production behavior remain out of
 scope until a direction is selected and separately approved. See
-[`ITINERARY_TRIP_BOOK.md`](ITINERARY_TRIP_BOOK.md).
+[`ITINERARY_TRIP_BOOK.md`](ITINERARY_TRIP_BOOK.md). Document ingestion itself was
+approved on 6-Aug-2026 and is now decided in
+[`TRAVEL_DOCUMENTS.md`](TRAVEL_DOCUMENTS.md), which also rules out merged-PDF storage
+permanently: originals are never kept.
 
 ## Rules
 

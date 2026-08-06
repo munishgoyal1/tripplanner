@@ -1,4 +1,4 @@
-import { BookOpen, Compass, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -24,7 +24,7 @@ export interface LabSelectionState {
 
 export type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
 
-export const LAST_ASSIGNED_LAB_NUMBER = 19;
+export const LAST_ASSIGNED_LAB_NUMBER = 20;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition | undefined {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -42,6 +42,18 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 }
 
 export const activeLabs: LabRecord[] = [
+  {
+    labNumber: 20,
+    id: "travel-documents",
+    title: "Where travel documents live, and what we refuse to keep",
+    category: "Trip data",
+    description: "Bookings, passports, visas and insurance get a home: fields are extracted once, the original file is never stored, and details are reused on the next trip. Compare a trip readiness rail, an account vault the trip only reports gaps against, and a drop-anything inbox that routes items later.",
+    createdAt: "2026-08-06",
+    status: "In evaluation",
+    decision: "Open · Recommended starting point: B · Account vault, trip shows gaps.",
+    href: "./lab-20-travel-documents.html",
+    icon: FileText,
+  },
   {
     labNumber: 19,
     id: "agentic-planning",

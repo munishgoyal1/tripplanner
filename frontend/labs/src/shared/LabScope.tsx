@@ -10,6 +10,19 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "travel-documents": {
+    changes: [
+      "Where travel documents live: inside the trip, on the account, or in one intake queue that routes items afterwards",
+      "How a document is captured — the read, extract, confirm-each-field, save sequence — and how plainly it says the original file is discarded",
+      "How the trip reports paperwork readiness: the blockers it names, the rule it cites, and how much surface that costs when nothing is wrong",
+      "How stored details are reused on the next trip, corrected, and deleted, and how they behave in an export",
+    ],
+    context: [
+      "The retention rule itself: fields are kept, document numbers are kept masked, the original file is never stored. Every option obeys it",
+      "The Lisbon fixture trip, its travellers, and the deterministic checks, which are identical across options",
+      "Itinerary, Map, and Details pane design, extraction accuracy, provider search, and server-side persistence",
+    ],
+  },
   "agentic-planning": {
     changes: [
       "Where the authority to write the trip lives: a deterministic plan engine that owns placement, validation, and persistence, with the model reduced to intent in and explanation out",
