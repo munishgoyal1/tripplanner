@@ -263,12 +263,12 @@ function DayCard({
         changesHotel && destinationHotelIndex > 0 ? (
           <ul
             aria-label={`Transition day timeline from ${firstStop.name} to ${day.stops[destinationHotelIndex].name}`}
-            className="relative isolate divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 before:absolute before:bottom-4 before:left-20 before:top-4 before:z-0 before:w-px before:bg-brand/25 sm:px-4 sm:before:left-[5.25rem] [&>li]:relative [&>li]:z-10"
+            className="space-y-1.5 border-t border-slate-200 bg-surface px-3 py-3 sm:px-4"
           >
             {visibleStops.map(renderStop)}
           </ul>
         ) : (
-          <ul className="divide-y divide-slate-100 border-t border-slate-200 bg-surface px-3 sm:px-4">
+          <ul className="space-y-1.5 border-t border-slate-200 bg-surface px-3 py-3 sm:px-4">
             {visibleStops.map(renderStop)}
           </ul>
         )
