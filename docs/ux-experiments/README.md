@@ -153,9 +153,10 @@ every option; only its ranking changes. See
 
 The map canvas lab is available at
 `http://127.0.0.1:5175/lab-18-map-canvas.html`. It compares a floating control deck, a
-bottom route dock that carries the day's stop timeline, and a single command ribbon,
-against how much of the pane today's three stacked control rows consume. Day scope,
-all three add-stop inputs, the day fact line, the pin card and the failure state are
+bottom route dock that carries the day's stop timeline, a single command ribbon, and a
+search-first dock that keeps the bottom placement but drops the resident stop list, puts a
+real search field in the dock, and lets a tap on an unplanned pin fill that same field. Day
+scope, all three add-stop inputs, the day fact line, the pin card and the failure state are
 required in every option. See [`MAP_CANVAS.md`](MAP_CANVAS.md).
 
 Both labs include a *Compare with today* toggle and a full-viewport production-scale

@@ -43,3 +43,7 @@ Create a lab proposing good chanegs to chat agent behaviour (not only UI) includ
 Some issues seen: sometimes adding a new attraciton to best day was added after the last day departure flight , after returning to banglaore, that is weird. So the items placement logic should be very very robust and intelligenmt. Is there a seperate intelligence layer required, which works on top or along with the LLM model ?
 Asking it to update a hotel of indore city to 3star , did that but also weirdly removed the bangalore flgith conenction also, and that too sielently without coneyiong.
 So reimagine a strong and intelligent agency chat (I mean not only chat but update interactions happenignn through any channel - map, itinerary, details or chat anywhere )
+
+[2026-08-06 14:54] [worker-2] ! Map canvas option D, search-first dock
+lab17: one thing i am having dillema on is that option B has addtional route places list given when those are also in itinerary, that eats up space. Showing at bottom all these controls looks better, but i will need to play around hwne we implenment this lab in a sandbox before we decide the iterations.
+and the Add place button - it doesnt intuitively tell user that clicking it will allow them to type a place in search bar - am i right or it is just fine ? and will they still be able to add a selected pin/place on the map intuitively - will selecting a place expand out the add place button with place name added in search box - provide 1 more option around reimagingin this add experience + the bottom bar from option B, in a new option D..

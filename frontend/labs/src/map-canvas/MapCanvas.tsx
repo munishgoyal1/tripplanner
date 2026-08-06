@@ -1,10 +1,11 @@
-import { Layers, Plus, Route, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Layers, Plus, Route, Search, X } from "lucide-react";
 import { useState } from "react";
 import { StylizedMap } from "../shared/StylizedMap";
+import type { DiscoveredPlace } from "../shared/StylizedMap";
 import { days, dayTotals } from "../shared/tripFixture";
 import type { Day, Stop } from "../shared/tripFixture";
 
-export type MapOption = "deck" | "dock" | "ribbon";
+export type MapOption = "deck" | "dock" | "ribbon" | "compose";
 
 const findStop = (id: string | null) => {
   for (const day of days) {
@@ -124,6 +125,57 @@ function AddStop({ compact = false }: { compact?: boolean }) {
         </button>
       )}
     </div>
+  );
+}
+
+/** The day's stop order, times, booking dots and travel legs, read left to right. */
+function SequenceStrip({
+  day,
+  selected,
+  onSelect,
+}: {
+  day: Day;
+  selected: string | null;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <ol className="flex items-stretch gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2">
+      {day.stops.map((stop, index) => (
+        <li key={stop.id} className="flex shrink-0 items-center gap-1">
+          {index > 0 && stop.travel && (
+            <span className="whitespace-nowrap px-1 text-[10px] font-medium text-accent">
+              {stop.travel.duration}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => onSelect(stop.id)}
+            className={`flex min-w-[7.5rem] max-w-[11rem] items-center gap-1.5 rounded-xl border px-2 py-1.5 text-left transition ${
+              selected === stop.id ? "border-transparent bg-ink text-white" : "border-slate-200 bg-white hover:border-slate-300"
+            }`}
+          >
+            <span
+              className="grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[10px] font-bold"
+              style={{ borderColor: day.color, color: selected === stop.id ? "#fff" : day.color }}
+            >
+              {stop.marker ?? "•"}
+            </span>
+            <span className="min-w-0">
+              <span className={`block text-[10px] tabular-nums ${selected === stop.id ? "text-white/70" : "text-slate-400"}`}>
+                {stop.time}{stop.estimated ? "*" : ""}
+              </span>
+              <span className="block truncate text-[11px] font-semibold">{stop.name}</span>
+            </span>
+            {stop.bookable && (
+              <span
+                className={`ml-auto h-1.5 w-1.5 shrink-0 rounded-full ${stop.booked ? "bg-emerald-500" : "bg-amber-400"}`}
+                title={stop.booked ? "Confirmed" : "Needs booking"}
+              />
+            )}
+          </button>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -281,45 +333,180 @@ function DockOption({ activeDay, setActiveDay, selected, setSelected }: OptionPr
             <span>{dayFactsLine(null)}</span>
           )}
         </div>
-        {active && (
-          <ol className="flex items-stretch gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2">
-            {active.stops.map((stop, index) => (
-              <li key={stop.id} className="flex shrink-0 items-center gap-1">
-                {index > 0 && stop.travel && (
-                  <span className="whitespace-nowrap px-1 text-[10px] font-medium text-accent">
-                    {stop.travel.duration}
-                  </span>
-                )}
+        {active && <SequenceStrip day={active} selected={selected} onSelect={setSelected} />}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------- D · Composer -------------------------------- */
+
+/** Places on the map that are not yet in the trip, so a tap can fill the composer. */
+const discoveredPlaces: DiscoveredPlace[] = [
+  { id: "d-estufa", name: "Estufa Fria greenhouse", kind: "Attraction", rating: 4.5, x: 29, y: 23 },
+  { id: "d-ramiro", name: "Cervejaria Ramiro", kind: "Restaurant", rating: 4.6, x: 57, y: 17 },
+  { id: "d-graca", name: "Miradouro da Graça", kind: "Viewpoint", rating: 4.7, x: 74, y: 39 },
+  { id: "d-lx", name: "LX Factory", kind: "Attraction", rating: 4.4, x: 17, y: 61 },
+  { id: "d-timeout", name: "Time Out Market", kind: "Restaurant", rating: 4.3, x: 45, y: 56 },
+];
+
+function ComposeOption({ activeDay, setActiveDay, selected, setSelected }: OptionProps) {
+  const active = days.find((day) => day.day === activeDay) ?? null;
+  const picked = findStop(selected);
+  const totals = active ? dayTotals(active) : null;
+  const [query, setQuery] = useState("");
+  const [resolved, setResolved] = useState<DiscoveredPlace | null>(null);
+  const [sequence, setSequence] = useState(false);
+
+  const typed = query.trim().toLowerCase();
+  const matches =
+    !resolved && typed.length >= 2
+      ? discoveredPlaces.filter((place) => place.name.toLowerCase().includes(typed)).slice(0, 3)
+      : [];
+
+  const take = (place: DiscoveredPlace) => {
+    setResolved(place);
+    setQuery(place.name);
+    setSelected(null);
+  };
+  const clear = () => {
+    setResolved(null);
+    setQuery("");
+  };
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="relative min-h-0 flex-1">
+        <StylizedMap
+          activeDay={activeDay}
+          selectedId={selected}
+          onSelect={(stop) => setSelected(stop.id)}
+          discovered={discoveredPlaces}
+          discoveredId={resolved?.id ?? null}
+          onDiscover={take}
+        />
+        {picked && (
+          <div className="absolute right-3 top-3 z-30">
+            <PinCard stop={picked.stop} day={picked.day} onClose={() => setSelected(null)} />
+          </div>
+        )}
+      </div>
+
+      <div data-lab-change="Map commands" className="z-20 shrink-0 border-t border-slate-200 bg-white/95 backdrop-blur">
+        <div className="relative px-3 py-2">
+          {matches.length > 0 && (
+            <ul className="absolute bottom-full left-3 right-3 z-40 mb-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-pop">
+              {matches.map((place) => (
+                <li key={place.id}>
+                  <button
+                    type="button"
+                    onClick={() => take(place)}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-slate-50"
+                  >
+                    <Search size={13} className="shrink-0 text-slate-400" aria-hidden />
+                    <span className="min-w-0 flex-1 truncate text-xs font-semibold text-ink">{place.name}</span>
+                    <span className="shrink-0 text-[11px] text-slate-500">{place.kind} · ★ {place.rating}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <div className="relative min-w-[11rem] flex-1">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+              <input
+                type="text"
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setResolved(null);
+                }}
+                placeholder="Search a place, or tap one on the map…"
+                className="h-9 w-full rounded-full border border-slate-200 bg-white pl-8 pr-8 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+              />
+              {query && (
                 <button
                   type="button"
-                  onClick={() => setSelected(stop.id)}
-                  className={`flex min-w-[7.5rem] max-w-[11rem] items-center gap-1.5 rounded-xl border px-2 py-1.5 text-left transition ${
-                    selected === stop.id ? "border-transparent bg-ink text-white" : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
+                  onClick={clear}
+                  className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-100"
+                  title="Clear"
                 >
-                  <span
-                    className="grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[10px] font-bold"
-                    style={{ borderColor: active.color, color: selected === stop.id ? "#fff" : active.color }}
-                  >
-                    {stop.marker ?? "•"}
-                  </span>
-                  <span className="min-w-0">
-                    <span className={`block text-[10px] tabular-nums ${selected === stop.id ? "text-white/70" : "text-slate-400"}`}>
-                      {stop.time}{stop.estimated ? "*" : ""}
-                    </span>
-                    <span className="block truncate text-[11px] font-semibold">{stop.name}</span>
-                  </span>
-                  {stop.bookable && (
-                    <span
-                      className={`ml-auto h-1.5 w-1.5 shrink-0 rounded-full ${stop.booked ? "bg-emerald-500" : "bg-amber-400"}`}
-                      title={stop.booked ? "Confirmed" : "Needs booking"}
-                    />
-                  )}
+                  <X size={12} aria-hidden />
                 </button>
-              </li>
-            ))}
-          </ol>
-        )}
+              )}
+            </div>
+            {resolved ? (
+              <>
+                <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                  {resolved.kind} · ★ {resolved.rating}
+                </span>
+                <select
+                  aria-label="Stop type (optional)"
+                  defaultValue={resolved.kind}
+                  className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs text-slate-600"
+                >
+                  <option>Type (optional)</option>
+                  <option>Attraction</option>
+                  <option>Hotel</option>
+                  <option>Restaurant</option>
+                  <option>Viewpoint</option>
+                </select>
+                <select
+                  aria-label="Add stop to day"
+                  defaultValue={active ? `Day ${active.day}` : "Best day"}
+                  className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs text-slate-600"
+                >
+                  <option>Best day</option>
+                  {days.map((day) => <option key={day.day}>Day {day.day}</option>)}
+                </select>
+                <button
+                  type="button"
+                  className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full bg-brand px-3.5 text-xs font-semibold text-white transition hover:bg-brand-600"
+                >
+                  <Plus size={14} aria-hidden /> Add
+                </button>
+              </>
+            ) : (
+              <span className="hidden shrink-0 pr-1 text-[11px] text-slate-400 md:inline">
+                or tap a dashed pin
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 border-t border-slate-100 px-3 py-1.5">
+          <DayScope activeDay={activeDay} onChange={setActiveDay} />
+          <span className="ml-auto shrink-0 text-[11px] text-slate-500">
+            {active ? `${totals?.planned} planned · ${totals?.confirmed} confirmed · ${totals?.toBook} to book` : "5 days planned"}
+          </span>
+          <button
+            type="button"
+            onClick={() => setSequence((value) => !value)}
+            aria-pressed={sequence}
+            disabled={!active}
+            className={`inline-flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[11px] font-semibold transition disabled:opacity-40 ${
+              sequence ? "bg-ink text-white" : "text-slate-500 hover:bg-slate-100"
+            }`}
+            title="The day's stop order also lives in the itinerary pane"
+          >
+            <Route size={11} aria-hidden /> Sequence
+            {sequence ? <ChevronDown size={11} aria-hidden /> : <ChevronUp size={11} aria-hidden />}
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1.5 border-t border-slate-100 px-3 py-1 text-[11px] text-slate-600">
+          {active ? (
+            <>
+              <span className="font-semibold text-ink">Day {active.day} · {active.title}</span>
+              <span className="text-slate-300" aria-hidden>|</span>
+              <span className="truncate">{dayFactsLine(active)}</span>
+            </>
+          ) : (
+            <span>{dayFactsLine(null)}</span>
+          )}
+        </div>
+
+        {sequence && active && <SequenceStrip day={active} selected={selected} onSelect={setSelected} />}
       </div>
     </div>
   );
@@ -461,6 +648,7 @@ export function MapCanvas({ option, showError = false }: { option: MapOption | "
     option === "today" ? <TodayOption {...props} />
     : option === "deck" ? <DeckOption {...props} />
     : option === "ribbon" ? <RibbonOption {...props} />
+    : option === "compose" ? <ComposeOption {...props} />
     : <DockOption {...props} />;
 
   return (

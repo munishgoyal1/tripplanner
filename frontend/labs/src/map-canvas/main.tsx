@@ -35,11 +35,36 @@ const variants: Array<{ id: MapOption; label: string; summary: string; delta: st
       "Today's three stacked control rows collapse into one command row plus a single day-coloured fact ribbon, then the map takes everything below it.",
     delta: "Smallest change from today and the safest to ship; least new capability.",
   },
+  {
+    id: "compose",
+    label: "D · Search-first dock",
+    summary:
+      "B's bottom dock without the resident stop list. A real search field sits in the dock at all times, so it is obvious you can type; tapping a dashed pin on the map fills that same field with the place name. Type and day only appear once there is a place to add, and the route timeline is a Sequence toggle rather than permanent furniture.",
+    delta: "Bottom controls without duplicating the itinerary. One composer fed two ways; the timeline stays available but stops charging rent.",
+  },
+];
+
+const dilemmas = [
+  {
+    question: "B's route timeline repeats the itinerary and eats the dock.",
+    answer:
+      "D drops it from the resting state and puts it behind a Sequence toggle in the same dock. The strip is identical when opened, so a sandbox round can settle whether it earns its 4rem — especially when the map is maximised and the itinerary is not on screen.",
+  },
+  {
+    question: "Does an Add a place button say you can type into it?",
+    answer:
+      "No. A pill labelled + Add a place reads as open a form or add something now, not type here. D replaces it with a field that already looks like a search box, carries a magnifier and a placeholder, and returns live results — the affordance states its own behaviour instead of promising it.",
+  },
+  {
+    question: "Can a place picked on the map still be added intuitively?",
+    answer:
+      "Yes, and it should feed the same composer rather than a parallel one. In D the dashed pins are places not yet in the trip; tapping one writes its name into the search field and reveals type, day and Add. Typing and tapping are two ways to fill one control, so there is only ever one add flow to learn.",
+  },
 ];
 
 const requirements = [
   "Day scope keeps All days plus every day, in the day's own route colour.",
-  "Adding a place keeps all three inputs: free-text search, optional type, and target day including Best day, plus the Add action.",
+  "Adding a place keeps all three inputs: free-text search, optional type, and target day including Best day, plus the Add action. An option may reveal them progressively, but none may be dropped.",
   "The day context line keeps the day label, schedule duration, start and end with the est. marker, and route-only travel duration, distance and mode.",
   "A selected pin keeps its photo, name, rating, address, Open details, and either move-day plus remove for planned stops or day select plus Add to trip for new ones.",
   "Route colour, numbered markers and the day polyline keep matching the itinerary pane exactly.",
@@ -52,12 +77,14 @@ const criteria = [
   { title: "Day comprehension", detail: "Can the owner tell the shape and cost of Day 3 without leaving the map?" },
   { title: "Itinerary agreement", detail: "Does a pin, its colour and its number read as the same object as the itinerary row?" },
   { title: "Narrow-pane survival", detail: "Does the option still work when the map is the secondary pane?" },
+  { title: "Duplication with the itinerary", detail: "Does the map repeat what the itinerary already says, and is that repetition worth its space?" },
 ];
 
 const guardrails = [
   "Floating chrome must never permanently obscure the selected pin or the route.",
   "Colours come from the existing day palette, brand coral and teal accent only.",
   "No control may be removed to gain map space; it may only move or collapse behind a visible affordance.",
+  "An affordance must describe what it does: a control that accepts typing must look like it accepts typing.",
   "Pin numbering and day colour must stay identical to the itinerary pane.",
 ];
 
@@ -116,7 +143,7 @@ function useQueryPreview(): MapOption | null {
 
 function Lab() {
   const previewOption = useQueryPreview();
-  const [option, setOption] = useState<MapOption>("dock");
+  const [option, setOption] = useState<MapOption>("compose");
   const [baseline, setBaseline] = useState(false);
   const [showError, setShowError] = useState(false);
   const handleChoose = useCallback((next: string) => {
@@ -155,7 +182,7 @@ function Lab() {
           <h1 className="display mt-2 text-3xl font-semibold text-ink sm:text-4xl">Map canvas, reimagined</h1>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
             Today three stacked control rows sit above the map and consume roughly a fifth of the pane
-            before a single pin is drawn. Three options rebalance chrome and geography while keeping
+            before a single pin is drawn. Four options rebalance chrome and geography while keeping
             every control, fact and state the production map already provides.
           </p>
         </header>
@@ -173,6 +200,24 @@ function Lab() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="mt-8">
+          <p className="text-[10px] font-bold uppercase text-brand">Open questions option D answers</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink">Three things the first three options left unresolved</h2>
+          <div className="mt-3 grid gap-3 lg:grid-cols-3">
+            {dilemmas.map((item) => (
+              <div key={item.question} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
+                <p className="text-sm font-semibold text-ink">{item.question}</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-600">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-slate-500">
+            None of this is settled here. D exists so the bottom-bar placement can be kept while the
+            duplication and the add affordance are argued separately, and so a sandbox round has
+            something concrete to iterate on.
+          </p>
         </section>
 
         <section className="mt-8">
@@ -205,7 +250,11 @@ function Lab() {
               <h2 className="mt-1 text-lg font-semibold text-ink">
                 {baseline ? "Today's map pane" : variants.find((variant) => variant.id === option)?.label}
               </h2>
-              <p className="mt-1 text-xs text-slate-500">Click a pin to open its card. Day 3 is scoped by default.</p>
+              <p className="mt-1 text-xs text-slate-500">
+                {option === "compose" && !baseline
+                  ? "Day 3 is scoped by default. Tap a numbered pin for its card, or a dashed pin to fill the search field."
+                  : "Click a pin to open its card. Day 3 is scoped by default."}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <button
