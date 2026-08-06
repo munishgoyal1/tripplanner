@@ -32,6 +32,7 @@ export default defineConfig({
         chatAssistant: resolve(__dirname, "lab-4-chat-assistant.html"),
         completedLabs: resolve(__dirname, "completed-labs.html"),
         destinationGuide: resolve(__dirname, "lab-13-destination-guide.html"),
+        firstVisit: resolve(__dirname, "lab-21-first-visit.html"),
         intercityMap: resolve(__dirname, "lab-14-intercity-map.html"),
         itineraryCanvas: resolve(__dirname, "lab-17-itinerary-canvas.html"),
         itineraryDensity: resolve(__dirname, "lab-11-itinerary-density.html"),

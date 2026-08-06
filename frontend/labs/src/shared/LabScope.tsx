@@ -10,6 +10,21 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "first-visit": {
+    changes: [
+      "What the root URL is: an explanation and an entry point, instead of the empty workspace it boots today",
+      "The order of the first screen — ask, prove, interview, or perform — and which of the product's two claims it makes visible first",
+      "The forty seconds after Plan is pressed: a durable guest trip URL, streaming reasoning, and a stated expiry",
+      "Where the account is asked for, what it adopts, and what a visitor loses by refusing",
+      "The shared trip: a public read-only plan page and the link preview a message app renders for it",
+    ],
+    context: [
+      "The Lisbon fixture plan, its prices, sources and savings, which are identical in all four options",
+      "The workspace itself — itinerary, map, details, assistant — which begins after this Lab ends",
+      "Real authentication, provider search, live pricing, SEO tooling, and server-side rendering mechanics",
+      "Pricing and plan tiers beyond the one honest line that the beta is free",
+    ],
+  },
   "travel-documents": {
     changes: [
       "Where travel documents live: inside the trip, on the account, or in one intake queue that routes items afterwards",

@@ -24,6 +24,47 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "first-visit": {
+    axis:
+      "All four sell the same product with the same plan and the same prices. They disagree about what the first ten seconds are spent on: asking, proving, interviewing, or performing.",
+    rows: [
+      {
+        option: "A · Prompt-first hero",
+        score: 76,
+        idea: "The input is the hero; proof waits below the fold.",
+        buys: "The shortest path from arrival to a real trip, and the least to build.",
+        costs: "It claims rather than proves, and looks like every other AI product.",
+        choose: "Visitors mostly arrive already convinced, by word of mouth.",
+      },
+      {
+        option: "B · Proof-first magazine",
+        score: 86,
+        idea: "A finished plan, with sourced prices, is the page.",
+        buys: "Belief before the ask, plus destination pages worth indexing.",
+        costs: "The one action is pushed down, and content has to be maintained.",
+        choose: "Strangers need a reason to believe before they will type.",
+      },
+      {
+        option: "C · Guided intake",
+        score: 64,
+        idea: "A short form writes the first prompt for you.",
+        buys: "Nobody stares at an empty box, and the answers seed preferences.",
+        costs: "Five decisions before anything happens, and it reads like a booking site.",
+        choose: "The audience cannot describe a trip in a sentence.",
+      },
+      {
+        option: "D · Live agent stage",
+        score: 83,
+        idea: "The product plans a trip in front of you, price falling live.",
+        buys: "Both claims — the reasoning and the best total — become visible at once.",
+        costs: "Autoplay, a dark theme unlike the app, and one destination that is not yours.",
+        choose: "The differentiator is invisible until someone watches it happen.",
+      },
+    ],
+    same: "The Lisbon fixture plan, its four days, its priced lines and their sources, the guest trip URL and its expiry, and the promise never to hold a card.",
+    verdict:
+      "B wins on the ordering question because this product's hard problem is belief, not intent: a stranger has no reason to trust that the times, transfers and totals are real until they read a finished plan, and that same content is the only thing here worth indexing. D wins the demonstration question outright — it is the only option that makes the reasoning and the falling price legible at the same moment — but it rests on one destination, needs JavaScript to say anything, and speaks a visual language the workspace does not. A is the safe answer and the cheapest to ship, and it is also the one a competitor can copy in an afternoon. C solves a real problem for people who cannot write the prompt, and pays for it by feeling like a booking form on first contact. The honest recommendation is B's structure with A's composer promoted into the hero and D's stage as the proof block, and C's four questions kept as a fallback behind an 'I'm not sure where' link.",
+  },
   "travel-documents": {
     axis:
       "All three read a document once, keep the fields, and discard the file. They disagree about where the kept record lives, and whether you sort a document before or after you hand it over.",

@@ -83,3 +83,6 @@ But overall the goal of this planner will be 2 fold -
 2. to get the best deals and overall help them book this trip in best possible cost across. May be we will later use their payment info like which credit card they hold etc. to optimzie any card offers also - this is just an example but you get the idea. Optimize to the best .. but not to take long time to build, still provide fast breezy user experience overall. 
 Add this in the Master goals and requirements docs whichever is relevant. And sugegst what you think.
 Should we create a lab on the first par t of overall landing experience etc.
+
+[2026-08-06 20:18] [worker-3 !] Create first-visit landing lab
+Okay go ahead and create a rich lab for this. If you think anbother topion D with very different look and feel also you want to present , do that .. I have time to go through all options in detail as this is critical feature
