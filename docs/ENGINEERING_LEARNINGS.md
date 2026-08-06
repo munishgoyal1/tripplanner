@@ -657,3 +657,16 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - A process that already redirects its own output must opt out rather than
   compete for the shared file. `TRIPPLANNER_RUN_LOG=0` is set for the detached
   sandbox runner, which writes to `logs/sandbox/<name>.log` regardless.
+
+## 2026-08-06 - Sandbox Discard Safety Is Relative To The Base
+
+- A promoted sandbox was synchronized forward to current `master`, while its
+  remote sandbox branch stayed at the merged feature tip. Comparing `HEAD` only
+  to that stale remote falsely classified ordinary `master` commits as unpushed
+  sandbox work and blocked discard.
+- Destructive safety asks the actual loss question: is the worktree dirty, or
+  does `origin/<base>..HEAD` contain commits? A lagging sandbox remote is harmless
+  when every local commit is already in the base.
+- Promotion records verification evidence before automatic teardown. If any
+  cleanup step fails, the registry entry and promoted status remain visible for
+  retry instead of reporting success and orphaning hidden resources.

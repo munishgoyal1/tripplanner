@@ -18,3 +18,19 @@ In C:\repos\tripplanner.worktrees\worker-1, validate and publish the Agent 1 lab
 5. Historical references under agent proposals and `docs/reference/history/requirements-log.txt` may retain Iti-Map. No active/current reference outside those historical records should retain Iti-Map.
 6. Git status must contain exactly the seven edited files from this task; run `git diff --check`.
 If all checks pass, stage exactly those seven files, commit `Rename Agent 1 to SmallFixes`, push the current branch to configured upstream, and report validation, commit SHA, push result, divergence, and final porcelain. Do not modify content or touch master. Stop before commit if any check fails.
+
+[2026-08-06 00:00] [worker-1 !] Discard Sandbox After Promotion
+if the promotion of a sandbox was successful when running the scriupt then add the discarding of sandbox as a step in promote sandbox scripts
+
+[2026-08-06 00:00] [worker-1 !] Fix Sandbox Promotion Status
+provide the promoted status also of sbx during listing.
+Investigate why lab16 sbx discard is failing saying it has unmerged work, whereas it promoted successfully. Any overall scripts fixing needed ?
+
+[2026-08-06 13:55] [worker-1 !] Validate Sandbox Cleanup Workflow
+In C:\repos\tripplanner.worktrees\worker-1, validate the final sandbox workflow and publish only if every requirement passes.
+1. Parse scripts/dev/sandbox.ps1 with the PowerShell parser: zero errors.
+2. Run `pwsh -NoProfile -File scripts/dev/sandbox.ps1 -List`; Lab 16 must report `promoted via PR #32 (legacy)`.
+3. Run Lab 16 `-Discard 2 -WhatIf` from worker root; it must reach the removal ShouldProcess action without outstanding-work error and must preserve its registry entry, worktree, local branch, and database (do not perform real discard).
+4. Inspect code/diff and confirm: discard blocks dirty or origin/base-unique work; sandbox remote lag alone does not block; promotion saves metadata and invokes discard only after verification; listing shows saved or legacy promoted status and cleanup-incomplete suffix; failed cleanup retains registry; local/remote deletion retries are idempotent; unexpected cleanup exceptions are recorded.
+5. `git diff --check` passes. Scope is exactly four modified files: scripts/dev/sandbox.ps1, scripts/README.md, docs/ENGINEERING_LEARNINGS.md, docs/reference/owner-inputs/prompts/worker-1.txt. Prompt entries are at the tail. No unrelated changes.
+If all pass, stage exactly those four files, commit with message `Fix sandbox promotion cleanup`, and push current agents/worker-1 branch to configured upstream. Do not touch master or real sandbox resources. Report validation, commit SHA, push result, divergence, and final porcelain. Stop before commit if any check fails.
