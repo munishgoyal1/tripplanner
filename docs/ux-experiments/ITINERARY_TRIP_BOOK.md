@@ -36,6 +36,8 @@ Non-goals:
 
 - No production UI, API, export, or persistence changes
 - No travel-document upload, extraction, storage, access, or retention design
+  (superseded 6-Aug-2026 for the product, not for this Lab: see
+  [`TRAVEL_DOCUMENTS.md`](TRAVEL_DOCUMENTS.md))
 - No PDF attachment concatenation or email behavior
 - No claim that fixture confirmations are real travel documents
 

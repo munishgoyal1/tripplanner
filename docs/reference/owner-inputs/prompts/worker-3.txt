@@ -46,3 +46,10 @@ These IDs or Date of birth or visa info and bookings info can be extracted and u
 After these file uploads provide way to refer them and see, update or delete etc. this is entirely now a Identity docs flow. 
 The bookings update flow should be seperate. 
 There are 3 - Bookings, Identity docs, Visa docs , anything else you think is storng to add ? Or any critique on this proposal ?
+
+[2026-08-06 13:10] [worker-3 !] Create travel documents lab
+Okay, may be dont store originals as you proposed, just extract the needed information. But what about on next trip again we asking them to upload passport etc. May be then just store the key info to re-use in future not the whole Id doc, same as you proposed. 
+
+Okay, let's leave out the word docx for now.
+
+Anything else you need ? May be create a new lab out of it first. So that we dont mix too many things in current sandbox lab16.

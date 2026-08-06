@@ -5,12 +5,13 @@
 | Field | Value |
 |---|---|
 | Brief ID | `002` |
-| Status | Draft - awaiting owner decisions |
+| Status | Retention decided - UX direction in evaluation |
 | Owner | Munish Goyal |
 | Created | 2026-08-06 |
 | Updated | 2026-08-06 |
 | Baseline | `docs/REQUIREMENTS.md` at `0e5ca20` |
 | Target milestone | TBD |
+| UX Lab | [Lab #20 - Travel documents](../ux-experiments/TRAVEL_DOCUMENTS.md) |
 | Related capability IDs | `LIFE-01`, `LIFE-02`, `MEM-01`, `DATA-01`, `EXPORT-01`, `SAFE-01`, `PLAN-02` |
 
 ## One-sentence requirement
@@ -33,6 +34,26 @@ carry the whole trip.
 - Provide a way to view, update, and delete uploaded documents.
 - Keep the bookings flow separate from the identity documents flow.
 
+## Owner decisions (6-Aug-2026)
+
+These are settled. They are constraints on every option, not variables.
+
+1. **Originals are never stored.** A file is read once, the fields that answer a
+   planning question are extracted, and the file is discarded. There is no
+   "keep the original" mode and no retention choice to present.
+2. **The extracted fields are the reuse mechanism.** Because the fields persist on
+   the account, the next trip is checked without asking for the same passport
+   again. This answers the owner's own concern directly: reuse comes from the key
+   information, never from a stored document.
+3. **`.docx` is out of the first version.** Accepted inputs are PDF, JPEG, PNG,
+   HEIC, and pasted text.
+
+The consequences are worth stating, because they simplify the rest of this brief
+considerably: there is no blob container to secure, no SAS issuance, no lifecycle
+rule, no thumbnail pipeline, no download path, and no original-file access event.
+A breach exposes a masked number and an expiry date rather than a scan of an
+identity document.
+
 ## Critique of the proposal as stated
 
 The intent is sound and matches the existing roadmap candidate
@@ -47,9 +68,10 @@ turn one compromised session into identity-theft material. The feature is worth
 building, but it must be designed as a small, deliberately boring vault rather
 than as general file attachment.
 
-**Recommendation:** extract-then-discard is the default. Persist the structured
-fields the planner actually uses, and treat retaining the original file as an
-explicit per-document choice with a visible retention period.
+**Recommendation:** extract-then-discard, with no option to keep the original.
+Persist only the structured fields the planner actually uses.
+*Owner decision, 6-Aug-2026: accepted, and tightened - there is no retain option
+at all.*
 
 The planner only needs these fields for every insight the owner described:
 
@@ -144,39 +166,36 @@ Two entry points, one vault.
 
 | Existing tenet | Application here |
 |---|---|
-| Read-only views render instantly from cache | Document lists render from metadata only; file bytes are never fetched to render a list, and thumbnails are generated once and cached |
+| Read-only views render instantly from cache | Document lists render from stored fields only; there are no file bytes to fetch |
 | Suggestions never disappear | Replacing an expired passport keeps the prior record visible as superseded until explicitly deleted |
 | Information-rich but ordered | One row per document: type, traveler, expiry with a status tint, and one primary action |
 | One clear primary action per item | Row action is `View`; update and delete live behind the row's overflow, so a destructive action is never the fastest click |
 | Never overwrite user data | Extraction merges additively into an existing record and shows a field-level diff before saving |
 | Settings has one owner | Travel documents is a section of the existing account sheet, not a new top-level command |
 | Only panes scroll | The documents surface scrolls inside its pane; no new page-level scroll |
-| Progress must be honest | Upload shows real per-file states: uploading, scanning, extracting, ready, or failed with a reason |
+| Progress must be honest | Capture shows real states: reading, extracting, awaiting confirmation, saved, or failed with a reason - and says plainly that the file was discarded |
 
 ### Performance rules
 
-- Upload posts the file directly and returns as soon as the object is stored;
-  extraction runs after and streams its result, so the UI is never blocked by a
+- The file is held in memory for the duration of extraction and never written to
+  durable storage; extraction streams its result, so the UI is never blocked by a
   model call.
-- List views read a metadata document only. Bytes are fetched on explicit view.
-- Downloads use a short-lived signed URL issued per request, never a long-lived
-  public URL.
-- Thumbnails are generated once at upload and stored beside the object.
+- Every list and every check reads stored fields only. No view in this feature
+  needs to fetch, decode, or render a document.
 
 ## Storage contract changes
 
-### Binary storage
+### No binary storage
 
-Document bytes must not be stored in Cosmos: the 2 MB document limit, RU cost,
-and absence of lifecycle rules all make it the wrong store. Use a private Azure
-Blob Storage container with:
+No blob container is provisioned, because no original file is kept. The uploaded
+bytes exist only inside the request that extracts them and are released when that
+request ends. This removes the entire class of work that document storage would
+otherwise require: private containers, user-delegation SAS, `Content-Disposition`
+hardening, lifecycle expiry rules, thumbnail generation, and download auditing.
 
-- No public access and no anonymous read.
-- Server-side encryption at rest.
-- Per-request user-delegation SAS with a short expiry for reads.
-- `Content-Disposition: attachment` and a fixed content type on download, so a
-  stored file can never execute in the application origin.
-- A lifecycle rule that deletes objects whose retention has elapsed.
+The transfer itself still needs care: cap the request size, validate content type
+by magic bytes before decoding, and never write the payload to a temporary file or
+a log.
 
 ### Metadata
 
@@ -184,7 +203,7 @@ One new Cosmos container, partitioned by user identity:
 
 | Container | Stores |
 |---|---|
-| `documents` | Document metadata, extracted fields, retention, and blob pointer |
+| `documents` | Extracted fields, booking linkage, and provenance. No file bytes, ever. |
 
 Document shape, kept deliberately flat:
 
@@ -192,12 +211,15 @@ Document shape, kept deliberately flat:
 id, user_id, scope ("traveler" | "trip"), trip_id?, traveler_key?,
 type ("passport" | "visa" | "insurance" | "vaccination" | "licence" |
       "loyalty" | "booking"),
-status ("processing" | "ready" | "failed" | "superseded"),
+status ("ready" | "failed" | "superseded"),
 fields { issuing_country, number_masked, expiry, date_of_birth, ... },
 booking { provider, reference, occurrence_day, occurrence_index, amount, currency },
-source { blob_path?, content_type, byte_size, retained_until? },
+provenance { captured_at, source_kind ("pdf" | "image" | "text"), confidence,
+             confirmed_by_user },
 created_at, updated_at, revision
 ```
+
+There is no `blob_path`. A record that cannot point at a file cannot leak one.
 
 ### Existing contracts touched
 
@@ -206,8 +228,8 @@ created_at, updated_at, revision
 - `share.py::sanitize_plan` is an allowlist today, which is why identity data
   cannot leak through share links by accident. That allowlist must remain an
   allowlist, and this brief must not add any document field to it.
-- `/account/privacy` must delete blobs as well as metadata. Without this,
-  `clear_all_data` would report success while passport scans survive.
+- `/account/privacy` must delete `documents` records. Without this, `clear_all_data`
+  would report success while passport fields survive.
 - `SAFE-01` currently claims six application containers are covered by the
   backup and recovery drill. Adding `documents` requires updating that evidence.
 
@@ -217,12 +239,14 @@ created_at, updated_at, revision
   attach bookings only; a browser-local capability is not an acceptable owner for
   a passport.
 - Validate content type by magic bytes, not by file extension or client-sent type.
-- Reject SVG, HTML, and archives. Cap file size and per-account document count.
-- Strip EXIF and GPS metadata from images before storage.
+- Reject SVG, HTML, and archives. Cap request size and per-account record count.
+- The uploaded bytes are never persisted, never logged, and never written to a
+  temporary file. Image EXIF and GPS data are discarded with the rest of the file.
+- Document numbers are stored masked. The unmasked number is never stored, so it
+  cannot be revealed later by any code path.
 - Never include document fields in analytics, structured logs, share snapshots,
   or passive learning. Log document events by type and outcome only.
 - Rate-limit uploads and extraction on the existing admission boundary.
-- Record an access event whenever an original file is downloaded or revealed.
 
 ## Export behavior
 
@@ -240,9 +264,9 @@ created_at, updated_at, revision
 - Booking attachment on an itinerary occurrence, with extraction to a review card
   and confirmation before any itinerary change.
 - Traveler documents for passport and visa with structured fields.
-- View, update, delete, and retention choice for every stored document.
+- View, update, and delete for every stored record.
 - Deterministic expiry and validity warnings surfaced on the trip.
-- Blob storage, deletion on privacy actions, and the security rules above.
+- Deletion on privacy actions, and the security rules above.
 
 ### Should ship
 
@@ -258,6 +282,8 @@ created_at, updated_at, revision
 
 ### Out of scope
 
+- Storing or rendering the original scan, photo, or PDF.
+- `.docx` input in the first version.
 - Payment instruments of any kind.
 - Automated purchasing, cancellation, or provider order management.
 - Sharing documents with anyone other than the owning account.
@@ -265,8 +291,8 @@ created_at, updated_at, revision
 
 ## Staged delivery
 
-1. **Vault foundation:** storage, upload, security, list, view, delete, privacy
-   deletion, no extraction.
+1. **Field foundation:** the `documents` container, the capture and confirmation
+   flow, list, view, edit, delete, and privacy deletion.
 2. **Bookings:** PDF and image extraction into the review card and occurrence
    linkage.
 3. **Traveler documents:** passport and visa fields, deterministic expiry checks.
@@ -276,12 +302,13 @@ Each stage is independently useful and independently revertible.
 
 ## Open owner decisions
 
-1. Retaining the original file: default to discard after extraction, or default to
-   keep until explicit deletion?
-2. File types for the first version. Recommendation is PDF, JPEG, PNG, HEIC, and
-   pasted text; `.docx` adds a parser and attack surface for confirmations that
-   are rarely Word documents.
-3. Confirm that guests cannot store identity documents.
-4. Confirm the export default is off and masked when enabled.
-5. Confirm the additional document types worth building, and whether emergency
+Retention and accepted file types are settled above. Three remain:
+
+1. Confirm that guests cannot store identity documents.
+2. Confirm the export default is off and masked when enabled.
+3. Confirm the additional document types worth building, and whether emergency
    and medical notes should extend `family_members` rather than become documents.
+
+The placement question - whether documents live in the trip, in the account, or in
+an intake queue - is being answered by
+[Lab #20](../ux-experiments/TRAVEL_DOCUMENTS.md) rather than decided here.

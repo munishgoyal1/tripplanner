@@ -43,6 +43,7 @@ export default defineConfig({
         multiCityItinerary: resolve(__dirname, "lab-15-multi-city-itinerary.html"),
         paneControls: resolve(__dirname, "lab-10-pane-controls.html"),
         shellVisualRefresh: resolve(__dirname, "lab-9-shell-visual-refresh.html"),
+        travelDocuments: resolve(__dirname, "lab-20-travel-documents.html"),
         tripSnapshot: resolve(__dirname, "lab-6-trip-snapshot.html"),
         workspaceCommandBar: resolve(__dirname, "lab-7-workspace-command-bar.html"),
         workspaceShell: resolve(__dirname, "lab-1-workspace-shell.html"),
