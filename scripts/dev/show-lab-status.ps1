@@ -3,7 +3,8 @@
 #
 # Lab status has two sources and they can drift:
 #   - the machine-local decision store the owner actually edits in the Labs UI
-#     (%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json), which is not in Git
+#     (Tripplanner/ux-labs/selections.json under the platform's local data root),
+#     which is not in Git
 #   - the committed defaultDisposition in frontend/labs/src/shared/labRecords.ts,
 #     which is the fallback when a lab has no saved decision yet
 #
@@ -21,7 +22,14 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $recordsPath = Join-Path $repoRoot "frontend/labs/src/shared/labRecords.ts"
-$storePath = Join-Path $env:LOCALAPPDATA "Tripplanner/ux-labs/selections.json"
+$localDataRoot = if ($env:LOCALAPPDATA) {
+    $env:LOCALAPPDATA
+} elseif ($env:HOME) {
+    Join-Path $env:HOME ".tripplanner"
+} else {
+    throw "Cannot resolve the platform's local data directory."
+}
+$storePath = Join-Path $localDataRoot "Tripplanner/ux-labs/selections.json"
 
 if (-not (Test-Path $recordsPath)) { throw "Lab records not found: $recordsPath" }
 

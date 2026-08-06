@@ -46,7 +46,7 @@ choose." Canonical documents answer "what is true now."
 | [`development/`](development/README.md) | Scope and index for contributor workflow guides |
 | [`development/architecture-onboarding.md`](development/architecture-onboarding.md) | Guided architecture and codebase onboarding for new engineers |
 | [`development/dev.md`](development/dev.md) | Local development guidance |
-| [`development/new-machine-setup.md`](development/new-machine-setup.md) | Reproduce the Windows toolchain, VS Code/Copilot settings, and four-agent layout |
+| [`development/new-machine-setup.md`](development/new-machine-setup.md) | Reproduce the Windows/macOS toolchain, VS Code/Copilot settings, and four-agent layout |
 | [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
 

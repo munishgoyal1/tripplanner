@@ -5,6 +5,25 @@ This is the plain-English running history of changes under devconfigs. Add the
 newest dated entry at the top. Record what changed, why it changed, how to apply
 it, and any manual recovery step that could help on a new or broken machine.
 
+2026-08-06 - Added native macOS environment setup
+-------------------------------------------------
+What changed:
+- Added a Homebrew manifest and native macOS setup and agent-window launchers.
+- Made portable VS Code settings and Copilot instructions target the standard
+  macOS user profile while retaining the Windows profile behavior.
+- Made shared workspace tasks and Python virtual-environment discovery portable.
+
+Why:
+The same MasterAgent plus three-worker environment must be reproducible on a Mac,
+not only on Windows.
+
+How to apply:
+Run ./Setup-Tripplanner-Dev.command from a macOS repository clone.
+
+Recovery:
+Re-run the launcher after an interrupted Homebrew install. Existing VS Code
+settings backups remain beside the macOS user settings file.
+
 2026-08-06 - Added full agent-environment setup
 ------------------------------------------------
 What changed:

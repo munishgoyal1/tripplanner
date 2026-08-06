@@ -1,0 +1,8 @@
+brew "azure-cli"
+brew "gh"
+brew "git"
+brew "node"
+brew "python@3.13"
+cask "docker"
+cask "powershell"
+cask "visual-studio-code"

@@ -200,9 +200,10 @@ function Get-FreeSlot {
 }
 
 function Get-VenvPython {
+    $pythonRelativePath = if ($IsWindows) { ".venv\Scripts\python.exe" } else { ".venv/bin/python" }
     $candidates = @(
-        (Join-Path $primaryRoot ".venv\Scripts\python.exe"),
-        (Join-Path $scriptRepoRoot ".venv\Scripts\python.exe")
+        (Join-Path $primaryRoot $pythonRelativePath),
+        (Join-Path $scriptRepoRoot $pythonRelativePath)
     )
     foreach ($candidate in $candidates) {
         if (Test-Path $candidate -PathType Leaf) { return $candidate }

@@ -9,18 +9,20 @@ IDs, private keys, or machine-specific paths.
 
 | Path | Purpose |
 | --- | --- |
-| `Apply-DevConfigs.ps1` | Merge portable settings into the current Windows user profile |
+| `Apply-DevConfigs.ps1` | Merge portable settings into the current Windows or macOS VS Code profile |
 | `vscode/settings.json` | Stable VS Code user and layout preferences |
 | `vscode/extensions.txt` | Curated, portable VS Code extension IDs |
 | `github-copilot/instructions/*.instructions.md` | Global instructions copied to the VS Code prompts folder |
 | `windows/packages.psd1` | Optional Windows developer-tool package manifest |
+| `macos/Brewfile` | Homebrew developer-tool package manifest |
 | `CONFIG-CHANGES.txt` | Plain-English, chronological configuration log |
 
-## Apply on a new Windows machine
+## Apply on a new machine
 
 For the full application, VS Code/Copilot, and four-agent environment, use the
 canonical [new-machine setup guide](../docs/development/new-machine-setup.md) or
-run `Setup-Tripplanner-Dev.cmd` from the repository root.
+run `Setup-Tripplanner-Dev.cmd` on Windows or `Setup-Tripplanner-Dev.command` on
+macOS from the repository root.
 
 To apply only the portable user configuration, open PowerShell in the repository
 root and run:
@@ -50,6 +52,13 @@ To install the curated VS Code extension set:
 
 The switches can be combined. Preview any operation with `-WhatIf`. Re-running
 the script is supported.
+
+On macOS, install the declared tools with the root setup launcher or directly:
+
+```bash
+brew bundle --file devconfigs/macos/Brewfile
+pwsh -File devconfigs/Apply-DevConfigs.ps1 -InstallExtensions
+```
 
 ## Deliberately manual settings
 
