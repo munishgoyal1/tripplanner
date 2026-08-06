@@ -20,3 +20,15 @@ rename agent3 to Sandbox instead of Infra
 
 [2026-08-05 19:44] [worker-3] ! Implement Lab 16 in sandbox
 Implement lab16 in a sandbox and bring it up for inspection
+
+[2026-08-05 20:35] [worker-3 !] Lab 16 dock feedback and selection scope
+what si the history overlap logic that will be broken, since the app is still not having any real customers so it might be ok to break past contract.
+
+Few comments on lab16:
+1. keep the chat at bottom like in option B by default, provide minimize option also that  brings it to its default botom single row.
+2. The look and feel of chat isnt like you showed in lab, but hopefully funcitonality should be. each chat and response is not like a card and lacksa the clock time.
+3. I asekd it to update hotel to low budget for Indore, after doing so it only was showing day1 itinerary. Looks like inadvertently it appleid some filter which should not be the case. After updating whatever it di , say hotel - it should simply select that by default. Selecting anythign means consistently done so across all panels.  for other than hotel , city add/modify intelligently it should figure what should be the seleciton scope.
+
+[2026-08-06 10:40] [worker-3 !] Fix sandbox log lock and naming
+fix this log file lock issue forom happening. 
+name the sandboxes smaller, prefix them with an incremental counter again. example 1-lab16-chatdock, 2-lab18-map etc. and hopefully list sandbox lists down all active sandboxes with name, purpose url etc.

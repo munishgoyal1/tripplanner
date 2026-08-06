@@ -21,6 +21,32 @@ function Get-RunLogDirectory {
     return $dir
 }
 
+function Test-RunLogWritable {
+    # A transcript held open by another live run cannot be rotated or reopened.
+    param([Parameter(Mandatory = $true)][string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return $true }
+    try {
+        $stream = [System.IO.File]::Open($Path, "Open", "Write", "None")
+        $stream.Dispose()
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Remove-StaleRunLogs {
+    # Concurrent runs leave per-process transcripts behind; they are only ever
+    # read while diagnosing that run, so a few days is generous.
+    param([Parameter(Mandatory = $true)][string]$Directory)
+    try {
+        Get-ChildItem -LiteralPath $Directory -Filter "*.pid*.log" -ErrorAction SilentlyContinue |
+            Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-3) } |
+            Remove-Item -Force -ErrorAction SilentlyContinue
+    } catch {
+        # Logging must never break a run.
+    }
+}
+
 function Backup-RunLog {
     # Keeps <name>.1.log and <name>.2.log beside the current transcript. Diagnosing
     # a failed run usually needs the run before it, which a bare overwrite destroys.
@@ -97,16 +123,37 @@ function Start-RunLog {
     if ($global:TripplannerRunLog) {
         return $null   # a nested script keeps writing to the outer transcript
     }
-    $path = Join-Path (Get-RunLogDirectory) "$Name.log"
+    $started = Get-Date
+    # A caller that already redirects its own output (the detached sandbox runner)
+    # opts out, so it never holds the shared transcript open for hours.
+    if ($env:TRIPPLANNER_RUN_LOG -eq "0") {
+        $global:TripplannerRunLog = [pscustomobject]@{
+            Name = $Name; Path = ""; Started = $started; Transcript = $false
+        }
+        return $null
+    }
+    $dir = Get-RunLogDirectory
+    Remove-StaleRunLogs -Directory $dir
+    $path = Join-Path $dir "$Name.log"
+    if (-not (Test-RunLogWritable -Path $path)) {
+        # Another live run owns the shared name. Take a private file rather than
+        # lose this transcript, and leave that run's rotation untouched.
+        $path = Join-Path $dir "$Name.pid$PID.log"
+    }
     Backup-RunLog -Path $path
+    $transcribing = $true
     try {
         Start-Transcript -Path $path -Force -ErrorAction Stop | Out-Null
     } catch {
         Write-Warning "Could not start the run log at ${path}: $($_.Exception.Message)"
-        return $null
+        $transcribing = $false
     }
-    $started = Get-Date
-    $global:TripplannerRunLog = [pscustomobject]@{ Name = $Name; Path = $path; Started = $started }
+    # Registered even when the transcript failed: a nested script must not then
+    # open a second transcript and file this run's output under its own name.
+    $global:TripplannerRunLog = [pscustomobject]@{
+        Name = $Name; Path = $path; Started = $started; Transcript = $transcribing
+    }
+    if (-not $transcribing) { return $null }
     $here = (Get-Location).Path
     $branch = & git -C $here branch --show-current 2>$null
     $head = & git -C $here rev-parse --short HEAD 2>$null
@@ -126,6 +173,8 @@ function Stop-RunLog {
     Write-Host ("[time]    {0} {1} after {2:hh\:mm\:ss}" -f `
             $log.Name, $Outcome, ((Get-Date) - $log.Started))
     Add-RunLogIndex -Name $log.Name -Outcome $Outcome
-    try { Stop-Transcript | Out-Null } catch { }
+    if ($log.Transcript) {
+        try { Stop-Transcript | Out-Null } catch { }
+    }
     $global:TripplannerRunLog = $null
 }
