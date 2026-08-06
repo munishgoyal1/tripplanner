@@ -9,7 +9,8 @@ param(
 )
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$python = Join-Path $repoRoot ".venv\Scripts\python.exe"
+$pythonRelativePath = if ($IsWindows) { ".venv\Scripts\python.exe" } else { ".venv/bin/python" }
+$python = Join-Path $repoRoot $pythonRelativePath
 if (-not (Test-Path $python)) {
     $python = "python"
 }

@@ -25,7 +25,8 @@ export interface LabSelection {
 
 export type LabSelections = Record<string, LabSelection>;
 
-const localDataRoot = process.env.LOCALAPPDATA || resolve(process.env.USERPROFILE || ".", ".tripplanner");
+const localDataRoot = process.env.LOCALAPPDATA
+  || resolve(process.env.USERPROFILE || process.env.HOME || ".", ".tripplanner");
 export const feedbackPath = resolve(localDataRoot, "Tripplanner", "ux-labs", "selections.json");
 export const backupPath = resolve(localDataRoot, "Tripplanner", "ux-labs", "selections.previous.json");
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Apply portable developer settings to the current Windows user profile.
+    Apply portable developer settings to the current VS Code user profile.
 
 .DESCRIPTION
   Merges repository-owned VS Code settings without deleting unrelated settings,
   installs global Copilot instruction files, and optionally installs missing
-  developer tools with winget. Existing VS Code settings are backed up before a
-  changed file is written.
+    developer tools with winget on Windows. Existing VS Code settings are backed
+    up before a changed file is written.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -147,11 +147,14 @@ function Install-VsCodeExtensions {
     }
 }
 
-if (-not $env:APPDATA) {
-    throw "APPDATA is unavailable; cannot locate the VS Code user profile."
+if ($IsMacOS) {
+    $vscodeUserDirectory = Join-Path $HOME "Library/Application Support/Code/User"
+} elseif ($env:APPDATA) {
+    $vscodeUserDirectory = Join-Path $env:APPDATA "Code\User"
+} else {
+    throw "Cannot locate the VS Code user profile on this operating system."
 }
 
-$vscodeUserDirectory = Join-Path $env:APPDATA "Code\User"
 Merge-JsonSettings `
     -SourcePath (Join-Path $PSScriptRoot "vscode\settings.json") `
     -DestinationPath (Join-Path $vscodeUserDirectory "settings.json")
@@ -160,6 +163,9 @@ Install-CopilotInstructions `
     -DestinationDirectory (Join-Path $vscodeUserDirectory "prompts")
 
 if ($InstallTools) {
+    if ($IsMacOS) {
+        throw "Use brew bundle --file devconfigs/macos/Brewfile to install macOS tools."
+    }
     Install-DeclaredTools (Join-Path $PSScriptRoot "windows\packages.psd1")
 }
 if ($InstallExtensions) {

@@ -208,7 +208,7 @@ conversation or explicit edit
 | `docs/ux-experiments/` | UX Lab decisions and lifecycle records |
 | `docs/operations/deployment-flow.md` | Canonical canary, production, monitoring, and rollback runbook |
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
-| `docs/development/new-machine-setup.md` | Canonical one-click Windows environment recreation and manual sign-in steps |
+| `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |
 | `docs/development/parallel-agent-development.md` | Primary/worker synchronization and integration workflow |
 | `infra/` | Azure IaC and approval-gated operational scripts |
 | `scripts/README.md` | Developer workflow and utility script ownership |
@@ -219,6 +219,7 @@ conversation or explicit edit
 | `scripts/dev/` | Local stack, worktree sync, feature sandbox, and UI snapshot engines |
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
 | `Setup-Tripplanner-Dev.cmd` | One-click full Windows developer and four-agent environment setup |
+| `Setup-Tripplanner-Dev.command` | One-click full macOS developer and four-agent environment setup |
 | `tests/` | Python unit and integration tests |
 | `docs/reference/` | Indexed owner inputs, decision history, and dated technical snapshots |
 

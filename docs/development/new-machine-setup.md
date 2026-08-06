@@ -1,11 +1,11 @@
-# New Windows machine setup
+# New machine setup
 
 This procedure recreates the Tripplanner development layout after the repository
-has been cloned from GitHub. It covers the application toolchain, portable VS
-Code and GitHub Copilot configuration, and the persistent three-worker plus one
-MasterAgent worktree layout.
+has been cloned from GitHub on Windows or macOS. It covers the application
+toolchain, portable VS Code and GitHub Copilot configuration, and the persistent
+three-worker plus one MasterAgent worktree layout.
 
-## One-click path
+## Windows one-click path
 
 1. Clone or populate the repository on the new machine. A short local path such
    as `C:\repos\tripplanner` is recommended because worktrees and Python virtual
@@ -29,12 +29,39 @@ Omit `-OpenAgentWindows` when preparing the machine without opening VS Code.
 The existing application-only setup remains available as
 `.\scripts\setup-dev-machine.ps1`.
 
+## macOS one-click path
+
+1. Clone the repository to a short local path such as `~/repos/tripplanner`.
+2. From Terminal in the repository root, run:
+
+   ```bash
+   ./Setup-Tripplanner-Dev.command
+   ```
+
+   The file is committed as executable and can also be opened from Finder.
+3. Accept any Xcode Command Line Tools or Homebrew prompts. Start Docker Desktop
+   when macOS requests approval for its privileged components.
+4. Complete the shared manual sign-ins and secrets in
+   [Manual steps](#manual-steps).
+
+The script installs the declared `devconfigs/macos/Brewfile`, including Git,
+Node.js, Python 3.13, PowerShell 7, VS Code, Docker Desktop, Azure CLI, and GitHub
+CLI. Use the underlying script directly for a headless setup:
+
+```bash
+./scripts/setup-dev-machine-macos.sh --include-mobile
+```
+
+Add `--open-agent-windows` to open all four VS Code workspaces. Re-running the
+setup is supported.
+
 ## What the launcher configures
 
 The full setup performs these operations:
 
-1. Installs missing Git, Node.js LTS, Python 3.13, PowerShell 7, Visual Studio
-   Code, Docker Desktop, Azure CLI, and GitHub CLI packages through `winget`.
+1. Installs missing Git, Node.js, Python 3.13, PowerShell 7, Visual Studio Code,
+   Docker Desktop, Azure CLI, and GitHub CLI packages through `winget` on Windows
+   or Homebrew on macOS.
 2. Merges the repository-owned settings from `devconfigs/vscode/settings.json`
    into the current VS Code user settings. Existing settings are backed up and
    unrelated settings are preserved.
@@ -57,7 +84,7 @@ The full setup performs these operations:
 9. Opens four distinct VS Code workspaces: Agent 1 - SmallFixes, Agent 2 -
    UXlabs, Agent 3 - Sandbox, and MasterAgent - Review & Integration.
 
-The workers live beside the clone in `<clone>.worktrees\worker-N`. Workspace
+The workers live beside the clone in `<clone>.worktrees/worker-N`. Workspace
 files in the primary checkout provide stable titles, colors, panel placement,
 and terminal/editor restoration settings.
 
@@ -92,11 +119,11 @@ Copy these only when the same local state is genuinely required:
 
 | State | Location | Guidance |
 | --- | --- | --- |
-| Provider and OAuth secrets | `<repo>\.env` | Transfer securely; never commit |
-| Local JSON trips/preferences | `%USERPROFILE%\.tripplanner\` | Optional personal data migration |
-| UX Lab decisions | `%LOCALAPPDATA%\Tripplanner\ux-labs\selections.json` | Copy to preserve authoritative local Lab lifecycle and handoff history |
+| Provider and OAuth secrets | `<repo>/.env` | Transfer securely; never commit |
+| Local JSON trips/preferences | Windows: `%USERPROFILE%\.tripplanner\`; macOS: `~/.tripplanner/` | Optional personal data migration |
+| UX Lab decisions | Windows: `%LOCALAPPDATA%\Tripplanner\ux-labs\selections.json`; macOS: `~/.tripplanner/Tripplanner/ux-labs/selections.json` | Copy to preserve authoritative local Lab lifecycle and handoff history |
 | VS Code authentication and chat history | VS Code/GitHub account state | Sign in; session sync may restore supported chat history |
-| Azure, GitHub CLI, Docker credentials | Windows credential stores | Authenticate again; do not copy credential databases |
+| Azure, GitHub CLI, Docker credentials | Windows Credential Manager or macOS Keychain | Authenticate again; do not copy credential databases |
 | Cosmos Emulator data | Docker volumes | Start clean unless a deliberate data migration is required |
 
 Repository settings, workspace files, extensions, Copilot instructions, branch
@@ -106,7 +133,7 @@ be byte-for-byte portable.
 
 ## Verify the environment
 
-Run these checks from the primary checkout:
+On Windows, run these checks from the primary checkout:
 
 ```powershell
 git status --short
@@ -119,6 +146,19 @@ npm --prefix frontend run build
 npm --prefix mobile run typecheck
 ```
 
+On macOS, run:
+
+```bash
+git status --short
+git worktree list
+code --list-extensions | grep -E "github.copilot|ms-python.python|ms-vscode.powershell"
+gh auth status
+copilot --version
+./.venv/bin/python -c "import fastapi, tripplanner; print('Python OK')"
+npm --prefix frontend run build
+npm --prefix mobile run typecheck
+```
+
 `git worktree list` should show `master` plus `agents/worker-1`,
 `agents/worker-2`, and `agents/worker-3`. Reopen all four windows later with:
 
@@ -126,18 +166,29 @@ npm --prefix mobile run typecheck
 .\Open-Tripplanner-All-Agents.cmd
 ```
 
+On macOS, reopen them with:
+
+```bash
+./Open-Tripplanner-All-Agents.command
+```
+
 MasterAgent owns local stack startup. Start the application from the primary
-checkout with `scripts/user/Run-Latest.cmd`; workers use server-free validation
-unless the owner explicitly assigns stack lifecycle work.
+checkout with `scripts/user/Run-Latest.cmd` on Windows or
+`pwsh -File scripts/dev/dev-spa.ps1` on macOS; workers use server-free
+validation unless the owner explicitly assigns stack lifecycle work.
 
 ## Recovery
 
-- Re-run `Setup-Tripplanner-Dev.cmd` after an interrupted install; completed
-  steps are retained.
+- Re-run `Setup-Tripplanner-Dev.cmd` on Windows or
+   `Setup-Tripplanner-Dev.command` on macOS after an interrupted install;
+   completed steps are retained.
 - VS Code settings backups are timestamped beside
-  `%APPDATA%\Code\User\settings.json`.
+   `%APPDATA%\Code\User\settings.json` on Windows or
+   `~/Library/Application Support/Code/User/settings.json` on macOS.
 - If a worker directory exists but is invalid, inspect `git worktree list`
   before removing anything. Do not delete a worktree containing uncommitted or
   unpushed work.
-- Use `scripts/user/Sync-AllTo-Latest.cmd` after setup to integrate committed
-  lane heads through `master` and synchronize all four worktrees.
+- Use `scripts/user/Sync-AllTo-Latest.cmd` on Windows or
+   `pwsh -File scripts/dev/all-worktrees-sync.ps1` on macOS after setup to
+   integrate committed lane heads through `master` and synchronize all four
+   worktrees.

@@ -40,7 +40,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}\\scripts\\dev\\sync-latest.ps1"
+          "${workspaceFolder}/scripts/dev/sync-latest.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"
@@ -57,7 +57,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}\\scripts\\dev\\run-latest.ps1"
+          "${workspaceFolder}/scripts/dev/run-latest.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"

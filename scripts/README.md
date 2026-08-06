@@ -10,6 +10,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | Path | Purpose |
 | --- | --- |
 | `setup-dev-machine.ps1` | Restore app prerequisites; `-FullAgentEnvironment` also configures VS Code/Copilot and all three workers |
+| `setup-dev-machine-macos.sh` | Restore the full macOS toolchain, VS Code/Copilot profile, and all three workers |
 | `open-agent-windows.ps1` | Open the persistent agent workspaces |
 | `analyze-errors.ps1` | Generate local or canary error reports |
 | `cosmos_copy.py` | Guarded Cosmos data copy and verification utility |

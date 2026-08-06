@@ -15,9 +15,9 @@
 param(
     [switch]$SkipToolInstall,
     [switch]$IncludeMobile,
-        [switch]$SkipDependencyInstall,
-        [switch]$FullAgentEnvironment,
-        [switch]$OpenAgentWindows
+    [switch]$SkipDependencyInstall,
+    [switch]$FullAgentEnvironment,
+    [switch]$OpenAgentWindows
 )
 
 $ErrorActionPreference = "Stop"
@@ -192,6 +192,13 @@ if ($FullAgentEnvironment) {
             & "$repoRoot\scripts\dev\agent-worktree.ps1" -Create $workerName -NoOpen
         } else {
             Write-Host "[ok] Persistent worktree $workerName"
+        }
+
+        $workerEnv = Join-Path $workerPath ".env"
+        $primaryEnv = Join-Path $repoRoot ".env"
+        if (-not (Test-Path $workerEnv -PathType Leaf) -and (Test-Path $primaryEnv -PathType Leaf)) {
+            Copy-Item $primaryEnv $workerEnv
+            Write-Host "[copied] .env from the primary checkout to $workerName"
         }
 
         & "$workerPath\scripts\setup-dev-machine.ps1" `
