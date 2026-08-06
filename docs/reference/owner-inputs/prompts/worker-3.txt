@@ -20,3 +20,29 @@ rename agent3 to Sandbox instead of Infra
 
 [2026-08-05 19:44] [worker-3] ! Implement Lab 16 in sandbox
 Implement lab16 in a sandbox and bring it up for inspection
+
+[2026-08-05 20:35] [worker-3 !] Lab 16 dock feedback and selection scope
+what si the history overlap logic that will be broken, since the app is still not having any real customers so it might be ok to break past contract.
+
+Few comments on lab16:
+1. keep the chat at bottom like in option B by default, provide minimize option also that  brings it to its default botom single row.
+2. The look and feel of chat isnt like you showed in lab, but hopefully funcitonality should be. each chat and response is not like a card and lacksa the clock time.
+3. I asekd it to update hotel to low budget for Indore, after doing so it only was showing day1 itinerary. Looks like inadvertently it appleid some filter which should not be the case. After updating whatever it di , say hotel - it should simply select that by default. Selecting anythign means consistently done so across all panels.  for other than hotel , city add/modify intelligently it should figure what should be the seleciton scope.
+
+[2026-08-06 10:40] [worker-3 !] Fix sandbox log lock and naming
+fix this log file lock issue forom happening. 
+name the sandboxes smaller, prefix them with an incremental counter again. example 1-lab16-chatdock, 2-lab18-map etc. and hopefully list sandbox lists down all active sandboxes with name, purpose url etc.
+
+[2026-08-06 10:52] [worker-3] Evaluate chat steering queue
+should we provide a steer , add to queue functionalities in chat ?
+
+[2026-08-06 10:58] [worker-3] Evaluate chat file attachments
+should we provide adding an image or file functionality
+
+[2026-08-06 11:34] [worker-3 !] Design travel documents vault
+yes lets add functionality of user able to add booking related files only - word doc, text, screenshots or pdfs etc. 
+also let them add passport, visa, or other identity related docs - this will help in giving insights and planning using visa and passport expiry dates etc. passort based eligibility for visa-free entries etc. Design this add File feature nicely with opur existing tenents of great and easy performant UX. (are these tenets alreayd capture in our principles and do you always keep them in mind , what do you always end up reading or rmemebering even on a new session or new machine). 
+These IDs or Date of birth or visa info and bookings info can be extracted and use din final itinerary export also which can serve as one single doc for entire trip reference. Give this as optional to add booking and othe rpersonal passport related detail in itinerary (just from privacy and comfort) Provide option to always remmeber and save these ID and visa docs for future trips in the user's account. Also carefully save the booking references also against the trip - you may now need to redesign the backend storage contracts, frontend etc. as this is a major feature. 
+After these file uploads provide way to refer them and see, update or delete etc. this is entirely now a Identity docs flow. 
+The bookings update flow should be seperate. 
+There are 3 - Bookings, Identity docs, Visa docs , anything else you think is storng to add ? Or any critique on this proposal ?
