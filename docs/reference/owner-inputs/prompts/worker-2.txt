@@ -49,3 +49,7 @@ lab17: one thing i am having dillema on is that option B has addtional route pla
 and the Add place button - it doesnt intuitively tell user that clicking it will allow them to type a place in search bar - am i right or it is just fine ? and will they still be able to add a selected pin/place on the map intuitively - will selecting a place expand out the add place button with place name added in search box - provide 1 more option around reimagingin this add experience + the bottom bar from option B, in a new option D..
 [2026-08-06 16:01] [worker-2] Merge conflict analysis for parallel labs
 if i start implementing all the open labs in parallel will they have lot of merge conflicts., give me a quick analysis
+[2026-08-06 18:22] [worker-2 !] Implement Lab 20 travel documents in a sandbox
+Implement lab20 in a sandbox
+[2026-08-06 18:22] [worker-2 !] Implement Lab 20 travel documents in a sandbox
+Implement lab20 in a sandbox
