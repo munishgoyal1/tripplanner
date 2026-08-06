@@ -35,3 +35,6 @@ name the sandboxes smaller, prefix them with an incremental counter again. examp
 
 [2026-08-06 10:52] [worker-3] Evaluate chat steering queue
 should we provide a steer , add to queue functionalities in chat ?
+
+[2026-08-06 10:58] [worker-3] Evaluate chat file attachments
+should we provide adding an image or file functionality
