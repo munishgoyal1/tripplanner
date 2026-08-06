@@ -48,18 +48,18 @@ export const variants: { id: VariantId; label: string; summary: string; delta: s
       "Changes only map geometry and framing: every transfer endpoint stays on one canvas in itinerary order. Unlike B, no separate summary strip is added; unlike C, no route-layer controls are added.",
   },
   {
-    id: "journey-strip",
-    label: "B · Journey strip + local map",
-    summary: "The map stays at destination-city scale while a pinned strip carries the complete stay-to-stay journey.",
-    delta:
-      "Moves the inter-city leg off the canvas and into fixed chrome above it. Unlike A, the origin circuit and terminals never appear as map geometry; unlike C, the user cannot reveal them.",
-  },
-  {
     id: "layer-toggle",
     label: "C · Optional inter-city layer",
     summary: "Both scales render together, with independent controls to hide local or inter-city geometry.",
     delta:
       "Adds two persistent visibility controls to the dual-scale canvas. Unlike A, geometry can be switched off; unlike B, the inter-city leg stays real map geometry rather than a summary.",
+  },
+  {
+    id: "journey-strip",
+    label: "B · Journey strip + local map",
+    summary: "The map stays at destination-city scale while a pinned strip carries the complete stay-to-stay journey.",
+    delta:
+      "Moves the inter-city leg off the canvas and into fixed chrome above it. Unlike A, the origin circuit and terminals never appear as map geometry; unlike C, the user cannot reveal them.",
   },
 ];
 

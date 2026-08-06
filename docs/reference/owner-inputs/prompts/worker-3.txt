@@ -59,3 +59,9 @@ Elaborate on #2 - I did not understand the export part.
 #3 - Build these additonal types , Why license ? For driving abroad - ye then makes sense. Emergency notes etc. doesnt need to be documents. Keep things simple also for now that will help more stickiness and user acquisition. This is overall product v1.
 [2026-08-06 13:41] [worker-3 !] Adopt last-four identity number rule
 Sounds good your recommendations. go ahead.
+[2026-08-06 14:44] [worker-3 !] Add option contrast to labs
+what is the difference between all 3 options in lab 17. Add another single writeup which makes it clear this difference along with the info already present in lab structure, and add that to all labs
+
+
+[2026-08-06 15:20] [worker-3 !] Score and reorder lab options
+add these scores and one additional text writeup contrasting the options clearly in each lab page in some section. Also for the open labs reorder the options in descending score order. Dont worry about implemented an dclosed , or discarded labs.

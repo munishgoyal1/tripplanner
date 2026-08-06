@@ -5,6 +5,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 import { IntercityWorkspace } from "./IntercityWorkspace";
 import { improvementRows, scenarios, variants, type ScenarioId, type VariantId } from "./scenarios";
@@ -88,6 +89,7 @@ function Lab() {
         </header>
 
         <LabScope labId="intercity-map" />
+        <OptionContrast labId="intercity-map" />
 
         <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
           <div className="border-b border-slate-100 px-4 py-3">

@@ -20,6 +20,7 @@ import {
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../../../src/index.css";
 
 type Variant = "semantic" | "compact" | "text";
@@ -188,6 +189,7 @@ function ShellVisualRefreshLab() {
           <div><div className="flex items-center gap-2 text-[#d94d61]"><Sparkles size={16} /><p className="text-[10px] font-bold uppercase">Active UX Lab</p></div><h1 className="mt-2 text-3xl font-semibold text-[#172433]" style={{ fontFamily: "'Newsreader', serif" }}>Workspace visual refresh</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-[#66727d]">Compare a quieter, more modern shell and decide how pane controls should communicate meaning. Production behavior is unchanged by this experiment.</p></div>
         </header>
         <LabScope labId="shell-visual-refresh" />
+        <OptionContrast labId="shell-visual-refresh" />
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Shell control variants">
           {variants.map((item) => <button key={item.id} type="button" role="tab" aria-selected={variant === item.id} onClick={() => choose(item.id)} className={`rounded-md bg-white p-4 text-left shadow-sm ring-1 transition ${variant === item.id ? "ring-2 ring-[#d94d61]" : "ring-[#dce2df] hover:ring-[#aeb9b4]"}`}><strong className="text-sm text-[#172433]">{item.label}</strong><span className="mt-1.5 block text-xs leading-5 text-[#66727d]">{item.summary}</span></button>)}
         </div>

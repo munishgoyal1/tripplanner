@@ -22,6 +22,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 
 type PaneId = "itinerary" | "map" | "details" | "assistant";
@@ -320,6 +321,7 @@ function Lab() {
         </header>
 
         <LabScope labId="workspace-command-bar" />
+        <OptionContrast labId="workspace-command-bar" />
 
         <div className="lab-variant-grid mt-5" role="tablist" aria-label="Command bar variants">
           {variants.map((variant) => (

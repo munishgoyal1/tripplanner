@@ -5,6 +5,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 import { AgenticWorkspace } from "./AgenticWorkspace";
 import type { AgencyOption, Channel } from "./AgenticWorkspace";
@@ -14,18 +15,18 @@ const LAB_ID = "agentic-planning";
 
 const variants: Array<{ id: AgencyOption; label: string; summary: string; delta: string }> = [
   {
-    id: "proposal",
-    label: "A · Proposal first",
-    summary:
-      "Every non-trivial change comes back as a proposal in the pane you asked from: the slot it chose, why that slot, what else it touches, and the alternatives. Nothing is written until you apply.",
-    delta: "Highest trust, zero silent damage. Costs one extra interaction on changes that were always safe.",
-  },
-  {
     id: "guarded",
     label: "B · Guarded autonomy",
     summary:
       "Safe changes apply immediately with an inline receipt carrying Undo and a why-here disclosure. Anything that breaks an invariant, or reaches outside its declared blast radius, hard-stops into a proposal instead.",
     delta: "Keeps the speed of today for ordinary edits and makes the dangerous class impossible.",
+  },
+  {
+    id: "proposal",
+    label: "A · Proposal first",
+    summary:
+      "Every non-trivial change comes back as a proposal in the pane you asked from: the slot it chose, why that slot, what else it touches, and the alternatives. Nothing is written until you apply.",
+    delta: "Highest trust, zero silent damage. Costs one extra interaction on changes that were always safe.",
   },
   {
     id: "console",
@@ -174,6 +175,7 @@ function Lab() {
         </header>
 
         <LabScope labId={LAB_ID} />
+        <OptionContrast labId={LAB_ID} />
 
         <section className="mt-8">
           <p className="text-[10px] font-bold uppercase text-brand">What actually went wrong</p>

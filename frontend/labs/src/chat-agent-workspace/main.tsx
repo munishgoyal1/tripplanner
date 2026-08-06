@@ -5,6 +5,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 import { ChatWorkspace } from "./ChatWorkspace";
 import { improvementRows, variants, type VariantId } from "./fixture";
@@ -101,6 +102,7 @@ function Lab() {
         </header>
 
         <LabScope labId="chat-agent-workspace" />
+        <OptionContrast labId="chat-agent-workspace" />
 
         <section className="mt-5 overflow-hidden rounded-md bg-white shadow-card ring-1 ring-slate-200">
           <div className="border-b border-slate-100 px-4 py-3">

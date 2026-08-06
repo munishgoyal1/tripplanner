@@ -20,6 +20,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 import { AccountDestination, type AnalyticsPreference, type DestinationId } from "./AccountDestination";
 
@@ -192,6 +193,7 @@ function Lab() {
         </header>
 
         <LabScope labId="account-settings" />
+        <OptionContrast labId="account-settings" />
 
         <div className="lab-variant-grid mt-5" role="tablist" aria-label="Account and settings variants">
           {variants.map((variant) => <button key={variant.id} type="button" role="tab" aria-selected={active === variant.id} onClick={() => setActive(variant.id)} className={`rounded-md p-3 text-left ring-1 transition ${active === variant.id ? "bg-white shadow-card ring-brand/30" : "bg-white/70 ring-slate-200 hover:bg-white"}`}><span className="text-sm font-semibold text-ink">{variant.label}</span><span className="mt-1 block text-xs leading-relaxed text-slate-500">{variant.summary}</span></button>)}

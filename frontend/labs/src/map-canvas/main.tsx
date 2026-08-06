@@ -5,6 +5,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import { WorkspaceFrame, kindMeta } from "../shared/WorkspaceFrame";
 import { dayThree, dayTotals, trip } from "../shared/tripFixture";
 import "../shared/experiment-layout.css";
@@ -15,18 +16,18 @@ const LAB_ID = "map-canvas";
 
 const variants: Array<{ id: MapOption; label: string; summary: string; delta: string }> = [
   {
-    id: "deck",
-    label: "A · Floating deck",
-    summary:
-      "The map runs edge to edge. Day scope, search and the day's facts float as glass cards over it, so the whole pane is geography and the controls feel weightless.",
-    delta: "Most map per pixel. Controls overlap the canvas, which can cover pins in a narrow pane.",
-  },
-  {
     id: "dock",
     label: "B · Route dock",
     summary:
       "The map stays clean while a dock at the bottom carries day tabs, the day's facts and a horizontal route timeline of every stop with times and travel legs. Searching is one button that opens in place.",
     delta: "Turns the map into a route-planning surface. Costs about 7rem at the bottom.",
+  },
+  {
+    id: "deck",
+    label: "A · Floating deck",
+    summary:
+      "The map runs edge to edge. Day scope, search and the day's facts float as glass cards over it, so the whole pane is geography and the controls feel weightless.",
+    delta: "Most map per pixel. Controls overlap the canvas, which can cover pins in a narrow pane.",
   },
   {
     id: "ribbon",
@@ -188,6 +189,7 @@ function Lab() {
         </header>
 
         <LabScope labId={LAB_ID} />
+        <OptionContrast labId={LAB_ID} />
 
         <section className="mt-8">
           <p className="text-[10px] font-bold uppercase text-brand">Required in every option</p>

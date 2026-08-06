@@ -19,6 +19,7 @@ import {
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 import "../../../src/index.css";
 
 type Variant = "edge" | "sheet" | "popover";
@@ -307,6 +308,7 @@ function ChatAssistantLab() {
         </header>
 
         <LabScope labId="chat-assistant-overlay" />
+        <OptionContrast labId="chat-assistant-overlay" />
 
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Assistant layout variants">
           {variants.map((item) => (

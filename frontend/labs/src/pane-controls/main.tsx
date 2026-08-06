@@ -18,6 +18,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 
 type Variant = "semantic" | "pair" | "menu";
 type Pane = "itinerary" | "map" | "details";
@@ -164,6 +165,7 @@ function PaneControlsLab() {
         <LabNavigation detail labId="pane-control-polish" />
         <header className="mt-4 flex flex-wrap items-end justify-between gap-5 border-b border-slate-200 pb-5"><div><div className="flex items-center gap-2 text-accent"><Sparkles size={17} /><p className="text-[10px] font-bold uppercase">Enhancements and polishing Lab</p></div><h1 className="display mt-2 text-3xl font-semibold text-ink">Pane control polish</h1><p className="mt-2 max-w-4xl text-sm leading-relaxed text-slate-600">Compare quieter, clearer ways to present each pane's own Hide and Maximize actions without changing pane ownership, behavior, layout, or recovery.</p></div></header>
         <LabScope labId="pane-control-polish" />
+        <OptionContrast labId="pane-control-polish" />
         <div className="mt-5 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Pane control variants">{variants.map((item) => <button key={item.id} role="tab" aria-selected={variant === item.id} onClick={() => setVariant(item.id)} className={`rounded-md bg-white p-4 text-left shadow-card ring-1 transition ${variant === item.id ? "ring-2 ring-accent" : "ring-slate-200 hover:ring-slate-300"}`}><strong className="block text-sm text-ink">{item.label}</strong><span className="mt-2 block text-xs leading-relaxed text-slate-600">{item.note}</span><span className="mt-3 block border-t border-slate-100 pt-2 text-[10px] font-semibold text-accent">{item.strength}</span></button>)}</div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-semibold text-ink">Interactive production-scale preview</p><p className="mt-0.5 text-[11px] text-slate-500">Try Hide, Maximize, Restore, and pane recovery independently in all three panes.</p></div><a href={`?preview=${variant}`} className="btn-primary"><Maximize2 size={14} /> Open full-size preview</a></div>
         <section className="mt-2 h-[680px] max-h-[76vh] min-h-[560px] overflow-hidden rounded-md bg-white shadow-pop ring-1 ring-slate-200" aria-label="Pane controls preview"><PlannerWorkspace key={variant} variant={variant} /></section>

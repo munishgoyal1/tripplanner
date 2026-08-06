@@ -11,6 +11,7 @@ import {
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 
 interface Option {
   id: string;
@@ -136,6 +137,7 @@ function HistoricalLab() {
         </header>
 
         <LabScope labId="workspace-shell" />
+        <OptionContrast labId="workspace-shell" />
 
         <div className="mt-6 grid gap-4 xl:grid-cols-3">
           {options.map((option) => <OptionCard key={option.id} option={option} />)}

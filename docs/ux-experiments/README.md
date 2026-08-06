@@ -49,6 +49,22 @@ the alternatives. Repeat the selected option's delta above its preview so the
 comparison remains visible after selection. A benefit-oriented summary alone is
 not sufficient to distinguish or approve an option.
 
+Every Lab must also carry the shared **The difference, in one place** block
+directly under Change scope. Per-option prose is written one option at a time and
+cannot be compared; this block states the single axis the options genuinely
+disagree about, then puts every option on the same four columns - the idea, what
+it buys, what it costs, and when to choose it - and closes by naming what is
+identical in all of them. Every option carries a 0-100 fit score and the rows
+render best first, so the recommendation is an ordering rather than a sentence.
+The score ranks only the options within one Lab. Option letters stay fixed
+because decision records refer to them; ranking never renames an option. In a
+Lab that is still open, list the option cards themselves in the same descending
+order, so the page and the table agree; a decided Lab keeps its recorded order.
+Close the block with one plain-prose paragraph reading the three options against
+each other and saying why the ranking lands where it does.
+Content lives in `frontend/labs/src/shared/OptionContrast.tsx`, keyed by Lab id,
+so a new Lab adds one record and renders `<OptionContrast labId={LAB_ID} />`.
+
 The Change scope block also controls optional **change markers** on each preview.
 Markers outline only elements carrying a Lab-owned `data-lab-change` target and
 label the varied region without wrapping or restyling it. The marker layer is
@@ -304,7 +320,10 @@ permanently: originals are never kept.
   keep that preview inside the Lab until the owner explicitly approves production.
 8. State exact in-scope changes and context-only elements before the alternatives.
   A realistic preview is not permission to redesign every element it happens to show.
-9. Mark each varied preview region with `data-lab-change`; keep annotations out of
+9. Give every Lab an option-contrast table naming the one axis the options disagree
+  about, compared on identical columns, scored 0-100 and ordered best first, plus
+  what stays identical across them.
+10. Mark each varied preview region with `data-lab-change`; keep annotations out of
   production UI and ensure marker overlays take no layout space or pointer input.
 
 ## Compare Checklist

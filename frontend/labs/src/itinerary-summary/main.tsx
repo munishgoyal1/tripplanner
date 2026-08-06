@@ -14,6 +14,7 @@ import "../../../src/index.css";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
+import { OptionContrast } from "../shared/OptionContrast";
 
 type Variant = "editorial" | "balanced" | "compact";
 
@@ -211,6 +212,7 @@ function Lab() {
         </header>
 
         <LabScope labId="itinerary-summary-design" />
+        <OptionContrast labId="itinerary-summary-design" />
 
         {!compare && (
           <div className="mt-5 grid gap-2 sm:grid-cols-3" role="tablist" aria-label="Itinerary summary variants">
