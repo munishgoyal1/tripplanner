@@ -53,3 +53,7 @@ Okay, may be dont store originals as you proposed, just extract the needed infor
 Okay, let's leave out the word docx for now.
 
 Anything else you need ? May be create a new lab out of it first. So that we dont mix too many things in current sandbox lab16.
+[2026-08-06 13:27] [worker-3 !] Confirm document types and export
+#1 - confirmed. this is also an incentive for them to signin and for us to acquire a user.
+Elaborate on #2 - I did not understand the export part.
+#3 - Build these additonal types , Why license ? For driving abroad - ye then makes sense. Emergency notes etc. doesnt need to be documents. Keep things simple also for now that will help more stickiness and user acquisition. This is overall product v1.

@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Brief ID | `002` |
-| Status | Retention decided - UX direction in evaluation |
+| Status | Scope decided - one export decision open, UX direction in evaluation |
 | Owner | Munish Goyal |
 | Created | 2026-08-06 |
 | Updated | 2026-08-06 |
@@ -47,6 +47,12 @@ These are settled. They are constraints on every option, not variables.
    information, never from a stored document.
 3. **`.docx` is out of the first version.** Accepted inputs are PDF, JPEG, PNG,
    HEIC, and pasted text.
+4. **Identity documents require a signed-in account.** Guests may attach bookings
+   only. The owner's framing is worth keeping: the vault is a reason to sign in,
+   so the security boundary and the acquisition incentive are the same line.
+5. **All five additional types ship in v1**, because each one answers a check the
+   planner can actually run. Emergency contacts and medical notes stay profile
+   fields on `family_members` and do not become documents.
 
 The consequences are worth stating, because they simplify the rest of this brief
 considerably: there is no blob container to secure, no SAS issuance, no lifecycle
@@ -129,15 +135,21 @@ model at all should be computed and explained instead:
 
 ## Additional document types worth adding
 
-Ranked by planning value against sensitivity.
+All five ship in v1. Each one is here because it answers a check the planner can
+run, not because it is a document a traveler happens to own.
 
-| Type | Why it earns a place | Sensitivity |
+| Type | The check it unlocks | Sensitivity |
 |---|---|---|
-| Travel insurance | Policy number and 24x7 assistance number are the single most useful things to have in a printed packet during disruption | Low |
+| Travel insurance | Medical cover against the destination's minimum, and a 24x7 assistance number in the packet during disruption | Low |
 | Vaccination or health certificate | Yellow fever proof is a legal entry condition for some destinations, so it belongs beside visa logic | Medium |
-| Driving licence and International Driving Permit | Required for car rental; expiry affects the trip | Medium |
+| Driving licence | Whether the licence is accepted at the destination, and whether an International Driving Permit is required alongside it. A non-EU licence without an IDP means the rental desk refuses the car | Medium |
+| International Driving Permit | Issued separately from the licence and expires a year later, so it is tracked as its own record against the licence | Medium |
 | Loyalty and travel programs | Frequent flyer, hotel status, rail pass; improves booking handoff quality | Low |
-| Emergency contact and critical medical notes | Belongs in the offline packet; already partially modeled in `family_members` | Medium |
+
+**Not documents:** emergency contacts and critical medical notes. They are short
+profile fields the traveler types once, they have no document to extract from, and
+`family_members` already models the people they belong to. Making them documents
+would add an upload flow to something that is two text fields.
 
 **Explicitly refused:** payment cards, bank details, tax identifiers, and any
 document whose only use is payment. The product does not purchase anything
@@ -242,20 +254,59 @@ There is no `blob_path`. A record that cannot point at a file cannot leak one.
 - Reject SVG, HTML, and archives. Cap request size and per-account record count.
 - The uploaded bytes are never persisted, never logged, and never written to a
   temporary file. Image EXIF and GPS data are discarded with the rest of the file.
-- Document numbers are stored masked. The unmasked number is never stored, so it
-  cannot be revealed later by any code path.
+- Document numbers are displayed masked everywhere. Whether the full number is
+  stored at all is the one open decision below; if it is not stored, no code path
+  can reveal it, which is the stronger position.
 - Never include document fields in analytics, structured logs, share snapshots,
   or passive learning. Log document events by type and outcome only.
 - Rate-limit uploads and extraction on the existing admission boundary.
 
 ## Export behavior
 
-- Identity details are excluded from every export by default.
-- Including them is an explicit per-export choice, and numbers stay masked unless
-  the user separately chooses to reveal them.
-- Public share links never include documents, references, or identity fields.
-- Email delivery of an unmasked identity number requires a second confirmation,
-  because email is not a private channel.
+"Export" is the trip leaving the product as a file: the itinerary PDF, the emailed
+packet, the calendar file. Once it leaves, none of the protections in this brief
+apply to it. A PDF sits in a Downloads folder, gets forwarded to a hotel, and gets
+printed. So the question is not what the app shows, it is what the app is willing
+to write into a file it will never see again.
+
+Three levels, deliberately different:
+
+| Surface | Contains identity details | Controlled by |
+|---|---|---|
+| Public share link | Never, under any setting | Not a setting. `sanitize_plan` is an allowlist |
+| Exported PDF or emailed packet | Off by default, opt in per export | A checkbox on the export sheet |
+| Full document numbers inside that export | See the open decision below | A second, separate confirmation |
+
+Booking references are treated separately from identity details. A confirmation
+number is the point of the packet, so it is included by default; a passport number
+is not, so it is not.
+
+Email delivery of an unmasked identity number would require its own confirmation,
+because email is not a private channel.
+
+## Open owner decision
+
+One decision remains, and it is narrower than it first appeared. Storing a
+document number and exporting one are the same question, because a number that is
+never stored can never be exported.
+
+**Does the product store the full document number, or only the last four digits?**
+
+| | Store last four only | Store the full number |
+|---|---|---|
+| What the export can carry | Names, expiry dates, visa windows, insurance cover, booking references, and `••••••4821` | All of that, plus the real number behind a second confirmation |
+| What it enables | Every planning check in this brief. All of them work on country, expiry, and dates | Filling an airline or visa form without fetching the physical passport |
+| What a breach exposes | Four digits and an expiry date | Identity-theft-grade data for the whole family |
+| What it costs to build | Nothing extra | Field-level encryption, key rotation, access auditing, and a reveal path to defend forever |
+
+**Recommendation: last four only.** No check in this brief needs the full number.
+Its only real use is transcribing into a form, which happens at a desk where the
+passport is usually within reach, and it is the single field that turns a modest
+leak into a serious one. It also keeps v1 simple, which is the stated goal.
+
+The placement question - whether documents live in the trip, in the account, or in
+an intake queue - is being answered by
+[Lab #20](../ux-experiments/TRAVEL_DOCUMENTS.md) rather than decided here.
 
 ## Scope
 
@@ -264,15 +315,17 @@ There is no `blob_path`. A record that cannot point at a file cannot leak one.
 - Booking attachment on an itinerary occurrence, with extraction to a review card
   and confirmation before any itinerary change.
 - Traveler documents for passport and visa with structured fields.
+- Insurance, vaccination, driving licence, International Driving Permit, and
+  loyalty types.
 - View, update, and delete for every stored record.
 - Deterministic expiry and validity warnings surfaced on the trip.
 - Deletion on privacy actions, and the security rules above.
 
 ### Should ship
 
-- Insurance, vaccination, driving licence, and loyalty types.
 - Optional masked identity appendix in the export.
 - Grounded visa-free eligibility using the existing visa tool.
+- Grounded International Driving Permit requirement for the destination.
 
 ### Could ship later
 
@@ -302,13 +355,6 @@ Each stage is independently useful and independently revertible.
 
 ## Open owner decisions
 
-Retention and accepted file types are settled above. Three remain:
-
-1. Confirm that guests cannot store identity documents.
-2. Confirm the export default is off and masked when enabled.
-3. Confirm the additional document types worth building, and whether emergency
-   and medical notes should extend `family_members` rather than become documents.
-
-The placement question - whether documents live in the trip, in the account, or in
-an intake queue - is being answered by
-[Lab #20](../ux-experiments/TRAVEL_DOCUMENTS.md) rather than decided here.
+Retention, accepted file types, guest access, and document types are settled
+above. The remaining decision is stated in full under
+[Export behavior](#export-behavior).

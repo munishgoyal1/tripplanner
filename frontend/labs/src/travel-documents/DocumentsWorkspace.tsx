@@ -26,6 +26,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  attentionChecks,
   bookingDocuments,
   blockerCount,
   itinerary,
@@ -583,7 +584,6 @@ function TravellerBlock({
 }
 
 function ReadinessRail(props: SurfaceProps) {
-  const blockers = readinessChecks.filter((check) => check.severity === "blocker");
   const clear = readinessChecks.filter((check) => check.severity === "ok");
   return (
     <aside
@@ -609,7 +609,7 @@ function ReadinessRail(props: SurfaceProps) {
       <div className="border-b border-slate-100">
         <p className="px-3 pb-1 pt-2.5 text-[10px] font-bold uppercase text-slate-500">Before you go</p>
         <ul>
-          {blockers.map((check) => (
+          {attentionChecks.map((check) => (
             <CheckRow
               key={check.id}
               check={check}
@@ -699,7 +699,7 @@ function VaultSheet(props: SurfaceProps & { onClose: () => void }) {
 }
 
 function InboxDock(props: SurfaceProps & { open: boolean; onToggle: () => void }) {
-  const queued = readinessChecks.filter((check) => check.severity === "blocker");
+  const queued = attentionChecks;
   return (
     <div
       className="absolute inset-x-0 bottom-0 z-40 border-t border-[#dce2df] bg-white shadow-[0_-8px_24px_rgba(23,36,51,.08)]"

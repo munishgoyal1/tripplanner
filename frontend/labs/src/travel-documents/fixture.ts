@@ -138,6 +138,23 @@ export const travellerDocuments: TravellerDocument[] = [
     ],
   },
   {
+    id: "doc-licence-self",
+    travellerId: "self",
+    kind: "licence",
+    title: "Driving licence",
+    issuer: "RTO Bengaluru East · India",
+    expiry: "2029-08-22",
+    expiryLabel: "22 Aug 2029",
+    capturedOn: "02 Aug 2026",
+    reusedFrom: "Kyoto, Mar 2026",
+    fields: [
+      { label: "Issuing country", value: "India", confidence: 0.98 },
+      { label: "Licence number", value: "KA••••••319", masked: true, confidence: 0.94 },
+      { label: "Categories", value: "LMV · MCWG", confidence: 0.91 },
+      { label: "Expiry", value: "22 Aug 2029", confidence: 0.97 },
+    ],
+  },
+  {
     id: "doc-insurance",
     travellerId: "self",
     kind: "insurance",
@@ -235,6 +252,18 @@ export const readinessChecks: ReadinessCheck[] = [
     action: "Add his visa once issued.",
   },
   {
+    id: "chk-driving-permit",
+    severity: "warning",
+    travellerId: "self",
+    title: "Your licence needs an International Driving Permit here",
+    detail:
+      "Day 3 is a Sintra day trip, which most people drive. An Indian licence is accepted in Portugal only alongside a valid IDP, and rental desks refuse the car without one.",
+    rule: "non-EU licence + car hire → IDP required",
+    origin: "grounded",
+    source: "Instituto da Mobilidade e dos Transportes, checked 6 Aug 2026",
+    action: "An IDP is issued same-day at your RTO and lasts a year.",
+  },
+  {
     id: "chk-self-visa",
     severity: "ok",
     travellerId: "self",
@@ -264,3 +293,8 @@ export const pendingExtraction: ExtractedField[] = [
 ];
 
 export const blockerCount = readinessChecks.filter((check) => check.severity === "blocker").length;
+
+// Blockers first, then warnings: anything the traveller still has to act on.
+export const attentionChecks = readinessChecks
+  .filter((check) => check.severity !== "ok")
+  .sort((a, b) => (a.severity === b.severity ? 0 : a.severity === "blocker" ? -1 : 1));

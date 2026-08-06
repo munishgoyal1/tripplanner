@@ -49,6 +49,13 @@ store to secure, expire, rotate or reason about in the privacy-deletion path.
 `.docx` is out of v1. PDF, JPEG, PNG, HEIC and pasted text cover every case the owner
 actually encounters.
 
+Two further decisions landed on 6-Aug-2026. Identity documents require a signed-in
+account, which makes the security boundary and the sign-up incentive the same line.
+And all five additional types ship in v1 — insurance, vaccination, driving licence,
+International Driving Permit, loyalty — because each answers a check the planner can
+actually run. Emergency contacts and medical notes stay profile fields; they have no
+document to extract from.
+
 ## Two lifetimes hiding inside one word
 
 "Document" covers two things that behave nothing alike:
@@ -119,8 +126,14 @@ the checks have real answers rather than decorative badges:
 | Priya's passport expires 20 Nov 2026 | **Blocker** — 38 days after exit, against a 3-month rule | Computed |
 | Aarav has no passport on file | **Blocker** — he is on the flight and the hotel booking | Computed |
 | Aarav has no Schengen visa | **Blocker** — Indian passport requires a Type C visa | Grounded |
+| Indian licence, no International Driving Permit | **Warning** — day 3 is a Sintra drive; the rental desk refuses the car | Grounded |
 | Munish's visa 1 Jun – 15 Dec 2026 | Clear — 63 days of margin | Computed |
 | Insurance €50,000 medical | Clear — against a €30,000 Schengen minimum | Grounded |
+
+The licence row exists to answer a fair question: why store a driving licence at
+all? Because the licence alone is not the check. A non-EU licence is accepted in
+Portugal only alongside an International Driving Permit, and that is a same-day
+errand at home and an impossible one at the rental desk.
 
 ## Guardrails
 
