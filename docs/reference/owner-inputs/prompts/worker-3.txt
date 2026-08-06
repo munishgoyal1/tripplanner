@@ -38,3 +38,11 @@ should we provide a steer , add to queue functionalities in chat ?
 
 [2026-08-06 10:58] [worker-3] Evaluate chat file attachments
 should we provide adding an image or file functionality
+
+[2026-08-06 11:34] [worker-3 !] Design travel documents vault
+yes lets add functionality of user able to add booking related files only - word doc, text, screenshots or pdfs etc. 
+also let them add passport, visa, or other identity related docs - this will help in giving insights and planning using visa and passport expiry dates etc. passort based eligibility for visa-free entries etc. Design this add File feature nicely with opur existing tenents of great and easy performant UX. (are these tenets alreayd capture in our principles and do you always keep them in mind , what do you always end up reading or rmemebering even on a new session or new machine). 
+These IDs or Date of birth or visa info and bookings info can be extracted and use din final itinerary export also which can serve as one single doc for entire trip reference. Give this as optional to add booking and othe rpersonal passport related detail in itinerary (just from privacy and comfort) Provide option to always remmeber and save these ID and visa docs for future trips in the user's account. Also carefully save the booking references also against the trip - you may now need to redesign the backend storage contracts, frontend etc. as this is a major feature. 
+After these file uploads provide way to refer them and see, update or delete etc. this is entirely now a Identity docs flow. 
+The bookings update flow should be seperate. 
+There are 3 - Bookings, Identity docs, Visa docs , anything else you think is storng to add ? Or any critique on this proposal ?
