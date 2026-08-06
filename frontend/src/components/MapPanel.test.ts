@@ -1320,13 +1320,14 @@ describe("map stop selection", () => {
     expect(screen.getByText("Schedule 8 hr, 09:00–17:00 est.")).toBeInTheDocument();
     expect(screen.getByText("Travel 25 min, 8 km, car")).toBeInTheDocument();
 
-    const input = await screen.findByPlaceholderText("Search places on this map…");
+    const input = await screen.findByPlaceholderText("Search a place, or tap one on the map…");
+    expect(screen.queryByRole("combobox", { name: "Stop type (optional)" })).not.toBeInTheDocument();
+    fireEvent.change(input, { target: { value: "North Market" } });
     const stopType = screen.getByRole("combobox", { name: "Stop type (optional)" });
     const day = screen.getByRole("combobox", { name: "Add stop to day" });
     expect(stopType).toHaveValue("");
     expect(stopType).toHaveTextContent("Type (optional)");
     expect(day).toHaveValue("1");
-    fireEvent.change(input, { target: { value: "North Market" } });
     fireEvent.change(day, { target: { value: "1" } });
     fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
