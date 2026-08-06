@@ -44,3 +44,6 @@ In C:\repos\tripplanner.worktrees\worker-1, complete this task cautiously.
 2. If clean, stage exactly those files, commit `Delete remote sandbox branches by default`, and push current agents/worker-1 to its configured upstream.
 3. Then fetch origin and verify remote branch `sandbox/lab16-chat-dock` exists and every commit on it is contained in `origin/master` (`origin/master..origin/sandbox/lab16-chat-dock` empty). Only if both are true, delete that remote branch with `git push origin --delete sandbox/lab16-chat-dock`. If it has unique work, do not delete it and report the blocker.
 4. Report commit SHA, code push, stale branch cleanup result, final divergence, and porcelain. Do not touch master, other branches, registry, worktrees, or databases.
+
+[2026-08-06 16:34] [worker-1 !] Create Second Lab17 Sandbox
+In C:\repos\tripplanner.worktrees\worker-1, create the fresh sandbox exactly with: .\scripts\sandbox\New-Sandbox.cmd lab17-canvas-2 "Lab 17 itinerary canvas: second independent sandbox" -NoSync -NoServe -NoOpen. This is explicitly owner-approved. Do not start servers, open VS Code, sync other worktrees, edit code, commit implementation, or touch existing sandbox 1-lab17-canvas. After creation, report exact branch, worktree, base commit, ports, DB, registry state, and verify both sandboxes exist and the new worktree is clean.

@@ -4,7 +4,7 @@ import { FlaskConical } from "lucide-react";
 import "../../../src/index.css";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabRecordCard } from "../shared/LabRecordCard";
-import { allLabs, effectiveLabDisposition, resolvedLabRecord } from "../shared/labRecords";
+import { allLabs, effectiveLabDisposition, resolvedLabRecord, type LabDisposition } from "../shared/labRecords";
 import { useLabSelections } from "../shared/useLabSelections";
 
 function LabCatalog() {
@@ -15,12 +15,12 @@ function LabCatalog() {
   const showParked = currentView === "catalog" || currentView === "parked";
   const { selections, status } = useLabSelections();
 
-  const labsFor = (dispositions: Array<string | undefined>) => status === "loaded"
+  const labsFor = (dispositions: LabDisposition[]) => status === "loaded"
     ? allLabs
         .filter((lab) => dispositions.includes(effectiveLabDisposition(lab, selections[lab.id])))
         .sort((first, second) => second.labNumber - first.labNumber)
     : [];
-  const visibleLabs = labsFor([undefined, "ready"]);
+  const visibleLabs = labsFor(["ready"]);
   const reviewLabs = labsFor(["implemented-review"]);
   const parkedLabs = labsFor(["parked"]);
   const title = currentView === "active" ? "UX Labs in progress" : currentView === "implemented-review" ? "Implemented UX Labs for review" : currentView === "parked" ? "Parked UX Labs" : "All Open UX Labs";
@@ -49,7 +49,7 @@ function LabCatalog() {
           </div>
           <div className="mt-3 overflow-hidden rounded-md ring-1 ring-slate-200">
             {visibleLabs.map((lab) => {
-              const disposition = selections[lab.id]?.disposition;
+              const disposition = effectiveLabDisposition(lab, selections[lab.id]);
               return <LabRecordCard key={lab.id} lab={resolvedLabRecord(lab, selections[lab.id])} compact state={disposition} selection={selections[lab.id]} />;
             })}
           </div>

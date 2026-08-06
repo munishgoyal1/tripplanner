@@ -670,3 +670,18 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 - Promotion records verification evidence before automatic teardown. If any
   cleanup step fails, the registry entry and promoted status remain visible for
   retry instead of reporting success and orphaning hidden resources.
+
+## 2026-08-06 - UX Lab Status Is Not In The Repository
+
+- Lab lifecycle state is owned by the machine-local decision store at
+  `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json`, written by the Labs dev
+  server. `labRecords.ts` only carries the fallback default. Reading the
+  committed file alone reported ten open labs when four were open, one parked and
+  the rest completed.
+- Run `pwsh -File scripts/dev/show-lab-status.ps1` before quoting which labs are
+  open. It prints live state beside the committed default and flags drift.
+- The record now carries one status field: `defaultDisposition` is required and
+  the displayed label is derived from it. A free-text `status` string, a separate
+  `completedLabs` array, and a card that fell back to `In evaluation` whenever
+  no decision was saved were three independent ways for the same lab to claim
+  three different states.
