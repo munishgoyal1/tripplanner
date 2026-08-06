@@ -71,3 +71,7 @@ implement lab17 in  a sandbox
 
 [2026-08-06 16:20] [worker-3 !] Implement lab18 in a new sandbox
 Implement lab18 in a new sandbox
+
+[2026-08-06 18:30] [worker-3] Move map day tabs to dock
+only 1 problem in lab18 implementaiotn - map days tabs are showing at top instead of at same row as sequence
+should be like screenshot
