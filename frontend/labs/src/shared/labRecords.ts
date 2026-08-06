@@ -7,12 +7,15 @@ export interface LabRecord {
   category: string;
   description: string;
   createdAt: string;
-  defaultDisposition?: LabDisposition;
+  defaultDisposition: LabDisposition;
   defaultStateChangedAt?: string;
-  status: string;
   href: string;
   decision: string;
   icon: typeof ListChecks;
+}
+
+export interface ResolvedLabRecord extends LabRecord {
+  status: string;
 }
 
 export interface LabSelectionState {
@@ -24,24 +27,33 @@ export interface LabSelectionState {
 
 export type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
 
+export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
+  ready: "In progress",
+  "implemented-review": "Implemented - To be reviewed",
+  parked: "Parked",
+  completed: "Completed",
+  discarded: "Discarded",
+};
+
 export const LAST_ASSIGNED_LAB_NUMBER = 20;
 
-export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition | undefined {
+export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
 }
 
-export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState): LabRecord {
+export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState): ResolvedLabRecord {
   const disposition = effectiveLabDisposition(lab, selection);
-  const status = disposition === "completed" ? "Completed"
-    : disposition === "implemented-review" ? "Implemented - To be reviewed"
-    : disposition === "ready" ? "In progress"
-    : disposition === "parked" ? "Parked"
-    : lab.status;
-  const decision = selection?.disposition && selection.selectionLabel ? selection.selectionLabel : lab.decision;
-  return { ...lab, status, decision };
+  return {
+    ...lab,
+    status: LAB_STATUS_LABELS[disposition],
+    decision: selection?.disposition && selection.selectionLabel ? selection.selectionLabel : lab.decision,
+  };
 }
 
-export const activeLabs: LabRecord[] = [
+// Committed defaults are the fallback only. The machine-local decision store
+// (%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json) overrides them at runtime;
+// run scripts/dev/show-lab-status.ps1 to compare the two.
+export const allLabs: LabRecord[] = [
   {
     labNumber: 20,
     id: "travel-documents",
@@ -49,7 +61,8 @@ export const activeLabs: LabRecord[] = [
     category: "Trip data",
     description: "Bookings, passports, visas and insurance get a home: fields are extracted once, the original file is never stored, and details are reused on the next trip. Compare a trip readiness rail, an account vault the trip only reports gaps against, and a drop-anything inbox that routes items later.",
     createdAt: "2026-08-06",
-    status: "In evaluation",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-06",
     decision: "Open · Recommended starting point: B · Account vault, trip shows gaps.",
     href: "./lab-20-travel-documents.html",
     icon: FileText,
@@ -61,7 +74,8 @@ export const activeLabs: LabRecord[] = [
     category: "Agent behaviour",
     description: "A deterministic plan engine between intent and the trip: envelope, presence, anchors, blast radius and receipts, so a change from chat, map, itinerary or details can never place a stop after the flight home or silently delete a booked leg.",
     createdAt: "2026-08-05",
-    status: "In evaluation",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-05",
     decision: "Open · Recommended starting point: B · Guarded autonomy.",
     href: "./lab-19-agentic-planning.html",
     icon: Workflow,
@@ -73,8 +87,9 @@ export const activeLabs: LabRecord[] = [
     category: "Map interaction",
     description: "Compare a floating control deck, a bottom route dock with the day's stop timeline, and a single command ribbon for how much of the map pane is actually geography.",
     createdAt: "2026-08-05",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: B · Route dock.",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-05",
+    decision: "Open · Recommended starting point: D · Search-first dock.",
     href: "./lab-18-map-canvas.html",
     icon: Map,
   },
@@ -85,7 +100,8 @@ export const activeLabs: LabRecord[] = [
     category: "Itinerary layout",
     description: "Compare a continuous journey spine, layered stop cards with in-place notes, and an editorial agenda for reading a five-day plan quickly without losing a single production fact.",
     createdAt: "2026-08-05",
-    status: "In evaluation",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-05",
     decision: "Open · Recommended starting point: B · Layered stop cards.",
     href: "./lab-17-itinerary-canvas.html",
     icon: ListChecks,
@@ -97,8 +113,9 @@ export const activeLabs: LabRecord[] = [
     category: "Assistant and workspace layout",
     description: "Compare a resident conversation column, a full-width focus composer, and a right-rail turn thread for where the Assistant lives and how a turn, its time, and its effects are read.",
     createdAt: "2026-08-05",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: C · Turn thread.",
+    defaultDisposition: "completed",
+    defaultStateChangedAt: "2026-08-06",
+    decision: "B · Focus composer.",
     href: "./lab-16-chat-agent-workspace.html",
     icon: MessageCircle,
   },
@@ -109,8 +126,9 @@ export const activeLabs: LabRecord[] = [
     category: "Map completeness",
     description: "Compare a connected day journey, a journey strip, and optional route layers for road, rail, and flight transfer days.",
     createdAt: "2026-08-01",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: A · Connected day journey.",
+    defaultDisposition: "completed",
+    defaultStateChangedAt: "2026-08-06",
+    decision: "C · Optional inter-city layer.",
     href: "./lab-14-intercity-map.html",
     icon: Map,
   },
@@ -121,9 +139,8 @@ export const activeLabs: LabRecord[] = [
     category: "Multi-city itinerary",
     description: "Compare three ways to show old-stay checkout, inter-city travel, new-stay check-in, and the remaining day.",
     createdAt: "2026-08-01",
-    defaultDisposition: "implemented-review",
-    defaultStateChangedAt: "2026-08-02",
-    status: "In evaluation",
+    defaultDisposition: "completed",
+    defaultStateChangedAt: "2026-08-06",
     decision: "A · Transition spine.",
     href: "./lab-15-multi-city-itinerary.html",
     icon: Route,
@@ -135,9 +152,8 @@ export const activeLabs: LabRecord[] = [
     category: "Place discovery",
     description: "Compare contextual alternatives, city chapters, and a filtered directory for browsing beyond the current ten-place shortlist.",
     createdAt: "2026-08-01",
-    defaultDisposition: "implemented-review",
-    defaultStateChangedAt: "2026-08-04",
-    status: "In evaluation",
+    defaultDisposition: "completed",
+    defaultStateChangedAt: "2026-08-06",
     decision: "A · Contextual explorer (with search).",
     href: "./lab-13-destination-guide.html",
     icon: Compass,
@@ -149,10 +165,9 @@ export const activeLabs: LabRecord[] = [
     category: "Account controls",
     description: "Compare one unified account menu, a strict profile/settings split, and a sectioned account hub with complete profile, analytics, and privacy destinations.",
     createdAt: "2026-08-01",
-    defaultDisposition: "implemented-review",
-    defaultStateChangedAt: "2026-08-02",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: A · Unified account menu.",
+    defaultDisposition: "completed",
+    defaultStateChangedAt: "2026-08-06",
+    decision: "C · Account settings hub.",
     href: "./lab-12-account-settings.html",
     icon: SlidersHorizontal,
   },
@@ -163,14 +178,12 @@ export const activeLabs: LabRecord[] = [
     category: "Trip export",
     description: "Compare compact, layered, and visual structures for one printable itinerary with confirmations and personal context.",
     createdAt: "2026-07-30",
-    status: "In evaluation",
-    decision: "Open · Recommended starting point: B · Layered Trip Book.",
+    defaultDisposition: "parked",
+    defaultStateChangedAt: "2026-08-06",
+    decision: "B · Layered Trip Book.",
     href: "./lab-5-itinerary-trip-book.html",
     icon: BookOpen,
   },
-];
-
-export const completedLabs: LabRecord[] = [
   {
     labNumber: 11,
     id: "itinerary-density",
@@ -180,7 +193,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-08-01",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-08-01",
-    status: "Implemented",
     decision: "B · Circuit header, adapted to preserve production detail and exact endpoint behavior.",
     href: "./lab-11-itinerary-density.html",
     icon: ListChecks,
@@ -194,7 +206,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-08-01",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-08-01",
-    status: "Implemented",
     decision: "B · Restrained icon pair, applied only to Itinerary, Map, and Details pane-local controls.",
     href: "./lab-10-pane-controls.html",
     icon: LayoutPanelTop,
@@ -208,7 +219,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-31",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-31",
-    status: "Implemented",
     decision: "A · Unified route ribbon, changing only the Map command hierarchy.",
     href: "./lab-8-map-controls.html",
     icon: Map,
@@ -222,7 +232,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-31",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-31",
-    status: "Implemented",
     decision: "B · Decision brief, with compact facts and no repeated Trip fit block below Budget.",
     href: "./lab-6-trip-snapshot.html",
     icon: ListChecks,
@@ -236,7 +245,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-31",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-31",
-    status: "Implemented",
     decision: "A · Direct pane toggles, with labeled New trip and unchanged pane-local controls.",
     href: "./lab-7-workspace-command-bar.html",
     icon: LayoutPanelTop,
@@ -250,7 +258,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-31",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-31",
-    status: "Implemented",
     decision: "A · Semantic icon + text, applied only to the desktop top command bar.",
     href: "./lab-9-shell-visual-refresh.html",
     icon: LayoutPanelTop,
@@ -264,7 +271,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-30",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-30",
-    status: "Implemented",
     decision: "B · Corner conversation sheet, preserving the mounted conversation and usable workspace.",
     href: "./lab-4-chat-assistant.html",
     icon: MessageCircle,
@@ -278,7 +284,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-29",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-29",
-    status: "Implemented",
     decision: "B · Compact Agenda, paired with C · Compact Brief.",
     href: "./lab-2-itinerary-information.html",
     icon: ListChecks,
@@ -292,7 +297,6 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-29",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-29",
-    status: "Implemented",
     decision: "C · Compact Brief with explicit travel rhythm, day plan, and booking readiness.",
     href: "./lab-3-itinerary-summary.html",
     icon: LayoutPanelTop,
@@ -306,14 +310,11 @@ export const completedLabs: LabRecord[] = [
     createdAt: "2026-07-23",
     defaultDisposition: "completed",
     defaultStateChangedAt: "2026-07-23",
-    status: "Decided",
     decision: "Layout C: map-first canvas, details-first rail, and compact lower-right Assistant.",
     href: "./lab-1-workspace-shell.html",
     icon: LayoutPanelTop,
   },
 ];
-
-export const allLabs = [...activeLabs, ...completedLabs];
 
 const assignedLabNumbers = allLabs.map((lab) => lab.labNumber);
 const labNumbersAreValid = assignedLabNumbers.every((number) => Number.isInteger(number) && number > 0)
