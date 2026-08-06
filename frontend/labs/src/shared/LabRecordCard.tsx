@@ -1,13 +1,5 @@
 import { ArrowRight, Clock3 } from "lucide-react";
-import type { LabDisposition, LabRecord, LabSelectionState } from "./labRecords";
-
-const stateLabels: Record<LabDisposition, string> = {
-  ready: "In progress",
-  "implemented-review": "Implemented - To be reviewed",
-  parked: "Parked",
-  completed: "Completed",
-  discarded: "Discarded",
-};
+import { LAB_STATUS_LABELS, type LabDisposition, type LabSelectionState, type ResolvedLabRecord } from "./labRecords";
 
 function formatDate(value: string): string {
   const date = /^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(`${value}T00:00:00Z`) : new Date(value);
@@ -21,7 +13,7 @@ export function LabRecordCard({
   state,
   selection,
 }: {
-  lab: LabRecord;
+  lab: ResolvedLabRecord;
   completed?: boolean;
   compact?: boolean;
   state?: LabDisposition;
@@ -31,7 +23,7 @@ export function LabRecordCard({
   const stateDate = state === lab.defaultDisposition && lab.defaultStateChangedAt
     ? lab.defaultStateChangedAt
     : selection?.stateChangedAt || selection?.updatedAt || lab.defaultStateChangedAt;
-  const stateLabel = state ? stateLabels[state] : "In evaluation";
+  const stateLabel = LAB_STATUS_LABELS[state ?? lab.defaultDisposition];
   if (compact) {
     return (
       <a href={lab.href} className="group grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 bg-white px-3 py-3 transition last:border-b-0 hover:bg-slate-50">
