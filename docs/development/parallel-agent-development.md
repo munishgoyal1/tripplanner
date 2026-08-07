@@ -35,8 +35,9 @@ verifies all three worker workspaces plus the integration workspace, and opens t
 in separate VS Code windows. VS Code restores
 the last window position, editor groups and tabs, cursor/scroll state, undo
 history, and terminal sessions for each workspace. The committed workspace
-settings keep the primary sidebar on the left and the terminal panel on the
-right. Machine-level `window.restoreWindows=all` and
+settings inherit one portable layout: hidden activity bar, primary sidebar and
+terminal panel on the right, hidden secondary sidebar, and a single editor tab.
+Machine-level `window.restoreWindows=all` and
 `files.hotExit=onExitAndWindowClose` retain all windows and unsaved editor
 buffers across a normal restart.
 

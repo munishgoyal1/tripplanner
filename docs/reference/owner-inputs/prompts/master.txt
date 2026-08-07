@@ -51,3 +51,6 @@ signin to azure with my personal login: munishgoyal1@gmail.com only that uses th
 
 [2026-08-07 16:37] [master !] Enable Python terminal env
 vAn environment file is configured but terminal environment injection is disabled. Enable "python.terminal.useEnvFile" to use environment variables from .env files in terminals.
+
+[2026-08-07 16:42] [master !] Save default VS Code layout
+save this vs code layout as default in the configs to be used everywhere
