@@ -81,3 +81,30 @@ In C:\repos\tripplanner.worktrees\worker-1, validate the three tripplanner-worke
 
 [2026-08-07 11:18] [worker-1 !] Debug Chat Hotel Updates
 I asked assistant / chat agent to update indore hotel to another 5star. it took 1 min and then gave a choice. i said ok works, it again took minutes and said it is done. But itinerary did not reflect the htoel change stilll. This is first time i am testing such updates from the chat. Does it work or there are bugs ?
+
+[2026-08-07 12:22] [worker-1 !] Fix Sandbox Cleanup Failure
+fix why the sandbox cleanup failed during last saandbox promotion sbx named 1-lab19-guarded
+
+== 6/6 verify ==
+[verified] origin/master contains every commit and the worktree is clean.
+[stop]    :8100 (PID 15356)
+[stop]    :5273 (PID 59720)
+[stop]    :5275 (PID 39660)
+[stop]    runner (61840)
+WARNING: C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded still exists; close anything using it and delete it manually.
+Deleted branch sandbox/1-lab19-guarded (was ac315a2).
+Dropped sandbox database tripplanner-sbx-1-lab19-guarded.
+To https://github.com/munishgoyal1/tripplanner.git
+ - [deleted]         sandbox/1-lab19-guarded
+Exception: C:\repos\tripplanner.worktrees\worker-2\scripts\dev\sandbox.ps1:1105:9
+Line |
+1105 |          throw "Sandbox '$slug' was promoted but cleanup is incomplete …
+	|          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	| Sandbox '1-lab19-guarded'
+	| was promoted but cleanup
+	| is incomplete; it remains
+	| listed for retry:
+	| worktree directory still
+	| exists:
+	| C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded
+Press any key to continue . . .

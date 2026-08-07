@@ -584,12 +584,21 @@ function Remove-SandboxLeftovers {
     Get-ChildItem -LiteralPath $Path -Force -Recurse -Directory -ErrorAction SilentlyContinue |
         Where-Object { $_.Attributes.HasFlag([IO.FileAttributes]::ReparsePoint) } |
         ForEach-Object { & cmd /c rmdir "$($_.FullName)" }
-    Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
-    if (Test-Path -LiteralPath $Path) {
-        Write-Warning "$Path still exists; close anything using it and delete it manually."
-        return $false
+
+    $lastError = $null
+    foreach ($attempt in 1..12) {
+        try {
+            Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
+        } catch {
+            $lastError = $_.Exception.Message
+        }
+        if (-not (Test-Path -LiteralPath $Path)) { return $true }
+        if ($attempt -lt 12) { Start-Sleep -Milliseconds 250 }
     }
-    return $true
+
+    $detail = if ($lastError) { " Last error: $lastError" } else { "" }
+    Write-Warning "$Path still exists after 12 deletion attempts.$detail Close anything using it and retry discard."
+    return $false
 }
 
 function Remove-PendingMergesFor {

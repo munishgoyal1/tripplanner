@@ -785,3 +785,12 @@ the outcome.
 - Use `Join-Path` and `System.IO.Path` separators in shared infrastructure and
   developer scripts. Keep Windows and macOS on one implementation when that is a
   local, low-complexity change; surface the tradeoff before adding platform forks.
+
+## 2026-08-07 - Process Exit Precedes Windows Handle Release
+
+- Stopping a process does not guarantee Windows has released every handle by the
+  time the stop command returns. A single immediate recursive delete can leave an
+  empty worktree directory and falsely turn successful promotion into manual cleanup.
+- Retry a destructive cleanup against observable state for a short bounded window.
+  Preserve the registry entry and final operating-system error when the path truly
+  remains locked, so the same cleanup operation can be retried safely.
