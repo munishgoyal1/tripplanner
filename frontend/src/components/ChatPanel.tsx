@@ -36,6 +36,7 @@ import type { ChatMessage, TurnEffect } from "../types";
 import { trackEvent } from "../analytics";
 import { saveTurnMeta, withStoredTurnMeta } from "../turnMetadata";
 import AccountSettingsHub from "./AccountSettingsHub";
+import type { AccountDestination } from "./AccountSettingsHub";
 import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 import {
@@ -130,6 +131,7 @@ export default function ChatPanel({
   const [input, setInput] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
+  const [accountDestination, setAccountDestination] = useState<AccountDestination>("menu");
   const [nameInput, setNameInput] = useState(getDisplayName());
   const [googleEnabled, setGoogleEnabled] = useState(false);
   const [auth, setAuth] = useState<AuthSession>({ authenticated: false });
@@ -197,7 +199,11 @@ export default function ChatPanel({
   }, []);
 
   useEffect(() => {
-    const openAccount = () => setShowAccount(true);
+    const openAccount = (event: Event) => {
+      const requested = (event as CustomEvent<{ destination?: AccountDestination }>).detail?.destination;
+      setAccountDestination(requested ?? "menu");
+      setShowAccount(true);
+    };
     const openSettings = () => setShowSettings(true);
     window.addEventListener("tripplanner:open-account", openAccount);
     window.addEventListener("tripplanner:open-settings", openSettings);
@@ -1095,6 +1101,7 @@ export default function ChatPanel({
           localIdentityActive={!isAnonymousUser()}
           nameInput={nameInput}
           privacyBusy={privacyBusy}
+          initialDestination={accountDestination}
           onNameInputChange={setNameInput}
           onClose={() => setShowAccount(false)}
           onGoogleSignIn={() => {

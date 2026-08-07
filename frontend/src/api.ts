@@ -357,6 +357,7 @@ export async function importSharedTrip(token: string): Promise<TripView> {
 export interface Preferences {
   display_name: string;
   home_city: string;
+
   home_country: string;
   trip_style: string;
   budget_level: string;
@@ -538,4 +539,164 @@ export async function setStopBooked(
 ): Promise<Itinerary> {
   return sharedClient.setStopBooked(day, name, booked);
 }
+
+// ---------------------------------------------------------------------------
+// Travel documents. The server keeps the fields a document contained, never
+// the document. Nothing here uploads a file for storage: the bytes are read
+// once by /documents/extract and discarded with the request.
+// ---------------------------------------------------------------------------
+
+export type DocumentKind =
+  | "passport"
+  | "visa"
+  | "insurance"
+  | "vaccination"
+  | "licence"
+  | "idp"
+  | "loyalty";
+
+export interface TravelDocument {
+  id: string;
+  scope: "traveler" | "trip";
+  type: DocumentKind;
+  status: string;
+  traveller_key: string;
+  traveller_name: string;
+  trip_id: string | null;
+  fields: Record<string, string | number>;
+  provenance: {
+    source_kind: "manual" | "image" | "text";
+    confidence: number;
+    confirmed_by_user: boolean;
+    captured_at: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DocumentsResponse {
+  documents: TravelDocument[];
+  type_labels: Record<string, string>;
+}
+
+export interface ProposedField {
+  key: string;
+  label: string;
+  value: string | number;
+  masked: boolean;
+  confidence: number;
+}
+
+export interface ExtractionResult {
+  type: DocumentKind;
+  source_kind: "image" | "text";
+  fields: ProposedField[];
+}
+
+export interface ReadinessCheck {
+  id: string;
+  severity: "blocker" | "warning" | "ok";
+  traveller_key: string;
+  traveller_name: string;
+  title: string;
+  detail: string;
+  rule: string;
+  origin: "computed";
+  action: string;
+}
+
+export interface DocumentReadiness {
+  destination?: string;
+  travellers?: { key: string; name: string; relationship: string }[];
+  checks: ReadinessCheck[];
+  blockers: number;
+  warnings: number;
+  badge: string;
+  badge_tone?: "blocker" | "warning" | "";
+  origin_country?: string;
+  destination_country?: string;
+  crosses_border?: boolean;
+  reason?: string;
+}
+
+export async function fetchTravelDocuments(): Promise<DocumentsResponse> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await apiFetch(`${BASE}/documents?${params.toString()}`);
+  ensureOk(res, "Could not load your document details");
+  return res.json();
+}
+
+/** Read one document and get field proposals back. Stores nothing. */
+export async function extractTravelDocument(
+  type: DocumentKind,
+  input: { contentBase64?: string; text?: string },
+): Promise<ExtractionResult> {
+  const res = await apiFetch(`${BASE}/documents/extract`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: getUserId(),
+      type,
+      content_base64: input.contentBase64 ?? "",
+      text: input.text ?? "",
+    }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.ok) {
+    throw new Error(json.message || "The document could not be read.");
+  }
+  return json as ExtractionResult;
+}
+
+export async function saveTravelDocument(record: {
+  id?: string;
+  type: DocumentKind;
+  traveller_key: string;
+  traveller_name: string;
+  fields: Record<string, string | number>;
+  provenance?: Partial<TravelDocument["provenance"]>;
+}): Promise<TravelDocument> {
+  const res = await apiFetch(`${BASE}/documents`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...record, id: record.id ?? "", user_id: getUserId() }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.ok) {
+    throw new Error(json.message || "Could not save these details.");
+  }
+  return json.document as TravelDocument;
+}
+
+export async function deleteTravelDocument(id: string): Promise<boolean> {
+  const res = await apiFetch(`${BASE}/documents/delete`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not delete that detail");
+  const json = await res.json();
+  return Boolean(json.ok);
+}
+
+export async function clearTravelDocuments(): Promise<number> {
+  const res = await apiFetch(`${BASE}/documents/clear`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not delete your document details");
+  const json = await res.json();
+  return Number(json.deleted || 0);
+}
+
+export async function fetchDocumentReadiness(
+  signal?: AbortSignal,
+): Promise<DocumentReadiness> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await apiFetch(`${BASE}/trip/documents/readiness?${params.toString()}`, { signal });
+  ensureOk(res, "Could not check this trip's documents");
+  return res.json();
+}
+
 

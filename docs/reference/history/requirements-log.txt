@@ -3390,6 +3390,27 @@ VALIDATION:
   in the drive insight while retaining explicit meals as separate itinerary stops.
 - Add breathing room between the saved-trip dropdown and workspace status text.
 
+[2026-08-07 18:55] Lab 20 travel documents implemented (Option B).
+Traveller document details live in Account and are reused by every trip; a trip only shows a gap badge.
+The original photo or text is read once and discarded: only allowlisted fields are stored, and identity numbers are reduced to their last four digits before any write.
+New: web/travel_documents.py, web/document_readiness.py, web/document_extract.py, components/TravelDocumentsVault.tsx, and a documents container in cosmos-data.bicep.
+PDFs are refused with an explicit message; photo and pasted text are the supported inputs. /account/privacy deletes these records.
+
+[2026-03-25] Document readiness only speaks when the trip crosses a border
+Passport, visa and IDP checks were firing on domestic trips, showing a red "1 document
+to fix" for a weekend in Goa. The deciding fact is the trip origin, which is already
+persisted and already learned opportunistically from the chat; origin and destination are
+each resolved to a country through the keyless Open-Meteo geocoder (web/place_country.py)
+and the border-dependent checks run only when the two differ. Unknown on either side means
+silence, not a guess. Citizenship is deliberately not collected - that is a visa question
+and tools/visa.py already answers it grounded.
+Second rule, applied to every type: absence warns, arithmetic blocks. A missing passport
+record is a warning worded as what it is, because crossing a border is not the same as
+needing a passport (Schengen, India-Nepal, UK-Ireland CTA). Only a stored date failing a
+comparison can raise a blocker; the toolbar badge is rose for blockers, amber for warnings.
+Also: the latest of several passports is the one measured, a visa naming another country is
+ignored, an untagged visa can only warn, a licence issued by the destination needs no IDP,
+and a lapsed loyalty tier is not worth a badge.
 === 2026-08-06 — Two product goals and public-edge architecture ===
 - Rank two goals above all other requirements: build the most intelligent itinerary
   within the user's preferences, tastes, budget, pace, and constraints; then get that
@@ -3403,3 +3424,33 @@ VALIDATION:
 - Keep the React SPA as the logged-in planner workspace; scale belongs behind the API.
   Add a server-rendered or prerendered public edge (landing, destination content,
   shared trips) for first paint, indexing, and link previews.
+
+[2026-08-07] Visa check wired to the documents vault (sandbox 1-lab20-docs)
+check_visa_requirements existed and was bound to the trip agent, but nothing in
+the system ever knew the user's passport country, so the tool could only be called
+with an invented value or skipped. passport_country is now optional: the tool reads
+the issuing_country (or nationality) of the traveller's own saved passport, then
+falls back to profile.passport_country. Residence is never used as nationality. Two
+saved passports with different countries is treated as unknown, not as a guess. When
+it is unknown the tool returns one question for the agent to ask and instructs it to
+save the answer with update_user_profile(passport_country=...), so it is asked once
+and never again. The response envelope now reports passport_country_source.
+
+[2026-08-07] Visa capability: layers 1 and 2 only, no rules engine.
+Owner decision: a per-country visa rules engine is not our domain and is best left to
+the issuing authorities; a stale rule is worse than none, because a wrong "visa-free"
+costs a boarding denial. Implemented instead:
+  Layer 1 (personal certainty, local and deterministic): the vault now stores a visa's
+  destination_country, entry_type, valid_from, valid_to, and max_stay_days, and
+  document_readiness computes expiry, validity window, Schengen bloc coverage, and
+  stay-limit arithmetic against the trip. A visa naming another Schengen member counts;
+  a visa naming no country only warns. Single-entry visas carry an explicit caveat,
+  because whether an earlier trip already spent one is unknowable here.
+  Layer 2 (requirement lookup, persisted): check_visa_requirements findings are saved on
+  the plan under "visa", so the answer outlives the chat. A missing visa plus a stated
+  processing time becomes a departure deadline: past it blocks, near it warns. Only an
+  official source domain may drive a blocker; an unofficial one can only warn.
+  Layer 3 (application guidance and third-party handoff) is deferred to the bookings and
+  execution layer, consistent with "booking = grounded choices and verified handoff".
+create_trip_plan now asks the agent to name travellers in travelers_summary, because
+per-traveller passport and visa checks only run for people that text names.

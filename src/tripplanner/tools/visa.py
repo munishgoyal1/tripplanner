@@ -42,10 +42,69 @@ def _build_query(passport_country: str, destination_country: str, purpose: str, 
     return " — ".join(parts)
 
 
+def _known_passport_country() -> tuple[str, str, list[str]]:
+    """The user's passport country from what they have already given us.
+
+    Returns ``(country, source, candidates)``. An empty country means we must
+    ask; ``candidates`` then lists the passports we found, so the question can
+    name them. Residence is never used: living in India does not make someone
+    an Indian passport holder, and guessing that wrong is worse than asking.
+    """
+    try:
+        from tripplanner.web.travel_documents import list_documents
+
+        records = [
+            record
+            for record in list_documents("traveler")
+            if record.get("type") == "passport"
+            and str(record.get("traveller_key") or "self") == "self"
+        ]
+    except Exception:
+        records = []
+
+    candidates: list[str] = []
+    seen: set[str] = set()
+    for record in records:
+        fields = record.get("fields") or {}
+        value = str(fields.get("issuing_country") or fields.get("nationality") or "").strip()
+        if value and value.casefold() not in seen:
+            seen.add(value.casefold())
+            candidates.append(value)
+    if len(candidates) == 1:
+        return candidates[0], "saved passport", candidates
+    if len(candidates) > 1:
+        return "", "multiple saved passports", candidates
+
+    try:
+        from tripplanner.tools.user_preferences import load_preferences
+
+        profile = load_preferences().get("profile") or {}
+        stated = str(profile.get("passport_country") or "").strip()
+    except Exception:
+        stated = ""
+    if stated:
+        return stated, "stated profile", [stated]
+    return "", "unknown", []
+
+
+def _ask_for_passport_country(candidates: list[str]) -> str:
+    if candidates:
+        listed = " or ".join(candidates)
+        question = f"which passport they will travel on for this trip — {listed}"
+    else:
+        question = 'which passport they will travel on (for example "Indian", "US", "British")'
+    return (
+        "Passport country unknown, so no visa check can be run yet. Ask the user exactly one "
+        f"question: {question}. Then call update_user_profile(passport_country=...) so it is "
+        "never asked again, and call this tool again with the answer. Do NOT guess it from "
+        "their home city, residence, or destination."
+    )
+
+
 @tool
 def check_visa_requirements(
-    passport_country: str,
-    destination_country: str,
+    passport_country: str = "",
+    destination_country: str = "",
     purpose: str = "tourism",
     length_of_stay_days: int = 0,
 ) -> str:
@@ -56,8 +115,13 @@ def check_visa_requirements(
     official source — this is NOT legal advice. Call once per international
     trip during planning; skip for domestic trips.
 
+    Leave passport_country empty unless the user just named it in this turn:
+    the tool resolves it from their saved passport or stated profile, and tells
+    you what to ask when it cannot. Never guess it from where they live.
+
     Args:
-        passport_country: e.g. "Indian", "US", "British".
+        passport_country: e.g. "Indian", "US", "British". Optional — resolved
+            from the user's own records when omitted.
         destination_country: e.g. "France", "United Arab Emirates", "Japan".
         purpose: "tourism" | "business" | "transit" | "study" | other. Default tourism.
         length_of_stay_days: Length of intended stay; 0 means "ignore length".
@@ -69,8 +133,14 @@ def check_visa_requirements(
             "official immigration site or IATA TravelCentre."
         )
 
-    if not passport_country.strip() or not destination_country.strip():
-        return "passport_country and destination_country are required."
+    if not destination_country.strip():
+        return "destination_country is required."
+
+    source = "provided"
+    if not passport_country.strip():
+        passport_country, source, candidates = _known_passport_country()
+        if not passport_country:
+            return _ask_for_passport_country(candidates)
 
     query = _build_query(
         passport_country.strip(),
@@ -97,6 +167,7 @@ def check_visa_requirements(
 
     out = {
         "passport_country": passport_country,
+        "passport_country_source": source,
         "destination_country": destination_country,
         "purpose": purpose,
         "length_of_stay_days": length_of_stay_days or None,

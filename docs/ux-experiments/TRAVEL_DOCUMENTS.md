@@ -5,8 +5,8 @@
 - Branch: `agents/worker-3`
 - Owner: Munish Goyal
 - Date started: 6-Aug-2026
-- Date ended: pending
-- Status: In evaluation
+- Date ended: 7-Aug-2026
+- Status: Selected — B · Account vault, trip shows gaps
 - Lab: `http://127.0.0.1:5175/lab-20-travel-documents.html`
 - Full-size preview: append `?preview=readiness`, `?preview=vault`, or `?preview=inbox`
 - Feature brief: [`../feature-briefs/002-travel-documents.md`](../feature-briefs/002-travel-documents.md)
@@ -176,4 +176,62 @@ capability on 6-Aug-2026; the direction is what this Lab now selects.
 
 ## Decision
 
-Pending owner selection.
+**B · Account vault, trip shows gaps.** Details live in Account, permanently and once. A
+trip never owns a document; it carries a single badge naming how many documents need
+fixing, and that badge opens the vault already scrolled to this trip's gaps. B is the only
+option where the second trip costs nothing, which was the criterion that mattered most.
+
+### What shipped
+
+Three backend modules, deliberately separated by lifetime rather than by layer:
+`travel_documents.py` decides what may be stored, `document_readiness.py` decides what to
+say about it, and `document_extract.py` reads a photo or pasted text once and returns
+proposals it does not persist. Endpoints are `GET /documents`, `POST /documents`,
+`POST /documents/extract`, `POST /documents/delete`, `POST /documents/clear`, and
+`GET /trip/documents/readiness`.
+
+The guardrails are enforced in code, not documented as intentions. Any field outside the
+per-type allowlist is dropped on save; `number`, `document_number` and `identity_number`
+are all folded into `number_last4` before anything is written, so a caller cannot store a
+full identity number even by asking. `/account/privacy` deletes these records and reports
+the count. `sanitize_plan` was not touched.
+
+Two scope decisions worth stating. PDFs are refused with an explicit message rather than
+silently failing, because no PDF reader is a dependency and pretending otherwise would be
+worse than the refusal; photographing the page or pasting the text both work. And the
+passport margin check names the six-month margin it used and asks the owner to confirm
+the destination's exact rule, rather than claiming a per-country rule the product does not
+actually hold.
+
+### What the first build got wrong, and the rule that replaced it
+
+The passport check fired on every trip that had dates. A weekend in Goa, planned from
+Bengaluru, showed a red "1 document to fix" for a passport the trip did not need. It was
+also the only check that alarmed on an *absence*: visa, insurance and permit checks all
+required a record to exist before they said anything.
+
+Two rules now govern every check:
+
+- **Silent unless the trip is known to cross a border.** The deciding fact is the trip's
+  own `origin` — already persisted, already learned opportunistically when the owner says
+  "I'll fly in from Bangalore", already falling back to the profile's home area. Origin and
+  destination are each resolved to a country through `place_country.py`, and the passport,
+  visa and IDP checks run only when the two differ. Unknown on either side is treated as
+  no border, so a geocoder outage produces silence rather than a false alarm. Citizenship
+  is deliberately not collected: it is a visa question, and `tools/visa.py` already answers
+  grounded visa questions properly.
+- **Absence warns, arithmetic blocks.** A missing passport record is now a warning worded
+  as what it actually is — "this trip leaves India, and nothing on this account records a
+  passport for this traveller, so no expiry check can run" — because crossing a border is
+  not the same as needing a passport (Schengen, India–Nepal, the UK–Ireland CTA). Only a
+  stored date that fails a comparison can raise a blocker. The toolbar badge is rose for
+  blockers and amber for warnings, so red keeps meaning "we proved something is wrong".
+
+The same rigour was applied to the other types rather than to passports alone. A dual
+national's lapsed second passport no longer raises a blocker: the latest expiry is the one
+measured. A visa naming another country is ignored entirely; a visa naming no country is
+still read, but only as a warning that says it may not be the visa that matters here. A
+licence issued by the destination country needs no International Driving Permit, and the
+IDP prompt no longer appears on domestic trips. Insurance and stored expiry dates stay
+active everywhere, because they are arithmetic over records the owner chose to keep, and
+they matter at home too. A lapsed loyalty tier is not worth a badge.

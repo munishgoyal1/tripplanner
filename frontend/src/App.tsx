@@ -12,7 +12,7 @@ import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
-import { fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
@@ -117,6 +117,9 @@ export default function App() {
     storedBoolean("tripplanner_assistant_open", true)
   ));
   const [showExport, setShowExport] = useState(false);
+  const [documentBadge, setDocumentBadge] = useState("");
+  const [documentBadgeTone, setDocumentBadgeTone] = useState<"blocker" | "warning">("warning");
+  const [documentsRevision, setDocumentsRevision] = useState(0);
   const [signedIn, setSignedIn] = useState(() => !isAnonymousUser());
   const [assistantView, setAssistantView] = useState<AssistantView>("bar");
   const [turnEffects, setTurnEffects] = useState<{ token: number; effects: TurnEffect[] } | null>(null);
@@ -173,6 +176,25 @@ export default function App() {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [chatOpen, isDesktop]);
+
+  // Document gaps are recomputed whenever the trip changes; the trip itself never
+  // stores the details, it only surfaces what is missing.
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchDocumentReadiness(controller.signal)
+      .then((readiness) => {
+        setDocumentBadge(readiness.badge || "");
+        setDocumentBadgeTone(readiness.badge_tone === "blocker" ? "blocker" : "warning");
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [tripVersion, documentsRevision]);
+
+  useEffect(() => {
+    const bump = () => setDocumentsRevision((value) => value + 1);
+    window.addEventListener("tripplanner:documents-changed", bump);
+    return () => window.removeEventListener("tripplanner:documents-changed", bump);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1200px)");
@@ -908,6 +930,11 @@ export default function App() {
           signedIn={signedIn}
           accountLabel={signedIn ? getDisplayName() || "Account" : "Guest"}
           onOpenAccount={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
+          documentBadge={documentBadge}
+          documentBadgeTone={documentBadgeTone}
+          onOpenDocuments={() => window.dispatchEvent(
+            new CustomEvent("tripplanner:open-account", { detail: { destination: "documents" } }),
+          )}
         />
 
         <main

@@ -50,6 +50,10 @@ trip through shared API contracts.
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
 | `src/tripplanner/web/chat_store.py` | Conversation and replay persistence |
+| `src/tripplanner/web/travel_documents.py` | Traveller document field vault: allowlist, identity-number masking, and persistence. Never stores a file |
+| `src/tripplanner/web/document_readiness.py` | Deterministic passport, visa, insurance, and permit checks against the active trip; silent unless the trip is known to cross a border |
+| `src/tripplanner/web/place_country.py` | Resolves a free-text place to its country via Open-Meteo geocoding, cached per string |
+| `src/tripplanner/web/document_extract.py` | Single-pass field extraction from a photo or pasted text; keeps nothing |
 | `src/tripplanner/web/external_operations.py` | Idempotency ledger for outbound provider writes |
 | `src/tripplanner/persistence.py` | Local JSON persistence boundary |
 | `src/tripplanner/storage_cosmos.py` | Cosmos implementation and conditional replacement |
@@ -78,6 +82,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/lib/notices.ts` | Global notice channel: id-keyed upsert, tone priority, and success auto-expiry |
 | `frontend/src/components/StatusBar.tsx` | Render-only toolbar and mobile presentation of the single active notice |
 | `frontend/src/components/AccountSettingsHub.tsx` | Web account/settings section ownership; delegates persisted destinations to existing auth, preferences, analytics, and privacy boundaries |
+| `frontend/src/components/TravelDocumentsVault.tsx` | Travel-document capture, review, reveal, and deletion. The trip surface only shows the gap badge |
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
 | `frontend/src/components/map/` | Map icon generation, focus matching, day and dedicated-drive route derivation, Google-place candidate conversion, React-independent overlay synchronization, and viewport mutation |
