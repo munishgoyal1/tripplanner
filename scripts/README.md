@@ -19,7 +19,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/agent-worktree.ps1` | Create, restore from a remote branch, open, list, or remove coding-agent worktrees |
-| `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes |
+| `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
@@ -30,9 +30,9 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`: `New-Sandbox.cmd <short-name> "<purpose>"` |
+| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
-| `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
+| `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, merge the sandbox's remote head and `master` into its local branch, then push that sandbox branch; never promotes to `master` |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |

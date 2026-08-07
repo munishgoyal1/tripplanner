@@ -489,6 +489,13 @@ recorded time, and implementation summary. Handoff and implementation versions a
 shown newest first. One final summary lists every implemented
 option and its notes. Saving shows an explicit confirmation naming the selected option
 and saved handoff version and cannot remain indefinitely in a Saving state.
+Lab implementation sandboxes retain an explicit Lab ID. Ambiguous handoff notes or
+scope are resolved with the owner in that sandbox worker chat before implementation.
+After each coherent changed iteration reaches a healthy sandbox run, its concrete
+change and validation summary append another Implemented review version; startup
+alone does not create history. Verified promotion requires the exact sandbox commit
+to have a healthy recorded iteration, then appends a Completed version before the
+sandbox is discarded.
 The permanent Lab number appears explicitly in the detail page's top header area
 and in its HTML filename. The top area shows the authoritative lifecycle status, includes its state
 date when recorded, updates after a save, and reports unavailable state rather
@@ -502,6 +509,7 @@ than guessing.
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `allows any state without requiring owner-entered implementation evidence`
 - [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `turns an existing Lab 20 choice into auditable version one`
 - [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `records implementation against latest handoff`
-- [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `rejects duplicate implementation without changing store`
+- [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `records each successful implementation iteration`
+- [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `sandbox records linked iterations and both promotion paths`
 - [`frontend/labs/src/shared/LabNavigation.test.tsx`](../frontend/labs/src/shared/LabNavigation.test.tsx) - `shows the permanent Lab number in detail-page navigation`
 - [`frontend/labs/src/shared/LabScope.test.tsx`](../frontend/labs/src/shared/LabScope.test.tsx) - `shows authoritative status in the top area and updates after a save`

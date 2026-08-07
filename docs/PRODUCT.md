@@ -166,9 +166,10 @@ browsing). NOT a corporate dashboard, NOT a chat-toy, NOT generic Bootstrap.
   return to All Labs. A chosen option carries its modifications,
   additional inputs, and implementation instructions in one handoff. Labs can be
   marked ready, parked with that handoff intact, implemented and awaiting owner
-  review, completed after owner sign-off with the selected decision preserved,
+  review, completed after owner sign-off or verified sandbox promotion with the selected decision preserved,
   or discarded from consideration. Production implementation moves a Lab to
-  **Implemented - To be reviewed**; only explicit owner sign-off completes it.
+  **Implemented - To be reviewed** after each coherent sandbox iteration; explicit
+  owner sign-off or verified promotion completes it.
   Lifecycle state never locks a Lab or its alternatives. Every option remains
   browsable, and an implemented or completed Lab can be revisited with another
   option, revised comments, or additional input. Saving that handoff starts a new
