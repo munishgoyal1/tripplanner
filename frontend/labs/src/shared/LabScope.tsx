@@ -10,6 +10,22 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "live-plan": {
+    changes: [
+      "What a first-time visitor is asked to do while the planner works: watch it, read it, replace it, or argue with it",
+      "The primary call to action, which currently reads as a move in a game rather than an action on your own trip",
+      "Whether the demo trip exists at all, or whether the hero is bound to a destination you choose",
+      "Whether the stream shows activity or judgement — and whether a judgement can be overruled before you have an account",
+      "How complete the demo plan has to be to convince: two cities, two hotels, and flight, rail, road and tram all compared",
+      "How the run reports its own progress, so an unfinished plan is never mistaken for a broken one",
+    ],
+    context: [
+      "The decision to prove the product by planning in front of the visitor, which Lab 21 settled and this Lab assumes",
+      "The rest of the public edge — destination pages, pricing, legal — beyond the three surfaces shown here",
+      "The workspace itself, which begins after this Lab ends",
+      "Real authentication, provider search, live pricing, and the rate limiting that option C would genuinely require",
+    ],
+  },
   "first-visit": {
     changes: [
       "What the root URL is: an explanation and an entry point, instead of the empty workspace it boots today",

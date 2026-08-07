@@ -420,8 +420,12 @@ function LandingStage({ stress }: { stress: boolean }) {
   const s = toneStyles[tone];
   const { step, replay } = useStageProgress(agentReceipts.length);
   const receipts = agentReceipts.slice(0, step);
-  const daysShown = Math.min(sampleDays.length, Math.max(0, Math.floor((step - 2) / 2)));
   const running = step < agentReceipts.length;
+  // Every card must be filled by the time the run says "complete", or a finished plan
+  // reads as a stuck one.
+  const daysShown = running
+    ? Math.min(sampleDays.length, Math.floor((step * sampleDays.length) / agentReceipts.length))
+    : sampleDays.length;
 
   return (
     <div className="min-h-full bg-[#080b11]">

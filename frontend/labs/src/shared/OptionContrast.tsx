@@ -24,6 +24,47 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "live-plan": {
+    axis:
+      "All four keep Lab 21's bet that the product is best proved by planning in front of you. They disagree about the visitor's role while it runs: audience, reader, subject, or opponent.",
+    rows: [
+      {
+        option: "A · Daylight stage",
+        score: 68,
+        idea: "Lab 21's stage with the theme changed and nothing else.",
+        buys: "A clean read on whether the dark console was carrying the idea.",
+        costs: "Every wording problem survives: 'Take over', an indeterminate spinner, someone else's trip.",
+        choose: "The only complaint about the shipped version was that it looked unlike the app.",
+      },
+      {
+        option: "B · The same stage, said plainly",
+        score: 81,
+        idea: "Identical choreography, rewritten so nothing reads as a game.",
+        buys: "A skip control, a step count, labelled pending days, and a call to action about your trip.",
+        costs: "It is still a demo of Lisbon, and it adds no reason to stay past the first read.",
+        choose: "The mechanic was fine and only the language was working against it.",
+      },
+      {
+        option: "C · Your trip from the first keystroke",
+        score: 84,
+        idea: "No demo at all — the destination is the hero and the plan is already yours.",
+        buys: "Nothing has to be taken over, and the account is never asked for during planning.",
+        costs: "An honest version runs a real agent for anonymous traffic, which is the one genuinely expensive answer here.",
+        choose: "Visitors arrive knowing where they want to go.",
+      },
+      {
+        option: "D · The decision replay",
+        score: 89,
+        idea: "The stream is judgement, not activity, and you can overrule it.",
+        buys: "The visitor acts before signing up, and the shared link carries reasoning no competitor can copy.",
+        costs: "Decisions must become first-class data, and a scripted overrule is a promise the planner then has to keep.",
+        choose: "The differentiator is the reasoning, and it has to be felt rather than described.",
+      },
+    ],
+    same: "The six-day Lisbon and Porto fixture, its two hotels, its flight, train, car and tram legs, its priced lines and their sources, the guest trip and its expiry, and the promise never to hold a card.",
+    verdict:
+      "D wins because it is the only option that turns the product's actual claim into something the visitor does rather than watches: overruling the Porto leg and being told, plainly, that flying costs ninety-four euros and breaks the pace rule on day five is an argument no screenshot and no competitor can fake, and it is the only version whose shared link still carries that argument to a stranger. C is close behind and answers the sharpest objection to the whole idea — that a demo of somebody else's Lisbon is not evidence about your Kyoto — but it pays for that honesty with a real agent run before an account exists, which is a rate-limiting and spend problem, not a design one. B is the cheapest useful thing in this Lab and should be treated as a floor rather than a choice: its nine small fixes belong in whichever option wins. A exists to isolate one variable and it earns its place by settling that argument, not by being shippable. The honest recommendation is D's decision replay built on B's wording, with C's destination binding as the next milestone once anonymous runs can be paid for safely.",
+  },
   "first-visit": {
     axis:
       "All four sell the same product with the same plan and the same prices. They disagree about what the first ten seconds are spent on: asking, proving, interviewing, or performing.",

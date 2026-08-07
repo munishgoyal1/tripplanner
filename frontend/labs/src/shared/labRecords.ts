@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 21;
+export const LAST_ASSIGNED_LAB_NUMBER = 22;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -54,6 +54,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // (%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json) overrides them at runtime;
 // run scripts/dev/show-lab-status.ps1 to compare the two.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 22,
+    id: "live-plan",
+    title: "The live plan, and what the visitor is meant to do while it runs",
+    category: "Public entry",
+    description: "Lab 21's live agent stage, taken as the base and pushed four ways: the same screen in daylight, the same screen said plainly, a hero that plans your destination from the first keystroke, and a decision replay you can overrule. The demo trip is now six days across Lisbon and Porto with two hotels, a flight, a train, a hire car and a tram, so the plan argues for itself. All four cover landing, first plan and shared trip.",
+    createdAt: "2026-08-07",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-07",
+    decision: "Open · Recommended starting point: D · The decision replay, with option B's clarity fixes applied to whichever option wins.",
+    href: "./lab-22-live-plan.html",
+    icon: Radio,
+  },
   {
     labNumber: 21,
     id: "first-visit",
