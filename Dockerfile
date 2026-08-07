@@ -3,16 +3,19 @@
 # --- Stage 1: build the React SPA --------------------------------------------
 FROM node:20-slim AS frontend
 WORKDIR /web
+ARG NPM_REGISTRY=https://ms-feed-2.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/
 COPY frontend/package.json frontend/package-lock.json ./
 COPY packages/tripplanner-client/ /packages/tripplanner-client/
 RUN npm ci --include=dev \
-    --registry=https://registry.npmjs.org/ \
+    --registry=${NPM_REGISTRY} \
     --replace-registry-host=always
 COPY frontend/ ./
 RUN npm run build   # emits /web/dist
 
 # --- Stage 2: Python runtime -------------------------------------------------
 FROM python:3.12-slim
+
+ARG PYTHON_PACKAGE_INDEX=https://ms-feed-2.pkgs.visualstudio.com/1es-public/_packaging/pypi-public/pypi/simple/
 
 # Link this image to the source repo so GHCR auto-grants the repo's Actions
 # workflow push access (avoids `denied: write_package` on CI runs).
@@ -24,7 +27,6 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_INDEX_URL=https://pypi.org/simple \
     PIP_DEFAULT_TIMEOUT=60 \
     PIP_RETRIES=5 \
     SPA_DIST_DIR=/app/frontend/dist
@@ -34,7 +36,7 @@ WORKDIR /app
 # Install deps first (layer-cache friendly)
 COPY pyproject.toml ./
 COPY src/ src/
-RUN pip install --no-cache-dir "."
+RUN PIP_INDEX_URL=${PYTHON_PACKAGE_INDEX} pip install --no-cache-dir "."
 
 # Built SPA from stage 1 — served by FastAPI at the root origin.
 COPY --from=frontend /web/dist ./frontend/dist

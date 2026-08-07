@@ -69,3 +69,23 @@ So can you fix it in a cross platform way that will work for mac and windows bot
 
 [2026-08-07 17:30] [master !] Implement Lab21 in sandbox
 implement lab21 in a new sandbox
+
+[2026-08-07 20:15] [master] ! Fix production Docker build
+fix this prod deployment failure
+
+RROR: failed to build: failed to solve: process "/bin/sh -c pip install --no-cache-dir \".\"" did not complete successfully: exit code: 1
+[2026-08-07 14:24:28Z] exit 1 from docker after 00:00:20
+Exception: C:\repos\tripplanner\scripts\dev\lib\run-log.ps1:102:9
+Line |
+ 102 |          throw $FailureMessage
+     |          ~~~~~~~~~~~~~~~~~~~~~
+     | docker build failed.
+Exception: C:\repos\tripplanner\infra\deploy-prod.ps1:133:9
+Line |
+ 133 |          throw "Canary deployment or smoke verification failed. Produc …
+     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Canary deployment or
+     | smoke verification
+     | failed. Production
+     | promotion is blocked.
+Press any key to continue . . .
