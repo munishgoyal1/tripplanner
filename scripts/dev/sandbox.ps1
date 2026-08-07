@@ -163,6 +163,15 @@ function Get-ShortName {
     return ($Name -replace "^\d+-", "")
 }
 
+function Test-SandboxWorktree {
+    # A half-finished discard can leave the folder behind with its .git gone, so
+    # existing on disk is not the same as still being a worktree git can drive.
+    param([Parameter(Mandatory = $true)][object]$Entry)
+    if (-not $Entry.worktree -or -not (Test-Path $Entry.worktree)) { return $false }
+    & git -C $Entry.worktree rev-parse --git-dir 2>$null | Out-Null
+    return $LASTEXITCODE -eq 0
+}
+
 function Get-SandboxLauncherPath {
     param([Parameter(Mandatory = $true)][string]$Name)
     if ($IsMacOS) {
@@ -884,6 +893,10 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         throw "Sandbox worktree is missing: $($entry.worktree). Recreate it with -New $shortName."
     }
+    if (-not (Test-SandboxWorktree -Entry $entry)) {
+        $launcher = Get-SandboxLauncherPath -Name "Discard-Sandbox"
+        throw "$($entry.worktree) exists but is no longer a git worktree, so a half-finished discard left it behind. Finish it with: $launcher $(Get-SandboxNumber -Entry $entry)"
+    }
     # Reuse the worker sync machinery: rerere-backed healing + resumable pending state.
     . "$PSScriptRoot/lib/sync-common.ps1"
 
@@ -1073,11 +1086,14 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
 
 if ($PSCmdlet.ParameterSetName -eq "Discard") {
     $currentPath = (Get-Location).Path.TrimEnd("\")
+    $liveWorktree = Test-SandboxWorktree -Entry $entry
     if (Test-Path $entry.worktree) {
         $resolved = (Resolve-Path $entry.worktree).Path.TrimEnd("\")
         if ($currentPath -eq $resolved -or $currentPath.StartsWith("$resolved\")) {
             throw "Run -Discard from the primary checkout, not from inside the sandbox worktree."
         }
+    }
+    if ($liveWorktree) {
         $outstanding = Get-SandboxOutstandingWork -Entry $entry -Base $BaseBranch
         if ($outstanding -and -not $Force) {
             throw "Sandbox '$slug' still holds work that origin/$BaseBranch does not have. Promote it first, or pass -Force to discard anyway:`n$($outstanding -join "`n")"
@@ -1085,6 +1101,8 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
         if ($outstanding) {
             Write-Warning "Discarding sandbox '$slug' with outstanding work (-Force):`n$($outstanding -join "`n")"
         }
+    } elseif (Test-Path $entry.worktree) {
+        Write-Warning "$($entry.worktree) is no longer a git worktree; finishing the teardown that was left half done."
     }
 
     $remoteAction = if ($DeleteRemoteBranch) { ", local and remote branches," } else { ", local branch," }
@@ -1093,9 +1111,14 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     }
 
     $cleanupIssues = @()
+    $leftoverPath = ""
     try {
     if (Test-Path $entry.worktree) {
+        # Its own servers run from inside the folder, so they must go first whether
+        # or not git still recognises it as a worktree.
         Stop-SandboxStack -Entry $entry
+    }
+    if ($liveWorktree) {
         $removeArgs = @("worktree", "remove", $entry.worktree)
         if ($Force) { $removeArgs += "--force" }
         try {
@@ -1104,14 +1127,14 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
             # git may unregister the worktree yet fail to delete locked files; finish the
             # rest of the teardown so the registry never disagrees with reality.
             Write-Warning "Could not fully delete $($entry.worktree): $($_.Exception.Message)"
-            Write-Warning "Close any window or terminal using that folder, then delete it manually."
             & git -C $scriptRepoRoot worktree prune
         }
-        if (-not (Remove-SandboxLeftovers -Path $entry.worktree)) {
-            $cleanupIssues += "worktree directory still exists: $($entry.worktree)"
-        }
+        if (-not (Remove-SandboxLeftovers -Path $entry.worktree)) { $leftoverPath = $entry.worktree }
     } else {
         Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("worktree", "prune")
+        if ((Test-Path $entry.worktree) -and -not (Remove-SandboxLeftovers -Path $entry.worktree)) {
+            $leftoverPath = $entry.worktree
+        }
     }
 
     Remove-PendingMergesFor -WorkingDirectory $entry.worktree
@@ -1165,5 +1188,10 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
     $remaining = Get-Registry | Where-Object { $_.slug -ne $slug }
     Save-Registry -Entries @($remaining)
     Write-Host "[discarded] sandbox '$slug'"
+    if ($leftoverPath) {
+        # The slot is what matters; a folder held open by a stale terminal or editor
+        # is cosmetic, and keeping the sandbox listed for that would strand the slot.
+        Write-Warning "$leftoverPath is still held open by another process. Everything else is cleaned up; close any window or terminal using that folder and delete it."
+    }
     return
 }

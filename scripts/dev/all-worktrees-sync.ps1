@@ -50,6 +50,13 @@ if (-not $ValidateOnly -and (Test-Path $registryPath -PathType Leaf)) {
     $sandboxes = if ([string]::IsNullOrWhiteSpace($raw)) { @() } else { @($raw | ConvertFrom-Json) }
     foreach ($sandbox in $sandboxes) {
         if (-not (Test-Path $sandbox.worktree -PathType Container)) { continue }
+        # A promoted sandbox whose cleanup did not finish still has its folder but
+        # no .git, and there is nothing to sync in it. Discard is the fix, not sync.
+        & git -C $sandbox.worktree rev-parse --git-dir 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Skipping sandbox '$($sandbox.slug)': $($sandbox.worktree) is no longer a git worktree. Finish the teardown with Discard-Sandbox $($sandbox.slug)."
+            continue
+        }
         Write-Host "`nSynchronizing sandbox '$($sandbox.slug)'..." -ForegroundColor Cyan
         $env:TRIPPLANNER_SANDBOX_NO_SYNC = "1"
         try {
