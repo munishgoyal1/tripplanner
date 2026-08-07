@@ -56,3 +56,9 @@ Implement lab20 in a sandbox
 
 [2026-08-06 19:30] [worker-2 !] Gate document checks on whether the trip crosses a border
 yes implement these inteelligent logics for passport , and think harder if anything similar is required for other type of docs we discussed.
+
+[2026-08-07 19:52] [worker-2] Sandbox restart after changes
+did you restart the sbx after last changes or do i need to restart. Which is the script to restart, same Run sandbox ?
+
+[2026-08-07 20:10] [worker-2] ! Visa flow for a Mexico trip
+i asked it to plan a mexico trip. it did not prompt me or given any indication for visa yet. when does visa come to picture wha tis the flow
