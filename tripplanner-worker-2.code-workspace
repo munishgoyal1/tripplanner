@@ -3,6 +3,10 @@
     {
       "name": "Tripplanner Agent 2 - UXlabs",
       "path": "../tripplanner.worktrees/worker-2"
+    },
+    {
+      "name": "Tripplanner worktrees (Agents 1-3 and sandboxes)",
+      "path": "../tripplanner.worktrees"
     }
   ],
   "settings": {
