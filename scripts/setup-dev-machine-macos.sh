@@ -23,6 +23,7 @@ fi
 
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repo_root"
+pip_index_url="${PIP_INDEX_URL:-https://ms-feed-2.pkgs.visualstudio.com/1es-public/_packaging/pypi-public/pypi/simple/}"
 
 assert_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -47,6 +48,10 @@ elif [[ -x /usr/local/bin/brew ]]; then
 fi
 
 if [[ "$skip_tool_install" == false ]]; then
+  if brew tap | grep -qx "powershell/tap"; then
+    echo "[migrate] Archived PowerShell Homebrew tap"
+    brew untap --force powershell/tap
+  fi
   echo "[install] Declared Homebrew tools"
   brew bundle --file "$repo_root/devconfigs/macos/Brewfile"
 fi
@@ -77,6 +82,7 @@ echo "[ok] Git configured for rerere + zdiff3 conflict style"
 setup_dependencies() {
   local checkout_root="$1"
   local python_path="$checkout_root/.venv/bin/python"
+  local requirements_lock="$repo_root/requirements.lock"
 
   if [[ ! -f "$checkout_root/.env" ]]; then
     cp "$checkout_root/.env.example" "$checkout_root/.env"
@@ -90,9 +96,11 @@ setup_dependencies() {
     if [[ ! -x "$python_path" ]]; then
       python3.13 -m venv "$checkout_root/.venv"
     fi
-    "$python_path" -m pip install --upgrade pip
-    "$python_path" -m pip install -r "$checkout_root/requirements.lock"
-    "$python_path" -m pip install -e "$checkout_root" --no-deps
+    PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet --upgrade pip
+    PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet --progress-bar off \
+      -r "$requirements_lock"
+    PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet \
+      -e "$checkout_root" --no-deps
     npm --prefix "$checkout_root/frontend" ci
     if [[ "$include_mobile" == true ]]; then
       npm --prefix "$checkout_root/mobile" ci

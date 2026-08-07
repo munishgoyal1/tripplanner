@@ -186,6 +186,13 @@ lifecycle work.
 - Re-run `Setup-Tripplanner-Dev.cmd` on Windows or
    `Setup-Tripplanner-Dev.command` on macOS after an interrupted install;
    completed steps are retained.
+- The macOS setup automatically removes the archived `powershell/tap` before
+  installing the current Homebrew Core `powershell` formula. This migration can
+  replace an older tap-provided PowerShell installation; rerun the setup after
+  any interrupted Homebrew operation.
+- Python restore on macOS defaults to the repository's public 1ES mirror because
+   the PyPI download CDN is blocked on the managed network. Set `PIP_INDEX_URL`
+   before launching setup to use a different reachable package index.
 - VS Code settings backups are timestamped beside
    `%APPDATA%\Code\User\settings.json` on Windows or
    `~/Library/Application Support/Code/User/settings.json` on macOS.

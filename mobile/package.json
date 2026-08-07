@@ -9,6 +9,7 @@
     "android": "expo start --lan --port 8082",
     "android:tunnel": "expo start --tunnel --port 8082",
     "ios": "expo start --ios",
+    "typecheck": "tsc --noEmit",
     "lint": "expo lint"
   },
   "dependencies": {

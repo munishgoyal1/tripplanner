@@ -12,9 +12,6 @@
   "settings": {
     "window.title": "Agent 3 - Sandbox | ${activeEditorShort}${separator}${rootName}",
     "chat.editing.autoAcceptDelay": 1,
-    "workbench.sideBar.location": "left",
-    "workbench.panel.defaultLocation": "right",
-    "workbench.editor.showTabs": "multiple",
     "workbench.editor.restoreEditors": true,
     "workbench.editor.restoreViewState": true,
     "files.restoreUndoStack": true,

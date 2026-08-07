@@ -8,14 +8,16 @@
   "files.autoSave": "afterDelay",
   "files.hotExit": "onExitAndWindowClose",
   "files.restoreUndoStack": true,
+  "python.terminal.useEnvFile": true,
   "terminal.integrated.enablePersistentSessions": true,
   "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
   "window.restoreWindows": "all",
-  "workbench.activityBar.location": "top",
+  "workbench.activityBar.location": "hidden",
   "workbench.editor.enablePreview": false,
   "workbench.editor.restoreEditors": true,
   "workbench.editor.restoreViewState": true,
   "workbench.editor.showTabs": "single",
+  "workbench.panel.defaultLocation": "right",
   "workbench.secondarySideBar.defaultVisibility": "hidden",
   "workbench.sideBar.location": "right"
 }
