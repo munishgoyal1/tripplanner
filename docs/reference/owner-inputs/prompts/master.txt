@@ -48,3 +48,6 @@ Installing python@3.13
 
 [2026-08-07 16:37] [master !] Isolate personal Azure login
 signin to azure with my personal login: munishgoyal1@gmail.com only that uses the visual studio enterprise subscription. do not interfere or use my mugoy@microsoft.com microsoft login for Azure and dont use any work subscriptions, not even for read operatrions
+
+[2026-08-07 16:37] [master !] Enable Python terminal env
+vAn environment file is configured but terminal environment injection is disabled. Enable "python.terminal.useEnvFile" to use environment variables from .env files in terminals.

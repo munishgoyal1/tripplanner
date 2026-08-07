@@ -8,6 +8,7 @@
   "files.autoSave": "afterDelay",
   "files.hotExit": "onExitAndWindowClose",
   "files.restoreUndoStack": true,
+  "python.terminal.useEnvFile": true,
   "terminal.integrated.enablePersistentSessions": true,
   "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
   "window.restoreWindows": "all",
