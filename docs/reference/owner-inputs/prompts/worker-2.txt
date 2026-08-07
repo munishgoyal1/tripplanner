@@ -105,3 +105,8 @@ Also provide an option for reset trip - this was in one of the lab shown but was
 
 [2026-08-07 16:40] [worker-2] ! Name the destination in the progress title
 Alogn with building your itinerary - sinc ethe bottom chat is only 1 row very small, the original prompt oin which destination itneierary etc. gets missed totall y out of the page. This notficiaton title can say somehting like "Building your Paris Trip Itinerary" or "Building your Itinerary for Goa Trip"
+
+[2026-08-07 16:55] [worker-2] ! Make the status bar coherent with what the turn actually did
+For a query like chat asking total on road time. the chat agent gave me that, but the top bar message was incoeherent to this - saying done updating your itinerry.. when there was nothing to update. 
+
+I want it fully coeherent set of update . think harder and fix the notificaiton bar properly for proepr informative and intutive messages. And also keep in mind the chat box is now small so unless user maximizes they wont see what agent is printing in response. they cant even see their own last prmopt btw
