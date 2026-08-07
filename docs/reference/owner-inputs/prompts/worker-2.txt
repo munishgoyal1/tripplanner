@@ -110,3 +110,6 @@ Alogn with building your itinerary - sinc ethe bottom chat is only 1 row very sm
 For a query like chat asking total on road time. the chat agent gave me that, but the top bar message was incoeherent to this - saying done updating your itinerry.. when there was nothing to update. 
 
 I want it fully coeherent set of update . think harder and fix the notificaiton bar properly for proepr informative and intutive messages. And also keep in mind the chat box is now small so unless user maximizes they wont see what agent is printing in response. they cant even see their own last prmopt btw
+
+[2026-08-07 17:05] [worker-2] ! Abstract the accumulated progress topics
+accumulate progress topics not a scripted sequence, but keep it bit abstracted as we dont want to overwhelm user with each and every internal itnerary build detail, and also it wont look elegant.
