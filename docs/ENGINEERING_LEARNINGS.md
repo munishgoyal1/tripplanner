@@ -702,3 +702,29 @@ A mutable current selection cannot prove owner review. Every handoff save must a
 - Regular synchronization never promotes sandbox commits into `master`. Only
   the explicit promote workflow validates, opens and merges the PR, verifies
   containment, and tears down the isolated environment.
+
+## 2026-08-07 - An Invariant Nobody Reads Back Is Not A Guard
+
+- The trip guard shipped with a working temporal invariant that would have
+  caught a stop scheduled on top of an intercity drive. Nothing called
+  `validate_plan` on the result of a rebalance, so the mutation reported
+  success anyway. Writing the rule and enforcing the rule are separate pieces
+  of work; a guard layer is only as strong as the point where its output is
+  read. Report only the violations the edit itself introduced, so inherited
+  flaws do not turn the check into noise.
+- Special cases written for the trip's arrival and departure legs quietly
+  applied to every journey. A day trip is transport too, and skipping "all
+  transport" when computing occupancy told the scheduler that the hours the
+  traveller spends in a car are free. Scope an exemption to the specific
+  entities it was reasoned about, not to their kind.
+- A stop moved to a different day carries a clock time that was chosen against
+  a different day's shape. Relocation must invalidate the time, otherwise the
+  stale value silently competes with whatever the new day already does at that
+  hour.
+- Constants borrowed from one mode of travel leak into others. A two-hour
+  pre-departure buffer is an airport rule; applied to a drive it generated
+  confident, wrong warnings. Make the threshold a function of the thing being
+  boarded.
+- Unit tests passing is not evidence the itinerary looks sane. Both defects in
+  this layer were found by a throwaway probe that printed every day's stops,
+  and neither was covered by an assertion until after it was seen.
