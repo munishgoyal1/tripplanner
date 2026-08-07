@@ -179,21 +179,25 @@ def update_user_profile(
     display_name: str | None = None,
     home_city: str | None = None,
     home_country: str | None = None,
+    passport_country: str | None = None,
     age_band: str | None = None,
     occupation: str | None = None,
 ) -> str:
     """Save basic profile facts about the user.
 
-    Call this as soon as you learn the user's name, city, country, age band,
-    or occupation. Pass ONLY the fields you just learned (others stay
+    Call this as soon as you learn the user's name, city, country, passport,
+    age band, or occupation. Pass ONLY the fields you just learned (others stay
     unchanged). Examples:
       - User: "I'm Munish from Bengaluru" → update_user_profile(display_name="Munish", home_city="Bengaluru", home_country="India")
       - User: "I'm a doctor" → update_user_profile(occupation="doctor")
+      - User: "I travel on my British passport" → update_user_profile(passport_country="British")
 
     Args:
         display_name: First name or how the user introduces themselves.
         home_city: City of residence (e.g. "Bengaluru").
         home_country: Country of residence (e.g. "India").
+        passport_country: Passport they travel on (e.g. "Indian"). Save this
+            ONLY when the user states it — never infer it from where they live.
         age_band: One of "20-30", "30-40", "40-50", "50-60", "60+".
         occupation: Free-form (e.g. "software engineer", "retired teacher").
     """
@@ -201,6 +205,7 @@ def update_user_profile(
         "display_name": display_name,
         "home_city": home_city,
         "home_country": home_country,
+        "passport_country": passport_country,
         "age_band": age_band,
         "occupation": occupation,
     })
@@ -208,6 +213,7 @@ def update_user_profile(
         "display_name": display_name,
         "home_city": home_city,
         "home_country": home_country,
+        "passport_country": passport_country,
         "age_band": age_band,
         "occupation": occupation,
     }.items() if v}
@@ -524,10 +530,14 @@ STEP 4 — BUILD ITINERARY
     to persist weather with source "agent_climate_estimate", one entry per trip
     date, and a note that live weather was unavailable. Never call that a forecast.
   - Visa & entry rules: for any international trip call
-    check_visa_requirements(passport_country, destination_country, purpose,
-    days). Surface visa-required / visa-on-arrival / e-visa status, the
-    typical processing time, and ALWAYS the official-source link from the
-    response. Skip for purely domestic trips.
+    check_visa_requirements(destination_country=..., purpose, days). Leave
+    passport_country empty — the tool resolves it from the user's saved
+    passport or stated profile. NEVER guess it from where they live. If the
+    tool says the passport country is unknown, ask the single question it
+    hands you, save the answer with update_user_profile(passport_country=...),
+    then call the tool again in the same turn. Surface visa-required /
+    visa-on-arrival / e-visa status, the typical processing time, and ALWAYS
+    the official-source link from the response. Skip for purely domestic trips.
   - Local events / festivals / holidays: call
     find_local_events(destination, start, end) once per trip. Flag any festival,
     parade, marathon, or public holiday overlapping the trip. Reasons:
@@ -647,6 +657,7 @@ EXTRACTION CHECKLIST — listen for ANY of these signals every turn:
 | Signal user gives                          | Tool to call IMMEDIATELY    |
 |--------------------------------------------|-----------------------------|
 | Own name, city, country, age, job          | update_user_profile         |
+| Passport they travel on ("my UK passport") | update_user_profile         |
 | Family/partner/child/parent/pet mentioned  | add_family_member           |
 | High-level interest ("I love photography") | add_user_interest           |
 | High-level dislike ("I hate crowds")       | add_user_dislike            |

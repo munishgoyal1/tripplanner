@@ -41,6 +41,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "home_city": None,        # "Bengaluru"
         "home_area": None,        # "Whitefield"
         "home_country": None,     # "India"
+        "passport_country": None,  # "Indian" — what they travel on, NOT where they live
         "age_band": None,         # "20-30" | "30-40" | "40-50" | "50-60" | "60+"
         "occupation": None,       # "software engineer" | "doctor" | ...
     },

@@ -38,12 +38,153 @@ def test_visa_not_configured(monkeypatch):
     assert "not configured" in out.lower()
 
 
-def test_visa_missing_inputs(monkeypatch):
+def test_visa_missing_destination(monkeypatch):
     monkeypatch.setattr(visa, "is_configured", lambda: True)
     out = visa.check_visa_requirements.invoke(
-        {"passport_country": "", "destination_country": "France"}
+        {"passport_country": "Indian", "destination_country": ""}
     )
-    assert "required" in out.lower()
+    assert "destination_country is required" in out
+
+
+# ---- passport country resolution ------------------------------------------
+
+
+def _no_documents(monkeypatch, records=()):
+    monkeypatch.setattr(
+        "tripplanner.web.travel_documents.list_documents",
+        lambda scope="traveler": list(records),
+    )
+
+
+def _profile(monkeypatch, profile):
+    monkeypatch.setattr(
+        "tripplanner.tools.user_preferences.load_preferences",
+        lambda: {"profile": dict(profile)},
+    )
+
+
+def test_passport_country_from_saved_passport(monkeypatch):
+    _no_documents(
+        monkeypatch,
+        [
+            {"type": "passport", "traveller_key": "self", "fields": {"issuing_country": "India"}},
+            {"type": "insurance", "traveller_key": "self", "fields": {"issuing_country": "Spain"}},
+        ],
+    )
+    _profile(monkeypatch, {"home_country": "Portugal"})
+    assert visa._known_passport_country() == ("India", "saved passport", ["India"])
+
+
+def test_passport_country_falls_back_to_nationality_field(monkeypatch):
+    _no_documents(
+        monkeypatch,
+        [{"type": "passport", "traveller_key": "self", "fields": {"nationality": "British"}}],
+    )
+    _profile(monkeypatch, {})
+    assert visa._known_passport_country()[0] == "British"
+
+
+def test_passport_country_ignores_other_travellers(monkeypatch):
+    _no_documents(
+        monkeypatch,
+        [
+            {
+                "type": "passport",
+                "traveller_key": "spouse:asha",
+                "fields": {"issuing_country": "India"},
+            }
+        ],
+    )
+    _profile(monkeypatch, {})
+    assert visa._known_passport_country() == ("", "unknown", [])
+
+
+def test_two_passports_are_ambiguous(monkeypatch):
+    _no_documents(
+        monkeypatch,
+        [
+            {"type": "passport", "traveller_key": "self", "fields": {"issuing_country": "India"}},
+            {
+                "type": "passport",
+                "traveller_key": "self",
+                "fields": {"issuing_country": "United States"},
+            },
+        ],
+    )
+    _profile(monkeypatch, {"passport_country": "Indian"})
+    country, source, candidates = visa._known_passport_country()
+    assert country == ""
+    assert source == "multiple saved passports"
+    assert candidates == ["India", "United States"]
+
+
+def test_passport_country_from_stated_profile(monkeypatch):
+    _no_documents(monkeypatch)
+    _profile(monkeypatch, {"passport_country": "Indian", "home_country": "Singapore"})
+    assert visa._known_passport_country() == ("Indian", "stated profile", ["Indian"])
+
+
+def test_residence_is_never_used_as_passport_country(monkeypatch):
+    _no_documents(monkeypatch)
+    _profile(monkeypatch, {"home_country": "India", "home_city": "Bengaluru"})
+    assert visa._known_passport_country() == ("", "unknown", [])
+
+
+def test_visa_asks_once_when_passport_country_unknown(monkeypatch):
+    monkeypatch.setattr(visa, "is_configured", lambda: True)
+    monkeypatch.setattr(visa, "_known_passport_country", lambda: ("", "unknown", []))
+
+    def boom(*a, **k):
+        raise AssertionError("must not search without a passport country")
+
+    monkeypatch.setattr(visa, "search_raw", boom)
+    out = visa.check_visa_requirements.invoke({"destination_country": "Mexico"})
+    assert "update_user_profile(passport_country=" in out
+    assert "which passport they will travel on" in out
+
+
+def test_visa_ask_names_the_saved_passports(monkeypatch):
+    monkeypatch.setattr(visa, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        visa, "_known_passport_country", lambda: ("", "multiple saved passports", ["India", "US"])
+    )
+    out = visa.check_visa_requirements.invoke({"destination_country": "Mexico"})
+    assert "India or US" in out
+
+
+def test_visa_uses_saved_passport_without_being_told(monkeypatch):
+    monkeypatch.setattr(visa, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        visa, "_known_passport_country", lambda: ("India", "saved passport", ["India"])
+    )
+    seen = {}
+
+    def fake_search_raw(query, max_results, search_depth):
+        seen["query"] = query
+        return {"answer": "", "results": []}
+
+    monkeypatch.setattr(visa, "search_raw", fake_search_raw)
+    out = json.loads(visa.check_visa_requirements.invoke({"destination_country": "Mexico"}))
+    assert "India passport holders" in seen["query"]
+    assert out["passport_country"] == "India"
+    assert out["passport_country_source"] == "saved passport"
+
+
+def test_explicit_passport_country_wins(monkeypatch):
+    monkeypatch.setattr(visa, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        visa,
+        "_known_passport_country",
+        lambda: (_ for _ in ()).throw(AssertionError("should not resolve")),
+    )
+    monkeypatch.setattr(visa, "search_raw", lambda *a, **k: {"answer": "", "results": []})
+    out = json.loads(
+        visa.check_visa_requirements.invoke(
+            {"passport_country": "British", "destination_country": "Mexico"}
+        )
+    )
+    assert out["passport_country"] == "British"
+    assert out["passport_country_source"] == "provided"
 
 
 def test_visa_returns_structured_envelope(monkeypatch):

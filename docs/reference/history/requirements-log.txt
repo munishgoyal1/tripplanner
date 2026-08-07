@@ -3424,3 +3424,14 @@ and a lapsed loyalty tier is not worth a badge.
 - Keep the React SPA as the logged-in planner workspace; scale belongs behind the API.
   Add a server-rendered or prerendered public edge (landing, destination content,
   shared trips) for first paint, indexing, and link previews.
+
+[2026-08-07] Visa check wired to the documents vault (sandbox 1-lab20-docs)
+check_visa_requirements existed and was bound to the trip agent, but nothing in
+the system ever knew the user's passport country, so the tool could only be called
+with an invented value or skipped. passport_country is now optional: the tool reads
+the issuing_country (or nationality) of the traveller's own saved passport, then
+falls back to profile.passport_country. Residence is never used as nationality. Two
+saved passports with different countries is treated as unknown, not as a guess. When
+it is unknown the tool returns one question for the agent to ask and instructs it to
+save the answer with update_user_profile(passport_country=...), so it is asked once
+and never again. The response envelope now reports passport_country_source.
