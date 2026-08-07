@@ -603,6 +603,51 @@ function Remove-PendingMergesFor {
     Save-PendingList -Entries $remaining
 }
 
+function Get-UnregisteredSandboxes {
+    # A hand-made worktree or branch is invisible to every verb here, so it
+    # silently loses promotion, iteration history, and slot allocation.
+    $registered = @(Get-Registry)
+    $knownPaths = @($registered | ForEach-Object { ([string]$_.worktree).Replace("\", "/").TrimEnd("/").ToLowerInvariant() })
+    $knownBranches = @($registered | ForEach-Object { [string]$_.branch })
+    $strays = @()
+
+    $worktreeLines = @(Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("worktree", "list", "--porcelain"))
+    foreach ($line in $worktreeLines) {
+        if ($line -notmatch "^worktree (.+)$") { continue }
+        $path = $Matches[1].Replace("\", "/").TrimEnd("/")
+        if ((Split-Path -Leaf $path) -notlike "sbx-*") { continue }
+        if ($knownPaths -contains $path.ToLowerInvariant()) { continue }
+        $strays += [pscustomobject]@{ Kind = "worktree"; Name = $path }
+    }
+
+    $branches = @(Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
+        "for-each-ref", "--format=%(refname:short)", "refs/heads/sandbox"
+    ))
+    foreach ($branch in $branches) {
+        if (-not $branch -or $knownBranches -contains $branch) { continue }
+        $strays += [pscustomobject]@{ Kind = "branch"; Name = $branch }
+    }
+    return $strays
+}
+
+function Write-UnregisteredSandboxWarning {
+    param([object[]]$Strays)
+    if (-not $Strays -or $Strays.Count -eq 0) { return }
+    Write-Host ""
+    Write-Host "Not created by this tool, so no verb here can reach them:" -ForegroundColor Yellow
+    foreach ($stray in $Strays) {
+        Write-Host ("    {0,-8}  {1}" -f $stray.Kind, $stray.Name) -ForegroundColor Yellow
+    }
+    Write-Host "    They hold no slot, so their ports may collide with the dev stack or a real sandbox." -ForegroundColor DarkGray
+    Write-Host ("    Move the work onto a proper sandbox: {0} <name> `"<purpose>`"" -f (Get-SandboxLauncherPath -Name "New-Sandbox")) -ForegroundColor DarkGray
+    if ($Strays | Where-Object { $_.Kind -eq "worktree" }) {
+        Write-Host "    Then drop a stray worktree with: git worktree remove <path>" -ForegroundColor DarkGray
+    }
+    if ($Strays | Where-Object { $_.Kind -eq "branch" }) {
+        Write-Host "    Then drop a stray branch with: git branch -D <branch>" -ForegroundColor DarkGray
+    }
+}
+
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
     "rev-parse", "--path-format=absolute", "--git-common-dir"
@@ -629,9 +674,11 @@ Start-RunLog -Name $runLogName | Out-Null
 
 if ($PSCmdlet.ParameterSetName -eq "List") {
     $entries = @(Get-Registry)
+    $strays = @(Get-UnregisteredSandboxes)
     if ($entries.Count -eq 0) {
         $launcher = Get-SandboxLauncherPath -Name "New-Sandbox"
         Write-Host "No sandboxes. Create one with: $launcher <name> `"<purpose>`""
+        Write-UnregisteredSandboxWarning -Strays $strays
         return
     }
     foreach ($item in ($entries | Sort-Object { [int]$_.slot })) {
@@ -658,6 +705,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         Write-Host ("    worktree  {0}" -f $item.worktree)
         Write-Host ("    database  {0}" -f $item.database)
     }
+    Write-UnregisteredSandboxWarning -Strays $strays
     Write-Host ""
     Write-Host "Any verb takes the number, the full name, or the short name:" -ForegroundColor DarkGray
     Write-Host "  $(Get-SandboxLauncherPath -Name 'Serve-Sandbox') <n>     $(Get-SandboxLauncherPath -Name 'Stop-Sandbox') <n>" -ForegroundColor DarkGray
