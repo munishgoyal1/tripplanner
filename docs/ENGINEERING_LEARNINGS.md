@@ -689,3 +689,16 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
 ## 2026-08-06 — UX Lab state is not review history
 
 A mutable current selection cannot prove owner review. Every handoff save must append immutable option, notes, state, and time evidence. Lifecycle state is independently selectable and must not erase history. Implementation evidence is a separate append-only record linked to the handoff version.
+
+## 2026-08-07 - Isolation Is A Promotion Boundary, Not A Synchronization Boundary
+
+- A sandbox is isolated in execution, data, ports, and the direction in which
+  its changes flow. It should still receive `master` frequently so integration
+  conflicts are discovered while the feature context is fresh.
+- "Sync all to latest" means every registered branch is current locally and on
+  its remote. After receiving its own remote head and `master`, a sandbox update
+  pushes the resulting committed head; a rejected non-fast-forward push is a
+  failure and is never repaired with force.
+- Regular synchronization never promotes sandbox commits into `master`. Only
+  the explicit promote workflow validates, opens and merges the PR, verifies
+  containment, and tears down the isolated environment.

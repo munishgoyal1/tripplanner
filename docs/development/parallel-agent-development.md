@@ -247,8 +247,11 @@ launcher, run:
 ```
 
 This first integrates committed heads through `master`, then updates MasterAgent,
-Agents 1, 2, and 3 independently. Each lane's staged, unstaged, and untracked
-files are preserved in an exact safety stash. Git `rerere` automatically applies
+Agents 1, 2, and 3 independently, then brings every registered sandbox branch
+forward and pushes its committed head. Sandbox synchronization is inbound only:
+it receives `master` and its own remote branch but never sends sandbox work into
+`master`; only explicit promotion does that. Each worktree's staged, unstaged,
+and untracked files are preserved in an exact safety stash. Git `rerere` automatically applies
 a previously recorded resolution. A novel local-edit conflict retains that
 lane's stash, records a resumable entry under `logs/sync/`, lists its unresolved
 paths, and allows the other lanes to continue; the command exits nonzero after
