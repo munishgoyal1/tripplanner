@@ -54,6 +54,7 @@ const FIELD_LABELS: Record<string, string> = {
   entry_type: "Entries",
   valid_from: "Valid from",
   valid_to: "Valid to",
+  max_stay_days: "Max stay per entry",
   provider: "Provider",
   policy_reference: "Policy number",
   medical_cover_amount: "Medical cover",

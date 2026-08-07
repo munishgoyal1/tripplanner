@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from tripplanner.web import document_readiness
 
 TRIP = {
@@ -202,6 +204,177 @@ class TestVisaChecks:
         ]
         result = _evaluate(documents)
         assert _by_id(result, "visa-window-self")[0]["severity"] == "blocker"
+
+    def test_a_visa_that_ran_out_before_departure_says_so(self):
+        documents = [
+            _document(
+                "self",
+                "visa",
+                {
+                    "destination_country": "Portugal",
+                    "valid_from": "2025-06-01",
+                    "valid_to": "2026-09-30",
+                },
+            )
+        ]
+        expired = _by_id(_evaluate(documents), "visa-expired-self")[0]
+        assert expired["severity"] == "blocker"
+        assert "before this trip starts" in expired["detail"]
+
+    def test_a_visa_starting_after_departure_is_a_blocker(self):
+        documents = [
+            _document(
+                "self",
+                "visa",
+                {
+                    "destination_country": "Portugal",
+                    "valid_from": "2026-10-10",
+                    "valid_to": "2026-12-15",
+                },
+            )
+        ]
+        window = _by_id(_evaluate(documents), "visa-window-self")[0]
+        assert window["severity"] == "blocker"
+        assert "starts after the trip" in window["title"]
+
+    def test_a_visa_with_only_an_expiry_is_still_checked(self):
+        documents = [
+            _document("self", "visa", {"destination_country": "Portugal", "expiry": "2026-10-11"})
+        ]
+        assert _by_id(_evaluate(documents), "visa-window-self")[0]["severity"] == "blocker"
+
+    def test_a_stay_limit_shorter_than_the_trip_blocks(self):
+        documents = [
+            _document(
+                "self",
+                "visa",
+                {
+                    "destination_country": "Portugal",
+                    "valid_from": "2026-06-01",
+                    "valid_to": "2026-12-15",
+                    "max_stay_days": 3,
+                },
+            )
+        ]
+        limit = _by_id(_evaluate(documents), "visa-stay-limit-self")[0]
+        assert limit["severity"] == "blocker"
+        assert "permits 3 days" in limit["detail"]
+
+    def test_a_schengen_visa_from_another_member_covers_the_trip(self):
+        documents = [
+            _document(
+                "self",
+                "visa",
+                {
+                    "destination_country": "France",
+                    "valid_from": "2026-06-01",
+                    "valid_to": "2026-12-15",
+                },
+            )
+        ]
+        covered = _by_id(_evaluate(documents), "visa-ok-self")[0]
+        assert covered["severity"] == "ok"
+        assert "Schengen visa issued for France" in covered["detail"]
+
+    def test_a_single_entry_visa_says_it_cannot_tell_if_it_was_used(self):
+        documents = [
+            _document(
+                "self",
+                "visa",
+                {
+                    "destination_country": "Portugal",
+                    "entry_type": "Single entry",
+                    "valid_from": "2026-06-01",
+                    "valid_to": "2026-12-15",
+                },
+            )
+        ]
+        covered = _by_id(_evaluate(documents), "visa-ok-self")[0]
+        assert "single-entry" in covered["detail"]
+
+
+# What the agent found and saved, so the answer outlives the conversation.
+_REQUIRED = {
+    "passport_country": "Indian",
+    "destination_country": "Portugal",
+    "status": "required",
+    "processing_days_typical": 21,
+    "official_url": "https://vistos.mne.gov.pt",
+    "source_domain": "mne.gov.pt",
+    "checked_on": "2026-07-01",
+}
+
+
+class TestVisaLeadTime:
+    def _trip(self, **finding):
+        return dict(TRIP, visa={**_REQUIRED, **finding})
+
+    def test_no_saved_finding_makes_no_claim(self):
+        result = _evaluate([])
+        assert not _by_id(result, "visa-needed") and not _by_id(result, "visa-lead-time")
+
+    def test_processing_longer_than_the_time_left_blocks(self):
+        result = _evaluate([], trip=self._trip(), today=date(2026, 10, 1))
+        late = _by_id(result, "visa-lead-time")[0]
+        assert late["severity"] == "blocker"
+        assert "about 21 days and you leave in 7" in late["detail"]
+        assert late["action"].endswith("https://vistos.mne.gov.pt")
+
+    def test_an_unofficial_source_can_only_warn(self):
+        result = _evaluate(
+            [],
+            trip=self._trip(source_domain="travelblog.example"),
+            today=date(2026, 10, 1),
+        )
+        assert _by_id(result, "visa-lead-time")[0]["severity"] == "warning"
+
+    def test_a_thin_margin_warns(self):
+        result = _evaluate([], trip=self._trip(), today=date(2026, 9, 10))
+        margin = _by_id(result, "visa-lead-time")[0]
+        assert margin["severity"] == "warning"
+        assert "little margin" in margin["title"]
+
+    def test_plenty_of_time_still_names_the_missing_visa(self):
+        result = _evaluate([], trip=self._trip(), today=date(2026, 5, 1))
+        assert _by_id(result, "visa-needed")[0]["severity"] == "warning"
+        assert not _by_id(result, "visa-lead-time")
+
+    def test_an_unknown_processing_time_is_never_invented(self):
+        result = _evaluate(
+            [], trip=self._trip(processing_days_typical=0), today=date(2026, 10, 1)
+        )
+        unknown = _by_id(result, "visa-needed")[0]
+        assert unknown["severity"] == "warning"
+        assert "unknown" in unknown["detail"]
+
+    def test_a_visa_already_held_silences_the_deadline(self):
+        documents = [
+            _document(key, "visa", {"destination_country": "Portugal", "valid_to": "2026-12-15"})
+            for key in ("self", "spouse:priya", "child:aarav")
+        ]
+        result = _evaluate(documents, trip=self._trip(), today=date(2026, 10, 1))
+        assert not _by_id(result, "visa-lead-time") and not _by_id(result, "visa-needed")
+
+    def test_one_traveller_still_missing_a_visa_keeps_the_deadline(self):
+        documents = [
+            _document("self", "visa", {"destination_country": "Portugal", "valid_to": "2026-12-15"})
+        ]
+        result = _evaluate(documents, trip=self._trip(), today=date(2026, 10, 1))
+        assert _by_id(result, "visa-lead-time")[0]["severity"] == "blocker"
+
+    def test_a_visa_free_finding_is_reassurance_not_a_warning(self):
+        result = _evaluate([], trip=self._trip(status="visa_free"), today=date(2026, 5, 1))
+        assert _by_id(result, "visa-not-needed")[0]["severity"] == "ok"
+
+    def test_a_domestic_trip_never_reads_the_finding(self):
+        result = _evaluate(
+            [],
+            trip=self._trip(),
+            today=date(2026, 10, 1),
+            origin_country="Portugal",
+            destination_country="Portugal",
+        )
+        assert not _by_id(result, "visa-lead-time")
 
 
 class TestOtherChecks:

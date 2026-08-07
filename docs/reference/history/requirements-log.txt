@@ -3435,3 +3435,22 @@ saved passports with different countries is treated as unknown, not as a guess. 
 it is unknown the tool returns one question for the agent to ask and instructs it to
 save the answer with update_user_profile(passport_country=...), so it is asked once
 and never again. The response envelope now reports passport_country_source.
+
+[2026-08-07] Visa capability: layers 1 and 2 only, no rules engine.
+Owner decision: a per-country visa rules engine is not our domain and is best left to
+the issuing authorities; a stale rule is worse than none, because a wrong "visa-free"
+costs a boarding denial. Implemented instead:
+  Layer 1 (personal certainty, local and deterministic): the vault now stores a visa's
+  destination_country, entry_type, valid_from, valid_to, and max_stay_days, and
+  document_readiness computes expiry, validity window, Schengen bloc coverage, and
+  stay-limit arithmetic against the trip. A visa naming another Schengen member counts;
+  a visa naming no country only warns. Single-entry visas carry an explicit caveat,
+  because whether an earlier trip already spent one is unknowable here.
+  Layer 2 (requirement lookup, persisted): check_visa_requirements findings are saved on
+  the plan under "visa", so the answer outlives the chat. A missing visa plus a stated
+  processing time becomes a departure deadline: past it blocks, near it warns. Only an
+  official source domain may drive a blocker; an unofficial one can only warn.
+  Layer 3 (application guidance and third-party handoff) is deferred to the bookings and
+  execution layer, consistent with "booking = grounded choices and verified handoff".
+create_trip_plan now asks the agent to name travellers in travelers_summary, because
+per-traveller passport and visa checks only run for people that text names.

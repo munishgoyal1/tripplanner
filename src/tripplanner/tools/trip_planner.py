@@ -1185,7 +1185,10 @@ def create_trip_plan(
         departure_date: YYYY-MM-DD.
         return_date: YYYY-MM-DD.
         origin: Departure city (defaults from preferences if not provided).
-        travelers_summary: e.g. '2 adults, 1 child (age 5)'.
+        travelers_summary: Name everyone travelling, e.g. 'Munish, Priya, and
+            Aarav (5)'. Names matter: per-traveller passport and visa checks
+            only run for people this text names. Fall back to counts
+            ('2 adults, 1 child (age 5)') only when you do not know the names.
         notes: Any special requirements or notes.
         planning_recommendation_json: Complete JSON returned by recommend_trip_duration.
     """
@@ -1278,6 +1281,9 @@ def create_trip_plan(
         "budget": 0,
         "currency": "",
         "weather": {},
+        # What check_visa_requirements found for this trip, so the answer
+        # survives the conversation it was given in.
+        "visa": {},
         # One-off constraints/exceptions that apply to THIS trip only (e.g.
         # "3-star is fine just this time"). They never leak into durable prefs.
         "trip_constraints": [],
@@ -1363,6 +1369,13 @@ def update_trip_plan(updates_json: str) -> str:
       apply to THIS trip ONLY (e.g. "3-star hotel is fine just for this trip",
       "OK with one connection this time"). Use this for anything the user says
       is a one-time exception; NEVER save such one-offs to durable preferences.
+    - visa: what check_visa_requirements found, so it outlives the chat. Shape:
+      {"passport_country": "Indian", "destination_country": "Mexico",
+       "status": "required" | "e_visa" | "on_arrival" | "visa_free" | "unclear",
+       "processing_days_typical": 21, "official_url": "https://...",
+       "source_domain": "gob.mx", "checked_on": "YYYY-MM-DD", "note": "one line"}
+      Use 0 for processing_days_typical when no source states one — never
+      estimate it, because it drives a deadline warning.
 
     Example: '{"selected_flights": [{"option": 1, "airline": "IndiGo", "price": 8500}]}'
     """
@@ -1398,6 +1411,7 @@ def update_trip_plan(updates_json: str) -> str:
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin", "budget", "currency", "weather", "trip_constraints",
+        "visa",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     merged_partial_itinerary = False

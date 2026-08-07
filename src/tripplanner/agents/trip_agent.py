@@ -537,7 +537,13 @@ STEP 4 — BUILD ITINERARY
     hands you, save the answer with update_user_profile(passport_country=...),
     then call the tool again in the same turn. Surface visa-required /
     visa-on-arrival / e-visa status, the typical processing time, and ALWAYS
-    the official-source link from the response. Skip for purely domestic trips.
+    the official-source link from the response. Then persist what you found
+    by calling update_trip_plan with a "visa" key holding passport_country,
+    destination_country, status, processing_days_typical (0 if no source
+    states one; never estimate it), official_url, source_domain, checked_on,
+    note. Saving it is what turns the answer into a deadline the planner can
+    warn about later. Re-check and re-save it if the destination or the
+    passport they travel on changes. Skip for purely domestic trips.
   - Local events / festivals / holidays: call
     find_local_events(destination, start, end) once per trip. Flag any festival,
     parade, marathon, or public holiday overlapping the trip. Reasons:

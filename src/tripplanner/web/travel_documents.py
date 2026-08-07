@@ -70,7 +70,7 @@ _COMMON_FIELDS = {
 FIELD_ALLOWLIST: dict[str, set[str]] = {
     "passport": _COMMON_FIELDS,
     "visa": _COMMON_FIELDS
-    | {"destination_country", "entry_type", "valid_from", "valid_to"},
+    | {"destination_country", "entry_type", "valid_from", "valid_to", "max_stay_days"},
     "insurance": {
         "holder_name",
         "provider",
@@ -98,6 +98,7 @@ _WHOLE_VALUE_FIELDS = {
 }
 
 _DATE_FIELDS = {"expiry", "date_of_birth", "valid_from", "valid_to", "administered_on"}
+_INT_FIELDS = {"medical_cover_amount", "max_stay_days"}
 _ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _DIGITS = re.compile(r"[^0-9A-Za-z]")
 
@@ -158,7 +159,7 @@ def sanitize_fields(document_type: str, fields: Any) -> dict[str, Any]:
             if value:
                 clean[name] = value
             continue
-        if name == "medical_cover_amount":
+        if name in _INT_FIELDS:
             try:
                 clean[name] = int(float(str(raw).replace(",", "").strip()))
             except (TypeError, ValueError):
