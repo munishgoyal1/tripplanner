@@ -1,15 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { destinationFromToolArgs, progressHeading } from "./useChatStream";
+import { destinationFromToolArgs, isPlanEditTool, progressHeading } from "./useChatStream";
 
 describe("progress heading", () => {
   it("names the destination so a one-row composer still says where", () => {
     expect(progressHeading(false, "Goa")).toBe("Building your Goa itinerary");
-    expect(progressHeading(true, "Paris")).toBe("Updating your Paris trip");
+    expect(progressHeading(true, "Paris", true)).toBe("Updating your Paris trip");
+  });
+
+  it("does not claim an update before the Assistant has edited anything", () => {
+    expect(progressHeading(true, "Madhya Pradesh")).toBe("Working on your Madhya Pradesh trip");
   });
 
   it("stays generic rather than naming a place it does not know", () => {
     expect(progressHeading(false, null)).toBe("Building your itinerary");
-    expect(progressHeading(true, "  ")).toBe("Updating your trip");
+    expect(progressHeading(true, "  ", true)).toBe("Updating your trip");
+  });
+});
+
+describe("plan edit tools", () => {
+  it("separates writing the plan from looking things up", () => {
+    expect(isPlanEditTool("update_trip_plan")).toBe(true);
+    expect(isPlanEditTool("add_selection")).toBe(true);
+    expect(isPlanEditTool("search_hotels")).toBe(false);
+    expect(isPlanEditTool("get_place_reviews")).toBe(false);
   });
 });
 

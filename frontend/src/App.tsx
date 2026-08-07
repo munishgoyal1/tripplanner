@@ -16,6 +16,7 @@ import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
+import { completionStatus } from "./lib/turnStatus";
 import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
@@ -517,33 +518,24 @@ export default function App() {
     if (!refreshed || (tripId && refreshed.trip_id !== tripId)) {
       setAssistantTurnStatus({
         phase: "error",
-        message: "The planning work finished, but the updated itinerary could not be loaded. Your previous view is still available.",
+        message: "Could not load the updated itinerary",
+        detail: "The planning work finished. Your previous view is still on screen.",
       });
       return;
     }
     const effects = diffTurnEffects(tripChanged ? null : beforeTurn, refreshed);
     if (effects.length) setTurnEffects({ token: Date.now(), effects });
-    if (context?.proposalOnly) {
-      setAssistantTurnStatus({
-        phase: "complete",
-        message: "Review complete. Your itinerary is unchanged and ready for your decision.",
-      });
-      return;
-    }
-    await applyTurnSelection(effects, tripChanged);
-    if (context?.startedWithoutTrip) {
-      setAssistantTurnStatus({
-        phase: "complete",
-        message: "Done building your itinerary. Your trip is ready to explore; start checking it out.",
-      });
-      return;
-    }
-    const updateSummary = compactStatus(refreshed.alerts?.[0]);
+    if (!context?.proposalOnly) await applyTurnSelection(effects, tripChanged);
     setAssistantTurnStatus({
       phase: "complete",
-      message: updateSummary
-        ? `${updateSummary} Everything is loaded and ready for a look.`
-        : "Done updating your itinerary. Everything is loaded and ready for a look.",
+      ...completionStatus({
+        destination: refreshed.destination,
+        startedWithoutTrip: Boolean(context?.startedWithoutTrip),
+        proposalOnly: Boolean(context?.proposalOnly),
+        effects,
+        reply: context?.reply ?? "",
+        alert: compactStatus(refreshed.alerts?.[0]),
+      }),
     });
   };
 

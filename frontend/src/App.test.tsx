@@ -47,7 +47,7 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
+  default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean; request: string; reply: string }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
     <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-layout={layout ?? "panel"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
       <button type="button" onClick={() => onHide?.()}>Hide Chat</button>
       <button type="button" onClick={() => onChangeLayout?.("sheet")}>Conversation</button>
@@ -57,13 +57,16 @@ vi.mock("./components/ChatPanel", () => ({
       <button type="button" onClick={() => onEffectSelect?.({ kind: "attraction", name: "Louvre Museum", day: 2, stop: 1, change: "added" })}>Open turn effect</button>
       <button type="button" onClick={() => onTurnStatus?.({ phase: "working", message: "Searching hotels. 45s elapsed. Full itinerary builds usually take about 2–4 minutes." })}>Report planning progress</button>
       <button type="button" onClick={() => {
-        onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
-        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: true });
+        onTurnStatus?.({ phase: "loading", message: "Wrapping up" });
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: true, request: "plan a trip", reply: "" });
       }}>Finish new itinerary</button>
       <button type="button" onClick={() => {
-        onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
-        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false });
+        onTurnStatus?.({ phase: "loading", message: "Wrapping up" });
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false, request: "rebalance day 3", reply: "" });
       }}>Finish itinerary update</button>
+      <button type="button" onClick={() => {
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false, request: "total time on road?", reply: "Total estimated road time is about 20 hours 28 minutes." });
+      }}>Answer a question</button>
     </div>
   ),
 }));
@@ -330,7 +333,7 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower"));
     fireEvent.click(screen.getByRole("button", { name: "Finish new itinerary" }));
 
-    expect(await screen.findByText(/updated itinerary could not be loaded/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Could not load the updated itinerary/i)).toBeInTheDocument();
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower");
   });
 
@@ -381,8 +384,27 @@ describe("App responsive workspace", () => {
     expect(screen.getByText(/Searching hotels\. 45s elapsed/)).toHaveClass("text-brand");
 
     fireEvent.click(screen.getByRole("button", { name: "Finish new itinerary" }));
-    expect(screen.getByText("Loading your updated itinerary now.")).toBeInTheDocument();
-    expect(await screen.findByText(/Done building your itinerary/)).toHaveClass("text-emerald-700");
+    expect(screen.getByText("Wrapping up")).toBeInTheDocument();
+    expect(await screen.findByText(/Your itinerary is ready/)).toHaveClass("text-emerald-700");
+  });
+
+  it("does not claim an itinerary update for a turn that only answered a question", async () => {
+    fetchTripViewMock.mockResolvedValue({
+      ...emptyView,
+      trip_id: "khandala-pune-1",
+      has_trip: true,
+      destination: "Madhya Pradesh",
+    });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Answer a question" }));
+
+    expect(await screen.findByText(/Answered in chat/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Total estimated road time is about 20 hours 28 minutes."),
+    ).toBeInTheDocument();
   });
 
   it("summarizes an itinerary modification after its refreshed view loads", async () => {
@@ -400,9 +422,7 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledOnce());
     fireEvent.click(screen.getByRole("button", { name: "Finish itinerary update" }));
 
-    expect(await screen.findByText(
-      "Itinerary refreshed. Everything is loaded and ready for a look.",
-    )).toHaveClass("text-emerald-700");
+    expect(await screen.findByText("Itinerary refreshed.")).toHaveClass("text-emerald-700");
   });
 
   it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {

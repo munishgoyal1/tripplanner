@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { streamChat } from "../api";
 import { trackEvent } from "../analytics";
+import { requestEcho } from "../lib/turnStatus";
 import type { ChatMessage, TripInputRequest } from "../types";
 
 export interface AssistantTurnStatus {
@@ -12,6 +13,10 @@ export interface AssistantTurnStatus {
 export interface AssistantTurnContext {
   proposalOnly: boolean;
   startedWithoutTrip: boolean;
+  /** What the user asked, so the bar can still show it after the composer scrolls. */
+  request: string;
+  /** What the Assistant said, for turns that only answered a question. */
+  reply: string;
 }
 
 interface FailedRequest {
@@ -96,10 +101,22 @@ export function destinationFromToolArgs(name: string, args?: string): string | n
 
 /** "Building your Goa itinerary" beats "Building your itinerary" when the
  * composer is one row tall and the request has scrolled away. */
-export function progressHeading(hasTrip: boolean, place?: string | null): string {
+export function progressHeading(
+  hasTrip: boolean,
+  place?: string | null,
+  editing = false,
+): string {
   const named = (place ?? "").trim();
-  if (!named) return hasTrip ? "Updating your trip" : "Building your itinerary";
-  return hasTrip ? `Updating your ${named} trip` : `Building your ${named} itinerary`;
+  if (!hasTrip) return named ? `Building your ${named} itinerary` : "Building your itinerary";
+  // Until the Assistant actually edits something the turn may well be a
+  // question, and claiming an update it never made is the lie the user notices.
+  if (!editing) return named ? `Working on your ${named} trip` : "Working on your trip";
+  return named ? `Updating your ${named} trip` : "Updating your trip";
+}
+
+/** Tools that can change the saved plan, as opposed to looking things up. */
+export function isPlanEditTool(name: string): boolean {
+  return /trip_plan|selection|booking|finalize|reschedule/i.test(name);
 }
 
 /** Short enough to sit in a list of clauses rather than end a sentence. */
@@ -138,6 +155,8 @@ export function useChatStream({
   const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
   const [coveredTopics, setCoveredTopics] = useState<string[]>([]);
   const [plannedPlace, setPlannedPlace] = useState<string | null>(null);
+  const [editingPlan, setEditingPlan] = useState(false);
+  const [liveRequest, setLiveRequest] = useState("");
   const [progressSeconds, setProgressSeconds] = useState(0);
   const streamControllerRef = useRef<AbortController | null>(null);
   const turnStartedAtRef = useRef(0);
@@ -161,8 +180,9 @@ export function useChatStream({
     // changing shape; the detail carries what actually moved. Only work that
     // really happened is listed — inventing plausible-sounding stages would
     // make the status a decoration rather than a report.
-    const heading = progressHeading(hasActiveTrip, destination || plannedPlace);
+    const heading = progressHeading(hasActiveTrip, destination || plannedPlace, editingPlan);
     const detail = [
+      requestEcho(liveRequest),
       progress.label,
       coveredTopics.length ? `covered ${joinTopics(coveredTopics)}` : null,
       elapsedLabel(publishedSeconds),
@@ -177,7 +197,9 @@ export function useChatStream({
     busy,
     coveredTopics,
     destination,
+    editingPlan,
     hasActiveTrip,
+    liveRequest,
     onTurnStatus,
     plannedPlace,
     progress,
@@ -204,6 +226,8 @@ export function useChatStream({
     publishedTurnStatusRef.current = "";
     setCoveredTopics([]);
     setPlannedPlace(null);
+    setEditingPlan(false);
+    setLiveRequest(outgoing);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
     const streamController = new AbortController();
     streamControllerRef.current = streamController;
@@ -257,6 +281,7 @@ export function useChatStream({
             setActiveTool({ name, args: extras?.args });
             const place = destinationFromToolArgs(name, extras?.args);
             if (place) setPlannedPlace(place);
+            if (isPlanEditTool(name)) setEditingPlan(true);
             setProgress({ label: toolProgressLabel(name), startedAt: turnStartedAtRef.current });
             return;
           }
@@ -274,15 +299,15 @@ export function useChatStream({
           }
           setActiveTool(null);
         },
-        onDone: (_reply, tripId) => {
+        onDone: (reply, tripId) => {
           if (tokenFrame != null) window.cancelAnimationFrame(tokenFrame);
           flushTokens();
           setActiveTool(null);
           setProgress(null);
           onTurnStatus?.({
             phase: "loading",
-            message: "Planning complete",
-            detail: "Loading your updated itinerary now.",
+            message: "Wrapping up",
+            detail: "Loading the latest view of your trip.",
           });
           setMessages((messages) => {
             const copy = [...messages];
@@ -301,6 +326,8 @@ export function useChatStream({
           void onTurnComplete(tripId, {
             proposalOnly,
             startedWithoutTrip: !hasActiveTrip,
+            request: outgoing,
+            reply,
           });
         },
         onError: (message) => {
@@ -312,7 +339,7 @@ export function useChatStream({
           onTurnStatus?.({
             phase: "error",
             message: "The Assistant hit an error",
-            detail: "Your previous itinerary is still available.",
+            detail: `${requestEcho(outgoing)} \u00b7 nothing was changed; your itinerary is still there.`,
           });
           setMessages((messages) => {
             const copy = [...messages];
