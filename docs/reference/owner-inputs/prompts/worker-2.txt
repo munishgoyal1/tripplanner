@@ -72,3 +72,7 @@ Scope: consider all travellers / family members part of trip.
 Visa: will it be stored entirely or only key info from privacy just like we treated passport ?
 Visa: will it be stored until it's expiry, because sometimes travellers may have multi-entry visa say for dubai or USA etc. and they may come to plan and travel again in few days , so think of all the visa rules. WIll you build a proper visa intelligence layer with all the right rules - this is today an area of confusion for travellers around visa rules - can this planner make it easy and breezy. I think for that we may need to design a seperate vis ainformational and applicaiton guidance/point to 3rd party providers  (similar to plan trip and help in bookings via 3rd party). We can take that full fledged feature later also based on what you suggest, as par tof the bookings flow later. 
 What you think ?
+
+[2026-08-07 21:10] [worker-2] ! Approve layer1 visa reuse and finding
+I agree with you about doing only layer1 and not building complexity of rule engine etc. that is not our domain and best left to the right authorities. Otherewise also for MVP i dont want you to make it deeply complex. So go ahead with this sequence and 3a, b implemntnation.
+3c can be later when we build execution layer.
