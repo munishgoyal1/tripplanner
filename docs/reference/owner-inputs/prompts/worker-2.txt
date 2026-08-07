@@ -85,3 +85,6 @@ Is scoring based only on planned minutes, travel etc. ie.e the business and fati
 I like the idea of scoring - only i am saying is think if you can expand it to add more meaningful parameters too, and explroe getting key insights from real reviews or authoritiave place details and model intelligence. 
 
 I am hopiong this layer will be solid and reliable guard to build a coherent trip that doesnt have any part of it that can look weird. It should be intelligent as a human would plan but hoping it will not be frictionful and overly restrictive.
+
+[2026-08-07 13:05] [worker-2] ! Clarify fatigue reserve and no numbers
+Elaborate bit more on #2 so I can give my call. Rest all I agree with you. What is reserve and do you plan to show any numbers to user, I hope not, only you will hsow text based statements, right ?
