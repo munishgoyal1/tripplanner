@@ -714,6 +714,34 @@ class TestTripPlanState:
         assert not result.startswith("Error:")
         assert plan["selected_hotels"][0]["name"] == "The Himalayan"
 
+    def test_update_trip_plan_accepts_hotel_in_evidenced_itinerary_city(self):
+        create_trip_plan.invoke({
+            "destination": "Madhya Pradesh",
+            "departure_date": "2026-09-18",
+            "return_date": "2026-09-21",
+        })
+        update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{"name": "Old Indore Hotel", "city": "Indore"}],
+            "day_wise_itinerary": [{
+                "day": 1,
+                "city": "Indore",
+                "stops": [{"name": "Old Indore Hotel", "kind": "hotel"}],
+            }],
+        })})
+
+        result = update_trip_plan.invoke({"updates_json": json.dumps({
+            "selected_hotels": [{
+                "name": "WOW Hotel Indore",
+                "city": "Indore",
+                "address": "AB Road, Indore, Madhya Pradesh, India",
+            }],
+        })})
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert not result.startswith("Error:")
+        assert plan["selected_hotels"][0]["name"] == "WOW Hotel Indore"
+        assert plan["day_wise_itinerary"][0]["stops"][0]["name"] == "WOW Hotel Indore"
+
     def test_update_trip_plan_replaces_hotel_in_itinerary_anchors(self, monkeypatch):
         from tripplanner.web import trip_view
 

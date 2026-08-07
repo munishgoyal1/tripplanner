@@ -340,6 +340,64 @@ def test_empty_itinerary_retries_one_failed_update(monkeypatch) -> None:
     assert graph_mod._trip_update_requirement(messages) is not None
 
 
+def test_existing_itinerary_retries_one_failed_mutation(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "Madhya Pradesh",
+            "day_wise_itinerary": [{"day": 1, "city": "Indore", "stops": []}],
+        },
+    )
+    messages = [
+        HumanMessage(content="Change the Indore hotel"),
+        AIMessage(
+            content="",
+            tool_calls=[{"name": "update_trip_plan", "args": {}, "id": "update-1"}],
+        ),
+        ToolMessage(
+            content="Error: hotel location must match the active trip destination.",
+            tool_call_id="update-1",
+        ),
+    ]
+
+    requirement = graph_mod._trip_update_requirement(messages)
+
+    assert requirement is not None
+    assert "was not saved" in requirement
+    assert "before claiming the itinerary changed" in requirement
+
+
+def test_existing_itinerary_failed_mutation_retry_is_bounded(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {
+            "destination": "Madhya Pradesh",
+            "day_wise_itinerary": [{"day": 1, "city": "Indore", "stops": []}],
+        },
+    )
+    messages = [HumanMessage(content="Change the Indore hotel")]
+    for attempt in range(2):
+        call_id = f"update-{attempt}"
+        messages.extend([
+            AIMessage(
+                content="",
+                tool_calls=[{"name": "update_trip_plan", "args": {}, "id": call_id}],
+            ),
+            ToolMessage(
+                content="Error: hotel location must match the active trip destination.",
+                tool_call_id=call_id,
+            ),
+        ])
+
+    assert graph_mod._trip_update_requirement(messages) is None
+
+
 def test_empty_itinerary_retry_is_bounded(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 

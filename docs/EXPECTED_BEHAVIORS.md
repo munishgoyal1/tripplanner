@@ -86,7 +86,8 @@ Assistant build its first proposal.
   itinerary is declared ready only after the trip view loads and invites inspection.
 - Existing-trip changes summarize the refreshed authoritative mutation. Proposal-only
   reviews say the itinerary is unchanged; failed reloads retain the prior view and
-  never claim that the new itinerary is ready.
+  never claim that the new itinerary is ready. A rejected trip mutation receives one
+  bounded correction attempt and is never narrated as successfully saved.
 
 **Executable proof:**
 
@@ -319,16 +320,21 @@ transfer to the hotel, so a mid-day check-in is not left blank.
 ### EB-ITIN-005 - Keep daily hotels synchronized across views
 
 **Trigger:** View a non-transfer day whose itinerary carries forward the active
-hotel while its prose mentions other selected hotels as alternatives.
+hotel while its prose mentions other selected hotels as alternatives, or replace
+a city-specific hotel through Assistant in a multi-city or regional trip.
 
 **Expected:** Itinerary and Map use the same rendered hotel for that day's route.
 Prose-only hotel alternatives do not replace or join the active stay. A genuine
-multi-hotel transfer day keeps its distinct hotel endpoints.
+multi-hotel transfer day keeps its distinct hotel endpoints. A replacement hotel
+is valid when its city is evidenced by the itinerary even if the trip destination
+is a broader region, and a successful save updates selected hotels and itinerary
+hotel anchors together.
 
 **Executable proof:**
 
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_uses_rendered_stay_over_prose_hotel_alternatives`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_carries_forward_hotel_after_transition`
+- [`tests/test_trip.py`](../tests/test_trip.py) - `test_update_trip_plan_accepts_hotel_in_evidenced_itinerary_city`
 
 ### EB-ITIN-006 - Include complete round-trip transport
 
