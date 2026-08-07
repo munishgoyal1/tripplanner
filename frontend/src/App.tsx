@@ -74,14 +74,18 @@ function compactStatus(status?: string): string | undefined {
   return status.length > 90 ? `${status.slice(0, 87).trimEnd()}...` : status;
 }
 
-export default function App() {
+export default function App({ initialRequest = null }: { initialRequest?: string | null }) {
   const [view, setView] = useState<TripView | null>(null);
   // Map + itinerary view-models handed over by a trip switch, so those panels
   // can render the new trip without a second and third round-trip.
   const [panelSeed, setPanelSeed] = useState<TripWorkspaceView | null>(null);
   const [loading, setLoading] = useState(true);
   const [plannerReview, setPlannerReview] = useState<PlannerReview | null>(null);
-  const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(null);
+  const [assistantRequest, setAssistantRequest] = useState<{ id: number; message: string; proposalOnly?: boolean } | null>(
+    // Seeded once when the public entry hands over a typed trip, so the workspace
+    // opens with that run already starting.
+    () => (initialRequest ? { id: Date.now(), message: initialRequest } : null)
+  );
   const [assistantTurnStatus, setAssistantTurnStatus] = useState<AssistantTurnStatus | null>(null);
   const [navList, setNavList] = useState<NavRef[]>([]);
   const [workspace, dispatchWorkspace] = useReducer(workspaceReducer, initialWorkspaceState);
