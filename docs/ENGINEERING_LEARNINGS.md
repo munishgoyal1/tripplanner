@@ -702,3 +702,16 @@ A mutable current selection cannot prove owner review. Every handoff save must a
 - Regular synchronization never promotes sandbox commits into `master`. Only
   the explicit promote workflow validates, opens and merges the PR, verifies
   containment, and tears down the isolated environment.
+
+## 2026-08-07 - Bootstrap From Current Shared Contracts
+
+- Package-manager names are not stable contracts. PowerShell moved from a removed
+  Homebrew cask and archived tap to a Core formula, while Docker's cask token was
+  renamed; machine setup must encode current package type and migrate sources that
+  can shadow the replacement.
+- A fresh worker branch may predate the machine-setup fix needed to install it.
+  Bootstrap shared dependencies from the current primary lockfile, then install
+  the worker's own editable source, so stale lane metadata cannot block setup.
+- Treat built-in editor extensions as installed. VS Code can omit them from
+  `--list-extensions`; attempting to install an obsolete companion extension can
+  instead trigger a downgrade conflict with the built-in version.
