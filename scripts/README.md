@@ -30,6 +30,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
+| `user/Run-Worker-Latest.cmd` | Fast-path one committed worker into `master` without tests, then restart the canonical master stack |
 | `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |

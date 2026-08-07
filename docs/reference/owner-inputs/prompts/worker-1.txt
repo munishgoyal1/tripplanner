@@ -108,3 +108,8 @@ Line |
 	| exists:
 	| C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded
 Press any key to continue . . .
+
+[2026-08-07 14:48] [worker-1 !] Add Targeted Worker Run
+Create a simpler version of Run-Latest that takes worker number as argument that alone is one from which to update master and re-run maste rdev stack, and dont run any tests, just simple merge sync into master and restart dev stack- this is for cases where i know other workers update is not needed currently or it wont affect or there is no update and only known contained updates from targetted worker is to be run. e.g. a new lab built by a worker needs to come to the master and dev stakc refreshed to see that lab.
+
+Does run latest always run from master ? Individual workers cant be run currently through any launcher script ?
