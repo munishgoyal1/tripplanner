@@ -54,3 +54,6 @@ vAn environment file is configured but terminal environment injection is disable
 
 [2026-08-07 16:42] [master !] Save default VS Code layout
 save this vs code layout as default in the configs to be used everywhere
+
+[2026-08-07 16:50] [master !] Remove corporate package mirrors
+nothing to be taken from 1es mirror, as that is microsoft corporate specific. later this repository may run dev environments outside of msft also, so keepo it entirely indepdnent.

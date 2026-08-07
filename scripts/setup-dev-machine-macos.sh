@@ -23,7 +23,21 @@ fi
 
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repo_root"
-pip_index_url="${PIP_INDEX_URL:-https://ms-feed-2.pkgs.visualstudio.com/1es-public/_packaging/pypi-public/pypi/simple/}"
+pip_index_url="${PIP_INDEX_URL:-https://pypi.org/simple}"
+npm_registry_url="${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}"
+
+assert_independent_package_source() {
+  local source_name="$1"
+  local source_url
+  source_url="$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$source_url" == *"pkgs.visualstudio.com"* || "$source_url" == *"1es-public"* ]]; then
+    echo "$source_name must not use Microsoft corporate package infrastructure: $2" >&2
+    exit 1
+  fi
+}
+
+assert_independent_package_source "PIP_INDEX_URL" "$pip_index_url"
+assert_independent_package_source "NPM_CONFIG_REGISTRY" "$npm_registry_url"
 
 assert_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -69,7 +83,7 @@ pwsh -NoProfile -File "$repo_root/devconfigs/Apply-DevConfigs.ps1" -InstallExten
 
 if ! command -v copilot >/dev/null 2>&1; then
   echo "[install] GitHub Copilot CLI"
-  npm install --global @github/copilot
+  npm install --global @github/copilot --registry="$npm_registry_url"
 else
   echo "[ok] GitHub Copilot CLI"
 fi
@@ -101,9 +115,9 @@ setup_dependencies() {
       -r "$requirements_lock"
     PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet \
       -e "$checkout_root" --no-deps
-    npm --prefix "$checkout_root/frontend" ci
+    npm --prefix "$checkout_root/frontend" ci --registry="$npm_registry_url"
     if [[ "$include_mobile" == true ]]; then
-      npm --prefix "$checkout_root/mobile" ci
+      npm --prefix "$checkout_root/mobile" ci --registry="$npm_registry_url"
     fi
   fi
 

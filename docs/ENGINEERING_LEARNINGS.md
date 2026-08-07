@@ -715,3 +715,13 @@ A mutable current selection cannot prove owner review. Every handoff save must a
 - Treat built-in editor extensions as installed. VS Code can omit them from
   `--list-extensions`; attempting to install an obsolete companion extension can
   instead trigger a downgrade conflict with the built-in version.
+
+## 2026-08-07 - Keep Repository Package Sources Public
+
+- Repository defaults, container builds, and committed lockfiles must resolve
+  through public ecosystem registries rather than organization-specific mirrors.
+- A corporate network workaround is machine-local configuration, not a portable
+  project default. Preserve standard overrides such as `PIP_INDEX_URL` for
+  constrained environments without encoding their private infrastructure.
+- Audit resolved lockfile URLs as well as installer flags. Package managers may
+  retain an old tarball host even when regeneration is given a different registry.
