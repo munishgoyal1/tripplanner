@@ -62,3 +62,13 @@ did you restart the sbx after last changes or do i need to restart. Which is the
 
 [2026-08-07 20:10] [worker-2] ! Visa flow for a Mexico trip
 i asked it to plan a mexico trip. it did not prompt me or given any indication for visa yet. when does visa come to picture wha tis the flow
+
+[2026-08-07 20:35] [worker-2] ! Proceed with visa items 1 and 2
+Proceed with as you suggest
+
+[2026-08-07 20:55] [worker-2] ! Visa scope privacy multi-entry intelligence
+Changes:
+Scope: consider all travellers / family members part of trip.
+Visa: will it be stored entirely or only key info from privacy just like we treated passport ?
+Visa: will it be stored until it's expiry, because sometimes travellers may have multi-entry visa say for dubai or USA etc. and they may come to plan and travel again in few days , so think of all the visa rules. WIll you build a proper visa intelligence layer with all the right rules - this is today an area of confusion for travellers around visa rules - can this planner make it easy and breezy. I think for that we may need to design a seperate vis ainformational and applicaiton guidance/point to 3rd party providers  (similar to plan trip and help in bookings via 3rd party). We can take that full fledged feature later also based on what you suggest, as par tof the bookings flow later. 
+What you think ?
