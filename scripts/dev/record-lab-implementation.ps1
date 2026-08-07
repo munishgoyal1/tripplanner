@@ -67,11 +67,23 @@ if (-not $lab) { throw "Lab '$LabId' does not have a saved handoff." }
 
 $handoffs = @($lab.handoffs)
 if (-not $handoffs.Count) { throw "Lab '$LabId' does not have versioned handoff history." }
-if ($State -eq "implemented-review" -and $lab.disposition -eq "implemented-review") {
-    throw "Lab '$LabId' is already implemented and awaiting review. Save a new handoff before recording another implementation."
-}
-
 $handoff = $handoffs | Sort-Object { [int]$_.version } | Select-Object -Last 1
+if ($State -eq "completed") {
+    $latestImplementation = if (@($lab.implementations).Count) {
+        @($lab.implementations) | Sort-Object { [int]$_.version } | Select-Object -Last 1
+    } else {
+        $lab.implementation
+    }
+    if ($latestImplementation -and $latestImplementation.handoffVersion) {
+        $implementedHandoff = $handoffs | Where-Object {
+            [int]$_.version -eq [int]$latestImplementation.handoffVersion
+        } | Select-Object -First 1
+        if (-not $implementedHandoff) {
+            throw "Lab '$LabId' implementation references missing handoff version $($latestImplementation.handoffVersion)."
+        }
+        $handoff = $implementedHandoff
+    }
+}
 $handoffVersion = (($handoffs | ForEach-Object { [int]$_.version } | Measure-Object -Maximum).Maximum) + 1
 $recordedAt = [DateTime]::UtcNow.ToString("o")
 $stateRecord = [ordered]@{
@@ -80,6 +92,7 @@ $stateRecord = [ordered]@{
     selectionLabel = [string]$handoff.selectionLabel
     comment = [string]$handoff.comment
     disposition = $State
+    summary = $Evidence.Trim()
     recordedAt = $recordedAt
 }
 $lab.handoffs = @($handoffs) + @($stateRecord)

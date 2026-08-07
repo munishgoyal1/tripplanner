@@ -153,6 +153,7 @@ describe("DecisionCapture", () => {
             selection: "b",
             selectionLabel: "B · Alternative",
             comment: "Second exact note",
+            summary: "Second sandbox run passed focused validation.",
             recordedAt: "2026-08-02T00:00:00.000Z",
           },
         ],
@@ -165,6 +166,7 @@ describe("DecisionCapture", () => {
     expect(screen.getByText("Implementation 2")).not.toBeNull();
     expect(screen.getByText((_, element) => element?.textContent === "First exact note\nKeep this line.", { selector: "p.whitespace-pre-wrap" })).not.toBeNull();
     expect(screen.getAllByText("Second exact note", { selector: "p.whitespace-pre-wrap" }).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Second sandbox run passed focused validation/)).not.toBeNull();
     expect(screen.getByText("Version 2: B · Alternative - Second exact note | Version 1: A · Implemented - First exact note Keep this line.")).not.toBeNull();
   });
 

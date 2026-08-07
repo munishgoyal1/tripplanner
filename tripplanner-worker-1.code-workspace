@@ -3,6 +3,10 @@
     {
       "name": "Tripplanner Agent 1 - SmallFixes",
       "path": "../tripplanner.worktrees/worker-1"
+    },
+    {
+      "name": "Tripplanner worktrees (Agents 1-3 and sandboxes)",
+      "path": "../tripplanner.worktrees"
     }
   ],
   "settings": {

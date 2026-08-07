@@ -81,11 +81,15 @@ for worktree synchronization and cleanup.
   functional changes require explicit owner consent.
 - Treat [FUTURE_FEATURES.md](../docs/roadmap/FUTURE_FEATURES.md) as candidates,
   not approval. Use an owner-edited feature brief for coherent new capabilities.
-- For selected UX Labs, implement only the declared option scope plus saved owner
-  modifications. Preserve the Lab page. After implementation is committed, run
-  `scripts/dev/record-lab-implementation.ps1` with the Lab ID and concrete commit,
-  validation, and deviation evidence so the latest handoff moves to implemented
-  review without creating or rewriting an owner handoff version.
+- For selected UX Labs, link the implementation sandbox with `-LabId` and read the
+  latest saved handoff before editing. Implement only the declared option scope
+  plus saved owner modifications, and preserve the Lab page. If the handoff or
+  implementation scope is ambiguous, ask the owner in the current sandbox worker
+  chat and wait for that answer instead of guessing. After each changed iteration
+  is committed and its sandbox endpoints are healthy, serve with a concrete
+  `-IterationSummary`; this appends the summary and validation evidence as an
+  implemented-review version. Do not record a startup with no Lab changes as an
+  iteration. Successful verified promotion appends Completed before cleanup.
 - Never deploy production without explicit owner approval.
 
 ## Code conventions

@@ -11,9 +11,9 @@
   the canonical dev stack (ports 8000/5173/5175) or live databases.
 
 .EXAMPLE
-    .\scripts\dev\sandbox.ps1 -New lab16-chatdock "Assistant dock rework"
+    .\scripts\dev\sandbox.ps1 -New lab16-chatdock "Assistant dock rework" -LabId chat-agent-workspace
     .\scripts\dev\sandbox.ps1 -Run 2
-    .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock
+    .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock -IterationSummary "Adjusted the dock and passed focused UI checks."
     .\scripts\dev\sandbox.ps1 -Stop 2
     .\scripts\dev\sandbox.ps1 -Update 2
     .\scripts\dev\sandbox.ps1 -Promote 2
@@ -27,6 +27,10 @@
   -Run holds the terminal; -Serve starts the same stack detached and waits for
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
   -New serves automatically unless you pass -NoServe.
+
+    Link a UX Lab sandbox with -LabId. After a healthy served iteration that contains
+    a coherent Lab change, pass -IterationSummary to append an implemented-review version.
+    Verified promotion appends Completed before sandbox cleanup.
 
   -New and -Update first integrate every committed worker lane through master
   (the same pass Sync-AllTo-Latest runs) and only then branch from, or merge,
@@ -84,6 +88,15 @@ param(
 
     [Parameter(ParameterSetName = "New", Position = 0)]
     [string]$Purpose = "",
+
+    [Parameter(ParameterSetName = "New")]
+    [Parameter(ParameterSetName = "Run")]
+    [Parameter(ParameterSetName = "Serve")]
+    [Parameter(ParameterSetName = "Promote")]
+    [string]$LabId = "",
+
+    [Parameter(ParameterSetName = "Serve")]
+    [string]$IterationSummary = "",
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
@@ -291,6 +304,108 @@ function Save-SandboxPromotion {
     Save-Registry -Entries $entries
 }
 
+function Save-SandboxLabId {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$LinkedLabId,
+        [switch]$RecordCurrentCommit
+    )
+
+    $entries = @(Get-Registry)
+    $saved = $entries | Where-Object { $_.slug -eq $Entry.slug } | Select-Object -First 1
+    if (-not $saved) { throw "Sandbox '$($Entry.slug)' disappeared from the registry." }
+    if ($saved.labId -and $saved.labId -ne $LinkedLabId.Trim()) {
+        throw "Sandbox '$($Entry.slug)' is already linked to Lab '$($saved.labId)', not '$($LinkedLabId.Trim())'."
+    }
+    $saved | Add-Member -NotePropertyName labId -NotePropertyValue $LinkedLabId.Trim() -Force
+    if (-not $saved.labBaselineCommit) {
+        $revision = if ($RecordCurrentCommit) { "HEAD^" } else { "HEAD" }
+        $commit = Invoke-Git -WorkingDirectory $saved.worktree -Arguments @("rev-parse", $revision)
+        $saved | Add-Member -NotePropertyName labBaselineCommit -NotePropertyValue $commit -Force
+    }
+    Save-Registry -Entries $entries
+    return $saved
+}
+
+function Save-SandboxLabIteration {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Commit
+    )
+
+    $entries = @(Get-Registry)
+    $saved = $entries | Where-Object { $_.slug -eq $Entry.slug } | Select-Object -First 1
+    if (-not $saved) { throw "Sandbox '$($Entry.slug)' disappeared from the registry." }
+    $saved | Add-Member -NotePropertyName lastLabIterationCommit -NotePropertyValue $Commit -Force
+    $saved | Add-Member -NotePropertyName lastLabIterationUtc -NotePropertyValue `
+        (Get-Date).ToUniversalTime().ToString("o") -Force
+    Save-Registry -Entries $entries
+}
+
+function Write-SandboxLabVersion {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$State,
+        [Parameter(Mandatory = $true)][string]$Summary
+    )
+
+    if (-not $Entry.labId) { return }
+    if ([string]::IsNullOrWhiteSpace($Summary)) {
+        throw "A concrete Lab iteration summary is required before recording sandbox '$($Entry.slug)'."
+    }
+    $status = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("status", "--porcelain")
+    if ($status) {
+        throw "Sandbox '$($Entry.slug)' has uncommitted changes. Commit the coherent Lab iteration before recording it."
+    }
+    $commit = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("rev-parse", "HEAD")
+    $previousCommit = if ($Entry.lastLabIterationCommit) {
+        $Entry.lastLabIterationCommit
+    } else {
+        $Entry.labBaselineCommit
+    }
+    if ($State -eq "implemented-review") {
+        if (-not $previousCommit) {
+            throw "Sandbox '$($Entry.slug)' has no Lab baseline. Link it explicitly with -LabId before recording an iteration."
+        }
+        if ($previousCommit -eq $commit) {
+            throw "Sandbox '$($Entry.slug)' has no new committed change since it was linked or its last recorded Lab iteration."
+        }
+        & git -C $Entry.worktree merge-base --is-ancestor $previousCommit $commit
+        if ($LASTEXITCODE -ne 0) {
+            throw "Sandbox '$($Entry.slug)' HEAD is not descended from its Lab baseline or last recorded iteration."
+        }
+    }
+    $evidence = "$($Summary.Trim())`nSandbox: $($Entry.slug); commit: $($commit.Substring(0, 12))"
+    & "$PSScriptRoot\record-lab-implementation.ps1" -LabId $Entry.labId -State $State -Evidence $evidence
+    if ($State -eq "implemented-review") {
+        Save-SandboxLabIteration -Entry $Entry -Commit $commit
+        $Entry | Add-Member -NotePropertyName lastLabIterationCommit -NotePropertyValue $commit -Force
+    }
+    Write-Host "[lab]     $($Entry.labId) -> $State" -ForegroundColor Green
+}
+
+function Assert-SandboxLabReadyForPromotion {
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [string]$Base = "",
+        [switch]$AllowContainedIteration
+    )
+
+    if (-not $Entry.labId) { return }
+    if (-not $Entry.lastLabIterationCommit) {
+        throw "Linked sandbox '$($Entry.slug)' has no recorded healthy Lab iteration. Serve it with -IterationSummary before promotion."
+    }
+    $commit = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("rev-parse", "HEAD")
+    if ($Entry.lastLabIterationCommit -ne $commit) {
+        if ($AllowContainedIteration -and $Base) {
+            & git -C $Entry.worktree merge-base --is-ancestor `
+                $Entry.lastLabIterationCommit "origin/$Base"
+            if ($LASTEXITCODE -eq 0) { return }
+        }
+        throw "Linked sandbox '$($Entry.slug)' HEAD changed after its last recorded Lab iteration. Serve and record the current commit before promotion."
+    }
+}
+
 function Get-SandboxPromotionLabel {
     param([Parameter(Mandatory = $true)][object]$Entry)
 
@@ -357,6 +472,7 @@ function Start-SandboxStack {
     # the resolver try both families.
     $apiHealth = "http://localhost:$($Entry.apiPort)/health"
     $frontendUrl = "http://localhost:$($Entry.frontendPort)/"
+    $labsUrl = "http://localhost:$($Entry.labsPort)/catalog.html"
 
     if (Test-SandboxEndpoint -Url $apiHealth) {
         Write-Host "[serve]   already listening on :$($Entry.apiPort)" -ForegroundColor DarkGray
@@ -383,20 +499,23 @@ function Start-SandboxStack {
     # A fresh sandbox installs frontend dependencies before Vite binds, so the SPA
     # needs a far longer budget than the API on the first serve.
     $frontendReady = Wait-SandboxEndpoint -Url $frontendUrl -TimeoutSeconds 300
+    $labsReady = Wait-SandboxEndpoint -Url $labsUrl
 
     $apiMark = if ($apiReady) { "ok" } else { "NOT READY" }
     $frontendMark = if ($frontendReady) { "ok" } else { "NOT READY" }
+    $labsMark = if ($labsReady) { "ok" } else { "NOT READY" }
     Write-Host "[api]     http://localhost:$($Entry.apiPort)  ($apiMark)" `
         -ForegroundColor $(if ($apiReady) { "Green" } else { "Yellow" })
     Write-Host "[spa]     http://localhost:$($Entry.frontendPort)  ($frontendMark)" `
         -ForegroundColor $(if ($frontendReady) { "Green" } else { "Yellow" })
-    Write-Host "[labs]    http://localhost:$($Entry.labsPort)/catalog.html"
+    Write-Host "[labs]    $labsUrl  ($labsMark)" `
+        -ForegroundColor $(if ($labsReady) { "Green" } else { "Yellow" })
     Write-Host "[stop]    .\scripts\dev\sandbox.ps1 -Stop $($Entry.slug)"
 
-    if (-not ($apiReady -and $frontendReady)) {
+    if (-not ($apiReady -and $frontendReady -and $labsReady)) {
         Write-Warning "Sandbox endpoints did not come up. Check the log above, or run -Run $($Entry.slug) in a terminal to watch it start."
     }
-    return ($apiReady -and $frontendReady)
+    return ($apiReady -and $frontendReady -and $labsReady)
 }
 
 function Stop-SandboxStack {
@@ -519,6 +638,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         Write-Host ("#{0}  {1}" -f $number, $item.slug) -ForegroundColor Cyan -NoNewline
         Write-Host ("   {0}  {1}" -f $state, $age) -ForegroundColor $(if ($serving) { "Green" } else { "DarkGray" })
         Write-Host ("    purpose   {0}" -f $purpose)
+        if ($item.labId) { Write-Host ("    lab       {0}" -f $item.labId) }
         Write-Host ("    promotion {0}" -f (Get-SandboxPromotionLabel -Entry $item))
         Write-Host ("    app       http://localhost:{0}" -f $item.frontendPort) `
             -ForegroundColor $(if ($serving) { "Green" } else { "Gray" })
@@ -575,6 +695,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
         "worktree", "add", "-b", $branchName, $worktreePath, "origin/$BaseBranch"
     )
+    $createdCommit = Invoke-Git -WorkingDirectory $worktreePath -Arguments @("rev-parse", "HEAD")
 
     $sourceEnv = Join-Path $primaryRoot ".env"
     if (Test-Path $sourceEnv -PathType Leaf) {
@@ -588,6 +709,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
         slug         = $slug
         slot         = $slot
         purpose      = $Purpose.Trim()
+        labId        = $LabId.Trim()
         branch       = $branchName
         worktree     = $worktreePath
         apiPort      = $apiPort
@@ -595,11 +717,16 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
         labsPort     = $labsPort
         database     = $database
         createdUtc   = (Get-Date).ToUniversalTime().ToString("o")
+        labBaselineCommit = if ($LabId.Trim()) { $createdCommit } else { "" }
     }
     Save-Registry -Entries (@($existing) + $entry)
 
     Write-Host "[created] #$number $slug on $branchName"
     if ($entry.purpose) { Write-Host "[purpose] $($entry.purpose)" }
+    if ($entry.labId) {
+        Write-Host "[lab]     $($entry.labId)"
+        Write-Host "[chat]    Resolve ambiguous handoff details in this sandbox worker chat before editing."
+    }
     Write-Host "[path]    $worktreePath"
     Write-Host "[ports]   api=$apiPort  frontend=$frontendPort  labs=$labsPort"
     Write-Host "[db]      $database (emulator)"
@@ -614,12 +741,24 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     if ($NoServe) {
         Write-Host "[run]     .\scripts\sandbox\Serve-Sandbox.cmd $number"
     } else {
-        Start-SandboxStack -Entry $entry | Out-Null
+        if (-not (Start-SandboxStack -Entry $entry)) {
+            throw "Sandbox '$slug' was created, but one or more endpoints did not become ready."
+        }
     }
     return
 }
 
 $entry = Resolve-SandboxEntry -Reference $reference
+$LabId = $LabId.Trim()
+if ($LabId) {
+    if ($WhatIfPreference) {
+        $entry | Add-Member -NotePropertyName labId -NotePropertyValue $LabId -Force
+    } else {
+        $recordCurrentCommit = $PSCmdlet.ParameterSetName -eq "Serve" -and $IterationSummary.Trim()
+        $entry = Save-SandboxLabId -Entry $entry -LinkedLabId $LabId `
+            -RecordCurrentCommit:$recordCurrentCommit
+    }
+}
 $slug = $entry.slug
 $shortName = Get-ShortName -Name $slug
 
@@ -659,6 +798,12 @@ if ($PSCmdlet.ParameterSetName -eq "Serve") {
     }
     $ready = Start-SandboxStack -Entry $entry
     if (-not $ready) { exit 1 }
+    if ($IterationSummary.Trim()) {
+        if (-not $entry.labId) {
+            throw "Link sandbox '$slug' with -LabId before recording an iteration summary."
+        }
+        Write-SandboxLabVersion -Entry $entry -State "implemented-review" -Summary $IterationSummary
+    }
     return
 }
 
@@ -777,11 +922,12 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($conflicts) {
         throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
-
+    Assert-SandboxLabReadyForPromotion -Entry $entry
     $unmerged = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
         "log", "--oneline", "origin/$BaseBranch..HEAD"
     )
     if (-not $unmerged) {
+        Assert-SandboxLabReadyForPromotion -Entry $entry -Base $BaseBranch -AllowContainedIteration
         Write-Host "== 2/3 push $($entry.branch) ==" -ForegroundColor Green
         Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
         Write-Host "== 3/3 verify ==" -ForegroundColor Green
@@ -789,6 +935,9 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         if ($outstanding) {
             throw "Sandbox '$slug' is already in origin/$BaseBranch but is not safe to discard:`n$($outstanding -join "`n")"
         }
+        Assert-SandboxLabReadyForPromotion -Entry $entry -Base $BaseBranch -AllowContainedIteration
+        Write-SandboxLabVersion -Entry $entry -State "completed" `
+            -Summary "Promoted to $BaseBranch after verification."
         Save-SandboxPromotion -Entry $entry -Base $BaseBranch
         Write-Host "[verified] origin/$BaseBranch already contains every commit and the worktree is clean." -ForegroundColor Green
         Push-Location $scriptRepoRoot
@@ -840,6 +989,9 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($outstanding) {
         throw "#$prNumber merged but sandbox '$slug' is not clean, so it is NOT safe to discard:`n$($outstanding -join "`n")"
     }
+    Assert-SandboxLabReadyForPromotion -Entry $entry
+    Write-SandboxLabVersion -Entry $entry -State "completed" `
+        -Summary "Promoted to $BaseBranch via PR #$prNumber after validation and verification."
     Save-SandboxPromotion -Entry $entry -Base $BaseBranch -PrNumber $prNumber
     Write-Host "[verified] origin/$BaseBranch contains every commit and the worktree is clean."
     Push-Location $scriptRepoRoot

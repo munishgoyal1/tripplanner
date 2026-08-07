@@ -127,6 +127,24 @@ def trip_update_requirement(
         return None
 
     update_positions = [index for index, name in positions if name == "update_trip_plan"]
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    current_updates = [index for index in update_positions if index > latest_human]
+    update_results = _tool_result_texts(messages, "update_trip_plan")
+    if (
+        current_updates
+        and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
+        and update_results
+        and update_results[-1].lstrip().startswith("Error:")
+    ):
+        return (
+            "The requested trip change was not saved because update_trip_plan failed: "
+            + update_results[-1]
+            + " Correct the rejected fields and call update_trip_plan again before "
+            "claiming the itinerary changed."
+        )
     if (
         not active_trip.get("day_wise_itinerary")
         and len(update_positions) < MAX_INITIAL_ITINERARY_UPDATES

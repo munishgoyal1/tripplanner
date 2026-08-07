@@ -22,11 +22,16 @@ workspace has five durable catalog views:
 
 The implemented-review workflow starts with production implementations made on
 2026-08-02. Earlier implemented Labs remain Completed; implementations from that
-date onward stay in Implemented review until explicit owner sign-off.
+date onward stay in Implemented review until explicit owner sign-off or verified
+sandbox promotion.
 Every owner save and agent-side state action appends a choice, exact notes, state,
 version number, and timestamp. Histories display newest first. Agent implementations
 also append evidence linked to the Implemented review state version; the owner can
 then complete, park, discard, or save another In progress handoff.
+Implementation sandboxes are linked with `-LabId`. The sandbox worker resolves
+ambiguous handoff details with the owner in that sandbox chat before editing. Each
+coherent changed iteration records a concrete `-IterationSummary` only after the
+sandbox is healthy, and verified promotion records Completed before cleanup.
 
 Do not delete a Lab after a decision. Update its machine lifecycle record, retain
 the page, and update its experiment document with the final choice and date.
@@ -302,16 +307,17 @@ Every **Save handoff version** appends the selected option, exact notes, chosen
 state, timestamp, and version; re-saving never rewrites prior owner review evidence.
 The owner can choose In progress, Parked, Implemented - To be reviewed, Completed,
 or Discarded at any time. State changes do not erase handoffs or implementation
-history. After implementing a saved handoff, the coding agent must run:
+history. After committing and validating a coherent sandbox iteration, the coding agent must run:
 
 ```powershell
-pwsh -NoProfile -File scripts/dev/record-lab-implementation.ps1 `
+scripts/sandbox/Serve-Sandbox.cmd <sandbox> `
   -LabId <lab-id> `
-  -Evidence "Commit <sha>; <validation and material deviations>."
+  -IterationSummary "<validation and material deviations>"
 ```
 
-This links a new implementation record to the latest handoff version and moves
-the Lab to Implemented - To be reviewed without inventing another owner handoff.
+This verifies API, SPA, and Labs readiness, links a new implementation record to
+the latest handoff version, and moves the Lab to Implemented - To be reviewed
+without inventing another owner handoff.
 The page also keeps each in-progress choice and comment as a browser draft. If
 the local endpoint is temporarily unavailable, the draft survives a reload and
 can be retried once the Labs server is running again.

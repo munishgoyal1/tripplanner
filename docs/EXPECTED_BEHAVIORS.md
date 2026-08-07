@@ -86,7 +86,8 @@ Assistant build its first proposal.
   itinerary is declared ready only after the trip view loads and invites inspection.
 - Existing-trip changes summarize the refreshed authoritative mutation. Proposal-only
   reviews say the itinerary is unchanged; failed reloads retain the prior view and
-  never claim that the new itinerary is ready.
+  never claim that the new itinerary is ready. A rejected trip mutation receives one
+  bounded correction attempt and is never narrated as successfully saved.
 
 **Executable proof:**
 
@@ -319,16 +320,21 @@ transfer to the hotel, so a mid-day check-in is not left blank.
 ### EB-ITIN-005 - Keep daily hotels synchronized across views
 
 **Trigger:** View a non-transfer day whose itinerary carries forward the active
-hotel while its prose mentions other selected hotels as alternatives.
+hotel while its prose mentions other selected hotels as alternatives, or replace
+a city-specific hotel through Assistant in a multi-city or regional trip.
 
 **Expected:** Itinerary and Map use the same rendered hotel for that day's route.
 Prose-only hotel alternatives do not replace or join the active stay. A genuine
-multi-hotel transfer day keeps its distinct hotel endpoints.
+multi-hotel transfer day keeps its distinct hotel endpoints. A replacement hotel
+is valid when its city is evidenced by the itinerary even if the trip destination
+is a broader region, and a successful save updates selected hotels and itinerary
+hotel anchors together.
 
 **Executable proof:**
 
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_uses_rendered_stay_over_prose_hotel_alternatives`
 - [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_map_view_carries_forward_hotel_after_transition`
+- [`tests/test_trip.py`](../tests/test_trip.py) - `test_update_trip_plan_accepts_hotel_in_evidenced_itinerary_city`
 
 ### EB-ITIN-006 - Include complete round-trip transport
 
@@ -489,6 +495,13 @@ recorded time, and implementation summary. Handoff and implementation versions a
 shown newest first. One final summary lists every implemented
 option and its notes. Saving shows an explicit confirmation naming the selected option
 and saved handoff version and cannot remain indefinitely in a Saving state.
+Lab implementation sandboxes retain an explicit Lab ID. Ambiguous handoff notes or
+scope are resolved with the owner in that sandbox worker chat before implementation.
+After each coherent changed iteration reaches a healthy sandbox run, its concrete
+change and validation summary append another Implemented review version; startup
+alone does not create history. Verified promotion requires the exact sandbox commit
+to have a healthy recorded iteration, then appends a Completed version before the
+sandbox is discarded.
 The permanent Lab number appears explicitly in the detail page's top header area
 and in its HTML filename. The top area shows the authoritative lifecycle status, includes its state
 date when recorded, updates after a save, and reports unavailable state rather
@@ -502,6 +515,7 @@ than guessing.
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `allows any state without requiring owner-entered implementation evidence`
 - [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `turns an existing Lab 20 choice into auditable version one`
 - [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `records implementation against latest handoff`
-- [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `rejects duplicate implementation without changing store`
+- [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `records each successful implementation iteration`
+- [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `sandbox records linked iterations and both promotion paths`
 - [`frontend/labs/src/shared/LabNavigation.test.tsx`](../frontend/labs/src/shared/LabNavigation.test.tsx) - `shows the permanent Lab number in detail-page navigation`
 - [`frontend/labs/src/shared/LabScope.test.tsx`](../frontend/labs/src/shared/LabScope.test.tsx) - `shows authoritative status in the top area and updates after a save`

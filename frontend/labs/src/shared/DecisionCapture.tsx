@@ -36,6 +36,7 @@ interface HandoffRecord {
   selectionLabel: string;
   comment: string;
   disposition: LabDisposition;
+  summary?: string;
   recordedAt: string;
 }
 
@@ -262,6 +263,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
                 <p className="mt-1 text-sm font-semibold text-ink">{handoff.selectionLabel}</p>
                 <p className="mt-0.5 text-[10px] font-bold uppercase text-slate-500">{handoff.disposition}</p>
                 <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-slate-700">{handoff.comment || "No handoff notes were saved."}</p>
+                {handoff.summary && <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-slate-700"><strong>Summary:</strong> {handoff.summary}</p>}
               </article>
             ))}
           </div>
