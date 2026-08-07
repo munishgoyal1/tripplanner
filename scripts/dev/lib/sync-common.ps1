@@ -253,12 +253,23 @@ function Register-OrphanedLaneConflicts {
     # Git's index is authoritative if pending-merge.json was absent or stale.
     $paths = Get-SyncPaths
     $known = @(Get-PendingMerges)
-    $roots = @($paths.PrimaryRoot) + @(1..3 | ForEach-Object { "$($paths.PrimaryRoot).worktrees\worker-$_" })
+    $worktreesRoot = "$($paths.PrimaryRoot).worktrees"
+    $roots = @($paths.PrimaryRoot) + @(1..3 | ForEach-Object {
+        Join-Path $worktreesRoot "worker-$_"
+    })
     foreach ($wd in $roots) {
         if (-not (Test-Path $wd -PathType Container)) { continue }
         $unmerged = @(& git -C $wd diff --name-only --diff-filter=U 2>$null)
         if ($unmerged.Count -eq 0) { continue }
-        if ($known | Where-Object { ([string]$_.workingDirectory).TrimEnd("\") -eq $wd.TrimEnd("\") }) { continue }
+        if ($known | Where-Object {
+            ([string]$_.workingDirectory).TrimEnd(
+                [System.IO.Path]::DirectorySeparatorChar,
+                [System.IO.Path]::AltDirectorySeparatorChar
+            ) -eq $wd.TrimEnd(
+                [System.IO.Path]::DirectorySeparatorChar,
+                [System.IO.Path]::AltDirectorySeparatorChar
+            )
+        }) { continue }
 
         $branch = [string](@(& git -C $wd branch --show-current 2>$null)[0])
         if ([string]::IsNullOrWhiteSpace($branch)) { continue }

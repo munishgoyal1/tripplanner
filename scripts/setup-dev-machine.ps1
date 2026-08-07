@@ -202,8 +202,9 @@ npm --prefix frontend run build
 Assert-LastCommandSucceeded "frontend production build"
 
 if ($FullAgentEnvironment) {
+    $worktreesRoot = "$repoRoot.worktrees"
     foreach ($workerName in @("worker-1", "worker-2", "worker-3")) {
-        $workerPath = "$repoRoot.worktrees\$workerName"
+        $workerPath = Join-Path $worktreesRoot $workerName
         if (-not (Test-Path $workerPath -PathType Container)) {
             & "$repoRoot\scripts\dev\agent-worktree.ps1" -Create $workerName -NoOpen
         } else {
