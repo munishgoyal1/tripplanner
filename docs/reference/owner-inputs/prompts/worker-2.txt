@@ -53,3 +53,6 @@ if i start implementing all the open labs in parallel will they have lot of merg
 Implement lab20 in a sandbox
 [2026-08-06 18:22] [worker-2 !] Implement Lab 20 travel documents in a sandbox
 Implement lab20 in a sandbox
+
+[2026-08-06 19:30] [worker-2 !] Gate document checks on whether the trip crosses a border
+yes implement these inteelligent logics for passport , and think harder if anything similar is required for other type of docs we discussed.
