@@ -92,6 +92,10 @@ On macOS, use the matching launchers:
 Every verb except `New-Sandbox` accepts the number, the full name, or the short
 name without its number prefix.
 
+Discard waits briefly for Windows to release stopped sandbox processes before it
+reports a locked worktree directory. A genuinely incomplete cleanup remains in
+the sandbox registry, so rerunning discard safely retries only the remaining work.
+
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,
 regular owner-facing launchers under `user/`, sandbox launchers under
