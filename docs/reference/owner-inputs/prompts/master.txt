@@ -45,3 +45,6 @@ Installing visual-studio-code
 Installing node
 Installing python@3.13
 `brew bundle` failed! 1 Brewfile dependency failed to install
+
+[2026-08-07 16:37] [master !] Isolate personal Azure login
+signin to azure with my personal login: munishgoyal1@gmail.com only that uses the visual studio enterprise subscription. do not interfere or use my mugoy@microsoft.com microsoft login for Azure and dont use any work subscriptions, not even for read operatrions
