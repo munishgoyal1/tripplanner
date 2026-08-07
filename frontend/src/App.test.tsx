@@ -47,7 +47,7 @@ vi.mock("./api", () => ({
 vi.mock("./components/ChatPanel", () => ({
   default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
     <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-layout={layout ?? "panel"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
-      <button type="button" onClick={() => onHide?.()}>Hide Assistant</button>
+      <button type="button" onClick={() => onHide?.()}>Hide Chat</button>
       <button type="button" onClick={() => onChangeLayout?.("sheet")}>Conversation</button>
       <button type="button" onClick={() => onChangeLayout?.("full")}>Maximize conversation</button>
       <button type="button" onClick={() => onChangeLayout?.("bar")}>Minimize conversation</button>
@@ -422,13 +422,13 @@ describe("App responsive workspace", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Itinerary" }));
     fireEvent.click(screen.getByRole("button", { name: "Hide Map" }));
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
 
     for (const title of [
       "Show or hide itinerary",
       "Show or hide map",
       "Show or hide trip details",
-      "Show or hide the trip assistant",
+      "Show or hide chat",
     ]) {
       expect(screen.getByTitle(title)).toHaveAttribute("aria-pressed", "false");
     }
@@ -458,7 +458,7 @@ describe("App responsive workspace", () => {
       ["Show or hide itinerary", "itinerary"],
       ["Show or hide map", "map"],
       ["Show or hide trip details", "details"],
-      ["Show or hide the trip assistant", "assistant"],
+      ["Show or hide chat", "assistant"],
     ] as const;
 
     for (let mask = 0; mask < 16; mask += 1) {
@@ -482,12 +482,12 @@ describe("App responsive workspace", () => {
     expect(screen.getByText("New trip", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
-    expect(itinerary).toHaveClass("rounded-md", "bg-slate-100", "text-slate-600");
+    expect(itinerary).toHaveClass("rounded-md", "bg-white", "text-slate-700");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
     expect(screen.getByText("Itinerary", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Map", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Details", { selector: "nav span" })).toBeInTheDocument();
-    expect(screen.getByText("Assistant", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByText("Chat", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-slate-400");
     expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
     expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
@@ -505,7 +505,7 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
     expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
@@ -574,8 +574,8 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Maximize conversation" }));
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "full");
 
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
-    fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
+    fireEvent.click(screen.getByTitle("Show or hide chat"));
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
   });
 
@@ -604,10 +604,10 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
+    fireEvent.click(screen.getByTitle("Show or hide chat"));
     expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
   });

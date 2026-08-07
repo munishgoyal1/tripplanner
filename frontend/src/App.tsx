@@ -856,7 +856,12 @@ export default function App() {
     if (!chatOpen) setAssistantView("bar");
   }, [chatOpen]);
 
-  const latestStatus = compactStatus(view?.alerts?.[0]);
+  // The first alert says what happened; anything after it is the guard saying
+  // what that cost. Compacting away the consequence would turn "apply and say
+  // what it cost" back into "apply silently", so it rides along uncompacted.
+  const latestStatus = [compactStatus(view?.alerts?.[0]), ...(view?.alerts ?? []).slice(1)]
+    .filter(Boolean)
+    .join(" ") || undefined;
   const reviewSummary = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
     : null;

@@ -450,7 +450,7 @@ describe("ChatPanel progress", () => {
     expect(onChangeLayout).toHaveBeenCalledWith("full");
     fireEvent.click(screen.getByRole("button", { name: /Minimize/ }));
     expect(onChangeLayout).toHaveBeenCalledWith("bar");
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(onHide).toHaveBeenCalled();
   });
 
