@@ -57,3 +57,9 @@ save this vs code layout as default in the configs to be used everywhere
 
 [2026-08-07 16:50] [master !] Remove corporate package mirrors
 nothing to be taken from 1es mirror, as that is microsoft corporate specific. later this repository may run dev environments outside of msft also, so keepo it entirely indepdnent.
+
+[2026-08-07 17:11] [master !] Add macOS launcher equivalents
+create launcher scripts like the windows .cmds inside a folder called mac under scripts for each of the corresponding cmd windows equivalent.
+do the same for sandbox cmds, prod, and canary folders also.
+
+Create each correepsonding fdolder under scripts/mac/

@@ -2,6 +2,8 @@
 
 This folder contains the regular owner-facing launchers. Their implementation
 stays under `scripts/dev/` so everyday commands remain easy to find.
+Windows launchers live here; matching macOS launchers live under
+`scripts/mac/user/` with the same base name and a `.command` extension.
 
 | Command | Purpose |
 | --- | --- |
@@ -30,4 +32,12 @@ all-worktree synchronization before starting the stack:
 Run-Latest.cmd
 Run-Latest.cmd -Watch -NoLabs
 Run-Latest.cmd all -Watch
+```
+
+On macOS, run the corresponding launcher from the repository root:
+
+```bash
+./scripts/mac/user/Run-Latest.command
+./scripts/mac/user/Run-Latest.command -Watch -NoLabs
+./scripts/mac/user/Run-Latest.command all -Watch
 ```
