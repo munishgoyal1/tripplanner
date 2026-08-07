@@ -22,7 +22,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
-| `dev/record-lab-implementation.ps1` | After implementing a saved UX Lab handoff, append implementation evidence and move it to owner review |
+| `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
