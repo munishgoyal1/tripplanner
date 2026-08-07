@@ -66,3 +66,6 @@ Create each correepsonding fdolder under scripts/mac/
 
 [2026-08-07 17:21] [master !] Keep infrastructure scripts cross-platform
 So can you fix it in a cross platform way that will work for mac and windows both. In geenral for these kind of infra and scripts, try to keep it cross platform so long as it is easy and cheap to do so without extra complexity. when you anticipate or notice extra complexity then ask me what to do. Keep this as a principle or rule for future going forward
+
+[2026-08-07 17:30] [master !] Implement Lab21 in sandbox
+implement lab21 in a new sandbox
