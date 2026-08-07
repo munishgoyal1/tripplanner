@@ -113,3 +113,8 @@ I want it fully coeherent set of update . think harder and fix the notificaiton 
 
 [2026-08-07 17:05] [worker-2] ! Abstract the accumulated progress topics
 accumulate progress topics not a scripted sequence, but keep it bit abstracted as we dont want to overwhelm user with each and every internal itnerary build detail, and also it wont look elegant.
+
+[2026-08-07 18:10] [worker-2] ! Make sandbox scripts robust
+Runnign discard 1 gave an error . Fix to make the scripts robust
+git status --porcelain failed in C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded.
+Also Sync-AllTo-Latest failed: git branch --show-current failed in the same path, and all-worktrees-sync then threw with 1 worktree failure.
