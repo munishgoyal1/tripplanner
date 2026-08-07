@@ -852,6 +852,7 @@ export default function App() {
       reloadToken={chatReloadToken}
       tripIdHint={chatTripId}
       hasActiveTrip={Boolean(view?.has_trip)}
+      destination={view?.destination ?? null}
       onNewTrip={handleNewTrip}
       onImported={handleImported}
       hideGlobalControls
@@ -1049,6 +1050,7 @@ export default function App() {
               reloadToken={chatReloadToken}
               tripIdHint={chatTripId}
               hasActiveTrip={Boolean(view?.has_trip)}
+              destination={view?.destination ?? null}
               onNewTrip={handleNewTrip}
               onImported={handleImported}
             />

@@ -22,6 +22,8 @@ interface FailedRequest {
 
 interface UseChatStreamOptions {
   hasActiveTrip: boolean;
+  /** Where the active trip is going, so the status can name it. */
+  destination?: string | null;
   transcriptReady: boolean;
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   onSendStart?: () => void;
@@ -77,6 +79,29 @@ function joinTopics(topics: string[]): string {
   return `${topics.slice(0, -1).join(", ")} and ${topics[topics.length - 1]}`;
 }
 
+/** The destination the agent itself just named, read back from its tool call.
+ *
+ * On a first build there is no trip to read a destination from, and the user's
+ * own prompt has already scrolled out of a one-row composer. Guessing at their
+ * wording would put a wrong place name in the heading, so this takes the value
+ * the agent passed to the planning tool and nothing else.
+ */
+export function destinationFromToolArgs(name: string, args?: string): string | null {
+  if (!args || !/trip|plan|itinerar/i.test(name)) return null;
+  const match = /(?:^|,\s*)destination=([^,]+)/i.exec(args);
+  const place = match?.[1]?.trim().replace(/[.\u2026]+$/, "").trim();
+  if (!place || place.length > 40 || /^(none|null|undefined)$/i.test(place)) return null;
+  return place;
+}
+
+/** "Building your Goa itinerary" beats "Building your itinerary" when the
+ * composer is one row tall and the request has scrolled away. */
+export function progressHeading(hasTrip: boolean, place?: string | null): string {
+  const named = (place ?? "").trim();
+  if (!named) return hasTrip ? "Updating your trip" : "Building your itinerary";
+  return hasTrip ? `Updating your ${named} trip` : `Building your ${named} itinerary`;
+}
+
 /** Short enough to sit in a list of clauses rather than end a sentence. */
 export function waitHint(isNewTrip: boolean, seconds: number): string {
   if (seconds >= 120) return "still working, no need to refresh";
@@ -99,6 +124,7 @@ export function elapsedLabel(seconds: number): string {
 
 export function useChatStream({
   hasActiveTrip,
+  destination,
   transcriptReady,
   setMessages,
   onSendStart,
@@ -111,6 +137,7 @@ export function useChatStream({
   const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
   const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
   const [coveredTopics, setCoveredTopics] = useState<string[]>([]);
+  const [plannedPlace, setPlannedPlace] = useState<string | null>(null);
   const [progressSeconds, setProgressSeconds] = useState(0);
   const streamControllerRef = useRef<AbortController | null>(null);
   const turnStartedAtRef = useRef(0);
@@ -134,7 +161,7 @@ export function useChatStream({
     // changing shape; the detail carries what actually moved. Only work that
     // really happened is listed — inventing plausible-sounding stages would
     // make the status a decoration rather than a report.
-    const heading = hasActiveTrip ? "Updating your trip" : "Building your itinerary";
+    const heading = progressHeading(hasActiveTrip, destination || plannedPlace);
     const detail = [
       progress.label,
       coveredTopics.length ? `covered ${joinTopics(coveredTopics)}` : null,
@@ -143,10 +170,19 @@ export function useChatStream({
     ]
       .filter(Boolean)
       .join(" \u00b7 ");
-    if (publishedTurnStatusRef.current === detail) return;
-    publishedTurnStatusRef.current = detail;
+    if (publishedTurnStatusRef.current === `${heading}|${detail}`) return;
+    publishedTurnStatusRef.current = `${heading}|${detail}`;
     onTurnStatus?.({ phase: "working", message: heading, detail });
-  }, [busy, coveredTopics, hasActiveTrip, onTurnStatus, progress, progressSeconds]);
+  }, [
+    busy,
+    coveredTopics,
+    destination,
+    hasActiveTrip,
+    onTurnStatus,
+    plannedPlace,
+    progress,
+    progressSeconds,
+  ]);
 
   useEffect(() => () => {
     streamControllerRef.current?.abort();
@@ -167,6 +203,7 @@ export function useChatStream({
     turnStartedAtRef.current = Date.now();
     publishedTurnStatusRef.current = "";
     setCoveredTopics([]);
+    setPlannedPlace(null);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
     const streamController = new AbortController();
     streamControllerRef.current = streamController;
@@ -218,6 +255,8 @@ export function useChatStream({
             usedTools.add(name);
             toolTrace.push({ name, args: extras?.args });
             setActiveTool({ name, args: extras?.args });
+            const place = destinationFromToolArgs(name, extras?.args);
+            if (place) setPlannedPlace(place);
             setProgress({ label: toolProgressLabel(name), startedAt: turnStartedAtRef.current });
             return;
           }

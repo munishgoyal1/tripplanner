@@ -57,6 +57,8 @@ interface Props {
   tripIdHint?: string | null;
   /** Whether an authoritative trip existed when the turn began. */
   hasActiveTrip?: boolean;
+  /** Where the active trip is going, so progress can name it. */
+  destination?: string | null;
   /** Start a fresh planning chat (clears the active trip + general chat). */
   onNewTrip?: () => void;
   /** Called after a successful guest-data import so the App can refresh trip panel. */
@@ -117,6 +119,7 @@ export default function ChatPanel({
   reloadToken = 0,
   tripIdHint = null,
   hasActiveTrip = false,
+  destination = null,
   onNewTrip,
   onImported,
   hideGlobalControls = false,
@@ -181,6 +184,7 @@ export default function ChatPanel({
     tripInputRequest,
   } = useChatStream({
     hasActiveTrip,
+    destination,
     transcriptReady,
     setMessages,
     onSendStart: () => onSendStartRef.current(),
