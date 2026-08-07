@@ -9,6 +9,7 @@ import { OptionContrast } from "../shared/OptionContrast";
 import "../shared/experiment-layout.css";
 import { AgenticWorkspace } from "./AgenticWorkspace";
 import type { AgencyOption, Channel } from "./AgenticWorkspace";
+import { EffortPanels } from "./EffortPanels";
 import { dayScores, invariants, startingTrip } from "./planEngine";
 
 const LAB_ID = "agentic-planning";
@@ -97,6 +98,10 @@ const requirements = [
   "Anchors — booked flights and stays — change only through their own operation.",
   "Rejected slots stay inspectable, so the owner can see the reasoning rather than trust it.",
   "Undo restores the exact prior state, including entities the change moved rather than created.",
+  "Effort ranks and warns; it never blocks. Only an invariant may refuse a change.",
+  "No composite score, bar, gauge or rating reaches the owner — only measured quantities and comparisons.",
+  "The cumulative reserve informs every ranking but speaks at most once per trip, at the worst point.",
+  "A model-inferred fact may lower a ranking or add a caveat; it may never block and is never phrased as certain.",
 ];
 
 const criteria = [
@@ -106,6 +111,8 @@ const criteria = [
   { title: "Recoverability", detail: "After three changes, can the owner see and undo exactly the one that was wrong?" },
   { title: "Channel parity", detail: "Does the same intent from map, itinerary or details behave identically to chat?" },
   { title: "Explanation trust", detail: "Does the narration match what the engine actually did, or is it model prose over an unknown action?" },
+  { title: "Judgement without nagging", detail: "Does the effort model stay silent on ordinary days and speak only when a human planner would have?" },
+  { title: "Legibility without numbers", detail: "Does every statement about effort name a quantity the owner can check against the itinerary?" },
 ];
 
 const guardrails = [
@@ -231,6 +238,8 @@ function Lab() {
           <p className="mt-2 text-xs text-slate-500">
             The departure day holds a check-out and a flight, so it is always the lightest day and always the winner.
             The score is a geography heuristic being asked a question about time and place that it cannot answer.
+            It is also the whole of today's judgement about whether a day is any good — which is the second gap, and
+            the one the effort model further down exists to close.
           </p>
         </section>
 
@@ -275,6 +284,8 @@ function Lab() {
             ))}
           </div>
         </section>
+
+        <EffortPanels />
 
         <section className="mt-8">
           <p className="text-[10px] font-bold uppercase text-brand">Required in every option</p>
