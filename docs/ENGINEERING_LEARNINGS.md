@@ -728,3 +728,29 @@ A mutable current selection cannot prove owner review. Every handoff save must a
 - Unit tests passing is not evidence the itinerary looks sane. Both defects in
   this layer were found by a throwaway probe that printed every day's stops,
   and neither was covered by an assertion until after it was seen.
+
+## 2026-08-07 - A Rebalancer That Deletes Is Not A Rebalancer
+
+Automatic day-rebalancing removed a stop the traveller had explicitly chosen when
+a day went over its cap, and said so only in a passing alert. A crowded day is a
+smaller problem than a choice that silently disappears. Displacement must be
+relocation: ask the placement guard for another legal day, and if none exists,
+leave the stop where it is and say that plainly. Capacity heuristics may reorder
+user intent; they may not discard it.
+
+A regression test that passes against the pre-fix code is not a regression test.
+The first version of the relocation test drove the change through the normal
+selection path, where the day never actually reached its cap, so it passed on the
+old code and proved nothing. Verify every new regression test by stashing the fix
+and watching it fail for the reason you expect, then restoring.
+
+A status line that replaces its label loses the record of what was done. During a
+multi-minute build, swapping "Searching hotels" for "Working out routes" leaves
+the user with a single word and no sense of progress. Accumulating the stages that
+genuinely ran is more informative than inventing a plausible-sounding sequence,
+and unlike a scripted narrative it cannot lie about what the model is doing.
+
+A notice that expires on a timer is a notice the user may never read. Outcomes now
+persist until something newer replaces them or the user dismisses them, and carry a
+headline plus a detail line so a consequence can be explained without truncating
+the outcome.
