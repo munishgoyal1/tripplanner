@@ -97,3 +97,8 @@ implement lab19 in a new sandbox
 
 [2026-08-07 14:30] [worker-2] ! Fix bad auto-fit around intercity drive
 for madhya pradesh trip: i added kaanch mandir first it added well , then after adding shree bada ganpati mandir that rpelaced and sent kaanch mandir to day2. but day 2 had a drive to ujjain and kaanch mandir arrival concides with drive start from ujjain at 3pm. this is not good fitting, looking weird. we planned an intelligence kind of layer for good auto fitting but this is a  basic bug. investigate and fix root causes
+
+[2026-08-07 15:05] [worker-2] ! Rework notifications, progress context, reset trip
+yes look at that. and also the notification messages now only show for 2 seconds, they should stay until next message or stay longer. And make these messages with a inital summary heading, then the detail. Also rethink how these messages can carry bit mroe context - examplel on the initial plana  trip requqest - it just says thinking and it may take 2-4 minutes to build. but behind thinking can you expand into broad categories like looking into hotels, places, building route etc. - critique it if you think otherwise, i want to select the best UX. 
+
+Also provide an option for reset trip - this was in one of the lab shown but was not in scope. add this functionality too. give it as a button or something somewhere without occupying too much space or so.
