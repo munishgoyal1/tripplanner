@@ -34,7 +34,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
-| `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, then merge it into a sandbox branch |
+| `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, merge the sandbox's remote head and `master` into its local branch, then push that sandbox branch; never promotes to `master` |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
 | `sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |

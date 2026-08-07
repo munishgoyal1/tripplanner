@@ -32,7 +32,9 @@
   (the same pass Sync-AllTo-Latest runs) and only then branch from, or merge,
   origin/master — so a sandbox never starts or sits behind work that is already
   committed elsewhere. Pass -NoSync to skip that pass. The reverse direction is
-  covered too: Sync-AllTo-Latest updates every registered sandbox at its end.
+    covered too: Sync-AllTo-Latest updates every registered sandbox at its end and
+    pushes the resulting committed sandbox head. This keeps the remote backup and
+    future PR current; it never merges sandbox work into master.
 
     -Promote is end to end: sync, validate, push, open the PR, merge into the base
     branch, verify that the base branch really contains every commit and that the
@@ -688,7 +690,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     $syncLogOwned = Start-SyncLog -Component "sandbox-update"
     try {
         Sync-LanesThroughMaster -Reason "update sandbox '$slug'"
-        Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "origin", $BaseBranch) | Out-Null
+        Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "origin") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.enabled", "true") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "merge.conflictstyle", "zdiff3") | Out-Null
@@ -706,6 +708,22 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         }
 
         try {
+            $sandboxRemoteRef = "origin/$($entry.branch)"
+            & git -C $wd rev-parse --verify --quiet $sandboxRemoteRef | Out-Null
+            if ($LASTEXITCODE -eq 0) {
+                & git -C $wd merge --no-edit $sandboxRemoteRef
+                if ($LASTEXITCODE -ne 0) {
+                    & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Could not merge $sandboxRemoteRef into $label."
+                    }
+                    Complete-MergeConflict -WorkingDirectory $wd -Label $label -Kind "lane" `
+                        -Branch $entry.branch -StashCommit $stashCommit
+                }
+            } elseif ($LASTEXITCODE -ne 1) {
+                throw "Could not inspect $sandboxRemoteRef."
+            }
+
             & git -C $wd merge --no-edit $remoteRef
             if ($LASTEXITCODE -ne 0) {
                 & git -C $wd rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
@@ -726,9 +744,11 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
             }
         }
 
+        Invoke-Git -WorkingDirectory $wd -Arguments @(
+            "push", "-u", "origin", "HEAD:refs/heads/$($entry.branch)"
+        ) | Out-Null
         $head = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "--short", "HEAD")
-        Write-Host "[updated] $label is current with $remoteRef at $head." -ForegroundColor Green
-        Write-Host "Push when ready: git -C `"$wd`" push origin $($entry.branch)"
+        Write-Host "[updated] $label and origin/$($entry.branch) are current with $remoteRef at $head." -ForegroundColor Green
     } finally {
         if ($syncLogOwned) { Stop-SyncLog }
     }
