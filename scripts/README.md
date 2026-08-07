@@ -41,6 +41,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 | `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
+| `mac/` | macOS `.command` equivalents for every root, `user/`, `sandbox/`, `canary/`, and `prod/` Windows `.cmd` launcher |
+
+The macOS launchers preserve the Windows names with a `.command` extension and
+the same subfolder layout. For example, use
+`scripts/mac/user/Run-Latest.command`,
+`scripts/mac/sandbox/New-Sandbox.command`, or
+`scripts/mac/canary/Deploy-Canary.command`. They forward all arguments to the
+same PowerShell owners and retain the existing deployment approval gates.
 
 Every entry point above writes its latest run to
 `<primary-checkout>/logs/last-run/<name>.log`, overwritten each run, next to an
@@ -73,6 +81,14 @@ emulator database. Keep the short name under 20 characters.
 .\scripts\sandbox\Serve-Sandbox.cmd 1
 ```
 
+On macOS, use the matching launchers:
+
+```bash
+./scripts/mac/sandbox/New-Sandbox.command lab16-chatdock "Assistant dock rework"
+./scripts/mac/sandbox/List-Sandboxes.command
+./scripts/mac/sandbox/Serve-Sandbox.command 1
+```
+
 Every verb except `New-Sandbox` accepts the number, the full name, or the short
 name without its number prefix.
 
@@ -80,6 +96,7 @@ Keep root-level scripts that are direct setup, diagnostic, smoke, or data utilit
 entry points. Put implementation and source-control workflow under `dev/`,
 regular owner-facing launchers under `user/`, sandbox launchers under
 `sandbox/`, and the hosted deployment launchers under `canary/` and `prod/`.
+Keep macOS launcher equivalents under the matching folder in `mac/`.
 Do not move cloud-mutating
 operations out of `infra/` merely because they are implemented in PowerShell;
 `canary/` and `prod/` hold only launchers for the gated scripts that live there.
