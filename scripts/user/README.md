@@ -11,6 +11,7 @@ Windows launchers live here; matching macOS launchers live under
 | `Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize MasterAgent and all three worker worktrees |
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest.cmd` | Synchronize the launcher worktree, then start its local stack; optional dev SPA flags are forwarded |
+| `Run-Worker-Latest.cmd <1\|2\|3>` | Merge only that worker into `master` without tests, then restart the canonical master stack |
 | `Show-Prompts.cmd` | Read the owner prompt log back across all agent lanes, newest first |
 
 By default, `Sync-MeTo-Latest.cmd` integrates all committed worker heads through
@@ -34,10 +35,23 @@ Run-Latest.cmd -Watch -NoLabs
 Run-Latest.cmd all -Watch
 ```
 
+`Run-Latest.cmd` acts on the checkout that launches it. Run it from MasterAgent
+for the canonical master stack; a worker copy syncs and runs that worker checkout.
+For the deliberate fast path that publishes one known worker and refreshes master,
+use:
+
+```cmd
+Run-Worker-Latest.cmd 2
+```
+
+This skips integration tests and does not update the other workers or sandboxes.
+It still preserves Git conflict handling and refuses an invalid worker number.
+
 On macOS, run the corresponding launcher from the repository root:
 
 ```bash
 ./scripts/mac/user/Run-Latest.command
 ./scripts/mac/user/Run-Latest.command -Watch -NoLabs
 ./scripts/mac/user/Run-Latest.command all -Watch
+./scripts/mac/user/Run-Worker-Latest.command 2
 ```

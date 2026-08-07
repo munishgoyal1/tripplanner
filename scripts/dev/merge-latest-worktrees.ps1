@@ -7,6 +7,8 @@ param(
 
     [switch]$SkipPrimaryUpdate,
 
+    [switch]$SkipValidation,
+
     [switch]$ValidateOnly
 )
 
@@ -166,7 +168,9 @@ try {
 
     $resultHead = Invoke-Git -WorkingDirectory $integrationRoot -Arguments @("rev-parse", "HEAD")
     if ($resultHead -ne $originMaster) {
-        if (-not (Invoke-IntegrationValidation -WorkingDirectory $integrationRoot -PrimaryRoot $primaryRoot)) {
+        if ($SkipValidation) {
+            Write-Warning "Publishing the selected committed worker changes without running integration tests."
+        } elseif (-not (Invoke-IntegrationValidation -WorkingDirectory $integrationRoot -PrimaryRoot $primaryRoot)) {
             throw "SYNC_VALIDATION_FAILED: the merged tree failed validation and was NOT published; master is unchanged. See the validation report above, fix the merged tree at $integrationRoot (or the offending commit), then re-run."
         }
         Write-Host "Pushing the integrated result to master..." -ForegroundColor Cyan
