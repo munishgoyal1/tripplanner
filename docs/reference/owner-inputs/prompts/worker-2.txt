@@ -88,3 +88,6 @@ I am hopiong this layer will be solid and reliable guard to build a coherent tri
 
 [2026-08-07 13:05] [worker-2] ! Clarify fatigue reserve and no numbers
 Elaborate bit more on #2 so I can give my call. Rest all I agree with you. What is reserve and do you plan to show any numbers to user, I hope not, only you will hsow text based statements, right ?
+
+[2026-08-07 13:30] [worker-2] ! Build Lab 19 effort model
+Go ahaed with all this as you suggested, and update the lab. I will have a look at lab once then ask you to implement it 
