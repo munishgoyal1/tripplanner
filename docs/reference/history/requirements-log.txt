@@ -3411,3 +3411,16 @@ comparison can raise a blocker; the toolbar badge is rose for blockers, amber fo
 Also: the latest of several passports is the one measured, a visa naming another country is
 ignored, an untagged visa can only warn, a licence issued by the destination needs no IDP,
 and a lapsed loyalty tier is not worth a badge.
+=== 2026-08-06 — Two product goals and public-edge architecture ===
+- Rank two goals above all other requirements: build the most intelligent itinerary
+  within the user's preferences, tastes, budget, pace, and constraints; then get that
+  same trip at the best achievable total cost and bridge the user into booking with
+  verified, pre-filled material.
+- Allow consent-gated payment context (which cards and loyalty programs a user holds)
+  as a later optimization signal. Store program and card identity only, never card
+  numbers, and never charge a payment method inside the product.
+- Keep both goals subordinate to speed: price and offer work is background and
+  time-boxed, and the planner always renders the plan it already has.
+- Keep the React SPA as the logged-in planner workspace; scale belongs behind the API.
+  Add a server-rendered or prerendered public edge (landing, destination content,
+  shared trips) for first paint, indexing, and link previews.

@@ -19,6 +19,23 @@ without duplicating the agent, travel logic, or persistence model.
 **Target user**: the owner (Munish). One-person product. Optimize for *his*
 flow, not a generic SaaS. If it isn't useful to him today, it doesn't ship.
 
+**North star — two goals, in this order:**
+
+1. **The best possible itinerary.** The most intelligent trip the user could have
+   planned for themselves, inside their preferences, tastes, budget, pace, and
+   hard constraints — decided by the agent, explained, and editable.
+2. **The best possible price for that trip, then a bridge into booking.** Once the
+   plan is right, find the strongest real prices and offers for it and hand the
+   user into booking with verified, pre-filled material. Later this may include the
+   user's own payment context — for example which cards they hold — so card and
+   portal offers are compared before the handoff. That context is consent-gated
+   preference data: the product stores program and card identity, never card
+   numbers, and never charges a payment method itself.
+
+Neither goal may cost the third property: the planner stays fast and breezy.
+Price and offer work is background and time-boxed, and the product always shows
+the plan it already has rather than blocking on a better one.
+
 New-trip planning is automation-first. Once the user supplies an origin,
 destination, and rough timing, the agent owns the first complete proposal: it
 chooses sensible defaults, researches and selects the strongest verified hotel,
@@ -48,7 +65,9 @@ support visual refinement while Assistant remains available for broader changes.
 ## 2) Non-goals (resist scope creep)
 
 - ❌ Multi-tenant features (orgs, teams, sharing) until explicitly asked.
-- ❌ Automated purchasing or card charging (booking remains a verified handoff).
+- ❌ Automated purchasing or card charging. Booking remains a verified handoff; a
+  future booking bridge deep-links into the provider with the choice already
+  verified and pre-filled, and still does not transact inside the product.
 - ❌ Treating an activity from-price or operating schedule as a held quote or booking.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
@@ -66,6 +85,15 @@ support visual refinement while Assistant remains available for broader changes.
   maps own phone ergonomics.
 
 One codebase, dispatcher in `storage_cosmos.is_enabled()`.
+
+The React SPA is the app shell, not the whole architecture. A planner is a
+logged-in, stateful workspace, and an SPA is the normal shape for that; scale
+comes from what sits behind it — API, agent, provider fan-out, cache, and data
+tier — not from replacing the client. What a public product does need is a
+credible public edge: server-rendered or prerendered landing, destination, and
+shared-trip pages that are fast on first paint, indexable, and link-previewable,
+with the SPA taking over the moment planning starts. "SPA for the workspace,
+rendered HTML for the public edge" is the intended shape.
 
 Cross-form-factor rules live in `packages/tripplanner-client`: JSON contracts,
 trip mutations, SSE parsing, and workspace revisions are shared. Platform code

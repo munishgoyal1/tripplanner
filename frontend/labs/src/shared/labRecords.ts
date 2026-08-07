@@ -1,4 +1,4 @@
-import { BookOpen, Compass, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 20;
+export const LAST_ASSIGNED_LAB_NUMBER = 21;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -54,6 +54,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // (%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json) overrides them at runtime;
 // run scripts/dev/show-lab-status.ps1 to compare the two.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 21,
+    id: "first-visit",
+    title: "The first visit, from stranger to a trip they own",
+    category: "Public entry",
+    description: "The root URL currently boots an empty workspace: no explanation, no proof, no public trip page, no guest-to-account moment. Four options rebuild the whole public edge - a prompt-first hero, a proof-first magazine, a guided intake, and a dark live agent stage that plans a trip in front of you - each across landing, first plan and shared trip.",
+    createdAt: "2026-08-06",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-06",
+    decision: "Open · Recommended starting point: B · Proof-first magazine, with D's live stage as the proof block.",
+    href: "./lab-21-first-visit.html",
+    icon: DoorOpen,
+  },
   {
     labNumber: 20,
     id: "travel-documents",

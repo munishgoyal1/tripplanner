@@ -75,3 +75,14 @@ Implement lab18 in a new sandbox
 [2026-08-06 18:30] [worker-3] Move map day tabs to dock
 only 1 problem in lab18 implementaiotn - map days tabs are showing at top instead of at same row as sequence
 should be like screenshot
+
+[2026-08-06 19:05] [worker-3 !] Record dual product goals
+currently it is a single page app - is that what large apps with millions of user visits are. will it be taken as a small thing and not genuine etc. waht is the right design for such a travel planner app. Later we want to scale up to include providing bridge to make bookings. 
+But overall the goal of this planner will be 2 fold - 
+1.  to help user build most intelligent itinerary within their preferences, tastes, budget and othe constraints, 
+2. to get the best deals and overall help them book this trip in best possible cost across. May be we will later use their payment info like which credit card they hold etc. to optimzie any card offers also - this is just an example but you get the idea. Optimize to the best .. but not to take long time to build, still provide fast breezy user experience overall. 
+Add this in the Master goals and requirements docs whichever is relevant. And sugegst what you think.
+Should we create a lab on the first par t of overall landing experience etc.
+
+[2026-08-06 20:18] [worker-3 !] Create first-visit landing lab
+Okay go ahead and create a rich lab for this. If you think anbother topion D with very different look and feel also you want to present , do that .. I have time to go through all options in detail as this is critical feature

@@ -82,7 +82,10 @@ for worktree synchronization and cleanup.
 - Treat [FUTURE_FEATURES.md](../docs/roadmap/FUTURE_FEATURES.md) as candidates,
   not approval. Use an owner-edited feature brief for coherent new capabilities.
 - For selected UX Labs, implement only the declared option scope plus saved owner
-  modifications. Preserve the Lab page and complete its lifecycle record.
+  modifications. Preserve the Lab page. After implementation is committed, run
+  `scripts/dev/record-lab-implementation.ps1` with the Lab ID and concrete commit,
+  validation, and deviation evidence so the latest handoff moves to implemented
+  review without creating or rewriting an owner handoff version.
 - Never deploy production without explicit owner approval.
 
 ## Code conventions

@@ -685,3 +685,7 @@ fixes. Keep entries concise, generalizable, and tied to observed behavior.
   `completedLabs` array, and a card that fell back to `In evaluation` whenever
   no decision was saved were three independent ways for the same lab to claim
   three different states.
+
+## 2026-08-06 — UX Lab state is not review history
+
+A mutable current selection cannot prove owner review. Every handoff save must append immutable option, notes, state, and time evidence. Lifecycle state is independently selectable and must not erase history. Implementation evidence is a separate append-only record linked to the handoff version.

@@ -1,7 +1,9 @@
 import type { Plugin } from "vite";
 import {
   readSelections,
+  withSelectionStoreLock,
   writeSelections,
+  type HandoffRecord,
   type ImplementationRecord,
   type LabSelection,
 } from "./lab-selection-store";
@@ -24,30 +26,53 @@ export function buildImplementationHistory(
     ? previous.implementations
     : previous?.implementation
       ? [{ ...previous.implementation, version: 1 }]
-      : previous?.selection && ["implemented-review", "completed"].includes(previous.disposition || "")
-        ? [{
-            version: 1,
-            selection: previous.selection,
-            selectionLabel: previous.selectionLabel,
-            comment: previous.comment,
-            recordedAt: previous.updatedAt,
-          }]
-        : [];
+      : [];
 
-  if (selection.disposition !== "implemented-review") return history;
+  if (
+    !["implemented-review", "completed"].includes(selection.disposition || "")
+    || ["implemented-review", "completed"].includes(previous?.disposition || "")
+    || !selection.implementationSummary?.trim()
+  ) {
+    return history;
+  }
 
   const implemented: ImplementationRecord = {
-    version: previous?.disposition === "implemented-review" && history.length
-      ? history[history.length - 1].version
-      : history.length + 1,
+    version: Math.max(0, ...history.map((record) => record.version)) + 1,
+    handoffVersion: Math.max(0, ...(selection.handoffs || []).map((handoff) => handoff.version)) || undefined,
     selection: selection.selection,
     selectionLabel: selection.selectionLabel,
     comment: selection.comment,
+    summary: selection.implementationSummary,
     recordedAt: updatedAt,
   };
-  return previous?.disposition === "implemented-review" && history.length
-    ? [...history.slice(0, -1), implemented]
-    : [...history, implemented];
+  return [...history, implemented];
+}
+
+export function buildHandoffHistory(
+  previous: LabSelection | undefined,
+  selection: LabSelection,
+  updatedAt: string,
+): HandoffRecord[] {
+  const history = previous?.handoffs?.length
+    ? previous.handoffs
+    : previous?.selection
+      ? [{
+          version: 1,
+          selection: previous.selection,
+          selectionLabel: previous.selectionLabel,
+          comment: previous.comment,
+          disposition: previous.disposition || "ready" as const,
+          recordedAt: previous.updatedAt,
+        }]
+      : [];
+  return [...history, {
+    version: Math.max(0, ...history.map((handoff) => handoff.version)) + 1,
+    selection: selection.selection,
+    selectionLabel: selection.selectionLabel,
+    comment: selection.comment,
+    disposition: selection.disposition || "ready",
+    recordedAt: updatedAt,
+  }];
 }
 
 export function labFeedbackPlugin(): Plugin {
@@ -57,7 +82,7 @@ export function labFeedbackPlugin(): Plugin {
       server.middlewares.use(endpoint, async (request, response) => {
         try {
           if (request.method === "GET") {
-            sendJson(response, 200, await readSelections());
+            sendJson(response, 200, await withSelectionStoreLock(() => readSelections()));
             return;
           }
           if (request.method !== "PUT") {
@@ -77,7 +102,7 @@ export function labFeedbackPlugin(): Plugin {
             chunks.push(buffer);
           }
           const selection = JSON.parse(Buffer.concat(chunks).toString("utf8")) as LabSelection;
-          if (!selection.labId || !selection.labTitle || selection.disposition !== "discarded" && (!selection.selection || !selection.selectionLabel)) {
+          if (!selection.labId || !selection.labTitle || !selection.selection || !selection.selectionLabel) {
             sendJson(response, 400, { error: "Incomplete lab selection" });
             return;
           }
@@ -86,36 +111,44 @@ export function labFeedbackPlugin(): Plugin {
             return;
           }
 
-          const selections = await readSelections();
-          const previous = selections[selection.labId];
-          const updatedAt = new Date().toISOString();
-          const stateChangedAt = previous?.disposition === selection.disposition
-            ? previous.stateChangedAt || previous.updatedAt
-            : updatedAt;
-          const implementations = buildImplementationHistory(previous, selection, updatedAt);
-          const latestImplementation = implementations[implementations.length - 1];
-          const implementation = latestImplementation
-            ? {
-                selection: latestImplementation.selection,
-                selectionLabel: latestImplementation.selectionLabel,
-                comment: latestImplementation.comment,
-                recordedAt: latestImplementation.recordedAt,
-              }
-            : undefined;
-          selections[selection.labId] = selection.disposition === "discarded"
-            ? {
-                labId: selection.labId,
-                labTitle: selection.labTitle,
-                selection: "",
-                selectionLabel: "",
-                comment: "",
-                disposition: "discarded",
-                stateChangedAt,
-                updatedAt,
-              }
-            : { ...selection, implementation, implementations, stateChangedAt, updatedAt };
-          await writeSelections(selections);
-          sendJson(response, 200, selections[selection.labId]);
+          const savedSelection = await withSelectionStoreLock(async () => {
+            const selections = await readSelections();
+            const previous = selections[selection.labId];
+            const entersImplementedState = ["implemented-review", "completed"].includes(selection.disposition || "")
+              && !["implemented-review", "completed"].includes(previous?.disposition || "");
+            if (entersImplementedState && !selection.implementationSummary?.trim()) {
+              throw new Error("Implementation evidence is required when entering an implemented state.");
+            }
+            const updatedAt = new Date().toISOString();
+            const stateChangedAt = previous?.disposition === selection.disposition
+              ? previous.stateChangedAt || previous.updatedAt
+              : updatedAt;
+            const handoffs = buildHandoffHistory(previous, selection, updatedAt);
+            const selectionWithHandoffs = { ...selection, handoffs };
+            const implementations = buildImplementationHistory(previous, selectionWithHandoffs, updatedAt);
+            const latestImplementation = implementations[implementations.length - 1];
+            const implementation = latestImplementation
+              ? {
+                  selection: latestImplementation.selection,
+                  selectionLabel: latestImplementation.selectionLabel,
+                  comment: latestImplementation.comment,
+                  summary: latestImplementation.summary,
+                  handoffVersion: latestImplementation.handoffVersion,
+                  recordedAt: latestImplementation.recordedAt,
+                }
+              : undefined;
+            selections[selection.labId] = {
+              ...selection,
+              handoffs,
+              implementation,
+              implementations,
+              stateChangedAt,
+              updatedAt,
+            };
+            await writeSelections(selections);
+            return selections[selection.labId];
+          });
+          sendJson(response, 200, savedSelection);
         } catch (error) {
           server.config.logger.error(`Unable to save lab feedback: ${String(error)}`);
           sendJson(response, 500, { error: "Unable to save lab feedback" });

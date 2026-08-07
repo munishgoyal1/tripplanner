@@ -123,6 +123,25 @@ experiment must include a production-scale preview that shows the option inside
 a realistic full application viewport; a miniature specimen alone is not enough
 to judge or approve a direction.
 
+## Open First Visit Experiment (2026-08-06)
+
+The first visit lab is available at
+`http://127.0.0.1:5175/lab-21-first-visit.html`. It is the first lab about the public edge
+rather than the workspace: today the root URL boots the SPA into an empty trip, so a stranger
+who follows a shared link finds no statement of what the product makes, no evidence that its
+plans are real, no public page for a trip that already exists, and no moment where a guest is
+invited to keep what they built.
+
+It treats the first visit as three surfaces, each selectable in the preview: the landing page,
+the forty seconds after Plan is pressed including the sign-in moment, and the shared trip page
+with the link preview a message app renders for it. Four options argue over what the first ten
+seconds are spent on — a prompt-first hero, a proof-first magazine, a guided intake that writes
+the prompt for you, and a dark live agent stage that plans a trip in front of you while the
+total falls from €3,833 to €3,480. All four use the same Lisbon fixture, the same sourced price
+lines, and the same guest trip URL and expiry, so only presentation differs. A stale-price
+toggle tests whether each option stays honest when the numbers cannot be defended, and a 390 px
+frame tests the arrival most visitors actually have. See [`FIRST_VISIT.md`](FIRST_VISIT.md).
+
 ## Open Agentic Planning Experiment (2026-08-05)
 
 The agentic planning lab is available at
@@ -275,15 +294,20 @@ itself; the owner's later execution instruction remains the approval boundary.
 Cards show both the Lab creation date and the date it entered its current
 lifecycle state. The machine record wins over committed historical fallback
 metadata when the two disagree.
-**Save for implementation** keeps the Lab in progress and marks the complete
-handoff ready. **Mark implemented - to be reviewed** is required after production
-implementation and keeps the Lab visible in progress for owner validation.
-**Sign off and complete** is enabled only from that review state; it records the
-owner's approval, removes the Lab from In progress, and lists it in both Completed
-views. **Park for later** preserves the option and notes, removes the Lab from In
-progress, and lists it under Parked on All Labs. **Discard Lab** removes
-the Lab from catalogs and deletes its option, notes, and browser draft; only a
-minimal discarded marker remains so it stays hidden.
+Every **Save handoff version** appends the selected option, exact notes, chosen
+state, timestamp, and version; re-saving never rewrites prior owner review evidence.
+The owner can choose In progress, Parked, Implemented - To be reviewed, Completed,
+or Discarded at any time. State changes do not erase handoffs or implementation
+history. After implementing a saved handoff, the coding agent must run:
+
+```powershell
+pwsh -NoProfile -File scripts/dev/record-lab-implementation.ps1 `
+  -LabId <lab-id> `
+  -Evidence "Commit <sha>; <validation and material deviations>."
+```
+
+This links a new implementation record to the latest handoff version and moves
+the Lab to Implemented - To be reviewed without inventing another owner handoff.
 The page also keeps each in-progress choice and comment as a browser draft. If
 the local endpoint is temporarily unavailable, the draft survives a reload and
 can be retried once the Labs server is running again.
@@ -307,9 +331,9 @@ permanently: originals are never kept.
 1. Keep each experiment isolated to UI layout/interaction files only.
 2. Timebox each experiment to 1-2 sessions.
 3. Use the scorecard template for decision-making.
-4. After implementing an experiment, move its shared record to `implemented-review`.
-  Keep it active until the owner signs off, then move it to `completed`; preserve
-  its Lab page as design history.
+4. After implementing an experiment, run `record-lab-implementation.ps1` with
+  concrete commit and validation evidence. Keep it active until the owner chooses
+  another state; preserve its Lab page and all handoff and implementation versions.
 5. Read `%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json` when the owner asks to execute a `ready`
   handoff; implement the selected option together with all handoff notes.
   Provisional language such as "try" or "see first" means extend or run the Lab
