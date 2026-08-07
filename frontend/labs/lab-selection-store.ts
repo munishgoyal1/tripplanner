@@ -18,6 +18,7 @@ export interface HandoffRecord {
   selectionLabel: string;
   comment: string;
   disposition: "ready" | "implemented-review" | "parked" | "completed" | "discarded";
+  summary?: string;
   recordedAt: string;
 }
 

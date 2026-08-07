@@ -186,6 +186,14 @@ lifecycle work.
 - Re-run `Setup-Tripplanner-Dev.cmd` on Windows or
    `Setup-Tripplanner-Dev.command` on macOS after an interrupted install;
    completed steps are retained.
+- The macOS setup automatically removes the archived `powershell/tap` before
+  installing the current Homebrew Core `powershell` formula. This migration can
+  replace an older tap-provided PowerShell installation; rerun the setup after
+  any interrupted Homebrew operation.
+- Python and npm restores default to public PyPI and npm on Windows, macOS, and
+   in container builds. Set `PIP_INDEX_URL` or `NPM_CONFIG_REGISTRY` before
+   launching setup only when an environment needs another standards-compatible,
+   non-corporate package source. Setup rejects Microsoft corporate package hosts.
 - VS Code settings backups are timestamped beside
    `%APPDATA%\Code\User\settings.json` on Windows or
    `~/Library/Application Support/Code/User/settings.json` on macOS.

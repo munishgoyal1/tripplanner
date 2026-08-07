@@ -23,6 +23,22 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
+$pipIndexUrl = if ($env:PIP_INDEX_URL) { $env:PIP_INDEX_URL } else { "https://pypi.org/simple" }
+$npmRegistryUrl = if ($env:NPM_CONFIG_REGISTRY) { $env:NPM_CONFIG_REGISTRY } else { "https://registry.npmjs.org/" }
+
+function Assert-IndependentPackageSource {
+    param(
+        [string]$SourceName,
+        [string]$SourceUrl
+    )
+
+    if ($SourceUrl -match "(?i)(pkgs\.visualstudio\.com|1es-public)") {
+        throw "$SourceName must not use Microsoft corporate package infrastructure: $SourceUrl"
+    }
+}
+
+Assert-IndependentPackageSource "PIP_INDEX_URL" $pipIndexUrl
+Assert-IndependentPackageSource "NPM_CONFIG_REGISTRY" $npmRegistryUrl
 
 $tools = @(
     @{ Name = "Git"; Command = "git"; Package = "Git.Git" },
@@ -89,7 +105,7 @@ if ($FullAgentEnvironment) {
 
     if (-not (Get-Command copilot -ErrorAction SilentlyContinue)) {
         Write-Host "[install] GitHub Copilot CLI"
-        npm install --global @github/copilot
+        npm install --global @github/copilot --registry=$npmRegistryUrl
         Assert-LastCommandSucceeded "GitHub Copilot CLI install"
     } else {
         Write-Host "[ok] GitHub Copilot CLI"
@@ -154,16 +170,16 @@ if (-not $SkipDependencyInstall) {
     if (-not (Test-Path ".venv\Scripts\python.exe")) {
         & $python313 -m venv .venv
     }
-    & ".venv\Scripts\python.exe" -m pip install --upgrade pip
+    & ".venv\Scripts\python.exe" -m pip install --index-url $pipIndexUrl --upgrade pip
     Assert-LastCommandSucceeded "pip upgrade"
-    & ".venv\Scripts\python.exe" -m pip install -r requirements.lock
+    & ".venv\Scripts\python.exe" -m pip install --index-url $pipIndexUrl -r requirements.lock
     Assert-LastCommandSucceeded "locked Python dependency install"
-    & ".venv\Scripts\python.exe" -m pip install -e . --no-deps
+    & ".venv\Scripts\python.exe" -m pip install --index-url $pipIndexUrl -e . --no-deps
     Assert-LastCommandSucceeded "editable package install"
 
     Push-Location frontend
     try {
-        npm ci
+        npm ci --registry=$npmRegistryUrl
         Assert-LastCommandSucceeded "frontend dependency install"
     } finally {
         Pop-Location
@@ -172,7 +188,7 @@ if (-not $SkipDependencyInstall) {
     if ($IncludeMobile) {
         Push-Location mobile
         try {
-            npm ci
+            npm ci --registry=$npmRegistryUrl
             Assert-LastCommandSucceeded "mobile dependency install"
         } finally {
             Pop-Location

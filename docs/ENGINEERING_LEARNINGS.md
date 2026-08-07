@@ -754,3 +754,25 @@ A notice that expires on a timer is a notice the user may never read. Outcomes n
 persist until something newer replaces them or the user dismisses them, and carry a
 headline plus a detail line so a consequence can be explained without truncating
 the outcome.
+## 2026-08-07 - Bootstrap From Current Shared Contracts
+
+- Package-manager names are not stable contracts. PowerShell moved from a removed
+  Homebrew cask and archived tap to a Core formula, while Docker's cask token was
+  renamed; machine setup must encode current package type and migrate sources that
+  can shadow the replacement.
+- A fresh worker branch may predate the machine-setup fix needed to install it.
+  Bootstrap shared dependencies from the current primary lockfile, then install
+  the worker's own editable source, so stale lane metadata cannot block setup.
+- Treat built-in editor extensions as installed. VS Code can omit them from
+  `--list-extensions`; attempting to install an obsolete companion extension can
+  instead trigger a downgrade conflict with the built-in version.
+
+## 2026-08-07 - Keep Repository Package Sources Public
+
+- Repository defaults, container builds, and committed lockfiles must resolve
+  through public ecosystem registries rather than organization-specific mirrors.
+- A corporate network workaround is machine-local configuration, not a portable
+  project default. Preserve standard overrides such as `PIP_INDEX_URL` for
+  constrained environments without encoding their private infrastructure.
+- Audit resolved lockfile URLs as well as installer flags. Package managers may
+  retain an old tarball host even when regeneration is given a different registry.

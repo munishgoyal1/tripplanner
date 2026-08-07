@@ -57,6 +57,7 @@ from tripplanner.tools.trip_validation import (  # noqa: F401
     _empty_itinerary_day_warnings,
     _hotel_destination_errors,
     _hotel_selection_warnings,
+    _itinerary_hotel_locations,
     _itinerary_time_errors,
     _restaurant_itinerary_warnings,
     _round_trip_transport_warnings,
@@ -1715,8 +1716,16 @@ def update_trip_plan(updates_json: str) -> str:
     except json.JSONDecodeError:
         return "Error: invalid JSON."
 
+    validation_plan = dict(plan)
+    if isinstance(updates.get("day_wise_itinerary"), list):
+        validation_plan["day_wise_itinerary"] = [
+            *(plan.get("day_wise_itinerary") or []),
+            *updates["day_wise_itinerary"],
+        ]
     hotel_destination_errors = _hotel_destination_errors(
-        str(plan.get("destination") or ""), updates.get("selected_hotels")
+        str(plan.get("destination") or ""),
+        updates.get("selected_hotels"),
+        _itinerary_hotel_locations(validation_plan),
     )
     if hotel_destination_errors:
         return (

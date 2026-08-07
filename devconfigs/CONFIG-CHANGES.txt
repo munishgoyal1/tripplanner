@@ -5,6 +5,27 @@ This is the plain-English running history of changes under devconfigs. Add the
 newest dated entry at the top. Record what changed, why it changed, how to apply
 it, and any manual recovery step that could help on a new or broken machine.
 
+2026-08-07 - Saved one default VS Code layout
+----------------------------------------------
+What changed:
+- Saved the active hidden activity bar, right primary sidebar, right terminal
+  panel, hidden secondary sidebar, and single-tab editor layout as portable
+  user defaults.
+- Removed conflicting sidebar, panel, and tab overrides from every committed
+  development and agent workspace while preserving lane titles and colors.
+
+Why:
+Every workspace and new machine should use the owner's current layout instead
+of restoring older per-workspace defaults.
+
+How to apply:
+Run `pwsh -File devconfigs/Apply-DevConfigs.ps1`, then reopen existing workspace
+windows once so VS Code restores them with the portable defaults.
+
+Recovery:
+Restore the timestamped VS Code user settings backup created by the apply script
+and revert the workspace/config changes if the prior layout is needed.
+
 2026-08-06 - Added native macOS environment setup
 -------------------------------------------------
 What changed:

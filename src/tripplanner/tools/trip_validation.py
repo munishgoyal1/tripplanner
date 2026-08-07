@@ -164,7 +164,44 @@ def _hotel_selection_warnings(plan: dict[str, Any]) -> list[str]:
     return warnings
 
 
-def _hotel_destination_errors(destination: str, hotels: Any) -> list[str]:
+def _itinerary_hotel_locations(plan: dict[str, Any]) -> set[str]:
+    locations: set[str] = set()
+    for hotel in plan.get("selected_hotels") or []:
+        if not isinstance(hotel, dict):
+            continue
+        for key in ("destination", "city", "location"):
+            value = str(hotel.get(key) or "").strip().lower()
+            if value:
+                locations.add(value)
+    for day in plan.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict):
+            continue
+        for key in ("destination", "city", "location"):
+            value = str(day.get(key) or "").strip().lower()
+            if value:
+                locations.add(value)
+        for stop in day.get("stops") or []:
+            if not isinstance(stop, dict):
+                continue
+            for key in ("destination", "city", "location"):
+                value = str(stop.get(key) or "").strip().lower()
+                if value:
+                    locations.add(value)
+            if _stop_kind(stop) not in {"flight", "transport"}:
+                continue
+            route = re.split(r"\b(?:to|→)\b", _stop_name(stop), flags=re.IGNORECASE)
+            for city in route[1:]:
+                value = re.split(r"[,;(/]", city, maxsplit=1)[0].strip().lower()
+                if value:
+                    locations.add(value)
+    return locations
+
+
+def _hotel_destination_errors(
+    destination: str,
+    hotels: Any,
+    itinerary_locations: set[str] | None = None,
+) -> list[str]:
     if not destination.strip() or not isinstance(hotels, list):
         return []
     destination_token = re.split(r"[,;/]", destination.lower(), maxsplit=1)[0].strip()
@@ -172,6 +209,7 @@ def _hotel_destination_errors(destination: str, hotels: Any) -> list[str]:
         return []
     destination_parts = [part.strip() for part in re.split(r"[,;/]", destination.lower())]
     destination_country = destination_parts[1] if len(destination_parts) > 1 else ""
+    allowed_locations = {destination_token, *(itinerary_locations or set())}
     errors: list[str] = []
     for hotel in hotels:
         if not isinstance(hotel, dict):
@@ -186,21 +224,31 @@ def _hotel_destination_errors(destination: str, hotels: Any) -> list[str]:
         ]
         address = str(hotel.get("address") or "").strip().lower()
         country = str(hotel.get("country") or "").strip().lower()
-        mismatched_location = any(
-            destination_token not in location for location in structured_locations
+        matching_location = any(
+            allowed in location or location in allowed
+            for location in structured_locations
+            for allowed in allowed_locations
         )
         mismatched_country = bool(
             country and destination_country and destination_country not in country
         )
         address_only_mismatch = bool(
-            address and not structured_locations and destination_token not in address
+            address
+            and not structured_locations
+            and not any(allowed in address for allowed in allowed_locations)
         )
-        if mismatched_location or mismatched_country or address_only_mismatch:
+        if (
+            (structured_locations and not matching_location)
+            or mismatched_country
+            or address_only_mismatch
+        ):
             errors.append(
                 f"{name or 'Selected hotel'} is located outside the trip destination "
                 f"'{destination}'."
             )
-        elif not structured_locations and not address and destination_token not in name.lower():
+        elif not structured_locations and not address and not any(
+            allowed in name.lower() for allowed in allowed_locations
+        ):
             errors.append(
                 f"{name or 'Selected hotel'} has no location evidence matching the trip "
                 f"destination '{destination}'."

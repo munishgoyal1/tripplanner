@@ -9,6 +9,7 @@ import pytest
 
 ROOT = Path(__file__).parents[1]
 SCRIPT = ROOT / "scripts" / "dev" / "record-lab-implementation.ps1"
+SANDBOX_SCRIPT = ROOT / "scripts" / "dev" / "sandbox.ps1"
 
 
 def write_store(path: Path) -> dict[str, object]:
@@ -82,6 +83,7 @@ def test_records_implementation_against_latest_handoff(tmp_path: Path) -> None:
         "selectionLabel": "B · Account vault",
         "comment": "Keep originals out of storage.",
         "disposition": "implemented-review",
+        "summary": "Commit abc123; 14 Labs tests passed.",
         "recordedAt": lab["updatedAt"],
     }
     assert lab["implementations"] == [{
@@ -98,18 +100,51 @@ def test_records_implementation_against_latest_handoff(tmp_path: Path) -> None:
     assert not list(tmp_path.glob("*.tmp"))
 
 
-def test_rejects_duplicate_implementation_without_changing_store(tmp_path: Path) -> None:
+def test_records_each_successful_implementation_iteration(tmp_path: Path) -> None:
     store_path = tmp_path / "selections.json"
     write_store(store_path)
     first = run_script(store_path)
-    before_duplicate = store_path.read_bytes()
 
-    duplicate = run_script(store_path, "A second implementation")
+    second = run_script(store_path, "A second successful iteration")
 
     assert first.returncode == 0
-    assert duplicate.returncode != 0
-    assert "already implemented and awaiting review" in duplicate.stderr
-    assert store_path.read_bytes() == before_duplicate
+    assert second.returncode == 0, second.stderr
+    updated = json.loads(store_path.read_text(encoding="utf-8-sig"))["travel-documents"]
+    assert [entry["version"] for entry in updated["handoffs"]] == [1, 2, 3]
+    assert [entry["summary"] for entry in updated["handoffs"][1:]] == [
+        "Commit abc123; 14 Labs tests passed.",
+        "A second successful iteration",
+    ]
+    assert [entry["version"] for entry in updated["implementations"]] == [1, 2]
+    assert updated["implementations"][1]["handoffVersion"] == 3
+
+
+def test_completion_preserves_latest_implemented_handoff(tmp_path: Path) -> None:
+    store_path = tmp_path / "selections.json"
+    write_store(store_path)
+    implemented = run_script(store_path)
+    assert implemented.returncode == 0, implemented.stderr
+
+    stored = json.loads(store_path.read_text(encoding="utf-8-sig"))
+    lab = stored["travel-documents"]
+    lab["handoffs"].append({
+        "version": 3,
+        "selection": "carry",
+        "selectionLabel": "A · Carry originals",
+        "comment": "Reconsider this option.",
+        "disposition": "ready",
+        "recordedAt": "2026-08-06T14:00:00.000Z",
+    })
+    store_path.write_text(json.dumps(stored), encoding="utf-8")
+
+    completed = run_script(store_path, "Promoted after verification.", "completed")
+
+    assert completed.returncode == 0, completed.stderr
+    updated = json.loads(store_path.read_text(encoding="utf-8-sig"))["travel-documents"]
+    assert updated["handoffs"][-1]["version"] == 4
+    assert updated["handoffs"][-1]["selection"] == "vault"
+    assert updated["handoffs"][-1]["comment"] == "Keep originals out of storage."
+    assert updated["handoffs"][-1]["disposition"] == "completed"
 
 
 @pytest.mark.parametrize("state", ["ready", "parked", "completed", "discarded"])
@@ -127,6 +162,7 @@ def test_records_agent_state_change_as_a_new_version(tmp_path: Path, state: str)
     assert updated["handoffs"][-1]["disposition"] == state
     assert updated["handoffs"][-1]["selection"] == "vault"
     assert updated["handoffs"][-1]["comment"] == "Keep originals out of storage."
+    assert updated["handoffs"][-1]["summary"] == "Commit abc123; 14 Labs tests passed."
 
 
 def test_preserves_singular_legacy_implementation(tmp_path: Path) -> None:
@@ -150,3 +186,18 @@ def test_preserves_singular_legacy_implementation(tmp_path: Path) -> None:
     assert updated["implementations"][0]["summary"] == "Commit old123."
     assert updated["implementations"][1]["summary"] == "Commit new456."
     assert updated["implementations"][1]["handoffVersion"] == 2
+
+
+def test_sandbox_records_linked_iterations_and_both_promotion_paths() -> None:
+    source = SANDBOX_SCRIPT.read_text(encoding="utf-8")
+
+    assert '[string]$LabId = ""' in source
+    assert '[string]$IterationSummary = ""' in source
+    assert source.count('Write-SandboxLabVersion -Entry $entry -State "implemented-review"') == 1
+    assert '$labsReady = Wait-SandboxEndpoint -Url $labsUrl' in source
+    assert 'Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("status", "--porcelain")' in source
+    assert 'labBaselineCommit' in source
+    assert 'lastLabIterationCommit' in source
+    assert 'merge-base --is-ancestor $previousCommit $commit' in source
+    assert 'Assert-SandboxLabReadyForPromotion -Entry $entry' in source
+    assert source.count('Write-SandboxLabVersion -Entry $entry -State "completed"') == 2

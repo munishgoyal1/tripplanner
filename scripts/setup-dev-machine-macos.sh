@@ -23,6 +23,21 @@ fi
 
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repo_root"
+pip_index_url="${PIP_INDEX_URL:-https://pypi.org/simple}"
+npm_registry_url="${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}"
+
+assert_independent_package_source() {
+  local source_name="$1"
+  local source_url
+  source_url="$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$source_url" == *"pkgs.visualstudio.com"* || "$source_url" == *"1es-public"* ]]; then
+    echo "$source_name must not use Microsoft corporate package infrastructure: $2" >&2
+    exit 1
+  fi
+}
+
+assert_independent_package_source "PIP_INDEX_URL" "$pip_index_url"
+assert_independent_package_source "NPM_CONFIG_REGISTRY" "$npm_registry_url"
 
 assert_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -47,6 +62,10 @@ elif [[ -x /usr/local/bin/brew ]]; then
 fi
 
 if [[ "$skip_tool_install" == false ]]; then
+  if brew tap | grep -qx "powershell/tap"; then
+    echo "[migrate] Archived PowerShell Homebrew tap"
+    brew untap --force powershell/tap
+  fi
   echo "[install] Declared Homebrew tools"
   brew bundle --file "$repo_root/devconfigs/macos/Brewfile"
 fi
@@ -64,7 +83,7 @@ pwsh -NoProfile -File "$repo_root/devconfigs/Apply-DevConfigs.ps1" -InstallExten
 
 if ! command -v copilot >/dev/null 2>&1; then
   echo "[install] GitHub Copilot CLI"
-  npm install --global @github/copilot
+  npm install --global @github/copilot --registry="$npm_registry_url"
 else
   echo "[ok] GitHub Copilot CLI"
 fi
@@ -77,6 +96,7 @@ echo "[ok] Git configured for rerere + zdiff3 conflict style"
 setup_dependencies() {
   local checkout_root="$1"
   local python_path="$checkout_root/.venv/bin/python"
+  local requirements_lock="$repo_root/requirements.lock"
 
   if [[ ! -f "$checkout_root/.env" ]]; then
     cp "$checkout_root/.env.example" "$checkout_root/.env"
@@ -90,12 +110,14 @@ setup_dependencies() {
     if [[ ! -x "$python_path" ]]; then
       python3.13 -m venv "$checkout_root/.venv"
     fi
-    "$python_path" -m pip install --upgrade pip
-    "$python_path" -m pip install -r "$checkout_root/requirements.lock"
-    "$python_path" -m pip install -e "$checkout_root" --no-deps
-    npm --prefix "$checkout_root/frontend" ci
+    PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet --upgrade pip
+    PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet --progress-bar off \
+      -r "$requirements_lock"
+    PIP_INDEX_URL="$pip_index_url" "$python_path" -m pip install --quiet \
+      -e "$checkout_root" --no-deps
+    npm --prefix "$checkout_root/frontend" ci --registry="$npm_registry_url"
     if [[ "$include_mobile" == true ]]; then
-      npm --prefix "$checkout_root/mobile" ci
+      npm --prefix "$checkout_root/mobile" ci --registry="$npm_registry_url"
     fi
   fi
 

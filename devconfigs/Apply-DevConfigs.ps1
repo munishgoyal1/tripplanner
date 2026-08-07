@@ -137,6 +137,15 @@ function Install-VsCodeExtensions {
             Write-Host "[ok] VS Code extension $extension"
             continue
         }
+        $extensionLocation = @(& code --locate-extension $extension)
+        if ($LASTEXITCODE -ne 0) {
+            throw "VS Code could not locate extension $extension."
+        }
+        if ($extensionLocation.Count -gt 0 -and
+            -not [string]::IsNullOrWhiteSpace([string]$extensionLocation[0])) {
+            Write-Host "[ok] Built-in VS Code extension $extension"
+            continue
+        }
         if ($PSCmdlet.ShouldProcess($extension, "Install VS Code extension")) {
             & code --install-extension $extension
             if ($LASTEXITCODE -ne 0) {

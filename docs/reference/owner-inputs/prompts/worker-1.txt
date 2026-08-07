@@ -57,3 +57,27 @@ after a  lab implementation change its status to implemented-in review and save 
 Show the states like earlier buttons instead fo dropdown. dont spend too much time on fixing logic for labs (it is internal tool just should be convenient enough nothing more)
 owner can still save another handoff anytime, or anytime change the state to anything, only thing you have to ensure is save that choice+notes+state verison so we know what is the last thing happened with lab. One small change - while showing order the versions by latest first.
 Not othe rmajor changes. - just ensure to save version, change the state after implementation, discard, park etc. - any acitons done by agent from backdoor.
+
+[2026-08-07 00:00] [worker-1 !] Capture Sandbox Lab Iterations
+When a lab is asked to be implemented and there is ambiguity eother due to handoff notes needing more owner inputs or otherwsie, that discusison should come through the implementation interaction in that sandbox worker chat. and those iterations summary after each good run of the sandbox with changes in lab should get capured in the lab's version with summary. finally on promote it should mark it as completed.
+
+[2026-08-07 00:00] [worker-1] Question Workflow Delay
+why taking so long.. for such a small ask
+
+[2026-08-07 00:00] [worker-1] Check Uncommitted Files
+there are uncommited files you have ?
+
+[2026-08-07 00:00] [worker-1 !] Commit Valid Lab Workflow
+commit them if they are valid and need to go in. do the needful with those files
+
+[2026-08-07 00:00] [worker-1 !] Mirror Repositories Across Workers
+but sandbox one will keep changing as they are created new and discarded. I can see exactly what i want in the MasterAgent vscode view. That came in automatically almost.. i dont rmemeber makign much of change.
+I want similar view in all worker vs code
+
+[2026-08-07 13:35] [worker-1 !] Commit Lab Sandbox Workflow
+In C:\repos\tripplanner.worktrees\worker-1, commit and push the validated Lab sandbox workflow. Stage ONLY these tracked files: .github/copilot-instructions.md; docs/EXPECTED_BEHAVIORS.md; docs/PRODUCT.md; docs/reference/owner-inputs/prompts/worker-1.txt; docs/ux-experiments/README.md; frontend/labs/lab-selection-store.ts; frontend/labs/src/shared/DecisionCapture.test.tsx; frontend/labs/src/shared/DecisionCapture.tsx; scripts/README.md; scripts/dev/record-lab-implementation.ps1; scripts/dev/sandbox.ps1; tests/test_record_lab_implementation.py. Do not stage node_modules or any other path. Before committing run git diff --cached --check and verify cached names exactly match that list. Commit message: "Track sandbox Lab implementation iterations". Push to upstream origin/agents/worker-1. Then report commit SHA, push result, divergence versus upstream and origin/master, and final git status --short. Do not touch master, servers, registry, worktrees, or databases.
+[2026-08-07 13:53] [worker-1] Commit Worker Source Control
+In C:\repos\tripplanner.worktrees\worker-1, validate the three tripplanner-worker-{1,2,3}.code-workspace files as JSON and git diff --check. Review the diff for only the shared worktree-parent folder additions and the append-only prompt entry. If valid, stage ONLY tripplanner-worker-1.code-workspace, tripplanner-worker-2.code-workspace, tripplanner-worker-3.code-workspace, and docs/reference/owner-inputs/prompts/worker-1.txt. Verify cached names exactly, commit with message "Show all worktrees in worker Source Control", and push to origin/agents/worker-1. Report SHA, validation, push, divergence, and final status. Do not touch master, launch/reload VS Code, or touch servers/sandboxes.
+
+[2026-08-07 11:18] [worker-1 !] Debug Chat Hotel Updates
+I asked assistant / chat agent to update indore hotel to another 5star. it took 1 min and then gave a choice. i said ok works, it again took minutes and said it is done. But itinerary did not reflect the htoel change stilll. This is first time i am testing such updates from the chat. Does it work or there are bugs ?

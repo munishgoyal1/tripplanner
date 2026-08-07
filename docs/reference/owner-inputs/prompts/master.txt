@@ -18,3 +18,42 @@ how about setting up Mac
 [2026-08-06 18:44] [master] ! Define cross-platform support policy
 So will this repository work both either on Mac or a windows ? Everything here is setup to work on either platforms ?
 And I am nto sure which environment will be my dominant one, but will you continue to maintain for both for any changes ? That might be an overhead - what is the standrard practice, one thing to think is different team memebrs could be on mac or windows
+
+[2026-08-07 13:34] [master !] Fix macOS setup packages
+what is the failure in this intial setup script or whats the issue with completing it on my this mac machine. make updates to the script if required. I want to get the mac envrinment setup scripts up smoothly.
+
+mugoy@Munishs-MacBook-Pro tripplanner % ./Setup-Tripplanner-Dev.command
+[install] Declared Homebrew tools
+Fetching git, node, python@3.13, docker, powershell, visual-studio-code
+Warning: Cask docker was renamed to docker-desktop.
+Warning: Cask docker was renamed to docker-desktop.
+Using azure-cli
+Using gh
+Installing docker
+Password:
+Installing powershell
+Warning: Cask 'powershell' is unavailable: No Cask with this name exists.
+==> Searching for similarly named casks...
+==> Casks
+powershell@preview
+
+To install powershell@preview, run:
+	brew install --cask powershell@preview
+Installing powershell has failed!
+Upgrading git
+Installing visual-studio-code
+Installing node
+Installing python@3.13
+`brew bundle` failed! 1 Brewfile dependency failed to install
+
+[2026-08-07 16:37] [master !] Isolate personal Azure login
+signin to azure with my personal login: munishgoyal1@gmail.com only that uses the visual studio enterprise subscription. do not interfere or use my mugoy@microsoft.com microsoft login for Azure and dont use any work subscriptions, not even for read operatrions
+
+[2026-08-07 16:37] [master !] Enable Python terminal env
+vAn environment file is configured but terminal environment injection is disabled. Enable "python.terminal.useEnvFile" to use environment variables from .env files in terminals.
+
+[2026-08-07 16:42] [master !] Save default VS Code layout
+save this vs code layout as default in the configs to be used everywhere
+
+[2026-08-07 16:50] [master !] Remove corporate package mirrors
+nothing to be taken from 1es mirror, as that is microsoft corporate specific. later this repository may run dev environments outside of msft also, so keepo it entirely indepdnent.
