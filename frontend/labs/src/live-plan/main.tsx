@@ -16,12 +16,28 @@ const LAB_ID = "live-plan";
 // never move with the ranking.
 const variants: { id: LivePlanOption; label: string; summary: string; delta: string }[] = [
   {
+    id: "exact",
+    label: "E · Dark stage, argued during the run",
+    summary:
+      "Lab 21's option D exactly as you saw it — dark console, receipts on the left, day cards assembling on the right — on a five-day trip. Twice, the run pauses itself and puts the choice inside the stream: 'Lisbon → Porto — Train, not the flight' with 'I would rather fly it' next to it. Answer it or ignore it; the plan re-settles in place and names what your preference cost.",
+    delta:
+      "Exact delta from A: theme unchanged, layout unchanged, page length unchanged. Two inline choice strips appear in the receipt console, the total becomes a re-settled total when you use one, and the button says 'Plan mine'.",
+  },
+  {
+    id: "ledger",
+    label: "F · Dark stage, argued after it finishes",
+    summary:
+      "The same dark stage on the same five-day trip, but the run plays through uninterrupted. When it completes, the console column swaps from the receipt log to 'Two things it decided for you' — both calls in full, with the options they beat and an overrule button. A 'Show the working' control flips back to the receipts.",
+    delta:
+      "Exact delta from E: same screen, later moment. The choice never interrupts the run, and because it arrives after the plan exists it can show the whole comparison table rather than a one-line strip.",
+  },
+  {
     id: "argue",
     label: "D · The decision replay",
     summary:
       "The stream is not activity, it is judgement. Three decisions arrive — the Porto leg, the Sintra day, the first hotel — each with the rule it applied and the options it rejected. You can overrule any one and the plan re-settles in front of you, with the cost of your preference named out loud.",
     delta:
-      "Exact delta: the visitor acts inside the demo instead of watching it. It is the only option where the product argues back, and the only shared link that carries why the train beat the flight.",
+      "Exact delta: the visitor acts inside the demo instead of watching it. E and F are the trimmed, decided versions of this idea; D is the maximal one, with the receipt console replaced entirely by decision cards.",
   },
   {
     id: "yours",
@@ -45,7 +61,7 @@ const variants: { id: LivePlanOption; label: string; summary: string; delta: str
     summary:
       "Lab 21's option D with one variable changed: the light theme from option B instead of the dark console. Same copy, same 'Take over' call to action, same choreography — so the darkness can be judged separately from the idea underneath it.",
     delta:
-      "Exact delta: theme only. Use the 'Compare with Lab 21 · D as shipped' toggle to flip the same screen back to dark and see what the theme was actually carrying.",
+      "Exact delta: theme only. Use the 'Reference · Lab 21 D as shipped' button to flip the same screen back to dark and see what the theme was actually carrying.",
   },
 ];
 
@@ -58,7 +74,7 @@ const surfaces: { id: LivePlanSurface; label: string; note: string }[] = [
   {
     id: "first-plan",
     label: "First plan and sign-in",
-    note: "The guest trip that exists after the demo: full six-day itinerary, both hotels, the transport comparisons, and exactly where each option asks for an account.",
+    note: "The guest trip that exists after the demo: the full itinerary, both hotels, the transport comparisons, and exactly where each option asks for an account.",
   },
   {
     id: "share",
@@ -76,7 +92,7 @@ const additions = [
   "The falling total is captioned in words: what it started at, what it stopped at, and which three changes produced the saving.",
   "‘It never books anything and never holds your card’ sits under the composer, where the doubt actually occurs.",
   "A transport legend on the console, so the flight/rail/road/tram icons on the day cards are readable at a glance.",
-  "prefers-reduced-motion resolves the whole run instantly rather than playing it slowly — applied to all four options.",
+  "prefers-reduced-motion resolves the whole run instantly rather than playing it slowly — applied to every option.",
 ];
 
 const requirements = [
@@ -111,7 +127,7 @@ const dilemmas = [
   {
     question: "What does the shared link have to carry?",
     answer:
-      "All four share a full six-day, two-city plan. Only D's shared page also carries the reasoning — the rejected flight, the rejected hire car, the rule that produced each answer — which is the part no other itinerary tool can copy.",
+      "Every option shares a full multi-day, two-city plan. Only D, E and F also carry the reasoning — the rejected flight, the rejected hire car, the rule that produced each answer — which is the part no other itinerary tool can copy.",
   },
 ];
 
@@ -129,7 +145,7 @@ const criteria = [
 const guardrails = [
   "No claim the product cannot honour today. No 'we book it for you', no invented savings, no live price that is really an estimate.",
   "All data is fixture data in this Lab. Nothing here fetches a provider, and no number should be read as a real quote.",
-  "Overruling a decision in option D re-settles a scripted outcome. It demonstrates the mechanic; it does not re-run a planner.",
+  "Overruling a decision in D, E or F re-settles a scripted outcome. It demonstrates the mechanic; it does not re-run a planner.",
   "This Lab changes no production code. It ends the moment the first plan exists; the workspace itself is out of scope.",
   "The account ask may move, but the guest path may not be removed: a plan must always be reachable without signing in.",
 ];
@@ -159,7 +175,7 @@ function Viewport({ mobile, children }: { mobile: boolean; children: React.React
 
 function Lab() {
   const query = useQuery();
-  const [option, setOption] = useState<LivePlanOption>("argue");
+  const [option, setOption] = useState<LivePlanOption>("exact");
   const [surface, setSurface] = useState<LivePlanSurface>("landing");
   const [mobile, setMobile] = useState(false);
   const [stress, setStress] = useState(false);
@@ -202,17 +218,65 @@ function Lab() {
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
             Lab 21 chose to prove the product by planning a trip in front of the visitor. The idea
             held; the execution asked the wrong things of them. This Lab takes that stage as the base
-            and pushes on it four ways — one that changes only the theme, one that changes only the
-            words, and two that reopen the question of what a first-time visitor should be doing while
-            the planner works. The demo trip is now six days across Lisbon and Porto, with two hotels,
-            a flight in, a train between the cities, a hire car for the one day that needs one and a
-            tram for the day that does not, because a planner that only walks around one city is not
-            the planner this product claims to be. Every option covers all three surfaces.
+            and pushes on it six ways — one that changes only the theme, one that changes only the
+            words, two that reopen the question of what a first-time visitor should be doing while the
+            planner works, and two exact candidates, E and F, that keep the dark stage you liked and
+            add nothing but the right to argue with it. The demo trip spans Lisbon and Porto with two
+            hotels, a flight in, a train between the cities, a hire car for the one day that needs one
+            and a tram for the day that does not, because a planner that only walks around one city is
+            not the planner this product claims to be. Every option covers all three surfaces.
           </p>
         </header>
 
         <LabScope labId={LAB_ID} />
         <OptionContrast labId={LAB_ID} />
+
+        <section className="mt-8 rounded-2xl border border-brand/25 bg-brand/[0.06] p-4">
+          <p className="text-[10px] font-bold uppercase text-brand">Added after your review</p>
+          <h2 className="mt-1 text-lg font-semibold text-ink">E and F are the exact ones — pick between these two</h2>
+          <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-slate-700">
+            You asked for the combination you saw on screen made concrete instead of assembled from a
+            toggle. Both E and F are Lab 21's option D in its dark console, with its layout, its
+            choreography and its receipt stream intact. Both add the one thing you wanted kept — that a
+            visitor can push back — and both cut it to two choices, <em>I would rather fly it</em> and
+            <em> Give me the car anyway</em>. Neither adds a page section, so the page is no longer than
+            A's. They differ in one deliberate way: <strong>E offers the choice while the run is still
+            going</strong>, inside the receipt console; <strong>F waits until the plan is finished</strong>
+            and then swaps the console into a two-item ledger. Everything else about them is identical.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl bg-white p-3.5 shadow-card ring-1 ring-slate-200">
+              <p className="text-sm font-semibold text-ink">Why the trip is five days now</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                Six filled the console faster than a first-time visitor could read it. Five is the
+                shortest cut that still carries both cities, both hotels, and a flight, an intercity
+                train, a regional train, a coach, a tram, the metro, a hire-car day and a walking day:
+                land in Lisbon, Sintra by train, north on the Alfa Pendular, the Douro by road, home
+                from Porto. Four would force dropping either the second city or the car day, and the
+                car day is what makes the Sintra argument mean anything. If you would rather keep six,
+                say so — it is a one-line change and A to D still run the six-day version so you can
+                compare them side by side.
+              </p>
+            </div>
+            <div className="rounded-xl bg-white p-3.5 shadow-card ring-1 ring-slate-200">
+              <p className="text-sm font-semibold text-ink">The one thing E and F did not keep as-is</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                The primary button says <em>Plan mine</em>, not <em>Take over</em>. That was the single
+                clearest failure in Lab 21's wording and it costs nothing to carry over. The headline
+                also ends differently — <em>Then change its mind</em> for E, <em>Then see what it
+                decided</em> for F — because the original promise, <em>Then take the plan</em>, no longer
+                describes what the screen offers. If you want either reverted to the shipped wording,
+                that is a two-word edit.
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 max-w-3xl text-xs leading-relaxed text-slate-600">
+            The <span className="font-semibold text-ink">Reference · Lab 21 D as shipped</span> button below
+            is no longer one of the options. It shows the screen these are replacing and deselects
+            every option card while it is on, so it can never quietly swap the preview under a
+            selected letter again.
+          </p>
+        </section>
 
         <section className="mt-8 rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
           <p className="text-[10px] font-bold uppercase text-amber-700">Answered from Lab 21</p>
@@ -255,16 +319,16 @@ function Lab() {
         </section>
 
         <section className="mt-8">
-          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" role="tablist" aria-label="Live plan options">
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3" role="tablist" aria-label="Live plan options">
             {variants.map((variant) => (
               <button
                 key={variant.id}
                 type="button"
                 role="tab"
-                aria-selected={option === variant.id}
+                aria-selected={!baseline && option === variant.id}
                 onClick={() => { setOption(variant.id); setBaseline(false); }}
                 className={`rounded-2xl border p-4 text-left transition ${
-                  option === variant.id
+                  !baseline && option === variant.id
                     ? "border-brand bg-white shadow-pop ring-1 ring-brand/30"
                     : "border-slate-200 bg-white hover:border-slate-300"
                 }`}
@@ -282,7 +346,7 @@ function Lab() {
             <div>
               <p className="text-[10px] font-bold uppercase text-brand">Production-scale preview</p>
               <h2 className="mt-1 text-lg font-semibold text-ink">
-                {baseline ? "Lab 21 · D as shipped, in the dark" : activeVariant?.label}
+                {baseline ? "Reference · Lab 21's option D, exactly as it shipped" : activeVariant?.label}
               </h2>
               <p className="mt-1 max-w-2xl text-xs text-slate-500">{activeSurface?.note}</p>
             </div>
@@ -331,7 +395,7 @@ function Lab() {
                   baseline ? "bg-ink text-white ring-ink" : "bg-white text-slate-600 ring-slate-200 hover:ring-slate-300"
                 }`}
               >
-                {baseline ? "Showing Lab 21 · D" : "Compare with Lab 21 · D as shipped"}
+                {baseline ? "Leave the reference" : "Reference · Lab 21 D as shipped"}
               </button>
               <a
                 href={`./lab-22-live-plan.html?preview=${option}&surface=${surface}${mobile ? "&mobile=1" : ""}`}
@@ -345,7 +409,7 @@ function Lab() {
           <p className="mt-2 rounded-lg bg-white px-3 py-2 text-xs leading-relaxed text-slate-600 ring-1 ring-slate-200">
             <span className="font-semibold text-ink">Exact delta · </span>
             {baseline
-              ? "The same option A screen in Lab 21's dark console. Only the theme differs, which is the whole point of keeping A unchanged."
+              ? "This is not one of the six options. It is the shipped screen these options are replacing, held here so you can put any of them beside it. No option is selected while it is showing."
               : activeVariant?.delta}
           </p>
 
@@ -356,14 +420,14 @@ function Lab() {
                 option={baseline ? "asis" : option}
                 surface={surface}
                 stress={stress}
-                tone={baseline ? "dark" : "light"}
+                tone={baseline ? "dark" : undefined}
               />
             </Viewport>
           </div>
           <p className="mt-2 text-xs text-slate-500">
-            All four options plan the same trips from the same fixture, so they argue over what the
-            visitor is asked to do, not over the facts. Prices, sources and fetch times are fabricated
-            to be realistic, not live.
+            Every option plans from the same fixture, so they argue over what the visitor is asked to
+            do, not over the facts. A to D run the six-day trip; E and F run the five-day cut. Prices,
+            sources and fetch times are fabricated to be realistic, not live.
           </p>
         </section>
 
@@ -408,11 +472,12 @@ function Lab() {
               </p>
             </div>
             <div className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200">
-              <p className="text-sm font-semibold text-ink">D · decisions must be first-class</p>
+              <p className="text-sm font-semibold text-ink">D, E and F · decisions must be first-class</p>
               <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                D only works if the planner records why it chose each hop and each stay — the rule, the
-                options and the rejected ones. That record is useful far beyond this page: it is what
-                the Details pane, the shared trip and every future explanation would read from.
+                These only work if the planner records why it chose each hop and each stay — the rule,
+                the options and the rejected ones. That record is useful far beyond this page: it is
+                what the Details pane, the shared trip and every future explanation would read from.
+                E and F need exactly two such records; D needs every one the planner makes.
               </p>
             </div>
           </div>
