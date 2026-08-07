@@ -91,3 +91,25 @@ Elaborate bit more on #2 so I can give my call. Rest all I agree with you. What 
 
 [2026-08-07 13:30] [worker-2] ! Build Lab 19 effort model
 Go ahaed with all this as you suggested, and update the lab. I will have a look at lab once then ask you to implement it 
+
+[2026-08-07 13:45] [worker-2] ! Implement Lab 19 in sandbox
+implement lab19 in a new sandbox
+
+[2026-08-07 14:30] [worker-2] ! Fix bad auto-fit around intercity drive
+for madhya pradesh trip: i added kaanch mandir first it added well , then after adding shree bada ganpati mandir that rpelaced and sent kaanch mandir to day2. but day 2 had a drive to ujjain and kaanch mandir arrival concides with drive start from ujjain at 3pm. this is not good fitting, looking weird. we planned an intelligence kind of layer for good auto fitting but this is a  basic bug. investigate and fix root causes
+
+[2026-08-07 15:05] [worker-2] ! Rework notifications, progress context, reset trip
+yes look at that. and also the notification messages now only show for 2 seconds, they should stay until next message or stay longer. And make these messages with a inital summary heading, then the detail. Also rethink how these messages can carry bit mroe context - examplel on the initial plana  trip requqest - it just says thinking and it may take 2-4 minutes to build. but behind thinking can you expand into broad categories like looking into hotels, places, building route etc. - critique it if you think otherwise, i want to select the best UX. 
+
+Also provide an option for reset trip - this was in one of the lab shown but was not in scope. add this functionality too. give it as a button or something somewhere without occupying too much space or so.
+
+[2026-08-07 16:40] [worker-2] ! Name the destination in the progress title
+Alogn with building your itinerary - sinc ethe bottom chat is only 1 row very small, the original prompt oin which destination itneierary etc. gets missed totall y out of the page. This notficiaton title can say somehting like "Building your Paris Trip Itinerary" or "Building your Itinerary for Goa Trip"
+
+[2026-08-07 16:55] [worker-2] ! Make the status bar coherent with what the turn actually did
+For a query like chat asking total on road time. the chat agent gave me that, but the top bar message was incoeherent to this - saying done updating your itinerry.. when there was nothing to update. 
+
+I want it fully coeherent set of update . think harder and fix the notificaiton bar properly for proepr informative and intutive messages. And also keep in mind the chat box is now small so unless user maximizes they wont see what agent is printing in response. they cant even see their own last prmopt btw
+
+[2026-08-07 17:05] [worker-2] ! Abstract the accumulated progress topics
+accumulate progress topics not a scripted sequence, but keep it bit abstracted as we dont want to overwhelm user with each and every internal itnerary build detail, and also it wont look elegant.
