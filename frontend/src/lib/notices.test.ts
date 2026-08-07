@@ -22,14 +22,24 @@ describe("notice channel", () => {
     expect(readNotice()?.message).toBe("Switched to Rome.");
   });
 
-  it("expires an outcome but keeps a failure until it is dismissed", () => {
+  it("keeps an outcome on screen until something newer replaces it", () => {
     vi.useFakeTimers();
     notify({ id: "done", tone: "success", message: "Switched to Rome." });
     notify({ id: "failed", tone: "error", message: "Could not remove the place." });
-    vi.advanceTimersByTime(10_000);
+    vi.advanceTimersByTime(60_000);
     expect(readNotice()?.message).toBe("Could not remove the place.");
 
     dismissNotice("failed");
-    expect(readNotice()).toBeNull();
+    expect(readNotice()?.message).toBe("Switched to Rome.");
+  });
+
+  it("carries a detail line alongside the headline", () => {
+    notify({
+      id: "added",
+      tone: "success",
+      message: "Added Kaanch Mandir",
+      detail: "Day 2 was packed, so I moved Lal Bagh Palace to Day 3.",
+    });
+    expect(readNotice()?.detail).toBe("Day 2 was packed, so I moved Lal Bagh Palace to Day 3.");
   });
 });

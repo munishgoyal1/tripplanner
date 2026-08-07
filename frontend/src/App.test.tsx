@@ -1,12 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock, shareActiveTripMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   selectItemMock: vi.fn(),
   deselectItemMock: vi.fn(),
   isAnonymousUserMock: vi.fn(() => true),
   shareActiveTripMock: vi.fn(),
+  resetTripMock: vi.fn(),
   emptyView: {
   trip_id: null,
   has_trip: false,
@@ -37,6 +38,7 @@ vi.mock("./api", () => ({
   selectItem: selectItemMock,
   deselectItem: deselectItemMock,
   startNewTrip: vi.fn(),
+  resetTrip: resetTripMock,
   shareActiveTrip: shareActiveTripMock,
   tripIcsUrl: vi.fn(() => "/api/trip/export.ics"),
   isAnonymousUser: isAnonymousUserMock,
@@ -45,9 +47,9 @@ vi.mock("./api", () => ({
 }));
 
 vi.mock("./components/ChatPanel", () => ({
-  default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
+  default: ({ hideGlobalControls, assistantRequest, layout, onChangeLayout, onHide, turnEffects, onEffectSelect, onTurnComplete, onTurnStatus }: { hideGlobalControls?: boolean; assistantRequest?: { message: string } | null; layout?: string; onChangeLayout?: (layout: "bar" | "sheet" | "full") => void; onHide?: () => void; turnEffects?: { effects: { kind: string; name: string; change: string }[] } | null; onEffectSelect?: (effect: { kind: string; name: string; day?: number; stop?: number; change: string }) => void; onTurnComplete?: (tripId?: string, context?: { proposalOnly: boolean; startedWithoutTrip: boolean; request: string; reply: string }) => void; onTurnStatus?: (status: { phase: "working" | "loading" | "complete" | "error"; message: string } | null) => void }) => (
     <div data-testid="chat-panel" data-global-controls-hidden={hideGlobalControls ? "true" : "false"} data-assistant-request={assistantRequest?.message ?? ""} data-layout={layout ?? "panel"} data-turn-effects={(turnEffects?.effects ?? []).map((effect) => `${effect.name}:${effect.change}`).join(",")}>
-      <button type="button" onClick={() => onHide?.()}>Hide Assistant</button>
+      <button type="button" onClick={() => onHide?.()}>Hide Chat</button>
       <button type="button" onClick={() => onChangeLayout?.("sheet")}>Conversation</button>
       <button type="button" onClick={() => onChangeLayout?.("full")}>Maximize conversation</button>
       <button type="button" onClick={() => onChangeLayout?.("bar")}>Minimize conversation</button>
@@ -55,13 +57,16 @@ vi.mock("./components/ChatPanel", () => ({
       <button type="button" onClick={() => onEffectSelect?.({ kind: "attraction", name: "Louvre Museum", day: 2, stop: 1, change: "added" })}>Open turn effect</button>
       <button type="button" onClick={() => onTurnStatus?.({ phase: "working", message: "Searching hotels. 45s elapsed. Full itinerary builds usually take about 2–4 minutes." })}>Report planning progress</button>
       <button type="button" onClick={() => {
-        onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
-        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: true });
+        onTurnStatus?.({ phase: "loading", message: "Wrapping up" });
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: true, request: "plan a trip", reply: "" });
       }}>Finish new itinerary</button>
       <button type="button" onClick={() => {
-        onTurnStatus?.({ phase: "loading", message: "Loading your updated itinerary now." });
-        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false });
+        onTurnStatus?.({ phase: "loading", message: "Wrapping up" });
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false, request: "rebalance day 3", reply: "" });
       }}>Finish itinerary update</button>
+      <button type="button" onClick={() => {
+        void onTurnComplete?.("khandala-pune-1", { proposalOnly: false, startedWithoutTrip: false, request: "total time on road?", reply: "Total estimated road time is about 20 hours 28 minutes." });
+      }}>Answer a question</button>
     </div>
   ),
 }));
@@ -328,24 +333,43 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower"));
     fireEvent.click(screen.getByRole("button", { name: "Finish new itinerary" }));
 
-    expect(await screen.findByText(/updated itinerary could not be loaded/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Could not load the updated itinerary/i)).toBeInTheDocument();
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower");
   });
 
-  it("shows a concise wrapping update near the trip identity", async () => {
+  it("shows a headline update with the consequence underneath it", async () => {
     fetchTripViewMock.mockResolvedValue({
       ...emptyView,
-      alerts: ["Removed Eiffel Tower and refreshed the itinerary."],
+      alerts: [
+        "Removed Eiffel Tower and refreshed the itinerary.",
+        "Day 2 was packed, so I moved Musée d'Orsay to Day 3.",
+      ],
     });
     setDesktop(true);
     render(<App />);
 
     const status = await screen.findByRole("status");
     expect(status.parentElement).toHaveClass("mr-auto", "flex-1");
-    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass(
-      "line-clamp-2",
-      "whitespace-normal",
-    );
+    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass("truncate");
+    expect(
+      screen.getByText("Day 2 was packed, so I moved Musée d'Orsay to Day 3."),
+    ).toHaveClass("line-clamp-2", "whitespace-normal");
+  });
+
+  it("resets the trip only after the user confirms", async () => {
+    resetTripMock.mockResolvedValue(null);
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    setDesktop(true);
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Reset trip" }));
+    expect(resetTripMock).not.toHaveBeenCalled();
+
+    confirm.mockReturnValue(true);
+    fireEvent.click(screen.getByRole("button", { name: "Reset trip" }));
+    await waitFor(() => expect(resetTripMock).toHaveBeenCalled());
+    expect(await screen.findByText("Trip reset")).toBeInTheDocument();
+    confirm.mockRestore();
   });
 
   it("keeps timely build progress in the top bar until the refreshed itinerary is ready", async () => {
@@ -360,8 +384,27 @@ describe("App responsive workspace", () => {
     expect(screen.getByText(/Searching hotels\. 45s elapsed/)).toHaveClass("text-brand");
 
     fireEvent.click(screen.getByRole("button", { name: "Finish new itinerary" }));
-    expect(screen.getByText("Loading your updated itinerary now.")).toBeInTheDocument();
-    expect(await screen.findByText(/Done building your itinerary/)).toHaveClass("text-emerald-700");
+    expect(screen.getByText("Wrapping up")).toBeInTheDocument();
+    expect(await screen.findByText(/Your itinerary is ready/)).toHaveClass("text-emerald-700");
+  });
+
+  it("does not claim an itinerary update for a turn that only answered a question", async () => {
+    fetchTripViewMock.mockResolvedValue({
+      ...emptyView,
+      trip_id: "khandala-pune-1",
+      has_trip: true,
+      destination: "Madhya Pradesh",
+    });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Answer a question" }));
+
+    expect(await screen.findByText(/Answered in chat/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Total estimated road time is about 20 hours 28 minutes."),
+    ).toBeInTheDocument();
   });
 
   it("summarizes an itinerary modification after its refreshed view loads", async () => {
@@ -379,9 +422,7 @@ describe("App responsive workspace", () => {
     await waitFor(() => expect(fetchTripViewMock).toHaveBeenCalledOnce());
     fireEvent.click(screen.getByRole("button", { name: "Finish itinerary update" }));
 
-    expect(await screen.findByText(
-      "Itinerary refreshed. Everything is loaded and ready for a look.",
-    )).toHaveClass("text-emerald-700");
+    expect(await screen.findByText("Itinerary refreshed.")).toHaveClass("text-emerald-700");
   });
 
   it("keeps itinerary, map, and wider details together with accessible resize controls", async () => {
@@ -422,13 +463,13 @@ describe("App responsive workspace", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Itinerary" }));
     fireEvent.click(screen.getByRole("button", { name: "Hide Map" }));
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
 
     for (const title of [
       "Show or hide itinerary",
       "Show or hide map",
       "Show or hide trip details",
-      "Show or hide the trip assistant",
+      "Show or hide chat",
     ]) {
       expect(screen.getByTitle(title)).toHaveAttribute("aria-pressed", "false");
     }
@@ -458,7 +499,7 @@ describe("App responsive workspace", () => {
       ["Show or hide itinerary", "itinerary"],
       ["Show or hide map", "map"],
       ["Show or hide trip details", "details"],
-      ["Show or hide the trip assistant", "assistant"],
+      ["Show or hide chat", "assistant"],
     ] as const;
 
     for (let mask = 0; mask < 16; mask += 1) {
@@ -482,12 +523,12 @@ describe("App responsive workspace", () => {
     expect(screen.getByText("New trip", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByLabelText("Pane visibility")).toBeInTheDocument();
     const itinerary = screen.getByTitle("Show or hide itinerary");
-    expect(itinerary).toHaveClass("rounded-md", "bg-slate-100", "text-slate-600");
+    expect(itinerary).toHaveClass("rounded-md", "bg-white", "text-slate-700");
     expect(itinerary.querySelector("svg.lucide-list")).toBeInTheDocument();
     expect(screen.getByText("Itinerary", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Map", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByText("Details", { selector: "nav span" })).toBeInTheDocument();
-    expect(screen.getByText("Assistant", { selector: "nav span" })).toBeInTheDocument();
+    expect(screen.getByText("Chat", { selector: "nav span" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Trip actions" })).toHaveClass("text-slate-400");
     expect(screen.getByRole("button", { name: "Account settings" })).toHaveTextContent("Guest");
     expect(screen.queryByRole("button", { name: "Travel preferences" })).not.toBeInTheDocument();
@@ -505,7 +546,7 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel").closest("section")).toHaveClass("hidden");
 
     fireEvent.click(screen.getByTitle("Show or hide trip details"));
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
     expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getByTestId("trip-panel").closest("section")).not.toHaveClass("hidden");
@@ -574,8 +615,8 @@ describe("App responsive workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Maximize conversation" }));
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "full");
 
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
-    fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
+    fireEvent.click(screen.getByTitle("Show or hide chat"));
     expect(screen.getByTestId("chat-panel")).toHaveAttribute("data-layout", "bar");
   });
 
@@ -604,10 +645,10 @@ describe("App responsive workspace", () => {
     render(<App />);
 
     await waitFor(() => expect(screen.getByTestId("chat-panel")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(screen.getByTestId("chat-panel").closest("section")).toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
-    fireEvent.click(screen.getByTitle("Show or hide the trip assistant"));
+    fireEvent.click(screen.getByTitle("Show or hide chat"));
     expect(screen.getByTestId("chat-panel").closest("section")).not.toHaveClass("hidden");
     expect(screen.getAllByTestId("chat-panel")).toHaveLength(1);
   });

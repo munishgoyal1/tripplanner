@@ -62,7 +62,8 @@ describe("ChatPanel progress", () => {
     expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
     await waitFor(() => expect(onTurnStatus).toHaveBeenLastCalledWith(expect.objectContaining({
       phase: "working",
-      message: expect.stringContaining("Checking places and reviews"),
+      message: "Building your itinerary",
+      detail: expect.stringContaining("\u201cPlan a Goa weekend\u201d \u00b7 places"),
     })));
   });
 
@@ -450,7 +451,7 @@ describe("ChatPanel progress", () => {
     expect(onChangeLayout).toHaveBeenCalledWith("full");
     fireEvent.click(screen.getByRole("button", { name: /Minimize/ }));
     expect(onChangeLayout).toHaveBeenCalledWith("bar");
-    fireEvent.click(screen.getByRole("button", { name: "Hide Assistant" }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(onHide).toHaveBeenCalled();
   });
 

@@ -232,6 +232,20 @@ export async function startNewTrip(): Promise<void> {
   return sharedClient.startNewTrip();
 }
 
+/** Empty the active trip's plan but keep its destination, dates and people.
+ * Returns every panel's view-model so the workspace swaps in one update. */
+export async function resetTrip(): Promise<TripWorkspaceView | null> {
+  const res = await apiFetch(`${BASE}/trip/reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not reset the trip");
+  const json = await res.json();
+  if (!json.ok || !json.view) return null;
+  return { view: json.view, map: json.map ?? null, itinerary: json.itinerary ?? null };
+}
+
 /** Build the URL that downloads the active trip as an .ics calendar file. */
 export function tripIcsUrl(): string {
   const params = new URLSearchParams({ user_id: getUserId() });

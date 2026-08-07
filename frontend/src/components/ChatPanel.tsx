@@ -57,6 +57,8 @@ interface Props {
   tripIdHint?: string | null;
   /** Whether an authoritative trip existed when the turn began. */
   hasActiveTrip?: boolean;
+  /** Where the active trip is going, so progress can name it. */
+  destination?: string | null;
   /** Start a fresh planning chat (clears the active trip + general chat). */
   onNewTrip?: () => void;
   /** Called after a successful guest-data import so the App can refresh trip panel. */
@@ -117,6 +119,7 @@ export default function ChatPanel({
   reloadToken = 0,
   tripIdHint = null,
   hasActiveTrip = false,
+  destination = null,
   onNewTrip,
   onImported,
   hideGlobalControls = false,
@@ -181,6 +184,7 @@ export default function ChatPanel({
     tripInputRequest,
   } = useChatStream({
     hasActiveTrip,
+    destination,
     transcriptReady,
     setMessages,
     onSendStart: () => onSendStartRef.current(),
@@ -1167,7 +1171,7 @@ export default function ChatPanel({
         {layout === "full" ? "Restore" : "Maximize"}
       </button>
       {onHide && (
-        <button type="button" onClick={onHide} title="Hide the assistant" aria-label="Hide Assistant" className={dockButton}>
+        <button type="button" onClick={onHide} title="Hide chat" aria-label="Hide Chat" className={dockButton}>
           <X size={12} aria-hidden />
         </button>
       )}
@@ -1184,7 +1188,7 @@ export default function ChatPanel({
         >
           <div className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2">
             <MessageSquare size={13} className="text-brand" aria-hidden />
-            <p className="text-[12px] font-semibold text-ink">Assistant</p>
+            <p className="text-[12px] font-semibold text-ink">Chat</p>
             <div className="ml-auto flex items-center gap-1">{dockControls}</div>
           </div>
           {transcriptBlock}

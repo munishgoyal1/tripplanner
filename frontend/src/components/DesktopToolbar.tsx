@@ -1,10 +1,17 @@
-import { AlertTriangle, List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
+import { AlertTriangle, List, Map, MessageCircle, PanelRight, Plus, RotateCcw, UserRound } from "lucide-react";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
 import TripSwitcher from "./TripSwitcher";
 
 type Pane = "itinerary" | "map" | "details" | "assistant";
+
+const PANES: { pane: Pane; label: string; Icon: typeof List; title: string }[] = [
+  { pane: "assistant", label: "Chat", Icon: MessageCircle, title: "Show or hide chat" },
+  { pane: "itinerary", label: "Itinerary", Icon: List, title: "Show or hide itinerary" },
+  { pane: "map", label: "Map", Icon: Map, title: "Show or hide map" },
+  { pane: "details", label: "Details", Icon: PanelRight, title: "Show or hide trip details" },
+];
 
 interface Props {
   tripVersion: number;
@@ -13,6 +20,7 @@ interface Props {
   onReviewWithPlanner: () => void;
   onKeepReview: () => void;
   onStartNewTrip: () => void;
+  onResetTrip: () => void;
   paneVisibility: Record<Pane, boolean>;
   onTogglePane: (pane: Pane) => void;
   tripActionsDisabled: boolean;
@@ -32,6 +40,7 @@ export default function DesktopToolbar({
   onReviewWithPlanner,
   onKeepReview,
   onStartNewTrip,
+  onResetTrip,
   paneVisibility,
   onTogglePane,
   tripActionsDisabled,
@@ -85,44 +94,36 @@ export default function DesktopToolbar({
           <Plus size={14} aria-hidden />
           <span>New trip</span>
         </button>
+        <button
+          type="button"
+          onClick={onResetTrip}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          title="Clear this trip's plan and start over, keeping the destination, dates and travellers"
+          aria-label="Reset trip"
+        >
+          <RotateCcw size={14} aria-hidden />
+        </button>
         <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
-        <div className="flex items-center gap-1" aria-label="Pane visibility">
-          <button
-            type="button"
-            onClick={() => onTogglePane("itinerary")}
-            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${paneVisibility.itinerary ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-            aria-pressed={paneVisibility.itinerary}
-            title="Show or hide itinerary"
-          >
-            <List size={15} aria-hidden /> <span className="hidden xl:inline">Itinerary</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onTogglePane("map")}
-            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${paneVisibility.map ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-            aria-pressed={paneVisibility.map}
-            title="Show or hide map"
-          >
-            <Map size={15} aria-hidden /> <span className="hidden xl:inline">Map</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onTogglePane("details")}
-            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${paneVisibility.details ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-            aria-pressed={paneVisibility.details}
-            title="Show or hide trip details"
-          >
-            <PanelRight size={15} aria-hidden /> <span className="hidden xl:inline">Details</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onTogglePane("assistant")}
-            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition ${paneVisibility.assistant ? "bg-slate-100 text-slate-600" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"}`}
-            aria-pressed={paneVisibility.assistant}
-            title="Show or hide the trip assistant"
-          >
-            <MessageCircle size={15} aria-hidden /> <span className="hidden xl:inline">Assistant</span>
-          </button>
+        <div
+          className="flex items-center gap-0.5 rounded-lg bg-slate-100/80 p-0.5 ring-1 ring-slate-200/80"
+          aria-label="Pane visibility"
+        >
+          {PANES.map(({ pane, label, Icon, title }) => (
+            <button
+              key={pane}
+              type="button"
+              onClick={() => onTogglePane(pane)}
+              className={`inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-semibold transition ${
+                paneVisibility[pane]
+                  ? "bg-white text-slate-700 shadow-sm ring-1 ring-slate-200/70"
+                  : "text-slate-400 hover:text-slate-600"
+              }`}
+              aria-pressed={paneVisibility[pane]}
+              title={title}
+            >
+              <Icon size={15} aria-hidden /> <span className="hidden xl:inline">{label}</span>
+            </button>
+          ))}
         </div>
         <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
         <button

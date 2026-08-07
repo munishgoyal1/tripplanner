@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
@@ -42,6 +43,16 @@ from tripplanner.tools.trip_common import (  # noqa: F401
     _summary_for_place,
 )
 from tripplanner.tools.trip_diff import diff_plans, format_diff
+from tripplanner.tools.trip_effort import coherence_notes, pacing_statement
+from tripplanner.tools.trip_guard import (
+    Envelope,
+    choose_placement,
+    diff_stops,
+    envelope,
+    receipt,
+    unexpected_changes,
+    validate_plan,
+)
 from tripplanner.tools.trip_validation import (  # noqa: F401
     _empty_itinerary_day_warnings,
     _hotel_destination_errors,
@@ -187,6 +198,15 @@ def _retime_stops_in_order(stops: list[Any]) -> None:
         if not isinstance(stop, dict):
             continue
         current = _parse_hhmm(str(stop.get("time") or ""))
+        if current is not None and _is_leg(stop):
+            # A flight leaves when it leaves. The rest of the day bends around
+            # a journey; the journey does not bend around the rest of the day.
+            previous_end = current + (
+                max(15, int(stop.get("duration_min")))
+                if isinstance(stop.get("duration_min"), (int, float))
+                else 90
+            )
+            continue
         if current is None:
             current = previous_end + 30 if previous_end is not None else 9 * 60
         elif previous_end is not None:
@@ -270,6 +290,10 @@ def _remove_candidate(day: dict[str, Any], destination: str, new_name: str) -> d
         kind = _stop_kind(raw)
         if kind not in {"attraction", "other"}:
             continue
+        # A leg mislabelled as "other" is still a leg. Rebalancing may drop a
+        # sightseeing stop; it may never quietly drop the flight home.
+        if _reads_as_journey(name):
+            continue
         summary = _summary_for_place(name, destination)
         coords = _coords_from_summary(summary)
         rating = summary.get("rating")
@@ -312,20 +336,150 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
         )
         return alerts
     stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-    removed = stops.pop(removal["index"])
-    removed_name = _stop_name(removed)
+    moved = stops[removal["index"]]
+    moved_name = _stop_name(moved)
+    landed = _move_to_another_day(plan, day_index, removal["index"])
+    if landed is None:
+        alerts.append(
+            f"Day {day_index + 1} is full, and {moved_name} does not fit on any other day, "
+            f"so I left it where it is."
+        )
+        return alerts
     alerts.append(
-        f"Day {day_index + 1} was packed, so I added {new_name} and removed {removed_name} to keep the route comfortable."
+        f"Day {day_index + 1} was packed, so I moved {moved_name} to Day {landed} "
+        f"to keep the route comfortable."
     )
-    # Keep the trip's selected buckets consistent with the itinerary.
-    if isinstance(removed, dict):
-        bucket = "selected_hotels" if _stop_kind(removed) == "hotel" else "selected_activities"
-        plan[bucket] = [
-            item
-            for item in (plan.get(bucket) or [])
-            if str(item.get("name") or "").strip().lower() != removed_name.lower()
-        ]
     return alerts
+
+
+def _move_to_another_day(plan: dict[str, Any], day_index: int, stop_index: int) -> int | None:
+    """Relocate a stop the day can no longer hold, rather than deleting it.
+
+    A place the traveller chose is not spare capacity. If no other day can take
+    it the stop stays put, because a crowded day is a smaller problem than a
+    choice that silently disappears.
+    """
+    itinerary = plan.get("day_wise_itinerary") or []
+    day = itinerary[day_index]
+    stops = day.get("stops") if isinstance(day.get("stops"), list) else []
+    stop = stops[stop_index]
+    if not isinstance(stop, dict):
+        return None
+    name = _stop_name(stop)
+    duration = stop.get("duration_min")
+    detached = stops.pop(stop_index)
+    placement, _ = choose_placement(
+        plan,
+        name,
+        _stop_kind(stop) or "attraction",
+        duration_min=int(duration) if isinstance(duration, (int, float)) else None,
+    )
+    if placement is None or placement.day == day_index + 1:
+        stops.insert(stop_index, detached)
+        return None
+    for entry in itinerary:
+        if not isinstance(entry, dict) or entry.get("day") != placement.day:
+            continue
+        target = entry.setdefault("stops", [])
+        detached["time"] = placement.time
+        target.insert(min(placement.index, len(target)), detached)
+        return placement.day
+    stops.insert(stop_index, detached)
+    return None
+
+
+_JOURNEY_RE = re.compile(
+    r"(→|->|\bto\b).*\b(flight|train|bus|drive|transfer|ferry)\b|"
+    r"\b(flight|train|bus|drive|transfer|ferry)\b.*(→|->)",
+    re.I,
+)
+
+
+def _reads_as_journey(name: str) -> bool:
+    """True when a stop name describes travel between places, whatever its kind."""
+    return bool(_JOURNEY_RE.search(name or ""))
+
+
+def _is_leg(stop: Any) -> bool:
+    return _stop_kind(stop) in {"flight", "transport"} or _reads_as_journey(_stop_name(stop))
+
+
+def _restore_undeclared_legs(
+    before: dict[str, Any], after: dict[str, Any], declared: set[str]
+) -> list[str]:
+    """I8. An operation may only remove the entities it declared.
+
+    Swapping a hotel must not take the flight home with it. Rather than trusting
+    every mutation path to be careful, the leg is put back afterwards and the
+    restoration is reported, so the failure can never be silent.
+    """
+    allowed = {name.casefold() for name in declared}
+    days = after.get("day_wise_itinerary")
+    if not isinstance(days, list):
+        return []
+    surviving = {
+        _stop_name(stop).casefold()
+        for entry in days
+        if isinstance(entry, dict)
+        for stop in (entry.get("stops") or [])
+        if _stop_name(stop)
+    }
+    restored: list[str] = []
+    for day_index, entry in enumerate(before.get("day_wise_itinerary") or []):
+        if not isinstance(entry, dict) or day_index >= len(days):
+            continue
+        target = days[day_index]
+        if not isinstance(target, dict):
+            continue
+        # A leg that was renamed rather than dropped still reads as travel on
+        # the same day, so restoring here would duplicate it.
+        if any(_is_leg(stop) for stop in (target.get("stops") or [])):
+            continue
+        for index, stop in enumerate(entry.get("stops") or []):
+            name = _stop_name(stop)
+            if not name or name.casefold() in surviving or name.casefold() in allowed:
+                continue
+            if not _is_leg(stop):
+                continue
+            stops = target.setdefault("stops", [])
+            if not isinstance(stops, list):
+                continue
+            stops.insert(min(index, len(stops)), deepcopy(stop))
+            surviving.add(name.casefold())
+            restored.append(name)
+    return restored
+
+
+def _newly_broken(before: dict[str, Any], after: dict[str, Any]) -> list[str]:
+    """Invariants this edit broke, ignoring the ones it inherited.
+
+    Writing the invariants was not enough; nothing was reading them back after a
+    rebalance, so a stop could be dropped on top of a drive and the trip would
+    still report success. Only the newly-broken ones are reported, because a
+    pre-existing flaw is not this edit's news.
+    """
+    was = {(item.code, item.day, item.stop) for item in validate_plan(before)}
+    return [
+        item.message
+        for item in validate_plan(after)
+        if (item.code, item.day, item.stop) not in was
+    ]
+
+
+def _pacing_text(plan: dict[str, Any]) -> str:
+    """What the shape of the trip costs, in words the user could check.
+
+    This is the weaker authority: it never refuses anything and never reports a
+    score. Most updates produce nothing here, which is the point — a judgement
+    that speaks on every change stops being read.
+    """
+    lines = coherence_notes(plan)[:2]
+    pacing = pacing_statement(plan)
+    if pacing:
+        lines.append(f"{pacing['statement']} {pacing['remedy']}")
+    if not lines:
+        return ""
+    return "\nWorth mentioning to the user: " + " ".join(lines)
 
 
 def _place_selected_stop(
@@ -438,8 +592,27 @@ def _place_selected_stop(
             raw.update(stop)
             stop = raw
 
-    best_idx = requested_idx or 0
-    if preferred_day is None:
+    # Ask the guard first. A day that cannot legally hold the stop is not merely
+    # an expensive choice, it is not a candidate at all — which is what keeps a
+    # new place off the far side of the flight home.
+    placement, rejections = choose_placement(
+        plan,
+        name,
+        stop_kind,
+        duration_min=stop.get("duration_min") if isinstance(stop, dict) else None,
+        preferred_day=preferred_day,
+    )
+    best_idx = requested_idx if requested_idx is not None else 0
+    guarded_time = ""
+    guarded_reason = ""
+    if placement is not None:
+        for idx, entry in enumerate(itinerary):
+            if isinstance(entry, dict) and int(entry.get("day") or idx + 1) == placement.day:
+                best_idx = idx
+                break
+        guarded_time = placement.time
+        guarded_reason = placement.reasons[0] if placement.reasons else ""
+    elif preferred_day is None:
         best_score: float | None = None
         for idx, day in enumerate(itinerary):
             if not isinstance(day, dict):
@@ -461,18 +634,31 @@ def _place_selected_stop(
     day = itinerary[best_idx]
     stops = day.setdefault("stops", []) if isinstance(day, dict) else []
 
-    insert_at = _closest_insert_index(stops, name, destination)
+    insert_at = placement.index if placement is not None else _closest_insert_index(
+        stops, name, destination
+    )
+    insert_at = max(0, min(insert_at, len(stops)))
     if insert_at >= len(stops):
         stops.append(stop)
     else:
         stops.insert(insert_at, stop)
 
-    if not str(stop.get("time") or "").strip():
+    if guarded_time:
+        stop["time"] = guarded_time
+    elif not str(stop.get("time") or "").strip():
         stop["time"] = _infer_stop_time(stops, insert_at, stop_kind)
 
     placed_day = int(day.get("day") or best_idx + 1)
     action = "moved" if existing else "placed"
     alerts.append(f"I {action} {name} to Day {placed_day} in stop {insert_at + 1}.")
+    if guarded_reason:
+        alerts.append(f"Chosen because it costs {guarded_reason}.")
+    elif placement is None and rejections:
+        blocked = rejections[0]
+        alerts.append(
+            f"No slot on Day {blocked.day} fits cleanly — the {blocked.window} gap "
+            f"{blocked.message}. I placed it anyway; adjust the time if that is wrong."
+        )
     return (
         alerts,
         {"day": placed_day, "stop": insert_at + 1, "name": name},
@@ -498,8 +684,16 @@ def _day_entry_and_stops(itinerary: list[Any], day_num: int) -> tuple[dict[str, 
     return None, []
 
 
-def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
-    """Regroup mutable place stops around the current per-day hotel anchors."""
+def _reflow_unbooked_attractions(
+    plan: dict[str, Any], exempt: set[str] | None = None
+) -> bool:
+    """Regroup mutable place stops around the current per-day hotel anchors.
+
+    ``exempt`` names stops the caller has just placed deliberately. Rebalancing
+    is allowed to tidy the trip around a decision; it is not allowed to quietly
+    reverse the decision and leave the explanation pointing at the wrong day.
+    """
+    spared = {name.lower() for name in (exempt or set())}
     itinerary = plan.get("day_wise_itinerary") or []
     days = [day for day in itinerary if isinstance(day, dict)]
     if not days:
@@ -517,7 +711,7 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
         for stop in stops:
             kind = _stop_kind(stop)
             booked = isinstance(stop, dict) and bool(stop.get("booked"))
-            if kind == "attraction" and not booked:
+            if kind == "attraction" and not booked and _stop_name(stop).lower() not in spared:
                 movable.append((day_index, stop))
                 continue
             fixed.append(stop)
@@ -531,20 +725,46 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
     if not movable:
         return False
 
+    # A day the traveller has not reached, or has already left, is not a place
+    # to park a spare attraction. Rebalancing may choose badly; it may not
+    # choose illegally.
+    env = envelope(plan)
+    legal_days = [
+        index
+        for index, day in enumerate(days)
+        if (
+            (env.arrival_day is None or int(day.get("day") or index + 1) >= env.arrival_day)
+            and (
+                env.departure_day is None
+                or int(day.get("day") or index + 1) <= env.departure_day
+            )
+        )
+    ] or list(range(len(days)))
+
     stop_coords = {
         id(stop): _coords_from_summary(_summary_for_place(_stop_name(stop), destination))
         for _, stop in movable
     }
     assignments: list[list[Any]] = [[] for _ in days]
-    target_sizes = [len(movable) // len(days) for _ in days]
-    for index in range(len(movable) % len(days)):
-        target_sizes[index] += 1
+    # Capacity mirrors where the stops already are. Without that, a single
+    # movable stop is handed to the first legal day and a perfectly good day is
+    # emptied for no reason the traveller could name.
+    legal = set(legal_days)
+    target_sizes = [0 for _ in days]
+    homeless = 0
+    for original_day, _stop in movable:
+        if original_day in legal:
+            target_sizes[original_day] += 1
+        else:
+            homeless += 1
+    for position in range(homeless):
+        target_sizes[legal_days[position % len(legal_days)]] += 1
 
     for original_day, stop in movable:
         coords = stop_coords[id(stop)]
-        available = [index for index, size in enumerate(target_sizes) if len(assignments[index]) < size]
+        available = [index for index in legal_days if len(assignments[index]) < target_sizes[index]]
         if not available:
-            available = list(range(len(days)))
+            available = list(legal_days)
 
         def score(day_index: int) -> tuple[float, int, int]:
             anchor = anchors[day_index]
@@ -554,7 +774,13 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
                 distance = abs(day_index - original_day) * 5.0
             return (distance, len(assignments[day_index]), day_index)
 
-        assignments[min(available, key=score)].append(stop)
+        chosen = min(available, key=score)
+        # A time earned on another day means nothing here. Carrying it over is
+        # how a stop ends up sitting on top of whatever this day already does
+        # at that hour.
+        if chosen != original_day and isinstance(stop, dict):
+            stop["time"] = ""
+        assignments[chosen].append(stop)
 
     changed = False
     for day_index, day in enumerate(days):
@@ -584,10 +810,11 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
             for stop in middle
         ):
             middle.sort(key=lambda stop: _parse_hhmm(str(stop.get("time") or "")) or 0)
-        _retime_stops_in_order(middle)
         next_stops = ([hotels[0]] if hotels else []) + middle
         if len(hotels) > 1:
             next_stops.append(hotels[-1])
+        next_stops = _settle_around_legs(next_stops, int(day.get("day") or day_index + 1), env)
+        _retime_stops_in_order(next_stops)
         previous_names = [_stop_name(stop) for stop in day.get("stops") or []]
         next_names = [_stop_name(stop) for stop in next_stops]
         if previous_names != next_names:
@@ -595,6 +822,52 @@ def _reflow_unbooked_attractions(plan: dict[str, Any]) -> bool:
         day["stops"] = next_stops
 
     return changed
+
+
+def _settle_around_legs(stops: list[Any], day_number: int, env: Envelope) -> list[Any]:
+    """Put the day's journeys back where the trip says they belong.
+
+    Checking into a hotel before the plane lands is not a scheduling preference,
+    it is a lie about where the traveller is. The arrival leg opens its day and
+    the departure leg closes its day; everything else keeps the order it had.
+    """
+    legs = [stop for stop in stops if _is_leg(stop)]
+    if not legs:
+        return stops
+    body = [stop for stop in stops if not _is_leg(stop)]
+    lead = legs if day_number == env.arrival_day and day_number != env.departure_day else []
+    trail = legs if day_number == env.departure_day and day_number != env.arrival_day else []
+    if lead or trail:
+        return lead + body + trail
+
+    # A drive in the middle of the day is an anchor too. A stop that cannot
+    # finish before the drive pulls away belongs on the far side of it, not on
+    # top of it.
+    timed_legs = sorted(
+        (
+            (stop, at)
+            for stop in legs
+            if (at := _parse_hhmm(str(stop.get("time") or ""))) is not None
+        ),
+        key=lambda pair: pair[1],
+    )
+    if not timed_legs:
+        return stops
+
+    settled: list[Any] = []
+    remaining = list(body)
+    for leg, departs in timed_legs:
+        before: list[Any] = []
+        after: list[Any] = []
+        for stop in remaining:
+            at = _parse_hhmm(str(stop.get("time") or "")) if isinstance(stop, dict) else None
+            duration = stop.get("duration_min") if isinstance(stop, dict) else None
+            length = max(15, int(duration)) if isinstance(duration, (int, float)) else 90
+            (before if at is not None and at + length <= departs else after).append(stop)
+        settled.extend(before)
+        settled.append(leg)
+        remaining = after
+    return settled + remaining
 
 
 @_serialized_mutation
@@ -826,6 +1099,8 @@ def add_selection(
         if already_selected
         else f"Added {name} to your trip."
     ]
+    before = deepcopy(plan)
+    declared = {name}
     placement: dict[str, Any] | None = None
     if _is_place_kind(kind):
         placement_alerts, placement, placed = _place_selected_stop(
@@ -836,16 +1111,25 @@ def add_selection(
         alerts.extend(placement_alerts)
         if not already_selected:
             bucket.append(item)
-        if preferred_day is None and _reflow_unbooked_attractions(plan):
+        if preferred_day is None and _reflow_unbooked_attractions(plan, {name}):
             alerts.append("Rebalanced unbooked itinerary stops around the updated trip.")
         canonical_kind = _canonical_place_kind(kind)
         if canonical_kind == "attraction" and preferred_day is None:
             itinerary = plan.get("day_wise_itinerary") or []
             for day_index in range(len(itinerary)):
                 alerts.extend(_rebalance_day(plan, day_index, name, canonical_kind))
-            _reflow_unbooked_attractions(plan)
+            _reflow_unbooked_attractions(plan, {name})
     elif not already_selected:
         bucket.append(item)
+    restored = _restore_undeclared_legs(before, plan, declared)
+    if restored:
+        alerts.append(
+            "Kept " + ", ".join(restored) + " — that leg was not part of this change."
+        )
+    stray = unexpected_changes(diff_stops(before, plan), declared)
+    if stray:
+        alerts.append("Fitting that in also had a knock-on effect. " + receipt(stray))
+    alerts.extend(_newly_broken(before, plan))
     _save_active_trip(plan)
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 
@@ -1168,6 +1452,49 @@ def _delete_active_trip() -> None:
     _resolve_active_trip_path().unlink(missing_ok=True)
 
 
+# What a reset keeps: where you are going, when, who with, and what you told us
+# you like. Everything else is the plan, and the plan is what you are throwing
+# away. Starting over should not mean typing your dates in again.
+_RESET_KEEPS = frozenset(
+    {
+        "trip_id",
+        "created_at",
+        "destination",
+        "origin",
+        "departure_date",
+        "return_date",
+        "travelers",
+        "notes",
+        "budget",
+        "currency",
+        "preferences_snapshot",
+        "planning_recommendation",
+        "trip_constraints",
+        "visa",
+    }
+)
+
+
+@_serialized_mutation
+def reset_active_trip() -> dict[str, Any] | None:
+    """Empty the active trip's plan while keeping its brief.
+
+    Non-tool: called by the "Reset" button. Returns the emptied plan, or
+    ``None`` when there is nothing active to reset.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return None
+    fresh = {key: value for key, value in plan.items() if key in _RESET_KEEPS}
+    fresh["status"] = "draft"
+    fresh["day_wise_itinerary"] = []
+    fresh["selected_flights"] = []
+    fresh["selected_hotels"] = []
+    fresh["selected_activities"] = []
+    _save_active_trip(fresh)
+    return fresh
+
+
 @tool
 @_serialized_mutation
 def create_trip_plan(
@@ -1445,12 +1772,30 @@ def update_trip_plan(updates_json: str) -> str:
     ):
         _reflow_unbooked_attractions(plan)
 
+    # Only a declared change to the flights may remove a leg. Swapping a hotel
+    # or resubmitting one day of the itinerary may not.
+    declared_legs: set[str] = set()
+    if "selected_flights" in updates:
+        declared_legs = {
+            _stop_name(leg)
+            for leg in (before.get("selected_flights") or [])
+            if _stop_name(leg)
+        }
+    restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
+
     _save_active_trip(plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
     empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
     transport_warnings = _round_trip_transport_warnings(plan)
     hotel_warnings = _hotel_selection_warnings(plan)
     warning_text = ""
+    if restored_legs:
+        warning_text += (
+            "\nKept "
+            + ", ".join(restored_legs)
+            + ": this update did not declare a change to the flights, so the leg was "
+            "restored. Send selected_flights when you mean to change travel."
+        )
     if merged_partial_itinerary:
         warning_text += (
             "\nPartial itinerary update merged: only the days you sent were replaced, "
@@ -1491,7 +1836,7 @@ def update_trip_plan(updates_json: str) -> str:
         return f"Trip plan updated (no material changes). Status: {plan['status']}{warning_text}"
     return (
         f"Trip plan updated. Status: {plan['status']}\n"
-        f"What changed:\n{format_diff(bullets)}{warning_text}"
+        f"What changed:\n{format_diff(bullets)}{warning_text}{_pacing_text(plan)}"
     )
 
 

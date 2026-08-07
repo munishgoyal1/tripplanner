@@ -9,7 +9,10 @@ export type NoticeTone = "progress" | "success" | "error" | "decision";
 export interface Notice {
   id: string;
   tone: NoticeTone;
+  /** One short line: what happened. */
   message: string;
+  /** Everything after the headline: why, what it cost, what to do next. */
+  detail?: string;
 }
 
 // Higher wins when several notices are live at once. Ties go to the newest.
@@ -20,8 +23,9 @@ const RANK: Record<NoticeTone, number> = {
   success: 1,
 };
 
-// Outcomes fade on their own; anything the user must act on stays put.
-const AUTO_DISMISS_MS: Partial<Record<NoticeTone, number>> = { success: 4000 };
+// Nothing expires on a timer. A notice that vanishes while the user is still
+// reading it is worse than one that lingers, and the next notice replaces this
+// one anyway. Outcomes stay until something newer has something to say.
 
 interface Entry extends Notice {
   seq: number;
@@ -48,7 +52,9 @@ function publish(): void {
       best = entry;
     }
   }
-  snapshot = best ? { id: best.id, tone: best.tone, message: best.message } : null;
+  snapshot = best
+    ? { id: best.id, tone: best.tone, message: best.message, detail: best.detail }
+    : null;
   for (const listener of listeners) listener();
 }
 
@@ -56,9 +62,13 @@ function publish(): void {
 export function notify(notice: Omit<Notice, "id"> & { id?: string }): string {
   const id = notice.id ?? `notice-${++sequence}`;
   clearTimer(id);
-  entries.set(id, { id, tone: notice.tone, message: notice.message, seq: ++sequence });
-  const ttl = AUTO_DISMISS_MS[notice.tone];
-  if (ttl) timers.set(id, setTimeout(() => dismissNotice(id), ttl));
+  entries.set(id, {
+    id,
+    tone: notice.tone,
+    message: notice.message,
+    detail: notice.detail,
+    seq: ++sequence,
+  });
   publish();
   return id;
 }

@@ -12,10 +12,11 @@ import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
-import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
+import { completionStatus } from "./lib/turnStatus";
 import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
@@ -437,6 +438,37 @@ export default function App() {
       });
     }
   };
+  const handleResetTrip = async () => {
+    if (
+      !window.confirm(
+        "Reset this trip? The itinerary and everything you've picked will be cleared. " +
+          "The destination, dates and travellers stay, so you can rebuild from the same brief.",
+      )
+    )
+      return;
+    try {
+      dismissNotice("action-error");
+      const workspace = await resetTrip();
+      setAssistantTurnStatus(null);
+      setPanelSeed(workspace);
+      dispatchWorkspace({ type: "trip-changed" });
+      await refresh(null);
+      notify({
+        id: "trip-reset",
+        tone: "success",
+        message: "Trip reset",
+        detail: "The plan is empty. Your destination, dates and travellers are unchanged.",
+      });
+      trackEvent("trip_reset", { surface: "desktop" });
+    } catch (error) {
+      notify({
+        id: "action-error",
+        tone: "error",
+        message: "Could not reset the trip",
+        detail: error instanceof Error ? error.message : undefined,
+      });
+    }
+  };
   const handleImported = async () => {
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
@@ -486,33 +518,24 @@ export default function App() {
     if (!refreshed || (tripId && refreshed.trip_id !== tripId)) {
       setAssistantTurnStatus({
         phase: "error",
-        message: "The planning work finished, but the updated itinerary could not be loaded. Your previous view is still available.",
+        message: "Could not load the updated itinerary",
+        detail: "The planning work finished. Your previous view is still on screen.",
       });
       return;
     }
     const effects = diffTurnEffects(tripChanged ? null : beforeTurn, refreshed);
     if (effects.length) setTurnEffects({ token: Date.now(), effects });
-    if (context?.proposalOnly) {
-      setAssistantTurnStatus({
-        phase: "complete",
-        message: "Review complete. Your itinerary is unchanged and ready for your decision.",
-      });
-      return;
-    }
-    await applyTurnSelection(effects, tripChanged);
-    if (context?.startedWithoutTrip) {
-      setAssistantTurnStatus({
-        phase: "complete",
-        message: "Done building your itinerary. Your trip is ready to explore; start checking it out.",
-      });
-      return;
-    }
-    const updateSummary = compactStatus(refreshed.alerts?.[0]);
+    if (!context?.proposalOnly) await applyTurnSelection(effects, tripChanged);
     setAssistantTurnStatus({
       phase: "complete",
-      message: updateSummary
-        ? `${updateSummary} Everything is loaded and ready for a look.`
-        : "Done updating your itinerary. Everything is loaded and ready for a look.",
+      ...completionStatus({
+        destination: refreshed.destination,
+        startedWithoutTrip: Boolean(context?.startedWithoutTrip),
+        proposalOnly: Boolean(context?.proposalOnly),
+        effects,
+        reply: context?.reply ?? "",
+        alert: compactStatus(refreshed.alerts?.[0]),
+      }),
     });
   };
 
@@ -821,6 +844,7 @@ export default function App() {
       reloadToken={chatReloadToken}
       tripIdHint={chatTripId}
       hasActiveTrip={Boolean(view?.has_trip)}
+      destination={view?.destination ?? null}
       onNewTrip={handleNewTrip}
       onImported={handleImported}
       hideGlobalControls
@@ -856,7 +880,11 @@ export default function App() {
     if (!chatOpen) setAssistantView("bar");
   }, [chatOpen]);
 
+  // The first alert says what happened; anything after it is the guard saying
+  // what that cost. The headline stays short and the rest becomes the detail,
+  // so "apply and say what it cost" survives without a wall of text.
   const latestStatus = compactStatus(view?.alerts?.[0]);
+  const statusDetail = (view?.alerts ?? []).slice(1).filter(Boolean).join(" ") || undefined;
   const reviewSummary = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
     : null;
@@ -872,11 +900,11 @@ export default function App() {
 
   useEffect(() => {
     if (latestStatus && !reviewSummary) {
-      notify({ id: "trip-alert", tone: "success", message: latestStatus });
+      notify({ id: "trip-alert", tone: "success", message: latestStatus, detail: statusDetail });
     } else {
       dismissNotice("trip-alert");
     }
-  }, [latestStatus, reviewSummary]);
+  }, [latestStatus, statusDetail, reviewSummary]);
 
   useEffect(() => {
     if (reviewSummary) notify({ id: "planner-review", tone: "decision", message: reviewSummary });
@@ -888,7 +916,7 @@ export default function App() {
       dismissNotice("assistant");
       return;
     }
-    const { phase, message } = assistantTurnStatus;
+    const { phase, message, detail } = assistantTurnStatus;
     notify({
       id: "assistant",
       tone:
@@ -898,6 +926,7 @@ export default function App() {
             ? "error"
             : "success",
       message,
+      detail,
     });
   }, [assistantTurnStatus]);
 
@@ -913,6 +942,7 @@ export default function App() {
           onReviewWithPlanner={reviewWithPlanner}
           onKeepReview={() => setPlannerReview(null)}
           onStartNewTrip={handleStartNewTrip}
+          onResetTrip={handleResetTrip}
           paneVisibility={{
             itinerary: itineraryOpen,
             map: mapOpen,
@@ -1012,6 +1042,7 @@ export default function App() {
               reloadToken={chatReloadToken}
               tripIdHint={chatTripId}
               hasActiveTrip={Boolean(view?.has_trip)}
+              destination={view?.destination ?? null}
               onNewTrip={handleNewTrip}
               onImported={handleImported}
             />
