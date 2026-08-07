@@ -4,15 +4,19 @@ param(
     [Parameter(Mandatory)]
     [string]$LabId,
 
-    [Parameter(Mandatory)]
-    [string]$Evidence,
+    [string]$Evidence = "",
+
+    [ValidateSet("ready", "implemented-review", "parked", "completed", "discarded")]
+    [string]$State = "implemented-review",
 
     [string]$StorePath
 )
 
 $ErrorActionPreference = "Stop"
 
-if (-not $Evidence.Trim()) { throw "Implementation evidence cannot be blank." }
+if ($State -eq "implemented-review" -and -not $Evidence.Trim()) {
+    throw "Implementation evidence cannot be blank when recording an implementation."
+}
 
 if (-not $StorePath) {
     $localDataRoot = if ($env:LOCALAPPDATA) {
@@ -63,14 +67,24 @@ if (-not $lab) { throw "Lab '$LabId' does not have a saved handoff." }
 
 $handoffs = @($lab.handoffs)
 if (-not $handoffs.Count) { throw "Lab '$LabId' does not have versioned handoff history." }
-if ($lab.disposition -ne "ready") {
-    throw "Lab '$LabId' must be In progress with a ready handoff before implementation can be recorded."
-}
-if ($lab.disposition -eq "implemented-review") {
+if ($State -eq "implemented-review" -and $lab.disposition -eq "implemented-review") {
     throw "Lab '$LabId' is already implemented and awaiting review. Save a new handoff before recording another implementation."
 }
 
 $handoff = $handoffs | Sort-Object { [int]$_.version } | Select-Object -Last 1
+$handoffVersion = (($handoffs | ForEach-Object { [int]$_.version } | Measure-Object -Maximum).Maximum) + 1
+$recordedAt = [DateTime]::UtcNow.ToString("o")
+$stateRecord = [ordered]@{
+    version = $handoffVersion
+    selection = [string]$handoff.selection
+    selectionLabel = [string]$handoff.selectionLabel
+    comment = [string]$handoff.comment
+    disposition = $State
+    recordedAt = $recordedAt
+}
+$lab.handoffs = @($handoffs) + @($stateRecord)
+
+if ($State -eq "implemented-review") {
 $implementations = if (@($lab.implementations).Count) {
     @($lab.implementations)
 } elseif ($lab.implementation) {
@@ -92,10 +106,9 @@ $version = if ($existingVersions.Count) {
 } else {
     1
 }
-$recordedAt = [DateTime]::UtcNow.ToString("o")
 $implementation = [ordered]@{
     version = $version
-    handoffVersion = [int]$handoff.version
+    handoffVersion = $handoffVersion
     selection = [string]$handoff.selection
     selectionLabel = [string]$handoff.selectionLabel
     comment = [string]$handoff.comment
@@ -113,7 +126,8 @@ $lab.implementation = [ordered]@{
     recordedAt = $implementation.recordedAt
 }
 $lab.implementationSummary = $implementation.summary
-$lab.disposition = "implemented-review"
+}
+$lab.disposition = $State
 $lab.stateChangedAt = $recordedAt
 $lab.updatedAt = $recordedAt
 
@@ -128,7 +142,11 @@ try {
     if (Test-Path -LiteralPath $temporaryPath) { Remove-Item -LiteralPath $temporaryPath -Force }
 }
 
-Write-Host "Recorded implementation v$version -> handoff v$($handoff.version) for $LabId."
+if ($State -eq "implemented-review") {
+    Write-Host "Recorded implementation v$version -> state version v$handoffVersion for $LabId."
+} else {
+    Write-Host "Recorded state '$State' as version v$handoffVersion for $LabId."
+}
 } finally {
     if ($lock) { $lock.Dispose() }
     if (Test-Path -LiteralPath $lockPath) { Remove-Item -LiteralPath $lockPath -Force }

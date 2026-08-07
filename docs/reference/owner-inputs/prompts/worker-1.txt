@@ -51,3 +51,9 @@ In C:\repos\tripplanner.worktrees\worker-1, create the fresh sandbox exactly wit
 [2026-08-06 19:32] [worker-1 !] Version Lab Handoff States
 why lab 20 doesnt have a versioned record of chosen choice and notes. already i saved a handoff with option B. Now relooking after few hrs it is hard to make whether i intentionally save dsomething or not (really speakign whether design was reviewed or not) Also make the state transitions bit more proper.
 Allow me to put it to any state anytime. After it is implemented by agent it should change state to implemented, after i save handoff / re-save a new handoff it should create a version of choices, including a record for what got implemented.
+
+[2026-08-07 00:00] [worker-1 !] Simplify Lab State History
+after a  lab implementation change its status to implemented-in review and save it in state verison. so that we know what has been done ont hat lab. after that owner can signoff or discard or park or save another ahandoff for iteraiton.
+Show the states like earlier buttons instead fo dropdown. dont spend too much time on fixing logic for labs (it is internal tool just should be convenient enough nothing more)
+owner can still save another handoff anytime, or anytime change the state to anything, only thing you have to ensure is save that choice+notes+state verison so we know what is the last thing happened with lab. One small change - while showing order the versions by latest first.
+Not othe rmajor changes. - just ensure to save version, change the state after implementation, discard, park etc. - any acitons done by agent from backdoor.

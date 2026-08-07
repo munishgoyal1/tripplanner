@@ -40,7 +40,7 @@ interface HandoffRecord {
 }
 
 function handoffHistory(selection: SavedSelection, options: DecisionOption[]): HandoffRecord[] {
-  if (selection.handoffs?.length) return selection.handoffs;
+  if (selection.handoffs?.length) return [...selection.handoffs].sort((first, second) => second.version - first.version);
   if (!selection.selection) return [];
   return [{
     version: 1,
@@ -57,12 +57,20 @@ function handoffHistory(selection: SavedSelection, options: DecisionOption[]): H
 function implementationHistory(
   selection: SavedSelection,
 ): ImplementationRecord[] {
-  if (selection.implementations?.length) return selection.implementations;
+  if (selection.implementations?.length) return [...selection.implementations].sort((first, second) => (second.version || 0) - (first.version || 0));
   if (selection.implementation) return [{ ...selection.implementation, version: 1 }];
   return [];
 }
 
 type LabDisposition = "ready" | "implemented-review" | "parked" | "completed" | "discarded";
+
+const LAB_STATES: { value: LabDisposition; label: string }[] = [
+  { value: "ready", label: "In progress" },
+  { value: "implemented-review", label: "Implemented - Review" },
+  { value: "parked", label: "Parked" },
+  { value: "completed", label: "Completed" },
+  { value: "discarded", label: "Discarded" },
+];
 
 interface DecisionCaptureProps {
   labId: string;
@@ -78,7 +86,6 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
   const [saved, setSaved] = useState<SavedSelection | null>(null);
   const [implementations, setImplementations] = useState<ImplementationRecord[]>([]);
   const [handoffs, setHandoffs] = useState<HandoffRecord[]>([]);
-  const [implementationSummary, setImplementationSummary] = useState("");
   const [disposition, setDisposition] = useState<LabDisposition>("ready");
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "offline">("loading");
   const onChooseRef = useRef(onChoose);
@@ -94,7 +101,6 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         setComment(localDraft.comment || "");
         setDisposition(localDraft.disposition || "ready");
         setHandoffs(handoffHistory(localDraft, optionsRef.current));
-        setImplementationSummary(localDraft.implementationSummary || "");
         setImplementations(implementationHistory(localDraft));
         onChooseRef.current(localDraft.selection);
       }
@@ -121,7 +127,6 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           if (!draftIsNewer) {
             setComment(existing.comment || "");
             setDisposition(existing.disposition || "ready");
-            setImplementationSummary(existing.implementationSummary || "");
             if (existing.selection) onChooseRef.current(existing.selection);
           }
         }
@@ -136,26 +141,20 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
   const selectedLabel = options.find((option) => option.id === activeOption)?.label || activeOption;
   const dirty = saved?.selection !== activeOption
     || saved?.comment !== comment
-    || saved?.disposition !== disposition
-    || (saved?.implementationSummary || "") !== implementationSummary;
+    || saved?.disposition !== disposition;
   const isReimplementation = implementations.length > 0;
   const showSaveConfirmation = status === "saved" && Boolean(saved) && !dirty;
-  const enteringImplementedState = ["implemented-review", "completed"].includes(disposition)
-    && !["implemented-review", "completed"].includes(saved?.disposition || "");
-  const missingImplementationEvidence = enteringImplementedState && !implementationSummary.trim();
 
   const keepDraft = (
     selection: string,
     nextComment: string,
     nextDisposition = disposition,
-    nextImplementationSummary = implementationSummary,
   ) => {
     localStorage.setItem(draftKey, JSON.stringify({
       selection,
       comment: nextComment,
       disposition: nextDisposition,
       handoffs,
-      implementationSummary: nextImplementationSummary,
       implementations,
       updatedAt: new Date().toISOString(),
     }));
@@ -188,7 +187,6 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           selectionLabel: selectedLabel,
           comment,
           disposition,
-          implementationSummary,
         }),
       });
       if (!response.ok) throw new Error("Unable to save selection");
@@ -255,7 +253,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
         <div className="mt-4 rounded-md bg-slate-50 px-3 py-3 ring-1 ring-slate-200">
           <p className="text-[10px] font-bold uppercase text-slate-600">Saved handoff history</p>
           <div className="mt-2 grid gap-2">
-            {[...handoffs].reverse().map((handoff) => (
+            {handoffs.map((handoff) => (
               <article key={`${handoff.version}-${handoff.recordedAt}`} className="rounded-md bg-white px-3 py-2 ring-1 ring-slate-200">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <p className="text-xs font-bold text-ink">Handoff version {handoff.version}</p>
@@ -285,42 +283,28 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
       <label className="mt-4 block text-xs font-semibold text-slate-700" htmlFor={`${labId}-comment`}>Handoff notes</label>
       <textarea id={`${labId}-comment`} value={comment} onChange={(event) => updateComment(event.target.value)} rows={5} placeholder="Describe modifications, additional inputs, details to preserve, and implementation or validation instructions for this option." className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40" />
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
-        <label className="text-xs font-semibold text-slate-700">
-          Lab state
-          <select
-            aria-label="Lab state"
-            value={disposition}
-            onChange={(event) => {
-              const nextDisposition = event.target.value as LabDisposition;
-              setDisposition(nextDisposition);
-              keepDraft(activeOption, comment, nextDisposition);
-            }}
-            className="mt-2 h-10 w-full rounded-md border-0 bg-white px-3 text-sm text-ink ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-brand/40"
-          >
-            <option value="ready">In progress</option>
-            <option value="parked">Parked</option>
-            <option value="implemented-review">Implemented - To be reviewed</option>
-            <option value="completed">Completed</option>
-            <option value="discarded">Discarded</option>
-          </select>
-        </label>
-        {(disposition === "implemented-review" || disposition === "completed") && (
-          <label className="text-xs font-semibold text-slate-700">
-            Implementation evidence
-            <textarea
-              aria-label="Implementation evidence"
-              value={implementationSummary}
-              onChange={(event) => {
-                setImplementationSummary(event.target.value);
-                keepDraft(activeOption, comment, disposition, event.target.value);
-              }}
-              rows={3}
-              placeholder="Agent summary, commit or PR, deviations, and validation evidence."
-              className="mt-2 w-full resize-y rounded-md border-0 bg-slate-50 px-3 py-2.5 text-sm leading-relaxed text-ink ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40"
-            />
-          </label>
-        )}
+      <div className="mt-4 grid gap-3">
+        <fieldset>
+          <legend className="text-xs font-semibold text-slate-700">Lab state</legend>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {LAB_STATES.map((state) => (
+              <label key={state.value} className={`cursor-pointer rounded-md px-3 py-2 text-xs font-semibold ring-1 ${disposition === state.value ? "bg-brand text-white ring-brand" : "bg-white text-slate-600 ring-slate-200 hover:ring-brand/30"}`}>
+                <input
+                  type="radio"
+                  name={`${labId}-state`}
+                  value={state.value}
+                  checked={disposition === state.value}
+                  onChange={() => {
+                    setDisposition(state.value);
+                    keepDraft(activeOption, comment, state.value);
+                  }}
+                  className="sr-only"
+                />
+                {state.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
       {showSaveConfirmation && (
@@ -345,7 +329,7 @@ export function DecisionCapture({ labId, labTitle, options, activeOption, onChoo
           {status === "offline" && "Save did not complete. The draft is kept in this browser; restart the Labs server, then retry."}
           {status === "idle" && (dirty ? "Workspace save pending; browser draft kept" : saved ? "Saved in this workspace" : "Nothing saved yet")}
         </p>
-        <button type="button" onClick={save} disabled={status === "saving" || missingImplementationEvidence} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> Save handoff version</button>
+        <button type="button" onClick={save} disabled={status === "saving"} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"><Save size={14} aria-hidden /> Save handoff version</button>
       </div>
     </section>
   );

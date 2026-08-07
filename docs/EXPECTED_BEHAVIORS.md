@@ -473,16 +473,20 @@ appears separately; revisiting Analytics in Account does not recreate that promp
 **Trigger:** Open any Lab, inspect an option, revise its handoff notes, choose any
 lifecycle state, and save or re-save the handoff.
 
-**Expected:** Every option and lifecycle state remains selectable at any time;
+**Expected:** Every option and lifecycle state remains selectable through visible
+state buttons at any time;
 choosing an option does not silently change state. Every save appends an immutable
 handoff version containing the selected option, exact notes, state, version number,
 and recorded time. Existing single-record selections migrate to handoff version 1,
 including Lab 20's saved Option B. Discarding changes state without deleting review
-history. When an agent implementation is saved as Implemented - To be reviewed, a
+history. Agent-side implementation, park, discard, completion, and reopen actions
+append the same choice, exact notes, resulting state, version number, and time. When
+an agent implementation is saved as Implemented - To be reviewed, a
 separate immutable implementation record links to its handoff version and preserves
 the agent's implementation evidence. Every implemented version remains visible under
 What was implemented with its selected option, exact saved notes, version number,
-recorded time, and implementation summary. One final summary lists every implemented
+recorded time, and implementation summary. Handoff and implementation versions are
+shown newest first. One final summary lists every implemented
 option and its notes. Saving shows an explicit confirmation naming the selected option
 and saved handoff version and cannot remain indefinitely in a Saving state.
 The permanent Lab number appears explicitly in the detail page's top header area
@@ -495,8 +499,7 @@ than guessing.
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `keeps every option browsable after loading an implemented choice`
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `starts a re-implementation handoff without losing the completed direction`
 - [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `shows exact notes and a final summary for every implementation version`
-- [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `allows any state and records implementation evidence with the handoff`
-- [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `appends the next implementation version after a reopened Lab`
+- [`frontend/labs/src/shared/DecisionCapture.test.tsx`](../frontend/labs/src/shared/DecisionCapture.test.tsx) - `allows any state without requiring owner-entered implementation evidence`
 - [`frontend/labs/feedback-plugin.test.ts`](../frontend/labs/feedback-plugin.test.ts) - `turns an existing Lab 20 choice into auditable version one`
 - [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `records implementation against latest handoff`
 - [`tests/test_record_lab_implementation.py`](../tests/test_record_lab_implementation.py) - `rejects duplicate implementation without changing store`

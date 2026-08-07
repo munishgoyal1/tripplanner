@@ -22,7 +22,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
-| `dev/record-lab-implementation.ps1` | After implementing a saved UX Lab handoff, append implementation evidence and move it to owner review |
+| `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
@@ -34,7 +34,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for its endpoints, and print the URLs |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
-| `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, then merge it into a sandbox branch |
+| `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, merge the sandbox's remote head and `master` into its local branch, then push that sandbox branch; never promotes to `master` |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
 | `sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
