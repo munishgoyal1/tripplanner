@@ -6,6 +6,7 @@ import type { ChatMessage, TripInputRequest } from "../types";
 export interface AssistantTurnStatus {
   phase: "working" | "loading" | "complete" | "error";
   message: string;
+  detail?: string;
 }
 
 export interface AssistantTurnContext {
@@ -55,6 +56,33 @@ function toolProgressLabel(name: string): string {
   return "Working on your trip";
 }
 
+/** The same work, named as a subject the user can recognise in a list. */
+function toolTopic(name: string): string {
+  if (/flight/i.test(name)) return "flights";
+  if (/hotel/i.test(name)) return "hotels";
+  if (/restaurant/i.test(name)) return "food";
+  if (/place|review|activit/i.test(name)) return "places";
+  if (/route|optimi/i.test(name)) return "routes";
+  if (/weather/i.test(name)) return "weather";
+  if (/visa/i.test(name)) return "entry rules";
+  if (/event/i.test(name)) return "events";
+  if (/preference|memory|profile/i.test(name)) return "your preferences";
+  if (/update|create|finalize|plan/i.test(name)) return "the itinerary";
+  if (/web_search/i.test(name)) return "current information";
+  return "";
+}
+
+function joinTopics(topics: string[]): string {
+  if (topics.length <= 1) return topics[0] ?? "";
+  return `${topics.slice(0, -1).join(", ")} and ${topics[topics.length - 1]}`;
+}
+
+/** Short enough to sit in a list of clauses rather than end a sentence. */
+export function waitHint(isNewTrip: boolean, seconds: number): string {
+  if (seconds >= 120) return "still working, no need to refresh";
+  return isNewTrip ? "full builds take about 2\u20134 minutes" : "a full rebuild takes about 2\u20134 minutes";
+}
+
 export function waitGuidance(isNewTrip: boolean, seconds: number): string {
   if (seconds >= 120) {
     return "Full builds usually take about 2–4 minutes. Still working; no need to refresh.";
@@ -82,6 +110,7 @@ export function useChatStream({
   const [failedRequest, setFailedRequest] = useState<FailedRequest | null>(null);
   const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
   const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
+  const [coveredTopics, setCoveredTopics] = useState<string[]>([]);
   const [progressSeconds, setProgressSeconds] = useState(0);
   const streamControllerRef = useRef<AbortController | null>(null);
   const turnStartedAtRef = useRef(0);
@@ -101,11 +130,23 @@ export function useChatStream({
   useEffect(() => {
     if (!busy || !progress) return;
     const publishedSeconds = Math.floor(progressSeconds / 10) * 10;
-    const message = `${progress.label}. ${elapsedLabel(publishedSeconds)}. ${waitGuidance(!hasActiveTrip, publishedSeconds)}`;
-    if (publishedTurnStatusRef.current === message) return;
-    publishedTurnStatusRef.current = message;
-    onTurnStatus?.({ phase: "working", message });
-  }, [busy, hasActiveTrip, onTurnStatus, progress, progressSeconds]);
+    // The heading stays still so the user is not re-reading a line that keeps
+    // changing shape; the detail carries what actually moved. Only work that
+    // really happened is listed — inventing plausible-sounding stages would
+    // make the status a decoration rather than a report.
+    const heading = hasActiveTrip ? "Updating your trip" : "Building your itinerary";
+    const detail = [
+      progress.label,
+      coveredTopics.length ? `covered ${joinTopics(coveredTopics)}` : null,
+      elapsedLabel(publishedSeconds),
+      waitHint(!hasActiveTrip, publishedSeconds),
+    ]
+      .filter(Boolean)
+      .join(" \u00b7 ");
+    if (publishedTurnStatusRef.current === detail) return;
+    publishedTurnStatusRef.current = detail;
+    onTurnStatus?.({ phase: "working", message: heading, detail });
+  }, [busy, coveredTopics, hasActiveTrip, onTurnStatus, progress, progressSeconds]);
 
   useEffect(() => () => {
     streamControllerRef.current?.abort();
@@ -125,6 +166,7 @@ export function useChatStream({
     setBusy(true);
     turnStartedAtRef.current = Date.now();
     publishedTurnStatusRef.current = "";
+    setCoveredTopics([]);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
     const streamController = new AbortController();
     streamControllerRef.current = streamController;
@@ -185,6 +227,12 @@ export function useChatStream({
               break;
             }
           }
+          const topic = toolTopic(name);
+          if (topic) {
+            setCoveredTopics((current) =>
+              current.includes(topic) ? current : [...current, topic],
+            );
+          }
           setActiveTool(null);
         },
         onDone: (_reply, tripId) => {
@@ -194,7 +242,8 @@ export function useChatStream({
           setProgress(null);
           onTurnStatus?.({
             phase: "loading",
-            message: "The planning work is complete. Loading your updated itinerary now.",
+            message: "Planning complete",
+            detail: "Loading your updated itinerary now.",
           });
           setMessages((messages) => {
             const copy = [...messages];
@@ -223,7 +272,8 @@ export function useChatStream({
           setProgress(null);
           onTurnStatus?.({
             phase: "error",
-            message: "The Assistant hit an error. Your previous itinerary is still available.",
+            message: "The Assistant hit an error",
+            detail: "Your previous itinerary is still available.",
           });
           setMessages((messages) => {
             const copy = [...messages];

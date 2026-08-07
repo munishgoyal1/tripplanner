@@ -335,20 +335,56 @@ def _rebalance_day(plan: dict[str, Any], day_index: int, new_name: str, new_kind
         )
         return alerts
     stops = day.get("stops") if isinstance(day.get("stops"), list) else []
-    removed = stops.pop(removal["index"])
-    removed_name = _stop_name(removed)
+    moved = stops[removal["index"]]
+    moved_name = _stop_name(moved)
+    landed = _move_to_another_day(plan, day_index, removal["index"])
+    if landed is None:
+        alerts.append(
+            f"Day {day_index + 1} is full, and {moved_name} does not fit on any other day, "
+            f"so I left it where it is."
+        )
+        return alerts
     alerts.append(
-        f"Day {day_index + 1} was packed, so I added {new_name} and removed {removed_name} to keep the route comfortable."
+        f"Day {day_index + 1} was packed, so I moved {moved_name} to Day {landed} "
+        f"to keep the route comfortable."
     )
-    # Keep the trip's selected buckets consistent with the itinerary.
-    if isinstance(removed, dict):
-        bucket = "selected_hotels" if _stop_kind(removed) == "hotel" else "selected_activities"
-        plan[bucket] = [
-            item
-            for item in (plan.get(bucket) or [])
-            if str(item.get("name") or "").strip().lower() != removed_name.lower()
-        ]
     return alerts
+
+
+def _move_to_another_day(plan: dict[str, Any], day_index: int, stop_index: int) -> int | None:
+    """Relocate a stop the day can no longer hold, rather than deleting it.
+
+    A place the traveller chose is not spare capacity. If no other day can take
+    it the stop stays put, because a crowded day is a smaller problem than a
+    choice that silently disappears.
+    """
+    itinerary = plan.get("day_wise_itinerary") or []
+    day = itinerary[day_index]
+    stops = day.get("stops") if isinstance(day.get("stops"), list) else []
+    stop = stops[stop_index]
+    if not isinstance(stop, dict):
+        return None
+    name = _stop_name(stop)
+    duration = stop.get("duration_min")
+    detached = stops.pop(stop_index)
+    placement, _ = choose_placement(
+        plan,
+        name,
+        _stop_kind(stop) or "attraction",
+        duration_min=int(duration) if isinstance(duration, (int, float)) else None,
+    )
+    if placement is None or placement.day == day_index + 1:
+        stops.insert(stop_index, detached)
+        return None
+    for entry in itinerary:
+        if not isinstance(entry, dict) or entry.get("day") != placement.day:
+            continue
+        target = entry.setdefault("stops", [])
+        detached["time"] = placement.time
+        target.insert(min(placement.index, len(target)), detached)
+        return placement.day
+    stops.insert(stop_index, detached)
+    return None
 
 
 _JOURNEY_RE = re.compile(
@@ -1413,6 +1449,49 @@ def _delete_active_trip() -> None:
         )
         return
     _resolve_active_trip_path().unlink(missing_ok=True)
+
+
+# What a reset keeps: where you are going, when, who with, and what you told us
+# you like. Everything else is the plan, and the plan is what you are throwing
+# away. Starting over should not mean typing your dates in again.
+_RESET_KEEPS = frozenset(
+    {
+        "trip_id",
+        "created_at",
+        "destination",
+        "origin",
+        "departure_date",
+        "return_date",
+        "travelers",
+        "notes",
+        "budget",
+        "currency",
+        "preferences_snapshot",
+        "planning_recommendation",
+        "trip_constraints",
+        "visa",
+    }
+)
+
+
+@_serialized_mutation
+def reset_active_trip() -> dict[str, Any] | None:
+    """Empty the active trip's plan while keeping its brief.
+
+    Non-tool: called by the "Reset" button. Returns the emptied plan, or
+    ``None`` when there is nothing active to reset.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return None
+    fresh = {key: value for key, value in plan.items() if key in _RESET_KEEPS}
+    fresh["status"] = "draft"
+    fresh["day_wise_itinerary"] = []
+    fresh["selected_flights"] = []
+    fresh["selected_hotels"] = []
+    fresh["selected_activities"] = []
+    _save_active_trip(fresh)
+    return fresh
 
 
 @tool

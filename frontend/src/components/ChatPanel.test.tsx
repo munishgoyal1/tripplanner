@@ -62,7 +62,8 @@ describe("ChatPanel progress", () => {
     expect(screen.queryByText(/search_places_with_reviews/)).not.toBeInTheDocument();
     await waitFor(() => expect(onTurnStatus).toHaveBeenLastCalledWith(expect.objectContaining({
       phase: "working",
-      message: expect.stringContaining("Checking places and reviews"),
+      message: "Building your itinerary",
+      detail: expect.stringContaining("Checking places and reviews"),
     })));
   });
 

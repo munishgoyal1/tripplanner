@@ -12,7 +12,7 @@ import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
-import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
@@ -437,6 +437,37 @@ export default function App() {
       });
     }
   };
+  const handleResetTrip = async () => {
+    if (
+      !window.confirm(
+        "Reset this trip? The itinerary and everything you've picked will be cleared. " +
+          "The destination, dates and travellers stay, so you can rebuild from the same brief.",
+      )
+    )
+      return;
+    try {
+      dismissNotice("action-error");
+      const workspace = await resetTrip();
+      setAssistantTurnStatus(null);
+      setPanelSeed(workspace);
+      dispatchWorkspace({ type: "trip-changed" });
+      await refresh(null);
+      notify({
+        id: "trip-reset",
+        tone: "success",
+        message: "Trip reset",
+        detail: "The plan is empty. Your destination, dates and travellers are unchanged.",
+      });
+      trackEvent("trip_reset", { surface: "desktop" });
+    } catch (error) {
+      notify({
+        id: "action-error",
+        tone: "error",
+        message: "Could not reset the trip",
+        detail: error instanceof Error ? error.message : undefined,
+      });
+    }
+  };
   const handleImported = async () => {
     dispatchWorkspace({ type: "trip-changed" });
     await refresh(null);
@@ -857,11 +888,10 @@ export default function App() {
   }, [chatOpen]);
 
   // The first alert says what happened; anything after it is the guard saying
-  // what that cost. Compacting away the consequence would turn "apply and say
-  // what it cost" back into "apply silently", so it rides along uncompacted.
-  const latestStatus = [compactStatus(view?.alerts?.[0]), ...(view?.alerts ?? []).slice(1)]
-    .filter(Boolean)
-    .join(" ") || undefined;
+  // what that cost. The headline stays short and the rest becomes the detail,
+  // so "apply and say what it cost" survives without a wall of text.
+  const latestStatus = compactStatus(view?.alerts?.[0]);
+  const statusDetail = (view?.alerts ?? []).slice(1).filter(Boolean).join(" ") || undefined;
   const reviewSummary = plannerReview
     ? [latestStatus, plannerReview.summary].filter(Boolean).join(" ")
     : null;
@@ -877,11 +907,11 @@ export default function App() {
 
   useEffect(() => {
     if (latestStatus && !reviewSummary) {
-      notify({ id: "trip-alert", tone: "success", message: latestStatus });
+      notify({ id: "trip-alert", tone: "success", message: latestStatus, detail: statusDetail });
     } else {
       dismissNotice("trip-alert");
     }
-  }, [latestStatus, reviewSummary]);
+  }, [latestStatus, statusDetail, reviewSummary]);
 
   useEffect(() => {
     if (reviewSummary) notify({ id: "planner-review", tone: "decision", message: reviewSummary });
@@ -893,7 +923,7 @@ export default function App() {
       dismissNotice("assistant");
       return;
     }
-    const { phase, message } = assistantTurnStatus;
+    const { phase, message, detail } = assistantTurnStatus;
     notify({
       id: "assistant",
       tone:
@@ -903,6 +933,7 @@ export default function App() {
             ? "error"
             : "success",
       message,
+      detail,
     });
   }, [assistantTurnStatus]);
 
@@ -918,6 +949,7 @@ export default function App() {
           onReviewWithPlanner={reviewWithPlanner}
           onKeepReview={() => setPlannerReview(null)}
           onStartNewTrip={handleStartNewTrip}
+          onResetTrip={handleResetTrip}
           paneVisibility={{
             itinerary: itineraryOpen,
             map: mapOpen,

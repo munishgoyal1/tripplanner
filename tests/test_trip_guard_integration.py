@@ -392,3 +392,57 @@ def test_displacing_an_earlier_choice_does_not_drop_it_onto_a_drive() -> None:
     plan = json.loads(get_trip_plan.invoke({}))
     for day in (1, 2, 3):
         assert _overlaps_a_drive(_stops_on(plan, day)) == []
+
+
+def test_a_place_the_user_chose_is_moved_not_deleted_when_the_day_fills() -> None:
+    _round_trip()
+    update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 2,
+                            "stops": [
+                                {"name": "Rajwada Palace", "kind": "attraction",
+                                 "time": "09:00", "duration_min": 120},
+                                {"name": "Lal Bagh Palace", "kind": "attraction",
+                                 "time": "11:30", "duration_min": 120},
+                                {"name": "Sarafa Bazaar", "kind": "attraction",
+                                 "time": "14:00", "duration_min": 120},
+                                {"name": "Kaanch Mandir", "kind": "attraction",
+                                 "time": "16:30", "duration_min": 120},
+                                {"name": "Shree Bada Ganpati Mandir", "kind": "attraction",
+                                 "time": "19:00", "duration_min": 60},
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+    plan = json.loads(get_trip_plan.invoke({}))
+    alerts = trip_planner._rebalance_day(plan, 1, "Shree Bada Ganpati Mandir", "attraction")
+
+    assert alerts, "a day over its cap should say something"
+    assert "removed" not in " ".join(alerts)
+    assert "Shree Bada Ganpati Mandir" in _names(plan)
+    assert "Kaanch Mandir" in _names(plan)
+    assert len(_stops_on(plan, 2)) == 4
+
+
+def test_resetting_keeps_the_brief_and_drops_the_plan() -> None:
+    _round_trip()
+    add_selection("attraction", {"name": "Rajwada Palace"})
+    before = json.loads(get_trip_plan.invoke({}))
+    after = trip_planner.reset_active_trip()
+
+    assert after is not None
+    assert after["destination"] == before["destination"]
+    assert after["departure_date"] == before["departure_date"]
+    assert after["return_date"] == before["return_date"]
+    assert after["trip_id"] == before["trip_id"]
+    assert after["day_wise_itinerary"] == []
+    assert after["selected_activities"] == []
+    assert after["selected_flights"] == []
+    assert json.loads(get_trip_plan.invoke({}))["day_wise_itinerary"] == []

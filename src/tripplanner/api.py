@@ -1200,6 +1200,24 @@ async def trip_new(req: UserRequest, request: Request) -> dict:
         await release_workspace_exclusive(workspace)
 
 
+@app.post("/trip/reset")
+async def trip_reset(req: UserRequest, request: Request) -> dict:
+    """Empty the active trip's plan but keep its destination, dates and people,
+    so the user can rebuild without re-entering the brief."""
+    from tripplanner.tools import trip_planner
+    from tripplanner.web import trip_operations
+
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        plan = await asyncio.to_thread(trip_planner.reset_active_trip)
+    finally:
+        await release_workspace_exclusive(workspace)
+    if plan is None:
+        return {"ok": False, "error": "no active trip"}
+    return await asyncio.to_thread(trip_operations.workspace_payload, plan)
+
+
 
 @app.get("/trip/export.ics")
 async def trip_export_ics(request: Request, user_id: str = "local") -> Response:

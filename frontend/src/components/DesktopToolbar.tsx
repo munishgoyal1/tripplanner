@@ -1,4 +1,4 @@
-import { AlertTriangle, List, Map, MessageCircle, PanelRight, Plus, UserRound } from "lucide-react";
+import { AlertTriangle, List, Map, MessageCircle, PanelRight, Plus, RotateCcw, UserRound } from "lucide-react";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
@@ -20,6 +20,7 @@ interface Props {
   onReviewWithPlanner: () => void;
   onKeepReview: () => void;
   onStartNewTrip: () => void;
+  onResetTrip: () => void;
   paneVisibility: Record<Pane, boolean>;
   onTogglePane: (pane: Pane) => void;
   tripActionsDisabled: boolean;
@@ -39,6 +40,7 @@ export default function DesktopToolbar({
   onReviewWithPlanner,
   onKeepReview,
   onStartNewTrip,
+  onResetTrip,
   paneVisibility,
   onTogglePane,
   tripActionsDisabled,
@@ -91,6 +93,15 @@ export default function DesktopToolbar({
         >
           <Plus size={14} aria-hidden />
           <span>New trip</span>
+        </button>
+        <button
+          type="button"
+          onClick={onResetTrip}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          title="Clear this trip's plan and start over, keeping the destination, dates and travellers"
+          aria-label="Reset trip"
+        >
+          <RotateCcw size={14} aria-hidden />
         </button>
         <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
         <div

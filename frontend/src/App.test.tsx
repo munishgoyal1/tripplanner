@@ -1,12 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock, shareActiveTripMock } = vi.hoisted(() => ({
+const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonymousUserMock, shareActiveTripMock, resetTripMock } = vi.hoisted(() => ({
   fetchTripViewMock: vi.fn(),
   selectItemMock: vi.fn(),
   deselectItemMock: vi.fn(),
   isAnonymousUserMock: vi.fn(() => true),
   shareActiveTripMock: vi.fn(),
+  resetTripMock: vi.fn(),
   emptyView: {
   trip_id: null,
   has_trip: false,
@@ -37,6 +38,7 @@ vi.mock("./api", () => ({
   selectItem: selectItemMock,
   deselectItem: deselectItemMock,
   startNewTrip: vi.fn(),
+  resetTrip: resetTripMock,
   shareActiveTrip: shareActiveTripMock,
   tripIcsUrl: vi.fn(() => "/api/trip/export.ics"),
   isAnonymousUser: isAnonymousUserMock,
@@ -332,20 +334,39 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-items", "Eiffel Tower");
   });
 
-  it("shows a concise wrapping update near the trip identity", async () => {
+  it("shows a headline update with the consequence underneath it", async () => {
     fetchTripViewMock.mockResolvedValue({
       ...emptyView,
-      alerts: ["Removed Eiffel Tower and refreshed the itinerary."],
+      alerts: [
+        "Removed Eiffel Tower and refreshed the itinerary.",
+        "Day 2 was packed, so I moved Musée d'Orsay to Day 3.",
+      ],
     });
     setDesktop(true);
     render(<App />);
 
     const status = await screen.findByRole("status");
     expect(status.parentElement).toHaveClass("mr-auto", "flex-1");
-    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass(
-      "line-clamp-2",
-      "whitespace-normal",
-    );
+    expect(screen.getByText("Removed Eiffel Tower.")).toHaveClass("truncate");
+    expect(
+      screen.getByText("Day 2 was packed, so I moved Musée d'Orsay to Day 3."),
+    ).toHaveClass("line-clamp-2", "whitespace-normal");
+  });
+
+  it("resets the trip only after the user confirms", async () => {
+    resetTripMock.mockResolvedValue(null);
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    setDesktop(true);
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Reset trip" }));
+    expect(resetTripMock).not.toHaveBeenCalled();
+
+    confirm.mockReturnValue(true);
+    fireEvent.click(screen.getByRole("button", { name: "Reset trip" }));
+    await waitFor(() => expect(resetTripMock).toHaveBeenCalled());
+    expect(await screen.findByText("Trip reset")).toBeInTheDocument();
+    confirm.mockRestore();
   });
 
   it("keeps timely build progress in the top bar until the refreshed itinerary is ready", async () => {

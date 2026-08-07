@@ -4,6 +4,7 @@ export type AnalyticsEvent =
   | "planning_failed"
   | "trip_created"
   | "new_trip_started"
+  | "trip_reset"
   | "login"
   | "place_added"
   | "place_removed"

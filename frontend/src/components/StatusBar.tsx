@@ -22,23 +22,25 @@ function NoticeLine({ notice, actions }: { notice: Notice; actions?: ReactNode }
       <span className={`mt-0.5 shrink-0 ${TONE_TEXT[notice.tone]}`}>
         <ToneIcon tone={notice.tone} />
       </span>
-      <p
-        className={`line-clamp-2 min-w-0 flex-1 whitespace-normal text-xs font-medium leading-tight ${TONE_TEXT[notice.tone]}`}
-        title={notice.message}
-      >
-        {notice.message}
-      </p>
+      <div className="min-w-0 flex-1" title={[notice.message, notice.detail].filter(Boolean).join(" — ")}>
+        <p className={`truncate text-xs font-semibold leading-tight ${TONE_TEXT[notice.tone]}`}>
+          {notice.message}
+        </p>
+        {notice.detail && (
+          <p className="line-clamp-2 whitespace-normal text-[11px] leading-snug text-slate-500">
+            {notice.detail}
+          </p>
+        )}
+      </div>
       {actions}
-      {notice.tone === "error" && (
-        <button
-          type="button"
-          onClick={() => dismissNotice(notice.id)}
-          className="shrink-0 rounded px-1 text-xs font-semibold leading-none text-rose-700 hover:bg-rose-50"
-          aria-label="Dismiss notification"
-        >
-          ✕
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => dismissNotice(notice.id)}
+        className={`shrink-0 rounded px-1 text-xs font-semibold leading-none hover:bg-slate-100 ${TONE_TEXT[notice.tone]}`}
+        aria-label="Dismiss notification"
+      >
+        ✕
+      </button>
     </div>
   );
 }
