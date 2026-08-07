@@ -63,7 +63,7 @@ export const allLabs: LabRecord[] = [
     createdAt: "2026-08-07",
     defaultDisposition: "ready",
     defaultStateChangedAt: "2026-08-07",
-    decision: "Open · Recommended starting point: D · The decision replay, with option B's clarity fixes applied to whichever option wins.",
+    decision: "Open · Choose between E and F · Lab 21's dark stage kept intact, cut to five days, with two overrulable choices — E offers them during the run, F after it.",
     href: "./lab-22-live-plan.html",
     icon: Radio,
   },

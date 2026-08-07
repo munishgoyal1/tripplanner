@@ -26,7 +26,7 @@ interface ContrastDefinition {
 const contrasts: Record<string, ContrastDefinition> = {
   "live-plan": {
     axis:
-      "All four keep Lab 21's bet that the product is best proved by planning in front of you. They disagree about the visitor's role while it runs: audience, reader, subject, or opponent.",
+      "All six keep Lab 21's bet that the product is best proved by planning in front of you. They disagree about the visitor's role while it runs: audience, reader, subject, or opponent — and, for E and F, about when the argument is offered.",
     rows: [
       {
         option: "A · Daylight stage",
@@ -60,10 +60,26 @@ const contrasts: Record<string, ContrastDefinition> = {
         costs: "Decisions must become first-class data, and a scripted overrule is a promise the planner then has to keep.",
         choose: "The differentiator is the reasoning, and it has to be felt rather than described.",
       },
+      {
+        option: "E · Dark stage, argued during the run",
+        score: 92,
+        idea: "Lab 21's dark stage untouched, with two overrulable choices offered inside the receipt stream.",
+        buys: "The mechanic without a redesign: same layout, same page length, and the argument arrives while attention is highest.",
+        costs: "Interrupting a run that is still going risks reading as a modal, and the strip is too small to show the full comparison.",
+        choose: "The stage was already right and the only thing missing was the visitor's hand on it.",
+      },
+      {
+        option: "F · Dark stage, argued after it finishes",
+        score: 90,
+        idea: "The same dark stage, run through uninterrupted, then the console swaps into a two-item decision ledger.",
+        buys: "The run stays clean, and the argument gets the whole comparison table because there is room for it once the plan exists.",
+        costs: "A visitor who leaves during the run never sees the differentiator at all, and the swap has to be discoverable.",
+        choose: "Nothing should interrupt the proof, and the argument is a second act rather than part of the first.",
+      },
     ],
-    same: "The six-day Lisbon and Porto fixture, its two hotels, its flight, train, car and tram legs, its priced lines and their sources, the guest trip and its expiry, and the promise never to hold a card.",
+    same: "The Lisbon and Porto fixture, its two hotels, its flight, train, car and tram legs, its priced lines and their sources, the guest trip and its expiry, and the promise never to hold a card. A to D run the six-day cut; E and F run the five-day one.",
     verdict:
-      "D wins because it is the only option that turns the product's actual claim into something the visitor does rather than watches: overruling the Porto leg and being told, plainly, that flying costs ninety-four euros and breaks the pace rule on day five is an argument no screenshot and no competitor can fake, and it is the only version whose shared link still carries that argument to a stranger. C is close behind and answers the sharpest objection to the whole idea — that a demo of somebody else's Lisbon is not evidence about your Kyoto — but it pays for that honesty with a real agent run before an account exists, which is a rate-limiting and spend problem, not a design one. B is the cheapest useful thing in this Lab and should be treated as a floor rather than a choice: its nine small fixes belong in whichever option wins. A exists to isolate one variable and it earns its place by settling that argument, not by being shippable. The honest recommendation is D's decision replay built on B's wording, with C's destination binding as the next milestone once anonymous runs can be paid for safely.",
+      "E and F are the two to choose between; everything above them is now working material. Both are Lab 21's option D in its dark console with the layout, the choreography and the receipt stream intact, and both add exactly one thing — that the visitor can push back, twice, on the Porto leg and the Sintra day. E offers the choice while the run is still going, which puts the argument where attention is highest and costs nothing in page height, but a one-line strip cannot show the comparison that justifies the answer. F waits until the plan is finished and swaps the console into a two-item ledger, which buys room for the whole rejected-options table and keeps the run clean, at the price that a visitor who leaves early never meets the differentiator at all. D remains the maximal version of the same idea and is worth keeping visible: it replaces the receipt console entirely, which is more honest about what the product is but abandons the stage you liked. C answers the sharpest objection to the whole Lab — that somebody else's Lisbon is not evidence about your Kyoto — but pays for it with a real agent run before an account exists. B is a floor rather than a choice: its wording fixes belong in whichever option wins, and E and F have already taken the important one. A exists to settle the theme question and has done so.",
   },
   "first-visit": {
     axis:

@@ -1,19 +1,24 @@
-// Four ways to run the same live plan. A is Lab 21's option D unchanged apart from the
+// Six ways to run the same live plan. A is Lab 21's option D unchanged apart from the
 // theme, B rewrites what it asks of you, and C and D re-open the question: C removes the
 // demo entirely by planning your destination from the first keystroke, D turns the receipt
-// log into decisions you can overrule. All four cover landing, first plan and shared trip.
+// log into decisions you can overrule. E and F are the exact ones: A's dark stage, five
+// days instead of six, and two overrulable choices — E offers them during the run, F after
+// it. All six cover landing, first plan and shared trip.
 
-import { Check, Gauge, Info, Loader2, Sparkles, Undo2, Wand2 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { Check, Eye, Gauge, Info, ListChecks, Loader2, Sparkles, Undo2, Wand2 } from "lucide-react";
+import { Fragment, useState, type ReactNode } from "react";
 
 import { Masthead, SiteFooter } from "../first-visit/pieces";
 import {
   baseTrip,
   decisions,
   faq,
+  shortDecisions,
+  shortTrip,
   signInMoments,
   trips,
   tripById,
+  type StageDecision,
   type StageTrip,
 } from "./fixture";
 import {
@@ -44,8 +49,25 @@ import {
   type Tone,
 } from "./pieces";
 
-export type LivePlanOption = "asis" | "plain" | "yours" | "argue";
+export type LivePlanOption = "asis" | "plain" | "yours" | "argue" | "exact" | "ledger";
 export type LivePlanSurface = "landing" | "first-plan" | "share";
+
+/** E and F run the five-day cut and the two-decision set; everything else keeps the six-day trip. */
+function isExactOption(option: LivePlanOption) {
+  return option === "exact" || option === "ledger";
+}
+
+function tripFor(option: LivePlanOption): StageTrip {
+  return isExactOption(option) ? shortTrip : baseTrip;
+}
+
+function decisionsFor(option: LivePlanOption): StageDecision[] {
+  return isExactOption(option) ? shortDecisions : decisions;
+}
+
+function placeCount(trip: StageTrip) {
+  return trip.summary.split(" · ").pop() ?? "";
+}
 
 interface Props {
   option: LivePlanOption;
@@ -55,7 +77,7 @@ interface Props {
 }
 
 export function LivePlan({ option, surface, stress = false, tone }: Props) {
-  const resolved: Tone = tone ?? "light";
+  const resolved: Tone = tone ?? (isExactOption(option) ? "dark" : "light");
 
   if (surface === "first-plan") return <FirstPlanSurface option={option} tone={resolved} stress={stress} />;
   if (surface === "share") return <ShareSurface option={option} tone={resolved} stress={stress} />;
@@ -63,6 +85,8 @@ export function LivePlan({ option, surface, stress = false, tone }: Props) {
   if (option === "asis") return <LandingAsIs tone={resolved} stress={stress} />;
   if (option === "plain") return <LandingPlain tone={resolved} stress={stress} />;
   if (option === "yours") return <LandingYours tone={resolved} stress={stress} />;
+  if (option === "exact") return <LandingExact tone={resolved} stress={stress} />;
+  if (option === "ledger") return <LandingLedger tone={resolved} stress={stress} />;
   return <LandingArgue tone={resolved} stress={stress} />;
 }
 
@@ -431,7 +455,7 @@ function DecisionCard({
   onOverrule,
   onUndo,
 }: {
-  decision: (typeof decisions)[number];
+  decision: StageDecision;
   tone: Tone;
   overruled: boolean;
   onOverrule: () => void;
@@ -508,9 +532,9 @@ function DecisionCard({
   );
 }
 
-function useOverrule() {
+function useOverrule(set: StageDecision[] = decisions) {
   const [overruled, setOverruled] = useState<string | null>(null);
-  const active = decisions.find((decision) => decision.id === overruled) ?? null;
+  const active = set.find((decision) => decision.id === overruled) ?? null;
   return { overruled, setOverruled, active };
 }
 
@@ -530,7 +554,7 @@ function LandingArgue({ tone, stress }: { tone: Tone; stress: boolean }) {
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-1 text-[11px] font-bold uppercase text-brand ring-1 ring-brand/20">
               <Sparkles size={11} aria-hidden />
-              {running ? "Showing its reasoning" : "3 decisions, all reversible"}
+              {running ? "Showing its reasoning" : `${decisions.length} decisions, all reversible`}
             </span>
             <StageControls tone={tone} running={running} onReplay={replay} onFinish={finish} skipLabel="Show all three" />
           </div>
@@ -565,7 +589,7 @@ function LandingArgue({ tone, stress }: { tone: Tone; stress: boolean }) {
 
             <div className="space-y-3">
               <div className="grid grid-cols-3 gap-2">
-                <Stat tone={tone} label="Days" value="6" />
+                <Stat tone={tone} label="Days" value={String(trip.days.length)} />
                 <Stat tone={tone} label="Hotels" value="2" />
                 <Stat tone={tone} label="Total" value={active ? active.outcome.total : trip.best} />
               </div>
@@ -603,16 +627,291 @@ function LandingArgue({ tone, stress }: { tone: Tone; stress: boolean }) {
   );
 }
 
+/* ------------------------------ E · the stage as shipped, with the choice offered inline */
+
+function InlineChoice({
+  decision,
+  tone,
+  overruled,
+  onOverrule,
+  onUndo,
+}: {
+  decision: StageDecision;
+  tone: Tone;
+  overruled: boolean;
+  onOverrule: () => void;
+  onUndo: () => void;
+}) {
+  const s = toneStyles[tone];
+
+  if (overruled) {
+    return (
+      <li className={`rounded-xl px-3 py-2.5 ${tone === "dark" ? "bg-amber-400/10 ring-1 ring-amber-400/30" : "bg-amber-50 ring-1 ring-amber-200"}`}>
+        <p className={`text-[11px] font-semibold ${s.heading}`}>{decision.outcome.headline}</p>
+        <p className={`mt-0.5 flex items-start gap-1.5 text-[11px] leading-relaxed ${tone === "dark" ? "text-amber-200" : "text-amber-800"}`}>
+          <Info size={12} className="mt-0.5 shrink-0" aria-hidden />
+          {decision.outcome.warning}
+        </p>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          <span className={`text-xs font-bold tabular-nums ${s.heading}`}>{decision.outcome.total}</span>
+          <span className="text-[11px] font-semibold text-amber-700">{decision.outcome.delta}</span>
+          <button type="button" onClick={onUndo} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${s.chip}`}>
+            <Undo2 size={11} aria-hidden /> Put it back
+          </button>
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li className={`rounded-xl px-3 py-2.5 ${tone === "dark" ? "bg-white/[0.06] ring-1 ring-white/15" : "bg-slate-50 ring-1 ring-slate-200"}`}>
+      <p className={`text-[11px] font-semibold ${s.heading}`}>
+        {decision.subject} — <span className={s.accent}>{decision.verdict}</span>
+      </p>
+      <p className={`mt-0.5 text-[11px] leading-relaxed ${s.muted}`}>{decision.rule}</p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={onOverrule}
+          className="inline-flex items-center gap-1.5 rounded-full bg-ink px-2.5 py-1 text-[11px] font-semibold text-white transition hover:opacity-90"
+        >
+          {decision.overrule}
+        </button>
+        <span className={`text-[11px] ${s.muted}`}>{decision.inline}</span>
+      </div>
+    </li>
+  );
+}
+
+function LandingExact({ tone, stress }: { tone: Tone; stress: boolean }) {
+  const s = toneStyles[tone];
+  const trip = shortTrip;
+  const { step, running, replay } = useStageRun(trip.receipts.length);
+  const built = running ? daysBuilt(trip.receipts, step) : trip.days.length;
+  const { overruled, setOverruled, active } = useOverrule(shortDecisions);
+
+  return (
+    <div className={`min-h-full ${tone === "dark" ? "bg-[#080b11]" : "bg-white"}`}>
+      <StageShell tone={tone}>
+        <Masthead tone={tone} cta="Sign in" links={["Live plan", "How it works", "Destinations"]} />
+
+        <section className="relative px-6 pb-8 pt-10" data-lab-change="Entry point">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${tone === "dark" ? "bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-400/30" : "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"}`}>
+              <span className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${running ? "animate-pulse" : ""}`} aria-hidden />
+              {running ? "Planning live" : "Plan complete"}
+            </span>
+            <span className={`text-[11px] ${s.muted}`}>No account. No signup. This is the product running, not a video.</span>
+          </div>
+
+          <h1 className={`display mt-3 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl ${s.heading}`}>
+            Watch it plan a trip.<br />Then change its mind.
+          </h1>
+
+          <div className="mt-6 grid gap-3 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className={`rounded-2xl p-4 ${s.panel} ${s.panelRing}`}>
+              <div className="flex items-center justify-between gap-2">
+                <p className={`font-mono text-[11px] uppercase tracking-wide ${s.muted}`}>
+                  agent · lisbon + porto · {trip.days.length} days · 2 travellers
+                </p>
+                <StageControls tone={tone} running={false} onReplay={replay} onFinish={replay} />
+              </div>
+              <ol className="mt-3 space-y-1.5" aria-live="polite">
+                {trip.receipts.slice(0, step).map((receipt) => {
+                  const choice = shortDecisions.find((decision) => decision.at === receipt.at);
+                  return (
+                    <Fragment key={receipt.at}>
+                      <ReceiptLine receipt={receipt} tone={tone} />
+                      {choice && (
+                        <InlineChoice
+                          decision={choice}
+                          tone={tone}
+                          overruled={overruled === choice.id}
+                          onOverrule={() => setOverruled(choice.id)}
+                          onUndo={() => setOverruled(null)}
+                        />
+                      )}
+                    </Fragment>
+                  );
+                })}
+                {running && (
+                  <li className={`flex items-center gap-2 font-mono text-[11px] ${s.muted}`}>
+                    <Loader2 size={11} className="animate-spin" aria-hidden /> working…
+                  </li>
+                )}
+              </ol>
+              {stress && <div className="mt-3"><StaleNotice tone={tone} /></div>}
+            </div>
+
+            <div className="space-y-3">
+              <DayGrid trip={trip} tone={tone} built={built} />
+              {active ? (
+                <div className={`rounded-xl px-3.5 py-2.5 ${tone === "dark" ? "bg-amber-400/10 ring-1 ring-amber-400/30" : "bg-amber-50 ring-1 ring-amber-200"}`}>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className={`text-[11px] font-bold uppercase ${tone === "dark" ? "text-amber-200" : "text-amber-800"}`}>Re-settled around your change</span>
+                    <span className={`text-lg font-bold tabular-nums ${s.heading}`}>{active.outcome.total}</span>
+                    <span className="text-xs font-semibold text-amber-700">{active.outcome.delta}</span>
+                  </div>
+                  <p className={`mt-0.5 text-[11px] leading-relaxed ${s.body}`}>
+                    The plan above is the one you asked for, not the one it recommended. Put it back
+                    and the {trip.best} version returns intact.
+                  </p>
+                </div>
+              ) : (
+                <SavingsRow trip={trip} tone={tone} />
+              )}
+              <div className={`rounded-2xl p-4 ${s.panel} ${s.panelRing}`}>
+                <p className={`text-sm font-semibold ${s.heading}`}>Make it yours</p>
+                <p className={`mt-1 text-xs ${s.body}`}>
+                  Replace Lisbon with anywhere. It re-plans from scratch in front of you, and you can
+                  argue with that one too.
+                </p>
+                <div className="mt-3">
+                  <Composer tone={tone} placeholder="Kyoto in April with a 6-year-old…" action="Plan mine" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </StageShell>
+      <BelowTheFold trip={trip} tone={tone} />
+    </div>
+  );
+}
+
+/* --------------------------- F · the stage as shipped, then the two calls it wants checked */
+
+function LandingLedger({ tone, stress }: { tone: Tone; stress: boolean }) {
+  const s = toneStyles[tone];
+  const trip = shortTrip;
+  const { step, running, replay } = useStageRun(trip.receipts.length);
+  const built = running ? daysBuilt(trip.receipts, step) : trip.days.length;
+  const { overruled, setOverruled, active } = useOverrule(shortDecisions);
+  const [working, setWorking] = useState(false);
+  const showReceipts = running || working;
+
+  return (
+    <div className={`min-h-full ${tone === "dark" ? "bg-[#080b11]" : "bg-white"}`}>
+      <StageShell tone={tone}>
+        <Masthead tone={tone} cta="Sign in" links={["Live plan", "How it works", "Destinations"]} />
+
+        <section className="relative px-6 pb-8 pt-10" data-lab-change="Entry point">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${tone === "dark" ? "bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-400/30" : "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"}`}>
+              <span className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${running ? "animate-pulse" : ""}`} aria-hidden />
+              {running ? "Planning live" : `Plan complete · ${shortDecisions.length} calls to check`}
+            </span>
+            <span className={`text-[11px] ${s.muted}`}>No account. No signup. This is the product running, not a video.</span>
+          </div>
+
+          <h1 className={`display mt-3 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl ${s.heading}`}>
+            Watch it plan a trip.<br />Then see what it decided.
+          </h1>
+
+          <div className="mt-6 grid gap-3 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className={`rounded-2xl p-4 ${s.panel} ${s.panelRing}`}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide ${s.muted}`}>
+                  {showReceipts ? (
+                    <>agent · lisbon + porto · {trip.days.length} days · 2 travellers</>
+                  ) : (
+                    <>
+                      <ListChecks size={12} aria-hidden /> {shortDecisions.length} things it decided for you
+                    </>
+                  )}
+                </p>
+                {running ? (
+                  <StageControls tone={tone} running={false} onReplay={replay} onFinish={replay} />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setWorking((value) => !value)}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${s.chip}`}
+                  >
+                    <Eye size={11} aria-hidden /> {working ? "Back to the decisions" : "Show the working"}
+                  </button>
+                )}
+              </div>
+
+              {showReceipts ? (
+                <ol className="mt-3 space-y-1.5" aria-live="polite">
+                  {trip.receipts.slice(0, step).map((receipt) => (
+                    <ReceiptLine key={receipt.at} receipt={receipt} tone={tone} />
+                  ))}
+                  {running && (
+                    <li className={`flex items-center gap-2 font-mono text-[11px] ${s.muted}`}>
+                      <Loader2 size={11} className="animate-spin" aria-hidden /> working…
+                    </li>
+                  )}
+                </ol>
+              ) : (
+                <div className="mt-3 space-y-2.5">
+                  <p className={`text-[11px] leading-relaxed ${s.body}`}>
+                    Everything else followed from these two. Both are reversible, and it will tell you
+                    what reversing them costs.
+                  </p>
+                  {shortDecisions.map((decision) => (
+                    <DecisionCard
+                      key={decision.id}
+                      decision={decision}
+                      tone={tone}
+                      overruled={overruled === decision.id}
+                      onOverrule={() => setOverruled(decision.id)}
+                      onUndo={() => setOverruled(null)}
+                    />
+                  ))}
+                </div>
+              )}
+              {stress && <div className="mt-3"><StaleNotice tone={tone} /></div>}
+            </div>
+
+            <div className="space-y-3">
+              <DayGrid trip={trip} tone={tone} built={built} />
+              {active ? (
+                <div className={`rounded-xl px-3.5 py-2.5 ${tone === "dark" ? "bg-amber-400/10 ring-1 ring-amber-400/30" : "bg-amber-50 ring-1 ring-amber-200"}`}>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className={`text-[11px] font-bold uppercase ${tone === "dark" ? "text-amber-200" : "text-amber-800"}`}>Re-settled around your change</span>
+                    <span className={`text-lg font-bold tabular-nums ${s.heading}`}>{active.outcome.total}</span>
+                    <span className="text-xs font-semibold text-amber-700">{active.outcome.delta}</span>
+                  </div>
+                  <p className={`mt-0.5 text-[11px] leading-relaxed ${s.body}`}>
+                    {active.outcome.warning}
+                  </p>
+                </div>
+              ) : (
+                <SavingsRow trip={trip} tone={tone} />
+              )}
+              <HotelStrip hotels={trip.hotels} tone={tone} />
+              <div className={`rounded-2xl p-4 ${s.panel} ${s.panelRing}`}>
+                <p className={`text-sm font-semibold ${s.heading}`}>Make it yours</p>
+                <p className={`mt-1 text-xs ${s.body}`}>
+                  Replace Lisbon with anywhere. It plans from scratch and shows you its calls the same
+                  way.
+                </p>
+                <div className="mt-3">
+                  <Composer tone={tone} placeholder="Kyoto in April with a 6-year-old…" action="Plan mine" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </StageShell>
+      <BelowTheFold trip={trip} tone={tone} />
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------- surface: the first plan */
 
 const guestUrl = "tripplanner.app/g/8f2c-lisbon-porto";
 
 function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; tone: Tone; stress: boolean }) {
   const s = toneStyles[tone];
-  const trip = baseTrip;
+  const trip = tripFor(option);
+  const decisionSet = decisionsFor(option);
   const moment = signInMoments[option];
-  const { overruled, setOverruled, active } = useOverrule();
-  const decisionLed = option === "argue";
+  const { overruled, setOverruled, active } = useOverrule(decisionSet);
+  const decisionLed = option === "argue" || isExactOption(option);
 
   return (
     <div className={`min-h-full ${tone === "dark" ? "bg-[#080b11]" : "bg-slate-50"}`}>
@@ -637,7 +936,7 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
             <div className="mt-4 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className={`text-xs font-bold uppercase ${s.muted}`}>The six days</p>
+                  <p className={`text-xs font-bold uppercase ${s.muted}`}>The {trip.days.length} days</p>
                   <ModeLegend tone={tone} />
                 </div>
                 <ItineraryFull trip={trip} tone={tone} />
@@ -653,7 +952,7 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
                 {decisionLed ? (
                   <div className="space-y-2">
                     <p className={`text-xs font-bold uppercase ${s.muted}`}>Its decisions, still reversible</p>
-                    {decisions.map((decision) => (
+                    {decisionSet.map((decision) => (
                       <DecisionCard
                         key={decision.id}
                         decision={decision}
@@ -689,8 +988,9 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
 
 function ShareSurface({ option, tone, stress }: { option: LivePlanOption; tone: Tone; stress: boolean }) {
   const s = toneStyles[tone];
-  const trip = baseTrip;
-  const decisionLed = option === "argue";
+  const trip = tripFor(option);
+  const decisionSet = decisionsFor(option);
+  const decisionLed = option === "argue" || isExactOption(option);
   const yoursLed = option === "yours";
 
   return (
@@ -713,7 +1013,7 @@ function ShareSurface({ option, tone, stress }: { option: LivePlanOption; tone: 
           <Stat tone={tone} label="Cities" value="Lisbon, Porto" />
           <Stat tone={tone} label="Hotels" value="2 · H1 and H2" />
           <Stat tone={tone} label="How you move" value="Flight, rail, road, tram" />
-          <Stat tone={tone} label="Places" value="21 planned" />
+          <Stat tone={tone} label="Places" value={placeCount(trip)} />
         </div>
         {stress && <div className="mt-3"><StaleNotice tone={tone} /></div>}
       </section>
@@ -722,7 +1022,7 @@ function ShareSurface({ option, tone, stress }: { option: LivePlanOption; tone: 
         <div className="grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <SectionHead tone={tone} eyebrow="The plan" title="Six days, two cities" />
+              <SectionHead tone={tone} eyebrow="The plan" title={`${trip.days.length} days, two cities`} />
               <ModeLegend tone={tone} />
             </div>
             <ItineraryFull trip={trip} tone={tone} />
@@ -754,7 +1054,7 @@ function ShareSurface({ option, tone, stress }: { option: LivePlanOption; tone: 
         />
         <div className="mt-4 grid gap-3 lg:grid-cols-3">
           {decisionLed
-            ? decisions.map((decision) => (
+            ? decisionSet.map((decision) => (
                 <div key={decision.id} className={`rounded-xl p-3 ${s.panel} ${s.panelRing}`}>
                   <p className={`text-xs font-semibold ${s.heading}`}>{decision.subject}</p>
                   <p className={`mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700`}>
