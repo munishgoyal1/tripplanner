@@ -163,6 +163,14 @@ function Get-ShortName {
     return ($Name -replace "^\d+-", "")
 }
 
+function Get-SandboxLauncherPath {
+    param([Parameter(Mandatory = $true)][string]$Name)
+    if ($IsMacOS) {
+        return "./scripts/mac/sandbox/$Name.command"
+    }
+    return ".\scripts\sandbox\$Name.cmd"
+}
+
 function Resolve-SandboxEntry {
     # "2", "2-lab16-chatdock", and "lab16-chatdock" all reach the same sandbox,
     # so nobody has to remember which number a name was given.
@@ -170,7 +178,8 @@ function Resolve-SandboxEntry {
 
     $entries = @(Get-Registry)
     if ($entries.Count -eq 0) {
-        throw "No sandboxes are registered. Create one with: .\scripts\sandbox\New-Sandbox.cmd <name> `"<purpose>`""
+        $launcher = Get-SandboxLauncherPath -Name "New-Sandbox"
+        throw "No sandboxes are registered. Create one with: $launcher <name> `"<purpose>`""
     }
     $match = @($entries | Where-Object { $_.slug -eq $Reference })
     if ($match.Count -eq 0 -and $Reference -match "^\d+$") {
@@ -621,7 +630,8 @@ Start-RunLog -Name $runLogName | Out-Null
 if ($PSCmdlet.ParameterSetName -eq "List") {
     $entries = @(Get-Registry)
     if ($entries.Count -eq 0) {
-        Write-Host "No sandboxes. Create one with: .\scripts\sandbox\New-Sandbox.cmd <name> `"<purpose>`""
+        $launcher = Get-SandboxLauncherPath -Name "New-Sandbox"
+        Write-Host "No sandboxes. Create one with: $launcher <name> `"<purpose>`""
         return
     }
     foreach ($item in ($entries | Sort-Object { [int]$_.slot })) {
@@ -650,8 +660,8 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
     }
     Write-Host ""
     Write-Host "Any verb takes the number, the full name, or the short name:" -ForegroundColor DarkGray
-    Write-Host "  .\scripts\sandbox\Serve-Sandbox.cmd <n>     .\scripts\sandbox\Stop-Sandbox.cmd <n>" -ForegroundColor DarkGray
-    Write-Host "  .\scripts\sandbox\Update-Sandbox.cmd <n>    .\scripts\sandbox\Promote-Sandbox.cmd <n>" -ForegroundColor DarkGray
+    Write-Host "  $(Get-SandboxLauncherPath -Name 'Serve-Sandbox') <n>     $(Get-SandboxLauncherPath -Name 'Stop-Sandbox') <n>" -ForegroundColor DarkGray
+    Write-Host "  $(Get-SandboxLauncherPath -Name 'Update-Sandbox') <n>    $(Get-SandboxLauncherPath -Name 'Promote-Sandbox') <n>" -ForegroundColor DarkGray
     return
 }
 
@@ -739,7 +749,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     }
 
     if ($NoServe) {
-        Write-Host "[run]     .\scripts\sandbox\Serve-Sandbox.cmd $number"
+        Write-Host "[run]     $(Get-SandboxLauncherPath -Name 'Serve-Sandbox') $number"
     } else {
         if (-not (Start-SandboxStack -Entry $entry)) {
             throw "Sandbox '$slug' was created, but one or more endpoints did not become ready."

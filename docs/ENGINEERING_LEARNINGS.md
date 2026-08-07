@@ -776,3 +776,12 @@ the outcome.
   constrained environments without encoding their private infrastructure.
 - Audit resolved lockfile URLs as well as installer flags. Package managers may
   retain an old tarball host even when regeneration is given a different registry.
+
+## 2026-08-07 - Compose Operational Paths With Platform APIs
+
+- PowerShell providers may accept a Windows backslash on macOS while native tools
+  receive it literally. A successful `Test-Path` therefore does not prove that
+  the same string is valid for `git -C`, `code`, or another native process.
+- Use `Join-Path` and `System.IO.Path` separators in shared infrastructure and
+  developer scripts. Keep Windows and macOS on one implementation when that is a
+  local, low-complexity change; surface the tradeoff before adding platform forks.

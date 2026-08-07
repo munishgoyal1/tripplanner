@@ -65,6 +65,7 @@ trip through shared API contracts.
 | `src/tripplanner/critics.py` | Deterministic quality checks |
 | `src/tripplanner/providers/` | Normalized travel provider clients and capability registry |
 | `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
+| `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 
 Tools use `@tool`. Keep provider HTTP details behind the existing client or tool
 boundary. Configuration comes from `Settings`, not scattered environment reads.

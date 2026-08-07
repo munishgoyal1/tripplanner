@@ -134,7 +134,7 @@ function Update-Lane {
     $workingDirectory = if ($Number -eq 0) {
         $PrimaryRoot
     } else {
-        "$PrimaryRoot.worktrees\worker-$Number"
+        Join-Path "$PrimaryRoot.worktrees" "worker-$Number"
     }
     $branch = if ($Number -eq 0) { "master" } else { "agents/worker-$Number" }
 
