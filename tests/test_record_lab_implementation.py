@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).parents[1]
 SCRIPT = ROOT / "scripts" / "dev" / "record-lab-implementation.ps1"
@@ -35,9 +37,12 @@ def write_store(path: Path) -> dict[str, object]:
     return store
 
 
-def run_script(store_path: Path, evidence: str = "Commit abc123; 14 Labs tests passed.") -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [
+def run_script(
+    store_path: Path,
+    evidence: str = "Commit abc123; 14 Labs tests passed.",
+    state: str = "implemented-review",
+) -> subprocess.CompletedProcess[str]:
+    arguments = [
             "pwsh",
             "-NoProfile",
             "-File",
@@ -46,9 +51,13 @@ def run_script(store_path: Path, evidence: str = "Commit abc123; 14 Labs tests p
             "travel-documents",
             "-Evidence",
             evidence,
+            "-State",
+            state,
             "-StorePath",
             str(store_path),
-        ],
+        ]
+    return subprocess.run(
+        arguments,
         capture_output=True,
         check=False,
         text=True,
@@ -62,14 +71,22 @@ def test_records_implementation_against_latest_handoff(tmp_path: Path) -> None:
     result = run_script(store_path)
 
     assert result.returncode == 0, result.stderr
-    assert "implementation v1 -> handoff v1" in result.stdout
+    assert "implementation v1 -> state version v2" in result.stdout
     stored = json.loads(store_path.read_text(encoding="utf-8-sig"))
     lab = stored["travel-documents"]
     assert lab["disposition"] == "implemented-review"
-    assert lab["handoffs"] == original["travel-documents"]["handoffs"]
+    assert lab["handoffs"][:-1] == original["travel-documents"]["handoffs"]
+    assert lab["handoffs"][-1] == {
+        "version": 2,
+        "selection": "vault",
+        "selectionLabel": "B · Account vault",
+        "comment": "Keep originals out of storage.",
+        "disposition": "implemented-review",
+        "recordedAt": lab["updatedAt"],
+    }
     assert lab["implementations"] == [{
         "version": 1,
-        "handoffVersion": 1,
+        "handoffVersion": 2,
         "selection": "vault",
         "selectionLabel": "B · Account vault",
         "comment": "Keep originals out of storage.",
@@ -91,23 +108,25 @@ def test_rejects_duplicate_implementation_without_changing_store(tmp_path: Path)
 
     assert first.returncode == 0
     assert duplicate.returncode != 0
-    assert "must be In progress with a ready handoff" in duplicate.stderr
+    assert "already implemented and awaiting review" in duplicate.stderr
     assert store_path.read_bytes() == before_duplicate
 
 
-def test_rejects_a_parked_handoff_without_changing_store(tmp_path: Path) -> None:
+@pytest.mark.parametrize("state", ["ready", "parked", "completed", "discarded"])
+def test_records_agent_state_change_as_a_new_version(tmp_path: Path, state: str) -> None:
     store_path = tmp_path / "selections.json"
     write_store(store_path)
-    stored = json.loads(store_path.read_text(encoding="utf-8"))
-    stored["travel-documents"]["disposition"] = "parked"
-    store_path.write_text(json.dumps(stored), encoding="utf-8")
-    before = store_path.read_bytes()
 
-    result = run_script(store_path)
+    result = run_script(store_path, state=state)
 
-    assert result.returncode != 0
-    assert "must be In progress with a ready handoff" in result.stderr
-    assert store_path.read_bytes() == before
+    assert result.returncode == 0, result.stderr
+    assert f"state '{state}' as version v2" in result.stdout
+    updated = json.loads(store_path.read_text(encoding="utf-8-sig"))["travel-documents"]
+    assert updated["disposition"] == state
+    assert updated["handoffs"][-1]["version"] == 2
+    assert updated["handoffs"][-1]["disposition"] == state
+    assert updated["handoffs"][-1]["selection"] == "vault"
+    assert updated["handoffs"][-1]["comment"] == "Keep originals out of storage."
 
 
 def test_preserves_singular_legacy_implementation(tmp_path: Path) -> None:
@@ -130,3 +149,4 @@ def test_preserves_singular_legacy_implementation(tmp_path: Path) -> None:
     assert [entry["version"] for entry in updated["implementations"]] == [1, 2]
     assert updated["implementations"][0]["summary"] == "Commit old123."
     assert updated["implementations"][1]["summary"] == "Commit new456."
+    assert updated["implementations"][1]["handoffVersion"] == 2

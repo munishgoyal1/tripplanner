@@ -4,7 +4,6 @@ import {
   withSelectionStoreLock,
   writeSelections,
   type HandoffRecord,
-  type ImplementationRecord,
   type LabSelection,
 } from "./lab-selection-store";
 
@@ -17,35 +16,12 @@ function sendJson(response: import("node:http").ServerResponse, status: number, 
   response.end(JSON.stringify(body));
 }
 
-export function buildImplementationHistory(
-  previous: LabSelection | undefined,
-  selection: LabSelection,
-  updatedAt: string,
-): ImplementationRecord[] {
-  const history = previous?.implementations?.length
+function existingImplementationHistory(previous: LabSelection | undefined) {
+  return previous?.implementations?.length
     ? previous.implementations
     : previous?.implementation
       ? [{ ...previous.implementation, version: 1 }]
       : [];
-
-  if (
-    !["implemented-review", "completed"].includes(selection.disposition || "")
-    || ["implemented-review", "completed"].includes(previous?.disposition || "")
-    || !selection.implementationSummary?.trim()
-  ) {
-    return history;
-  }
-
-  const implemented: ImplementationRecord = {
-    version: Math.max(0, ...history.map((record) => record.version)) + 1,
-    handoffVersion: Math.max(0, ...(selection.handoffs || []).map((handoff) => handoff.version)) || undefined,
-    selection: selection.selection,
-    selectionLabel: selection.selectionLabel,
-    comment: selection.comment,
-    summary: selection.implementationSummary,
-    recordedAt: updatedAt,
-  };
-  return [...history, implemented];
 }
 
 export function buildHandoffHistory(
@@ -114,18 +90,12 @@ export function labFeedbackPlugin(): Plugin {
           const savedSelection = await withSelectionStoreLock(async () => {
             const selections = await readSelections();
             const previous = selections[selection.labId];
-            const entersImplementedState = ["implemented-review", "completed"].includes(selection.disposition || "")
-              && !["implemented-review", "completed"].includes(previous?.disposition || "");
-            if (entersImplementedState && !selection.implementationSummary?.trim()) {
-              throw new Error("Implementation evidence is required when entering an implemented state.");
-            }
             const updatedAt = new Date().toISOString();
             const stateChangedAt = previous?.disposition === selection.disposition
               ? previous.stateChangedAt || previous.updatedAt
               : updatedAt;
             const handoffs = buildHandoffHistory(previous, selection, updatedAt);
-            const selectionWithHandoffs = { ...selection, handoffs };
-            const implementations = buildImplementationHistory(previous, selectionWithHandoffs, updatedAt);
+            const implementations = existingImplementationHistory(previous);
             const latestImplementation = implementations[implementations.length - 1];
             const implementation = latestImplementation
               ? {

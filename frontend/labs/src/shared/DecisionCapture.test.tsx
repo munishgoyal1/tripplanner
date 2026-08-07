@@ -112,7 +112,7 @@ describe("DecisionCapture", () => {
 
     fireEvent.click(screen.getByRole("radio", { name: "B · Alternative" }));
     await waitFor(() => expect((screen.getByRole("radio", { name: "B · Alternative" }) as HTMLInputElement).checked).toBe(true));
-    fireEvent.change(screen.getByLabelText("Lab state"), { target: { value: "ready" } });
+    fireEvent.click(screen.getByRole("radio", { name: "In progress" }));
     fireEvent.change(screen.getByLabelText("Handoff notes"), {
       target: { value: "Apply this revision" },
     });
@@ -165,7 +165,7 @@ describe("DecisionCapture", () => {
     expect(screen.getByText("Implementation 2")).not.toBeNull();
     expect(screen.getByText((_, element) => element?.textContent === "First exact note\nKeep this line.", { selector: "p.whitespace-pre-wrap" })).not.toBeNull();
     expect(screen.getAllByText("Second exact note", { selector: "p.whitespace-pre-wrap" }).length).toBeGreaterThan(0);
-    expect(screen.getByText("Version 1: A · Implemented - First exact note Keep this line. | Version 2: B · Alternative - Second exact note")).not.toBeNull();
+    expect(screen.getByText("Version 2: B · Alternative - Second exact note | Version 1: A · Implemented - First exact note Keep this line.")).not.toBeNull();
   });
 
   it("stops waiting and keeps the draft when a save does not respond", async () => {
@@ -225,7 +225,7 @@ describe("DecisionCapture", () => {
 
     await waitFor(() => expect((screen.getByRole("radio", { name: "B · Alternative" }) as HTMLInputElement).checked).toBe(true));
     expect((screen.getByLabelText("Handoff notes") as HTMLTextAreaElement).value).toBe("Unsaved offline revision");
-    expect((screen.getByLabelText("Lab state") as HTMLSelectElement).value).toBe("parked");
+    expect((screen.getByRole("radio", { name: "Parked" }) as HTMLInputElement).checked).toBe(true);
     expect(screen.getByText("Workspace save pending; browser draft kept")).not.toBeNull();
   });
 
@@ -246,7 +246,7 @@ describe("DecisionCapture", () => {
     expect(screen.queryByText("What was implemented")).toBeNull();
   });
 
-  it("allows any state and records implementation evidence with the handoff", async () => {
+  it("allows any state without requiring owner-entered implementation evidence", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify({
         "multi-city-itinerary": {
@@ -262,7 +262,6 @@ describe("DecisionCapture", () => {
         selectionLabel: "A · Implemented",
         comment: "Reviewed choice",
         disposition: "implemented-review",
-        implementationSummary: "Commit abc123; focused tests passed.",
         handoffs: [{
           version: 2,
           selection: "a",
@@ -271,32 +270,20 @@ describe("DecisionCapture", () => {
           disposition: "implemented-review",
           recordedAt: "2026-08-02T00:00:00.000Z",
         }],
-        implementations: [{
-          version: 1,
-          handoffVersion: 2,
-          selection: "a",
-          selectionLabel: "A · Implemented",
-          comment: "Reviewed choice",
-          summary: "Commit abc123; focused tests passed.",
-          recordedAt: "2026-08-02T00:00:00.000Z",
-        }],
+        implementations: [],
       }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
     render(<Harness />);
     await screen.findByText("Saved handoff history");
-    fireEvent.change(screen.getByLabelText("Lab state"), { target: { value: "implemented-review" } });
-    fireEvent.change(screen.getByLabelText("Implementation evidence"), {
-      target: { value: "Commit abc123; focused tests passed." },
-    });
+    fireEvent.click(screen.getByRole("radio", { name: "Implemented - Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Save handoff version" }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toMatchObject({
       disposition: "implemented-review",
-      implementationSummary: "Commit abc123; focused tests passed.",
     });
-    expect(await screen.findByText("From handoff version 2")).not.toBeNull();
-    expect(screen.getAllByText(/Commit abc123; focused tests passed/).length).toBeGreaterThan(0);
+    expect(await screen.findByText("Handoff version 2")).not.toBeNull();
+    expect(screen.queryByText("What was implemented")).toBeNull();
   });
 });

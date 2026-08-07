@@ -23,6 +23,10 @@ workspace has five durable catalog views:
 The implemented-review workflow starts with production implementations made on
 2026-08-02. Earlier implemented Labs remain Completed; implementations from that
 date onward stay in Implemented review until explicit owner sign-off.
+Every owner save and agent-side state action appends a choice, exact notes, state,
+version number, and timestamp. Histories display newest first. Agent implementations
+also append evidence linked to the Implemented review state version; the owner can
+then complete, park, discard, or save another In progress handoff.
 
 Do not delete a Lab after a decision. Update its machine lifecycle record, retain
 the page, and update its experiment document with the final choice and date.
