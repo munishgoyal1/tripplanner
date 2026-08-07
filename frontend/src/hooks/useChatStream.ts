@@ -63,25 +63,26 @@ function toolProgressLabel(name: string): string {
   return "Working on your trip";
 }
 
-/** The same work, named as a subject the user can recognise in a list. */
-function toolTopic(name: string): string {
-  if (/flight/i.test(name)) return "flights";
-  if (/hotel/i.test(name)) return "hotels";
-  if (/restaurant/i.test(name)) return "food";
-  if (/place|review|activit/i.test(name)) return "places";
-  if (/route|optimi/i.test(name)) return "routes";
-  if (/weather/i.test(name)) return "weather";
-  if (/visa/i.test(name)) return "entry rules";
-  if (/event/i.test(name)) return "events";
-  if (/preference|memory|profile/i.test(name)) return "your preferences";
-  if (/update|create|finalize|plan/i.test(name)) return "the itinerary";
-  if (/web_search/i.test(name)) return "current information";
+/** The same work, abstracted to the few stages a traveller would recognise.
+ *
+ * Deliberately coarse: naming every tool would report the machine's internals
+ * rather than the user's plan, and the list would never stop growing.
+ */
+function toolStage(name: string): string {
+  if (/preference|memory|profile|about_me/i.test(name)) return "your preferences";
+  if (/flight|train|transport|route|optimi|drive/i.test(name)) return "travel";
+  if (/hotel|stay|accommodation/i.test(name)) return "stays";
+  if (/place|review|activit|restaurant|event|attraction/i.test(name)) return "places";
+  if (/weather|visa|entry|document|currency/i.test(name)) return "practical details";
+  if (/trip_plan|itinerar|selection|booking|finalize/i.test(name)) return "the itinerary";
   return "";
 }
 
-function joinTopics(topics: string[]): string {
-  if (topics.length <= 1) return topics[0] ?? "";
-  return `${topics.slice(0, -1).join(", ")} and ${topics[topics.length - 1]}`;
+/** Only the last few stages, so a long build stays one readable line. */
+export function stageTrail(stages: string[], keep = 4): string {
+  if (!stages.length) return "";
+  const tail = stages.slice(-keep).join(" \u2192 ");
+  return stages.length > keep ? `\u2026 \u2192 ${tail}` : tail;
 }
 
 /** The destination the agent itself just named, read back from its tool call.
@@ -122,6 +123,9 @@ export function isPlanEditTool(name: string): boolean {
 /** Short enough to sit in a list of clauses rather than end a sentence. */
 export function waitHint(isNewTrip: boolean, seconds: number): string {
   if (seconds >= 120) return "still working, no need to refresh";
+  // Set the expectation once at the start, then get out of the way; repeating
+  // it beside a running clock is noise.
+  if (seconds >= 30) return "";
   return isNewTrip ? "full builds take about 2\u20134 minutes" : "a full rebuild takes about 2\u20134 minutes";
 }
 
@@ -153,7 +157,7 @@ export function useChatStream({
   const [failedRequest, setFailedRequest] = useState<FailedRequest | null>(null);
   const [activeTool, setActiveTool] = useState<{ name: string; args?: string } | null>(null);
   const [progress, setProgress] = useState<{ label: string; startedAt: number } | null>(null);
-  const [coveredTopics, setCoveredTopics] = useState<string[]>([]);
+  const [stages, setStages] = useState<string[]>([]);
   const [plannedPlace, setPlannedPlace] = useState<string | null>(null);
   const [editingPlan, setEditingPlan] = useState(false);
   const [liveRequest, setLiveRequest] = useState("");
@@ -176,15 +180,14 @@ export function useChatStream({
   useEffect(() => {
     if (!busy || !progress) return;
     const publishedSeconds = Math.floor(progressSeconds / 10) * 10;
-    // The heading stays still so the user is not re-reading a line that keeps
-    // changing shape; the detail carries what actually moved. Only work that
-    // really happened is listed — inventing plausible-sounding stages would
-    // make the status a decoration rather than a report.
+    // The trail is the whole report: its last step is what is happening now, so
+    // the per-tool label would only repeat it in more words. Only stages that
+    // really ran are listed — inventing plausible ones would make the status a
+    // decoration rather than a report.
     const heading = progressHeading(hasActiveTrip, destination || plannedPlace, editingPlan);
     const detail = [
       requestEcho(liveRequest),
-      progress.label,
-      coveredTopics.length ? `covered ${joinTopics(coveredTopics)}` : null,
+      stageTrail(stages) || "getting started",
       elapsedLabel(publishedSeconds),
       waitHint(!hasActiveTrip, publishedSeconds),
     ]
@@ -195,7 +198,6 @@ export function useChatStream({
     onTurnStatus?.({ phase: "working", message: heading, detail });
   }, [
     busy,
-    coveredTopics,
     destination,
     editingPlan,
     hasActiveTrip,
@@ -204,6 +206,7 @@ export function useChatStream({
     plannedPlace,
     progress,
     progressSeconds,
+    stages,
   ]);
 
   useEffect(() => () => {
@@ -224,9 +227,8 @@ export function useChatStream({
     setBusy(true);
     turnStartedAtRef.current = Date.now();
     publishedTurnStatusRef.current = "";
-    setCoveredTopics([]);
-    setPlannedPlace(null);
-    setEditingPlan(false);
+    setStages([]);
+    setPlannedPlace(null);    setEditingPlan(false);
     setLiveRequest(outgoing);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
     const streamController = new AbortController();
@@ -282,6 +284,14 @@ export function useChatStream({
             const place = destinationFromToolArgs(name, extras?.args);
             if (place) setPlannedPlace(place);
             if (isPlanEditTool(name)) setEditingPlan(true);
+            const stage = toolStage(name);
+            if (stage) {
+              setStages((current) =>
+                current[current.length - 1] === stage || current.includes(stage)
+                  ? current
+                  : [...current, stage],
+              );
+            }
             setProgress({ label: toolProgressLabel(name), startedAt: turnStartedAtRef.current });
             return;
           }
@@ -290,12 +300,6 @@ export function useChatStream({
               toolTrace[index].duration_ms = extras?.duration_ms;
               break;
             }
-          }
-          const topic = toolTopic(name);
-          if (topic) {
-            setCoveredTopics((current) =>
-              current.includes(topic) ? current : [...current, topic],
-            );
           }
           setActiveTool(null);
         },

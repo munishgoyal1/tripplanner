@@ -63,7 +63,7 @@ describe("ChatPanel progress", () => {
     await waitFor(() => expect(onTurnStatus).toHaveBeenLastCalledWith(expect.objectContaining({
       phase: "working",
       message: "Building your itinerary",
-      detail: expect.stringContaining("Checking places and reviews"),
+      detail: expect.stringContaining("\u201cPlan a Goa weekend\u201d \u00b7 places"),
     })));
   });
 
