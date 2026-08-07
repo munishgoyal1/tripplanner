@@ -140,3 +140,6 @@ Dark theme, option D from lab21.
 Keep rest things as-is. Just add that part of showing that user can easily make different choices too - that part of I would rather fly it , Give me the car anyway. I dont want 3 examples of it , 2 are enough may be and dont want ot make the page too lengthy , so see how you can adjust overall.
 
 If you have 2 options you can present to me with these adjustments then put them in 2 new option E and F. I will finalize one of them and refine with you. (also just a thought not an instruciton - Will it help keeping the  trip as 4 or 5 days to not make it too crowdy (what you think) but still capturing some vairability like hotel, flight, train, walk - balance between number of days 4 - 6 and the vairability. ) If you think cant be made less than 6 to show the medium complexity of 2 destinations and travel mode vairability and it will look fine for the user then we will go with that same.
+
+[2026-08-07 20:32] [worker-2] ! Implement Lab 22 in a new sandbox
+Imeplement the lab22 in a new sandbox
