@@ -51,6 +51,7 @@ from tripplanner.tools.trip_guard import (
     envelope,
     receipt,
     unexpected_changes,
+    validate_plan,
 )
 from tripplanner.tools.trip_validation import (  # noqa: F401
     _empty_itinerary_day_warnings,
@@ -412,6 +413,22 @@ def _restore_undeclared_legs(
     return restored
 
 
+def _newly_broken(before: dict[str, Any], after: dict[str, Any]) -> list[str]:
+    """Invariants this edit broke, ignoring the ones it inherited.
+
+    Writing the invariants was not enough; nothing was reading them back after a
+    rebalance, so a stop could be dropped on top of a drive and the trip would
+    still report success. Only the newly-broken ones are reported, because a
+    pre-existing flaw is not this edit's news.
+    """
+    was = {(item.code, item.day, item.stop) for item in validate_plan(before)}
+    return [
+        item.message
+        for item in validate_plan(after)
+        if (item.code, item.day, item.stop) not in was
+    ]
+
+
 def _pacing_text(plan: dict[str, Any]) -> str:
     """What the shape of the trip costs, in words the user could check.
 
@@ -720,7 +737,13 @@ def _reflow_unbooked_attractions(
                 distance = abs(day_index - original_day) * 5.0
             return (distance, len(assignments[day_index]), day_index)
 
-        assignments[min(available, key=score)].append(stop)
+        chosen = min(available, key=score)
+        # A time earned on another day means nothing here. Carrying it over is
+        # how a stop ends up sitting on top of whatever this day already does
+        # at that hour.
+        if chosen != original_day and isinstance(stop, dict):
+            stop["time"] = ""
+        assignments[chosen].append(stop)
 
     changed = False
     for day_index, day in enumerate(days):
@@ -779,7 +802,35 @@ def _settle_around_legs(stops: list[Any], day_number: int, env: Envelope) -> lis
     trail = legs if day_number == env.departure_day and day_number != env.arrival_day else []
     if lead or trail:
         return lead + body + trail
-    return stops
+
+    # A drive in the middle of the day is an anchor too. A stop that cannot
+    # finish before the drive pulls away belongs on the far side of it, not on
+    # top of it.
+    timed_legs = sorted(
+        (
+            (stop, at)
+            for stop in legs
+            if (at := _parse_hhmm(str(stop.get("time") or ""))) is not None
+        ),
+        key=lambda pair: pair[1],
+    )
+    if not timed_legs:
+        return stops
+
+    settled: list[Any] = []
+    remaining = list(body)
+    for leg, departs in timed_legs:
+        before: list[Any] = []
+        after: list[Any] = []
+        for stop in remaining:
+            at = _parse_hhmm(str(stop.get("time") or "")) if isinstance(stop, dict) else None
+            duration = stop.get("duration_min") if isinstance(stop, dict) else None
+            length = max(15, int(duration)) if isinstance(duration, (int, float)) else 90
+            (before if at is not None and at + length <= departs else after).append(stop)
+        settled.extend(before)
+        settled.append(leg)
+        remaining = after
+    return settled + remaining
 
 
 @_serialized_mutation
@@ -1041,6 +1092,7 @@ def add_selection(
     stray = unexpected_changes(diff_stops(before, plan), declared)
     if stray:
         alerts.append("Fitting that in also had a knock-on effect. " + receipt(stray))
+    alerts.extend(_newly_broken(before, plan))
     _save_active_trip(plan)
     return {"ok": True, "alerts": alerts, "trip": plan, "placement": placement}
 

@@ -440,7 +440,14 @@ def _feasibility_violations(
             following, following_at = timed[index + 1]
             ends = current_at + _duration_of(current)
             if _stop_kind(following) in _TRANSPORT_KINDS:
-                needed = ends + PRE_DEPARTURE_BUFFER_MIN
+                # Two hours is an airport, not a car. Asking for check-in time
+                # before a drive turns a real rule into background noise.
+                buffer_min = (
+                    PRE_DEPARTURE_BUFFER_MIN
+                    if _stop_kind(following) == "flight"
+                    else TURNAROUND_MIN
+                )
+                needed = ends + buffer_min
                 if needed > following_at:
                     out.append(
                         Violation(
@@ -448,7 +455,7 @@ def _feasibility_violations(
                             "Departure buffer",
                             f"{_stop_name(current)} leaves only {following_at - ends} minutes "
                             f"before {_stop_name(following)} on Day {day}; "
-                            f"{PRE_DEPARTURE_BUFFER_MIN} are required.",
+                            f"{buffer_min} are required.",
                             day,
                             _stop_name(following),
                         )
@@ -546,8 +553,14 @@ def _windows(day: int, stops: list[Any], env: Envelope) -> list[_Window]:
     blocks: list[tuple[int, int, int, Any]] = []
     for index, stop in enumerate(stops):
         at = _time_of(stop)
-        if at is None or _stop_kind(stop) in _TRANSPORT_KINDS:
+        if at is None:
             continue
+        if _stop_kind(stop) in _TRANSPORT_KINDS:
+            # The trip's own arrival and departure already bound the day. Any
+            # other journey is a drive the traveller is sitting in, so it holds
+            # its hours the same way a museum visit does.
+            if _stop_name(stop) in {env.arrival_name, env.departure_name}:
+                continue
         blocks.append(
             (
                 _abs(day, at) - TURNAROUND_MIN,

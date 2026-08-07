@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 
 from tripplanner.tools import trip_planner, user_preferences
+from tripplanner.tools.trip_guard import envelope
 from tripplanner.tools.trip_planner import (
     add_selection,
     create_trip_plan,
@@ -215,3 +216,179 @@ def test_no_tool_result_ever_shows_the_traveller_a_number_for_the_trip() -> None
     lowered = json.dumps(result.get("alerts", [])).lower()
     for token in ("score", "rating", "/100", "out of 10", "effort:"):
         assert token not in lowered
+
+
+def _excursion_day() -> None:
+    """Day 2 leaves Indore in the morning and drives back mid-afternoon."""
+    update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "day_wise_itinerary": [
+                        {
+                            "day": 2,
+                            "stops": [
+                                {
+                                    "name": "Drive Indore to Ujjain",
+                                    "kind": "transport",
+                                    "time": "09:00",
+                                    "duration_min": 120,
+                                    "booked": True,
+                                },
+                                {
+                                    "name": "Mahakaleshwar Temple",
+                                    "kind": "attraction",
+                                    "time": "11:30",
+                                    "duration_min": 120,
+                                },
+                                {
+                                    "name": "Drive Ujjain to Indore",
+                                    "kind": "transport",
+                                    "time": "15:00",
+                                    "duration_min": 120,
+                                    "booked": True,
+                                },
+                            ],
+                        }
+                    ]
+                }
+            )
+        }
+    )
+
+
+def _overlaps_a_drive(stops: list[dict]) -> list[str]:
+    drives = [
+        (
+            trip_planner._parse_hhmm(str(stop.get("time") or "")),
+            int(stop.get("duration_min") or 90),
+            str(stop.get("name") or ""),
+        )
+        for stop in stops
+        if str(stop.get("kind") or "") == "transport"
+    ]
+    clashes = []
+    for stop in stops:
+        if str(stop.get("kind") or "") == "transport":
+            continue
+        at = trip_planner._parse_hhmm(str(stop.get("time") or ""))
+        if at is None:
+            continue
+        length = int(stop.get("duration_min") or 90)
+        for start, minutes, name in drives:
+            if start is not None and at < start + minutes and at + length > start:
+                clashes.append(f"{stop.get('name')} overlaps {name}")
+    return clashes
+
+
+def test_a_stop_that_collides_with_a_drive_is_moved_off_it() -> None:
+    """The reported failure, at the point it happened: a stop landed on Day 2
+    carrying a time from another day, and that time was the moment the car
+    pulled away from Ujjain."""
+    stops = [
+        {"name": "Hotel Sayaji", "kind": "hotel", "time": "08:00", "duration_min": 30},
+        {
+            "name": "Drive Indore to Ujjain",
+            "kind": "transport",
+            "time": "09:00",
+            "duration_min": 120,
+        },
+        {
+            "name": "Mahakaleshwar Temple",
+            "kind": "attraction",
+            "time": "11:30",
+            "duration_min": 120,
+        },
+        {"name": "Kaanch Mandir", "kind": "attraction", "time": "15:00", "duration_min": 90},
+        {
+            "name": "Drive Ujjain to Indore",
+            "kind": "transport",
+            "time": "15:00",
+            "duration_min": 120,
+        },
+    ]
+    plan = {
+        "origin": "Bangalore",
+        "destination": "Indore",
+        "day_wise_itinerary": [
+            {"day": 1, "stops": []},
+            {"day": 2, "stops": stops},
+            {"day": 3, "stops": []},
+        ],
+    }
+    settled = trip_planner._settle_around_legs(stops, 2, envelope(plan))
+    trip_planner._retime_stops_in_order(settled)
+    assert _overlaps_a_drive(settled) == []
+    assert [stop["name"] for stop in settled].index("Kaanch Mandir") > [
+        stop["name"] for stop in settled
+    ].index("Drive Ujjain to Indore")
+
+
+def test_a_relocated_stop_does_not_carry_its_old_clock_time() -> None:
+    """A time earned on another day is what put the stop on top of the drive."""
+    plan = {
+        "origin": "Bangalore",
+        "destination": "Indore",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Flight Bangalore to Indore",
+                        "kind": "flight",
+                        "time": "09:00",
+                        "duration_min": 120,
+                    },
+                    {"name": "Hotel Sayaji", "kind": "hotel", "time": "13:00", "duration_min": 45},
+                    {"name": "Kaanch Mandir", "kind": "attraction", "time": "15:00"},
+                    {"name": "Rajwada Palace", "kind": "attraction", "time": "16:00"},
+                    {"name": "Sarafa Bazaar", "kind": "attraction", "time": "18:00"},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [
+                    {"name": "Hotel Sayaji", "kind": "hotel", "time": "08:00", "duration_min": 30},
+                    {
+                        "name": "Drive Ujjain to Indore",
+                        "kind": "transport",
+                        "time": "15:00",
+                        "duration_min": 120,
+                        "booked": True,
+                    },
+                ],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {
+                        "name": "Flight Indore to Bangalore",
+                        "kind": "flight",
+                        "time": "18:00",
+                        "duration_min": 120,
+                    }
+                ],
+            },
+        ],
+    }
+    trip_planner._reflow_unbooked_attractions(plan)
+    for day in (1, 2, 3):
+        assert _overlaps_a_drive(_stops_on(plan, day)) == []
+
+
+def test_a_place_is_never_scheduled_on_top_of_a_drive() -> None:
+    _round_trip()
+    _excursion_day()
+    add_selection("attraction", {"name": "Kaanch Mandir"})
+    plan = json.loads(get_trip_plan.invoke({}))
+    assert _overlaps_a_drive(_stops_on(plan, 2)) == []
+
+
+def test_displacing_an_earlier_choice_does_not_drop_it_onto_a_drive() -> None:
+    _round_trip()
+    _excursion_day()
+    add_selection("attraction", {"name": "Kaanch Mandir"})
+    add_selection("attraction", {"name": "Shree Bada Ganpati Mandir"})
+    plan = json.loads(get_trip_plan.invoke({}))
+    for day in (1, 2, 3):
+        assert _overlaps_a_drive(_stops_on(plan, day)) == []

@@ -287,3 +287,60 @@ def test_the_effort_model_cannot_refuse_anything() -> None:
         if not name.startswith("_") and callable(getattr(trip_effort, name))
     }
     assert not {name for name in public if "valid" in name or "block" in name}
+
+
+# --------------------------------------------------------------------------- #
+# A drive in the middle of the day
+# --------------------------------------------------------------------------- #
+
+EXCURSION = plan(
+    [
+        [
+            stop("Flight Bengaluru → Indore", "09:00", "flight", 120),
+            stop("Hotel Sayaji", "13:00", "hotel", 45),
+        ],
+        [
+            stop("Hotel Sayaji", "08:00", "hotel", 30),
+            stop("Drive Indore to Ujjain", "09:00", "transport", 120),
+            stop("Mandu Fort", "11:30", "attraction", 120),
+            stop("Drive Ujjain to Indore", "15:00", "transport", 120),
+        ],
+        [
+            stop("Rajwada Palace", "10:00"),
+            stop("Flight Indore → Bengaluru", "18:00", "flight", 120),
+        ],
+    ]
+)
+
+
+def test_a_midday_drive_holds_its_hours(located: None) -> None:
+    """The traveller is sitting in the car; that time is not free."""
+    env = trip_guard.envelope(EXCURSION)
+    stops = EXCURSION["day_wise_itinerary"][1]["stops"]
+    windows = trip_guard._windows(2, stops, env)
+    drive = trip_guard._abs(2, 15 * 60)
+    assert not any(window.start < drive + 120 and window.end > drive for window in windows)
+
+
+def test_the_trips_own_legs_do_not_carve_up_their_day(located: None) -> None:
+    """Arrival and departure already bound the day; blocking them twice would
+    leave the arrival day with no usable time at all."""
+    env = trip_guard.envelope(ROUND_TRIP)
+    stops = ROUND_TRIP["day_wise_itinerary"][0]["stops"]
+    assert trip_guard._windows(1, stops, env)
+
+
+def test_a_stop_is_never_offered_the_hours_a_drive_occupies(located: None) -> None:
+    placement, _ = trip_guard.choose_placement(
+        EXCURSION, "Lal Bagh Palace", "attraction", duration_min=90, preferred_day=2
+    )
+    if placement is not None:
+        chosen = trip_guard._parse_hhmm(placement.time)
+        assert chosen is not None
+        assert not (chosen < 17 * 60 and chosen + 90 > 15 * 60)
+
+
+def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
+    """Two hours of buffer before a car ride is noise, not a rule."""
+    codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
+    assert not codes
