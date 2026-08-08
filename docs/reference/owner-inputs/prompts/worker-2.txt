@@ -165,3 +165,6 @@ For D-01 rail coach pricing, build the capability alogn with fallback that if no
 Consumer Platforms & Aggregators- **Omio:** Compares train, bus, and flight pricing across Europe and North America.
 - **Trainline / Rail Europe:** Authoritative direct ticket retailing and pricing sources for European rail networks.
 - **Rome2rio:** Multimodal trip planner showing estimated price ranges for combined rail, coach, and transit leg
+
+[2026-08-08 20:30] [worker-2] ! D-06 headline wording
+D-06 "Then change its mind" is not a posiutive and rtight staeemnt, just say something on lines of watch it plan.. you can ask it to plan yours . change its mind is negative shows not stable etc.

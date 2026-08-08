@@ -605,7 +605,7 @@ state. That is intentional and must be stated in the runbook.
 | D-03 | Are rule weights user-tunable, or fixed with preferences as an input? | Fixed rule, preferences as input. A tunable ranker is a settings screen nobody opens. | Open |
 | D-04 | Do decisions appear on shared trips by default? | Yes, read-only. The reasoning is the most persuasive thing in the trip. | Open |
 | D-05 | Do we record lodging and flight decisions in M1, or transport only? | Transport only in M1; the remaining milestones are all expected to land, one by one. | **Resolved 2026-08-08 by owner** |
-| D-06 | Carried over from Lab 22: option E says **Plan mine** and **"Then change its mind"**, both differing from option A's wording. Keep or align? | Keep — they are specific to this option's promise | **Open, unanswered** |
+| D-06 | Carried over from Lab 22: option E says **Plan mine** and **"Then change its mind"**, both differing from option A's wording. Keep or align? | Headline changed to **"Watch it plan a trip. Then ask it to plan yours."** — "change its mind" reads as instability, not capability, and the second line should invite rather than caveat. **Plan mine** stays. | **Resolved 2026-08-08 by owner** |
 
 ## Agent execution contract
 
@@ -629,3 +629,4 @@ this brief:
 | 2026-08-08 | Brief created after auditing the gap between Lab 22 option E and the real backend | Agent (worker-2) |
 | 2026-08-08 | D-01 and D-05 resolved by owner. Estimated fares removed entirely in favour of a fare-source port that degrades to unpriced; provider candidates recorded for a later decision. | Agent (worker-2) |
 | 2026-08-08 | **M1 implemented.** `decisions/` package (models, rules, store), `providers/fares.py` port with the unpriced fallback, `compare_transport_options` tool, `route_metrics` helper, decisions persisted on the trip and exposed read-only through `trip_view`, shared TS types. 33 new tests; full suite 974 passed. | Agent (worker-2) |
+| 2026-08-08 | D-06 resolved by owner: public headline is now "Watch it plan a trip. Then ask it to plan yours." | Agent (worker-2) |
