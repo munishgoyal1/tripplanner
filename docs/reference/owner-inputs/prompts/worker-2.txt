@@ -143,3 +143,6 @@ If you have 2 options you can present to me with these adjustments then put them
 
 [2026-08-07 20:32] [worker-2] ! Implement Lab 22 in a new sandbox
 Imeplement the lab22 in a new sandbox
+
+[2026-08-08 11:17] [worker-2] ! Product must really support what the demo promises
+Are you asking me that you can produce the real fix (new feature support ?), yes eventually what we are promising and hsowing to users , our product has to support in real also. Are we on same page in my understanding ?
