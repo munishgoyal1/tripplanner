@@ -227,3 +227,12 @@ Constraints:
 - Commit and push every completed milestone.
 - Serve the sandbox with scripts/dev/sandbox.ps1 and record an IterationSummary.
 - Do not deploy production.
+
+[2026-08-08 18:00] [worker-2] ! Bridge landing and app themes in Lab 22 Option E
+ok can you implement these visual bridge in the UX lab22 first. can you update it for option E and show. I want to first have a look.
+
+[2026-08-08 18:55] [worker-2] ! Show landing to workspace flow in Lab 22 Option E
+so the first plan is only for first plan or any plan will show up like that, where have you show the actual app page with coherent fonts and theme. Show a proper flow of landing page to next page when user clciks Plan Mine or skip tpo the app (both land to the app page, where is the first plan page)
+
+[2026-08-08 19:35] [worker-2] ! Finalize Lab 22 for promotion
+ok finalize all this so i can get in position to promote the sandbox
