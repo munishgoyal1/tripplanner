@@ -22,6 +22,7 @@ from typing import Any
 from langchain_core.tools import tool
 
 from tripplanner import storage_cosmos
+from tripplanner.decisions.provenance import make_check, record_check
 from tripplanner.decisions.store import upsert_decision
 from tripplanner.json_store import atomic_write_json
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
@@ -1292,6 +1293,21 @@ def record_trip_decision(decision) -> bool:
     if not plan:
         return False
     upsert_decision(plan, decision)
+    _save_active_trip(plan)
+    return True
+
+
+@_serialized_mutation
+def record_price_check(kind: str, provider: str) -> bool:
+    """Note that we looked at a live source, so the plan can say when.
+
+    Non-tool. Silently does nothing without an active trip: a search before a
+    trip exists has nothing to be provenance for.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    record_check(plan, make_check(kind, provider))
     _save_active_trip(plan)
     return True
 

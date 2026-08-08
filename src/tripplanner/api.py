@@ -45,6 +45,7 @@ from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from tripplanner.chat_interactions import extract_input_request
+from tripplanner.decisions.receipts import receipt_for
 from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_identity import (
     is_anonymous_id,
@@ -564,6 +565,12 @@ def _sse(event: str, data: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+def _elapsed_clock(started: float) -> str:
+    """Where in the turn this happened, so a replay can be read like a log."""
+    seconds = max(int(time.monotonic() - started), 0)
+    return f"{seconds // 60}:{seconds % 60:02d}"
+
+
 # Proxies must not buffer or cache an event stream, or the SPA sees the whole
 # turn arrive at once instead of token by token.
 _SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
@@ -760,6 +767,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         # reply against them (hallucination critic).
         tool_outputs: list[ToolMessage] = []
         tool_names_called: set[str] = set()  # track which tools fired this turn
+        receipt_seq = 0
         yield _sse("progress", {"stage": "thinking"})
         try:
             async for ev in app_graph.astream_events(
@@ -816,6 +824,20 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                                     ToolMessage(content=content, tool_call_id=name)
                                 )
                     yield _sse("tool", payload)
+                    tool_text = (
+                        output if isinstance(output, str) else getattr(output, "content", "")
+                    )
+                    receipt = receipt_for(name, tool_text)
+                    if receipt is not None:
+                        receipt_seq += 1
+                        yield _sse(
+                            "receipt",
+                            {
+                                "seq": receipt_seq,
+                                "at": _elapsed_clock(started),
+                                **receipt.as_dict(),
+                            },
+                        )
                     yield _sse("progress", {"stage": "reviewing"})
         except GraphRecursionError:
             reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)

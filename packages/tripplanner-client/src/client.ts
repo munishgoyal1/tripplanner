@@ -80,6 +80,17 @@ function dispatchFrame(event: string, data: Record<string, unknown>, handlers: S
       },
     );
   }
+  if (event === "receipt" && handlers.onReceipt && typeof data.text === "string") {
+    handlers.onReceipt({
+      seq: typeof data.seq === "number" ? data.seq : 0,
+      at: typeof data.at === "string" ? data.at : "",
+      kind: typeof data.kind === "string" ? data.kind : "",
+      text: data.text,
+      detail: typeof data.detail === "string" ? data.detail : undefined,
+      decision_id: typeof data.decision_id === "string" ? data.decision_id : undefined,
+      source: typeof data.source === "string" ? data.source : undefined,
+    });
+  }
   if (event === "progress" && handlers.onProgress) {
     const stage = data.stage;
     if (stage === "thinking" || stage === "reviewing" || stage === "saving") {

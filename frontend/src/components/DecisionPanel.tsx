@@ -1,12 +1,19 @@
 import { Check, RotateCcw, Undo2 } from "lucide-react";
 import { useState } from "react";
 import { overrideDecision, restoreDecision } from "../api";
-import type { CostBaseline, Decision, DecisionOption, TripView } from "../types";
+import type {
+  CostBaseline,
+  Decision,
+  DecisionOption,
+  ProvenanceRow,
+  TripView,
+} from "../types";
 
 interface Props {
   decisions: Decision[];
   updatedAt?: string | null;
   baseline?: CostBaseline | null;
+  provenance?: ProvenanceRow[];
   onApplied: (view: TripView, message: string, warnings: string[]) => void;
   onStale: (view: TripView | undefined, message: string) => void;
   onError: (message: string) => void;
@@ -165,12 +172,14 @@ export default function DecisionPanel({
   decisions,
   updatedAt,
   baseline,
+  provenance,
   onApplied,
   onStale,
   onError,
 }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
-  if (decisions.length === 0) return null;
+  const checks = provenance ?? [];
+  if (decisions.length === 0 && checks.length === 0) return null;
 
   const run = async (decisionId: string, optionId: string | null) => {
     setBusyId(decisionId);
@@ -223,6 +232,18 @@ export default function DecisionPanel({
           />
         ))}
       </div>
+      {checks.length > 0 && (
+        <ul className="mt-3 space-y-1 border-t border-slate-100 pt-2.5">
+          {checks.map((check) => (
+            <li
+              key={`${check.kind}:${check.provider}`}
+              className={`text-[11px] ${check.current ? "text-slate-500" : "text-amber-700"}`}
+            >
+              {check.text}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

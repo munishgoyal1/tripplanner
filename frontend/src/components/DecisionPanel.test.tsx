@@ -182,4 +182,41 @@ describe("DecisionPanel", () => {
 
     expect(container.innerHTML).toBe("");
   });
+
+  it("says when each price was last checked and flags one that has aged out", () => {
+    render(
+      <DecisionPanel
+        decisions={[]}
+        updatedAt={null}
+        baseline={null}
+        provenance={[
+          {
+            kind: "flights",
+            provider: "Duffel",
+            checked_at: "2026-05-04T09:00:00",
+            expires_at: "2026-05-04T09:30:00",
+            current: true,
+            text: "Flights priced from Duffel on 04 May 09:00.",
+          },
+          {
+            kind: "lodging",
+            provider: "LiteAPI",
+            checked_at: "2026-05-01T09:00:00",
+            expires_at: "2026-05-01T21:00:00",
+            current: false,
+            text: "Stays last priced from LiteAPI on 01 May 09:00 — may have changed.",
+          },
+        ]}
+        onApplied={vi.fn()}
+        onStale={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Flights priced from Duffel on 04 May 09:00.")).toBeTruthy();
+    const stale = screen.getByText(
+      "Stays last priced from LiteAPI on 01 May 09:00 — may have changed.",
+    );
+    expect(stale.className).toContain("text-amber-700");
+  });
 });

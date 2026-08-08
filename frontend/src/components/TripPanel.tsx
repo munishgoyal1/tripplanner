@@ -433,6 +433,7 @@ export default function TripPanel({
             decisions={view.decisions ?? []}
             updatedAt={view.updated_at}
             baseline={ov.cost_baseline}
+            provenance={ov.provenance}
             onApplied={onDecisionApplied}
             onStale={onDecisionStale ?? (() => undefined)}
             onError={onDecisionError ?? (() => undefined)}

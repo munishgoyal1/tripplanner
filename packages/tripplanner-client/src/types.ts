@@ -97,6 +97,7 @@ export interface TripOverview {
   total_cost: number | null;
   total_cost_display: string;
   cost_baseline?: CostBaseline | null;
+  provenance?: ProvenanceRow[];
   budget?: Budget | null;
   weather?: TripWeather | null;
   family_pills?: string[];
@@ -175,6 +176,17 @@ export interface DecisionOverride {
   previous_option_id: string;
   effect: { total_cost?: number | null; delta?: number | null; currency: string };
   warnings: string[];
+}
+
+/** When we last looked at a live source, and whether that look still holds. */
+export interface ProvenanceRow {
+  kind: string;
+  provider: string;
+  checked_at: string;
+  expires_at: string;
+  /** False once the quote has aged out. Never present it as today's price. */
+  current: boolean;
+  text: string;
 }
 
 /** What the plan cost before the traveller started overruling it. */
@@ -479,9 +491,21 @@ export interface TripInputRequest {
   allow_skip: boolean;
 }
 
+/** One line of what the planner actually did, derived from a tool's own output. */
+export interface Receipt {
+  seq: number;
+  at: string;
+  kind: string;
+  text: string;
+  detail?: string;
+  decision_id?: string;
+  source?: string;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
+  onReceipt?: (receipt: Receipt) => void;
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
   onInputRequest?: (request: TripInputRequest) => void;
   onDone: (reply: string, tripId?: string) => void;

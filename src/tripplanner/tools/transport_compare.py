@@ -234,6 +234,7 @@ def _summarise(decision: Decision, warnings: list[str]) -> str:
     chosen = decision.chosen
     payload = {
         "decision_id": decision.id,
+        "subject": decision.subject,
         "chosen": chosen.label if chosen else "",
         "rule": decision.rule.text,
         "priced": decision.priced.value,

@@ -547,9 +547,12 @@ the engine become true.
   current view, and does not mutate the trip.
 - **AC-08** A trip document saved before this feature loads, renders and can be
   edited with no error and no empty decision UI.
-- **AC-09** Selected flights and hotels carry `source.provider` and
-  `source.checked_at`; a selection whose `expires_at` has passed is never
-  labelled current.
+- **AC-09** Every live price the planner obtains records the provider and the
+  moment it was obtained, and once that record has aged out the figure is never
+  described as current. Implemented as a plan-level price-check ledger rather
+  than per-selection fields: `_format_offers` emits no offer identifier, so
+  there is no key on which to join a stored selection back to the quote that
+  produced it, and inventing one would be provenance in name only.
 - **AC-10** A run emits `receipt` events whose count equals the number of
   receipt-mapped tool calls, and the existing `tool` events are unchanged.
 - **AC-11** A shared snapshot shows decisions without `provider_ref` or keyed
@@ -563,17 +566,17 @@ the engine become true.
 
 | Layer | Required check | Evidence |
 |---|---|---|
-| Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_store.py` — no mocks | M2 done: `test_decision_rules.py` (9), `test_decision_store.py` (8), `test_decision_apply.py` (11) pass; `receipts` is M3 |
-| Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | M2 done: 6 tests pass (override, restore, stale 409, matching revision, unknown decision, flag off → 404) |
+| Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_store.py` — no mocks | M3 done: `test_decision_rules.py` (9), `test_decision_store.py` (8), `test_decision_apply.py` (11), `test_decision_receipts.py` (11) pass |
+| Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | M3 done: `test_decisions_api.py` (6) plus `test_receipt_stream.py` (2) — a receipt only for verifiable work, `tool` events unchanged |
 | Fare port | `tests/test_fare_sources.py` — empty registry yields unpriced, air source yields a sourced quote, failure degrades | M1 done: 6 tests pass |
 | Tool | `tests/test_transport_compare.py` — fan-out with stubbed providers, partial-failure degradation, cache, ceilings | M1 done: 10 tests pass |
-| Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | M2 done: full suite 991 passed, no regression; malformed records skipped (`test_decision_store.py`) |
-| Share | extend `tests/test_share.py` — allowlist, provenance stripping | M3 |
-| Web behavior | new vitest for the decision panel, override, undo, confidence rendering | M2 done: `DecisionPanel.test.tsx` (7) pass; frontend suite 275 passed |
-| Shared client | type compile of `packages/tripplanner-client` | M2 done: `npx tsc -b --noEmit` clean |
-| Mobile | `tsc` only; no mobile UI in this increment | M2 done: contract additions are optional fields; no mobile change |
+| Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | M3 done: full suite 1008 passed, no regression; malformed decision and price-check rows skipped |
+| Share | extend `tests/test_share.py` — allowlist, provenance stripping | M3 done: 12 tests pass — `provider_ref` and `day_cost` dropped, keyed URLs dropped, the overruled choice shown, `price_checks` carried |
+| Web behavior | new vitest for the decision panel, override, undo, confidence rendering | M3 done: `DecisionPanel.test.tsx` (8) including the stale-price line, `api.test.ts` receipt dispatch; frontend suite 270 passed |
+| Shared client | type compile of `packages/tripplanner-client` | M3 done: `npx tsc -b --noEmit` clean |
+| Mobile | `tsc` only; no mobile UI in this increment | M3 done: `Receipt`, `ProvenanceRow` and `onReceipt` are optional additions; no mobile change |
 | Accessibility | override control keyboard-reachable, warning announced via live region | M2 done: overrule and undo are native buttons; warnings render through the existing notice channel |
-| Build | `npm run build`, `pytest` | M2 done: `pytest` 991 passed; `npm run build` clean |
+| Build | `npm run build`, `pytest` | M3 done: `pytest` 1008 passed; `npm run build` clean |
 | Canary | read-only smoke plus one manual overrule on a real trip | Pending |
 | Production | explicit owner approval | Pending |
 
@@ -631,3 +634,4 @@ this brief:
 | 2026-08-08 | **M1 implemented.** `decisions/` package (models, rules, store), `providers/fares.py` port with the unpriced fallback, `compare_transport_options` tool, `route_metrics` helper, decisions persisted on the trip and exposed read-only through `trip_view`, shared TS types. 33 new tests; full suite 974 passed. | Agent (worker-2) |
 | 2026-08-08 | D-06 resolved by owner: public headline is now "Watch it plan a trip. Then ask it to plan yours." | Agent (worker-2) |
 | 2026-08-08 | **M2 implemented.** `decisions/apply.py` re-settles the plan deterministically on an overrule (leg rewritten, following stops shifted, total moved, guard warnings surfaced not swallowed); `apply_decision_override` tool with an `updated_at` staleness check; `POST`/`DELETE /trip/decisions/{id}/override` behind `decisions_ui_enabled`, 409 on a stale write; `cost_baseline` and `updated_at` on the view; `DecisionPanel` in the workspace with overrule and undo. 17 new backend tests, 7 new vitest; suites 991 and 275 pass. D-02 and D-03 settled as recommended. | Agent (worker-2) |
+| 2026-08-08 | **M3 implemented.** `decisions/receipts.py` derives each receipt from the tool's own output, so a tool with nothing verifiable to report produces no line; `receipt` SSE events carry a sequence and an elapsed clock and are rendered as a live trail in the chat. `decisions/provenance.py` records a price check whenever a live provider actually answers, expires it per source kind, and switches the wording once it has aged out — surfaced under the decision panel and in the exported plan. `share.py` sanitises decisions onto public snapshots without `provider_ref`, `day_cost` or keyed URLs, and shows the overruled choice rather than the agent's. 13 new backend tests, 2 new vitest; suites 1008 and 270 pass. AC-09 met through the ledger rather than per-selection fields — see the amended criterion. | Agent (worker-2) |
