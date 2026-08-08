@@ -123,13 +123,83 @@ def sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
         "day_wise_itinerary",
         "estimated_total_cost",
         "total_cost",
+        "cost_baseline",
+        "price_checks",
         "currency",
         "notes",
         "summary",
         "created_at",
         "updated_at",
     }
-    return {k: plan[k] for k in public_keys if k in plan}
+    public = {k: plan[k] for k in public_keys if k in plan}
+    decisions = sanitize_decisions(plan.get("decisions"))
+    if decisions:
+        public["decisions"] = decisions
+    return public
+
+
+# Anything that could be replayed against a provider, or billed to us, or that
+# only means something inside our own ranker.
+_PRIVATE_OPTION_KEYS = {"provider_ref", "day_cost"}
+_TRACKING_PARAMS = ("key=", "apikey=", "api_key=", "token=", "aff", "utm_", "partner")
+
+
+def _public_url(url: Any) -> str:
+    text = str(url or "").strip()
+    if not text.startswith("https://"):
+        return ""
+    lowered = text.lower()
+    if any(marker in lowered for marker in _TRACKING_PARAMS):
+        return ""
+    return text
+
+
+def sanitize_decisions(decisions: Any) -> list[dict[str, Any]]:
+    """Public decisions: the reasoning and the numbers, none of the plumbing.
+
+    A viewer should be able to see why a leg was chosen and what was turned
+    down. They should not be able to see our rule codes, our provider handles,
+    or a URL that bills us when they click it.
+    """
+    if not isinstance(decisions, list):
+        return []
+    public: list[dict[str, Any]] = []
+    for record in decisions:
+        if not isinstance(record, dict) or not record.get("id"):
+            continue
+        options = []
+        for option in record.get("options") or []:
+            if not isinstance(option, dict):
+                continue
+            clean = {k: v for k, v in option.items() if k not in _PRIVATE_OPTION_KEYS}
+            source = clean.get("source")
+            if isinstance(source, dict):
+                clean["source"] = {
+                    "provider": source.get("provider", ""),
+                    "checked_at": source.get("checked_at", ""),
+                    "confidence": source.get("confidence", ""),
+                    "url": _public_url(source.get("url")),
+                }
+            options.append(clean)
+        rule = record.get("rule")
+        override = record.get("override")
+        chosen = record.get("chosen_option_id", "")
+        if isinstance(override, dict) and override.get("option_id"):
+            chosen = override["option_id"]
+        public.append(
+            {
+                "id": record["id"],
+                "kind": record.get("kind", ""),
+                "subject": record.get("subject", ""),
+                "scope": record.get("scope") or {},
+                # The sentence, not the code that produced it.
+                "rule_text": (rule or {}).get("text", "") if isinstance(rule, dict) else "",
+                "chosen_option_id": chosen,
+                "priced": record.get("priced", ""),
+                "options": options,
+            }
+        )
+    return public
 
 
 def resolve(token: str) -> dict[str, Any] | None:

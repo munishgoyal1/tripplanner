@@ -116,6 +116,13 @@ class Settings(BaseModel):
     # length/word count -- never the content.
     audit_user_messages: str = os.getenv("AUDIT_USER_MESSAGES", "")
 
+    # Shows the recorded comparisons in the workspace and accepts overrules.
+    # Off leaves the records being written but hides them, so a half-finished
+    # surface never reaches a traveller.
+    decisions_ui_enabled: bool = Field(
+        default_factory=lambda: os.getenv("DECISIONS_UI_ENABLED", "1").strip() != "0"
+    )
+
 
 @lru_cache
 def get_settings() -> Settings:

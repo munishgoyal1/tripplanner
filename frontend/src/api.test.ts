@@ -84,8 +84,35 @@ describe("streamChat", () => {
     expect(events.onDone).toHaveBeenCalledWith("Hello", "trip-1");
   });
 
-  it("marks planner review turns as proposal-only", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
+  it("passes a receipt through and ignores one with nothing to say", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        streamResponse([
+          'event: receipt\ndata: {"seq":1,"at":"0:12","kind":"transport","text":"Compared 3 ways from Lisbon to Porto","detail":"train picked, 2 rejected","decision_id":"dec_1"}\n\n',
+          'event: receipt\ndata: {"seq":2,"at":"0:14","kind":"web"}\n\n',
+          'event: done\ndata: {"reply":"Done"}\n\n',
+        ]),
+      ),
+    );
+    const events = handlers();
+    events.onReceipt = vi.fn();
+
+    await streamChat("plan a trip", events);
+
+    expect(events.onReceipt).toHaveBeenCalledTimes(1);
+    expect(events.onReceipt).toHaveBeenCalledWith({
+      seq: 1,
+      at: "0:12",
+      kind: "transport",
+      text: "Compared 3 ways from Lisbon to Porto",
+      detail: "train picked, 2 rejected",
+      decision_id: "dec_1",
+      source: undefined,
+    });
+  });
+
+  it("marks planner review turns as proposal-only", async () => {    const fetchMock = vi.fn().mockResolvedValue(
       streamResponse(['event: done\ndata: {"reply":"Three options"}\n\n']),
     );
     vi.stubGlobal("fetch", fetchMock);

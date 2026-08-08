@@ -192,6 +192,28 @@ def set_stop_booked(day: int, name: str, booked: bool) -> dict[str, Any]:
     return {"ok": ok, "itinerary": build_itinerary()}
 
 
+def override_decision(
+    decision_id: str,
+    option_id: str | None,
+    *,
+    expected_updated_at: str = "",
+) -> dict[str, Any]:
+    """Overrule a recorded comparison, or undo that overrule.
+
+    Returns the whole trip in one response so the workspace takes a single
+    coherent update rather than re-fetching each panel.
+    """
+    outcome = trip_planner.apply_decision_override(
+        decision_id, option_id, expected_updated_at=expected_updated_at
+    )
+    plan = trip_planner.load_active_trip_dict()
+    return {
+        **outcome,
+        "view": trip_view.build_view(plan, None),
+        "itinerary": trip_view.build_itinerary(plan),
+    }
+
+
 def activate_trip(trip_id: str) -> Any:
     """Flip the active trip. Kept minimal so the workspace lock is held briefly."""
     return trip_planner.switch_active_trip(trip_id)

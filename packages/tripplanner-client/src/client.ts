@@ -1,4 +1,5 @@
 import type {
+  DecisionApplyResult,
   DeselectItemOptions,
   Itinerary,
   MapView,
@@ -78,6 +79,17 @@ function dispatchFrame(event: string, data: Record<string, unknown>, handlers: S
         duration_ms: typeof data.duration_ms === "number" ? data.duration_ms : undefined,
       },
     );
+  }
+  if (event === "receipt" && handlers.onReceipt && typeof data.text === "string") {
+    handlers.onReceipt({
+      seq: typeof data.seq === "number" ? data.seq : 0,
+      at: typeof data.at === "string" ? data.at : "",
+      kind: typeof data.kind === "string" ? data.kind : "",
+      text: data.text,
+      detail: typeof data.detail === "string" ? data.detail : undefined,
+      decision_id: typeof data.decision_id === "string" ? data.decision_id : undefined,
+      source: typeof data.source === "string" ? data.source : undefined,
+    });
   }
   if (event === "progress" && handlers.onProgress) {
     const stage = data.stage;
@@ -336,6 +348,37 @@ export class TripplannerClient {
       dispatchFrame(finalFrame.event, finalFrame.data, handlers);
     }
     if (!terminalEvent) throw new Error("The response stream ended before completion.");
+  }
+
+  async overrideDecision(
+    decisionId: string,
+    optionId: string,
+    updatedAt?: string | null,
+  ): Promise<DecisionApplyResult> {
+    const response = await this.post(
+      `/trip/decisions/${encodeURIComponent(decisionId)}/override`,
+      { option_id: optionId, updated_at: updatedAt ?? "" },
+    );
+    return this.decisionResult(response, "Could not change this leg");
+  }
+
+  async restoreDecision(
+    decisionId: string,
+    updatedAt?: string | null,
+  ): Promise<DecisionApplyResult> {
+    const params: Record<string, string> = { user_id: await this.userId() };
+    if (updatedAt) params.updated_at = updatedAt;
+    const response = await this.request(
+      this.url(`/trip/decisions/${encodeURIComponent(decisionId)}/override`, params),
+      { method: "DELETE" },
+    );
+    return this.decisionResult(response, "Could not undo this change");
+  }
+
+  /** A 409 is not a failure to hide: it carries the trip as it actually is now. */
+  private async decisionResult(response: Response, action: string): Promise<DecisionApplyResult> {
+    if (!response.ok && response.status !== 409) ensureOk(response, action);
+    return (await response.json()) as DecisionApplyResult;
   }
 
   private async post(

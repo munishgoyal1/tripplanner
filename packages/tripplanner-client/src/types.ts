@@ -96,14 +96,129 @@ export interface TripOverview {
   counts: { flights: number; hotels: number; activities: number; days: number };
   total_cost: number | null;
   total_cost_display: string;
+  cost_baseline?: CostBaseline | null;
+  provenance?: ProvenanceRow[];
   budget?: Budget | null;
   weather?: TripWeather | null;
   family_pills?: string[];
   constraints?: string[];
 }
 
+export type TransportMode =
+  | "flight"
+  | "train"
+  | "road"
+  | "coach"
+  | "ferry"
+  | "metro"
+  | "walk";
+
+/** A price is real or absent. There is no estimated tier. */
+export type UnpricedReason = "no_source" | "source_failed" | "out_of_coverage";
+
+export type PricedState = "full" | "partial" | "none";
+
+export interface DecisionPrice {
+  amount: number;
+  currency: string;
+  basis?: "per_traveller" | "per_party";
+  amount_max?: number | null;
+}
+
+export interface DecisionSource {
+  provider: string;
+  url?: string;
+  checked_at?: string;
+  expires_at?: string | null;
+  confidence?: "live" | "cached";
+}
+
+export interface DecisionOption {
+  id: string;
+  mode: TransportMode;
+  label: string;
+  detail?: string;
+  price: DecisionPrice | null;
+  priced: boolean;
+  unpriced_reason: UnpricedReason | null;
+  duration_min?: number | null;
+  door_to_door_min?: number | null;
+  duration_estimated?: boolean;
+  rejected_because?: string | null;
+  source?: DecisionSource;
+}
+
+export interface Decision {
+  id: string;
+  kind: "transport_mode" | "lodging" | "flight" | "day_shape";
+  subject: string;
+  scope: {
+    day?: number | null;
+    from_place?: string;
+    to_place?: string;
+    date?: string;
+  };
+  rule: { code: string; text: string };
+  state: "agent" | "overruled";
+  priced: PricedState;
+  /** The option currently in the plan — the override when there is one. */
+  chosen_option_id: string;
+  /** What the agent picked, so "undo" has something to point at. */
+  agent_option_id?: string;
+  override?: DecisionOverride | null;
+  effect: { total_cost: number; delta?: number; currency: string };
+  options: DecisionOption[];
+}
+
+export interface DecisionOverride {
+  option_id: string;
+  at: string;
+  previous_option_id: string;
+  effect: { total_cost?: number | null; delta?: number | null; currency: string };
+  warnings: string[];
+}
+
+/** When we last looked at a live source, and whether that look still holds. */
+export interface ProvenanceRow {
+  kind: string;
+  provider: string;
+  checked_at: string;
+  expires_at: string;
+  /** False once the quote has aged out. Never present it as today's price. */
+  current: boolean;
+  text: string;
+}
+
+/** What the plan cost before the traveller started overruling it. */
+export interface CostBaseline {
+  first: number;
+  current: number;
+  saved: number;
+  currency: string;
+  first_display: string;
+  current_display: string;
+  saved_display: string;
+}
+
+export interface DecisionApplyResult {
+  ok: boolean;
+  stale?: boolean;
+  message: string;
+  decision_id: string;
+  option_id: string | null;
+  previous_option_id: string | null;
+  total_cost: number | null;
+  delta: number;
+  currency: string;
+  warnings: string[];
+  view?: TripView;
+  itinerary?: Itinerary;
+}
+
 export interface TripView {
   trip_id: string | null;
+  /** The revision an override must quote back to avoid clobbering newer work. */
+  updated_at?: string | null;
   has_trip: boolean;
   title: string;
   destination: string;
@@ -113,6 +228,7 @@ export interface TripView {
   overview: TripOverview | null;
   available_days: number[];
   items: TripItem[];
+  decisions?: Decision[];
   alerts?: string[];
 }
 
@@ -242,6 +358,8 @@ export interface ItineraryStop {
   name: string;
   kind: string;
   time: string;
+  /** Set on an intercity leg that came out of a recorded comparison. */
+  decision_id?: string | null;
   arrival_time?: string;
   arrival_time_estimated?: boolean;
   terminal_role?: "departure" | "arrival";
@@ -373,9 +491,21 @@ export interface TripInputRequest {
   allow_skip: boolean;
 }
 
+/** One line of what the planner actually did, derived from a tool's own output. */
+export interface Receipt {
+  seq: number;
+  at: string;
+  kind: string;
+  text: string;
+  detail?: string;
+  decision_id?: string;
+  source?: string;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
+  onReceipt?: (receipt: Receipt) => void;
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
   onInputRequest?: (request: TripInputRequest) => void;
   onDone: (reply: string, tripId?: string) => void;

@@ -636,6 +636,34 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     await handleDeselect(kind, name, { day, stop, all_occurrences: false });
   };
 
+  const handleDecisionApplied = (next: TripView, message: string, warnings: string[]) => {
+    dismissNotice("action-error");
+    ++refreshGeneration.current;
+    refreshController.current?.abort();
+    setLoading(false);
+    applyView(next, null);
+    dispatchWorkspace({ type: "trip-content-changed" });
+    notify({
+      id: "trip-alert",
+      tone: warnings.length > 0 ? "error" : "success",
+      message,
+      detail: warnings.join(" "),
+    });
+  };
+
+  // A stale write means someone else moved the trip on. Show them that trip
+  // rather than the one they were arguing with.
+  const handleDecisionStale = (next: TripView | undefined, message: string) => {
+    if (next) applyView(next, null);
+    else void refresh(null, { silent: true });
+    dispatchWorkspace({ type: "trip-content-changed" });
+    notify({ id: "action-error", tone: "error", message });
+  };
+
+  const handleDecisionError = (message: string) => {
+    notify({ id: "action-error", tone: "error", message });
+  };
+
   const reviewWithPlanner = () => {
     if (!plannerReview) return;
     setInspectorOpen(true);
@@ -734,6 +762,9 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     focusContext: focus,
     tripVersion,
     onSwitched: handleSwitched,
+    onDecisionApplied: handleDecisionApplied,
+    onDecisionStale: handleDecisionStale,
+    onDecisionError: handleDecisionError,
   };
 
   const railProps = {

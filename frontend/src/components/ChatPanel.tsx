@@ -178,6 +178,7 @@ export default function ChatPanel({
     failedRequest,
     progress,
     progressSeconds,
+    receipts,
     retryFailedRequest,
     sendMessage,
     stopResponse,
@@ -1002,6 +1003,18 @@ export default function ChatPanel({
               <span className="mt-0.5 block leading-relaxed">
                 {elapsedLabel(progressSeconds)} · {waitGuidance(!hasActiveTrip, progressSeconds)}
               </span>
+              {receipts.length > 0 && (
+                <span className="mt-2 block space-y-1 border-t border-brand/10 pt-2">
+                  {receipts.map((receipt) => (
+                    <span key={receipt.seq} className="block text-[11px] leading-snug text-muted">
+                      <span className="tabular-nums text-muted/70">{receipt.at}</span>{" "}
+                      <span className="text-ink">{receipt.text}</span>
+                      {receipt.detail && <span> · {receipt.detail}</span>}
+                      {receipt.source && <span className="text-muted/70"> · {receipt.source}</span>}
+                    </span>
+                  ))}
+                </span>
+              )}
             </span>
           </div>
         )}

@@ -18,6 +18,9 @@ credentials/
 data/whatsapp/
 data/calls/
 
+# Working output of scripts/capture_public_run.py
+.capture/
+
 # IDE
 .vscode/*
 !.vscode/extensions.json
