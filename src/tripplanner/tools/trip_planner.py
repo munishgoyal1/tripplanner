@@ -1735,6 +1735,70 @@ def _merge_itinerary_days(
     return merged, True
 
 
+def _journey_matches(stop: Any, origin: str, destination: str) -> bool:
+    if _stop_kind(stop) not in {"flight", "transport"}:
+        return False
+    name = re.sub(r"[^a-z0-9]+", " ", _stop_name(stop).casefold()).strip()
+    source = re.sub(r"[^a-z0-9]+", " ", origin.casefold()).strip()
+    target = re.sub(r"[^a-z0-9]+", " ", destination.casefold()).strip()
+    source_index = name.find(source)
+    return source_index >= 0 and name.find(target, source_index + len(source)) > source_index
+
+
+def _ensure_selected_flight_legs(plan: dict[str, Any], previous_origin: str = "") -> list[str]:
+    if not plan.get("selected_flights"):
+        return []
+    origin = str(plan.get("origin") or "").strip()
+    destination = str(plan.get("destination") or "").strip()
+    itinerary = plan.get("day_wise_itinerary")
+    if not origin or not destination or origin.casefold() == destination.casefold() or not itinerary:
+        return []
+    days = [day for day in itinerary if isinstance(day, dict)]
+    if not days:
+        return []
+
+    added: list[str] = []
+    first_stops = days[0].setdefault("stops", [])
+    last_stops = days[-1].setdefault("stops", [])
+    if previous_origin and previous_origin.casefold() != origin.casefold():
+        for stops, source, target in (
+            (first_stops, previous_origin, destination),
+            (last_stops, destination, previous_origin),
+        ):
+            if not isinstance(stops, list):
+                continue
+            for stop in stops:
+                if not isinstance(stop, dict) or not _journey_matches(stop, source, target):
+                    continue
+                stop["name"] = re.sub(
+                    re.escape(previous_origin), origin, _stop_name(stop), count=1,
+                    flags=re.IGNORECASE,
+                )
+                added.append(str(stop["name"]))
+    if isinstance(first_stops, list) and not any(
+        _journey_matches(stop, origin, destination) for stop in first_stops
+    ):
+        outbound = {"name": f"Flight: {origin} to {destination}", "kind": "flight"}
+        hotel_index = next(
+            (index for index, stop in enumerate(first_stops) if _stop_kind(stop) == "hotel"),
+            len(first_stops),
+        )
+        first_stops.insert(hotel_index, outbound)
+        added.append(outbound["name"])
+
+    if isinstance(last_stops, list) and not any(
+        _journey_matches(stop, destination, origin) for stop in last_stops
+    ):
+        inbound = {"name": f"Flight: {destination} to {origin}", "kind": "flight"}
+        hotel_indexes = [
+            index for index, stop in enumerate(last_stops) if _stop_kind(stop) == "hotel"
+        ]
+        insert_at = hotel_indexes[-1] + 1 if hotel_indexes else len(last_stops)
+        last_stops.insert(insert_at, inbound)
+        added.append(inbound["name"])
+    return added
+
+
 @tool
 @_serialized_mutation
 def update_trip_plan(updates_json: str) -> str:
@@ -1835,6 +1899,12 @@ def update_trip_plan(updates_json: str) -> str:
     ):
         _reflow_unbooked_attractions(plan)
 
+    added_flight_legs = []
+    if {"origin", "selected_flights"}.intersection(updates):
+        added_flight_legs = _ensure_selected_flight_legs(
+            plan, str(before.get("origin") or "")
+        )
+
     # Only a declared change to the flights may remove a leg. Swapping a hotel
     # or resubmitting one day of the itinerary may not.
     declared_legs: set[str] = set()
@@ -1859,6 +1929,8 @@ def update_trip_plan(updates_json: str) -> str:
             + ": this update did not declare a change to the flights, so the leg was "
             "restored. Send selected_flights when you mean to change travel."
         )
+    if added_flight_legs:
+        warning_text += "\nAdded missing trip legs: " + ", ".join(added_flight_legs) + "."
     if merged_partial_itinerary:
         warning_text += (
             "\nPartial itinerary update merged: only the days you sent were replaced, "

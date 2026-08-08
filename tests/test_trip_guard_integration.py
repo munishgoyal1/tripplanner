@@ -210,6 +210,39 @@ def test_an_update_that_declares_a_flight_change_is_allowed_to_change_it() -> No
     assert "Flight Indore to Bangalore" not in names
 
 
+def test_origin_correction_restores_missing_selected_flight_legs() -> None:
+    create_trip_plan.invoke(
+        {
+            "destination": "Goa",
+            "departure_date": "2026-08-10",
+            "return_date": "2026-08-12",
+            "origin": "Delhi",
+        }
+    )
+    update_trip_plan.invoke(
+        {
+            "updates_json": json.dumps(
+                {
+                    "selected_flights": [{"airline": "IndiGo"}],
+                    "day_wise_itinerary": [
+                        {"day": 1, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
+                        {"day": 2, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
+                        {"day": 3, "stops": [{"name": "Goa Hotel", "kind": "hotel"}]},
+                    ],
+                }
+            )
+        }
+    )
+
+    result = update_trip_plan.invoke({"updates_json": json.dumps({"origin": "Bangalore"})})
+    plan = json.loads(get_trip_plan.invoke({}))
+
+    assert plan["origin"] == "Bangalore"
+    assert _stops_on(plan, 1)[0]["name"] == "Flight: Bangalore to Goa"
+    assert _stops_on(plan, 3)[-1]["name"] == "Flight: Goa to Bangalore"
+    assert "Added missing trip legs" in result
+
+
 def test_no_tool_result_ever_shows_the_traveller_a_number_for_the_trip() -> None:
     _round_trip()
     result = add_selection("attraction", {"name": "Patalpani Falls"})

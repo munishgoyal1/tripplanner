@@ -31,6 +31,7 @@ MAX_TOOL_PHASES_PER_TURN = 10
 ForcedReason: TypeAlias = Literal[
     "tool_phase_budget",
     "new_trip_creation",
+    "origin_correction",
     "hotel_provider_fallback",
     "persist_or_repair_plan",
     "missing_concrete_hotel",
@@ -58,6 +59,10 @@ _NEW_TRIP_REQUEST_RE = re.compile(
 )
 _NEW_TRIP_INTENT_RE = re.compile(
     r"\b(?:new|separate|another|different)\s+(?:\w+\s+){0,3}(?:trip|vacation|holiday|getaway)\b",
+    re.IGNORECASE,
+)
+_ORIGIN_CORRECTION_RE = re.compile(
+    r"\b(?:origin|departure city|departing from|flying from)\b",
     re.IGNORECASE,
 )
 
@@ -182,6 +187,31 @@ def trip_update_requirement(
             "placeholders, and resubmit the full itinerary now."
         )
     return None
+
+
+def origin_correction_requirement(
+    messages: Sequence[BaseMessage], active_trip: dict[str, Any]
+) -> str | None:
+    if not active_trip.get("destination"):
+        return None
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    if latest_human < 0 or not _ORIGIN_CORRECTION_RE.search(
+        str(messages[latest_human].content or "")
+    ):
+        return None
+    turn_tools = {
+        name for index, name in _tool_call_positions(messages) if index > latest_human
+    }
+    if "update_trip_plan" in turn_tools:
+        return None
+    return (
+        "The traveller explicitly supplied or corrected the active trip origin. "
+        "Call update_trip_plan now with the stated origin and update the itinerary's "
+        "outbound and return travel before replying."
+    )
 
 
 def trip_hotel_search_requirement(
@@ -366,9 +396,14 @@ def resolve_completion_policy(
         if proposal_only or creation_tool or new_trip_flow
         else trip_hotel_fallback_requirement(messages)
     )
+    origin_requirement = (
+        None
+        if proposal_only or creation_tool or new_trip_flow or hotel_fallback_requirement
+        else origin_correction_requirement(messages, active_trip)
+    )
     update_requirement = (
         None
-        if proposal_only or new_trip_flow or hotel_fallback_requirement
+        if proposal_only or new_trip_flow or hotel_fallback_requirement or origin_requirement
         else trip_update_requirement(
             messages,
             active_trip,
@@ -403,6 +438,8 @@ def resolve_completion_policy(
         else "search_places_with_reviews"
         if hotel_fallback_requirement
         else "update_trip_plan"
+        if origin_requirement
+        else "update_trip_plan"
         if update_requirement
         else "search_hotels"
         if hotel_search_requirement
@@ -415,6 +452,8 @@ def resolve_completion_policy(
         if creation_tool
         else "hotel_provider_fallback"
         if hotel_fallback_requirement
+        else "origin_correction"
+        if origin_requirement
         else "persist_or_repair_plan"
         if update_requirement
         else "missing_concrete_hotel"
@@ -427,6 +466,7 @@ def resolve_completion_policy(
     )
     requirement = (
         hotel_fallback_requirement
+        or origin_requirement
         or update_requirement
         or hotel_search_requirement
     )

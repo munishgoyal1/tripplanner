@@ -124,6 +124,18 @@ def test_one_remaining_tool_phase_still_allows_completion_repair() -> None:
     assert decision.forced_reason == "persist_or_repair_plan"
 
 
+def test_origin_correction_forces_persistence_even_without_planning_intent() -> None:
+    decision = resolve_completion_policy(
+        messages=[HumanMessage(content="My origin city is Bangalore.")],
+        active_trip={"destination": "Goa", "origin": "Delhi", "day_wise_itinerary": []},
+        proposal_only=False,
+        has_planning_intent=False,
+    )
+
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.forced_reason == "origin_correction"
+
+
 def test_proposal_only_ignores_tool_phase_budget_and_completion_gates() -> None:
     decision = resolve_completion_policy(
         messages=[
