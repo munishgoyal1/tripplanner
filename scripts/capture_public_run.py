@@ -171,10 +171,11 @@ def _capture(prompts: list[str], previous: dict[str, Any] | None) -> dict[str, A
             "currency": itinerary.get("currency", ""),
         },
         "overview": view.get("overview", {}),
+        # Sanitised the same way a shared trip is, because this is published too.
+        "plan": share.sanitize_plan(plan),
         "receipts": receipts,
         "days": itinerary.get("days", []),
         "stats": itinerary.get("stats", {}),
-        # Sanitised the same way a shared trip is, because this is published too.
         "decisions": share.sanitize_decisions(plan.get("decisions")),
         "overrules": _overrules(plan, itinerary),
         "provenance": build_provenance(plan),
