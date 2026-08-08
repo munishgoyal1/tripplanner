@@ -291,6 +291,30 @@ def build_weather(trip: dict[str, Any] | None) -> dict[str, Any] | None:
 # ---------------------------------------------------------------------------
 
 
+def _build_cost_baseline(trip: dict[str, Any], symbol: str) -> dict[str, Any] | None:
+    """What the plan cost before the traveller started overruling it.
+
+    Absent until the first overrule, so an untouched trip shows no comparison
+    against itself.
+    """
+    baseline = trip.get("cost_baseline")
+    if not isinstance(baseline, dict):
+        return None
+    first, current = baseline.get("first"), baseline.get("current")
+    if not isinstance(first, int | float) or not isinstance(current, int | float):
+        return None
+    saved = round(float(first) - float(current), 2)
+    return {
+        "first": first,
+        "current": current,
+        "saved": saved,
+        "currency": str(baseline.get("currency") or ""),
+        "first_display": fmt_money(first, symbol),
+        "current_display": fmt_money(current, symbol),
+        "saved_display": fmt_money(abs(saved), symbol),
+    }
+
+
 def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     counts = {
         "flights": len(trip.get("selected_flights") or []),
@@ -315,6 +339,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
+        "cost_baseline": _build_cost_baseline(trip, symbol),
         "budget": build_budget(trip),
         "weather": build_weather(trip),
         "family_pills": family_pills(prefs),
@@ -748,6 +773,8 @@ def warm_view_items(trip: dict[str, Any] | None) -> None:
 
 def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
     """Recorded comparisons, shaped for display. Read-only in this view."""
+    if not get_settings().decisions_ui_enabled:
+        return []
     out: list[dict[str, Any]] = []
     for decision in list_decisions(trip):
         out.append({
@@ -759,6 +786,10 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
             "state": decision.state.value,
             "priced": decision.priced.value,
             "chosen_option_id": decision.active_option_id,
+            "agent_option_id": decision.chosen_option_id,
+            "override": (
+                decision.override.model_dump(mode="json") if decision.override else None
+            ),
             "effect": decision.effect.model_dump(mode="json"),
             "options": [
                 {
@@ -795,6 +826,7 @@ def build_view(
     if not trip:
         return {
             "trip_id": None,
+            "updated_at": None,
             "has_trip": False,
             "title": "Trip planner",
             "destination": "",
@@ -850,6 +882,7 @@ def build_view(
 
     return {
         "trip_id": str(trip.get("trip_id") or "") or None,
+        "updated_at": str(trip.get("updated_at") or "") or None,
         "has_trip": True,
         "title": title,
         "destination": destination,
@@ -1619,6 +1652,9 @@ def _render_day_stops(
         s = _normalize_stop(raw, hotels, activities)
         if not s:
             continue
+        if isinstance(raw, dict) and raw.get("decision_id"):
+            # Lets the UI put the "why this way" affordance on the leg itself.
+            s["decision_id"] = str(raw["decision_id"])
         route_mode = _intercity_transfer_mode(s["name"], s["kind"])
         if route_mode in {"Drive", "Bus"}:
             s["route_circuit_id"] = _route_circuit_id(day_num, raw_stop_index, route_mode)

@@ -123,6 +123,7 @@ def sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
         "day_wise_itinerary",
         "estimated_total_cost",
         "total_cost",
+        "cost_baseline",
         "currency",
         "notes",
         "summary",

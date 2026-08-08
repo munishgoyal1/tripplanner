@@ -1,4 +1,5 @@
 import type {
+  DecisionApplyResult,
   DeselectItemOptions,
   Itinerary,
   MapView,
@@ -336,6 +337,37 @@ export class TripplannerClient {
       dispatchFrame(finalFrame.event, finalFrame.data, handlers);
     }
     if (!terminalEvent) throw new Error("The response stream ended before completion.");
+  }
+
+  async overrideDecision(
+    decisionId: string,
+    optionId: string,
+    updatedAt?: string | null,
+  ): Promise<DecisionApplyResult> {
+    const response = await this.post(
+      `/trip/decisions/${encodeURIComponent(decisionId)}/override`,
+      { option_id: optionId, updated_at: updatedAt ?? "" },
+    );
+    return this.decisionResult(response, "Could not change this leg");
+  }
+
+  async restoreDecision(
+    decisionId: string,
+    updatedAt?: string | null,
+  ): Promise<DecisionApplyResult> {
+    const params: Record<string, string> = { user_id: await this.userId() };
+    if (updatedAt) params.updated_at = updatedAt;
+    const response = await this.request(
+      this.url(`/trip/decisions/${encodeURIComponent(decisionId)}/override`, params),
+      { method: "DELETE" },
+    );
+    return this.decisionResult(response, "Could not undo this change");
+  }
+
+  /** A 409 is not a failure to hide: it carries the trip as it actually is now. */
+  private async decisionResult(response: Response, action: string): Promise<DecisionApplyResult> {
+    if (!response.ok && response.status !== 409) ensureOk(response, action);
+    return (await response.json()) as DecisionApplyResult;
   }
 
   private async post(

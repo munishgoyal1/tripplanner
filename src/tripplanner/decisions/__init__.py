@@ -8,6 +8,7 @@ describe.
 
 from __future__ import annotations
 
+from tripplanner.decisions.apply import ApplyResult, apply_override, restore
 from tripplanner.decisions.models import (
     Decision,
     FareBasis,
@@ -33,6 +34,7 @@ from tripplanner.decisions.store import (
 __all__ = [
     "MAX_DECISIONS_PER_TRIP",
     "MAX_OPTIONS_PER_DECISION",
+    "ApplyResult",
     "Decision",
     "FareBasis",
     "Option",
@@ -44,10 +46,12 @@ __all__ = [
     "TransportMode",
     "TransportPrefs",
     "UnpricedReason",
+    "apply_override",
     "decision_from_dict",
     "decision_to_dict",
     "list_decisions",
     "prune_decisions",
     "rank",
+    "restore",
     "upsert_decision",
 ]

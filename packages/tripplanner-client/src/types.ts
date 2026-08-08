@@ -96,6 +96,7 @@ export interface TripOverview {
   counts: { flights: number; hotels: number; activities: number; days: number };
   total_cost: number | null;
   total_cost_display: string;
+  cost_baseline?: CostBaseline | null;
   budget?: Budget | null;
   weather?: TripWeather | null;
   family_pills?: string[];
@@ -159,13 +160,53 @@ export interface Decision {
   rule: { code: string; text: string };
   state: "agent" | "overruled";
   priced: PricedState;
+  /** The option currently in the plan — the override when there is one. */
   chosen_option_id: string;
+  /** What the agent picked, so "undo" has something to point at. */
+  agent_option_id?: string;
+  override?: DecisionOverride | null;
   effect: { total_cost: number; delta?: number; currency: string };
   options: DecisionOption[];
 }
 
+export interface DecisionOverride {
+  option_id: string;
+  at: string;
+  previous_option_id: string;
+  effect: { total_cost?: number | null; delta?: number | null; currency: string };
+  warnings: string[];
+}
+
+/** What the plan cost before the traveller started overruling it. */
+export interface CostBaseline {
+  first: number;
+  current: number;
+  saved: number;
+  currency: string;
+  first_display: string;
+  current_display: string;
+  saved_display: string;
+}
+
+export interface DecisionApplyResult {
+  ok: boolean;
+  stale?: boolean;
+  message: string;
+  decision_id: string;
+  option_id: string | null;
+  previous_option_id: string | null;
+  total_cost: number | null;
+  delta: number;
+  currency: string;
+  warnings: string[];
+  view?: TripView;
+  itinerary?: Itinerary;
+}
+
 export interface TripView {
   trip_id: string | null;
+  /** The revision an override must quote back to avoid clobbering newer work. */
+  updated_at?: string | null;
   has_trip: boolean;
   title: string;
   destination: string;
@@ -305,6 +346,8 @@ export interface ItineraryStop {
   name: string;
   kind: string;
   time: string;
+  /** Set on an intercity leg that came out of a recorded comparison. */
+  decision_id?: string | null;
   arrival_time?: string;
   arrival_time_estimated?: boolean;
   terminal_role?: "departure" | "arrival";

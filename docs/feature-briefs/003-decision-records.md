@@ -563,17 +563,17 @@ the engine become true.
 
 | Layer | Required check | Evidence |
 |---|---|---|
-| Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_store.py` — no mocks | M1 done: `test_decision_rules.py` (9), `test_decision_store.py` (8) pass; `apply`/`receipts` are M2/M3 |
-| Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | M2 |
+| Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_store.py` — no mocks | M2 done: `test_decision_rules.py` (9), `test_decision_store.py` (8), `test_decision_apply.py` (11) pass; `receipts` is M3 |
+| Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | M2 done: 6 tests pass (override, restore, stale 409, matching revision, unknown decision, flag off → 404) |
 | Fare port | `tests/test_fare_sources.py` — empty registry yields unpriced, air source yields a sourced quote, failure degrades | M1 done: 6 tests pass |
 | Tool | `tests/test_transport_compare.py` — fan-out with stubbed providers, partial-failure degradation, cache, ceilings | M1 done: 10 tests pass |
-| Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | M1 done: full suite 974 passed, no regression; malformed records skipped (`test_decision_store.py`) |
+| Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | M2 done: full suite 991 passed, no regression; malformed records skipped (`test_decision_store.py`) |
 | Share | extend `tests/test_share.py` — allowlist, provenance stripping | M3 |
-| Web behavior | new vitest for the decision panel, override, undo, confidence rendering | M2 |
-| Shared client | type compile of `packages/tripplanner-client` | M1 done: `npx tsc -b --noEmit` clean |
-| Mobile | `tsc` only; no mobile UI in this increment | M2 |
-| Accessibility | override control keyboard-reachable, warning announced via live region | M2 |
-| Build | `npm run build`, `pytest` | M1 done: `pytest` 974 passed; `npm run build` at M2 (no web change yet) |
+| Web behavior | new vitest for the decision panel, override, undo, confidence rendering | M2 done: `DecisionPanel.test.tsx` (7) pass; frontend suite 275 passed |
+| Shared client | type compile of `packages/tripplanner-client` | M2 done: `npx tsc -b --noEmit` clean |
+| Mobile | `tsc` only; no mobile UI in this increment | M2 done: contract additions are optional fields; no mobile change |
+| Accessibility | override control keyboard-reachable, warning announced via live region | M2 done: overrule and undo are native buttons; warnings render through the existing notice channel |
+| Build | `npm run build`, `pytest` | M2 done: `pytest` 991 passed; `npm run build` clean |
 | Canary | read-only smoke plus one manual overrule on a real trip | Pending |
 | Production | explicit owner approval | Pending |
 
@@ -601,8 +601,8 @@ state. That is intentional and must be stated in the runbook.
 | ID | Question | Recommendation | Status |
 |---|---|---|---|
 | D-01 | Rail/coach pricing source | Build the fare-source port; with no reliable source registered, behave as if rail/coach pricing is unsupported and show no price. No estimates. Commercial providers (Omio, Trainline/Rail Europe, Rome2rio) are a separate decision. | **Resolved 2026-08-08 by owner** |
-| D-02 | Does overruling re-plan the whole day, or only swap the leg? | Swap deterministically in M2; whole-day re-plan is the agent's job, reachable by asking | Open |
-| D-03 | Are rule weights user-tunable, or fixed with preferences as an input? | Fixed rule, preferences as input. A tunable ranker is a settings screen nobody opens. | Open |
+| D-02 | Does overruling re-plan the whole day, or only swap the leg? | Swap deterministically in M2; whole-day re-plan is the agent's job, reachable by asking | **Settled in M2 as recommended** |
+| D-03 | Are rule weights user-tunable, or fixed with preferences as an input? | Fixed rule, preferences as input. A tunable ranker is a settings screen nobody opens. | **Settled in M1 as recommended** |
 | D-04 | Do decisions appear on shared trips by default? | Yes, read-only. The reasoning is the most persuasive thing in the trip. | Open |
 | D-05 | Do we record lodging and flight decisions in M1, or transport only? | Transport only in M1; the remaining milestones are all expected to land, one by one. | **Resolved 2026-08-08 by owner** |
 | D-06 | Carried over from Lab 22: option E says **Plan mine** and **"Then change its mind"**, both differing from option A's wording. Keep or align? | Headline changed to **"Watch it plan a trip. Then ask it to plan yours."** — "change its mind" reads as instability, not capability, and the second line should invite rather than caveat. **Plan mine** stays. | **Resolved 2026-08-08 by owner** |
@@ -630,3 +630,4 @@ this brief:
 | 2026-08-08 | D-01 and D-05 resolved by owner. Estimated fares removed entirely in favour of a fare-source port that degrades to unpriced; provider candidates recorded for a later decision. | Agent (worker-2) |
 | 2026-08-08 | **M1 implemented.** `decisions/` package (models, rules, store), `providers/fares.py` port with the unpriced fallback, `compare_transport_options` tool, `route_metrics` helper, decisions persisted on the trip and exposed read-only through `trip_view`, shared TS types. 33 new tests; full suite 974 passed. | Agent (worker-2) |
 | 2026-08-08 | D-06 resolved by owner: public headline is now "Watch it plan a trip. Then ask it to plan yours." | Agent (worker-2) |
+| 2026-08-08 | **M2 implemented.** `decisions/apply.py` re-settles the plan deterministically on an overrule (leg rewritten, following stops shifted, total moved, guard warnings surfaced not swallowed); `apply_decision_override` tool with an `updated_at` staleness check; `POST`/`DELETE /trip/decisions/{id}/override` behind `decisions_ui_enabled`, 409 on a stale write; `cost_baseline` and `updated_at` on the view; `DecisionPanel` in the workspace with overrule and undo. 17 new backend tests, 7 new vitest; suites 991 and 275 pass. D-02 and D-03 settled as recommended. | Agent (worker-2) |

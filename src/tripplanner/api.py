@@ -293,6 +293,13 @@ class DeselectRequest(BaseModel):
     all_occurrences: bool = True
 
 
+class DecisionOverrideRequest(BaseModel):
+    option_id: str
+    user_id: str = "local"
+    # The trip revision the traveller was looking at. Empty means "don't check".
+    updated_at: str = ""
+
+
 class TripIdRequest(BaseModel):
     trip_id: str
     user_id: str = "local"
@@ -1133,6 +1140,55 @@ async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
         )
     finally:
         await release_workspace_exclusive(workspace)
+
+
+@app.post("/trip/decisions/{decision_id}/override")
+async def trip_decision_override(
+    decision_id: str, req: DecisionOverrideRequest, request: Request
+) -> Response:
+    """Switch the plan onto the option the traveller picked."""
+    return await _apply_decision_override(
+        request, decision_id, req.option_id, req.user_id, req.updated_at
+    )
+
+
+@app.delete("/trip/decisions/{decision_id}/override")
+async def trip_decision_restore(
+    decision_id: str, request: Request, user_id: str = "local", updated_at: str = ""
+) -> Response:
+    """Undo an overrule and put the agent's own choice back."""
+    return await _apply_decision_override(request, decision_id, None, user_id, updated_at)
+
+
+async def _apply_decision_override(
+    request: Request,
+    decision_id: str,
+    option_id: str | None,
+    user_id: str,
+    updated_at: str,
+) -> Response:
+    from tripplanner.config import get_settings
+    from tripplanner.web import trip_operations
+
+    if not get_settings().decisions_ui_enabled:
+        return JSONResponse(
+            {"ok": False, "stale": False, "message": "Decision records are turned off."},
+            status_code=404,
+        )
+    resolved = _set_request_user(request, user_id)
+    workspace = await acquire_workspace_exclusive(resolved)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.override_decision,
+            decision_id,
+            option_id,
+            expected_updated_at=updated_at,
+        )
+    finally:
+        await release_workspace_exclusive(workspace)
+    # A stale write is not an error the traveller caused; hand back the truth.
+    status = 409 if payload.get("stale") else 200
+    return JSONResponse(payload, status_code=status)
 
 
 @app.get("/trips")

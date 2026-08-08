@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage, TripWorkspaceView } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
@@ -202,6 +202,23 @@ export async function deselectItem(
   options?: DeselectItemOptions,
 ): Promise<{ view: TripView; alerts: string[]; planner_review?: PlannerReview | null }> {
   return sharedClient.deselectItem(kind, name, options);
+}
+
+/** Take a different option on a recorded comparison. */
+export async function overrideDecision(
+  decisionId: string,
+  optionId: string,
+  updatedAt?: string | null,
+): Promise<DecisionApplyResult> {
+  return sharedClient.overrideDecision(decisionId, optionId, updatedAt);
+}
+
+/** Put the agent's own choice back. */
+export async function restoreDecision(
+  decisionId: string,
+  updatedAt?: string | null,
+): Promise<DecisionApplyResult> {
+  return sharedClient.restoreDecision(decisionId, updatedAt);
 }
 
 /** List the user's saved trips (the "My trips" switcher). */

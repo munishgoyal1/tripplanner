@@ -1296,6 +1296,37 @@ def record_trip_decision(decision) -> bool:
     return True
 
 
+@_serialized_mutation
+def apply_decision_override(
+    decision_id: str, option_id: str | None, *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    """Switch the plan onto a traveller's chosen option, or undo that switch.
+
+    ``option_id`` of ``None`` restores the agent's own choice. A non-empty
+    ``expected_updated_at`` that no longer matches means another window already
+    moved this trip, so nothing is written.
+    """
+    from tripplanner.decisions.apply import apply_override, restore
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+    result = (
+        apply_override(plan, decision_id, option_id)
+        if option_id
+        else restore(plan, decision_id)
+    )
+    if result.ok:
+        _save_active_trip(plan)
+    return {"stale": False, **result.as_dict()}
+
+
 def _mirror_to_history(plan: dict[str, Any]) -> None:
     """Persist the plan into the per-user trips collection under its trip_id."""
     tid = plan.get("trip_id")

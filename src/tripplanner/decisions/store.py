@@ -56,16 +56,19 @@ def prune_decisions(decisions: list[Decision]) -> list[Decision]:
     return [d for d in trimmed if d.id in kept]
 
 
-def upsert_decision(plan: dict[str, Any], decision: Decision) -> dict[str, Any]:
+def upsert_decision(
+    plan: dict[str, Any], decision: Decision, *, preserve_override: bool = True
+) -> dict[str, Any]:
     """Replace the decision with the same id, or append it, then prune.
 
     Ids are deterministic, so re-running the same comparison refreshes it instead
     of stacking duplicates. A user override on the existing record survives the
-    refresh unless the option they picked no longer exists.
+    refresh unless the option they picked no longer exists. Pass
+    ``preserve_override=False`` when the write *is* the user changing their mind.
     """
     existing = list_decisions(plan)
     previous = next((d for d in existing if d.id == decision.id), None)
-    if previous is not None and previous.override is not None:
+    if preserve_override and previous is not None and previous.override is not None:
         if decision.option(previous.override.option_id) is not None:
             decision = decision.model_copy(
                 update={"override": previous.override, "state": previous.state}

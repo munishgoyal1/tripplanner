@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type DeselectItemOptions, type SelectItemOptions } from "../api";
 import type { TripItem, TripView, TripWorkspaceView } from "../types";
+import DecisionPanel from "./DecisionPanel";
 import DestinationGuide from "./DestinationGuide";
 import DestinationOverview from "./DestinationOverview";
 import GuideScopeBar, { type KindTab } from "./GuideScopeBar";
@@ -34,6 +35,10 @@ interface Props {
   focusContext?: { day?: number; stop?: number } | null;
   tripVersion: number;
   onSwitched: (tripId?: string, workspace?: TripWorkspaceView | null) => void;
+  /** Applying a traveller's overrule goes through the workspace state owner. */
+  onDecisionApplied?: (view: TripView, message: string, warnings: string[]) => void;
+  onDecisionStale?: (view: TripView | undefined, message: string) => void;
+  onDecisionError?: (message: string) => void;
   /** Hide the internal saved-trips switcher (RightRail renders it persistently). */
   hideSwitcher?: boolean;
 }
@@ -280,6 +285,9 @@ export default function TripPanel({
   focusContext,
   tripVersion,
   onSwitched,
+  onDecisionApplied,
+  onDecisionStale,
+  onDecisionError,
   hideSwitcher = false,
 }: Props) {
   const [lb, setLb] = useState<{ photos: string[]; index: number; alt: string }>({
@@ -418,6 +426,17 @@ export default function TripPanel({
 
         {!focused && ov.destination && (
           <DestinationOverview destination={ov.destination} />
+        )}
+
+        {!focused && onDecisionApplied && (
+          <DecisionPanel
+            decisions={view.decisions ?? []}
+            updatedAt={view.updated_at}
+            baseline={ov.cost_baseline}
+            onApplied={onDecisionApplied}
+            onStale={onDecisionStale ?? (() => undefined)}
+            onError={onDecisionError ?? (() => undefined)}
+          />
         )}
 
         <section className="border-t border-slate-100 px-4 py-4">
