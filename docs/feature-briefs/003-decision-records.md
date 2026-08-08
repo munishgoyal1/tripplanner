@@ -563,17 +563,17 @@ the engine become true.
 
 | Layer | Required check | Evidence |
 |---|---|---|
-| Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_prune.py` — no mocks | Pending |
-| Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | Pending |
-| Fare port | `tests/test_fare_sources.py` — empty registry yields unpriced, air source yields a sourced quote, failure degrades | Pending |
-| Tool | `tests/test_transport_compare.py` — fan-out with stubbed providers, partial-failure degradation, cache, ceilings | Pending |
-| Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | Pending |
-| Share | extend `tests/test_share.py` — allowlist, provenance stripping | Pending |
-| Web behavior | new vitest for the decision panel, override, undo, confidence rendering | Pending |
-| Shared client | type compile of `packages/tripplanner-client` | Pending |
-| Mobile | `tsc` only; no mobile UI in this increment | Pending |
-| Accessibility | override control keyboard-reachable, warning announced via live region | Pending |
-| Build | `npm run build`, `pytest` | Pending |
+| Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_store.py` — no mocks | M1 done: `test_decision_rules.py` (9), `test_decision_store.py` (8) pass; `apply`/`receipts` are M2/M3 |
+| Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | M2 |
+| Fare port | `tests/test_fare_sources.py` — empty registry yields unpriced, air source yields a sourced quote, failure degrades | M1 done: 6 tests pass |
+| Tool | `tests/test_transport_compare.py` — fan-out with stubbed providers, partial-failure degradation, cache, ceilings | M1 done: 10 tests pass |
+| Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | M1 done: full suite 974 passed, no regression; malformed records skipped (`test_decision_store.py`) |
+| Share | extend `tests/test_share.py` — allowlist, provenance stripping | M3 |
+| Web behavior | new vitest for the decision panel, override, undo, confidence rendering | M2 |
+| Shared client | type compile of `packages/tripplanner-client` | M1 done: `npx tsc -b --noEmit` clean |
+| Mobile | `tsc` only; no mobile UI in this increment | M2 |
+| Accessibility | override control keyboard-reachable, warning announced via live region | M2 |
+| Build | `npm run build`, `pytest` | M1 done: `pytest` 974 passed; `npm run build` at M2 (no web change yet) |
 | Canary | read-only smoke plus one manual overrule on a real trip | Pending |
 | Production | explicit owner approval | Pending |
 
@@ -628,3 +628,4 @@ this brief:
 |---|---|---|
 | 2026-08-08 | Brief created after auditing the gap between Lab 22 option E and the real backend | Agent (worker-2) |
 | 2026-08-08 | D-01 and D-05 resolved by owner. Estimated fares removed entirely in favour of a fare-source port that degrades to unpriced; provider candidates recorded for a later decision. | Agent (worker-2) |
+| 2026-08-08 | **M1 implemented.** `decisions/` package (models, rules, store), `providers/fares.py` port with the unpriced fallback, `compare_transport_options` tool, `route_metrics` helper, decisions persisted on the trip and exposed read-only through `trip_view`, shared TS types. 33 new tests; full suite 974 passed. | Agent (worker-2) |

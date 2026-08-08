@@ -14,6 +14,7 @@ from tripplanner.tools.trip_planner import planning_completion_gaps
 COMPLETION_RESEARCH_TOOLS = frozenset({
     "search_flights_duffel",
     "search_flights",
+    "compare_transport_options",
     "search_hotels",
     "search_activities",
     "search_points_of_interest",

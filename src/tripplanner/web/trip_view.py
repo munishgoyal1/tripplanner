@@ -23,6 +23,7 @@ from typing import Any
 from urllib.parse import quote
 
 from tripplanner.config import get_settings
+from tripplanner.decisions.store import list_decisions
 from tripplanner.tools import user_preferences
 from tripplanner.web import map_view, places_cache
 
@@ -745,6 +746,43 @@ def warm_view_items(trip: dict[str, Any] | None) -> None:
     )
 
 
+def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
+    """Recorded comparisons, shaped for display. Read-only in this view."""
+    out: list[dict[str, Any]] = []
+    for decision in list_decisions(trip):
+        out.append({
+            "id": decision.id,
+            "kind": decision.kind.value,
+            "subject": decision.subject,
+            "scope": decision.scope.model_dump(mode="json"),
+            "rule": decision.rule.model_dump(mode="json"),
+            "state": decision.state.value,
+            "priced": decision.priced.value,
+            "chosen_option_id": decision.active_option_id,
+            "effect": decision.effect.model_dump(mode="json"),
+            "options": [
+                {
+                    "id": option.id,
+                    "mode": option.mode.value,
+                    "label": option.label,
+                    "detail": option.detail,
+                    "price": option.price.model_dump(mode="json") if option.price else None,
+                    "priced": option.priced,
+                    "unpriced_reason": (
+                        option.unpriced_reason.value if option.unpriced_reason else None
+                    ),
+                    "duration_min": option.duration_min,
+                    "door_to_door_min": option.door_to_door_min,
+                    "duration_estimated": option.duration_estimated,
+                    "rejected_because": option.rejected_because,
+                    "source": option.source.model_dump(mode="json"),
+                }
+                for option in decision.options
+            ],
+        })
+    return out
+
+
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
@@ -771,6 +809,7 @@ def build_view(
             "overview": None,
             "available_days": [],
             "items": [],
+            "decisions": [],
         }
 
     destination = str(trip.get("destination") or "")
@@ -824,6 +863,7 @@ def build_view(
             if isinstance(day, dict)
         ],
         "items": items,
+        "decisions": _build_decisions(trip),
     }
 
 

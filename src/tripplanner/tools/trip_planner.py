@@ -22,6 +22,7 @@ from typing import Any
 from langchain_core.tools import tool
 
 from tripplanner import storage_cosmos
+from tripplanner.decisions.store import upsert_decision
 from tripplanner.json_store import atomic_write_json
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
 from tripplanner.tools.trip_common import (  # noqa: F401
@@ -1278,6 +1279,21 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
         _ensure_dirs()
         atomic_write_json(_resolve_active_trip_path(), plan, indent=2)
     _mirror_to_history(plan)
+
+
+@_serialized_mutation
+def record_trip_decision(decision) -> bool:
+    """Attach a recorded comparison to the active trip.
+
+    Non-tool: decisions ride inside the trip document so a plan and the reasoning
+    behind it can never be loaded from two different writes.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    upsert_decision(plan, decision)
+    _save_active_trip(plan)
+    return True
 
 
 def _mirror_to_history(plan: dict[str, Any]) -> None:

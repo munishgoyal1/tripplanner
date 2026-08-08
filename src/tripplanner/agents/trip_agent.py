@@ -23,6 +23,7 @@ from tripplanner.tools.hotel_search import search_hotels
 from tripplanner.tools.memory_recall import recall_relevant_memory
 from tripplanner.tools.place_hours import check_place_hours
 from tripplanner.tools.routing import compute_route, optimize_day_route
+from tripplanner.tools.transport_compare import compare_transport_options
 from tripplanner.tools.trip_planner import (
     _load_active_trip,
     create_trip_plan,
@@ -458,6 +459,12 @@ STEP 3 — PARALLEL SEARCH (do all at once)
   e) nearby_restaurants — top-rated restaurants near the hotel matching dietary needs
   f) web_search — fresh travel guides, recent reviews, seasonal advice when
      structured APIs don't cover it (e.g. "is Goa safe in monsoon?")
+  g) compare_transport_options — for every intercity hop between two bases in the
+     itinerary, BEFORE you write that transfer into a day. It compares road, rail
+     and air, records the rejected options and the rule, and returns the winner.
+     Some options come back with no price because no fare source covers them.
+     Report those on time and day impact only. NEVER invent, estimate, or imply a
+     fare for an unpriced option, and never present one as if it were quoted.
 
     HOTEL COMPLETION GATE: unless the user explicitly asks to compare hotel
     options before choosing, select the strongest preference-matched real hotel
@@ -856,6 +863,8 @@ _SEARCH_TOOLS = [
     # Routing & travel time (Google Routes API)
     compute_route,
     optimize_day_route,
+    # Mode comparison for one intercity hop — records the decision on the trip
+    compare_transport_options,
     # Weather + packing (Open-Meteo, no key)
     get_weather_forecast,
     # Visa & entry rules (Tavily-backed, prefers .gov / IATA)

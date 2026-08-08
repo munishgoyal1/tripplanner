@@ -193,6 +193,43 @@ def compute_route(stops_json: str, mode: str = "DRIVE") -> str:
     return json.dumps(out, indent=2)
 
 
+def _seconds_to_minutes(value) -> int | None:
+    if value is None:
+        return None
+    try:
+        return int(round(float(str(value).rstrip("sS")) / 60))
+    except (TypeError, ValueError):
+        return None
+
+
+def route_metrics(origin: str | dict, destination: str | dict, mode: str) -> dict | None:
+    """Duration in minutes and distance in km for one origin → destination hop.
+
+    Non-tool: transport comparison needs the numbers, not the formatted string
+    ``compute_route`` hands to the model.
+    """
+    if not is_configured():
+        return None
+    payload = _build_route_payload([origin, destination], mode, optimize=False)
+    try:
+        data = _post_routes(payload, "routes.duration,routes.distanceMeters")
+    except httpx.HTTPError:
+        return None
+    routes = data.get("routes") or []
+    if not routes:
+        return None
+    route = routes[0]
+    minutes = _seconds_to_minutes(route.get("duration"))
+    if minutes is None:
+        return None
+    meters = route.get("distanceMeters")
+    return {
+        "mode": _normalize_mode(mode),
+        "duration_min": minutes,
+        "distance_km": round(float(meters) / 1000, 1) if meters else None,
+    }
+
+
 @tool
 def optimize_day_route(stops_json: str, mode: str = "DRIVE") -> str:
     """Reorder a day's intermediate stops to minimize total travel time.

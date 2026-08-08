@@ -102,6 +102,68 @@ export interface TripOverview {
   constraints?: string[];
 }
 
+export type TransportMode =
+  | "flight"
+  | "train"
+  | "road"
+  | "coach"
+  | "ferry"
+  | "metro"
+  | "walk";
+
+/** A price is real or absent. There is no estimated tier. */
+export type UnpricedReason = "no_source" | "source_failed" | "out_of_coverage";
+
+export type PricedState = "full" | "partial" | "none";
+
+export interface DecisionPrice {
+  amount: number;
+  currency: string;
+  basis?: "per_traveller" | "per_party";
+  amount_max?: number | null;
+}
+
+export interface DecisionSource {
+  provider: string;
+  url?: string;
+  checked_at?: string;
+  expires_at?: string | null;
+  confidence?: "live" | "cached";
+}
+
+export interface DecisionOption {
+  id: string;
+  mode: TransportMode;
+  label: string;
+  detail?: string;
+  price: DecisionPrice | null;
+  priced: boolean;
+  unpriced_reason: UnpricedReason | null;
+  duration_min?: number | null;
+  door_to_door_min?: number | null;
+  duration_estimated?: boolean;
+  rejected_because?: string | null;
+  source?: DecisionSource;
+}
+
+export interface Decision {
+  id: string;
+  kind: "transport_mode" | "lodging" | "flight" | "day_shape";
+  subject: string;
+  scope: {
+    day?: number | null;
+    from_place?: string;
+    to_place?: string;
+    date?: string;
+  };
+  rule: { code: string; text: string };
+  state: "agent" | "overruled";
+  priced: PricedState;
+  chosen_option_id: string;
+  effect: { total_cost: number; delta?: number; currency: string };
+  options: DecisionOption[];
+}
+
 export interface TripView {
   trip_id: string | null;
   has_trip: boolean;
@@ -113,6 +175,7 @@ export interface TripView {
   overview: TripOverview | null;
   available_days: number[];
   items: TripItem[];
+  decisions?: Decision[];
   alerts?: string[];
 }
 
