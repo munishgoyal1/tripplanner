@@ -34,6 +34,18 @@ describe("PublicEntry", () => {
     window.localStorage.clear();
   });
 
+  it("starts the captured run from reset when reduced motion is preferred", () => {
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: vi.fn().mockReturnValue({ matches: true }),
+    });
+
+    render(<PublicEntry onPlan={() => {}} onSkip={() => {}} />);
+
+    expect(screen.getByText(/replaying a real run/i)).toBeInTheDocument();
+    expect(screen.queryByText(/plan complete/i)).not.toBeInTheDocument();
+  });
+
   it("plays the captured run and lands on the trip total", () => {
     renderFinished();
     expect(screen.getByText(/plan complete/i)).toBeInTheDocument();

@@ -101,31 +101,12 @@ const stopIcons: Record<StopKind, typeof Plane> = {
   transport: TrainFront,
 };
 
-export function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(() => (
-    typeof window.matchMedia === "function"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false
-  ));
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") return;
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(query.matches);
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-  return reduced;
-}
-
-// A visitor who has asked the operating system to stop animations gets the finished plan,
-// not a slower version of the same performance.
 export function useStageRun(total: number) {
-  const reduced = usePrefersReducedMotion();
-  const [step, setStep] = useState(() => (reduced ? total : 0));
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    setStep(reduced ? total : 0);
-  }, [reduced, total]);
+    setStep(0);
+  }, [total]);
 
   useEffect(() => {
     if (step >= total) return;
