@@ -4,6 +4,7 @@ from typing import Any
 
 from tripplanner.tools import trip_planner
 from tripplanner.web import trip_view
+from tripplanner.web.workspace_payload import build_workspace_payload
 
 
 def _stop_name(stop: Any) -> str:
@@ -201,12 +202,7 @@ def workspace_payload(plan: Any) -> dict[str, Any]:
     # One payload for every panel. The plan is already loaded here, so the map
     # and itinerary cost no extra reads and all three panels swap together
     # instead of each fetching its own copy and settling one after another.
-    return {
-        "ok": True,
-        "view": trip_view.build_view(plan, None),
-        "map": trip_view.build_map_view(plan),
-        "itinerary": trip_view.build_itinerary(plan),
-    }
+    return build_workspace_payload(plan)
 
 
 def switch_trip(trip_id: str) -> dict[str, Any]:
