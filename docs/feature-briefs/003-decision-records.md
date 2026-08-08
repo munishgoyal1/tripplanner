@@ -33,7 +33,7 @@ cosmetic:
 
 | The page claims | Reality today | Evidence |
 |---|---|---|
-| "Flight, rail, road and coach — priced on every hop" | No comparison exists. One mode per call, loser never stored. | `src/tripplanner/tools/routing.py` `compute_route` takes a single `mode` |
+| "Flight, rail, road and coach — priced on every hop" | No comparison exists. One mode per call, loser never stored. Rail and coach have no fare source at all. | `src/tripplanner/tools/routing.py` `compute_route` takes a single `mode` |
 | "It chose the train, here is the rule, overrule it" | Rationale is disposable LLM prose. `trip_guard` computes `reasons` in memory and drops them. | `src/tripplanner/tools/trip_guard.py` `Rejection.reasons` |
 | "€4,180 first → €3,764 best, saved €416" | No first-vs-current concept. Only `total_cost` and `budget`. | `src/tripplanner/tools/trip_planner.py` plan dict |
 | "Every number carries its source, checked 11 min ago" | Offers carry `provider` / `quoted_at` / `expires_at`; all dropped when selected. | `src/tripplanner/providers/models.py` vs `selected_*` entries |
@@ -78,10 +78,11 @@ being illustrations and become views over real data.
    becomes the flight, the total moves to the flight's total with a visible
    delta, day 3 is re-shaped, and a warning names what was lost. "Put it back"
    restores the rail version intact.
-3. **Awkward edge — no price available.** Portuguese rail has no bookable API in
-   this product. The comparison must still happen, with the rail fare marked as
-   an estimate and labelled as such in the UI. **It must never be presented with
-   the same confidence as a live Duffel quote.**
+3. **Awkward edge — no fare available.** Portuguese rail has no bookable API in
+   this product. The comparison must still happen and still be useful: the rail
+   option shows its duration, transfers and day impact, and **shows no price at
+   all**. It must never carry an invented number, and the decision must not fail
+   because one row is unpriced.
 4. **Awkward edge — stale decision.** A trip planned three weeks ago is reopened.
    Its quotes have expired. The decision still renders, but every price is marked
    as of its capture date and no expired number claims to be current.
@@ -177,27 +178,40 @@ The honest ranking of value per unit of risk: provenance and receipts are cheap
 and immediately visible; the decision spine is the thing worth building
 carefully; mode comparison is the one that can fail on an external dependency.
 
-## The dependency that can sink this
+## The dependency, and the owner's answer to it
 
 **There is no rail or coach pricing API in this product.** Google Routes TRANSIT
 returns duration and legs, not fares. Duffel and Amadeus cover air only.
 
-So "priced on every hop" has exactly three possible answers, and the owner must
-pick one:
+**Owner decision, 2026-08-08:** build the capability behind a source port, and
+when no reliable source can answer, *behave as if rail and coach pricing is not
+supported* — compare on time, transfers and day impact, and show no price at
+all. Do not estimate. Integrating a commercial provider is a separate decision.
 
-- **(a) Estimated fares.** Derive rail/coach prices from `web_search` plus a
-  small per-corridor heuristic, marked `confidence: "estimated"` everywhere it
-  appears. Cheap, honest if labelled, weaker claim.
-- **(b) Add a provider.** Trainline/Omio-class API for rail and coach. Real
-  prices, real cost, new contract, new approval.
-- **(c) Compare on time and shape only where price is unknown.** Show duration,
-  transfers and day impact for rail/coach, and price only where a real quote
-  exists. Strongest honesty, weakest headline.
+This is the stronger answer and it simplifies the design: **there is no
+`estimated` price tier.** A price is either a real quote from a real source, or
+it is absent. `Option.price` is nullable, and every consumer — the ranker, the
+view model, the share page, the public entry — must handle an unpriced option as
+a first-class case rather than an error state.
 
-The design below works with any of the three; the option carries `confidence` and
-`source` either way. **This is decision D-03 and it blocks the marketing copy,
-not the engineering.** Recommendation: ship (a) in M1 with unmistakable labelling,
-and treat (b) as a separate brief once the feature has earned it.
+The practical effect on the product claim: it is not "priced on every hop", it is
+**"every hop compared, and priced wherever a real fare exists"**. That sentence
+is true today, stays true when a provider is added, and never has to be walked
+back.
+
+### Provider candidates for the separate decision
+
+Recorded here so the port is shaped to fit them, not integrated in this brief:
+
+| Candidate | Coverage | Shape it implies |
+|---|---|---|
+| **Omio** | Rail, coach and air across Europe and North America, aggregated | Multi-mode in one call — the port must allow one source to answer several modes |
+| **Trainline / Rail Europe** | Authoritative European rail retailing and fares | Rail only, per-operator; the port must allow mode-specific registration |
+| **Rome2rio** | Multimodal, *price ranges* rather than bookable fares | Ranges, not points — if adopted, `Money` needs a range variant, and a range must never be rendered as a fixed price |
+
+The last row is the reason the port returns a `FareQuote` rather than a bare
+number: a range from Rome2rio and a bookable fare from Trainline are different
+kinds of truth and must stay distinguishable all the way to the pixel.
 
 ---
 
@@ -225,7 +239,7 @@ Two new optional top-level fields on the trip document. Nothing existing changes
   "state": "agent",                   // agent | overruled
   "override": null,                   // OverrideRecord | null
   "effect": { "total_cost": 3764, "currency": "EUR" },
-  "confidence": "mixed"               // live | cached | estimated | mixed (worst of options)
+  "priced": "partial"                 // full | partial | none — how much of the comparison carried a real fare
 }
 ```
 
@@ -238,19 +252,25 @@ Two new optional top-level fields on the trip document. Nothing existing changes
   "label": "Alfa Pendular",
   "detail": "Santa Apolónia → Campanhã, hourly",
   "price": { "amount": 62, "currency": "EUR", "basis": "per_traveller" },
+  "priced": true,                     // false => price is null and stays null
+  "unpriced_reason": null,            // "no_source" | "source_failed" | "out_of_coverage"
   "duration_min": 175,                // in-vehicle
   "door_to_door_min": 215,            // includes access, check-in, egress — the ranked value
   "day_cost": 0.35,                   // fraction of a usable day consumed
   "rejected_because": "Costs €94 more and turns day 3 into a transfer day.",
   "source": {
-    "provider": "cp.pt via web_search",
-    "url": "https://…",
+    "provider": "duffel",
+    "url": null,
     "checked_at": "2026-10-02T09:13:58",
-    "expires_at": null,
-    "confidence": "estimated"         // live | cached | estimated
+    "expires_at": "2026-10-02T09:43:58",
+    "confidence": "live"              // live | cached  — there is no estimated tier
   }
 }
 ```
+
+An unpriced option carries `price: null`, `priced: false`, a reason, and a
+`source` whose provider is `null`. It still carries duration and day impact,
+because that is the part we genuinely know.
 
 `door_to_door_min` is the single most important field in the schema. It is what
 makes the planner's reasoning defensible, and it is the reason a 55-minute flight
@@ -332,7 +352,10 @@ Scoring, in order of weight:
 2. **Day integrity.** `day_cost` — an option that consumes a usable day of a
    5-day trip is penalised hard. This is what makes the Lisbon→Porto answer come
    out right for a human reason rather than a numeric coincidence.
-3. **Price**, normalised against the trip's `budget_level`.
+3. **Price**, normalised against the trip's `budget_level`. **Unpriced options
+   are ranked on time and day impact alone and are never penalised for having no
+   price.** If the winner is unpriced, the rule text says the choice was made on
+   time because no fare was available — it does not imply the choice was cheap.
 4. **Stated preference.** `preferences_snapshot.transport_preferences` — a
    traveller who has said they dislike driving gets that respected, and the rule
    text says so out loud.
@@ -367,11 +390,28 @@ def compare_transport_options(
 
 **Fan-out**, concurrent, each independently degradable:
 
-| Mode | Source | Confidence |
-|---|---|---|
-| Road | Routes API `DRIVE` + hire-car day-rate heuristic | duration `live`, price `estimated` |
-| Rail / coach | Routes API `TRANSIT` for shape and duration; fare from `web_search` per D-03 | `estimated` |
-| Air | `search_flights_duffel`, falling back to `search_flights` | `live` |
+| Mode | Duration source | Fare source today | If no fare |
+|---|---|---|---|
+| Road | Routes API `DRIVE` | none | unpriced, `no_source` |
+| Rail / coach | Routes API `TRANSIT` | none registered | unpriced, `no_source` |
+| Air | Duffel / Amadeus segments | `search_flights_duffel`, falling back to `search_flights` | unpriced, `source_failed` |
+
+Fares come from a registry, not from the tool. `src/tripplanner/providers/fares.py`
+defines the port:
+
+```python
+class FareSource(Protocol):
+    modes: frozenset[str]
+    name: str
+    def quote(self, req: FareRequest) -> FareQuote | None: ...
+```
+
+`FareQuote` carries `amount | range`, `currency`, `basis`, `provider`,
+`quoted_at`, `expires_at`. The registry is ordered; the first source covering the
+mode that returns a quote wins. **Today only the air source is registered, and
+the rail/road/coach rows come back unpriced by design.** Adding Omio or Trainline
+later is one new module plus one registry line — no change to the tool, the
+ranker, or any surface.
 
 Door-to-door is computed by adding fixed, documented access constants per mode
 (air: 120 min airport overhead plus city-to-airport transfer from Routes; rail:
@@ -438,7 +478,7 @@ for back-compat.
 event: receipt
 data: {"seq":9,"at":"0:33","kind":"transport","text":"Compared 4 ways from Lisbon to Porto",
        "detail":"rail picked · 3 rejected","decision_id":"dec_lisbon_porto_d3",
-       "source":"Duffel + CP","confidence":"mixed"}
+       "source":"Duffel","priced":"partial"}
 ```
 
 `decisions/receipts.py` maps a completed tool call to a receipt or to `None`.
@@ -489,8 +529,11 @@ the engine become true.
 
 - **AC-01** A trip with an intercity hop stores a `transport_mode` decision with
   at least two options, each carrying `door_to_door_min` and a `source`.
-- **AC-02** Every option price carries `confidence`, and an `estimated` price is
-  visually distinct from a `live` one on every surface that shows it.
+- **AC-02** An option with no available fare renders with its duration and day
+  impact and **no price and no placeholder number** on every surface, and the
+  decision still ranks and displays normally.
+- **AC-02b** No code path produces a price without a `source.provider` and a
+  `checked_at`. Asserted by a test that walks every option of a built decision.
 - **AC-03** `rank()` prefers rail over air on a hop where rail's door-to-door
   time is lower, and its returned sentence cites the door-to-door rule. Pure
   unit test, no mocks.
@@ -522,6 +565,7 @@ the engine become true.
 |---|---|---|
 | Pure/domain logic | `tests/test_decision_rules.py`, `test_decision_apply.py`, `test_decision_receipts.py`, `test_decision_prune.py` — no mocks | Pending |
 | Backend contract | `tests/test_decisions_api.py` — override, restore, 409, sanitised view | Pending |
+| Fare port | `tests/test_fare_sources.py` — empty registry yields unpriced, air source yields a sourced quote, failure degrades | Pending |
 | Tool | `tests/test_transport_compare.py` — fan-out with stubbed providers, partial-failure degradation, cache, ceilings | Pending |
 | Persistence | extend `tests/test_trip.py` — additive fields, old-document compatibility | Pending |
 | Share | extend `tests/test_share.py` — allowlist, provenance stripping | Pending |
@@ -556,11 +600,11 @@ state. That is intentional and must be stated in the runbook.
 
 | ID | Question | Recommendation | Status |
 |---|---|---|---|
-| D-01 | Rail/coach pricing source — estimate, new provider, or price-only-where-known? | Ship estimates in M1 with unmistakable labelling; treat a paid rail provider as its own brief | **Open — blocks the marketing claim** |
+| D-01 | Rail/coach pricing source | Build the fare-source port; with no reliable source registered, behave as if rail/coach pricing is unsupported and show no price. No estimates. Commercial providers (Omio, Trainline/Rail Europe, Rome2rio) are a separate decision. | **Resolved 2026-08-08 by owner** |
 | D-02 | Does overruling re-plan the whole day, or only swap the leg? | Swap deterministically in M2; whole-day re-plan is the agent's job, reachable by asking | Open |
 | D-03 | Are rule weights user-tunable, or fixed with preferences as an input? | Fixed rule, preferences as input. A tunable ranker is a settings screen nobody opens. | Open |
 | D-04 | Do decisions appear on shared trips by default? | Yes, read-only. The reasoning is the most persuasive thing in the trip. | Open |
-| D-05 | Do we record lodging and flight decisions in M1, or transport only? | Transport only in M1. It is the claim on the page and the hardest case; lodging follows the same schema in M2+. | Open |
+| D-05 | Do we record lodging and flight decisions in M1, or transport only? | Transport only in M1; the remaining milestones are all expected to land, one by one. | **Resolved 2026-08-08 by owner** |
 | D-06 | Carried over from Lab 22: option E says **Plan mine** and **"Then change its mind"**, both differing from option A's wording. Keep or align? | Keep — they are specific to this option's promise | **Open, unanswered** |
 
 ## Agent execution contract
@@ -573,11 +617,14 @@ this brief:
 - No sentence describing a number may be produced by the model. Rule text,
   rejection reasons and receipt lines are generated in `decisions/` from the same
   data the UI renders.
-- Any surface that renders a price must render its confidence. A component that
-  cannot show confidence must not show the price.
+- Any surface that renders a price must render its source and capture time. A
+  component that cannot show provenance must not show the price. An option with
+  no fare shows no number — not a zero, not a dash styled like a number, not a
+  "from" figure.
 
 ## Change log
 
 | Date | Change | Author |
 |---|---|---|
 | 2026-08-08 | Brief created after auditing the gap between Lab 22 option E and the real backend | Agent (worker-2) |
+| 2026-08-08 | D-01 and D-05 resolved by owner. Estimated fares removed entirely in favour of a fare-source port that degrades to unpriced; provider candidates recorded for a later decision. | Agent (worker-2) |

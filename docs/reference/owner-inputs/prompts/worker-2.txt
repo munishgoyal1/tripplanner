@@ -149,3 +149,12 @@ Are you asking me that you can produce the real fix (new feature support ?), yes
 
 [2026-08-08 11:37] [worker-2] ! Feature brief with HLD and LLD for decision records
 Wrtie the feature brief along with some HLD and LLD design details for me to understand what all is included. Make the feature comprehensive for top value items here and any other accessorial things needed, and dont cut corners uneccesarily. Keep it balanced to target top items.
+
+[2026-08-08 14:46] [worker-2] ! D-01 fare source with unpriced fallback, D-05 transport only in M1
+For D-01 rail coach pricing, build the capability alogn with fallback that if no such reliable source is available then it just behaves as if it doesnt support rail coach pricing. Simulatenously we will figure if the existing such providers as below can be integrated or not, that will be aspeerate decision. Is it fine ? D-05 - It's fine for transport only in M1, but hope you will end up building everything in milestones one by one.rget to achieve all this today.
+
+Consumer Platforms & Aggregators- **Omio:** Compares train, bus, and flight pricing across Europe and North America.
+
+- **Trainline / Rail Europe:** Authoritative direct ticket retailing and pricing sources for European rail networks.
+
+- **Rome2rio:** Multimodal trip planner showing estimated price ranges for combined rail, coach, and transit leg
