@@ -1109,7 +1109,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($outstanding) {
         throw "#$prNumber merged but sandbox '$slug' is not clean, so it is NOT safe to discard:`n$($outstanding -join "`n")"
     }
-    Assert-SandboxLabReadyForPromotion -Entry $entry
+    Assert-SandboxLabReadyForPromotion -Entry $entry -Base $BaseBranch -AllowContainedIteration
     Write-SandboxLabVersion -Entry $entry -State "completed" `
         -Summary "Promoted to $BaseBranch via PR #$prNumber after validation and verification."
     Save-SandboxPromotion -Entry $entry -Base $BaseBranch -PrNumber $prNumber
