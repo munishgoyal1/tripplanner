@@ -202,7 +202,7 @@ export default function PublicEntry({
           </div>
 
           <h1 className={`display mt-3 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl ${dark.heading}`}>
-            Watch it plan a trip.<br />Then change its mind.
+            Watch it plan a trip.<br />Then ask it to plan yours.
           </h1>
 
           <div className="mt-6 grid gap-3 lg:grid-cols-[0.95fr_1.05fr]">
