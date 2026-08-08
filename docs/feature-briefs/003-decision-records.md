@@ -576,7 +576,8 @@ the engine become true.
 | Shared client | type compile of `packages/tripplanner-client` | M3 done: `npx tsc -b --noEmit` clean |
 | Mobile | `tsc` only; no mobile UI in this increment | M3 done: `Receipt`, `ProvenanceRow` and `onReceipt` are optional additions; no mobile change |
 | Accessibility | override control keyboard-reachable, warning announced via live region | M2 done: overrule and undo are native buttons; warnings render through the existing notice channel |
-| Build | `npm run build`, `pytest` | M3 done: `pytest` 1008 passed; `npm run build` clean |
+| Build | `npm run build`, `pytest` | M4 done: `pytest` 1014 passed; sandbox `npm run build` clean, 276 vitest pass |
+| Public entry | the Lab 22 page renders only values present in the capture | M4 done: `scripts/capture_public_run.py` output drives every receipt, day, comparison and overrule outcome; `PublicEntry.test.tsx` asserts the captured total and a real re-settle |
 | Canary | read-only smoke plus one manual overrule on a real trip | Pending |
 | Production | explicit owner approval | Pending |
 

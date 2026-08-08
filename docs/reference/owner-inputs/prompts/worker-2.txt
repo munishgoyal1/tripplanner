@@ -174,3 +174,65 @@ Yes continue doing through all milestones, unless you need my input. I will eval
 
 [2026-08-08 17:20] [worker-2] ! Sample pricing marker on public entry
 Continue with price claims also. Put one small marker saying Pricing data is sample. Anyway we will eventually get the live proper data feed also from these providers, so i want to build evrything, just keep a small marker somewhere.
+
+[2026-08-08 18:13] [worker-2 !] Reset Initial Landing Plan
+When a new user lands on landing page - The plan already shows up completed trather than looking like a live one. Clicking on replay starts it correctly. On first go itself  it should start from reset point . Below is the context of lab22 feature implemented in sandbox
+
+
+Repository: tripplanner
+Workspace: C:\repos\tripplanner.worktrees\worker-2
+Lane: Agent 2 - UXlabs
+
+Owner goal:
+Finish Lab 22 end to end. The original Lab 22 prototype has three surfaces:
+1. Landing
+2. First plan plus sign-in moment
+3. Shared trip page
+
+Current status:
+- Prototype contains all three surfaces under frontend/labs/src/first-visit/ and live-plan/.
+- Sandbox branch sandbox/1-lab22-liveplan is serving at http://localhost:5273.
+- Engine-backed public entry is shipped and pushed as aa610f5.
+- Engine receipt fix and M4 documentation are pushed on agents/worker-2 as d6bfa8d and 54e5ebb.
+- Current sandbox implements the captured landing/public entry and first-plan handoff.
+- Sign-in is only available through the workspace account drawer, not yet promoted as the dedicated first-plan sign-in moment.
+- Shared-trip import works in the main app through ?share=..., but the polished Lab 22 shared-trip page has not yet been promoted into the sandbox public entry.
+
+Next feature:
+Promote the remaining Lab 22 surfaces into the sandbox:
+- Add the dedicated sign-in moment after the first plan renders, preserving guest-first planning and guest-data migration.
+- Add the dedicated public shared-trip page using the existing sanitized share contract.
+- Keep the capture-derived facts and sample-pricing disclosure.
+- Do not replace the working engine-backed public entry with hand-written claims.
+
+Important files:
+- frontend/labs/src/first-visit/FirstVisit.tsx
+- frontend/labs/src/live-plan/LivePlan.tsx
+- frontend/src/publicEntry/Root.tsx
+- frontend/src/publicEntry/PublicEntry.tsx
+- frontend/src/components/ChatPanel.tsx
+- frontend/src/components/AccountSettingsHub.tsx
+- frontend/src/App.tsx
+- frontend/src/api.ts
+
+Validation:
+- Backend: .\.venv\Scripts\python.exe -m pytest -q
+- Frontend: npx tsc -b --noEmit
+- Frontend tests: npx vitest run --reporter=dot
+- Build: npm run build
+
+Constraints:
+- Read docs/CODEMAP.md, docs/PRODUCT.md, docs/EXPECTED_BEHAVIORS.md, and docs/feature-briefs/003-decision-records.md before editing.
+- Preserve unrelated worktree changes.
+- Commit and push every completed milestone.
+- Serve the sandbox with scripts/dev/sandbox.ps1 and record an IterationSummary.
+- Do not deploy production.
+
+[2026-08-08 18:00] [worker-2] ! Bridge landing and app themes in Lab 22 Option E
+ok can you implement these visual bridge in the UX lab22 first. can you update it for option E and show. I want to first have a look.
+
+[2026-08-08 18:55] [worker-2] ! Show landing to workspace flow in Lab 22 Option E
+so the first plan is only for first plan or any plan will show up like that, where have you show the actual app page with coherent fonts and theme. Show a proper flow of landing page to next page when user clciks Plan Mine or skip tpo the app (both land to the app page, where is the first plan page)
+
+[2026-08-08 19:35] [worker-2] ! Finalize Lab 22 for promotion
+ok finalize all this so i can get in position to promote the sandbox
