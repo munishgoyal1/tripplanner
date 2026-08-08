@@ -123,3 +123,9 @@ Screeshot of my last 28 days costs
 
 [2026-08-08 16:53] [worker-1] Improve Copilot Agent Workflow
 Follow instructions in #prompt:SKILL.md with these arguments: tips
+[2026-08-08 11:57] [worker-1] ! Record Optimization Recommendations
+record these recommendations in a folder under doc soemwhere to be picked later. these are all related to LLM call from inside the product.
+
+Any other code refactoring opportunities to make it modular and maintainable. Also analyze for obvious performance gaps
+[2026-08-08 12:05] [worker-1] ! Refactor Modular Code Boundaries
+Without reducing any funcitonality and not regressing you can go ahead and do these refactorings first then we will look at the performance fixes next.
