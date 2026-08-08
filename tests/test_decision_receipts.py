@@ -75,7 +75,18 @@ def test_a_search_receipt_reads_offers_out_of_a_wrapper():
     output = json.dumps({"quote_status": "live", "offers": [{"name": "LX Boutique Hotel"}]})
     receipt = receipt_for("search_hotels", output)
     assert receipt is not None
+    assert receipt.text == "Searched bookable stays"
     assert receipt.detail == "1 stay · LX Boutique Hotel"
+
+
+def test_a_stay_receipt_says_when_no_room_was_priced():
+    output = "quote_status=estimated; provider=google_places\n" + json.dumps(
+        [{"name": "LX Boutique Hotel"}, {"name": "Independente Principe Real"}]
+    )
+    receipt = receipt_for("search_hotels", output)
+    assert receipt is not None
+    assert receipt.text == "Looked up stays, no live room rate"
+    assert receipt.detail == "2 stays · LX Boutique Hotel +1"
 
 
 def test_a_search_receipt_stays_plain_when_the_output_is_prose():

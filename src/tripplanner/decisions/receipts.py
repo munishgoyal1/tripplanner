@@ -78,12 +78,24 @@ def _fixed(kind: str, text: str, source: str = "") -> Callable[[str], Receipt | 
     return lambda _output: Receipt(kind=kind, text=text, source=source)
 
 
+def _payload(output: str) -> Any:
+    """The JSON a tool returned, even when it put a status line in front of it."""
+    try:
+        return json.loads(output)
+    except (TypeError, ValueError):
+        pass
+    starts = [index for index in (output.find("["), output.find("{")) if index >= 0]
+    if not starts:
+        return None
+    try:
+        return json.loads(output[min(starts) :])
+    except (TypeError, ValueError):
+        return None
+
+
 def _results(output: str) -> list[Any]:
     """The result list a search tool returned, or nothing we are sure about."""
-    try:
-        payload = json.loads(output)
-    except (TypeError, ValueError):
-        return []
+    payload = _payload(output)
     if isinstance(payload, list):
         return payload
     if isinstance(payload, dict):
@@ -131,6 +143,22 @@ def _counted(
     return build
 
 
+def _stays(output: str) -> Receipt | None:
+    """A stay search, told apart by whether a room was actually priced.
+
+    With no hotel rate provider configured the tool falls back to property
+    metadata, which is worth showing but is not a bookable rate. Saying so is
+    the difference between evidence and a claim.
+    """
+
+    live = '"quote_status": "live"' in output
+    if live:
+        return _counted("lodging", "Searched bookable stays", ("stay", "stays"), "Amadeus")(output)
+    return _counted(
+        "lodging", "Looked up stays, no live room rate", ("stay", "stays"), "Google Places"
+    )(output)
+
+
 # One entry per tool whose work a traveller would recognise. Everything absent
 # from this table is bookkeeping, and bookkeeping is not evidence.
 _BUILDERS: dict[str, Callable[[str], Receipt | None]] = {
@@ -138,7 +166,7 @@ _BUILDERS: dict[str, Callable[[str], Receipt | None]] = {
     "search_flights_duffel": _fixed("flights", "Searched live flight inventory", "Duffel"),
     "search_flights": _fixed("flights", "Searched live flight inventory", "Amadeus"),
     "verify_flight_offer": _fixed("flights", "Re-checked the fare was still live", "Duffel"),
-    "search_hotels": _counted("lodging", "Searched bookable stays", ("stay", "stays"), "Amadeus"),
+    "search_hotels": _stays,
     "search_activities": _counted(
         "places", "Searched things to do", ("activity", "activities"), "Amadeus"
     ),
