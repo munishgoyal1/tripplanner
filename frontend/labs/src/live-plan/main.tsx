@@ -73,8 +73,8 @@ const surfaces: { id: LivePlanSurface; label: string; note: string }[] = [
   },
   {
     id: "first-plan",
-    label: "First plan and sign-in",
-    note: "The guest trip that exists after the demo: the full itinerary, both hotels, the transport comparisons, and exactly where each option asks for an account.",
+    label: "Workspace after planning",
+    note: "The app state reached from both Plan mine and Skip to app: the guest trip is already in the workspace, with itinerary, decisions, and the later sign-in moment.",
   },
   {
     id: "share",
