@@ -906,7 +906,8 @@ function LandingLedger({ tone, stress }: { tone: Tone; stress: boolean }) {
 const guestUrl = "tripplanner.app/g/8f2c-lisbon-porto";
 
 function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; tone: Tone; stress: boolean }) {
-  const s = toneStyles[tone];
+  const workspaceTone: Tone = isExactOption(option) ? "light" : tone;
+  const s = toneStyles[workspaceTone];
   const trip = tripFor(option);
   const decisionSet = decisionsFor(option);
   const moment = signInMoments[option];
@@ -914,11 +915,19 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
   const decisionLed = option === "argue" || isExactOption(option);
 
   return (
-    <div className={`min-h-full ${tone === "dark" ? "bg-[#080b11]" : "bg-slate-50"}`}>
-      <Masthead tone={tone} cta="Sign in" links={["Your trips", "How it works", "Destinations"]} />
+    <div className={`min-h-full ${workspaceTone === "dark" ? "bg-[#080b11]" : "bg-slate-50"}`}>
+      <Masthead tone={workspaceTone} cta="Sign in" links={["Your trips", "How it works", "Destinations"]} />
+      {isExactOption(option) && (
+        <div className="border-b border-slate-200 bg-white px-6 py-2">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 text-[11px]">
+            <span className="font-semibold text-slate-600">Workspace · your plan is ready</span>
+            <span className="text-slate-400">Guest plan · kept in this browser until you sign in</span>
+          </div>
+        </div>
+      )}
       <div className="px-6 py-6">
-        <BrowserFrame url={guestUrl} tone={tone}>
-          <div className={`p-4 ${tone === "dark" ? "bg-[#080b11]" : "bg-white"}`}>
+        <BrowserFrame url={guestUrl} tone={workspaceTone}>
+          <div className={`p-4 ${workspaceTone === "dark" ? "bg-[#080b11]" : "bg-white"}`}>
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className={`text-[10px] font-bold uppercase ${s.accent}`}>Your plan · guest link, kept 30 days</p>
@@ -931,22 +940,22 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
               </div>
             </div>
 
-            {stress && <div className="mt-3"><StaleNotice tone={tone} /></div>}
+            {stress && <div className="mt-3"><StaleNotice tone={workspaceTone} /></div>}
 
             <div className="mt-4 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className={`text-xs font-bold uppercase ${s.muted}`}>The {trip.days.length} days</p>
-                  <ModeLegend tone={tone} />
+                  <ModeLegend tone={workspaceTone} />
                 </div>
-                <ItineraryFull trip={trip} tone={tone} />
+                <ItineraryFull trip={trip} tone={workspaceTone} />
               </div>
 
               <div className="space-y-3">
-                <SavingsRow trip={trip} tone={tone} caption />
+                <SavingsRow trip={trip} tone={workspaceTone} caption />
                 <div>
                   <p className={`mb-1.5 text-xs font-bold uppercase ${s.muted}`}>Where you sleep</p>
-                  <HotelStrip hotels={trip.hotels} tone={tone} detail />
+                  <HotelStrip hotels={trip.hotels} tone={workspaceTone} detail />
                 </div>
 
                 {decisionLed ? (
@@ -956,7 +965,7 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
                       <DecisionCard
                         key={decision.id}
                         decision={decision}
-                        tone={tone}
+                        tone={workspaceTone}
                         overruled={overruled === decision.id}
                         onOverrule={() => setOverruled(decision.id)}
                         onUndo={() => setOverruled(null)}
@@ -967,13 +976,13 @@ function FirstPlanSurface({ option, tone, stress }: { option: LivePlanOption; to
                   <div className="space-y-2">
                     <p className={`text-xs font-bold uppercase ${s.muted}`}>How it moved you</p>
                     {trip.compares.map((compare) => (
-                      <ModeCompareCard key={compare.id} compare={compare} tone={tone} />
+                      <ModeCompareCard key={compare.id} compare={compare} tone={workspaceTone} />
                     ))}
                   </div>
                 )}
 
-                <PriceTableLive trip={trip} tone={tone} compact />
-                <SignInCard moment={moment} tone={tone} />
+                <PriceTableLive trip={trip} tone={workspaceTone} compact />
+                <SignInCard moment={moment} tone={workspaceTone} />
               </div>
             </div>
           </div>
