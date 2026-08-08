@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PublicEntry from "./PublicEntry";
-import { demoTrip } from "./demoRun";
+import { demoDecisions, demoTrip } from "./demoRun";
 import { hasSkippedPublicEntry, markPublicEntrySkipped, shouldShowPublicEntry } from "./publicEntryState";
 
 // The run animates one receipt at a time; the tests jump to the finished plan instead of
@@ -34,24 +34,26 @@ describe("PublicEntry", () => {
     window.localStorage.clear();
   });
 
-  it("plays the captured run and lands on the best total", () => {
+  it("plays the captured run and lands on the trip total", () => {
     renderFinished();
     expect(screen.getByText(/plan complete/i)).toBeInTheDocument();
-    expect(screen.getAllByText(demoTrip.best).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Day 5 ·/)).not.toHaveLength(0);
+    expect(screen.getAllByText(demoTrip.total).length).toBeGreaterThan(0);
+    const lastDay = demoTrip.days[demoTrip.days.length - 1];
+    expect(screen.getAllByText(new RegExp(`Day ${lastDay.day} ·`))).not.toHaveLength(0);
   });
 
-  it("re-settles the total when a decision is overruled, and restores it on undo", () => {
+  it("re-settles the plan when a decision is overruled, and restores it on undo", () => {
+    const decision = demoDecisions[0];
     renderFinished();
-    fireEvent.click(screen.getByRole("button", { name: /i would rather fly it/i }));
-    expect(screen.getAllByText("€3,858").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("+€94").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: decision.overrule }));
+    expect(screen.getByText(decision.outcome.headline)).toBeInTheDocument();
+    expect(screen.getByText(decision.outcome.warning)).toBeInTheDocument();
     expect(screen.getByText(/re-settled around your change/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /put it back/i }));
-    expect(screen.queryByText("€3,858")).not.toBeInTheDocument();
+    expect(screen.queryByText(decision.outcome.headline)).not.toBeInTheDocument();
     expect(screen.queryByText(/re-settled around your change/i)).not.toBeInTheDocument();
-    expect(screen.getAllByText(demoTrip.best).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(demoTrip.total).length).toBeGreaterThan(0);
   });
 
   it("hands a typed request to the workspace", () => {

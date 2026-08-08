@@ -140,8 +140,8 @@ function BelowTheFold() {
         <SectionHead
           tone="light"
           eyebrow="How it decided to move you"
-          title="Flight, rail, road and coach — priced on every hop"
-          body="A trip is decided by how you get between places. Each hop is compared door to door, and the options it rejected stay visible."
+          title="Flight, rail, road and coach — measured door to door"
+          body="A trip is decided by how you get between places. Each hop is compared end to end, including the transfers a fare page never shows you, and the options it rejected stay visible with the reason."
         />
         <div className="mt-4 grid gap-3 lg:grid-cols-3">
           {trip.compares.map((compare) => (
@@ -209,27 +209,27 @@ export default function PublicEntry({
             <div className={`rounded-2xl p-4 ${dark.panel} ${dark.panelRing}`}>
               <div className="flex items-center justify-between gap-2">
                 <p className={`font-mono text-[11px] uppercase tracking-wide ${dark.muted}`}>
-                  agent · lisbon + porto · {trip.days.length} days · 2 travellers
+                  agent · {trip.title} · {trip.travellers}
                 </p>
                 <StageControls tone="dark" running={running} onReplay={replay} onFinish={finish} />
               </div>
               <ol className="mt-3 space-y-1.5" aria-live="polite">
-                {trip.receipts.slice(0, step).map((receipt) => {
-                  const choice = demoDecisions.find((decision) => decision.at === receipt.at);
-                  return (
-                    <Fragment key={receipt.at}>
-                      <ReceiptLine receipt={receipt} tone="dark" />
-                      {choice && (
+                {trip.receipts.slice(0, step).map((receipt, index) => (
+                  <Fragment key={`${index}-${receipt.at}`}>
+                    <ReceiptLine receipt={receipt} tone="dark" />
+                    {demoDecisions
+                      .filter((decision) => decision.after === index)
+                      .map((decision) => (
                         <InlineChoice
-                          decision={choice}
-                          overruled={overruled === choice.id}
-                          onOverrule={() => setOverruled(choice.id)}
+                          key={decision.id}
+                          decision={decision}
+                          overruled={overruled === decision.id}
+                          onOverrule={() => setOverruled(decision.id)}
                           onUndo={() => setOverruled(null)}
                         />
-                      )}
-                    </Fragment>
-                  );
-                })}
+                      ))}
+                  </Fragment>
+                ))}
                 {running && (
                   <li className={`flex items-center gap-2 font-mono text-[11px] ${dark.muted}`}>
                     <Loader2 size={11} className="animate-spin" aria-hidden /> working…
@@ -261,7 +261,7 @@ export default function PublicEntry({
                   </div>
                   <p className={`mt-0.5 text-[11px] leading-relaxed ${dark.body}`}>
                     The plan above is the one you asked for, not the one it recommended. Put it back
-                    and the {trip.best} version returns intact.
+                    and its own version returns intact.
                   </p>
                 </div>
               ) : (

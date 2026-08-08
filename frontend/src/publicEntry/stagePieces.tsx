@@ -182,11 +182,11 @@ function LegChips({ legs, tone }: { legs: StageLeg[]; tone: Tone }) {
   const s = toneStyles[tone];
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {legs.map((leg) => {
+      {legs.map((leg, index) => {
         const Icon = modeIcons[leg.mode];
         return (
           <span
-            key={leg.label}
+            key={`${index}-${leg.label}`}
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${s.chip}`}
             title={leg.label}
           >
@@ -252,8 +252,8 @@ export function StageDayCard({ day, tone }: { day: StageDay; tone: Tone }) {
       <p className={`mt-0.5 text-[13px] font-semibold ${s.heading}`}>{day.title}</p>
       <p className={`text-[11px] ${s.muted}`}>{day.city}</p>
       <ul className="mt-1.5">
-        {day.stops.slice(0, 3).map((stop) => (
-          <StopRow key={`${day.day}-${stop.time}`} stop={stop} color={day.color} tone={tone} />
+        {day.stops.slice(0, 3).map((stop, index) => (
+          <StopRow key={`${day.day}-${index}-${stop.time}`} stop={stop} color={day.color} tone={tone} />
         ))}
       </ul>
       <div className="mt-2">
@@ -302,7 +302,7 @@ export function HotelStrip({ hotels, tone, detail = false }: { hotels: StageHote
           <p className={`mt-1.5 text-[11px] leading-relaxed ${s.body}`}>{hotel.why}</p>
           {detail && (
             <p className={`mt-1.5 text-[11px] ${s.muted}`}>
-              {hotel.source} · checked {hotel.checked} · beat {hotel.beat}
+              {hotel.source} · checked {hotel.checked}
             </p>
           )}
         </div>
@@ -351,11 +351,9 @@ export function SavingsRow({ trip, tone }: { trip: StageTrip; tone: Tone }) {
   return (
     <div className={`rounded-xl px-3.5 py-2.5 ${tone === "dark" ? "bg-emerald-400/10 ring-1 ring-emerald-400/30" : "bg-emerald-50 ring-1 ring-emerald-200"}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className={`text-[11px] font-bold uppercase ${tone === "dark" ? "text-emerald-300" : "text-emerald-700"}`}>Best total so far</span>
-        <span className={`text-sm font-semibold line-through tabular-nums ${s.muted}`}>{trip.first}</span>
-        <span className={`text-lg font-bold tabular-nums ${s.heading}`}>{trip.best}</span>
-        <span className={`text-xs font-semibold ${tone === "dark" ? "text-emerald-300" : "text-emerald-700"}`}>saved {trip.saved}</span>
-        <span className={`text-[11px] ${s.body}`}>{trip.sources}</span>
+        <span className={`text-[11px] font-bold uppercase ${tone === "dark" ? "text-emerald-300" : "text-emerald-700"}`}>{trip.totalLabel}</span>
+        <span className={`text-lg font-bold tabular-nums ${s.heading}`}>{trip.total}</span>
+        <span className={`text-[11px] ${s.body}`}>{trip.totalNote}</span>
       </div>
     </div>
   );
@@ -372,7 +370,6 @@ export function PriceTableLive({ trip, tone }: { trip: StageTrip; tone: Tone }) 
             <th scope="col" className={`px-3 py-2 text-[10px] font-bold uppercase ${s.muted}`}>Line</th>
             <th scope="col" className={`px-3 py-2 text-right text-[10px] font-bold uppercase ${s.muted}`}>Price</th>
             <th scope="col" className={`px-3 py-2 text-[10px] font-bold uppercase ${s.muted}`}>Source · checked</th>
-            <th scope="col" className={`px-3 py-2 text-[10px] font-bold uppercase ${s.muted}`}>What it beat</th>
           </tr>
         </thead>
         <tbody>
@@ -387,11 +384,27 @@ export function PriceTableLive({ trip, tone }: { trip: StageTrip; tone: Tone }) 
                 {line.source}
                 <span className={`block ${s.muted}`}>{line.checked}</span>
               </td>
-              <td className={`px-3 py-2 align-top text-[11px] ${s.muted}`}>{line.beat}</td>
             </tr>
           ))}
         </tbody>
+        <tfoot>
+          <tr className={`border-t ${s.divider}`}>
+            <th scope="row" className="px-3 py-2 align-top">
+              <span className={`block text-xs font-semibold ${s.heading}`}>{trip.totalLabel}</span>
+              <span className={`block text-[11px] font-normal ${s.body}`}>
+                {trip.totalNote}
+              </span>
+            </th>
+            <td className={`px-3 py-2 text-right align-top text-xs font-bold tabular-nums ${s.heading}`}>{trip.total}</td>
+            <td className={`px-3 py-2 align-top text-[11px] ${s.muted}`}>{trip.sources}</td>
+          </tr>
+        </tfoot>
       </table>
+      <p className={`border-t px-3 py-2 text-[10px] leading-relaxed ${s.divider} ${s.muted}`}>
+        Pricing data is sample: fares come from a provider sandbox while the live accounts are
+        being set up, and lines marked no live rate were never quoted. What is real is where each
+        number came from and when it was fetched.
+      </p>
     </div>
   );
 }
