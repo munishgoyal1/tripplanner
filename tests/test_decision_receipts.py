@@ -10,7 +10,7 @@ from tripplanner.decisions.provenance import (
     make_check,
     record_check,
 )
-from tripplanner.decisions.receipts import receipt_for
+from tripplanner.decisions.receipts import ReceiptLog, receipt_for
 
 
 def _comparison_output(**extra) -> str:
@@ -63,6 +63,20 @@ def test_receipt_dict_omits_empty_fields():
     assert receipt is not None
     payload = receipt.as_dict()
     assert set(payload) == {"kind", "text", "source"}
+
+
+def test_the_same_tool_output_twice_is_one_receipt():
+    log = ReceiptLog()
+    assert log.add("search_hotels", "3 stays in Lisbon") is not None
+    assert log.add("search_hotels", "3 stays in Lisbon") is None
+    assert log.count == 1
+
+
+def test_the_same_tool_on_different_work_is_numbered_again():
+    log = ReceiptLog()
+    log.add("search_hotels", "3 stays in Lisbon")
+    assert log.add("search_hotels", "4 stays in Porto") is not None
+    assert log.count == 2
 
 
 def test_price_check_records_one_row_per_source():

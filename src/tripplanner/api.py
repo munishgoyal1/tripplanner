@@ -45,7 +45,7 @@ from starlette.background import BackgroundTask
 
 from tripplanner import config as _config  # noqa: F401  -- import triggers load_dotenv()
 from tripplanner.chat_interactions import extract_input_request
-from tripplanner.decisions.receipts import receipt_for
+from tripplanner.decisions.receipts import ReceiptLog
 from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_identity import (
     is_anonymous_id,
@@ -767,7 +767,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         # reply against them (hallucination critic).
         tool_outputs: list[ToolMessage] = []
         tool_names_called: set[str] = set()  # track which tools fired this turn
-        receipt_seq = 0
+        receipts = ReceiptLog()
         yield _sse("progress", {"stage": "thinking"})
         try:
             async for ev in app_graph.astream_events(
@@ -827,13 +827,12 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                     tool_text = (
                         output if isinstance(output, str) else getattr(output, "content", "")
                     )
-                    receipt = receipt_for(name, tool_text)
+                    receipt = receipts.add(name, tool_text)
                     if receipt is not None:
-                        receipt_seq += 1
                         yield _sse(
                             "receipt",
                             {
-                                "seq": receipt_seq,
+                                "seq": receipts.count,
                                 "at": _elapsed_clock(started),
                                 **receipt.as_dict(),
                             },

@@ -107,3 +107,29 @@ def receipt_for(name: str, output: Any) -> Receipt | None:
     if builder is None:
         return None
     return builder(output if isinstance(output, str) else "")
+
+
+class ReceiptLog:
+    """The receipts for one turn, numbered, in order, and without repeats.
+
+    A single tool call can surface twice in the event stream because the cache
+    wrapper re-enters the tool, and the second event carries the same output as
+    the first. Same output means the same look at the world, so it describes no
+    further work and earns no second line.
+    """
+
+    def __init__(self) -> None:
+        self._seen: set[tuple[str, str]] = set()
+        self.count = 0
+
+    def add(self, name: str, output: Any) -> Receipt | None:
+        text = output if isinstance(output, str) else ""
+        key = (name, text)
+        if key in self._seen:
+            return None
+        receipt = receipt_for(name, text)
+        if receipt is None:
+            return None
+        self._seen.add(key)
+        self.count += 1
+        return receipt
