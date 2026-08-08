@@ -416,9 +416,49 @@ function Assert-SandboxLabReadyForPromotion {
     $commit = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("rev-parse", "HEAD")
     if ($Entry.lastLabIterationCommit -ne $commit) {
         if ($AllowContainedIteration -and $Base) {
+            # -Promote synchronizes the sandbox before it checks eligibility. That
+            # creates a local merge whose first parent is the recorded Lab commit
+            # and whose other parent is origin/master. It is not new Lab work and
+            # should not require another served iteration. Direct commits remain
+            # rejected: every first-parent commit after the iteration must be a
+            # merge that brings in a commit already contained by the base branch.
             & git -C $Entry.worktree merge-base --is-ancestor `
-                $Entry.lastLabIterationCommit "origin/$Base"
-            if ($LASTEXITCODE -eq 0) { return }
+                $Entry.lastLabIterationCommit $commit
+            if ($LASTEXITCODE -eq 0) {
+                $syncOnly = $true
+                $revisions = @(
+                    (& git -C $Entry.worktree rev-list --first-parent `
+                        "$($Entry.lastLabIterationCommit)..$commit").Trim().Split(
+                        [Environment]::NewLine,
+                        [System.StringSplitOptions]::RemoveEmptyEntries
+                    )
+                )
+                foreach ($revision in $revisions) {
+                    $parents = @(
+                        (& git -C $Entry.worktree show -s --format=%P $revision).Trim().Split(
+                            " ",
+                            [System.StringSplitOptions]::RemoveEmptyEntries
+                        )
+                    )
+                    if ($parents.Count -lt 2) {
+                        $syncOnly = $false
+                        break
+                    }
+                    $baseMerged = $false
+                    foreach ($parent in $parents | Select-Object -Skip 1) {
+                        & git -C $Entry.worktree merge-base --is-ancestor $parent "origin/$Base"
+                        if ($LASTEXITCODE -eq 0) {
+                            $baseMerged = $true
+                            break
+                        }
+                    }
+                    if (-not $baseMerged) {
+                        $syncOnly = $false
+                        break
+                    }
+                }
+                if ($syncOnly) { return }
+            }
         }
         throw "Linked sandbox '$($Entry.slug)' HEAD changed after its last recorded Lab iteration. Serve and record the current commit before promotion."
     }
@@ -1002,7 +1042,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($conflicts) {
         throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
-    Assert-SandboxLabReadyForPromotion -Entry $entry
+    Assert-SandboxLabReadyForPromotion -Entry $entry -Base $BaseBranch -AllowContainedIteration
     $unmerged = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
         "log", "--oneline", "origin/$BaseBranch..HEAD"
     )
