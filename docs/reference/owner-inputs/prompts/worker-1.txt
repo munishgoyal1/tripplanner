@@ -120,3 +120,6 @@ analyze my interaction/usage pattern with AI coding agents and present a crisp p
 [2026-08-08 16:46] [worker-1] Choose Session Reset Model
 So you mean i should reset the session after every feature delivered. How to resetn in a conveneient way. Should I sue the Auto model choice option will it be ablet o auto select he right modelatleast for smaller tasks.
 Screeshot of my last 28 days costs
+
+[2026-08-08 16:53] [worker-1] Improve Copilot Agent Workflow
+Follow instructions in #prompt:SKILL.md with these arguments: tips
