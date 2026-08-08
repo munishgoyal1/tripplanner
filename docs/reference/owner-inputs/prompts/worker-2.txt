@@ -171,3 +171,6 @@ D-06 "Then change its mind" is not a posiutive and rtight staeemnt, just say som
 
 [2026-08-08 20:40] [worker-2] ! Continue through all milestones
 Yes continue doing through all milestones, unless you need my input. I will evaluate final lab output in the sandbox at the end
+
+[2026-08-08 17:20] [worker-2] ! Sample pricing marker on public entry
+Continue with price claims also. Put one small marker saying Pricing data is sample. Anyway we will eventually get the live proper data feed also from these providers, so i want to build evrything, just keep a small marker somewhere.

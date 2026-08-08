@@ -171,10 +171,11 @@ def _capture(prompts: list[str], previous: dict[str, Any] | None) -> dict[str, A
             "currency": itinerary.get("currency", ""),
         },
         "overview": view.get("overview", {}),
+        # Sanitised the same way a shared trip is, because this is published too.
+        "plan": share.sanitize_plan(plan),
         "receipts": receipts,
         "days": itinerary.get("days", []),
         "stats": itinerary.get("stats", {}),
-        # Sanitised the same way a shared trip is, because this is published too.
         "decisions": share.sanitize_decisions(plan.get("decisions")),
         "overrules": _overrules(plan, itinerary),
         "provenance": build_provenance(plan),
@@ -208,6 +209,11 @@ def main(argv: list[str] | None = None) -> int:
         " throwaway data and has no business in a real database.",
     )
     args = parser.parse_args(argv)
+
+    # The run prints place names and arrows that a Windows console encodes as
+    # nothing, and losing a whole capture to a print statement is absurd.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     if args.store == "local":
         storage_cosmos.is_enabled = lambda: False  # type: ignore[assignment]
