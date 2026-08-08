@@ -5,7 +5,7 @@
 // days instead of six, and two overrulable choices — E offers them during the run, F after
 // it. All six cover landing, first plan and shared trip.
 
-import { Check, Eye, Gauge, Info, ListChecks, Loader2, Sparkles, Undo2, Wand2 } from "lucide-react";
+import { ArrowRight, Check, Eye, Gauge, Info, ListChecks, Loader2, Sparkles, Undo2, Wand2 } from "lucide-react";
 import { Fragment, useState, type ReactNode } from "react";
 
 import { Masthead, SiteFooter } from "../first-visit/pieces";
@@ -77,15 +77,21 @@ interface Props {
 }
 
 export function LivePlan({ option, surface, stress = false, tone }: Props) {
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const resolved: Tone = tone ?? (isExactOption(option) ? "dark" : "light");
 
+  if (workspaceOpen && option === "exact" && surface === "landing") {
+    return <FirstPlanSurface option={option} tone={resolved} stress={stress} />;
+  }
   if (surface === "first-plan") return <FirstPlanSurface option={option} tone={resolved} stress={stress} />;
   if (surface === "share") return <ShareSurface option={option} tone={resolved} stress={stress} />;
 
   if (option === "asis") return <LandingAsIs tone={resolved} stress={stress} />;
   if (option === "plain") return <LandingPlain tone={resolved} stress={stress} />;
   if (option === "yours") return <LandingYours tone={resolved} stress={stress} />;
-  if (option === "exact") return <LandingExact tone={resolved} stress={stress} />;
+  if (option === "exact") {
+    return <LandingExact tone={resolved} stress={stress} onOpenWorkspace={() => setWorkspaceOpen(true)} />;
+  }
   if (option === "ledger") return <LandingLedger tone={resolved} stress={stress} />;
   return <LandingArgue tone={resolved} stress={stress} />;
 }
@@ -683,7 +689,15 @@ function InlineChoice({
   );
 }
 
-function LandingExact({ tone, stress }: { tone: Tone; stress: boolean }) {
+function LandingExact({
+  tone,
+  stress,
+  onOpenWorkspace,
+}: {
+  tone: Tone;
+  stress: boolean;
+  onOpenWorkspace: () => void;
+}) {
   const s = toneStyles[tone];
   const trip = shortTrip;
   const { step, running, replay } = useStageRun(trip.receipts.length);
@@ -714,7 +728,16 @@ function LandingExact({ tone, stress }: { tone: Tone; stress: boolean }) {
                 <p className={`font-mono text-[11px] uppercase tracking-wide ${s.muted}`}>
                   agent · lisbon + porto · {trip.days.length} days · 2 travellers
                 </p>
-                <StageControls tone={tone} running={false} onReplay={replay} onFinish={replay} />
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={onOpenWorkspace}
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${s.chip}`}
+                  >
+                    Skip to app
+                  </button>
+                  <StageControls tone={tone} running={false} onReplay={replay} onFinish={replay} />
+                </div>
               </div>
               <ol className="mt-3 space-y-1.5" aria-live="polite">
                 {trip.receipts.slice(0, step).map((receipt) => {
@@ -766,9 +789,13 @@ function LandingExact({ tone, stress }: { tone: Tone; stress: boolean }) {
                   Replace Lisbon with anywhere. It re-plans from scratch in front of you, and you can
                   argue with that one too.
                 </p>
-                <div className="mt-3">
-                  <Composer tone={tone} placeholder="Kyoto in April with a 6-year-old…" action="Plan mine" />
-                </div>
+                <button
+                  type="button"
+                  onClick={onOpenWorkspace}
+                  className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand px-3.5 py-2 text-[13px] font-semibold text-white transition hover:bg-brand/90"
+                >
+                  Plan mine <ArrowRight size={14} aria-hidden />
+                </button>
               </div>
             </div>
           </div>
