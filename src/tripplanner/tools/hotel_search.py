@@ -6,6 +6,7 @@ import json
 
 from langchain_core.tools import tool
 
+from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.liteapi import LiteAPIError
 from tripplanner.providers.models import HotelSearchQuery
 from tripplanner.providers.registry import get_hotel_provider
@@ -118,6 +119,8 @@ def search_hotels(
                     max_results=max_results,
                 )
             )
+            if offers:
+                note_price_check("lodging", provider.name)
             return json.dumps(
                 {
                     "quote_status": "live" if offers else "unavailable",

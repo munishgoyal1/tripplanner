@@ -20,6 +20,7 @@ import httpx
 from langchain_core.tools import tool
 
 from tripplanner.config import get_settings
+from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.liteapi import LiteAPIError
 from tripplanner.providers.models import FlightSearchQuery
 from tripplanner.providers.registry import get_flight_provider
@@ -166,6 +167,8 @@ def search_flights_duffel(
                     max_results=max_results,
                 )
             )
+            if offers:
+                note_price_check("flights", provider.name)
             return json.dumps(
                 {
                     "quote_status": "live" if offers else "unavailable",
@@ -234,6 +237,8 @@ def search_flights_duffel(
         resp.raise_for_status()
         data = resp.json().get("data", {})
         offers = data.get("offers", [])
+        if offers:
+            note_price_check("flights", "Duffel")
         return _format_offers(offers, max_results)
     except httpx.HTTPStatusError as e:
         body_text = ""
@@ -269,6 +274,7 @@ def verify_flight_offer(offer_id: str, refresh: bool = True) -> str:
         )
     try:
         offer = provider.verify_flight(offer_id)
+        note_price_check("flights", provider.name)
         return json.dumps(
             {
                 "quote_status": "live",

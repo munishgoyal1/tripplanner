@@ -3454,3 +3454,12 @@ costs a boarding denial. Implemented instead:
   execution layer, consistent with "booking = grounded choices and verified handoff".
 create_trip_plan now asks the agent to name travellers in travelers_summary, because
 per-traveller passport and visa checks only run for people that text names.
+
+[2026-08-08] Public entry is generated from a captured run, not written
+Owner ruling: keep the price claims on the Lab 22 entry page and add one small
+marker saying the pricing data is sample, because the live provider feeds are
+coming and the surfaces should be built now. Implemented in M4: the page is
+derived from scripts/capture_public_run.py output, the price table carries the
+sample-pricing marker, a room with no rate provider reads "no live rate", and a
+saved total that only covers fares is labelled "Priced so far" rather than
+"Trip total".

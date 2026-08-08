@@ -1,4 +1,4 @@
-import type { TripView, DestinationOverview, MapView, MapsConfig, PlannerReview, SavedTrip, Itinerary, PlaceGuidePage, TripWorkspaceView } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
@@ -35,6 +35,7 @@ export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;
   onProgress?: (stage: "thinking" | "reviewing" | "saving") => void;
+  onReceipt?: (receipt: Receipt) => void;
   onInputRequest?: (request: TripInputRequest) => void;
   onDone: (reply: string, tripId?: string) => void;
   onError: (message: string) => void;
@@ -128,6 +129,19 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
         duration_ms: typeof data.duration_ms === "number" ? data.duration_ms : undefined,
       });
       break;
+    case "receipt":
+      if (typeof data.text === "string" && data.text) {
+        h.onReceipt?.({
+          seq: typeof data.seq === "number" ? data.seq : 0,
+          at: typeof data.at === "string" ? data.at : "",
+          kind: typeof data.kind === "string" ? data.kind : "",
+          text: data.text,
+          detail: typeof data.detail === "string" ? data.detail : undefined,
+          decision_id: typeof data.decision_id === "string" ? data.decision_id : undefined,
+          source: typeof data.source === "string" ? data.source : undefined,
+        });
+      }
+      break;
     case "progress":
       if (["thinking", "reviewing", "saving"].includes(data.stage)) {
         h.onProgress?.(data.stage);
@@ -202,6 +216,23 @@ export async function deselectItem(
   options?: DeselectItemOptions,
 ): Promise<{ view: TripView; alerts: string[]; planner_review?: PlannerReview | null }> {
   return sharedClient.deselectItem(kind, name, options);
+}
+
+/** Take a different option on a recorded comparison. */
+export async function overrideDecision(
+  decisionId: string,
+  optionId: string,
+  updatedAt?: string | null,
+): Promise<DecisionApplyResult> {
+  return sharedClient.overrideDecision(decisionId, optionId, updatedAt);
+}
+
+/** Put the agent's own choice back. */
+export async function restoreDecision(
+  decisionId: string,
+  updatedAt?: string | null,
+): Promise<DecisionApplyResult> {
+  return sharedClient.restoreDecision(decisionId, updatedAt);
 }
 
 /** List the user's saved trips (the "My trips" switcher). */

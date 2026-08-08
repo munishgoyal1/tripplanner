@@ -143,3 +143,87 @@ If you have 2 options you can present to me with these adjustments then put them
 
 [2026-08-07 20:32] [worker-2] ! Implement Lab 22 in a new sandbox
 Imeplement the lab22 in a new sandbox
+
+[2026-08-08 11:17] [worker-2] ! Product must really support what the demo promises
+Are you asking me that you can produce the real fix (new feature support ?), yes eventually what we are promising and hsowing to users , our product has to support in real also. Are we on same page in my understanding ?
+
+[2026-08-08 11:37] [worker-2] ! Feature brief with HLD and LLD for decision records
+Wrtie the feature brief along with some HLD and LLD design details for me to understand what all is included. Make the feature comprehensive for top value items here and any other accessorial things needed, and dont cut corners uneccesarily. Keep it balanced to target top items.
+
+[2026-08-08 14:46] [worker-2] ! D-01 fare source with unpriced fallback, D-05 transport only in M1
+For D-01 rail coach pricing, build the capability alogn with fallback that if no such reliable source is available then it just behaves as if it doesnt support rail coach pricing. Simulatenously we will figure if the existing such providers as below can be integrated or not, that will be aspeerate decision. Is it fine ? D-05 - It's fine for transport only in M1, but hope you will end up building everything in milestones one by one.rget to achieve all this today.
+
+Consumer Platforms & Aggregators- **Omio:** Compares train, bus, and flight pricing across Europe and North America.
+
+- **Trainline / Rail Europe:** Authoritative direct ticket retailing and pricing sources for European rail networks.
+
+- **Rome2rio:** Multimodal trip planner showing estimated price ranges for combined rail, coach, and transit leg
+
+[2026-08-08 20:05] [worker-2] ! Decision records M1 implementation
+For D-01 rail coach pricing, build the capability alogn with fallback that if no such reliable source is available then it just behaves as if it doesnt support rail coach pricing. Simulatenously we will figure if the existing such providers as below can be integrated or not, that will be aspeerate decision. Is it fine ? D-05 - It's fine for transport only in M1, but hope you will end up building everything in milestones one by one.rget to achieve all this today.
+
+Consumer Platforms & Aggregators- **Omio:** Compares train, bus, and flight pricing across Europe and North America.
+- **Trainline / Rail Europe:** Authoritative direct ticket retailing and pricing sources for European rail networks.
+- **Rome2rio:** Multimodal trip planner showing estimated price ranges for combined rail, coach, and transit leg
+
+[2026-08-08 20:30] [worker-2] ! D-06 headline wording
+D-06 "Then change its mind" is not a posiutive and rtight staeemnt, just say something on lines of watch it plan.. you can ask it to plan yours . change its mind is negative shows not stable etc.
+
+[2026-08-08 20:40] [worker-2] ! Continue through all milestones
+Yes continue doing through all milestones, unless you need my input. I will evaluate final lab output in the sandbox at the end
+
+[2026-08-08 17:20] [worker-2] ! Sample pricing marker on public entry
+Continue with price claims also. Put one small marker saying Pricing data is sample. Anyway we will eventually get the live proper data feed also from these providers, so i want to build evrything, just keep a small marker somewhere.
+
+[2026-08-08 18:13] [worker-2 !] Reset Initial Landing Plan
+When a new user lands on landing page - The plan already shows up completed trather than looking like a live one. Clicking on replay starts it correctly. On first go itself  it should start from reset point . Below is the context of lab22 feature implemented in sandbox
+
+
+Repository: tripplanner
+Workspace: C:\repos\tripplanner.worktrees\worker-2
+Lane: Agent 2 - UXlabs
+
+Owner goal:
+Finish Lab 22 end to end. The original Lab 22 prototype has three surfaces:
+1. Landing
+2. First plan plus sign-in moment
+3. Shared trip page
+
+Current status:
+- Prototype contains all three surfaces under frontend/labs/src/first-visit/ and live-plan/.
+- Sandbox branch sandbox/1-lab22-liveplan is serving at http://localhost:5273.
+- Engine-backed public entry is shipped and pushed as aa610f5.
+- Engine receipt fix and M4 documentation are pushed on agents/worker-2 as d6bfa8d and 54e5ebb.
+- Current sandbox implements the captured landing/public entry and first-plan handoff.
+- Sign-in is only available through the workspace account drawer, not yet promoted as the dedicated first-plan sign-in moment.
+- Shared-trip import works in the main app through ?share=..., but the polished Lab 22 shared-trip page has not yet been promoted into the sandbox public entry.
+
+Next feature:
+Promote the remaining Lab 22 surfaces into the sandbox:
+- Add the dedicated sign-in moment after the first plan renders, preserving guest-first planning and guest-data migration.
+- Add the dedicated public shared-trip page using the existing sanitized share contract.
+- Keep the capture-derived facts and sample-pricing disclosure.
+- Do not replace the working engine-backed public entry with hand-written claims.
+
+Important files:
+- frontend/labs/src/first-visit/FirstVisit.tsx
+- frontend/labs/src/live-plan/LivePlan.tsx
+- frontend/src/publicEntry/Root.tsx
+- frontend/src/publicEntry/PublicEntry.tsx
+- frontend/src/components/ChatPanel.tsx
+- frontend/src/components/AccountSettingsHub.tsx
+- frontend/src/App.tsx
+- frontend/src/api.ts
+
+Validation:
+- Backend: .\.venv\Scripts\python.exe -m pytest -q
+- Frontend: npx tsc -b --noEmit
+- Frontend tests: npx vitest run --reporter=dot
+- Build: npm run build
+
+Constraints:
+- Read docs/CODEMAP.md, docs/PRODUCT.md, docs/EXPECTED_BEHAVIORS.md, and docs/feature-briefs/003-decision-records.md before editing.
+- Preserve unrelated worktree changes.
+- Commit and push every completed milestone.
+- Serve the sandbox with scripts/dev/sandbox.ps1 and record an IterationSummary.
+- Do not deploy production.

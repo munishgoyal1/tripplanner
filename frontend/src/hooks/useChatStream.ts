@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { streamChat } from "../api";
 import { trackEvent } from "../analytics";
 import { requestEcho } from "../lib/turnStatus";
-import type { ChatMessage, TripInputRequest } from "../types";
+import type { ChatMessage, Receipt, TripInputRequest } from "../types";
 
 export interface AssistantTurnStatus {
   phase: "working" | "loading" | "complete" | "error";
@@ -162,6 +162,8 @@ export function useChatStream({
   const [editingPlan, setEditingPlan] = useState(false);
   const [liveRequest, setLiveRequest] = useState("");
   const [progressSeconds, setProgressSeconds] = useState(0);
+  // What the planner actually did this turn, in the order it did it.
+  const [receipts, setReceipts] = useState<Receipt[]>([]);
   const streamControllerRef = useRef<AbortController | null>(null);
   const turnStartedAtRef = useRef(0);
   const publishedTurnStatusRef = useRef("");
@@ -228,6 +230,7 @@ export function useChatStream({
     turnStartedAtRef.current = Date.now();
     publishedTurnStatusRef.current = "";
     setStages([]);
+    setReceipts([]);
     setPlannedPlace(null);    setEditingPlan(false);
     setLiveRequest(outgoing);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
@@ -276,6 +279,7 @@ export function useChatStream({
           setProgress({ label: PROGRESS_LABELS[stage], startedAt: turnStartedAtRef.current });
         },
         onInputRequest: setTripInputRequest,
+        onReceipt: (receipt) => setReceipts((current) => [...current, receipt]),
         onTool: (name, phase, extras) => {
           if (phase === "start") {
             usedTools.add(name);
@@ -437,6 +441,7 @@ export function useChatStream({
     failedRequest,
     progress,
     progressSeconds,
+    receipts,
     retryFailedRequest,
     sendMessage,
     stopResponse,

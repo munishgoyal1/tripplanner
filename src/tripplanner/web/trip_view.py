@@ -23,6 +23,8 @@ from typing import Any
 from urllib.parse import quote
 
 from tripplanner.config import get_settings
+from tripplanner.decisions.provenance import build_provenance
+from tripplanner.decisions.store import list_decisions
 from tripplanner.tools import user_preferences
 from tripplanner.web import map_view, places_cache
 
@@ -290,6 +292,30 @@ def build_weather(trip: dict[str, Any] | None) -> dict[str, Any] | None:
 # ---------------------------------------------------------------------------
 
 
+def _build_cost_baseline(trip: dict[str, Any], symbol: str) -> dict[str, Any] | None:
+    """What the plan cost before the traveller started overruling it.
+
+    Absent until the first overrule, so an untouched trip shows no comparison
+    against itself.
+    """
+    baseline = trip.get("cost_baseline")
+    if not isinstance(baseline, dict):
+        return None
+    first, current = baseline.get("first"), baseline.get("current")
+    if not isinstance(first, int | float) or not isinstance(current, int | float):
+        return None
+    saved = round(float(first) - float(current), 2)
+    return {
+        "first": first,
+        "current": current,
+        "saved": saved,
+        "currency": str(baseline.get("currency") or ""),
+        "first_display": fmt_money(first, symbol),
+        "current_display": fmt_money(current, symbol),
+        "saved_display": fmt_money(abs(saved), symbol),
+    }
+
+
 def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     counts = {
         "flights": len(trip.get("selected_flights") or []),
@@ -314,6 +340,8 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
+        "cost_baseline": _build_cost_baseline(trip, symbol),
+        "provenance": build_provenance(trip),
         "budget": build_budget(trip),
         "weather": build_weather(trip),
         "family_pills": family_pills(prefs),
@@ -745,6 +773,49 @@ def warm_view_items(trip: dict[str, Any] | None) -> None:
     )
 
 
+def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
+    """Recorded comparisons, shaped for display. Read-only in this view."""
+    if not get_settings().decisions_ui_enabled:
+        return []
+    out: list[dict[str, Any]] = []
+    for decision in list_decisions(trip):
+        out.append({
+            "id": decision.id,
+            "kind": decision.kind.value,
+            "subject": decision.subject,
+            "scope": decision.scope.model_dump(mode="json"),
+            "rule": decision.rule.model_dump(mode="json"),
+            "state": decision.state.value,
+            "priced": decision.priced.value,
+            "chosen_option_id": decision.active_option_id,
+            "agent_option_id": decision.chosen_option_id,
+            "override": (
+                decision.override.model_dump(mode="json") if decision.override else None
+            ),
+            "effect": decision.effect.model_dump(mode="json"),
+            "options": [
+                {
+                    "id": option.id,
+                    "mode": option.mode.value,
+                    "label": option.label,
+                    "detail": option.detail,
+                    "price": option.price.model_dump(mode="json") if option.price else None,
+                    "priced": option.priced,
+                    "unpriced_reason": (
+                        option.unpriced_reason.value if option.unpriced_reason else None
+                    ),
+                    "duration_min": option.duration_min,
+                    "door_to_door_min": option.door_to_door_min,
+                    "duration_estimated": option.duration_estimated,
+                    "rejected_because": option.rejected_because,
+                    "source": option.source.model_dump(mode="json"),
+                }
+                for option in decision.options
+            ],
+        })
+    return out
+
+
 def build_view(
     trip: dict[str, Any] | None, focus: dict[str, Any] | None
 ) -> dict[str, Any]:
@@ -757,6 +828,7 @@ def build_view(
     if not trip:
         return {
             "trip_id": None,
+            "updated_at": None,
             "has_trip": False,
             "title": "Trip planner",
             "destination": "",
@@ -771,6 +843,7 @@ def build_view(
             "overview": None,
             "available_days": [],
             "items": [],
+            "decisions": [],
         }
 
     destination = str(trip.get("destination") or "")
@@ -811,6 +884,7 @@ def build_view(
 
     return {
         "trip_id": str(trip.get("trip_id") or "") or None,
+        "updated_at": str(trip.get("updated_at") or "") or None,
         "has_trip": True,
         "title": title,
         "destination": destination,
@@ -824,6 +898,7 @@ def build_view(
             if isinstance(day, dict)
         ],
         "items": items,
+        "decisions": _build_decisions(trip),
     }
 
 
@@ -894,6 +969,31 @@ _PRICE_LEVEL_HINT = {
     "PRICE_LEVEL_MODERATE": "Mid-range",
     "PRICE_LEVEL_EXPENSIVE": "Premium",
     "PRICE_LEVEL_VERY_EXPENSIVE": "Luxury",
+}
+# Bands are per currency, because 6,000-15,000 a night is an ordinary hotel in
+# rupees and a yacht in euros. A currency with no band shows nothing at all: an
+# absent guess is honest, a wrongly scaled one is not.
+_COST_HINT_BANDS = {
+    "\u20b9": {
+        "meal": "500-1,500 pp",
+        "attraction": "300-1,200 tickets",
+        "hotel": "6,000-15,000 / night",
+    },
+    "\u20ac": {
+        "meal": "15-40 pp",
+        "attraction": "8-25 tickets",
+        "hotel": "90-220 / night",
+    },
+    "$": {
+        "meal": "18-45 pp",
+        "attraction": "10-30 tickets",
+        "hotel": "110-260 / night",
+    },
+    "\u00a3": {
+        "meal": "15-40 pp",
+        "attraction": "10-28 tickets",
+        "hotel": "95-230 / night",
+    },
 }
 
 
@@ -1153,13 +1253,8 @@ def _cost_hint(kind: str, summary: dict[str, Any], selected_price: float, symbol
     if level in _PRICE_LEVEL_HINT:
         return _PRICE_LEVEL_HINT[level]
 
-    if kind == "meal":
-        return f"{symbol}500-1,500 pp (est.)"
-    if kind == "attraction":
-        return f"{symbol}300-1,200 tickets (est.)"
-    if kind == "hotel":
-        return f"{symbol}6,000-15,000 / night (est.)"
-    return ""
+    band = _COST_HINT_BANDS.get(symbol, {}).get(kind, "")
+    return f"{symbol}{band} (est.)" if band else ""
 
 
 def _duration_hint(kind: str, duration_min: Any) -> int:
@@ -1579,6 +1674,9 @@ def _render_day_stops(
         s = _normalize_stop(raw, hotels, activities)
         if not s:
             continue
+        if isinstance(raw, dict) and raw.get("decision_id"):
+            # Lets the UI put the "why this way" affordance on the leg itself.
+            s["decision_id"] = str(raw["decision_id"])
         route_mode = _intercity_transfer_mode(s["name"], s["kind"])
         if route_mode in {"Drive", "Bus"}:
             s["route_circuit_id"] = _route_circuit_id(day_num, raw_stop_index, route_mode)

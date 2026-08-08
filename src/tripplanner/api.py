@@ -46,6 +46,7 @@ from tripplanner import config as _config  # noqa: F401  -- import triggers load
 from tripplanner.api_contracts import (
     ChatRequest,
     ChatResponse,
+    DecisionOverrideRequest,
     DeselectRequest,
     DocumentDeleteRequest,
     DocumentExtractRequest,
@@ -60,6 +61,7 @@ from tripplanner.api_contracts import (
     UserRequest,
 )
 from tripplanner.chat_interactions import extract_input_request
+from tripplanner.decisions.receipts import ReceiptLog
 from tripplanner.observability import app_event, model_rate_limit_fields, setup_logging
 from tripplanner.request_identity import (
     is_anonymous_id,
@@ -448,6 +450,12 @@ def _sse(event: str, data: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+def _elapsed_clock(started: float) -> str:
+    """Where in the turn this happened, so a replay can be read like a log."""
+    seconds = max(int(time.monotonic() - started), 0)
+    return f"{seconds // 60}:{seconds % 60:02d}"
+
+
 # Proxies must not buffer or cache an event stream, or the SPA sees the whole
 # turn arrive at once instead of token by token.
 _SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
@@ -644,6 +652,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
         # reply against them (hallucination critic).
         tool_outputs: list[ToolMessage] = []
         tool_names_called: set[str] = set()  # track which tools fired this turn
+        receipts = ReceiptLog()
         yield _sse("progress", {"stage": "thinking"})
         try:
             async for ev in app_graph.astream_events(
@@ -700,6 +709,19 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                                     ToolMessage(content=content, tool_call_id=name)
                                 )
                     yield _sse("tool", payload)
+                    tool_text = (
+                        output if isinstance(output, str) else getattr(output, "content", "")
+                    )
+                    receipt = receipts.add(name, tool_text)
+                    if receipt is not None:
+                        yield _sse(
+                            "receipt",
+                            {
+                                "seq": receipts.count,
+                                "at": _elapsed_clock(started),
+                                **receipt.as_dict(),
+                            },
+                        )
                     yield _sse("progress", {"stage": "reviewing"})
         except GraphRecursionError:
             reply, gap_count = await asyncio.to_thread(_best_effort_plan_reply)
@@ -1024,6 +1046,55 @@ async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
         )
     finally:
         await release_workspace_exclusive(workspace)
+
+
+@app.post("/trip/decisions/{decision_id}/override")
+async def trip_decision_override(
+    decision_id: str, req: DecisionOverrideRequest, request: Request
+) -> Response:
+    """Switch the plan onto the option the traveller picked."""
+    return await _apply_decision_override(
+        request, decision_id, req.option_id, req.user_id, req.updated_at
+    )
+
+
+@app.delete("/trip/decisions/{decision_id}/override")
+async def trip_decision_restore(
+    decision_id: str, request: Request, user_id: str = "local", updated_at: str = ""
+) -> Response:
+    """Undo an overrule and put the agent's own choice back."""
+    return await _apply_decision_override(request, decision_id, None, user_id, updated_at)
+
+
+async def _apply_decision_override(
+    request: Request,
+    decision_id: str,
+    option_id: str | None,
+    user_id: str,
+    updated_at: str,
+) -> Response:
+    from tripplanner.config import get_settings
+    from tripplanner.web import trip_operations
+
+    if not get_settings().decisions_ui_enabled:
+        return JSONResponse(
+            {"ok": False, "stale": False, "message": "Decision records are turned off."},
+            status_code=404,
+        )
+    resolved = _set_request_user(request, user_id)
+    workspace = await acquire_workspace_exclusive(resolved)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.override_decision,
+            decision_id,
+            option_id,
+            expected_updated_at=updated_at,
+        )
+    finally:
+        await release_workspace_exclusive(workspace)
+    # A stale write is not an error the traveller caused; hand back the truth.
+    status = 409 if payload.get("stale") else 200
+    return JSONResponse(payload, status_code=status)
 
 
 @app.get("/trips")

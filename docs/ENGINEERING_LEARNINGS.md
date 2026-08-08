@@ -794,3 +794,17 @@ the outcome.
 - Retry a destructive cleanup against observable state for a short bounded window.
   Preserve the registry entry and final operating-system error when the path truly
   remains locked, so the same cleanup operation can be retried safely.
+
+## 2026-08-08 - A Marketing Page Cannot Be More Capable Than Its Engine
+
+- The Lab 22 entry page was hand-written and quietly promised a whole-trip total,
+  beaten prices, and priced rail on every hop. None of those exist. Generating the
+  page from a captured real run removed the claims automatically, because a number
+  the engine never produced has nowhere to come from.
+- Capture the run, then derive the page. A capture also becomes a regression test
+  for the engine's own honesty: three defects surfaced only when a real run was
+  rendered, including a receipt that named Amadeus for a search it answered from
+  Google Places metadata.
+- Prefer the tool's own words on a public surface. When the agent wrote "no live
+  room rate available for these dates", the page's job was to show it, not to
+  paraphrase it into a number.
