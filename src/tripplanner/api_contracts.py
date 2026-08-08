@@ -41,6 +41,12 @@ class DeselectRequest(BaseModel):
     all_occurrences: bool = True
 
 
+class DecisionOverrideRequest(BaseModel):
+     option_id: str
+     user_id: str = "local"
+     updated_at: str = ""
+
+
 class TripIdRequest(BaseModel):
     trip_id: str
     user_id: str = "local"
