@@ -58,6 +58,32 @@ def test_fixed_tool_names_its_source():
     assert receipt.kind == "places"
 
 
+def test_a_search_receipt_counts_and_names_what_it_found():
+    output = json.dumps(
+        [
+            {"name": "Time Out Market Lisboa"},
+            {"name": "Mercado da Ribeira"},
+            {"name": "Cervejaria Ramiro"},
+        ]
+    )
+    receipt = receipt_for("search_places_with_reviews", output)
+    assert receipt is not None
+    assert receipt.detail == "3 places · Time Out Market Lisboa +2"
+
+
+def test_a_search_receipt_reads_offers_out_of_a_wrapper():
+    output = json.dumps({"quote_status": "live", "offers": [{"name": "LX Boutique Hotel"}]})
+    receipt = receipt_for("search_hotels", output)
+    assert receipt is not None
+    assert receipt.detail == "1 stay · LX Boutique Hotel"
+
+
+def test_a_search_receipt_stays_plain_when_the_output_is_prose():
+    receipt = receipt_for("search_hotels", "No stays found for those dates.")
+    assert receipt is not None
+    assert receipt.detail == ""
+
+
 def test_receipt_dict_omits_empty_fields():
     receipt = receipt_for("web_search", "results")
     assert receipt is not None

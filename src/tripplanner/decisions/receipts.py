@@ -78,6 +78,59 @@ def _fixed(kind: str, text: str, source: str = "") -> Callable[[str], Receipt | 
     return lambda _output: Receipt(kind=kind, text=text, source=source)
 
 
+def _results(output: str) -> list[Any]:
+    """The result list a search tool returned, or nothing we are sure about."""
+    try:
+        payload = json.loads(output)
+    except (TypeError, ValueError):
+        return []
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict):
+        for key in ("offers", "results", "places", "activities"):
+            value = payload.get(key)
+            if isinstance(value, list):
+                return value
+    return []
+
+
+def _name_of(item: Any) -> str:
+    if not isinstance(item, dict):
+        return ""
+    for key in ("name", "title", "hotel_name"):
+        value = item.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    display = item.get("displayName")
+    if isinstance(display, dict):
+        return str(display.get("text") or "").strip()
+    return ""
+
+
+def _counted(
+    kind: str, text: str, nouns: tuple[str, str], source: str = ""
+) -> Callable[[str], Receipt | None]:
+    """A search receipt that says how much it found, taken from the output itself.
+
+    Four searches in one turn all reading "Searched bookable stays" tell a
+    traveller nothing about which four. The count and the first name come from
+    what the tool returned, so the line stays evidence rather than decoration.
+    """
+
+    def build(output: str) -> Receipt | None:
+        found = _results(output)
+        if not found:
+            return Receipt(kind=kind, text=text, source=source)
+        first = _name_of(found[0])
+        rest = len(found) - 1
+        detail = f"{len(found)} {nouns[0] if len(found) == 1 else nouns[1]}"
+        if first:
+            detail += f" · {first}" + (f" +{rest}" if rest > 0 else "")
+        return Receipt(kind=kind, text=text, detail=_clip(detail, MAX_DETAIL), source=source)
+
+    return build
+
+
 # One entry per tool whose work a traveller would recognise. Everything absent
 # from this table is bookkeeping, and bookkeeping is not evidence.
 _BUILDERS: dict[str, Callable[[str], Receipt | None]] = {
@@ -85,12 +138,20 @@ _BUILDERS: dict[str, Callable[[str], Receipt | None]] = {
     "search_flights_duffel": _fixed("flights", "Searched live flight inventory", "Duffel"),
     "search_flights": _fixed("flights", "Searched live flight inventory", "Amadeus"),
     "verify_flight_offer": _fixed("flights", "Re-checked the fare was still live", "Duffel"),
-    "search_hotels": _fixed("lodging", "Searched bookable stays", "Amadeus"),
-    "search_activities": _fixed("places", "Searched things to do", "Amadeus"),
-    "search_points_of_interest": _fixed("places", "Searched points of interest", "Amadeus"),
-    "search_places_with_reviews": _fixed("places", "Checked ratings and reviews", "Google Places"),
+    "search_hotels": _counted("lodging", "Searched bookable stays", ("stay", "stays"), "Amadeus"),
+    "search_activities": _counted(
+        "places", "Searched things to do", ("activity", "activities"), "Amadeus"
+    ),
+    "search_points_of_interest": _counted(
+        "places", "Searched points of interest", ("place", "places"), "Amadeus"
+    ),
+    "search_places_with_reviews": _counted(
+        "places", "Checked ratings and reviews", ("place", "places"), "Google Places"
+    ),
     "get_place_reviews": _fixed("places", "Read what visitors said", "Google Places"),
-    "nearby_restaurants": _fixed("places", "Looked for places to eat nearby", "Google Places"),
+    "nearby_restaurants": _counted(
+        "places", "Looked for places to eat nearby", ("place", "places"), "Google Places"
+    ),
     "check_place_hours": _fixed("places", "Checked opening hours", "Google Places"),
     "compute_route": _fixed("routing", "Measured real travel time", "Google Routes"),
     "optimize_day_route": _fixed("routing", "Reordered the day to cut travel", "Google Routes"),

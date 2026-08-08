@@ -970,6 +970,31 @@ _PRICE_LEVEL_HINT = {
     "PRICE_LEVEL_EXPENSIVE": "Premium",
     "PRICE_LEVEL_VERY_EXPENSIVE": "Luxury",
 }
+# Bands are per currency, because 6,000-15,000 a night is an ordinary hotel in
+# rupees and a yacht in euros. A currency with no band shows nothing at all: an
+# absent guess is honest, a wrongly scaled one is not.
+_COST_HINT_BANDS = {
+    "\u20b9": {
+        "meal": "500-1,500 pp",
+        "attraction": "300-1,200 tickets",
+        "hotel": "6,000-15,000 / night",
+    },
+    "\u20ac": {
+        "meal": "15-40 pp",
+        "attraction": "8-25 tickets",
+        "hotel": "90-220 / night",
+    },
+    "$": {
+        "meal": "18-45 pp",
+        "attraction": "10-30 tickets",
+        "hotel": "110-260 / night",
+    },
+    "\u00a3": {
+        "meal": "15-40 pp",
+        "attraction": "10-28 tickets",
+        "hotel": "95-230 / night",
+    },
+}
 
 
 def _infer_stop_kind(name: str, hotels: set[str], activities: set[str]) -> str:
@@ -1228,13 +1253,8 @@ def _cost_hint(kind: str, summary: dict[str, Any], selected_price: float, symbol
     if level in _PRICE_LEVEL_HINT:
         return _PRICE_LEVEL_HINT[level]
 
-    if kind == "meal":
-        return f"{symbol}500-1,500 pp (est.)"
-    if kind == "attraction":
-        return f"{symbol}300-1,200 tickets (est.)"
-    if kind == "hotel":
-        return f"{symbol}6,000-15,000 / night (est.)"
-    return ""
+    band = _COST_HINT_BANDS.get(symbol, {}).get(kind, "")
+    return f"{symbol}{band} (est.)" if band else ""
 
 
 def _duration_hint(kind: str, duration_min: Any) -> int:

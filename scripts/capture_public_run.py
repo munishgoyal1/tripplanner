@@ -210,6 +210,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    # The run prints place names and arrows that a Windows console encodes as
+    # nothing, and losing a whole capture to a print statement is absurd.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     if args.store == "local":
         storage_cosmos.is_enabled = lambda: False  # type: ignore[assignment]
     set_user_id(args.user)
