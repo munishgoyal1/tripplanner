@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Inter (UI) + Fraunces (display headings) are loaded via <link> in
+/* Space Grotesk (UI) + Newsreader (display headings) are loaded via <link> in
    index.html so we keep the @import-free CSS PostCSS prefers. */
 
 @layer components {
@@ -45,6 +45,87 @@ body {
   color: theme("colors.ink");
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.product-theme-aegean {
+  --landing-bg: #f7fbfa;
+  --landing-surface: rgba(255, 255, 255, 0.88);
+  --landing-heading: #10324a;
+  --landing-body: #385c70;
+  --landing-muted: #6c8795;
+  --landing-line: #c8e2e8;
+  --landing-accent: #0877b9;
+  --landing-brand: #d63c75;
+  --landing-lower-bg: #fffdf5;
+  --landing-lower-line: #d5e8e9;
+  background: var(--landing-bg);
+}
+
+.product-theme-aegean > div,
+.product-theme-aegean > div > div:first-child {
+  background-color: var(--landing-bg) !important;
+}
+
+.product-theme-aegean .display {
+  font-family: theme("fontFamily.display");
+}
+
+.product-theme-aegean .bg-white\[\/0\.04\],
+.product-theme-aegean .bg-white\/\[0\.04\],
+.product-theme-aegean .bg-white\[\/0\.06\],
+.product-theme-aegean .bg-white\/\[0\.06\] {
+  background-color: var(--landing-surface) !important;
+}
+
+.product-theme-aegean > div > div:last-child,
+.product-theme-aegean .bg-white {
+  background-color: var(--landing-lower-bg) !important;
+}
+
+.product-theme-aegean .text-white {
+  color: var(--landing-heading) !important;
+}
+
+.product-theme-aegean .text-slate-300 {
+  color: var(--landing-body) !important;
+}
+
+.product-theme-aegean .text-slate-400,
+.product-theme-aegean .text-slate-500 {
+  color: var(--landing-muted) !important;
+}
+
+.product-theme-aegean .text-emerald-300,
+.product-theme-aegean .text-emerald-800 {
+  color: var(--landing-accent) !important;
+}
+
+.product-theme-aegean .bg-brand {
+  background-color: var(--landing-brand) !important;
+}
+
+.product-theme-aegean .ring-white\/10,
+.product-theme-aegean .ring-white\/15,
+.product-theme-aegean .ring-white\/20,
+.product-theme-aegean .border-white\/10 {
+  border-color: var(--landing-line) !important;
+  --tw-ring-color: var(--landing-line) !important;
+}
+
+.product-theme-aegean > div > div:last-child .border-slate-200,
+.product-theme-aegean > div > div:last-child .ring-slate-200 {
+  border-color: var(--landing-lower-line) !important;
+  --tw-ring-color: var(--landing-lower-line) !important;
+}
+
+.product-theme-aegean .bg-white.text-ink {
+  background-color: var(--landing-heading) !important;
+  color: var(--landing-bg) !important;
+}
+
+.product-theme-aegean [class*="bg-brand/25"],
+.product-theme-aegean [class*="bg-teal-400/20"] {
+  opacity: 0.1;
 }
 
 /* Slim, neutral scrollbars feel less "OS-default" inside cards. */

@@ -11,17 +11,19 @@ export default function Root() {
 
   if (showEntry) {
     return (
-      <PublicEntry
-        onPlan={(request) => {
-          markPublicEntrySkipped();
-          setInitialRequest(request);
-          setShowEntry(false);
-        }}
-        onSkip={() => {
-          markPublicEntrySkipped();
-          setShowEntry(false);
-        }}
-      />
+      <div className="product-theme-aegean min-h-full">
+        <PublicEntry
+          onPlan={(request) => {
+            markPublicEntrySkipped();
+            setInitialRequest(request);
+            setShowEntry(false);
+          }}
+          onSkip={() => {
+            markPublicEntrySkipped();
+            setShowEntry(false);
+          }}
+        />
+      </div>
     );
   }
 
