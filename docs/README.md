@@ -21,6 +21,7 @@ canonical set below instead of reading every file.
 | [`roadmap/`](roadmap/README.md) | Possible future outcomes and deferred decisions; never implementation approval |
 | [`feature-briefs/`](feature-briefs/README.md) | One owner-approved outcome translated into bounded scope and acceptance criteria |
 | [`ux-experiments/`](ux-experiments/README.md) | Isolated visual decisions tested before production implementation |
+| [`research/`](research/) | Dated external findings — provider access, cost, and terms — that inform a decision but are not themselves approval |
 
 ## How planning becomes current truth
 
@@ -92,6 +93,8 @@ active Word document while that lock exists.
 - Put future product candidates in `docs/roadmap/`.
 - Put active milestone intake in `docs/feature-briefs/`.
 - Put UX experiments in `docs/ux-experiments/`.
+- Put dated external research in `docs/research/`, and state the verification
+  date in the document so a stale finding is obvious.
 - Put local setup and contributor workflows in `docs/development/`.
 - Put deployment, reliability, observability, and performance runbooks in
   `docs/operations/`.
