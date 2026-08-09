@@ -15,6 +15,7 @@ from tripplanner.providers.models import (
     HotelAvailabilityProvider,
     RailAvailabilityProvider,
 )
+from tripplanner.providers.omio_client import OmioCoachSource, OmioTrainSource
 from tripplanner.providers.viator import ViatorProvider
 
 ProviderFactory = Callable[[Settings], object]
@@ -40,11 +41,19 @@ def _kiwi_ferry(settings: Settings) -> KiwiFerrySource:
     return KiwiFerrySource(settings.kiwi_api_key, settings.kiwi_base_url)
 
 
+def _omio_train(settings: Settings) -> OmioTrainSource:
+    return OmioTrainSource(settings.omio_api_key, settings.omio_base_url)
+
+
+def _omio_coach(settings: Settings) -> OmioCoachSource:
+    return OmioCoachSource(settings.omio_api_key, settings.omio_base_url)
+
+
 _HOTEL_PROVIDERS: dict[str, ProviderFactory] = {"liteapi": _liteapi}
 _FLIGHT_PROVIDERS: dict[str, ProviderFactory] = {"liteapi": _liteapi}
 _ACTIVITY_PROVIDERS: dict[str, ProviderFactory] = {"viator": _viator}
-_TRAIN_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_train}
-_COACH_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_coach}
+_TRAIN_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_train, "omio": _omio_train}
+_COACH_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_coach, "omio": _omio_coach}
 _FERRY_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_ferry}
 
 
@@ -55,7 +64,12 @@ def _selected_provider(kind: str, settings: Settings) -> str | None:
     if selected == "auto":
         if kind == "activity":
             return "viator" if getattr(settings, "viator_api_key", "") else None
-        if kind in ("train", "coach", "ferry"):
+        if kind in ("train", "coach"):
+            # Try Omio first (broader European coverage), fall back to Kiwi
+            if getattr(settings, "omio_api_key", ""):
+                return "omio"
+            return "kiwi" if getattr(settings, "kiwi_api_key", "") else None
+        if kind == "ferry":
             return "kiwi" if getattr(settings, "kiwi_api_key", "") else None
         return "liteapi" if getattr(settings, "liteapi_api_key", "") else None
     return selected
@@ -112,6 +126,8 @@ def get_train_provider(settings: Settings | None = None) -> RailAvailabilityProv
         raise ValueError(f"Unknown train provider: {selected}")
     if selected == "kiwi" and not getattr(active_settings, "kiwi_api_key", ""):
         raise ValueError("Kiwi train provider selected but KIWI_API_KEY is empty")
+    if selected == "omio" and not getattr(active_settings, "omio_api_key", ""):
+        raise ValueError("Omio train provider selected but OMIO_API_KEY is empty")
     return factory(active_settings)  # type: ignore[return-value]
 
 
@@ -127,6 +143,8 @@ def get_coach_provider(settings: Settings | None = None) -> CoachAvailabilityPro
         raise ValueError(f"Unknown coach provider: {selected}")
     if selected == "kiwi" and not getattr(active_settings, "kiwi_api_key", ""):
         raise ValueError("Kiwi coach provider selected but KIWI_API_KEY is empty")
+    if selected == "omio" and not getattr(active_settings, "omio_api_key", ""):
+        raise ValueError("Omio coach provider selected but OMIO_API_KEY is empty")
     return factory(active_settings)  # type: ignore[return-value]
 
 
