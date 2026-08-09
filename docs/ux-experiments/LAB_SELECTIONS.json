@@ -136,6 +136,15 @@
         "disposition": "implemented-review",
         "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
         "recordedAt": "2026-08-09T16:53:13.3980620Z"
+      },
+      {
+        "version": 5.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+        "recordedAt": "2026-08-09T16:58:34.0974650Z"
       }
     ],
     "implementations": [
@@ -165,18 +174,27 @@
         "comment": "Looks fitting",
         "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
         "recordedAt": "2026-08-09T16:53:13.3980620Z"
+      },
+      {
+        "version": 4.0,
+        "handoffVersion": 5.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+        "recordedAt": "2026-08-09T16:58:34.0974650Z"
       }
     ],
-    "stateChangedAt": "2026-08-09T16:53:13.3980620Z",
-    "updatedAt": "2026-08-09T16:53:13.3980620Z",
+    "stateChangedAt": "2026-08-09T16:58:34.0974650Z",
+    "updatedAt": "2026-08-09T16:58:34.0974650Z",
     "implementation": {
-      "handoffVersion": 4.0,
+      "handoffVersion": 5.0,
       "selection": "aegean",
       "selectionLabel": "E · Aegean sun",
       "comment": "Looks fitting",
-      "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
-      "recordedAt": "2026-08-09T16:53:13.3980620Z"
+      "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+      "recordedAt": "2026-08-09T16:58:34.0974650Z"
     },
-    "implementationSummary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02"
+    "implementationSummary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3"
   }
 }

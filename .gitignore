@@ -54,3 +54,4 @@ logs/
 
 # Legacy owner selections; current Lab history is tracked in LAB_SELECTIONS.json.
 docs/ux-experiments/LAB_SELECTIONS.local.json
+docs/ux-experiments/LAB_SELECTIONS.previous.json
