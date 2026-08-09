@@ -305,3 +305,6 @@ Yes I want you to apply on the sandbox app UI, not just the lab. Just the lab is
 
 [2026-08-10 00:36] [master !] Proceed with pricing P1 and P2
 Proceed with P1 and then P2
+
+[2026-08-10 00:45] [master !] Research missing provider API costs
+Can you research the mainstream these missing provider APIs and list down crisply the cost and pre-requsite to get access
