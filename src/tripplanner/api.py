@@ -1553,6 +1553,7 @@ async def get_preferences(request: Request, user_id: str = "local") -> dict:
         "display_region": profile.get("display_region") or profile.get("home_country") or "",
         "display_language": profile.get("display_language") or "en",
         "display_currency": prefs.get("display_currency") or "USD",
+        "display_currency_configured": "display_currency" in set(prefs.get("_explicit_fields") or []),
         "trip_style": prefs.get("trip_style") or "",
         "budget_level": prefs.get("budget_level") or "",
         "flight_class": transport.get("flight_class") or "",
@@ -1641,6 +1642,12 @@ async def save_preferences_endpoint(req: PreferencesRequest, request: Request) -
             profile["home_city"] = req.home_city.strip() or None
         if req.home_country is not None:
             profile["home_country"] = req.home_country.strip() or None
+        if req.display_region is not None:
+            profile["display_region"] = req.display_region.strip() or None
+        if req.display_language is not None:
+            profile["display_language"] = req.display_language
+        if req.display_currency is not None:
+            prefs["display_currency"] = req.display_currency
         if req.trip_style is not None:
             prefs["trip_style"] = req.trip_style or None
         if req.budget_level is not None:

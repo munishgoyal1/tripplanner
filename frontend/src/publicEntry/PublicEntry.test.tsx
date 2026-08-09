@@ -2,8 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PublicEntry from "./PublicEntry";
-import { demoDecisions, demoTrip } from "./demoRun";
+import { demoDecisions, demoDecisionsForLocale, demoTripForLocale } from "./demoRun";
 import { hasSkippedPublicEntry, markPublicEntrySkipped, shouldShowPublicEntry } from "./publicEntryState";
+import { Masthead } from "./stagePieces";
 
 // The run animates one receipt at a time; the tests jump to the finished plan instead of
 // waiting out the timers.
@@ -46,26 +47,56 @@ describe("PublicEntry", () => {
     expect(screen.queryByText(/plan complete/i)).not.toBeInTheDocument();
   });
 
+  it("chooses representative trips for major locale regions", () => {
+    const samples = [
+      ["IN", "INR", "Rajasthan heritage circuit"],
+      ["CN", "CNY", "China's imperial cities"],
+      ["AU", "AUD", "Australia's east coast"],
+      ["JP", "JPY", "Japan by rail"],
+      ["CA", "CAD", "Canadian Rockies"],
+    ] as const;
+    for (const [region, currency, title] of samples) {
+      const trip = demoTripForLocale(region, currency);
+      expect(trip.title).toBe(title);
+      const content = JSON.stringify(trip);
+      expect(content).not.toMatch(/Lisbon|Porto|Portugal|Principe Real|G\.A Palace/i);
+      if (currency === "INR") expect(content).not.toMatch(/€/);
+    }
+  });
+
+  it("uses a self-contained Rajasthan run for India", () => {
+    const content = JSON.stringify({
+      trip: demoTripForLocale("IN", "INR"),
+      decisions: demoDecisionsForLocale("IN", "INR"),
+    });
+    expect(content).toMatch(/Amber Fort/);
+    expect(content).toMatch(/Mehrangarh Fort/);
+    expect(content).toMatch(/Lake Pichola/);
+    expect(content).not.toMatch(/Lisbon|Porto|Portugal|Portuguese|Principe Real|G\.A Palace|Bairro Alto|Alfama|Bel[eé]m|Tapabento|Time Out Market|Ribeira|Livraria Lello|Bolh[aã]o|Port wine|Past[eé]is|Zenith|Cervejaria|Lisboa|LHR-LIS|\bLIS\b|\bOPO\b/i);
+  });
+
   it("plays the captured run and lands on the trip total", () => {
     renderFinished();
+    const expectedTrip = demoTripForLocale("US", "USD");
     expect(screen.getByText(/plan complete/i)).toBeInTheDocument();
-    expect(screen.getAllByText(demoTrip.total).length).toBeGreaterThan(0);
-    const lastDay = demoTrip.days[demoTrip.days.length - 1];
+    expect(screen.getAllByText(expectedTrip.total).length).toBeGreaterThan(0);
+    const lastDay = expectedTrip.days[expectedTrip.days.length - 1];
     expect(screen.getAllByText(new RegExp(`Day ${lastDay.day} ·`))).not.toHaveLength(0);
   });
 
   it("shows complete representative beta pricing", () => {
     renderFinished();
+    const expectedTrip = demoTripForLocale("US", "USD");
 
-    expect(demoTrip.total).toBe("€2,149");
-    expect(screen.getAllByText("€330 est.").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("€420 est.").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(expectedTrip.total).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/€/)).not.toBeInTheDocument();
     expect(screen.getAllByText("AI Tripplanner", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.queryByText(/no live rate|no fare source/i)).not.toBeInTheDocument();
   });
 
   it("re-settles the plan when a decision is overruled, and restores it on undo", () => {
     const decision = demoDecisions[0];
+    const expectedTrip = demoTripForLocale("US", "USD");
     renderFinished();
     fireEvent.click(screen.getByRole("button", { name: decision.overrule }));
     expect(screen.getByText(decision.outcome.headline)).toBeInTheDocument();
@@ -75,7 +106,7 @@ describe("PublicEntry", () => {
     fireEvent.click(screen.getByRole("button", { name: /put it back/i }));
     expect(screen.queryByText(decision.outcome.headline)).not.toBeInTheDocument();
     expect(screen.queryByText(/re-settled around your change/i)).not.toBeInTheDocument();
-    expect(screen.getAllByText(demoTrip.total).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(expectedTrip.total).length).toBeGreaterThan(0);
   });
 
   it("hands a typed request to the workspace", () => {
@@ -100,5 +131,12 @@ describe("PublicEntry", () => {
     renderFinished({ onSkip });
     fireEvent.click(screen.getByRole("button", { name: /skip to the app/i }));
     expect(onSkip).toHaveBeenCalled();
+  });
+
+  it("shows the signed-in display name in the masthead", () => {
+    render(<Masthead tone="dark" onSkip={() => {}} accountLabel="Munish" signedIn />);
+
+    expect(screen.getByText("Munish")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Munish profile" })).toBeInTheDocument();
   });
 });

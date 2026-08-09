@@ -8,6 +8,7 @@ export interface DisplayPreferences {
 }
 
 const STORAGE_KEY = "tripplanner_display_preferences";
+const SOURCE_KEY = "tripplanner_display_preferences_source";
 const DEFAULTS: DisplayPreferences = { region: "", language: "en", currency: "USD" };
 const RATES_FROM_USD: Record<string, number> = { USD: 1, EUR: 0.92, GBP: 0.78, INR: 83 };
 
@@ -49,8 +50,9 @@ export function readDisplayPreferences(): DisplayPreferences {
   }
 }
 
-export function writeDisplayPreferences(next: DisplayPreferences): void {
+export function writeDisplayPreferences(next: DisplayPreferences, source: "detected" | "profile" = "profile"): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  localStorage.setItem(SOURCE_KEY, source);
   window.dispatchEvent(new Event("tripplanner:display-preferences-changed"));
 }
 
@@ -63,9 +65,9 @@ export function detectInitialDisplayPreferences(): DisplayPreferences {
 
 export function ensureInitialDisplayPreferences(): DisplayPreferences {
   const existing = readDisplayPreferences();
-  if (localStorage.getItem(STORAGE_KEY)) return existing;
+  if (localStorage.getItem(STORAGE_KEY) && localStorage.getItem(SOURCE_KEY)) return existing;
   const detected = detectInitialDisplayPreferences();
-  writeDisplayPreferences(detected);
+  writeDisplayPreferences(detected, "detected");
   return detected;
 }
 
@@ -94,11 +96,17 @@ export function formatDisplayAmount(amount: number, sourceCurrency: string, targ
 }
 
 export function formatSourceAmount(amount: number, sourceCurrency: string, targetCurrency: DisplayCurrency): string {
-  const display = formatDisplayAmount(amount, sourceCurrency, targetCurrency);
-  const normalizedSource = normalizeCurrency(sourceCurrency);
-  if (normalizedSource === targetCurrency || !RATES_FROM_USD[normalizedSource] || !RATES_FROM_USD[targetCurrency]) return display;
-  const source = new Intl.NumberFormat("en", { style: "currency", currency: normalizedSource, maximumFractionDigits: 0 }).format(amount);
-  return `${display} (source ${source})`;
+  return formatDisplayAmount(amount, sourceCurrency, targetCurrency);
+}
+
+export function formatCostDisplay(value: string, targetCurrency: DisplayCurrency): string {
+  const match = value.trim().match(/^([€£$₹]|[A-Z]{3})\s*(.*)$/);
+  if (!match) return value;
+  const sourceCurrency = normalizeCurrency(match[1]);
+  if (!RATES_FROM_USD[sourceCurrency] || !RATES_FROM_USD[targetCurrency]) return value;
+  return match[2].replace(/\d[\d,]*(?:\.\d+)?/g, (number) => (
+    formatDisplayAmount(Number(number.replace(/,/g, "")), sourceCurrency, targetCurrency)
+  ));
 }
 
 export function formatDistance(distanceKm: number, region: string): string {

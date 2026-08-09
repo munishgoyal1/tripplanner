@@ -78,11 +78,15 @@ function compactStatus(status?: string): string | undefined {
 export default function App({ initialRequest = null }: { initialRequest?: string | null }) {
   useEffect(() => {
     ensureInitialDisplayPreferences();
-    fetchPreferences().then((preferences) => writeDisplayPreferences({
-      region: preferences.display_region || preferences.home_country || "",
-      language: "en",
-      currency: preferences.display_currency || "USD",
-    })).catch(() => undefined);
+    fetchPreferences().then((preferences) => {
+      if (!isAnonymousUser() || preferences.display_currency_configured) {
+        writeDisplayPreferences({
+          region: preferences.display_region || preferences.home_country || "",
+          language: "en",
+          currency: preferences.display_currency || "USD",
+        });
+      }
+    }).catch(() => undefined);
   }, []);
   const [view, setView] = useState<TripView | null>(null);
   // Map + itinerary view-models handed over by a trip switch, so those panels
@@ -1009,6 +1013,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onOpenDocuments={() => window.dispatchEvent(
             new CustomEvent("tripplanner:open-account", { detail: { destination: "documents" } }),
           )}
+          onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
         />
 
         <main
@@ -1095,6 +1100,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           tripOpen={mobileTripOpen}
           onOpenTrip={() => setMobileTripOpen(true)}
           onCloseTrip={() => setMobileTripOpen(false)}
+          onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
           tripDetails={(
             <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
           )}

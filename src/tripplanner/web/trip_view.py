@@ -25,6 +25,7 @@ from urllib.parse import quote
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import build_provenance
 from tripplanner.decisions.store import list_decisions
+from tripplanner.decisions.trip_cost import build_cost_ledger
 from tripplanner.tools import user_preferences
 from tripplanner.web import map_view, places_cache
 
@@ -340,6 +341,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
+        "cost_evidence": build_cost_ledger(trip).as_dict(),
         "cost_baseline": _build_cost_baseline(trip, symbol),
         "provenance": build_provenance(trip),
         "budget": build_budget(trip),

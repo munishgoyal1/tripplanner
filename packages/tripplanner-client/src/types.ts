@@ -85,6 +85,31 @@ export interface TripWeather {
   packing_advice: string[];
 }
 
+export interface CostEvidenceLine {
+  kind: string;
+  label: string;
+  status: "live" | "stale" | "unverified" | "unpriced";
+  amount?: number;
+  currency?: string;
+  provider?: string;
+  checked_at?: string;
+  expires_at?: string;
+  reason?: string;
+}
+
+/** What the trip costs according to recorded provider checks, not the model. */
+export interface CostEvidence {
+  currency: string;
+  lines: CostEvidenceLine[];
+  priced_total: number | null;
+  priced_count: number;
+  stale_count: number;
+  unverified_count: number;
+  unpriced_count: number;
+  complete: boolean;
+  summary: string;
+}
+
 export interface TripOverview {
   destination: string;
   origin: string;
@@ -96,6 +121,7 @@ export interface TripOverview {
   counts: { flights: number; hotels: number; activities: number; days: number };
   total_cost: number | null;
   total_cost_display: string;
+  cost_evidence?: CostEvidence | null;
   cost_baseline?: CostBaseline | null;
   provenance?: ProvenanceRow[];
   budget?: Budget | null;

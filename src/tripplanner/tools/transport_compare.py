@@ -19,6 +19,7 @@ from typing import Any
 
 from langchain_core.tools import tool
 
+from tripplanner.config import get_settings
 from tripplanner.decisions.models import (
     Decision,
     DecisionKind,
@@ -27,6 +28,7 @@ from tripplanner.decisions.models import (
     Option,
     Price,
     Rule,
+    RunningCost,
     Source,
     TransportMode,
     UnpricedReason,
@@ -134,6 +136,7 @@ def _build_option(
     *,
     duration_estimated: bool = False,
     detail: str = "",
+    running_cost: RunningCost | None = None,
 ) -> Option:
     quote, reason = quote_fare(request)
     price = None
@@ -162,7 +165,28 @@ def _build_option(
         door_to_door_min=door_to_door_min,
         duration_estimated=duration_estimated,
         day_cost=_day_cost(door_to_door_min, mode),
+        running_cost=running_cost,
         source=source,
+    )
+
+
+def _running_cost(distance_km: float | None, currency: str) -> RunningCost | None:
+    """Fuel cost of driving the hop, only when the owner configured real figures."""
+    if not distance_km or distance_km <= 0:
+        return None
+    settings = get_settings()
+    price = settings.road_fuel_price_per_litre
+    consumption = settings.road_fuel_litres_per_100km
+    if price <= 0 or consumption <= 0:
+        return None
+    litres = distance_km / 100.0 * consumption
+    return RunningCost(
+        amount=round(litres * price, 2),
+        currency=settings.road_cost_currency or currency,
+        assumptions=(
+            f"{distance_km:.0f} km at {consumption:g} L/100km and "
+            f"{price:g} per litre. Fuel only, excludes tolls and parking."
+        ),
     )
 
 
@@ -195,6 +219,7 @@ def _collect_options(
             drive["duration_min"] + 20,
             fare(TransportMode.ROAD),
             detail=f"{distance_km} km door to door" if distance_km else "",
+            running_cost=_running_cost(distance_km, currency),
         )
     )
 
@@ -251,6 +276,15 @@ def _summarise(decision: Decision, warnings: list[str]) -> str:
                 "unpriced_reason": option.unpriced_reason.value
                 if option.unpriced_reason
                 else None,
+                "running_cost": (
+                    {
+                        "amount": option.running_cost.amount,
+                        "currency": option.running_cost.currency,
+                        "assumptions": option.running_cost.assumptions,
+                    }
+                    if option.running_cost
+                    else None
+                ),
                 "rejected_because": option.rejected_because,
             }
             for option in decision.options
@@ -258,7 +292,9 @@ def _summarise(decision: Decision, warnings: list[str]) -> str:
         "warnings": warnings,
         "note": (
             "Options without a price have no reliable fare source. State the time "
-            "and the trade-off, and do not invent or estimate a fare for them."
+            "and the trade-off, and do not invent or estimate a fare for them. A "
+            "running_cost is modelled fuel for driving your own vehicle, not a "
+            "fare: quote it only with its assumptions and never add it to fares."
         ),
     }
     return json.dumps(payload, ensure_ascii=False, indent=2)

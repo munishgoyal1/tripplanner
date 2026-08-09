@@ -18,6 +18,7 @@ import {
   SkipForward,
   TrainFront,
   TramFront,
+  UserRound,
   UtensilsCrossed,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -462,17 +463,32 @@ export function SectionHead({ tone, eyebrow, title, body }: { tone: Tone; eyebro
   );
 }
 
-export function Masthead({ tone, onSkip }: { tone: Tone; onSkip: () => void }) {
+export function Masthead({ tone, onSkip, accountLabel, signedIn }: { tone: Tone; onSkip: () => void; accountLabel: string; signedIn: boolean }) {
   return (
     <header className={`flex items-center justify-between border-b px-6 py-3.5 ${toneStyles[tone].divider}`}>
       <BrandIdentity compact />
-      <button
-        type="button"
-        onClick={onSkip}
-        className={`rounded-full px-3 py-1.5 text-[13px] font-semibold transition ${tone === "dark" ? "bg-white text-ink hover:bg-slate-200" : "bg-ink text-white hover:opacity-90"}`}
-      >
-        Skip to the app <ArrowRight size={13} className="ml-1 inline" aria-hidden />
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onSkip}
+          className={`inline-flex items-center gap-2 rounded-full border px-2 py-1.5 text-[12px] font-semibold transition ${tone === "dark" ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"}`}
+          title={`${accountLabel} profile · Open planner account settings`}
+          aria-label={`${accountLabel} profile`}
+        >
+          <span className={`relative grid h-6 w-6 place-items-center rounded-full ${tone === "dark" ? "bg-white text-ink" : "bg-slate-100 text-slate-700"}`}>
+            <UserRound size={14} aria-hidden />
+            <span className={`absolute -bottom-0.5 -right-1 h-2 w-2 rounded-full ring-2 ${tone === "dark" ? "ring-[#080b11]" : "ring-white"} ${signedIn ? "bg-emerald-400" : "bg-slate-400"}`} aria-hidden />
+          </span>
+          <span>{accountLabel}</span>
+        </button>
+        <button
+          type="button"
+          onClick={onSkip}
+          className={`rounded-full px-3 py-1.5 text-[13px] font-semibold transition ${tone === "dark" ? "bg-white text-ink hover:bg-slate-200" : "bg-ink text-white hover:opacity-90"}`}
+        >
+          Skip to the app <ArrowRight size={13} className="ml-1 inline" aria-hidden />
+        </button>
+      </div>
     </header>
   );
 }

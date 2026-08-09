@@ -157,6 +157,7 @@ evidence.
 | Destination discovery | `tools/destinations.py`, `tools/search.py` | Return grounded options with source context |
 | Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Prefer free/sandbox active providers, cache before fan-out, fall back in order, and label evidence/freshness accurately. A provider that returns nothing must fall through to the next source, never end the search |
 | Currency normalization | `providers/fx.py` consumed by `decisions/rules.py` | Published ECB reference rates, cached; an unavailable rate drops the money term rather than comparing raw amounts across currencies |
+| Trip cost evidence | `decisions/trip_cost.py` surfaced as `overview.cost_evidence` | Classifies every selected item against recorded price checks as live, stale, unverified or unpriced; never sums two currencies without a rate and never estimates |
 | Gated provider candidates | `providers/registry.py` catalog plus disabled experimental adapters | Do not auto-enable without current approved API access and acceptable terms |
 | Maps and geocoding | `tools/routing.py`, optional `providers/openrouteservice.py`, and frontend map utilities | Google Routes is primary; OpenRouteService is a coordinate-only free-tier fallback; keep coordinates and selected itinerary synchronized |
 | Preferences | About Me extractor, apply logic, and store | Merge additively unless the owner explicitly removes data |

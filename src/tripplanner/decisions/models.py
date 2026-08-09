@@ -88,6 +88,20 @@ class Source(BaseModel):
     confidence: Confidence = Confidence.LIVE
 
 
+class RunningCost(BaseModel):
+    """What it costs to use your own vehicle. Never a fare and never a quote.
+
+    Driving has no ticket to price, so this is arithmetic over distance and a
+    fuel price the owner configured. It is kept out of ``Price`` on purpose: it
+    must never be summed with fares or presented as a bookable number, and it
+    takes no part in ranking.
+    """
+
+    amount: float
+    currency: str
+    assumptions: str = ""
+
+
 class Option(BaseModel):
     id: str
     mode: TransportMode
@@ -103,6 +117,7 @@ class Option(BaseModel):
     duration_estimated: bool = False
     day_cost: float = 0.0
     rejected_because: str | None = None
+    running_cost: RunningCost | None = None
     source: Source = Field(default_factory=Source)
 
     def model_post_init(self, _context: Any) -> None:

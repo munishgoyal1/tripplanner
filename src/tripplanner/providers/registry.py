@@ -33,6 +33,9 @@ def _viator(settings: Settings) -> ViatorProvider:
 _HOTEL_PROVIDERS: dict[str, ProviderFactory] = {"liteapi": _liteapi}
 _FLIGHT_PROVIDERS: dict[str, ProviderFactory] = {"liteapi": _liteapi}
 _ACTIVITY_PROVIDERS: dict[str, ProviderFactory] = {"viator": _viator}
+# No verified rail, coach or ferry source exists on free or sandbox terms. These
+# stay empty on purpose: every candidate so far is partner-gated or unofficial,
+# and an adapter we cannot verify fails silently rather than loudly.
 _TRAIN_PROVIDERS: dict[str, ProviderFactory] = {}
 _COACH_PROVIDERS: dict[str, ProviderFactory] = {}
 _FERRY_PROVIDERS: dict[str, ProviderFactory] = {}
@@ -50,7 +53,12 @@ _PROVIDER_CATALOG: tuple[ProviderCandidate, ...] = (
         access=ProviderAccess.ACTIVE_FREE_OR_SANDBOX,
         free_mvp_ok=True,
         enabled=True,
-        notes="Nuitee/LiteAPI advertises a production-like sandbox and search/prebook/book flow.",
+        notes=(
+            "Nuitee/LiteAPI advertises a production-like sandbox and search/prebook/book "
+            "flow. Verified 2026-08-10 against the vendor endpoint index: hotel rates plus "
+            "legs-based /flights/rates and /flights/verify. It publishes no rail, coach or "
+            "ferry API, so ground transport must not be routed here."
+        ),
     ),
     ProviderCandidate(
         name="viator",

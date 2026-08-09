@@ -5,8 +5,10 @@
 import { ArrowRight, Info, Loader2, MapPin, Undo2 } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 
-import { demoDecisions, demoTrip, faq, type StageDecision } from "./demoRun";
-import { ensureInitialDisplayPreferences, useDisplayPreferences } from "../lib/displayPreferences";
+import { demoDecisionsForLocale, demoTripForLocale, faq, type StageDecision, type StageTrip } from "./demoRun";
+import { fetchPreferences } from "../api";
+import { getDisplayName, isAnonymousUser } from "../auth/authSession";
+import { ensureInitialDisplayPreferences, useDisplayPreferences, writeDisplayPreferences } from "../lib/displayPreferences";
 import {
   HotelStrip,
   ModeCompareCard,
@@ -28,9 +30,9 @@ import {
 
 const dark = toneStyles.dark;
 
-function useOverrule() {
+function useOverrule(decisions: StageDecision[]) {
   const [overruled, setOverruled] = useState<string | null>(null);
-  const active = demoDecisions.find((decision) => decision.id === overruled) ?? null;
+  const active = decisions.find((decision) => decision.id === overruled) ?? null;
   return { overruled, setOverruled, active };
 }
 
@@ -120,8 +122,7 @@ function Composer({ onPlan }: { onPlan: (request: string) => void }) {
   );
 }
 
-function BelowTheFold() {
-  const trip = demoTrip;
+function BelowTheFold({ trip }: { trip: StageTrip }) {
   return (
     <div className="bg-white">
       <section className="border-b border-slate-200 px-6 py-8">
@@ -177,12 +178,26 @@ export default function PublicEntry({
   onPlan: (request: string) => void;
   onSkip: () => void;
 }) {
+  const signedIn = !isAnonymousUser();
+  const accountLabel = signedIn ? getDisplayName() || "Account" : "Guest";
   const displayPreferences = useDisplayPreferences();
-  useEffect(() => { ensureInitialDisplayPreferences(); }, []);
-  const trip = demoTrip;
+  useEffect(() => {
+    ensureInitialDisplayPreferences();
+    fetchPreferences().then((preferences) => {
+      if (!isAnonymousUser() || preferences.display_currency_configured) {
+        writeDisplayPreferences({
+          region: preferences.display_region || preferences.home_country || "",
+          language: "en",
+          currency: preferences.display_currency || "USD",
+        });
+      }
+    }).catch(() => undefined);
+  }, []);
+  const trip = demoTripForLocale(displayPreferences.region, displayPreferences.currency);
+  const decisions = demoDecisionsForLocale(displayPreferences.region, displayPreferences.currency);
   const { step, running, replay, finish } = useStageRun(trip.receipts.length);
   const built = running ? daysBuilt(trip.receipts, step) : trip.days.length;
-  const { overruled, setOverruled, active } = useOverrule();
+  const { overruled, setOverruled, active } = useOverrule(decisions);
   const shown = Math.max(1, built);
 
   return (
@@ -191,7 +206,7 @@ export default function PublicEntry({
         <div className="pointer-events-none absolute -left-24 -top-40 h-96 w-96 rounded-full bg-brand/25 blur-3xl" aria-hidden />
         <div className="pointer-events-none absolute -right-24 top-10 h-96 w-96 rounded-full bg-teal-400/20 blur-3xl" aria-hidden />
 
-        <Masthead tone="dark" onSkip={onSkip} />
+        <Masthead tone="dark" onSkip={onSkip} accountLabel={accountLabel} signedIn={signedIn} />
 
         <section className="relative px-6 pb-8 pt-10">
           <div className="flex flex-wrap items-center gap-2">
@@ -223,7 +238,7 @@ export default function PublicEntry({
                 {trip.receipts.slice(0, step).map((receipt, index) => (
                   <Fragment key={`${index}-${receipt.at}`}>
                     <ReceiptLine receipt={receipt} tone="dark" />
-                    {demoDecisions
+                    {decisions
                       .filter((decision) => decision.after === index)
                       .map((decision) => (
                         <InlineChoice
@@ -277,7 +292,7 @@ export default function PublicEntry({
               <div className={`rounded-2xl p-4 ${dark.panel} ${dark.panelRing}`}>
                 <p className={`text-sm font-semibold ${dark.heading}`}>Make it yours</p>
                 <p className={`mt-1 text-xs ${dark.body}`}>
-                  Replace Lisbon with anywhere. It re-plans from scratch in front of you, and you can
+                  Replace this trip with anywhere. It re-plans from scratch in front of you, and you can
                   argue with that one too.
                 </p>
                 <div className="mt-3">
@@ -297,7 +312,7 @@ export default function PublicEntry({
           </div>
         </section>
       </div>
-      <BelowTheFold />
+      <BelowTheFold trip={trip} />
     </div>
   );
 }

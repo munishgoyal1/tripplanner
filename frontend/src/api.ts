@@ -407,6 +407,7 @@ export interface Preferences {
   display_region?: string;
   display_language?: "en";
   display_currency?: string;
+  display_currency_configured?: boolean;
   trip_style: string;
   budget_level: string;
   flight_class: string;

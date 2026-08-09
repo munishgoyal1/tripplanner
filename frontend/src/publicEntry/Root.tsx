@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isAnonymousUser } from "../auth/authSession";
 import PublicEntry from "./PublicEntry";
 import {
@@ -18,11 +18,21 @@ export default function Root() {
   const openWorkspace = (request: string | null = null) => {
     markPublicEntrySkipped();
     if (isPublicEntryPath()) {
-      window.history.replaceState({}, "", "/");
+      window.history.replaceState({}, "", "/planner");
     }
     setInitialRequest(request);
     setShowEntry(false);
   };
+
+  useEffect(() => {
+    const openWelcome = () => {
+      window.history.pushState({}, "", "/welcome");
+      setInitialRequest(null);
+      setShowEntry(true);
+    };
+    window.addEventListener("tripplanner:open-welcome", openWelcome);
+    return () => window.removeEventListener("tripplanner:open-welcome", openWelcome);
+  }, []);
 
   if (showEntry) {
     return (
