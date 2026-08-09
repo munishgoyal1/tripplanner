@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   destinationFromToolArgs,
+  destinationFromUserMessage,
   isPlanEditTool,
   progressHeading,
   stageTrail,
@@ -72,5 +73,42 @@ describe("destination from tool args", () => {
   it("refuses a truncated or empty value rather than showing a fragment", () => {
     expect(destinationFromToolArgs("create_trip_plan", "origin=Bangalore")).toBeNull();
     expect(destinationFromToolArgs("update_trip_plan", "destination=None")).toBeNull();
+  });
+});
+
+describe("destination from user message", () => {
+  it("extracts destination from 'plan a [place] trip' phrasing", () => {
+    expect(destinationFromUserMessage("plan a China trip")).toBe("China");
+    expect(destinationFromUserMessage("can you plan a Japan trip for me?")).toBe("Japan");
+  });
+
+  it("handles 'trip to [place]' phrasing", () => {
+    expect(destinationFromUserMessage("I want a trip to Paris")).toBe("Paris");
+    expect(destinationFromUserMessage("planning a trip to New York in August")).toBe("New York");
+  });
+
+  it("handles 'travel to [place]' and 'visit [place]' phrasing", () => {
+    expect(destinationFromUserMessage("I'd like to travel to Thailand")).toBe("Thailand");
+    expect(destinationFromUserMessage("want to visit Barcelona")).toBe("Barcelona");
+  });
+
+  it("handles '[place] trip' phrasing", () => {
+    expect(destinationFromUserMessage("Plan my Bali trip")).toBe("Bali");
+    expect(destinationFromUserMessage("Tokyo trip next month?")).toBe("Tokyo");
+  });
+
+  it("rejects messages without trip-planning keywords", () => {
+    expect(destinationFromUserMessage("what's the weather in London?")).toBeNull();
+    expect(destinationFromUserMessage("add a restaurant in Rome")).toBeNull();
+  });
+
+  it("rejects invalid or missing destinations", () => {
+    expect(destinationFromUserMessage("plan a trip")).toBeNull();
+    expect(destinationFromUserMessage("trip to a")).toBeNull();
+  });
+
+  it("rejects very long messages to avoid false positives", () => {
+    const longMsg = "plan a " + "x".repeat(500);
+    expect(destinationFromUserMessage(longMsg)).toBeNull();
   });
 });
