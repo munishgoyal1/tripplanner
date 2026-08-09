@@ -12,6 +12,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. "$PSScriptRoot/deployment-common.ps1"
+
 if ($Deep -and $Environment -eq "production" -and -not $AllowProductionWrites) {
     throw "Deep production smoke creates an isolated chat turn. Pass -AllowProductionWrites explicitly."
 }
@@ -41,7 +43,18 @@ if ([string]::IsNullOrWhiteSpace($ExpectedOAuthCallback)) {
     }
 }
 
-$python = if (Test-Path ".venv/Scripts/python.exe") { ".venv/Scripts/python.exe" } else { "python" }
+$pythonCandidates = @(
+    (Join-Path (Join-Path ".venv" "Scripts") "python.exe"),
+    (Join-Path (Join-Path ".venv" "bin") "python"),
+    "python3",
+    "python"
+)
+$python = $pythonCandidates | Where-Object {
+    if ($_ -match "[\\/]") { Test-Path $_ -PathType Leaf } else { Get-Command $_ -ErrorAction SilentlyContinue }
+} | Select-Object -First 1
+if ([string]::IsNullOrWhiteSpace($python)) {
+    throw "Python is required to run hosted smoke tests."
+}
 $arguments = @(
     "scripts/hosted_smoke.py",
     "--environment", $Environment,

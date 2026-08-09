@@ -489,13 +489,73 @@ function Stop-SandboxProcesses {
     param([Parameter(Mandatory = $true)][string]$Worktree)
 
     $escaped = [regex]::Escape($Worktree)
-    $running = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
-        Where-Object { $_.CommandLine -and $_.CommandLine -match $escaped })
-    foreach ($process in $running) {
-        Write-Host "[stop]    $($process.Name) ($($process.ProcessId))"
-        Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
+    $processIds = @(Get-ProcessIdsByCommandPattern -Pattern $escaped)
+    foreach ($processId in $processIds) {
+        Write-Host "[stop]    worktree process ($processId)"
+        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
     }
-    if ($running.Count -gt 0) { Start-Sleep -Milliseconds 500 }
+    if ($processIds.Count -gt 0) { Start-Sleep -Milliseconds 500 }
+}
+
+function Get-ListeningProcessIds {
+    param([Parameter(Mandatory = $true)][int]$Port)
+
+    if (Get-Command Get-NetTCPConnection -ErrorAction SilentlyContinue) {
+        try {
+            return @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
+                ForEach-Object { $_.OwningProcess } |
+                Where-Object { $_ -gt 0 } |
+                Sort-Object -Unique)
+        } catch {
+            return @()
+        }
+    }
+    if (-not $IsWindows -and (Get-Command lsof -ErrorAction SilentlyContinue)) {
+        return @(& lsof -nP -tiTCP:$Port -sTCP:LISTEN 2>$null |
+            Where-Object { $_ -match "^\d+$" } |
+            ForEach-Object { [int]$_ } |
+            Sort-Object -Unique)
+    }
+    return @()
+}
+
+function Stop-ProcessTree {
+    param([Parameter(Mandatory = $true)][int]$ProcessId)
+
+    if ($IsWindows) {
+        & taskkill.exe /PID $ProcessId /T /F 2>$null | Out-Null
+    } else {
+        Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
+    }
+    try {
+        Wait-Process -Id $ProcessId -Timeout 5 -ErrorAction SilentlyContinue
+    } catch {
+        # The process may have exited before Wait-Process attached.
+    }
+}
+
+function Get-ProcessIdsByCommandPattern {
+    param([Parameter(Mandatory = $true)][string]$Pattern)
+
+    if ($IsWindows -and (Get-Command Get-CimInstance -ErrorAction SilentlyContinue)) {
+        return @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+            Where-Object { $_.CommandLine -and $_.CommandLine -match $Pattern } |
+            ForEach-Object { [int]$_.ProcessId } |
+            Sort-Object -Unique)
+    }
+    if (-not $IsWindows) {
+        return @(& ps -axo pid=,command= |
+            Where-Object { $_ -match $Pattern } |
+            ForEach-Object { if ($_ -match "^\s*(\d+)") { [int]$Matches[1] } } |
+            Where-Object { $_ -and $_ -ne $PID } |
+            Sort-Object -Unique)
+    }
+    return @()
+}
+
+function ConvertTo-ComparablePath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    return $Path.Replace("\", "/").TrimEnd("/")
 }
 
 function Test-SandboxEndpoint {
@@ -542,11 +602,16 @@ function Start-SandboxStack {
         # the shared -Run transcript open for the hours it serves.
         $env:TRIPPLANNER_RUN_LOG = "0"
         try {
-            Start-Process -FilePath "pwsh" -WindowStyle Hidden `
-                -RedirectStandardOutput $log -RedirectStandardError "$log.err" `
-                -ArgumentList @(
+            $startArgs = @{
+                FilePath = "pwsh"
+                RedirectStandardOutput = $log
+                RedirectStandardError = "$log.err"
+                ArgumentList = @(
                     "-NoProfile", "-File", (Join-Path $PSScriptRoot "sandbox.ps1"), "-Run", $Entry.slug
-                ) | Out-Null
+                )
+            }
+            if ($IsWindows) { $startArgs.WindowStyle = "Hidden" }
+            Start-Process @startArgs | Out-Null
         } finally {
             Remove-Item Env:\TRIPPLANNER_RUN_LOG -ErrorAction SilentlyContinue
         }
@@ -580,21 +645,23 @@ function Stop-SandboxStack {
     param([Parameter(Mandatory = $true)][object]$Entry)
 
     foreach ($port in @($Entry.apiPort, $Entry.frontendPort, $Entry.labsPort)) {
-        $listeners = @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue)
-        $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+        $processIds = @(Get-ListeningProcessIds -Port $port)
         foreach ($processId in $processIds) {
             Write-Host "[stop]    :$port (PID $processId)"
-            & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
+            Stop-ProcessTree -ProcessId $processId
+        }
+        $remainingIds = @(Get-ListeningProcessIds -Port $port)
+        if ($remainingIds.Count -gt 0) {
+            throw "Sandbox port $port is still occupied by PID $($remainingIds -join ', ') after forced cleanup."
         }
     }
     # The detached runner's command line carries the slug, not the worktree path,
     # so Stop-SandboxProcesses alone would leave it behind.
     $pattern = "sandbox\.ps1.+-Run\s+$([regex]::Escape($Entry.slug))(\s|$)"
-    $launchers = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
-        Where-Object { $_.CommandLine -and $_.CommandLine -match $pattern })
-    foreach ($launcher in $launchers) {
-        Write-Host "[stop]    runner ($($launcher.ProcessId))"
-        Stop-Process -Id $launcher.ProcessId -Force -ErrorAction SilentlyContinue
+    $launcherIds = @(Get-ProcessIdsByCommandPattern -Pattern $pattern)
+    foreach ($launcherId in $launcherIds) {
+        Write-Host "[stop]    runner ($launcherId)"
+        Stop-ProcessTree -ProcessId $launcherId
     }
     if (Test-Path $Entry.worktree -PathType Container) {
         Stop-SandboxProcesses -Worktree $Entry.worktree
@@ -632,7 +699,13 @@ function Remove-SandboxLeftovers {
     if (-not (Test-Path -LiteralPath $Path)) { return $true }
     Get-ChildItem -LiteralPath $Path -Force -Recurse -Directory -ErrorAction SilentlyContinue |
         Where-Object { $_.Attributes.HasFlag([IO.FileAttributes]::ReparsePoint) } |
-        ForEach-Object { & cmd /c rmdir "$($_.FullName)" }
+        ForEach-Object {
+            if ($IsWindows) {
+                & cmd /c rmdir "$($_.FullName)"
+            } else {
+                Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue
+            }
+        }
 
     $lastError = $null
     foreach ($attempt in 1..12) {
@@ -1125,11 +1198,11 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
 }
 
 if ($PSCmdlet.ParameterSetName -eq "Discard") {
-    $currentPath = (Get-Location).Path.TrimEnd("\")
+    $currentPath = ConvertTo-ComparablePath -Path (Get-Location).Path
     $liveWorktree = Test-SandboxWorktree -Entry $entry
     if (Test-Path $entry.worktree) {
-        $resolved = (Resolve-Path $entry.worktree).Path.TrimEnd("\")
-        if ($currentPath -eq $resolved -or $currentPath.StartsWith("$resolved\")) {
+        $resolved = ConvertTo-ComparablePath -Path (Resolve-Path $entry.worktree).Path
+        if ($currentPath -eq $resolved -or $currentPath.StartsWith("$resolved/")) {
             throw "Run -Discard from the primary checkout, not from inside the sandbox worktree."
         }
     }

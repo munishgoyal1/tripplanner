@@ -115,3 +115,39 @@ zsh: command not found: Run-Latest.command
 
 [2026-08-08 00:00] [master] ! Fix Domestic Passport Prompt
 It is asking for Passports for all 3 of my family memebers saying trip leaves the orogin country when the current trip is only to Goa and that is within the home country India. Fix it if needed
+[2026-08-09 09:49] [master \!] Fix Run-Latest error
+fix this error during Run-Latest . you can check the latst log also , right ?
+
+one: master, every worker worktree, and every sandbox are synchronized.
+[2026-08-09 04:17:09Z] [INFO] Sync log completed for run-latest
+Starting the latest local dev stack with dev-spa.ps1...
+dev-spa.ps1: /Users/mugoy/repos/tripplanner/scripts/dev/run-latest.ps1:75:1
+Line |
+  75 |  & "$PSScriptRoot\dev-spa.ps1" @devSpaParameters
+     |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot bind argument to
+     | parameter 'Path'
+     | because it is null.
+(.venv) mugoy@Munishs-MacBook-Pro user % 
+
+[2026-08-09 09:56] [master] Start Docker Desktop
+run the docker desktop
+
+[2026-08-09 10:02] [master \!] Clarify Docker pull
+The downloading image went on for too long with logs giving a feeling that it is stuck in a loop and it was showing in red so looked like an error too. fix that
+
+[2026-08-09 10:08] [master \!] Fix script root cause
+why did it fail during script run, fix the root cause and the scripts should not fail. they were very robust running on windows. i have been using them for last 2 weeks without such errors
+
+[2026-08-09 10:16] [master \!] Fix SPA robustness
+fix the start spa dev robustness faiures
+
+[2026-08-09 10:20] [master \!] Fix sandbox discard
+fix the discard sandbox script robustness issues
+
+[2026-08-09 10:29] [master \!] Cross-platform launchers
+make all the sandbox and user and all launcher scripts cross platform . better to do it in one go now ?
+
+[2026-08-09 10:47] [master \!] Canary prod launchers
+are the chanegs not committed ? 
+Fix the canary and prod launchers also

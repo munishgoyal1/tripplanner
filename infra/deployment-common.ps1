@@ -1,5 +1,14 @@
 . "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
 
+function Get-DeploymentUser {
+    foreach ($candidate in @($env:USERNAME, $env:USER, $env:LOGNAME)) {
+        if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+            return $candidate
+        }
+    }
+    return [System.Environment]::UserName
+}
+
 function Import-DeploymentEnvironment {
     param([Parameter(Mandatory)][string]$Path)
 

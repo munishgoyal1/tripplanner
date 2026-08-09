@@ -34,6 +34,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
+. "$PSScriptRoot/deployment-common.ps1"
 Start-RunLog -Name "push-image" | Out-Null
 
 # Always run from the repo root (one level up from infra/).
@@ -95,7 +96,7 @@ Write-Host "  ✓ Pushed`n"
 $historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/image-pushes.log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Add-Content $historyLog "[$timestamp] Pushed $($tags -join ', ') | By: $env:USERNAME"
+Add-Content $historyLog "[$timestamp] Pushed $($tags -join ', ') | By: $(Get-DeploymentUser)"
 
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  ✓ IMAGE PUSHED                                          ║"

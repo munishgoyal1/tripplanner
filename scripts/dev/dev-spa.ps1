@@ -128,36 +128,117 @@ function Clear-ListeningPort {
     )
 
     $listeners = @()
-    try {
-        $listeners = @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
-    } catch {
-        $listeners = @()
+    $processIds = @()
+    if (Get-Command Get-NetTCPConnection -ErrorAction SilentlyContinue) {
+        try {
+            $listeners = @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
+            $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+        } catch {
+            $listeners = @()
+        }
+    }
+    if ($processIds.Count -eq 0 -and -not $IsWindows -and (Get-Command lsof -ErrorAction SilentlyContinue)) {
+        $processIds = @(& lsof -nP -tiTCP:$Port -sTCP:LISTEN 2>$null |
+            Where-Object { $_ -match "^\d+$" } |
+            ForEach-Object { [int]$_ } |
+            Sort-Object -Unique)
     }
 
-    if ($listeners.Count -eq 0) {
+    if ($processIds.Count -eq 0) {
         return
     }
 
-    $processIds = @($listeners.OwningProcess | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
     Write-Host "Clearing $Service port :$Port (PID $($processIds -join ', ')) ..." -ForegroundColor Yellow
     foreach ($processId in $processIds) {
-        & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
-        if ($LASTEXITCODE -ne 0 -and (Get-Process -Id $processId -ErrorAction SilentlyContinue)) {
-            throw "Could not stop PID $processId on $Service port $Port."
+        if ($IsWindows) {
+            & taskkill.exe /PID $processId /T /F 2>$null | Out-Null
+        } else {
+            Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
         }
-        Wait-Process -Id $processId -Timeout 5 -ErrorAction SilentlyContinue
+        try {
+            Wait-Process -Id $processId -Timeout 5 -ErrorAction SilentlyContinue
+        } catch {
+            # The process may have exited before Wait-Process attached.
+        }
     }
 
     $remaining = @()
-    try {
-        $remaining = @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
-    } catch {
-        $remaining = @()
+    if (Get-Command Get-NetTCPConnection -ErrorAction SilentlyContinue) {
+        try {
+            $remaining = @(Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
+        } catch {
+            $remaining = @()
+        }
     }
 
     if ($remaining.Count -gt 0) {
         $remainingIds = @($remaining.OwningProcess | Sort-Object -Unique) -join ", "
         throw "$Service port $Port is still occupied by PID $remainingIds after forced cleanup."
+    }
+    if (-not $IsWindows -and (Get-Command lsof -ErrorAction SilentlyContinue)) {
+        $remainingIds = @(& lsof -nP -tiTCP:$Port -sTCP:LISTEN 2>$null |
+            Where-Object { $_ -match "^\d+$" } |
+            Sort-Object -Unique)
+        if ($remainingIds.Count -gt 0) {
+            throw "$Service port $Port is still occupied by PID $($remainingIds -join ', ') after forced cleanup."
+        }
+    }
+}
+
+function Test-FrontendDependenciesCurrent {
+    param(
+        [Parameter(Mandatory = $true)][string]$FrontendRoot
+    )
+
+    $nodeModules = Join-Path $FrontendRoot "node_modules"
+    $viteExecutable = if ($IsWindows) { "vite.cmd" } else { "vite" }
+    $viteBin = Join-Path (Join-Path $nodeModules ".bin") $viteExecutable
+    $installStamp = Join-Path $nodeModules ".tripplanner-install-stamp"
+    if (-not (Test-Path $nodeModules) -or -not (Test-Path $viteBin) -or -not (Test-Path $installStamp)) {
+        return $false
+    }
+
+    return (Get-Content -Raw -Path $installStamp).Trim() -eq (Get-FrontendDependencyFingerprint -FrontendRoot $FrontendRoot).Trim()
+}
+
+function Get-FrontendDependencyFingerprint {
+    param(
+        [Parameter(Mandatory = $true)][string]$FrontendRoot
+    )
+
+    $packageFiles = @(
+        (Join-Path $FrontendRoot "package.json"),
+        (Join-Path $FrontendRoot "package-lock.json")
+    ) | Where-Object { Test-Path $_ }
+    if (-not $packageFiles) {
+        return ""
+    }
+
+    return (($packageFiles | ForEach-Object {
+        $hash = Get-FileHash -Algorithm SHA256 -Path $_
+        "$([System.IO.Path]::GetFileName($_))=$($hash.Hash)"
+    }) -join "`n")
+}
+
+function Install-FrontendDependencies {
+    param(
+        [Parameter(Mandatory = $true)][string]$FrontendRoot,
+        [Parameter(Mandatory = $true)][string]$NpmCommand
+    )
+
+    Write-Host "Installing frontend dependencies ..." -ForegroundColor Yellow
+    Push-Location $FrontendRoot
+    try {
+        & $NpmCommand install
+        if ($LASTEXITCODE -ne 0) {
+            throw "npm install failed in $FrontendRoot."
+        }
+        $nodeModules = Join-Path $FrontendRoot "node_modules"
+        $installStamp = Join-Path $nodeModules ".tripplanner-install-stamp"
+        Get-FrontendDependencyFingerprint -FrontendRoot $FrontendRoot | Set-Content -Path $installStamp
+    }
+    finally {
+        Pop-Location
     }
 }
 
@@ -227,7 +308,7 @@ if (-not $FrontendOnly -and ($UseCanaryData -or $configuredCosmosBackend -eq "az
 if (-not $FrontendOnly) {
     Write-Host "Starting FastAPI backend on :$ApiPort ..." -ForegroundColor Cyan
     if ([string]::IsNullOrWhiteSpace($env:APP_LOG_PATH)) {
-        $env:APP_LOG_PATH = Join-Path $sharedRepoRoot "logs\diagnostics\local-app.jsonl"
+        $env:APP_LOG_PATH = Join-Path (Join-Path (Join-Path $sharedRepoRoot "logs") "diagnostics") "local-app.jsonl"
     }
     Write-Host "  Diagnostics: $env:APP_LOG_PATH" -ForegroundColor DarkGray
     if ($Logs) {
@@ -245,24 +326,23 @@ if (-not $FrontendOnly) {
 }
 
 if (-not $BackendOnly) {
-    if (-not (Test-Path "frontend\node_modules")) {
-        Write-Host "Installing frontend dependencies (first run)..." -ForegroundColor Yellow
-        Push-Location frontend
-        npm install
-        Pop-Location
+    $frontendRoot = Join-Path $repoRoot "frontend"
+    $npmCommand = if ($IsWindows) { "npm.cmd" } else { "npm" }
+    if (-not (Test-FrontendDependenciesCurrent -FrontendRoot $frontendRoot)) {
+        Install-FrontendDependencies -FrontendRoot $frontendRoot -NpmCommand $npmCommand
     }
     $labs = $null
     if (-not $NoLabs) {
         Write-Host "Starting UX Labs on :$LabsPort ..." -ForegroundColor Cyan
         $env:VITE_LABS_PORT = "$LabsPort"
         $env:VITE_HMR = if ($Watch) { "1" } else { "0" }
-        $labs = Start-Process -PassThru -NoNewWindow -WorkingDirectory (Join-Path $repoRoot "frontend") `
-            -FilePath "npm.cmd" -ArgumentList @("run", "dev:ux-lab")
+        $labs = Start-Process -PassThru -NoNewWindow -WorkingDirectory $frontendRoot `
+            -FilePath $npmCommand -ArgumentList @("run", "dev:ux-lab")
         Write-Host "  Labs: http://127.0.0.1:$LabsPort/catalog.html" -ForegroundColor Green
     }
 
     Write-Host "Starting Vite dev server on :$FrontendPort ..." -ForegroundColor Cyan
-    Push-Location frontend
+    Push-Location $frontendRoot
     try {
         $env:VITE_API_TARGET = "http://localhost:$ApiPort"
         $env:VITE_PORT = "$FrontendPort"
@@ -272,7 +352,10 @@ if (-not $BackendOnly) {
         if ($configuredCosmosBackend -eq "emulator") {
             $env:VITE_DEV_GUEST_ID = "web-00000000-0000-4000-8000-000000000001"
         }
-        npm run dev
+        & $npmCommand run dev
+        if ($LASTEXITCODE -ne 0) {
+            throw "Vite dev server exited with code $LASTEXITCODE."
+        }
     }
     finally {
         Pop-Location

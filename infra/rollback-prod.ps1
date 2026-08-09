@@ -20,7 +20,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-. "$PSScriptRoot/../scripts/dev/lib/run-log.ps1"
+. "$PSScriptRoot/deployment-common.ps1"
 Start-RunLog -Name "prod-rollback" | Out-Null
 
 if (-not [string]::IsNullOrWhiteSpace($SubscriptionId)) {
@@ -97,7 +97,7 @@ Write-Host "  Active: $previousRevision`n"
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-prod.log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
-Add-Content $historyLog "[$timestamp] ROLLBACK from $currentRevision to $previousRevision | By: $env:USERNAME"
+Add-Content $historyLog "[$timestamp] ROLLBACK from $currentRevision to $previousRevision | By: $(Get-DeploymentUser)"
 
 Write-Host "✓ Logged to $historyLog`n"
 Stop-RunLog

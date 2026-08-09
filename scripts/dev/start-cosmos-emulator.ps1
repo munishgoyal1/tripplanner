@@ -7,7 +7,24 @@ param(
 
 $ErrorActionPreference = "Stop"
 $composeFile = Join-Path $PSScriptRoot "cosmos-emulator.compose.yml"
+$emulatorImage = "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-latest"
 $readyUrl = "http://localhost:8080/ready"
+
+function Invoke-DockerCommand {
+    param(
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [Parameter(Mandatory = $true)][string]$FailureMessage
+    )
+
+    $output = & docker @Arguments 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        if ($output) {
+            $output | ForEach-Object { Write-Host $_ -ForegroundColor Red }
+        }
+        throw $FailureMessage
+    }
+    return @($output)
+}
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
     throw "Docker is required for the Cosmos DB Emulator. Install Docker Desktop and retry."
@@ -15,10 +32,17 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 
 docker info *> $null
 if ($LASTEXITCODE -ne 0) {
-    $dockerDesktop = @(
-        (Join-Path $env:ProgramFiles "Docker\Docker\Docker Desktop.exe"),
-        (Join-Path $env:LOCALAPPDATA "Docker\Docker Desktop.exe")
-    ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    $dockerDesktopCandidates = if ($IsWindows) {
+        @(
+            (Join-Path $env:ProgramFiles "Docker\Docker\Docker Desktop.exe"),
+            (Join-Path $env:LOCALAPPDATA "Docker\Docker Desktop.exe")
+        )
+    } elseif ($IsMacOS) {
+        @("/Applications/Docker.app")
+    } else {
+        @()
+    }
+    $dockerDesktop = $dockerDesktopCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
     if (-not $dockerDesktop) {
         throw "Docker is installed but its daemon is not running, and Docker Desktop could not be found. Start Docker manually and retry."
     }
@@ -28,7 +52,11 @@ if ($LASTEXITCODE -ne 0) {
         Write-Host "Docker Desktop is open. Waiting for its daemon ..." -ForegroundColor Yellow
     } else {
         Write-Host "Docker is not running. Starting Docker Desktop ..." -ForegroundColor Yellow
-        Start-Process -FilePath $dockerDesktop
+        if ($IsMacOS) {
+            Start-Process -FilePath "open" -ArgumentList @("-a", "Docker")
+        } else {
+            Start-Process -FilePath $dockerDesktop
+        }
     }
     $dockerDeadline = [DateTime]::UtcNow.AddSeconds($DockerReadyTimeoutSeconds)
     do {
@@ -46,10 +74,16 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 if (-not $NoStart) {
-    docker compose -f $composeFile up -d
+    docker image inspect $emulatorImage *> $null
     if ($LASTEXITCODE -ne 0) {
-        throw "Cosmos DB Emulator container failed to start."
+        Write-Host "First run: downloading the Cosmos DB Emulator image. This is large and can take several minutes." -ForegroundColor Yellow
+        Invoke-DockerCommand -Arguments @("pull", "--quiet", $emulatorImage) `
+            -FailureMessage "Cosmos DB Emulator image download failed." | Out-Null
+        Write-Host "Cosmos DB Emulator image downloaded." -ForegroundColor Green
     }
+    Write-Host "Starting Cosmos DB Emulator container ..." -ForegroundColor Cyan
+    Invoke-DockerCommand -Arguments @("compose", "-f", $composeFile, "up", "-d", "--no-build") `
+        -FailureMessage "Cosmos DB Emulator container failed to start." | Out-Null
 }
 
 $deadline = [DateTime]::UtcNow.AddSeconds($ReadyTimeoutSeconds)

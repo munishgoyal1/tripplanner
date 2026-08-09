@@ -367,7 +367,7 @@ Write-Host "Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag`n"
 $historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-prod.log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$approver = $env:USERNAME
+$approver = Get-DeploymentUser
 Add-Content $historyLog "[$timestamp] APPROVED by $approver | RG: $prodRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | Status: SUCCESS"
 
 Write-Host "✓ Logged to $historyLog"

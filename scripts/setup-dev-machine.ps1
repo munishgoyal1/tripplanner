@@ -57,7 +57,11 @@ if ($FullAgentEnvironment) {
 function Refresh-ProcessPath {
     $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    $env:Path = "$machinePath;$userPath"
+    $separator = [IO.Path]::PathSeparator
+    $env:Path = @($machinePath, $userPath, $env:Path) |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        Select-Object -Unique |
+        Join-String -Separator $separator
 }
 
 function Install-MissingTool {
@@ -69,6 +73,9 @@ function Install-MissingTool {
     }
     if ($SkipToolInstall) {
         throw "$($Tool.Name) is missing and -SkipToolInstall was supplied."
+    }
+    if (-not $IsWindows) {
+        throw "$($Tool.Name) is missing. Install it with Homebrew or the vendor installer, then rerun."
     }
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         throw "$($Tool.Name) is missing and winget is unavailable. Install App Installer, then rerun."
@@ -100,7 +107,7 @@ foreach ($tool in $tools) {
 }
 
 if ($FullAgentEnvironment) {
-    & "$repoRoot\devconfigs\Apply-DevConfigs.ps1" -InstallExtensions
+    & (Join-Path (Join-Path $repoRoot "devconfigs") "Apply-DevConfigs.ps1") -InstallExtensions
     Write-Host "[ok] Portable VS Code and Copilot configuration applied"
 
     if (-not (Get-Command copilot -ErrorAction SilentlyContinue)) {
@@ -126,9 +133,19 @@ function Resolve-Python313 {
             return $resolved.Trim()
         }
     }
+    foreach ($candidate in @("python3.13", "python3", "python")) {
+        if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) { continue }
+        $resolved = & $candidate -c "import sys; ok = sys.version_info[:2] == (3, 13); print(sys.executable) if ok else None; raise SystemExit(0 if ok else 1)" 2>$null
+        if ($LASTEXITCODE -eq 0 -and $resolved) {
+            return $resolved.Trim()
+        }
+    }
 
     if ($SkipToolInstall) {
         throw "Python 3.13 is required but was not found. Install it with 'winget install --id Python.Python.3.13 --exact', then rerun."
+    }
+    if (-not $IsWindows) {
+        throw "Python 3.13 is required but was not found. Install it with Homebrew or python.org, then rerun."
     }
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         throw "Python 3.13 is required and winget is unavailable. Install Python 3.13, then rerun."
@@ -160,21 +177,22 @@ if (-not (Test-Path ".env")) {
 }
 
 if (-not $SkipDependencyInstall) {
-    if (Test-Path ".venv\Scripts\python.exe") {
-        $venvVersion = & ".venv\Scripts\python.exe" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+    $venvPython = if ($IsWindows) { Join-Path (Join-Path ".venv" "Scripts") "python.exe" } else { Join-Path (Join-Path ".venv" "bin") "python" }
+    if (Test-Path $venvPython) {
+        $venvVersion = & $venvPython -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
         if ($venvVersion -ne "3.13") {
             Write-Host "[recreate] .venv uses Python $venvVersion; Python 3.13 is required"
             Remove-Item ".venv" -Recurse -Force
         }
     }
-    if (-not (Test-Path ".venv\Scripts\python.exe")) {
+    if (-not (Test-Path $venvPython)) {
         & $python313 -m venv .venv
     }
-    & ".venv\Scripts\python.exe" -m pip install --index-url $pipIndexUrl --upgrade pip
+    & $venvPython -m pip install --index-url $pipIndexUrl --upgrade pip
     Assert-LastCommandSucceeded "pip upgrade"
-    & ".venv\Scripts\python.exe" -m pip install --index-url $pipIndexUrl -r requirements.lock
+    & $venvPython -m pip install --index-url $pipIndexUrl -r requirements.lock
     Assert-LastCommandSucceeded "locked Python dependency install"
-    & ".venv\Scripts\python.exe" -m pip install --index-url $pipIndexUrl -e . --no-deps
+    & $venvPython -m pip install --index-url $pipIndexUrl -e . --no-deps
     Assert-LastCommandSucceeded "editable package install"
 
     Push-Location frontend
@@ -196,7 +214,8 @@ if (-not $SkipDependencyInstall) {
     }
 }
 
-& ".venv\Scripts\python.exe" -c "import fastapi, tripplanner; print('[ok] Python environment')"
+$venvPython = if ($IsWindows) { Join-Path (Join-Path ".venv" "Scripts") "python.exe" } else { Join-Path (Join-Path ".venv" "bin") "python" }
+& $venvPython -c "import fastapi, tripplanner; print('[ok] Python environment')"
 Assert-LastCommandSucceeded "Python environment verification"
 npm --prefix frontend run build
 Assert-LastCommandSucceeded "frontend production build"
@@ -206,7 +225,7 @@ if ($FullAgentEnvironment) {
     foreach ($workerName in @("worker-1", "worker-2", "worker-3")) {
         $workerPath = Join-Path $worktreesRoot $workerName
         if (-not (Test-Path $workerPath -PathType Container)) {
-            & "$repoRoot\scripts\dev\agent-worktree.ps1" -Create $workerName -NoOpen
+            & (Join-Path (Join-Path (Join-Path $repoRoot "scripts") "dev") "agent-worktree.ps1") -Create $workerName -NoOpen
         } else {
             Write-Host "[ok] Persistent worktree $workerName"
         }
@@ -218,7 +237,7 @@ if ($FullAgentEnvironment) {
             Write-Host "[copied] .env from the primary checkout to $workerName"
         }
 
-        & "$workerPath\scripts\setup-dev-machine.ps1" `
+        & (Join-Path (Join-Path $workerPath "scripts") "setup-dev-machine.ps1") `
             -SkipToolInstall `
             -IncludeMobile:$IncludeMobile `
             -SkipDependencyInstall:$SkipDependencyInstall
@@ -226,7 +245,7 @@ if ($FullAgentEnvironment) {
     }
 
     if ($OpenAgentWindows) {
-        & "$repoRoot\scripts\open-agent-windows.ps1" -IncludeWorker2 -IncludeWorker3
+        & (Join-Path (Join-Path $repoRoot "scripts") "open-agent-windows.ps1") -IncludeWorker2 -IncludeWorker3
     }
 }
 

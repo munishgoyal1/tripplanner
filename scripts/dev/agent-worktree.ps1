@@ -68,6 +68,11 @@ function Get-AgentWorktreePath {
     return Join-Path $worktreesRoot $Name
 }
 
+function ConvertTo-ComparablePath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    return $Path.Replace("\", "/").TrimEnd("/")
+}
+
 $scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $commonGitDir = Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
     "rev-parse", "--path-format=absolute", "--git-common-dir"
@@ -138,7 +143,8 @@ if ($PSCmdlet.ParameterSetName -eq "Create") {
 
     Write-Host "[created] $branchName"
     Write-Host "[path]    $worktreePath"
-    Write-Host "[setup]   .\scripts\setup-dev-machine.ps1 -SkipToolInstall"
+    $setupCommand = if ($IsMacOS) { "./Setup-Tripplanner-Dev.command" } else { ".\scripts\setup-dev-machine.ps1 -SkipToolInstall" }
+    Write-Host "[setup]   $setupCommand"
 
     if (-not $NoOpen) {
         & code --new-window $worktreePath
@@ -153,9 +159,9 @@ if (-not (Test-Path $worktreePath -PathType Container)) {
     throw "Worktree not found: $worktreePath"
 }
 
-$currentPath = (Get-Location).Path.TrimEnd("\")
-$resolvedWorktreePath = (Resolve-Path $worktreePath).Path.TrimEnd("\")
-if ($currentPath -eq $resolvedWorktreePath -or $currentPath.StartsWith("$resolvedWorktreePath\")) {
+$currentPath = ConvertTo-ComparablePath -Path (Get-Location).Path
+$resolvedWorktreePath = ConvertTo-ComparablePath -Path (Resolve-Path $worktreePath).Path
+if ($currentPath -eq $resolvedWorktreePath -or $currentPath.StartsWith("$resolvedWorktreePath/")) {
     throw "Run removal from the primary checkout or another worktree, not from the worktree being removed."
 }
 

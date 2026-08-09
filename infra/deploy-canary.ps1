@@ -235,7 +235,7 @@ Write-Host "       if all tests pass and you're ready for production.`n"
 $historyLog = Join-Path (Get-PrimaryRepoRoot) "logs/deployments-canary.log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $historyLog) | Out-Null
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Add-Content $historyLog "[$timestamp] Deployed canary | RG: $canaryRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | By: $env:USERNAME"
+Add-Content $historyLog "[$timestamp] Deployed canary | RG: $canaryRG | Image: ghcr.io/munishgoyal1/tripplanner:$ImageTag | By: $(Get-DeploymentUser)"
 Write-Host "✓ Logged to $historyLog`n"
 Stop-RunLog
 

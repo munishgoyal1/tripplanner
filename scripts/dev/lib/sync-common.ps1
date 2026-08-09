@@ -580,7 +580,11 @@ function Invoke-IntegrationValidation {
             } finally {
                 if ($linkedModules) {
                     # Remove only the junction link; never recurse into the primary's modules.
-                    & cmd /c rmdir "$mergedModules" 2>$null
+                    if ($IsWindows) {
+                        & cmd /c rmdir "$mergedModules" 2>$null
+                    } else {
+                        Remove-Item -LiteralPath $mergedModules -Force -ErrorAction SilentlyContinue
+                    }
                 }
             }
             if ($code -ne 0) {
