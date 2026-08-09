@@ -5,6 +5,12 @@
 **Scope:** Multi-provider rail ticket pricing integration  
 
 ---
+> **Status note — superseded for MVP provider activation (2026-08-09):** This
+> document remains historical design analysis, not approval to integrate Omio,
+> Kiwi, or similar transport providers. Current product policy requires free or
+> sandbox access plus verified current API terms before a provider can be
+> registered as active. Omio and Kiwi are partner-gated candidates, so rail and
+> coach pricing should degrade as unsupported until access is confirmed.
 
 ## Executive Summary
 

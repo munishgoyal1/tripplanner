@@ -185,24 +185,33 @@ re-describing the whole product.
 
 ### PLAN-02 - Grounded providers and enrichment
 
-- LiteAPI is the preferred read-only source for date/party-specific hotel rates,
-  flight rates, and selected-flight verification when configured. Normalized
-  hotel results retain the searched destination as query context, not physical
-  locality proof; all results retain opaque provider
-  references, quote time/expiry, total provider currency, and explicit `live`,
-  `unavailable`, or `provider_error` evidence.
+- Travel inventory routes through a provider-neutral capability registry. The
+  active MVP registry auto-enables only configured providers with credible
+  sandbox/free access; partner-gated candidates such as Kiwi, Omio,
+  Travelpayouts, and Tiqets are catalogued but inactive until current approved
+  API access and terms are confirmed.
+- Flight, hotel, and activity searches use a cache-first provider chain with
+  ordered fallback on timeout, throttling, unavailable credentials, provider
+  errors, or no availability. Returned evidence includes provider, cache hit,
+  checked time, expiry, and quote status.
+- LiteAPI is the preferred read-only active source for date/party-specific hotel
+  rates, flight rates, and selected-flight verification when configured.
+  Normalized hotel results retain the searched destination as query context, not
+  physical locality proof; all results retain opaque provider references, quote
+  time/expiry, total provider currency, and explicit evidence.
 - The stable flight and hotel tools route through separate capability contracts;
   future providers can implement either capability without changing the agent.
 - Viator is the preferred read-only activity provider when configured. The stable
   activity tool returns date-filtered product discovery, operating-schedule evidence,
   ratings, duration, cancellation/confirmation metadata, and the provider's unchanged
   affiliate URL. Prices are explicitly `from` prices, not exact party totals or holds.
-- Duffel remains the flight fallback, and Amadeus remains available for legacy
-  flight, hotel, activity, and point-of-interest searches.
+- Amadeus remains available only as a legacy fallback where still configured;
+  new MVP work should not assume Amadeus self-service access.
 - Google hotel results are property metadata only and are labeled `estimated`;
   they never establish room availability or a live rate.
-- Explicit inventory refresh bypasses shared cache. Live hotel, flight, and activity
-  search uses a 60-second cache and flight verification uses 30 seconds by default.
+- Explicit inventory refresh bypasses shared cache. MVP cache TTLs are
+  configurable by capability and intentionally favor low cost over exact
+  real-time behavior.
 - Google Places supplies place search, ratings, reviews, photos, restaurants,
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.

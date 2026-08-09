@@ -37,6 +37,10 @@ def isolated_tool(monkeypatch):
     """No network, no shared state leaking between cases."""
     transport_compare._cache.clear()
     transport_compare.reset_turn_budget()
+    monkeypatch.setattr(fares, "get_flight_provider", lambda: None)
+    monkeypatch.setattr(fares, "get_train_provider", lambda: None)
+    monkeypatch.setattr(fares, "get_coach_provider", lambda: None)
+    monkeypatch.setattr(fares, "get_ferry_provider", lambda: None)
 
     saved: dict = {}
 
@@ -105,7 +109,7 @@ def test_rail_comes_back_unpriced_rather_than_estimated(isolated_tool, air_sourc
     result = run()
     rail = next(o for o in result["options"] if o["mode"] == "train")
     assert rail["price"] is None
-    assert rail["unpriced_reason"] == "out_of_coverage"
+    assert rail["unpriced_reason"] == "no_source"
     assert rail["door_to_door_min"] > 0
     assert result["priced"] == "partial"
 

@@ -7,12 +7,15 @@ import json
 from langchain_core.tools import tool
 
 from tripplanner.decisions.provenance import note_price_check
-from tripplanner.providers.liteapi import LiteAPIError
+from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.models import HotelSearchQuery
-from tripplanner.providers.registry import get_hotel_provider
+from tripplanner.providers.registry import get_hotel_providers
+from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
 from tripplanner.tools.flight_search import resolve_iata
 from tripplanner.tools.google_places import search_places_with_reviews
+
+_HOTEL_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache()
 
 
 def _format_hotels(data: dict) -> str:
@@ -101,41 +104,53 @@ def search_hotels(
         refundable_only: Return only refundable live rates when supported.
         refresh: Bypass the short-lived shared result cache.
     """
-    del refresh
-    provider = get_hotel_provider()
-    if provider:
-        try:
-            offers = provider.search_hotels(
-                HotelSearchQuery(
-                    destination=city,
-                    checkin=checkin,
-                    checkout=checkout,
-                    adults_per_room=adults,
-                    rooms=rooms,
-                    children_ages=children_ages or [],
-                    currency=currency.upper(),
-                    guest_nationality=guest_nationality.upper(),
-                    refundable_only=refundable_only,
-                    max_results=max_results,
-                )
-            )
-            if offers:
-                note_price_check("lodging", provider.name)
+    providers = get_hotel_providers()
+    if providers:
+        query = HotelSearchQuery(
+            destination=city,
+            checkin=checkin,
+            checkout=checkout,
+            adults_per_room=adults,
+            rooms=rooms,
+            children_ages=children_ages or [],
+            currency=currency.upper(),
+            guest_nationality=guest_nationality.upper(),
+            refundable_only=refundable_only,
+            max_results=max_results,
+        )
+        result = run_provider_chain(
+            providers=providers,
+            cache=_HOTEL_RESULT_CACHE,
+            cache_key=query.model_dump_json(),
+            ttl_seconds=10 * 60,
+            refresh=refresh,
+            empty_value=[],
+            call=lambda provider: provider.search_hotels(query),
+        )
+        offers = result.value
+        if offers:
+            note_price_check("lodging", result.provider)
             return json.dumps(
                 {
-                    "quote_status": "live" if offers else "unavailable",
-                    "provider": provider.name,
+                    "quote_status": result.quote_status,
+                    "provider": result.provider,
+                    "cache_hit": result.cache_hit,
+                    "checked_at": result.checked_at,
+                    "expires_at": result.expires_at,
                     "offers": [offer.model_dump(mode="json") for offer in offers],
                 },
                 ensure_ascii=False,
+                default=str,
             )
-        except (LiteAPIError, ValueError) as exc:
+        if result.errors:
             return json.dumps(
                 {
-                    "quote_status": "provider_error",
-                    "provider": provider.name,
-                    "error": str(exc),
-                }
+                    "quote_status": result.quote_status,
+                    "provider": result.provider,
+                    "errors": result.errors,
+                },
+                ensure_ascii=False,
+                default=str,
             )
 
     if not amadeus_client.is_configured():

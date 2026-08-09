@@ -2,9 +2,18 @@
 
 from __future__ import annotations
 
+import json
+
 from langchain_core.tools import tool
 
+from tripplanner.decisions.provenance import note_price_check
+from tripplanner.providers.cache import ProviderTTLCache
+from tripplanner.providers.models import FlightSearchQuery
+from tripplanner.providers.registry import get_flight_providers
+from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
+
+_FLIGHT_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache()
 
 # Common city → IATA code mapping (India-focused + major international)
 _IATA_CODES: dict[str, str] = {
@@ -102,6 +111,8 @@ def search_flights(
     infants: int = 0,
     travel_class: str = "ECONOMY",
     max_results: int = 5,
+    currency: str = "INR",
+    refresh: bool = False,
 ) -> str:
     """Search for real flights with airlines, timings, stops, and prices.
 
@@ -115,12 +126,53 @@ def search_flights(
         infants: Number of infants (under 2).
         travel_class: ECONOMY, PREMIUM_ECONOMY, BUSINESS, or FIRST.
         max_results: Maximum flight options to return (1-10).
+        currency: ISO currency code for provider prices.
+        refresh: Bypass the short-lived shared result cache.
     """
+    providers = get_flight_providers()
+    if providers:
+        query = FlightSearchQuery(
+            origin=origin,
+            destination=destination,
+            departure_date=departure_date,
+            return_date=return_date,
+            adults=adults,
+            children=children,
+            infants=infants,
+            cabin_class=travel_class,
+            max_results=max_results,
+            currency=currency.upper(),
+        )
+        result = run_provider_chain(
+            providers=providers,
+            cache=_FLIGHT_RESULT_CACHE,
+            cache_key=query.model_dump_json(),
+            ttl_seconds=10 * 60,
+            refresh=refresh,
+            empty_value=[],
+            call=lambda provider: provider.search_flights(query),
+        )
+        offers = result.value
+        if offers:
+            note_price_check("flight", result.provider)
+            return json.dumps(
+                {
+                    "quote_status": result.quote_status,
+                    "provider": result.provider,
+                    "cache_hit": result.cache_hit,
+                    "checked_at": result.checked_at,
+                    "expires_at": result.expires_at,
+                    "offers": [offer.model_dump(mode="json") for offer in offers],
+                },
+                ensure_ascii=False,
+                default=str,
+            )
+
     if not amadeus_client.is_configured():
         return (
-            "Amadeus API not configured. Set AMADEUS_API_KEY and AMADEUS_API_SECRET in .env.\n"
-            "Sign up free at https://developers.amadeus.com (2000 calls/month free).\n"
-            "Falling back to general knowledge for flight suggestions."
+            "No configured flight provider returned availability. Configure an approved MVP "
+            "provider such as LiteAPI/Nuitee sandbox, or use legacy Amadeus only if enterprise "
+            "access is available. Falling back to general knowledge for flight suggestions."
         )
 
     origin_code = resolve_iata(origin)
@@ -133,7 +185,7 @@ def search_flights(
         "adults": adults,
         "travelClass": travel_class,
         "max": min(max_results, 10),
-        "currencyCode": "INR",
+        "currencyCode": currency.upper(),
     }
     if children:
         params["children"] = children

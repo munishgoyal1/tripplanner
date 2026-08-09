@@ -78,11 +78,30 @@ support visual refinement while Assistant remains available for broader changes.
 
 ## 2a) MVP provider and economics rules
 
+- **Mainstream, dependable sources only.** A provider is eligible only if it is
+  an established, operator-backed or commercially-run service with a documented
+  API, an accountable owner, and dependable uptime. Do not integrate one-off,
+  hobby, single-maintainer, best-effort, scraped, unofficial, or "might work"
+  sources, and do not integrate a source that is already observably flaky —
+  today's flakiness is tomorrow's outage, and a source we cannot rely on in
+  future is not worth the integration cost now. Prefer fewer, sturdier sources
+  over broader but shakier coverage.
+- **Verify a provider exists before writing code for it.** Read the vendor's
+  own API documentation and probe the live endpoint before implementing an
+  adapter. Never infer an endpoint, schema, rate limit, or pricing tier from
+  memory. Because adapters degrade gracefully to empty results, an imaginary or
+  dead provider fails silently forever instead of failing loudly — so an
+  unverified adapter is worse than no adapter.
+- **Record rejected candidates.** A provider that was evaluated and turned down
+  belongs in the provider catalog with its access model and the reason, so the
+  next person does not re-litigate it or accidentally enable it.
 - **Free or near-free first.** During MVP, prefer provider sandboxes, free
   developer tiers, public/open feeds, affiliate discovery access, and low-cost
   services. Do not add a paid provider merely because it has broader inventory;
   first measure usage, throttling, accuracy, latency, and cost. A paid service
-  needs an explicit must-have justification after that evidence exists.
+  needs an explicit must-have justification after that evidence exists. Free
+  never outranks dependable: a free source that fails the mainstream bar above
+  is not eligible at any price.
 - **Two or three sources are enough.** Each important category should have a
   primary source and one or two practical fallbacks, not a sprawling provider
   matrix. Candidates may include Duffel, Kiwi.com, Omio, Travelpayouts, Viator,

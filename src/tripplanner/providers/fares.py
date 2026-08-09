@@ -15,13 +15,23 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Protocol
 
 from tripplanner.decisions.models import Confidence, FareBasis, TransportMode, UnpricedReason
 from tripplanner.providers.cache import CacheKey, FareCache
-from tripplanner.providers.models import FlightSearchQuery, CoachSearchQuery, FerrySearchQuery, RailSearchQuery
-from tripplanner.providers.registry import get_flight_provider, get_train_provider, get_coach_provider, get_ferry_provider
+from tripplanner.providers.models import (
+    CoachSearchQuery,
+    FerrySearchQuery,
+    FlightSearchQuery,
+    RailSearchQuery,
+)
+from tripplanner.providers.registry import (
+    get_coach_provider,
+    get_ferry_provider,
+    get_flight_provider,
+    get_train_provider,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +88,13 @@ class FareSource(Protocol):
 
 
 class AirFareSource:
-    """Prices flights through the configured flight provider (Duffel today)."""
+    """Prices flights through the configured active flight provider."""
 
     name = "flights"
     modes = frozenset({TransportMode.FLIGHT})
+
+    def is_configured(self) -> bool:
+        return get_flight_provider() is not None
 
     def quote(self, request: FareRequest) -> FareQuote | None:
         provider = get_flight_provider()
@@ -115,10 +128,13 @@ class AirFareSource:
 
 
 class RailFareSource:
-    """Prices train routes through the configured train provider (Kiwi today)."""
+    """Prices train routes through a configured active train provider."""
 
     name = "trains"
     modes = frozenset({TransportMode.TRAIN})
+
+    def is_configured(self) -> bool:
+        return get_train_provider() is not None
 
     def quote(self, request: FareRequest) -> FareQuote | None:
         provider = get_train_provider()
@@ -150,10 +166,13 @@ class RailFareSource:
 
 
 class CoachFareSource:
-    """Prices coach/bus routes through the configured coach provider."""
+    """Prices coach/bus routes through a configured active coach provider."""
 
     name = "coaches"
     modes = frozenset({TransportMode.COACH})
+
+    def is_configured(self) -> bool:
+        return get_coach_provider() is not None
 
     def quote(self, request: FareRequest) -> FareQuote | None:
         provider = get_coach_provider()
@@ -185,10 +204,13 @@ class CoachFareSource:
 
 
 class FerryFareSource:
-    """Prices ferry routes through the configured ferry provider (Kiwi today)."""
+    """Prices ferry routes through a configured active ferry provider."""
 
     name = "ferries"
     modes = frozenset({TransportMode.FERRY})
+
+    def is_configured(self) -> bool:
+        return get_ferry_provider() is not None
 
     def quote(self, request: FareRequest) -> FareQuote | None:
         provider = get_ferry_provider()
@@ -230,7 +252,12 @@ _SOURCES: list[FareSource] = [
 
 
 def sources_for(mode: TransportMode) -> list[FareSource]:
-    return [source for source in _SOURCES if mode in source.modes]
+    sources = [source for source in _SOURCES if mode in source.modes]
+    return [
+        source
+        for source in sources
+        if not hasattr(source, "is_configured") or source.is_configured()
+    ]
 
 
 def register_source(source: FareSource) -> None:
@@ -286,7 +313,7 @@ async def _query_source_async(
         # Run the synchronous quote call in a thread pool
         loop = asyncio.get_event_loop()
         quote = await loop.run_in_executor(None, source.quote, request)
-        
+
         latency_ms = (datetime.now(UTC) - start_time).total_seconds() * 1000
         if quote is not None:
             _record_success(source.name, str(request.mode), latency_ms)
@@ -304,11 +331,11 @@ async def _quote_fare_async(
     timeout_seconds: float = 2.0,
 ) -> tuple[FareQuote | None, UnpricedReason | None]:
     """Concurrently query fare sources with timeout. Returns first result.
-    
+
     Args:
         request: FareRequest with mode, from_place, to_place, date, etc.
         timeout_seconds: Max time to wait for first result (default 2s for UX).
-    
+
     Returns:
         (FareQuote, None) if quote found; (None, UnpricedReason) otherwise.
     """
@@ -325,18 +352,18 @@ async def _quote_fare_async(
     if cached is not None:
         _record_cache_hit("cache")
         return cached, None
-    
+
     candidates = sources_for(request.mode)
     if not candidates:
         return None, UnpricedReason.NO_SOURCE
-    
+
     # Launch concurrent queries
     start_time = datetime.now(UTC)
     tasks = [
         _query_source_async(source, request, start_time)
         for source in candidates
     ]
-    
+
     try:
         # Wait for first successful result within timeout
         for coro in asyncio.as_completed(tasks, timeout=timeout_seconds):
@@ -345,26 +372,26 @@ async def _quote_fare_async(
                 # Cache and return first result
                 _FARE_CACHE.set(cache_key, quote)
                 return quote, None
-    except asyncio.TimeoutError:
-        logger.info("fare query timeout for %s %s→%s", 
+    except TimeoutError:
+        logger.info("fare query timeout for %s %s→%s",
                    request.mode, request.from_place, request.to_place)
     except Exception as exc:
         logger.error("unexpected error in concurrent fare query: %s", exc)
-    
+
     # All queries failed or timed out
     failed_any = any(
         source.name in _PROVIDER_STATS["quote_failure"]
         for source in candidates
     )
     return None, (
-        UnpricedReason.SOURCE_FAILED if failed_any 
+        UnpricedReason.SOURCE_FAILED if failed_any
         else UnpricedReason.OUT_OF_COVERAGE
     )
 
 
 def quote_fare(request: FareRequest) -> tuple[FareQuote | None, UnpricedReason | None]:
     """Return a fare, or the reason there is none. Never raises, never guesses.
-    
+
     This is the synchronous entry point. For async contexts, use _quote_fare_async.
     Uses in-process concurrency and caching to minimize latency.
     """
@@ -373,7 +400,7 @@ def quote_fare(request: FareRequest) -> tuple[FareQuote | None, UnpricedReason |
     candidates = sources_for(request.mode)
     if not candidates:
         return None, UnpricedReason.NO_SOURCE
-    
+
     # Check cache
     cache_key = CacheKey(
         mode=str(request.mode).lower(),
@@ -387,10 +414,10 @@ def quote_fare(request: FareRequest) -> tuple[FareQuote | None, UnpricedReason |
     if cached is not None:
         _record_cache_hit("cache")
         return cached, None
-    
+
     failed = False
     start_time = datetime.now(UTC)
-    
+
     for source in candidates:
         try:
             quote = source.quote(request)
@@ -404,5 +431,5 @@ def quote_fare(request: FareRequest) -> tuple[FareQuote | None, UnpricedReason |
             _record_failure(source.name, str(request.mode))
             logger.info("fare source %s failed for %s: %s", source.name, request.mode, exc)
             continue
-    
+
     return None, UnpricedReason.SOURCE_FAILED if failed else UnpricedReason.OUT_OF_COVERAGE
