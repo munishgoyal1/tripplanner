@@ -172,3 +172,7 @@ For now you do the merge and make it clean respecting the other agent's work and
 
 [2026-08-09 11:36] [master \!] Implement provider next step
 Go ahead with your this impleemntation plan
+
+[2026-08-09 11:47] [master \!] Propagate provider config
+Bring the key related configs to all the .env for local prod canary.
+and can you help figure yoruself the providers you are planning do they have valid and free api access. Ask me to find if you get stuck
