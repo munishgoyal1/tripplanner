@@ -404,6 +404,9 @@ export interface Preferences {
   home_city: string;
 
   home_country: string;
+  display_region?: string;
+  display_language?: "en";
+  display_currency?: string;
   trip_style: string;
   budget_level: string;
   flight_class: string;

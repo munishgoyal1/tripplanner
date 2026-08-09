@@ -111,6 +111,10 @@ export default function AccountSettingsHub({
             <div><label htmlFor="account-display-name" className="text-xs font-semibold text-slate-600">Display name</label><input id="account-display-name" value={nameInput} onChange={(event) => onNameInputChange(event.target.value)} onKeyDown={(event) => event.key === "Enter" && nameInput.trim() && onLocalSignIn()} className="mt-1 h-9 w-full rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" placeholder="Your name" /></div>
             <div className="flex items-center gap-2"><button type="button" onClick={onLocalSignIn} disabled={!nameInput.trim()} className="h-9 rounded-md bg-brand px-4 text-xs font-semibold text-white disabled:opacity-40">{localIdentityActive ? "Update name" : "Sign in"}</button>{localIdentityActive && <button type="button" onClick={onSignOut} className="h-9 rounded-md px-3 text-xs font-semibold text-slate-500 hover:bg-slate-50">Sign out</button>}</div>
           </div>}
+          <div className="mt-5 border-t border-slate-100 pt-4">
+            <p className="mb-2 text-xs font-semibold uppercase text-brand">Display defaults</p>
+            <SettingsModal embedded onClose={() => setDestination("menu")} />
+          </div>
         </div>}
 
         {destination === "travel" && <div className="p-4">

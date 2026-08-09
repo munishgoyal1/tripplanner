@@ -1,6 +1,7 @@
 import { BedDouble, CalendarDays, CheckCircle2, Compass, Plane } from "lucide-react";
 import type { Budget, TripOverview } from "../types";
 import WeatherIcon from "./WeatherIcon";
+import { formatDate, formatSourceAmount, useDisplayPreferences, type DisplayCurrency } from "../lib/displayPreferences";
 
 interface Props {
   overview: TripOverview;
@@ -10,7 +11,7 @@ interface Props {
   onAllDaysMap?: () => void;
 }
 
-function BudgetSummary({ budget }: { budget: Budget }) {
+function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCurrency: DisplayCurrency }) {
   const hasTarget = budget.target != null && budget.target > 0;
   const pct = budget.pct_used ?? 0;
   const tone = budget.over_budget ? "bg-rose-500" : pct >= 80 ? "bg-amber-400" : "bg-emerald-500";
@@ -21,12 +22,12 @@ function BudgetSummary({ budget }: { budget: Budget }) {
         <div>
           <p className="text-[10px] font-semibold uppercase text-slate-400">Trip spend</p>
           <p className="mt-0.5 text-base font-semibold text-ink">
-            {budget.spent_display}
-            {hasTarget && <span className="text-xs font-normal text-slate-400"> / {budget.target_display}</span>}
+            {formatSourceAmount(budget.spent, budget.currency, displayCurrency)}
+            {hasTarget && <span className="text-xs font-normal text-slate-400"> / {formatSourceAmount(budget.target ?? 0, budget.currency, displayCurrency)}</span>}
           </p>
         </div>
         <p className="text-right text-xs text-slate-500">
-          {budget.per_traveler_display} <span className="text-slate-400">per traveler</span>
+          {formatSourceAmount(budget.per_traveler, budget.currency, displayCurrency)} <span className="text-slate-400">per traveler</span>
         </p>
       </div>
       {hasTarget && (
@@ -36,7 +37,7 @@ function BudgetSummary({ budget }: { budget: Budget }) {
           </div>
           <div className="mt-1 flex justify-between text-[11px] text-slate-500">
             <span className={budget.over_budget ? "font-medium text-rose-700" : ""}>
-              {budget.remaining_display} {budget.over_budget ? "over" : "left"}
+              {budget.remaining != null ? formatSourceAmount(Math.abs(budget.remaining), budget.currency, displayCurrency) : ""} {budget.over_budget ? "over" : "left"}
             </span>
             <span>{pct}% used</span>
           </div>
@@ -47,6 +48,7 @@ function BudgetSummary({ budget }: { budget: Budget }) {
 }
 
 export default function TripSnapshot({ overview, booked, stops, active = false, onAllDaysMap }: Props) {
+  const { region, currency } = useDisplayPreferences();
   const statusTone = overview.status === "booked"
     ? "bg-brand/10 text-brand ring-brand/20"
     : overview.status === "finalized"
@@ -58,7 +60,7 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
     { label: "places", value: overview.counts.activities, icon: Compass },
     { label: overview.counts.flights === 1 ? "flight" : "flights", value: overview.counts.flights, icon: Plane },
   ];
-  const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).join(" - ");
+  const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).map((date) => formatDate(date, /united states/i.test(region) ? "en-US" : "en-GB")).join(" - ");
   const travelersLabel = `${overview.travelers} ${Number(overview.travelers) === 1 ? "traveler" : "travelers"}`;
   const remainingStops = stops != null && booked != null ? Math.max(stops - booked, 0) : null;
   const readinessPct = stops ? Math.round(((booked ?? 0) / stops) * 100) : 0;
@@ -105,8 +107,8 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
           <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ${statusTone}`}>
             {overview.status}
           </span>
-          {overview.total_cost_display && (
-            <p className="mt-1.5 text-sm font-semibold text-ink">{overview.total_cost_display}</p>
+          {overview.total_cost != null && (
+            <p className="mt-1.5 text-sm font-semibold text-ink">{formatSourceAmount(overview.total_cost, overview.budget?.currency || "USD", currency)}</p>
           )}
         </div>
       </div>
@@ -185,7 +187,7 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
           {overview.constraints.join(" · ")}
         </p>
       )}
-      {overview.budget && <div className="mt-3"><BudgetSummary budget={overview.budget} /></div>}
+      {overview.budget && <div className="mt-3"><BudgetSummary budget={overview.budget} displayCurrency={currency} /></div>}
     </section>
   );
 }

@@ -3,9 +3,10 @@
 // taken, and overruling one re-settles the totals in place.
 
 import { ArrowRight, Info, Loader2, MapPin, Undo2 } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { demoDecisions, demoTrip, faq, type StageDecision } from "./demoRun";
+import { ensureInitialDisplayPreferences, useDisplayPreferences } from "../lib/displayPreferences";
 import {
   HotelStrip,
   ModeCompareCard,
@@ -176,6 +177,8 @@ export default function PublicEntry({
   onPlan: (request: string) => void;
   onSkip: () => void;
 }) {
+  const displayPreferences = useDisplayPreferences();
+  useEffect(() => { ensureInitialDisplayPreferences(); }, []);
   const trip = demoTrip;
   const { step, running, replay, finish } = useStageRun(trip.receipts.length);
   const built = running ? daysBuilt(trip.receipts, step) : trip.days.length;
@@ -198,6 +201,9 @@ export default function PublicEntry({
             </span>
             <span className={`text-[11px] ${dark.muted}`}>
               No account, no signup. This run was captured so it cannot fail in front of you — yours is planned live.
+            </span>
+            <span className={`text-[11px] ${dark.muted}`}>
+              Display: {displayPreferences.currency}{displayPreferences.region ? ` · ${displayPreferences.region}` : " · detected from browser"} · English
             </span>
           </div>
 

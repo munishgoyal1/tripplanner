@@ -68,6 +68,9 @@ class PreferencesRequest(BaseModel):
     display_name: str | None = None
     home_city: str | None = None
     home_country: str | None = None
+    display_region: str | None = None
+    display_language: Literal["en"] | None = None
+    display_currency: str | None = Field(default=None, pattern=r"^[A-Z]{3}$")
     trip_style: str | None = None
     budget_level: str | None = None
     flight_class: str | None = None

@@ -41,6 +41,8 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "home_city": None,        # "Bengaluru"
         "home_area": None,        # "Whitefield"
         "home_country": None,     # "India"
+        "display_region": None,   # Country or region used for presentation defaults
+        "display_language": "en", # English-only contract for now
         "passport_country": None,  # "Indian" — what they travel on, NOT where they live
         "age_band": None,         # "20-30" | "30-40" | "40-50" | "50-60" | "60+"
         "occupation": None,       # "software engineer" | "doctor" | ...
@@ -123,6 +125,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
     # questions first. "interactive" means the agent may pause to ask for any
     # missing info it can't confidently infer (dates, companion count, budget).
     "planning_mode": "direct",
+    "display_currency": "USD",
     # Cheap digest of the durable signals the last summary was built from — lets
     # update_summary() skip the LLM call when nothing durable changed.
     "profile_summary_digest": "",}

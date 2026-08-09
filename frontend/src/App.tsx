@@ -12,7 +12,7 @@ import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
-import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { fetchDocumentReadiness, fetchPreferences, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
@@ -20,6 +20,7 @@ import { completionStatus } from "./lib/turnStatus";
 import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
+import { ensureInitialDisplayPreferences, writeDisplayPreferences } from "./lib/displayPreferences";
 
 interface NavRef {
   kind: string;
@@ -75,6 +76,14 @@ function compactStatus(status?: string): string | undefined {
 }
 
 export default function App({ initialRequest = null }: { initialRequest?: string | null }) {
+  useEffect(() => {
+    ensureInitialDisplayPreferences();
+    fetchPreferences().then((preferences) => writeDisplayPreferences({
+      region: preferences.display_region || preferences.home_country || "",
+      language: "en",
+      currency: preferences.display_currency || "USD",
+    })).catch(() => undefined);
+  }, []);
   const [view, setView] = useState<TripView | null>(null);
   // Map + itinerary view-models handed over by a trip switch, so those panels
   // can render the new trip without a second and third round-trip.

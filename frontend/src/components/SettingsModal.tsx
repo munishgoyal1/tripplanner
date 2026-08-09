@@ -5,6 +5,7 @@ import {
   regenerateProfileSummary,
   type Preferences,
 } from "../api";
+import { displayCurrencyLabel, supportedDisplayCurrencies, writeDisplayPreferences } from "../lib/displayPreferences";
 
 interface Props {
   onClose: () => void;
@@ -14,6 +15,7 @@ interface Props {
 const TRIP_STYLES = ["", "relaxed", "balanced", "packed", "luxury", "budget", "adventure"];
 const BUDGET_LEVELS = ["", "shoestring", "budget", "moderate", "comfortable", "luxury"];
 const FLIGHT_CLASSES = ["", "economy", "premium_economy", "business", "first"];
+const DISPLAY_CURRENCIES = supportedDisplayCurrencies();
 
 function commaList(v: string[]): string {
   return v.join(", ");
@@ -93,6 +95,7 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
         setSummaryConflict(true);
         return;
       }
+      writeDisplayPreferences({ region: merged.display_region || merged.home_country || "", language: "en", currency: merged.display_currency || "USD" });
       if (result.about_me_extracted && result.about_me_extracted.length > 0) {
         // Re-load so the form reflects the structured fields the LLM filled
         // in, and surface a confirmation instead of closing immediately.
@@ -219,6 +222,20 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
                   onChange={(e) => set("home_country", e.target.value)}
                 />
               </Field>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <p className="mb-2 text-xs font-semibold uppercase text-brand">Region and display</p>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Country or region">
+                  <input className="input" value={prefs.display_region || ""} onChange={(e) => set("display_region", e.target.value)} placeholder="India" />
+                </Field>
+                <Field label="Display currency">
+                  <select className="input" value={prefs.display_currency || "USD"} onChange={(e) => set("display_currency", e.target.value as Preferences["display_currency"])}>
+                    {DISPLAY_CURRENCIES.map((currency) => <option key={currency} value={currency}>{displayCurrencyLabel(currency)}</option>)}
+                  </select>
+                </Field>
+              </div>
+              <p className="mt-2 text-[11px] leading-relaxed text-slate-500">Language: English only for now. This changes presentation defaults, not passport, visa, or provider rules.</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Trip style">
