@@ -145,6 +145,15 @@
         "disposition": "implemented-review",
         "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
         "recordedAt": "2026-08-09T16:58:34.0974650Z"
+      },
+      {
+        "version": 6.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+        "recordedAt": "2026-08-09T17:00:15.5350300Z"
       }
     ],
     "implementations": [
@@ -183,18 +192,27 @@
         "comment": "Looks fitting",
         "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
         "recordedAt": "2026-08-09T16:58:34.0974650Z"
+      },
+      {
+        "version": 5.0,
+        "handoffVersion": 6.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+        "recordedAt": "2026-08-09T17:00:15.5350300Z"
       }
     ],
-    "stateChangedAt": "2026-08-09T16:58:34.0974650Z",
-    "updatedAt": "2026-08-09T16:58:34.0974650Z",
+    "stateChangedAt": "2026-08-09T17:00:15.5350300Z",
+    "updatedAt": "2026-08-09T17:00:15.5350300Z",
     "implementation": {
-      "handoffVersion": 5.0,
+      "handoffVersion": 6.0,
       "selection": "aegean",
       "selectionLabel": "E · Aegean sun",
       "comment": "Looks fitting",
-      "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
-      "recordedAt": "2026-08-09T16:58:34.0974650Z"
+      "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+      "recordedAt": "2026-08-09T17:00:15.5350300Z"
     },
-    "implementationSummary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3"
+    "implementationSummary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664"
   }
 }
