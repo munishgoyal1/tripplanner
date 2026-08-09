@@ -228,3 +228,10 @@ check some of the text on the i would rather fly buttons is mixing with backgoru
 
 [2026-08-09 17:37] [master !] Add Direct Landing Page Route
 can you specifically put landing page at a named starting page that can be reached even when once landed into app. there is no way for me to go back and test the landing page. anyway this will nto matter to users much even if e give something like intro.html etc think something more standard name and way to goto landing page directly anytime
+
+[2026-08-09 17:47] [master !] Polish Landing Demo Content
+The descriptive heading should be AI TripPlanner on pages.
+Why are some data points without actual price numbers, sosme places you mentioned no live rate . Dont do that. It makes it look like half baked. Get some representative numebrs - even if made up where missing but within reasonable.
+Its fine to promise all of that - I will handle that with my initial beta users.
+
+But those thigns will eventually come in as I am building the full Pricing module. and getting in more providers.

@@ -54,6 +54,16 @@ describe("PublicEntry", () => {
     expect(screen.getAllByText(new RegExp(`Day ${lastDay.day} ·`))).not.toHaveLength(0);
   });
 
+  it("shows complete representative beta pricing", () => {
+    renderFinished();
+
+    expect(demoTrip.total).toBe("€2,149");
+    expect(screen.getAllByText("€330 est.").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("€420 est.").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("AI TripPlanner").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/no live rate|no fare source/i)).not.toBeInTheDocument();
+  });
+
   it("re-settles the plan when a decision is overruled, and restores it on undo", () => {
     const decision = demoDecisions[0];
     renderFinished();

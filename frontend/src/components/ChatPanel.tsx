@@ -578,7 +578,7 @@ export default function ChatPanel({
           </span>
           <div>
             <h1 className="display text-lg font-semibold leading-tight text-ink">
-              Trip Planner
+              AI TripPlanner
             </h1>
             <p className="text-xs text-muted">Your AI travel concierge</p>
           </div>

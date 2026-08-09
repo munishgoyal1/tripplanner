@@ -382,9 +382,9 @@ export function PriceTableLive({ trip, tone }: { trip: StageTrip; tone: Tone }) 
         </tfoot>
       </table>
       <p className={`border-t px-3 py-2 text-[10px] leading-relaxed ${s.divider} ${s.muted}`}>
-        Pricing data is sample: fares come from a provider sandbox while the live accounts are
-        being set up, and lines marked no live rate were never quoted. What is real is where each
-        number came from and when it was fetched.
+        Beta pricing is representative: the flight is a provider sandbox fare, while stays and
+        daily spend use realistic estimates for these dates. Every estimate is replaced or
+        rechecked against a provider before booking.
       </p>
     </div>
   );
@@ -467,7 +467,7 @@ export function Masthead({ tone, onSkip }: { tone: Tone; onSkip: () => void }) {
     <header className={`flex items-center justify-between border-b px-6 py-3.5 ${s.divider}`}>
       <div className="flex items-center gap-2">
         <span className="grid h-7 w-7 place-items-center rounded-md bg-brand text-[13px] font-bold text-white">T</span>
-        <span className={`display text-base font-semibold ${s.heading}`}>Tripplanner</span>
+        <span className={`display text-base font-semibold ${s.heading}`}>AI TripPlanner</span>
       </div>
       <div className="flex items-center gap-2">
         <span className={`hidden rounded-full px-2.5 py-1 text-[11px] font-semibold sm:inline ${s.chip}`}>Beta</span>
@@ -488,7 +488,7 @@ export function SiteFooter({ tone }: { tone: Tone }) {
   return (
     <footer className={`border-t px-6 py-6 ${s.divider}`}>
       <p className={`text-[11px] ${s.muted}`}>
-        © 2026 Tripplanner · We never hold your card and never charge you. Bookings complete on the
+        © 2026 AI TripPlanner · We never hold your card and never charge you. Bookings complete on the
         provider's own site.
       </p>
     </footer>
