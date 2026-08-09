@@ -10,7 +10,7 @@ import "../../../src/index.css";
 import "./styles.css";
 import "./landing-themes.css";
 
-type ThemeId = "postcard" | "midnight" | "mineral" | "citrus";
+type ThemeId = "postcard" | "midnight" | "mineral" | "citrus" | "aegean" | "tropical";
 type Surface = "landing" | "workspace" | "mobile";
 
 const themes = [
@@ -49,6 +49,24 @@ const themes = [
     bestFor: "A sharper, more distinctive identity when the product wants more momentum.",
     fonts: "Manrope + Fraunces",
     colors: ["#f4f1e8", "#e36b37", "#2354a6", "#18243d"],
+  },
+  {
+    id: "aegean" as const,
+    label: "E · Aegean sun",
+    short: "Salt white + bougainvillea",
+    summary: "A sunlit island system pairing salt-white space, ultramarine structure, bougainvillea action, and warm yellow signals.",
+    bestFor: "An unmistakably travel-led identity that feels optimistic without becoming resort branding.",
+    fonts: "Newsreader + Space Grotesk",
+    colors: ["#f7fbfa", "#d63c75", "#0877b9", "#10324a"],
+  },
+  {
+    id: "tropical" as const,
+    label: "F · Tropical wayfinder",
+    short: "Palm + mango",
+    summary: "A lively wayfinding system built from deep palm green, mango action, lagoon evidence, and hibiscus detail.",
+    bestFor: "A warmer, more adventurous product voice with clear navigation energy.",
+    fonts: "Fraunces + DM Sans",
+    colors: ["#eaf7f2", "#ffb000", "#008f87", "#163b3a"],
   },
 ];
 
@@ -103,7 +121,7 @@ function ProductThemesLab() {
 
   if (requested) return <main className="full-preview"><ThemeFrame theme={requested} surface={surface} /><a className="exit-preview" href="./lab-23-product-themes.html"><ArrowLeft size={14} /> Exit full-size preview</a></main>;
 
-  return <main className="lab-page"><div className="lab-wrap"><LabNavigation detail labId="product-themes" /><header className="lab-header"><div><div className="lab-eyebrow"><Sparkles size={16} /> Product-wide visual language</div><h1>One product, four ways to feel it.</h1><p>Today the landing page is dark and the planner is light. This Lab tests four complete systems across the public edge, the spatial workspace, and mobile so the handoff feels intentional instead of accidental.</p></div></header><LabScope labId="product-themes" /><OptionContrast labId="product-themes" /><section className="decision-rules"><div><strong>Every option shares</strong><span>the same trip, hierarchy, copy, and interactions.</span></div><div><strong>The choice changes</strong><span>surface temperature, type pairing, contrast, and signal colors.</span></div><div><strong>Recommendation</strong><span>Start with A unless the product deliberately wants a darker identity everywhere.</span></div></section><div className="theme-options" role="tablist" aria-label="Product-wide visual themes">{themes.map((item) => <button key={item.id} type="button" role="tab" aria-selected={themeId === item.id} onClick={() => setThemeId(item.id)} className={`theme-option ${themeId === item.id ? "selected" : ""}`}><span className="swatches">{item.colors.map((color) => <i key={color} style={{ background: color }} />)}</span><strong>{item.label}</strong><span>{item.summary}</span><small>{item.bestFor}</small></button>)}</div><div className="preview-toolbar"><div><span className="section-kicker">Live comparison</span><strong>{theme.label}</strong></div><div className="surface-tabs" role="tablist" aria-label="Preview surface">{(["landing", "workspace", "mobile"] as Surface[]).map((item) => <button key={item} type="button" className={surface === item ? "active" : ""} onClick={() => setSurface(item)}>{item === "landing" ? "Landing" : item === "workspace" ? "Workspace" : "Mobile"}</button>)}</div><a className="preview-link" href={`?preview=${theme.id}&surface=${surface}`}>Open full size <ArrowRight size={14} /></a></div><section className="theme-preview" aria-label={`${theme.label} preview`}><ThemeFrame theme={theme} surface={surface} /></section><div className="theme-notes"><article><span className="note-index">01</span><strong>Continuity over contrast</strong><p>The landing page can be expressive, but its paper, type, and action colors must be recognizable when the user enters the dense planner.</p></article><article><span className="note-index">02</span><strong>One accent does the work</strong><p>Primary actions, active itinerary state, and saved outcomes share one signal. Secondary evidence gets a cooler supporting color.</p></article><article><span className="note-index">03</span><strong>Dark is a decision, not a default</strong><p>Option B is viable only if the workspace also accepts dark map chrome, dark inspector surfaces, and more demanding contrast testing.</p></article></div><DecisionCapture labId="product-themes" labTitle="Product-wide visual themes" options={themes} activeOption={themeId} onChoose={(id) => setThemeId(id as ThemeId)} /></div></main>;
+  return <main className="lab-page"><div className="lab-wrap"><LabNavigation detail labId="product-themes" /><header className="lab-header"><div><div className="lab-eyebrow"><Sparkles size={16} /> Product-wide visual language</div><h1>One product, six ways to feel it.</h1><p>Today the landing page is dark and the planner is light. This Lab tests six complete systems across the public edge, the spatial workspace, and mobile so the handoff feels intentional instead of accidental.</p></div></header><LabScope labId="product-themes" /><OptionContrast labId="product-themes" /><section className="decision-rules"><div><strong>Every option shares</strong><span>the same trip, hierarchy, copy, and interactions.</span></div><div><strong>The choice changes</strong><span>surface temperature, type pairing, contrast, and signal colors.</span></div><div><strong>Recommendation</strong><span>Compare C's operational calm with E and F's stronger travel character.</span></div></section><div className="theme-options" role="tablist" aria-label="Product-wide visual themes">{themes.map((item) => <button key={item.id} type="button" role="tab" aria-selected={themeId === item.id} onClick={() => setThemeId(item.id)} className={`theme-option ${themeId === item.id ? "selected" : ""}`}><span className="swatches">{item.colors.map((color) => <i key={color} style={{ background: color }} />)}</span><strong>{item.label}</strong><span>{item.summary}</span><small>{item.bestFor}</small></button>)}</div><div className="preview-toolbar"><div><span className="section-kicker">Live comparison</span><strong>{theme.label}</strong></div><div className="surface-tabs" role="tablist" aria-label="Preview surface">{(["landing", "workspace", "mobile"] as Surface[]).map((item) => <button key={item} type="button" className={surface === item ? "active" : ""} onClick={() => setSurface(item)}>{item === "landing" ? "Landing" : item === "workspace" ? "Workspace" : "Mobile"}</button>)}</div><a className="preview-link" href={`?preview=${theme.id}&surface=${surface}`}>Open full size <ArrowRight size={14} /></a></div><section className="theme-preview" aria-label={`${theme.label} preview`}><ThemeFrame theme={theme} surface={surface} /></section><div className="theme-notes"><article><span className="note-index">01</span><strong>Continuity over contrast</strong><p>The landing page can be expressive, but its paper, type, and action colors must be recognizable when the user enters the dense planner.</p></article><article><span className="note-index">02</span><strong>One accent does the work</strong><p>Primary actions, active itinerary state, and saved outcomes share one signal. Secondary evidence gets a cooler supporting color.</p></article><article><span className="note-index">03</span><strong>Dark is a decision, not a default</strong><p>Option B is viable only if the workspace also accepts dark map chrome, dark inspector surfaces, and more demanding contrast testing.</p></article></div><DecisionCapture labId="product-themes" labTitle="Product-wide visual themes" options={themes} activeOption={themeId} onChoose={(id) => setThemeId(id as ThemeId)} /></div></main>;
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(<React.StrictMode><ProductThemesLab /></React.StrictMode>);

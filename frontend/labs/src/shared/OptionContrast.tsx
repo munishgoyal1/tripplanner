@@ -26,7 +26,7 @@ interface ContrastDefinition {
 const contrasts: Record<string, ContrastDefinition> = {
   "product-themes": {
     axis:
-      "All four render the same production landing, copy, controls, trip, and interaction model. They disagree only about the product's visual language: palette, typography, surface character, contrast, and signal colours.",
+      "All six render the same production landing, copy, controls, trip, and interaction model. They disagree only about the product's visual language: palette, typography, surface character, contrast, and signal colours.",
     rows: [
       {
         option: "A · Postcard editorial",
@@ -60,10 +60,26 @@ const contrasts: Record<string, ContrastDefinition> = {
         costs: "The brighter signals can compete with trip content and status colours.",
         choose: "The product should feel contemporary and fast rather than contemplative.",
       },
+      {
+        option: "E · Aegean sun",
+        score: 93,
+        idea: "Salt-white space, ultramarine structure, bougainvillea action, and warm sun signals.",
+        buys: "The clearest travel identity here: optimistic, geographic, and vibrant without losing legibility.",
+        costs: "The island references need restraint so the system does not narrow the product to beach travel.",
+        choose: "Travel character should be unmistakable from the first screen while planning still feels rigorous.",
+      },
+      {
+        option: "F · Tropical wayfinder",
+        score: 89,
+        idea: "Palm green, mango action, lagoon evidence, and hibiscus detail used like a wayfinding system.",
+        buys: "Warmth, adventure, and strong navigation cues with enough deep green to anchor dense information.",
+        costs: "Its richer signals require discipline around warning, booking, and map-status colours.",
+        choose: "The product should feel lively and exploratory while retaining an operational backbone.",
+      },
     ],
     same: "The production PublicEntry DOM and behavior, every word of copy, the replay sequence, inline overruling and undo, the Plan mine and Skip actions, the Lisbon and Porto fixture, evidence content, order, and responsive layout.",
     verdict:
-      "C is the strongest system for the product as a whole because it remains calm and legible when the itinerary becomes dense, while A is the strongest travel-specific public voice. B preserves the current landing most directly but risks carrying a dark stage too far into daily planning. D has useful energy and command clarity, though its stronger signals need the most discipline around status and map colours. The decision here is entirely visual: the current landing experience is fixed in every row.",
+      "E is now the strongest travel-specific direction: its salt-white, ultramarine, bougainvillea, and sun palette feels geographic and optimistic while keeping the information hierarchy crisp. C remains the calmest system for long planning sessions, and F offers a warmer, more adventurous alternative with a strong wayfinding logic. A is editorial, B preserves the current stage most directly, and D supplies modernist energy. The decision here is entirely visual: the current landing experience is fixed in every row.",
   },
   "live-plan": {
     axis:

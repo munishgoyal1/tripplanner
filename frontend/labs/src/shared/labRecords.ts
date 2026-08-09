@@ -56,7 +56,7 @@ export const allLabs: LabRecord[] = [
   {
     labNumber: 23,
     id: "product-themes",
-    title: "One product, four ways to feel it",
+    title: "One product, six ways to feel it",
     category: "Product-wide visual language",
     description: "Compare four coherent visual systems across the public landing page, spatial planner workspace, and mobile trip view so the dark-to-light handoff becomes an intentional product decision.",
     createdAt: "2026-08-09",
