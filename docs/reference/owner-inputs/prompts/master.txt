@@ -176,3 +176,6 @@ Go ahead with your this impleemntation plan
 [2026-08-09 11:47] [master \!] Propagate provider config
 Bring the key related configs to all the .env for local prod canary.
 and can you help figure yoruself the providers you are planning do they have valid and free api access. Ask me to find if you get stuck
+
+[2026-08-09 14:56] [master] Hosted environment provisioning
+How does the canary and prod environment file with keys get provisioned. I forgot what was the meach=ism. for local i know you use the .env file
