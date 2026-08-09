@@ -54,6 +54,41 @@ class Settings(BaseModel):
     travel_hotel_provider: str = os.getenv("TRAVEL_HOTEL_PROVIDER", "auto").strip().lower()
     travel_flight_provider: str = os.getenv("TRAVEL_FLIGHT_PROVIDER", "auto").strip().lower()
 
+    # Kiwi.com Trains API (free tier) — train, coach, ferry pricing
+    # Sign up free: https://www.kiwi.com/business/trains (get API key from dashboard)
+    # Free tier: 10 requests/minute, 600 requests/hour
+    kiwi_api_key: str = os.getenv("KIWI_API_KEY", "")
+    kiwi_base_url: str = os.getenv("KIWI_BASE_URL", "https://www.kiwi.com/api/v1").rstrip("/")
+    
+    # Rail transport pricing providers (train, coach, ferry)
+    enable_train_pricing: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_TRAIN_PRICING", "1").strip() != "0"
+    )
+    enable_coach_pricing: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_COACH_PRICING", "1").strip() != "0"
+    )
+    enable_ferry_pricing: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_FERRY_PRICING", "1").strip() != "0"
+    )
+    
+    # Preferred rail transport provider ("kiwi" or "liteapi"; "auto" tries in order)
+    travel_train_provider: str = os.getenv("TRAVEL_TRAIN_PROVIDER", "auto").strip().lower()
+    travel_coach_provider: str = os.getenv("TRAVEL_COACH_PROVIDER", "auto").strip().lower()
+    travel_ferry_provider: str = os.getenv("TRAVEL_FERRY_PROVIDER", "auto").strip().lower()
+
+    # Fare cache TTLs (in seconds)
+    # Flight and hotel: 4 hours (highly dynamic)
+    flight_cache_ttl_sec: int = _env_positive_int("FLIGHT_CACHE_TTL_SEC", 14400)
+    hotel_cache_ttl_sec: int = _env_positive_int("HOTEL_CACHE_TTL_SEC", 14400)
+    
+    # Train, coach, ferry: 12 hours (less dynamic, stable day-of)
+    train_cache_ttl_sec: int = _env_positive_int("TRAIN_CACHE_TTL_SEC", 43200)
+    coach_cache_ttl_sec: int = _env_positive_int("COACH_CACHE_TTL_SEC", 43200)
+    ferry_cache_ttl_sec: int = _env_positive_int("FERRY_CACHE_TTL_SEC", 43200)
+    
+    # Activity: 24 hours (least dynamic)
+    activity_cache_ttl_sec: int = _env_positive_int("ACTIVITY_CACHE_TTL_SEC", 86400)
+
     # Static schedule estimates used only when a persisted itinerary or live
     # provider does not contain the corresponding operational timing.
     flight_duration_default_min: int = _env_positive_int("FLIGHT_DURATION_DEFAULT_MIN", 90)

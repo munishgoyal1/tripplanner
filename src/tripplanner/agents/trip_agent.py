@@ -19,6 +19,7 @@ from tripplanner.tools.google_places import (
     nearby_restaurants,
     search_places_with_reviews,
 )
+from tripplanner.tools.ground_transport import search_coaches, search_ferries, search_trains
 from tripplanner.tools.hotel_search import search_hotels
 from tripplanner.tools.memory_recall import recall_relevant_memory
 from tripplanner.tools.place_hours import check_place_hours
@@ -855,6 +856,10 @@ _SEARCH_TOOLS = [
     search_hotels,
     search_activities,
     search_points_of_interest,
+    # Ground transportation (trains, coaches, ferries)
+    search_trains,
+    search_coaches,
+    search_ferries,
     # Ratings & reviews (Google Places)
     search_places_with_reviews,
     get_place_reviews,
@@ -907,6 +912,7 @@ _PLANNING_TRIGGER_TOOLS = {
     "execute_bookings", "resume_trip", "list_past_trips",
     "search_flights_duffel", "verify_flight_offer", "search_flights", "search_hotels",
     "search_activities", "search_points_of_interest",
+    "search_trains", "search_coaches", "search_ferries",
     "search_places_with_reviews", "get_place_reviews", "nearby_restaurants",
     "check_place_hours", "compute_route", "optimize_day_route",
     "get_weather_forecast", "check_visa_requirements", "find_local_events",

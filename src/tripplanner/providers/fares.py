@@ -14,8 +14,8 @@ from datetime import UTC, datetime
 from typing import Protocol
 
 from tripplanner.decisions.models import Confidence, FareBasis, TransportMode, UnpricedReason
-from tripplanner.providers.models import FlightSearchQuery
-from tripplanner.providers.registry import get_flight_provider
+from tripplanner.providers.models import FlightSearchQuery, CoachSearchQuery, FerrySearchQuery, RailSearchQuery
+from tripplanner.providers.registry import get_flight_provider, get_train_provider, get_coach_provider, get_ferry_provider
 
 logger = logging.getLogger(__name__)
 
@@ -90,9 +90,119 @@ class AirFareSource:
         )
 
 
-# Ordered: the first source that covers the mode and answers wins. Rail, coach
-# and ferry have no entry, which is exactly why those hops come back unpriced.
-_SOURCES: list[FareSource] = [AirFareSource()]
+class RailFareSource:
+    """Prices train routes through the configured train provider (Kiwi today)."""
+
+    name = "trains"
+    modes = frozenset({TransportMode.TRAIN})
+
+    def quote(self, request: FareRequest) -> FareQuote | None:
+        provider = get_train_provider()
+        if provider is None or not request.date:
+            return None
+        offers = provider.search_rails(
+            RailSearchQuery(
+                origin=request.from_place,
+                destination=request.to_place,
+                departure_date=request.date,
+                adults=max(1, request.travellers),
+                max_results=3,
+            )
+        )
+        cheapest = min(
+            (offer for offer in offers if offer.total and offer.total.amount > 0),
+            key=lambda offer: offer.total.amount,
+            default=None,
+        )
+        if cheapest is None:
+            return None
+        return FareQuote(
+            amount=cheapest.total.amount,
+            currency=cheapest.total.currency,
+            provider=provider.name,
+            basis=FareBasis.PER_PARTY,
+            checked_at=cheapest.quoted_at or datetime.now(UTC),
+        )
+
+
+class CoachFareSource:
+    """Prices coach/bus routes through the configured coach provider (Kiwi today)."""
+
+    name = "coaches"
+    modes = frozenset({TransportMode.BUS})
+
+    def quote(self, request: FareRequest) -> FareQuote | None:
+        provider = get_coach_provider()
+        if provider is None or not request.date:
+            return None
+        offers = provider.search_coaches(
+            CoachSearchQuery(
+                origin=request.from_place,
+                destination=request.to_place,
+                departure_date=request.date,
+                adults=max(1, request.travellers),
+                max_results=3,
+            )
+        )
+        cheapest = min(
+            (offer for offer in offers if offer.total and offer.total.amount > 0),
+            key=lambda offer: offer.total.amount,
+            default=None,
+        )
+        if cheapest is None:
+            return None
+        return FareQuote(
+            amount=cheapest.total.amount,
+            currency=cheapest.total.currency,
+            provider=provider.name,
+            basis=FareBasis.PER_PARTY,
+            checked_at=cheapest.quoted_at or datetime.now(UTC),
+        )
+
+
+class FerryFareSource:
+    """Prices ferry routes through the configured ferry provider (Kiwi today)."""
+
+    name = "ferries"
+    modes = frozenset({TransportMode.FERRY})
+
+    def quote(self, request: FareRequest) -> FareQuote | None:
+        provider = get_ferry_provider()
+        if provider is None or not request.date:
+            return None
+        offers = provider.search_ferries(
+            FerrySearchQuery(
+                origin=request.from_place,
+                destination=request.to_place,
+                departure_date=request.date,
+                adults=max(1, request.travellers),
+                max_results=3,
+            )
+        )
+        cheapest = min(
+            (offer for offer in offers if offer.total and offer.total.amount > 0),
+            key=lambda offer: offer.total.amount,
+            default=None,
+        )
+        if cheapest is None:
+            return None
+        return FareQuote(
+            amount=cheapest.total.amount,
+            currency=cheapest.total.currency,
+            provider=provider.name,
+            basis=FareBasis.PER_PARTY,
+            checked_at=cheapest.quoted_at or datetime.now(UTC),
+        )
+
+
+# Ordered: the first source that covers the mode and answers wins. Register ground
+# transportation sources here; they'll auto-enable when configured.
+_SOURCES: list[FareSource] = [
+    AirFareSource(),
+    RailFareSource(),
+    CoachFareSource(),
+    FerryFareSource(),
+]
 
 
 def sources_for(mode: TransportMode) -> list[FareSource]:
