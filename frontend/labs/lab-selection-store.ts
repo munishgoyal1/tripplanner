@@ -43,6 +43,7 @@ const localDataRoot = process.env.LOCALAPPDATA
   || resolve(process.env.USERPROFILE || process.env.HOME || ".", ".tripplanner");
 export const feedbackPath = resolve(localDataRoot, "Tripplanner", "ux-labs", "selections.json");
 export const backupPath = resolve(localDataRoot, "Tripplanner", "ux-labs", "selections.previous.json");
+export const canonicalPath = resolve(__dirname, "../../docs/ux-experiments/LAB_SELECTIONS.json");
 const lockPath = `${feedbackPath}.lock`;
 
 export async function withSelectionStoreLock<T>(operation: () => Promise<T>): Promise<T> {
@@ -141,28 +142,98 @@ export function migrateLegacyHandoffs(selections: LabSelections): boolean {
   return migrated;
 }
 
-export async function readSelections(): Promise<LabSelections> {
-  const stored = await readJson(feedbackPath);
-  if (stored) {
-    if (migrateLegacyHandoffs(stored)) await writeSelections(stored);
-    return stored;
-  }
+function handoffIdentity(record: HandoffRecord): string {
+  return JSON.stringify([record.recordedAt, record.selection, record.disposition, record.comment]);
+}
 
-  const legacy = await readJson(canonicalLegacyPath());
-  if (!legacy) return {};
-  migrateLegacyHandoffs(legacy);
-  await writeSelections(legacy);
-  return legacy;
+function implementationIdentity(record: ImplementationRecord): string {
+  return JSON.stringify([record.recordedAt, record.selection, record.summary]);
+}
+
+export function mergeSelections(
+  canonical: LabSelections | null,
+  local: LabSelections | null,
+): LabSelections {
+  const merged = { ...(canonical || {}) };
+  for (const [labId, selection] of Object.entries(local || {})) {
+    const existing = merged[labId];
+    if (!existing) {
+      merged[labId] = selection;
+      continue;
+    }
+    const latest = selection.updatedAt > existing.updatedAt ? selection : existing;
+    const handoffs = [...(existing.handoffs || []), ...(selection.handoffs || [])]
+      .filter((record, index, records) => records.findIndex((candidate) =>
+        handoffIdentity(candidate) === handoffIdentity(record)
+      ) === index)
+      .sort((first, second) => first.recordedAt.localeCompare(second.recordedAt))
+      .map((record, index) => ({ ...record, version: index + 1 }));
+    const implementationSources = [
+      ...(existing.implementations || []).map((record) => ({ record, handoffs: existing.handoffs || [] })),
+      ...(selection.implementations || []).map((record) => ({ record, handoffs: selection.handoffs || [] })),
+    ];
+    const implementations = implementationSources
+      .filter((source, index, sources) => sources.findIndex((candidate) =>
+        implementationIdentity(candidate.record) === implementationIdentity(source.record)
+      ) === index)
+      .sort((first, second) => first.record.recordedAt.localeCompare(second.record.recordedAt))
+      .map(({ record, handoffs: sourceHandoffs }, index) => {
+        const linkedHandoff = sourceHandoffs.find((handoff) => handoff.version === record.handoffVersion);
+        const mergedHandoff = linkedHandoff
+          ? handoffs.find((handoff) => handoffIdentity(handoff) === handoffIdentity(linkedHandoff))
+          : undefined;
+        return {
+          ...record,
+          version: index + 1,
+          handoffVersion: mergedHandoff?.version ?? record.handoffVersion,
+        };
+      });
+    const latestLinkedHandoff = latest.handoffs?.find((handoff) =>
+      handoff.version === latest.implementation?.handoffVersion
+    );
+    const mergedLatestHandoff = latestLinkedHandoff
+      ? handoffs.find((handoff) => handoffIdentity(handoff) === handoffIdentity(latestLinkedHandoff))
+      : undefined;
+    merged[labId] = {
+      ...latest,
+      handoffs: handoffs.length ? handoffs : latest.handoffs,
+      implementations: implementations.length ? implementations : latest.implementations,
+      implementation: latest.implementation ? {
+        ...latest.implementation,
+        handoffVersion: mergedLatestHandoff?.version ?? latest.implementation.handoffVersion,
+      } : undefined,
+    };
+  }
+  return merged;
+}
+
+export async function readSelections(): Promise<LabSelections> {
+  const canonical = await readJson(canonicalPath);
+  const stored = await readJson(feedbackPath) || await readJson(canonicalLegacyPath());
+  const canonicalSnapshot = JSON.stringify(canonical || {});
+  const storedSnapshot = JSON.stringify(stored || {});
+  const selections = mergeSelections(canonical, stored);
+  const migrated = migrateLegacyHandoffs(selections);
+  const mergedSnapshot = JSON.stringify(selections);
+  if (migrated || canonicalSnapshot !== mergedSnapshot || storedSnapshot !== mergedSnapshot) {
+    await writeSelections(selections);
+  }
+  return selections;
 }
 
 export async function writeSelections(selections: LabSelections): Promise<void> {
+  await mkdir(dirname(canonicalPath), { recursive: true });
   await mkdir(dirname(feedbackPath), { recursive: true });
-  const temporaryPath = `${feedbackPath}.${process.pid}.tmp`;
-  await writeFile(temporaryPath, `${JSON.stringify(selections, null, 2)}\n`, "utf8");
+  const contents = `${JSON.stringify(selections, null, 2)}\n`;
+  const canonicalTemporaryPath = `${canonicalPath}.${process.pid}.tmp`;
+  const localTemporaryPath = `${feedbackPath}.${process.pid}.tmp`;
+  await writeFile(canonicalTemporaryPath, contents, "utf8");
+  await writeFile(localTemporaryPath, contents, "utf8");
   try {
     await copyFile(feedbackPath, backupPath);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
-  await rename(temporaryPath, feedbackPath);
+  await rename(canonicalTemporaryPath, canonicalPath);
+  await rename(localTemporaryPath, feedbackPath);
 }

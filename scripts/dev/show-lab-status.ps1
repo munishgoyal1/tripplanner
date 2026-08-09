@@ -1,12 +1,10 @@
 #!/usr/bin/env pwsh
 # Report the authoritative lifecycle state of every UX Lab.
 #
-# Lab status has two sources and they can drift:
-#   - the machine-local decision store the owner actually edits in the Labs UI
-#     (Tripplanner/ux-labs/selections.json under the platform's local data root),
-#     which is not in Git
-#   - the committed defaultDisposition in frontend/labs/src/shared/labRecords.ts,
-#     which is the fallback when a lab has no saved decision yet
+# Lab status has one tracked canonical store plus committed fallbacks:
+#   - docs/ux-experiments/LAB_SELECTIONS.json contains versioned owner and agent history
+#   - frontend/labs/src/shared/labRecords.ts is the fallback for labs without history
+# A machine-local cache is merged into the canonical store by the Labs server.
 #
 # Reading only the committed file gives a stale answer. Run this before quoting
 # which Labs are open. Rows marked DRIFT need labRecords.ts updated to match.
@@ -22,14 +20,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $recordsPath = Join-Path $repoRoot "frontend/labs/src/shared/labRecords.ts"
-$localDataRoot = if ($env:LOCALAPPDATA) {
-    $env:LOCALAPPDATA
-} elseif ($env:HOME) {
-    Join-Path $env:HOME ".tripplanner"
-} else {
-    throw "Cannot resolve the platform's local data directory."
-}
-$storePath = Join-Path $localDataRoot "Tripplanner/ux-labs/selections.json"
+$storePath = Join-Path $repoRoot "docs/ux-experiments/LAB_SELECTIONS.json"
 
 if (-not (Test-Path $recordsPath)) { throw "Lab records not found: $recordsPath" }
 
@@ -38,7 +29,7 @@ if (Test-Path $storePath) {
     (Get-Content $storePath -Raw | ConvertFrom-Json).PSObject.Properties |
         ForEach-Object { $store[$_.Name] = $_.Value }
 } else {
-    Write-Warning "No local decision store at $storePath. Showing committed defaults only."
+    Write-Warning "No canonical decision store at $storePath. Showing committed defaults only."
 }
 
 $source = Get-Content $recordsPath -Raw

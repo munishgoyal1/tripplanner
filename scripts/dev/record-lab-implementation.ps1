@@ -19,14 +19,8 @@ if ($State -eq "implemented-review" -and -not $Evidence.Trim()) {
 }
 
 if (-not $StorePath) {
-    $localDataRoot = if ($env:LOCALAPPDATA) {
-        $env:LOCALAPPDATA
-    } elseif ($env:HOME) {
-        Join-Path $env:HOME ".tripplanner"
-    } else {
-        throw "Cannot resolve the platform's local data directory."
-    }
-    $StorePath = Join-Path $localDataRoot "Tripplanner/ux-labs/selections.json"
+    $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    $StorePath = Join-Path $repoRoot "docs/ux-experiments/LAB_SELECTIONS.json"
 }
 
 if (-not (Test-Path -LiteralPath $StorePath)) { throw "Lab selection store not found: $StorePath" }
@@ -145,9 +139,7 @@ $lab.stateChangedAt = $recordedAt
 $lab.updatedAt = $recordedAt
 
 $directory = Split-Path -Parent $StorePath
-$backupPath = Join-Path $directory "selections.previous.json"
 $temporaryPath = "$StorePath.$PID.tmp"
-Copy-Item -LiteralPath $StorePath -Destination $backupPath -Force
 try {
     $store | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $temporaryPath -Encoding utf8NoBOM
     Move-Item -LiteralPath $temporaryPath -Destination $StorePath -Force

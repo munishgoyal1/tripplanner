@@ -1,0 +1,97 @@
+{
+  "live-plan": {
+    "labId": "live-plan",
+    "labTitle": "The live plan, and what the visitor is meant to do while it runs",
+    "selection": "exact",
+    "selectionLabel": "E · Dark stage, argued during the run",
+    "comment": "Recovered from committed Lab 22 owner prompts and implementation history. Any richer machine-local history is merged into this tracked record when that machine next opens the Labs server.",
+    "disposition": "completed",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Owner chose the exact dark Lab 21 stage with two inline overridable decisions as the direction to refine.",
+        "disposition": "ready",
+        "summary": "Recovered from the committed 2026-08-07 owner prompt and Lab option commit.",
+        "recordedAt": "2026-08-07T14:30:40.000Z"
+      },
+      {
+        "version": 2,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Implement Option E as the anonymous public entry in a linked sandbox.",
+        "disposition": "implemented-review",
+        "summary": "Anonymous public entry implementation committed as 5612eb5.",
+        "recordedAt": "2026-08-07T17:26:46.000Z"
+      },
+      {
+        "version": 3,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Keep the page grounded in a captured real run, retain sample pricing disclosure, and add the remaining sign-in and shared-trip surfaces.",
+        "disposition": "implemented-review",
+        "summary": "Captured-run public entry and decision-record milestones committed through aa610f5 and 54e5ebb.",
+        "recordedAt": "2026-08-08T12:29:40.000Z"
+      },
+      {
+        "version": 4,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
+        "disposition": "implemented-review",
+        "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+        "recordedAt": "2026-08-08T14:01:49.000Z"
+      },
+      {
+        "version": 5,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "All Labs older than Lab 23 are complete.",
+        "disposition": "completed",
+        "summary": "Owner corrected the UX Lab catalog lifecycle state on 2026-08-09.",
+        "recordedAt": "2026-08-09T10:27:00.000Z"
+      }
+    ],
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Implement Option E as the anonymous public entry in a linked sandbox.",
+        "summary": "Anonymous public entry implementation committed as 5612eb5.",
+        "recordedAt": "2026-08-07T17:26:46.000Z"
+      },
+      {
+        "version": 2,
+        "handoffVersion": 3,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Keep the page grounded in a captured real run, retain sample pricing disclosure, and add the remaining sign-in and shared-trip surfaces.",
+        "summary": "Captured-run public entry and decision-record milestones committed through aa610f5 and 54e5ebb.",
+        "recordedAt": "2026-08-08T12:29:40.000Z"
+      },
+      {
+        "version": 3,
+        "handoffVersion": 4,
+        "selection": "exact",
+        "selectionLabel": "E · Dark stage, argued during the run",
+        "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
+        "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+        "recordedAt": "2026-08-08T14:01:49.000Z"
+      }
+    ],
+    "implementation": {
+      "handoffVersion": 4,
+      "selection": "exact",
+      "selectionLabel": "E · Dark stage, argued during the run",
+      "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
+      "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+      "recordedAt": "2026-08-08T14:01:49.000Z"
+    },
+    "implementationSummary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
+    "stateChangedAt": "2026-08-09T10:27:00.000Z",
+    "updatedAt": "2026-08-09T10:27:00.000Z"
+  }
+}

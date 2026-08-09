@@ -831,3 +831,17 @@ the outcome.
 - The stubbed unit tests passed throughout, because they returned one row with a
   country and no name. A fixture simpler than the real payload cannot fail the
   way production does; the bug was only visible against the live service.
+
+## 2026-08-09 - Workflow State Is Repository Data, Not Machine Data
+
+- UX Lab choices, handoff notes, implementation evidence, and lifecycle states
+  were written only under the operating system's local data directory. A new
+  machine therefore fell back to stale committed defaults and silently presented
+  completed Labs as in progress, while the exact history remained on the old host.
+- Keep workflow history in one tracked canonical record. A machine-local file may
+  remain as a draft cache or migration source, but reads must union its immutable
+  histories into the canonical record and prefer newer top-level state without
+  dropping older notes.
+- A fallback default is not synchronization. Make every UI and script writer touch
+  the tracked record so an unsaved lifecycle change is visible in `git status` and
+  travels through the same commit, review, and merge path as the implementation.

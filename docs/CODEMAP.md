@@ -211,7 +211,7 @@ conversation or explicit edit
 | `docs/ENGINEERING_LEARNINGS.md` | Durable lessons from observed failures |
 | `docs/feature-briefs/` | Owner-approved active milestone scope |
 | `docs/roadmap/` | Candidate and deferred ideas |
-| `docs/ux-experiments/` | UX Lab decisions and lifecycle records |
+| `docs/ux-experiments/` | UX Lab decisions and lifecycle records; `LAB_SELECTIONS.json` is the tracked canonical handoff and implementation history |
 | `docs/operations/deployment-flow.md` | Canonical canary, production, monitoring, and rollback runbook |
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |
