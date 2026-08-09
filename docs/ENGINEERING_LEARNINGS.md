@@ -808,3 +808,26 @@ the outcome.
 - Prefer the tool's own words on a public surface. When the agent wrote "no live
   room rate available for these dates", the page's job was to show it, not to
   paraphrase it into a number.
+
+## 2026-08-08 - A Fuzzy Geocoder's Top Hit Is Not Evidence
+
+- Document readiness demanded passports for the whole family on a Bengaluru-to-Goa
+  trip. The gate was right and the data was wrong: `resolve_country` took the
+  geocoder's first row, and Open-Meteo answers "Goa" with Genoa in Italy and
+  "Bangalore" with a village in Sindh. The places the traveller meant are absent
+  from the results entirely, so no ranking could have recovered them.
+- A search endpoint that matches loosely returns near-misses, not alternatives.
+  Require the returned name to equal the query before treating the row as an
+  answer, and rank what survives by significance rather than by the order the
+  service happened to return.
+- When the correct answer can be missing from the source, the only honest
+  outcomes are a confident match or "unknown". Resolving to unknown was already
+  safe here because the caller stays silent without both countries; the defect
+  was that the resolver had no way to express doubt.
+- Tightening a resolver silences its callers, so check what else depended on the
+  loose answer. A bare "Bangalore" no longer resolves, which would have muted
+  genuinely international trips, so the origin falls back to the home country the
+  user declared - better evidence than a guess either way.
+- The stubbed unit tests passed throughout, because they returned one row with a
+  country and no name. A fixture simpler than the real payload cannot fail the
+  way production does; the bug was only visible against the live service.

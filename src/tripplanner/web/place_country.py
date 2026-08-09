@@ -8,11 +8,22 @@ cached per place string, because a city's country does not change.
 A lookup that fails is never cached, so a dropped network call does not turn
 into a permanently wrong answer. A lookup that succeeds with no match is
 cached, because that string will not start matching later.
+
+The geocoder matches loosely, and its top hit is not the best-known place: it
+answers "Goa" with Genoa in Italy and "Bangalore" with a village in Sindh,
+while the places a traveller means are absent from the results altogether.
+Taking the first row therefore turned a Bengaluru-to-Goa trip into an
+international one. A near-miss is not evidence, so a result counts only when
+its name matches exactly, it is substantial enough to be the place a bare name
+refers to, and it clearly outweighs any same-named rival in another country.
+Anything short of that resolves to ``""``, and the caller stays silent.
 """
 
 from __future__ import annotations
 
+import unicodedata
 from threading import Lock
+from typing import Any
 
 import httpx
 
@@ -20,6 +31,13 @@ from tripplanner import http_client
 
 _GEOCODE = "https://geocoding-api.open-meteo.com/v1/search"
 _TIMEOUT_S = 8
+_RESULT_COUNT = 10
+
+# A bare name identifies a country only when one substantial place answers to
+# it; under this, "Goa" resolves to a Philippine municipality of 21,000.
+_MIN_POPULATION = 50_000
+# ...and the winner must outweigh any same-named place in another country.
+_DOMINANCE = 5
 
 _cache: dict[str, str] = {}
 _lock = Lock()
@@ -51,22 +69,69 @@ def _candidates(place: str) -> list[str]:
     return ordered
 
 
+def _fold(value: Any) -> str:
+    """Compare names without accents or casing, so "Goá" answers to "Goa"."""
+    decomposed = unicodedata.normalize("NFKD", str(value or ""))
+    return " ".join(
+        "".join(char for char in decomposed if not unicodedata.combining(char)).split()
+    ).casefold()
+
+
+def _population(result: dict[str, Any]) -> int:
+    value = result.get("population")
+    return value if isinstance(value, int) and value > 0 else 0
+
+
+def _confident_country(results: list[Any], name: str) -> str:
+    """The country of the one substantial place this name clearly refers to."""
+    target = _fold(name)
+    named = [
+        result
+        for result in results
+        if isinstance(result, dict)
+        and _fold(result.get("name")) == target
+        and str(result.get("country") or "").strip()
+    ]
+    if not named:
+        return ""
+
+    best = max(named, key=_population)
+    if _population(best) < _MIN_POPULATION:
+        return ""
+    country = str(best.get("country")).strip()
+    abroad = max(
+        (
+            _population(result)
+            for result in named
+            if _fold(result.get("country")) != _fold(country)
+        ),
+        default=0,
+    )
+    # Two comparable places of the same name say the trip cannot be placed.
+    if abroad * _DOMINANCE > _population(best):
+        return ""
+    return country
+
+
 def _lookup(name: str) -> str | None:
-    """Country for one query form. ``""`` means no match, ``None`` means the
-    lookup itself failed."""
+    """Country for one query form. ``""`` means no confident match, ``None``
+    means the lookup itself failed."""
     try:
         response = http_client.get(
             _GEOCODE,
-            params={"name": name, "count": 1, "language": "en", "format": "json"},
+            params={
+                "name": name,
+                "count": _RESULT_COUNT,
+                "language": "en",
+                "format": "json",
+            },
             timeout=_TIMEOUT_S,
         )
         response.raise_for_status()
         results = response.json().get("results") or []
     except (httpx.HTTPError, ValueError, KeyError):
         return None
-    if not results:
-        return ""
-    return str(results[0].get("country") or "").strip()
+    return _confident_country(results, name)
 
 
 def resolve_country(place: str) -> str:

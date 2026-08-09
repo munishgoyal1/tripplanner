@@ -112,3 +112,6 @@ how to run the launcher commands on mac
 
 (.venv) mugoy@Munishs-MacBook-Pro user % Run-Latest.command all
 zsh: command not found: Run-Latest.command
+
+[2026-08-08 00:00] [master] ! Fix Domestic Passport Prompt
+It is asking for Passports for all 3 of my family memebers saying trip leaves the orogin country when the current trip is only to Goa and that is within the home country India. Fix it if needed

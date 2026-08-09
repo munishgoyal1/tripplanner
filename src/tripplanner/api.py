@@ -1863,11 +1863,18 @@ async def trip_documents_readiness(request: Request, user_id: str = "local") -> 
                 "badge_tone": "",
                 "reason": "no_trip",
             }
+        prefs = prefs_store.load_preferences()
+        profile = prefs.get("profile") if isinstance(prefs.get("profile"), dict) else {}
+        # A city name the geocoder cannot place is not a border; the home
+        # country the user declared is better evidence than a guess.
+        origin_country = place_country.resolve_country(trip.get("origin")) or (
+            place_country.resolve_country(profile.get("home_country"))
+        )
         return document_readiness.evaluate(
             trip,
             travel_documents.list_documents("traveler"),
-            prefs_store.load_preferences(),
-            origin_country=place_country.resolve_country(trip.get("origin")),
+            prefs,
+            origin_country=origin_country,
             destination_country=place_country.resolve_country(trip.get("destination")),
         )
 
