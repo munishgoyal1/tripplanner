@@ -93,5 +93,26 @@
     "implementationSummary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
     "stateChangedAt": "2026-08-09T10:27:00.000Z",
     "updatedAt": "2026-08-09T10:27:00.000Z"
+  },
+  "product-themes": {
+    "labId": "product-themes",
+    "labTitle": "Product-wide visual themes",
+    "selection": "aegean",
+    "selectionLabel": "E · Aegean sun",
+    "comment": "Looks fitting",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "ready",
+        "recordedAt": "2026-08-09T11:15:56.327Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-08-09T11:15:56.327Z",
+    "updatedAt": "2026-08-09T11:15:56.327Z"
   }
 }
