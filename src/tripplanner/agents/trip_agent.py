@@ -447,13 +447,15 @@ STEP 2.5 — SHARE A FIRST-CUT ITINERARY IMMEDIATELY (don't wait for searches)
 
 STEP 3 — PARALLEL SEARCH (do all at once)
   Call these tools in parallel based on preferences:
-    a) search_flights_duffel — preferred provider-neutral flight search. It uses
-      LiteAPI when configured, otherwise Duffel. Real airlines, times, stops,
-      prices, and quote evidence. Before describing a selected LiteAPI offer as
-      current, call verify_flight_offer and persist the verified normalized offer
-      including provider_ref, quoted_at, expires_at, and status. Only fall back to
-      search_flights (Amadeus) if the preferred search returns nothing useful.
-  b) search_hotels — real hotels with names, ratings, prices (Amadeus pricing)
+    a) search_flights_duffel — preferred provider-neutral flight search. It tries
+      the configured provider first and falls back to Duffel when that returns
+      nothing. Real airlines, times, stops, prices, and quote evidence. Before
+      describing a selected provider offer as current, call verify_flight_offer
+      and persist the verified normalized offer including provider_ref,
+      quoted_at, expires_at, and status.
+  b) search_hotels — real hotels with names, ratings, and live room rates from
+     the configured stay provider. When no rate provider answers it returns
+     property metadata only, marked as an estimate with no bookable rate.
   c) search_places_with_reviews — Google ratings/reviews for shortlisted hotels
      and attractions. ALWAYS run this on any hotel before recommending it.
   d) search_activities — sightseeing, tours, attraction tickets with prices

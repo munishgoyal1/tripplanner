@@ -18,6 +18,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Protocol
 
+from tripplanner.config import get_settings
 from tripplanner.decisions.models import Confidence, FareBasis, TransportMode, UnpricedReason
 from tripplanner.providers.cache import CacheKey, FareCache
 from tripplanner.providers.models import (
@@ -35,15 +36,22 @@ from tripplanner.providers.registry import (
 
 logger = logging.getLogger(__name__)
 
-# Global cache with per-mode TTLs (seconds)
-_FARE_CACHE = FareCache(ttl_seconds={
-    "flight": 4 * 3600,      # 4 hours (highly dynamic)
-    "train": 12 * 3600,      # 12 hours (stable within day)
-    "coach": 12 * 3600,      # 12 hours
-    "ferry": 12 * 3600,      # 12 hours
-    "hotel": 4 * 3600,       # 4 hours
-    "activity": 24 * 3600,   # 24 hours
-})
+
+def _fare_cache_ttls() -> dict[str, int]:
+    settings = get_settings()
+    return {
+        "flight": settings.flight_cache_ttl_sec,
+        "train": settings.train_cache_ttl_sec,
+        "coach": settings.coach_cache_ttl_sec,
+        "ferry": settings.ferry_cache_ttl_sec,
+        "hotel": settings.hotel_cache_ttl_sec,
+        "activity": settings.activity_cache_ttl_sec,
+    }
+
+
+# Keys are plain lowercase mode strings because CacheKey.mode is built with
+# str(mode).lower(); an enum member would not match on lookup.
+_FARE_CACHE = FareCache(ttl_seconds=_fare_cache_ttls())
 
 # Telemetry: track provider choices and performance
 _PROVIDER_STATS = {

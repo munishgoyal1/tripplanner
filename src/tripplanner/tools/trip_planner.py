@@ -23,6 +23,7 @@ from langchain_core.tools import tool
 
 from tripplanner import storage_cosmos
 from tripplanner.decisions.provenance import make_check, record_check
+from tripplanner.decisions.rules import money
 from tripplanner.decisions.store import upsert_decision
 from tripplanner.json_store import atomic_write_json
 from tripplanner.tools.finalize_critic import critique as _critique_finalized
@@ -2031,10 +2032,17 @@ def finalize_trip() -> str:
         lines.append("")
 
     if plan["cost_breakdown"]:
+        plan_currency = str(plan.get("currency") or "INR")
         lines.append("  COST BREAKDOWN:")
         for item, cost in plan["cost_breakdown"].items():
-            lines.append(f"    {item}: ₹{cost:,.0f}" if isinstance(cost, (int, float)) else f"    {item}: {cost}")
-        lines.append(f"\n  TOTAL ESTIMATED COST: ₹{plan.get('total_cost', 0):,.0f}")
+            lines.append(
+                f"    {item}: {money(cost, plan_currency)}"
+                if isinstance(cost, (int, float))
+                else f"    {item}: {cost}"
+            )
+        lines.append(
+            f"\n  TOTAL ESTIMATED COST: {money(plan.get('total_cost', 0) or 0, plan_currency)}"
+        )
     lines.append(f"\n{'='*60}")
     lines.append("  Status: FINALIZED — ready for booking")
     lines.append("  Say 'execute' to proceed with bookings.")

@@ -13,6 +13,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from tripplanner.providers.models import PRICED_QUOTE_STATUSES
+
 MAX_TEXT = 90
 MAX_DETAIL = 60
 
@@ -119,6 +121,27 @@ def _name_of(item: Any) -> str:
     return ""
 
 
+def _provider_of(output: str, fallback: str = "") -> str:
+    """The provider that actually answered, so a receipt never credits the wrong one."""
+    payload = _payload(output)
+    if isinstance(payload, dict):
+        provider = payload.get("provider")
+        if isinstance(provider, str) and provider.strip() and provider.strip() != "none":
+            return provider.strip()
+    return fallback
+
+
+_PRICED_STATUS_VALUES = {status.value for status in PRICED_QUOTE_STATUSES}
+
+
+def _is_priced(output: str) -> bool:
+    payload = _payload(output)
+    if not isinstance(payload, dict):
+        return False
+    status = payload.get("quote_status")
+    return isinstance(status, str) and status in _PRICED_STATUS_VALUES
+
+
 def _counted(
     kind: str, text: str, nouns: tuple[str, str], source: str = ""
 ) -> Callable[[str], Receipt | None]:
@@ -151,27 +174,41 @@ def _stays(output: str) -> Receipt | None:
     the difference between evidence and a claim.
     """
 
-    live = '"quote_status": "live"' in output
-    if live:
-        return _counted("lodging", "Searched bookable stays", ("stay", "stays"), "Amadeus")(output)
+    if _is_priced(output):
+        return _counted(
+            "lodging",
+            "Searched bookable stays",
+            ("stay", "stays"),
+            _provider_of(output),
+        )(output)
     return _counted(
-        "lodging", "Looked up stays, no live room rate", ("stay", "stays"), "Google Places"
+        "lodging",
+        "Looked up stays, no live room rate",
+        ("stay", "stays"),
+        _provider_of(output, "Google Places"),
     )(output)
+
+
+def _live_flights(text: str, fallback: str) -> Callable[[str], Receipt | None]:
+    """Flight receipts credit whichever provider in the chain answered."""
+    return lambda output: Receipt(
+        kind="flights", text=text, source=_provider_of(output, fallback)
+    )
 
 
 # One entry per tool whose work a traveller would recognise. Everything absent
 # from this table is bookkeeping, and bookkeeping is not evidence.
 _BUILDERS: dict[str, Callable[[str], Receipt | None]] = {
     "compare_transport_options": _comparison,
-    "search_flights_duffel": _fixed("flights", "Searched live flight inventory", "Duffel"),
-    "search_flights": _fixed("flights", "Searched live flight inventory", "Amadeus"),
-    "verify_flight_offer": _fixed("flights", "Re-checked the fare was still live", "Duffel"),
+    "search_flights_duffel": _live_flights("Searched live flight inventory", "Duffel"),
+    "search_flights": _live_flights("Searched live flight inventory", ""),
+    "verify_flight_offer": _live_flights("Re-checked the fare was still live", "Duffel"),
     "search_hotels": _stays,
     "search_activities": _counted(
-        "places", "Searched things to do", ("activity", "activities"), "Amadeus"
+        "places", "Searched things to do", ("activity", "activities"), ""
     ),
     "search_points_of_interest": _counted(
-        "places", "Searched points of interest", ("place", "places"), "Amadeus"
+        "places", "Searched points of interest", ("place", "places"), ""
     ),
     "search_places_with_reviews": _counted(
         "places", "Checked ratings and reviews", ("place", "places"), "Google Places"

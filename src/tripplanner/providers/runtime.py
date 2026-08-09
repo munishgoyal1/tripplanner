@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 from tripplanner.providers.cache import ProviderCacheEntry, ProviderTTLCache
+from tripplanner.providers.models import QuoteStatus
 
 T = TypeVar("T")
 
@@ -15,7 +16,7 @@ T = TypeVar("T")
 class ProviderChainResult(Generic[T]):
     value: T
     provider: str
-    quote_status: str
+    quote_status: QuoteStatus
     cache_hit: bool = False
     checked_at: object | None = None
     expires_at: object | None = None
@@ -44,7 +45,7 @@ def run_provider_chain(
             return ProviderChainResult(
                 value=cached.value,
                 provider=cached.provider,
-                quote_status="cached_live",
+                quote_status=QuoteStatus.CACHED,
                 cache_hit=True,
                 checked_at=cached.checked_at,
                 expires_at=cached.expires_at,
@@ -70,7 +71,7 @@ def run_provider_chain(
         return ProviderChainResult(
             value=value,
             provider=provider_name,
-            quote_status="live_search",
+            quote_status=QuoteStatus.LIVE,
             checked_at=cache_entry.checked_at,
             expires_at=cache_entry.expires_at,
             errors=errors,
@@ -79,6 +80,6 @@ def run_provider_chain(
     return ProviderChainResult(
         value=empty_value,
         provider="none",
-        quote_status="unavailable" if not errors else "provider_error",
+        quote_status=QuoteStatus.UNAVAILABLE if not errors else QuoteStatus.PROVIDER_ERROR,
         errors=errors,
     )

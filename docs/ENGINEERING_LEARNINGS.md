@@ -855,3 +855,23 @@ the outcome.
 - A validation step described as a hard gate must add a blocking failure when its
   installed dependencies cannot be reused. A warning plus success is an implicit
   bypass and gives stronger assurance than the run actually earned.
+
+## 2026-08-10 - A Fallback That Returns Early Is Not A Fallback
+
+- `search_flights_duffel` called the registry provider and then returned
+  unconditionally, including on an empty result. The documented Duffel fallback
+  below it was unreachable for every environment with a provider key set, so a
+  provider with no coverage silently degraded to no flight prices at all. A
+  chain step must return only on success; empty and error must fall through.
+- Two vocabularies for the same fact will disagree. The provider runtime emitted
+  `live_search`/`cached_live` while the receipt layer matched the literal string
+  `"quote_status": "live"`, so genuinely live stay searches were recorded as
+  unpriced evidence. Freshness states belong in one enum that every layer imports.
+- Configuration that nothing reads is worse than no configuration. Six
+  `*_CACHE_TTL_SEC` settings existed while the caches used hardcoded literals,
+  advertising control that did not exist. Either wire a knob to its behavior or
+  delete it.
+- Money needs a unit before it needs a comparison. Ranking subtracted raw amounts
+  from different currencies, so a fare in a weaker unit always looked worse. When
+  a rate is unavailable, drop the money term instead of mixing units — a slower
+  ranking is recoverable, a confidently wrong price is not.
