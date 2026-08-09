@@ -223,6 +223,22 @@ Provide 2 more options in the lab - may be something different and fresh, more a
 [2026-08-09 16:46] [master !] Implement Lab 23 Sandbox
 Implement lab23 in a new sandbox
 
+[2026-08-09 17:20] [master !] Fix Aegean Text Contrast
+check some of the text on the i would rather fly buttons is mixing with backgorund, both being black are not visible. and page's top right corner text beta is also very light in color. Improve the contrast of text in all such cases sot hat visibility is proper. dont change the background colors much and dont change the main theme
+
+[2026-08-09 17:37] [master !] Add Direct Landing Page Route
+can you specifically put landing page at a named starting page that can be reached even when once landed into app. there is no way for me to go back and test the landing page. anyway this will nto matter to users much even if e give something like intro.html etc think something more standard name and way to goto landing page directly anytime
+
+[2026-08-09 17:47] [master !] Polish Landing Demo Content
+The descriptive heading should be AI TripPlanner on pages.
+Why are some data points without actual price numbers, sosme places you mentioned no live rate . Dont do that. It makes it look like half baked. Get some representative numebrs - even if made up where missing but within reasonable.
+Its fine to promise all of that - I will handle that with my initial beta users.
+
+But those thigns will eventually come in as I am building the full Pricing module. and getting in more providers.
+
+[2026-08-09 22:18] [master !] Refine AI Tripplanner Branding
+Use AI Tripplanner and move the Beta tag to this name either near or some way as a super script or something standard.
+Also bring in / design a solid good icon to use instead of the T as icon for this app.
 [2026-08-09 18:00] [master !] Fix sandbox promotion HEAD
 Why is the sandbox promotion script internally possibly calling the Sync sciprt has now started regress failing on the Git HEAD issue. check logs and provide root fix.
 [2026-08-09 17:53] [master !] Create localization UX lab

@@ -139,9 +139,13 @@ $lab.stateChangedAt = $recordedAt
 $lab.updatedAt = $recordedAt
 
 $directory = Split-Path -Parent $StorePath
+$fileName = [IO.Path]::GetFileNameWithoutExtension($StorePath)
+$extension = [IO.Path]::GetExtension($StorePath)
+$backupPath = Join-Path $directory "$fileName.previous$extension"
 $temporaryPath = "$StorePath.$PID.tmp"
 try {
     $store | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $temporaryPath -Encoding utf8NoBOM
+    Copy-Item -LiteralPath $StorePath -Destination $backupPath -Force
     Move-Item -LiteralPath $temporaryPath -Destination $StorePath -Force
 } finally {
     if (Test-Path -LiteralPath $temporaryPath) { Remove-Item -LiteralPath $temporaryPath -Force }

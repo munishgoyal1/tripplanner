@@ -123,6 +123,7 @@ export interface CapturedRun {
   plan: {
     selected_hotels?: CapturedHotel[];
     selected_flights?: CapturedFlight[];
+    day_wise_itinerary?: Array<{ cost_estimate?: number | null }>;
   };
   receipts: CapturedReceipt[];
   days: CapturedDay[];

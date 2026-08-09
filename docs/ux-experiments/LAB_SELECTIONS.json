@@ -100,7 +100,7 @@
     "selection": "aegean",
     "selectionLabel": "E · Aegean sun",
     "comment": "Looks fitting",
-    "disposition": "ready",
+    "disposition": "implemented-review",
     "handoffs": [
       {
         "version": 1,
@@ -109,10 +109,110 @@
         "comment": "Looks fitting",
         "disposition": "ready",
         "recordedAt": "2026-08-09T11:15:56.327Z"
+      },
+      {
+        "version": 2.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Applied Aegean sun across landing and workspace via shared palette and typography tokens; preserved PublicEntry behavior; 288 frontend tests, TypeScript, production build, desktop/mobile browser checks, and API/SPA/Labs endpoint probes passed.\nSandbox: 1-lab23-aegean; commit: 55b91cd",
+        "recordedAt": "2026-08-09T11:43:12.4301700Z"
+      },
+      {
+        "version": 3.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Contrast refinement in commit 0d58de5: preserved the Aegean palette and backgrounds while restoring white foregrounds on ink, brand, and violet filled controls and dark Aegean text on translucent chips. Browser checks measured 13.32:1 for itinerary choice buttons, 12.82:1 for Beta, and 4.41:1 for the brand action. PublicEntry 7/7 tests, full frontend 288/288 tests, TypeScript, production build, CSS diagnostics, and API/SPA/Labs endpoint checks passed.",
+        "recordedAt": "2026-08-09T11:53:06.9552720Z"
+      },
+      {
+        "version": 4.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
+        "recordedAt": "2026-08-09T16:53:13.3980620Z"
+      },
+      {
+        "version": 5.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+        "recordedAt": "2026-08-09T16:58:34.0974650Z"
+      },
+      {
+        "version": 6.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "disposition": "implemented-review",
+        "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+        "recordedAt": "2026-08-09T17:00:15.5350300Z"
       }
     ],
-    "implementations": [],
-    "stateChangedAt": "2026-08-09T11:15:56.327Z",
-    "updatedAt": "2026-08-09T11:15:56.327Z"
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Applied Aegean sun across landing and workspace via shared palette and typography tokens; preserved PublicEntry behavior; 288 frontend tests, TypeScript, production build, desktop/mobile browser checks, and API/SPA/Labs endpoint probes passed.\nSandbox: 1-lab23-aegean; commit: 55b91cd",
+        "recordedAt": "2026-08-09T11:43:12.4301700Z"
+      },
+      {
+        "version": 2.0,
+        "handoffVersion": 3.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Contrast refinement in commit 0d58de5: preserved the Aegean palette and backgrounds while restoring white foregrounds on ink, brand, and violet filled controls and dark Aegean text on translucent chips. Browser checks measured 13.32:1 for itinerary choice buttons, 12.82:1 for Beta, and 4.41:1 for the brand action. PublicEntry 7/7 tests, full frontend 288/288 tests, TypeScript, production build, CSS diagnostics, and API/SPA/Labs endpoint checks passed.",
+        "recordedAt": "2026-08-09T11:53:06.9552720Z"
+      },
+      {
+        "version": 3.0,
+        "handoffVersion": 4.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
+        "recordedAt": "2026-08-09T16:53:13.3980620Z"
+      },
+      {
+        "version": 4.0,
+        "handoffVersion": 5.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
+        "recordedAt": "2026-08-09T16:58:34.0974650Z"
+      },
+      {
+        "version": 5.0,
+        "handoffVersion": 6.0,
+        "selection": "aegean",
+        "selectionLabel": "E · Aegean sun",
+        "comment": "Looks fitting",
+        "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+        "recordedAt": "2026-08-09T17:00:15.5350300Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-09T17:00:15.5350300Z",
+    "updatedAt": "2026-08-09T17:00:15.5350300Z",
+    "implementation": {
+      "handoffVersion": 6.0,
+      "selection": "aegean",
+      "selectionLabel": "E · Aegean sun",
+      "comment": "Looks fitting",
+      "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
+      "recordedAt": "2026-08-09T17:00:15.5350300Z"
+    },
+    "implementationSummary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664"
   }
 }

@@ -1,4 +1,5 @@
 const SKIP_KEY = "tripplanner_public_entry_skipped";
+export const PUBLIC_ENTRY_PATH = "/welcome";
 
 function readFlag() {
   try {
@@ -23,4 +24,8 @@ export function markPublicEntrySkipped() {
 
 export function shouldShowPublicEntry(anonymous: boolean) {
   return anonymous && !readFlag();
+}
+
+export function isPublicEntryPath(pathname = window.location.pathname) {
+  return pathname.replace(/\/+$/, "") === PUBLIC_ENTRY_PATH;
 }
