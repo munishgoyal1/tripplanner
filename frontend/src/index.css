@@ -86,6 +86,16 @@ body {
   color: var(--landing-heading) !important;
 }
 
+.product-theme-aegean .bg-ink.text-white,
+.product-theme-aegean .bg-brand.text-white,
+.product-theme-aegean .bg-violet-500.text-white {
+  color: #ffffff !important;
+}
+
+.product-theme-aegean .bg-white\/10.text-slate-200 {
+  color: var(--landing-heading) !important;
+}
+
 .product-theme-aegean .text-slate-300 {
   color: var(--landing-body) !important;
 }
