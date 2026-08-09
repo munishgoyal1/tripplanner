@@ -484,10 +484,26 @@ function Copy-LocalConfigForValidation {
     }
 }
 
+function New-FrontendDependencyLink {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Target
+    )
+
+    $itemType = if ($IsWindows) { "Junction" } else { "SymbolicLink" }
+    try {
+        New-Item -ItemType $itemType -Path $Path -Target $Target -ErrorAction Stop | Out-Null
+        return Test-Path $Path -PathType Container
+    } catch {
+        Write-SyncLog -Level Error "Could not link frontend dependencies with a $itemType at $Path`: $($_.Exception.Message)"
+        return $false
+    }
+}
+
 function Invoke-IntegrationValidation {
     # Verifies a merged tree BEFORE it is published to master so a clean-but-broken
     # merge cannot become the base everyone builds on. Dependencies are reused from
-    # the primary worktree (frontend node_modules via a junction; the primary .venv
+    # the primary worktree (frontend node_modules via a directory link; the primary .venv
     # for Python) with PYTHONPATH pointed at the merged src, so nothing is
     # reinstalled. Frontend vitest is a HARD gate (it is hermetic). Python is a
     # REGRESSION gate: it blocks only on failures that are NEW versus a
@@ -569,8 +585,7 @@ function Invoke-IntegrationValidation {
         $mergedModules = Join-Path $frontendDir "node_modules"
         $linkedModules = $false
         if ((Test-Path $primaryModules -PathType Container) -and -not (Test-Path $mergedModules)) {
-            New-Item -ItemType Junction -Path $mergedModules -Target $primaryModules -ErrorAction SilentlyContinue | Out-Null
-            $linkedModules = Test-Path $mergedModules
+            $linkedModules = New-FrontendDependencyLink -Path $mergedModules -Target $primaryModules
         }
         if (Test-Path $mergedModules) {
             Write-SyncLog "Running frontend vitest on the merged tree..."
@@ -593,7 +608,8 @@ function Invoke-IntegrationValidation {
                 Write-SyncLog "Frontend vitest passed."
             }
         } else {
-            Write-SyncLog -Level Warn "Skipping frontend tests: node_modules was unavailable to link."
+            $blocking.Add("frontend vitest unavailable: node_modules could not be linked")
+            Write-SyncLog -Level Error "Frontend tests cannot run because node_modules was unavailable to link."
         }
     }
 

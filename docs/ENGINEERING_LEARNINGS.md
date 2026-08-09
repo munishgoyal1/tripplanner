@@ -845,3 +845,13 @@ the outcome.
 - A fallback default is not synchronization. Make every UI and script writer touch
   the tracked record so an unsaved lifecycle change is visible in `git status` and
   travels through the same commit, review, and merge path as the implementation.
+
+## 2026-08-09 - A Hard Gate Must Fail Closed
+
+- PowerShell directory-link types are platform-specific: use a junction on
+  Windows and a symbolic link on macOS/Linux. Suppressing a failed Windows-only
+  junction on macOS made frontend validation disappear while the merged tree was
+  still published.
+- A validation step described as a hard gate must add a blocking failure when its
+  installed dependencies cannot be reused. A warning plus success is an implicit
+  bypass and gives stronger assurance than the run actually earned.

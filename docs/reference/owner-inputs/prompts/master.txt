@@ -257,3 +257,13 @@ Line |
 1171 |          if ($LASTEXITCODE -ne 0) {throw "gh pr list failed." }
      |~~~~~~~~~~~~~~~~~~~~~~~~~~
      | gh pr list failed.
+
+[2026-08-09 23:16] [master !] Fix sync frontend validation
+The sync all to latest script had this warning. Fix it
+
+1062 passed, 1 warning in 18.35s
+[WARN] Skipping frontend tests: node_modules was unavailable to link.
+[INFO] Validation passed; the merged tree is safe to publish.
+
+[2026-08-09 23:18] [master !] Rebuild Lab 24 realistically
+Now re-do the lab24 looking at the latest in master. Lab23 which implemented the actual theme is now promoted to master. Use that and actual landing pages not just very dummy kind so that i can inspect the pages as they will look not leaving a lot to imagine while deciding the lab decision
