@@ -218,6 +218,9 @@ who left the dev spa changes uncommitted
 Okay lets look at lab23 - It is giving a very different landing page than the current one. I did not intend to change the landing page fucntionality, only wanted a theme options.
 
 [2026-08-09 16:25] [master !] Add vibrant travel themes
+
+[2026-08-09 23:44] [master] Review next feature backlog
+Bring uo the list of next set of features we had planned. they wre logged in FUTURE requirement or some similar doc . that included your suggestions also. Now its time to think of next features
 Provide 2 more options in the lab - may be something different and fresh, more appealing vibrant from travel domain persepctive.
 
 [2026-08-09 16:46] [master !] Implement Lab 23 Sandbox
@@ -267,3 +270,12 @@ The sync all to latest script had this warning. Fix it
 
 [2026-08-09 23:18] [master !] Rebuild Lab 24 realistically
 Now re-do the lab24 looking at the latest in master. Lab23 which implemented the actual theme is now promoted to master. Use that and actual landing pages not just very dummy kind so that i can inspect the pages as they will look not leaving a lot to imagine while deciding the lab decision
+
+[2026-08-09 23:31] [master \!] Implement Lab24 in sandbox
+Implement lab24 in a new sandbox.
+
+[2026-08-09 23:37] [master] \! Audit pricing and availability coverage
+Let';s look at the pricing, real time price and availability capability scenario that we have currently. What is the order of fetching and fallback logic for each category, any insight/nuance.
+I need to see what is the gaps and what needs to impleement, either a provider is missing, or a paid api will make it for a certain provider. Is any category (hotels, trains..etc) completely not covered etc. I need to see these and take next steps
+
+First thing is solidify and make pricing robust so that all our claims of producing most optimal itinerary are met.
