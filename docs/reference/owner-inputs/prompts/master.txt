@@ -235,3 +235,9 @@ Why are some data points without actual price numbers, sosme places you mentione
 Its fine to promise all of that - I will handle that with my initial beta users.
 
 But those thigns will eventually come in as I am building the full Pricing module. and getting in more providers.
+[2026-08-09 18:00] [master !] Fix sandbox promotion HEAD
+Why is the sandbox promotion script internally possibly calling the Sync sciprt has now started regress failing on the Git HEAD issue. check logs and provide root fix.
+[2026-08-09 17:53] [master !] Create localization UX lab
+Create a new UX lab - for content lcoalization , example currency INR for Indian users, $ USD for American users, British pound, Euro and so on.
+Also localize 3-4 trip samples. For Indian users definitely - may be a sample of Rajasthan trip or so, pick some nice balanced complex and giving good variations example. Language can all remain English for now - or if you think it can easily localize then provide user an option to chose country and language on the home page, and let them change these on the main workspace also. May be one either a dropdown next to Export or elsewhere you think appropriate or within the profile dropdown somewhere (that may be better and acceptable, also saves space for a long term setting kind fo thing saves wasting the more dynamic itmes main view real estate). Any other things you can think of that Indian, American, European users may need to have differently ? Add those too - call out specifically in the lab scope. And pause if you need my input first
+Provide 4-5 different options on the UX in the lab.

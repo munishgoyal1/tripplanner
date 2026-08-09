@@ -199,5 +199,83 @@ def test_sandbox_records_linked_iterations_and_both_promotion_paths() -> None:
     assert 'labBaselineCommit' in source
     assert 'lastLabIterationCommit' in source
     assert 'merge-base --is-ancestor $previousCommit $commit' in source
+    assert 'diff-tree --no-commit-id --name-only -r $revision' in source
+    assert '$_ -ne "docs/ux-experiments/LAB_SELECTIONS.json"' in source
+    assert 'if ($parents.Count -eq 1 -and $labRecordOnly)' in source
     assert 'Assert-SandboxLabReadyForPromotion -Entry $entry' in source
     assert source.count('Write-SandboxLabVersion -Entry $entry -State "completed"') == 2
+
+
+def test_promotion_allows_lab_record_commit_but_rejects_later_product_work(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "sandbox"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "test@example.com"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "Test"], check=True)
+
+    def commit(path: str, content: str, message: str) -> str:
+        target = repo / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+        subprocess.run(["git", "-C", str(repo), "add", path], check=True)
+        subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", message], check=True)
+        return subprocess.check_output(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+        ).strip()
+
+    base = commit("README.md", "base\n", "base")
+    reviewed = commit("frontend/src/App.tsx", "reviewed\n", "reviewed product change")
+    subprocess.run(
+        ["git", "-C", str(repo), "update-ref", "refs/remotes/origin/master", base],
+        check=True,
+    )
+    commit(
+        "docs/ux-experiments/LAB_SELECTIONS.json",
+        '{"lab":"implemented-review"}\n',
+        "record Lab review",
+    )
+
+    harness = tmp_path / "assert-promotion.ps1"
+    harness.write_text(
+        f'''$tokens = $null
+$errors = $null
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    "{SANDBOX_SCRIPT.as_posix()}", [ref]$tokens, [ref]$errors)
+$definition = $ast.Find({{ param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+    $node.Name -eq "Assert-SandboxLabReadyForPromotion"
+}}, $true)
+Invoke-Expression $definition.Extent.Text
+function Invoke-Git {{
+    param([string]$WorkingDirectory, [string[]]$Arguments)
+    $output = & git -C $WorkingDirectory @Arguments
+    if ($LASTEXITCODE -ne 0) {{ throw "git failed" }}
+    return $output
+}}
+$entry = [pscustomobject]@{{
+    slug = "test"
+    labId = "lab"
+    worktree = "{repo.as_posix()}"
+    lastLabIterationCommit = "{reviewed}"
+}}
+Assert-SandboxLabReadyForPromotion -Entry $entry -Base master -AllowContainedIteration
+''',
+        encoding="utf-8",
+    )
+    allowed = subprocess.run(
+        ["pwsh", "-NoProfile", "-File", str(harness)],
+        capture_output=True,
+        text=True,
+    )
+    assert allowed.returncode == 0, allowed.stderr
+
+    commit("frontend/src/App.tsx", "unreviewed\n", "unreviewed product change")
+    rejected = subprocess.run(
+        ["pwsh", "-NoProfile", "-File", str(harness)],
+        capture_output=True,
+        text=True,
+    )
+    assert rejected.returncode != 0
+    assert "HEAD changed after its last recorded Lab iteration" in rejected.stderr
