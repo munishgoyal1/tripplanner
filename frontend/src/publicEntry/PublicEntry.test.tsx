@@ -60,7 +60,7 @@ describe("PublicEntry", () => {
     expect(demoTrip.total).toBe("€2,149");
     expect(screen.getAllByText("€330 est.").length).toBeGreaterThan(0);
     expect(screen.getAllByText("€420 est.").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("AI TripPlanner").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("AI Tripplanner", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.queryByText(/no live rate|no fare source/i)).not.toBeInTheDocument();
   });
 

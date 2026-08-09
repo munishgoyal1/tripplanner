@@ -235,6 +235,10 @@ Why are some data points without actual price numbers, sosme places you mentione
 Its fine to promise all of that - I will handle that with my initial beta users.
 
 But those thigns will eventually come in as I am building the full Pricing module. and getting in more providers.
+
+[2026-08-09 22:18] [master !] Refine AI Tripplanner Branding
+Use AI Tripplanner and move the Beta tag to this name either near or some way as a super script or something standard.
+Also bring in / design a solid good icon to use instead of the T as icon for this app.
 [2026-08-09 18:00] [master !] Fix sandbox promotion HEAD
 Why is the sandbox promotion script internally possibly calling the Sync sciprt has now started regress failing on the Git HEAD issue. check logs and provide root fix.
 [2026-08-09 17:53] [master !] Create localization UX lab

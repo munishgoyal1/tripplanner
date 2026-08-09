@@ -37,6 +37,7 @@ import { trackEvent } from "../analytics";
 import { saveTurnMeta, withStoredTurnMeta } from "../turnMetadata";
 import AccountSettingsHub from "./AccountSettingsHub";
 import type { AccountDestination } from "./AccountSettingsHub";
+import BrandIdentity from "./BrandIdentity";
 import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 import {
@@ -573,14 +574,9 @@ export default function ChatPanel({
   const brandHeader = (
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/85 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-brand to-brand-700 text-base text-white shadow-sm">
-            ✈
-          </span>
           <div>
-            <h1 className="display text-lg font-semibold leading-tight text-ink">
-              AI TripPlanner
-            </h1>
-            <p className="text-xs text-muted">Your AI travel concierge</p>
+            <BrandIdentity />
+            <p className="ml-[46px] mt-0.5 text-xs text-muted">Your AI travel concierge</p>
           </div>
         </div>
         <div className="flex items-center gap-1">

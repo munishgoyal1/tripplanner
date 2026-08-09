@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import BrandIdentity from "../components/BrandIdentity";
 import { trustPoints } from "./demoRun";
 import type {
   ModeCompare,
@@ -462,23 +463,16 @@ export function SectionHead({ tone, eyebrow, title, body }: { tone: Tone; eyebro
 }
 
 export function Masthead({ tone, onSkip }: { tone: Tone; onSkip: () => void }) {
-  const s = toneStyles[tone];
   return (
-    <header className={`flex items-center justify-between border-b px-6 py-3.5 ${s.divider}`}>
-      <div className="flex items-center gap-2">
-        <span className="grid h-7 w-7 place-items-center rounded-md bg-brand text-[13px] font-bold text-white">T</span>
-        <span className={`display text-base font-semibold ${s.heading}`}>AI TripPlanner</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className={`hidden rounded-full px-2.5 py-1 text-[11px] font-semibold sm:inline ${s.chip}`}>Beta</span>
-        <button
-          type="button"
-          onClick={onSkip}
-          className={`rounded-full px-3 py-1.5 text-[13px] font-semibold transition ${tone === "dark" ? "bg-white text-ink hover:bg-slate-200" : "bg-ink text-white hover:opacity-90"}`}
-        >
-          Skip to the app <ArrowRight size={13} className="ml-1 inline" aria-hidden />
-        </button>
-      </div>
+    <header className={`flex items-center justify-between border-b px-6 py-3.5 ${toneStyles[tone].divider}`}>
+      <BrandIdentity compact />
+      <button
+        type="button"
+        onClick={onSkip}
+        className={`rounded-full px-3 py-1.5 text-[13px] font-semibold transition ${tone === "dark" ? "bg-white text-ink hover:bg-slate-200" : "bg-ink text-white hover:opacity-90"}`}
+      >
+        Skip to the app <ArrowRight size={13} className="ml-1 inline" aria-hidden />
+      </button>
     </header>
   );
 }
@@ -488,7 +482,7 @@ export function SiteFooter({ tone }: { tone: Tone }) {
   return (
     <footer className={`border-t px-6 py-6 ${s.divider}`}>
       <p className={`text-[11px] ${s.muted}`}>
-        © 2026 AI TripPlanner · We never hold your card and never charge you. Bookings complete on the
+        © 2026 AI Tripplanner · We never hold your card and never charge you. Bookings complete on the
         provider's own site.
       </p>
     </footer>
