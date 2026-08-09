@@ -100,6 +100,48 @@ export function destinationFromToolArgs(name: string, args?: string): string | n
   return place;
 }
 
+/** Attempt to extract destination from user's message when starting a new trip.
+ *
+ * Covers "plan a China trip", "I want to go to Paris", "trip to Tokyo", etc.
+ * Returns null if no clear destination is found, so the tool call remains the
+ * source of truth for the destination once the agent runs the planner.
+ */
+export function destinationFromUserMessage(message: string): string | null {
+  if (!message || message.length > 500) return null;
+  // Simple heuristics: look for common trip-planning phrases
+  if (!/plan|trip|travel|visit|going|want/i.test(message)) return null;
+  
+  // Use simpler, more focused patterns with stricter post-validation
+  const patterns = [
+    // "plan a/an PLACE trip" format
+    /plan\s+(?:a|an|my)?\s+([A-Z][A-Za-z\s]{2,}?)\s+trip/i,
+    // "trip to PLACE" format (no "a" before "trip")
+    /trip\s+to\s+([A-Z][A-Za-z\s]{2,}?)(?:\s+in|\s+for|[,?]|$)/i,
+    // "travel to PLACE" format
+    /travel\s+to\s+([A-Z][A-Za-z\s]{2,}?)(?:\s+in|\s+for|[,?]|$)/i,
+    // "visit PLACE" or "want to visit PLACE"
+    /(?:want to\s+)?visit\s+([A-Z][A-Za-z\s]{2,}?)(?:\s+in|\s+for|[,?]|$)/i,
+    // standalone "PLACE trip" at beginning or after punctuation
+    /(?:^|,\s+)([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+)?)\s+trip/i,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = pattern.exec(message);
+    if (match && match[1]) {
+      const place = match[1].trim().replace(/\s+/g, " ");
+      // Validate: reasonable length, not a stop word, not obviously wrong
+      if (place.length >= 3 && place.length <= 40) {
+        // Reject common English words that shouldn't be place names
+        if (!/^(?:this|that|your|their|visit|my|the|and|for|with)$/i.test(place)) {
+          return place;
+        }
+      }
+    }
+  }
+  
+  return null;
+}
+
 /** "Building your Goa itinerary" beats "Building your itinerary" when the
  * composer is one row tall and the request has scrolled away. */
 export function progressHeading(
@@ -231,7 +273,12 @@ export function useChatStream({
     publishedTurnStatusRef.current = "";
     setStages([]);
     setReceipts([]);
-    setPlannedPlace(null);    setEditingPlan(false);
+    // Try to detect a new destination from the user's message for immediate feedback.
+    // If they ask for a new trip (e.g., "plan a China trip" while in Goa), show the
+    // correct destination in the notification before the assistant calls the tool.
+    const detectedPlace = destinationFromUserMessage(outgoing);
+    setPlannedPlace(detectedPlace);
+    setEditingPlan(false);
     setLiveRequest(outgoing);
     setProgress({ label: PROGRESS_LABELS.thinking, startedAt: turnStartedAtRef.current });
     const streamController = new AbortController();
