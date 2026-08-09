@@ -185,6 +185,35 @@ function Clear-ListeningPort {
     }
 }
 
+function Wait-BackendReady {
+    param(
+        [Parameter(Mandatory = $true)][System.Diagnostics.Process]$Process,
+        [Parameter(Mandatory = $true)][int]$Port,
+        [int]$TimeoutSeconds = 30
+    )
+
+    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+    $healthUrl = "http://127.0.0.1:$Port/health"
+    $lastHealthError = $null
+    while ([DateTime]::UtcNow -lt $deadline) {
+        if ($Process.HasExited) {
+            throw "FastAPI backend exited with code $($Process.ExitCode) before becoming ready."
+        }
+        try {
+            $health = Invoke-RestMethod -Uri $healthUrl -TimeoutSec 2
+            if ($health.status -eq "ok") {
+                Write-Host "  Backend ready: $healthUrl" -ForegroundColor Green
+                return
+            }
+        } catch {
+            $lastHealthError = $_.Exception.Message
+        }
+        Start-Sleep -Milliseconds 200
+    }
+    $detail = if ($lastHealthError) { " Last error: $lastHealthError" } else { "" }
+    throw "FastAPI backend did not become ready at $healthUrl within $TimeoutSeconds seconds.$detail"
+}
+
 function Test-FrontendDependenciesCurrent {
     param(
         [Parameter(Mandatory = $true)][string]$FrontendRoot
@@ -323,6 +352,7 @@ if (-not $FrontendOnly) {
     $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--app-dir", "src", "--port", "$ApiPort")
     if ($Watch) { $uvicornArgs += "--reload" }
     $backend = Start-Process -PassThru -NoNewWindow -WorkingDirectory $repoRoot $py -ArgumentList $uvicornArgs
+    Wait-BackendReady -Process $backend -Port $ApiPort
 }
 
 if (-not $BackendOnly) {
