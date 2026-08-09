@@ -63,6 +63,17 @@ def isolated_tool(monkeypatch):
     transport_compare.reset_turn_budget()
 
 
+@pytest.fixture(autouse=True)
+def no_ambient_ground_providers(monkeypatch):
+    """Keep comparison output driven by stub sources, not by a configured provider."""
+    for getter in ("get_train_provider", "get_coach_provider", "get_ferry_provider"):
+        monkeypatch.setattr(fares, getter, lambda: None)
+    # The fare cache is process-global; one test's stub quote must not answer the next.
+    fares._FARE_CACHE.clear()
+    yield
+    fares._FARE_CACHE.clear()
+
+
 @pytest.fixture
 def air_source():
     source = StubSource("stub-air", {TransportMode.FLIGHT}, amount=286)
@@ -94,7 +105,7 @@ def test_rail_comes_back_unpriced_rather_than_estimated(isolated_tool, air_sourc
     result = run()
     rail = next(o for o in result["options"] if o["mode"] == "train")
     assert rail["price"] is None
-    assert rail["unpriced_reason"] == "no_source"
+    assert rail["unpriced_reason"] == "out_of_coverage"
     assert rail["door_to_door_min"] > 0
     assert result["priced"] == "partial"
 

@@ -16,9 +16,8 @@ def _format_rail(offers: list[RailOffer]) -> str:
     lines: list[str] = []
     for i, offer in enumerate(offers, 1):
         total = offer.total
-        currency = total.currency
-        amount = total.amount
-        
+        price_str = f"{total.currency} {total.amount}" if total else "price not published"
+
         provider = offer.provider
         journey_duration = offer.journey_duration_min
         direct = "Direct" if offer.direct else f"{offer.changes or 0} stop(s)"
@@ -30,7 +29,7 @@ def _format_rail(offers: list[RailOffer]) -> str:
             minutes = journey_duration % 60
             duration_str = f" | {hours}h {minutes}m"
         
-        lines.append(f"\n--- Option {i} — {currency} {amount} ---")
+        lines.append(f"\n--- Option {i} — {price_str} ---")
         lines.append(f"  Provider: {provider}")
         lines.append(f"  Journey: {direct}{duration_str}")
         lines.append(f"  Status: {status}")
@@ -58,9 +57,8 @@ def _format_coach(offers: list[CoachOffer]) -> str:
     lines: list[str] = []
     for i, offer in enumerate(offers, 1):
         total = offer.total
-        currency = total.currency
-        amount = total.amount
-        
+        price_str = f"{total.currency} {total.amount}" if total else "price not published"
+
         provider = offer.provider
         operator = offer.operator_name or "Unknown operator"
         journey_duration = offer.journey_duration_min
@@ -72,7 +70,7 @@ def _format_coach(offers: list[CoachOffer]) -> str:
             minutes = journey_duration % 60
             duration_str = f" | {hours}h {minutes}m"
         
-        lines.append(f"\n--- Option {i} — {currency} {amount} ---")
+        lines.append(f"\n--- Option {i} — {price_str} ---")
         lines.append(f"  Operator: {operator}")
         lines.append(f"  Provider: {provider}")
         lines.append(f"  Journey{duration_str}")

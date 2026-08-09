@@ -60,13 +60,14 @@ class Settings(BaseModel):
     kiwi_api_key: str = os.getenv("KIWI_API_KEY", "")
     kiwi_base_url: str = os.getenv("KIWI_BASE_URL", "https://www.kiwi.com/api/v1").rstrip("/")
     
-    # Omio API (free tier) — multi-modal transport pricing (train, coach)
-    # Sign up free: https://www.omio.com/business (get API key from dashboard)
-    # Covers 45+ countries in Europe with trains, coaches, and ferries
-    # Free tier: 1000 requests/month
-    omio_api_key: str = os.getenv("OMIO_API_KEY", "")
-    omio_base_url: str = os.getenv("OMIO_BASE_URL", "https://api.omio.com").rstrip("/")
-    
+    # Public HAFAS REST instances (transport.rest) — train and coach search.
+    # No API key required; ~100 requests/minute. Deutsche Bahn long-distance
+    # journeys publish fares, fare-zone networks (VBB/BVG) return timing only.
+    # Docs: https://v6.db.transport.rest/api.html
+    hafas_rest_base_url: str = os.getenv(
+        "HAFAS_REST_BASE_URL", "https://v6.db.transport.rest"
+    ).rstrip("/")
+
     # Rail transport pricing providers (train, coach, ferry)
     enable_train_pricing: bool = Field(
         default_factory=lambda: os.getenv("ENABLE_TRAIN_PRICING", "1").strip() != "0"
@@ -78,7 +79,7 @@ class Settings(BaseModel):
         default_factory=lambda: os.getenv("ENABLE_FERRY_PRICING", "1").strip() != "0"
     )
     
-    # Preferred rail transport provider ("kiwi", "omio", or "auto"; "auto" tries in order)
+    # Preferred rail transport provider ("kiwi", "hafas", or "auto"; "auto" tries in order)
     travel_train_provider: str = os.getenv("TRAVEL_TRAIN_PROVIDER", "auto").strip().lower()
     travel_coach_provider: str = os.getenv("TRAVEL_COACH_PROVIDER", "auto").strip().lower()
     travel_ferry_provider: str = os.getenv("TRAVEL_FERRY_PROVIDER", "auto").strip().lower()

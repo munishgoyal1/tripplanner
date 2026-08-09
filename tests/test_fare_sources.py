@@ -26,6 +26,17 @@ class StubSource:
         return self._quote
 
 
+@pytest.fixture(autouse=True)
+def no_ambient_ground_providers(monkeypatch):
+    """These tests cover the source chain, not whichever provider .env happens to configure."""
+    for getter in ("get_train_provider", "get_coach_provider", "get_ferry_provider"):
+        monkeypatch.setattr(fares, getter, lambda: None)
+    # The fare cache is process-global; one test's stub quote must not answer the next.
+    fares._FARE_CACHE.clear()
+    yield
+    fares._FARE_CACHE.clear()
+
+
 @pytest.fixture
 def request_for_train():
     return FareRequest(
@@ -52,10 +63,11 @@ def clean_registry():
         fares.unregister_source(name)
 
 
-def test_rail_has_no_source_today_so_it_comes_back_unpriced(request_for_train):
+def test_rail_is_unpriced_when_its_registered_source_cannot_cover_the_route(request_for_train):
+    # A rail source is registered, so the honest answer is "not covered", not "no source".
     quote, reason = quote_fare(request_for_train)
     assert quote is None
-    assert reason is UnpricedReason.NO_SOURCE
+    assert reason is UnpricedReason.OUT_OF_COVERAGE
 
 
 def test_a_registered_source_prices_the_hop(request_for_train, clean_registry):
@@ -115,7 +127,7 @@ def test_a_source_is_not_asked_about_a_mode_it_does_not_cover(request_for_train,
     quote, reason = quote_fare(request_for_train)
     assert ferry_only.calls == 0
     assert quote is None
-    assert reason is UnpricedReason.NO_SOURCE
+    assert reason is UnpricedReason.OUT_OF_COVERAGE
 
 
 def test_a_range_quote_keeps_its_upper_bound():

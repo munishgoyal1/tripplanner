@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from tripplanner.config import Settings, get_settings
+from tripplanner.providers.hafas_rest_client import HafasRestCoachSource, HafasRestTrainSource
 from tripplanner.providers.kiwi_client import KiwiCoachSource, KiwiFerrySource, KiwiTrainSource
 from tripplanner.providers.liteapi import LiteAPIProvider
 from tripplanner.providers.models import (
@@ -15,7 +16,6 @@ from tripplanner.providers.models import (
     HotelAvailabilityProvider,
     RailAvailabilityProvider,
 )
-from tripplanner.providers.omio_client import OmioCoachSource, OmioTrainSource
 from tripplanner.providers.viator import ViatorProvider
 
 ProviderFactory = Callable[[Settings], object]
@@ -41,19 +41,19 @@ def _kiwi_ferry(settings: Settings) -> KiwiFerrySource:
     return KiwiFerrySource(settings.kiwi_api_key, settings.kiwi_base_url)
 
 
-def _omio_train(settings: Settings) -> OmioTrainSource:
-    return OmioTrainSource(settings.omio_api_key, settings.omio_base_url)
+def _hafas_train(settings: Settings) -> HafasRestTrainSource:
+    return HafasRestTrainSource(settings.hafas_rest_base_url)
 
 
-def _omio_coach(settings: Settings) -> OmioCoachSource:
-    return OmioCoachSource(settings.omio_api_key, settings.omio_base_url)
+def _hafas_coach(settings: Settings) -> HafasRestCoachSource:
+    return HafasRestCoachSource(settings.hafas_rest_base_url)
 
 
 _HOTEL_PROVIDERS: dict[str, ProviderFactory] = {"liteapi": _liteapi}
 _FLIGHT_PROVIDERS: dict[str, ProviderFactory] = {"liteapi": _liteapi}
 _ACTIVITY_PROVIDERS: dict[str, ProviderFactory] = {"viator": _viator}
-_TRAIN_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_train, "omio": _omio_train}
-_COACH_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_coach, "omio": _omio_coach}
+_TRAIN_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_train, "hafas": _hafas_train}
+_COACH_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_coach, "hafas": _hafas_coach}
 _FERRY_PROVIDERS: dict[str, ProviderFactory] = {"kiwi": _kiwi_ferry}
 
 
@@ -65,10 +65,10 @@ def _selected_provider(kind: str, settings: Settings) -> str | None:
         if kind == "activity":
             return "viator" if getattr(settings, "viator_api_key", "") else None
         if kind in ("train", "coach"):
-            # Try Omio first (broader European coverage), fall back to Kiwi
-            if getattr(settings, "omio_api_key", ""):
-                return "omio"
-            return "kiwi" if getattr(settings, "kiwi_api_key", "") else None
+            # Prefer a keyed provider; HAFAS REST needs no key so it is the floor.
+            if getattr(settings, "kiwi_api_key", ""):
+                return "kiwi"
+            return "hafas" if getattr(settings, "hafas_rest_base_url", "") else None
         if kind == "ferry":
             return "kiwi" if getattr(settings, "kiwi_api_key", "") else None
         return "liteapi" if getattr(settings, "liteapi_api_key", "") else None
@@ -126,8 +126,8 @@ def get_train_provider(settings: Settings | None = None) -> RailAvailabilityProv
         raise ValueError(f"Unknown train provider: {selected}")
     if selected == "kiwi" and not getattr(active_settings, "kiwi_api_key", ""):
         raise ValueError("Kiwi train provider selected but KIWI_API_KEY is empty")
-    if selected == "omio" and not getattr(active_settings, "omio_api_key", ""):
-        raise ValueError("Omio train provider selected but OMIO_API_KEY is empty")
+    if selected == "hafas" and not getattr(active_settings, "hafas_rest_base_url", ""):
+        raise ValueError("HAFAS train provider selected but HAFAS_REST_BASE_URL is empty")
     return factory(active_settings)  # type: ignore[return-value]
 
 
@@ -143,8 +143,8 @@ def get_coach_provider(settings: Settings | None = None) -> CoachAvailabilityPro
         raise ValueError(f"Unknown coach provider: {selected}")
     if selected == "kiwi" and not getattr(active_settings, "kiwi_api_key", ""):
         raise ValueError("Kiwi coach provider selected but KIWI_API_KEY is empty")
-    if selected == "omio" and not getattr(active_settings, "omio_api_key", ""):
-        raise ValueError("Omio coach provider selected but OMIO_API_KEY is empty")
+    if selected == "hafas" and not getattr(active_settings, "hafas_rest_base_url", ""):
+        raise ValueError("HAFAS coach provider selected but HAFAS_REST_BASE_URL is empty")
     return factory(active_settings)  # type: ignore[return-value]
 
 

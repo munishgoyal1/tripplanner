@@ -150,10 +150,10 @@ class RailFareSource:
 
 
 class CoachFareSource:
-    """Prices coach/bus routes through the configured coach provider (Kiwi today)."""
+    """Prices coach/bus routes through the configured coach provider."""
 
     name = "coaches"
-    modes = frozenset({TransportMode.BUS})
+    modes = frozenset({TransportMode.COACH})
 
     def quote(self, request: FareRequest) -> FareQuote | None:
         provider = get_coach_provider()

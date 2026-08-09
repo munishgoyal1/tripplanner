@@ -147,7 +147,8 @@ class RailSearchQuery(BaseModel):
 class RailOffer(BaseModel):
     provider: str
     provider_ref: dict[str, str]
-    total: Money
+    # Unset when the network publishes no fare; the hop still shows its timing.
+    total: Money | None = None
     segments: list[dict[str, Any]]
     quoted_at: datetime
     expires_at: datetime | None = None
@@ -173,7 +174,8 @@ class CoachSearchQuery(BaseModel):
 class CoachOffer(BaseModel):
     provider: str
     provider_ref: dict[str, str]
-    total: Money
+    # Unset when the network publishes no fare; the hop still shows its timing.
+    total: Money | None = None
     segments: list[dict[str, Any]]
     quoted_at: datetime
     expires_at: datetime | None = None
