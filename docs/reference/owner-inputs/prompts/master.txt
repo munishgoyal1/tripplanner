@@ -198,3 +198,6 @@ add the needed wirings
 
 [2026-08-09 15:40] [master \!] Compare product-wide UX themes
 create a UX lab suggesting few good themes to use overall for the entire product. Currently landing page is dark and app workspace is light. Suggest 3-4 different combinates that look like a coeherent elegant and modern first classs UI for all the pages in the product.
+
+[2026-08-09 15:55] [master !] Own UX lab ports
+stop them and next time you own these ports you can kill other process ont hat port
