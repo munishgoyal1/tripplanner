@@ -1,0 +1,144 @@
+.lab23-public-entry {
+  min-height: 100%;
+  --landing-bg: #080b11;
+  --landing-surface: rgba(255, 255, 255, 0.04);
+  --landing-surface-strong: #ffffff;
+  --landing-heading: #ffffff;
+  --landing-body: #cbd5e1;
+  --landing-muted: #64748b;
+  --landing-line: rgba(255, 255, 255, 0.1);
+  --landing-accent: #34d399;
+  --landing-brand: #e14d5f;
+  --landing-lower-bg: #ffffff;
+  --landing-lower-heading: #18243d;
+  --landing-lower-body: #475569;
+  --landing-lower-line: #e2e8f0;
+  --landing-display: "Fraunces", serif;
+  --landing-body-font: "Manrope", sans-serif;
+}
+
+.lab23-public-entry.theme-postcard {
+  --landing-bg: #f7f2e9;
+  --landing-surface: rgba(255, 255, 255, 0.72);
+  --landing-heading: #1e2b31;
+  --landing-body: #526168;
+  --landing-muted: #7b8587;
+  --landing-line: #d9d1c4;
+  --landing-accent: #176f72;
+  --landing-brand: #e14d5f;
+  --landing-lower-bg: #fffdf8;
+  --landing-lower-heading: #1e2b31;
+  --landing-lower-body: #526168;
+  --landing-lower-line: #e3ddd2;
+  --landing-display: "Newsreader", serif;
+  --landing-body-font: "DM Sans", sans-serif;
+}
+
+.lab23-public-entry.theme-mineral {
+  --landing-bg: #e9f0ec;
+  --landing-surface: rgba(255, 255, 255, 0.7);
+  --landing-heading: #203238;
+  --landing-body: #4d6265;
+  --landing-muted: #728487;
+  --landing-line: #cbd8d3;
+  --landing-accent: #1e6671;
+  --landing-brand: #c95c45;
+  --landing-lower-bg: #f7faf8;
+  --landing-lower-heading: #203238;
+  --landing-lower-body: #4d6265;
+  --landing-lower-line: #d6e0dc;
+  --landing-display: "Newsreader", serif;
+  --landing-body-font: "Space Grotesk", sans-serif;
+}
+
+.lab23-public-entry.theme-citrus {
+  --landing-bg: #f4f1e8;
+  --landing-surface: rgba(255, 255, 255, 0.78);
+  --landing-heading: #18243d;
+  --landing-body: #46536a;
+  --landing-muted: #758096;
+  --landing-line: #d8d5c9;
+  --landing-accent: #2354a6;
+  --landing-brand: #e36b37;
+  --landing-lower-bg: #fffef9;
+  --landing-lower-heading: #18243d;
+  --landing-lower-body: #46536a;
+  --landing-lower-line: #dfddd4;
+  --landing-display: "Fraunces", serif;
+  --landing-body-font: "Manrope", sans-serif;
+}
+
+.lab23-public-entry > div,
+.lab23-public-entry > div > div:first-child,
+.lab23-public-entry > div > div:first-child > div:first-child {
+  background-color: var(--landing-bg) !important;
+  font-family: var(--landing-body-font);
+}
+
+.lab23-public-entry .display {
+  font-family: var(--landing-display) !important;
+}
+
+.lab23-public-entry .bg-white\[\/0\.04\],
+.lab23-public-entry .bg-white\/\[0\.04\] {
+  background-color: var(--landing-surface) !important;
+}
+
+.lab23-public-entry .bg-white,
+.lab23-public-entry > div > div:last-child {
+  background-color: var(--landing-lower-bg) !important;
+}
+
+.lab23-public-entry .text-white {
+  color: var(--landing-heading) !important;
+}
+
+.lab23-public-entry .text-slate-300 {
+  color: var(--landing-body) !important;
+}
+
+.lab23-public-entry .text-slate-500,
+.lab23-public-entry .text-slate-400 {
+  color: var(--landing-muted) !important;
+}
+
+.lab23-public-entry .text-emerald-300,
+.lab23-public-entry .text-emerald-800 {
+  color: var(--landing-accent) !important;
+}
+
+.lab23-public-entry .bg-brand {
+  background-color: var(--landing-brand) !important;
+}
+
+.lab23-public-entry .ring-white\/10,
+.lab23-public-entry .ring-white\/15,
+.lab23-public-entry .ring-white\/20,
+.lab23-public-entry .border-white\/10 {
+  --tw-ring-color: var(--landing-line) !important;
+  border-color: var(--landing-line) !important;
+}
+
+.lab23-public-entry > div > div:last-child .text-ink {
+  color: var(--landing-lower-heading) !important;
+}
+
+.lab23-public-entry > div > div:last-child .text-slate-600 {
+  color: var(--landing-lower-body) !important;
+}
+
+.lab23-public-entry > div > div:last-child .border-slate-200,
+.lab23-public-entry > div > div:last-child .ring-slate-200 {
+  border-color: var(--landing-lower-line) !important;
+  --tw-ring-color: var(--landing-lower-line) !important;
+}
+
+.lab23-public-entry:not(.theme-midnight) .bg-white.text-ink {
+  background-color: var(--landing-heading) !important;
+  color: var(--landing-bg) !important;
+}
+
+.lab23-public-entry:not(.theme-midnight) [class*="bg-brand/25"],
+.lab23-public-entry:not(.theme-midnight) [class*="bg-teal-400/20"] {
+  opacity: 0.1;
+}

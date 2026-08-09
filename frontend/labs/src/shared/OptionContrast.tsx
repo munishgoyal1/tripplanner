@@ -24,6 +24,47 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "product-themes": {
+    axis:
+      "All four render the same production landing, copy, controls, trip, and interaction model. They disagree only about the product's visual language: palette, typography, surface character, contrast, and signal colours.",
+    rows: [
+      {
+        option: "A · Postcard editorial",
+        score: 88,
+        idea: "Warm paper, editorial serif, coral action, and blue-green evidence.",
+        buys: "A humane travel voice that bridges inspiration and serious planning.",
+        costs: "The warmer surfaces can feel less operational in dense workspace views.",
+        choose: "The product should feel considered and travel-specific before it feels technical.",
+      },
+      {
+        option: "B · Midnight atlas",
+        score: 84,
+        idea: "The current dark stage extended into a cinematic atlas system.",
+        buys: "Strong continuity with the landing already in production and confident contrast.",
+        costs: "A dark family across every surface can become heavy during long planning sessions.",
+        choose: "The existing public identity is the strongest product signal to preserve.",
+      },
+      {
+        option: "C · Coastal mineral",
+        score: 91,
+        idea: "Sea-glass neutrals, mineral blue, terracotta action, and restrained type.",
+        buys: "The calmest and most legible system for dense itinerary work.",
+        costs: "It is quieter and less immediately theatrical than the public dark stage.",
+        choose: "Dependable planning should lead and visual drama should stay secondary.",
+      },
+      {
+        option: "D · Citrus modernist",
+        score: 80,
+        idea: "Chalk surfaces, cobalt navigation, and citrus action signals.",
+        buys: "A crisp, energetic identity with clear command emphasis.",
+        costs: "The brighter signals can compete with trip content and status colours.",
+        choose: "The product should feel contemporary and fast rather than contemplative.",
+      },
+    ],
+    same: "The production PublicEntry DOM and behavior, every word of copy, the replay sequence, inline overruling and undo, the Plan mine and Skip actions, the Lisbon and Porto fixture, evidence content, order, and responsive layout.",
+    verdict:
+      "C is the strongest system for the product as a whole because it remains calm and legible when the itinerary becomes dense, while A is the strongest travel-specific public voice. B preserves the current landing most directly but risks carrying a dark stage too far into daily planning. D has useful energy and command clarity, though its stronger signals need the most discipline around status and map colours. The decision here is entirely visual: the current landing experience is fixed in every row.",
+  },
   "live-plan": {
     axis:
       "All six keep Lab 21's bet that the product is best proved by planning in front of you. They disagree about the visitor's role while it runs: audience, reader, subject, or opponent — and, for E and F, about when the argument is offered.",

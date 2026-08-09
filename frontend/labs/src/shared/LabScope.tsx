@@ -10,6 +10,18 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "product-themes": {
+    changes: [
+      "Colour tokens: page, surface, text, border, action, evidence, and signal colours",
+      "Typography: the display and body families used to express each visual direction",
+      "Surface treatment and contrast, applied consistently across the public entry, workspace, and mobile specimens",
+    ],
+    context: [
+      "The exact production landing component, including its copy, hierarchy, replay, progress, inline decisions, totals, and evidence sections",
+      "Plan mine, Skip to the app, reset, overrule, and undo behavior; every theme renders the same controls in the same places",
+      "The Lisbon and Porto fixture, content order, responsive behavior, and the workspace and mobile product functionality",
+    ],
+  },
   "live-plan": {
     changes: [
       "What a first-time visitor is asked to do while the planner works: watch it, read it, replace it, or argue with it",

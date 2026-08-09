@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { ArrowLeft, ArrowRight, CalendarDays, Check, Compass, Map, MessageCircle, Sparkles, WalletCards } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Compass, Map, MessageCircle, Sparkles, WalletCards } from "lucide-react";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
 import { OptionContrast } from "../shared/OptionContrast";
+import PublicEntry from "../../../src/publicEntry/PublicEntry";
 import "../../../src/index.css";
 import "./styles.css";
+import "./landing-themes.css";
 
 type ThemeId = "postcard" | "midnight" | "mineral" | "citrus";
 type Surface = "landing" | "workspace" | "mobile";
@@ -64,6 +66,14 @@ function ThemeFrame({ theme, surface }: { theme: typeof themes[number]; surface:
   const ink = theme.colors[3];
   const secondary = theme.colors[2];
 
+  if (surface === "landing") {
+    return (
+      <div className={`lab23-public-entry theme-${theme.id}`}>
+        <PublicEntry onPlan={() => undefined} onSkip={() => undefined} />
+      </div>
+    );
+  }
+
   return (
     <div className={`theme-frame theme-${theme.id} ${isMobile ? "theme-mobile" : ""}`} style={{ "--theme-accent": accent, "--theme-ink": ink, "--theme-secondary": secondary } as React.CSSProperties}>
       <header className="theme-nav">
@@ -71,24 +81,6 @@ function ThemeFrame({ theme, surface }: { theme: typeof themes[number]; surface:
         <nav className="theme-nav-links" aria-label="Public navigation"><span>How it works</span><span>Saved trips</span><span>Sign in</span></nav>
         <button type="button" className="theme-nav-action" onClick={() => setAssistantOpen(true)}>Plan a trip <ArrowRight size={14} /></button>
       </header>
-
-      {surface === "landing" && <main className="landing-surface">
-        <section className="landing-hero">
-          <div className="eyebrow"><Sparkles size={13} /> A plan with a point of view</div>
-          <h1>Your next trip,<br /><em>already thought through.</em></h1>
-          <p className="hero-copy">A preference-aware itinerary with real places, sensible pacing, and the practical details that make a good trip feel easy.</p>
-          <div className="hero-actions"><button type="button" className="primary-button" onClick={() => setAssistantOpen(true)}>Start with a destination <ArrowRight size={16} /></button><button type="button" className="quiet-button">See a finished plan</button></div>
-          <div className="trust-row"><span><Check size={13} /> No account to begin</span><span><Check size={13} /> Booking stays in your hands</span></div>
-        </section>
-        <section className="landing-proof" aria-label="Generated trip preview">
-          <div className="proof-heading"><span className="section-kicker">A real plan, not a moodboard</span><span className="proof-source">Lisbon + Porto · 8 days</span></div>
-          <div className="proof-card">
-            <div className="proof-image"><div className="sun-disc" /><div className="tram-line" /><span className="image-label">Day 3 · Alfama slowly</span></div>
-            <div className="proof-copy"><div className="mini-label">The shape of the trip</div><h2>Old streets, late lunches, one good train.</h2><p>Four anchor experiences, two calm transfer days, and enough white space to follow a good recommendation.</p><div className="proof-stats"><span><strong>8</strong> days</span><span><strong>2</strong> stays</span><span><strong>€2,180</strong> indicative total</span></div></div>
-          </div>
-          <div className="proof-strip"><span>Flights</span><span>Stay</span><span>Places</span><span>Weather</span><span className="proof-active">A plan that holds together</span></div>
-        </section>
-      </main>}
 
       {surface === "workspace" && <main className="workspace-surface">
         <div className="workspace-toolbar"><button type="button" className="trip-switcher"><span className="trip-dot" /> Lisbon + Porto <CalendarDays size={14} /></button><div className="workspace-status">Saved · 4 of 7 booking-ready</div><div className="workspace-controls"><button type="button" className="selected-control"><CalendarDays size={14} /> Itinerary</button><button type="button"><Map size={14} /> Map</button><button type="button" onClick={() => setAssistantOpen(true)}><MessageCircle size={14} /> Assistant</button></div><button type="button" className="icon-button" aria-label="Budget"><WalletCards size={16} /></button></div>
