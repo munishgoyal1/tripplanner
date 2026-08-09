@@ -1,8 +1,8 @@
-"""Read-only Omio (formerly GoEuro) trains, coaches, and multi-modal provider.
+"""Experimental Omio affiliate transport adapter.
 
-Omio provides real-time pricing for trains, coaches, and ride-share across 45+
-European countries. This client handles search, response parsing, retries, and
-error handling with graceful degradation (empty results on API failure).
+Omio's Search API is partner-gated and is not registered as an active MVP
+provider. Keep this module out of default execution until current approved API
+access and terms are verified for the account.
 """
 
 from __future__ import annotations
@@ -16,8 +16,6 @@ import httpx
 from tripplanner.providers.models import (
     CoachOffer,
     CoachSearchQuery,
-    FerryOffer,
-    FerrySearchQuery,
     Money,
     QuoteStatus,
     RailOffer,
@@ -49,7 +47,7 @@ def _journey_duration_min(route: dict[str, Any]) -> int | None:
 
 def _count_transfers(segments: list[dict[str, Any]]) -> int:
     """Count number of transfers/stops from segments.
-    
+
     0 = direct, 1+ = with transfers.
     """
     if not segments:
@@ -262,7 +260,6 @@ class OmioCoachSource:
                     continue
 
                 segments = _parse_segments(route)
-                transfers = _count_transfers(segments)
 
                 offer = CoachOffer(
                     provider=self.name,

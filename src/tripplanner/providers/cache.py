@@ -119,3 +119,45 @@ class FareCache:
             if now >= created_at + timedelta(seconds=ttl):
                 expired += 1
         return {"entries": len(self.cache), "expired": expired}
+
+
+@dataclass(frozen=True)
+class ProviderCacheEntry(Generic[T]):
+    value: T
+    provider: str
+    checked_at: datetime
+    expires_at: datetime
+
+
+class ProviderTTLCache(Generic[T]):
+    """Small in-process TTL cache for provider capability results.
+
+    This is intentionally generic and conservative. It is a low-cost MVP guard
+    around provider fan-out, not a replacement for persisted trip evidence.
+    """
+
+    def __init__(self) -> None:
+        self._items: dict[str, ProviderCacheEntry[T]] = {}
+
+    def get(self, key: str) -> ProviderCacheEntry[T] | None:
+        entry = self._items.get(key)
+        if not entry:
+            return None
+        if datetime.now(UTC) >= entry.expires_at:
+            del self._items[key]
+            return None
+        return entry
+
+    def set(self, key: str, value: T, *, provider: str, ttl_seconds: int) -> ProviderCacheEntry[T]:
+        checked_at = datetime.now(UTC)
+        entry = ProviderCacheEntry(
+            value=value,
+            provider=provider,
+            checked_at=checked_at,
+            expires_at=checked_at + timedelta(seconds=max(1, ttl_seconds)),
+        )
+        self._items[key] = entry
+        return entry
+
+    def clear(self) -> None:
+        self._items.clear()

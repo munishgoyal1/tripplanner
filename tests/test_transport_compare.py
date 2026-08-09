@@ -37,6 +37,10 @@ def isolated_tool(monkeypatch):
     """No network, no shared state leaking between cases."""
     transport_compare._cache.clear()
     transport_compare.reset_turn_budget()
+    monkeypatch.setattr(fares, "get_flight_provider", lambda: None)
+    monkeypatch.setattr(fares, "get_train_provider", lambda: None)
+    monkeypatch.setattr(fares, "get_coach_provider", lambda: None)
+    monkeypatch.setattr(fares, "get_ferry_provider", lambda: None)
 
     saved: dict = {}
 

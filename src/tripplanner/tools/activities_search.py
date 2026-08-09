@@ -6,10 +6,13 @@ import json
 
 from langchain_core.tools import tool
 
+from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.models import ActivitySearchQuery
-from tripplanner.providers.registry import get_activity_provider
-from tripplanner.providers.viator import ViatorError
+from tripplanner.providers.registry import get_activity_providers
+from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.tools import amadeus_client
+
+_ACTIVITY_RESULT_CACHE: ProviderTTLCache[list] = ProviderTTLCache()
 
 # Approximate coordinates for popular destinations
 _CITY_COORDS: dict[str, tuple[float, float]] = {
@@ -112,40 +115,52 @@ def search_activities(
         currency: ISO currency code for provider from-prices.
         refresh: Bypass the short-lived shared result cache.
     """
-    del refresh
-    provider = get_activity_provider()
-    if provider:
-        try:
-            offers = provider.search_activities(
-                ActivitySearchQuery(
-                    destination=city,
-                    start_date=start_date,
-                    end_date=end_date,
-                    adults=adults,
-                    children=children,
-                    currency=currency.upper(),
-                    max_results=max_results,
-                )
-            )
-            if offers:
-                return json.dumps(
-                    {
-                        "quote_status": "live",
-                        "provider": provider.name,
-                        "pricing_scope": "from_price; not an exact party total or held quote",
-                        "booking_supported": False,
-                        "offers": [offer.model_dump(mode="json") for offer in offers],
-                    },
-                    ensure_ascii=False,
-                )
-        except (ViatorError, ValueError) as exc:
+    providers = get_activity_providers()
+    if providers:
+        query = ActivitySearchQuery(
+            destination=city,
+            start_date=start_date,
+            end_date=end_date,
+            adults=adults,
+            children=children,
+            currency=currency.upper(),
+            max_results=max_results,
+        )
+        result = run_provider_chain(
+            providers=providers,
+            cache=_ACTIVITY_RESULT_CACHE,
+            cache_key=query.model_dump_json(),
+            ttl_seconds=6 * 60 * 60,
+            refresh=refresh,
+            empty_value=[],
+            call=lambda provider: provider.search_activities(query),
+        )
+        offers = result.value
+        if offers:
             return json.dumps(
                 {
-                    "quote_status": "provider_error",
-                    "provider": provider.name,
+                    "quote_status": result.quote_status,
+                    "provider": result.provider,
+                    "cache_hit": result.cache_hit,
+                    "checked_at": result.checked_at,
+                    "expires_at": result.expires_at,
+                    "pricing_scope": "from_price; not an exact party total or held quote",
                     "booking_supported": False,
-                    "error": str(exc),
-                }
+                    "offers": [offer.model_dump(mode="json") for offer in offers],
+                },
+                ensure_ascii=False,
+                default=str,
+            )
+        if result.errors:
+            return json.dumps(
+                {
+                    "quote_status": result.quote_status,
+                    "provider": result.provider,
+                    "booking_supported": False,
+                    "errors": result.errors,
+                },
+                ensure_ascii=False,
+                default=str,
             )
 
     if not amadeus_client.is_configured():

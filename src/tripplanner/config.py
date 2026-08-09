@@ -54,31 +54,28 @@ class Settings(BaseModel):
     travel_hotel_provider: str = os.getenv("TRAVEL_HOTEL_PROVIDER", "auto").strip().lower()
     travel_flight_provider: str = os.getenv("TRAVEL_FLIGHT_PROVIDER", "auto").strip().lower()
 
-    # Kiwi.com Trains API (free tier) — train, coach, ferry pricing
-    # Sign up free: https://www.kiwi.com/business/trains (get API key from dashboard)
-    # Free tier: 10 requests/minute, 600 requests/hour
+    # Partner-gated transport candidates. Keep disabled until current approved
+    # API access and free/sandbox terms are confirmed for this account.
     kiwi_api_key: str = os.getenv("KIWI_API_KEY", "")
     kiwi_base_url: str = os.getenv("KIWI_BASE_URL", "https://www.kiwi.com/api/v1").rstrip("/")
-    
-    # Omio API (free tier) — multi-modal transport pricing (train, coach)
-    # Sign up free: https://www.omio.com/business (get API key from dashboard)
-    # Covers 45+ countries in Europe with trains, coaches, and ferries
-    # Free tier: 1000 requests/month
+
+    # Omio affiliate Search API is partner-gated. Do not assume public/free API access.
     omio_api_key: str = os.getenv("OMIO_API_KEY", "")
     omio_base_url: str = os.getenv("OMIO_BASE_URL", "https://api.omio.com").rstrip("/")
-    
+
     # Rail transport pricing providers (train, coach, ferry)
     enable_train_pricing: bool = Field(
-        default_factory=lambda: os.getenv("ENABLE_TRAIN_PRICING", "1").strip() != "0"
+        default_factory=lambda: os.getenv("ENABLE_TRAIN_PRICING", "0").strip() == "1"
     )
     enable_coach_pricing: bool = Field(
-        default_factory=lambda: os.getenv("ENABLE_COACH_PRICING", "1").strip() != "0"
+        default_factory=lambda: os.getenv("ENABLE_COACH_PRICING", "0").strip() == "1"
     )
     enable_ferry_pricing: bool = Field(
-        default_factory=lambda: os.getenv("ENABLE_FERRY_PRICING", "1").strip() != "0"
+        default_factory=lambda: os.getenv("ENABLE_FERRY_PRICING", "0").strip() == "1"
     )
     
-    # Preferred rail transport provider ("kiwi", "omio", or "auto"; "auto" tries in order)
+    # Preferred rail transport provider. Only providers registered as active in
+    # providers/registry.py are accepted; Kiwi/Omio remain inactive candidates.
     travel_train_provider: str = os.getenv("TRAVEL_TRAIN_PROVIDER", "auto").strip().lower()
     travel_coach_provider: str = os.getenv("TRAVEL_COACH_PROVIDER", "auto").strip().lower()
     travel_ferry_provider: str = os.getenv("TRAVEL_FERRY_PROVIDER", "auto").strip().lower()

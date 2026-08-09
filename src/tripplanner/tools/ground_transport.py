@@ -1,11 +1,22 @@
-"""Ground transportation search via Kiwi.com trains, coaches, and ferries APIs."""
+"""Ground transportation search through approved provider adapters."""
 
 from __future__ import annotations
 
 from langchain_core.tools import tool
 
-from tripplanner.providers.models import CoachOffer, CoachSearchQuery, FerryOffer, FerrySearchQuery, RailOffer, RailSearchQuery
-from tripplanner.providers.registry import get_coach_provider, get_ferry_provider, get_train_provider
+from tripplanner.providers.models import (
+    CoachOffer,
+    CoachSearchQuery,
+    FerryOffer,
+    FerrySearchQuery,
+    RailOffer,
+    RailSearchQuery,
+)
+from tripplanner.providers.registry import (
+    get_coach_provider,
+    get_ferry_provider,
+    get_train_provider,
+)
 
 
 def _format_rail(offers: list[RailOffer]) -> str:
@@ -18,33 +29,35 @@ def _format_rail(offers: list[RailOffer]) -> str:
         total = offer.total
         currency = total.currency
         amount = total.amount
-        
+
         provider = offer.provider
         journey_duration = offer.journey_duration_min
         direct = "Direct" if offer.direct else f"{offer.changes or 0} stop(s)"
         status = offer.status.value if offer.status else "unknown"
-        
+
         duration_str = ""
         if journey_duration:
             hours = journey_duration // 60
             minutes = journey_duration % 60
             duration_str = f" | {hours}h {minutes}m"
-        
+
         lines.append(f"\n--- Option {i} — {currency} {amount} ---")
         lines.append(f"  Provider: {provider}")
         lines.append(f"  Journey: {direct}{duration_str}")
         lines.append(f"  Status: {status}")
-        
+
         if offer.booking_url:
             lines.append(f"  Book: {offer.booking_url}")
-        
+
         # Show segments
         for j, seg in enumerate(offer.segments, 1):
             dep = seg.get("departure", "?")
             arr = seg.get("arrival", "?")
             operator = seg.get("operator", "")
             duration = seg.get("duration", "")
-            lines.append(f"    Leg {j}: {dep} → {arr}{' | ' + operator if operator else ''}{' | ' + str(duration) if duration else ''}")
+            operator_part = f" | {operator}" if operator else ""
+            duration_part = f" | {duration}" if duration else ""
+            lines.append(f"    Leg {j}: {dep} → {arr}{operator_part}{duration_part}")
 
     lines.append(f"\n{len(offers)} train option(s) found.")
     return "\n".join(lines)
@@ -60,37 +73,39 @@ def _format_coach(offers: list[CoachOffer]) -> str:
         total = offer.total
         currency = total.currency
         amount = total.amount
-        
+
         provider = offer.provider
         operator = offer.operator_name or "Unknown operator"
         journey_duration = offer.journey_duration_min
         status = offer.status.value if offer.status else "unknown"
-        
+
         duration_str = ""
         if journey_duration:
             hours = journey_duration // 60
             minutes = journey_duration % 60
             duration_str = f" | {hours}h {minutes}m"
-        
+
         lines.append(f"\n--- Option {i} — {currency} {amount} ---")
         lines.append(f"  Operator: {operator}")
         lines.append(f"  Provider: {provider}")
         lines.append(f"  Journey{duration_str}")
         lines.append(f"  Status: {status}")
-        
+
         if offer.amenities:
             lines.append(f"  Amenities: {', '.join(offer.amenities)}")
-        
+
         if offer.booking_url:
             lines.append(f"  Book: {offer.booking_url}")
-        
+
         # Show segments
         for j, seg in enumerate(offer.segments, 1):
             dep = seg.get("departure", "?")
             arr = seg.get("arrival", "?")
             operator_seg = seg.get("operator", "")
             duration = seg.get("duration", "")
-            lines.append(f"    Leg {j}: {dep} → {arr}{' | ' + operator_seg if operator_seg else ''}{' | ' + str(duration) if duration else ''}")
+            operator_part = f" | {operator_seg}" if operator_seg else ""
+            duration_part = f" | {duration}" if duration else ""
+            lines.append(f"    Leg {j}: {dep} → {arr}{operator_part}{duration_part}")
 
     lines.append(f"\n{len(offers)} coach option(s) found.")
     return "\n".join(lines)
@@ -106,37 +121,39 @@ def _format_ferry(offers: list[FerryOffer]) -> str:
         total = offer.total
         currency = total.currency
         amount = total.amount
-        
+
         provider = offer.provider
         route = offer.route_name or "Unknown route"
         journey_duration = offer.journey_duration_min
         status = offer.status.value if offer.status else "unknown"
-        
+
         duration_str = ""
         if journey_duration:
             hours = journey_duration // 60
             minutes = journey_duration % 60
             duration_str = f" | {hours}h {minutes}m"
-        
+
         lines.append(f"\n--- Option {i} — {currency} {amount} ---")
         lines.append(f"  Route: {route}")
         lines.append(f"  Provider: {provider}")
         lines.append(f"  Journey{duration_str}")
         lines.append(f"  Status: {status}")
-        
+
         if offer.cabin_options:
             lines.append(f"  Cabin options: {', '.join(offer.cabin_options)}")
-        
+
         if offer.booking_url:
             lines.append(f"  Book: {offer.booking_url}")
-        
+
         # Show segments
         for j, seg in enumerate(offer.segments, 1):
             dep = seg.get("departure", "?")
             arr = seg.get("arrival", "?")
             operator_seg = seg.get("operator", "")
             duration = seg.get("duration", "")
-            lines.append(f"    Leg {j}: {dep} → {arr}{' | ' + operator_seg if operator_seg else ''}{' | ' + str(duration) if duration else ''}")
+            operator_part = f" | {operator_seg}" if operator_seg else ""
+            duration_part = f" | {duration}" if duration else ""
+            lines.append(f"    Leg {j}: {dep} → {arr}{operator_part}{duration_part}")
 
     lines.append(f"\n{len(offers)} ferry option(s) found.")
     return "\n".join(lines)
@@ -169,8 +186,9 @@ def search_trains(
     provider = get_train_provider()
     if provider is None:
         return (
-            "Train provider not configured. Set KIWI_API_KEY in .env to enable train search.\n"
-            "Sign up free at https://www.kiwi.com/business/trains"
+            "Train provider not configured. Rail pricing is intentionally disabled until "
+            "a current approved free/sandbox API is confirmed. Use schedule/routing evidence "
+            "without a fare, or configure an active registry provider after approval."
         )
 
     try:
@@ -216,8 +234,9 @@ def search_coaches(
     provider = get_coach_provider()
     if provider is None:
         return (
-            "Coach provider not configured. Set KIWI_API_KEY in .env to enable coach search.\n"
-            "Sign up free at https://www.kiwi.com/business/coaches"
+            "Coach provider not configured. Coach pricing is intentionally disabled until "
+            "a current approved free/sandbox API is confirmed. Use schedule/routing evidence "
+            "without a fare, or configure an active registry provider after approval."
         )
 
     try:
@@ -263,8 +282,9 @@ def search_ferries(
     provider = get_ferry_provider()
     if provider is None:
         return (
-            "Ferry provider not configured. Set KIWI_API_KEY in .env to enable ferry search.\n"
-            "Sign up free at https://www.kiwi.com/business/ferries"
+            "Ferry provider not configured. Ferry pricing is intentionally disabled until "
+            "a current approved free/sandbox API is confirmed. Use schedule/routing evidence "
+            "without a fare, or configure an active registry provider after approval."
         )
 
     try:

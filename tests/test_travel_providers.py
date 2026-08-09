@@ -7,13 +7,17 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
+from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.liteapi import LiteAPIError, LiteAPIProvider
 from tripplanner.providers.models import ActivitySearchQuery, FlightSearchQuery, HotelSearchQuery
 from tripplanner.providers.registry import (
     get_activity_provider,
     get_flight_provider,
     get_hotel_provider,
+    get_train_provider,
+    provider_catalog,
 )
+from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.providers.viator import ViatorError, ViatorProvider
 
 
@@ -54,6 +58,86 @@ def test_registry_auto_preserves_legacy_when_liteapi_is_unconfigured():
     assert get_hotel_provider(settings) is None  # type: ignore[arg-type]
     assert get_flight_provider(settings) is None  # type: ignore[arg-type]
     assert get_activity_provider(settings) is None  # type: ignore[arg-type]
+
+
+def test_partner_gated_transport_providers_are_not_auto_enabled():
+    settings = SimpleNamespace(
+        liteapi_api_key="test-key",
+        travel_train_provider="auto",
+        enable_train_pricing=True,
+    )
+
+    assert get_train_provider(settings) is None  # type: ignore[arg-type]
+
+
+def test_registry_rejects_unverified_explicit_transport_provider():
+    settings = SimpleNamespace(
+        kiwi_api_key="test-key",
+        travel_train_provider="kiwi",
+        enable_train_pricing=True,
+    )
+
+    with pytest.raises(ValueError, match="Unknown or inactive train provider: kiwi"):
+        get_train_provider(settings)  # type: ignore[arg-type]
+
+
+def test_provider_catalog_keeps_gated_candidates_disabled():
+    catalog = {candidate.name: candidate for candidate in provider_catalog()}
+
+    assert catalog["liteapi"].free_mvp_ok is True
+    assert catalog["kiwi"].enabled is False
+    assert catalog["omio"].enabled is False
+    assert catalog["tiqets"].enabled is False
+    assert catalog["travelpayouts"].enabled is False
+
+
+class EmptyProvider:
+    name = "empty"
+
+    def search(self):
+        return []
+
+
+class WorkingProvider:
+    name = "working"
+
+    def __init__(self):
+        self.calls = 0
+
+    def search(self):
+        self.calls += 1
+        return ["offer"]
+
+
+def test_provider_chain_falls_back_and_caches():
+    working = WorkingProvider()
+    cache: ProviderTTLCache[list[str]] = ProviderTTLCache()
+
+    first = run_provider_chain(
+        providers=[EmptyProvider(), working],
+        cache=cache,
+        cache_key="same-query",
+        ttl_seconds=60,
+        refresh=False,
+        empty_value=[],
+        call=lambda provider: provider.search(),
+    )
+    second = run_provider_chain(
+        providers=[EmptyProvider(), working],
+        cache=cache,
+        cache_key="same-query",
+        ttl_seconds=60,
+        refresh=False,
+        empty_value=[],
+        call=lambda provider: provider.search(),
+    )
+
+    assert first.value == ["offer"]
+    assert first.provider == "working"
+    assert first.cache_hit is False
+    assert second.cache_hit is True
+    assert second.provider == "working"
+    assert working.calls == 1
 
 
 def test_liteapi_normalizes_live_hotel_rates(monkeypatch):

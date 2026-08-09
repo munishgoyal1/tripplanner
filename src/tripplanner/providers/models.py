@@ -17,6 +17,39 @@ class QuoteStatus(StrEnum):
     PROVIDER_ERROR = "provider_error"
 
 
+class ProviderCapability(StrEnum):
+    FLIGHT_SEARCH = "flight.search"
+    FLIGHT_VERIFY = "flight.verify"
+    HOTEL_SEARCH = "hotel.search"
+    HOTEL_VERIFY = "hotel.verify"
+    ACTIVITY_SEARCH = "activity.search"
+    ACTIVITY_VERIFY = "activity.verify"
+    TICKET_SEARCH = "ticket.search"
+    TRAIN_SEARCH = "train.search"
+    COACH_SEARCH = "coach.search"
+    FERRY_SEARCH = "ferry.search"
+    ROUTE_COMPUTE = "route.compute"
+    PLACE_SEARCH = "place.search"
+
+
+class ProviderAccess(StrEnum):
+    ACTIVE_FREE_OR_SANDBOX = "active_free_or_sandbox"
+    ACTIVE_PAID_DISABLED = "active_paid_disabled"
+    PARTNER_GATED = "partner_gated"
+    DEPRECATED_OR_UNVERIFIED = "deprecated_or_unverified"
+    PUBLIC_OPEN = "public_open"
+
+
+class ProviderCandidate(BaseModel):
+    name: str
+    capabilities: list[ProviderCapability]
+    access: ProviderAccess
+    free_mvp_ok: bool = False
+    enabled: bool = False
+    requires_key: bool = True
+    notes: str = ""
+
+
 class Money(BaseModel):
     amount: float
     currency: str

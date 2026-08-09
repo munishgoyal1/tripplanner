@@ -11,22 +11,21 @@ Tests cover:
 
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from datetime import UTC, date, datetime
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from tripplanner.config import Settings
-from tripplanner.providers.omio_client import OmioCoachSource, OmioTrainSource, OmioError
 from tripplanner.providers.models import (
     CoachSearchQuery,
-    Money,
     QuoteStatus,
     RailSearchQuery,
 )
+from tripplanner.providers.omio_client import OmioCoachSource, OmioError, OmioTrainSource
 from tripplanner.providers.registry import (
+    _selected_provider,
     get_coach_provider,
     get_train_provider,
-    _selected_provider,
 )
 
 
@@ -334,15 +333,14 @@ class TestOmioCoachSource:
 
 
 class TestRegistryIntegration:
-    """Test Omio integration with provider registry."""
+    """Test Omio remains an experimental, partner-gated adapter."""
 
-    def test_get_train_provider_returns_omio_when_configured(self) -> None:
-        """Return OmioTrainSource when OMIO_API_KEY is set."""
+    def test_get_train_provider_does_not_auto_enable_omio(self) -> None:
+        """Omio keys alone do not prove approved current API access."""
         settings = Settings(omio_api_key="test_key_abc", kiwi_api_key="")
         provider = get_train_provider(settings)
 
-        assert provider is not None
-        assert isinstance(provider, OmioTrainSource)
+        assert provider is None
 
     def test_get_train_provider_returns_none_without_key(self) -> None:
         """Return None when no train provider is configured."""
@@ -363,13 +361,12 @@ class TestRegistryIntegration:
         provider = get_train_provider(settings)
         assert provider is None
 
-    def test_get_coach_provider_returns_omio_when_configured(self) -> None:
-        """Return OmioCoachSource when OMIO_API_KEY is set."""
+    def test_get_coach_provider_does_not_auto_enable_omio(self) -> None:
+        """Coach pricing is disabled until approved partner access is confirmed."""
         settings = Settings(omio_api_key="test_key_xyz", kiwi_api_key="")
         provider = get_coach_provider(settings)
 
-        assert provider is not None
-        assert isinstance(provider, OmioCoachSource)
+        assert provider is None
 
     def test_get_coach_provider_returns_none_without_key(self) -> None:
         """Return None when no coach provider is configured."""
@@ -381,17 +378,17 @@ class TestRegistryIntegration:
         provider = get_coach_provider(settings)
         assert provider is None
 
-    def test_selected_provider_omio_prioritized_for_train(self) -> None:
-        """Omio takes priority over Kiwi for train/coach when both are available."""
+    def test_selected_provider_does_not_prioritize_gated_train_candidates(self) -> None:
+        """Partner-gated keys do not make Omio/Kiwi active providers."""
         settings = Settings(omio_api_key="omio_key", kiwi_api_key="kiwi_key")
         provider = _selected_provider("train", settings)
-        assert provider == "omio"
+        assert provider is None
 
-    def test_selected_provider_fallback_to_kiwi(self) -> None:
-        """Fall back to Kiwi when Omio is not configured."""
+    def test_selected_provider_does_not_fallback_to_kiwi(self) -> None:
+        """Kiwi is also partner-gated and not a free public fallback."""
         settings = Settings(omio_api_key="", kiwi_api_key="kiwi_key")
         provider = _selected_provider("train", settings)
-        assert provider == "kiwi"
+        assert provider is None
 
     def test_selected_provider_explicit_override(self) -> None:
         """Explicit provider selection overrides auto-selection."""
@@ -410,7 +407,7 @@ class TestRegistryIntegration:
             travel_train_provider="omio",
             enable_train_pricing=True,
         )
-        with pytest.raises(ValueError, match="Omio train provider selected"):
+        with pytest.raises(ValueError, match="Unknown or inactive train provider: omio"):
             get_train_provider(settings)
 
     def test_get_coach_provider_raises_on_missing_key(self) -> None:
@@ -420,17 +417,17 @@ class TestRegistryIntegration:
             travel_coach_provider="omio",
             enable_coach_pricing=True,
         )
-        with pytest.raises(ValueError, match="Omio coach provider selected"):
+        with pytest.raises(ValueError, match="Unknown or inactive coach provider: omio"):
             get_coach_provider(settings)
 
-    def test_ferry_provider_still_kiwi_only(self) -> None:
-        """Ferry provider falls back to Kiwi only (Omio doesn't support yet)."""
+    def test_ferry_provider_does_not_auto_enable_kiwi(self) -> None:
+        """Ferry pricing remains unavailable until approved API access exists."""
         from tripplanner.providers.registry import get_ferry_provider
 
         settings = Settings(omio_api_key="test_key", kiwi_api_key="kiwi_key")
         provider = _selected_provider("ferry", settings)
-        # Ferry should only return kiwi since Omio doesn't have ferry support
-        assert provider == "kiwi"
+        assert provider is None
+        assert get_ferry_provider(settings) is None
 
 
 class TestOmioErrorHandling:

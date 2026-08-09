@@ -21,7 +21,6 @@ from tripplanner.providers.models import (
     RailOffer,
     RailSearchQuery,
 )
-from tripplanner.tools.flight_search import resolve_iata
 
 
 class LiteAPIError(RuntimeError):
@@ -112,10 +111,34 @@ _HOTEL_CITY_CODES = {
     "tokyo": "TYO",
 }
 
+_IATA_CODES = {
+    "delhi": "DEL",
+    "new delhi": "DEL",
+    "mumbai": "BOM",
+    "bangalore": "BLR",
+    "bengaluru": "BLR",
+    "goa": "GOI",
+    "london": "LHR",
+    "new york": "JFK",
+    "paris": "CDG",
+    "tokyo": "NRT",
+    "dubai": "DXB",
+    "singapore": "SIN",
+}
+
+
+def _resolve_iata(place: str) -> str:
+    normalized = place.lower().strip()
+    if normalized in _IATA_CODES:
+        return _IATA_CODES[normalized]
+    if len(place) == 3 and place.isalpha():
+        return place.upper()
+    return place.upper()[:3]
+
 
 def _hotel_location_code(destination: str) -> str:
     normalized = destination.strip().lower()
-    return _HOTEL_CITY_CODES.get(normalized, resolve_iata(destination))
+    return _HOTEL_CITY_CODES.get(normalized, _resolve_iata(destination))
 
 
 class LiteAPIProvider:
@@ -214,8 +237,8 @@ class LiteAPIProvider:
     def search_flights(self, query: FlightSearchQuery) -> list[FlightOffer]:
         legs = [
             {
-                "origin": resolve_iata(query.origin),
-                "destination": resolve_iata(query.destination),
+                "origin": _resolve_iata(query.origin),
+                "destination": _resolve_iata(query.destination),
                 "date": query.departure_date,
                 "direction": "OUTBOUND",
             }
@@ -223,8 +246,8 @@ class LiteAPIProvider:
         if query.return_date:
             legs.append(
                 {
-                    "origin": resolve_iata(query.destination),
-                    "destination": resolve_iata(query.origin),
+                    "origin": _resolve_iata(query.destination),
+                    "destination": _resolve_iata(query.origin),
                     "date": query.return_date,
                     "direction": "INBOUND",
                 }
@@ -370,14 +393,14 @@ class LiteAPIProvider:
         """Parse LiteAPI train response into RailOffer list."""
         offers: list[RailOffer] = []
         quoted_at = _utc_now()
-        
+
         for route in payload.get("data", []):
             route_id = str(route.get("id") or "")
             total = _money(route.get("price") or route.get("pricing"), currency)
-            
+
             if not route_id or not total:
                 continue
-            
+
             offers.append(
                 RailOffer(
                     provider=self.name,
@@ -392,7 +415,7 @@ class LiteAPIProvider:
                     booking_url=route.get("bookingUrl"),
                 )
             )
-        
+
         offers.sort(key=lambda offer: offer.total.amount)
         return offers[:max_results]
 
@@ -405,14 +428,14 @@ class LiteAPIProvider:
         """Parse LiteAPI coach response into CoachOffer list."""
         offers: list[CoachOffer] = []
         quoted_at = _utc_now()
-        
+
         for route in payload.get("data", []):
             route_id = str(route.get("id") or "")
             total = _money(route.get("price") or route.get("pricing"), currency)
-            
+
             if not route_id or not total:
                 continue
-            
+
             offers.append(
                 CoachOffer(
                     provider=self.name,
@@ -427,7 +450,7 @@ class LiteAPIProvider:
                     booking_url=route.get("bookingUrl"),
                 )
             )
-        
+
         offers.sort(key=lambda offer: offer.total.amount)
         return offers[:max_results]
 
@@ -440,14 +463,14 @@ class LiteAPIProvider:
         """Parse LiteAPI ferry response into FerryOffer list."""
         offers: list[FerryOffer] = []
         quoted_at = _utc_now()
-        
+
         for route in payload.get("data", []):
             route_id = str(route.get("id") or "")
             total = _money(route.get("price") or route.get("pricing"), currency)
-            
+
             if not route_id or not total:
                 continue
-            
+
             offers.append(
                 FerryOffer(
                     provider=self.name,
@@ -462,6 +485,6 @@ class LiteAPIProvider:
                     booking_url=route.get("bookingUrl"),
                 )
             )
-        
+
         offers.sort(key=lambda offer: offer.total.amount)
         return offers[:max_results]

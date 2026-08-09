@@ -154,8 +154,8 @@ evidence.
 | Area | Primary paths | Contract |
 | --- | --- | --- |
 | Destination discovery | `tools/destinations.py`, `tools/search.py` | Return grounded options with source context |
-| Flights and hotels | Stable agent tools plus `providers/registry.py` | Prefer live availability; label fallback data accurately |
-| Activities | Existing Viator/Amadeus provider boundaries | Preserve provenance and handoff material |
+| Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Prefer free/sandbox active providers, cache before fan-out, fall back in order, and label evidence/freshness accurately |
+| Gated provider candidates | `providers/registry.py` catalog plus disabled experimental adapters | Do not auto-enable without current approved API access and acceptable terms |
 | Maps and geocoding | Map/location tools plus frontend map utilities | Keep coordinates and selected itinerary synchronized |
 | Preferences | About Me extractor, apply logic, and store | Merge additively unless the owner explicitly removes data |
 | Email/export | Export tool and external operation ledger | Retried requests must not duplicate delivery records |

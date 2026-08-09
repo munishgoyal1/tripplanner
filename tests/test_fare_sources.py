@@ -41,6 +41,7 @@ def request_for_train():
 @pytest.fixture
 def clean_registry():
     added: list[str] = []
+    fares._FARE_CACHE.clear()
 
     def add(source):
         fares.register_source(source)
@@ -50,6 +51,7 @@ def clean_registry():
     yield add
     for name in added:
         fares.unregister_source(name)
+    fares._FARE_CACHE.clear()
 
 
 def test_rail_has_no_source_today_so_it_comes_back_unpriced(request_for_train):

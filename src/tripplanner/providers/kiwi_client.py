@@ -1,4 +1,9 @@
-"""Read-only Kiwi.com trains, coaches, and ferries provider."""
+"""Experimental Kiwi.com transport adapter.
+
+Kiwi/Tequila is partner-gated and is not registered as an active MVP provider.
+Keep this module out of default execution until current approved API access and
+terms are verified for the account.
+"""
 
 from __future__ import annotations
 
