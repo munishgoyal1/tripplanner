@@ -20,6 +20,13 @@ def _env_positive_int(name: str, default: int) -> int:
         return default
 
 
+def _env_positive_float(name: str, default: float) -> float:
+    try:
+        return max(0.0, float(os.getenv(name, str(default))))
+    except ValueError:
+        return default
+
+
 class Settings(BaseModel):
     # Azure OpenAI
     azure_openai_endpoint: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
@@ -105,6 +112,17 @@ class Settings(BaseModel):
 
     # Activity: 24 hours (least dynamic)
     activity_cache_ttl_sec: int = _env_positive_int("ACTIVITY_CACHE_TTL_SEC", 86400)
+
+    # Driving has no fare to quote, so its running cost is arithmetic over
+    # distance. Both must be set or no running cost is shown at all: a made-up
+    # fuel price is exactly the kind of invented number this product refuses.
+    road_fuel_price_per_litre: float = Field(
+        default_factory=lambda: _env_positive_float("ROAD_FUEL_PRICE_PER_LITRE", 0.0)
+    )
+    road_fuel_litres_per_100km: float = Field(
+        default_factory=lambda: _env_positive_float("ROAD_FUEL_LITRES_PER_100KM", 0.0)
+    )
+    road_cost_currency: str = os.getenv("ROAD_COST_CURRENCY", "").strip().upper()
 
     # Short-lived shared cache in front of the provider search tools. This is a
     # separate layer from the fare cache above, which backs transport comparisons.

@@ -875,3 +875,25 @@ the outcome.
   from different currencies, so a fare in a weaker unit always looked worse. When
   a rate is unavailable, drop the money term instead of mixing units — a slower
   ranking is recoverable, a confidently wrong price is not.
+
+## 2026-08-10 - Verify The Vendor Before Keeping The Adapter
+
+- `providers/liteapi.py` carried `search_rails`, `search_coaches` and
+  `search_ferries` posting to `trains/search`, `coaches/search` and
+  `ferries/search`. LiteAPI's own endpoint index documents hotels and flights
+  only; those three endpoints do not exist. Because provider adapters degrade to
+  an empty list, the code would have failed silently forever. Removed. The same
+  check confirmed the flight adapter is correct — `/flights/rates` is real and
+  legs-based, exactly as implemented — so verification cuts both ways.
+- An empty provider registry deserves a comment saying it is deliberate. Three
+  empty dicts looked like an oversight and invited someone to "fix" them by
+  wiring an unverified adapter.
+- A total the model writes is not evidence. `total_cost` had no provider, no
+  checked-at and no expiry, so a stale or invented figure was indistinguishable
+  from a live quote. The ledger in `decisions/trip_cost.py` derives what is
+  actually backed by a recorded check and names the rest as stale, unverified or
+  unpriced.
+- Respect an invariant before adding a feature that breaks it. Driving needed a
+  cost, but the decision model states there is deliberately no estimated price
+  tier. Modelled fuel therefore became `RunningCost` — a separate field that
+  never enters `Price`, never joins a fare total and takes no part in ranking.

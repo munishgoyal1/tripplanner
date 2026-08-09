@@ -1,4 +1,9 @@
-"""Read-only LiteAPI hotel and flight availability adapter."""
+"""Read-only LiteAPI hotel and flight availability adapter.
+
+Capability is limited to what the vendor documents: hotel rates and the
+legs-based flight rates/verify endpoints. LiteAPI publishes no rail, coach or
+ferry API, so this adapter must not grow one.
+"""
 
 from __future__ import annotations
 
@@ -8,18 +13,11 @@ from typing import Any
 import httpx
 
 from tripplanner.providers.models import (
-    CoachOffer,
-    CoachSearchQuery,
-    FerryOffer,
-    FerrySearchQuery,
     FlightOffer,
     FlightSearchQuery,
     HotelOffer,
     HotelSearchQuery,
     Money,
-    QuoteStatus,
-    RailOffer,
-    RailSearchQuery,
 )
 
 
@@ -321,170 +319,5 @@ class LiteAPIProvider:
                             changes=changes,
                         )
                     )
-        offers.sort(key=lambda offer: offer.total.amount)
-        return offers[:max_results]
-
-    def search_rails(self, query: RailSearchQuery) -> list[RailOffer]:
-        """Search for train routes via LiteAPI trains endpoint."""
-        try:
-            payload = self._post(
-                "trains/search",
-                {
-                    "departureCity": query.origin,
-                    "arrivalCity": query.destination,
-                    "departureDate": query.departure_date,
-                    "returnDate": query.return_date or None,
-                    "adults": query.adults,
-                    "children": query.children,
-                    "currency": query.currency,
-                },
-                timeout=30,
-            )
-            return self._rail_offers(payload, query.currency, query.max_results)
-        except LiteAPIError:
-            return []
-
-    def search_coaches(self, query: CoachSearchQuery) -> list[CoachOffer]:
-        """Search for coach/bus routes via LiteAPI coaches endpoint."""
-        try:
-            payload = self._post(
-                "coaches/search",
-                {
-                    "departureCity": query.origin,
-                    "arrivalCity": query.destination,
-                    "departureDate": query.departure_date,
-                    "returnDate": query.return_date or None,
-                    "adults": query.adults,
-                    "children": query.children,
-                    "currency": query.currency,
-                },
-                timeout=30,
-            )
-            return self._coach_offers(payload, query.currency, query.max_results)
-        except LiteAPIError:
-            return []
-
-    def search_ferries(self, query: FerrySearchQuery) -> list[FerryOffer]:
-        """Search for ferry routes via LiteAPI ferries endpoint."""
-        try:
-            payload = self._post(
-                "ferries/search",
-                {
-                    "departurePort": query.origin,
-                    "arrivalPort": query.destination,
-                    "departureDate": query.departure_date,
-                    "returnDate": query.return_date or None,
-                    "adults": query.adults,
-                    "children": query.children,
-                    "currency": query.currency,
-                },
-                timeout=30,
-            )
-            return self._ferry_offers(payload, query.currency, query.max_results)
-        except LiteAPIError:
-            return []
-
-    def _rail_offers(
-        self,
-        payload: dict[str, Any],
-        currency: str,
-        max_results: int,
-    ) -> list[RailOffer]:
-        """Parse LiteAPI train response into RailOffer list."""
-        offers: list[RailOffer] = []
-        quoted_at = _utc_now()
-
-        for route in payload.get("data", []):
-            route_id = str(route.get("id") or "")
-            total = _money(route.get("price") or route.get("pricing"), currency)
-
-            if not route_id or not total:
-                continue
-
-            offers.append(
-                RailOffer(
-                    provider=self.name,
-                    provider_ref={"route_id": route_id},
-                    total=total,
-                    segments=route.get("segments") or [],
-                    quoted_at=quoted_at,
-                    status=QuoteStatus.LIVE,
-                    journey_duration_min=_number(route.get("duration")),
-                    changes=route.get("stops", 0),
-                    direct=route.get("stops", 0) == 0,
-                    booking_url=route.get("bookingUrl"),
-                )
-            )
-
-        offers.sort(key=lambda offer: offer.total.amount)
-        return offers[:max_results]
-
-    def _coach_offers(
-        self,
-        payload: dict[str, Any],
-        currency: str,
-        max_results: int,
-    ) -> list[CoachOffer]:
-        """Parse LiteAPI coach response into CoachOffer list."""
-        offers: list[CoachOffer] = []
-        quoted_at = _utc_now()
-
-        for route in payload.get("data", []):
-            route_id = str(route.get("id") or "")
-            total = _money(route.get("price") or route.get("pricing"), currency)
-
-            if not route_id or not total:
-                continue
-
-            offers.append(
-                CoachOffer(
-                    provider=self.name,
-                    provider_ref={"route_id": route_id},
-                    total=total,
-                    segments=route.get("segments") or [],
-                    quoted_at=quoted_at,
-                    status=QuoteStatus.LIVE,
-                    journey_duration_min=_number(route.get("duration")),
-                    operator_name=route.get("operator"),
-                    amenities=route.get("amenities") or [],
-                    booking_url=route.get("bookingUrl"),
-                )
-            )
-
-        offers.sort(key=lambda offer: offer.total.amount)
-        return offers[:max_results]
-
-    def _ferry_offers(
-        self,
-        payload: dict[str, Any],
-        currency: str,
-        max_results: int,
-    ) -> list[FerryOffer]:
-        """Parse LiteAPI ferry response into FerryOffer list."""
-        offers: list[FerryOffer] = []
-        quoted_at = _utc_now()
-
-        for route in payload.get("data", []):
-            route_id = str(route.get("id") or "")
-            total = _money(route.get("price") or route.get("pricing"), currency)
-
-            if not route_id or not total:
-                continue
-
-            offers.append(
-                FerryOffer(
-                    provider=self.name,
-                    provider_ref={"route_id": route_id},
-                    total=total,
-                    segments=route.get("segments") or [],
-                    quoted_at=quoted_at,
-                    status=QuoteStatus.LIVE,
-                    journey_duration_min=_number(route.get("duration")),
-                    route_name=route.get("routeName"),
-                    cabin_options=route.get("cabinOptions") or [],
-                    booking_url=route.get("bookingUrl"),
-                )
-            )
-
         offers.sort(key=lambda offer: offer.total.amount)
         return offers[:max_results]

@@ -60,6 +60,7 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
   ];
   const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).join(" - ");
   const travelersLabel = `${overview.travelers} ${Number(overview.travelers) === 1 ? "traveler" : "travelers"}`;
+  const costEvidence = overview.cost_evidence ?? null;
   const remainingStops = stops != null && booked != null ? Math.max(stops - booked, 0) : null;
   const readinessPct = stops ? Math.round(((booked ?? 0) / stops) * 100) : 0;
   const tripSummary = overview.notes.trim() || [
@@ -107,6 +108,20 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
           </span>
           {overview.total_cost_display && (
             <p className="mt-1.5 text-sm font-semibold text-ink">{overview.total_cost_display}</p>
+          )}
+          {costEvidence?.summary && (
+            <p
+              className={`mt-0.5 text-[10px] font-medium ${
+                costEvidence.complete ? "text-emerald-700" : "text-amber-700"
+              }`}
+              title={
+                costEvidence.complete
+                  ? "Every item is backed by a current provider quote."
+                  : "Some items are not backed by a current provider quote."
+              }
+            >
+              {costEvidence.summary}
+            </p>
           )}
         </div>
       </div>
