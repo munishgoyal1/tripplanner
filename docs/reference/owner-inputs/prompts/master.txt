@@ -104,3 +104,11 @@ The goa trip - regressions and issues.
 
 Why so many bugs and regressions got introduced after lab22 implementation.
 
+[2026-08-08 17:31] [master !] Update vulnerable LangChain Core
+Outdated langchain-core v1.4.0 instance detected. Please update your langchain-core copy to keep your device secure. Visit aka.ms/mcpmac for policy details.
+
+[2026-08-09 09:45] [master] Run Mac launchers
+how to run the launcher commands on mac
+
+(.venv) mugoy@Munishs-MacBook-Pro user % Run-Latest.command all
+zsh: command not found: Run-Latest.command
