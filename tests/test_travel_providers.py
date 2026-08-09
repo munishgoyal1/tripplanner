@@ -16,6 +16,7 @@ from tripplanner.providers.registry import (
     get_hotel_provider,
     get_train_provider,
     provider_catalog,
+    provider_status,
 )
 from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.providers.viator import ViatorError, ViatorProvider
@@ -89,6 +90,21 @@ def test_provider_catalog_keeps_gated_candidates_disabled():
     assert catalog["omio"].enabled is False
     assert catalog["tiqets"].enabled is False
     assert catalog["travelpayouts"].enabled is False
+
+
+def test_provider_status_reports_readiness_without_secrets():
+    settings = SimpleNamespace(
+        liteapi_api_key="liteapi-key",
+        viator_api_key="",
+        openrouteservice_api_key="ors-key",
+    )
+    status = {item["name"]: item for item in provider_status(settings)}
+
+    assert status["liteapi"]["active"] is True
+    assert status["viator"]["configured"] is False
+    assert status["openrouteservice"]["active"] is True
+    assert "liteapi-key" not in str(status)
+    assert "ors-key" not in str(status)
 
 
 class EmptyProvider:

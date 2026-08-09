@@ -34,7 +34,7 @@ trip through shared API contracts.
 | `src/tripplanner/state.py` | Shared graph state and merge behavior |
 | `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
-| `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, production SPA mount |
+| `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, `/providers/status` diagnostics, production SPA mount |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
@@ -63,7 +63,7 @@ trip through shared API contracts.
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
-| `src/tripplanner/providers/` | Normalized travel provider clients and capability registry |
+| `src/tripplanner/providers/` | Normalized travel provider clients, capability registry, TTL/fallback runtime, and non-secret readiness status |
 | `src/tripplanner/tools/` | LangChain tools and stable agent/provider boundaries |
 | `scripts/mac/` | macOS `.command` launchers mirroring Windows root, user, sandbox, canary, and production entry points |
 
@@ -156,7 +156,7 @@ evidence.
 | Destination discovery | `tools/destinations.py`, `tools/search.py` | Return grounded options with source context |
 | Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Prefer free/sandbox active providers, cache before fan-out, fall back in order, and label evidence/freshness accurately |
 | Gated provider candidates | `providers/registry.py` catalog plus disabled experimental adapters | Do not auto-enable without current approved API access and acceptable terms |
-| Maps and geocoding | Map/location tools plus frontend map utilities | Keep coordinates and selected itinerary synchronized |
+| Maps and geocoding | `tools/routing.py`, optional `providers/openrouteservice.py`, and frontend map utilities | Google Routes is primary; OpenRouteService is a coordinate-only free-tier fallback; keep coordinates and selected itinerary synchronized |
 | Preferences | About Me extractor, apply logic, and store | Merge additively unless the owner explicitly removes data |
 | Email/export | Export tool and external operation ledger | Retried requests must not duplicate delivery records |
 

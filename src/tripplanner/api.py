@@ -2253,6 +2253,14 @@ async def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/providers/status")
+async def providers_status() -> dict[str, object]:
+    """Expose non-secret provider readiness for MVP diagnostics."""
+    from tripplanner.providers.registry import provider_status
+
+    return {"providers": provider_status()}
+
+
 @app.get("/metrics/tools")
 async def metrics_tools() -> dict:
     """Return per-tool latency + error + cache-hit counters.

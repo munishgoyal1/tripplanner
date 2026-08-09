@@ -9,7 +9,6 @@ import pytest
 
 from tripplanner.tools import routing
 
-
 # ---------------------------------------------------------------------------
 # Pure-helper tests (no network)
 # ---------------------------------------------------------------------------
@@ -130,6 +129,74 @@ def test_compute_route_not_configured(monkeypatch):
     monkeypatch.setattr(routing, "is_configured", lambda: False)
     out = routing.compute_route.invoke({"stops_json": "[\"A\", \"B\"]"})
     assert "not configured" in out.lower()
+
+
+def test_coordinate_route_falls_back_to_openrouteservice(monkeypatch):
+    captured = {}
+    routing._ORS_ROUTE_CACHE.clear()
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(
+            google_places_api_key="",
+            openrouteservice_api_key="ors-test-key",
+            openrouteservice_base_url="https://api.openrouteservice.org",
+            openrouteservice_route_ttl_sec=60,
+        ),
+    )
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        captured.update(url=url, headers=headers, json=json, timeout=timeout)
+        return _mk_response(
+            {
+                "routes": [
+                    {
+                        "summary": {"duration": 900, "distance": 2200},
+                        "segments": [{"duration": 900, "distance": 2200}],
+                    }
+                ]
+            }
+        )
+
+    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    stops_json = json.dumps(
+        [{"name": "A", "lat": 48.8566, "lng": 2.3522}, {"name": "B", "lat": 48.86, "lng": 2.34}]
+    )
+
+    out = json.loads(routing.compute_route.invoke({"stops_json": stops_json, "mode": "WALK"}))
+
+    assert out["provider"] == "openrouteservice"
+    assert out["total_duration"] == "15m"
+    assert out["total_distance"] == "2.2 km"
+    assert captured["headers"]["Authorization"] == "ors-test-key"
+    assert captured["json"]["coordinates"] == [[2.3522, 48.8566], [2.34, 48.86]]
+
+
+def test_openrouteservice_coordinate_routes_are_cached(monkeypatch):
+    calls = []
+    routing._ORS_ROUTE_CACHE.clear()
+    monkeypatch.setattr(
+        routing,
+        "get_settings",
+        lambda: SimpleNamespace(
+            google_places_api_key="",
+            openrouteservice_api_key="ors-test-key",
+            openrouteservice_base_url="https://api.openrouteservice.org",
+            openrouteservice_route_ttl_sec=60,
+        ),
+    )
+
+    def fake_post(*args, **kwargs):
+        calls.append(args[0])
+        return _mk_response({"routes": [{"summary": {"duration": 60, "distance": 100}}]})
+
+    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    origin = {"lat": 48.8566, "lng": 2.3522}
+    destination = {"lat": 48.86, "lng": 2.34}
+
+    assert routing.route_metrics(origin, destination, "DRIVE") is not None
+    assert routing.route_metrics(origin, destination, "DRIVE") is not None
+    assert len(calls) == 1
 
 
 def test_compute_route_invalid_json(_configured):

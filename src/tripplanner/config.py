@@ -54,6 +54,16 @@ class Settings(BaseModel):
     travel_hotel_provider: str = os.getenv("TRAVEL_HOTEL_PROVIDER", "auto").strip().lower()
     travel_flight_provider: str = os.getenv("TRAVEL_FLIGHT_PROVIDER", "auto").strip().lower()
 
+    # OpenRouteService directions fallback. The free standard plan is suitable
+    # for MVP coordinate-based driving, walking, and cycling route checks.
+    openrouteservice_api_key: str = os.getenv("OPENROUTESERVICE_API_KEY", "")
+    openrouteservice_base_url: str = os.getenv(
+        "OPENROUTESERVICE_BASE_URL", "https://api.openrouteservice.org"
+    ).rstrip("/")
+    openrouteservice_route_ttl_sec: int = _env_positive_int(
+        "OPENROUTESERVICE_ROUTE_TTL_SEC", 6 * 60 * 60
+    )
+
     # Partner-gated transport candidates. Keep disabled until current approved
     # API access and free/sandbox terms are confirmed for this account.
     kiwi_api_key: str = os.getenv("KIWI_API_KEY", "")
@@ -73,7 +83,7 @@ class Settings(BaseModel):
     enable_ferry_pricing: bool = Field(
         default_factory=lambda: os.getenv("ENABLE_FERRY_PRICING", "0").strip() == "1"
     )
-    
+
     # Preferred rail transport provider. Only providers registered as active in
     # providers/registry.py are accepted; Kiwi/Omio remain inactive candidates.
     travel_train_provider: str = os.getenv("TRAVEL_TRAIN_PROVIDER", "auto").strip().lower()
@@ -84,12 +94,12 @@ class Settings(BaseModel):
     # Flight and hotel: 4 hours (highly dynamic)
     flight_cache_ttl_sec: int = _env_positive_int("FLIGHT_CACHE_TTL_SEC", 14400)
     hotel_cache_ttl_sec: int = _env_positive_int("HOTEL_CACHE_TTL_SEC", 14400)
-    
+
     # Train, coach, ferry: 12 hours (less dynamic, stable day-of)
     train_cache_ttl_sec: int = _env_positive_int("TRAIN_CACHE_TTL_SEC", 43200)
     coach_cache_ttl_sec: int = _env_positive_int("COACH_CACHE_TTL_SEC", 43200)
     ferry_cache_ttl_sec: int = _env_positive_int("FERRY_CACHE_TTL_SEC", 43200)
-    
+
     # Activity: 24 hours (least dynamic)
     activity_cache_ttl_sec: int = _env_positive_int("ACTIVITY_CACHE_TTL_SEC", 86400)
 

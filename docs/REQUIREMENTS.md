@@ -216,6 +216,13 @@ re-describing the whole product.
   addresses, coordinates, and opening hours.
 - Google Routes supplies measured route distance/time and route optimization.
   Map circuit drawings and fallback estimates avoid unnecessary Directions calls.
+- OpenRouteService is an optional free-tier fallback for coordinate-based
+  driving, walking, and cycling routes. Google remains primary for place-ID or
+  address routing, traffic-aware driving, transit, and waypoint optimization.
+  Both the fallback source and route freshness remain visible to callers.
+- `GET /providers/status` exposes non-secret configured/active readiness,
+  capabilities, access classification, and notes so the owner can review MVP
+  provider costs and gated candidates before enabling anything new.
 - Open-Meteo supplies no-key daily forecasts and same-season archive context.
   Forecast failures fall back to the archive; total provider failure may use an
   explicitly labeled agent monthly-climate estimate. Normalized weather persists

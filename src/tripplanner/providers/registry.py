@@ -82,7 +82,8 @@ _PROVIDER_CATALOG: tuple[ProviderCandidate, ...] = (
         capabilities=[ProviderCapability.ROUTE_COMPUTE],
         access=ProviderAccess.ACTIVE_FREE_OR_SANDBOX,
         free_mvp_ok=True,
-        notes="Free developer routing tier exists; adapter not implemented yet.",
+        enabled=True,
+        notes="Free-tier coordinate routing fallback for driving, walking, and cycling.",
     ),
     ProviderCandidate(
         name="travelpayouts",
@@ -138,6 +139,36 @@ _PROVIDER_CATALOG: tuple[ProviderCandidate, ...] = (
 
 def provider_catalog() -> list[ProviderCandidate]:
     return [candidate.model_copy(deep=True) for candidate in _PROVIDER_CATALOG]
+
+
+def provider_status(settings: Settings | None = None) -> list[dict[str, object]]:
+    """Return non-secret provider readiness for diagnostics and MVP cost review."""
+
+    active_settings = settings or get_settings()
+    key_attributes = {
+        "liteapi": "liteapi_api_key",
+        "viator": "viator_api_key",
+        "openrouteservice": "openrouteservice_api_key",
+    }
+    statuses: list[dict[str, object]] = []
+    for candidate in _PROVIDER_CATALOG:
+        key_attribute = key_attributes.get(candidate.name)
+        configured = (
+            not candidate.requires_key
+            or bool(key_attribute and getattr(active_settings, key_attribute, ""))
+        )
+        statuses.append(
+            {
+                "name": candidate.name,
+                "capabilities": [capability.value for capability in candidate.capabilities],
+                "access": candidate.access.value,
+                "free_mvp_ok": candidate.free_mvp_ok,
+                "configured": configured,
+                "active": candidate.enabled and configured,
+                "notes": candidate.notes,
+            }
+        )
+    return statuses
 
 
 def _selected_provider(kind: str, settings: Settings) -> str | None:
