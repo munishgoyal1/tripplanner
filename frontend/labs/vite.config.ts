@@ -40,6 +40,7 @@ export default defineConfig({
         itineraryInformation: resolve(__dirname, "lab-2-itinerary-information.html"),
         itinerarySummary: resolve(__dirname, "lab-3-itinerary-summary.html"),
         itineraryTripBook: resolve(__dirname, "lab-5-itinerary-trip-book.html"),
+        localization: resolve(__dirname, "lab-24-localization.html"),
         mapCanvas: resolve(__dirname, "lab-18-map-canvas.html"),
         mapControls: resolve(__dirname, "lab-8-map-controls.html"),
         multiCityItinerary: resolve(__dirname, "lab-15-multi-city-itinerary.html"),

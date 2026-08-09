@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 23;
+export const LAST_ASSIGNED_LAB_NUMBER = 24;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 24,
+    id: "localization",
+    title: "One planner, local ways of reading it",
+    category: "Regional content and currency",
+    description: "Compare five homes for country, language, display currency, and regional formats across Home, Workspace, and Profile, using localized Rajasthan, US Pacific Coast, Scotland, and continental Europe trips.",
+    createdAt: "2026-08-09",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-09",
+    decision: "Open · Recommended starting point: C · Profile-first",
+    href: "./lab-24-localization.html",
+    icon: Globe2,
+  },
   {
     labNumber: 23,
     id: "product-themes",

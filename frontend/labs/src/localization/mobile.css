@@ -1,0 +1,18 @@
+@media (max-width: 760px) {
+  .workspace-preview {
+    overflow-y: auto;
+  }
+
+  .workspace-body {
+    height: auto;
+    min-height: 520px;
+  }
+
+  .itinerary-list {
+    overflow: visible;
+  }
+
+  .regional-panel {
+    display: block;
+  }
+}

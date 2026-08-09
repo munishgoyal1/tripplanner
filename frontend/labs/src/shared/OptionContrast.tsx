@@ -24,6 +24,55 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "localization": {
+    axis:
+      "Every option formats the same four trips and keeps provider currency honest. They disagree about when locale is confirmed, where the durable setting lives, and whether a trip can temporarily override display currency.",
+    rows: [
+      {
+        option: "A · Welcome setup",
+        score: 74,
+        idea: "Country and language are a deliberate first-visit step.",
+        buys: "No ambiguity about the chosen formats before planning starts.",
+        costs: "Configuration blocks the first proof of value and asks obvious questions of most visitors.",
+        choose: "A wrong regional default would be more damaging than one extra onboarding step.",
+      },
+      {
+        option: "B · Detect, then confirm",
+        score: 86,
+        idea: "Browser region seeds one compact Home confirmation.",
+        buys: "A fast default with an explicit correction path that disappears after use.",
+        costs: "VPNs, travel, shared devices, and browser settings can make the inference wrong.",
+        choose: "Most visitors use a device configured for the formats they expect.",
+      },
+      {
+        option: "C · Profile-first",
+        score: 92,
+        idea: "A quiet Home chip leads to a durable Region and language destination in Account settings.",
+        buys: "One stable cross-device preference without spending daily workspace space.",
+        costs: "A first-time visitor may not notice an inferred default until a format looks wrong.",
+        choose: "Locale changes rarely and belongs beside the other reusable travel defaults.",
+      },
+      {
+        option: "D · Workspace quick switch",
+        score: 68,
+        idea: "Country and currency sit persistently beside Export.",
+        buys: "Immediate switching while comparing trips, quotes, or screenshots.",
+        costs: "An infrequent preference permanently competes with planning controls.",
+        choose: "The owner regularly presents or compares the same plan for different regional audiences.",
+      },
+      {
+        option: "E · Profile + trip lens",
+        score: 89,
+        idea: "Profile owns the default; Trip actions can override display currency and show source currency.",
+        buys: "The most honest cross-border comparison without changing the durable account preference.",
+        costs: "Users must understand account default, trip override, provider currency, and conversion freshness.",
+        choose: "Cross-border provider quotes are common enough that dual-currency review is core work.",
+      },
+    ],
+    same: "The four trip fixtures, itinerary choices, provider quote amounts and currencies, English copy, Home hierarchy, workspace content, profile identity, and export action. Every option supports INR, USD, GBP, and EUR and applies the same date, time, unit, temperature, tax, service, driving, holiday, address, and phone rules.",
+    verdict:
+      "C is the best default because locale is a durable account preference, not a command used often enough to occupy the workspace. Pair it with B's one-time confirmation so an inferred setting never becomes invisible. E is the right extension when real cross-border quotes arrive: it keeps provider currency and conversion freshness visible without turning the whole toolbar into a locale switcher. A is too much ceremony for first value, while D spends permanent space on an occasional correction.",
+  },
   "product-themes": {
     axis:
       "All six render the same production landing, copy, controls, trip, and interaction model. They disagree only about the product's visual language: palette, typography, surface character, contrast, and signal colours.",
@@ -873,7 +922,7 @@ export function OptionContrast({ labId }: { labId: string }) {
         <p className="mt-1 max-w-4xl text-xs leading-relaxed text-slate-500">{contrast.axis}</p>
         <p className="mt-1.5 max-w-4xl text-xs leading-relaxed text-slate-500">
           Ranked best first. The score is a 0-100 judgement of how well an option serves the job named above once its
-          cost is subtracted. It ranks these three against each other and means nothing outside this Lab.
+          cost is subtracted. It ranks these options against each other and means nothing outside this Lab.
         </p>
       </div>
       <div className="overflow-x-auto">

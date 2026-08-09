@@ -10,6 +10,21 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "localization": {
+    changes: [
+      "Where country, interface language, display currency, date/time, week-start, distance, and temperature preferences are first confirmed and later changed",
+      "Whether the workspace exposes a persistent locale control, keeps it in Account settings, or adds a per-trip display-currency lens",
+      "How converted prices retain provider currency, exchange-rate source, and checked time instead of implying the provider will charge the display amount",
+      "Regional practical content: Indian digit grouping, taxes and mandatory fees, tipping and service, driving side, address and phone formats, public holidays, transport conventions, and local booking cut-offs",
+      "Four fixed stress cases: Rajasthan in INR, the US Pacific Coast in USD, Scotland in GBP, and Amsterdam–Brussels–Paris in EUR",
+    ],
+    context: [
+      "English interface copy is the only implemented language in this Lab; the selector establishes a future contract and does not pretend translations exist",
+      "The itinerary choices, provider quotes, stored source currency, and trip totals are fixed; formatting may change but source data never does",
+      "Passport, visa, entry, and document rules depend on traveler citizenship/residency and destination, never on the selected interface country",
+      "Live foreign-exchange services, translation infrastructure, provider checkout behavior, geolocation, and production preference persistence",
+    ],
+  },
   "product-themes": {
     changes: [
       "Colour tokens: page, surface, text, border, action, evidence, and signal colours",
