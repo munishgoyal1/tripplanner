@@ -1112,6 +1112,10 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
         throw "GitHub CLI 'gh' is required by -Promote. Install it, or open and merge the PR yourself."
     }
+    & gh auth status --hostname github.com *> $null
+    if ($LASTEXITCODE -ne 0) {
+        throw "GitHub CLI is not authenticated. Run 'gh auth login --hostname github.com --web' before promoting."
+    }
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."
