@@ -222,3 +222,6 @@ Provide 2 more options in the lab - may be something different and fresh, more a
 
 [2026-08-09 16:46] [master !] Implement Lab 23 Sandbox
 Implement lab23 in a new sandbox
+
+[2026-08-09 18:00] [master !] Fix sandbox promotion HEAD
+Why is the sandbox promotion script internally possibly calling the Sync sciprt has now started regress failing on the Git HEAD issue. check logs and provide root fix.

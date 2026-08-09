@@ -417,11 +417,9 @@ function Assert-SandboxLabReadyForPromotion {
     if ($Entry.lastLabIterationCommit -ne $commit) {
         if ($AllowContainedIteration -and $Base) {
             # -Promote synchronizes the sandbox before it checks eligibility. That
-            # creates a local merge whose first parent is the recorded Lab commit
-            # and whose other parent is origin/master. It is not new Lab work and
-            # should not require another served iteration. Direct commits remain
-            # rejected: every first-parent commit after the iteration must be a
-            # merge that brings in a commit already contained by the base branch.
+            # may add a metadata-only Lab record commit or a local merge whose
+            # other parent is origin/master. Neither is new Lab work. Product
+            # commits remain rejected until another served iteration records them.
             & git -C $Entry.worktree merge-base --is-ancestor `
                 $Entry.lastLabIterationCommit $commit
             if ($LASTEXITCODE -eq 0) {
@@ -440,6 +438,20 @@ function Assert-SandboxLabReadyForPromotion {
                             [System.StringSplitOptions]::RemoveEmptyEntries
                         )
                     )
+                    $changedPaths = @(
+                        & git -C $Entry.worktree diff-tree --no-commit-id --name-only -r $revision
+                    )
+                    $labRecordOnly = $changedPaths.Count -gt 0 -and @(
+                        $changedPaths | Where-Object {
+                            $_ -ne "docs/ux-experiments/LAB_SELECTIONS.json"
+                        }
+                    ).Count -eq 0
+                    if ($parents.Count -eq 1 -and $labRecordOnly) {
+                        # Recording an implemented-review version changes the tracked
+                        # Lab store after the reviewed product commit. Its follow-up
+                        # metadata commit belongs to that iteration, not a new one.
+                        continue
+                    }
                     if ($parents.Count -lt 2) {
                         $syncOnly = $false
                         break
