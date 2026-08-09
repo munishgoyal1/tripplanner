@@ -201,3 +201,15 @@ create a UX lab suggesting few good themes to use overall for the entire product
 
 [2026-08-09 15:55] [master !] Own UX lab ports
 stop them and next time you own these ports you can kill other process ont hat port
+
+[2026-08-09 15:35] [master !] Fix local trip loading
+
+in latest local stack, it errors saying could not load map and no trip is also loaded. Fix thes issues, any regressions caused ?
+
+[2026-08-09 15:45] [master !] Repair UX labs state
+The UX labs status is not correctly captrued from the work done on other windows devbox. Why is it so, i thought the state etc. is all part of some json files that are part fo repo, is it not carried forward properly here. I see the multiple state transitions/handoff notes of lab 22 are completely missing. If it is hard to manage state like this then consider proper saving mechanism.
+
+Fix: All labs except the newest lab 23 that are in progress state should be in completed state.
+
+[2026-08-09 16:01] [master] Find uncommitted dev-spa owner
+who left the dev spa changes uncommitted 
