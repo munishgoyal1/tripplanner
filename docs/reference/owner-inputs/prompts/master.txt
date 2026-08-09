@@ -151,3 +151,12 @@ make all the sandbox and user and all launcher scripts cross platform . better t
 [2026-08-09 10:47] [master \!] Canary prod launchers
 are the chanegs not committed ? 
 Fix the canary and prod launchers also
+
+[2026-08-09 11:06] [master \!] Capture product vision
+Rate limiting is acceptable, but until i experiment and understand the usage and cost patterns these APIs can incurr to me i dont want to integrate the paid ones yet. Consider others too like kiwi.com, omio, travelpayouts, tiqets etc. We dont need 5 of them for each category but 2-3 is also enough for each category, say if one of them throttles or is down or errors out, then fallback to next best etc. have this as a defualt fallback sort of logic and then before all this we also do have a configurable TTLed cache for each thing. We dont need exactly live yet. keep it openf or futrue once we past the MVP stage that time we will make it realtime and more solid, but still for now i dont want to lose accuracy for most part so that usesrs can practically start using it and benefitting even if it is in MVP and free for them. I also dont want to incurr any much charges in MVP staeg, we will evaluate if it comes to having some paid service integrated for a must-have experience.
+
+My plan is to provide my users (customers) the best without any monetary bias towards particular purchases irrespective of how much i benefit from them. Also It should always feel a wow, smart plan that they would have struggled to build on their own or taken long time and effort,
+
+My product usp is to save time, effort, make it smooth, practical, real, based on their preferences, and smart and intelligent itinerary and most cost effective. At the end we will build a feature to provide for making bookings at these affiliate and integrate that booking part, but we wont take the booking payment ourselves that has to go to other providers, we will integrate the booking confirmations.
+
+From this and similar future prompts extract the important product vision and rules, scope boundaries to update our joint vision document to be referred to and updated jointly to keep the product aligning to that vision. If i later manually make updates to that vision doc then retain those as it is and dont tinker to my edited parts, but overall those should also serve you as authoritative source coming from owner input and rest of vision doc that is maintained by you should coherently update to align to owner vision.

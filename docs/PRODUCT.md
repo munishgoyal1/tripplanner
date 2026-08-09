@@ -6,11 +6,11 @@
 
 ## 1) Product
 
-A personal AI trip planner that produces a **complete, bookable** trip — not
-a list of suggestions. Real flights (Duffel), real hotels & activities
-(Amadeus), real ratings & reviews (Google Places), fresh travel content
-(Tavily). A single LangGraph agent uses a phase-selected tool set. It learns from preferences and
-past trips and remembers them across devices.
+A personal AI trip planner that produces a **complete, booking-ready** trip —
+not a list of suggestions. It combines grounded flight, stay, activity,
+transport, place, review, weather, and travel-content sources through a
+provider-neutral layer. A single LangGraph agent uses a phase-selected tool set.
+It learns from preferences and past trips and remembers them across devices.
 
 The product also serves as an end-to-end multi-form-factor proof of concept:
 the same planner capabilities should feel native on web, iPhone, and Android
@@ -68,10 +68,55 @@ support visual refinement while Assistant remains available for broader changes.
 - ❌ Automated purchasing or card charging. Booking remains a verified handoff; a
   future booking bridge deep-links into the provider with the choice already
   verified and pre-filled, and still does not transact inside the product.
+- ❌ Provider commissions or affiliate payouts influencing recommendations. The
+  user gets the best fit and most cost-effective practical choice regardless of
+  how much the product may earn from the eventual handoff.
 - ❌ Treating an activity from-price or operating schedule as a held quote or booking.
 - ❌ Background email/SMS/push notifications (removed Session 1).
 - ❌ Calendar/Gmail/Keep integrations (removed Session 1).
 - ❌ Generic chatbot vibes. This is a planner, not a friend-bot.
+
+## 2a) MVP provider and economics rules
+
+- **Free or near-free first.** During MVP, prefer provider sandboxes, free
+  developer tiers, public/open feeds, affiliate discovery access, and low-cost
+  services. Do not add a paid provider merely because it has broader inventory;
+  first measure usage, throttling, accuracy, latency, and cost. A paid service
+  needs an explicit must-have justification after that evidence exists.
+- **Two or three sources are enough.** Each important category should have a
+  primary source and one or two practical fallbacks, not a sprawling provider
+  matrix. Candidates may include Duffel, Kiwi.com, Omio, Travelpayouts, Viator,
+  Tiqets, Nuitee/LiteAPI, Google Places/Routes, GTFS/OpenTripPlanner, and
+  regional operator feeds, subject to their current terms and access.
+- **Fallback is a default behavior.** Provider timeout, throttling, outage,
+  malformed data, missing coverage, or an unavailable key should move to the
+  next eligible source. A fallback must retain its source, freshness, currency,
+  inclusions, and confidence rather than silently looking like primary data.
+- **Cache before fan-out.** Every provider capability has a configurable,
+  persisted TTL cache appropriate to the data type. Cache reads first, then
+  query the preferred source, then fallbacks. Explicit refresh remains possible.
+  Cache age must be visible whenever it materially affects price or availability.
+- **MVP does not require exact real-time data.** The product should remain
+  practically accurate and useful with recently checked, cached, indicative, or
+  provider-deep-linked data when exact live verification is unavailable. Every
+  price and availability claim is labeled with its evidence level and checked
+  time; no stale or approximate value is presented as a held quote.
+- **Real-time is an evolution path.** After MVP usage and cost patterns are
+  understood, increase refresh frequency, add stronger revalidation and
+  provider coverage, and introduce paid live services only where they improve a
+  must-have experience enough to justify their cost.
+- **Optimize for the traveler, not the provider.** Ranking may optimize total
+  practical trip cost, time, comfort, reliability, preference fit, and risk.
+  Affiliate relationships are disclosed and never change the ranking objective.
+- **Booking stays external.** The future booking bridge sends the user to the
+  selected provider or affiliate, preserves verified handoff details, and
+  ingests booking confirmations. Tripplanner does not take booking payment or
+  become the merchant of record.
+
+The durable promise is a surprising amount of time and effort saved: a smooth,
+preference-aware, realistic, intelligent itinerary that is more practical and
+cost-effective than most users could assemble themselves, even while the MVP
+uses carefully labeled cached and partially verified sources.
 
 ## 3) Run modes
 
