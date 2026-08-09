@@ -6,6 +6,7 @@ import json
 
 from langchain_core.tools import tool
 
+from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.models import FlightSearchQuery
@@ -147,7 +148,7 @@ def search_flights(
             providers=providers,
             cache=_FLIGHT_RESULT_CACHE,
             cache_key=query.model_dump_json(),
-            ttl_seconds=10 * 60,
+            ttl_seconds=get_settings().flight_search_cache_ttl_sec,
             refresh=refresh,
             empty_value=[],
             call=lambda provider: provider.search_flights(query),

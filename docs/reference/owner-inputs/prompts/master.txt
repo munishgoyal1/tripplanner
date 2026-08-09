@@ -279,3 +279,26 @@ Let';s look at the pricing, real time price and availability capability scenario
 I need to see what is the gaps and what needs to impleement, either a provider is missing, or a paid api will make it for a certain provider. Is any category (hotels, trains..etc) completely not covered etc. I need to see these and take next steps
 
 First thing is solidify and make pricing robust so that all our claims of producing most optimal itinerary are met.
+[2026-08-09 16:20] [master !] Audit pricing and fallback robustness
+Let';s look at the pricing, real time price and availability capability scenario that we have currently. What is the order of fetching and fallback logic for each category, any insight/nuance.
+I need to see what is the gaps and what needs to impleement, either a provider is missing, or a paid api will make it for a certain provider. Is any category (hotels, trains..etc) completely not covered etc. I need to see these and take next steps
+
+First thing is solidify and make pricing robust so that all our claims of producing most optimal itinerary are met.
+
+[2026-08-10 09:15] [master !] Audit pricing and availability coverage
+Let';s look at the pricing, real time price and availability capability scenario that we have currently. What is the order of fetching and fallback logic for each category, any insight/nuance.
+I need to see what is the gaps and what needs to impleement, either a provider is missing, or a paid api will make it for a certain provider. Is any category (hotels, trains..etc) completely not covered etc. I need to see these and take next steps
+
+First thing is solidify and make pricing robust so that all our claims of producing most optimal itinerary are met.
+
+[2026-08-10 00:08] [master \!] Sandbox 1 localization not visible
+i cant see the implemented version of localization at the sbx  1-lab24 urls. did you implelement the local currency etc in profile. Apparently no change is there
+
+[2026-08-10 00:12] [master \!] New sandbox for Lab24
+yes implement lab24 real changes onto a new sandbox
+
+[2026-08-10 00:14] [master \!] Use sandbox 1
+use the sandbox 1
+
+[2026-08-10 00:24] [master \!] Implement localization in app UI
+Yes I want you to apply on the sandbox app UI, not just the lab. Just the lab is all done now, i sleected the option in handoff and understood the scope. Now its time to quickly implement and i will signoff for promotion next step

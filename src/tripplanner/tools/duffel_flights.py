@@ -22,7 +22,7 @@ from langchain_core.tools import tool
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.liteapi import LiteAPIError
-from tripplanner.providers.models import FlightSearchQuery
+from tripplanner.providers.models import FlightSearchQuery, QuoteStatus
 from tripplanner.providers.registry import get_flight_provider
 from tripplanner.tools.flight_search import resolve_iata
 
@@ -149,6 +149,9 @@ def search_flights_duffel(
         refresh: Bypass the short-lived shared result cache.
     """
     del refresh
+    # A registry provider is tried first, but an empty or failed result must fall
+    # through to Duffel rather than ending the search.
+    registry_errors: list[str] = []
     provider = get_flight_provider()
     if provider:
         try:
@@ -169,24 +172,32 @@ def search_flights_duffel(
             )
             if offers:
                 note_price_check("flights", provider.name)
+                return json.dumps(
+                    {
+                        "quote_status": QuoteStatus.LIVE.value,
+                        "provider": provider.name,
+                        "offers": [offer.model_dump(mode="json") for offer in offers],
+                    },
+                    ensure_ascii=False,
+                )
+            registry_errors.append(f"{provider.name}: no availability")
+        except (LiteAPIError, ValueError) as exc:
+            registry_errors.append(f"{provider.name}: {exc}")
+
+    if not is_configured():
+        if registry_errors:
             return json.dumps(
                 {
-                    "quote_status": "live" if offers else "unavailable",
-                    "provider": provider.name,
-                    "offers": [offer.model_dump(mode="json") for offer in offers],
+                    "quote_status": QuoteStatus.UNAVAILABLE.value,
+                    "provider": provider.name if provider else "none",
+                    "errors": registry_errors,
+                    "notice": (
+                        "No fallback flight provider is configured. Set DUFFEL_API_KEY to "
+                        "search flights when the primary provider returns nothing."
+                    ),
                 },
                 ensure_ascii=False,
             )
-        except (LiteAPIError, ValueError) as exc:
-            return json.dumps(
-                {
-                    "quote_status": "provider_error",
-                    "provider": provider.name,
-                    "error": str(exc),
-                }
-            )
-
-    if not is_configured():
         return (
             "Duffel API not configured. Set DUFFEL_API_KEY in .env.\n"
             "Sign up free for a test token at https://app.duffel.com/sign-up "
@@ -268,7 +279,7 @@ def verify_flight_offer(offer_id: str, refresh: bool = True) -> str:
     if not provider:
         return json.dumps(
             {
-                "quote_status": "unavailable",
+                "quote_status": QuoteStatus.UNAVAILABLE.value,
                 "notice": "Configured legacy flight provider does not support offer verification.",
             }
         )
@@ -277,7 +288,7 @@ def verify_flight_offer(offer_id: str, refresh: bool = True) -> str:
         note_price_check("flights", provider.name)
         return json.dumps(
             {
-                "quote_status": "live",
+                "quote_status": QuoteStatus.LIVE.value,
                 "provider": provider.name,
                 "offer": offer.model_dump(mode="json"),
             },
@@ -286,7 +297,7 @@ def verify_flight_offer(offer_id: str, refresh: bool = True) -> str:
     except (LiteAPIError, ValueError) as exc:
         return json.dumps(
             {
-                "quote_status": "provider_error",
+                "quote_status": QuoteStatus.PROVIDER_ERROR.value,
                 "provider": provider.name,
                 "error": str(exc),
             }

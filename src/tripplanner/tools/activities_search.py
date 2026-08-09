@@ -6,6 +6,7 @@ import json
 
 from langchain_core.tools import tool
 
+from tripplanner.config import get_settings
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.models import ActivitySearchQuery
 from tripplanner.providers.registry import get_activity_providers
@@ -130,7 +131,7 @@ def search_activities(
             providers=providers,
             cache=_ACTIVITY_RESULT_CACHE,
             cache_key=query.model_dump_json(),
-            ttl_seconds=6 * 60 * 60,
+            ttl_seconds=get_settings().activity_search_cache_ttl_sec,
             refresh=refresh,
             empty_value=[],
             call=lambda provider: provider.search_activities(query),

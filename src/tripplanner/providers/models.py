@@ -11,10 +11,15 @@ from pydantic import BaseModel, Field
 
 class QuoteStatus(StrEnum):
     LIVE = "live"
+    CACHED = "cached"
     STALE = "stale"
     UNAVAILABLE = "unavailable"
     ESTIMATED = "estimated"
     PROVIDER_ERROR = "provider_error"
+
+
+#: Statuses backed by a real provider quote rather than a guess or a gap.
+PRICED_QUOTE_STATUSES = frozenset({QuoteStatus.LIVE, QuoteStatus.CACHED, QuoteStatus.STALE})
 
 
 class ProviderCapability(StrEnum):

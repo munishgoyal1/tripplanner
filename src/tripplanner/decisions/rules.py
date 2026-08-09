@@ -13,9 +13,11 @@ an option whose total is actually known.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 
 from tripplanner.decisions.models import Option, TransportMode
+from tripplanner.providers.fx import convert
 
 USABLE_DAY_MIN = 600
 
@@ -97,6 +99,42 @@ def party_total(option: Option, travellers: int) -> float | None:
     return option.price.amount * max(1, travellers)
 
 
+def _base_currency(options: list[Option]) -> str:
+    """The currency most of the priced options already use."""
+    currencies = [
+        option.price.currency.upper()
+        for option in options
+        if option.price is not None and option.price.currency
+    ]
+    if not currencies:
+        return ""
+    return Counter(currencies).most_common(1)[0][0]
+
+
+def _comparable_totals(options: list[Option], travellers: int) -> dict[str, float]:
+    """Party totals in one currency, or nothing when they cannot all be converted.
+
+    Ranking two fares in different currencies by their raw numbers is worse than
+    not ranking them by price at all, so a missing rate drops the money term for
+    the whole comparison instead of quietly mixing units.
+    """
+    base = _base_currency(options)
+    if not base:
+        return {}
+    totals: dict[str, float] = {}
+    for option in options:
+        if option.price is None:
+            continue
+        total = party_total(option, travellers)
+        if total is None:
+            continue
+        converted = convert(total, option.price.currency, base)
+        if converted is None:
+            return {}
+        totals[option.id] = converted
+    return totals
+
+
 def _time_score(option: Option, prefs: TransportPrefs) -> float:
     score = float(option.door_to_door_min or option.duration_min or 0)
     score += max(0.0, option.day_cost) * USABLE_DAY_MIN
@@ -107,8 +145,12 @@ def _time_score(option: Option, prefs: TransportPrefs) -> float:
     return score
 
 
-def _price_minutes(option: Option, prefs: TransportPrefs) -> float:
-    total = party_total(option, prefs.travellers)
+def _price_minutes(
+    option: Option, prefs: TransportPrefs, totals: dict[str, float] | None = None
+) -> float:
+    total = totals.get(option.id) if totals is not None else party_total(
+        option, prefs.travellers
+    )
     if total is None:
         return 0.0
     rate = _VALUE_OF_TIME_PER_HOUR.get((prefs.budget_level or "").lower(), _DEFAULT_VALUE_OF_TIME)
@@ -125,9 +167,10 @@ def rank(options: list[Option], prefs: TransportPrefs | None = None) -> RankResu
     time_scores = {option.id: _time_score(option, prefs) for option in usable}
     priced = [option for option in usable if option.price is not None]
     unpriced = [option for option in usable if option.price is None]
+    totals = _comparable_totals(usable, prefs.travellers)
 
     if priced and not unpriced:
-        scores = {o.id: time_scores[o.id] + _price_minutes(o, prefs) for o in usable}
+        scores = {o.id: time_scores[o.id] + _price_minutes(o, prefs, totals) for o in usable}
         winner = min(usable, key=lambda o: scores[o.id])
         rule_code = "door_to_door_time"
     elif not priced:
@@ -183,9 +226,11 @@ def _rejection(option: Option, winner: Option, prefs: TransportPrefs) -> str:
     loser_total = party_total(option, prefs.travellers)
     winner_total = party_total(winner, prefs.travellers)
     if loser_total is not None and winner_total is not None:
-        gap = loser_total - winner_total
         currency = (option.price.currency if option.price else "") or ""
-        if abs(gap) >= 1:
+        winner_currency = (winner.price.currency if winner.price else "") or ""
+        comparable_winner = convert(winner_total, winner_currency, currency)
+        gap = None if comparable_winner is None else loser_total - comparable_winner
+        if gap is not None and abs(gap) >= 1:
             parts.append(
                 f"costs {money(gap, currency)} more"
                 if gap > 0

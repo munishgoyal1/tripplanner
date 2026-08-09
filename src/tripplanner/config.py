@@ -32,9 +32,12 @@ class Settings(BaseModel):
     )
 
     # Amadeus Self-Service API (flights, hotels, activities)
-    # NOTE: Amadeus Self-Service is being decommissioned on July 17, 2026.
-    # Code preserved for future enterprise-tier migration. Prefer Duffel for new searches.
-    # Sign up free (while available): https://developers.amadeus.com
+    # PARKED: decommissioned 2026-07-17. Retained for a possible enterprise-tier
+    # contract later. Requires ENABLE_AMADEUS_LEGACY=1 as well as credentials, so
+    # adding a key alone never reactivates it.
+    enable_amadeus_legacy: bool = Field(
+        default_factory=lambda: os.getenv("ENABLE_AMADEUS_LEGACY", "0").strip() == "1"
+    )
     amadeus_api_key: str = os.getenv("AMADEUS_API_KEY", "")
     amadeus_api_secret: str = os.getenv("AMADEUS_API_SECRET", "")
     amadeus_base_url: str = os.getenv(
@@ -102,6 +105,14 @@ class Settings(BaseModel):
 
     # Activity: 24 hours (least dynamic)
     activity_cache_ttl_sec: int = _env_positive_int("ACTIVITY_CACHE_TTL_SEC", 86400)
+
+    # Short-lived shared cache in front of the provider search tools. This is a
+    # separate layer from the fare cache above, which backs transport comparisons.
+    hotel_search_cache_ttl_sec: int = _env_positive_int("HOTEL_SEARCH_CACHE_TTL_SEC", 600)
+    flight_search_cache_ttl_sec: int = _env_positive_int("FLIGHT_SEARCH_CACHE_TTL_SEC", 600)
+    activity_search_cache_ttl_sec: int = _env_positive_int(
+        "ACTIVITY_SEARCH_CACHE_TTL_SEC", 21600
+    )
 
     # Static schedule estimates used only when a persisted itinerary or live
     # provider does not contain the corresponding operational timing.

@@ -1,9 +1,12 @@
 """Thin HTTP client for Amadeus Self-Service APIs.
 
+PARKED. Amadeus Self-Service is being decommissioned on 2026-07-17 and this
+integration is retained only for a possible future enterprise-tier contract. It
+stays inert unless ENABLE_AMADEUS_LEGACY=1 *and* credentials are present, so no
+current search path depends on it. Do not extend it or wire it into new flows.
+
 Handles OAuth2 token management and provides get/post helpers.
 Uses test environment by default; set AMADEUS_BASE_URL for production.
-
-Sign up free: https://developers.amadeus.com  (2 000 calls/month free)
 """
 
 from __future__ import annotations
@@ -53,9 +56,9 @@ def _get_token() -> str:
 
 
 def is_configured() -> bool:
-    """Check whether Amadeus API credentials are set."""
+    """True only when the parked Amadeus path is explicitly enabled and credentialed."""
     s = get_settings()
-    return bool(s.amadeus_api_key and s.amadeus_api_secret)
+    return bool(s.enable_amadeus_legacy and s.amadeus_api_key and s.amadeus_api_secret)
 
 
 def get(path: str, params: dict | None = None) -> dict:
