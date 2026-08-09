@@ -40,11 +40,21 @@
     "cSpell.ignorePaths": [
       "docs/reference/archive/myprompts.txt"
     ],
+    "chat.sessionSync.enabled": true,
+    "chat.viewSessions.orientation": "stacked",
+    "files.hotExit": "onExitAndWindowClose",
     "workbench.editor.restoreEditors": true,
     "workbench.editor.restoreViewState": true,
     "files.restoreUndoStack": true,
     "terminal.integrated.enablePersistentSessions": true,
     "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+    "window.restoreWindows": "all",
+    "workbench.activityBar.location": "hidden",
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.showTabs": "single",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.sideBar.location": "right",
     "workbench.colorCustomizations": {
       "activityBar.background": "#115e59",
       "activityBar.foreground": "#ffffff",
