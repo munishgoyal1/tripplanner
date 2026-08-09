@@ -77,7 +77,7 @@ def get_cap_usd() -> float:
 
 
 def _local_dir() -> Path:
-    base = Path(os.getenv("tripplanner_HOME", str(Path.home() / ".tripplanner"))) / "usage"
+    base = Path(os.getenv("TRIPPLANNER_HOME", str(Path.home() / ".tripplanner"))) / "usage"
     base.mkdir(parents=True, exist_ok=True)
     return base
 
