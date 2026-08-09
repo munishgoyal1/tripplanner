@@ -74,6 +74,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 
 | Path | Owns |
 | --- | --- |
+| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | Public-entry gating and the permanent `/welcome` route back to the landing experience |
 | `frontend/src/App.tsx` | Web application composition; trip state, refresh, mutations, pane/resize state, and panel body ownership |
 | `frontend/src/components/ChatPanel.tsx` | Assistant transcript presentation, composer, trip-input UI, account controls, and transcript loading/cache coordination |
 | `frontend/src/hooks/useChatStream.ts` | Assistant SSE lifecycle, progress timing, cancellation, retry state, trip-input requests, and workspace turn-status publication |

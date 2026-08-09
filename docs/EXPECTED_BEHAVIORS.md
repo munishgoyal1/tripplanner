@@ -95,6 +95,22 @@ Assistant build its first proposal.
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps timely build progress in the top bar until the refreshed itinerary is ready`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `summarizes an itinerary modification after its refreshed view loads`
 
+## Public entry
+
+### EB-PUBLIC-001 - Reopen the landing page directly
+
+**Trigger:** Navigate directly to `/welcome`, including after previously skipping
+the public entry or entering the planner workspace.
+
+**Expected:** The public landing experience opens regardless of authentication or
+the saved first-visit skip flag. Choosing Plan mine or Skip to the app replaces
+the address with `/` before opening the workspace, and Plan mine carries its
+request into the Assistant as before. `/welcome/` behaves the same as `/welcome`.
+
+**Executable proof:**
+
+- [`frontend/src/publicEntry/Root.test.tsx`](../frontend/src/publicEntry/Root.test.tsx)
+
 ## Planner workspace
 
 ### EB-WORKSPACE-001 - Arrange visible desktop panes freely
