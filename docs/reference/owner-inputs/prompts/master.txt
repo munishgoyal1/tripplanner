@@ -192,3 +192,6 @@ ok forget about reverting and restoring. I have a backup copy I will do the rest
 
 [2026-08-09 15:25] [master] Check hosted provider calls
 the liteapi and other some of the keys were missing from the canary and prod bicep wiring. does that mean till now prod wasnt able to make those real calls
+
+[2026-08-09 15:58] [master] Add needed wiring
+add the needed wirings

@@ -135,3 +135,26 @@ def test_infrastructure_enables_email_alerts_only_in_production() -> None:
     assert "enableFailureAlerts" not in canary
     assert 'event_kind == "chat_operation" and outcome == "error"' in query
     assert 'event_kind == "tool_call" and status == "error"' in query
+
+
+def test_infrastructure_wires_openrouteservice_from_environment_files() -> None:
+    root = Path(__file__).parents[1]
+    template = (root / "infra" / "main.bicep").read_text(encoding="utf-8")
+    production = (root / "infra" / "prod.bicepparam").read_text(encoding="utf-8")
+    canary = (root / "infra" / "canary.bicepparam").read_text(encoding="utf-8")
+
+    assert "param openRouteServiceApiKey string = ''" in template
+    assert "param openRouteServiceBaseUrl string = 'https://api.openrouteservice.org'" in template
+    assert "param openRouteServiceRouteTtlSec int = 21600" in template
+    assert "{ name: 'openrouteservice-api-key', value: openRouteServiceApiKey }" in template
+    assert "{ name: 'OPENROUTESERVICE_API_KEY', secretRef: 'openrouteservice-api-key' }" in template
+    assert "{ name: 'OPENROUTESERVICE_BASE_URL', value: openRouteServiceBaseUrl }" in template
+    assert "{ name: 'OPENROUTESERVICE_ROUTE_TTL_SEC', value: string(openRouteServiceRouteTtlSec) }" in template
+
+    assert "readEnvironmentVariable('OPENROUTESERVICE_API_KEY', '')" in canary
+    assert "readEnvironmentVariable('OPENROUTESERVICE_BASE_URL', 'https://api.openrouteservice.org')" in canary
+    assert "int(readEnvironmentVariable('OPENROUTESERVICE_ROUTE_TTL_SEC', '21600'))" in canary
+
+    assert "readEnvironmentVariable('OPENROUTESERVICE_API_KEY', '')" in production
+    assert "readEnvironmentVariable('OPENROUTESERVICE_BASE_URL', 'https://api.openrouteservice.org')" in production
+    assert "int(readEnvironmentVariable('OPENROUTESERVICE_ROUTE_TTL_SEC', '21600'))" in production
