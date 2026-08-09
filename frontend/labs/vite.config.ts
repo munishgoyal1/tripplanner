@@ -44,6 +44,7 @@ export default defineConfig({
         mapControls: resolve(__dirname, "lab-8-map-controls.html"),
         multiCityItinerary: resolve(__dirname, "lab-15-multi-city-itinerary.html"),
         paneControls: resolve(__dirname, "lab-10-pane-controls.html"),
+        productThemes: resolve(__dirname, "lab-23-product-themes.html"),
         shellVisualRefresh: resolve(__dirname, "lab-9-shell-visual-refresh.html"),
         travelDocuments: resolve(__dirname, "lab-20-travel-documents.html"),
         tripSnapshot: resolve(__dirname, "lab-6-trip-snapshot.html"),

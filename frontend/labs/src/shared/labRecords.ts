@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 22;
+export const LAST_ASSIGNED_LAB_NUMBER = 23;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -54,6 +54,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // (%LOCALAPPDATA%/Tripplanner/ux-labs/selections.json) overrides them at runtime;
 // run scripts/dev/show-lab-status.ps1 to compare the two.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 23,
+    id: "product-themes",
+    title: "One product, four ways to feel it",
+    category: "Product-wide visual language",
+    description: "Compare four coherent visual systems across the public landing page, spatial planner workspace, and mobile trip view so the dark-to-light handoff becomes an intentional product decision.",
+    createdAt: "2026-08-09",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-09",
+    decision: "Open · Recommended starting point: A · Postcard editorial",
+    href: "./lab-23-product-themes.html",
+    icon: Palette,
+  },
   {
     labNumber: 22,
     id: "live-plan",
