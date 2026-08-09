@@ -179,3 +179,13 @@ and can you help figure yoruself the providers you are planning do they have val
 
 [2026-08-09 14:56] [master] Hosted environment provisioning
 How does the canary and prod environment file with keys get provisioned. I forgot what was the meach=ism. for local i know you use the .env file
+
+[2026-08-09 12:01] [master \!] Wire hosted provider secrets
+ok forget about reverting and restoring. I have a backup copy I will do the restore myself. You focus on the other wiring up task i gave you
+
+[2026-08-09 12:08] [master \!] Preserve deployment env values
+i will obtain this key, but why is it not fully wired into for canary adn prod deployment process ?
+and why did you wrongly overwrite canary and prod env files. Not sure if you can revert that overwrite and correctly jsut append new key value pairs and the actual key values.
+
+[2026-08-09 12:10] [master \!] Wire hosted provider secrets
+ok forget about reverting and restoring. I have a backup copy I will do the restore myself. You focus on the other wiring up task i gave you

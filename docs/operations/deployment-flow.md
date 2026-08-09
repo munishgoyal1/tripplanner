@@ -229,6 +229,13 @@ ignored `.env`. The deployment scripts refuse to fall back to local `.env`, so
 an environment's OAuth and Maps credentials cannot be injected into another
 environment by a later release.
 
+Optional provider settings follow the same boundary. Set `LITEAPI_*`,
+`VIATOR_*`, `DUFFEL_API_KEY`, `GOOGLE_PLACES_API_KEY`, and
+`OPENROUTESERVICE_*` in the target environment file only. The environment
+parameter files pass them into `main.bicep`; nonblank API keys become Container
+Apps secrets and blank keys are omitted, leaving that provider inactive. Never
+copy local provider values into canary or production automatically.
+
 Validate shared-data changes separately and obtain approval before applying
 them. Then deploy canary through the normal flow, validate and bake, and promote
 the same application image to production. Never allow canary and production to

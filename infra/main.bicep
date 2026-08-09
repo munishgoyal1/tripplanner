@@ -38,6 +38,39 @@ param azureOpenAiApiKey string
 param duffelApiKey string
 
 @secure()
+@description('Optional LiteAPI/Nuitee API key. Empty leaves hotel and flight provider integration inactive.')
+param liteapiApiKey string = ''
+
+@description('LiteAPI/Nuitee API base URL.')
+param liteapiBaseUrl string = 'https://api.liteapi.travel/v3.0'
+
+@description('Configured hotel provider selector. auto uses LiteAPI only when its key is present.')
+param travelHotelProvider string = 'auto'
+
+@description('Configured flight provider selector. auto uses LiteAPI only when its key is present.')
+param travelFlightProvider string = 'auto'
+
+@secure()
+@description('Optional Viator partner API key. Empty leaves activity provider integration inactive.')
+param viatorApiKey string = ''
+
+@description('Viator partner API base URL.')
+param viatorBaseUrl string = 'https://api.sandbox.viator.com/partner'
+
+@description('Configured activity provider selector. auto uses Viator only when its key is present.')
+param travelActivityProvider string = 'auto'
+
+@secure()
+@description('Optional OpenRouteService API key for coordinate-based directions fallback.')
+param openRouteServiceApiKey string = ''
+
+@description('OpenRouteService API base URL.')
+param openRouteServiceBaseUrl string = 'https://api.openrouteservice.org'
+
+@description('Coordinate route fallback cache TTL in seconds.')
+param openRouteServiceRouteTtlSec int = 21600
+
+@secure()
 @description('Google Places (New) API key.')
 param googlePlacesApiKey string = ''
 
@@ -139,6 +172,33 @@ var oauthEnv = concat(
   empty(githubOauthClientSecret) ? [] : [{ name: 'OAUTH_GITHUB_CLIENT_SECRET', secretRef: 'github-oauth-client-secret' }],
   empty(webSessionSecret) ? [] : [{ name: 'WEB_SESSION_SECRET', secretRef: 'web-session-secret' }],
   empty(oauthRedirectBase) ? [] : [{ name: 'OAUTH_REDIRECT_BASE', value: oauthRedirectBase }]
+)
+
+// Optional provider secrets are omitted entirely when a key is absent. Container
+// Apps rejects empty secret values, and an absent key must keep that provider inactive.
+var providerSecrets = concat(
+  empty(liteapiApiKey) ? [] : [{ name: 'liteapi-api-key', value: liteapiApiKey }],
+  empty(viatorApiKey) ? [] : [{ name: 'viator-api-key', value: viatorApiKey }],
+  empty(openRouteServiceApiKey) ? [] : [{ name: 'openrouteservice-api-key', value: openRouteServiceApiKey }]
+)
+
+var providerEnv = concat(
+  empty(liteapiApiKey) ? [] : [
+    { name: 'LITEAPI_API_KEY', secretRef: 'liteapi-api-key' }
+    { name: 'LITEAPI_BASE_URL', value: liteapiBaseUrl }
+    { name: 'TRAVEL_HOTEL_PROVIDER', value: travelHotelProvider }
+    { name: 'TRAVEL_FLIGHT_PROVIDER', value: travelFlightProvider }
+  ],
+  empty(viatorApiKey) ? [] : [
+    { name: 'VIATOR_API_KEY', secretRef: 'viator-api-key' }
+    { name: 'VIATOR_BASE_URL', value: viatorBaseUrl }
+    { name: 'TRAVEL_ACTIVITY_PROVIDER', value: travelActivityProvider }
+  ],
+  empty(openRouteServiceApiKey) ? [] : [
+    { name: 'OPENROUTESERVICE_API_KEY', secretRef: 'openrouteservice-api-key' }
+    { name: 'OPENROUTESERVICE_BASE_URL', value: openRouteServiceBaseUrl }
+    { name: 'OPENROUTESERVICE_ROUTE_TTL_SEC', value: string(openRouteServiceRouteTtlSec) }
+  ]
 )
 
 var baseSecrets = [
@@ -310,7 +370,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
       }
-      secrets: concat(baseSecrets, oauthSecrets)
+      secrets: concat(baseSecrets, oauthSecrets, providerSecrets)
     }
     template: {
       containers: [
@@ -321,7 +381,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: concat(baseEnv, oauthEnv)
+          env: concat(baseEnv, oauthEnv, providerEnv)
         }
       ]
       scale: {
