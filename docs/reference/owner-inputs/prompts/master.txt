@@ -327,6 +327,9 @@ And retain - merge the workser1-3 txt prompts into master single file itself for
 [2026-08-10 17:05] [master !] Restore sandbox sync launchers
 Why did you remove the synall to latest and sync me scripts. adapt them to be used for syncing the latest master onto a sandbox, that will be a flow required
 
+[2026-08-10 17:15] [master !] Fix macOS sync launcher access
+fix the access part
+
 ## Historical prompts imported from retired lanes
 
 The retired worker prompt histories are preserved below verbatim as historical
