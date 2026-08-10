@@ -348,6 +348,11 @@ fix the access part
 [2026-08-10 17:25] [master !] Move sandbox launchers under user
 bring the sandbox launcher scripts folder under user folder since user is the launcher user facing fdolder. do similar for mac and windows
 
+[2026-08-10 17:50] [master !] Verify sandbox ancestry after sync
+after succesful syncallto latest run, main check is that none of the sbx branches local or remote should be lower than master. 
+
+This screenshot both are above master and master merged into them so that means all good.
+
 [2026-08-10 17:40] [master !] Resolve sandbox 3 cache conflict
 Already up to date.
 Auto-merging .env.example
