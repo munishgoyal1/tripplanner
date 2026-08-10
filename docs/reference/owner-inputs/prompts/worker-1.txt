@@ -138,3 +138,17 @@ arrange this workspace and save settings similar to the masteragent lane 0 works
 
 [2026-08-09 16:41] [worker-1 !] Replicate Lane Zero Layout
 vs code settigns sync is also on. did that not help in spining up new vsc with same layout settings, or is it saved part of every workspace. if that is so then save the lane 0 vs code layout settings for all workers workspaces too
+
+[2026-08-10 01:19] [worker-1 \!] Fix welcome locale identity
+Still mixture of lisbon with rajasthan is happening. see the screesnhot
+And Instead of profile text - show the name of logged in suer similar to planner page
+
+[2026-08-10 10:17] [worker-1 \!] Redesign regional demo fixtures
+It is showing london to delhi for a rajasthan trip.
+
+You should re-think how you hvae built the static data for these  trips - you can simply geenrate these and store in cosmos and keep it cached . There will be some 8-10 versions one for each region , the same as you planned with regional mapping. One such example trip for Americas, one for India, one for Asia or so - on those similar lines, no change. Why will it then mix up things, you always fetch from a self-contained particular trip data. Why will it ever mix London with Delhi. On top of that you can store the prices in correspondingly mapped currency etc. also - All this data set probably can refresh once in a while.
+
+Btw, I just realized that we dont neeed real data here. We just need a reasonable real recent data for a representaiton. Once a month refresh of prices and actual route data etc, should be fine. That can be done with a scheduled cron kind of job. What do you think
+
+[2026-08-10 10:35] [worker-1 !] Build regional demo pipeline
+proceed with this plan
