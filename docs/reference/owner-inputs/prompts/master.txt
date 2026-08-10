@@ -975,3 +975,5 @@ hold on to this, log it in details with context as needed as a TODO so that when
 
 
 Going forward for any deferred items i will ask you to place a tood
+[2026-08-10 18:32] [master !] Commit changes by default
+why dont you commit changes by default as part of your final response. dont leave them hanging
