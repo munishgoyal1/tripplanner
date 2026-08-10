@@ -6,10 +6,11 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi.testclient import TestClient
 
 from tripplanner import api
+from tripplanner.request_identity import require_owner
 from tripplanner.request_limits import ChatAdmission, ReplayLookupAdmission, chat_admission
 from tripplanner.web import oauth
 
@@ -26,6 +27,43 @@ def _hosted(monkeypatch) -> TestClient:  # type: ignore[no-untyped-def]
 
 def _user_token(user_id: str) -> str:
     return oauth.make_session_token(user_id, "Test User", "test@example.com", "")
+
+
+def test_owner_guard_accepts_configured_verified_email(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("OPS_DASHBOARD_OWNER_EMAIL", "owner@example.com")
+    client = _hosted(monkeypatch)
+    client.cookies.set(
+        oauth.SESSION_COOKIE,
+        oauth.make_session_token("google-owner", "Owner", "OWNER@example.com", ""),
+    )
+
+    @api.app.get("/_test/owner-guard/allowed")
+    async def owner_guard_allowed(request: Request):
+        return {"user_id": require_owner(request)["user_id"]}
+
+    response = client.get("/_test/owner-guard/allowed")
+
+    assert response.status_code == 200
+    assert response.json() == {"user_id": "google-owner"}
+
+
+@pytest.mark.parametrize("identity", ["missing", "guest", "non_owner"])
+def test_owner_guard_hides_route_from_every_other_identity(monkeypatch, identity: str) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("OPS_DASHBOARD_OWNER_EMAIL", "owner@example.com")
+    client = _hosted(monkeypatch)
+    if identity == "guest":
+        client.cookies.set(oauth.SESSION_COOKIE, oauth.make_guest_token(_GUEST_ID))
+    elif identity == "non_owner":
+        client.cookies.set(oauth.SESSION_COOKIE, _user_token("google-other"))
+
+    @api.app.get(f"/_test/owner-guard/{identity}")
+    async def owner_guard_hidden(request: Request):
+        return require_owner(request)
+
+    response = client.get(f"/_test/owner-guard/{identity}")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Not found."}
 
 
 def test_signed_cookie_overrides_forged_usage_identity(monkeypatch) -> None:  # type: ignore[no-untyped-def]
