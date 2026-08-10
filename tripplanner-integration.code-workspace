@@ -5,7 +5,7 @@
       "path": "."
     },
     {
-      "path": "../tripplanner.worktrees/sbx-2-redis-cache-layer"
+      "path": "../tripplanner.worktrees"
     }
   ],
   "settings": {
