@@ -18,6 +18,19 @@ def test_promotion_checks_github_auth_before_sync() -> None:
     assert "gh auth login --hostname github.com --web" in source
 
 
+def test_promotion_synchronizes_primary_before_and_after_remote_merge() -> None:
+    source = SANDBOX_SCRIPT.read_text(encoding="utf-8")
+
+    assert "function Sync-PrimaryCheckout" in source
+    assert 'Sync-PrimaryCheckout -Base $BaseBranch' in source
+    assert 'Sync-PrimaryCheckout -Base $BaseBranch -RequireExact' in source
+    assert source.count('Sync-PrimaryCheckout -Base $BaseBranch') == 2
+    assert 'merge --ff-only "origin/$Base"' in source
+    assert "Primary checkout has uncommitted changes" in source
+    assert "Primary checkout must match origin/$Base before promotion" in source
+    assert "Primary checkout is not a clean fast-forward" in source
+
+
 def test_worktree_cleanup_retries_transient_windows_lock(tmp_path: Path) -> None:
     worktree = tmp_path / "worktree"
     worktree.mkdir()

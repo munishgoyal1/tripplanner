@@ -3,6 +3,9 @@
 Make it more aggregate level also. Show the following - bifurcate into 2 sub pages may - Busienss and System Health
 
 Type of user interaction - New Trip, trip edit, export, signin etc. all different key activites.
+
+[2026-08-10 18:37] [master !] Explain and fix sandbox promotion divergence
+why you left changes uncommitted. i have instructed you to finish off the work when you respond final status
 Total time spent by user 
 Categoriesed number of Errors. Top type of errrors.
 # of Users, their country, source and any reason bouncing off after intial quick interaction.- aggregates
