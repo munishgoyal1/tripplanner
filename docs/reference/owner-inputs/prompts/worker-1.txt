@@ -139,11 +139,11 @@ arrange this workspace and save settings similar to the masteragent lane 0 works
 [2026-08-09 16:41] [worker-1 !] Replicate Lane Zero Layout
 vs code settigns sync is also on. did that not help in spining up new vsc with same layout settings, or is it saved part of every workspace. if that is so then save the lane 0 vs code layout settings for all workers workspaces too
 
-[2026-08-10 01:19] [worker-1 \!] Fix welcome locale identity
+[2026-08-10 01:19] [worker-1 !] Fix welcome locale identity
 Still mixture of lisbon with rajasthan is happening. see the screesnhot
 And Instead of profile text - show the name of logged in suer similar to planner page
 
-[2026-08-10 10:17] [worker-1 \!] Redesign regional demo fixtures
+[2026-08-10 10:17] [worker-1 !] Redesign regional demo fixtures
 It is showing london to delhi for a rajasthan trip.
 
 You should re-think how you hvae built the static data for these  trips - you can simply geenrate these and store in cosmos and keep it cached . There will be some 8-10 versions one for each region , the same as you planned with regional mapping. One such example trip for Americas, one for India, one for Asia or so - on those similar lines, no change. Why will it then mix up things, you always fetch from a self-contained particular trip data. Why will it ever mix London with Delhi. On top of that you can store the prices in correspondingly mapped currency etc. also - All this data set probably can refresh once in a while.
@@ -187,3 +187,23 @@ and why the mumbai to jaipur trip is so short just 3 days - doesnt look good rep
 
 [2026-08-10 11:44] [worker-1 !] Fix planner back navigation
 fix it: the browser back button should go back to welcome page instead it always stays ont he planner page.
+
+[2026-08-10 11:48] [worker-1 !] Unify profile and currency behavior
+Changing currency to CNY isnt updating it in the itinerary panel in workspace. 
+Also The profile experience on welcome page - make it exactly the same as that is on workspace, why is it partial and clciking on travel profile sub menu row takes user to planner page - that is not good experience, just replicate all of the profile settings experience on welcome page also and in fact make it common through the app, any new page also it could be re-used.
+
+[2026-08-10 13:32] [worker-1 !] Fix blank welcome settings
+	Currency fixes ok,
+	The account settings on welcome/home page shows up blank drop pane on click - weird that you could not fix it in 2-3 retries still yet. :-()
+
+[2026-08-10 14:05] [worker-1 !] Add fixed country language selectors
+    Okay one last attempt on fixing this -
+    First issue is that the currency dropdown has become limited now - which is fine. I am fine with top popular currencies for now.
+    But the Country is a free text field and user may fill wrong etc. do you want to provide a fixed set of language/country/locale - Just copy from the standard feature - nothing unique here. Get it working and done. Both country / language locale should dictate language and country soecific thigns like the sample welcome page trip, language etc. and currency should specifically map the currency. Both are independent and keep the displays also independend for example the country could be india and trip therefoire ahs to be the Rajasthan India specific one on welcome page shown, but if currency shocsen is $ (assume a foreigner from USA is in india and they want to see trip costs in $) then that shojld be honoered. hope you understood the requirements now clearly.
+
+1. Itinerary item comparison in detail : hotel comparison, attraction comparison, transport mode comparison, any other comparison
+
+Trip budget adherence, Whatif and what are modficiations possible on adjusting budget - Smart suggestions
+e.g. You can add burj khalifa top deck view ticket if you are adding 200$ to the trip budget. That is worth , it is rated 5star by millions of people and strong review ... add main words.
+You can drop certain actiivtiy, or just take 1 stop connecting flight - you could get to visit singapore airport which is worth spending time, then catch a evening flight. this way you save money and land at good time to have 1 night rest etc.
+How do we build travel specific super intelligence to give a WOW and BEST itinerary and BEST and SMARTEST comparison options ??
