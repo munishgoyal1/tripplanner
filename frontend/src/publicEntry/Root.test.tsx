@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import Root from "./Root";
@@ -52,6 +52,20 @@ describe("public entry routing", () => {
 
     expect(window.location.pathname).toBe("/");
     expect(screen.getByText("Workspace request: none")).toBeInTheDocument();
+  });
+
+  it("returns to the landing page with the browser back button", async () => {
+    window.history.replaceState({}, "", "/welcome");
+    const historyLength = window.history.length;
+    render(<Root />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Skip to the app" }));
+    expect(window.history.length).toBe(historyLength + 1);
+
+    window.history.back();
+
+    await waitFor(() => expect(window.location.pathname).toBe("/welcome"));
+    expect(screen.getByRole("heading", { name: "Public landing" })).toBeInTheDocument();
   });
 
   it("carries a landing request into the root workspace", () => {
