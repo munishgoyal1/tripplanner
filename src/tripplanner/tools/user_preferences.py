@@ -42,7 +42,7 @@ _DEFAULT_PREFS: dict[str, Any] = {
         "home_area": None,        # "Whitefield"
         "home_country": None,     # "India"
         "display_region": None,   # Country or region used for presentation defaults
-        "display_language": "en", # English-only contract for now
+        "display_language": "en", # Presentation language selected by the traveller
         "passport_country": None,  # "Indian" — what they travel on, NOT where they live
         "age_band": None,         # "20-30" | "30-40" | "40-50" | "50-60" | "60+"
         "occupation": None,       # "software engineer" | "doctor" | ...

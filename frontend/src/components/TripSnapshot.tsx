@@ -48,7 +48,7 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
 }
 
 export default function TripSnapshot({ overview, booked, stops, active = false, onAllDaysMap }: Props) {
-  const { region, currency } = useDisplayPreferences();
+  const { currency } = useDisplayPreferences();
   const statusTone = overview.status === "booked"
     ? "bg-brand/10 text-brand ring-brand/20"
     : overview.status === "finalized"
@@ -60,7 +60,7 @@ export default function TripSnapshot({ overview, booked, stops, active = false, 
     { label: "places", value: overview.counts.activities, icon: Compass },
     { label: overview.counts.flights === 1 ? "flight" : "flights", value: overview.counts.flights, icon: Plane },
   ];
-  const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).map((date) => formatDate(date, /united states/i.test(region) ? "en-US" : "en-GB")).join(" - ");
+  const dateRange = [overview.departure_date, overview.return_date].filter(Boolean).map((date) => formatDate(date)).join(" - ");
   const travelersLabel = `${overview.travelers} ${Number(overview.travelers) === 1 ? "traveler" : "travelers"}`;
   const costEvidence = overview.cost_evidence ?? null;
   const remainingStops = stops != null && booked != null ? Math.max(stops - booked, 0) : null;

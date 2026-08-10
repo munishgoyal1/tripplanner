@@ -9,6 +9,7 @@ import {
   demoArtifactForLocale,
   faq,
   fetchDemoArtifact,
+  withDisplayCurrency,
   type PublicDemoArtifact,
   type StageDecision,
   type StageTrip,
@@ -16,7 +17,15 @@ import {
 import { fetchPreferences } from "../api";
 import { getDisplayName, isAnonymousUser } from "../auth/authSession";
 import { openAccountSettings } from "../components/accountSettings";
-import { ensureInitialDisplayPreferences, useDisplayPreferences, writeDisplayPreferences } from "../lib/displayPreferences";
+import {
+  displayLanguageLabel,
+  displayRegionLabel,
+  ensureInitialDisplayPreferences,
+  normalizeDisplayLanguage,
+  normalizeDisplayRegion,
+  useDisplayPreferences,
+  writeDisplayPreferences,
+} from "../lib/displayPreferences";
 import {
   HotelStrip,
   ModeCompareCard,
@@ -199,8 +208,8 @@ export default function PublicEntry({
     fetchPreferences().then((preferences) => {
       if (!isAnonymousUser() || preferences.display_currency_configured) {
         writeDisplayPreferences({
-          region: preferences.display_region || preferences.home_country || "",
-          language: "en",
+          region: normalizeDisplayRegion(preferences.display_region || preferences.home_country || ""),
+          language: normalizeDisplayLanguage(preferences.display_language || "en"),
           currency: preferences.display_currency || "USD",
         });
       }
@@ -221,8 +230,9 @@ export default function PublicEntry({
     }).catch(() => undefined);
     return () => controller.abort();
   }, [displayPreferences.currency, displayPreferences.region]);
-  const trip = artifact.trip;
-  const decisions = artifact.decisions;
+  const localized = withDisplayCurrency(artifact, displayPreferences.currency);
+  const trip = localized.trip;
+  const decisions = localized.decisions;
   const { step, running, replay, finish } = useStageRun(trip.receipts.length);
   const built = running ? daysBuilt(trip.receipts, step) : trip.days.length;
   const { overruled, setOverruled, active } = useOverrule(decisions);
@@ -246,7 +256,7 @@ export default function PublicEntry({
               No account, no signup. This run was captured so it cannot fail in front of you — yours is planned live.
             </span>
             <span className={`text-[11px] ${dark.muted}`}>
-              Display: {displayPreferences.currency}{displayPreferences.region ? ` · ${displayPreferences.region}` : " · detected from browser"} · English
+              Display: {displayPreferences.currency}{displayPreferences.region ? ` · ${displayRegionLabel(displayPreferences.region)}` : " · detected from browser"} · {displayLanguageLabel(displayPreferences.language)}
             </span>
           </div>
 

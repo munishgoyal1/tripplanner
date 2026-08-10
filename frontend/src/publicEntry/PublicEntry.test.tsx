@@ -85,6 +85,16 @@ describe("PublicEntry", () => {
     expect(screen.queryByText(/agent · Mumbai to Jaipur/i)).not.toBeInTheDocument();
   });
 
+  it("keeps the country trip while pricing it in the chosen currency", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("unavailable", { status: 503 }));
+    writeDisplayPreferences({ region: "IN", currency: "USD", language: "en" });
+    renderFinished();
+
+    expect(screen.getByText(/agent · Mumbai to Jaipur/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/\$/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/INR/)).not.toBeInTheDocument();
+  });
+
   it("selects ten independent standalone artifacts", () => {
     const mappings = [
       ["IN", "INR"], ["US", "USD"], ["CA", "CAD"], ["GB", "GBP"], ["EU", "EUR"],

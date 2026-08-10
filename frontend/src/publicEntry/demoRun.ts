@@ -1,4 +1,5 @@
 import bundleJson from "./publicDemoRuns.json";
+import { formatCostDisplay, type DisplayCurrency } from "../lib/displayPreferences";
 
 export type StageMode = "flight" | "train" | "road" | "tram" | "metro" | "bus" | "walk" | "ferry";
 export type StopKind = "flight" | "hotel" | "attraction" | "meal" | "transport";
@@ -32,6 +33,44 @@ export function demoArtifactForLocale(region: string, currency: string): PublicD
     artifact.market.aliases.some((alias) => alias.toUpperCase() === normalizedRegion))
     ?? bundle.artifacts.find((artifact) => artifact.currency === normalizedCurrency)
     ?? bundle.artifacts.find((artifact) => artifact.currency === "EUR")!;
+}
+
+/** Present one market's captured money in the traveller's currency; the itinerary itself is untouched. */
+export function withDisplayCurrency(
+  artifact: PublicDemoArtifact,
+  currency: DisplayCurrency,
+): PublicDemoArtifact {
+  if (!currency || artifact.currency === currency) return artifact;
+  const money = (value: string) => formatCostDisplay(value, currency);
+  const optional = (value?: string) => (value ? money(value) : value);
+  const trip = artifact.trip;
+  return {
+    ...artifact,
+    trip: {
+      ...trip,
+      total: money(trip.total),
+      days: trip.days.map((day) => ({
+        ...day,
+        legs: day.legs.map((leg) => ({ ...leg, cost: optional(leg.cost) })),
+        stops: day.stops.map((stop) => ({ ...stop, cost: optional(stop.cost) })),
+      })),
+      hotels: trip.hotels.map((hotel) => ({ ...hotel, price: money(hotel.price) })),
+      compares: trip.compares.map((compare) => ({
+        ...compare,
+        options: compare.options.map((option) => ({ ...option, cost: money(option.cost) })),
+      })),
+      lines: trip.lines.map((line) => ({ ...line, price: money(line.price) })),
+    },
+    decisions: artifact.decisions.map((decision) => ({
+      ...decision,
+      options: decision.options.map((option) => ({ ...option, cost: money(option.cost) })),
+      outcome: {
+        ...decision.outcome,
+        total: money(decision.outcome.total),
+        delta: money(decision.outcome.delta),
+      },
+    })),
+  };
 }
 
 export function isPublicDemoArtifact(value: unknown): value is PublicDemoArtifact {

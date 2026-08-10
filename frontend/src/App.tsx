@@ -21,7 +21,7 @@ import { completionStatus } from "./lib/turnStatus";
 import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
-import { ensureInitialDisplayPreferences, writeDisplayPreferences } from "./lib/displayPreferences";
+import { ensureInitialDisplayPreferences, normalizeDisplayLanguage, normalizeDisplayRegion, writeDisplayPreferences } from "./lib/displayPreferences";
 
 interface NavRef {
   kind: string;
@@ -82,8 +82,8 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     fetchPreferences().then((preferences) => {
       if (!isAnonymousUser() || preferences.display_currency_configured) {
         writeDisplayPreferences({
-          region: preferences.display_region || preferences.home_country || "",
-          language: "en",
+          region: normalizeDisplayRegion(preferences.display_region || preferences.home_country || ""),
+          language: normalizeDisplayLanguage(preferences.display_language || "en"),
           currency: preferences.display_currency || "USD",
         });
       }

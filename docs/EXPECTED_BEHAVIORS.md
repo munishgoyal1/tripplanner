@@ -124,7 +124,9 @@ manifest, or invalid remote content leaves the bundled artifact visible. Routes,
 entities, hotels, and money remain compatible with the selected market; India
 starts in Mumbai and contains no London or Portuguese-route entities. A supported
 country/region takes precedence over a stale currency during preference changes,
-and the matching bundled artifact replaces the prior one immediately. Every
+and the matching bundled artifact replaces the prior one immediately. Country
+selects the market; the display currency only re-prices that market's money, so
+India with USD still shows the Rajasthan run with dollar amounts. Every
 regional artifact stores four to six complete days with matching completion
 receipts.
 
@@ -542,6 +544,23 @@ falls back to the source currency.
 
 - [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `updates itinerary costs when the display currency changes to CNY`
 - [`frontend/src/lib/displayPreferences.test.ts`](../frontend/src/lib/displayPreferences.test.ts)
+
+### EB-ACCOUNT-003 - Choose country, language, and currency from fixed lists
+
+**Trigger:** Open Account settings and set Country or region, Language, or
+Display currency.
+
+**Expected:** Country and language are chosen from fixed standard lists rather
+than typed as free text, and currency offers only convertible currencies. A
+previously typed country such as `India` maps onto its standard entry instead of
+being lost. Country and language decide the regional example trip, dates, and
+distance/temperature units; currency independently decides money, so either can
+change without disturbing the other. Interface text remains English.
+
+**Executable proof:**
+
+- [`frontend/src/lib/displayPreferences.test.ts`](../frontend/src/lib/displayPreferences.test.ts)
+- [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx) - `keeps the country trip while pricing it in the chosen currency`
 
 ## UX Labs
 
