@@ -5,7 +5,14 @@
 import { ArrowRight, Info, Loader2, MapPin, Undo2 } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 
-import { demoDecisionsForLocale, demoTripForLocale, faq, type StageDecision, type StageTrip } from "./demoRun";
+import {
+  demoArtifactForLocale,
+  faq,
+  fetchDemoArtifact,
+  type PublicDemoArtifact,
+  type StageDecision,
+  type StageTrip,
+} from "./demoRun";
 import { fetchPreferences } from "../api";
 import { getDisplayName, isAnonymousUser } from "../auth/authSession";
 import { ensureInitialDisplayPreferences, useDisplayPreferences, writeDisplayPreferences } from "../lib/displayPreferences";
@@ -181,6 +188,11 @@ export default function PublicEntry({
   const signedIn = !isAnonymousUser();
   const accountLabel = signedIn ? getDisplayName() || "Account" : "Guest";
   const displayPreferences = useDisplayPreferences();
+  const fallbackArtifact = demoArtifactForLocale(
+    displayPreferences.region,
+    displayPreferences.currency,
+  );
+  const [artifact, setArtifact] = useState<PublicDemoArtifact>(fallbackArtifact);
   useEffect(() => {
     ensureInitialDisplayPreferences();
     fetchPreferences().then((preferences) => {
@@ -193,8 +205,23 @@ export default function PublicEntry({
       }
     }).catch(() => undefined);
   }, []);
-  const trip = demoTripForLocale(displayPreferences.region, displayPreferences.currency);
-  const decisions = demoDecisionsForLocale(displayPreferences.region, displayPreferences.currency);
+  useEffect(() => {
+    const controller = new AbortController();
+    const selected = demoArtifactForLocale(displayPreferences.region, displayPreferences.currency);
+    setArtifact(selected);
+    fetchDemoArtifact(
+      displayPreferences.region || selected.region,
+      displayPreferences.currency || selected.currency,
+      controller.signal,
+    ).then((remote) => {
+      if (remote.region === selected.region && remote.currency === selected.currency) {
+        setArtifact(remote);
+      }
+    }).catch(() => undefined);
+    return () => controller.abort();
+  }, [displayPreferences.currency, displayPreferences.region]);
+  const trip = artifact.trip;
+  const decisions = artifact.decisions;
   const { step, running, replay, finish } = useStageRun(trip.receipts.length);
   const built = running ? daysBuilt(trip.receipts, step) : trip.days.length;
   const { overruled, setOverruled, active } = useOverrule(decisions);

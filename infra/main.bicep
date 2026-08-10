@@ -152,6 +152,7 @@ var suffix = uniqueString(resourceGroup().id)
 var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
+var publicDemoJobName = '${namePrefix}-public-demo-refresh-${suffix}'
 var failureAlertQuery = loadTextContent('queries/application-failures.kql')
 
 // OAuth secrets are only attached when a value is supplied. Container Apps
@@ -392,9 +393,58 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
+resource publicDemoRefreshJob 'Microsoft.App/jobs@2024-03-01' = {
+  name: publicDemoJobName
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    environmentId: env.id
+    configuration: {
+      triggerType: 'Schedule'
+      replicaTimeout: 900
+      replicaRetryLimit: 1
+      scheduleTriggerConfig: {
+        cronExpression: '0 3 1 * *'
+        parallelism: 1
+        replicaCompletionCount: 1
+      }
+    }
+    template: {
+      containers: [
+        {
+          name: 'public-demo-refresh'
+          image: containerImage
+          command: ['python']
+          args: ['-m', 'tripplanner.public_demo']
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: [
+            { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
+            { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
+            { name: 'COSMOS_USE_MANAGED_IDENTITY', value: '1' }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+module publicDemoCosmosRole 'public-demo-cosmos-role.bicep' = {
+  scope: resourceGroup(cosmosResourceGroupName)
+  params: {
+    cosmosAccountName: cosmosAccountName
+    principalId: publicDemoRefreshJob.identity.principalId
+  }
+}
+
 output containerAppFqdn string = app.properties.configuration.ingress.fqdn
 output containerAppUrl string = 'https://${app.properties.configuration.ingress.fqdn}'
 output containerAppName string = app.name
+output publicDemoRefreshJobName string = publicDemoRefreshJob.name
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output cosmosAccountName string = cosmos.name
 output logAnalyticsId string = logs.id

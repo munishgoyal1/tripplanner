@@ -111,6 +111,22 @@ request into the Assistant as before. `/welcome/` behaves the same as `/welcome`
 
 - [`frontend/src/publicEntry/Root.test.tsx`](../frontend/src/publicEntry/Root.test.tsx)
 
+### EB-PUBLIC-002 - Render one internally consistent regional demo
+
+**Trigger:** Open the public entry with a supported display region and currency.
+
+**Expected:** The page renders a bundled regional artifact immediately, then may
+replace it only with one complete, schema-valid artifact from `/public/demo-run`.
+Trip and decisions always come from the same version. Cosmos failure, a missing
+manifest, or invalid remote content leaves the bundled artifact visible. Routes,
+entities, hotels, and money remain compatible with the selected market; India
+starts in Mumbai and contains no London or Portuguese-route entities.
+
+**Executable proof:**
+
+- [`tests/test_public_demo.py`](../tests/test_public_demo.py)
+- [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
+
 ## Planner workspace
 
 ### EB-WORKSPACE-001 - Arrange visible desktop panes freely

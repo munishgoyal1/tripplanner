@@ -2266,6 +2266,19 @@ async def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/public/demo-run")
+async def public_demo_run(request: Request, region: str = "EU", currency: str = "EUR") -> Response:
+    """Return one validated regional artifact without requiring authentication."""
+    from tripplanner.public_demo import active_artifact, artifact_etag
+
+    artifact = active_artifact(region, currency)
+    etag = artifact_etag(artifact)
+    headers = {"ETag": etag, "Cache-Control": "public, max-age=3600, stale-if-error=2592000"}
+    if request.headers.get("if-none-match") == etag:
+        return Response(status_code=304, headers=headers)
+    return JSONResponse(artifact, headers=headers)
+
+
 @app.get("/providers/status")
 async def providers_status() -> dict[str, object]:
     """Expose non-secret provider readiness for MVP diagnostics."""

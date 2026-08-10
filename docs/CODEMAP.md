@@ -35,6 +35,7 @@ trip through shared API contracts.
 | `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, `/providers/status` diagnostics, production SPA mount |
+| `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
@@ -75,6 +76,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | Path | Owns |
 | --- | --- |
 | `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | Public-entry gating and the permanent `/welcome` route back to the landing experience |
+| `frontend/src/publicEntry/publicDemoRuns.json`, `demoRun.ts` | Ten self-contained regional public-demo artifacts, deterministic mapping, and whole-artifact API replacement |
 | `frontend/src/App.tsx` | Web application composition; trip state, refresh, mutations, pane/resize state, and panel body ownership |
 | `frontend/src/components/ChatPanel.tsx` | Assistant transcript presentation, composer, trip-input UI, account controls, and transcript loading/cache coordination |
 | `frontend/src/hooks/useChatStream.ts` | Assistant SSE lifecycle, progress timing, cancellation, retry state, trip-input requests, and workspace turn-status publication |
@@ -144,6 +146,7 @@ Cosmos containers have explicit ownership:
 | `about_me` | Preference profiles |
 | `email_exports` | Idempotent export records |
 | `guest_credentials` | Guest capability records |
+| `public_demo_runs` | Immutable regional public-demo artifacts and the shared `_public` active manifest |
 
 Canary and production databases are isolated within the shared Cosmos account.
 Local emulator data is also isolated and must never be reset automatically. Data

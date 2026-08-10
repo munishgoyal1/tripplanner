@@ -3463,3 +3463,13 @@ derived from scripts/capture_public_run.py output, the price table carries the
 sample-pricing marker, a room with no rate provider reads "no live rate", and a
 saved total that only covers fares is labelled "Priced so far" rather than
 "Trip total".
+
+[2026-08-10] Regional public demo uses standalone immutable artifacts
+Owner approval: ship ten complete regional artifacts for India/INR, US/USD,
+Canada/CAD, UK/GBP, Eurozone/EUR, Japan/JPY, China/CNY, Australia/AUD, UAE/AED,
+and Brazil/BRL. Never derive one region by text replacement or fixture
+inheritance. Render a bundled last-known-good artifact immediately; read a
+validated active artifact from a dedicated Cosmos container when available.
+Monthly refresh writes versioned immutable documents and promotes one active
+manifest only after the complete set validates. Trip and decisions always move
+together as one artifact version.

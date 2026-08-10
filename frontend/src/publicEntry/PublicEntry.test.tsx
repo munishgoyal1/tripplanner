@@ -1,8 +1,12 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PublicEntry from "./PublicEntry";
-import { demoDecisions, demoDecisionsForLocale, demoTripForLocale } from "./demoRun";
+import {
+  demoArtifactForLocale,
+  demoDecisionsForLocale,
+  demoTripForLocale,
+} from "./demoRun";
 import { hasSkippedPublicEntry, markPublicEntrySkipped, shouldShowPublicEntry } from "./publicEntryState";
 import { Masthead } from "./stagePieces";
 
@@ -49,11 +53,11 @@ describe("PublicEntry", () => {
 
   it("chooses representative trips for major locale regions", () => {
     const samples = [
-      ["IN", "INR", "Rajasthan heritage circuit"],
-      ["CN", "CNY", "China's imperial cities"],
-      ["AU", "AUD", "Australia's east coast"],
-      ["JP", "JPY", "Japan by rail"],
-      ["CA", "CAD", "Canadian Rockies"],
+      ["IN", "INR", "Mumbai to Jaipur"],
+      ["CN", "CNY", "Beijing to Xi'an"],
+      ["AU", "AUD", "Sydney to Cairns"],
+      ["JP", "JPY", "Tokyo to Kyoto"],
+      ["CA", "CAD", "Calgary to Banff"],
     ] as const;
     for (const [region, currency, title] of samples) {
       const trip = demoTripForLocale(region, currency);
@@ -64,15 +68,79 @@ describe("PublicEntry", () => {
     }
   });
 
+  it("selects ten independent standalone artifacts", () => {
+    const mappings = [
+      ["IN", "INR"], ["US", "USD"], ["CA", "CAD"], ["GB", "GBP"], ["EU", "EUR"],
+      ["JP", "JPY"], ["CN", "CNY"], ["AU", "AUD"], ["AE", "AED"], ["BR", "BRL"],
+    ] as const;
+    const artifacts = mappings.map(([region, currency]) => demoArtifactForLocale(region, currency));
+
+    expect(new Set(artifacts.map((artifact) => artifact.artifact_version))).toHaveLength(10);
+    expect(new Set(artifacts.map((artifact) => artifact.trip.id))).toHaveLength(10);
+    for (const artifact of artifacts) {
+      const { trip } = artifact;
+      const dayNumbers = trip.days.map((day) => day.day);
+      const hotelMarkers = new Set(trip.hotels.map((hotel) => hotel.marker));
+      const entities = new Set(artifact.market.entities);
+      expect(trip.days.length).toBeGreaterThanOrEqual(3);
+      expect(trip.receipts.length).toBeGreaterThanOrEqual(6);
+      expect(dayNumbers).toEqual([...new Set(dayNumbers)].sort((left, right) => left - right));
+      expect(new Set(trip.receipts.flatMap((receipt) => receipt.day ?? []))).toEqual(
+        new Set(dayNumbers),
+      );
+      expect(trip.days.every((day) => day.stops.length >= 2)).toBe(true);
+      expect(trip.days.every((day) => hotelMarkers.has(day.hotel))).toBe(true);
+      expect(trip.days.flatMap((day) => day.stops)
+        .filter((stop) => stop.kind === "hotel")
+        .every((stop) => Boolean(stop.marker) && hotelMarkers.has(stop.marker!))).toBe(true);
+      expect(artifact.market.cities.every((city) => entities.has(city))).toBe(true);
+      expect(trip.hotels.every((hotel) => entities.has(hotel.name))).toBe(true);
+      expect(trip.days.flatMap((day) => day.stops)
+        .filter((stop) => ["hotel", "attraction", "meal"].includes(stop.kind))
+        .every((stop) => entities.has(stop.name))).toBe(true);
+      expect(trip.hotels.length).toBeGreaterThanOrEqual(1);
+      expect(trip.compares.length).toBeGreaterThanOrEqual(1);
+      expect(trip.lines.length).toBeGreaterThanOrEqual(2);
+      expect(artifact.decisions.length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
   it("uses a self-contained Rajasthan run for India", () => {
     const content = JSON.stringify({
       trip: demoTripForLocale("IN", "INR"),
       decisions: demoDecisionsForLocale("IN", "INR"),
     });
     expect(content).toMatch(/Amber Fort/);
-    expect(content).toMatch(/Mehrangarh Fort/);
-    expect(content).toMatch(/Lake Pichola/);
+    expect(content).toMatch(/Mumbai → Jaipur/);
+    expect(content).not.toMatch(/London|\bLHR\b|\bLGW\b/);
     expect(content).not.toMatch(/Lisbon|Porto|Portugal|Portuguese|Principe Real|G\.A Palace|Bairro Alto|Alfama|Bel[eé]m|Tapabento|Time Out Market|Ribeira|Livraria Lello|Bolh[aã]o|Port wine|Past[eé]is|Zenith|Cervejaria|Lisboa|LHR-LIS|\bLIS\b|\bOPO\b/i);
+  });
+
+  it("renders bundled data immediately and replaces only a complete remote artifact", async () => {
+    const remote = structuredClone(demoArtifactForLocale("US", "USD"));
+    remote.artifact_version = "remote-us-v2";
+    remote.trip.title = "Remote Pacific run";
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.includes("/public/demo-run")) {
+        return new Response(JSON.stringify(remote), { status: 200 });
+      }
+      return new Response("{}", { status: 500 });
+    });
+
+    render(<PublicEntry onPlan={() => {}} onSkip={() => {}} />);
+    expect(screen.getByText(/agent · San Francisco to Yosemite/i)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/agent · Remote Pacific run/i)).toBeInTheDocument());
+  });
+
+  it("keeps the bundled artifact when the regional API fails", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("unavailable", { status: 503 }));
+
+    render(<PublicEntry onPlan={() => {}} onSkip={() => {}} />);
+
+    expect(screen.getByText(/agent · San Francisco to Yosemite/i)).toBeInTheDocument();
+    await waitFor(() => expect(globalThis.fetch).toHaveBeenCalled());
+    expect(screen.queryByText(/Remote Pacific run/i)).not.toBeInTheDocument();
   });
 
   it("plays the captured run and lands on the trip total", () => {
@@ -95,7 +163,7 @@ describe("PublicEntry", () => {
   });
 
   it("re-settles the plan when a decision is overruled, and restores it on undo", () => {
-    const decision = demoDecisions[0];
+    const decision = demoDecisionsForLocale("US", "USD")[0];
     const expectedTrip = demoTripForLocale("US", "USD");
     renderFinished();
     fireEvent.click(screen.getByRole("button", { name: decision.overrule }));
