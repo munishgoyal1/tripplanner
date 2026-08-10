@@ -330,6 +330,25 @@ Why did you remove the synall to latest and sync me scripts. adapt them to be us
 [2026-08-10 17:15] [master !] Fix macOS sync launcher access
 fix the access part
 
+[2026-08-10 17:25] [master !] Move sandbox launchers under user
+bring the sandbox launcher scripts folder under user folder since user is the launcher user facing fdolder. do similar for mac and windows
+
+[2026-08-10 17:35] [master !] Fix Sync All stash failure
+Fix the root and make scripts robust reliable always. as part of syncalltolatest error is :
+
+    6ab97e3..46473d6  HEAD -> sandbox/3-owner-ops-dashboard
+[updated] Sandbox '3-owner-ops-dashboard' and origin/sandbox/3-owner-ops-dashboard are current with origin/master at 46473d6.
+Exception: /Users/mugoy/repos/tripplanner/scripts/dev/all-worktrees-sync.ps1:46:5
+Line |
+  46 |      throw "Sandbox synchronizationneeds attention:`n$($failures -joi …
+      |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      | Sandbox synchronization needs
+      | attention: 1-stay-comparison: git
+      | stash push --include-untracked
+      | --message sandbox-update temporary
+      | 1-stay-comparison changes failed in
+      | /Users/mugoy/repos/tripplanner.worktrees/sbx-1-stay-comparison.
+
 ## Historical prompts imported from retired lanes
 
 The retired worker prompt histories are preserved below verbatim as historical
@@ -889,3 +908,6 @@ Okay go ahead and create a rich lab for this. If you think anbother topion D wit
 yes conform to the natural meaning of Sync all to latest.
 
 Another thing - just givng you my other thoughts you can guide me - I was thinking whetehr even sandbox branch update should be part of other regular worker sync all to laetst flow, and keep sandbox explcit seperate because thats what they are - isolated. But then if we think deeper, they are eventually meant to merge to master and all the owrker updates have to be in master too, so why not just let it update frequently so that later merge surprises are reduced and it doesnt diverge over time too much. I think thats similar to any branching done from main branches, sandbox is just isolated execution environment and doesnt push to other main branches until verified and promoted - thats the only difference, right ?
+
+[2026-08-10 17:25] [master !] Move sandbox launchers under user
+bring the sandbox launcher scripts folder under user folder since user is the launcher user facing fdolder. do similar for mac and windows

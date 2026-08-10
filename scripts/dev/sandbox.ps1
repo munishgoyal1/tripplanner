@@ -177,9 +177,9 @@ function Test-SandboxWorktree {
 function Get-SandboxLauncherPath {
     param([Parameter(Mandatory = $true)][string]$Name)
     if ($IsMacOS) {
-        return "./scripts/mac/sandbox/$Name.command"
+        return "./scripts/mac/user/sandbox/$Name.command"
     }
-    return ".\scripts\sandbox\$Name.cmd"
+    return ".\scripts\user\sandbox\$Name.cmd"
 }
 
 function Resolve-SandboxEntry {
@@ -796,6 +796,24 @@ function Complete-SandboxMergeConflict {
     throw "SANDBOX_CONFLICT_PENDING: $Label has conflicts: $($unmerged -join ', '). Resolve them in $WorkingDirectory, then run Resolve-SandboxConflicts for this sandbox.$stashHint"
 }
 
+function Get-SandboxUnmergedFiles {
+    param([Parameter(Mandatory = $true)][string]$WorkingDirectory)
+    return @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
+}
+
+function Save-SandboxConflictState {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [string]$StashCommit = ""
+    )
+    $stateDir = Join-Path $primaryRoot "logs/sandbox"
+    New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
+    [pscustomobject]@{
+        worktree = $WorkingDirectory
+        stashCommit = $StashCommit
+    } | ConvertTo-Json | Set-Content -Path (Join-Path $stateDir "pending-conflict-$((Split-Path -Leaf $WorkingDirectory)).json")
+}
+
 function Restore-SandboxStash {
     param(
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
@@ -810,6 +828,7 @@ function Restore-SandboxStash {
     }
     & git -C $WorkingDirectory stash pop --index "stash@{0}"
     if ($LASTEXITCODE -ne 0) {
+        Save-SandboxConflictState -WorkingDirectory $WorkingDirectory -StashCommit $StashCommit
         Write-Warning "$Label local changes conflict with the updated base; resolve them before continuing."
     }
 }
@@ -1130,6 +1149,11 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         throw "$label must be on $($entry.branch), not $actualBranch."
     }
     $remoteRef = "origin/$BaseBranch"
+
+    $unmerged = @(Get-SandboxUnmergedFiles -WorkingDirectory $wd)
+    if ($unmerged.Count -gt 0) {
+        throw "SANDBOX_CONFLICT_PENDING: $label already has unresolved files: $($unmerged -join ', '). Resolve them, then run Resolve-SandboxConflicts before retrying Sync All."
+    }
 
     if (-not $PSCmdlet.ShouldProcess($entry.branch, "Merge $remoteRef into the sandbox")) {
         return

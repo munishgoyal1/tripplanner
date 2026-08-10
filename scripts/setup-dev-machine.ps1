@@ -239,7 +239,7 @@ Write-Host "Azure access:    run 'az login' before deployment."
 Write-Host "GHCR access:     run 'docker login ghcr.io' with a write:packages PAT."
 if ($FullAgentEnvironment) {
     Write-Host "GitHub access:   run 'gh auth login' and sign into GitHub in VS Code."
-    Write-Host '.\scripts\sandbox\New-Sandbox.cmd <name> "<purpose>"'
+    Write-Host '.\scripts\user\sandbox\New-Sandbox.cmd <name> "<purpose>"'
 }
 if (-not $dockerReady) {
     Write-Host "Docker Desktop is installed but its daemon is not running; start it before local Cosmos or image builds."
