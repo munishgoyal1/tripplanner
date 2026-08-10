@@ -15,10 +15,20 @@ export default function Root() {
   );
   const [initialRequest, setInitialRequest] = useState<string | null>(null);
 
+  useEffect(() => {
+    const handlePopState = () => {
+      const showWelcome = isPublicEntryPath();
+      setShowEntry(showWelcome);
+      if (showWelcome) setInitialRequest(null);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   const openWorkspace = (request: string | null = null) => {
     markPublicEntrySkipped();
     if (isPublicEntryPath()) {
-      window.history.replaceState({}, "", "/planner");
+      window.history.pushState({}, "", "/");
     }
     setInitialRequest(request);
     setShowEntry(false);

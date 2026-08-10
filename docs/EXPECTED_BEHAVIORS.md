@@ -103,9 +103,10 @@ Assistant build its first proposal.
 the public entry or entering the planner workspace.
 
 **Expected:** The public landing experience opens regardless of authentication or
-the saved first-visit skip flag. Choosing Plan mine or Skip to the app replaces
-the address with `/` before opening the workspace, and Plan mine carries its
-request into the Assistant as before. `/welcome/` behaves the same as `/welcome`.
+the saved first-visit skip flag. Choosing Plan mine or Skip to the app changes the
+address to `/` before opening the workspace while preserving `/welcome` in
+browser history. Back returns to the landing experience, and Plan mine carries
+its request into the Assistant as before. `/welcome/` behaves the same as `/welcome`.
 
 **Executable proof:**
 
