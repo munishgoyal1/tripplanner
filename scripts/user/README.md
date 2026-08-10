@@ -11,7 +11,7 @@ Windows launchers live here; matching macOS launchers live under
 | `Run-Latest.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
 | `Sync-MeTo-Latest.cmd <sandbox>` | Fast-forward primary `master`, then update one sandbox from it |
 | `Sync-AllTo-Latest.cmd` | Fast-forward primary `master`, then update every registered sandbox from it |
-| `../sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
+| `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `Show-Prompts.cmd` | Read the master owner prompt log |
 
 `Run-Latest.cmd` is only for the primary `master` checkout. It fast-forwards
@@ -33,5 +33,5 @@ corresponding primary launcher from the repository root:
 ```
 
 When `Update-Sandbox` stops on a semantic merge conflict, resolve the marked
-files in that sandbox, then run `scripts/sandbox/Resolve-SandboxConflicts.cmd <sandbox>`
-on Windows or `scripts/mac/sandbox/Resolve-SandboxConflicts.command <sandbox>` on macOS.
+files in that sandbox, then run `scripts/user/sandbox/Resolve-SandboxConflicts.cmd <sandbox>`
+on Windows or `scripts/mac/user/sandbox/Resolve-SandboxConflicts.command <sandbox>` on macOS.
