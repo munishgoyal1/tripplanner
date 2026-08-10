@@ -176,6 +176,9 @@ class Settings(BaseModel):
     cosmos_endpoint: str = os.getenv("COSMOS_ENDPOINT", "")
     cosmos_key: str = os.getenv("COSMOS_KEY", "")
     cosmos_connection_string: str = os.getenv("COSMOS_CONNECTION_STRING", "")
+    cosmos_use_managed_identity: bool = (
+        os.getenv("COSMOS_USE_MANAGED_IDENTITY", "").strip() == "1"
+    )
     cosmos_database: str = os.getenv("COSMOS_DATABASE", "tripplanner")
     cosmos_emulator: bool = os.getenv("COSMOS_EMULATOR", "").strip() == "1"
     cosmos_dev_backend: str = Field(

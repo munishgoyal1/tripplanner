@@ -8,6 +8,7 @@ import type {
   ProvenanceRow,
   TripView,
 } from "../types";
+import { formatSourceAmount, useDisplayPreferences, type DisplayCurrency } from "../lib/displayPreferences";
 
 interface Props {
   decisions: Decision[];
@@ -19,13 +20,12 @@ interface Props {
   onError: (message: string) => void;
 }
 
-function priceLabel(option: DecisionOption): string {
+function priceLabel(option: DecisionOption, displayCurrency: DisplayCurrency): string {
   if (!option.price) return "No price";
   const { amount, currency, amount_max } = option.price;
-  const symbol = currency === "EUR" ? "€" : currency === "USD" ? "$" : currency === "GBP" ? "£" : "";
-  const one = symbol ? `${symbol}${Math.round(amount)}` : `${Math.round(amount)} ${currency}`;
+  const one = formatSourceAmount(amount, currency, displayCurrency);
   if (amount_max && amount_max > amount) {
-    return `${one}–${symbol ? "" : " "}${symbol}${Math.round(amount_max)}`;
+    return `${one}–${formatSourceAmount(amount_max, currency, displayCurrency)}`;
   }
   return one;
 }
@@ -57,6 +57,7 @@ function OptionRow({
   busy: boolean;
   onTake: () => void;
 }) {
+  const { currency: displayCurrency } = useDisplayPreferences();
   const door = durationLabel(option.door_to_door_min ?? option.duration_min);
   return (
     <li
@@ -82,7 +83,7 @@ function OptionRow({
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
         <span className={`text-[13px] font-semibold ${option.priced ? "text-ink" : "text-slate-400"}`}>
-          {option.priced ? priceLabel(option) : "—"}
+          {option.priced ? priceLabel(option, displayCurrency) : "—"}
         </span>
         {!option.priced && (
           <span className="text-right text-[10px] leading-tight text-slate-400">

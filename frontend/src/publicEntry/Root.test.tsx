@@ -12,6 +12,10 @@ vi.mock("../auth/authSession", () => ({
   isAnonymousUser: isAnonymousUserMock,
 }));
 
+vi.mock("../components/AccountSettingsController", () => ({
+  default: () => null,
+}));
+
 vi.mock("../App", () => ({
   default: ({ initialRequest }: { initialRequest?: string | null }) => (
     <div>Workspace request: {initialRequest ?? "none"}</div>

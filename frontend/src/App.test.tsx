@@ -34,6 +34,12 @@ const { emptyView, fetchTripViewMock, selectItemMock, deselectItemMock, isAnonym
 
 vi.mock("./api", () => ({
   fetchTripView: fetchTripViewMock,
+  fetchPreferences: vi.fn(() => Promise.resolve({
+    display_currency_configured: false,
+    display_currency: "USD",
+    display_region: "",
+    home_country: "",
+  })),
   importSharedTrip: vi.fn(),
   selectItem: selectItemMock,
   deselectItem: deselectItemMock,

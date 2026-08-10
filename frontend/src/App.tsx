@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import CanvasPaneFrame from "./components/CanvasPaneFrame";
+import { openAccountSettings } from "./components/accountSettings";
 import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
 import DetailsPaneShell from "./components/DetailsPaneShell";
 import DesktopToolbar from "./components/DesktopToolbar";
@@ -12,7 +13,7 @@ import { FloatingStatusBar } from "./components/StatusBar";
 import TripPanel from "./components/TripPanel";
 import RightRail from "./components/RightRail";
 import { trackEvent } from "./analytics";
-import { fetchDocumentReadiness, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
+import { fetchDocumentReadiness, fetchPreferences, fetchTripView, getDisplayName, importSharedTrip, isAnonymousUser, resetTrip, selectItem, deselectItem, startNewTrip, type DeselectItemOptions, type SelectItemOptions } from "./api";
 import { useWorkspaceFocus } from "./hooks/useWorkspaceFocus";
 import type { ItineraryFilter } from "./lib/itineraryFilters";
 import { dismissNotice, notify } from "./lib/notices";
@@ -20,6 +21,7 @@ import { completionStatus } from "./lib/turnStatus";
 import type { PlannerReview, TripView, TripWorkspaceView, TurnEffect } from "./types";
 import { diffTurnEffects } from "./turnEffects";
 import { initialWorkspaceState, workspaceReducer } from "./workspaceState";
+import { ensureInitialDisplayPreferences, normalizeDisplayLanguage, normalizeDisplayRegion, writeDisplayPreferences } from "./lib/displayPreferences";
 
 interface NavRef {
   kind: string;
@@ -75,6 +77,18 @@ function compactStatus(status?: string): string | undefined {
 }
 
 export default function App({ initialRequest = null }: { initialRequest?: string | null }) {
+  useEffect(() => {
+    ensureInitialDisplayPreferences();
+    fetchPreferences().then((preferences) => {
+      if (!isAnonymousUser() || preferences.display_currency_configured) {
+        writeDisplayPreferences({
+          region: normalizeDisplayRegion(preferences.display_region || preferences.home_country || ""),
+          language: normalizeDisplayLanguage(preferences.display_language || "en"),
+          currency: preferences.display_currency || "USD",
+        });
+      }
+    }).catch(() => undefined);
+  }, []);
   const [view, setView] = useState<TripView | null>(null);
   // Map + itinerary view-models handed over by a trip switch, so those panels
   // can render the new trip without a second and third round-trip.
@@ -994,12 +1008,11 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onExport={() => setShowExport(true)}
           signedIn={signedIn}
           accountLabel={signedIn ? getDisplayName() || "Account" : "Guest"}
-          onOpenAccount={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
+          onOpenAccount={() => openAccountSettings()}
           documentBadge={documentBadge}
           documentBadgeTone={documentBadgeTone}
-          onOpenDocuments={() => window.dispatchEvent(
-            new CustomEvent("tripplanner:open-account", { detail: { destination: "documents" } }),
-          )}
+          onOpenDocuments={() => openAccountSettings("documents")}
+          onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
         />
 
         <main
@@ -1086,6 +1099,7 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           tripOpen={mobileTripOpen}
           onOpenTrip={() => setMobileTripOpen(true)}
           onCloseTrip={() => setMobileTripOpen(false)}
+          onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
           tripDetails={(
             <RightRail {...railProps} photos={<TripPanel {...tripPanelProps} hideSwitcher />} />
           )}

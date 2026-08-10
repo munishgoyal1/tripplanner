@@ -404,6 +404,10 @@ export interface Preferences {
   home_city: string;
 
   home_country: string;
+  display_region?: string;
+  display_language?: string;
+  display_currency?: string;
+  display_currency_configured?: boolean;
   trip_style: string;
   budget_level: string;
   flight_class: string;

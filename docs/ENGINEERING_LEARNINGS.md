@@ -897,3 +897,16 @@ the outcome.
   cost, but the decision model states there is deliberately no estimated price
   tier. Modelled fuel therefore became `RunningCost` — a separate field that
   never enters `Price`, never joins a fare total and takes no part in ranking.
+
+## 2026-08-10 - A Regional Fixture Is One Versioned Unit
+
+- Replacing place names and currency strings inside one captured run creates a
+  plausible-looking mixture whose route, hotels, decisions, and receipts no
+  longer describe the same trip. Regional examples must be standalone artifacts.
+- Validate relationships, not a blacklist: declared cities own route endpoints
+  and hotels, hotel markers own day references, decisions belong to trip
+  comparisons, money uses one currency, and entities declared by another market
+  cannot appear in the rendered payload.
+- Availability and freshness are separate concerns. Render the bundled artifact
+  synchronously, fetch a complete active version opportunistically, and publish
+  refreshes by writing every immutable document before replacing one manifest.

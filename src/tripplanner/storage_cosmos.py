@@ -65,7 +65,7 @@ def is_enabled() -> bool:
     """True when the Cosmos backend is configured. Cheap (no network)."""
     s = get_settings()
     return bool(s.cosmos_endpoint) and bool(
-        s.cosmos_key or s.cosmos_connection_string
+        s.cosmos_key or s.cosmos_connection_string or s.cosmos_use_managed_identity
     )
 
 
@@ -82,6 +82,12 @@ def _client_singleton():
     if s.cosmos_connection_string:
         _client = CosmosClient.from_connection_string(
             s.cosmos_connection_string, **client_options
+        )
+    elif s.cosmos_use_managed_identity:
+        from azure.identity import DefaultAzureCredential
+
+        _client = CosmosClient(
+            s.cosmos_endpoint, credential=DefaultAzureCredential(), **client_options
         )
     else:
         _client = CosmosClient(

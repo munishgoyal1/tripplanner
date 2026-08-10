@@ -19,6 +19,7 @@ dependencies = [
     "httpx>=0.28",
     "rich>=13.9",
     "azure-cosmos>=4.16",
+    "azure-identity>=1.19",
     "azure-communication-email>=1.1",
     "reportlab>=4.4",
 ]
@@ -30,9 +31,7 @@ dev = [
     "ruff>=0.7",
     "mypy>=1.12",
 ]
-azure = [
-    "azure-identity>=1.19",
-]
+azure = []
 
 [tool.ruff]
 line-length = 100
@@ -44,3 +43,6 @@ select = ["E", "F", "I", "N", "W", "UP"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+tripplanner = ["public_demo_runs.json"]

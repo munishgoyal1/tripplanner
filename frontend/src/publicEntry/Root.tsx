@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { isAnonymousUser } from "../auth/authSession";
+import AccountSettingsController from "../components/AccountSettingsController";
 import PublicEntry from "./PublicEntry";
 import {
   isPublicEntryPath,
@@ -34,16 +35,27 @@ export default function Root() {
     setShowEntry(false);
   };
 
-  if (showEntry) {
-    return (
+  useEffect(() => {
+    const openWelcome = () => {
+      window.history.pushState({}, "", "/welcome");
+      setInitialRequest(null);
+      setShowEntry(true);
+    };
+    window.addEventListener("tripplanner:open-welcome", openWelcome);
+    return () => window.removeEventListener("tripplanner:open-welcome", openWelcome);
+  }, []);
+
+  return (
+    <>
+      {showEntry ? (
       <div className="product-theme-aegean min-h-full">
         <PublicEntry
           onPlan={(request) => openWorkspace(request)}
           onSkip={() => openWorkspace()}
         />
       </div>
-    );
-  }
-
-  return <App initialRequest={initialRequest} />;
+      ) : <App initialRequest={initialRequest} />}
+      <AccountSettingsController />
+    </>
+  );
 }

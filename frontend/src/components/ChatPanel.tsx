@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import {
   ArrowDown,
   Check,
@@ -16,17 +15,11 @@ import {
   X,
 } from "lucide-react";
 import {
-  signIn,
-  signOut,
   getDisplayName,
   isAnonymousUser,
-  fetchAuthConfig,
   fetchChatHistory,
   startNewTrip,
   syncAuth,
-  loginWithGoogle,
-  logoutGoogle,
-  runPrivacyAction,
   fetchGuestDataSummary,
   migrateGuestData,
   getUserId,
@@ -35,10 +28,8 @@ import {
 import type { ChatMessage, TurnEffect } from "../types";
 import { trackEvent } from "../analytics";
 import { saveTurnMeta, withStoredTurnMeta } from "../turnMetadata";
-import AccountSettingsHub from "./AccountSettingsHub";
-import type { AccountDestination } from "./AccountSettingsHub";
+import { openAccountSettings } from "./accountSettings";
 import BrandIdentity from "./BrandIdentity";
-import SettingsModal from "./SettingsModal";
 import TripInputCard, { formatTripInputResponse } from "./TripInputCard";
 import {
   elapsedLabel,
@@ -133,13 +124,7 @@ export default function ChatPanel({
 }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
-  const [showSettings, setShowSettings] = useState(false);
-  const [showAccount, setShowAccount] = useState(false);
-  const [accountDestination, setAccountDestination] = useState<AccountDestination>("menu");
-  const [nameInput, setNameInput] = useState(getDisplayName());
-  const [googleEnabled, setGoogleEnabled] = useState(false);
   const [auth, setAuth] = useState<AuthSession>({ authenticated: false });
-  const [privacyBusy, setPrivacyBusy] = useState(false);
   // Guest-import banner: set when sign-in just occurred and the old guest account had data.
   const [guestBanner, setGuestBanner] = useState<{
     guestId: string;
@@ -159,7 +144,6 @@ export default function ChatPanel({
   const atBottomRef = useRef(true);
   const [hasNewBelow, setHasNewBelow] = useState(false);
   const appliedEffectsTokenRef = useRef(0);
-  const accountRef = useRef<HTMLDivElement>(null);
   const transcriptCacheRef = useRef<Map<string, ChatMessage[]>>(new Map());
   const loadedTranscriptRequestRef = useRef<string | null>(null);
   // Set to true immediately after a Google sign-in where the previous identity
@@ -203,30 +187,6 @@ export default function ChatPanel({
   useEffect(() => () => {
     if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
   }, []);
-
-  useEffect(() => {
-    const openAccount = (event: Event) => {
-      const requested = (event as CustomEvent<{ destination?: AccountDestination }>).detail?.destination;
-      setAccountDestination(requested ?? "menu");
-      setShowAccount(true);
-    };
-    const openSettings = () => setShowSettings(true);
-    window.addEventListener("tripplanner:open-account", openAccount);
-    window.addEventListener("tripplanner:open-settings", openSettings);
-    return () => {
-      window.removeEventListener("tripplanner:open-account", openAccount);
-      window.removeEventListener("tripplanner:open-settings", openSettings);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!showAccount) return;
-    const dismissOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setShowAccount(false);
-    };
-    window.addEventListener("keydown", dismissOnEscape);
-    return () => window.removeEventListener("keydown", dismissOnEscape);
-  }, [showAccount]);
 
   const cacheKey = tripIdHint && tripIdHint.trim() ? tripIdHint.trim() : "__active__";
   const transcriptRequestKey = JSON.stringify([cacheKey, reloadToken, tripIdHint]);
@@ -301,7 +261,6 @@ export default function ChatPanel({
   // On load, learn whether Google OAuth is available and pick up any existing
   // session (the cookie mirrors its identity into localStorage via syncAuth).
   useEffect(() => {
-    fetchAuthConfig().then((c) => setGoogleEnabled(c.google));
     syncAuth().then((session) => {
       setAuth(session);
       // If we just obtained an authenticated session and the previous id was a
@@ -496,68 +455,6 @@ export default function ChatPanel({
     });
   }
 
-  async function handleDeleteTripHistory() {
-    const ok = window.confirm(
-      "Delete all saved trips and related chat history for this account? This cannot be undone."
-    );
-    if (!ok) return;
-    setPrivacyBusy(true);
-    try {
-      const res = await runPrivacyAction("delete_trip_history");
-      if (!res.ok) {
-        window.alert(res.message || "Could not delete trip history.");
-        return;
-      }
-      await startFresh();
-      window.alert("Trip history deleted.");
-      setShowAccount(false);
-    } finally {
-      setPrivacyBusy(false);
-    }
-  }
-
-  async function handleClearAllData() {
-    const typed = window.prompt('Type DELETE to clear all your app data for this account.');
-    if ((typed || "").trim().toUpperCase() !== "DELETE") return;
-    setPrivacyBusy(true);
-    try {
-      const res = await runPrivacyAction("clear_all_data", typed || "");
-      if (!res.ok) {
-        window.alert(res.message || "Could not clear data.");
-        return;
-      }
-      await startFresh();
-      window.alert("All app data cleared for this account.");
-      setShowAccount(false);
-    } finally {
-      setPrivacyBusy(false);
-    }
-  }
-
-  async function handleDeleteAccountData() {
-    const typed = window.prompt(
-      'Type DELETE to delete this app account data. This clears all app data and signs you out.'
-    );
-    if ((typed || "").trim().toUpperCase() !== "DELETE") return;
-    setPrivacyBusy(true);
-    try {
-      const res = await runPrivacyAction("delete_account", typed || "");
-      if (!res.ok) {
-        window.alert(res.message || "Could not delete account data.");
-        return;
-      }
-      if (auth.authenticated) {
-        await logoutGoogle();
-      } else {
-        signOut();
-      }
-      window.alert("Account data deleted.");
-      window.location.reload();
-    } finally {
-      setPrivacyBusy(false);
-    }
-  }
-
   // A question from the agent lives in the transcript, so a collapsed dock has
   // to open far enough to answer it.
   useEffect(() => {
@@ -594,7 +491,7 @@ export default function ChatPanel({
           </button>}
           <div>
             {!hideGlobalControls && <button
-              onClick={() => setShowAccount(true)}
+              onClick={() => openAccountSettings()}
               title="Account settings"
               aria-label="Account settings"
               className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
@@ -611,171 +508,7 @@ export default function ChatPanel({
                   : getDisplayName() || "Account"}
               </span>
             </button>}
-            {false && showAccount && createPortal(
-              <div ref={accountRef} className="fixed right-3 top-14 z-[100] w-64 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
-                {auth.authenticated ? (
-                  <>
-                    <div className="mb-2 flex items-center gap-2">
-                      {auth.picture && (
-                        <img
-                          src={auth.picture}
-                          alt=""
-                          className="h-8 w-8 rounded-full"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-ink">
-                          {auth.display_name || "Signed in"}
-                        </p>
-                        {auth.email && (
-                          <p className="truncate text-xs text-slate-500">{auth.email}</p>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        await logoutGoogle();
-                        window.location.reload();
-                      }}
-                      disabled={privacyBusy}
-                      className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100"
-                    >
-                      Sign out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {googleEnabled && (
-                      <button
-                        onClick={() => {
-                          trackEvent("login", { method: "google_start" });
-                          loginWithGoogle();
-                        }}
-                        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24">
-                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" />
-                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z" />
-                          <path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z" />
-                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z" />
-                        </svg>
-                        Sign in with Google
-                      </button>
-                    )}
-                    <p className="mb-2 text-xs text-slate-500">
-                      {googleEnabled ? "Or sign in with a name. " : ""}Your
-                      preferences and trips follow this identity across devices.
-                      (Use “local” to share state with the CLI.)
-                    </p>
-                <input
-                  className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:border-brand focus:outline-none"
-                  placeholder="Your name"
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && nameInput.trim()) {
-                      trackEvent("login", { method: "name" });
-                      signIn(nameInput);
-                      setShowAccount(false);
-                      window.location.reload();
-                    }
-                  }}
-                />
-                <div className="mt-2 flex justify-between gap-2">
-                  {!isAnonymousUser() && (
-                    <button
-                      onClick={() => {
-                        signOut();
-                        window.location.reload();
-                      }}
-                      className="rounded-lg px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-100"
-                    >
-                      Sign out
-                    </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      if (!nameInput.trim()) return;
-                      trackEvent("login", { method: "name" });
-                      signIn(nameInput);
-                      setShowAccount(false);
-                      window.location.reload();
-                    }}
-                    disabled={!nameInput.trim()}
-                    className="ml-auto rounded-lg bg-brand px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40"
-                  >
-                    Sign in
-                  </button>
-                </div>
-                  </>
-                )}
-
-                <div className="my-3 h-px bg-slate-200" />
-
-                <button
-                  onClick={() => {
-                    setShowAccount(false);
-                  }}
-                  className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100"
-                >
-                  Analytics preferences
-                </button>
-
-                <button
-                  onClick={() => {
-                    setShowSettings(true);
-                    setShowAccount(false);
-                  }}
-                  disabled={privacyBusy}
-                  className="mb-2 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100"
-                >
-                  Edit preferences
-                </button>
-
-                <button
-                  onClick={handleDeleteTripHistory}
-                  disabled={privacyBusy}
-                  className="mb-2 w-full rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-left text-xs text-amber-800 hover:bg-amber-100 disabled:opacity-50"
-                >
-                  Delete trip history
-                </button>
-
-                <button
-                  onClick={handleClearAllData}
-                  disabled={privacyBusy}
-                  className="mb-2 w-full rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-left text-xs text-rose-800 hover:bg-rose-100 disabled:opacity-50"
-                >
-                  Clear all my data
-                </button>
-
-                <button
-                  onClick={handleDeleteAccountData}
-                  disabled={privacyBusy}
-                  className="w-full rounded-lg border border-rose-300 bg-rose-100 px-3 py-1.5 text-left text-xs font-medium text-rose-900 hover:bg-rose-200 disabled:opacity-50"
-                >
-                  Delete account
-                </button>
-
-                <p className="mt-2 text-[10px] text-slate-500">
-                  Privacy controls follow a GDPR-style model: access/edit, delete trip history,
-                  erase all app data, and account data deletion.
-                </p>
-              </div>,
-              document.body,
-            )}
           </div>
-          {false && !hideGlobalControls && <button
-            onClick={() => setShowSettings(true)}
-            title="Travel preferences"
-            aria-label="Travel preferences"
-            className="rounded-full p-2 text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-50 hover:text-ink"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          </button>}
         </div>
       </header>
   );
@@ -1101,54 +834,12 @@ export default function ChatPanel({
       </div>
   );
 
-  const modals = (
-    <>
-      {showSettings && createPortal(
-        <SettingsModal onClose={() => setShowSettings(false)} />,
-        document.body,
-      )}
-      {showAccount && createPortal(
-        <AccountSettingsHub
-          auth={auth}
-          googleEnabled={googleEnabled}
-          localIdentityActive={!isAnonymousUser()}
-          nameInput={nameInput}
-          privacyBusy={privacyBusy}
-          initialDestination={accountDestination}
-          onNameInputChange={setNameInput}
-          onClose={() => setShowAccount(false)}
-          onGoogleSignIn={() => {
-            trackEvent("login", { method: "google_start" });
-            loginWithGoogle();
-          }}
-          onLocalSignIn={() => {
-            if (!nameInput.trim()) return;
-            trackEvent("login", { method: "name" });
-            signIn(nameInput);
-            setShowAccount(false);
-            window.location.reload();
-          }}
-          onSignOut={async () => {
-            if (auth.authenticated) await logoutGoogle();
-            else signOut();
-            window.location.reload();
-          }}
-          onDeleteTripHistory={() => void handleDeleteTripHistory()}
-          onClearAllData={() => void handleClearAllData()}
-          onDeleteAccount={() => void handleDeleteAccountData()}
-        />,
-        document.body,
-      )}
-    </>
-  );
-
   if (!docked) {
     return (
       <div className="flex h-full flex-col bg-white">
         {brandHeader}
         {transcriptBlock}
         {composerBlock}
-        {modals}
       </div>
     );
   }
@@ -1221,7 +912,6 @@ export default function ChatPanel({
         )}
         {composerBlock}
       </div>
-      {modals}
     </div>
   );
 }

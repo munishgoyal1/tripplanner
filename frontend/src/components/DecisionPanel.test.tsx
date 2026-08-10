@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { writeDisplayPreferences } from "../lib/displayPreferences";
 import type { Decision, TripView } from "../types";
 import DecisionPanel from "./DecisionPanel";
 
@@ -72,6 +73,7 @@ function renderPanel(decisions: Decision[]) {
 
 describe("DecisionPanel", () => {
   beforeEach(() => {
+    writeDisplayPreferences({ region: "FR", language: "en", currency: "EUR" });
     overrideDecision.mockReset();
     restoreDecision.mockReset();
   });

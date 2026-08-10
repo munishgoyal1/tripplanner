@@ -36,6 +36,7 @@ WORKDIR /app
 # Install deps first (layer-cache friendly)
 COPY pyproject.toml ./
 COPY src/ src/
+COPY frontend/src/publicEntry/publicDemoRuns.json src/tripplanner/public_demo_runs.json
 RUN PIP_INDEX_URL=${PYTHON_PACKAGE_INDEX} pip install --no-cache-dir "."
 
 # Built SPA from stage 1 — served by FastAPI at the root origin.

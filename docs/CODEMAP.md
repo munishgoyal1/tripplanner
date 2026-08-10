@@ -35,6 +35,7 @@ trip through shared API contracts.
 | `src/tripplanner/prompts.py` | Agent instructions and prompt assembly |
 | `src/tripplanner/workflow.py` | Trip-planning workflow helpers |
 | `src/tripplanner/api.py` | FastAPI routes, hosted identity boundary, SSE transport, `/providers/status` diagnostics, production SPA mount |
+| `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
@@ -74,16 +75,19 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 
 | Path | Owns |
 | --- | --- |
-| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | Public-entry gating and the permanent `/welcome` route back to the landing experience |
+| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | Public-entry gating, the permanent `/welcome` route back to the landing experience, and page-independent account-controller mounting |
+| `frontend/src/publicEntry/publicDemoRuns.json`, `demoRun.ts` | Ten self-contained regional public-demo artifacts, deterministic mapping, whole-artifact API replacement, and display-currency presentation |
 | `frontend/src/App.tsx` | Web application composition; trip state, refresh, mutations, pane/resize state, and panel body ownership |
-| `frontend/src/components/ChatPanel.tsx` | Assistant transcript presentation, composer, trip-input UI, account controls, and transcript loading/cache coordination |
+| `frontend/src/components/ChatPanel.tsx` | Assistant transcript presentation, composer, trip-input UI, and transcript loading/cache coordination |
 | `frontend/src/hooks/useChatStream.ts` | Assistant SSE lifecycle, progress timing, cancellation, retry state, trip-input requests, and workspace turn-status publication |
 | `frontend/src/workspaceState.ts` | Canonical web trip revision, identity, and focus reducer |
 | `frontend/src/components/CanvasPaneFrame.tsx`, `DetailsPaneShell.tsx`, `AssistantModalShell.tsx` | Render-only desktop pane frames and controls |
 | `frontend/src/components/DesktopToolbar.tsx`, `MobileWorkspaceShell.tsx` | Render-only responsive workspace chrome |
 | `frontend/src/lib/notices.ts` | Global notice channel: id-keyed upsert, tone priority, and success auto-expiry |
 | `frontend/src/components/StatusBar.tsx` | Render-only toolbar and mobile presentation of the single active notice |
-| `frontend/src/components/AccountSettingsHub.tsx` | Web account/settings section ownership; delegates persisted destinations to existing auth, preferences, analytics, and privacy boundaries |
+| `frontend/src/lib/displayPreferences.ts` | Display country, language, and currency storage; fixed standard option sets, legacy-value migration, locale derivation, and money/unit formatting |
+| `frontend/src/components/AccountSettingsController.tsx`, `accountSettings.ts` | Page-independent account/settings ownership, auth and privacy actions, destination routing, and reusable open command |
+| `frontend/src/components/AccountSettingsHub.tsx` | Account/settings render surface; delegates persisted destinations to existing auth, preferences, documents, analytics, and privacy boundaries |
 | `frontend/src/components/TravelDocumentsVault.tsx` | Travel-document capture, review, reveal, and deletion. The trip surface only shows the gap badge |
 | `frontend/src/components/SettingsModal.tsx` | Persisted Travel Profile editing and profile-summary conflict handling |
 | `frontend/src/components/MapPanel.tsx` | Google Maps instance lifecycle, UI state, Places interaction, focus coordination, and compatibility re-exports |
@@ -144,6 +148,7 @@ Cosmos containers have explicit ownership:
 | `about_me` | Preference profiles |
 | `email_exports` | Idempotent export records |
 | `guest_credentials` | Guest capability records |
+| `public_demo_runs` | Immutable regional public-demo artifacts and the shared `_public` active manifest |
 
 Canary and production databases are isolated within the shared Cosmos account.
 Local emulator data is also isolated and must never be reset automatically. Data

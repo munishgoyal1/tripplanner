@@ -5,6 +5,15 @@ import {
   regenerateProfileSummary,
   type Preferences,
 } from "../api";
+import {
+  displayCurrencyLabel,
+  normalizeDisplayLanguage,
+  normalizeDisplayRegion,
+  supportedDisplayCurrencies,
+  supportedDisplayLanguages,
+  supportedDisplayRegions,
+  writeDisplayPreferences,
+} from "../lib/displayPreferences";
 
 interface Props {
   onClose: () => void;
@@ -14,6 +23,9 @@ interface Props {
 const TRIP_STYLES = ["", "relaxed", "balanced", "packed", "luxury", "budget", "adventure"];
 const BUDGET_LEVELS = ["", "shoestring", "budget", "moderate", "comfortable", "luxury"];
 const FLIGHT_CLASSES = ["", "economy", "premium_economy", "business", "first"];
+const DISPLAY_CURRENCIES = supportedDisplayCurrencies();
+const DISPLAY_REGIONS = supportedDisplayRegions();
+const DISPLAY_LANGUAGES = supportedDisplayLanguages();
 
 function commaList(v: string[]): string {
   return v.join(", ");
@@ -93,6 +105,11 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
         setSummaryConflict(true);
         return;
       }
+      writeDisplayPreferences({
+        region: normalizeDisplayRegion(merged.display_region || merged.home_country || ""),
+        language: normalizeDisplayLanguage(merged.display_language || "en"),
+        currency: merged.display_currency || "USD",
+      });
       if (result.about_me_extracted && result.about_me_extracted.length > 0) {
         // Re-load so the form reflects the structured fields the LLM filled
         // in, and surface a confirmation instead of closing immediately.
@@ -219,6 +236,28 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
                   onChange={(e) => set("home_country", e.target.value)}
                 />
               </Field>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <p className="mb-2 text-xs font-semibold uppercase text-brand">Region and display</p>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Country or region">
+                  <select className="input" value={normalizeDisplayRegion(prefs.display_region || prefs.home_country || "")} onChange={(e) => set("display_region", e.target.value)}>
+                    <option value="">Detect from browser</option>
+                    {DISPLAY_REGIONS.map((region) => <option key={region.code} value={region.code}>{region.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Language">
+                  <select className="input" value={normalizeDisplayLanguage(prefs.display_language || "en")} onChange={(e) => set("display_language", e.target.value)}>
+                    {DISPLAY_LANGUAGES.map((language) => <option key={language.code} value={language.code}>{language.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Display currency">
+                  <select className="input" value={prefs.display_currency || "USD"} onChange={(e) => set("display_currency", e.target.value as Preferences["display_currency"])}>
+                    {DISPLAY_CURRENCIES.map((currency) => <option key={currency} value={currency}>{displayCurrencyLabel(currency)}</option>)}
+                  </select>
+                </Field>
+              </div>
+              <p className="mt-2 text-[11px] leading-relaxed text-slate-500">Country and language set the example trip, dates, and units. Currency is independent, so you can stay in one country and price everything in another currency. Interface text is English for now, and none of this changes passport, visa, or provider rules.</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Trip style">

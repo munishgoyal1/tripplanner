@@ -1550,6 +1550,10 @@ async def get_preferences(request: Request, user_id: str = "local") -> dict:
         "display_name": profile.get("display_name") or "",
         "home_city": profile.get("home_city") or "",
         "home_country": profile.get("home_country") or "",
+        "display_region": profile.get("display_region") or profile.get("home_country") or "",
+        "display_language": profile.get("display_language") or "en",
+        "display_currency": prefs.get("display_currency") or "USD",
+        "display_currency_configured": "display_currency" in set(prefs.get("_explicit_fields") or []),
         "trip_style": prefs.get("trip_style") or "",
         "budget_level": prefs.get("budget_level") or "",
         "flight_class": transport.get("flight_class") or "",
@@ -1585,6 +1589,9 @@ async def save_preferences_endpoint(req: PreferencesRequest, request: Request) -
         "display_name": "profile.display_name",
         "home_city": "profile.home_city",
         "home_country": "profile.home_country",
+        "display_region": "profile.display_region",
+        "display_language": "profile.display_language",
+        "display_currency": "display_currency",
         "trip_style": "trip_style",
         "budget_level": "budget_level",
         "flight_class": "transport_preferences.flight_class",
@@ -1635,6 +1642,12 @@ async def save_preferences_endpoint(req: PreferencesRequest, request: Request) -
             profile["home_city"] = req.home_city.strip() or None
         if req.home_country is not None:
             profile["home_country"] = req.home_country.strip() or None
+        if req.display_region is not None:
+            profile["display_region"] = req.display_region.strip() or None
+        if req.display_language is not None:
+            profile["display_language"] = req.display_language
+        if req.display_currency is not None:
+            prefs["display_currency"] = req.display_currency
         if req.trip_style is not None:
             prefs["trip_style"] = req.trip_style or None
         if req.budget_level is not None:
@@ -2251,6 +2264,19 @@ async def auth_logout() -> JSONResponse:
 @app.get("/health")
 async def health() -> dict:
     return {"status": "ok"}
+
+
+@app.get("/public/demo-run")
+async def public_demo_run(request: Request, region: str = "EU", currency: str = "EUR") -> Response:
+    """Return one validated regional artifact without requiring authentication."""
+    from tripplanner.public_demo import active_artifact, artifact_etag
+
+    artifact = active_artifact(region, currency)
+    etag = artifact_etag(artifact)
+    headers = {"ETag": etag, "Cache-Control": "public, max-age=3600, stale-if-error=2592000"}
+    if request.headers.get("if-none-match") == etag:
+        return Response(status_code=304, headers=headers)
+    return JSONResponse(artifact, headers=headers)
 
 
 @app.get("/providers/status")

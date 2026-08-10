@@ -2,6 +2,7 @@ import { CalendarCheck2, Check, ChevronDown, Loader2, MapPin, Route, Trash2 } fr
 import { useState } from "react";
 import type { ItineraryStop } from "../types";
 import { isIntercityTravel } from "./map/routeDerivations";
+import { formatCostDisplay, useDisplayPreferences } from "../lib/displayPreferences";
 
 const KIND_ICON: Record<string, string> = {
   hotel: "\u{1F3E8}",
@@ -104,6 +105,7 @@ export default function ItineraryStopRow({
   const routeFocusable = isIntercityTravel(stop.kind, stop.name);
   const removable = !!onRemove && ["attraction", "activity", "meal", "restaurant"].includes(stop.kind);
   const [removing, setRemoving] = useState(false);
+  const { currency } = useDisplayPreferences();
   const [notesOpen, setNotesOpen] = useState(false);
   const circuitTimingNotes = new Set(["start from your stay", "return to your stay"]);
   const insightTexts = uniqueDetailTexts(stop.insight);
@@ -315,7 +317,7 @@ export default function ItineraryStopRow({
           </div>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-1 pl-[2.375rem]">
-          {!circuitReturn && stop.cost_display && <span className="chip">{stop.cost_display}</span>}
+          {!circuitReturn && stop.cost_display && <span className="chip">{formatCostDisplay(stop.cost_display, currency)}</span>}
           {!circuitReturn && stop.opening_hours && <span className="chip">{stop.opening_hours}</span>}
           {!circuitReturn && typeof stop.rating === "number" && (
             <span className="chip" aria-label={`${stop.name} rating ${stop.rating.toFixed(1)} out of 5`}>

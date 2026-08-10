@@ -7,6 +7,7 @@ interface Props {
   onOpenTrip: () => void;
   onCloseTrip: () => void;
   tripDetails: ReactNode;
+  onOpenWelcome: () => void;
 }
 
 export default function MobileWorkspaceShell({
@@ -16,9 +17,18 @@ export default function MobileWorkspaceShell({
   onOpenTrip,
   onCloseTrip,
   tripDetails,
+  onOpenWelcome,
 }: Props) {
   return (
     <section className="flex h-screen flex-col">
+      <button
+        type="button"
+        onClick={onOpenWelcome}
+        className="fixed right-3 top-3 z-30 inline-flex h-8 items-center gap-1.5 rounded-md bg-white/90 px-2.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200 backdrop-blur hover:bg-white"
+        aria-label="Open home page"
+      >
+        <span aria-hidden>⌂</span> Home
+      </button>
       {chat}
 
       {hasTrip && !tripOpen && (

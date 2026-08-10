@@ -1,4 +1,4 @@
-import { AlertTriangle, List, Map, MessageCircle, PanelRight, Plus, RotateCcw, UserRound } from "lucide-react";
+import { AlertTriangle, House, List, Map, MessageCircle, PanelRight, Plus, RotateCcw, UserRound } from "lucide-react";
 import type { TripWorkspaceView } from "../types";
 import StatusBar from "./StatusBar";
 import TripActionsMenu from "./TripActionsMenu";
@@ -31,6 +31,7 @@ interface Props {
   documentBadge: string;
   documentBadgeTone: "blocker" | "warning";
   onOpenDocuments: () => void;
+  onOpenWelcome: () => void;
 }
 
 export default function DesktopToolbar({
@@ -51,6 +52,7 @@ export default function DesktopToolbar({
   documentBadge,
   documentBadgeTone,
   onOpenDocuments,
+  onOpenWelcome,
 }: Props) {
   return (
     <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-visible border-b border-[#dce2df] bg-[#fbfcfb]/95 px-3 shadow-[0_1px_4px_rgba(23,36,51,.06)] backdrop-blur">
@@ -126,6 +128,15 @@ export default function DesktopToolbar({
           ))}
         </div>
         <TripActionsMenu disabled={tripActionsDisabled} onExport={onExport} compactTrigger />
+        <button
+          type="button"
+          onClick={onOpenWelcome}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          title="Home: About and support information"
+          aria-label="Open home page"
+        >
+          <House size={15} aria-hidden />
+        </button>
         <button
           type="button"
           onClick={onOpenAccount}

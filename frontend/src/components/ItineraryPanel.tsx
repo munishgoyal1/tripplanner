@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchItinerary, setStopBooked } from "../api";
 import type { Itinerary, ItineraryDay, ItineraryStop, TripOverview } from "../types";
 import { itineraryStopMatchesFilters, type ItineraryFilter } from "../lib/itineraryFilters";
+import { formatDistance, formatTemperature, useDisplayPreferences } from "../lib/displayPreferences";
 import ItineraryFilterControls from "./ItineraryFilterControls";
 import ItineraryStopRow from "./ItineraryStopRow";
 import TripSnapshot from "./TripSnapshot";
@@ -88,6 +89,7 @@ function DayCard({
   jumpToken: number;
   onRemove?: (kind: string, name: string, day: number, stop: number) => void;
 }) {
+  const { region } = useDisplayPreferences();
   let visitOrder = 0;
   const hotelNames = hotelIdentityGroups(
     day.stops.filter((stop) => stop.kind === "hotel").map((stop) => stop.name),
@@ -208,7 +210,7 @@ function DayCard({
                   <span className="text-accent"><WeatherIcon condition={day.weather.condition} size={16} /></span>
                   <span>{day.weather.summary}</span>
                   {day.weather.high_c != null && day.weather.low_c != null && (
-                    <span className="tabular-nums text-slate-500">{Math.round(day.weather.high_c)}° / {Math.round(day.weather.low_c)}°C</span>
+                    <span className="tabular-nums text-slate-500">{formatTemperature(day.weather.high_c, region)} / {formatTemperature(day.weather.low_c, region)}</span>
                   )}
                   {day.weather.precip_probability_pct != null && day.weather.precip_probability_pct >= 30 && (
                     <span className="text-sky-700">{Math.round(day.weather.precip_probability_pct)}% rain</span>
@@ -232,7 +234,7 @@ function DayCard({
               <span className="inline-flex basis-full items-center gap-1">
                 <MapPin size={12} aria-hidden />
                 <strong className="font-semibold text-ink">Day&apos;s travel:</strong>
-                {day.route.duration_display} · {day.route.distance_display} · {day.route.mode}
+                {day.route.duration_display} · {formatDistance(day.route.distance_km, region)} · {day.route.mode}
               </span>
             )}
             <span className={remainingStops > 0 ? "text-amber-700" : "text-emerald-700"}>

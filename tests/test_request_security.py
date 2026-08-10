@@ -179,6 +179,36 @@ def test_preferences_round_trip_planning_mode(monkeypatch) -> None:  # type: ign
     assert after.json()["planning_mode"] == "interactive"
 
 
+def test_preferences_round_trip_localization(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from tripplanner.tools import user_preferences
+
+    state = user_preferences.load_preferences()
+
+    monkeypatch.setattr(user_preferences, "load_preferences", lambda: state)
+    monkeypatch.setattr(
+        user_preferences,
+        "mutate_preferences",
+        lambda apply: state.update(apply(state) or {}) or state,
+    )
+    client = _hosted(monkeypatch)
+    client.cookies.set(oauth.SESSION_COOKIE, _user_token("google-owner"))
+
+    saved = client.post(
+        "/preferences",
+        json={
+            "display_currency": "INR",
+            "display_region": "India",
+            "display_language": "en",
+            "user_id": "google-owner",
+        },
+    )
+    after = client.get("/preferences")
+
+    assert saved.status_code == 200
+    assert after.json()["display_currency"] == "INR"
+    assert after.json()["display_region"] == "India"
+
+
 def test_preferences_reports_stale_profile_summary_edit(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     from tripplanner.tools import user_preferences
 

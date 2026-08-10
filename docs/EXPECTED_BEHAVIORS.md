@@ -112,6 +112,43 @@ its request into the Assistant as before. `/welcome/` behaves the same as `/welc
 
 - [`frontend/src/publicEntry/Root.test.tsx`](../frontend/src/publicEntry/Root.test.tsx)
 
+### EB-PUBLIC-002 - Render one internally consistent regional demo
+
+**Trigger:** Open the public entry with a supported display country/region and
+currency, or change the display country while the public entry is visible.
+
+**Expected:** The page renders a bundled regional artifact immediately, then may
+replace it only with one complete, schema-valid artifact from `/public/demo-run`.
+Trip and decisions always come from the same version. Cosmos failure, a missing
+manifest, or invalid remote content leaves the bundled artifact visible. Routes,
+entities, hotels, and money remain compatible with the selected market; India
+starts in Mumbai and contains no London or Portuguese-route entities. A supported
+country/region takes precedence over a stale currency during preference changes,
+and the matching bundled artifact replaces the prior one immediately. Country
+selects the market; the display currency only re-prices that market's money, so
+India with USD still shows the Rajasthan run with dollar amounts. Every
+regional artifact stores four to six complete days with matching completion
+receipts.
+
+**Executable proof:**
+
+- [`tests/test_public_demo.py`](../tests/test_public_demo.py)
+- [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
+
+### EB-PUBLIC-003 - Keep profile and workspace entry actions separate
+
+**Trigger:** Select the profile chip in the public-entry masthead.
+
+**Expected:** The profile chip opens the complete shared Account settings hub
+without leaving `/welcome`. Choosing any settings destination, including Travel
+Profile, stays on `/welcome`. Entering the planner happens only through Plan mine
+or the separate Skip to the app action.
+
+**Executable proof:**
+
+- [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
+- [`frontend/src/components/AccountSettingsController.test.tsx`](../frontend/src/components/AccountSettingsController.test.tsx)
+
 ## Planner workspace
 
 ### EB-WORKSPACE-001 - Arrange visible desktop panes freely
@@ -475,19 +512,55 @@ rebuild unrelated itinerary data.
 
 ### EB-ACCOUNT-001 - Keep account destinations in one hub
 
-**Trigger:** Open Account settings and choose Profile and sign-in, Travel Profile,
+**Trigger:** Open Account settings from the welcome page, workspace, or another
+application page and choose Profile and sign-in, Travel Profile, Travel documents,
 Analytics preferences, or Privacy and data.
 
-**Expected:** The destination opens inside the Account settings hub rather than
-as a detached settings surface. Travel Profile and Analytics remain editable
-there. When analytics is configured and no choice exists, first-run consent still
-appears separately; revisiting Analytics in Account does not recreate that prompt.
+**Expected:** Every entry point opens the same Root-owned Account settings hub
+without navigating away from the current page. The destination opens inside the
+hub rather than as a detached settings surface. Travel Profile and Analytics
+remain editable there. When analytics is configured and no choice exists,
+first-run consent still appears separately; revisiting Analytics in Account does
+not recreate that prompt.
 
 **Executable proof:**
 
-- [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `presents the four selected account destinations`
+- [`frontend/src/components/AccountSettingsController.test.tsx`](../frontend/src/components/AccountSettingsController.test.tsx)
+- [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `presents the five shared account destinations`
 - [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `keeps travel profile and analytics inside the account settings hub`
 - [`frontend/src/components/AnalyticsConsent.test.tsx`](../frontend/src/components/AnalyticsConsent.test.tsx) - `shows the bottom prompt only for first-run consent when analytics is configured`
+
+### EB-ACCOUNT-002 - Apply supported display currencies to itinerary costs
+
+**Trigger:** Change Display currency to a supported currency such as CNY while an
+itinerary is visible in the workspace.
+
+**Expected:** Visible itinerary and trip-summary costs immediately re-render in
+the selected currency using the shared display conversion table. The selector
+offers only currencies that table can convert, so a selection never silently
+falls back to the source currency.
+
+**Executable proof:**
+
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `updates itinerary costs when the display currency changes to CNY`
+- [`frontend/src/lib/displayPreferences.test.ts`](../frontend/src/lib/displayPreferences.test.ts)
+
+### EB-ACCOUNT-003 - Choose country, language, and currency from fixed lists
+
+**Trigger:** Open Account settings and set Country or region, Language, or
+Display currency.
+
+**Expected:** Country and language are chosen from fixed standard lists rather
+than typed as free text, and currency offers only convertible currencies. A
+previously typed country such as `India` maps onto its standard entry instead of
+being lost. Country and language decide the regional example trip, dates, and
+distance/temperature units; currency independently decides money, so either can
+change without disturbing the other. Interface text remains English.
+
+**Executable proof:**
+
+- [`frontend/src/lib/displayPreferences.test.ts`](../frontend/src/lib/displayPreferences.test.ts)
+- [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx) - `keeps the country trip while pricing it in the chosen currency`
 
 ## UX Labs
 
