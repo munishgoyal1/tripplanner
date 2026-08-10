@@ -26,24 +26,26 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
-| `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
-| `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
-| `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
-| `sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
-| `sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
-| `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
-| `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
-| `sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
+| `user/Sync-MeTo-Latest.cmd` | Fast-forward primary `master`, then update one named sandbox from it |
+| `user/Sync-AllTo-Latest.cmd` | Fast-forward primary `master`, then update every registered sandbox from it |
+| `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
+| `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
+| `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
+| `user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
+| `user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `user/sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
+| `user/sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
+| `user/sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
+| `user/sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
 | `canary/Deploy-Canary.cmd` | Launch `infra/deploy-canary.ps1` to build, push, deploy, and smoke the current SHA on canary |
 | `prod/Deploy-Prod.cmd` | Launch `infra/deploy-prod.ps1`, which still requires the typed `APPROVE_PROD_DEPLOYMENT` gate |
 | `prod/Rollback-Prod.cmd` | Launch `infra/rollback-prod.ps1` to activate the previous production revision |
-| `mac/` | macOS `.command` equivalents for every root, `user/`, `sandbox/`, `canary/`, and `prod/` Windows `.cmd` launcher |
+| `mac/` | macOS `.command` equivalents for every root, `user/`, `canary/`, and `prod/` Windows `.cmd` launcher |
 
 The macOS launchers preserve the Windows names with a `.command` extension and
 the same subfolder layout. For example, use
 `scripts/mac/user/Run-Latest.command`,
-`scripts/mac/sandbox/New-Sandbox.command`, or
+`scripts/mac/user/sandbox/New-Sandbox.command`, or
 `scripts/mac/canary/Deploy-Canary.command`. They forward all arguments to the
 same PowerShell owners and retain the existing deployment approval gates.
 
@@ -73,17 +75,17 @@ serves 8100/5273/5275, `#2` serves 8110/5283/5285. The name is
 emulator database. Keep the short name under 20 characters.
 
 ```powershell
-.\scripts\sandbox\New-Sandbox.cmd lab16-chatdock "Assistant dock rework"
-.\scripts\sandbox\List-Sandboxes.cmd
-.\scripts\sandbox\Serve-Sandbox.cmd 1
+.\scripts\user\sandbox\New-Sandbox.cmd lab16-chatdock "Assistant dock rework"
+.\scripts\user\sandbox\List-Sandboxes.cmd
+.\scripts\user\sandbox\Serve-Sandbox.cmd 1
 ```
 
 On macOS, use the matching launchers:
 
 ```bash
-./scripts/mac/sandbox/New-Sandbox.command lab16-chatdock "Assistant dock rework"
-./scripts/mac/sandbox/List-Sandboxes.command
-./scripts/mac/sandbox/Serve-Sandbox.command 1
+./scripts/mac/user/sandbox/New-Sandbox.command lab16-chatdock "Assistant dock rework"
+./scripts/mac/user/sandbox/List-Sandboxes.command
+./scripts/mac/user/sandbox/Serve-Sandbox.command 1
 ```
 
 Every verb except `New-Sandbox` accepts the number, the full name, or the short
@@ -95,8 +97,8 @@ the sandbox registry, so rerunning discard safely retries only the remaining wor
 
 Keep root-level scripts that are direct setup, diagnostic, smoke, or data utility
 entry points. Put implementation and source-control workflow under `dev/`,
-regular owner-facing launchers under `user/`, sandbox launchers under
-`sandbox/`, and the hosted deployment launchers under `canary/` and `prod/`.
+regular owner-facing launchers under `user/`, including sandbox launchers under
+`user/sandbox/`, and the hosted deployment launchers under `canary/` and `prod/`.
 Keep macOS launcher equivalents under the matching folder in `mac/`.
 Do not move cloud-mutating
 operations out of `infra/` merely because they are implemented in PowerShell;

@@ -153,5 +153,5 @@ geographic sense" before it answers anything else.
   model does not carry booking state.
 - Rationale: the pane reads as a map with commands under it rather than a form with a map
   underneath, and the add affordance now looks like what it is.
-- Next action: owner runs `.\scripts\sandbox\Run-Sandbox.cmd 4`, judges the map surface,
+- Next action: owner runs `.\scripts\user\sandbox\Run-Sandbox.cmd 4`, judges the map surface,
   the add flow and whether *Sequence* is worth its space, then promotes or discards.

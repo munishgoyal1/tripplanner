@@ -117,5 +117,5 @@ else is reference material that should be available in one gesture and silent un
   by existing tests. It can follow in the same sandbox if the owner wants it.
 - Rationale: the pane reads at a glance — what is happening, what is at risk, what still
   needs booking — while long-form guidance stays one click away instead of always printed.
-- Next action: owner runs `.\scripts\sandbox\Run-Sandbox.cmd 1`, inspects the itinerary
+- Next action: owner runs `.\scripts\user\sandbox\Run-Sandbox.cmd 1`, inspects the itinerary
   pane (including at about 20 rem wide), then promotes or discards the sandbox.

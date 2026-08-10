@@ -51,6 +51,8 @@ returns to `master` only through its validated promotion flow.
 
 To synchronize primary `master` and start the canonical stack, double-click
 `scripts/user/Run-Latest.cmd` or run the VS Code task **Tripplanner: Run Latest**.
+Use `scripts/user/Sync-MeTo-Latest.cmd <sandbox>` to update one sandbox, or
+`scripts/user/Sync-AllTo-Latest.cmd` to update every registered sandbox.
 
 Use these launchers by outcome:
 
@@ -58,6 +60,8 @@ Use these launchers by outcome:
 | --- | --- |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Fast-forward primary `master` from `origin/master`, then start the canonical `dev-spa.ps1` stack. |
+| `scripts/user/Sync-MeTo-Latest.cmd <sandbox>` | Fast-forward primary `master`, then merge it into one sandbox. |
+| `scripts/user/Sync-AllTo-Latest.cmd` | Fast-forward primary `master`, then merge it into every registered sandbox. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 Every launcher writes a transcript to `logs/last-run/<script>.log` in the primary

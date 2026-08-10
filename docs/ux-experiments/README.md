@@ -314,7 +314,7 @@ or Discarded at any time. State changes do not erase handoffs or implementation
 history. After committing and validating a coherent sandbox iteration, the coding agent must run:
 
 ```powershell
-scripts/sandbox/Serve-Sandbox.cmd <sandbox> `
+scripts/user/sandbox/Serve-Sandbox.cmd <sandbox> `
   -LabId <lab-id> `
   -IterationSummary "<validation and material deviations>"
 ```

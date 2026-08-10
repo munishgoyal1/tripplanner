@@ -177,9 +177,9 @@ function Test-SandboxWorktree {
 function Get-SandboxLauncherPath {
     param([Parameter(Mandatory = $true)][string]$Name)
     if ($IsMacOS) {
-        return "./scripts/mac/sandbox/$Name.command"
+        return "./scripts/mac/user/sandbox/$Name.command"
     }
-    return ".\scripts\sandbox\$Name.cmd"
+    return ".\scripts\user\sandbox\$Name.cmd"
 }
 
 function Resolve-SandboxEntry {
