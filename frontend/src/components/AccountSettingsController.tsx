@@ -14,7 +14,7 @@ import {
 import { trackEvent } from "../analytics";
 import { getDisplayName, isAnonymousUser } from "../auth/authSession";
 import AccountSettingsHub, { type AccountDestination } from "./AccountSettingsHub";
-import { ACCOUNT_SETTINGS_EVENT } from "./accountSettings";
+import { ACCOUNT_SETTINGS_EVENT, normalizeAccountDestination } from "./accountSettings";
 
 export default function AccountSettingsController() {
   const [open, setOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function AccountSettingsController() {
   useEffect(() => {
     const showAccount = (event: Event) => {
       const requested = (event as CustomEvent<{ destination?: AccountDestination }>).detail?.destination;
-      setDestination(requested ?? "menu");
+      setDestination(normalizeAccountDestination(requested));
       setOpen(true);
     };
     window.addEventListener(ACCOUNT_SETTINGS_EVENT, showAccount);

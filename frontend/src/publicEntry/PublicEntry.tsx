@@ -234,7 +234,7 @@ export default function PublicEntry({
         <div className="pointer-events-none absolute -left-24 -top-40 h-96 w-96 rounded-full bg-brand/25 blur-3xl" aria-hidden />
         <div className="pointer-events-none absolute -right-24 top-10 h-96 w-96 rounded-full bg-teal-400/20 blur-3xl" aria-hidden />
 
-        <Masthead tone="dark" onSkip={onSkip} onOpenAccount={openAccountSettings} accountLabel={accountLabel} signedIn={signedIn} />
+        <Masthead tone="dark" onSkip={onSkip} onOpenAccount={() => openAccountSettings()} accountLabel={accountLabel} signedIn={signedIn} />
 
         <section className="relative px-6 pb-8 pt-10">
           <div className="flex flex-wrap items-center gap-2">

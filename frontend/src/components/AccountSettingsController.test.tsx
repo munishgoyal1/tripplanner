@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import AccountSettingsController from "./AccountSettingsController";
@@ -31,5 +31,14 @@ describe("AccountSettingsController", () => {
     expect(screen.getByRole("button", { name: /Analytics preferences/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Privacy and data/ })).toBeInTheDocument();
     expect(window.location.pathname).toBe("/welcome");
+  });
+
+  it("opens the settings menu when used directly as a React click handler", async () => {
+    render(<><button type="button" onClick={openAccountSettings}>Profile</button><AccountSettingsController /></>);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile" }));
+
+    expect(await screen.findByRole("button", { name: /Travel profile/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Privacy and data/ })).toBeInTheDocument();
   });
 });
