@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PublicEntry from "./PublicEntry";
+import { writeDisplayPreferences } from "../lib/displayPreferences";
 import {
   demoArtifactForLocale,
   demoDecisionsForLocale,
@@ -68,6 +69,22 @@ describe("PublicEntry", () => {
     }
   });
 
+  it("lets a changed display country override the previous currency", () => {
+    expect(demoArtifactForLocale("FR", "INR").trip.title).toBe("Lisbon to Porto");
+  });
+
+  it("switches the visible welcome artifact immediately when display country changes", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("unavailable", { status: 503 }));
+    writeDisplayPreferences({ region: "IN", currency: "INR", language: "en" });
+    render(<PublicEntry onPlan={() => {}} onSkip={() => {}} />);
+    expect(screen.getByText(/agent · Mumbai to Jaipur/i)).toBeInTheDocument();
+
+    writeDisplayPreferences({ region: "FR", currency: "INR", language: "en" });
+
+    await waitFor(() => expect(screen.getByText(/agent · Lisbon to Porto/i)).toBeInTheDocument());
+    expect(screen.queryByText(/agent · Mumbai to Jaipur/i)).not.toBeInTheDocument();
+  });
+
   it("selects ten independent standalone artifacts", () => {
     const mappings = [
       ["IN", "INR"], ["US", "USD"], ["CA", "CAD"], ["GB", "GBP"], ["EU", "EUR"],
@@ -82,7 +99,8 @@ describe("PublicEntry", () => {
       const dayNumbers = trip.days.map((day) => day.day);
       const hotelMarkers = new Set(trip.hotels.map((hotel) => hotel.marker));
       const entities = new Set(artifact.market.entities);
-      expect(trip.days.length).toBeGreaterThanOrEqual(3);
+      expect(trip.days.length).toBeGreaterThanOrEqual(4);
+      expect(trip.days.length).toBeLessThanOrEqual(6);
       expect(trip.receipts.length).toBeGreaterThanOrEqual(6);
       expect(dayNumbers).toEqual([...new Set(dayNumbers)].sort((left, right) => left - right));
       expect(new Set(trip.receipts.flatMap((receipt) => receipt.day ?? []))).toEqual(
@@ -202,9 +220,14 @@ describe("PublicEntry", () => {
   });
 
   it("shows the signed-in display name in the masthead", () => {
-    render(<Masthead tone="dark" onSkip={() => {}} accountLabel="Munish" signedIn />);
+    const onSkip = vi.fn();
+    render(<Masthead tone="dark" onSkip={onSkip} accountLabel="Munish" signedIn />);
 
     expect(screen.getByText("Munish")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Munish profile" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Munish profile" }));
+    expect(onSkip).not.toHaveBeenCalled();
+    expect(screen.getByRole("menu", { name: "Munish profile menu" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("menuitem", { name: /open account settings/i }));
+    expect(onSkip).toHaveBeenCalledOnce();
   });
 });

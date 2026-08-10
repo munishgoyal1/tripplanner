@@ -210,8 +210,8 @@ export default function PublicEntry({
     const selected = demoArtifactForLocale(displayPreferences.region, displayPreferences.currency);
     setArtifact(selected);
     fetchDemoArtifact(
-      displayPreferences.region || selected.region,
-      displayPreferences.currency || selected.currency,
+      selected.region,
+      selected.currency,
       controller.signal,
     ).then((remote) => {
       if (remote.region === selected.region && remote.currency === selected.currency) {

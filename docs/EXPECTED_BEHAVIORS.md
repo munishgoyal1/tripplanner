@@ -113,18 +113,35 @@ request into the Assistant as before. `/welcome/` behaves the same as `/welcome`
 
 ### EB-PUBLIC-002 - Render one internally consistent regional demo
 
-**Trigger:** Open the public entry with a supported display region and currency.
+**Trigger:** Open the public entry with a supported display country/region and
+currency, or change the display country while the public entry is visible.
 
 **Expected:** The page renders a bundled regional artifact immediately, then may
 replace it only with one complete, schema-valid artifact from `/public/demo-run`.
 Trip and decisions always come from the same version. Cosmos failure, a missing
 manifest, or invalid remote content leaves the bundled artifact visible. Routes,
 entities, hotels, and money remain compatible with the selected market; India
-starts in Mumbai and contains no London or Portuguese-route entities.
+starts in Mumbai and contains no London or Portuguese-route entities. A supported
+country/region takes precedence over a stale currency during preference changes,
+and the matching bundled artifact replaces the prior one immediately. Every
+regional artifact stores four to six complete days with matching completion
+receipts.
 
 **Executable proof:**
 
 - [`tests/test_public_demo.py`](../tests/test_public_demo.py)
+- [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
+
+### EB-PUBLIC-003 - Keep profile and workspace entry actions separate
+
+**Trigger:** Select the profile chip in the public-entry masthead.
+
+**Expected:** The profile chip opens its profile menu without leaving `/welcome`.
+Entering the planner happens only through an explicit menu command or the separate
+Skip to the app action.
+
+**Executable proof:**
+
 - [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
 
 ## Planner workspace

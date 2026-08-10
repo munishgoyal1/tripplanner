@@ -18,7 +18,7 @@ def test_bundle_has_ten_valid_standalone_artifacts() -> None:
         day_numbers = [day["day"] for day in trip["days"]]
         markers = {hotel["marker"] for hotel in trip["hotels"]}
         entities = set(artifact["market"]["entities"])
-        assert len(trip["days"]) >= 3
+        assert 4 <= len(trip["days"]) <= 6
         assert len(trip["receipts"]) >= 6
         assert day_numbers == sorted(set(day_numbers))
         assert {receipt["day"] for receipt in trip["receipts"] if "day" in receipt} == set(
@@ -46,6 +46,7 @@ def test_bundle_has_ten_valid_standalone_artifacts() -> None:
         assert artifact["decisions"]
     assert public_demo.bundled_artifact("IN", "INR")["market"]["origin"] == "Mumbai"
     assert public_demo.bundled_artifact("JP", "JPY")["trip"]["title"] == "Tokyo to Kyoto"
+    assert public_demo.bundled_artifact("FR", "INR")["trip"]["title"] == "Lisbon to Porto"
 
 
 def test_invalid_cosmos_artifact_falls_back_to_bundle(monkeypatch) -> None:

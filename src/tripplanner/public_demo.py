@@ -68,7 +68,7 @@ def validate_artifact(artifact: dict[str, Any], known_entities: set[str]) -> Non
     ):
         raise ValueError("public-demo route is outside its market")
     if (
-        len(trip["days"]) < 3
+        not 4 <= len(trip["days"]) <= 6
         or len(trip["receipts"]) < 6
         or not trip["hotels"]
         or not trip["compares"]
@@ -105,7 +105,10 @@ def validate_artifact(artifact: dict[str, Any], known_entities: set[str]) -> Non
     if any(not decision["id"].startswith(tuple(compare_ids)) for decision in artifact["decisions"]):
         raise ValueError("public-demo decision is detached from its trip")
     text = "\n".join(_all_text({"trip": trip, "decisions": artifact["decisions"]}))
-    foreign_entities = known_entities - entities
+    foreign_entities = {
+        entity for entity in known_entities - entities
+        if not any(entity in local_entity for local_entity in entities)
+    }
     if any(entity in text for entity in foreign_entities):
         raise ValueError("public-demo artifact contains an entity from another market")
     money_fields = [line for line in text.splitlines() if any(char.isdigit() for char in line)]
@@ -139,7 +142,7 @@ def bundled_artifact(region: str, currency: str) -> dict[str, Any]:
     normalized_currency = currency.strip().upper()
     for artifact in bundle["artifacts"]:
         aliases = {alias.upper() for alias in artifact["market"]["aliases"]}
-        if normalized_region in aliases and normalized_currency == artifact["currency"]:
+        if normalized_region in aliases:
             return copy.deepcopy(artifact)
     for artifact in bundle["artifacts"]:
         if normalized_currency == artifact["currency"]:

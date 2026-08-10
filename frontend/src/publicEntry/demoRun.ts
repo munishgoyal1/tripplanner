@@ -29,8 +29,7 @@ export function demoArtifactForLocale(region: string, currency: string): PublicD
   const normalizedRegion = region.trim().toUpperCase();
   const normalizedCurrency = currency.trim().toUpperCase();
   return bundle.artifacts.find((artifact) =>
-    artifact.currency === normalizedCurrency
-      && artifact.market.aliases.some((alias) => alias.toUpperCase() === normalizedRegion))
+    artifact.market.aliases.some((alias) => alias.toUpperCase() === normalizedRegion))
     ?? bundle.artifacts.find((artifact) => artifact.currency === normalizedCurrency)
     ?? bundle.artifacts.find((artifact) => artifact.currency === "EUR")!;
 }
