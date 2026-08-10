@@ -24,16 +24,26 @@ if ($LASTEXITCODE -ne 0 -or $branch -ne "master") {
 }
 $changes = & git -C $primaryRoot status --porcelain
 if ($LASTEXITCODE -ne 0) { throw "Could not inspect primary master changes." }
-if ($changes -and -not $ValidateOnly) {
-    throw "Primary master has uncommitted changes. Commit or stash them before synchronizing sandboxes."
-}
 
 Write-Host "[sync]    fetching origin/master" -ForegroundColor Cyan
 & git -C $primaryRoot fetch origin master
 if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin/master." }
 if (-not $ValidateOnly) {
-    & git -C $primaryRoot merge --ff-only origin/master
-    if ($LASTEXITCODE -ne 0) { throw "Could not fast-forward primary master." }
+    # Sandboxes rebase onto the master commit, not the primary working tree, so
+    # uncommitted primary edits only matter when they block the fast-forward.
+    $remoteHead = (& git -C $primaryRoot rev-parse origin/master).Trim()
+    & git -C $primaryRoot merge-base --is-ancestor $remoteHead HEAD
+    if ($LASTEXITCODE -ne 0) {
+        & git -C $primaryRoot merge --ff-only origin/master
+        if ($LASTEXITCODE -ne 0) {
+            $hint = if ($changes) {
+                " Uncommitted primary master changes are blocking it; commit or stash the affected files."
+            } else { "" }
+            throw "Could not fast-forward primary master.$hint"
+        }
+    } elseif ($changes) {
+        Write-Host "[sync]    primary master already has origin/master; uncommitted changes kept." -ForegroundColor Yellow
+    }
 }
 
 $sandboxScript = Join-Path $primaryRoot "scripts/dev/sandbox.ps1"
