@@ -85,6 +85,16 @@ describe("PublicEntry", () => {
     expect(screen.queryByText(/agent · Mumbai to Jaipur/i)).not.toBeInTheDocument();
   });
 
+  it("uses the representative regional trip in the planner prompt", () => {
+    writeDisplayPreferences({ region: "IN", currency: "INR", language: "en" });
+    render(<PublicEntry onPlan={() => {}} onSkip={() => {}} />);
+
+    expect(screen.getByLabelText(/where do you want to go/i)).toHaveAttribute(
+      "placeholder",
+      "Mumbai to Jaipur in April with a 6-year-old...",
+    );
+  });
+
   it("keeps the country trip while pricing it in the chosen currency", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("unavailable", { status: 503 }));
     writeDisplayPreferences({ region: "IN", currency: "USD", language: "en" });
