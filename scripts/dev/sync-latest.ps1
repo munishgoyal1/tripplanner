@@ -29,8 +29,8 @@ Write-Host "[sync]    fetching origin/master" -ForegroundColor Cyan
 & git -C $primaryRoot fetch origin master
 if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin/master." }
 if (-not $ValidateOnly) {
-    # Sandboxes rebase onto the master commit, not the primary working tree, so
-    # uncommitted primary edits only matter when they block the fast-forward.
+    # Sandboxes merge origin/master directly, so the primary fast-forward only
+    # feeds the ancestry check below. Git itself refuses to clobber dirty files.
     $remoteHead = (& git -C $primaryRoot rev-parse origin/master).Trim()
     & git -C $primaryRoot merge-base --is-ancestor $remoteHead HEAD
     if ($LASTEXITCODE -ne 0) {
