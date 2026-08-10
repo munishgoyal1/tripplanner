@@ -152,3 +152,20 @@ Btw, I just realized that we dont neeed real data here. We just need a reasonabl
 
 [2026-08-10 10:35] [worker-1 !] Build regional demo pipeline
 proceed with this plan
+
+[2026-08-10 11:18] [worker-1 !] Fix sandbox missing uvicorn
+running this sandbox led to error
+
+andbox '1-lab24-real-preview' -> http://localhost:5273
+Starting Cosmos DB Emulator container ...
+Cosmos DB Emulator is ready at https://localhost:8081.
+Using isolated local Cosmos DB Emulator (database tripplanner-sbx-1-lab24-real-preview).
+Starting FastAPI backend on :8100 ...
+	Diagnostics: /Users/mugoy/repos/tripplanner/logs/diagnostics/local-app.jsonl
+/Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/.venv/bin/python:No module named uvicorn
+Exception: /Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/scripts/dev/dev-spa.ps1:200:13
+Line |
+ 200 |              throw "FastAPI backend exited with code $($Process.ExitCo …
+		 |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		 | FastAPI backend exited with code 1
+		 | before becoming ready.
