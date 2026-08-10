@@ -86,9 +86,7 @@ class _UsageCallback(BaseCallbackHandler):
                 "llm_call",
                 status="ok",
                 model=self._model,
-                ms=round((time.monotonic() - self._started_at) * 1000, 2)
-                if self._started_at is not None
-                else None,
+                ms=round(duration_ms, 2) if self._started_at is not None else None,
                 message_count=self._message_count,
                 prompt_chars=self._prompt_chars,
                 prompt_tokens=prompt,
@@ -120,9 +118,7 @@ class _UsageCallback(BaseCallbackHandler):
                 "llm_call",
                 status="error",
                 model=self._model,
-                ms=round((time.monotonic() - self._started_at) * 1000, 2)
-                if self._started_at is not None
-                else None,
+                ms=round(duration_ms, 2) if self._started_at is not None else None,
                 message_count=self._message_count,
                 prompt_chars=self._prompt_chars,
                 error=type(error).__name__,
