@@ -170,6 +170,9 @@ def snapshot() -> dict[str, Any]:
             drop_offs["planning_abandoned"] += 1
         elif reached == {"page_view"}:
             drop_offs["page_only"] += 1
+    session_dimensions = [
+        min(events, key=lambda item: float(item["at"])) for events in session_events.values()
+    ]
     return {
         "generated_at": datetime.now(UTC).isoformat(),
         "uptime_seconds": max(0, round(time.time() - _STARTED_AT)),
@@ -210,8 +213,12 @@ def snapshot() -> dict[str, Any]:
             "activities": dict(activity_counts.most_common()),
             "funnel": funnel,
             "drop_offs": dict(drop_offs.most_common()),
-            "countries": dict(Counter(item["country"] for item in product_events).most_common(8)),
-            "sources": dict(Counter(item["source"] for item in product_events).most_common()),
+            "countries": dict(
+                Counter(item["country"] for item in session_dimensions).most_common(8)
+            ),
+            "sources": dict(
+                Counter(item["source"] for item in session_dimensions).most_common()
+            ),
         },
     }
 

@@ -89,8 +89,8 @@ def test_ops_metrics_snapshot_aggregates_product_funnel_and_drop_offs(monkeypatc
         "planning_completed": 1,
     }
     assert result["drop_offs"] == {"planning_failed": 1}
-    assert result["countries"] == {"US": 4, "unknown": 2}
-    assert result["sources"] == {"search": 4, "direct": 2}
+    assert result["countries"] == {"US": 1, "unknown": 1}
+    assert result["sources"] == {"search": 1, "direct": 1}
 
 
 def test_ops_overview_is_owner_only_and_hidden_from_openapi(monkeypatch) -> None:  # type: ignore[no-untyped-def]
