@@ -47,6 +47,34 @@ export interface OpsOverview {
     active_trips: Record<"today" | "7d" | "30d", number>;
     chat_requests: number;
     iterations: number;
+    inventory: {
+      trips: number;
+      flights: number;
+      hotels: number;
+      activities: number;
+    };
+  };
+  product: {
+    events: number;
+    sessions: number;
+    users: number;
+    engagement_seconds: number;
+    activities: Record<string, number>;
+    funnel: Record<"page_view" | "planning_started" | "trip_created" | "planning_completed", number>;
+    drop_offs: Record<string, number>;
+    countries: Record<string, number>;
+    sources: Record<string, number>;
+  };
+  chat_turns: {
+    calls: number;
+    completed: number;
+    errors: number;
+    distinct_users: number;
+    p50_ms: number;
+    p95_ms: number;
+    tool_calls: number;
+    avg_tools_per_turn: number;
+    outcomes: Record<string, number>;
   };
   requests: OpsMetricRow & {
     by_route: Record<string, OpsMetricRow>;
@@ -62,13 +90,28 @@ export interface OpsOverview {
     completion_tokens: number;
     cost_usd: number;
   };
-  tools: Record<string, OpsMetricRow & { cache_hits: number; hit_rate: number; avg_ms: number }>;
+  tools: Record<string, OpsMetricRow & {
+    cache_hits: number;
+    hit_rate: number;
+    avg_ms: number;
+    error_types: Record<string, number>;
+  }>;
+  providers: Record<string, {
+    calls: number;
+    successes: number;
+    failures: number;
+    failure_rate: number;
+    avg_ms: number;
+  }>;
   cache: {
     configured: boolean;
     backend: "redis" | "memory";
     redis_connected: boolean;
     fallback_active: boolean;
     memory_entries: number;
+    redis_entries: number;
+    redis_bytes: number;
+    redis_stats_truncated: boolean;
   };
 }
 

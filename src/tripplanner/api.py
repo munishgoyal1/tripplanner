@@ -70,6 +70,7 @@ from tripplanner.request_identity import (
     require_owner,
     require_signed_user,
     resolve_user_id,
+    signed_session,
 )
 from tripplanner.request_limits import (
     acquire_chat,
@@ -302,6 +303,7 @@ def _record_chat_operation(
     outcome: Literal["completed", "replayed", "capped", "error"],
     error: str | None = None,
     exception: BaseException | None = None,
+    tool_calls: int = 0,
 ) -> None:
     error_name = error or (type(exception).__name__ if exception else None)
     model_fields = (
@@ -317,6 +319,14 @@ def _record_chat_operation(
         duration_ms=round((time.monotonic() - started) * 1000, 2),
         **({"error": error_name} if error_name else {}),
         **model_fields,
+    )
+    from tripplanner.ops_metrics import record_chat_turn
+
+    record_chat_turn(
+        user_id,
+        outcome,
+        (time.monotonic() - started) * 1000,
+        tool_calls=tool_calls,
     )
 
 
@@ -782,6 +792,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 transport="sse",
                 outcome="error",
                 exception=exc,
+                tool_calls=len(tool_names_called),
             )
             message = "The assistant hit an error. Please retry."
             if partial_save_failed:
@@ -823,6 +834,7 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 transport="sse",
                 outcome="error",
                 error=type(exc).__name__,
+                tool_calls=len(tool_names_called),
             )
             yield _sse(
                 "error",
@@ -838,7 +850,11 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
             _schedule_learning_sweep(user_id, req.message)
         app_event("api_chat_stream_done", reply_length=len(reply))
         _record_chat_operation(
-            started, user_id=user_id, transport="sse", outcome="completed"
+            started,
+            user_id=user_id,
+            transport="sse",
+            outcome="completed",
+            tool_calls=len(tool_names_called),
         )
         yield _sse("done", {"reply": reply, "agent": "trip", "trip_id": tid_after})
 
@@ -2318,6 +2334,30 @@ async def metrics_tools() -> dict:
     return {"tools": tool_metrics_snapshot()}
 
 
+@app.post("/analytics/event", include_in_schema=False, status_code=204)
+async def analytics_event(request: Request) -> Response:
+    """Accept one consented, allowlisted, content-free product event."""
+    from tripplanner.ops_metrics import record_product_event
+
+    try:
+        body = await request.json()
+        event = str(body.get("event") or "")
+        session_id = str(body.get("session_id") or "")
+        source = str(body.get("source") or "unknown")
+        if not re.fullmatch(r"[A-Za-z0-9-]{8,80}", session_id):
+            return Response(status_code=204)
+        session = signed_session(request)
+        record_product_event(
+            event,
+            session_id,
+            user_id=str(session["user_id"]) if session else None,
+            source=source,
+        )
+    except (AttributeError, TypeError, ValueError):
+        pass
+    return Response(status_code=204)
+
+
 @app.get("/ops/overview", include_in_schema=False)
 async def ops_overview(request: Request) -> dict[str, Any]:
     """Return content-free business and engineering metrics to the owner only."""
@@ -2329,6 +2369,7 @@ async def ops_overview(request: Request) -> dict[str, Any]:
     from tripplanner.observability import tool_metrics_snapshot
     from tripplanner.ops_metrics import snapshot
     from tripplanner.providers.cache import provider_cache_status
+    from tripplanner.providers.fares import get_provider_stats
     from tripplanner.tools.trip_planner import list_saved_trips
     from tripplanner.usage import get_usage as get_owner_usage
 
@@ -2364,6 +2405,14 @@ async def ops_overview(request: Request) -> dict[str, Any]:
             runtime["requests"]["by_route"].get("POST /chat/stream", {}).get("calls", 0)
         ),
         "iterations": sum(1 for trip in trips if trip.get("updated_at")),
+        "inventory": {
+            "trips": len(trips),
+            "flights": sum(int((trip.get("counts") or {}).get("flights", 0)) for trip in trips),
+            "hotels": sum(int((trip.get("counts") or {}).get("hotels", 0)) for trip in trips),
+            "activities": sum(
+                int((trip.get("counts") or {}).get("activities", 0)) for trip in trips
+            ),
+        },
     }
     usage = get_owner_usage(str(session["user_id"]))
     runtime["usage"] = {
@@ -2374,6 +2423,27 @@ async def ops_overview(request: Request) -> dict[str, Any]:
         "cost_usd": usage.get("cost_usd", 0.0),
     }
     runtime["tools"] = tool_metrics_snapshot()
+    provider_stats = get_provider_stats()
+    provider_names = set(provider_stats["quote_success"]) | set(provider_stats["quote_failure"])
+    runtime["providers"] = {
+        provider: {
+            "calls": int(provider_stats["quote_success"].get(provider, 0))
+            + int(provider_stats["quote_failure"].get(provider, 0)),
+            "successes": int(provider_stats["quote_success"].get(provider, 0)),
+            "failures": int(provider_stats["quote_failure"].get(provider, 0)),
+            "failure_rate": round(
+                int(provider_stats["quote_failure"].get(provider, 0))
+                / max(
+                    1,
+                    int(provider_stats["quote_success"].get(provider, 0))
+                    + int(provider_stats["quote_failure"].get(provider, 0)),
+                ),
+                3,
+            ),
+            "avg_ms": round(float(provider_stats["avg_latency_ms"].get(provider, 0)), 2),
+        }
+        for provider in sorted(provider_names)
+    }
     runtime["cache"] = provider_cache_status()
     return runtime
 

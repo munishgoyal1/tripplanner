@@ -237,8 +237,28 @@ class _RedisProviderCache(Generic[T]):
     def _namespaced(self, key: str) -> str:
         return f"{self._namespace}:{key}"
 
-    def status(self) -> dict[str, bool]:
-        return {"enabled": True, "connected": self._client is not None and not self._warned_down}
+    def status(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "enabled": True,
+            "connected": self._client is not None and not self._warned_down,
+            "entries": 0,
+            "bytes": 0,
+            "truncated": False,
+        }
+        if not self._client:
+            return result
+        try:
+            keys = list(self._client.scan_iter(match=f"{self._namespace}:*", count=100, _type="string"))
+            if len(keys) > 1000:
+                keys = keys[:1000]
+                result["truncated"] = True
+            result["entries"] = len(keys)
+            result["bytes"] = sum(int(self._client.memory_usage(key) or 0) for key in keys)
+            self._warned_down = False
+        except Exception as exc:  # noqa: BLE001 - status must never break requests
+            self._warn_once(exc)
+            result["connected"] = False
+        return result
 
     def get(self, key: str) -> ProviderCacheEntry[T] | None:
         if not self._client:
@@ -299,4 +319,9 @@ def provider_cache_status() -> dict[str, Any]:
         "redis_connected": redis_connected,
         "fallback_active": redis_enabled and not redis_connected,
         "memory_entries": sum(int(cache["memory_entries"]) for cache in caches),
+        "redis_entries": sum(int(cache["redis"].get("entries", 0)) for cache in caches),
+        "redis_bytes": sum(int(cache["redis"].get("bytes", 0)) for cache in caches),
+        "redis_stats_truncated": any(
+            bool(cache["redis"].get("truncated", False)) for cache in caches
+        ),
     }
