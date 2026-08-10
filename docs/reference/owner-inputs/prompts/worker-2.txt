@@ -236,3 +236,9 @@ so the first plan is only for first plan or any plan will show up like that, whe
 
 [2026-08-08 19:35] [worker-2] ! Finalize Lab 22 for promotion
 ok finalize all this so i can get in position to promote the sandbox
+[$ts] [worker-2 !] owner-only ops dashboard
+yes add that and may be a not just for redis, build a mini dashboard kind of thing - that shows business metrics, engineering metrics, errors, latency, number of calls, model calls and time taken for each request, new trips, iterations etc. , redis being one part of the engineering metrics. Build this as something only accessible to my id: munishgoyal1@gmail.com for others it should not be even visible or known. Is that good way, or should we keep ity as a speerate diagnostics/On-call kind of operations app but that i fear may just add complexity
+
+[2026-08-10 15:22] [worker-2 !] finish redis sandbox work
+ok continue with your redis work, finish that and once done I will quickly validate and promote sbx
+
