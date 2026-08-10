@@ -187,3 +187,7 @@ and why the mumbai to jaipur trip is so short just 3 days - doesnt look good rep
 
 [2026-08-10 11:44] [worker-1 !] Fix planner back navigation
 fix it: the browser back button should go back to welcome page instead it always stays ont he planner page.
+
+[2026-08-10 11:48] [worker-1 !] Unify profile and currency behavior
+Changing currency to CNY isnt updating it in the itinerary panel in workspace. 
+Also The profile experience on welcome page - make it exactly the same as that is on workspace, why is it partial and clciking on travel profile sub menu row takes user to planner page - that is not good experience, just replicate all of the profile settings experience on welcome page also and in fact make it common through the app, any new page also it could be re-used.
