@@ -39,6 +39,12 @@ def build_view(focus: dict[str, str] | None = None) -> dict[str, Any]:
     return trip_view.build_view(trip_planner.load_active_trip_dict(), focus)
 
 
+def build_budget_what_if() -> dict[str, Any]:
+    from tripplanner.decisions.budget_what_if import build_budget_what_if as build
+
+    return build(trip_planner.load_active_trip_dict())
+
+
 def warm_guide() -> None:
     """Background warm of the destination-guide dataset for the active trip."""
     trip_view.warm_guide(trip_planner.load_active_trip_dict())

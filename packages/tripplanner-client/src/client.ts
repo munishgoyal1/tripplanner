@@ -1,4 +1,5 @@
 import type {
+  BudgetWhatIf,
   DecisionApplyResult,
   DeselectItemOptions,
   Itinerary,
@@ -155,6 +156,12 @@ export class TripplannerClient {
     const response = await this.request(this.url("/trip/view", params), { signal });
     ensureOk(response, "Could not load the trip");
     return response.json() as Promise<TripView>;
+  }
+
+  async buildBudgetWhatIf(): Promise<BudgetWhatIf> {
+    const response = await this.post("/trip/budget/what-if", {});
+    ensureOk(response, "Could not build budget suggestions");
+    return response.json() as Promise<BudgetWhatIf>;
   }
 
   async fetchPlaceGuide(

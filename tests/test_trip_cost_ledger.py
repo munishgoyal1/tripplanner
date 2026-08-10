@@ -97,6 +97,15 @@ def test_two_currencies_are_converted_before_being_added():
     ledger = build_cost_ledger(plan)
     assert ledger.priced_total == 280.0
     assert all(line.currency == "EUR" for line in ledger.lines)
+    converted = next(line for line in ledger.lines if line.label == "Dollar Stay")
+    assert converted.fx == {
+        "from_currency": "USD",
+        "to_currency": "EUR",
+        "rate": 0.9,
+        "source": "European Central Bank via Frankfurter",
+        "rate_date": "2026-08-10",
+        "fetched_at": converted.fx["fetched_at"],
+    }
 
 
 def test_without_a_rate_the_line_is_unpriced_rather_than_summed_wrongly():
@@ -124,3 +133,4 @@ def test_the_summary_names_what_is_not_backed():
     ledger = build_cost_ledger(plan)
     assert ledger.summary == "1 priced · 1 unpriced"
     assert ledger.as_dict()["complete"] is False
+    assert ledger.as_dict()["coverage_pct"] == 50

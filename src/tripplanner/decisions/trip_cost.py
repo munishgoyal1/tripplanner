@@ -19,7 +19,7 @@ from datetime import datetime
 from typing import Any
 
 from tripplanner.decisions.provenance import is_expired
-from tripplanner.providers.fx import convert
+from tripplanner.providers.fx import convert_with_provenance
 
 # Kinds map to the price-check kinds recorded by the search tools.
 _BUCKETS: tuple[tuple[str, str, str], ...] = (
@@ -50,6 +50,7 @@ class CostLine:
     checked_at: str = ""
     expires_at: str = ""
     reason: str = ""
+    fx: dict[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -68,6 +69,8 @@ class CostLine:
         ):
             if value:
                 payload[key] = value
+        if self.fx:
+            payload["fx"] = self.fx
         return payload
 
 
@@ -87,6 +90,7 @@ class CostLedger:
         return bool(self.lines) and self.priced_count == len(self.lines)
 
     def as_dict(self) -> dict[str, Any]:
+        coverage_pct = round(self.priced_count / len(self.lines) * 100) if self.lines else 0
         return {
             "currency": self.currency,
             "lines": [line.as_dict() for line in self.lines],
@@ -96,6 +100,7 @@ class CostLedger:
             "unverified_count": self.unverified_count,
             "unpriced_count": self.unpriced_count,
             "complete": self.complete,
+            "coverage_pct": coverage_pct,
             "summary": self.summary,
         }
 
@@ -205,8 +210,8 @@ def build_cost_ledger(
                 continue
 
             item_currency = _currency_of(item, currency)
-            converted = convert(amount, item_currency, currency)
-            if converted is None:
+            conversion = convert_with_provenance(amount, item_currency, currency)
+            if conversion is None:
                 lines.append(
                     CostLine(
                         kind=check_kind,
@@ -231,12 +236,17 @@ def build_cost_ledger(
                     kind=check_kind,
                     label=label,
                     status=status,
-                    amount=converted,
+                    amount=conversion.amount,
                     currency=currency,
                     provider=str((check or {}).get("provider") or ""),
                     checked_at=str((check or {}).get("checked_at") or ""),
                     expires_at=str((check or {}).get("expires_at") or ""),
                     reason=reason,
+                    fx=(
+                        conversion.provenance()
+                        if conversion.from_currency != conversion.to_currency
+                        else None
+                    ),
                 )
             )
 

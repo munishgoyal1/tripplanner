@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Brief ID | `004` |
-| Status | In progress |
+| Status | Validated foundation |
 | Owner | Munish Goyal |
 | Created | 2026-08-10 |
 | Updated | 2026-08-10 |
@@ -19,7 +19,7 @@ As the trip owner, I need grounded comparisons and explicit budget what-if sugge
 
 ## Current behavior
 
-Stay and flight searches can retain the exact returned candidates as persisted decisions. The decision panel explains the deterministic rule, lets the owner select another candidate, and restores the original selection. The trip has cost evidence, but no user-owned structured budget target or coordinated budget what-if proposals.
+Stay and flight searches retain exact returned candidates as persisted decisions. The trip now stores new budget targets as user-owned structured data, labels incomplete headroom with live-price coverage, retains timestamped published FX provenance, and builds exact-alternative savings proposals only on explicit request. Each proposal can be accepted through the existing revision-checked decision mutation. Coordinated multi-item acceptance remains a follow-up.
 
 ## Scope and priority
 
@@ -98,4 +98,9 @@ Stay and flight searches can retain the exact returned candidates as persisted d
 | Mutation | Override and restore exact selected item | Decision apply tests |
 | Contract | Display-safe facts and no provider handles | Trip-view and share tests |
 | Web | Kind-specific facts and reversal controls | Decision panel tests and production build |
-| Budget | Target, evidence, FX, proposal, and coordinated apply | Focused backend and client tests in the next milestone |
+| Budget | Target, evidence, FX, and on-demand proposal | Focused backend, API, shared-client, and view tests |
+
+## Remaining follow-up
+
+- Add one coordinated multi-item acceptance contract with stale/partial-failure reporting before AC-08 is complete.
+- Add a dedicated proposal review UX only after its placement and interaction are owner-approved; the existing decision panel remains the acceptance surface for individual exact alternatives.

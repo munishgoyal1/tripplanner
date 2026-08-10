@@ -58,11 +58,39 @@ export interface Budget {
   per_traveler_display: string;
   breakdown: { flights?: number; hotels?: number; activities?: number };
   target: number | null;
+  target_currency?: string;
+  target_owner?: "user" | "legacy" | string;
+  target_updated_at?: string;
+  target_fx?: CostEvidenceLine["fx"] | null;
   target_display: string;
   remaining: number | null;
   remaining_display: string;
   pct_used: number | null;
   over_budget: boolean;
+  estimated: boolean;
+  evidence_coverage_pct: number;
+  verified_spent: number | null;
+}
+
+export interface BudgetWhatIfProposal {
+  id: string;
+  decision_id: string;
+  option_id: string;
+  kind: "flight" | "lodging";
+  subject: string;
+  label: string;
+  savings: number;
+  currency: string;
+  tradeoff: string;
+  personalized: boolean;
+}
+
+export interface BudgetWhatIf {
+  generated_on_demand: true;
+  estimated: boolean;
+  evidence_coverage_pct: number;
+  currency: string;
+  proposals: BudgetWhatIfProposal[];
 }
 
 export type WeatherCondition = "clear" | "partly_cloudy" | "cloudy" | "fog" | "rain" | "storm" | "snow" | "unknown";
@@ -95,6 +123,14 @@ export interface CostEvidenceLine {
   checked_at?: string;
   expires_at?: string;
   reason?: string;
+  fx?: {
+    from_currency: string;
+    to_currency: string;
+    rate: number;
+    source: string;
+    rate_date: string;
+    fetched_at: string;
+  };
 }
 
 /** What the trip costs according to recorded provider checks, not the model. */
@@ -107,6 +143,7 @@ export interface CostEvidence {
   unverified_count: number;
   unpriced_count: number;
   complete: boolean;
+  coverage_pct: number;
   summary: string;
 }
 

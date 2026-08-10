@@ -330,6 +330,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     except Exception:  # pragma: no cover - storage failure shouldn't break the view
         prefs = None
     symbol = currency_symbol(trip)
+    cost_evidence = build_cost_ledger(trip).as_dict()
     return {
         "destination": trip.get("destination") or "",
         "origin": trip.get("origin") or "",
@@ -341,10 +342,10 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
-        "cost_evidence": build_cost_ledger(trip).as_dict(),
+        "cost_evidence": cost_evidence,
         "cost_baseline": _build_cost_baseline(trip, symbol),
         "provenance": build_provenance(trip),
-        "budget": build_budget(trip),
+        "budget": build_budget(trip, cost_evidence=cost_evidence),
         "weather": build_weather(trip),
         "family_pills": family_pills(prefs),
         "constraints": [

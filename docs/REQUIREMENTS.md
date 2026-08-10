@@ -668,10 +668,11 @@ implemented capability baseline.
   The selectable overlay/control prototype is active in UX Labs; production wiring
   requires an owner-selected direction.
 - No complete cost-optimization layer (DEAL-01). Exact-response stay and flight
-  candidate comparisons now support deterministic selection and reversal, but
-  there is no cross-source comparison, re-check of a finalized-but-unbooked
-  price, user-owned budget what-if workflow, or loyalty, card-benefit, and
-  portal-offer modeling.
+  comparisons support deterministic selection and reversal. User-owned budget
+  targets, evidence-labeled headroom, published FX provenance, and explicitly
+  requested exact-alternative savings proposals are implemented. Cross-source
+  comparison, coordinated multi-item proposal acceptance, finalized-but-unbooked
+  re-checks, loyalty, card-benefit, and portal-offer modeling remain gaps.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
   not indexable and not first-paint-fast for anonymous visitors.

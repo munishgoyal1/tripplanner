@@ -1812,8 +1812,8 @@ def update_trip_plan(updates_json: str) -> str:
     - day_wise_itinerary: list of day plans
     - cost_breakdown: dict of cost items
     - total_cost: number
-    - budget: number — the user's total budget for THIS trip (drives the live
-      budget meter in the UI; set it as soon as the user states a budget)
+        - budget: {"amount": number, "currency": ISO code, "owner": "user"} - the
+            user's total budget for THIS trip. Set only from an explicit user target.
     - currency: ISO code of the sticky display currency ("INR", "USD", "EUR",
       ...) — set it once when you pick the plan's currency so every surface
       (including the budget meter) shows the same symbol
@@ -1881,6 +1881,26 @@ def update_trip_plan(updates_json: str) -> str:
     merged_partial_itinerary = False
     for key, val in updates.items():
         if key in allowed_keys:
+            if key == "budget":
+                if isinstance(val, int | float) and not isinstance(val, bool):
+                    val = {
+                        "amount": val,
+                        "currency": str(updates.get("currency") or plan.get("currency") or "INR"),
+                        "owner": "user",
+                        "updated_at": datetime.now().isoformat(),
+                    }
+                elif isinstance(val, dict):
+                    val = {
+                        **val,
+                        "currency": str(
+                            val.get("currency")
+                            or updates.get("currency")
+                            or plan.get("currency")
+                            or "INR"
+                        ),
+                        "owner": "user",
+                        "updated_at": datetime.now().isoformat(),
+                    }
             if key == "selected_hotels" and isinstance(val, list):
                 val = [
                     hotel

@@ -602,6 +602,23 @@ class TestTripPlanState:
         assert plan["weather"]["source"] == "forecast"
         assert plan["total_cost"] == 8500
 
+    def test_update_trip_plan_owns_numeric_budget_as_structured_user_target(self):
+        create_trip_plan.invoke({
+            "destination": "Goa",
+            "departure_date": "2026-07-01",
+            "return_date": "2026-07-05",
+        })
+
+        update_trip_plan.invoke(
+            {"updates_json": json.dumps({"budget": 100000, "currency": "INR"})}
+        )
+
+        plan = json.loads(get_trip_plan.invoke({}))
+        assert plan["budget"]["amount"] == 100000
+        assert plan["budget"]["currency"] == "INR"
+        assert plan["budget"]["owner"] == "user"
+        assert plan["budget"]["updated_at"]
+
     def test_update_trip_plan_rejects_placeholder_hotel_selection(self):
         create_trip_plan.invoke({
             "destination": "Goa",

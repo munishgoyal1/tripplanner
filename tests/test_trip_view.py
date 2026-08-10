@@ -298,6 +298,29 @@ def test_build_budget_with_target_under() -> None:
     assert b["over_budget"] is False
 
 
+def test_build_budget_accepts_structured_user_owned_target() -> None:
+    trip = {
+        **SAMPLE_TRIP,
+        "currency": "USD",
+        "total_cost": 8000,
+        "budget": {
+            "amount": 10000,
+            "currency": "USD",
+            "owner": "user",
+            "updated_at": "2026-08-10T17:55:00Z",
+        },
+    }
+
+    budget = trip_view.build_budget(trip)
+
+    assert budget is not None
+    assert budget["target"] == 10000
+    assert budget["target_currency"] == "USD"
+    assert budget["target_owner"] == "user"
+    assert budget["target_updated_at"] == "2026-08-10T17:55:00Z"
+    assert budget["remaining"] == 2000
+
+
 def test_build_budget_over_target() -> None:
     trip = {**SAMPLE_TRIP, "budget": 60000, "total_cost": 82000}
     b = trip_view.build_budget(trip)
@@ -340,6 +363,51 @@ def test_traveler_count_parsing() -> None:
 def test_overview_includes_budget() -> None:
     view = trip_view.build_view({**SAMPLE_TRIP, "budget": 100000}, None)
     assert view["overview"]["budget"]["target"] == 100000
+    assert view["overview"]["budget"]["estimated"] is True
+    assert view["overview"]["budget"]["evidence_coverage_pct"] == 0
+
+
+def test_budget_headroom_is_verified_only_with_complete_live_evidence() -> None:
+    evidence = {"complete": True, "coverage_pct": 100, "priced_total": 8000}
+    budget = trip_view.build_budget(
+        {"currency": "USD", "total_cost": 8000, "budget": 10000},
+        cost_evidence=evidence,
+    )
+
+    assert budget is not None
+    assert budget["estimated"] is False
+    assert budget["evidence_coverage_pct"] == 100
+    assert budget["verified_spent"] == 8000
+
+
+def test_structured_target_uses_published_fx_provenance(monkeypatch) -> None:
+    from datetime import UTC, datetime
+
+    from tripplanner.providers import fx
+
+    fetched_at = datetime(2026, 8, 10, 12, tzinfo=UTC)
+    monkeypatch.setitem(
+        fx._cache,
+        "EUR",
+        fx.RateTable(
+            base="EUR",
+            rates={"USD": 1.2},
+            fetched_at=fetched_at,
+            rate_date="2026-08-10",
+        ),
+    )
+    budget = trip_view.build_budget(
+        {
+            "currency": "USD",
+            "total_cost": 6000,
+            "budget": {"amount": 10000, "currency": "EUR", "owner": "user"},
+        }
+    )
+
+    assert budget is not None
+    assert budget["target"] == 12000
+    assert budget["target_fx"]["rate"] == 1.2
+    assert budget["target_fx"]["rate_date"] == "2026-08-10"
 
 
 # ---- family_pills ---------------------------------------------------------

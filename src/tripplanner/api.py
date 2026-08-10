@@ -884,6 +884,15 @@ async def trip_view_endpoint(
     return view
 
 
+@app.post("/trip/budget/what-if")
+async def trip_budget_what_if(request: Request, user_id: str = "local") -> dict:
+    """Generate grounded savings proposals only when the traveller asks."""
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    return await asyncio.to_thread(trip_operations.build_budget_what_if)
+
+
 @app.get("/trip/places")
 async def trip_places_endpoint(
     request: Request,
