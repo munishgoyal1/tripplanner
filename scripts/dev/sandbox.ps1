@@ -49,6 +49,9 @@
 
   Sandboxes are always created fresh and discarded after promotion: a fresh one
   costs about 29 seconds, which is not worth a second lifecycle to manage.
+
+    A semantic merge conflict leaves the sandbox merge and any safety stash intact.
+    Resolve the files, then run Resolve-SandboxConflicts for that sandbox before retrying.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "List")]
@@ -766,6 +769,51 @@ function Sync-MasterBaseline {
     }
 }
 
+function Complete-SandboxMergeConflict {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [string]$StashCommit = ""
+    )
+
+    & git -C $WorkingDirectory rerere 2>&1 | Out-Host
+    $unmerged = @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
+    if ($unmerged.Count -eq 0) {
+        & git -C $WorkingDirectory commit --no-edit
+        if ($LASTEXITCODE -ne 0) { throw "Could not finish the recorded merge for $Label." }
+        return
+    }
+
+    if ($StashCommit) {
+        $stateDir = Join-Path $primaryRoot "logs/sandbox"
+        New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
+        [pscustomobject]@{
+            worktree = $WorkingDirectory
+            stashCommit = $StashCommit
+        } | ConvertTo-Json | Set-Content -Path (Join-Path $stateDir "pending-conflict-$((Split-Path -Leaf $WorkingDirectory)).json")
+    }
+    $stashHint = if ($StashCommit) { " Its safety stash is retained until recovery completes." } else { "" }
+    throw "SANDBOX_CONFLICT_PENDING: $Label has conflicts: $($unmerged -join ', '). Resolve them in $WorkingDirectory, then run Resolve-SandboxConflicts for this sandbox.$stashHint"
+}
+
+function Restore-SandboxStash {
+    param(
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][string]$StashCommit
+    )
+
+    $currentStash = & git -C $WorkingDirectory rev-parse --quiet --verify refs/stash 2>$null
+    if ($LASTEXITCODE -ne 0 -or $currentStash -ne $StashCommit) {
+        Write-Warning "$Label safety stash is not the newest stash; leaving it untouched."
+        return
+    }
+    & git -C $WorkingDirectory stash pop --index "stash@{0}"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "$Label local changes conflict with the updated base; resolve them before continuing."
+    }
+}
+
 function Remove-SandboxLeftovers {
     # npm workspaces link @tripplanner/client into frontend/node_modules, and
     # `git worktree remove` leaves that reparse point plus its parents on disk.
@@ -1116,8 +1164,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
                     if ($LASTEXITCODE -ne 0) {
                         throw "Could not merge $sandboxRemoteRef into $label."
                     }
-                    Complete-MergeConflict -WorkingDirectory $wd -Label $label -Kind "lane" `
-                        -Branch $entry.branch -StashCommit $stashCommit
+                    Complete-SandboxMergeConflict -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
                 }
             } elseif ($LASTEXITCODE -ne 1) {
                 throw "Could not inspect $sandboxRemoteRef."
@@ -1129,8 +1176,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
                 if ($LASTEXITCODE -ne 0) {
                     throw "Could not merge $remoteRef into $label."
                 }
-                Complete-MergeConflict -WorkingDirectory $wd -Label $label -Kind "lane" `
-                    -Branch $entry.branch -StashCommit $stashCommit
+                Complete-SandboxMergeConflict -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
             }
         } finally {
             if ($stashCommit) {
@@ -1138,7 +1184,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
                 if ($LASTEXITCODE -eq 0) {
                     Write-Warning "$label local changes remain in the safety stash until the merge conflict is resolved."
                 } else {
-                    Restore-LaneStash -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
+                    Restore-SandboxStash -WorkingDirectory $wd -Label $label -StashCommit $stashCommit
                 }
             }
         }

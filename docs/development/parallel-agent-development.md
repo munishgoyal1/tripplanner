@@ -14,4 +14,8 @@ On macOS, use the matching `.command` launchers under `scripts/mac/sandbox/`. Ea
 
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/user/Run-Latest.cmd` on Windows or `scripts/mac/user/Run-Latest.command` on macOS. Sandboxes use their own ports and server-free validation by default.
 
+If `Update-Sandbox` reports `SANDBOX_CONFLICT_PENDING`, resolve its marked files
+in the sandbox worktree, then run `Resolve-SandboxConflicts` for that sandbox to
+finish the merge and push its branch before retrying update or promotion.
+
 Discard a sandbox after verified promotion.

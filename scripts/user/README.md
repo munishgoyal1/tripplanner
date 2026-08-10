@@ -9,6 +9,7 @@ Windows launchers live here; matching macOS launchers live under
 | --- | --- |
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
+| `../sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `Show-Prompts.cmd` | Read the master owner prompt log |
 
 `Run-Latest.cmd` is only for the primary `master` checkout. It fast-forwards
@@ -26,3 +27,7 @@ corresponding primary launcher from the repository root:
 ./scripts/mac/user/Run-Latest.command
 ./scripts/mac/user/Run-Latest.command -Watch -NoLabs
 ```
+
+When `Update-Sandbox` stops on a semantic merge conflict, resolve the marked
+files in that sandbox, then run `scripts/sandbox/Resolve-SandboxConflicts.cmd <sandbox>`
+on Windows or `scripts/mac/sandbox/Resolve-SandboxConflicts.command <sandbox>` on macOS.

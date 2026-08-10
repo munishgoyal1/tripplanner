@@ -31,6 +31,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
 | `sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |

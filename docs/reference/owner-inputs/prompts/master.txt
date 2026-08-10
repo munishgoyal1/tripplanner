@@ -318,3 +318,568 @@ Impelemnt all this exactly as you suggested. I created a remote branch current w
 [2026-08-10 16:25] [master !] Remove remaining worker artifacts
 discard the uncommited work and do not retain the workers. also fix the windows based launchers also wherever needed.
 Make the sandbox , sync, run code and all other scripts uptodate with this workers removal entirely
+
+[2026-08-10 16:50] [master !] Restore sandbox conflict recovery
+do you need to retain resolve conflicts scripts and logic for resolving between sandboxes and amster because it will be almost similar logic needed. I suggest to keep that workflow in some way adapted to sandboxes.
+
+And retain - merge the workser1-3 txt prompts into master single file itself for now
+
+## Historical prompts imported from retired lanes
+
+The retired worker prompt histories are preserved below verbatim as historical
+records. New owner prompts continue to append under the active `[master]` lane.
+
+## Retired worker-1 prompt history
+
+# Owner prompts executed in the Agent 1 - SmallFixes lane.
+# Tail-appended, newest at the bottom. Only this lane writes this file.
+# Format: [YYYY-MM-DD HH:MM] [worker-1] [!] <short title> / verbatim prompt / blank line.
+# See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-06 00:00] [worker-1 !] Fix Destination City Filters
+why are the cities filters not showing on the destination guide in madhya pradesh trip case. it is a bug , sometimes it shows sometimes not
+
+[2026-08-06 00:00] [worker-1 !] Rename Agent To SmallFixes
+ranem this agent as from Iti-Map to SmallFixes
+
+[2026-08-06 00:00] [worker-1 !] Validate Publish Agent Rename
+In C:\repos\tripplanner.worktrees\worker-1, validate and publish the Agent 1 label rename. Requirements:
+1. `tripplanner-worker-1.code-workspace` parses as JSON and its folder name/window title say `Agent 1 - SmallFixes`.
+2. `scripts/open-agent-windows.ps1` parses with the PowerShell parser and its worker-1 display Name is `Agent 1 - SmallFixes`.
+3. Current workflow references in `.github/copilot-instructions.md`, `docs/development/dev.md`, `docs/development/parallel-agent-development.md`, `docs/reference/owner-inputs/prompts/README.md`, and the header of `docs/reference/owner-inputs/prompts/worker-1.txt` say SmallFixes. The worker log's newest entry must contain the latest owner prompt verbatim at the bottom.
+4. Stable identifiers remain unchanged: `worker-1`, `agents/worker-1`, and `tripplanner-worker-1.code-workspace` filename/references.
+5. Historical references under agent proposals and `docs/reference/history/requirements-log.txt` may retain Iti-Map. No active/current reference outside those historical records should retain Iti-Map.
+6. Git status must contain exactly the seven edited files from this task; run `git diff --check`.
+If all checks pass, stage exactly those seven files, commit `Rename Agent 1 to SmallFixes`, push the current branch to configured upstream, and report validation, commit SHA, push result, divergence, and final porcelain. Do not modify content or touch master. Stop before commit if any check fails.
+
+[2026-08-06 00:00] [worker-1 !] Discard Sandbox After Promotion
+if the promotion of a sandbox was successful when running the scriupt then add the discarding of sandbox as a step in promote sandbox scripts
+
+[2026-08-06 00:00] [worker-1 !] Fix Sandbox Promotion Status
+provide the promoted status also of sbx during listing.
+Investigate why lab16 sbx discard is failing saying it has unmerged work, whereas it promoted successfully. Any overall scripts fixing needed ?
+
+[2026-08-06 13:55] [worker-1 !] Validate Sandbox Cleanup Workflow
+In C:\repos\tripplanner.worktrees\worker-1, validate the final sandbox workflow and publish only if every requirement passes.
+1. Parse scripts/dev/sandbox.ps1 with the PowerShell parser: zero errors.
+2. Run `pwsh -NoProfile -File scripts/dev/sandbox.ps1 -List`; Lab 16 must report `promoted via PR #32 (legacy)`.
+3. Run Lab 16 `-Discard 2 -WhatIf` from worker root; it must reach the removal ShouldProcess action without outstanding-work error and must preserve its registry entry, worktree, local branch, and database (do not perform real discard).
+4. Inspect code/diff and confirm: discard blocks dirty or origin/base-unique work; sandbox remote lag alone does not block; promotion saves metadata and invokes discard only after verification; listing shows saved or legacy promoted status and cleanup-incomplete suffix; failed cleanup retains registry; local/remote deletion retries are idempotent; unexpected cleanup exceptions are recorded.
+5. `git diff --check` passes. Scope is exactly four modified files: scripts/dev/sandbox.ps1, scripts/README.md, docs/ENGINEERING_LEARNINGS.md, docs/reference/owner-inputs/prompts/worker-1.txt. Prompt entries are at the tail. No unrelated changes.
+If all pass, stage exactly those four files, commit with message `Fix sandbox promotion cleanup`, and push current agents/worker-1 branch to configured upstream. Do not touch master or real sandbox resources. Report validation, commit SHA, push result, divergence, and final porcelain. Stop before commit if any check fails.
+
+[2026-08-06 00:00] [worker-1 !] Delete Discarded Sandbox Branches
+remote branch is not deleted as part of discard script. is that an oversight, seems obvious thing you missed
+
+[2026-08-06 14:45] [worker-1 !] Commit Sandbox Branch Cleanup
+In C:\repos\tripplanner.worktrees\worker-1, complete this task cautiously.
+1. Review the full diff and require exactly three modified files: scripts/dev/sandbox.ps1, scripts/README.md, docs/reference/owner-inputs/prompts/worker-1.txt. Confirm the prompt is at the true tail, PowerShell parses, switch default is true, explicit `-DeleteRemoteBranch:$false` remains possible, both promotion recursive discard calls inherit the default, remote deletion is idempotent, and `git diff --check` passes.
+2. If clean, stage exactly those files, commit `Delete remote sandbox branches by default`, and push current agents/worker-1 to its configured upstream.
+3. Then fetch origin and verify remote branch `sandbox/lab16-chat-dock` exists and every commit on it is contained in `origin/master` (`origin/master..origin/sandbox/lab16-chat-dock` empty). Only if both are true, delete that remote branch with `git push origin --delete sandbox/lab16-chat-dock`. If it has unique work, do not delete it and report the blocker.
+4. Report commit SHA, code push, stale branch cleanup result, final divergence, and porcelain. Do not touch master, other branches, registry, worktrees, or databases.
+
+[2026-08-06 16:34] [worker-1 !] Create Second Lab17 Sandbox
+In C:\repos\tripplanner.worktrees\worker-1, create the fresh sandbox exactly with: .\scripts\sandbox\New-Sandbox.cmd lab17-canvas-2 "Lab 17 itinerary canvas: second independent sandbox" -NoSync -NoServe -NoOpen. This is explicitly owner-approved. Do not start servers, open VS Code, sync other worktrees, edit code, commit implementation, or touch existing sandbox 1-lab17-canvas. After creation, report exact branch, worktree, base commit, ports, DB, registry state, and verify both sandboxes exist and the new worktree is clean.
+
+[2026-08-06 19:32] [worker-1 !] Version Lab Handoff States
+why lab 20 doesnt have a versioned record of chosen choice and notes. already i saved a handoff with option B. Now relooking after few hrs it is hard to make whether i intentionally save dsomething or not (really speakign whether design was reviewed or not) Also make the state transitions bit more proper.
+Allow me to put it to any state anytime. After it is implemented by agent it should change state to implemented, after i save handoff / re-save a new handoff it should create a version of choices, including a record for what got implemented.
+
+[2026-08-07 00:00] [worker-1 !] Simplify Lab State History
+after a  lab implementation change its status to implemented-in review and save it in state verison. so that we know what has been done ont hat lab. after that owner can signoff or discard or park or save another ahandoff for iteraiton.
+Show the states like earlier buttons instead fo dropdown. dont spend too much time on fixing logic for labs (it is internal tool just should be convenient enough nothing more)
+owner can still save another handoff anytime, or anytime change the state to anything, only thing you have to ensure is save that choice+notes+state verison so we know what is the last thing happened with lab. One small change - while showing order the versions by latest first.
+Not othe rmajor changes. - just ensure to save version, change the state after implementation, discard, park etc. - any acitons done by agent from backdoor.
+
+[2026-08-07 00:00] [worker-1 !] Capture Sandbox Lab Iterations
+When a lab is asked to be implemented and there is ambiguity eother due to handoff notes needing more owner inputs or otherwsie, that discusison should come through the implementation interaction in that sandbox worker chat. and those iterations summary after each good run of the sandbox with changes in lab should get capured in the lab's version with summary. finally on promote it should mark it as completed.
+
+[2026-08-07 00:00] [worker-1] Question Workflow Delay
+why taking so long.. for such a small ask
+
+[2026-08-07 00:00] [worker-1] Check Uncommitted Files
+there are uncommited files you have ?
+
+[2026-08-07 00:00] [worker-1 !] Commit Valid Lab Workflow
+commit them if they are valid and need to go in. do the needful with those files
+
+[2026-08-07 00:00] [worker-1 !] Mirror Repositories Across Workers
+but sandbox one will keep changing as they are created new and discarded. I can see exactly what i want in the MasterAgent vscode view. That came in automatically almost.. i dont rmemeber makign much of change.
+I want similar view in all worker vs code
+
+[2026-08-07 13:35] [worker-1 !] Commit Lab Sandbox Workflow
+In C:\repos\tripplanner.worktrees\worker-1, commit and push the validated Lab sandbox workflow. Stage ONLY these tracked files: .github/copilot-instructions.md; docs/EXPECTED_BEHAVIORS.md; docs/PRODUCT.md; docs/reference/owner-inputs/prompts/worker-1.txt; docs/ux-experiments/README.md; frontend/labs/lab-selection-store.ts; frontend/labs/src/shared/DecisionCapture.test.tsx; frontend/labs/src/shared/DecisionCapture.tsx; scripts/README.md; scripts/dev/record-lab-implementation.ps1; scripts/dev/sandbox.ps1; tests/test_record_lab_implementation.py. Do not stage node_modules or any other path. Before committing run git diff --cached --check and verify cached names exactly match that list. Commit message: "Track sandbox Lab implementation iterations". Push to upstream origin/agents/worker-1. Then report commit SHA, push result, divergence versus upstream and origin/master, and final git status --short. Do not touch master, servers, registry, worktrees, or databases.
+[2026-08-07 13:53] [worker-1] Commit Worker Source Control
+In C:\repos\tripplanner.worktrees\worker-1, validate the three tripplanner-worker-{1,2,3}.code-workspace files as JSON and git diff --check. Review the diff for only the shared worktree-parent folder additions and the append-only prompt entry. If valid, stage ONLY tripplanner-worker-1.code-workspace, tripplanner-worker-2.code-workspace, tripplanner-worker-3.code-workspace, and docs/reference/owner-inputs/prompts/worker-1.txt. Verify cached names exactly, commit with message "Show all worktrees in worker Source Control", and push to origin/agents/worker-1. Report SHA, validation, push, divergence, and final status. Do not touch master, launch/reload VS Code, or touch servers/sandboxes.
+
+[2026-08-07 11:18] [worker-1 !] Debug Chat Hotel Updates
+I asked assistant / chat agent to update indore hotel to another 5star. it took 1 min and then gave a choice. i said ok works, it again took minutes and said it is done. But itinerary did not reflect the htoel change stilll. This is first time i am testing such updates from the chat. Does it work or there are bugs ?
+
+[2026-08-07 12:22] [worker-1 !] Fix Sandbox Cleanup Failure
+fix why the sandbox cleanup failed during last saandbox promotion sbx named 1-lab19-guarded
+
+== 6/6 verify ==
+[verified] origin/master contains every commit and the worktree is clean.
+[stop]    :8100 (PID 15356)
+[stop]    :5273 (PID 59720)
+[stop]    :5275 (PID 39660)
+[stop]    runner (61840)
+WARNING: C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded still exists; close anything using it and delete it manually.
+Deleted branch sandbox/1-lab19-guarded (was ac315a2).
+Dropped sandbox database tripplanner-sbx-1-lab19-guarded.
+To https://github.com/munishgoyal1/tripplanner.git
+ - [deleted]         sandbox/1-lab19-guarded
+Exception: C:\repos\tripplanner.worktrees\worker-2\scripts\dev\sandbox.ps1:1105:9
+Line |
+1105 |          throw "Sandbox '$slug' was promoted but cleanup is incomplete …
+	|          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	| Sandbox '1-lab19-guarded'
+	| was promoted but cleanup
+	| is incomplete; it remains
+	| listed for retry:
+	| worktree directory still
+	| exists:
+	| C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded
+Press any key to continue . . .
+
+[2026-08-07 14:48] [worker-1 !] Add Targeted Worker Run
+Create a simpler version of Run-Latest that takes worker number as argument that alone is one from which to update master and re-run maste rdev stack, and dont run any tests, just simple merge sync into master and restart dev stack- this is for cases where i know other workers update is not needed currently or it wont affect or there is no update and only known contained updates from targetted worker is to be run. e.g. a new lab built by a worker needs to come to the master and dev stakc refreshed to see that lab.
+
+Does run latest always run from master ? Individual workers cant be run currently through any launcher script ?
+
+[2026-08-08 10:43] [worker-1 !] Optimize AI Agent Token Costs
+analyze my interaction/usage pattern with AI coding agents and present a crisp plan on things I and you can follow to optimize the token costs.
+
+[2026-08-08 16:46] [worker-1] Choose Session Reset Model
+So you mean i should reset the session after every feature delivered. How to resetn in a conveneient way. Should I sue the Auto model choice option will it be ablet o auto select he right modelatleast for smaller tasks.
+Screeshot of my last 28 days costs
+
+[2026-08-08 16:53] [worker-1] Improve Copilot Agent Workflow
+Follow instructions in #prompt:SKILL.md with these arguments: tips
+[2026-08-08 11:57] [worker-1] ! Record Optimization Recommendations
+record these recommendations in a folder under doc soemwhere to be picked later. these are all related to LLM call from inside the product.
+
+Any other code refactoring opportunities to make it modular and maintainable. Also analyze for obvious performance gaps
+[2026-08-08 12:05] [worker-1] ! Refactor Modular Code Boundaries
+Without reducing any funcitonality and not regressing you can go ahead and do these refactorings first then we will look at the performance fixes next.
+
+[2026-08-09 12:16] [worker-1 !] Diagnose failed China train-cost chat request
+Why last agent chat request failed that asked for the fetchign the train costs in the china trip
+
+[2026-08-09 16:35] [worker-1 !] Match MasterAgent workspace settings
+arrange this workspace and save settings similar to the masteragent lane 0 workspace
+
+[2026-08-09 16:41] [worker-1 !] Replicate Lane Zero Layout
+vs code settigns sync is also on. did that not help in spining up new vsc with same layout settings, or is it saved part of every workspace. if that is so then save the lane 0 vs code layout settings for all workers workspaces too
+
+[2026-08-10 01:19] [worker-1 !] Fix welcome locale identity
+Still mixture of lisbon with rajasthan is happening. see the screesnhot
+And Instead of profile text - show the name of logged in suer similar to planner page
+
+[2026-08-10 10:17] [worker-1 !] Redesign regional demo fixtures
+It is showing london to delhi for a rajasthan trip.
+
+You should re-think how you hvae built the static data for these  trips - you can simply geenrate these and store in cosmos and keep it cached . There will be some 8-10 versions one for each region , the same as you planned with regional mapping. One such example trip for Americas, one for India, one for Asia or so - on those similar lines, no change. Why will it then mix up things, you always fetch from a self-contained particular trip data. Why will it ever mix London with Delhi. On top of that you can store the prices in correspondingly mapped currency etc. also - All this data set probably can refresh once in a while.
+
+Btw, I just realized that we dont neeed real data here. We just need a reasonable real recent data for a representaiton. Once a month refresh of prices and actual route data etc, should be fine. That can be done with a scheduled cron kind of job. What do you think
+
+[2026-08-10 10:35] [worker-1 !] Build regional demo pipeline
+proceed with this plan
+
+[2026-08-10 11:18] [worker-1 !] Fix sandbox missing uvicorn
+running this sandbox led to error
+
+andbox '1-lab24-real-preview' -> http://localhost:5273
+Starting Cosmos DB Emulator container ...
+Cosmos DB Emulator is ready at https://localhost:8081.
+Using isolated local Cosmos DB Emulator (database tripplanner-sbx-1-lab24-real-preview).
+Starting FastAPI backend on :8100 ...
+	Diagnostics: /Users/mugoy/repos/tripplanner/logs/diagnostics/local-app.jsonl
+/Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/.venv/bin/python:No module named uvicorn
+Exception: /Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/scripts/dev/dev-spa.ps1:200:13
+Line |
+ 200 |              throw "FastAPI backend exited with code $($Process.ExitCo …
+		 |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		 | FastAPI backend exited with code 1
+		 | before becoming ready.
+
+[2026-08-10 11:22] [worker-1 !] Repair incomplete sandbox venv
+Starting FastAPI backend on :8100 ...
+	Diagnostics: /Users/mugoy/repos/tripplanner/logs/diagnostics/local-app.jsonl
+WARNING: Skipping incomplete Python environment at /Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/.venv/bin/python (uvicorn is unavailable).
+INFO:     Started server process [15157]
+INFO:     Waiting for application startup.
+INFO:     Application startup comp
+
+[2026-08-10 11:31] [worker-1 !] Fix welcome regional UX bugs
+Few bug fixes:
+
+As soon i changed my Display country to France, the welcome page still continued to show the Jaipur trip. It should update to France mapped initial static trip immediately.
+Also clicking on my profile icon/name on welcome page should clearly just open the profile menu dropdown , the same experience as in the workspace, but it inadvertenlyt is mapped to skip to the app action and it goes to the app - make this UI element action clear seperation.
+and why the mumbai to jaipur trip is so short just 3 days - doesnt look good representaiton to be showin a on such a wlecome page. You should ensure the days are 4-6 for all the different region mapped trips you created.
+
+[2026-08-10 11:44] [worker-1 !] Fix planner back navigation
+fix it: the browser back button should go back to welcome page instead it always stays ont he planner page.
+
+[2026-08-10 11:48] [worker-1 !] Unify profile and currency behavior
+Changing currency to CNY isnt updating it in the itinerary panel in workspace. 
+Also The profile experience on welcome page - make it exactly the same as that is on workspace, why is it partial and clciking on travel profile sub menu row takes user to planner page - that is not good experience, just replicate all of the profile settings experience on welcome page also and in fact make it common through the app, any new page also it could be re-used.
+
+[2026-08-10 13:32] [worker-1 !] Fix blank welcome settings
+	Currency fixes ok,
+	The account settings on welcome/home page shows up blank drop pane on click - weird that you could not fix it in 2-3 retries still yet. :-()
+
+[2026-08-10 14:05] [worker-1 !] Add fixed country language selectors
+    Okay one last attempt on fixing this -
+    First issue is that the currency dropdown has become limited now - which is fine. I am fine with top popular currencies for now.
+    But the Country is a free text field and user may fill wrong etc. do you want to provide a fixed set of language/country/locale - Just copy from the standard feature - nothing unique here. Get it working and done. Both country / language locale should dictate language and country soecific thigns like the sample welcome page trip, language etc. and currency should specifically map the currency. Both are independent and keep the displays also independend for example the country could be india and trip therefoire ahs to be the Rajasthan India specific one on welcome page shown, but if currency shocsen is $ (assume a foreigner from USA is in india and they want to see trip costs in $) then that shojld be honoered. hope you understood the requirements now clearly.
+
+[2026-08-10 14:32] [worker-1 !] Make sandbox promote one-click
+    why was there no record of current commit etc. after coming on mac somehow theese basic workflows have started becoming fragile and despite surfacing they are nto getting fixed on root and not robust. can you fix things for futrue to make them robust one-click. After iteration cycles on a sandbox i should be able to directly call Promotoesandbox why does that neeed a seperate pre-req. and where is that pre-req. usually being completed ?
+
+1. Itinerary item comparison in detail : hotel comparison, attraction comparison, transport mode comparison, any other comparison
+
+Trip budget adherence, Whatif and what are modficiations possible on adjusting budget - Smart suggestions
+e.g. You can add burj khalifa top deck view ticket if you are adding 200$ to the trip budget. That is worth , it is rated 5star by millions of people and strong review ... add main words.
+You can drop certain actiivtiy, or just take 1 stop connecting flight - you could get to visit singapore airport which is worth spending time, then catch a evening flight. this way you save money and land at good time to have 1 night rest etc.
+How do we build travel specific super intelligence to give a WOW and BEST itinerary and BEST and SMARTEST comparison options ??
+
+[2026-08-10 13:17] [worker-1 !] Draft comparison and budget brief
+yes draft it
+
+## Retired worker-2 prompt history
+
+# Owner prompts executed in the Agent 2 - UXlabs lane.
+# Tail-appended, newest at the bottom. Only this lane writes this file.
+# Format: [YYYY-MM-DD HH:MM] [worker-2] [!] <short title> / verbatim prompt / blank line.
+# See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-05 17:05] [worker-2] ! Keep prompt logs out of merge contention
+prompts_executed and rleated files that get modified in each lane on each task and itneraxction usually runs into conflicts to merge. find some better way to keep it out of contention. it is not such a ciritcal file buit taking away preciosu time and cost cycles.
+
+[2026-08-05 18:04] [worker-2] Count active sandboxes
+how many sandboxes are active
+
+[2026-08-05 18:04] [worker-2] Show named sandboxes
+lab 16 is not a sandbox yet. it is just a UX lab. Show the named sandboxes
+
+[2026-08-05 18:04] [worker-2] Review refactor sandbox deltas
+anything from refactor sandbox to be promoted. are there any deltas compared to master. sumarize it
+
+[2026-08-05 18:11] [worker-2] Explain missing sandbox Git graphs
+why do i not see sandbox worktrees in the git graph here . its showing only the worker trees
+
+[2026-08-05 18:13] [worker-2] Detail refactor sandbox changes
+what are the exact delta changes made in this sbx
+
+[2026-08-05 18:16] [worker-2] Show sandbox pointers in graph
+show em how exactly to enable seeing all sandbox treee pointers just like worker branches in the git graph
+
+[2026-08-05 18:29] [worker-2] ! Audit stale unused branches
+which are the stale unused git branches in this repo, present that and then i will signoff if you can delete those branches
+
+[2026-08-05 18:39] [worker-2] ! Delete four stale branches
+delete your recommended 4 old ones
+
+[2026-08-05 19:45] [worker-2] ! Rename Agent 2 to UXlabs
+rename agent 2 from Detail-Chat to UXlabs
+
+[2026-08-05 20:06] [worker-2] ! Reimagine itinerary and map labs
+forget the preiovus sandbox.
+
+Create a single or 2 UX lab reimagingin the itinerary, maps panel to make it more elegant and easy UX while still retaining all key info and proviidng a breezy and modern User experience. Keep pverall color scheme and UX theme consistent across the entire app. Think of it like a 100million user web app.
+
+[2026-08-05 22:01] [worker-2] ! Lab for intelligent agent behaviour
+Create a lab proposing good chanegs to chat agent behaviour (not only UI) including UI. Especially the semantics, example how it intelligently builds itinerary.
+Some issues seen: sometimes adding a new attraciton to best day was added after the last day departure flight , after returning to banglaore, that is weird. So the items placement logic should be very very robust and intelligenmt. Is there a seperate intelligence layer required, which works on top or along with the LLM model ?
+Asking it to update a hotel of indore city to 3star , did that but also weirdly removed the bangalore flgith conenction also, and that too sielently without coneyiong.
+So reimagine a strong and intelligent agency chat (I mean not only chat but update interactions happenignn through any channel - map, itinerary, details or chat anywhere )
+
+[2026-08-06 14:54] [worker-2] ! Map canvas option D, search-first dock
+lab17: one thing i am having dillema on is that option B has addtional route places list given when those are also in itinerary, that eats up space. Showing at bottom all these controls looks better, but i will need to play around hwne we implenment this lab in a sandbox before we decide the iterations.
+and the Add place button - it doesnt intuitively tell user that clicking it will allow them to type a place in search bar - am i right or it is just fine ? and will they still be able to add a selected pin/place on the map intuitively - will selecting a place expand out the add place button with place name added in search box - provide 1 more option around reimagingin this add experience + the bottom bar from option B, in a new option D..
+[2026-08-06 16:01] [worker-2] Merge conflict analysis for parallel labs
+if i start implementing all the open labs in parallel will they have lot of merge conflicts., give me a quick analysis
+[2026-08-06 18:22] [worker-2 !] Implement Lab 20 travel documents in a sandbox
+Implement lab20 in a sandbox
+[2026-08-06 18:22] [worker-2 !] Implement Lab 20 travel documents in a sandbox
+Implement lab20 in a sandbox
+
+[2026-08-06 19:30] [worker-2 !] Gate document checks on whether the trip crosses a border
+yes implement these inteelligent logics for passport , and think harder if anything similar is required for other type of docs we discussed.
+
+[2026-08-07 19:52] [worker-2] Sandbox restart after changes
+did you restart the sbx after last changes or do i need to restart. Which is the script to restart, same Run sandbox ?
+
+[2026-08-07 20:10] [worker-2] ! Visa flow for a Mexico trip
+i asked it to plan a mexico trip. it did not prompt me or given any indication for visa yet. when does visa come to picture wha tis the flow
+
+[2026-08-07 20:35] [worker-2] ! Proceed with visa items 1 and 2
+Proceed with as you suggest
+
+[2026-08-07 20:55] [worker-2] ! Visa scope privacy multi-entry intelligence
+Changes:
+Scope: consider all travellers / family members part of trip.
+Visa: will it be stored entirely or only key info from privacy just like we treated passport ?
+Visa: will it be stored until it's expiry, because sometimes travellers may have multi-entry visa say for dubai or USA etc. and they may come to plan and travel again in few days , so think of all the visa rules. WIll you build a proper visa intelligence layer with all the right rules - this is today an area of confusion for travellers around visa rules - can this planner make it easy and breezy. I think for that we may need to design a seperate vis ainformational and applicaiton guidance/point to 3rd party providers  (similar to plan trip and help in bookings via 3rd party). We can take that full fledged feature later also based on what you suggest, as par tof the bookings flow later. 
+What you think ?
+
+[2026-08-07 21:10] [worker-2] ! Approve layer1 visa reuse and finding
+I agree with you about doing only layer1 and not building complexity of rule engine etc. that is not our domain and best left to the right authorities. Otherewise also for MVP i dont want you to make it deeply complex. So go ahead with this sequence and 3a, b implemntnation.
+3c can be later when we build execution layer.
+
+[2026-08-07 12:35] [worker-2] ! Expand Lab 19 trip scoring design
+Let's discuss and iterate over the lab 19 - I understand the overall intent of an additionaql layer in between that guards the trip sanity and intelligence with background scoring of each day. I would like you to think even harder now so we get a good design in first place.
+
+Is scoring based only on planned minutes, travel etc. ie.e the business and fatigue caused. It could also have intelligence to rank fatigue based on type of travel - if there is lot of walking for example, that tires a person more. Or picked from LLM model about a bumpy terrain even if it is 5 km on a jeep ride say in a trek that could be more tiring than a 30 km smooth highway drive. Based on the actual reviews, model intelligence and user preferences (some user may like train travel better than a road travel and more convenient and less tiring) score these and also in a way match the right choice overall when multiple options are avaiolable.
+
+I like the idea of scoring - only i am saying is think if you can expand it to add more meaningful parameters too, and explroe getting key insights from real reviews or authoritiave place details and model intelligence. 
+
+I am hopiong this layer will be solid and reliable guard to build a coherent trip that doesnt have any part of it that can look weird. It should be intelligent as a human would plan but hoping it will not be frictionful and overly restrictive.
+
+[2026-08-07 13:05] [worker-2] ! Clarify fatigue reserve and no numbers
+Elaborate bit more on #2 so I can give my call. Rest all I agree with you. What is reserve and do you plan to show any numbers to user, I hope not, only you will hsow text based statements, right ?
+
+[2026-08-07 13:30] [worker-2] ! Build Lab 19 effort model
+Go ahaed with all this as you suggested, and update the lab. I will have a look at lab once then ask you to implement it 
+
+[2026-08-07 13:45] [worker-2] ! Implement Lab 19 in sandbox
+implement lab19 in a new sandbox
+
+[2026-08-07 14:30] [worker-2] ! Fix bad auto-fit around intercity drive
+for madhya pradesh trip: i added kaanch mandir first it added well , then after adding shree bada ganpati mandir that rpelaced and sent kaanch mandir to day2. but day 2 had a drive to ujjain and kaanch mandir arrival concides with drive start from ujjain at 3pm. this is not good fitting, looking weird. we planned an intelligence kind of layer for good auto fitting but this is a  basic bug. investigate and fix root causes
+
+[2026-08-07 15:05] [worker-2] ! Rework notifications, progress context, reset trip
+yes look at that. and also the notification messages now only show for 2 seconds, they should stay until next message or stay longer. And make these messages with a inital summary heading, then the detail. Also rethink how these messages can carry bit mroe context - examplel on the initial plana  trip requqest - it just says thinking and it may take 2-4 minutes to build. but behind thinking can you expand into broad categories like looking into hotels, places, building route etc. - critique it if you think otherwise, i want to select the best UX. 
+
+Also provide an option for reset trip - this was in one of the lab shown but was not in scope. add this functionality too. give it as a button or something somewhere without occupying too much space or so.
+
+[2026-08-07 16:40] [worker-2] ! Name the destination in the progress title
+Alogn with building your itinerary - sinc ethe bottom chat is only 1 row very small, the original prompt oin which destination itneierary etc. gets missed totall y out of the page. This notficiaton title can say somehting like "Building your Paris Trip Itinerary" or "Building your Itinerary for Goa Trip"
+
+[2026-08-07 16:55] [worker-2] ! Make the status bar coherent with what the turn actually did
+For a query like chat asking total on road time. the chat agent gave me that, but the top bar message was incoeherent to this - saying done updating your itinerry.. when there was nothing to update. 
+
+I want it fully coeherent set of update . think harder and fix the notificaiton bar properly for proepr informative and intutive messages. And also keep in mind the chat box is now small so unless user maximizes they wont see what agent is printing in response. they cant even see their own last prmopt btw
+
+[2026-08-07 17:05] [worker-2] ! Abstract the accumulated progress topics
+accumulate progress topics not a scripted sequence, but keep it bit abstracted as we dont want to overwhelm user with each and every internal itnerary build detail, and also it wont look elegant.
+
+[2026-08-07 18:10] [worker-2] ! Make sandbox scripts robust
+Runnign discard 1 gave an error . Fix to make the scripts robust
+git status --porcelain failed in C:\repos\tripplanner.worktrees\sbx-1-lab19-guarded.
+Also Sync-AllTo-Latest failed: git branch --show-current failed in the same path, and all-worktrees-sync then threw with 1 worktree failure.
+
+[2026-08-07 18:40] [worker-2] ! Replicate Lab 21 option D variations
+replicate and create another lab from lab21 . Take option D - live plan one as the base, but I need few varioations of that in the new lab.
+1st option keep the D as it is without changes, jut keep the regular light themese as with option B, so this will give me chance to look at D without dark theme.
+option2:
+The Call to action - Plan your trip chat box is not very clear, make it clearer. It says take over.. in first look it is not very intuitivae, it seems like playing a game, take over and start playing. Any more smaller additions ? you can make and call out in lab page.
+There is a common issue - is it a bug or just deliberately left,. the 4th card in the sample live trip plan is not populated till the end, it doesn tcomplete the plan user may think it got stuck or buggy.
+For Other 2 options make variations as below.
+Actually you should tkae this opportunity to reimagine these yourself once again, but overall i like your idea. So improve on preivous base D option fundamentally as well, not just incremental ideas. Show something more appealing if you think so.
+
+[2026-08-07 18:55] [worker-2] ! All surfaces and multi-modal plan variety
+No, you should include all pages not just landing page atleast in your re-imagined last 2 options. and also think of adding Hotels and H marker or Hotel icon, plus the flight , train, or by road travel to show the diversity in the planning and all type of options checked. Give the plan good variation to make it more ocnvincing dna impressive.
+
+[2026-08-07 19:20] [worker-2] ! Lab 22 options E and F, exact dark decision stage
+In lab22. option D and then selecting OPtion D as shipped lab21. What is the point there, it is confusing me.
+I liked this combination as in screenshot - Option D in lab22 but with dark theme.
+
+Can you create a option E with exacts so I can see and implement an exact option without confusion.
+Dark theme, option D from lab21.
+Keep rest things as-is. Just add that part of showing that user can easily make different choices too - that part of I would rather fly it , Give me the car anyway. I dont want 3 examples of it , 2 are enough may be and dont want ot make the page too lengthy , so see how you can adjust overall.
+
+If you have 2 options you can present to me with these adjustments then put them in 2 new option E and F. I will finalize one of them and refine with you. (also just a thought not an instruciton - Will it help keeping the  trip as 4 or 5 days to not make it too crowdy (what you think) but still capturing some vairability like hotel, flight, train, walk - balance between number of days 4 - 6 and the vairability. ) If you think cant be made less than 6 to show the medium complexity of 2 destinations and travel mode vairability and it will look fine for the user then we will go with that same.
+
+[2026-08-07 20:32] [worker-2] ! Implement Lab 22 in a new sandbox
+Imeplement the lab22 in a new sandbox
+
+[2026-08-08 11:17] [worker-2] ! Product must really support what the demo promises
+Are you asking me that you can produce the real fix (new feature support ?), yes eventually what we are promising and hsowing to users , our product has to support in real also. Are we on same page in my understanding ?
+
+[2026-08-08 11:37] [worker-2] ! Feature brief with HLD and LLD for decision records
+Wrtie the feature brief along with some HLD and LLD design details for me to understand what all is included. Make the feature comprehensive for top value items here and any other accessorial things needed, and dont cut corners uneccesarily. Keep it balanced to target top items.
+
+[2026-08-08 14:46] [worker-2] ! D-01 fare source with unpriced fallback, D-05 transport only in M1
+For D-01 rail coach pricing, build the capability alogn with fallback that if no such reliable source is available then it just behaves as if it doesnt support rail coach pricing. Simulatenously we will figure if the existing such providers as below can be integrated or not, that will be aspeerate decision. Is it fine ? D-05 - It's fine for transport only in M1, but hope you will end up building everything in milestones one by one.rget to achieve all this today.
+
+Consumer Platforms & Aggregators- **Omio:** Compares train, bus, and flight pricing across Europe and North America.
+
+- **Trainline / Rail Europe:** Authoritative direct ticket retailing and pricing sources for European rail networks.
+
+- **Rome2rio:** Multimodal trip planner showing estimated price ranges for combined rail, coach, and transit leg
+
+[2026-08-08 20:05] [worker-2] ! Decision records M1 implementation
+For D-01 rail coach pricing, build the capability alogn with fallback that if no such reliable source is available then it just behaves as if it doesnt support rail coach pricing. Simulatenously we will figure if the existing such providers as below can be integrated or not, that will be aspeerate decision. Is it fine ? D-05 - It's fine for transport only in M1, but hope you will end up building everything in milestones one by one.rget to achieve all this today.
+
+Consumer Platforms & Aggregators- **Omio:** Compares train, bus, and flight pricing across Europe and North America.
+- **Trainline / Rail Europe:** Authoritative direct ticket retailing and pricing sources for European rail networks.
+- **Rome2rio:** Multimodal trip planner showing estimated price ranges for combined rail, coach, and transit leg
+
+[2026-08-08 20:30] [worker-2] ! D-06 headline wording
+D-06 "Then change its mind" is not a posiutive and rtight staeemnt, just say something on lines of watch it plan.. you can ask it to plan yours . change its mind is negative shows not stable etc.
+
+[2026-08-08 20:40] [worker-2] ! Continue through all milestones
+Yes continue doing through all milestones, unless you need my input. I will evaluate final lab output in the sandbox at the end
+
+[2026-08-08 17:20] [worker-2] ! Sample pricing marker on public entry
+Continue with price claims also. Put one small marker saying Pricing data is sample. Anyway we will eventually get the live proper data feed also from these providers, so i want to build evrything, just keep a small marker somewhere.
+
+[2026-08-08 18:13] [worker-2 !] Reset Initial Landing Plan
+When a new user lands on landing page - The plan already shows up completed trather than looking like a live one. Clicking on replay starts it correctly. On first go itself  it should start from reset point . Below is the context of lab22 feature implemented in sandbox
+
+
+Repository: tripplanner
+Workspace: C:\repos\tripplanner.worktrees\worker-2
+Lane: Agent 2 - UXlabs
+
+Owner goal:
+Finish Lab 22 end to end. The original Lab 22 prototype has three surfaces:
+1. Landing
+2. First plan plus sign-in moment
+3. Shared trip page
+
+Current status:
+- Prototype contains all three surfaces under frontend/labs/src/first-visit/ and live-plan/.
+- Sandbox branch sandbox/1-lab22-liveplan is serving at http://localhost:5273.
+- Engine-backed public entry is shipped and pushed as aa610f5.
+- Engine receipt fix and M4 documentation are pushed on agents/worker-2 as d6bfa8d and 54e5ebb.
+- Current sandbox implements the captured landing/public entry and first-plan handoff.
+- Sign-in is only available through the workspace account drawer, not yet promoted as the dedicated first-plan sign-in moment.
+- Shared-trip import works in the main app through ?share=..., but the polished Lab 22 shared-trip page has not yet been promoted into the sandbox public entry.
+
+Next feature:
+Promote the remaining Lab 22 surfaces into the sandbox:
+- Add the dedicated sign-in moment after the first plan renders, preserving guest-first planning and guest-data migration.
+- Add the dedicated public shared-trip page using the existing sanitized share contract.
+- Keep the capture-derived facts and sample-pricing disclosure.
+- Do not replace the working engine-backed public entry with hand-written claims.
+
+Important files:
+- frontend/labs/src/first-visit/FirstVisit.tsx
+- frontend/labs/src/live-plan/LivePlan.tsx
+- frontend/src/publicEntry/Root.tsx
+- frontend/src/publicEntry/PublicEntry.tsx
+- frontend/src/components/ChatPanel.tsx
+- frontend/src/components/AccountSettingsHub.tsx
+- frontend/src/App.tsx
+- frontend/src/api.ts
+
+Validation:
+- Backend: .\.venv\Scripts\python.exe -m pytest -q
+- Frontend: npx tsc -b --noEmit
+- Frontend tests: npx vitest run --reporter=dot
+- Build: npm run build
+
+Constraints:
+- Read docs/CODEMAP.md, docs/PRODUCT.md, docs/EXPECTED_BEHAVIORS.md, and docs/feature-briefs/003-decision-records.md before editing.
+- Preserve unrelated worktree changes.
+- Commit and push every completed milestone.
+- Serve the sandbox with scripts/dev/sandbox.ps1 and record an IterationSummary.
+- Do not deploy production.
+
+[2026-08-08 18:00] [worker-2] ! Bridge landing and app themes in Lab 22 Option E
+ok can you implement these visual bridge in the UX lab22 first. can you update it for option E and show. I want to first have a look.
+
+[2026-08-08 18:55] [worker-2] ! Show landing to workspace flow in Lab 22 Option E
+so the first plan is only for first plan or any plan will show up like that, where have you show the actual app page with coherent fonts and theme. Show a proper flow of landing page to next page when user clciks Plan Mine or skip tpo the app (both land to the app page, where is the first plan page)
+
+[2026-08-08 19:35] [worker-2] ! Finalize Lab 22 for promotion
+ok finalize all this so i can get in position to promote the sandbox
+
+## Retired worker-3 prompt history
+
+# Owner prompts executed in the Agent 3 - Sandbox lane.
+# Tail-appended, newest at the bottom. Only this lane writes this file.
+# Format: [YYYY-MM-DD HH:MM] [worker-3] [!] <short title> / verbatim prompt / blank line.
+# See README.md in this directory. Entries 001-050 are archived in ../prompts_executed.txt.
+
+[2026-08-05 18:47] [worker-3] ! Fix Worker3 sync error
+syncme to latest has an error when run on the worker3 launcher
+
+[2026-08-05 18:49] [worker-3] ! Read last-run logs first
+you should read the last run logs. why do you have to reprosuce it again yourself
+
+[2026-08-05 19:03] [worker-3] ! Check perf-panels promotion failure
+check the sandbox prmotion failure for perf-panels
+
+[2026-08-05 19:24] [worker-3] ! Diagnose sandbox discard cleanup
+why the sbx discard didnt clear the worktrees cleanly from here: C:\repos\tripplanner.worktrees
+
+[2026-08-05 19:31] [worker-3] ! Rename Agent 3 lane
+rename agent3 to Sandbox instead of Infra
+
+[2026-08-05 19:44] [worker-3] ! Implement Lab 16 in sandbox
+Implement lab16 in a sandbox and bring it up for inspection
+
+[2026-08-05 20:35] [worker-3 !] Lab 16 dock feedback and selection scope
+what si the history overlap logic that will be broken, since the app is still not having any real customers so it might be ok to break past contract.
+
+Few comments on lab16:
+1. keep the chat at bottom like in option B by default, provide minimize option also that  brings it to its default botom single row.
+2. The look and feel of chat isnt like you showed in lab, but hopefully funcitonality should be. each chat and response is not like a card and lacksa the clock time.
+3. I asekd it to update hotel to low budget for Indore, after doing so it only was showing day1 itinerary. Looks like inadvertently it appleid some filter which should not be the case. After updating whatever it di , say hotel - it should simply select that by default. Selecting anythign means consistently done so across all panels.  for other than hotel , city add/modify intelligently it should figure what should be the seleciton scope.
+
+[2026-08-06 10:40] [worker-3 !] Fix sandbox log lock and naming
+fix this log file lock issue forom happening. 
+name the sandboxes smaller, prefix them with an incremental counter again. example 1-lab16-chatdock, 2-lab18-map etc. and hopefully list sandbox lists down all active sandboxes with name, purpose url etc.
+
+[2026-08-06 10:52] [worker-3] Evaluate chat steering queue
+should we provide a steer , add to queue functionalities in chat ?
+
+[2026-08-06 10:58] [worker-3] Evaluate chat file attachments
+should we provide adding an image or file functionality
+
+[2026-08-06 11:34] [worker-3 !] Design travel documents vault
+yes lets add functionality of user able to add booking related files only - word doc, text, screenshots or pdfs etc. 
+also let them add passport, visa, or other identity related docs - this will help in giving insights and planning using visa and passport expiry dates etc. passort based eligibility for visa-free entries etc. Design this add File feature nicely with opur existing tenents of great and easy performant UX. (are these tenets alreayd capture in our principles and do you always keep them in mind , what do you always end up reading or rmemebering even on a new session or new machine). 
+These IDs or Date of birth or visa info and bookings info can be extracted and use din final itinerary export also which can serve as one single doc for entire trip reference. Give this as optional to add booking and othe rpersonal passport related detail in itinerary (just from privacy and comfort) Provide option to always remmeber and save these ID and visa docs for future trips in the user's account. Also carefully save the booking references also against the trip - you may now need to redesign the backend storage contracts, frontend etc. as this is a major feature. 
+After these file uploads provide way to refer them and see, update or delete etc. this is entirely now a Identity docs flow. 
+The bookings update flow should be seperate. 
+There are 3 - Bookings, Identity docs, Visa docs , anything else you think is storng to add ? Or any critique on this proposal ?
+
+[2026-08-06 13:10] [worker-3 !] Create travel documents lab
+Okay, may be dont store originals as you proposed, just extract the needed information. But what about on next trip again we asking them to upload passport etc. May be then just store the key info to re-use in future not the whole Id doc, same as you proposed. 
+
+Okay, let's leave out the word docx for now.
+
+Anything else you need ? May be create a new lab out of it first. So that we dont mix too many things in current sandbox lab16.
+[2026-08-06 13:27] [worker-3 !] Confirm document types and export
+#1 - confirmed. this is also an incentive for them to signin and for us to acquire a user.
+Elaborate on #2 - I did not understand the export part.
+#3 - Build these additonal types , Why license ? For driving abroad - ye then makes sense. Emergency notes etc. doesnt need to be documents. Keep things simple also for now that will help more stickiness and user acquisition. This is overall product v1.
+[2026-08-06 13:41] [worker-3 !] Adopt last-four identity number rule
+Sounds good your recommendations. go ahead.
+[2026-08-06 14:44] [worker-3 !] Add option contrast to labs
+what is the difference between all 3 options in lab 17. Add another single writeup which makes it clear this difference along with the info already present in lab structure, and add that to all labs
+
+
+[2026-08-06 15:20] [worker-3 !] Score and reorder lab options
+add these scores and one additional text writeup contrasting the options clearly in each lab page in some section. Also for the open labs reorder the options in descending score order. Dont worry about implemented an dclosed , or discarded labs.
+
+[2026-08-06 15:55] [worker-3 !] Implement lab 17 in sandbox
+implement lab17 in  a sandbox
+
+[2026-08-06 16:20] [worker-3 !] Implement lab18 in a new sandbox
+Implement lab18 in a new sandbox
+
+[2026-08-06 18:30] [worker-3] Move map day tabs to dock
+only 1 problem in lab18 implementaiotn - map days tabs are showing at top instead of at same row as sequence
+should be like screenshot
+
+[2026-08-06 19:05] [worker-3 !] Record dual product goals
+currently it is a single page app - is that what large apps with millions of user visits are. will it be taken as a small thing and not genuine etc. waht is the right design for such a travel planner app. Later we want to scale up to include providing bridge to make bookings. 
+But overall the goal of this planner will be 2 fold - 
+1.  to help user build most intelligent itinerary within their preferences, tastes, budget and othe constraints, 
+2. to get the best deals and overall help them book this trip in best possible cost across. May be we will later use their payment info like which credit card they hold etc. to optimzie any card offers also - this is just an example but you get the idea. Optimize to the best .. but not to take long time to build, still provide fast breezy user experience overall. 
+Add this in the Master goals and requirements docs whichever is relevant. And sugegst what you think.
+Should we create a lab on the first par t of overall landing experience etc.
+
+[2026-08-06 20:18] [worker-3 !] Create first-visit landing lab
+Okay go ahead and create a rich lab for this. If you think anbother topion D with very different look and feel also you want to present , do that .. I have time to go through all options in detail as this is critical feature
+
+[2026-08-07 09:49] [worker-3 !] Align sandbox sync semantics
+yes conform to the natural meaning of Sync all to latest.
+
+Another thing - just givng you my other thoughts you can guide me - I was thinking whetehr even sandbox branch update should be part of other regular worker sync all to laetst flow, and keep sandbox explcit seperate because thats what they are - isolated. But then if we think deeper, they are eventually meant to merge to master and all the owrker updates have to be in master too, so why not just let it update frequently so that later merge surprises are reduced and it doesnt diverge over time too much. I think thats similar to any branching done from main branches, sandbox is just isolated execution environment and doesnt push to other main branches until verified and promoted - thats the only difference, right ?
