@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Branch: `agents/worker-1`
+- Branch: not retained; current implementation work uses a sandbox
 - Owner: Munish Goyal
 - Date started: 2026-07-30
 - Date ended: 2026-07-30

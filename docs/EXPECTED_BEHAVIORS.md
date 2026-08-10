@@ -586,7 +586,7 @@ shown newest first. One final summary lists every implemented
 option and its notes. Saving shows an explicit confirmation naming the selected option
 and saved handoff version and cannot remain indefinitely in a Saving state.
 Lab implementation sandboxes retain an explicit Lab ID. Ambiguous handoff notes or
-scope are resolved with the owner in that sandbox worker chat before implementation.
+scope are resolved with the owner in that sandbox chat before implementation.
 After each coherent changed iteration reaches a healthy sandbox run, its concrete
 change and validation summary append another Implemented review version; startup
 alone does not create history. Verified promotion requires the exact sandbox commit

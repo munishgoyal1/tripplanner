@@ -225,17 +225,17 @@ conversation or explicit edit
 | `docs/operations/deployment-flow.md` | Canonical canary, production, monitoring, and rollback runbook |
 | `docs/operations/backup-recovery.md` | Guarded backup and restore drill |
 | `docs/development/new-machine-setup.md` | Canonical one-click Windows/macOS environment recreation and manual sign-in steps |
-| `docs/development/parallel-agent-development.md` | Primary/worker synchronization and integration workflow |
+| `docs/development/parallel-agent-development.md` | Sandbox lifecycle and promotion workflow |
 | `infra/` | Azure IaC and approval-gated operational scripts |
 | `scripts/README.md` | Developer workflow and utility script ownership |
-| `scripts/user/` | Owner-facing sync and run launchers |
+| `scripts/user/` | Owner-facing run and prompt-log launchers |
 | `scripts/sandbox/` | Owner-facing sandbox launchers (new, run, serve, stop, update, promote, discard, list) |
 | `scripts/canary/` | Owner-facing launcher for the canary deployment |
 | `scripts/prod/` | Owner-facing launchers for the approval-gated production deployment and rollback |
-| `scripts/dev/` | Local stack, worktree sync, feature sandbox, and UI snapshot engines |
+| `scripts/dev/` | Local stack, feature sandbox, prompt-log, and UI snapshot engines |
 | `scripts/` | Local setup, smoke, migration, and diagnostic helpers |
-| `Setup-Tripplanner-Dev.cmd` | One-click full Windows developer and four-agent environment setup |
-| `Setup-Tripplanner-Dev.command` | One-click full macOS developer and four-agent environment setup |
+| `Setup-Tripplanner-Dev.cmd` | One-click full Windows developer environment setup |
+| `Setup-Tripplanner-Dev.command` | One-click full macOS developer environment setup |
 | `tests/` | Python unit and integration tests |
 | `docs/reference/` | Indexed owner inputs, decision history, and dated technical snapshots |
 

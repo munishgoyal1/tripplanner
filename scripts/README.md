@@ -9,16 +9,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 
 | Path | Purpose |
 | --- | --- |
-| `setup-dev-machine.ps1` | Restore app prerequisites; `-FullAgentEnvironment` also configures VS Code/Copilot and all three workers |
-| `setup-dev-machine-macos.sh` | Restore the full macOS toolchain, VS Code/Copilot profile, and all three workers |
-| `open-agent-windows.ps1` | Open the persistent agent workspaces |
+| `setup-dev-machine.ps1` | Restore app prerequisites; `-FullAgentEnvironment` also configures VS Code/Copilot |
+| `setup-dev-machine-macos.sh` | Restore the full macOS toolchain and VS Code/Copilot profile |
 | `analyze-errors.ps1` | Generate local or canary error reports |
 | `cosmos_copy.py` | Guarded Cosmos data copy and verification utility |
 | `hosted_smoke.py` | Read-only hosted HTTP smoke implementation |
 | `performance_baseline.py` | Hermetic endpoint performance baseline |
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
-| `dev/agent-worktree.ps1` | Create, restore from a remote branch, open, list, or remove coding-agent worktrees |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
@@ -26,16 +24,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
-| `user/Sync-MeTo-Latest.cmd` | Synchronize committed code into the launcher worktree |
-| `user/Sync-AllTo-Latest.cmd` | Integrate committed code, then synchronize master and all three workers |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `user/Run-Worker-Latest.cmd` | Fast-path one committed worker into `master` without tests, then restart the canonical master stack |
 | `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
 | `sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
-| `sandbox/Update-Sandbox.cmd` | Integrate every committed lane through `master`, merge the sandbox's remote head and `master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
 | `sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
 | `sandbox/Discard-Sandbox.cmd` | Remove a sandbox worktree, local and remote branches, and emulator database (refuses while work is not in `master`; pass `-DeleteRemoteBranch:$false` to retain the remote branch) |
 | `sandbox/List-Sandboxes.cmd` | List every sandbox with its number, purpose, promotion status, URLs, branch, worktree, database, and whether it is serving |
@@ -53,7 +49,7 @@ same PowerShell owners and retain the existing deployment approval gates.
 
 Every entry point above writes its latest run to
 `<primary-checkout>/logs/last-run/<name>.log`, overwritten each run, next to an
-append-only `runs.log` index. Any lane, worker, or sandbox reads the same files,
+append-only `runs.log` index. The primary checkout and every sandbox read the same files,
 so the last run of any script can be debugged from anywhere. Each log opens with
 a `[time]` start stamp and closes with the outcome and elapsed time.
 

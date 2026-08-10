@@ -1,15 +1,7 @@
 #!/usr/bin/env pwsh
 [CmdletBinding()]
 param(
-	[Parameter(Position = 0)]
-	[ValidateSet("all")]
-	[string]$Target,
-
-	[Alias("All")]
-	[switch]$AllWorktrees,
-
 	[switch]$ValidateOnly,
-	[switch]$NoAutoResolve,
 	[int]$ApiPort = 8000,
 	[int]$FrontendPort = 5173,
 	[int]$LabsPort = 5175,
@@ -26,26 +18,18 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
 Start-RunLog -Name "run-latest" | Out-Null
-. "$PSScriptRoot/lib/sync-common.ps1"
-$syncParameters = @{}
-if ($ValidateOnly) {
-	$syncParameters.ValidateOnly = $true
-}
-if ($NoAutoResolve) {
-	$syncParameters.NoAutoResolve = $true
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$branch = (& git -C $repoRoot branch --show-current).Trim()
+if ($LASTEXITCODE -ne 0 -or $branch -ne "master") {
+	throw "Run-Latest is for the primary master checkout. Use a sandbox launcher for isolated work."
 }
 
-$syncLogOwned = Start-SyncLog -Component "run-latest"
-try {
-    if ($Target -eq "all" -or $AllWorktrees) {
-        Write-Host "Synchronizing latest committed code into all worktrees..." -ForegroundColor Cyan
-        & "$PSScriptRoot\all-worktrees-sync.ps1" @syncParameters
-    } else {
-        Write-Host "Synchronizing latest committed code into this worktree..." -ForegroundColor Cyan
-        & "$PSScriptRoot\sync-latest.ps1" @syncParameters
-    }
-} finally {
-    if ($syncLogOwned) { Stop-SyncLog }
+Write-Host "Synchronizing master with origin/master..." -ForegroundColor Cyan
+& git -C $repoRoot fetch origin master
+if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin/master." }
+if (-not $ValidateOnly) {
+	& git -C $repoRoot merge --ff-only origin/master
+	if ($LASTEXITCODE -ne 0) { throw "Could not fast-forward master to origin/master." }
 }
 
 if ($ValidateOnly) {
