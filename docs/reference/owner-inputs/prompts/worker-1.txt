@@ -169,3 +169,11 @@ Line |
 		 |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		 | FastAPI backend exited with code 1
 		 | before becoming ready.
+
+[2026-08-10 11:22] [worker-1 !] Repair incomplete sandbox venv
+Starting FastAPI backend on :8100 ...
+	Diagnostics: /Users/mugoy/repos/tripplanner/logs/diagnostics/local-app.jsonl
+WARNING: Skipping incomplete Python environment at /Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/.venv/bin/python (uvicorn is unavailable).
+INFO:     Started server process [15157]
+INFO:     Waiting for application startup.
+INFO:     Application startup comp
