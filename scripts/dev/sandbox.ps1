@@ -763,7 +763,7 @@ function Sync-MasterBaseline {
     }
 
     Write-Host "[sync]    fetching origin/master ($Reason)" -ForegroundColor Cyan
-    & git -C $primaryRoot fetch origin master
+    & git -C $primaryRoot fetch -q origin master
     if ($LASTEXITCODE -ne 0) {
         throw "Could not fetch origin/master."
     }
@@ -779,7 +779,7 @@ function Sync-PrimaryCheckout {
     if ($changes) {
         throw "Primary checkout has uncommitted changes. Commit or stash them before promotion."
     }
-    Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin", $Base) | Out-Null
+    Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "-q", "origin", $Base) | Out-Null
     $localHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")
     $remoteHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "origin/$Base")
     if ($RequireExact -and $localHead -ne $remoteHead) {
@@ -1033,7 +1033,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     }
 
     Sync-MasterBaseline -Reason "new sandbox '$slug'"
-    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "origin", $BaseBranch)
+    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "-q", "origin", $BaseBranch)
     New-Item -ItemType Directory -Path $worktreesRoot -Force | Out-Null
     Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
         "worktree", "add", "-b", $branchName, $worktreePath, "origin/$BaseBranch"
@@ -1183,7 +1183,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
 
     try {
         Sync-MasterBaseline -Reason "update sandbox '$slug'"
-        Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "origin") | Out-Null
+        Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "-q", "origin") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.enabled", "true") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "merge.conflictstyle", "zdiff3") | Out-Null
@@ -1236,7 +1236,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         }
 
         Invoke-Git -WorkingDirectory $wd -Arguments @(
-            "push", "-u", "origin", "HEAD:refs/heads/$($entry.branch)"
+            "push", "-q", "-u", "origin", "HEAD:refs/heads/$($entry.branch)"
         ) | Out-Null
         $head = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "--short", "HEAD")
         Write-Host "[updated] $label and origin/$($entry.branch) are current with $remoteRef at $head." -ForegroundColor Green

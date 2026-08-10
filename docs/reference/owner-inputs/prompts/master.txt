@@ -989,3 +989,6 @@ Why master having local uncommited changes should impact Sync scripts. Syncs wil
 
 [2026-08-10 18:42] [master] Clarify primary worktree touch during sync
 you said "onfirmed the sandbox update path never touches the primary working tree" but the local master worktree does get the remote master's latest updates , corrrect ? so in that snees the primary owrkig tree does get touched
+
+[2026-08-10 18:46] [master] Stop red fetch noise in sync output
+stop showing this line in red as part of running sync scripts . Becuase red means error, and this is just youa re trying to highlight something importaqnt but you can do that with another color nto red.

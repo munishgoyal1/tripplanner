@@ -25,7 +25,7 @@ if ($LASTEXITCODE -ne 0 -or $branch -ne "master") {
 }
 
 Write-Host "Synchronizing master with origin/master..." -ForegroundColor Cyan
-& git -C $repoRoot fetch origin master
+& git -C $repoRoot fetch -q origin master
 if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin/master." }
 if (-not $ValidateOnly) {
 	& git -C $repoRoot merge --ff-only origin/master
