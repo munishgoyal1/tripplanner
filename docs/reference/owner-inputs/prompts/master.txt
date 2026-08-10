@@ -983,3 +983,9 @@ hold on to this, log it in details with context as needed as a TODO so that when
 Going forward for any deferred items i will ask you to place a tood
 [2026-08-10 18:32] [master !] Commit changes by default
 why dont you commit changes by default as part of your final response. dont leave them hanging
+
+[2026-08-10 18:40] [master !] Stop sync blocking on dirty master
+Why master having local uncommited changes should impact Sync scripts. Syncs will just bring in the latest from origin/master top master which we can always do. And then it is to be given to all or selected sandbox. Why is the sync-meto-latest 1 script stopping
+
+[2026-08-10 18:42] [master] Clarify primary worktree touch during sync
+you said "onfirmed the sandbox update path never touches the primary working tree" but the local master worktree does get the remote master's latest updates , corrrect ? so in that snees the primary owrkig tree does get touched
