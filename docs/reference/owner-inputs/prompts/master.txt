@@ -970,3 +970,8 @@ Another thing - just givng you my other thoughts you can guide me - I was thinki
 
 [2026-08-10 17:25] [master !] Move sandbox launchers under user
 bring the sandbox launcher scripts folder under user folder since user is the launcher user facing fdolder. do similar for mac and windows
+[2026-08-10 18:20] [master !] Log deferred merge-history explanation todo
+hold on to this, log it in details with context as needed as a TODO so that when i next ask you we need not discuss this again we can simply pick it from here the point we left it at. , put TODO folder under docs/roadmap
+
+
+Going forward for any deferred items i will ask you to place a tood
