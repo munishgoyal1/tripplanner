@@ -152,3 +152,35 @@ Btw, I just realized that we dont neeed real data here. We just need a reasonabl
 
 [2026-08-10 10:35] [worker-1 !] Build regional demo pipeline
 proceed with this plan
+
+[2026-08-10 11:18] [worker-1 !] Fix sandbox missing uvicorn
+running this sandbox led to error
+
+andbox '1-lab24-real-preview' -> http://localhost:5273
+Starting Cosmos DB Emulator container ...
+Cosmos DB Emulator is ready at https://localhost:8081.
+Using isolated local Cosmos DB Emulator (database tripplanner-sbx-1-lab24-real-preview).
+Starting FastAPI backend on :8100 ...
+	Diagnostics: /Users/mugoy/repos/tripplanner/logs/diagnostics/local-app.jsonl
+/Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/.venv/bin/python:No module named uvicorn
+Exception: /Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/scripts/dev/dev-spa.ps1:200:13
+Line |
+ 200 |              throw "FastAPI backend exited with code $($Process.ExitCo …
+		 |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		 | FastAPI backend exited with code 1
+		 | before becoming ready.
+
+[2026-08-10 11:22] [worker-1 !] Repair incomplete sandbox venv
+Starting FastAPI backend on :8100 ...
+	Diagnostics: /Users/mugoy/repos/tripplanner/logs/diagnostics/local-app.jsonl
+WARNING: Skipping incomplete Python environment at /Users/mugoy/repos/tripplanner.worktrees/sbx-1-lab24-real-preview/.venv/bin/python (uvicorn is unavailable).
+INFO:     Started server process [15157]
+INFO:     Waiting for application startup.
+INFO:     Application startup comp
+
+[2026-08-10 11:31] [worker-1 !] Fix welcome regional UX bugs
+Few bug fixes:
+
+As soon i changed my Display country to France, the welcome page still continued to show the Jaipur trip. It should update to France mapped initial static trip immediately.
+Also clicking on my profile icon/name on welcome page should clearly just open the profile menu dropdown , the same experience as in the workspace, but it inadvertenlyt is mapped to skip to the app action and it goes to the app - make this UI element action clear seperation.
+and why the mumbai to jaipur trip is so short just 3 days - doesnt look good representaiton to be showin a on such a wlecome page. You should ensure the days are 4-6 for all the different region mapped trips you created.
