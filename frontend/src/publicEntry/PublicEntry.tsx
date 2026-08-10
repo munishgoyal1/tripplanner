@@ -107,7 +107,13 @@ function InlineChoice({
   );
 }
 
-function Composer({ onPlan }: { onPlan: (request: string) => void }) {
+function Composer({
+  onPlan,
+  placeholder,
+}: {
+  onPlan: (request: string) => void;
+  placeholder: string;
+}) {
   const [value, setValue] = useState("");
   const request = value.trim();
   return (
@@ -123,7 +129,7 @@ function Composer({ onPlan }: { onPlan: (request: string) => void }) {
           type="text"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          placeholder="Kyoto in April with a 6-year-old…"
+          placeholder={placeholder}
           aria-label="Where do you want to go?"
           className="min-w-0 flex-1 bg-transparent text-[15px] text-white outline-none placeholder:text-slate-500"
         />
@@ -334,7 +340,10 @@ export default function PublicEntry({
                   argue with that one too.
                 </p>
                 <div className="mt-3">
-                  <Composer onPlan={onPlan} />
+                  <Composer
+                    onPlan={onPlan}
+                    placeholder={`${localized.market.origin} to ${localized.market.destination} in April with a 6-year-old...`}
+                  />
                 </div>
                 <button
                   type="button"

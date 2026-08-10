@@ -308,3 +308,6 @@ Proceed with P1 and then P2
 
 [2026-08-10 00:45] [master !] Research missing provider API costs
 Can you research the mainstream these missing provider APIs and list down crisply the cost and pre-requsite to get access
+
+[2026-08-10 10:27] [master \!] Implement Redis cache layer
+Yes do it. One question , why did you suggest to keep 2 backends (inmemory and redis) , still keeping the in-memory. Is it to provide optinality in case redis cost is high or so ?
