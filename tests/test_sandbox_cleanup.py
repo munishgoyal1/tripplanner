@@ -72,3 +72,10 @@ $removed = Remove-SandboxLeftovers -Path $WorktreePath
 
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout) == {"removed": True, "attempts": 3, "exists": False}
+
+
+def test_promotion_cleanup_removes_pending_conflict_marker() -> None:
+    source = SANDBOX_SCRIPT.read_text(encoding="utf-8")
+
+    assert "Remove-PendingMergesFor" not in source
+    assert 'pending-conflict-$((Split-Path -Leaf $entry.worktree)).json' in source

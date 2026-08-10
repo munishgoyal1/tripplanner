@@ -17,5 +17,8 @@ The primary checkout owns the canonical local app stack. Before starting it, run
 If `Update-Sandbox` reports `SANDBOX_CONFLICT_PENDING`, resolve its marked files
 in the sandbox worktree, then run `Resolve-SandboxConflicts` for that sandbox to
 finish the merge and push its branch before retrying update or promotion.
+If a retained safety stash restore conflicts, resolve the marked files first;
+the same resolver preserves the applied local changes and clears only the stale
+stash record before the next sync.
 
 Discard a sandbox after verified promotion.
