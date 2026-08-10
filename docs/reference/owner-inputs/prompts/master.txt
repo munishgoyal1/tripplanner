@@ -324,6 +324,9 @@ do you need to retain resolve conflicts scripts and logic for resolving between 
 
 And retain - merge the workser1-3 txt prompts into master single file itself for now
 
+[2026-08-10 17:05] [master !] Restore sandbox sync launchers
+Why did you remove the synall to latest and sync me scripts. adapt them to be used for syncing the latest master onto a sandbox, that will be a flow required
+
 ## Historical prompts imported from retired lanes
 
 The retired worker prompt histories are preserved below verbatim as historical

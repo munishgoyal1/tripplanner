@@ -26,6 +26,8 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
+| `user/Sync-MeTo-Latest.cmd` | Fast-forward primary `master`, then update one named sandbox from it |
+| `user/Sync-AllTo-Latest.cmd` | Fast-forward primary `master`, then update every registered sandbox from it |
 | `sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
