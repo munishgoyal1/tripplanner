@@ -201,9 +201,15 @@ Also The profile experience on welcome page - make it exactly the same as that i
     First issue is that the currency dropdown has become limited now - which is fine. I am fine with top popular currencies for now.
     But the Country is a free text field and user may fill wrong etc. do you want to provide a fixed set of language/country/locale - Just copy from the standard feature - nothing unique here. Get it working and done. Both country / language locale should dictate language and country soecific thigns like the sample welcome page trip, language etc. and currency should specifically map the currency. Both are independent and keep the displays also independend for example the country could be india and trip therefoire ahs to be the Rajasthan India specific one on welcome page shown, but if currency shocsen is $ (assume a foreigner from USA is in india and they want to see trip costs in $) then that shojld be honoered. hope you understood the requirements now clearly.
 
+[2026-08-10 14:32] [worker-1 !] Make sandbox promote one-click
+    why was there no record of current commit etc. after coming on mac somehow theese basic workflows have started becoming fragile and despite surfacing they are nto getting fixed on root and not robust. can you fix things for futrue to make them robust one-click. After iteration cycles on a sandbox i should be able to directly call Promotoesandbox why does that neeed a seperate pre-req. and where is that pre-req. usually being completed ?
+
 1. Itinerary item comparison in detail : hotel comparison, attraction comparison, transport mode comparison, any other comparison
 
 Trip budget adherence, Whatif and what are modficiations possible on adjusting budget - Smart suggestions
 e.g. You can add burj khalifa top deck view ticket if you are adding 200$ to the trip budget. That is worth , it is rated 5star by millions of people and strong review ... add main words.
 You can drop certain actiivtiy, or just take 1 stop connecting flight - you could get to visit singapore airport which is worth spending time, then catch a evening flight. this way you save money and land at good time to have 1 night rest etc.
 How do we build travel specific super intelligence to give a WOW and BEST itinerary and BEST and SMARTEST comparison options ??
+
+[2026-08-10 13:17] [worker-1 !] Draft comparison and budget brief
+yes draft it
