@@ -32,11 +32,11 @@ if ($unmerged.Count -gt 0) {
     throw "Resolve these files before retrying: $($unmerged -join ', ')"
 }
 & git -C $worktree rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
-if ($LASTEXITCODE -ne 0) {
+if ($LASTEXITCODE -ne 0 -and -not (Test-Path $statePath)) {
     Write-Host "[no-op] Sandbox '$($entry[0].slug)' has no pending merge." -ForegroundColor Yellow
     return
 }
-if ($PSCmdlet.ShouldProcess($entry[0].branch, "Finish resolved sandbox merge")) {
+if ($LASTEXITCODE -eq 0 -and $PSCmdlet.ShouldProcess($entry[0].branch, "Finish resolved sandbox merge")) {
     & git -C $worktree add -u
     & git -C $worktree commit --no-edit
     if ($LASTEXITCODE -ne 0) { throw "Could not finish the sandbox merge." }
@@ -47,11 +47,22 @@ if (Test-Path $statePath) {
     if ($LASTEXITCODE -ne 0 -or $currentStash -ne $state.stashCommit) {
         throw "Sandbox safety stash changed; leaving it untouched for manual recovery."
     }
-    if ($PSCmdlet.ShouldProcess($entry[0].branch, "Restore sandbox safety stash")) {
-        & git -C $worktree stash pop --index "stash@{0}"
-        if ($LASTEXITCODE -ne 0) { throw "Sandbox merge finished, but restoring its safety stash conflicted." }
+    if ($PSCmdlet.ShouldProcess($entry[0].branch, "Finalize sandbox safety stash recovery")) {
+        & git -C $worktree rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            & git -C $worktree stash pop --index "stash@{0}"
+            if ($LASTEXITCODE -ne 0) { throw "Sandbox merge finished, but restoring its safety stash conflicted." }
+        } else {
+            & git -C $worktree stash drop "stash@{0}"
+            if ($LASTEXITCODE -ne 0) { throw "Resolved sandbox stash conflict, but could not remove its retained safety stash." }
+        }
         Remove-Item -Force $statePath
     }
+}
+& git -C $worktree rev-parse --quiet --verify MERGE_HEAD 2>$null | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[resolved] Sandbox '$($entry[0].slug)' local changes are restored; rerun Sync Me or Sync All." -ForegroundColor Green
+    return
 }
 if ($PSCmdlet.ShouldProcess($entry[0].branch, "Push resolved sandbox branch")) {
     & git -C $worktree push -u origin "HEAD:refs/heads/$($entry[0].branch)"
