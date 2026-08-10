@@ -314,3 +314,7 @@ Yes do it. One question , why did you suggest to keep 2 backends (inmemory and r
 
 [2026-08-10 16:10] [master !] Retire workers for sandboxes
 Impelemnt all this exactly as you suggested. I created a remote branch current with master as of now named "archive/drop-workersconcept-use-sandboxes", apply tag to master "archive/drop-workersconcept-use-sandboxes".
+
+[2026-08-10 16:25] [master !] Remove remaining worker artifacts
+discard the uncommited work and do not retain the workers. also fix the windows based launchers also wherever needed.
+Make the sandbox , sync, run code and all other scripts uptodate with this workers removal entirely

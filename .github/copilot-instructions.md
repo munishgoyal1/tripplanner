@@ -52,7 +52,7 @@ not override the canonical documents above, which govern current behavior.
 - Do not add docstrings, type hints, or comments to code you did not otherwise touch.
 
 See [parallel-agent-development.md](../docs/development/parallel-agent-development.md)
-for sandbox lifecycle and archived-worker recovery.
+for sandbox lifecycle and promotion.
 
 ## Product and engineering boundaries
 

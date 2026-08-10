@@ -32,7 +32,7 @@ record back to Git and the local cache. Commit that tracked change with the Lab 
 so another machine receives the same lifecycle and notes. Histories display newest first. Agent implementations
 also append evidence linked to the Implemented review state version; the owner can
 then complete, park, discard, or save another In progress handoff.
-Implementation sandboxes are linked with `-LabId`. The sandbox worker resolves
+Implementation sandboxes are linked with `-LabId`. The sandbox resolves
 ambiguous handoff details with the owner in that sandbox chat before editing. Each
 coherent changed iteration records a concrete `-IterationSummary` only after the
 sandbox is healthy, and verified promotion records Completed before cleanup.

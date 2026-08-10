@@ -79,11 +79,6 @@ The full setup performs these operations:
    A sandbox copies the primary environment and uses its own worktree, ports,
    and local emulator database.
 
-The retired fixed-worker environment is preserved at the annotated tag and
-remote branch `archive/drop-workersconcept-use-sandboxes`. Run
-`scripts/dev/restore-parallel-workers.ps1` from the primary checkout only when
-you need that historical workflow for temporary reference or use.
-
 ## Manual steps
 
 Authentication and secrets are deliberately never copied by Git or the setup

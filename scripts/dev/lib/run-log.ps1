@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 # Shared "last run" logging. Every entry-point script overwrites one transcript in
-# <primary-root>/logs/last-run so any lane, worker, or sandbox can read the latest
+# <primary-root>/logs/last-run so the primary checkout or a sandbox can read the latest
 # run of any script. Dot-source: . "$PSScriptRoot/lib/run-log.ps1".
 
 function Get-PrimaryRepoRoot {

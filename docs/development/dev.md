@@ -49,12 +49,6 @@ task-named sandbox for each isolated feature. Create, serve, update, promote, or
 discard it through the sandbox launchers. A sandbox begins at `origin/master` and
 returns to `master` only through its validated promotion flow.
 
-The fixed-worker workflow is preserved at the annotated tag and remote branch
-`archive/drop-workersconcept-use-sandboxes`. Run
-`scripts/dev/restore-parallel-workers.ps1` to open that historical workflow in a
-detached archive worktree. It is for temporary reference or use only; never merge
-it directly into current `master`.
-
 To synchronize primary `master` and start the canonical stack, double-click
 `scripts/user/Run-Latest.cmd` or run the VS Code task **Tripplanner: Run Latest**.
 
@@ -64,7 +58,6 @@ Use these launchers by outcome:
 | --- | --- |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest.cmd` | Fast-forward primary `master` from `origin/master`, then start the canonical `dev-spa.ps1` stack. |
-| `scripts/dev/restore-parallel-workers.ps1` | Open the archived fixed-worker workflow in an isolated detached worktree. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 Every launcher writes a transcript to `logs/last-run/<script>.log` in the primary

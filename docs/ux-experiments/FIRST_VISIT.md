@@ -2,7 +2,7 @@
 
 ## Meta
 
-- Branch: `agents/worker-3`
+- Branch: not retained; current implementation work uses a sandbox
 - Owner: mugoy
 - Date started: 2026-08-06
 - Date ended: —

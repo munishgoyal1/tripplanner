@@ -5,27 +5,24 @@ This is the plain-English running history of changes under devconfigs. Add the
 newest dated entry at the top. Record what changed, why it changed, how to apply
 it, and any manual recovery step that could help on a new or broken machine.
 
-2026-08-09 - Pinned the Lane 0 layout in every worker workspace
-----------------------------------------------------------------
+2026-08-10 - Retired fixed worker workspace layouts
+---------------------------------------------------
 What changed:
-- Added the portable chat-session, window restoration, sidebar, panel, and
-  editor-tab layout settings to all three committed worker workspace files.
-- Preserved each worker's title, color, and role-specific settings.
+- Removed the fixed worker workspace files and launchers.
+- Kept the portable chat-session, window restoration, sidebar, panel, and
+  editor-tab settings in the shared VS Code configuration.
 
 Why:
-Settings Sync carries user preferences, but VS Code also restores layout state
-per workspace identity. Pinning the supported defaults in each worker workspace
-makes a first launch consistent before that workspace has local restored state.
+The primary workspace and task-named sandboxes are the only supported developer
+workflow. Shared settings keep both layouts consistent without fixed lanes.
 
 How to apply:
-Reopen each worker through `Open-Tripplanner-All-Agents.cmd` on Windows or
-`Open-Tripplanner-All-Agents.command` on macOS. Place a Copilot chat in an editor
-once per new workspace when desired; VS Code persists that placement locally.
+Run `pwsh -File devconfigs/Apply-DevConfigs.ps1`, then reopen the primary
+workspace or create a new sandbox. Place a Copilot chat in an editor once when
+desired; VS Code persists that placement locally.
 
 Recovery:
-Remove the shared layout keys from the worker workspace files to return them to
-user-setting-only defaults. Existing local workspace state may still need to be
-rearranged once.
+Restore the timestamped VS Code user-settings backup created by the apply script.
 
 2026-08-07 - Saved one default VS Code layout
 ----------------------------------------------

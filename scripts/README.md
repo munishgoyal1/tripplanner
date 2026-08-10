@@ -18,7 +18,6 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `smoke_test.py` | Local provider credential and connectivity smoke |
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
-| `dev/restore-parallel-workers.ps1` | Open the archived fixed-worker workflow in a detached reference worktree |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
