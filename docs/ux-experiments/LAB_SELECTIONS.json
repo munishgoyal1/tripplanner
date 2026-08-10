@@ -111,7 +111,7 @@
         "recordedAt": "2026-08-09T11:15:56.327Z"
       },
       {
-        "version": 2.0,
+        "version": 2,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -120,7 +120,7 @@
         "recordedAt": "2026-08-09T11:43:12.4301700Z"
       },
       {
-        "version": 3.0,
+        "version": 3,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -129,7 +129,7 @@
         "recordedAt": "2026-08-09T11:53:06.9552720Z"
       },
       {
-        "version": 4.0,
+        "version": 4,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -138,7 +138,7 @@
         "recordedAt": "2026-08-09T16:53:13.3980620Z"
       },
       {
-        "version": 5.0,
+        "version": 5,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -147,7 +147,7 @@
         "recordedAt": "2026-08-09T16:58:34.0974650Z"
       },
       {
-        "version": 6.0,
+        "version": 6,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -156,7 +156,7 @@
         "recordedAt": "2026-08-09T17:00:15.5350300Z"
       },
       {
-        "version": 7.0,
+        "version": 7,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -168,7 +168,7 @@
     "implementations": [
       {
         "version": 1,
-        "handoffVersion": 2.0,
+        "handoffVersion": 2,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -176,8 +176,8 @@
         "recordedAt": "2026-08-09T11:43:12.4301700Z"
       },
       {
-        "version": 2.0,
-        "handoffVersion": 3.0,
+        "version": 2,
+        "handoffVersion": 3,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -185,8 +185,8 @@
         "recordedAt": "2026-08-09T11:53:06.9552720Z"
       },
       {
-        "version": 3.0,
-        "handoffVersion": 4.0,
+        "version": 3,
+        "handoffVersion": 4,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -194,8 +194,8 @@
         "recordedAt": "2026-08-09T16:53:13.3980620Z"
       },
       {
-        "version": 4.0,
-        "handoffVersion": 5.0,
+        "version": 4,
+        "handoffVersion": 5,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -203,8 +203,8 @@
         "recordedAt": "2026-08-09T16:58:34.0974650Z"
       },
       {
-        "version": 5.0,
-        "handoffVersion": 6.0,
+        "version": 5,
+        "handoffVersion": 6,
         "selection": "aegean",
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
@@ -215,7 +215,7 @@
     "stateChangedAt": "2026-08-09T17:41:42.5505810Z",
     "updatedAt": "2026-08-09T17:41:42.5505810Z",
     "implementation": {
-      "handoffVersion": 6.0,
+      "handoffVersion": 6,
       "selection": "aegean",
       "selectionLabel": "E · Aegean sun",
       "comment": "Looks fitting",
@@ -223,5 +223,26 @@
       "recordedAt": "2026-08-09T17:00:15.5350300Z"
     },
     "implementationSummary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664"
+  },
+  "localization": {
+    "labId": "localization",
+    "labTitle": "Regional content and currency",
+    "selection": "profile",
+    "selectionLabel": "C · Profile-first",
+    "comment": "",
+    "disposition": "ready",
+    "handoffs": [
+      {
+        "version": 1,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "ready",
+        "recordedAt": "2026-08-09T17:56:28.860Z"
+      }
+    ],
+    "implementations": [],
+    "stateChangedAt": "2026-08-09T17:56:28.860Z",
+    "updatedAt": "2026-08-09T17:56:28.860Z"
   }
 }
