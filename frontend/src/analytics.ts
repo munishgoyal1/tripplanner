@@ -17,6 +17,7 @@ export type AnalyticsPreference = "granted" | "denied";
 type EventParameters = Record<string, string | number | boolean>;
 
 const CONSENT_KEY = "tripplanner_analytics_consent";
+const SESSION_KEY = "tripplanner_analytics_session";
 let measurementId = "";
 let ready = false;
 
@@ -25,6 +26,36 @@ function analyticsWindow(): Window & {
   gtag?: (...args: unknown[]) => void;
 } {
   return window;
+}
+
+function analyticsSession(): string {
+  const current = sessionStorage.getItem(SESSION_KEY);
+  if (current) return current;
+  const created = crypto.randomUUID();
+  sessionStorage.setItem(SESSION_KEY, created);
+  return created;
+}
+
+function acquisitionSource(): "direct" | "search" | "social" | "referral" {
+  if (!document.referrer) return "direct";
+  const host = new URL(document.referrer).hostname.toLowerCase();
+  if (/(^|\.)(google|bing|duckduckgo|yahoo)\./.test(host)) return "search";
+  if (/(^|\.)(facebook|instagram|linkedin|reddit|tiktok|x|twitter)\./.test(host)) return "social";
+  return "referral";
+}
+
+function recordProductEvent(event: AnalyticsEvent | "page_view"): void {
+  void fetch("/api/analytics/event", {
+    method: "POST",
+    credentials: "same-origin",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event,
+      session_id: analyticsSession(),
+      source: acquisitionSource(),
+    }),
+  }).catch(() => undefined);
 }
 
 export function getAnalyticsPreference(): AnalyticsPreference | null {
@@ -77,6 +108,7 @@ export function enableAnalytics(id: string): void {
     page_location: `${window.location.origin}${window.location.pathname}`,
     page_title: document.title,
   });
+  recordProductEvent("page_view");
 }
 
 export function disableAnalytics(): void {
@@ -89,4 +121,5 @@ export function disableAnalytics(): void {
 export function trackEvent(name: AnalyticsEvent, parameters: EventParameters = {}): void {
   if (!ready || !measurementId) return;
   analyticsWindow().gtag?.("event", name, parameters);
+  recordProductEvent(name);
 }

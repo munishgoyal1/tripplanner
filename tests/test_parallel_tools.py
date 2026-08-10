@@ -171,6 +171,34 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
     }]
 
 
+def test_usage_callback_records_model_error_latency(monkeypatch) -> None:
+    from tripplanner import graph as graph_mod
+
+    events: list[tuple[str, dict]] = []
+    ticks = iter([10.0, 10.5])
+    monkeypatch.setattr(graph_mod.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(
+        graph_mod,
+        "app_event",
+        lambda kind, **fields: events.append((kind, fields)),
+    )
+    callback = graph_mod._UsageCallback("gpt-4.1-test")
+    callback.on_chat_model_start(
+        {},
+        [[HumanMessage(content="Plan a short Punjab trip")]],
+    )
+    callback.on_llm_error(TimeoutError("timed out"))
+
+    assert events == [("llm_call", {
+        "status": "error",
+        "model": "gpt-4.1-test",
+        "ms": 500.0,
+        "message_count": 1,
+        "prompt_chars": 24,
+        "error": "TimeoutError",
+    })]
+
+
 def test_trip_agent_compacts_tool_results_only_for_model_input(monkeypatch) -> None:
     from tripplanner import graph as graph_mod
 

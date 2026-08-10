@@ -8,9 +8,14 @@ import {
   shouldShowPublicEntry,
 } from "./publicEntryState";
 import App from "../App";
+import OpsDashboard from "../ops/OpsDashboard";
 
 /** `/welcome` always opens the public entry; normal return visits open the workspace. */
 export default function Root() {
+  if (window.location.pathname === "/operations") {
+    return <OpsDashboard />;
+  }
+
   const [showEntry, setShowEntry] = useState(
     () => isPublicEntryPath() || shouldShowPublicEntry(isAnonymousUser())
   );
