@@ -236,3 +236,38 @@ def test_shared_plan_carries_decisions_and_price_checks() -> None:
     assert public["decisions"][0]["subject"] == "Lisbon to Porto"
     assert public["price_checks"][0]["provider"] == "Duffel"
 
+
+def test_shared_stay_drops_opaque_provider_references_at_every_level() -> None:
+    plan = _make_plan(
+        selected_hotels=[
+            {
+                "name": "Memmo Alfama",
+                "provider_ref": {"hotel_id": "hotel-42", "rate_id": "rate-7"},
+                "source": {"provider": "LiteAPI", "checked_at": "2026-09-15T08:00:00"},
+            }
+        ],
+        decisions=[
+            _decision(
+                kind="lodging",
+                options=[
+                    {
+                        "id": "opt_memmo",
+                        "mode": None,
+                        "label": "Memmo Alfama",
+                        "price": {"amount": 640, "currency": "EUR"},
+                        "lodging": {
+                            "room_name": "River view king",
+                            "provider_ref": {"hotel_id": "hotel-42", "rate_id": "rate-7"},
+                        },
+                    }
+                ],
+            )
+        ],
+    )
+
+    public = share.sanitize_plan(plan)
+
+    assert "provider_ref" not in public["selected_hotels"][0]
+    assert "provider_ref" not in public["decisions"][0]["options"][0]["lodging"]
+    assert public["selected_hotels"][0]["source"]["provider"] == "LiteAPI"
+

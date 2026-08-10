@@ -798,7 +798,7 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
             "options": [
                 {
                     "id": option.id,
-                    "mode": option.mode.value,
+                    "mode": option.mode.value if option.mode else None,
                     "label": option.label,
                     "detail": option.detail,
                     "price": option.price.model_dump(mode="json") if option.price else None,
@@ -811,6 +811,14 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
                     "duration_estimated": option.duration_estimated,
                     "rejected_because": option.rejected_because,
                     "source": option.source.model_dump(mode="json"),
+                    "lodging": (
+                        option.lodging.model_dump(
+                            mode="json",
+                            exclude={"provider_ref"},
+                        )
+                        if option.lodging
+                        else None
+                    ),
                 }
                 for option in decision.options
             ],

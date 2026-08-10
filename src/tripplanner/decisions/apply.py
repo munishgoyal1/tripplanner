@@ -14,6 +14,7 @@ from typing import Any
 
 from tripplanner.decisions.models import (
     Decision,
+    DecisionKind,
     DecisionState,
     Effect,
     Option,
@@ -189,8 +190,90 @@ def _guard_warnings(plan: dict[str, Any]) -> list[str]:
     return [v.message for v in violations if getattr(v, "message", "")]
 
 
+def _lodging_item(option: Option, decision: Decision) -> dict[str, Any]:
+    lodging = option.lodging
+    item: dict[str, Any] = {
+        "name": option.label,
+        "hotel_name": option.label,
+        "decision_id": decision.id,
+    }
+    if option.price is not None:
+        item.update({"total": option.price.amount, "currency": option.price.currency})
+    if lodging is not None:
+        for key, value in (
+            ("checkin", lodging.checkin),
+            ("checkout", lodging.checkout),
+            ("room_name", lodging.room_name),
+            ("board_name", lodging.board_name),
+            ("refundable", lodging.refundable),
+            ("cancellation_summary", lodging.cancellation_summary),
+            ("address", lodging.address),
+            ("rating", lodging.rating),
+        ):
+            if value not in (None, ""):
+                item[key] = value
+        if lodging.provider_ref:
+            item["provider_ref"] = dict(lodging.provider_ref)
+    source = option.source
+    item["source"] = source.model_dump(mode="json", exclude_none=True)
+    return item
+
+
+def _apply_lodging_shape(
+    plan: dict[str, Any], decision: Decision, previous: Option | None, chosen: Option
+) -> list[str]:
+    previous_name = (previous.label if previous else "").strip().lower()
+    replacement = _lodging_item(chosen, decision)
+    selected = plan.get("selected_hotels")
+    replaced = False
+    if isinstance(selected, list):
+        for index, item in enumerate(selected):
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or item.get("hotel_name") or "").strip().lower()
+            if previous_name and name == previous_name:
+                selected[index] = replacement
+                replaced = True
+                break
+    else:
+        selected = []
+        plan["selected_hotels"] = selected
+    if not replaced:
+        selected.append(replacement)
+
+    anchors = 0
+    for day in plan.get("day_wise_itinerary") or []:
+        if not isinstance(day, dict) or not isinstance(day.get("stops"), list):
+            continue
+        for stop in day["stops"]:
+            if not isinstance(stop, dict) or str(stop.get("kind") or "").lower() != "hotel":
+                continue
+            name = str(stop.get("name") or "").strip().lower()
+            if previous_name and name != previous_name:
+                continue
+            stop.update(
+                {
+                    key: value
+                    for key, value in replacement.items()
+                    if key not in {"provider_ref", "source"}
+                }
+            )
+            stop["kind"] = "hotel"
+            anchors += 1
+    return (
+        []
+        if anchors
+        else ["The stay was updated, but its itinerary anchor was no longer present."]
+    )
+
+
 def _settle_cost(
-    plan: dict[str, Any], previous: Option | None, chosen: Option, travellers: int
+    plan: dict[str, Any],
+    previous: Option | None,
+    chosen: Option,
+    travellers: int,
+    *,
+    lodging: bool = False,
 ) -> tuple[float | None, float, list[str]]:
     total = _to_number(plan.get("total_cost"))
     before = party_total(previous, travellers) if previous else None
@@ -200,8 +283,9 @@ def _settle_cost(
     if after is None or before is None:
         unpriced = chosen if after is None else previous
         label = unpriced.label if unpriced else "this option"
+        evidence = "verified price" if lodging else "fare source"
         warnings.append(
-            f"No fare source covers {label}, so the trip total is unchanged."
+            f"No {evidence} covers {label}, so the trip total is unchanged."
         )
         return total, 0.0, warnings
 
@@ -240,21 +324,30 @@ def _apply(plan: dict[str, Any], decision: Decision, chosen: Option) -> ApplyRes
     previous = decision.option(decision.active_option_id)
     before_total = _to_number(plan.get("total_cost"))
 
-    located = _locate_stop(plan, decision)
     warnings: list[str] = []
-    if located is None:
-        warnings.append(
-            "This leg is no longer in the itinerary, so only the decision was updated."
-        )
+    if decision.kind == DecisionKind.LODGING:
+        warnings.extend(_apply_lodging_shape(plan, decision, previous, chosen))
     else:
-        stops, position = located
-        stop = stops[position]
-        before_min = int(stop.get("duration_min") or 0)
-        _write_stop(stop, chosen, decision)
-        after_min = int(stop.get("duration_min") or 0)
-        _shift_following(stops, position, after_min - before_min)
+        located = _locate_stop(plan, decision)
+        if located is None:
+            warnings.append(
+                "This leg is no longer in the itinerary, so only the decision was updated."
+            )
+        else:
+            stops, position = located
+            stop = stops[position]
+            before_min = int(stop.get("duration_min") or 0)
+            _write_stop(stop, chosen, decision)
+            after_min = int(stop.get("duration_min") or 0)
+            _shift_following(stops, position, after_min - before_min)
 
-    total, delta, cost_warnings = _settle_cost(plan, previous, chosen, travellers)
+    total, delta, cost_warnings = _settle_cost(
+        plan,
+        previous,
+        chosen,
+        travellers,
+        lodging=decision.kind == DecisionKind.LODGING,
+    )
     warnings.extend(cost_warnings)
     _update_baseline(plan, before_total, total, currency)
     warnings.extend(_guard_warnings(plan))

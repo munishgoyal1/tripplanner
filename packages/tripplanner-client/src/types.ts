@@ -161,7 +161,7 @@ export interface DecisionSource {
 
 export interface DecisionOption {
   id: string;
-  mode: TransportMode;
+  mode?: TransportMode | null;
   label: string;
   detail?: string;
   price: DecisionPrice | null;
@@ -172,6 +172,17 @@ export interface DecisionOption {
   duration_estimated?: boolean;
   rejected_because?: string | null;
   source?: DecisionSource;
+  lodging?: {
+    checkin?: string;
+    checkout?: string;
+    room_name?: string;
+    board_name?: string | null;
+    refundable?: boolean | null;
+    cancellation_summary?: string | null;
+    address?: string | null;
+    rating?: number | null;
+    review_count?: number | null;
+  } | null;
 }
 
 export interface Decision {

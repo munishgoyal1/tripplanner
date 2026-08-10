@@ -92,6 +92,43 @@ describe("DecisionPanel", () => {
     expect(screen.getByText("We have no fare source for this")).toBeTruthy();
   });
 
+  it("shows sourced stay facts without transport language", () => {
+    renderPanel([
+      decision({
+        id: "dec_lodging_lisbon",
+        kind: "lodging",
+        subject: "Stay in Lisbon",
+        rule: {
+          code: "verified_stay_total",
+          text: "Lowest verified stay total; provider rating and refundability break ties",
+        },
+        chosen_option_id: "opt_memmo",
+        agent_option_id: "opt_memmo",
+        options: [
+          {
+            id: "opt_memmo",
+            mode: null,
+            label: "Memmo Alfama",
+            detail: "River view king",
+            price: { amount: 640, currency: "EUR", basis: "per_party" },
+            priced: true,
+            unpriced_reason: null,
+            lodging: {
+              room_name: "River view king",
+              board_name: "Breakfast",
+              rating: 4.7,
+              refundable: true,
+            },
+          },
+        ],
+      }),
+    ]);
+
+    expect(screen.getByText(/4.7 provider rating/)).toBeTruthy();
+    expect(screen.getByText(/Refundable/)).toBeTruthy();
+    expect(screen.queryByText(/door to door/)).toBeNull();
+  });
+
   it("applies an overrule through the state owner with the trip revision", async () => {
     overrideDecision.mockResolvedValue({
       ok: true,

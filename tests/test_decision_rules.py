@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
-from tripplanner.decisions.models import FareBasis, Option, Price, TransportMode
+from datetime import UTC, datetime
+
+from tripplanner.decisions.lodging import build_lodging_decision, reconcile_selected_lodging
+from tripplanner.decisions.models import FareBasis, LodgingFacts, Option, Price, TransportMode
 from tripplanner.decisions.rules import TransportPrefs, party_total, rank
+from tripplanner.providers.models import HotelOffer, Money
 
 
 def option(
@@ -111,3 +115,88 @@ def test_per_traveller_and_per_party_fares_compare_on_the_same_basis():
 
 def test_empty_comparison_returns_nothing():
     assert rank([], TransportPrefs()) is None
+
+
+def test_lodging_option_does_not_require_transport_fields():
+    stay = Option(
+        id="liteapi:hotel-42:rate-7",
+        label="Memmo Alfama",
+        price=Price(amount=640, currency="EUR", basis=FareBasis.PER_PARTY),
+        lodging=LodgingFacts(
+            checkin="2026-10-02",
+            checkout="2026-10-05",
+            room_name="River view king",
+            refundable=True,
+            rating=4.7,
+            provider_ref={"hotel_id": "hotel-42", "rate_id": "rate-7"},
+        ),
+    )
+
+    payload = stay.model_dump(mode="json")
+    assert payload["mode"] is None
+    assert payload["lodging"]["rating"] == 4.7
+    assert payload["lodging"]["provider_ref"]["rate_id"] == "rate-7"
+
+
+def hotel(name: str, amount: float, *, rating: float | None, refundable: bool) -> HotelOffer:
+    slug = name.lower().replace(" ", "-")
+    return HotelOffer(
+        provider="liteapi",
+        provider_ref={"hotel_id": slug, "offer_id": f"offer-{slug}", "rate_id": "rate-1"},
+        hotel_name=name,
+        search_destination="Lisbon",
+        room_name="King room",
+        total=Money(amount=amount, currency="EUR"),
+        refundable=refundable,
+        quoted_at=datetime.now(UTC),
+        rating=rating,
+    )
+
+
+def test_lodging_decision_keeps_the_exact_candidates_and_verified_rule():
+    decision = build_lodging_decision(
+        [
+            hotel("Memmo Alfama", 640, rating=4.7, refundable=True),
+            hotel("Hotel Mundial", 520, rating=4.5, refundable=True),
+            hotel("Bairro Alto Hotel", 900, rating=None, refundable=False),
+        ],
+        destination="Lisbon",
+        checkin="2026-10-02",
+        checkout="2026-10-05",
+        cached=False,
+    )
+
+    assert decision is not None
+    assert decision.kind.value == "lodging"
+    assert len(decision.options) == 3
+    assert decision.chosen is not None and decision.chosen.label == "Hotel Mundial"
+    assert decision.rule.code == "verified_stay_total"
+    assert decision.option(decision.chosen_option_id).source.provider == "liteapi"
+
+
+def test_lodging_decision_follows_the_property_the_agent_persisted():
+    decision = build_lodging_decision(
+        [
+            hotel("Memmo Alfama", 640, rating=4.7, refundable=True),
+            hotel("Hotel Mundial", 520, rating=4.5, refundable=True),
+        ],
+        destination="Lisbon",
+        checkin="2026-10-02",
+        checkout="2026-10-05",
+        cached=False,
+    )
+    assert decision is not None and decision.chosen.label == "Hotel Mundial"
+    plan = {
+        "selected_hotels": [{"name": "Memmo Alfama"}],
+        "decisions": [decision.model_dump(mode="json")],
+    }
+
+    reconcile_selected_lodging(plan)
+
+    reconciled = plan["decisions"][0]
+    chosen = next(
+        option
+        for option in reconciled["options"]
+        if option["id"] == reconciled["chosen_option_id"]
+    )
+    assert chosen["label"] == "Memmo Alfama"

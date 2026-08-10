@@ -9,9 +9,11 @@ import pytest
 from tripplanner.decisions.apply import apply_override, restore
 from tripplanner.decisions.models import (
     Decision,
+    DecisionKind,
     DecisionScope,
     DecisionState,
     FareBasis,
+    LodgingFacts,
     Option,
     Price,
     Rule,
@@ -246,3 +248,80 @@ def test_missing_leg_updates_the_record_and_says_the_plan_moved_on(seeded: dict)
     assert any("no longer in the itinerary" in w for w in result.warnings)
     decision = find_decision(seeded, "dec_transport_mode_lisbon_porto")
     assert decision is not None and decision.active_option_id == "opt_air"
+
+
+def lodging_option(option_id: str, label: str, amount: float) -> Option:
+    return Option(
+        id=option_id,
+        label=label,
+        price=Price(amount=amount, currency="EUR", basis=FareBasis.PER_PARTY),
+        lodging=LodgingFacts(
+            checkin="2026-05-01",
+            checkout="2026-05-04",
+            room_name="King room",
+            refundable=True,
+            rating=4.6,
+            provider_ref={"hotel_id": option_id, "rate_id": f"rate-{option_id}"},
+        ),
+    )
+
+
+def lodging_plan() -> dict:
+    plan = {
+        "currency": "EUR",
+        "total_cost": 1600.0,
+        "selected_hotels": [{"name": "Memmo Alfama", "total": 640, "currency": "EUR"}],
+        "day_wise_itinerary": [
+            {
+                "day": day,
+                "stops": [{"name": "Memmo Alfama", "kind": "hotel", "time": "08:00"}],
+            }
+            for day in range(1, 4)
+        ],
+    }
+    upsert_decision(
+        plan,
+        Decision(
+            id="dec_lodging_lisbon",
+            kind=DecisionKind.LODGING,
+            created_at=datetime.now(UTC),
+            scope=DecisionScope(to_place="Lisbon", date="2026-05-01"),
+            subject="Stay in Lisbon",
+            rule=Rule(code="verified_stay_total", text="Lowest verified stay total."),
+            chosen_option_id="memmo",
+            options=[
+                lodging_option("memmo", "Memmo Alfama", 640),
+                lodging_option("mundial", "Hotel Mundial", 520),
+            ],
+        ),
+    )
+    return plan
+
+
+def test_lodging_override_replaces_selection_and_every_stay_anchor() -> None:
+    plan = lodging_plan()
+
+    result = apply_override(plan, "dec_lodging_lisbon", "mundial")
+
+    assert result.ok
+    assert result.delta == pytest.approx(-120)
+    assert plan["total_cost"] == pytest.approx(1480)
+    assert plan["selected_hotels"][0]["name"] == "Hotel Mundial"
+    assert plan["selected_hotels"][0]["provider_ref"]["hotel_id"] == "mundial"
+    assert all(
+        day["stops"][0]["name"] == "Hotel Mundial" for day in plan["day_wise_itinerary"]
+    )
+
+
+def test_lodging_restore_returns_the_exact_original_stay() -> None:
+    plan = lodging_plan()
+
+    apply_override(plan, "dec_lodging_lisbon", "mundial")
+    result = restore(plan, "dec_lodging_lisbon")
+
+    assert result.ok
+    assert plan["total_cost"] == pytest.approx(1600)
+    assert plan["selected_hotels"][0]["name"] == "Memmo Alfama"
+    assert all(
+        day["stops"][0]["name"] == "Memmo Alfama" for day in plan["day_wise_itinerary"]
+    )

@@ -1899,6 +1899,10 @@ def update_trip_plan(updates_json: str) -> str:
         plan.get("selected_hotels"),
     ):
         _reflow_unbooked_attractions(plan)
+    if "selected_hotels" in updates:
+        from tripplanner.decisions.lodging import reconcile_selected_lodging
+
+        reconcile_selected_lodging(plan)
 
     added_flight_legs = []
     if {"origin", "selected_flights"}.intersection(updates):
