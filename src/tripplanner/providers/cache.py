@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import pickle
+import weakref
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
@@ -18,6 +19,7 @@ except ImportError:  # pragma: no cover - optional runtime dependency by environ
 
 T = TypeVar("T")
 log = logging.getLogger(__name__)
+_PROVIDER_CACHES: weakref.WeakSet[ProviderTTLCache[Any]] = weakref.WeakSet()
 
 
 class TransportMode(StrEnum):
@@ -149,6 +151,7 @@ class ProviderTTLCache(Generic[T]):
     def __init__(self) -> None:
         self._items: dict[str, ProviderCacheEntry[T]] = {}
         self._redis: _RedisProviderCache[T] | None = None
+        _PROVIDER_CACHES.add(self)
 
         settings = get_settings()
         if settings.cache_redis_enabled:
@@ -192,6 +195,16 @@ class ProviderTTLCache(Generic[T]):
         if self._redis:
             self._redis.clear_namespace()
 
+    def status(self) -> dict[str, Any]:
+        return {
+            "memory_entries": len(self._items),
+            "redis": (
+                self._redis.status()
+                if self._redis
+                else {"enabled": False, "connected": False}
+            ),
+        }
+
 
 class _RedisProviderCache(Generic[T]):
     """Best-effort Redis cache that gracefully falls back to in-memory only."""
@@ -223,6 +236,9 @@ class _RedisProviderCache(Generic[T]):
 
     def _namespaced(self, key: str) -> str:
         return f"{self._namespace}:{key}"
+
+    def status(self) -> dict[str, bool]:
+        return {"enabled": True, "connected": self._client is not None and not self._warned_down}
 
     def get(self, key: str) -> ProviderCacheEntry[T] | None:
         if not self._client:
@@ -271,3 +287,16 @@ class _RedisProviderCache(Generic[T]):
             return
         self._warned_down = True
         log.warning("Redis cache call failed; continuing with in-memory fallback: %s", exc)
+
+
+def provider_cache_status() -> dict[str, Any]:
+    caches = [cache.status() for cache in list(_PROVIDER_CACHES)]
+    redis_enabled = any(cache["redis"]["enabled"] for cache in caches)
+    redis_connected = any(cache["redis"]["connected"] for cache in caches)
+    return {
+        "configured": get_settings().cache_redis_enabled,
+        "backend": "redis" if redis_connected else "memory",
+        "redis_connected": redis_connected,
+        "fallback_active": redis_enabled and not redis_connected,
+        "memory_entries": sum(int(cache["memory_entries"]) for cache in caches),
+    }

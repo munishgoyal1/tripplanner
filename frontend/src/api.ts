@@ -31,6 +31,53 @@ export interface ToolEventExtras {
   duration_ms?: number;
 }
 
+export interface OpsMetricRow {
+  calls: number;
+  errors: number;
+  p50_ms: number;
+  p95_ms: number;
+  p90_ms?: number;
+}
+
+export interface OpsOverview {
+  generated_at: string;
+  uptime_seconds: number;
+  business: {
+    new_trips: Record<"today" | "7d" | "30d", number>;
+    active_trips: Record<"today" | "7d" | "30d", number>;
+    chat_requests: number;
+    iterations: number;
+  };
+  requests: OpsMetricRow & {
+    by_route: Record<string, OpsMetricRow>;
+    error_statuses: Record<string, number>;
+  };
+  models: OpsMetricRow & {
+    recent: Array<{ model: string; status: string; duration_ms: number; at: number }>;
+  };
+  usage: {
+    month: string;
+    model_calls: number;
+    prompt_tokens: number;
+    completion_tokens: number;
+    cost_usd: number;
+  };
+  tools: Record<string, OpsMetricRow & { cache_hits: number; hit_rate: number; avg_ms: number }>;
+  cache: {
+    configured: boolean;
+    backend: "redis" | "memory";
+    redis_connected: boolean;
+    fallback_active: boolean;
+    memory_entries: number;
+  };
+}
+
+export async function fetchOpsOverview(signal?: AbortSignal): Promise<OpsOverview> {
+  const response = await apiFetch(`${BASE}/ops/overview`, { signal });
+  ensureOk(response, "Operations overview unavailable");
+  return response.json() as Promise<OpsOverview>;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;

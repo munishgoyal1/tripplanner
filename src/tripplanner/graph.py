@@ -71,6 +71,14 @@ class _UsageCallback(BaseCallbackHandler):
 
     def on_llm_end(self, response: Any, **_: Any) -> None:  # noqa: D401
         try:
+            duration_ms = (
+                (time.monotonic() - self._started_at) * 1000
+                if self._started_at is not None
+                else 0.0
+            )
+            from tripplanner.ops_metrics import record_model_call
+
+            record_model_call(self._model, "ok", duration_ms)
             usage = (response.llm_output or {}).get("token_usage") or {}
             prompt = int(usage.get("prompt_tokens") or 0)
             completion = int(usage.get("completion_tokens") or 0)
@@ -100,6 +108,14 @@ class _UsageCallback(BaseCallbackHandler):
 
     def on_llm_error(self, error: BaseException, **_: Any) -> None:
         try:
+            duration_ms = (
+                (time.monotonic() - self._started_at) * 1000
+                if self._started_at is not None
+                else 0.0
+            )
+            from tripplanner.ops_metrics import record_model_call
+
+            record_model_call(self._model, "error", duration_ms)
             app_event(
                 "llm_call",
                 status="error",

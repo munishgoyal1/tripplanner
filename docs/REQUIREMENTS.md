@@ -91,6 +91,7 @@ re-describing the whole product.
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
+| OPS-03 | Owner-only in-app product and engineering operations dashboard | Implemented; hidden route and server-side verified-email guard |
 | PUBLIC-01 | Public custom-domain MVP with traction feedback loop | Implemented; permanent `/welcome`, privacy-safe analytics, and regional last-known-good demo pipeline |
 | DEAL-01 | Best-total-cost comparison, offer and card-benefit optimization | Proposed |
 | MONEY-01 | Minimally intrusive monetization after traction | Proposed |

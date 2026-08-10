@@ -67,6 +67,7 @@ from tripplanner.request_identity import (
     is_anonymous_id,
     is_hosted,
     require_guest_capability,
+    require_owner,
     require_signed_user,
     resolve_user_id,
 )
@@ -150,7 +151,24 @@ async def _strip_api_prefix(request: Request, call_next):  # type: ignore[no-unt
         request.scope["path"] = "/"
     elif path.startswith("/api/"):
         request.scope["path"] = path[4:]
-    return await call_next(request)
+    started_at = time.monotonic()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        from tripplanner.ops_metrics import record_request
+
+        route = request.scope.get("route")
+        route_path = getattr(route, "path", None) or "unmatched"
+        if not str(route_path).startswith("/ops/"):
+            record_request(
+                request.method,
+                str(route_path),
+                status_code,
+                (time.monotonic() - started_at) * 1000,
+            )
 
 # Per-user chat history is persisted per active trip via ``web.chat_store`` so
 # the conversation + itinerary summary survive a browser refresh and follow
@@ -2300,10 +2318,70 @@ async def metrics_tools() -> dict:
     return {"tools": tool_metrics_snapshot()}
 
 
+@app.get("/ops/overview", include_in_schema=False)
+async def ops_overview(request: Request) -> dict[str, Any]:
+    """Return content-free business and engineering metrics to the owner only."""
+    session = require_owner(request)
+    set_user_id(str(session["user_id"]))
+
+    from datetime import UTC, datetime, timedelta
+
+    from tripplanner.observability import tool_metrics_snapshot
+    from tripplanner.ops_metrics import snapshot
+    from tripplanner.providers.cache import provider_cache_status
+    from tripplanner.tools.trip_planner import list_saved_trips
+    from tripplanner.usage import get_usage as get_owner_usage
+
+    now = datetime.now(UTC)
+    trips = list_saved_trips()
+
+    def count_since(field: str, days: int) -> int:
+        threshold = now - timedelta(days=days)
+        count = 0
+        for trip in trips:
+            try:
+                value = datetime.fromisoformat(str(trip.get(field) or "").replace("Z", "+00:00"))
+                if value.tzinfo is None:
+                    value = value.replace(tzinfo=UTC)
+                count += value >= threshold
+            except ValueError:
+                continue
+        return count
+
+    runtime = snapshot()
+    runtime["business"] = {
+        "new_trips": {
+            "today": count_since("created_at", 1),
+            "7d": count_since("created_at", 7),
+            "30d": count_since("created_at", 30),
+        },
+        "active_trips": {
+            "today": count_since("updated_at", 1),
+            "7d": count_since("updated_at", 7),
+            "30d": count_since("updated_at", 30),
+        },
+        "chat_requests": (
+            runtime["requests"]["by_route"].get("POST /chat/stream", {}).get("calls", 0)
+        ),
+        "iterations": sum(1 for trip in trips if trip.get("updated_at")),
+    }
+    usage = get_owner_usage(str(session["user_id"]))
+    runtime["usage"] = {
+        "month": usage.get("month"),
+        "model_calls": usage.get("calls", 0),
+        "prompt_tokens": usage.get("prompt_tokens", 0),
+        "completion_tokens": usage.get("completion_tokens", 0),
+        "cost_usd": usage.get("cost_usd", 0.0),
+    }
+    runtime["tools"] = tool_metrics_snapshot()
+    runtime["cache"] = provider_cache_status()
+    return runtime
+
+
 @app.get("/usage")
 async def usage_for_user(request: Request, user_id: str = "local") -> dict:
     """Return this month's LLM token + cost usage for ``user_id`` and the cap."""
-    from tripplanner.usage import get_cap_usd, get_usage, is_over_cap
+    from tripplanner.usage import get_cap_usd, is_over_cap
 
     resolved_user_id = _set_request_user(request, user_id)
     over, doc = is_over_cap(resolved_user_id)
