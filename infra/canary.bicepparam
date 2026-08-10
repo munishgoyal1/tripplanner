@@ -17,6 +17,11 @@ param travelActivityProvider = readEnvironmentVariable('TRAVEL_ACTIVITY_PROVIDER
 param openRouteServiceApiKey = readEnvironmentVariable('OPENROUTESERVICE_API_KEY', '')
 param openRouteServiceBaseUrl = readEnvironmentVariable('OPENROUTESERVICE_BASE_URL', 'https://api.openrouteservice.org')
 param openRouteServiceRouteTtlSec = int(readEnvironmentVariable('OPENROUTESERVICE_ROUTE_TTL_SEC', '21600'))
+param cacheRedisEnabled = readEnvironmentVariable('CACHE_REDIS_ENABLED', '0') == '1'
+param cacheRedisUrl = readEnvironmentVariable('CACHE_REDIS_URL', '')
+param cacheRedisNamespace = readEnvironmentVariable('CACHE_REDIS_NAMESPACE', 'tripplanner:provider-cache')
+param cacheRedisConnectTimeoutSec = readEnvironmentVariable('CACHE_REDIS_CONNECT_TIMEOUT_SEC', '0.2')
+param cacheRedisSocketTimeoutSec = readEnvironmentVariable('CACHE_REDIS_SOCKET_TIMEOUT_SEC', '0.2')
 param googlePlacesApiKey = readEnvironmentVariable('GOOGLE_PLACES_API_KEY', '')
 param googleMapsBrowserKey = readEnvironmentVariable('GOOGLE_MAPS_BROWSER_KEY', '')
 param tavilyApiKey = readEnvironmentVariable('TAVILY_API_KEY', '')
