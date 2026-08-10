@@ -345,9 +345,21 @@ if (-not $FrontendOnly) {
         Write-Host "  LOG_LEVEL=DEBUG (verbose backend logs)" -ForegroundColor DarkGray
     }
     $pythonRelativePath = if ($IsWindows) { ".venv\Scripts\python.exe" } else { ".venv/bin/python" }
-    $py = Join-Path $repoRoot $pythonRelativePath
-    if (-not (Test-Path $py)) { $py = Join-Path $sharedRepoRoot $pythonRelativePath }
-    if (-not (Test-Path $py)) { $py = "python" }
+    $py = $null
+    $pythonCandidates = @(
+        (Join-Path $repoRoot $pythonRelativePath),
+        (Join-Path $sharedRepoRoot $pythonRelativePath)
+    )
+    foreach ($candidate in $pythonCandidates) {
+        if (-not (Test-Path $candidate -PathType Leaf)) { continue }
+        & $candidate -c "import uvicorn" 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $py = $candidate
+            break
+        }
+        Write-Warning "Skipping incomplete Python environment at $candidate (uvicorn is unavailable)."
+    }
+    if (-not $py) { $py = "python" }
     # src-layout project: make imports work even if pip install -e . was not run.
     $uvicornArgs = @("-m", "uvicorn", "tripplanner.api:app", "--app-dir", "src", "--port", "$ApiPort")
     if ($Watch) { $uvicornArgs += "--reload" }
