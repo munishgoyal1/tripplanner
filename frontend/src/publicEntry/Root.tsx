@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isAnonymousUser } from "../auth/authSession";
 import PublicEntry from "./PublicEntry";
 import {
@@ -15,10 +15,20 @@ export default function Root() {
   );
   const [initialRequest, setInitialRequest] = useState<string | null>(null);
 
+  useEffect(() => {
+    const handlePopState = () => {
+      const showWelcome = isPublicEntryPath();
+      setShowEntry(showWelcome);
+      if (showWelcome) setInitialRequest(null);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   const openWorkspace = (request: string | null = null) => {
     markPublicEntrySkipped();
     if (isPublicEntryPath()) {
-      window.history.replaceState({}, "", "/");
+      window.history.pushState({}, "", "/");
     }
     setInitialRequest(request);
     setShowEntry(false);
