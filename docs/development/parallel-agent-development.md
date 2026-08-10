@@ -14,6 +14,11 @@ On macOS, use the matching `.command` launchers under `scripts/mac/user/sandbox/
 
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/user/Run-Latest.cmd` on Windows or `scripts/mac/user/Run-Latest.command` on macOS. Sandboxes use their own ports and server-free validation by default.
 
+After a successful `Sync-AllTo-Latest`, each registered sandbox may be ahead of
+`master`, but both its local branch and its pushed remote branch must contain the
+exact current `master` commit. The sync commands verify this ancestry invariant
+before reporting success.
+
 If `Update-Sandbox` reports `SANDBOX_CONFLICT_PENDING`, resolve its marked files
 in the sandbox worktree, then run `Resolve-SandboxConflicts` for that sandbox to
 finish the merge and push its branch before retrying update or promotion.

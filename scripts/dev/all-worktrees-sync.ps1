@@ -45,4 +45,19 @@ foreach ($sandbox in $sandboxes) {
 if ($failures.Count -gt 0) {
     throw "Sandbox synchronization needs attention:`n$($failures -join "`n")"
 }
+
+if (-not $ValidateOnly) {
+    $masterHead = (& git -C $primaryRoot rev-parse HEAD).Trim()
+    foreach ($sandbox in $sandboxes) {
+        & git -C $sandbox.worktree merge-base --is-ancestor $masterHead HEAD
+        if ($LASTEXITCODE -ne 0) {
+            throw "Sandbox '$($sandbox.slug)' local branch is behind master $masterHead after Sync All."
+        }
+        & git -C $primaryRoot merge-base --is-ancestor $masterHead "origin/$($sandbox.branch)"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Sandbox '$($sandbox.slug)' remote branch is behind master $masterHead after Sync All."
+        }
+    }
+    Write-Host "[verified] All registered local and remote sandbox branches contain master $($masterHead.Substring(0, 7))." -ForegroundColor Green
+}
 Write-Host "[done]    All registered sandboxes are current with master." -ForegroundColor Green
