@@ -1384,7 +1384,10 @@ if ($PSCmdlet.ParameterSetName -eq "Discard") {
         }
     }
 
-    Remove-PendingMergesFor -WorkingDirectory $entry.worktree
+    $pendingConflictPath = Join-Path $primaryRoot "logs/sandbox/pending-conflict-$((Split-Path -Leaf $entry.worktree)).json"
+    if (Test-Path -LiteralPath $pendingConflictPath) {
+        Remove-Item -LiteralPath $pendingConflictPath -Force
+    }
 
     $localBranch = & git -C $scriptRepoRoot branch --list $entry.branch
     if ($LASTEXITCODE -ne 0) {

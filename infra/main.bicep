@@ -70,6 +70,22 @@ param openRouteServiceBaseUrl string = 'https://api.openrouteservice.org'
 @description('Coordinate route fallback cache TTL in seconds.')
 param openRouteServiceRouteTtlSec int = 21600
 
+@description('Enable Redis-backed provider cache. Off keeps in-memory-only behavior.')
+param cacheRedisEnabled bool = false
+
+@secure()
+@description('Optional Redis URL (for example: rediss://:<key>@host:6380/0). Empty keeps local in-memory fallback only.')
+param cacheRedisUrl string = ''
+
+@description('Redis cache key namespace used by the provider cache layer.')
+param cacheRedisNamespace string = 'tripplanner:provider-cache'
+
+@description('Redis connect timeout in seconds.')
+param cacheRedisConnectTimeoutSec string = '0.2'
+
+@description('Redis socket timeout in seconds.')
+param cacheRedisSocketTimeoutSec string = '0.2'
+
 @secure()
 @description('Google Places (New) API key.')
 param googlePlacesApiKey string = ''
@@ -183,6 +199,8 @@ var providerSecrets = concat(
   empty(openRouteServiceApiKey) ? [] : [{ name: 'openrouteservice-api-key', value: openRouteServiceApiKey }]
 )
 
+var redisSecrets = empty(cacheRedisUrl) ? [] : [{ name: 'cache-redis-url', value: cacheRedisUrl }]
+
 var providerEnv = concat(
   empty(liteapiApiKey) ? [] : [
     { name: 'LITEAPI_API_KEY', secretRef: 'liteapi-api-key' }
@@ -221,6 +239,10 @@ var baseEnv = [
   { name: 'TAVILY_API_KEY', secretRef: 'tavily-api-key' }
   { name: 'GOOGLE_MAPS_BROWSER_KEY', value: googleMapsBrowserKey }
   { name: 'GOOGLE_ANALYTICS_MEASUREMENT_ID', value: googleAnalyticsMeasurementId }
+  { name: 'CACHE_REDIS_ENABLED', value: cacheRedisEnabled ? '1' : '0' }
+  { name: 'CACHE_REDIS_NAMESPACE', value: cacheRedisNamespace }
+  { name: 'CACHE_REDIS_CONNECT_TIMEOUT_SEC', value: cacheRedisConnectTimeoutSec }
+  { name: 'CACHE_REDIS_SOCKET_TIMEOUT_SEC', value: cacheRedisSocketTimeoutSec }
   { name: 'COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
   { name: 'COSMOS_KEY', secretRef: 'cosmos-key' }
   { name: 'COSMOS_DATABASE', value: cosmosDatabaseName }
@@ -230,6 +252,13 @@ var baseEnv = [
   // audit_events Cosmos container. Off by default.
   { name: 'AUDIT_USER_MESSAGES', value: auditUserMessages ? '1' : '' }
 ]
+
+var redisEnv = empty(cacheRedisUrl)
+  ? []
+  : [{
+      name: 'CACHE_REDIS_URL'
+      secretRef: 'cache-redis-url'
+    }]
 
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logsName
@@ -371,7 +400,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
       }
-      secrets: concat(baseSecrets, oauthSecrets, providerSecrets)
+      secrets: concat(baseSecrets, oauthSecrets, providerSecrets, redisSecrets)
     }
     template: {
       containers: [
@@ -382,7 +411,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             cpu: json('0.5')
             memory: '1Gi'
           }
-          env: concat(baseEnv, oauthEnv, providerEnv)
+          env: concat(baseEnv, oauthEnv, providerEnv, redisEnv)
         }
       ]
       scale: {

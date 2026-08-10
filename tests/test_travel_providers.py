@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
+from tripplanner.config import get_settings
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.liteapi import LiteAPIError, LiteAPIProvider
 from tripplanner.providers.models import (
@@ -163,6 +164,25 @@ def test_provider_chain_falls_back_and_caches():
     assert second.cache_hit is True
     assert second.provider == "working"
     assert working.calls == 1
+
+
+def test_provider_ttl_cache_uses_memory_fallback_when_redis_unavailable(monkeypatch):
+    monkeypatch.setenv("CACHE_REDIS_ENABLED", "1")
+    monkeypatch.setenv("CACHE_REDIS_URL", "redis://127.0.0.1:6399/0")
+    get_settings.cache_clear()
+
+    try:
+        cache: ProviderTTLCache[list[str]] = ProviderTTLCache()
+        cache.set("fallback-key", ["offer"], provider="working", ttl_seconds=60)
+
+        entry = cache.get("fallback-key")
+        assert entry is not None
+        assert entry.provider == "working"
+        assert entry.value == ["offer"]
+    finally:
+        monkeypatch.delenv("CACHE_REDIS_ENABLED", raising=False)
+        monkeypatch.delenv("CACHE_REDIS_URL", raising=False)
+        get_settings.cache_clear()
 
 
 def test_liteapi_normalizes_live_hotel_rates(monkeypatch):
