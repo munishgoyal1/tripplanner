@@ -28,9 +28,11 @@
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
   -New serves automatically unless you pass -NoServe.
 
-    Link a UX Lab sandbox with -LabId. After a healthy served iteration that contains
-    a coherent Lab change, pass -IterationSummary to append an implemented-review version.
-    Verified promotion appends Completed before sandbox cleanup.
+    Link a UX Lab sandbox with -LabId. -Promote records the promoted commit as an
+    implemented-review iteration by itself, after starting the stack and confirming
+    the endpoints answer, so an iteration loop ends at -Promote with no separate step.
+    Pass -IterationSummary to either -Serve or -Promote to choose that wording instead
+    of the commit subjects. Verified promotion appends Completed before sandbox cleanup.
 
   -New and -Update first integrate every committed worker lane through master
   (the same pass Sync-AllTo-Latest runs) and only then branch from, or merge,
@@ -96,6 +98,7 @@ param(
     [string]$LabId = "",
 
     [Parameter(ParameterSetName = "Serve")]
+    [Parameter(ParameterSetName = "Promote")]
     [string]$IterationSummary = "",
 
     [Parameter(ParameterSetName = "New")]
@@ -394,12 +397,82 @@ function Write-SandboxLabVersion {
         }
     }
     $evidence = "$($Summary.Trim())`nSandbox: $($Entry.slug); commit: $($commit.Substring(0, 12))"
-    & "$PSScriptRoot\record-lab-implementation.ps1" -LabId $Entry.labId -State $State -Evidence $evidence
+    # The recorder defaults its store to the lane that launched this script, which wrote
+    # sandbox records into whichever worktree happened to invoke it. An iteration belongs
+    # to the sandbox branch so it travels with the PR; a completed record outlives the
+    # sandbox, so it belongs to the primary checkout.
+    $storeRoot = if ($State -eq "implemented-review") { $Entry.worktree } else { $primaryRoot }
+    $store = "docs/ux-experiments/LAB_SELECTIONS.json"
+    & "$PSScriptRoot\record-lab-implementation.ps1" -LabId $Entry.labId -State $State `
+        -Evidence $evidence -StorePath (Join-Path $storeRoot $store)
+    # The recorder only writes the store. Leaving that write uncommitted made the next
+    # promote fail its own clean-worktree gate, so it is committed with the record.
+    if ($storeRoot -eq $Entry.worktree) {
+        $storeChanged = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+            "status", "--porcelain", "--", $store
+        )
+        if ($storeChanged) {
+            Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("add", "--", $store) | Out-Null
+            Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+                "commit", "-m", "Record $($Entry.labId) lab $State for $($Entry.slug)", "--", $store
+            ) | Out-Null
+            Write-Host "[lab]     committed the lab record" -ForegroundColor DarkGray
+        }
+    }
     if ($State -eq "implemented-review") {
         Save-SandboxLabIteration -Entry $Entry -Commit $commit
         $Entry | Add-Member -NotePropertyName lastLabIterationCommit -NotePropertyValue $commit -Force
     }
     Write-Host "[lab]     $($Entry.labId) -> $State" -ForegroundColor Green
+}
+
+function Register-SandboxLabIteration {
+    # Promotion needs proof that the promoted commit ran healthily. Recording used to
+    # happen only inside a separate -Serve call, so the ordinary run, test, commit loop
+    # always arrived at -Promote with nothing recorded. Promotion now records it here,
+    # against the same health check -Serve uses, instead of failing on a missing step.
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Base,
+        [string]$Summary = ""
+    )
+
+    if (-not $Entry.labId) { return }
+    try {
+        Assert-SandboxLabReadyForPromotion -Entry $Entry -Base $Base -AllowContainedIteration
+        return
+    } catch {
+        Write-Host "[lab]     no recorded iteration for this commit; recording it now" -ForegroundColor Cyan
+    }
+
+    $changes = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("status", "--porcelain")
+    if ($changes) {
+        throw "Sandbox '$($Entry.slug)' has uncommitted changes. Commit them before promoting."
+    }
+    if (-not (Start-SandboxStack -Entry $Entry)) {
+        throw "Sandbox '$($Entry.slug)' endpoints are not healthy, so this commit cannot be recorded as a verified Lab iteration. Fix the stack and re-run promotion."
+    }
+
+    $text = $Summary.Trim()
+    if (-not $text) {
+        $previous = if ($Entry.lastLabIterationCommit) {
+            $Entry.lastLabIterationCommit
+        } else {
+            $Entry.labBaselineCommit
+        }
+        $subjects = @()
+        if ($previous) {
+            $subjects = @(Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+                "log", "--first-parent", "--format=%s", "$previous..HEAD"
+            ) | Where-Object { $_ -and $_ -notmatch "^Merge " } | Select-Object -First 3)
+        }
+        $text = if ($subjects) {
+            $subjects -join "; "
+        } else {
+            "Sandbox iteration verified healthy before promotion."
+        }
+    }
+    Write-SandboxLabVersion -Entry $Entry -State "implemented-review" -Summary $text
 }
 
 function Assert-SandboxLabReadyForPromotion {
@@ -1131,6 +1204,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if ($conflicts) {
         throw "Resolve and commit these conflicts, then re-run -Promote ${slug}:`n$($conflicts -join "`n")"
     }
+    Register-SandboxLabIteration -Entry $entry -Base $BaseBranch -Summary $IterationSummary
     Assert-SandboxLabReadyForPromotion -Entry $entry -Base $BaseBranch -AllowContainedIteration
     $unmerged = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
         "log", "--oneline", "origin/$BaseBranch..HEAD"

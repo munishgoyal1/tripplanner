@@ -85,10 +85,12 @@ for worktree synchronization and cleanup.
   latest saved handoff before editing. Implement only the declared option scope
   plus saved owner modifications, and preserve the Lab page. If the handoff or
   implementation scope is ambiguous, ask the owner in the current sandbox worker
-  chat and wait for that answer instead of guessing. After each changed iteration
-  is committed and its sandbox endpoints are healthy, serve with a concrete
-  `-IterationSummary`; this appends the summary and validation evidence as an
-  implemented-review version. Do not record a startup with no Lab changes as an
+  chat and wait for that answer instead of guessing. `-Promote` records the promoted
+  commit as an implemented-review iteration by itself, after starting the stack and
+  confirming the endpoints answer, so an iteration loop ends at promotion with no
+  separate step. Pass `-IterationSummary` to `-Serve` or `-Promote` only to choose
+  that wording, or to record an intermediate iteration you want in the Lab history.
+  Do not record a startup with no Lab changes as an
   iteration. Successful verified promotion appends Completed before cleanup.
 - Never deploy production without explicit owner approval.
 
