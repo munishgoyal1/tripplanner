@@ -667,10 +667,11 @@ implemented capability baseline.
 - Structured Assistant input is not yet rendered in production web or native UI.
   The selectable overlay/control prototype is active in UX Labs; production wiring
   requires an owner-selected direction.
-- No cost-optimization layer (DEAL-01). Provider prices are shown as returned;
-  there is no cross-source comparison for the same choice, no re-check of a
-  finalized-but-unbooked price, no total-trip cost model the user can act on, and
-  no loyalty, card-benefit, or portal-offer modeling.
+- No complete cost-optimization layer (DEAL-01). Exact-response stay and flight
+  candidate comparisons now support deterministic selection and reversal, but
+  there is no cross-source comparison, re-check of a finalized-but-unbooked
+  price, user-owned budget what-if workflow, or loyalty, card-benefit, and
+  portal-offer modeling.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
   not indexable and not first-paint-fast for anonymous visitors.

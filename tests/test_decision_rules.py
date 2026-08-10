@@ -4,10 +4,18 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from tripplanner.decisions.flights import build_flight_decision
 from tripplanner.decisions.lodging import build_lodging_decision, reconcile_selected_lodging
-from tripplanner.decisions.models import FareBasis, LodgingFacts, Option, Price, TransportMode
+from tripplanner.decisions.models import (
+    FareBasis,
+    FlightFacts,
+    LodgingFacts,
+    Option,
+    Price,
+    TransportMode,
+)
 from tripplanner.decisions.rules import TransportPrefs, party_total, rank
-from tripplanner.providers.models import HotelOffer, Money
+from tripplanner.providers.models import FlightOffer, HotelOffer, Money
 
 
 def option(
@@ -200,3 +208,82 @@ def test_lodging_decision_follows_the_property_the_agent_persisted():
         if option["id"] == reconciled["chosen_option_id"]
     )
     assert chosen["label"] == "Memmo Alfama"
+
+
+def _flight_offer(*, offer_id: str, amount: float, segments: list[dict]) -> FlightOffer:
+    return FlightOffer(
+        provider="stub-flights",
+        provider_ref={"offer_id": offer_id},
+        total=Money(amount=amount, currency="USD"),
+        segments=segments,
+        quoted_at=datetime.now(UTC),
+    )
+
+
+def _flight_decision(offers: list[FlightOffer]):
+    return build_flight_decision(
+        offers,
+        origin="Delhi",
+        destination="London",
+        departure_date="2026-10-02",
+        return_date="",
+        cabin_class="ECONOMY",
+        cached=False,
+    )
+
+
+def test_flight_decision_prefers_fewer_stops_before_price() -> None:
+    direct = _flight_offer(
+        offer_id="direct",
+        amount=900,
+        segments=[{"origin": "DEL", "destination": "LHR", "carrier": "Air India"}],
+    )
+    connecting = _flight_offer(
+        offer_id="connecting",
+        amount=650,
+        segments=[
+            {"origin": "DEL", "destination": "DXB", "carrier": "Emirates"},
+            {"origin": "DXB", "destination": "LHR", "carrier": "Emirates"},
+        ],
+    )
+
+    decision = _flight_decision([connecting, direct])
+
+    assert decision is not None
+    chosen = decision.option(decision.chosen_option_id)
+    assert chosen is not None
+    assert chosen.flight == FlightFacts(
+        origin="Delhi",
+        destination="London",
+        departure_date="2026-10-02",
+        cabin_class="ECONOMY",
+        segments=[{"origin": "DEL", "destination": "LHR", "carrier": "Air India"}],
+        stops=0,
+        provider_ref={"offer_id": "direct"},
+    )
+    assert decision.rule.code == "flight_stops_then_total"
+    rejected = next(option for option in decision.options if option.flight.stops == 1)
+    assert "Adds 1 stop" in rejected.rejected_because
+
+
+def test_flight_decision_uses_verified_total_to_break_stop_ties() -> None:
+    decision = _flight_decision(
+        [
+            _flight_offer(
+                offer_id="expensive",
+                amount=900,
+                segments=[{"origin": "DEL", "destination": "LHR", "carrier": "A"}],
+            ),
+            _flight_offer(
+                offer_id="cheaper",
+                amount=700,
+                segments=[{"origin": "DEL", "destination": "LHR", "carrier": "B"}],
+            ),
+        ]
+    )
+
+    assert decision is not None
+    chosen = decision.option(decision.chosen_option_id)
+    assert chosen is not None and chosen.price is not None
+    assert chosen.price.amount == 700
+    assert chosen.source.provider == "stub-flights"

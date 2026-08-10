@@ -13,6 +13,7 @@ from tripplanner.decisions.models import (
     DecisionScope,
     DecisionState,
     FareBasis,
+    FlightFacts,
     LodgingFacts,
     Option,
     Price,
@@ -325,3 +326,72 @@ def test_lodging_restore_returns_the_exact_original_stay() -> None:
     assert all(
         day["stops"][0]["name"] == "Memmo Alfama" for day in plan["day_wise_itinerary"]
     )
+
+
+def flight_option(option_id: str, airline: str, amount: float, stops: int) -> Option:
+    return Option(
+        id=option_id,
+        mode=TransportMode.FLIGHT,
+        label=airline,
+        price=Price(amount=amount, currency="USD", basis=FareBasis.PER_PARTY),
+        flight=FlightFacts(
+            origin="DEL",
+            destination="LHR",
+            departure_date="2026-05-01",
+            cabin_class="ECONOMY",
+            segments=[{"origin": "DEL", "destination": "LHR", "carrier": airline}],
+            stops=stops,
+            provider_ref={"offer_id": option_id},
+        ),
+    )
+
+
+def flight_plan() -> dict:
+    plan = {
+        "currency": "USD",
+        "total_cost": 2400.0,
+        "selected_flights": [
+            {
+                "airline": "Air India",
+                "price": 900,
+                "currency": "USD",
+                "provider_ref": {"offer_id": "direct"},
+            }
+        ],
+        "day_wise_itinerary": [],
+    }
+    upsert_decision(
+        plan,
+        Decision(
+            id="dec_flight_del_lhr",
+            kind=DecisionKind.FLIGHT,
+            created_at=datetime.now(UTC),
+            scope=DecisionScope(from_place="DEL", to_place="LHR", date="2026-05-01"),
+            subject="Flight from Delhi to London",
+            rule=Rule(code="flight_stops_then_total", text="Fewest stops first."),
+            chosen_option_id="direct",
+            options=[
+                flight_option("direct", "Air India", 900, 0),
+                flight_option("connecting", "Emirates", 650, 1),
+            ],
+        ),
+    )
+    return plan
+
+
+def test_flight_override_and_restore_swap_the_exact_selected_offer() -> None:
+    plan = flight_plan()
+
+    switched = apply_override(plan, "dec_flight_del_lhr", "connecting")
+
+    assert switched.ok
+    assert switched.delta == pytest.approx(-250)
+    assert plan["total_cost"] == pytest.approx(2150)
+    assert plan["selected_flights"][0]["airline"] == "Emirates"
+    assert plan["selected_flights"][0]["provider_ref"]["offer_id"] == "connecting"
+
+    restored = restore(plan, "dec_flight_del_lhr")
+
+    assert restored.ok
+    assert plan["total_cost"] == pytest.approx(2400)
+    assert plan["selected_flights"][0]["provider_ref"]["offer_id"] == "direct"

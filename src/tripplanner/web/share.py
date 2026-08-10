@@ -134,6 +134,8 @@ def sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
     public = {k: plan[k] for k in public_keys if k in plan}
     if "selected_hotels" in public:
         public["selected_hotels"] = _strip_private_fields(public["selected_hotels"])
+    if "selected_flights" in public:
+        public["selected_flights"] = _strip_private_fields(public["selected_flights"])
     decisions = sanitize_decisions(plan.get("decisions"))
     if decisions:
         public["decisions"] = decisions

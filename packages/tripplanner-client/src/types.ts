@@ -183,6 +183,18 @@ export interface DecisionOption {
     rating?: number | null;
     review_count?: number | null;
   } | null;
+  flight?: {
+    origin?: string;
+    destination?: string;
+    departure_date?: string;
+    return_date?: string;
+    cabin_class?: string;
+    segments?: Array<Record<string, unknown>>;
+    stops?: number;
+    seats_remaining?: number | null;
+    baggage?: Record<string, unknown> | null;
+    terms?: Record<string, unknown> | null;
+  } | null;
 }
 
 export interface Decision {

@@ -14,6 +14,7 @@ from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.liteapi import LiteAPIError, LiteAPIProvider
 from tripplanner.providers.models import (
     ActivitySearchQuery,
+    FlightOffer,
     FlightSearchQuery,
     HotelOffer,
     HotelSearchQuery,
@@ -29,7 +30,7 @@ from tripplanner.providers.registry import (
 )
 from tripplanner.providers.runtime import run_provider_chain
 from tripplanner.providers.viator import ViatorError, ViatorProvider
-from tripplanner.tools import hotel_search, trip_planner
+from tripplanner.tools import flight_search, hotel_search, trip_planner
 
 
 def _response(status: int, payload: dict | None = None) -> httpx.Response:
@@ -380,6 +381,69 @@ def test_liteapi_normalizes_flight_search_and_verify(monkeypatch):
     assert found[0].seats_remaining == 3
     assert verified.total.amount == 845.0
     assert verified.changes == {"priceChanged": True}
+
+
+def test_flight_search_records_the_exact_compared_candidates(monkeypatch):
+    class Flights:
+        name = "stub-flights"
+
+        def __init__(self):
+            self.calls = 0
+
+        def search_flights(self, query):
+            self.calls += 1
+            return [
+                FlightOffer(
+                    provider=self.name,
+                    provider_ref={"offer_id": offer_id},
+                    total=Money(amount=amount, currency="USD"),
+                    segments=segments,
+                    quoted_at=datetime.now(UTC),
+                )
+                for offer_id, amount, segments in [
+                    (
+                        "direct",
+                        900,
+                        [{"origin": "DEL", "destination": "LHR", "carrier": "A"}],
+                    ),
+                    (
+                        "connecting",
+                        650,
+                        [
+                            {"origin": "DEL", "destination": "DXB", "carrier": "B"},
+                            {"origin": "DXB", "destination": "LHR", "carrier": "B"},
+                        ],
+                    ),
+                ]
+            ]
+
+    provider = Flights()
+    saved: dict = {}
+    flight_search._FLIGHT_RESULT_CACHE.clear()
+    monkeypatch.setattr(flight_search, "get_flight_providers", lambda: [provider])
+    monkeypatch.setattr(flight_search, "note_price_check", lambda *args: None)
+    monkeypatch.setattr(
+        trip_planner,
+        "record_trip_decision",
+        lambda decision: saved.update({"decision": decision}) or True,
+    )
+
+    payload = json.loads(
+        flight_search.search_flights.invoke(
+            {
+                "origin": "Delhi",
+                "destination": "London",
+                "departure_date": "2026-10-02",
+                "currency": "USD",
+            }
+        )
+    )
+
+    assert provider.calls == 1
+    assert payload["decision_id"] == saved["decision"].id
+    assert payload["recommended_option_id"] == saved["decision"].chosen_option_id
+    refs = {option.flight.provider_ref["offer_id"] for option in saved["decision"].options}
+    assert refs == {"direct", "connecting"}
 
 
 def test_liteapi_surfaces_provider_errors_without_response_body(monkeypatch):

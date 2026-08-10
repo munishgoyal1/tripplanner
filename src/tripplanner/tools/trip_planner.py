@@ -1903,6 +1903,10 @@ def update_trip_plan(updates_json: str) -> str:
         from tripplanner.decisions.lodging import reconcile_selected_lodging
 
         reconcile_selected_lodging(plan)
+    if "selected_flights" in updates:
+        from tripplanner.decisions.flights import reconcile_selected_flight
+
+        reconcile_selected_flight(plan)
 
     added_flight_legs = []
     if {"origin", "selected_flights"}.intersection(updates):

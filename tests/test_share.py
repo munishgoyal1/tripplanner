@@ -271,3 +271,39 @@ def test_shared_stay_drops_opaque_provider_references_at_every_level() -> None:
     assert "provider_ref" not in public["decisions"][0]["options"][0]["lodging"]
     assert public["selected_hotels"][0]["source"]["provider"] == "LiteAPI"
 
+
+def test_shared_flight_drops_opaque_provider_references_at_every_level() -> None:
+    plan = _make_plan(
+        selected_flights=[
+            {
+                "airline": "Air India",
+                "provider_ref": {"offer_id": "off-direct"},
+                "source": {"provider": "Duffel", "checked_at": "2026-09-15T08:00:00"},
+            }
+        ],
+        decisions=[
+            _decision(
+                kind="flight",
+                options=[
+                    {
+                        "id": "opt_direct",
+                        "mode": "flight",
+                        "label": "Air India",
+                        "price": {"amount": 900, "currency": "USD"},
+                        "flight": {
+                            "origin": "DEL",
+                            "destination": "LHR",
+                            "provider_ref": {"offer_id": "off-direct"},
+                        },
+                    }
+                ],
+            )
+        ],
+    )
+
+    public = share.sanitize_plan(plan)
+
+    assert "provider_ref" not in public["selected_flights"][0]
+    assert "provider_ref" not in public["decisions"][0]["options"][0]["flight"]
+    assert public["selected_flights"][0]["source"]["provider"] == "Duffel"
+

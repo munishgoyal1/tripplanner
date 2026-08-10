@@ -267,6 +267,65 @@ def _apply_lodging_shape(
     )
 
 
+def _flight_item(option: Option, decision: Decision) -> dict[str, Any]:
+    flight = option.flight
+    item: dict[str, Any] = {
+        "name": option.label,
+        "airline": option.label,
+        "decision_id": decision.id,
+    }
+    if option.price is not None:
+        item.update({"price": option.price.amount, "currency": option.price.currency})
+    if flight is not None:
+        item.update(
+            {
+                "from": flight.origin,
+                "to": flight.destination,
+                "departure_date": flight.departure_date,
+                "return_date": flight.return_date,
+                "travel_class": flight.cabin_class,
+                "segments": [dict(segment) for segment in flight.segments],
+                "stops": flight.stops,
+                "provider_ref": dict(flight.provider_ref),
+            }
+        )
+        for key, value in (
+            ("seats_remaining", flight.seats_remaining),
+            ("baggage", flight.baggage),
+            ("terms", flight.terms),
+        ):
+            if value is not None:
+                item[key] = value
+    item["source"] = option.source.model_dump(mode="json", exclude_none=True)
+    return item
+
+
+def _apply_flight_shape(
+    plan: dict[str, Any], decision: Decision, previous: Option | None, chosen: Option
+) -> list[str]:
+    previous_ref = previous.flight.provider_ref if previous and previous.flight else {}
+    previous_offer_id = str(previous_ref.get("offer_id") or "")
+    replacement = _flight_item(chosen, decision)
+    selected = plan.get("selected_flights")
+    if not isinstance(selected, list):
+        selected = []
+        plan["selected_flights"] = selected
+    for index, item in enumerate(selected):
+        if not isinstance(item, dict):
+            continue
+        provider_ref = item.get("provider_ref")
+        offer_id = (
+            str(provider_ref.get("offer_id") or "")
+            if isinstance(provider_ref, dict)
+            else str(item.get("offer_id") or "")
+        )
+        if previous_offer_id and offer_id == previous_offer_id:
+            selected[index] = replacement
+            return []
+    selected.append(replacement)
+    return ["The prior flight offer was no longer selected, so this flight was added."]
+
+
 def _settle_cost(
     plan: dict[str, Any],
     previous: Option | None,
@@ -327,6 +386,8 @@ def _apply(plan: dict[str, Any], decision: Decision, chosen: Option) -> ApplyRes
     warnings: list[str] = []
     if decision.kind == DecisionKind.LODGING:
         warnings.extend(_apply_lodging_shape(plan, decision, previous, chosen))
+    elif decision.kind == DecisionKind.FLIGHT:
+        warnings.extend(_apply_flight_shape(plan, decision, previous, chosen))
     else:
         located = _locate_stop(plan, decision)
         if located is None:

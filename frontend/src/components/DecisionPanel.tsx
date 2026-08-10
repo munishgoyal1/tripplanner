@@ -71,6 +71,20 @@ function OptionRow({
         ? "Non-refundable"
         : "",
   ].filter(Boolean);
+  const flightFacts = [
+    option.flight?.origin && option.flight?.destination
+      ? `${option.flight.origin} → ${option.flight.destination}`
+      : "",
+    option.flight?.stops === 0
+      ? "Direct"
+      : option.flight?.stops != null
+        ? `${option.flight.stops} stop${option.flight.stops === 1 ? "" : "s"}`
+        : "",
+    option.flight?.cabin_class?.replaceAll("_", " ").toLowerCase(),
+    option.flight?.seats_remaining != null
+      ? `${option.flight.seats_remaining} seats left at check`
+      : "",
+  ].filter(Boolean);
   return (
     <li
       className={`flex items-start gap-2.5 rounded-lg px-2.5 py-2 ring-1 ${
@@ -90,9 +104,16 @@ function OptionRow({
             <span className="text-[10px] font-semibold uppercase text-slate-400">Original pick</span>
           )}
         </p>
-        {option.detail && <p className="mt-0.5 text-[11px] text-slate-500">{option.detail}</p>}
+        {option.detail && !option.flight && (
+          <p className="mt-0.5 text-[11px] text-slate-500">{option.detail}</p>
+        )}
         {lodgingFacts.length > 0 && (
           <p className="mt-0.5 text-[11px] text-slate-500">{lodgingFacts.join(" · ")}</p>
+        )}
+        {flightFacts.length > 0 && (
+          <p className="mt-0.5 text-[11px] capitalize text-slate-500">
+            {flightFacts.join(" · ")}
+          </p>
         )}
         {!active && option.rejected_because && (
           <p className="mt-0.5 text-[11px] text-slate-500">{option.rejected_because}</p>

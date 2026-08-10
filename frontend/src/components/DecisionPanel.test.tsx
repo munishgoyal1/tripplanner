@@ -129,6 +129,45 @@ describe("DecisionPanel", () => {
     expect(screen.queryByText(/door to door/)).toBeNull();
   });
 
+  it("shows flight route, stops, cabin, and live seat evidence", () => {
+    renderPanel([
+      decision({
+        id: "dec_flight_del_lhr",
+        kind: "flight",
+        subject: "Flight from Delhi to London",
+        rule: {
+          code: "flight_stops_then_total",
+          text: "Fewest stops first; lowest verified party total breaks ties",
+        },
+        chosen_option_id: "opt_direct",
+        agent_option_id: "opt_direct",
+        options: [
+          {
+            id: "opt_direct",
+            mode: "flight",
+            label: "Air India",
+            detail: "DEL to LHR · Direct",
+            price: { amount: 900, currency: "USD", basis: "per_party" },
+            priced: true,
+            unpriced_reason: null,
+            flight: {
+              origin: "DEL",
+              destination: "LHR",
+              cabin_class: "PREMIUM_ECONOMY",
+              stops: 0,
+              seats_remaining: 3,
+            },
+          },
+        ],
+      }),
+    ]);
+
+    expect(screen.getByText(/DEL → LHR/)).toBeTruthy();
+    expect(screen.getByText(/Direct/)).toBeTruthy();
+    expect(screen.getByText(/premium economy/)).toBeTruthy();
+    expect(screen.getByText(/3 seats left at check/)).toBeTruthy();
+  });
+
   it("applies an overrule through the state owner with the trip revision", async () => {
     overrideDecision.mockResolvedValue({
       ok: true,

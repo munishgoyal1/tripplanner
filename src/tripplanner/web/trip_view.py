@@ -819,6 +819,14 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
                         if option.lodging
                         else None
                     ),
+                    "flight": (
+                        option.flight.model_dump(
+                            mode="json",
+                            exclude={"provider_ref"},
+                        )
+                        if option.flight
+                        else None
+                    ),
                 }
                 for option in decision.options
             ],
