@@ -221,13 +221,12 @@ describe("PublicEntry", () => {
 
   it("shows the signed-in display name in the masthead", () => {
     const onSkip = vi.fn();
-    render(<Masthead tone="dark" onSkip={onSkip} accountLabel="Munish" signedIn />);
+    const onOpenAccount = vi.fn();
+    render(<Masthead tone="dark" onSkip={onSkip} onOpenAccount={onOpenAccount} accountLabel="Munish" signedIn />);
 
     expect(screen.getByText("Munish")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Munish profile" }));
     expect(onSkip).not.toHaveBeenCalled();
-    expect(screen.getByRole("menu", { name: "Munish profile menu" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("menuitem", { name: /open account settings/i }));
-    expect(onSkip).toHaveBeenCalledOnce();
+    expect(onOpenAccount).toHaveBeenCalledOnce();
   });
 });

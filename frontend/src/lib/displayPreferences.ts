@@ -10,7 +10,19 @@ export interface DisplayPreferences {
 const STORAGE_KEY = "tripplanner_display_preferences";
 const SOURCE_KEY = "tripplanner_display_preferences_source";
 const DEFAULTS: DisplayPreferences = { region: "", language: "en", currency: "USD" };
-const RATES_FROM_USD: Record<string, number> = { USD: 1, EUR: 0.92, GBP: 0.78, INR: 83 };
+const RATES_FROM_USD: Record<string, number> = {
+  USD: 1,
+  EUR: 0.92,
+  GBP: 0.78,
+  INR: 83,
+  JPY: 147,
+  CAD: 1.36,
+  AUD: 1.52,
+  CHF: 0.88,
+  CNY: 7.2,
+  AED: 3.67,
+  BRL: 5,
+};
 
 function normalizeCurrency(currency: string): string {
   const value = currency.toUpperCase();
@@ -21,9 +33,7 @@ function normalizeCurrency(currency: string): string {
 }
 
 export function supportedDisplayCurrencies(): string[] {
-  const intl = Intl as typeof Intl & { supportedValuesOf?: (key: "currency") => string[] };
-  if (typeof intl.supportedValuesOf === "function") return intl.supportedValuesOf("currency");
-  return ["USD", "EUR", "GBP", "INR", "JPY", "CAD", "AUD", "CHF", "CNY"];
+  return Object.keys(RATES_FROM_USD);
 }
 
 export function displayCurrencyLabel(currency: string): string {

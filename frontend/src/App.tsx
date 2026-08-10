@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import CanvasPaneFrame from "./components/CanvasPaneFrame";
+import { openAccountSettings } from "./components/accountSettings";
 import ChatPanel, { type AssistantTurnContext, type AssistantTurnStatus } from "./components/ChatPanel";
 import DetailsPaneShell from "./components/DetailsPaneShell";
 import DesktopToolbar from "./components/DesktopToolbar";
@@ -1007,12 +1008,10 @@ export default function App({ initialRequest = null }: { initialRequest?: string
           onExport={() => setShowExport(true)}
           signedIn={signedIn}
           accountLabel={signedIn ? getDisplayName() || "Account" : "Guest"}
-          onOpenAccount={() => window.dispatchEvent(new Event("tripplanner:open-account"))}
+          onOpenAccount={() => openAccountSettings()}
           documentBadge={documentBadge}
           documentBadgeTone={documentBadgeTone}
-          onOpenDocuments={() => window.dispatchEvent(
-            new CustomEvent("tripplanner:open-account", { detail: { destination: "documents" } }),
-          )}
+          onOpenDocuments={() => openAccountSettings("documents")}
           onOpenWelcome={() => window.dispatchEvent(new Event("tripplanner:open-welcome"))}
         />
 

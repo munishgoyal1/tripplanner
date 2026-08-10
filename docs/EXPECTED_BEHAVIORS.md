@@ -137,13 +137,15 @@ receipts.
 
 **Trigger:** Select the profile chip in the public-entry masthead.
 
-**Expected:** The profile chip opens its profile menu without leaving `/welcome`.
-Entering the planner happens only through an explicit menu command or the separate
-Skip to the app action.
+**Expected:** The profile chip opens the complete shared Account settings hub
+without leaving `/welcome`. Choosing any settings destination, including Travel
+Profile, stays on `/welcome`. Entering the planner happens only through Plan mine
+or the separate Skip to the app action.
 
 **Executable proof:**
 
 - [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
+- [`frontend/src/components/AccountSettingsController.test.tsx`](../frontend/src/components/AccountSettingsController.test.tsx)
 
 ## Planner workspace
 
@@ -508,19 +510,38 @@ rebuild unrelated itinerary data.
 
 ### EB-ACCOUNT-001 - Keep account destinations in one hub
 
-**Trigger:** Open Account settings and choose Profile and sign-in, Travel Profile,
+**Trigger:** Open Account settings from the welcome page, workspace, or another
+application page and choose Profile and sign-in, Travel Profile, Travel documents,
 Analytics preferences, or Privacy and data.
 
-**Expected:** The destination opens inside the Account settings hub rather than
-as a detached settings surface. Travel Profile and Analytics remain editable
-there. When analytics is configured and no choice exists, first-run consent still
-appears separately; revisiting Analytics in Account does not recreate that prompt.
+**Expected:** Every entry point opens the same Root-owned Account settings hub
+without navigating away from the current page. The destination opens inside the
+hub rather than as a detached settings surface. Travel Profile and Analytics
+remain editable there. When analytics is configured and no choice exists,
+first-run consent still appears separately; revisiting Analytics in Account does
+not recreate that prompt.
 
 **Executable proof:**
 
-- [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `presents the four selected account destinations`
+- [`frontend/src/components/AccountSettingsController.test.tsx`](../frontend/src/components/AccountSettingsController.test.tsx)
+- [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `presents the five shared account destinations`
 - [`frontend/src/components/AccountSettingsHub.test.tsx`](../frontend/src/components/AccountSettingsHub.test.tsx) - `keeps travel profile and analytics inside the account settings hub`
 - [`frontend/src/components/AnalyticsConsent.test.tsx`](../frontend/src/components/AnalyticsConsent.test.tsx) - `shows the bottom prompt only for first-run consent when analytics is configured`
+
+### EB-ACCOUNT-002 - Apply supported display currencies to itinerary costs
+
+**Trigger:** Change Display currency to a supported currency such as CNY while an
+itinerary is visible in the workspace.
+
+**Expected:** Visible itinerary and trip-summary costs immediately re-render in
+the selected currency using the shared display conversion table. The selector
+offers only currencies that table can convert, so a selection never silently
+falls back to the source currency.
+
+**Executable proof:**
+
+- [`frontend/src/components/ItineraryPanel.test.tsx`](../frontend/src/components/ItineraryPanel.test.tsx) - `updates itinerary costs when the display currency changes to CNY`
+- [`frontend/src/lib/displayPreferences.test.ts`](../frontend/src/lib/displayPreferences.test.ts)
 
 ## UX Labs
 

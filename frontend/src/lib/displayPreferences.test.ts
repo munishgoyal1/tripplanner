@@ -5,6 +5,7 @@ describe("display preferences formatting", () => {
   it("formats prices in the selected presentation currency", () => {
     expect(formatDisplayAmount(100, "USD", "INR")).toBe("₹8,300");
     expect(formatDisplayAmount(100, "€", "USD")).toBe("$109");
+    expect(formatDisplayAmount(100, "USD", "CNY")).toBe("CN¥720");
   });
 
   it("uses regional distance and temperature conventions", () => {

@@ -24,12 +24,13 @@ function renderHub(overrides: Partial<React.ComponentProps<typeof AccountSetting
 }
 
 describe("AccountSettingsHub", () => {
-  it("presents the four selected account destinations", () => {
+  it("presents the five shared account destinations", () => {
     renderHub();
 
     expect(screen.getByRole("complementary", { name: "Account settings" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Profile and sign-in/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Travel profile/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Travel documents/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Analytics preferences/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Privacy and data/ })).toBeInTheDocument();
   });

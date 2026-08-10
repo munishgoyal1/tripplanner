@@ -492,8 +492,10 @@ If a redesign violates the above without a stated reason, push back.
   **additively** merges into preferences. Never overwrite existing user data.
 - **Account settings has one owner.** One labeled identity command opens a
   right-side sheet for Profile and sign-in, Travel Profile, Analytics
-  preferences, and Privacy and data. Escape or the explicit close control
-  dismisses it; do not restore a separate Travel preferences command-bar gear.
+  preferences, Travel documents, and Privacy and data. The same complete sheet
+  opens without navigation from welcome, workspace, and future pages. Escape or
+  the explicit close control dismisses it; do not restore a separate Travel
+  preferences command-bar gear or a page-specific profile menu.
 
 ## 6) Owner taste — code & process
 
@@ -556,3 +558,4 @@ changes the type/color/shape vocabulary, update §4. If a new run mode
 appears, add it to §3. Stale PRODUCT.md = wasted onboarding time for the
 next agent session.
 
+Keep product intent in this canonical document rather than a parallel summary.

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { writeDisplayPreferences } from "../lib/displayPreferences";
 import type { Itinerary, TripOverview } from "../types";
 import ItineraryPanel from "./ItineraryPanel";
 
@@ -124,6 +125,8 @@ const overview: TripOverview = {
 
 describe("ItineraryPanel", () => {
   beforeEach(() => {
+    window.localStorage.clear();
+    writeDisplayPreferences({ region: "IN", language: "en", currency: "USD" });
     fetchItineraryMock.mockReset().mockResolvedValue(itinerary);
     setStopBookedMock.mockReset();
     scrollIntoViewMock.mockReset();
@@ -160,8 +163,27 @@ describe("ItineraryPanel", () => {
     expect(screen.getByText("1 hr visit")).toBeInTheDocument();
     expect(screen.queryByText("In trip")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Mark confirmed/ })).toHaveLength(2);
-    expect(screen.getByLabelText("Light rain, high 18 degrees Celsius, low 12 degrees Celsius")).toHaveTextContent("18° / 12°C");
+    expect(screen.getByLabelText("Light rain, high 18 degrees Celsius, low 12 degrees Celsius")).toHaveTextContent("18°C / 12°C");
     expect(screen.getByText("65% rain")).toBeInTheDocument();
+  });
+
+  it("updates itinerary costs when the display currency changes to CNY", async () => {
+    fetchItineraryMock.mockResolvedValue({
+      ...itinerary,
+      days: [{
+        ...itinerary.days[0],
+        stops: [{ ...itinerary.days[0].stops[0], cost_display: "USD 100" }],
+      }],
+    });
+    writeDisplayPreferences({ region: "US", language: "en", currency: "USD" });
+    render(<ItineraryPanel />);
+
+    expect(await screen.findByText("$100")).toBeInTheDocument();
+
+    writeDisplayPreferences({ region: "CN", language: "en", currency: "CNY" });
+
+    await waitFor(() => expect(screen.getByText("CN¥720")).toBeInTheDocument());
+    expect(screen.queryByText("$100")).not.toBeInTheDocument();
   });
 
   it("uses the itinerary entry point for the authoritative trip snapshot", async () => {
@@ -171,8 +193,8 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("Paris");
     expect(screen.getByLabelText("5 days")).toBeInTheDocument();
     expect(screen.getByLabelText("4 places")).toBeInTheDocument();
-    expect(snapshot).toHaveTextContent("₹45,000");
-    expect(snapshot).toHaveTextContent("Delhi · 2026-09-12 - 2026-09-16 · 2 travelers");
+    expect(snapshot).toHaveTextContent("$45,000");
+    expect(snapshot).toHaveTextContent("From Delhi · 12 Sept 2026 - 16 Sept 2026 · 2 travelers");
     expect(snapshot).toHaveTextContent("0 of 2 ready");
     expect(snapshot).toHaveTextContent("2 need booking");
     expect(screen.getByLabelText("0% of stops ready")).toBeInTheDocument();

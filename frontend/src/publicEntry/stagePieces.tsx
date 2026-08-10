@@ -8,7 +8,6 @@ import {
   Camera,
   Car,
   Check,
-  ChevronDown,
   Footprints,
   Hotel,
   Loader2,
@@ -22,7 +21,7 @@ import {
   UserRound,
   UtensilsCrossed,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import BrandIdentity from "../components/BrandIdentity";
 import { trustPoints } from "./demoRun";
@@ -464,59 +463,24 @@ export function SectionHead({ tone, eyebrow, title, body }: { tone: Tone; eyebro
   );
 }
 
-export function Masthead({ tone, onSkip, accountLabel, signedIn }: { tone: Tone; onSkip: () => void; accountLabel: string; signedIn: boolean }) {
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!profileOpen) return;
-    const closeOnOutsideClick = (event: MouseEvent) => {
-      if (!profileRef.current?.contains(event.target as Node)) setProfileOpen(false);
-    };
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setProfileOpen(false);
-    };
-    window.addEventListener("mousedown", closeOnOutsideClick);
-    window.addEventListener("keydown", closeOnEscape);
-    return () => {
-      window.removeEventListener("mousedown", closeOnOutsideClick);
-      window.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [profileOpen]);
-
+export function Masthead({ tone, onSkip, onOpenAccount, accountLabel, signedIn }: { tone: Tone; onSkip: () => void; onOpenAccount: () => void; accountLabel: string; signedIn: boolean }) {
   return (
     <header className={`flex items-center justify-between border-b px-6 py-3.5 ${toneStyles[tone].divider}`}>
       <BrandIdentity compact />
       <div className="flex items-center gap-2">
-        <div ref={profileRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setProfileOpen((open) => !open)}
-            className={`inline-flex items-center gap-2 rounded-full border px-2 py-1.5 text-[12px] font-semibold transition ${tone === "dark" ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"}`}
-            title={`${accountLabel} profile menu`}
-            aria-label={`${accountLabel} profile`}
-            aria-haspopup="menu"
-            aria-expanded={profileOpen}
-          >
-            <span className={`relative grid h-6 w-6 place-items-center rounded-full ${tone === "dark" ? "bg-white text-ink" : "bg-slate-100 text-slate-700"}`}>
-              <UserRound size={14} aria-hidden />
-              <span className={`absolute -bottom-0.5 -right-1 h-2 w-2 rounded-full ring-2 ${tone === "dark" ? "ring-[#080b11]" : "ring-white"} ${signedIn ? "bg-emerald-400" : "bg-slate-400"}`} aria-hidden />
-            </span>
-            <span>{accountLabel}</span>
-            <ChevronDown size={12} className={`transition ${profileOpen ? "rotate-180" : ""}`} aria-hidden />
-          </button>
-          {profileOpen && (
-            <div role="menu" aria-label={`${accountLabel} profile menu`} className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-md border border-slate-200 bg-white text-left text-slate-700 shadow-xl">
-              <div className="border-b border-slate-100 px-4 py-3">
-                <p className="truncate text-xs font-semibold text-ink">{accountLabel}</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">{signedIn ? "Signed-in traveler" : "Guest traveler"}</p>
-              </div>
-              <button type="button" role="menuitem" onClick={onSkip} className="w-full px-4 py-3 text-left hover:bg-slate-50">
-                <span className="block text-xs font-semibold">Open account settings</span>
-                <span className="mt-0.5 block text-[11px] text-slate-400">Profile, travel defaults, documents, and privacy</span>
-              </button>
-            </div>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={onOpenAccount}
+          className={`inline-flex items-center gap-2 rounded-full border px-2 py-1.5 text-[12px] font-semibold transition ${tone === "dark" ? "border-white/25 bg-white/10 text-white hover:bg-white/15" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"}`}
+          title={`${accountLabel} account settings`}
+          aria-label={`${accountLabel} profile`}
+        >
+          <span className={`relative grid h-6 w-6 place-items-center rounded-full ${tone === "dark" ? "bg-white text-ink" : "bg-slate-100 text-slate-700"}`}>
+            <UserRound size={14} aria-hidden />
+            <span className={`absolute -bottom-0.5 -right-1 h-2 w-2 rounded-full ring-2 ${tone === "dark" ? "ring-[#080b11]" : "ring-white"} ${signedIn ? "bg-emerald-400" : "bg-slate-400"}`} aria-hidden />
+          </span>
+          <span>{accountLabel}</span>
+        </button>
         <button
           type="button"
           onClick={onSkip}
