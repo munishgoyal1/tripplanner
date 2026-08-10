@@ -49,7 +49,7 @@
     "terminal.integrated.enablePersistentSessions": true,
     "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
     "window.restoreWindows": "all",
-    "workbench.activityBar.location": "hidden",
+    "workbench.activityBar.location": "top",
     "workbench.editor.enablePreview": false,
     "workbench.editor.showTabs": "single",
     "workbench.panel.defaultLocation": "right",

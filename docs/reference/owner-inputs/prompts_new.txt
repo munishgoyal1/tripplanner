@@ -1,1 +1,1 @@
-1. you can remove the recycle sandbox scriots andrecycle fucntionality completely now.
+1. Since most of my work currently is on master branch, may be I would like to invert the default option for Sync All script to consider only master (masterAgent lane 0) unless an "all" parameter is passed. Similar should be used for Sandbox promotion

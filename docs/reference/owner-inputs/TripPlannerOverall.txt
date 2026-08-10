@@ -2,3 +2,12 @@ Goals:
 
    - Top level main goal is to build smartest personalized itinerary in shortest time and with minimal user intervention or input required.
     
+Next Features:
+
+1. Itinerary item comparison in detail : hotel comparison, attraction comparison, transport mode comparison, any other comparison
+
+Trip budget adherence, Whatif and what are modficiations possible on adjusting budget - Smart suggestions
+e.g. You can add burj khalifa top deck view ticket if you are adding 200$ to the trip budget. That is worth , it is rated 5star by millions of people and strong review ... add main words.
+You can drop certain actiivtiy, or just take 1 stop connecting flight - you could get to visit singapore airport which is worth spending time, then catch a evening flight. this way you save money and land at good time to have 1 night rest etc.
+How do we build travel specific super intelligence to give a WOW and BEST itinerary and BEST and SMARTEST comparison options ??
+
