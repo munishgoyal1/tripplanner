@@ -126,10 +126,22 @@ class Settings(BaseModel):
 
     # Short-lived shared cache in front of the provider search tools. This is a
     # separate layer from the fare cache above, which backs transport comparisons.
+    # Keep CACHE_REDIS_ENABLED=0 to use in-memory only.
     hotel_search_cache_ttl_sec: int = _env_positive_int("HOTEL_SEARCH_CACHE_TTL_SEC", 600)
     flight_search_cache_ttl_sec: int = _env_positive_int("FLIGHT_SEARCH_CACHE_TTL_SEC", 600)
     activity_search_cache_ttl_sec: int = _env_positive_int(
         "ACTIVITY_SEARCH_CACHE_TTL_SEC", 21600
+    )
+    cache_redis_enabled: bool = Field(
+        default_factory=lambda: os.getenv("CACHE_REDIS_ENABLED", "0").strip() == "1"
+    )
+    cache_redis_url: str = os.getenv("CACHE_REDIS_URL", "redis://localhost:6379/0")
+    cache_redis_namespace: str = os.getenv("CACHE_REDIS_NAMESPACE", "tripplanner:provider-cache")
+    cache_redis_connect_timeout_sec: float = _env_positive_float(
+        "CACHE_REDIS_CONNECT_TIMEOUT_SEC", 0.2
+    )
+    cache_redis_socket_timeout_sec: float = _env_positive_float(
+        "CACHE_REDIS_SOCKET_TIMEOUT_SEC", 0.2
     )
 
     # Static schedule estimates used only when a persisted itinerary or live

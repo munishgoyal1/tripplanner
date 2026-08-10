@@ -311,6 +311,21 @@ Can you research the mainstream these missing provider APIs and list down crispl
 
 [2026-08-10 10:27] [master \!] Implement Redis cache layer
 Yes do it. One question , why did you suggest to keep 2 backends (inmemory and redis) , still keeping the in-memory. Is it to provide optinality in case redis cost is high or so ?
+[2026-08-10 11:18] [master !] Provision Azure Redis and wire envs
+Do all these steps and provision a bare minimum redis cache in my azure subscription in the local Resource group first.
+and you might be already planning to wire all this to canary and prod without me having to tell you this basic thing. If yes, great.
+
+[2026-08-10 11:59] [master !] Record Azure subscription context
+This subscription/login info should be already logged in some of the bootstrapping docs, if not yet, please log so every time agent doesnt have to sift through
+
+[2026-08-10 12:01] [master !] Consolidate Redis into local RG
+Do you really need to create a seperate resoruce group based on region, just add region in the resource name if that helps. But i would like to keep simpler format of single RG holding all env specific resources unless the resource count bloats a lot.
+
+[2026-08-10 12:48] [master !] Run sandbox with Redis enabled
+Run this sandbox with redis turned on. I want to inspect
+
+[2026-08-10 13:00] [master !] Add hosted Redis env placeholders
+which are the 6 env files and why didnt you add the placeholders for redis config in .env.canary and .env.prod ?
 
 [2026-08-10 16:10] [master !] Retire workers for sandboxes
 Impelemnt all this exactly as you suggested. I created a remote branch current with master as of now named "archive/drop-workersconcept-use-sandboxes", apply tag to master "archive/drop-workersconcept-use-sandboxes".

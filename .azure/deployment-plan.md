@@ -3,6 +3,30 @@
 Status: Validated
 Last updated: 2026-07-31
 
+## Azure Account Context
+
+Use the owner's personal Azure account for this repository:
+
+- Login: `munishgoyal1@gmail.com`
+- Subscription: `Visual Studio Enterprise Subscription`
+- Subscription ID: `2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`
+- Tenant ID: `d889d6d8-feaa-4837-937f-ddb9007ba8ef`
+- Primary region: `eastus2`
+- Local resource group: `rg-tripplanner-local`
+
+Authenticate the Azure CLI explicitly before resource operations so the
+Microsoft work tenant is not selected accidentally:
+
+```bash
+az login --tenant d889d6d8-feaa-4837-937f-ddb9007ba8ef
+az account set --subscription 2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b
+az account show --query "{subscription:name,id:id,tenant:tenantId,user:user.name}" -o table
+```
+
+Azure CLI credentials and VS Code Azure extension credentials are separate.
+If an Azure extension call reports a tenant mismatch, verify the CLI context
+above and use Azure CLI for the operation; do not switch to work subscriptions.
+
 ## 1. Objective And Constraints
 
 Modernize tripplanner's data infrastructure so local development is free and

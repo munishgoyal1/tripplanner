@@ -62,8 +62,16 @@ a database or fall back to local `.env` credentials.
 Authenticate manually before any Azure operation:
 
 ```powershell
-az login
+az login --tenant d889d6d8-feaa-4837-937f-ddb9007ba8ef
+az account set --subscription 2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b
+az account show --query "{subscription:name,id:id,tenant:tenantId,user:user.name}" -o table
 ```
+
+The personal Azure account for this repository is `munishgoyal1@gmail.com` in
+the `Visual Studio Enterprise Subscription` (`2dd0a2f4-fc3a-4245-8e40-fadd0bbcbd5b`).
+Its tenant is `d889d6d8-feaa-4837-937f-ddb9007ba8ef`. Do not use the
+`mugoy@microsoft.com` work identity or any work subscription for tripplanner
+operations.
 
 Preview shared-data changes before applying them:
 
