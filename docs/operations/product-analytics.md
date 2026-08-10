@@ -25,6 +25,14 @@ No GA script is loaded before consent. The manual page view strips the query
 string so shared-trip tokens are not collected. Consent is stored only in the
 browser and can be changed later.
 
+Consented events also fan out to the hidden first-party aggregate endpoint used
+by the owner operations dashboard. That endpoint accepts only the event name, a
+random browser-session ID, and a bounded source category. It ignores event
+parameters and does not retain URLs, referrers, account IDs, emails, prompts,
+destinations, dates, trip IDs, or cache keys. Its funnel, engagement, source, and
+drop-off metrics are process-local and reset with the container; GA4 remains the
+durable authority for acquisition, country, retention, and historical funnels.
+
 ## Event vocabulary
 
 | Event | Meaning | Parameters |
@@ -64,3 +72,14 @@ country. Also monitor planning failure rate and median time between
 GA4 answers acquisition and customer-flow questions. Diagnose a conversion drop
 against the PII-safe `chat_operation` and `tool_call` queries in
 `operations-slos.md`; do not copy operational exception details into GA4.
+
+The hidden `/operations` route provides two live views:
+
+- **Business**: consented activities, users, active engagement time, source
+	categories, observed funnel stage, and persisted trip counts.
+- **System Health**: chat/model/API latency, tool and fare-provider failures,
+	top cache-hit tool categories, Redis namespace size, and selected trip items.
+
+Dashboard labels distinguish process-local, monthly persisted, and rolling
+30-day values. An observed drop-off describes the last measured stage; it must
+not be presented as a subjective reason for leaving.

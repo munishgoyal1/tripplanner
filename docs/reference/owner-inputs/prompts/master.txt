@@ -1,3 +1,24 @@
+
+[2026-08-10 16:53] [master !] Expand operations insights dashboard
+Make it more aggregate level also. Show the following - bifurcate into 2 sub pages may - Busienss and System Health
+
+Type of user interaction - New Trip, trip edit, export, signin etc. all different key activites.
+
+[2026-08-10 18:37] [master !] Explain and fix sandbox promotion divergence
+why you left changes uncommitted. i have instructed you to finish off the work when you respond final status
+Total time spent by user 
+Categoriesed number of Errors. Top type of errrors.
+# of Users, their country, source and any reason bouncing off after intial quick interaction.- aggregates
+UI activity funnel till trip itinerary built
+
+System health - cache size, number of trips, places, items etc. cache hit %, top items being cache hit, 
+
+Mainly time taken by the travel LLM during chat interactions, number of tool calls made, top toools,
+
+
+Tool (provider) failures, Top faiolures and top failing providers, # of calls and percentage of failutrres etc. 
+
+Think deep and build a valuable and insightful dahsboard properly. If any metrics or observability items are mssing , do add them on backl of this ops dashboard feature now you will know what is missing, add logs if any msissing. 
 # Owner prompts executed in the MasterAgent lane (primary `master` workspace).
 # Tail-appended, newest at the bottom. Only this lane writes this file.
 # Format: [YYYY-MM-DD HH:MM] [master] [!] <short title> / verbatim prompt / blank line.
@@ -955,3 +976,10 @@ Another thing - just givng you my other thoughts you can guide me - I was thinki
 
 [2026-08-10 17:25] [master !] Move sandbox launchers under user
 bring the sandbox launcher scripts folder under user folder since user is the launcher user facing fdolder. do similar for mac and windows
+[2026-08-10 18:20] [master !] Log deferred merge-history explanation todo
+hold on to this, log it in details with context as needed as a TODO so that when i next ask you we need not discuss this again we can simply pick it from here the point we left it at. , put TODO folder under docs/roadmap
+
+
+Going forward for any deferred items i will ask you to place a tood
+[2026-08-10 18:32] [master !] Commit changes by default
+why dont you commit changes by default as part of your final response. dont leave them hanging

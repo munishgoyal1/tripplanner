@@ -14,6 +14,12 @@ On macOS, use the matching `.command` launchers under `scripts/mac/user/sandbox/
 
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/user/Run-Latest.cmd` on Windows or `scripts/mac/user/Run-Latest.command` on macOS. Sandboxes use their own ports and server-free validation by default.
 
+Promotion requires the primary `master` checkout to be clean and exactly equal
+to `origin/master` before the pull request is merged. After GitHub merges the
+pull request, promotion fast-forwards the primary checkout before recording
+completion or discarding the sandbox. A stale or locally-ahead primary checkout
+stops the promotion instead of creating a divergent history.
+
 After a successful `Sync-AllTo-Latest`, each registered sandbox may be ahead of
 `master`, but both its local branch and its pushed remote branch must contain the
 exact current `master` commit. The sync commands verify this ancestry invariant

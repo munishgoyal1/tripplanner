@@ -769,6 +769,28 @@ function Sync-MasterBaseline {
     }
 }
 
+function Sync-PrimaryCheckout {
+    param(
+        [Parameter(Mandatory = $true)][string]$Base,
+        [switch]$RequireExact
+    )
+
+    $changes = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("status", "--porcelain")
+    if ($changes) {
+        throw "Primary checkout has uncommitted changes. Commit or stash them before promotion."
+    }
+    Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("fetch", "origin", $Base) | Out-Null
+    $localHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "HEAD")
+    $remoteHead = Invoke-Git -WorkingDirectory $primaryRoot -Arguments @("rev-parse", "origin/$Base")
+    if ($RequireExact -and $localHead -ne $remoteHead) {
+        throw "Primary checkout must match origin/$Base before promotion (local $localHead, remote $remoteHead)."
+    }
+    & git -C $primaryRoot merge --ff-only "origin/$Base"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Primary checkout is not a clean fast-forward from origin/$Base. Reconcile it before promotion."
+    }
+}
+
 function Complete-SandboxMergeConflict {
     param(
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
@@ -1241,6 +1263,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
     Write-Host "== 1/6 sync with origin/$BaseBranch ==" -ForegroundColor Green
+    Sync-PrimaryCheckout -Base $BaseBranch -RequireExact
     & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -NoSync:$NoSync -Confirm:$false
     $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
         "diff", "--name-only", "--diff-filter=U"
@@ -1306,6 +1329,10 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     } finally {
         Pop-Location
     }
+
+    # GitHub advances the remote base branch, not the local primary checkout.
+    # Refresh it before any promotion bookkeeping can create a commit on stale master.
+    Sync-PrimaryCheckout -Base $BaseBranch
 
     # A merge that gh reports as done is not proof: branch protection can queue
     # it, and validation takes long enough for the worktree to be dirtied while

@@ -514,11 +514,15 @@ def record_tool_call(
                 "cache_hits": 0,
                 "total_ms": 0.0,
                 "recent_ms": [],
+                "error_types": {},
             },
         )
         m["calls"] += 1
         if status == "error":
             m["errors"] += 1
+            if error:
+                error_types: dict[str, int] = m["error_types"]
+                error_types[error] = error_types.get(error, 0) + 1
         if cache_hit:
             m["cache_hits"] += 1
         # We still record latency on errors so a slow-failing tool surfaces.
@@ -568,6 +572,9 @@ def tool_metrics_snapshot() -> dict[str, dict[str, Any]]:
                 "avg_ms": round(m["total_ms"] / calls, 2) if calls else 0.0,
                 "p50_ms": _percentile(recent_sorted, 50),
                 "p95_ms": _percentile(recent_sorted, 95),
+                "error_types": dict(
+                    sorted(m["error_types"].items(), key=lambda item: item[1], reverse=True)[:5]
+                ),
             }
     return out
 

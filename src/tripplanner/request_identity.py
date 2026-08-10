@@ -69,6 +69,19 @@ def require_signed_user(request: Request) -> str:
     return str(session["user_id"])
 
 
+def require_owner(request: Request) -> dict[str, str]:
+    session = signed_session(request)
+    owner_email = os.getenv("OPS_DASHBOARD_OWNER_EMAIL", "munishgoyal1@gmail.com")
+    if (
+        not session
+        or session.get("session_kind") == "guest"
+        or str(session.get("email") or "").strip().casefold()
+        != owner_email.strip().casefold()
+    ):
+        raise HTTPException(status_code=404, detail="Not found.")
+    return session
+
+
 def require_guest_capability(request: Request, guest_id: str) -> None:
     session = bearer_session(request)
     if (

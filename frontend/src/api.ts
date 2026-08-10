@@ -31,6 +31,96 @@ export interface ToolEventExtras {
   duration_ms?: number;
 }
 
+export interface OpsMetricRow {
+  calls: number;
+  errors: number;
+  p50_ms: number;
+  p95_ms: number;
+  p90_ms?: number;
+}
+
+export interface OpsOverview {
+  generated_at: string;
+  uptime_seconds: number;
+  business: {
+    new_trips: Record<"today" | "7d" | "30d", number>;
+    active_trips: Record<"today" | "7d" | "30d", number>;
+    chat_requests: number;
+    iterations: number;
+    inventory: {
+      trips: number;
+      flights: number;
+      hotels: number;
+      activities: number;
+    };
+  };
+  product: {
+    events: number;
+    sessions: number;
+    users: number;
+    engagement_seconds: number;
+    activities: Record<string, number>;
+    funnel: Record<"page_view" | "planning_started" | "trip_created" | "planning_completed", number>;
+    drop_offs: Record<string, number>;
+    countries: Record<string, number>;
+    sources: Record<string, number>;
+  };
+  chat_turns: {
+    calls: number;
+    completed: number;
+    errors: number;
+    distinct_users: number;
+    p50_ms: number;
+    p95_ms: number;
+    tool_calls: number;
+    avg_tools_per_turn: number;
+    outcomes: Record<string, number>;
+  };
+  requests: OpsMetricRow & {
+    by_route: Record<string, OpsMetricRow>;
+    error_statuses: Record<string, number>;
+  };
+  models: OpsMetricRow & {
+    recent: Array<{ model: string; status: string; duration_ms: number; at: number }>;
+  };
+  usage: {
+    month: string;
+    model_calls: number;
+    prompt_tokens: number;
+    completion_tokens: number;
+    cost_usd: number;
+  };
+  tools: Record<string, OpsMetricRow & {
+    cache_hits: number;
+    hit_rate: number;
+    avg_ms: number;
+    error_types: Record<string, number>;
+  }>;
+  providers: Record<string, {
+    calls: number;
+    successes: number;
+    failures: number;
+    failure_rate: number;
+    avg_ms: number;
+  }>;
+  cache: {
+    configured: boolean;
+    backend: "redis" | "memory";
+    redis_connected: boolean;
+    fallback_active: boolean;
+    memory_entries: number;
+    redis_entries: number;
+    redis_bytes: number;
+    redis_stats_truncated: boolean;
+  };
+}
+
+export async function fetchOpsOverview(signal?: AbortSignal): Promise<OpsOverview> {
+  const response = await apiFetch(`${BASE}/ops/overview`, { signal });
+  ensureOk(response, "Operations overview unavailable");
+  return response.json() as Promise<OpsOverview>;
+}
+
 export interface StreamHandlers {
   onToken: (text: string) => void;
   onTool: (name: string, phase: "start" | "end", extras?: ToolEventExtras) => void;

@@ -1402,6 +1402,7 @@ def _trip_summary(plan: dict[str, Any], active_id: str | None) -> dict[str, Any]
             "hotels": len(plan.get("selected_hotels") or []),
             "activities": len(plan.get("selected_activities") or []),
         },
+        "created_at": str(plan.get("created_at") or ""),
         "updated_at": str(plan.get("updated_at") or plan.get("created_at") or ""),
         "is_active": bool(active_id) and tid == active_id,
     }

@@ -62,6 +62,7 @@ trip through shared API contracts.
 | `src/tripplanner/about_me_store.py` | Preference profile persistence |
 | `src/tripplanner/export.py` | Export composition |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
+| `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |
 | `src/tripplanner/providers/` | Normalized travel provider clients, capability registry, TTL/fallback runtime, and non-secret readiness status |
@@ -99,6 +100,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 | `frontend/src/hooks/useWorkspaceFocus.ts` | Mutually exclusive place, identified drive/route, day-circuit, and all-days focus transitions and repeat-action tokens |
 | `frontend/src/hooks/` | Web state synchronization and reusable client behavior |
 | `frontend/src/lib/` | API client, mapping, formatting, and browser utilities |
+| `frontend/src/ops/OpsDashboard.tsx` | Direct-only Business and System Health views; server authorization remains authoritative |
 | `frontend/src/types.ts` | Web-local types not owned by the shared client package |
 | `frontend/e2e/` | Playwright end-to-end behavior |
 | `frontend/labs/` | Isolated UX experiments only, never production runtime code |
