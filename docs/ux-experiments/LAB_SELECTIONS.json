@@ -14,7 +14,7 @@
         "comment": "Owner chose the exact dark Lab 21 stage with two inline overridable decisions as the direction to refine.",
         "disposition": "ready",
         "summary": "Recovered from the committed 2026-08-07 owner prompt and Lab option commit.",
-        "recordedAt": "2026-08-07T14:30:40.000Z"
+        "recordedAt": "2026-08-07T14:30:40Z"
       },
       {
         "version": 2,
@@ -23,7 +23,7 @@
         "comment": "Implement Option E as the anonymous public entry in a linked sandbox.",
         "disposition": "implemented-review",
         "summary": "Anonymous public entry implementation committed as 5612eb5.",
-        "recordedAt": "2026-08-07T17:26:46.000Z"
+        "recordedAt": "2026-08-07T17:26:46Z"
       },
       {
         "version": 3,
@@ -32,7 +32,7 @@
         "comment": "Keep the page grounded in a captured real run, retain sample pricing disclosure, and add the remaining sign-in and shared-trip surfaces.",
         "disposition": "implemented-review",
         "summary": "Captured-run public entry and decision-record milestones committed through aa610f5 and 54e5ebb.",
-        "recordedAt": "2026-08-08T12:29:40.000Z"
+        "recordedAt": "2026-08-08T12:29:40Z"
       },
       {
         "version": 4,
@@ -41,7 +41,7 @@
         "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
         "disposition": "implemented-review",
         "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
-        "recordedAt": "2026-08-08T14:01:49.000Z"
+        "recordedAt": "2026-08-08T14:01:49Z"
       },
       {
         "version": 5,
@@ -50,7 +50,7 @@
         "comment": "All Labs older than Lab 23 are complete.",
         "disposition": "completed",
         "summary": "Owner corrected the UX Lab catalog lifecycle state on 2026-08-09.",
-        "recordedAt": "2026-08-09T10:27:00.000Z"
+        "recordedAt": "2026-08-09T10:27:00Z"
       }
     ],
     "implementations": [
@@ -61,7 +61,7 @@
         "selectionLabel": "E · Dark stage, argued during the run",
         "comment": "Implement Option E as the anonymous public entry in a linked sandbox.",
         "summary": "Anonymous public entry implementation committed as 5612eb5.",
-        "recordedAt": "2026-08-07T17:26:46.000Z"
+        "recordedAt": "2026-08-07T17:26:46Z"
       },
       {
         "version": 2,
@@ -70,7 +70,7 @@
         "selectionLabel": "E · Dark stage, argued during the run",
         "comment": "Keep the page grounded in a captured real run, retain sample pricing disclosure, and add the remaining sign-in and shared-trip surfaces.",
         "summary": "Captured-run public entry and decision-record milestones committed through aa610f5 and 54e5ebb.",
-        "recordedAt": "2026-08-08T12:29:40.000Z"
+        "recordedAt": "2026-08-08T12:29:40Z"
       },
       {
         "version": 3,
@@ -79,7 +79,7 @@
         "selectionLabel": "E · Dark stage, argued during the run",
         "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
         "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
-        "recordedAt": "2026-08-08T14:01:49.000Z"
+        "recordedAt": "2026-08-08T14:01:49Z"
       }
     ],
     "implementation": {
@@ -88,11 +88,11 @@
       "selectionLabel": "E · Dark stage, argued during the run",
       "comment": "Bridge the landing and app visual systems and show the complete landing-to-workspace flow before promotion.",
       "summary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
-      "recordedAt": "2026-08-08T14:01:49.000Z"
+      "recordedAt": "2026-08-08T14:01:49Z"
     },
     "implementationSummary": "Theme bridge and landing-to-workspace flow committed as b0ee195 and 016e403.",
-    "stateChangedAt": "2026-08-09T10:27:00.000Z",
-    "updatedAt": "2026-08-09T10:27:00.000Z"
+    "stateChangedAt": "2026-08-09T10:27:00Z",
+    "updatedAt": "2026-08-09T10:27:00Z"
   },
   "product-themes": {
     "labId": "product-themes",
@@ -117,7 +117,7 @@
         "comment": "Looks fitting",
         "disposition": "implemented-review",
         "summary": "Applied Aegean sun across landing and workspace via shared palette and typography tokens; preserved PublicEntry behavior; 288 frontend tests, TypeScript, production build, desktop/mobile browser checks, and API/SPA/Labs endpoint probes passed.\nSandbox: 1-lab23-aegean; commit: 55b91cd",
-        "recordedAt": "2026-08-09T11:43:12.4301700Z"
+        "recordedAt": "2026-08-09T11:43:12.43017Z"
       },
       {
         "version": 3,
@@ -126,7 +126,7 @@
         "comment": "Looks fitting",
         "disposition": "implemented-review",
         "summary": "Contrast refinement in commit 0d58de5: preserved the Aegean palette and backgrounds while restoring white foregrounds on ink, brand, and violet filled controls and dark Aegean text on translucent chips. Browser checks measured 13.32:1 for itinerary choice buttons, 12.82:1 for Beta, and 4.41:1 for the brand action. PublicEntry 7/7 tests, full frontend 288/288 tests, TypeScript, production build, CSS diagnostics, and API/SPA/Labs endpoint checks passed.",
-        "recordedAt": "2026-08-09T11:53:06.9552720Z"
+        "recordedAt": "2026-08-09T11:53:06.955272Z"
       },
       {
         "version": 4,
@@ -135,7 +135,7 @@
         "comment": "Looks fitting",
         "disposition": "implemented-review",
         "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
-        "recordedAt": "2026-08-09T16:53:13.3980620Z"
+        "recordedAt": "2026-08-09T16:53:13.398062Z"
       },
       {
         "version": 5,
@@ -144,7 +144,7 @@
         "comment": "Looks fitting",
         "disposition": "implemented-review",
         "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
-        "recordedAt": "2026-08-09T16:58:34.0974650Z"
+        "recordedAt": "2026-08-09T16:58:34.097465Z"
       },
       {
         "version": 6,
@@ -153,7 +153,7 @@
         "comment": "Looks fitting",
         "disposition": "implemented-review",
         "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
-        "recordedAt": "2026-08-09T17:00:15.5350300Z"
+        "recordedAt": "2026-08-09T17:00:15.53503Z"
       },
       {
         "version": 7,
@@ -162,7 +162,7 @@
         "comment": "Looks fitting",
         "disposition": "completed",
         "summary": "Promoted to master via PR #38 after full backend, TypeScript, and frontend validation and merge verification.",
-        "recordedAt": "2026-08-09T17:41:42.5505810Z"
+        "recordedAt": "2026-08-09T17:41:42.550581Z"
       }
     ],
     "implementations": [
@@ -173,7 +173,7 @@
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
         "summary": "Applied Aegean sun across landing and workspace via shared palette and typography tokens; preserved PublicEntry behavior; 288 frontend tests, TypeScript, production build, desktop/mobile browser checks, and API/SPA/Labs endpoint probes passed.\nSandbox: 1-lab23-aegean; commit: 55b91cd",
-        "recordedAt": "2026-08-09T11:43:12.4301700Z"
+        "recordedAt": "2026-08-09T11:43:12.43017Z"
       },
       {
         "version": 2,
@@ -182,7 +182,7 @@
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
         "summary": "Contrast refinement in commit 0d58de5: preserved the Aegean palette and backgrounds while restoring white foregrounds on ink, brand, and violet filled controls and dark Aegean text on translucent chips. Browser checks measured 13.32:1 for itinerary choice buttons, 12.82:1 for Beta, and 4.41:1 for the brand action. PublicEntry 7/7 tests, full frontend 288/288 tests, TypeScript, production build, CSS diagnostics, and API/SPA/Labs endpoint checks passed.",
-        "recordedAt": "2026-08-09T11:53:06.9552720Z"
+        "recordedAt": "2026-08-09T11:53:06.955272Z"
       },
       {
         "version": 3,
@@ -191,7 +191,7 @@
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
         "summary": "Final Lab 23 review: added permanent /welcome access, complete representative beta pricing with no missing-rate placeholders, improved text contrast, and standardized the AI Tripplanner Beta route-icon lockup. Focused public-entry and workspace tests, TypeScript, production build, and live API/SPA/Labs checks passed. Sandbox: 1-lab23-aegean; commit: 56ceb02",
-        "recordedAt": "2026-08-09T16:53:13.3980620Z"
+        "recordedAt": "2026-08-09T16:53:13.398062Z"
       },
       {
         "version": 4,
@@ -200,7 +200,7 @@
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
         "summary": "Promotion validation follow-up: corrected case-sensitive TRIPPLANNER_HOME isolation and restored atomic Lab store backups. Focused recorder and usage tests passed under the promotion validator PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 928cbe3",
-        "recordedAt": "2026-08-09T16:58:34.0974650Z"
+        "recordedAt": "2026-08-09T16:58:34.097465Z"
       },
       {
         "version": 5,
@@ -209,18 +209,18 @@
         "selectionLabel": "E · Aegean sun",
         "comment": "Looks fitting",
         "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
-        "recordedAt": "2026-08-09T17:00:15.5350300Z"
+        "recordedAt": "2026-08-09T17:00:15.53503Z"
       }
     ],
-    "stateChangedAt": "2026-08-09T17:41:42.5505810Z",
-    "updatedAt": "2026-08-09T17:41:42.5505810Z",
+    "stateChangedAt": "2026-08-09T17:41:42.550581Z",
+    "updatedAt": "2026-08-09T17:41:42.550581Z",
     "implementation": {
       "handoffVersion": 6,
       "selection": "aegean",
       "selectionLabel": "E · Aegean sun",
       "comment": "Looks fitting",
       "summary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664",
-      "recordedAt": "2026-08-09T17:00:15.5350300Z"
+      "recordedAt": "2026-08-09T17:00:15.53503Z"
     },
     "implementationSummary": "Promotion workflow review: validation fixes and generated Lab backup ignore are committed together; recorder test 1/1 and usage tests 19/19 pass under sandbox PYTHONPATH. Sandbox: 1-lab23-aegean; commit: 5b4f664"
   },
@@ -230,7 +230,7 @@
     "selection": "profile",
     "selectionLabel": "C · Profile-first",
     "comment": "",
-    "disposition": "ready",
+    "disposition": "implemented-review",
     "handoffs": [
       {
         "version": 1,
@@ -238,11 +238,39 @@
         "selectionLabel": "C · Profile-first",
         "comment": "",
         "disposition": "ready",
-        "recordedAt": "2026-08-09T17:56:28.860Z"
+        "recordedAt": "2026-08-09T17:56:28.86Z"
+      },
+      {
+        "version": 2.0,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "implemented-review",
+        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+        "recordedAt": "2026-08-10T07:47:19.9529480Z"
       }
     ],
-    "implementations": [],
-    "stateChangedAt": "2026-08-09T17:56:28.860Z",
-    "updatedAt": "2026-08-09T17:56:28.860Z"
+    "implementations": [
+      {
+        "version": 1,
+        "handoffVersion": 2.0,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+        "recordedAt": "2026-08-10T07:47:19.9529480Z"
+      }
+    ],
+    "stateChangedAt": "2026-08-10T07:47:19.9529480Z",
+    "updatedAt": "2026-08-10T07:47:19.9529480Z",
+    "implementation": {
+      "handoffVersion": 2.0,
+      "selection": "profile",
+      "selectionLabel": "C · Profile-first",
+      "comment": "",
+      "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
+      "recordedAt": "2026-08-10T07:47:19.9529480Z"
+    },
+    "implementationSummary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867"
   }
 }
