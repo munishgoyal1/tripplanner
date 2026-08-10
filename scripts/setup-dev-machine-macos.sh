@@ -130,7 +130,7 @@ echo "Setup complete."
 echo "GitHub access: run 'gh auth login' and sign into GitHub in VS Code."
 echo "Azure access:  run 'az login' before deployment."
 echo "GHCR access:   run 'docker login ghcr.io' before image publication."
-echo "Sandbox:      ./scripts/mac/sandbox/New-Sandbox.command <name> \"<purpose>\""
+echo "Sandbox:      ./scripts/mac/user/sandbox/New-Sandbox.command <name> \"<purpose>\""
 if ! docker info >/dev/null 2>&1; then
   echo "Docker Desktop is installed but not running; start it before local Cosmos or image builds."
 fi

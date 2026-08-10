@@ -16,8 +16,8 @@ you want a stable, curated starting set that does not depend on your local data:
 python scripts/dev/sandbox_seed.py seed --database tripplanner-sbx-<slug> --source fixtures
 ```
 
-`scripts/sandbox/Run-Sandbox.cmd` on Windows and
-`scripts/mac/sandbox/Run-Sandbox.command` on macOS seed with
+`scripts/user/sandbox/Run-Sandbox.cmd` on Windows and
+`scripts/mac/user/sandbox/Run-Sandbox.command` on macOS seed with
 `--source local --if-empty` automatically, so a fresh sandbox opens with
 realistic data and re-running never duplicates it.
 
