@@ -1,1 +1,3 @@
 1. Since most of my work currently is on master branch, may be I would like to invert the default option for Sync All script to consider only master (masterAgent lane 0) unless an "all" parameter is passed. Similar should be used for Sandbox promotion
+
+2. next time start commitign master and prompts etc kind of text files even if they are edited by me. They are low risk rather than they hanging around just keep the area clean.When you do explciitly you can just callout at the end that you have done this, if there will be anything to flag i will check and fix post facto.

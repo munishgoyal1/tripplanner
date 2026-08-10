@@ -6,9 +6,8 @@
 .DESCRIPTION
   Installs missing prerequisites with winget, creates the Python environment,
   restores web dependencies, and reports authentication still required for
-    canary or production. Full agent mode also applies the portable VS Code and
-    Copilot configuration and initializes the three persistent worker worktrees.
-    It never starts servers, logs in, or overwrites .env.
+    canary or production. Full agent mode applies the portable VS Code and Copilot
+    configuration. It never starts servers, logs in, or overwrites .env.
 #>
 
 [CmdletBinding()]
@@ -220,33 +219,8 @@ Assert-LastCommandSucceeded "Python environment verification"
 npm --prefix frontend run build
 Assert-LastCommandSucceeded "frontend production build"
 
-if ($FullAgentEnvironment) {
-    $worktreesRoot = "$repoRoot.worktrees"
-    foreach ($workerName in @("worker-1", "worker-2", "worker-3")) {
-        $workerPath = Join-Path $worktreesRoot $workerName
-        if (-not (Test-Path $workerPath -PathType Container)) {
-            & (Join-Path (Join-Path (Join-Path $repoRoot "scripts") "dev") "agent-worktree.ps1") -Create $workerName -NoOpen
-        } else {
-            Write-Host "[ok] Persistent worktree $workerName"
-        }
-
-        $workerEnv = Join-Path $workerPath ".env"
-        $primaryEnv = Join-Path $repoRoot ".env"
-        if (-not (Test-Path $workerEnv -PathType Leaf) -and (Test-Path $primaryEnv -PathType Leaf)) {
-            Copy-Item $primaryEnv $workerEnv
-            Write-Host "[copied] .env from the primary checkout to $workerName"
-        }
-
-        & (Join-Path (Join-Path $workerPath "scripts") "setup-dev-machine.ps1") `
-            -SkipToolInstall `
-            -IncludeMobile:$IncludeMobile `
-            -SkipDependencyInstall:$SkipDependencyInstall
-        Write-Host "[ok] Worker environment $workerName"
-    }
-
-    if ($OpenAgentWindows) {
-        & (Join-Path (Join-Path $repoRoot "scripts") "open-agent-windows.ps1") -IncludeWorker2 -IncludeWorker3
-    }
+if ($FullAgentEnvironment -and $OpenAgentWindows) {
+    & code --new-window $repoRoot
 }
 
 $dockerReady = $false
@@ -265,7 +239,7 @@ Write-Host "Azure access:    run 'az login' before deployment."
 Write-Host "GHCR access:     run 'docker login ghcr.io' with a write:packages PAT."
 if ($FullAgentEnvironment) {
     Write-Host "GitHub access:   run 'gh auth login' and sign into GitHub in VS Code."
-    Write-Host "Agent windows:   .\Open-Tripplanner-All-Agents.cmd"
+    Write-Host '.\scripts\sandbox\New-Sandbox.cmd <name> "<purpose>"'
 }
 if (-not $dockerReady) {
     Write-Host "Docker Desktop is installed but its daemon is not running; start it before local Cosmos or image builds."
