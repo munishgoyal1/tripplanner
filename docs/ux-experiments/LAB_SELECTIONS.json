@@ -230,7 +230,7 @@
     "selection": "profile",
     "selectionLabel": "C · Profile-first",
     "comment": "",
-    "disposition": "implemented-review",
+    "disposition": "completed",
     "handoffs": [
       {
         "version": 1,
@@ -248,6 +248,15 @@
         "disposition": "implemented-review",
         "summary": "Fixed country and language selectors, shared account settings hub, and currency independence.\nSandbox: 1-lab24-real-preview; commit: 086913b2c867",
         "recordedAt": "2026-08-10T07:47:19.9529480Z"
+      },
+      {
+        "version": 3.0,
+        "selection": "profile",
+        "selectionLabel": "C · Profile-first",
+        "comment": "",
+        "disposition": "completed",
+        "summary": "Promoted to master via PR #39 after validation and verification.\nSandbox: 1-lab24-real-preview; commit: 5cb31e0a2ba0",
+        "recordedAt": "2026-08-10T08:04:58.4184540Z"
       }
     ],
     "implementations": [
@@ -261,8 +270,8 @@
         "recordedAt": "2026-08-10T07:47:19.9529480Z"
       }
     ],
-    "stateChangedAt": "2026-08-10T07:47:19.9529480Z",
-    "updatedAt": "2026-08-10T07:47:19.9529480Z",
+    "stateChangedAt": "2026-08-10T08:04:58.4184540Z",
+    "updatedAt": "2026-08-10T08:04:58.4184540Z",
     "implementation": {
       "handoffVersion": 2.0,
       "selection": "profile",
