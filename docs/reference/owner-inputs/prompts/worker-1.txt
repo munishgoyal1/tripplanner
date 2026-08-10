@@ -177,3 +177,10 @@ WARNING: Skipping incomplete Python environment at /Users/mugoy/repos/tripplanne
 INFO:     Started server process [15157]
 INFO:     Waiting for application startup.
 INFO:     Application startup comp
+
+[2026-08-10 11:31] [worker-1 !] Fix welcome regional UX bugs
+Few bug fixes:
+
+As soon i changed my Display country to France, the welcome page still continued to show the Jaipur trip. It should update to France mapped initial static trip immediately.
+Also clicking on my profile icon/name on welcome page should clearly just open the profile menu dropdown , the same experience as in the workspace, but it inadvertenlyt is mapped to skip to the app action and it goes to the app - make this UI element action clear seperation.
+and why the mumbai to jaipur trip is so short just 3 days - doesnt look good representaiton to be showin a on such a wlecome page. You should ensure the days are 4-6 for all the different region mapped trips you created.
