@@ -43,3 +43,25 @@ if ($ValidateOnly) {
 }
 & $sandboxScript -Update $Sandbox -BaseBranch master -Confirm:$false
 if ($LASTEXITCODE -ne 0) { throw "Could not synchronize sandbox '$Sandbox'." }
+
+$registryPath = "$primaryRoot.worktrees/sandboxes.json"
+$entries = @(Get-Content -Raw $registryPath | ConvertFrom-Json)
+$shortName = $Sandbox -replace "^\d+-", ""
+$entry = @($entries | Where-Object {
+    $_.slug -eq $Sandbox -or ($_.slug -replace "^\d+-", "") -eq $shortName
+})
+if ($entry.Count -eq 0 -and $Sandbox -match "^\d+$") {
+    $entry = @($entries | Where-Object { ([int]$_.slot + 1) -eq [int]$Sandbox })
+}
+if ($entry.Count -ne 1) { throw "Sandbox '$Sandbox' was not uniquely found after synchronization." }
+
+$masterHead = (& git -C $primaryRoot rev-parse HEAD).Trim()
+& git -C $entry[0].worktree merge-base --is-ancestor $masterHead HEAD
+if ($LASTEXITCODE -ne 0) {
+    throw "Sandbox '$($entry[0].slug)' local branch does not contain master $masterHead after synchronization."
+}
+& git -C $primaryRoot merge-base --is-ancestor $masterHead "origin/$($entry[0].branch)"
+if ($LASTEXITCODE -ne 0) {
+    throw "Sandbox '$($entry[0].slug)' remote branch does not contain master $masterHead after synchronization."
+}
+Write-Host "[verified] Sandbox '$($entry[0].slug)' local and remote branches contain master $($masterHead.Substring(0, 7))." -ForegroundColor Green

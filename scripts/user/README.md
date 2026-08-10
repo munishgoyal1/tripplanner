@@ -32,6 +32,10 @@ corresponding primary launcher from the repository root:
 ./scripts/mac/user/Sync-AllTo-Latest.command
 ```
 
+A successful sync guarantees that every registered sandbox branch, both local
+and pushed remote, contains the current `master` commit. A sandbox can be ahead
+of `master` with its own feature commits; it must never be behind it.
+
 When `Update-Sandbox` stops on a semantic merge conflict, resolve the marked
 files in that sandbox, then run `scripts/user/sandbox/Resolve-SandboxConflicts.cmd <sandbox>`
 on Windows or `scripts/mac/user/sandbox/Resolve-SandboxConflicts.command <sandbox>` on macOS.
