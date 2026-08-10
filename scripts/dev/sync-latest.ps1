@@ -26,7 +26,7 @@ $changes = & git -C $primaryRoot status --porcelain
 if ($LASTEXITCODE -ne 0) { throw "Could not inspect primary master changes." }
 
 Write-Host "[sync]    fetching origin/master" -ForegroundColor Cyan
-& git -C $primaryRoot fetch origin master
+& git -C $primaryRoot fetch -q origin master
 if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin/master." }
 if (-not $ValidateOnly) {
     # Sandboxes merge origin/master directly, so the primary fast-forward only
