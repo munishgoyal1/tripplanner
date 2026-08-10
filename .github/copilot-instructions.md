@@ -19,14 +19,12 @@ not override the canonical documents above, which govern current behavior.
 ## Agent workflow
 
 - Keep the current chat title to a concrete 4-5 word summary of the latest task.
-  Reconsider it after every prompt in every primary and worker VS Code window.
-- After each owner prompt, append it verbatim to the **bottom** of your own lane's
-  file in [docs/reference/owner-inputs/prompts/](../docs/reference/owner-inputs/prompts/)
-  (`master.txt`, `worker-1.txt`, `worker-2.txt`, or `worker-3.txt`). One lane writes
-  one file, so these logs never conflict. Entry header:
-  `[YYYY-MM-DD HH:MM] [lane] <short title>`, with ` !` after the lane for feature
+  Reconsider it after every prompt in the primary or sandbox VS Code window.
+- After each owner prompt, append it verbatim to the **bottom** of
+  [master.txt](../docs/reference/owner-inputs/prompts/master.txt). Entry header:
+  `[YYYY-MM-DD HH:MM] [master] <short title>`, with ` !` after the lane for feature
   work, bug fixes, critical owner direction, or reusable workflows. Do not read the
-  file first, do not number entries, and never write another lane's file.
+  file first and do not number entries.
   `prompts_executed.txt` and `prompts_executed_imp.txt` are frozen archives.
   Read the log back with `pwsh -File scripts/dev/show-prompts.ps1`.
 - Read 50-200 line chunks and batch independent reads. Start from the owning file,
@@ -34,24 +32,13 @@ not override the canonical documents above, which govern current behavior.
 - Before every new code change, require a clean worktree, fetch `origin`, and
   synchronize the active branch with latest `origin/master`. Resolve conflicts
   and re-read affected files before editing.
-- The primary `master` workspace is the default development lane. Use persistent
-  Agent 1 - SmallFixes, Agent 2 - UXlabs, and Agent 3 - Sandbox worktrees only for
-  owner-requested, sizeable, isolated parallel assignments. These names are logical default
-  ownership areas. MasterAgent uses reserved integer `0`; worker agents retain
-  positive integers, branches, worktree paths, and numeric script arguments.
-  Each worker owns one PR-sized change at a time.
-- Run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree to update. MasterAgent always
-  integrates all committed worker heads by default. Workers also integrate all
-  committed sibling worktree changes through `master` by default; pass
-  `onlyfrommaster` to receive committed `master` without integrating siblings. The launcher is the
-  only worktree updated.
-- Use `scripts/user/Sync-AllTo-Latest.cmd` only when every worktree should be
-  updated. It may run from any lane, preserves each lane's local edits, reuses
-  recorded `rerere` resolutions, and reports novel conflicts without guessing.
-- MasterAgent in the primary workspace owns local stack startup, stop, restart,
-  stale-port cleanup, and health checks for the owner's manual testing. Workers 1,
-  2, and 3 must obtain explicit approval before changing the stack lifecycle and use
-  server-free validation by default.
+- The primary `master` workspace is the default development lane. Use a fresh,
+  task-named sandbox only for an isolated feature or UX Lab. A sandbox returns to
+  `master` only through its validated promotion flow.
+- Run `scripts/user/Run-Latest.cmd` only from primary `master` to fast-forward it
+  from `origin/master` before starting the local stack.
+- The primary workspace owns the canonical local stack. Sandboxes use their own
+  port slots and server-free validation by default.
 - Validate once per coherent milestone unless a focused mid-edit check is needed.
   Always commit and push completed changes; do not leave unpushed milestones.
 - Preserve Windows and macOS support for core development: setup, dependency
@@ -65,7 +52,7 @@ not override the canonical documents above, which govern current behavior.
 - Do not add docstrings, type hints, or comments to code you did not otherwise touch.
 
 See [parallel-agent-development.md](../docs/development/parallel-agent-development.md)
-for worktree synchronization and cleanup.
+for sandbox lifecycle and archived-worker recovery.
 
 ## Product and engineering boundaries
 

@@ -2,8 +2,8 @@
 
 This procedure recreates the Tripplanner development layout after the repository
 has been cloned from GitHub on Windows or macOS. It covers the application
-toolchain, portable VS Code and GitHub Copilot configuration, and the persistent
-three-worker plus one MasterAgent worktree layout.
+toolchain, portable VS Code and GitHub Copilot configuration, and sandbox-first
+feature development.
 
 ## Windows one-click path
 
@@ -52,8 +52,7 @@ CLI. Use the underlying script directly for a headless setup:
 ./scripts/setup-dev-machine-macos.sh --include-mobile
 ```
 
-Add `--open-agent-windows` to open all four VS Code workspaces. Re-running the
-setup is supported.
+Re-running the setup is supported.
 
 ## What the launcher configures
 
@@ -76,17 +75,14 @@ The full setup performs these operations:
 6. Creates `.env` from `.env.example` only when `.env` is absent, then creates
    the Python virtual environment and restores locked Python, frontend, and
    mobile dependencies.
-7. Restores `worker-1`, `worker-2`, and `worker-3` from their existing
-   `origin/agents/worker-*` branches. If a remote slot does not exist, it is
-   created from current `origin/master`.
-8. Copies the primary `.env` into each new worker, creates each worker's isolated
-   `.venv` and frontend dependencies, and verifies its frontend build.
-9. Opens four distinct VS Code workspaces: Agent 1 - SmallFixes, Agent 2 -
-   UXlabs, Agent 3 - Sandbox, and MasterAgent - Review & Integration.
+7. Leaves feature isolation to fresh sandboxes created when a task needs one.
+   A sandbox copies the primary environment and uses its own worktree, ports,
+   and local emulator database.
 
-The workers live beside the clone in `<clone>.worktrees/worker-N`. Workspace
-files in the primary checkout provide stable titles, colors, panel placement,
-and terminal/editor restoration settings.
+The retired fixed-worker environment is preserved at the annotated tag and
+remote branch `archive/drop-workersconcept-use-sandboxes`. Run
+`scripts/dev/restore-parallel-workers.ps1` from the primary checkout only when
+you need that historical workflow for temporary reference or use.
 
 ## Manual steps
 
@@ -104,7 +100,7 @@ script.
 
 3. Fill the primary `.env` with the required provider keys and local settings.
    Never commit it. If migrating from an old machine, transfer it through an
-   approved secret channel, then rerun setup so newly created workers receive it.
+   approved secret channel.
 4. Start Docker Desktop before running the local Cosmos emulator or building
    images.
 5. Run `az login` only when Azure access is needed. Run `docker login ghcr.io`
@@ -159,27 +155,14 @@ npm --prefix frontend run build
 npm --prefix mobile run typecheck
 ```
 
-`git worktree list` should show `master` plus `agents/worker-1`,
-`agents/worker-2`, and `agents/worker-3`. Reopen all four windows later with:
-
-```powershell
-.\Open-Tripplanner-All-Agents.cmd
-```
-
-On macOS, reopen them with:
-
-```bash
-./Open-Tripplanner-All-Agents.command
-```
-
-MasterAgent owns local stack startup. Start the application from the primary
+`git worktree list` should show the primary `master` checkout and any currently
+active sandboxes. Master owns local stack startup. Start the application from the primary
 checkout with `scripts/user/Run-Latest.cmd` on Windows. The macOS setup,
-dependency, build/test, and four-agent paths are available, but the full local
+dependency, build/test, and sandbox paths are available, but the full local
 `dev-spa.ps1` lifecycle is not yet qualified because Windows-specific process
 and npm hooks remain. Use direct Python/npm commands or the hosted canary for
 Mac integration testing until that workflow has a passing Mac host smoke.
-Workers use server-free validation unless the owner explicitly assigns stack
-lifecycle work.
+Sandboxes use server-free validation unless their isolated stack is needed.
 
 ## Recovery
 
@@ -197,10 +180,9 @@ lifecycle work.
 - VS Code settings backups are timestamped beside
    `%APPDATA%\Code\User\settings.json` on Windows or
    `~/Library/Application Support/Code/User/settings.json` on macOS.
-- If a worker directory exists but is invalid, inspect `git worktree list`
-  before removing anything. Do not delete a worktree containing uncommitted or
-  unpushed work.
-- Use `scripts/user/Sync-AllTo-Latest.cmd` on Windows or
-   `pwsh -File scripts/dev/all-worktrees-sync.ps1` on macOS after setup to
-   integrate committed lane heads through `master` and synchronize all four
-   worktrees.
+- If a sandbox directory exists but is invalid, inspect `git worktree list`
+   before removing anything. Do not delete a worktree containing uncommitted or
+   unpushed work.
+- Run `scripts/user/Run-Latest.cmd` from the primary checkout before starting
+   the canonical local stack. Use `Update-Sandbox` to bring an in-flight sandbox
+   forward from `origin/master`.

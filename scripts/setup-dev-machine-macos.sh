@@ -2,14 +2,12 @@
 set -euo pipefail
 
 include_mobile=false
-open_agent_windows=false
 skip_tool_install=false
 skip_dependency_install=false
 
 for argument in "$@"; do
   case "$argument" in
     --include-mobile) include_mobile=true ;;
-    --open-agent-windows) open_agent_windows=true ;;
     --skip-tool-install) skip_tool_install=true ;;
     --skip-dependency-install) skip_dependency_install=true ;;
     *) echo "Unknown option: $argument" >&2; exit 2 ;;
@@ -127,36 +125,12 @@ setup_dependencies() {
 
 setup_dependencies "$repo_root"
 
-for worker_name in worker-1 worker-2 worker-3; do
-  worker_path="${repo_root}.worktrees/$worker_name"
-  if [[ ! -d "$worker_path" ]]; then
-    pwsh -NoProfile -File "$repo_root/scripts/dev/agent-worktree.ps1" -Create "$worker_name" -NoOpen
-  else
-    echo "[ok] Persistent worktree $worker_name"
-  fi
-  if [[ ! -f "$worker_path/.env" && -f "$repo_root/.env" ]]; then
-    cp "$repo_root/.env" "$worker_path/.env"
-    echo "[copied] .env from the primary checkout to $worker_name"
-  fi
-  setup_dependencies "$worker_path"
-done
-
-if [[ "$open_agent_windows" == true ]]; then
-  for workspace in \
-    tripplanner-worker-1.code-workspace \
-    tripplanner-worker-2.code-workspace \
-    tripplanner-worker-3.code-workspace \
-    tripplanner-integration.code-workspace; do
-    code --new-window "$repo_root/$workspace"
-  done
-fi
-
 echo
 echo "Setup complete."
 echo "GitHub access: run 'gh auth login' and sign into GitHub in VS Code."
 echo "Azure access:  run 'az login' before deployment."
 echo "GHCR access:   run 'docker login ghcr.io' before image publication."
-echo "Agent windows: ./Open-Tripplanner-All-Agents.command"
+echo "Sandbox:      ./scripts/mac/sandbox/New-Sandbox.command <name> \"<purpose>\""
 if ! docker info >/dev/null 2>&1; then
   echo "Docker Desktop is installed but not running; start it before local Cosmos or image builds."
 fi

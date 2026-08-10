@@ -34,13 +34,9 @@
     Pass -IterationSummary to either -Serve or -Promote to choose that wording instead
     of the commit subjects. Verified promotion appends Completed before sandbox cleanup.
 
-  -New and -Update first integrate every committed worker lane through master
-  (the same pass Sync-AllTo-Latest runs) and only then branch from, or merge,
-  origin/master — so a sandbox never starts or sits behind work that is already
-  committed elsewhere. Pass -NoSync to skip that pass. The reverse direction is
-    covered too: Sync-AllTo-Latest updates every registered sandbox at its end and
-    pushes the resulting committed sandbox head. This keeps the remote backup and
-    future PR current; it never merges sandbox work into master.
+    -New and -Update fetch the latest origin/master before branching or merging, so
+    each sandbox starts from the current canonical baseline. Pass -NoSync to skip
+    that refresh. Sandbox work reaches master only through -Promote.
 
     -Promote is end to end: sync, validate, push, open the PR, merge into the base
     branch, verify that the base branch really contains every commit and that the
@@ -753,25 +749,20 @@ function Stop-SandboxStack {
     }
 }
 
-function Sync-LanesThroughMaster {
-    # A sandbox is only "latest" if master already holds what the worker lanes
-    # committed; branching from origin/master alone leaves it behind whatever has
-    # not been integrated yet. The env guard breaks the cycle when the reverse
-    # direction runs — all-worktrees-sync updates sandboxes at its end.
+function Sync-MasterBaseline {
+    # Sandboxes are the only active isolated development lane. Fetching the
+    # canonical baseline avoids hidden integration work before a sandbox starts.
     param([string]$Reason)
 
     if ($NoSync) {
-        Write-Host "[sync]    skipped (-NoSync); master may be behind the worker lanes." -ForegroundColor Yellow
+        Write-Host "[sync]    skipped (-NoSync); origin/master may have advanced." -ForegroundColor Yellow
         return
     }
-    if ($env:TRIPPLANNER_SANDBOX_NO_SYNC -eq "1") { return }
 
-    Write-Host "[sync]    integrating every committed lane through master ($Reason)" -ForegroundColor Cyan
-    $env:TRIPPLANNER_SANDBOX_NO_SYNC = "1"
-    try {
-        & "$PSScriptRoot\all-worktrees-sync.ps1"
-    } finally {
-        Remove-Item Env:\TRIPPLANNER_SANDBOX_NO_SYNC -ErrorAction SilentlyContinue
+    Write-Host "[sync]    fetching origin/master ($Reason)" -ForegroundColor Cyan
+    & git -C $primaryRoot fetch origin master
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not fetch origin/master."
     }
 }
 
@@ -806,17 +797,6 @@ function Remove-SandboxLeftovers {
     $detail = if ($lastError) { " Last error: $lastError" } else { "" }
     Write-Warning "$Path still exists after 12 deletion attempts.$detail Close anything using it and retry discard."
     return $false
-}
-
-function Remove-PendingMergesFor {
-    # An interrupted -Update records a resumable merge; a discarded sandbox must not
-    # leave one behind, or every later sync fails against the missing worktree.
-    param([Parameter(Mandatory = $true)][string]$WorkingDirectory)
-
-    . "$PSScriptRoot/lib/sync-common.ps1"
-    $target = $WorkingDirectory.TrimEnd("\")
-    $remaining = @(Get-PendingMerges | Where-Object { ([string]$_.workingDirectory).TrimEnd("\") -ne $target })
-    Save-PendingList -Entries $remaining
 }
 
 function Get-UnregisteredSandboxes {
@@ -963,7 +943,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
         return
     }
 
-    Sync-LanesThroughMaster -Reason "new sandbox '$slug'"
+    Sync-MasterBaseline -Reason "new sandbox '$slug'"
     Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("fetch", "origin", $BaseBranch)
     New-Item -ItemType Directory -Path $worktreesRoot -Force | Out-Null
     Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
@@ -999,7 +979,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     if ($entry.purpose) { Write-Host "[purpose] $($entry.purpose)" }
     if ($entry.labId) {
         Write-Host "[lab]     $($entry.labId)"
-        Write-Host "[chat]    Resolve ambiguous handoff details in this sandbox worker chat before editing."
+        Write-Host "[chat]    Resolve ambiguous handoff details in this sandbox chat before editing."
     }
     Write-Host "[path]    $worktreePath"
     Write-Host "[ports]   api=$apiPort  frontend=$frontendPort  labs=$labsPort"
@@ -1095,9 +1075,6 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         $launcher = Get-SandboxLauncherPath -Name "Discard-Sandbox"
         throw "$($entry.worktree) exists but is no longer a git worktree, so a half-finished discard left it behind. Finish it with: $launcher $(Get-SandboxNumber -Entry $entry)"
     }
-    # Reuse the worker sync machinery: rerere-backed healing + resumable pending state.
-    . "$PSScriptRoot/lib/sync-common.ps1"
-
     $wd = $entry.worktree
     $label = "Sandbox '$slug'"
     $actualBranch = (Invoke-Git -WorkingDirectory $wd -Arguments @("branch", "--show-current")).Trim()
@@ -1110,9 +1087,8 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         return
     }
 
-    $syncLogOwned = Start-SyncLog -Component "sandbox-update"
     try {
-        Sync-LanesThroughMaster -Reason "update sandbox '$slug'"
+        Sync-MasterBaseline -Reason "update sandbox '$slug'"
         Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "origin") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.enabled", "true") | Out-Null
         Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
@@ -1172,9 +1148,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         ) | Out-Null
         $head = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "--short", "HEAD")
         Write-Host "[updated] $label and origin/$($entry.branch) are current with $remoteRef at $head." -ForegroundColor Green
-    } finally {
-        if ($syncLogOwned) { Stop-SyncLog }
-    }
+    } finally { }
     return
 }
 

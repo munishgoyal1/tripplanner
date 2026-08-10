@@ -8,19 +8,17 @@ One page. Stick this on a second monitor.
 
 Open <http://localhost:5173> for the app or
 <http://127.0.0.1:5175/catalog.html> for UX Labs in your regular browser
-(Chrome / Edge / Firefox). MasterAgent in the primary workspace owns `dev-spa.ps1`,
-stale-port cleanup, startup, restarts after runtime changes, and health checks
-for manual testing. Workers 1, 2, and 3 must ask the owner before changing the local
-stack lifecycle. The owner only refreshes the browser when ready to test a
-feature or Lab.
+(Chrome / Edge / Firefox). The primary workspace owns `dev-spa.ps1`, stale-port
+cleanup, startup, restarts after runtime changes, and health checks for manual
+testing. Each sandbox has its own port slot, so its lifecycle cannot disturb the
+primary stack.
 
 ## Platform support policy
 
 Tripplanner supports Windows and macOS for core application development. Core
 means machine setup, dependency restore, VS Code and Copilot configuration,
-Python/frontend/mobile build and test commands, and the persistent MasterAgent
-plus three-worker layout. Application code and shared developer engines should
-remain platform-neutral.
+Python/frontend/mobile build and test commands, and sandboxed feature worktrees.
+Application code and shared developer engines should remain platform-neutral.
 
 Support is evidence-based rather than assumed:
 
@@ -28,7 +26,7 @@ Support is evidence-based rather than assumed:
 | --- | --- | --- |
 | Setup, dependencies, VS Code/Copilot | Verified | Installer and configuration available; host smoke pending |
 | Python, frontend, and mobile build/test | Verified | Supported through standard Python/npm commands; host smoke pending |
-| Four agent worktrees and windows | Verified | Setup and launchers available; host smoke pending |
+| Sandboxed feature worktrees and windows | Verified | Setup and launchers available; host smoke pending |
 | Full `dev-spa.ps1` local stack | Verified | Not yet qualified; Windows process and `npm.cmd` hooks remain |
 | Sandbox lifecycle and `.cmd` convenience launchers | Verified | Not currently supported |
 | iOS simulator/build tooling | Not available | macOS/Xcode only |
@@ -44,38 +42,29 @@ as Xcode and Windows process management remain scoped to their native platform.
 Linux remains the container and CI runtime, not a supported interactive
 developer workstation.
 
-## Optional parallel coding windows
+## Sandbox-first development
 
-The default workflow uses this single primary workspace directly on `master`.
-Only when the owner explicitly requests parallel development, use:
+The default workflow uses the primary workspace on `master` plus one fresh,
+task-named sandbox for each isolated feature. Create, serve, update, promote, or
+discard it through the sandbox launchers. A sandbox begins at `origin/master` and
+returns to `master` only through its validated promotion flow.
 
-- `tripplanner-worker-1.code-workspace` - Agent 1 - SmallFixes on `agents/worker-1`
-- `tripplanner-integration.code-workspace` - MasterAgent Review & Integration on `master`
+The fixed-worker workflow is preserved at the annotated tag and remote branch
+`archive/drop-workersconcept-use-sandboxes`. Run
+`scripts/dev/restore-parallel-workers.ps1` to open that historical workflow in a
+detached archive worktree. It is for temporary reference or use only; never merge
+it directly into current `master`.
 
-Agent 2 - UXlabs on `agents/worker-2` remains available through
-`Open-Tripplanner-All-Agents.cmd`. Agent 3 - Sandbox on `agents/worker-3` owns
-isolated sandbox and operational assignments when the added coordination is worthwhile.
-
-See [parallel-agent-development.md](parallel-agent-development.md) for worker
-assignment, PR, synchronization, and merge rules.
-
-In optional parallel mode, run `scripts/user/Sync-MeTo-Latest.cmd` from the worktree
-that should receive all latest committed code. To synchronize the launcher
-worktree and then restart its local stack in one click, double-click
-`scripts/user/Run-Latest.cmd` or run the VS Code task
-**Tripplanner: Run Latest**. Existing staged, unstaged, and untracked work
-is preserved in every affected worktree.
+To synchronize primary `master` and start the canonical stack, double-click
+`scripts/user/Run-Latest.cmd` or run the VS Code task **Tripplanner: Run Latest**.
 
 Use these launchers by outcome:
 
 | Launcher | Purpose |
 | --- | --- |
-| `scripts/user/Sync-MeTo-Latest.cmd` | Integrate every committed worker head through `master`, then update only the launcher worktree. Pass `onlyfrommaster` to skip sibling integration. |
-| `scripts/user/Sync-AllTo-Latest.cmd` | From any worktree, integrate committed worker code through `master`, update MasterAgent and Agents 1-3, then merge and push every registered sandbox branch while preserving local edits. Sandbox heads receive `master` but never flow back into it without promotion. Verifies the merged tree (frontend `vitest` hard gate; `pytest` regression gate vs `logs/sync/validation-baseline.json`) before publishing to `master`. |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
-| `scripts/user/Run-Latest.cmd` | Run location-aware Sync Latest, then start the canonical `dev-spa.ps1` stack. All stack options are optional and forwarded; pass `all` or `-All` to synchronize every worktree first. |
-| `scripts/user/Resolve-Conflicts.cmd` | On-demand conflict resolver. Normally unnecessary: the launchers resolve novel conflicts automatically in-flow (opt out with `-NoAutoResolve` or `TRIPPLANNER_NO_AUTO_RESOLVE=1`). Invokes the GitHub Copilot CLI to clear conflict markers on any pending merge, then hands off to `resume-merge.ps1` to validate and publish. Copilot only edits the conflicted files (it is denied `git push`), so the validation gate still guards correctness. Pass `-ResolveOnly` to stop after clearing markers, `-Model <name>` to pick a model. Requires `npm install -g @github/copilot` and a signed-in CLI. |
-| `scripts/dev/resume-merge.ps1` | Finish any sync merge that stopped with `SYNC_CONFLICT_PENDING` once the conflicted files are resolved, then propagate the integrated `master` into every worktree. Reads `logs/sync/pending-merge.json` and runs non-interactively; the sync launchers also finish resolved pending merges automatically at the start of their next run. |
+| `scripts/user/Run-Latest.cmd` | Fast-forward primary `master` from `origin/master`, then start the canonical `dev-spa.ps1` stack. |
+| `scripts/dev/restore-parallel-workers.ps1` | Open the archived fixed-worker workflow in an isolated detached worktree. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 Every launcher writes a transcript to `logs/last-run/<script>.log` in the primary
