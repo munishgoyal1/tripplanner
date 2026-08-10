@@ -6,11 +6,11 @@ or deployment policy.
 
 - [`dev.md`](dev.md): local application, test, and UX Lab commands.
 - [`new-machine-setup.md`](new-machine-setup.md): one-click Windows/macOS toolchain,
-  VS Code/Copilot configuration, persistent workers, and manual sign-ins.
+  VS Code/Copilot configuration, sandboxes, and manual sign-ins.
 - [`architecture-onboarding.md`](architecture-onboarding.md): guided system
   architecture, ownership map, data flows, invariants, and first-week reading plan.
-- [`parallel-agent-development.md`](parallel-agent-development.md): worker
-  worktrees, synchronization, review, and guarded integration.
+- [`parallel-agent-development.md`](parallel-agent-development.md): sandbox
+  worktrees, promotion, and cleanup.
 - [`setup-oauth.md`](setup-oauth.md): local Google OAuth setup.
 
 Update these guides when the development workflow or commands change. Product

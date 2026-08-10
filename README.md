@@ -142,13 +142,12 @@ Stored at `~/.tripplanner/user_preferences.json`, tracks:
 | Hosting target | Azure Container Apps (FastAPI serves the React SPA) | Serverless, scales to zero |
 
 > **Developing locally?** Run `.\Setup-Tripplanner-Dev.cmd` on Windows or
-> `./Setup-Tripplanner-Dev.command` on macOS to reproduce the full toolchain,
-> VS Code/Copilot configuration, and four-agent layout. See
+> `./Setup-Tripplanner-Dev.command` on macOS to reproduce the full toolchain
+> and VS Code/Copilot configuration. See
 > [`docs/development/new-machine-setup.md`](docs/development/new-machine-setup.md)
 > for manual sign-ins and non-portable state, then see
 > [`docs/development/dev.md`](docs/development/dev.md) for the `.\scripts\dev\dev-spa.ps1` workflow.
-> For multiple simultaneous coding-agent windows, use isolated Git worktrees as
-> described in
+> For isolated feature work, use the sandbox workflow described in
 > [`docs/development/parallel-agent-development.md`](docs/development/parallel-agent-development.md).
 
 ## Quick Start
@@ -166,8 +165,8 @@ pwsh -File scripts/dev/dev-spa.ps1
 ```
 
 The setup command installs missing prerequisites, restores locked dependencies,
-applies portable VS Code/Copilot configuration, restores all three workers, and
-preserves any existing `.env`. See [docs/development/new-machine-setup.md](docs/development/new-machine-setup.md)
+applies portable VS Code/Copilot configuration, and preserves any existing `.env`.
+See [docs/development/new-machine-setup.md](docs/development/new-machine-setup.md)
 for required manual authentication, and [docs/operations/deployment-flow.md](docs/operations/deployment-flow.md)
 for the two-stage canary and production release flow.
 

@@ -9,7 +9,7 @@
 docs/reference/history/requirements-log.txt merge=union
 docs/reference/owner-inputs/prompts_executed.txt merge=union
 docs/reference/owner-inputs/prompts_executed_imp.txt merge=union
-docs/reference/owner-inputs/prompts/*.txt merge=union
+docs/reference/owner-inputs/prompts/*.txt merge=union whitespace=-trailing-space
 docs/ENGINEERING_LEARNINGS.md merge=union
 
 *.command text eol=lf

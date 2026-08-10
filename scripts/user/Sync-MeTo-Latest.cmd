@@ -1,3 +1,5 @@
 @echo off
 pwsh -NoProfile -ExecutionPolicy Bypass -File "%~dp0..\dev\sync-latest.ps1" %*
-exit /b %errorlevel%
+set "exitCode=%errorlevel%"
+if not "%exitCode%"=="0" pause
+exit /b %exitCode%

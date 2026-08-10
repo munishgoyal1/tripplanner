@@ -1,67 +1,45 @@
 #!/usr/bin/env pwsh
-[CmdletBinding()]
-param(
-    [Parameter(Position = 0)]
-    [ValidateSet("onlyfrommaster")]
-    [string]$Target,
+<#!
+.SYNOPSIS
+  Synchronize one sandbox with the latest primary master.
+#>
 
-    [switch]$ValidateOnly,
-    [switch]$NoAutoResolve
+[CmdletBinding(SupportsShouldProcess = $true)]
+param(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string]$Sandbox,
+    [switch]$ValidateOnly
 )
 
 $ErrorActionPreference = "Stop"
-. "$PSScriptRoot/lib/sync-common.ps1"
-$scriptRoot = $PSScriptRoot
-$syncLogOwned = Start-SyncLog -Component "sync-latest"
-try {
-
-Invoke-SyncWithAutoResolve -NoAutoResolve:$NoAutoResolve -Body {
-
-if (-not $ValidateOnly) { Invoke-PendingMergeHeal }
-
-$repoRoot = Split-Path -Parent (Split-Path -Parent $scriptRoot)
-$branch = & git -C $repoRoot branch --show-current
-$gitExitCode = $LASTEXITCODE
-if ($gitExitCode -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) {
-    throw "Could not identify the launcher worktree branch at $repoRoot."
+$scriptRepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$commonGitDir = & git -C $scriptRepoRoot rev-parse --path-format=absolute --git-common-dir
+if ($LASTEXITCODE -ne 0 -or -not $commonGitDir) {
+    throw "Could not resolve the primary Tripplanner checkout."
 }
-$branch = @($branch)[0].Trim()
-
-$agentNumber = switch ($branch) {
-    "master" { 0 }
-    "agents/worker-1" { 1 }
-    "agents/worker-2" { 2 }
-    "agents/worker-3" { 3 }
-    default {
-        throw "Sync-Latest supports master or agents/worker-1 through agents/worker-3; found $branch."
-    }
+$primaryRoot = Split-Path -Parent $commonGitDir.Trim()
+$branch = (& git -C $primaryRoot branch --show-current).Trim()
+if ($LASTEXITCODE -ne 0 -or $branch -ne "master") {
+    throw "The primary checkout must be on master before synchronizing sandboxes."
 }
-$laneName = if ($agentNumber -eq 0) { "MasterAgent (0)" } else { "Agent $agentNumber" }
+$changes = & git -C $primaryRoot status --porcelain
+if ($LASTEXITCODE -ne 0) { throw "Could not inspect primary master changes." }
+if ($changes -and -not $ValidateOnly) {
+    throw "Primary master has uncommitted changes. Commit or stash them before synchronizing sandboxes."
+}
 
-Write-Host "Synchronizing latest committed code into $laneName..." -ForegroundColor Cyan
-if ($agentNumber -eq 0) {
-    if ($Target -eq "onlyfrommaster") {
-        & "$scriptRoot\update-from-master.ps1" 0 -ValidateOnly:$ValidateOnly
-        Write-Host "MasterAgent is current with origin/master only." -ForegroundColor Green
-    }
-    else {
-        & "$scriptRoot\merge-latest-worktrees.ps1" -ValidateOnly:$ValidateOnly
-        Write-Host "MasterAgent is current after worktree integration." -ForegroundColor Green
-    }
+Write-Host "[sync]    fetching origin/master" -ForegroundColor Cyan
+& git -C $primaryRoot fetch origin master
+if ($LASTEXITCODE -ne 0) { throw "Could not fetch origin/master." }
+if (-not $ValidateOnly) {
+    & git -C $primaryRoot merge --ff-only origin/master
+    if ($LASTEXITCODE -ne 0) { throw "Could not fast-forward primary master." }
+}
+
+$sandboxScript = Join-Path $primaryRoot "scripts/dev/sandbox.ps1"
+if ($ValidateOnly) {
+    Write-Host "[ready]   Sandbox '$Sandbox' can be updated from origin/master." -ForegroundColor Green
     return
 }
-
-if ($Target -ne "onlyfrommaster") {
-    Write-Host "Integrating all committed worktree heads through master..." -ForegroundColor Cyan
-    & "$scriptRoot\merge-latest-worktrees.ps1" -SkipPrimaryUpdate -ValidateOnly:$ValidateOnly
-}
-
-Write-Host "Applying latest master to $laneName..." -ForegroundColor Cyan
-& "$scriptRoot\update-from-master.ps1" $agentNumber -ValidateOnly:$ValidateOnly
-
-}
-
-}
-finally {
-    if ($syncLogOwned) { Stop-SyncLog }
-}
+& $sandboxScript -Update $Sandbox -BaseBranch master -Confirm:$false
+if ($LASTEXITCODE -ne 0) { throw "Could not synchronize sandbox '$Sandbox'." }

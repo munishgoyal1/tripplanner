@@ -16,8 +16,8 @@ from tripplanner.error_analysis import (
 
 def test_shared_diagnostics_dir_uses_primary_git_worktree(monkeypatch, tmp_path: Path) -> None:
     primary = tmp_path / "tripplanner"
-    worker = tmp_path / "tripplanner.worktrees" / "worker-1"
-    worker.mkdir(parents=True)
+    sandbox = tmp_path / "tripplanner.worktrees" / "sbx-1-diagnostics"
+    sandbox.mkdir(parents=True)
     monkeypatch.setattr(
         "tripplanner.error_analysis.subprocess.run",
         lambda *_args, **_kwargs: subprocess.CompletedProcess(
@@ -25,7 +25,7 @@ def test_shared_diagnostics_dir_uses_primary_git_worktree(monkeypatch, tmp_path:
         ),
     )
 
-    assert shared_diagnostics_dir(worker) == primary / "logs" / "diagnostics"
+    assert shared_diagnostics_dir(sandbox) == primary / "logs" / "diagnostics"
 
 
 def test_classifies_only_failure_signals() -> None:
