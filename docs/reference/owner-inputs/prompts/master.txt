@@ -1000,3 +1000,31 @@ Can you continue from last task that got interrupted because of vsc restart
 dont create a special commit for just master.txt changes, otherwise so many commits will just be dummy sort of showing. But keep the master.txt prompt log changes bunched and when there is a legitimate feature or fix other code files going, that time add it to the commit.
 
 [2026-08-11 11:17] [master] ! Prod deployment should call canary deployment only if required, if canary was already deployed and that matches latest master then Prod does not need to waste time re-deploying canary
+
+[2026-08-11 11:18] [master !] Prod deploy canary/token failure
+Prod deployment :
+
+
+✓ Step 0: Building & pushing image from current code...
+
+╔═══════════════════════════════════════════════════════════╗
+║  📦 BUILD & PUSH IMAGE → GHCR                            ║
+╚═══════════════════════════════════════════════════════════╝
+
+Image:    ghcr.io/munishgoyal1/tripplanner
+Tags:     ghcr.io/munishgoyal1/tripplanner:62f7899, ghcr.io/munishgoyal1/tripplanner:latest
+
+Exception: /Users/mugoy/repos/tripplanner/infra/push-image.ps1:102:3
+Line |
+ 102 |    throw "No valid GHCR publish token is available. Set GHCR_TOKEN to  …
+     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | No valid GHCR publish token is available. Set
+     | GHCR_TOKEN to a GitHub PAT with write:packages, or
+     | run 'gh auth refresh -h github.com -s
+     | write:packages' and retry.
+Exception: /Users/mugoy/repos/tripplanner/infra/deploy-prod.ps1:133:9
+Line |
+ 133 |          throw "Canary deployment or smoke verification failed. Produc …
+     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Canary deployment or smoke verification failed.
+     | Production promotion is blocked.

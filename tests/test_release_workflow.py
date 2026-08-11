@@ -82,6 +82,7 @@ def test_production_repairs_missing_canary_gate_before_approval() -> None:
     assert '"-NamePrefix", $CanaryNamePrefix' in production
     assert "if ($canaryImageMatches)" in production
     assert "no canary redeploy was required" in production
+    assert "$uniqueCanaryImages = @($canaryImages | Select-Object -Unique)" in production
 
 
 def test_image_push_requires_fresh_publish_authentication_before_build() -> None:

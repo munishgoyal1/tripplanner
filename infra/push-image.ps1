@@ -13,9 +13,9 @@
   builds on every commit, so the local loop stays fast. Run this only when you
   actually want to ship a new image.
 
-  Auth: needs a `docker login ghcr.io` session. If you're not logged in, set a
-  GitHub PAT (with `write:packages`) in one of these env vars and this script
-  will log in for you: GHCR_TOKEN, CR_PAT, or GITHUB_TOKEN.
+  Auth: set a GitHub PAT (with `write:packages`) in GHCR_TOKEN, CR_PAT, or
+  GITHUB_TOKEN. If none is set, an authenticated GitHub CLI token is used only
+  when it belongs to the package owner and includes `write:packages`.
 
 .EXAMPLE
   ./infra/push-image.ps1
@@ -62,20 +62,55 @@ Write-Host "Tags:     $($tags -join ', ')`n"
 docker --version *> $null
 if ($LASTEXITCODE -ne 0) { throw "Docker is not available. Start Docker Desktop and retry." }
 
-# Log in to GHCR if a token is provided; otherwise assume an existing session.
-$token = $env:GHCR_TOKEN
-if ([string]::IsNullOrWhiteSpace($token)) { $token = $env:CR_PAT }
-if ([string]::IsNullOrWhiteSpace($token)) { $token = $env:GITHUB_TOKEN }
-if (-not [string]::IsNullOrWhiteSpace($token)) {
-    Write-Host "✓ Logging in to $Registry as $GhcrUser ..."
-    $token | docker login $Registry --username $GhcrUser --password-stdin
-    if ($LASTEXITCODE -ne 0) { throw "docker login to $Registry failed." }
-    Write-Host "  ✓ Logged in`n"
-} else {
-    Write-Host "ℹ No GHCR_TOKEN/CR_PAT/GITHUB_TOKEN set — assuming an existing"
-    Write-Host "  'docker login $Registry' session. If push fails with auth, set a"
-    Write-Host "  PAT in GHCR_TOKEN and retry.`n"
+# Always establish a fresh GHCR session before building. A cached Docker credential
+# can be expired while still appearing present and would fail only after the build.
+$token = $null
+$tokenSource = $null
+if (-not [string]::IsNullOrWhiteSpace($env:GHCR_TOKEN)) {
+    $token = $env:GHCR_TOKEN
+    $tokenSource = "GHCR_TOKEN"
+} elseif (-not [string]::IsNullOrWhiteSpace($env:CR_PAT)) {
+    $token = $env:CR_PAT
+    $tokenSource = "CR_PAT"
+} elseif (-not [string]::IsNullOrWhiteSpace($env:GITHUB_TOKEN)) {
+    $token = $env:GITHUB_TOKEN
+    $tokenSource = "GITHUB_TOKEN"
 }
+
+if ([string]::IsNullOrWhiteSpace($token) -and (Get-Command gh -ErrorAction SilentlyContinue)) {
+    $ghLogin = (& gh api user --jq .login 2>$null | Out-String).Trim()
+    $loginExitCode = $LASTEXITCODE
+    $ghHeaders = (& gh api --include user 2>$null | Out-String)
+    $headersExitCode = $LASTEXITCODE
+    $scopeMatch = [regex]::Match($ghHeaders, '(?im)^x-oauth-scopes:\s*(.+)$')
+    $ghScopes = if ($scopeMatch.Success) {
+        @($scopeMatch.Groups[1].Value.Split(',') | ForEach-Object { $_.Trim() })
+    } else {
+        @()
+    }
+
+    if ($loginExitCode -eq 0 -and $headersExitCode -eq 0 -and
+        $ghLogin -eq $GhcrUser -and $ghScopes -contains "write:packages") {
+        $token = (& gh auth token --hostname github.com 2>$null | Out-String).Trim()
+        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($token)) {
+            $tokenSource = "GitHub CLI"
+        }
+    }
+}
+
+if ([string]::IsNullOrWhiteSpace($token)) {
+    $remedy = "Set GHCR_TOKEN to a GitHub PAT with write:packages, or run " +
+        "'gh auth refresh -h github.com -s write:packages' and retry."
+    throw "No valid GHCR publish token is available. $remedy"
+}
+
+Write-Host "✓ Logging in to $Registry as $GhcrUser using $tokenSource ..."
+$token | docker login $Registry --username $GhcrUser --password-stdin
+$token = $null
+if ($LASTEXITCODE -ne 0) {
+    throw "docker login to $Registry failed. Refresh the token's write:packages access and retry."
+}
+Write-Host "  ✓ Logged in`n"
 
 # Build with all tags.
 Write-Host "✓ Building image ..."
