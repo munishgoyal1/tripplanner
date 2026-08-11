@@ -995,3 +995,6 @@ stop showing this line in red as part of running sync scripts . Becuase red mean
 
 [2026-08-11 10:51] [master] \! Resume prod authentication fix
 Can you continue from last task that got interrupted because of vsc restart
+
+[2026-08-11 11:15] [master] Bundle master.txt with real code
+dont create a special commit for just master.txt changes, otherwise so many commits will just be dummy sort of showing. But keep the master.txt prompt log changes bunched and when there is a legitimate feature or fix other code files going, that time add it to the commit.
