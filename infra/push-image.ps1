@@ -13,9 +13,9 @@
   builds on every commit, so the local loop stays fast. Run this only when you
   actually want to ship a new image.
 
-  Auth: set a GitHub PAT (with `write:packages`) in GHCR_TOKEN, CR_PAT, or
-  GITHUB_TOKEN. If none is set, an authenticated GitHub CLI token is used only
-  when it belongs to the package owner and includes `write:packages`.
+    Auth: set a GitHub PAT (with `write:packages`) in GHCR_TOKEN, CR_PAT, or
+    GITHUB_TOKEN. If none is set, an authenticated Docker credential is verified
+    against GHCR and reused. An eligible GitHub CLI token is also supported.
 
 .EXAMPLE
   ./infra/push-image.ps1
@@ -99,22 +99,33 @@ if ([string]::IsNullOrWhiteSpace($token) -and (Get-Command gh -ErrorAction Silen
 }
 
 if ([string]::IsNullOrWhiteSpace($token)) {
-    $remedy = "Set GHCR_TOKEN to a GitHub PAT with write:packages, or run " +
-        "'gh auth refresh -h github.com -s write:packages' and retry."
-    throw "No valid GHCR publish token is available. $remedy"
+    Write-Host "ℹ No token variable or eligible GitHub CLI token found. Verifying the existing Docker credential ..."
+    docker manifest inspect "$repo`:latest" *> $null
+    if ($LASTEXITCODE -eq 0) {
+        $tokenSource = "Docker credential store"
+        Write-Host "  ✓ Existing Docker credential authenticated to $Registry`n"
+    } else {
+        $remedy = "Set GHCR_TOKEN to a GitHub PAT with write:packages, run " +
+            "'gh auth refresh -h github.com -s write:packages', or run " +
+            "'docker login $Registry' and retry."
+        throw "No valid GHCR publish token is available. $remedy"
+    }
 }
 
-Write-Host "✓ Logging in to $Registry as $GhcrUser using $tokenSource ..."
-$token | docker login $Registry --username $GhcrUser --password-stdin
-$token = $null
-if ($LASTEXITCODE -ne 0) {
-    throw "docker login to $Registry failed. Refresh the token's write:packages access and retry."
+if (-not [string]::IsNullOrWhiteSpace($token)) {
+    Write-Host "✓ Logging in to $Registry as $GhcrUser using $tokenSource ..."
+    $token | docker login $Registry --username $GhcrUser --password-stdin
+    $token = $null
+    if ($LASTEXITCODE -ne 0) {
+        throw "docker login to $Registry failed. Refresh the token's write:packages access and retry."
+    }
+    Write-Host "  ✓ Logged in`n"
 }
-Write-Host "  ✓ Logged in`n"
 
-# Build with all tags.
+# Build with all tags. Azure Container Apps runs linux/amd64, including when
+# the publisher is running Docker Desktop on Apple Silicon.
 Write-Host "✓ Building image ..."
-$buildArgs = @("build")
+$buildArgs = @("build", "--platform", "linux/amd64")
 foreach ($t in $tags) { $buildArgs += @("-t", $t) }
 $buildArgs += "."
 Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs -FailureMessage "docker build failed."

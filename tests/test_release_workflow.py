@@ -97,4 +97,16 @@ def test_image_push_requires_fresh_publish_authentication_before_build() -> None
     assert "assuming an existing session" not in script
     assert "gh auth token --hostname github.com" in script
     assert '$ghLogin -eq $GhcrUser -and $ghScopes -contains "write:packages"' in script
+    assert 'docker manifest inspect "$repo`:latest"' in script
+    assert "Docker credential store" in script
+    assert '"build", "--platform", "linux/amd64"' in script
     assert "gh auth refresh -h github.com -s write:packages" in script
+
+
+def test_container_app_job_name_stays_within_azure_limit() -> None:
+    template = (Path(__file__).parents[1] / "infra" / "main.bicep").read_text(
+        encoding="utf-8"
+    )
+
+    assert "var publicDemoJobName = '${namePrefix}-demo-refresh-${take(suffix, 8)}'" in template
+    assert "var publicDemoJobName = '${namePrefix}-public-demo-refresh-${suffix}'" not in template

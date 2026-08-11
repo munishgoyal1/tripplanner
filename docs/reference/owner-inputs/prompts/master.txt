@@ -1034,3 +1034,9 @@ rename Run-Latest to Run-Latest-Master
 and do we really need 2 sync scripts if they are not fundamentally different. Can they be made as single Sync-Latest-FromRemoteMaster and default behaviour being sync all sandboxes, and if a number provided then sync only that sandbox, local master gets FF always though. 
 
 Always keep parity and do any change for both mac and windows launchers to maintain them in sync.
+
+[2026-08-11 11:45] [master] ! Fix GHCR token acquisition
+Prod deployment is failing on No valid GHCR publish token. fix it
+
+[2026-08-11 12:19] [master] ! Fix deployment authentication fallback
+fix the deployment failures
