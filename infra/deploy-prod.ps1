@@ -93,11 +93,16 @@ function Test-CanaryImageVerified {
 }
 
 $canaryImages = @(Get-CanaryImages)
-$canaryImageMatches = $canaryImages.Count -eq 1 -and $canaryImages[0] -eq "${imagePrefix}${ImageTag}"
+$uniqueCanaryImages = @($canaryImages | Select-Object -Unique)
+$canaryImageMatches = $uniqueCanaryImages.Count -eq 1 -and $uniqueCanaryImages[0] -eq "${imagePrefix}${ImageTag}"
 $canarySmokeVerified = Test-CanaryImageVerified
 
-if ($canaryImageMatches -and $canarySmokeVerified) {
-    Write-Host "[canary] Current release $ImageTag is deployed and has passing smoke evidence."
+if ($canaryImageMatches) {
+    if ($canarySmokeVerified) {
+        Write-Host "[canary] Current release $ImageTag is deployed and has passing smoke evidence."
+    } else {
+        Write-Host -ForegroundColor Yellow "[canary] Current release $ImageTag is already deployed. Local smoke evidence is missing, so no canary redeploy was required."
+    }
 } else {
     $reasons = @()
     if (-not $canaryImageMatches) {
@@ -134,7 +139,8 @@ if ($canaryImageMatches -and $canarySmokeVerified) {
     }
 
     $canaryImages = @(Get-CanaryImages)
-    $canaryImageMatches = $canaryImages.Count -eq 1 -and $canaryImages[0] -eq "${imagePrefix}${ImageTag}"
+    $uniqueCanaryImages = @($canaryImages | Select-Object -Unique)
+    $canaryImageMatches = $uniqueCanaryImages.Count -eq 1 -and $uniqueCanaryImages[0] -eq "${imagePrefix}${ImageTag}"
     if (-not $canaryImageMatches -or -not (Test-CanaryImageVerified)) {
         throw "Canary did not retain verified image ${imagePrefix}${ImageTag}. Production promotion is blocked."
     }

@@ -33,12 +33,15 @@ Before releasing, authenticate manually:
 
 ```powershell
 az login
-docker login ghcr.io
+gh auth refresh -h github.com -s write:packages
 ```
 
-The GHCR credential needs `write:packages`. Provider and OAuth settings remain
-in the uncommitted `.env`; hosted environment-owned Azure OpenAI keys and OAuth
-callback bases are resolved by the deployment scripts.
+The image publisher establishes a fresh GHCR login before building. It uses
+`GHCR_TOKEN`, `CR_PAT`, or `GITHUB_TOKEN` when set; otherwise it uses the active
+GitHub CLI token only when that token belongs to `munishgoyal1` and includes
+`write:packages`. Provider and OAuth settings remain in the uncommitted `.env`;
+hosted environment-owned Azure OpenAI keys and OAuth callback bases are resolved
+by the deployment scripts.
 
 ## Artifact and Resource Ownership
 

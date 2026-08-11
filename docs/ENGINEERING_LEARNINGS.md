@@ -910,3 +910,12 @@ the outcome.
 - Availability and freshness are separate concerns. Render the bundled artifact
   synchronously, fetch a complete active version opportunistically, and publish
   refreshes by writing every immutable document before replacing one manifest.
+
+## 2026-08-11 - Authenticate the Registry Before Paying the Build Cost
+
+- A cached Docker credential can exist after its token expires, so treating the
+  credential store as proof of authentication defers a predictable failure until
+  after an expensive image build.
+- Release automation should establish a fresh registry session before building.
+  Automatic credential fallback is valid only when both identity and required
+  package scope are verified; otherwise fail with the exact refresh command.

@@ -80,3 +80,20 @@ def test_production_repairs_missing_canary_gate_before_approval() -> None:
     assert "Dry run cannot repair the canary gate" in production
     assert "Production cannot rebuild an image after canary verification" in production
     assert '"-NamePrefix", $CanaryNamePrefix' in production
+    assert "if ($canaryImageMatches)" in production
+    assert "no canary redeploy was required" in production
+
+
+def test_image_push_requires_fresh_publish_authentication_before_build() -> None:
+    script = (
+        Path(__file__).parents[1] / "infra" / "push-image.ps1"
+    ).read_text(encoding="utf-8")
+
+    login = script.index("docker login $Registry")
+    build = script.index('Invoke-LoggedNative -FilePath "docker" -ArgumentList $buildArgs')
+
+    assert login < build
+    assert "assuming an existing session" not in script
+    assert "gh auth token --hostname github.com" in script
+    assert '$ghLogin -eq $GhcrUser -and $ghScopes -contains "write:packages"' in script
+    assert "gh auth refresh -h github.com -s write:packages" in script
