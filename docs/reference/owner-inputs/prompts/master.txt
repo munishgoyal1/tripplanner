@@ -1028,3 +1028,9 @@ Line |
      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      | Canary deployment or smoke verification failed.
      | Production promotion is blocked.
+
+[2026-08-11 11:42] [master !] Unify master run and sync launchers
+rename Run-Latest to Run-Latest-Master 
+and do we really need 2 sync scripts if they are not fundamentally different. Can they be made as single Sync-Latest-FromRemoteMaster and default behaviour being sync all sandboxes, and if a number provided then sync only that sandbox, local master gets FF always though. 
+
+Always keep parity and do any change for both mac and windows launchers to maintain them in sync.

@@ -2,4 +2,4 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "$0")/../../.." && pwd)"
-exec pwsh -NoProfile -File "$repo_root/scripts/dev/sync-latest.ps1" "$@"
+exec pwsh -NoProfile -File "$repo_root/scripts/dev/run-latest-master.ps1" "$@"

@@ -8,28 +8,27 @@ Windows launchers live here; matching macOS launchers live under
 | Command | Purpose |
 | --- | --- |
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
-| `Run-Latest.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
-| `Sync-MeTo-Latest.cmd <sandbox>` | Fast-forward primary `master`, then update one sandbox from it |
-| `Sync-AllTo-Latest.cmd` | Fast-forward primary `master`, then update every registered sandbox from it |
+| `Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
+| `Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `Show-Prompts.cmd` | Read the master owner prompt log |
 
-`Run-Latest.cmd` is only for the primary `master` checkout. It fast-forwards
+`Run-Latest-Master.cmd` is only for the primary `master` checkout. It fast-forwards
 from `origin/master` and accepts every optional `dev-spa.ps1` parameter:
 
 ```cmd
-Run-Latest.cmd
-Run-Latest.cmd -Watch -NoLabs
+Run-Latest-Master.cmd
+Run-Latest-Master.cmd -Watch -NoLabs
 ```
 
 For an isolated feature, use the sandbox launchers. On macOS, run the
 corresponding primary launcher from the repository root:
 
 ```bash
-./scripts/mac/user/Run-Latest.command
-./scripts/mac/user/Run-Latest.command -Watch -NoLabs
-./scripts/mac/user/Sync-MeTo-Latest.command 2
-./scripts/mac/user/Sync-AllTo-Latest.command
+./scripts/mac/user/Run-Latest-Master.command
+./scripts/mac/user/Run-Latest-Master.command -Watch -NoLabs
+./scripts/mac/user/Sync-Latest-FromRemoteMaster.command 2
+./scripts/mac/user/Sync-Latest-FromRemoteMaster.command
 ```
 
 A successful sync guarantees that every registered sandbox branch, both local

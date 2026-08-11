@@ -25,9 +25,8 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/start-cosmos-emulator.ps1` | Start or verify the local Cosmos emulator |
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
-| `user/Run-Latest.cmd` | Owner-facing synchronize-and-run launcher |
-| `user/Sync-MeTo-Latest.cmd` | Fast-forward primary `master`, then update one named sandbox from it |
-| `user/Sync-AllTo-Latest.cmd` | Fast-forward primary `master`, then update every registered sandbox from it |
+| `user/Run-Latest-Master.cmd` | Owner-facing synchronize-and-run launcher for primary `master` |
+| `user/Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every sandbox or only the selected one |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
@@ -44,7 +43,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 
 The macOS launchers preserve the Windows names with a `.command` extension and
 the same subfolder layout. For example, use
-`scripts/mac/user/Run-Latest.command`,
+`scripts/mac/user/Run-Latest-Master.command`,
 `scripts/mac/user/sandbox/New-Sandbox.command`, or
 `scripts/mac/canary/Deploy-Canary.command`. They forward all arguments to the
 same PowerShell owners and retain the existing deployment approval gates.
