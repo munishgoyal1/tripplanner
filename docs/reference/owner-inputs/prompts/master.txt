@@ -1152,3 +1152,8 @@ i ran 2way sync with only sbx2 as param, why did it still update sbx3 ?
 
 [2026-08-13 22:53] [master !] Varanasi trip empty itinerary, similar to Nashik
 varanasi trip again similar to nashik shows empty itinerary. map has some stops shown. not sure even if that is complete. chat shows the itinerary
+
+[2026-08-13 22:57] [master] ! Itinerary coherence checks and flow
+we need to work on delivering trip level coehrent and smart itineraries. In one example of paris trip in sbx2- louvre museum is added on tuesday when it already found that this attaraction may be closed on tuesdays. Do we already have such checks.. these are basic checks, what all else is there.
+
+Where is the deterministic rule based check, and whjere is the AI based intelligence. explain me the trip building flow also
