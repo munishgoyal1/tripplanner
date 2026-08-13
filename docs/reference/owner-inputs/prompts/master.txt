@@ -1125,3 +1125,6 @@ Create a rename sandbox launcher, change the rest of name string and retain the 
 fix this 2 way sync error
 
 "twoway-sync-master-sbx.ps1: Cannot bind parameter 'ForegroundColor'. Cannot convert value "YellowWrite-Host" to type "System.ConsoleColor"."
+
+[2026-08-13 22:25] [master] ! Fix two-way sync Write-Host error
+fix this 2 way sync error
