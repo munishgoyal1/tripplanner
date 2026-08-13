@@ -935,3 +935,19 @@ the outcome.
 - An invariant that returns early on unparseable input is indistinguishable from
   an invariant that passed. When a guard depends on a match, test the case where
   the match cannot succeed, or the guard will report health it never checked.
+
+## 2026-08-13 - Validate Where the Write Happens, Not Where It Is Convenient
+
+- The deterministic invariants existed and were correct, but `validate_plan` was
+  reachable from exactly one mutation (`add_selection`). The tool that writes
+  flights and whole itineraries never called it, so the guard that would have
+  caught a stop stranded after the flight home simply never ran on the path that
+  produced the defect. A rule enforced on one of five write paths is a rule the
+  product does not have.
+- Repair and detection belong together and belong at the persistence boundary.
+  Ordering ran only as a side effect of a hotel change, which meant adding a
+  flight reordered nothing. Anchoring both to the write makes the guarantee
+  independent of which field the edit happened to touch.
+- Stage a new invariant before it can block. Continuity (I9) reports on the edit
+  that introduces it but does not gate completion, because a new rule meets its
+  real false-positive rate on existing data, not in tests.

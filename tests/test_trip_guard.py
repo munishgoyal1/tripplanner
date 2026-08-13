@@ -18,6 +18,8 @@ _COORDS = {
     "Lal Bagh Palace": (22.6944, 75.8452),
     "Mandu Fort": (22.3700, 75.4000),
     "Hotel Sayaji": (22.7250, 75.8800),
+    # ~500 km from Indore: far enough that only a named journey explains it.
+    "Gateway of India": (18.9220, 72.8347),
 }
 
 
@@ -208,6 +210,53 @@ def test_a_stop_stranded_after_the_flight_home_blocks_completion(located: None) 
 
 def test_a_coherent_itinerary_reports_no_coherence_gap(located: None) -> None:
     assert trip_validation.itinerary_coherence_gaps(ROUND_TRIP) == []
+
+
+def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
+    stranded = plan(
+        [
+            [stop("Rajwada Palace", "10:00")],
+            [stop("Gateway of India", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(stranded)}
+    assert "I9" in codes
+
+
+def test_a_journey_between_the_days_explains_the_move(located: None) -> None:
+    connected = plan(
+        [
+            [
+                stop("Rajwada Palace", "10:00"),
+                stop("Drive Indore → Mumbai", "15:00", "transport", 180),
+            ],
+            [stop("Gateway of India", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(connected)}
+    assert "I9" not in codes
+
+
+def test_a_nearby_day_trip_is_never_reported_as_a_gap(located: None) -> None:
+    nearby = plan(
+        [
+            [stop("Rajwada Palace", "10:00")],
+            [stop("Mandu Fort", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(nearby)}
+    assert "I9" not in codes
+
+
+def test_continuity_stays_silent_when_a_place_has_no_coordinates() -> None:
+    unlocated = plan(
+        [
+            [stop("Somewhere Unknown", "10:00")],
+            [stop("Another Unknown", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(unlocated)}
+    assert "I9" not in codes
 
 
 def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:
