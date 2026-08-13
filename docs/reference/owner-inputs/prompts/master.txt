@@ -1157,3 +1157,6 @@ varanasi trip again similar to nashik shows empty itinerary. map has some stops 
 we need to work on delivering trip level coehrent and smart itineraries. In one example of paris trip in sbx2- louvre museum is added on tuesday when it already found that this attaraction may be closed on tuesdays. Do we already have such checks.. these are basic checks, what all else is there.
 
 Where is the deterministic rule based check, and whjere is the AI based intelligence. explain me the trip building flow also
+
+[2026-08-13 23:03] [master !] Deleting a different trip blocked by in-progress chat
+to test this fix i initiated a new trip chat and same varanasi itinerary build prompt. While this in progress i clicked to dleete oldd varanasi trip. It said could not delete. Both are different trips anyway, so it should allow to delete
