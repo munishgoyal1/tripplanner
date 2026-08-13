@@ -2,6 +2,15 @@
 <#
 .SYNOPSIS
   Finish a manually resolved merge in an active sandbox.
+
+.DESCRIPTION
+  Accepts the sandbox number, full slug, or short name, matching every other
+  sandbox launcher.
+
+.EXAMPLE
+  ./scripts/dev/resolve-sandbox-conflicts.ps1 1
+  ./scripts/dev/resolve-sandbox-conflicts.ps1 1-stay-comparison
+  ./scripts/dev/resolve-sandbox-conflicts.ps1 stay-comparison
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -12,20 +21,18 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-$registryPath = "$repoRoot.worktrees/sandboxes.json"
+. "$PSScriptRoot/lib/sandbox-registry.ps1"
+
+$registryPath = Get-SandboxRegistryPath -PrimaryRoot $repoRoot
 if (-not (Test-Path $registryPath)) { throw "Sandbox registry not found: $registryPath" }
 
-$entries = @(Get-Content -Raw $registryPath | ConvertFrom-Json)
-$shortName = $Sandbox -replace "^\d+-", ""
-$entry = @($entries | Where-Object {
-    $_.slug -eq $Sandbox -or ($_.slug -replace "^\d+-", "") -eq $shortName
-})
-if ($entry.Count -eq 0 -and $Sandbox -match "^\d+$") {
-    $entry = @($entries | Where-Object { ([int]$_.slot + 1) -eq [int]$Sandbox })
-}
-if ($entry.Count -ne 1) { throw "Sandbox '$Sandbox' was not uniquely found." }
+$entry = @(Select-SandboxEntry -Entries (Get-SandboxRegistry -PrimaryRoot $repoRoot) -Reference $Sandbox)
 $worktree = $entry[0].worktree
 $statePath = Join-Path $repoRoot "logs/sandbox/pending-conflict-$((Split-Path -Leaf $worktree)).json"
+
+# Replay resolutions this repository already recorded. rerere only reapplies a
+# resolution the owner made themselves, so nothing new is decided here.
+& git -C $worktree rerere 2>&1 | Out-Host
 
 $unmerged = @(& git -C $worktree diff --name-only --diff-filter=U)
 if ($unmerged.Count -gt 0) {

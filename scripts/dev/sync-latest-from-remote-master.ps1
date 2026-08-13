@@ -71,6 +71,16 @@ if ($ValidateOnly) {
 }
 
 $sandboxScript = Join-Path $primaryRoot "scripts/dev/sandbox.ps1"
+$resolverScript = Join-Path $primaryRoot "scripts/dev/resolve-sandbox-conflicts.ps1"
+
+function Test-SandboxConflictPending {
+    # Ask git, not the error text: the launcher rewraps per-lane messages, so
+    # matching on the message is what silently skipped recovery before.
+    param([Parameter(Mandatory = $true)][string]$WorkingDirectory)
+    $unmerged = @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
+    return $unmerged.Count -gt 0
+}
+
 $failures = [System.Collections.Generic.List[string]]::new()
 foreach ($target in $targets) {
     if (-not (Test-Path $target.worktree -PathType Container)) {
@@ -82,7 +92,26 @@ foreach ($target in $targets) {
         & $sandboxScript -Update $target.slug -BaseBranch master -NoSync -Confirm:$false
         if ($LASTEXITCODE -ne 0) { throw "sync command returned $LASTEXITCODE" }
     } catch {
-        $failures.Add("$($target.slug): $($_.Exception.Message)")
+        $firstError = $_.Exception.Message
+        # Retry only when a conflict is actually pending, so a failed validation
+        # gate can never be replayed into acceptance.
+        if (-not (Test-SandboxConflictPending -WorkingDirectory $target.worktree)) {
+            $failures.Add("$($target.slug): $firstError")
+            continue
+        }
+        Write-Host "[resolve] sandbox '$($target.slug)' has conflicts; running the resolver" -ForegroundColor Yellow
+        try {
+            & $resolverScript -Sandbox $target.slug -Confirm:$false
+            if ($LASTEXITCODE -ne 0) { throw "resolver returned $LASTEXITCODE" }
+            if (Test-SandboxConflictPending -WorkingDirectory $target.worktree) {
+                throw "conflicts still need manual resolution"
+            }
+            & $sandboxScript -Update $target.slug -BaseBranch master -NoSync -Confirm:$false
+            if ($LASTEXITCODE -ne 0) { throw "sync command returned $LASTEXITCODE after recovery" }
+            Write-Host "[resolve] sandbox '$($target.slug)' recovered" -ForegroundColor Green
+        } catch {
+            $failures.Add("$($target.slug): $firstError -> recovery failed: $($_.Exception.Message)")
+        }
     }
 }
 if ($failures.Count -gt 0) {
