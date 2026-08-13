@@ -62,23 +62,31 @@ def _transport_route_endpoints(name: str) -> tuple[str, str] | None:
     return waypoints[0], waypoints[-1]
 
 
+def _named_terminal_ref(text: str) -> tuple[str, str] | None:
+    lowered = text.lower()
+    if "airport" in lowered:
+        return ("airport", text)
+    if "railway station" in lowered or "train station" in lowered:
+        return ("station", text)
+    if "bus stand" in lowered or "bus station" in lowered:
+        return ("bus_station", text)
+    return None
+
+
 def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
     text = str(name or "").strip()
     lowered = text.lower()
     if not text:
         return []
+    named = _named_terminal_ref(text)
     if kind not in {"flight", "transport"}:
-        if "airport" in lowered:
-            return [("airport", text)]
-        if "railway station" in lowered or "train station" in lowered:
-            return [("station", text)]
-        if "bus stand" in lowered or "bus station" in lowered:
-            return [("bus_station", text)]
-        return []
+        return [named] if named else []
 
     endpoints = _transport_route_endpoints(text)
     if not endpoints:
-        return []
+        # A leg written as one terminal per stop ("… Airport, Delhi (DEL)") names a
+        # real place, so the map must pin it rather than drop the stop.
+        return [named] if named else []
     origin, destination = endpoints
     waypoints = _transport_route_waypoints(text)
     if kind == "flight":

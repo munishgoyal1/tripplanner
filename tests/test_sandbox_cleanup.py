@@ -6,25 +6,36 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 SANDBOX_SCRIPT = ROOT / "scripts" / "dev" / "sandbox.ps1"
+GH_CLI_LIB = ROOT / "scripts" / "dev" / "lib" / "gh-cli.ps1"
+
+
+def _promote_block(source: str) -> str:
+    start = source.index('if ($PSCmdlet.ParameterSetName -eq "Promote")')
+    end = source.index('if ($PSCmdlet.ParameterSetName -eq "Discard")', start)
+    return source[start:end]
 
 
 def test_promotion_checks_github_auth_before_sync() -> None:
     source = SANDBOX_SCRIPT.read_text(encoding="utf-8")
+    block = _promote_block(source)
+    lib = GH_CLI_LIB.read_text(encoding="utf-8")
 
-    auth_check = source.index("gh auth status --hostname github.com")
-    sync_step = source.index('Write-Host "== 1/6 sync with origin/$BaseBranch =="')
+    auth_check = block.index('Get-RequiredGhCli -Verb "-Promote"')
+    sync_step = block.index('Write-Host "== 1/6 sync with origin/$BaseBranch =="')
 
     assert auth_check < sync_step
-    assert "gh auth login --hostname github.com --web" in source
+    assert "gh auth status --hostname github.com" in lib
+    assert "gh auth login --hostname github.com --web" in lib
 
 
 def test_promotion_synchronizes_primary_before_and_after_remote_merge() -> None:
     source = SANDBOX_SCRIPT.read_text(encoding="utf-8")
+    block = _promote_block(source)
 
     assert "function Sync-PrimaryCheckout" in source
-    assert 'Sync-PrimaryCheckout -Base $BaseBranch' in source
-    assert 'Sync-PrimaryCheckout -Base $BaseBranch -RequireExact' in source
-    assert source.count('Sync-PrimaryCheckout -Base $BaseBranch') == 2
+    assert 'Sync-PrimaryCheckout -Base $BaseBranch' in block
+    assert 'Sync-PrimaryCheckout -Base $BaseBranch -RequireExact' in block
+    assert block.count('Sync-PrimaryCheckout -Base $BaseBranch') == 2
     assert 'merge --ff-only "origin/$Base"' in source
     assert "Primary checkout has uncommitted changes" in source
     assert "Primary checkout must match origin/$Base before promotion" in source

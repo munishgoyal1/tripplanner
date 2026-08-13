@@ -1010,3 +1010,24 @@ the outcome.
   date aged past the FX rate TTL, the assertion started reaching the live rate
   service and failing on a real published rate. Seed freshness relative to now
   and keep the fixed value only where the assertion depends on it.
+
+## 2026-08-13 - A Surface That Cannot Render a Stop Must Not Drop It Silently
+
+- The itinerary renders every stop verbatim, while the map renders only stops it
+  can resolve to a pin. Anything it cannot resolve is skipped with no marker and
+  no message, so the two surfaces disagree and only the map looks "wrong".
+- `_transport_terminal_refs` understood a flight only as `Flight: A to B`. When
+  the agent wrote one stop per terminal ("Kempegowda International Airport,
+  Bangalore (BLR)", kind `flight`), endpoint parsing failed, and the caller's
+  `if kind in {"flight", "transport"}: continue` discarded the stop. The same
+  name with kind `airport` produced a pin, so a tag the user never sees decided
+  whether their flights appeared. Parse the route form, then fall back to the
+  stop as its own named terminal.
+- The guard that rejects a geocode whose provider name does not match the stop
+  name prevents wrong pins, but it also drops real ones: "Seine River Cruise"
+  resolves to "Bateaux Parisiens" with correct coordinates and shares no token
+  with the stop, so it vanished from the map while staying in the itinerary.
+- Audit cross-surface consistency by diffing the surfaces themselves, not by
+  reading the builder. Comparing `/trip/itinerary` stop names against
+  `/trip/map` pin names found seven missing stops in seconds, including one this
+  investigation was not looking for.
