@@ -2043,6 +2043,33 @@ def test_destination_only_drive_remains_transport_without_inventing_an_origin() 
     assert trip_view._transport_terminal_refs(name, "transport") == []
 
 
+@pytest.mark.parametrize(
+    ("name", "waypoints"),
+    [
+        ("Flight Bengaluru to London via Doha", ["Bengaluru", "Doha", "London"]),
+        ("Flight Bengaluru → Doha → London", ["Bengaluru", "Doha", "London"]),
+        ("Flight Bengaluru to Indore", ["Bengaluru", "Indore"]),
+        ("Flight Delhi to Lima via Doha and Madrid", ["Delhi", "Doha", "Madrid", "Lima"]),
+    ],
+)
+def test_a_connecting_leg_keeps_every_place_it_passes_through(
+    name: str, waypoints: list[str]
+) -> None:
+    from tripplanner.web.transport import _transport_route_waypoints
+
+    assert _transport_route_waypoints(name) == waypoints
+    # The endpoints view stays the outer pair so existing callers are unaffected.
+    assert trip_view._transport_route_endpoints(name) == (waypoints[0], waypoints[-1])
+
+
+def test_a_connecting_flight_pins_the_airport_it_stops_at() -> None:
+    assert trip_view._transport_terminal_refs("Flight Bengaluru to London via Doha", "flight") == [
+        ("airport", "Bengaluru Airport"),
+        ("airport", "Doha Airport"),
+        ("airport", "London Airport"),
+    ]
+
+
 def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
