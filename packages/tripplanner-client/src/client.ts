@@ -318,7 +318,20 @@ export class TripplannerClient {
       },
       options.signal,
     );
-    ensureOk(response, "Chat request failed");
+    if (!response.ok) {
+      let detail = "";
+      try {
+        const payload = (await response.json()) as { detail?: unknown };
+        if (typeof payload.detail === "string") detail = payload.detail;
+      } catch {
+        // Keep the status-based message when the server did not return JSON.
+      }
+      throw new ApiError(
+        detail || `Chat request failed (${response.status}).`,
+        response.status,
+        retryAfterMs(response),
+      );
+    }
     const stream = response.body as ReadableStream<Uint8Array> | null;
     if (!stream?.getReader) {
       let terminalEvent = false;

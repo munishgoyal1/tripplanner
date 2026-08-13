@@ -1117,5 +1117,11 @@ I am thinking if we should take this approach instead of dropping, while still f
 [2026-08-13 17:57] [master] ! Implement unmapped stop tiering in sandbox 2
 Implement all of it as you planned. Do it onto sandbox 2
 
+[2026-08-13 19:06] [master !] Explain chat replan 409
+in nashik trip, asking it to replan hit a 409 without any descirptive reason.
+
 [2026-08-13 18:46] [master !] Queue map add while chat runs
 does the map add stop not accept a request while another chat request is in progress. In Paris trip on sbx2, adding a pin from map resulted in 409 error. at same time re-plan paris trip prompt was ongoing.
+
+[2026-08-13 19:04] [master] ! Multi-leg round trip inconsistent across itinerary and map
+in the primary stack, on asking to replan the paris trip. it only showed banaglroe to paris flight leg now missing the airports in between entirely from itinerary. map is showing both legs with delhi in between. that too is only for blr to paris, but not for return. still the ocnsistency is not there
