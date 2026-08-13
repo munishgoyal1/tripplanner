@@ -1117,3 +1117,6 @@ I am thinking if we should take this approach instead of dropping, while still f
 [2026-08-13 17:20] [master] ! Rename sync launchers and scope them per sandbox
 rename Sync-TwoWay to TwoWay-Sync-MasterSbx and Sync-Latest... to Sync-Sbxs-FromMaster .
 Default for both works for all sbx,  if a sbx number is given works only for that sbx
+
+[2026-08-13 17:28] [master] ! Rename-Sandbox launcher keeping the number
+Create a rename sandbox launcher, change the rest of name string and retain the sbx number if new name string doesnt have it

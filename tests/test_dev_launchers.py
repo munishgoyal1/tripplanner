@@ -140,6 +140,59 @@ def test_merge_launchers_exist_for_both_platforms() -> None:
     assert "-Merge" in windows_launcher.read_text(encoding="utf-8")
 
 
+def _rename_block(sandbox_script: str) -> str:
+    start = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Rename")')
+    end = sandbox_script.index('if ($PSCmdlet.ParameterSetName -eq "Merge")', start)
+    return sandbox_script[start:end]
+
+
+def test_rename_keeps_the_number_and_renames_every_derived_name() -> None:
+    root = Path(__file__).parents[1]
+    sandbox_script = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+    block = _rename_block(sandbox_script)
+
+    assert '[Parameter(Mandatory = $true, ParameterSetName = "Rename")]' in sandbox_script
+    # The number comes from the sandbox, so a name given without one keeps it.
+    assert '$newSlug = "$number-$newShortName"' in block
+    # A number may be repeated but never reassigned: it owns the ports.
+    assert 'if ($NewName -match "^(\\d+)-")' in block
+    assert "Renaming cannot move it to" in block
+    # Branch, worktree, and database follow the slug.
+    assert '$newBranch = "sandbox/$newSlug"' in block
+    assert '"sbx-$newSlug"' in block
+    assert '$newDatabase = "tripplanner-sbx-$newSlug"' in block
+    assert '"worktree", "move"' in block
+    assert '"branch", "-m"' in block
+    assert "Save-Registry" in block
+
+
+def test_rename_refuses_unsafe_states_and_publishes_before_deleting() -> None:
+    root = Path(__file__).parents[1]
+    sandbox_script = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+    block = _rename_block(sandbox_script)
+
+    assert "already covers" in block
+    assert "Test-SandboxEndpoint" in block
+    assert "is serving. Stop it first" in block
+    assert "Get-SandboxUnmergedFiles" in block
+    # The new branch is published before the old one is removed.
+    assert block.index("push -u origin") < block.index("push origin --delete")
+
+
+def test_rename_launchers_exist_for_both_platforms() -> None:
+    root = Path(__file__).parents[1]
+    mac_launcher = (
+        root / "scripts" / "mac" / "user" / "sandbox" / "Rename-Sandbox.command"
+    ).read_text(encoding="utf-8")
+    windows_launcher = (root / "scripts" / "user" / "sandbox" / "Rename-Sandbox.cmd").read_text(
+        encoding="utf-8"
+    )
+
+    assert "sandbox.ps1" in mac_launcher
+    assert "-Rename" in mac_launcher
+    assert "-Rename" in windows_launcher
+
+
 def test_github_cli_is_resolved_instead_of_trusting_path() -> None:
     root = Path(__file__).parents[1]
     lib = (root / "scripts" / "dev" / "lib" / "gh-cli.ps1").read_text(encoding="utf-8")

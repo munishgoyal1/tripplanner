@@ -12,6 +12,7 @@ Windows launchers live here; matching macOS launchers live under
 | `Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
 | `TwoWay-Sync-MasterSbx.cmd [sandbox]` | Rare, gated two-way sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
+| `sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox, keeping its number and ports |
 | `sandbox/Merge-Sandbox.cmd <sandbox>` | Merge the sandbox into `master` and resynchronize it, keeping the sandbox active |
 | `Show-Prompts.cmd` | Read the master owner prompt log |
 

@@ -12,6 +12,13 @@ Create a sandbox from the primary checkout:
 
 On macOS, use the matching `.command` launchers under `scripts/mac/user/sandbox/`. Each sandbox has an isolated worktree, branch, port slot, and local emulator database. `Update-Sandbox` merges current `origin/master` into an in-flight sandbox. Promotion is the only path from sandbox code into `master`.
 
+`Rename-Sandbox <sandbox> <new-name>` changes only the name part of a sandbox.
+Its branch, worktree folder, and database name follow, while the number keeps its
+ports, so a new name may repeat the number but cannot change it. Renaming
+requires the sandbox to be stopped and conflict-free, publishes the new branch
+before deleting the old one, and leaves the previous emulator database in place —
+the renamed sandbox seeds a fresh one on its next run.
+
 `Merge-Sandbox` lands finished work without ending the lane. It runs the same
 validation, pull request, merge, and verification steps as promotion, then
 resynchronizes the sandbox onto the updated base and leaves it registered and

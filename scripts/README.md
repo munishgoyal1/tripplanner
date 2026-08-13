@@ -33,6 +33,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
 | `user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `user/sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox's name part; its branch, worktree, and database follow while the number keeps its ports |
 | `user/sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
 | `user/sandbox/Merge-Sandbox.cmd` | Same gates as promotion, but keeps the sandbox: fetch latest `master`, auto-resolve conflicts, validate, push, open the PR, merge, verify it landed, then resynchronize the sandbox so work continues in the same lane |
 | `user/sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |
