@@ -202,6 +202,12 @@ def _provider_name_matches(source_name: str, provider_name: str) -> bool:
         SequenceMatcher(None, source_token, provider_token).ratio() >= 0.75
         for source_token in source_identity
         for provider_token in provider_identity
+    ) or any(
+        len(source_token) >= 5
+        and len(provider_token) >= 5
+        and source_token[:5] == provider_token[:5]
+        for source_token in source_identity
+        for provider_token in provider_identity
     )
 
 
@@ -216,6 +222,26 @@ def _hotel_identity_matches(left: str, right: str) -> bool:
     if not left_tokens or not right_tokens:
         return False
     return left_tokens <= right_tokens or right_tokens <= left_tokens
+
+
+def _day_place_context(entry: dict[str, Any], destination: str) -> str:
+    """Return a useful locality for Places lookups on one itinerary day."""
+    for field in ("city", "location", "destination"):
+        value = str(entry.get(field) or "").strip()
+        if value:
+            return value
+
+    title = str(entry.get("title") or "").strip()
+    if not title:
+        return destination
+    if match := re.search(r"\bto\s+([^,]+)$", title, flags=re.IGNORECASE):
+        return match.group(1).strip()
+    title = re.sub(r"\s*\([^)]*\)", "", title).strip()
+    for marker in (" Day Trip", " Excursion", " &"):
+        if marker.lower() in title.lower():
+            title = re.split(re.escape(marker), title, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+            break
+    return title or destination
 
 
 def _map_pins(
@@ -246,9 +272,10 @@ def _map_pins(
 
     # (kind, name) in display order: user picks first, then suggestions.
     refs: list[tuple[str, str]] = []
+    context_by_name: dict[str, str] = {}
     seen: set[str] = set()
 
-    def _add(kind: str, name: str) -> None:
+    def _add(kind: str, name: str, context: str = destination) -> None:
         key = (name or "").strip().lower()
         if kind == "hotel" and any(
             existing_kind == "hotel" and _hotel_identity_matches(existing_name, name)
@@ -258,6 +285,7 @@ def _map_pins(
         if name and key not in seen:
             seen.add(key)
             refs.append((kind, name))
+            context_by_name[key] = context
 
     def _infer_kind_from_name(name: str) -> str:
         n = (name or "").strip().lower()
@@ -277,6 +305,7 @@ def _map_pins(
         stops = entry.get("stops")
         if not isinstance(stops, list):
             continue
+        day_context = _day_place_context(entry, destination)
         has_route_anchor = False
         for s in stops:
             if isinstance(s, dict):
@@ -301,7 +330,7 @@ def _map_pins(
                 if _intercity_transfer_mode(name, kind) == "Drive" and has_route_anchor:
                     continue
                 for terminal_kind, terminal_name in terminal_refs:
-                    _add(terminal_kind, terminal_name)
+                    _add(terminal_kind, terminal_name, "")
                     explicit_day_by_name.setdefault(terminal_name.lower(), day_num)
                     tier_by_name.setdefault(terminal_name.lower(), ANCHOR)
                     from_itinerary.add(terminal_name.lower())
@@ -310,7 +339,7 @@ def _map_pins(
                 continue
             if kind not in {"hotel", "attraction", "meal", "restaurant"}:
                 kind = _infer_kind_from_name(name)
-            _add(kind, name)
+            _add(kind, name, day_context)
             explicit_day_by_name.setdefault(name.lower(), day_num)
             tier_by_name.setdefault(name.lower(), tier)
             from_itinerary.add(name.lower())
@@ -333,16 +362,13 @@ def _map_pins(
         ):
             _add("attraction", name)
 
-    places_cache.prefetch(
-        [
-            name
-            for _, name in refs
-            if tier_by_name.get(name.strip().lower()) != LABEL
-        ],
-        destination,
-        max_photos=1,
-        with_reviews=False,
-    )
+    names_by_context: dict[str, list[str]] = {}
+    for _, name in refs:
+        if tier_by_name.get(name.strip().lower()) != LABEL:
+            context = context_by_name.get(name.strip().lower(), destination)
+            names_by_context.setdefault(context, []).append(name)
+    for context, names in names_by_context.items():
+        places_cache.prefetch(names, context, max_photos=1, with_reviews=False)
 
     def _report(name: str, kind: str, reason: str, candidate: dict[str, Any] | None) -> None:
         key = name.strip().lower()
@@ -363,6 +389,7 @@ def _map_pins(
     pins: list[dict[str, Any]] = []
     for i, (kind, name) in enumerate(refs):
         key = name.strip().lower()
+        context = context_by_name.get(key, destination)
         if tier_by_name.get(key) == LABEL:
             # Naming no place, it has no pin to be missing; say so rather than
             # letting the geocoder invent one.
@@ -372,7 +399,7 @@ def _map_pins(
         info = (
             binding
             if binding
-            else (places_cache.get_details(name, destination) or {})
+            else (places_cache.get_details(name, context) or {})
         )
         provider_name = str(info.get("name") or "").strip()
         if (
@@ -399,7 +426,7 @@ def _map_pins(
         if lat is None or lng is None:
             _report(name, kind, "no_location", None)
             continue
-        photos = places_cache.get_photos(name, destination, max_photos=1)
+        photos = places_cache.get_photos(name, context, max_photos=1)
         is_sel = (
             name.strip().lower() in selected.get(kind, set())
             or name.strip().lower() in itinerary_names

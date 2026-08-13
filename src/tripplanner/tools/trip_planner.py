@@ -1049,6 +1049,59 @@ def _load_active_trip() -> dict[str, Any] | None:
     return None
 
 
+def _normalize_hotel_endpoints(plan: dict[str, Any]) -> bool:
+    """Keep one meaningful return stay and make a hotel-only departure actionable."""
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return False
+
+    changed = False
+    days = [day for day in itinerary if isinstance(day, dict)]
+    for day in days:
+        stops = day.get("stops")
+        if not isinstance(stops, list):
+            continue
+        normalized: list[Any] = []
+        for stop in stops:
+            if (
+                normalized
+                and _stop_kind(stop) == "hotel"
+                and _stop_kind(normalized[-1]) == "hotel"
+                and _stop_name(stop).casefold()
+                == _stop_name(normalized[-1]).casefold()
+            ):
+                previous = normalized[-1]
+                if isinstance(previous, dict) and not str(previous.get("note") or "").strip():
+                    previous["note"] = "Return to hotel"
+                changed = True
+                continue
+            normalized.append(stop)
+        if len(normalized) != len(stops):
+            day["stops"] = normalized
+            stops = normalized
+        if (
+            len(stops) == 1
+            and _stop_kind(stops[0]) == "hotel"
+            and "check" in f"{day.get('title') or ''} {day.get('summary') or ''}"
+            .casefold()
+        ):
+            stop = stops[0]
+            if isinstance(stop, dict):
+                if not str(stop.get("time") or "").strip():
+                    stop["time"] = "11:00"
+                    changed = True
+                if (
+                    not str(stop.get("note") or "").strip()
+                    or str(stop.get("note")).casefold() == "check-out"
+                ):
+                    stop["note"] = (
+                        "Check out by 11:00 (confirm with your hotel). "
+                        "Leave bags with reception if your onward departure is later."
+                    )
+                    changed = True
+    return changed
+
+
 def load_active_trip_dict() -> dict[str, Any] | None:
     """Public, non-tool accessor for the current active trip.
 
@@ -1331,6 +1384,7 @@ def _save_active_trip(plan: dict[str, Any]) -> None:
     # in-progress drafts are never lost when the user switches trips.
     if not plan.get("trip_id"):
         plan["trip_id"] = _compute_trip_id(plan)
+    _normalize_hotel_endpoints(plan)
     plan["updated_at"] = datetime.now().isoformat()
 
     if storage_cosmos.is_enabled():

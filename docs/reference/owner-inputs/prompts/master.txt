@@ -1169,3 +1169,7 @@ to test this fix i initiated a new trip chat and same varanasi itinerary build p
 it should make the unmapped stops list each row clickable to show that stop to give full context to user. - Just similar to valid stop click on itinerary similar make this also clickable and all surfaces should show respective info.
 
 change text to add breakup with 3 key stops not mapped in messaging at bottom saying 8 stops
+
+[2026-08-13 23:23] [master] ! varanasi trip 
+day6 - at end there are 2 items - the hotel, and the return to hotel. why are both needed. usually we have it as return to hotel.
+day7 - no plan given , no timings of anything given. no guidance on checkout time given.
