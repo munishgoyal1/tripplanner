@@ -120,11 +120,13 @@ function Install-DeclaredTools {
 function Install-VsCodeExtensions {
     param([Parameter(Mandatory = $true)][string]$ManifestPath)
 
-    if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
-        throw "The VS Code command 'code' is unavailable. Add it to PATH, then rerun."
+    . (Join-Path $PSScriptRoot "../scripts/dev/lib/vscode-cli.ps1")
+    $code = Resolve-VsCodeCli
+    if (-not $code) {
+        throw "The VS Code command 'code' was not found. Install VS Code, then rerun."
     }
 
-    $installed = @(& code --list-extensions)
+    $installed = @(& $code --list-extensions)
     if ($LASTEXITCODE -ne 0) {
         throw "VS Code could not list installed extensions."
     }
@@ -137,7 +139,7 @@ function Install-VsCodeExtensions {
             Write-Host "[ok] VS Code extension $extension"
             continue
         }
-        $extensionLocation = @(& code --locate-extension $extension)
+        $extensionLocation = @(& $code --locate-extension $extension)
         if ($LASTEXITCODE -ne 0) {
             throw "VS Code could not locate extension $extension."
         }
@@ -147,7 +149,7 @@ function Install-VsCodeExtensions {
             continue
         }
         if ($PSCmdlet.ShouldProcess($extension, "Install VS Code extension")) {
-            & code --install-extension $extension
+            & $code --install-extension $extension
             if ($LASTEXITCODE -ne 0) {
                 throw "VS Code could not install extension $extension."
             }
