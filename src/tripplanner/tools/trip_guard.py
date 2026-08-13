@@ -44,6 +44,9 @@ CONTINUITY_KM = 150.0
 
 _TRANSPORT_KINDS = {"flight", "transport"}
 _CITY_ALIASES = {"bengaluru": "bangalore", "mysuru": "mysore", "mumbai": "bombay"}
+_TERMINAL_RE = re.compile(
+    r"\bairports?\b|\brailway station\b|\btrain station\b|\bbus (?:stand|station)\b", re.I
+)
 
 INVARIANTS: tuple[tuple[str, str, str], ...] = (
     (
@@ -58,7 +61,12 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
     ("I6", "Stay coverage", "Every night away from home has a stay."),
     ("I7", "Return coverage", "An outbound leg keeps its matching return leg."),
     ("I8", "Blast radius", "An operation may only change the entities it declared."),
-    ("I9", "Continuity", "A day must begin where the day before it ended."),
+    ("I9", "Continuity", "Every move between stops must be explained by a journey."),
+    (
+        "I10",
+        "Guard coverage",
+        "A plan must say where the trip starts, or the envelope invariants cannot run.",
+    ),
 )
 
 
@@ -352,6 +360,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     out.extend(_stay_violations(structured, env))
     out.extend(_return_violations(plan, env))
     out.extend(_continuity_violations(structured, destination))
+    out.extend(_coverage_violations(plan))
     return out
 
 
@@ -555,45 +564,72 @@ def _stay_violations(
 def _continuity_violations(
     structured: list[tuple[int, dict[str, Any], list[Any]]], destination: str
 ) -> list[Violation]:
-    """I9. A day that starts in a city the trip never travelled to is a gap.
+    """I9. Every move between stops must be explained by a journey.
 
-    Silent unless both sides are located and neither day carries a journey that
-    would explain the move: a guard that guesses geography is worse than one
-    that stays quiet about it.
+    The trip is one body moving through one sequence of places, so the rule is
+    the same inside a day and across midnight. A named leg moves you and ends
+    the chain; two terminals in a row are the leg the plan did not bother to
+    name. Anything else has to stay within a day's reach of the stop before it.
+
+    Silent unless both sides are located: a guard that guesses geography is
+    worse than one that stays quiet about it.
     """
-    days: list[tuple[int, list[tuple[str, tuple[float, float]]], bool]] = []
-    for day, _entry, stops in structured:
-        located: list[tuple[str, tuple[float, float]]] = []
-        has_leg = False
-        for stop in stops:
-            if _stop_kind(stop) in _TRANSPORT_KINDS:
-                has_leg = True
-                continue
-            coords = _coords(stop, destination)
-            if coords:
-                located.append((_stop_name(stop) or "An untitled stop", coords))
-        days.append((day, located, has_leg))
-
     out: list[Violation] = []
-    for index in range(len(days) - 1):
-        _day, located, has_leg = days[index]
-        next_day, next_located, next_has_leg = days[index + 1]
-        if not located or not next_located or has_leg or next_has_leg:
-            continue
-        if _haversine_km(located[-1][1], next_located[0][1]) <= CONTINUITY_KM:
-            continue
-        name = next_located[0][0]
-        out.append(
-            Violation(
-                "I9",
-                "Continuity",
-                f"Day {next_day} starts at {name}, far from where Day {_day} ended, "
-                "and no journey connects them.",
-                next_day,
-                name,
-            )
-        )
+    previous: tuple[str, int, tuple[float, float], bool] | None = None
+    for day, _entry, stops in structured:
+        for stop in stops:
+            name = _stop_name(stop) or "An untitled stop"
+            terminal = bool(_TERMINAL_RE.search(name))
+            if _stop_kind(stop) in _TRANSPORT_KINDS and not terminal:
+                previous = None
+                continue
+            here = _coords(stop, destination)
+            if not here:
+                continue
+            if previous is not None:
+                previous_name, previous_day, previous_coords, previous_terminal = previous
+                if not (previous_terminal and terminal) and (
+                    _haversine_km(previous_coords, here) > CONTINUITY_KM
+                ):
+                    out.append(
+                        Violation(
+                            "I9",
+                            "Continuity",
+                            (
+                                f"Day {day} starts at {name}, far from where Day "
+                                f"{previous_day} ended, and no journey connects them."
+                            )
+                            if previous_day != day
+                            else (
+                                f"{name} is far from {previous_name} on Day {day}, "
+                                "and no journey connects them."
+                            ),
+                            day,
+                            name,
+                        )
+                    )
+            previous = (name, day, here, terminal)
     return out
+
+
+def _coverage_violations(plan: dict[str, Any]) -> list[Violation]:
+    """I10. Say when the guard has gone blind instead of passing in silence.
+
+    Without an origin there is no envelope, so arrival, presence, stay coverage
+    and return all stop reporting — the plan looks clean because nothing looked.
+    """
+    if not str(plan.get("destination") or "").strip():
+        return []
+    if str(plan.get("origin") or "").strip():
+        return []
+    return [
+        Violation(
+            "I10",
+            "Guard coverage",
+            "The plan does not say where the trip starts from, so arrival, presence, "
+            "stay coverage and the return leg cannot be checked.",
+        )
+    ]
 
 
 def _return_violations(plan: dict[str, Any], env: Envelope) -> list[Violation]:

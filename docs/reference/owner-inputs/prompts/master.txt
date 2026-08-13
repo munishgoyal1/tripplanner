@@ -1152,3 +1152,6 @@ this is happening in sbx2 stack under my id in case you are not able to find. el
 
 [2026-08-13 23:08] [master] ! Always triage from my Cosmos emulator data
 yes ofcourse i am being your test helper in doing the QA and UAT. i am re-iterating just figure form chat session context which sbx or master stack is being referred then go and find data under that cosmos emulator and my google id.
+
+[2026-08-13 23:24] [master] ! Audit all coherence guards, not one by one
+yes ofcourse. instead of us finding these guards one by one, can you being AI intelligently do an audit to ensure that all such kind of guards are in place
