@@ -27,6 +27,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest-Master.cmd` | Owner-facing synchronize-and-run launcher for primary `master` |
 | `user/Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every sandbox or only the selected one |
+| `user/Sync-TwoWay.cmd` | Rare, gated two-way sync: merge every sandbox into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |

@@ -35,6 +35,14 @@ After a successful `Sync-Latest-FromRemoteMaster`, each registered sandbox may b
 exact current `master` commit. The sync commands verify this ancestry invariant
 before reporting success.
 
+`Sync-TwoWay` is the rare counterpart that also sends work the other way: it
+merges every sandbox into `master` through the same `-Merge` gates, then brings
+all sandboxes back up to the resulting `master`. Because that publishes several
+lanes at once, it refuses to run while any sandbox holds uncommitted work or
+unresolved conflicts, prints the exact commits each sandbox would land, and then
+requires the phrase `APPROVE_SANDBOX_TO_MASTER`. Use it only when every sandbox
+is known to be feature-clean; the routine refresh remains one-way.
+
 If `Update-Sandbox` reports `SANDBOX_CONFLICT_PENDING`, resolve its marked files
 in the sandbox worktree, then run `Resolve-SandboxConflicts` for that sandbox to
 finish the merge and push its branch before retrying update or promotion.

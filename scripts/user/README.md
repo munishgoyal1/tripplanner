@@ -10,6 +10,7 @@ Windows launchers live here; matching macOS launchers live under
 | `Start-Dev-Spa.cmd` | Start the local app stack without synchronizing code first |
 | `Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
 | `Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
+| `Sync-TwoWay.cmd` | Rare, gated two-way sync: merge every sandbox into `master`, then bring all sandboxes back up to it. Requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
 | `sandbox/Merge-Sandbox.cmd <sandbox>` | Merge the sandbox into `master` and resynchronize it, keeping the sandbox active |
 | `Show-Prompts.cmd` | Read the master owner prompt log |

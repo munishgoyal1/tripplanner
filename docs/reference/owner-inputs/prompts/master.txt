@@ -1106,3 +1106,6 @@ The paris trip in master dev stack isnt showing the flight paths in map. In orig
 
 [2026-08-13 16:35] [master] ! Merge must auto-resolve and fetch latest master
 but mind you, this merge functionality should also have auto-conflict -resolver and  update fetch latest from master
+
+[2026-08-13 16:57] [master] ! Gated two-way sandbox and master sync
+can you create a seperate Sync script under user folder that does 2 way sync syncs master into sandboxes and sandboxes to master, bringing all worktrees in sync. It is similar to previous sync script that was used for workers and master sync. But mind you, keep this approval gated with some string to type before it does this work, because we dont want half baked sandboxes accidentally getting into master. We will use this only rarely when we know for sure that sbx are feature clean

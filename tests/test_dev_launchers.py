@@ -152,3 +152,54 @@ def test_github_cli_is_resolved_instead_of_trusting_path() -> None:
     # may remain in the merge or promote paths.
     assert "& gh " not in sandbox_script
     assert "Get-Command gh " not in sandbox_script
+
+
+def test_two_way_sync_is_gated_by_a_typed_approval() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "scripts" / "dev" / "sync-two-way.ps1").read_text(encoding="utf-8")
+
+    assert '$approvalPhrase = "APPROVE_SANDBOX_TO_MASTER"' in script
+    assert "Read-Host" in script
+    assert "if ($approval -ne $approvalPhrase)" in script
+
+    # Nothing may merge before the gate is passed.
+    approval = script.index("$approval = Read-Host")
+    merge_call = script.index("& $sandboxScript -Merge")
+    assert approval < merge_call
+    # The owner sees the exact commits before being asked to approve.
+    assert script.index("commit(s) to merge") < approval
+
+
+def test_two_way_sync_refuses_half_baked_sandboxes() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "scripts" / "dev" / "sync-two-way.ps1").read_text(encoding="utf-8")
+
+    assert "has uncommitted changes" in script
+    assert "has unresolved conflicts" in script
+    assert "needs every sandbox to be committed and conflict-free" in script
+    # Preflight rejects before the plan is offered for approval.
+    preflight = script.index("needs every sandbox to be committed")
+    assert preflight < script.index("$approval = Read-Host")
+
+
+def test_two_way_sync_reuses_merge_gates_and_refreshes_sandboxes() -> None:
+    root = Path(__file__).parents[1]
+    script = (root / "scripts" / "dev" / "sync-two-way.ps1").read_text(encoding="utf-8")
+
+    # Sandbox work reaches master only through the gated -Merge verb.
+    assert "& $sandboxScript -Merge" in script
+    assert "-SkipValidation" not in script
+    # Every sandbox ends on the resulting base, and that is verified.
+    assert "sync-latest-from-remote-master.ps1" in script
+    assert "merge-base --is-ancestor $baseHead HEAD" in script
+
+
+def test_two_way_sync_launchers_exist_for_both_platforms() -> None:
+    root = Path(__file__).parents[1]
+    mac_launcher = (root / "scripts" / "mac" / "user" / "Sync-TwoWay.command").read_text(
+        encoding="utf-8"
+    )
+    windows_launcher = (root / "scripts" / "user" / "Sync-TwoWay.cmd").read_text(encoding="utf-8")
+
+    assert "sync-two-way.ps1" in mac_launcher
+    assert "sync-two-way.ps1" in windows_launcher
