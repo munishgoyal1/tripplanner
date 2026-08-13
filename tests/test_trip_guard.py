@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from tripplanner.tools import trip_common, trip_effort, trip_guard
+from tripplanner.tools import trip_common, trip_effort, trip_guard, trip_validation
 
 _COORDS = {
     "Rajwada Palace": (22.7177, 75.8545),
@@ -151,6 +151,39 @@ def test_a_leg_between_two_destination_cities_never_bounds_the_trip() -> None:
     env = trip_guard.envelope(internal)
     assert env.arrival_day == 1
     assert env.departure_day == 3
+
+
+def test_a_regional_round_trip_is_not_reported_as_missing_its_legs() -> None:
+    complete = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150),
+                stop("Hotel Sayaji", "14:00", "hotel", 45),
+            ],
+            [
+                stop("Hotel Sayaji", "08:00", "hotel", 30),
+                stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150),
+            ],
+        ],
+        destination="Rajasthan",
+    )
+    assert trip_validation._round_trip_transport_warnings(complete) == []
+
+
+def test_a_regional_trip_missing_its_return_is_still_reported() -> None:
+    one_way = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150),
+                stop("Hotel Sayaji", "14:00", "hotel", 45),
+            ],
+            [stop("Hotel Sayaji", "08:00", "hotel", 30)],
+        ],
+        destination="Rajasthan",
+    )
+    warnings = trip_validation._round_trip_transport_warnings(one_way)
+    assert len(warnings) == 1
+    assert "back to Bengaluru" in warnings[0]
 
 
 def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:

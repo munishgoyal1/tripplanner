@@ -23,6 +23,7 @@ from tripplanner.tools.trip_common import (
     _stop_name,
     _style_caps,
 )
+from tripplanner.tools.trip_guard import leg_touches_home
 
 
 def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
@@ -114,11 +115,15 @@ def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
          if _stop_kind(last_stops[index]) == "hotel"),
         -1,
     )
+    # A regional destination names its real cities, so a leg that simply leaves
+    # or returns home counts even when it never spells the destination out.
     has_outbound = first_hotel < len(first_stops) and any(
-        has_direction(stop, origin, destination) for stop in first_stops[:first_hotel]
+        has_direction(stop, origin, destination) or leg_touches_home(stop, origin)[0]
+        for stop in first_stops[:first_hotel]
     )
     has_return = last_hotel >= 0 and any(
-        has_direction(stop, destination, origin) for stop in last_stops[last_hotel + 1:]
+        has_direction(stop, destination, origin) or leg_touches_home(stop, origin)[1]
+        for stop in last_stops[last_hotel + 1:]
     )
 
     warnings: list[str] = []

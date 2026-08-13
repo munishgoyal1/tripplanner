@@ -919,3 +919,19 @@ the outcome.
 - Release automation should establish a fresh registry session before building.
   Automatic credential fallback is valid only when both identity and required
   package scope are verified; otherwise fail with the exact refresh command.
+
+## 2026-08-13 - A Matcher That Cannot Match Turns Its Invariants Off
+
+- The trip envelope recognised its arrival and departure legs by looking for the
+  plan's `destination` string inside a leg name. A regional trip names its real
+  cities, so "Flight Bengaluru to Jaipur" never contains "Rajasthan" and the
+  envelope came back empty. Nothing failed: leg ordering silently stopped
+  running and the return-coverage invariant silently stopped firing, so a flight
+  home landed mid-afternoon between two attractions and a missing return leg was
+  never reported.
+- Anchor on the fact that is always present. The traveller's home city appears on
+  both bounding legs by definition, while the destination is a label that may
+  describe a region, a country, or nothing the legs ever say.
+- An invariant that returns early on unparseable input is indistinguishable from
+  an invariant that passed. When a guard depends on a match, test the case where
+  the match cannot succeed, or the guard will report health it never checked.

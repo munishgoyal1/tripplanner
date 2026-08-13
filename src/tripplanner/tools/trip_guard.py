@@ -171,6 +171,11 @@ def _home_bound_leg(stop: Any, home: str) -> tuple[bool, bool]:
     return (from_home and not to_home, to_home and not from_home)
 
 
+def leg_touches_home(stop: Any, origin: str) -> tuple[bool, bool]:
+    """``(leaves_home, arrives_home)`` for one stop, given the trip's origin."""
+    return _home_bound_leg(stop, _normalize_city(origin, first_part=True))
+
+
 def _duration_of(stop: Any) -> int:
     kind = _stop_kind(stop)
     raw = stop.get("duration_min") if isinstance(stop, dict) else None
