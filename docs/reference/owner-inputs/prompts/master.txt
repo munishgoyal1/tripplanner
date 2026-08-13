@@ -1093,3 +1093,10 @@ Why are the timestamps and time taken for response getting lost for previous tur
 [2026-08-13 15:37] [master] ! New-Sandbox fails on missing code command
 mugoy@Munishs-MacBook-Pro sandbox % ./New-Sandbox.command "3-bugfixes"
 Exception: scripts/dev/sandbox.ps1:1027 VS Code command 'code' is unavailable. Add it to PATH or pass -NoOpen.
+
+[2026-08-13 16:02] [master] ! Restore sandbox auto conflict resolver
+Is the automatic merge conflict resolver not part of the sync latest scripts like it used to be earlier when we had workers.
+
+and now it i snot showing the actual conflcit spot when opened the file side to side
+
+run and fix these yourself. restore the auto resolver, and resolve script should like any sandbox script should be able to ttake the sbx number as parameter
