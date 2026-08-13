@@ -1143,3 +1143,12 @@ fix this 2 way sync error
 
 [2026-08-13 22:25] [master] ! Fix two-way sync Write-Host error
 fix this 2 way sync error
+
+[2026-08-13 22:29] [master] Why auto conflict resolve did not run in two-way sync
+why did auto conflcit resolve not run as part of 2way sync
+
+[2026-08-13 22:29] [master] Why two-way sync updates all sandboxes
+i ran 2way sync with only sbx2 as param, why did it still update sbx3 ?
+
+[2026-08-13 22:53] [master !] Varanasi trip empty itinerary, similar to Nashik
+varanasi trip again similar to nashik shows empty itinerary. map has some stops shown. not sure even if that is complete. chat shows the itinerary
