@@ -16,6 +16,7 @@
     .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock -IterationSummary "Adjusted the dock and passed focused UI checks."
     .\scripts\dev\sandbox.ps1 -Stop 2
     .\scripts\dev\sandbox.ps1 -Update 2
+    .\scripts\dev\sandbox.ps1 -Rename 2 chatdock-v2
     .\scripts\dev\sandbox.ps1 -Merge 2
     .\scripts\dev\sandbox.ps1 -Promote 2
     .\scripts\dev\sandbox.ps1 -Discard 2
@@ -52,6 +53,11 @@
     lands, and runs the sandbox conflict resolver automatically on both syncs, so
     a conflict git can already settle does not stall the merge.
 
+    -Rename changes only the name part of a sandbox: its branch, worktree folder,
+    and database name follow, while the number keeps its ports. A new name may
+    repeat the existing number but cannot change it. The previous emulator
+    database is left in place and the renamed sandbox seeds a fresh one.
+
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
     unless you pass -Force. Discard removes the local and remote sandbox branches;
@@ -87,6 +93,12 @@ param(
 
     [Parameter(Mandatory = $true, ParameterSetName = "Update")]
     [string]$Update,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Rename")]
+    [string]$Rename,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Rename", Position = 0)]
+    [string]$NewName,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Discard")]
     [string]$Discard,
@@ -994,7 +1006,7 @@ $registryPath = Join-Path $worktreesRoot "sandboxes.json"
 # One transcript per sandbox and verb. The reference is resolved first so that
 # -Run 2 and -Run 2-lab16-chatdock write to the same log instead of two.
 $runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
-$reference = @($New, $Run, $Serve, $Stop, $Promote, $Merge, $Update, $Discard) |
+$reference = @($New, $Run, $Serve, $Stop, $Promote, $Merge, $Update, $Rename, $Discard) |
     Where-Object { $_ } | Select-Object -First 1
 $runLogSlug = $reference
 if ($reference -and $runVerb -ne "new") {
@@ -1046,6 +1058,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
     Write-Host "  $(Get-SandboxLauncherPath -Name 'Serve-Sandbox') <n>     $(Get-SandboxLauncherPath -Name 'Stop-Sandbox') <n>" -ForegroundColor DarkGray
     Write-Host "  $(Get-SandboxLauncherPath -Name 'Update-Sandbox') <n>    $(Get-SandboxLauncherPath -Name 'Promote-Sandbox') <n>" -ForegroundColor DarkGray
     Write-Host "  $(Get-SandboxLauncherPath -Name 'Merge-Sandbox') <n>     (merge to master, keep the sandbox)" -ForegroundColor DarkGray
+    Write-Host "  $(Get-SandboxLauncherPath -Name 'Rename-Sandbox') <n> <new-name>" -ForegroundColor DarkGray
     return
 }
 
@@ -1293,6 +1306,94 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
         $head = Invoke-Git -WorkingDirectory $wd -Arguments @("rev-parse", "--short", "HEAD")
         Write-Host "[updated] $label and origin/$($entry.branch) are current with $remoteRef at $head." -ForegroundColor Green
     } finally { }
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "Rename") {
+    $number = Get-SandboxNumber -Entry $entry
+    # The number is the port slot, not a label, so a caller may repeat it but
+    # never reassign it.
+    if ($NewName -match "^(\d+)-") {
+        if ([int]$matches[1] -ne $number) {
+            throw "Sandbox '$slug' is #$number. Renaming cannot move it to #$($matches[1]) because the number owns its ports and database; discard and recreate instead."
+        }
+    }
+    $newShortName = (Get-ShortName -Name $NewName).ToLowerInvariant()
+    Assert-ShortName -Name $newShortName
+
+    $newSlug = "$number-$newShortName"
+    if ($newSlug -eq $entry.slug) {
+        Write-Host "[current] Sandbox '$($entry.slug)' already has that name." -ForegroundColor Green
+        return
+    }
+    $clash = @(Get-Registry | Where-Object {
+        $_.slug -ne $entry.slug -and (Get-ShortName -Name $_.slug) -eq $newShortName
+    })
+    if ($clash.Count -gt 0) {
+        throw "Sandbox '$($clash[0].slug)' already covers '$newShortName'."
+    }
+
+    if (-not (Test-SandboxWorktree -Entry $entry)) {
+        throw "Sandbox worktree is missing or is no longer a git worktree: $($entry.worktree)."
+    }
+    if (Test-SandboxEndpoint -Url "http://localhost:$($entry.apiPort)/health") {
+        throw "Sandbox '$slug' is serving. Stop it first: $(Get-SandboxLauncherPath -Name 'Stop-Sandbox') $number."
+    }
+    $unmerged = @(Get-SandboxUnmergedFiles -WorkingDirectory $entry.worktree)
+    if ($unmerged.Count -gt 0) {
+        throw "Sandbox '$slug' has unresolved conflicts; finish the merge before renaming:`n$($unmerged -join "`n")"
+    }
+
+    $newBranch = "sandbox/$newSlug"
+    $newWorktree = Join-Path $worktreesRoot "sbx-$newSlug"
+    $newDatabase = "tripplanner-sbx-$newSlug"
+    & git -C $scriptRepoRoot show-ref --verify --quiet "refs/heads/$newBranch"
+    if ($LASTEXITCODE -eq 0) { throw "Local branch already exists: $newBranch." }
+    if (Test-Path $newWorktree) { throw "Path already exists: $newWorktree." }
+
+    $action = "Rename to $newSlug (branch, worktree, and database name)"
+    if (-not $PSCmdlet.ShouldProcess($entry.slug, $action)) { return }
+
+    $oldBranch = $entry.branch
+    $oldWorktree = $entry.worktree
+    $oldDatabase = $entry.database
+
+    Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @("worktree", "move", $oldWorktree, $newWorktree) | Out-Null
+    Invoke-Git -WorkingDirectory $newWorktree -Arguments @("branch", "-m", $oldBranch, $newBranch) | Out-Null
+
+    $entries = @(Get-Registry)
+    foreach ($item in $entries) {
+        if ($item.slug -eq $entry.slug) {
+            $item.slug = $newSlug
+            $item.branch = $newBranch
+            $item.worktree = $newWorktree
+            $item.database = $newDatabase
+        }
+    }
+    Save-Registry -Entries $entries
+
+    # Publish the new branch before removing the old one, so the work is never
+    # only local.
+    & git -C $newWorktree push -u origin "HEAD:refs/heads/$newBranch"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "Renamed locally, but publishing $newBranch failed. Push it before the next sync."
+    } else {
+        & git -C $newWorktree rev-parse --verify --quiet "origin/$oldBranch" | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            & git -C $newWorktree push origin --delete $oldBranch
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Renamed and published, but the old remote branch $oldBranch remains. Delete it manually."
+            }
+        }
+    }
+
+    Write-Host "[renamed] $($entry.slug) -> $newSlug" -ForegroundColor Green
+    Write-Host "[branch]  $newBranch"
+    Write-Host "[worktree] $newWorktree"
+    Write-Host "[db]      $newDatabase (emulator)"
+    Write-Host "The previous emulator database $oldDatabase still holds this sandbox's data;" -ForegroundColor Yellow
+    Write-Host "the next run seeds $newDatabase fresh." -ForegroundColor Yellow
+    Write-Host "Reopen any editor window that still points at the old path." -ForegroundColor Cyan
     return
 }
 

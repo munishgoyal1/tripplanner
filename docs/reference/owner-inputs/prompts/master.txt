@@ -1125,3 +1125,13 @@ does the map add stop not accept a request while another chat request is in prog
 
 [2026-08-13 19:04] [master] ! Multi-leg round trip inconsistent across itinerary and map
 in the primary stack, on asking to replan the paris trip. it only showed banaglroe to paris flight leg now missing the airports in between entirely from itinerary. map is showing both legs with delhi in between. that too is only for blr to paris, but not for return. still the ocnsistency is not there
+[2026-08-13 17:02] [master] ! Flag unmapped stops instead of dropping
+What is the confidence level of allow a provider mismatch when the stop came from the structured itinerary. Explain me in detail when does this case of dropping occurs
+I am thinking if we should take this approach instead of dropping, while still flagging in UI without silent treatment. The loudness of the Flagging UX could be based on some criticality factor - can you decide on that what is best way.
+
+[2026-08-13 17:20] [master] ! Rename sync launchers and scope them per sandbox
+rename Sync-TwoWay to TwoWay-Sync-MasterSbx and Sync-Latest... to Sync-Sbxs-FromMaster .
+Default for both works for all sbx,  if a sbx number is given works only for that sbx
+
+[2026-08-13 17:28] [master] ! Rename-Sandbox launcher keeping the number
+Create a rename sandbox launcher, change the rest of name string and retain the sbx number if new name string doesnt have it
