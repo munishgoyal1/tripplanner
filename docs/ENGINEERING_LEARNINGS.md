@@ -1031,3 +1031,11 @@ the outcome.
   reading the builder. Comparing `/trip/itinerary` stop names against
   `/trip/map` pin names found seven missing stops in seconds, including one this
   investigation was not looking for.
+- A journey the plan never spells out is still a journey. Recognizing legs only
+  by their written form (`kind: "flight"`, or a name with a drive/train/bus
+  word) made a Paris replan read as a local day: the two airports it listed were
+  dropped from the map route and the day was bookended by the destination stay,
+  so the trip asked the traveller to drive between Bengaluru and Paris. Derive
+  the leg from what the stops imply — two terminals in different cities are an
+  inter-city hop — and keep that rule shared between the itinerary and the map
+  so the two surfaces cannot disagree about whether a day is a transfer day.
