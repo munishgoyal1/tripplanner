@@ -48,6 +48,9 @@
     and stays registered and active. Nothing is discarded, no promotion is
     recorded, and UX Lab records are left untouched. Use it to land finished work
     and carry on in the same lane; use -Promote when the lane is finished.
+    -Merge fetches the latest base before syncing and again after the pull request
+    lands, and runs the sandbox conflict resolver automatically on both syncs, so
+    a conflict git can already settle does not stall the merge.
 
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
@@ -830,6 +833,46 @@ function Get-SandboxUnmergedFiles {
     return @(& git -C $WorkingDirectory diff --name-only --diff-filter=U)
 }
 
+function Invoke-SandboxUpdateWithRecovery {
+    # Same recovery the sync launcher performs: run the resolver when a conflict
+    # is actually pending, then retry once. Retrying on anything else would
+    # replay a failure that was never a conflict.
+    param(
+        [Parameter(Mandatory = $true)][string]$Slug,
+        [Parameter(Mandatory = $true)][string]$WorkingDirectory,
+        [Parameter(Mandatory = $true)][string]$Base,
+        [Parameter(Mandatory = $true)][string]$Verb,
+        [switch]$SkipBaseFetch
+    )
+
+    try {
+        & $PSCommandPath -Update $Slug -BaseBranch $Base -NoSync:$SkipBaseFetch -Confirm:$false
+        if (@(Get-SandboxUnmergedFiles -WorkingDirectory $WorkingDirectory).Count -eq 0) { return }
+        $firstError = "update left conflicts pending"
+    } catch {
+        $firstError = $_.Exception.Message
+        if (@(Get-SandboxUnmergedFiles -WorkingDirectory $WorkingDirectory).Count -eq 0) { throw }
+    }
+
+    Write-Host "[resolve] sandbox '$Slug' has conflicts; running the resolver" -ForegroundColor Yellow
+    try {
+        & (Join-Path $PSScriptRoot "resolve-sandbox-conflicts.ps1") -Sandbox $Slug -Confirm:$false
+    } catch {
+        throw "$firstError`nResolve these conflicts, then re-run $Verb ${Slug}: $($_.Exception.Message)"
+    }
+    $conflicts = @(Get-SandboxUnmergedFiles -WorkingDirectory $WorkingDirectory)
+    if ($conflicts.Count -gt 0) {
+        throw "Resolve and commit these conflicts, then re-run $Verb ${Slug}:`n$($conflicts -join "`n")"
+    }
+
+    & $PSCommandPath -Update $Slug -BaseBranch $Base -NoSync -Confirm:$false
+    $conflicts = @(Get-SandboxUnmergedFiles -WorkingDirectory $WorkingDirectory)
+    if ($conflicts.Count -gt 0) {
+        throw "Recovered the first conflict, but resynchronizing '$Slug' conflicted again:`n$($conflicts -join "`n")"
+    }
+    Write-Host "[resolve] sandbox '$Slug' recovered" -ForegroundColor Green
+}
+
 function Save-SandboxConflictState {
     param(
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
@@ -1265,15 +1308,10 @@ if ($PSCmdlet.ParameterSetName -eq "Merge") {
     $action = "Merge into $BaseBranch, then resynchronize the sandbox and keep it"
     if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
 
-    Write-Host "== 1/6 sync with origin/$BaseBranch ==" -ForegroundColor Green
+    Write-Host "== 1/6 fetch latest $BaseBranch and sync the sandbox ==" -ForegroundColor Green
     Sync-PrimaryCheckout -Base $BaseBranch -RequireExact
-    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -NoSync:$NoSync -Confirm:$false
-    $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
-        "diff", "--name-only", "--diff-filter=U"
-    )
-    if ($conflicts) {
-        throw "Resolve and commit these conflicts, then re-run -Merge ${slug}:`n$($conflicts -join "`n")"
-    }
+    Invoke-SandboxUpdateWithRecovery -Slug $slug -WorkingDirectory $entry.worktree `
+        -Base $BaseBranch -Verb "-Merge" -SkipBaseFetch:$NoSync
 
     # The commit the base branch must contain afterwards. Captured before the
     # merge so the post-merge resync cannot be mistaken for the merged work.
@@ -1336,20 +1374,15 @@ if ($PSCmdlet.ParameterSetName -eq "Merge") {
         Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
     }
 
-    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -NoSync -Confirm:$false
-    $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
-        "diff", "--name-only", "--diff-filter=U"
-    )
-    if ($conflicts) {
-        throw "Merged #$prNumber into $BaseBranch, but resynchronizing the sandbox conflicted:`n$($conflicts -join "`n")"
-    }
+    # The base moved when the PR merged, so refresh and resynchronize onto it.
+    Invoke-SandboxUpdateWithRecovery -Slug $slug -WorkingDirectory $entry.worktree `
+        -Base $BaseBranch -Verb "-Merge"
 
     Write-Host "[verified] origin/$BaseBranch contains $($mergedHead.Substring(0, 7))."
     Write-Host "[kept]     Sandbox '$slug' stays active on $($entry.branch) and is current with $BaseBranch." -ForegroundColor Green
     Write-Host "Sync your other lanes so they pick up $BaseBranch." -ForegroundColor Cyan
     return
 }
-
 if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         throw "Sandbox worktree is missing: $($entry.worktree)."

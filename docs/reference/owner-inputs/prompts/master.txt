@@ -1100,3 +1100,9 @@ run and fix these yourself. restore the auto resolver, and resolve script should
 
 [2026-08-13 16:29] [master] ! Merge-Sandbox launcher that keeps the sandbox
 Do we have functionality of merging sandbox changes to master and bringing it upto sync with master without any other side effects (without discarding it). Can we write a seperate launcher  Merge-Sandbox that does it.
+
+[2026-08-13 16:34] [master] ! Map missing flight paths after itinerary update
+The paris trip in master dev stack isnt showing the flight paths in map. In original trip there were no flight connections from home city, but after prompting agent to use Bangalore as home city and add onward and return flights, it did so in the itinerary but didnt do in the map. Why this inconsistency , some bug. do a audit to see that every update to trip ensures it is consistent across all surfaces itinerary, map, and destination guide.
+
+[2026-08-13 16:35] [master] ! Merge must auto-resolve and fetch latest master
+but mind you, this merge functionality should also have auto-conflict -resolver and  update fetch latest from master

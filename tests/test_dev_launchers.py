@@ -105,7 +105,29 @@ def test_merge_lands_sandbox_work_without_discarding_it() -> None:
     # The base branch must provably contain the merged commit.
     assert "merge-base --is-ancestor $mergedHead" in code
     # And the sandbox is brought back onto the new base.
-    assert code.count("-Update $slug") == 2
+    assert code.count("Invoke-SandboxUpdateWithRecovery") == 2
+
+
+def test_merge_recovers_conflicts_and_refreshes_the_base() -> None:
+    root = Path(__file__).parents[1]
+    sandbox_script = (root / "scripts" / "dev" / "sandbox.ps1").read_text(encoding="utf-8")
+    block = _merge_block(sandbox_script)
+    code = _code_lines(block)
+
+    assert "function Invoke-SandboxUpdateWithRecovery" in sandbox_script
+    # Merge refreshes the base before syncing, and again after the PR lands.
+    assert "Sync-PrimaryCheckout -Base $BaseBranch -RequireExact" in code
+    assert "fetch latest $BaseBranch" in code
+    assert code.count("Invoke-SandboxUpdateWithRecovery") == 2
+    # Raw updates that would bypass recovery are gone from the merge path.
+    assert "-Update $slug" not in code
+
+    helper_start = sandbox_script.index("function Invoke-SandboxUpdateWithRecovery")
+    helper = sandbox_script[helper_start : sandbox_script.index("\n}", helper_start)]
+    assert "resolve-sandbox-conflicts.ps1" in helper
+    # Recover only when a conflict is genuinely pending.
+    assert "Get-SandboxUnmergedFiles" in helper
+    assert helper.count("resolve-sandbox-conflicts.ps1") == 1
 
 
 def test_merge_launchers_exist_for_both_platforms() -> None:
