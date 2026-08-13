@@ -228,7 +228,9 @@ export function useChatStream({
     // the per-tool label would only repeat it in more words. Only stages that
     // really ran are listed — inventing plausible ones would make the status a
     // decoration rather than a report.
-    const heading = progressHeading(hasActiveTrip, destination || plannedPlace, editingPlan);
+    // A request for a new destination must not be announced under the trip the
+    // user is leaving, so the place this turn is actually about wins.
+    const heading = progressHeading(hasActiveTrip, plannedPlace || destination, editingPlan);
     const detail = [
       requestEcho(liveRequest),
       stageTrail(stages) || "getting started",

@@ -409,6 +409,48 @@ def test_a_relocated_stop_does_not_carry_its_old_clock_time() -> None:
         assert _overlaps_a_drive(_stops_on(plan, day)) == []
 
 
+def test_a_return_leg_added_later_still_closes_a_regional_trip() -> None:
+    """The reported defect: flights added after planning put the flight home in
+    the middle of the last day, because a regional destination never matched."""
+    plan = {
+        "origin": "Bangalore",
+        "destination": "Rajasthan",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Flight Bangalore to Jaipur",
+                        "kind": "flight",
+                        "time": "09:00",
+                        "duration_min": 150,
+                    },
+                    {"name": "Hotel Sayaji", "kind": "hotel", "time": "14:00", "duration_min": 45},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [{"name": "Rajwada Palace", "kind": "attraction", "time": "10:00"}],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {
+                        "name": "Flight Udaipur to Bangalore",
+                        "kind": "flight",
+                        "time": "11:00",
+                        "duration_min": 150,
+                    },
+                    {"name": "Kaanch Mandir", "kind": "attraction", "time": "15:00"},
+                    {"name": "Mahakaleshwar Temple", "kind": "attraction", "time": "16:30"},
+                ],
+            },
+        ],
+    }
+    trip_planner._reflow_unbooked_attractions(plan)
+    assert [stop["name"] for stop in _stops_on(plan, 3)][-1] == "Flight Udaipur to Bangalore"
+
+
 def test_a_place_is_never_scheduled_on_top_of_a_drive() -> None:
     _round_trip()
     _excursion_day()

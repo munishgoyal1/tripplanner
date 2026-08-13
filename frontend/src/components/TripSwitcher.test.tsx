@@ -124,14 +124,16 @@ describe("TripSwitcher notifications", () => {
     expect(await screen.findByText("Switched to Rome.")).toBeInTheDocument();
   });
 
-  it("explains a busy workspace instead of a generic failure", async () => {
+  it("blames the running update rather than the trip being opened", async () => {
     switchTripMock.mockRejectedValue(new ApiError("Could not switch trips (409).", 409, 0));
     render(<><StatusBar /><TripSwitcher version={1} onSwitched={vi.fn()} /></>);
 
     await openAndPickRome();
 
     expect(
-      await screen.findByText("Rome is busy finishing another update. Try again in a moment."),
+      await screen.findByText(
+        "The Assistant is still finishing an update. Rome will open once it completes.",
+      ),
     ).toBeInTheDocument();
   });
 });

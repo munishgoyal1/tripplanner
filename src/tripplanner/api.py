@@ -238,6 +238,7 @@ def _save_chat(
     tid_after = active_trip_id()
 
     carryover = ""
+    origin_prompt = ""
     is_switch = (
         tid_before is not None
         and tid_after is not None
@@ -250,6 +251,7 @@ def _save_chat(
         active = trip_planner.load_active_trip_dict() or {}
         new_dest = str(active.get("destination") or "")
         carryover = chat_carryover.distill(base_history, prev_dest, new_dest)
+        origin_prompt = chat_store.originating_request(base_history, new_dest)
 
     return chat_store.persist_turn(
         tid_before,
@@ -257,6 +259,7 @@ def _save_chat(
         base_history,
         completed_turn,
         carryover,
+        origin_prompt=origin_prompt,
         request_id=request_id,
         completed=completed,
         agent=agent,

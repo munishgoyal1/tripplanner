@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections.abc import Callable
 from pathlib import Path
 from threading import Lock
@@ -174,6 +175,25 @@ def transcript(trip_id: str | None) -> list[dict[str, str]]:
         for r in _read_rows(trip_id)
         if str(r.get("text") or "").strip()
     ]
+
+
+def originating_request(history: list[BaseMessage], destination: str) -> str:
+    """The user's own words that asked for this trip, from the previous chat.
+
+    A new trip is usually created a turn *after* it is requested, because the
+    kickoff question comes first. Without this the new chat opens on an answer
+    to a question it never shows, and the request itself stays in the old trip.
+    """
+    place = re.split(r"[,;/]", destination, maxsplit=1)[0].strip().casefold()
+    if not place:
+        return ""
+    for message in reversed(history):
+        if getattr(message, "type", "") != "human":
+            continue
+        text = message.content if isinstance(message.content, str) else str(message.content)
+        if place in text.casefold():
+            return text.strip()
+    return ""
 
 
 def _longest_common_block(
@@ -673,6 +693,7 @@ def persist_turn(
     completed_turn: list[BaseMessage],
     carryover_text: str = "",
     *,
+    origin_prompt: str = "",
     request_id: str | None = None,
     completed: bool = True,
     agent: str = "trip",
@@ -783,6 +804,16 @@ def persist_turn(
         )
     else:
         suffix: list[BaseMessage] = []
+        first_asked = next(
+            (
+                str(message.content)
+                for message in completed_turn
+                if getattr(message, "type", "") == "human"
+            ),
+            "",
+        )
+        if origin_prompt.strip() and origin_prompt.strip() != first_asked.strip():
+            suffix.append(HumanMessage(content=origin_prompt.strip()))
         if carryover_text.strip():
             suffix.append(AIMessage(content=carryover_text.strip()))
         suffix.extend(completed_turn)

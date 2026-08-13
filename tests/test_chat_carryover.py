@@ -347,6 +347,46 @@ def test_persist_turn_switch_keeps_prev_and_seeds_new(monkeypatch, tmp_path):
     ]
 
 
+def test_persist_turn_switch_carries_the_request_that_started_the_trip(monkeypatch, tmp_path):
+    """The trip is created a turn after it is asked for, so without this the new
+    chat opens on the kickoff answer and never shows the request itself."""
+    _use_temp_chats(monkeypatch, tmp_path)
+    paris = [
+        HumanMessage(content="plan paris for 4 days"),
+        AIMessage(content="Paris draft ready"),
+        HumanMessage(content="Plan a trip to Rajasthan for 7 days"),
+        AIMessage(content="A few quick details first"),
+    ]
+    chat_store.save("paris_x_y", paris)
+
+    turn = [
+        HumanMessage(content="2 adults, mid budget"),
+        AIMessage(content="Rajasthan itinerary ready"),
+    ]
+    chat_store.persist_turn(
+        "paris_x_y",
+        "rajasthan_p_q",
+        paris,
+        turn,
+        origin_prompt=chat_store.originating_request(paris, "Rajasthan"),
+    )
+
+    assert chat_store.transcript("rajasthan_p_q") == [
+        {"role": "user", "text": "Plan a trip to Rajasthan for 7 days"},
+        {"role": "user", "text": "2 adults, mid budget"},
+        {"role": "assistant", "text": "Rajasthan itinerary ready"},
+    ]
+
+
+def test_originating_request_ignores_an_unrelated_previous_chat(monkeypatch, tmp_path):
+    _use_temp_chats(monkeypatch, tmp_path)
+    history = [
+        HumanMessage(content="plan paris for 4 days"),
+        AIMessage(content="Paris draft ready"),
+    ]
+    assert chat_store.originating_request(history, "Rajasthan") == ""
+
+
 def test_persist_turn_switch_to_existing_appends(monkeypatch, tmp_path):
     _use_temp_chats(monkeypatch, tmp_path)
     chat_store.save("kashmir_p_q", [HumanMessage(content="old"), AIMessage(content="prev")])

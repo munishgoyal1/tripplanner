@@ -135,6 +135,42 @@ def _is_journey_between(stop: Any, source: str, target: str) -> bool:
     return name.find(dst, src_at + len(src)) > src_at
 
 
+_MODE_PREFIX_RE = re.compile(
+    r"^\s*(?:non-?stop\s+|direct\s+)?(?:flight|train|bus|drive|transfer|ferry|taxi|cab|car)\b[\s:—–-]*",
+    re.I,
+)
+_JOURNEY_SPLIT_RE = re.compile(r"→|-+>|—>|\bto\b", re.I)
+
+
+def _journey_endpoints(stop: Any) -> tuple[str, str] | None:
+    """Normalized ``(source, target)`` for a transport stop that names both ends."""
+    if _stop_kind(stop) not in _TRANSPORT_KINDS:
+        return None
+    parts = _JOURNEY_SPLIT_RE.split(_stop_name(stop), maxsplit=1)
+    if len(parts) != 2:
+        return None
+    source = _normalize_city(_MODE_PREFIX_RE.sub("", parts[0]))
+    target = _normalize_city(parts[1], first_part=True)
+    return (source, target) if source and target else None
+
+
+def _home_bound_leg(stop: Any, home: str) -> tuple[bool, bool]:
+    """``(leaves_home, arrives_home)`` for one transport stop.
+
+    A regional destination names its real cities, so "Flight Bengaluru → Jaipur"
+    never contains "Rajasthan". Anchoring on the traveller's home city instead
+    keeps the envelope — and every invariant that depends on it — working for a
+    multi-city trip.
+    """
+    endpoints = _journey_endpoints(stop)
+    if endpoints is None or not home:
+        return (False, False)
+    source, target = endpoints
+    from_home = home in source
+    to_home = home in target
+    return (from_home and not to_home, to_home and not from_home)
+
+
 def _duration_of(stop: Any) -> int:
     kind = _stop_kind(stop)
     raw = stop.get("duration_min") if isinstance(stop, dict) else None
@@ -201,14 +237,20 @@ def envelope(plan: dict[str, Any]) -> Envelope:
     if not origin or not destination:
         return Envelope(None, None, "", None, None, "")
 
+    home = _normalize_city(origin, first_part=True)
+
     for day, _entry, stops in days_of(plan):
         for stop in stops:
-            if _is_journey_between(stop, origin, destination) and arrival_day is None:
+            leaves_home, arrives_home = _home_bound_leg(stop, home)
+            if not leaves_home and not arrives_home:
+                leaves_home = _is_journey_between(stop, origin, destination)
+                arrives_home = _is_journey_between(stop, destination, origin)
+            if leaves_home and arrival_day is None:
                 start = _time_of(stop)
                 arrival_day = day
                 arrival_name = _stop_name(stop)
                 arrival_end = _abs(day, start + _duration_of(stop)) if start is not None else None
-            if _is_journey_between(stop, destination, origin):
+            if arrives_home:
                 start = _time_of(stop)
                 departure_day = day
                 departure_name = _stop_name(stop)

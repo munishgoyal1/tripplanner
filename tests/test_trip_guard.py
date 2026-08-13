@@ -106,6 +106,53 @@ def test_an_outbound_leg_without_a_return_is_reported() -> None:
     assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
 
 
+# A regional destination names its real cities, so the envelope has to anchor on
+# the traveller's home city rather than the destination string.
+REGION_TRIP = plan(
+    [
+        [
+            stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150),
+            stop("Hotel Sayaji", "14:00", "hotel", 45),
+        ],
+        [stop("Rajwada Palace", "10:00")],
+        [
+            stop("Mandu Fort", "09:00", "attraction", 180),
+            stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150),
+        ],
+    ],
+    destination="Rajasthan",
+)
+
+
+def test_envelope_reads_a_regional_trip_from_its_home_city() -> None:
+    env = trip_guard.envelope(REGION_TRIP)
+    assert env.arrival_day == 1
+    assert env.departure_day == 3
+    assert env.bounded_start and env.bounded_end
+
+
+def test_a_regional_outbound_without_a_return_is_reported() -> None:
+    one_way = plan(
+        [[stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150)]],
+        destination="Rajasthan",
+    )
+    assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
+
+
+def test_a_leg_between_two_destination_cities_never_bounds_the_trip() -> None:
+    internal = plan(
+        [
+            [stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150)],
+            [stop("Drive Jaipur → Udaipur", "09:00", "transport", 300)],
+            [stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150)],
+        ],
+        destination="Rajasthan",
+    )
+    env = trip_guard.envelope(internal)
+    assert env.arrival_day == 1
+    assert env.departure_day == 3
+
+
 def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:
     broken = plan(
         [
