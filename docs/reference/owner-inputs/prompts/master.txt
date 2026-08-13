@@ -1,4 +1,7 @@
 
+[2026-08-10 19:54] [master] ! Proactively fix diagnosed root causes
+why didnt you fix the root problem, you are just reporting to me, instead i would likeyou to always be proactive and go fix and report that
+
 [2026-08-10 16:53] [master !] Expand operations insights dashboard
 Make it more aggregate level also. Show the following - bifurcate into 2 sub pages may - Busienss and System Health
 
@@ -992,3 +995,101 @@ you said "onfirmed the sandbox update path never touches the primary working tre
 
 [2026-08-10 18:46] [master] Stop red fetch noise in sync output
 stop showing this line in red as part of running sync scripts . Becuase red means error, and this is just youa re trying to highlight something importaqnt but you can do that with another color nto red.
+
+[2026-08-11 10:51] [master] \! Resume prod authentication fix
+Can you continue from last task that got interrupted because of vsc restart
+
+[2026-08-11 11:15] [master] Bundle master.txt with real code
+dont create a special commit for just master.txt changes, otherwise so many commits will just be dummy sort of showing. But keep the master.txt prompt log changes bunched and when there is a legitimate feature or fix other code files going, that time add it to the commit.
+
+[2026-08-11 11:17] [master] ! Prod deployment should call canary deployment only if required, if canary was already deployed and that matches latest master then Prod does not need to waste time re-deploying canary
+
+[2026-08-11 11:18] [master !] Prod deploy canary/token failure
+Prod deployment :
+
+
+✓ Step 0: Building & pushing image from current code...
+
+╔═══════════════════════════════════════════════════════════╗
+║  📦 BUILD & PUSH IMAGE → GHCR                            ║
+╚═══════════════════════════════════════════════════════════╝
+
+Image:    ghcr.io/munishgoyal1/tripplanner
+Tags:     ghcr.io/munishgoyal1/tripplanner:62f7899, ghcr.io/munishgoyal1/tripplanner:latest
+
+Exception: /Users/mugoy/repos/tripplanner/infra/push-image.ps1:102:3
+Line |
+ 102 |    throw "No valid GHCR publish token is available. Set GHCR_TOKEN to  …
+     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | No valid GHCR publish token is available. Set
+     | GHCR_TOKEN to a GitHub PAT with write:packages, or
+     | run 'gh auth refresh -h github.com -s
+     | write:packages' and retry.
+Exception: /Users/mugoy/repos/tripplanner/infra/deploy-prod.ps1:133:9
+Line |
+ 133 |          throw "Canary deployment or smoke verification failed. Produc …
+     |          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Canary deployment or smoke verification failed.
+     | Production promotion is blocked.
+
+[2026-08-11 11:42] [master !] Unify master run and sync launchers
+rename Run-Latest to Run-Latest-Master 
+and do we really need 2 sync scripts if they are not fundamentally different. Can they be made as single Sync-Latest-FromRemoteMaster and default behaviour being sync all sandboxes, and if a number provided then sync only that sandbox, local master gets FF always though. 
+
+Always keep parity and do any change for both mac and windows launchers to maintain them in sync.
+
+[2026-08-11 11:45] [master] ! Fix GHCR token acquisition
+Prod deployment is failing on No valid GHCR publish token. fix it
+
+[2026-08-11 12:19] [master] ! Fix deployment authentication fallback
+fix the deployment failures
+
+[2026-08-13 13:48] [master !] Fix chat handoff and flight itinerary bugs
+Few bugs to fix: (Start a new sandbox for all these fixes)
+
+1. [chat assistant] - If in an existing trip request for a new trrip is place, then that initial prompt for this new trip should also get copied over to the new trip chat. Otherwise later when referring tot his new trip indepenxcently , user will not have context what they asked agent to plan.
+
+2. [itinerary] rajasthan itinerary was initally planned without home city links, because home city was not available in profile. later when user asked to add flights to and from bangalore, the return flight link was added in the last day before some other attractions' plan whichw as weird. Flight/Travel links whether asked later should always maintain entire itinerary sanctity.
+This happened in production, so if you can fetch logs and itinerary data from production (munish goyal google login) to analyze the root cause.
+
+3. [Travel/flight] - account for non-direct flight stops (airports) to be shown on the map with the broken up travel legs just like a normal leg. dont combine it up in single leg if the connection has stops.
+
+4. [chat] when a new destination (Rajasthan) trip plan is asked in chat of the current Paris trip, 
+it continues to mention updating your Paris itineratry, we already implemented picking the new place to update in the notifciaiton title.
+
+5. [chat] - when a trip building (say Rajasthan) is ongoing, if user siwtching to another trip (say Paris) from list, it errors saying "Paris is busy finishing another uptade. Please try again in sometime" 
+and when switching back to Rajasthan it again says "Rajasthan is busy finishing another uptade. Please try again in sometime"  .
+
+One thing is we shoudl think whether we can still allow to switch while another trip building is in progress ?
+and the messaging should be related to trip.. sounds weird "Paris is busy...."
+and since Rajasthan trip iniitiation prompt was started from Paris trip chat, find a way to cleanly handoff and seperate it out. Once Rajasthan trip is built, dont mix up 
+Rajasthan trip chat with Paris one. Currently all subsequent prompts in Rajasthan trip are also being show in Paris trip chat.
+
+
+6. [itinerary] - refer local Rajasthan trip - 
+
+Initial prompt was explcitily telling not to add flights from home city
+"Plan a trip to rajasthan for 7 days, just showing the rajasthan in itinerary without flight links from originating city"
+Then asked to add flights (we ware testing the product)
+"can you include the flight connectiopns as we are based at banagalore"
+
+Wrong behaviour observed:
+a. it added only bangalore to jaipur connection., no return udaipur to bangalore added.
+
+[2026-08-13 00:00] [master] \! Make the system fast with caching and parallelism
+Analyze the performance of various calls, i see many of them taking seconds instead of milliseconds overall, and a post chat/stream taking 20s for p95. what can be done to make the system performant, super fast breezy, any caching will help ? or any paralellization on making calls etc. do the enahncement if you have any in a right archtiectural pattern so that it can be scaled when new providers get added, and newer logics or remote calls get added.
+
+[2026-08-13 00:00] [master] ! macOS launcher fails with pwsh not found
+(.venv) mugoy@Munishs-MacBook-Pro user % ./Run-Latest-Master.command
+./Run-Latest-Master.command: line 5: exec: pwsh: not found
+(.venv) mugoy@Munishs-MacBook-Pro user %
+
+[2026-08-13 00:00] [master] Ask why pwsh terminal option disappeared
+looks like pwsh terminal is missing now as an option . what happened ?
+
+[2026-08-13 15:32] [master] ! Chat loses timestamps and day marker
+Why are the timestamps and time taken for response getting lost for previous turns. Also why is the Today marker showing for latest chat only, even when the showing turns in screenshot both are from today.
+
+[2026-08-13 15:37] [master] ! New-Sandbox fails on missing code command
+mugoy@Munishs-MacBook-Pro sandbox % ./New-Sandbox.command "3-bugfixes"
+Exception: scripts/dev/sandbox.ps1:1027 VS Code command 'code' is unavailable. Add it to PATH or pass -NoOpen.

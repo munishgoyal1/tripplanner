@@ -22,13 +22,14 @@
       "statusBar.foreground": "#ffffff",
       "titleBar.activeBackground": "#115e59",
       "titleBar.activeForeground": "#ffffff"
-    }
+    },
+    "powershell.cwd": "Tripplanner MasterAgent"
   },
   "tasks": {
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Tripplanner: Sync Latest",
+        "label": "Tripplanner: Sync Latest From Remote Master",
         "type": "shell",
         "command": "pwsh",
         "args": [
@@ -36,7 +37,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}/scripts/dev/sync-latest.ps1"
+          "${workspaceFolder}/scripts/dev/sync-latest-from-remote-master.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"
@@ -45,7 +46,7 @@
         "problemMatcher": []
       },
       {
-        "label": "Tripplanner: Run Latest",
+        "label": "Tripplanner: Run Latest Master",
         "type": "shell",
         "command": "pwsh",
         "args": [
@@ -53,7 +54,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}/scripts/dev/run-latest.ps1"
+          "${workspaceFolder}/scripts/dev/run-latest-master.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"

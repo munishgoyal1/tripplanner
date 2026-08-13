@@ -7,6 +7,7 @@ from typing import Any
 
 import httpx
 
+from tripplanner import http_client
 from tripplanner.providers.models import ActivityOffer, ActivitySearchQuery, Money, QuoteStatus
 
 
@@ -66,12 +67,11 @@ class ViatorProvider:
         if localized:
             headers["Accept-Language"] = "en-US"
         try:
-            response = httpx.request(
+            response = http_client.request(
                 method,
                 f"{self._base_url}/{path.lstrip('/')}",
                 headers=headers,
                 json=payload,
-                timeout=20,
             )
             response.raise_for_status()
             return response.json()

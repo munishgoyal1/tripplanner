@@ -570,6 +570,16 @@ implemented capability baseline.
 - Place metadata uses a synchronized durable cache with long metadata TTL,
   shorter signed-photo URL TTL, request coalescing, and parallel prefetch.
 - Read-only agent tools use a per-user read-through cache where safe.
+- Every outbound dependency shares one pooled HTTP runtime that reuses
+  connections and TLS, applies a per-endpoint latency budget derived from the
+  request host, and opens a per-endpoint circuit breaker so a failing dependency
+  fails fast instead of charging its full timeout to every later caller. Open
+  circuits are visible through `GET /providers/status`.
+- The model client is reused across the tool phases of a turn so each round does
+  not pay a fresh TLS handshake; usage accounting is keyed per model run.
+- Independent remote work in one response is fanned out concurrently, with a
+  failed branch degrading rather than failing the response. Ordered provider
+  fallback within a single capability stays sequential.
 - A deterministic FastAPI regression gate measures p50/p95 and HTTP errors for
   representative trip reads plus a workspace mutation while retaining identity,
   thread-offload, and admission behavior. It rejects p95 above 750 ms and proves

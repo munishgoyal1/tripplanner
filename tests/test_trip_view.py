@@ -385,7 +385,9 @@ def test_structured_target_uses_published_fx_provenance(monkeypatch) -> None:
 
     from tripplanner.providers import fx
 
-    fetched_at = datetime(2026, 8, 10, 12, tzinfo=UTC)
+    # Seeded relative to now: a fixed timestamp ages past the rate TTL and the
+    # test then silently reaches the live rate service.
+    fetched_at = datetime.now(UTC)
     monkeypatch.setitem(
         fx._cache,
         "EUR",

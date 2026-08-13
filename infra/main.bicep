@@ -168,7 +168,7 @@ var suffix = uniqueString(resourceGroup().id)
 var logsName = '${namePrefix}-logs-${suffix}'
 var envName = '${namePrefix}-env-${suffix}'
 var appName = '${namePrefix}-app-${suffix}'
-var publicDemoJobName = '${namePrefix}-public-demo-refresh-${suffix}'
+var publicDemoJobName = '${namePrefix}-demo-refresh-${take(suffix, 8)}'
 var failureAlertQuery = loadTextContent('queries/application-failures.kql')
 
 // OAuth secrets are only attached when a value is supplied. Container Apps

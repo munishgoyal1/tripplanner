@@ -91,7 +91,7 @@ def test_compute_route_returns_legs_and_totals(_configured, monkeypatch):
             }]
         })
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
 
     stops_json = json.dumps(["Hotel Lutetia", "Louvre", "Notre Dame"])
     out = routing.compute_route.invoke({"stops_json": stops_json, "mode": "WALK"})
@@ -116,7 +116,7 @@ def test_compute_route_drive_sets_traffic_aware(_configured, monkeypatch):
         captured["payload"] = json
         return _mk_response({"routes": [{"duration": "60s", "distanceMeters": 100, "legs": []}]})
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
     routing.compute_route.invoke({
         "stops_json": json.dumps(["A", "B"]),
         "mode": "drive",  # lowercase is normalized
@@ -158,7 +158,7 @@ def test_coordinate_route_falls_back_to_openrouteservice(monkeypatch):
             }
         )
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
     stops_json = json.dumps(
         [{"name": "A", "lat": 48.8566, "lng": 2.3522}, {"name": "B", "lat": 48.86, "lng": 2.34}]
     )
@@ -190,7 +190,7 @@ def test_openrouteservice_coordinate_routes_are_cached(monkeypatch):
         calls.append(args[0])
         return _mk_response({"routes": [{"summary": {"duration": 60, "distance": 100}}]})
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
     origin = {"lat": 48.8566, "lng": 2.3522}
     destination = {"lat": 48.86, "lng": 2.34}
 
@@ -221,7 +221,7 @@ def test_optimize_day_route_uses_returned_order(_configured, monkeypatch):
             }]
         })
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
 
     stops_json = json.dumps(["Hotel", "B", "C", "D", "Hotel"])
     out = routing.optimize_day_route.invoke({"stops_json": stops_json, "mode": "WALK"})
@@ -255,7 +255,7 @@ def test_optimize_day_route_sends_optimize_flag(_configured, monkeypatch):
             }]
         })
 
-    monkeypatch.setattr(routing.httpx, "post", fake_post)
+    monkeypatch.setattr(routing.http_client, "post", fake_post)
     routing.optimize_day_route.invoke({"stops_json": json.dumps(["A", "B", "C"])})
     assert captured["payload"]["optimizeWaypointOrder"] is True
     assert captured["payload"]["intermediates"] == [{"address": "B"}]

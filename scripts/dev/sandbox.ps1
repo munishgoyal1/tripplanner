@@ -123,6 +123,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
+. "$PSScriptRoot/lib/node-tools.ps1"
+. "$PSScriptRoot/lib/vscode-cli.ps1"
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -266,6 +268,7 @@ function Invoke-SandboxValidation {
 
     $frontend = Join-Path $Worktree "frontend"
     if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+    Use-CompatibleNode
     Push-Location $frontend
     try {
         Write-Host "[check]   tsc" -ForegroundColor Cyan
@@ -1021,8 +1024,9 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     if (Test-Path $worktreePath) {
         throw "Path already exists: $worktreePath."
     }
-    if (-not $NoOpen -and -not (Get-Command code -ErrorAction SilentlyContinue)) {
-        throw "VS Code command 'code' is unavailable. Add it to PATH or pass -NoOpen."
+    $vsCodeCli = if ($NoOpen) { $null } else { Resolve-VsCodeCli }
+    if (-not $NoOpen -and -not $vsCodeCli) {
+        throw "The VS Code command 'code' was not found. Install VS Code, or pass -NoOpen."
     }
     $apiPort = $ApiBase + ($slot * $Step)
     $frontendPort = $FrontendBase + ($slot * $Step)
@@ -1075,7 +1079,7 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
     Write-Host "[db]      $database (emulator)"
 
     if (-not $NoOpen) {
-        & code --new-window $worktreePath
+        & $vsCodeCli --new-window $worktreePath
         if ($LASTEXITCODE -ne 0) {
             throw "Sandbox was created, but VS Code could not open $worktreePath."
         }

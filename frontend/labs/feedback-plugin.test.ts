@@ -162,6 +162,45 @@ describe("mergeSelections", () => {
     ]);
   });
 
+  it("deduplicates equivalent timestamp precision from different writers", () => {
+    const tracked = {
+      ...baseSelection,
+      handoffs: [{
+        version: 1,
+        selection: "a",
+        selectionLabel: "A · Implemented",
+        comment: "Same handoff",
+        disposition: "implemented-review" as const,
+        recordedAt: "2026-08-09T11:43:12.43017Z",
+      }],
+      implementations: [{
+        version: 1,
+        handoffVersion: 1,
+        selection: "a",
+        selectionLabel: "A · Implemented",
+        comment: "Same handoff",
+        summary: "Same implementation",
+        recordedAt: "2026-08-09T11:43:12.43017Z",
+      }],
+    };
+    const local = {
+      ...tracked,
+      handoffs: tracked.handoffs.map((record) => ({
+        ...record,
+        recordedAt: "2026-08-09T11:43:12.4301700Z",
+      })),
+      implementations: tracked.implementations.map((record) => ({
+        ...record,
+        recordedAt: "2026-08-09T11:43:12.4301700Z",
+      })),
+    };
+
+    const merged = mergeSelections({ "live-plan": tracked }, { "live-plan": local })["live-plan"];
+
+    expect(merged.handoffs).toEqual(tracked.handoffs);
+    expect(merged.implementations).toEqual(tracked.implementations);
+  });
+
   it("remaps implementation links when an imported handoff changes version", () => {
     const local = {
       ...baseSelection,

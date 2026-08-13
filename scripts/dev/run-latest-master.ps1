@@ -17,11 +17,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
-Start-RunLog -Name "run-latest" | Out-Null
+Start-RunLog -Name "run-latest-master" | Out-Null
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $branch = (& git -C $repoRoot branch --show-current).Trim()
 if ($LASTEXITCODE -ne 0 -or $branch -ne "master") {
-	throw "Run-Latest is for the primary master checkout. Use a sandbox launcher for isolated work."
+	throw "Run-Latest-Master is for the primary master checkout. Use a sandbox launcher for isolated work."
 }
 
 Write-Host "Synchronizing master with origin/master..." -ForegroundColor Cyan
@@ -39,16 +39,8 @@ if ($ValidateOnly) {
 
 $devSpaParameters = @{}
 foreach ($name in @(
-	"ApiPort",
-	"FrontendPort",
-	"LabsPort",
-	"BackendOnly",
-	"FrontendOnly",
-	"NoLabs",
-	"Watch",
-	"Logs",
-	"CosmosBackend",
-	"UseCanaryData"
+	"ApiPort", "FrontendPort", "LabsPort", "BackendOnly", "FrontendOnly", "NoLabs",
+	"Watch", "Logs", "CosmosBackend", "UseCanaryData"
 )) {
 	if ($PSBoundParameters.ContainsKey($name)) {
 		$devSpaParameters[$name] = $PSBoundParameters[$name]

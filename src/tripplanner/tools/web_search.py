@@ -13,6 +13,7 @@ import json
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 
 _TAVILY_URL = "https://api.tavily.com/search"
@@ -47,7 +48,7 @@ def search_raw(
     }
     if topic in ("news", "general"):
         payload["topic"] = topic
-    resp = httpx.post(_TAVILY_URL, json=payload, timeout=25)
+    resp = http_client.post(_TAVILY_URL, json=payload)
     resp.raise_for_status()
     data = resp.json()
     return {

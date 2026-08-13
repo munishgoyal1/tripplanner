@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.liteapi import LiteAPIError, LiteAPIProvider
@@ -218,7 +219,7 @@ def test_liteapi_normalizes_live_hotel_rates(monkeypatch):
             },
         )
 
-    monkeypatch.setattr(httpx, "post", fake_post)
+    monkeypatch.setattr(http_client, "post", fake_post)
     provider = LiteAPIProvider("secret", "https://api.liteapi.travel/v3.0")
     offers = provider.search_hotels(
         HotelSearchQuery(
@@ -245,7 +246,7 @@ def test_liteapi_normalizes_live_hotel_rates(monkeypatch):
 
 
 def test_liteapi_maps_204_to_no_hotel_availability(monkeypatch):
-    monkeypatch.setattr(httpx, "post", lambda *args, **kwargs: _response(204))
+    monkeypatch.setattr(http_client, "post", lambda *args, **kwargs: _response(204))
     provider = LiteAPIProvider("secret", "https://api.liteapi.travel/v3.0")
 
     assert (
@@ -363,7 +364,7 @@ def test_liteapi_normalizes_flight_search_and_verify(monkeypatch):
             ),
         ]
     )
-    monkeypatch.setattr(httpx, "post", lambda *args, **kwargs: next(responses))
+    monkeypatch.setattr(http_client, "post", lambda *args, **kwargs: next(responses))
     provider = LiteAPIProvider("secret", "https://api.liteapi.travel/v3.0")
 
     found = provider.search_flights(
@@ -450,7 +451,7 @@ def test_liteapi_surfaces_provider_errors_without_response_body(monkeypatch):
     def fail(*args, **kwargs):
         raise httpx.TimeoutException("timed out")
 
-    monkeypatch.setattr(httpx, "post", fail)
+    monkeypatch.setattr(http_client, "post", fail)
     provider = LiteAPIProvider("secret", "https://api.liteapi.travel/v3.0")
 
     with pytest.raises(LiteAPIError, match="TimeoutException"):
@@ -463,7 +464,7 @@ def test_viator_normalizes_activity_search_and_schedule(monkeypatch):
     calls: list[dict] = []
     affiliate_url = "https://www.viator.com/tours/London/Example/d737-123?mcid=abc"
 
-    def fake_request(method, url, *, headers, json, timeout):
+    def fake_request(method, url, *, headers, json, timeout=None):
         calls.append(
             {"method": method, "url": url, "headers": headers, "json": json, "timeout": timeout}
         )
@@ -509,7 +510,7 @@ def test_viator_normalizes_activity_search_and_schedule(monkeypatch):
             },
         )
 
-    monkeypatch.setattr(httpx, "request", fake_request)
+    monkeypatch.setattr(http_client, "request", fake_request)
     provider = ViatorProvider("sandbox-secret", "https://api.sandbox.viator.com/partner")
     offers = provider.search_activities(
         ActivitySearchQuery(
@@ -548,7 +549,7 @@ def test_viator_surfaces_provider_errors(monkeypatch):
     def fail(*args, **kwargs):
         raise httpx.TimeoutException("timed out")
 
-    monkeypatch.setattr(httpx, "request", fail)
+    monkeypatch.setattr(http_client, "request", fail)
     provider = ViatorProvider("sandbox-secret", "https://api.sandbox.viator.com/partner")
 
     with pytest.raises(ViatorError, match="TimeoutException"):

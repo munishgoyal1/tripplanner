@@ -22,6 +22,7 @@ from datetime import date
 from typing import Any
 from urllib.parse import quote
 
+from tripplanner.concurrency import run_parallel
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import build_provenance
 from tripplanner.decisions.store import list_decisions
@@ -2091,6 +2092,40 @@ def build_destination_overview(
             "map_url": "",
         }
 
+    # Places and news share nothing, so the overview costs the slower of the two
+    # rather than their sum.
+    branches = run_parallel(
+        {
+            "places": lambda: _overview_places(destination),
+            "news": (lambda: _fetch_destination_news(destination)) if include_news else list,
+        }
+    )
+    photos, key_attractions, reviews, summary = branches["places"] or ([], [], [], "")
+    news: list[dict[str, str]] = branches["news"] or []
+
+    rated = [a["rating"] for a in key_attractions if a.get("rating")]
+    agg_rating = round(sum(rated) / len(rated), 1) if rated else None
+    agg_reviews = sum(
+        int(a["review_count"]) for a in key_attractions if a.get("review_count")
+    )
+
+    return {
+        "destination": destination,
+        "summary": summary,
+        "rating": agg_rating,
+        "review_count": agg_reviews,
+        "photos": photos[:_MAX_GALLERY_ITEMS],
+        "key_attractions": key_attractions,
+        "reviews": reviews[:_MAX_REVIEWS_PER_ITEM * 3],
+        "news": news,
+        "map_url": build_map_url(destination, [a["name"] for a in key_attractions[:5]]),
+    }
+
+
+def _overview_places(
+    destination: str,
+) -> tuple[list[str], list[dict[str, Any]], list[dict[str, Any]], str]:
+    """Photos, key attractions, sample reviews, and a summary for ``destination``."""
     attraction_names = places_cache.top_places(
         destination, "attraction", n=_MAX_OVERVIEW_ATTRACTIONS
     )
@@ -2126,28 +2161,7 @@ def build_destination_overview(
                         "author": r.get("author") or "Guest",
                     }
                 )
-
-    rated = [a["rating"] for a in key_attractions if a.get("rating")]
-    agg_rating = round(sum(rated) / len(rated), 1) if rated else None
-    agg_reviews = sum(
-        int(a["review_count"]) for a in key_attractions if a.get("review_count")
-    )
-
-    news: list[dict[str, str]] = []
-    if include_news:
-        news = _fetch_destination_news(destination)
-
-    return {
-        "destination": destination,
-        "summary": summary,
-        "rating": agg_rating,
-        "review_count": agg_reviews,
-        "photos": photos[:_MAX_GALLERY_ITEMS],
-        "key_attractions": key_attractions,
-        "reviews": reviews[:_MAX_REVIEWS_PER_ITEM * 3],
-        "news": news,
-        "map_url": build_map_url(destination, [a["name"] for a in key_attractions[:5]]),
-    }
+    return photos, key_attractions, reviews, summary
 
 
 def _fetch_destination_news(destination: str) -> list[dict[str, str]]:

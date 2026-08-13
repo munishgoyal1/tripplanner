@@ -142,12 +142,23 @@ export function migrateLegacyHandoffs(selections: LabSelections): boolean {
   return migrated;
 }
 
+function timestampIdentity(timestamp: string): string {
+  return timestamp.replace(/\.(\d*?[1-9])?0+Z$/, (_match, significant = "") =>
+    significant ? `.${significant}Z` : "Z"
+  );
+}
+
 function handoffIdentity(record: HandoffRecord): string {
-  return JSON.stringify([record.recordedAt, record.selection, record.disposition, record.comment]);
+  return JSON.stringify([
+    timestampIdentity(record.recordedAt),
+    record.selection,
+    record.disposition,
+    record.comment,
+  ]);
 }
 
 function implementationIdentity(record: ImplementationRecord): string {
-  return JSON.stringify([record.recordedAt, record.selection, record.summary]);
+  return JSON.stringify([timestampIdentity(record.recordedAt), record.selection, record.summary]);
 }
 
 export function mergeSelections(
@@ -210,30 +221,34 @@ export function mergeSelections(
 export async function readSelections(): Promise<LabSelections> {
   const canonical = await readJson(canonicalPath);
   const stored = await readJson(feedbackPath) || await readJson(canonicalLegacyPath());
-  const canonicalSnapshot = JSON.stringify(canonical || {});
   const storedSnapshot = JSON.stringify(stored || {});
   const selections = mergeSelections(canonical, stored);
   const migrated = migrateLegacyHandoffs(selections);
   const mergedSnapshot = JSON.stringify(selections);
-  if (migrated || canonicalSnapshot !== mergedSnapshot || storedSnapshot !== mergedSnapshot) {
-    await writeSelections(selections);
+  if (migrated || storedSnapshot !== mergedSnapshot) {
+    await writeLocalSelections(selections);
   }
   return selections;
 }
 
-export async function writeSelections(selections: LabSelections): Promise<void> {
-  await mkdir(dirname(canonicalPath), { recursive: true });
+async function writeLocalSelections(selections: LabSelections): Promise<void> {
   await mkdir(dirname(feedbackPath), { recursive: true });
   const contents = `${JSON.stringify(selections, null, 2)}\n`;
-  const canonicalTemporaryPath = `${canonicalPath}.${process.pid}.tmp`;
   const localTemporaryPath = `${feedbackPath}.${process.pid}.tmp`;
-  await writeFile(canonicalTemporaryPath, contents, "utf8");
   await writeFile(localTemporaryPath, contents, "utf8");
   try {
     await copyFile(feedbackPath, backupPath);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
-  await rename(canonicalTemporaryPath, canonicalPath);
   await rename(localTemporaryPath, feedbackPath);
+}
+
+export async function writeSelections(selections: LabSelections): Promise<void> {
+  await mkdir(dirname(canonicalPath), { recursive: true });
+  const contents = `${JSON.stringify(selections, null, 2)}\n`;
+  const canonicalTemporaryPath = `${canonicalPath}.${process.pid}.tmp`;
+  await writeFile(canonicalTemporaryPath, contents, "utf8");
+  await writeLocalSelections(selections);
+  await rename(canonicalTemporaryPath, canonicalPath);
 }
