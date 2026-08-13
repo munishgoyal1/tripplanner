@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from tripplanner.tools import trip_common, trip_effort, trip_guard
+from tripplanner.tools import trip_common, trip_effort, trip_guard, trip_validation
 
 _COORDS = {
     "Rajwada Palace": (22.7177, 75.8545),
@@ -18,6 +18,8 @@ _COORDS = {
     "Lal Bagh Palace": (22.6944, 75.8452),
     "Mandu Fort": (22.3700, 75.4000),
     "Hotel Sayaji": (22.7250, 75.8800),
+    # ~500 km from Indore: far enough that only a named journey explains it.
+    "Gateway of India": (18.9220, 72.8347),
 }
 
 
@@ -104,6 +106,157 @@ def test_a_stop_after_the_flight_home_breaks_the_envelope(located: None) -> None
 def test_an_outbound_leg_without_a_return_is_reported() -> None:
     one_way = plan([[stop("Flight Bengaluru → Indore", "09:00", "flight", 120)]])
     assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
+
+
+# A regional destination names its real cities, so the envelope has to anchor on
+# the traveller's home city rather than the destination string.
+REGION_TRIP = plan(
+    [
+        [
+            stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150),
+            stop("Hotel Sayaji", "14:00", "hotel", 45),
+        ],
+        [stop("Rajwada Palace", "10:00")],
+        [
+            stop("Mandu Fort", "09:00", "attraction", 180),
+            stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150),
+        ],
+    ],
+    destination="Rajasthan",
+)
+
+
+def test_envelope_reads_a_regional_trip_from_its_home_city() -> None:
+    env = trip_guard.envelope(REGION_TRIP)
+    assert env.arrival_day == 1
+    assert env.departure_day == 3
+    assert env.bounded_start and env.bounded_end
+
+
+def test_a_regional_outbound_without_a_return_is_reported() -> None:
+    one_way = plan(
+        [[stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150)]],
+        destination="Rajasthan",
+    )
+    assert any(violation.code == "I7" for violation in trip_guard.validate_plan(one_way))
+
+
+def test_a_leg_between_two_destination_cities_never_bounds_the_trip() -> None:
+    internal = plan(
+        [
+            [stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150)],
+            [stop("Drive Jaipur → Udaipur", "09:00", "transport", 300)],
+            [stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150)],
+        ],
+        destination="Rajasthan",
+    )
+    env = trip_guard.envelope(internal)
+    assert env.arrival_day == 1
+    assert env.departure_day == 3
+
+
+def test_a_regional_round_trip_is_not_reported_as_missing_its_legs() -> None:
+    complete = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150),
+                stop("Hotel Sayaji", "14:00", "hotel", 45),
+            ],
+            [
+                stop("Hotel Sayaji", "08:00", "hotel", 30),
+                stop("Flight Udaipur → Bengaluru", "18:00", "flight", 150),
+            ],
+        ],
+        destination="Rajasthan",
+    )
+    assert trip_validation._round_trip_transport_warnings(complete) == []
+
+
+def test_a_regional_trip_missing_its_return_is_still_reported() -> None:
+    one_way = plan(
+        [
+            [
+                stop("Flight Bengaluru → Jaipur", "09:00", "flight", 150),
+                stop("Hotel Sayaji", "14:00", "hotel", 45),
+            ],
+            [stop("Hotel Sayaji", "08:00", "hotel", 30)],
+        ],
+        destination="Rajasthan",
+    )
+    warnings = trip_validation._round_trip_transport_warnings(one_way)
+    assert len(warnings) == 1
+    assert "back to Bengaluru" in warnings[0]
+
+
+def test_a_stop_stranded_after_the_flight_home_blocks_completion(located: None) -> None:
+    """A turn may not report success while the itinerary contradicts itself."""
+    broken = plan(
+        [
+            [stop("Flight Bengaluru → Indore", "09:00", "flight", 120)],
+            [stop("Rajwada Palace", "10:00")],
+            [
+                stop("Flight Indore → Bengaluru", "11:00", "flight", 120),
+                stop("Mandu Fort", "15:00"),
+            ],
+        ]
+    )
+    gaps = trip_validation.itinerary_coherence_gaps(broken)
+    assert any("Mandu Fort" in gap for gap in gaps)
+    assert any(
+        "Itinerary is not coherent" in gap
+        for gap in trip_validation.planning_completion_gaps(broken)
+    )
+
+
+def test_a_coherent_itinerary_reports_no_coherence_gap(located: None) -> None:
+    assert trip_validation.itinerary_coherence_gaps(ROUND_TRIP) == []
+
+
+def test_a_day_cannot_begin_where_the_trip_never_travelled(located: None) -> None:
+    stranded = plan(
+        [
+            [stop("Rajwada Palace", "10:00")],
+            [stop("Gateway of India", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(stranded)}
+    assert "I9" in codes
+
+
+def test_a_journey_between_the_days_explains_the_move(located: None) -> None:
+    connected = plan(
+        [
+            [
+                stop("Rajwada Palace", "10:00"),
+                stop("Drive Indore → Mumbai", "15:00", "transport", 180),
+            ],
+            [stop("Gateway of India", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(connected)}
+    assert "I9" not in codes
+
+
+def test_a_nearby_day_trip_is_never_reported_as_a_gap(located: None) -> None:
+    nearby = plan(
+        [
+            [stop("Rajwada Palace", "10:00")],
+            [stop("Mandu Fort", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(nearby)}
+    assert "I9" not in codes
+
+
+def test_continuity_stays_silent_when_a_place_has_no_coordinates() -> None:
+    unlocated = plan(
+        [
+            [stop("Somewhere Unknown", "10:00")],
+            [stop("Another Unknown", "10:00")],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(unlocated)}
+    assert "I9" not in codes
 
 
 def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:

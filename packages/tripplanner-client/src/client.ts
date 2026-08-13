@@ -223,13 +223,13 @@ export class TripplannerClient {
   async fetchChatHistory(
     tripId?: string,
     signal?: AbortSignal,
-  ): Promise<{ role: "user" | "assistant"; text: string }[]> {
+  ): Promise<{ role: "user" | "assistant"; text: string; ts?: number; seconds?: number }[]> {
     const params: Record<string, string> = { user_id: await this.userId() };
     if (tripId) params.trip_id = tripId;
     const response = await this.request(this.url("/chat/history", params), { signal });
     ensureOk(response, "Could not load chat history");
     const data = (await response.json()) as {
-      messages?: { role: "user" | "assistant"; text: string }[];
+      messages?: { role: "user" | "assistant"; text: string; ts?: number; seconds?: number }[];
     };
     return data.messages ?? [];
   }

@@ -873,6 +873,34 @@ def _settle_around_legs(stops: list[Any], day_number: int, env: Envelope) -> lis
     return settled + remaining
 
 
+def _settle_plan_legs(plan: dict[str, Any]) -> list[int]:
+    """Re-seat every day's journeys against the trip envelope, and report which days moved.
+
+    A leg added after the trip was planned must not keep the position the edit
+    happened to drop it in, so this runs on the whole itinerary after any write.
+    """
+    env = envelope(plan)
+    itinerary = plan.get("day_wise_itinerary")
+    if not isinstance(itinerary, list):
+        return []
+    resettled: list[int] = []
+    for index, entry in enumerate(itinerary):
+        if not isinstance(entry, dict):
+            continue
+        stops = entry.get("stops")
+        if not isinstance(stops, list) or not stops:
+            continue
+        raw_day = entry.get("day")
+        day_number = raw_day if isinstance(raw_day, int) and raw_day > 0 else index + 1
+        settled = _settle_around_legs(stops, day_number, env)
+        if [_stop_name(stop) for stop in settled] == [_stop_name(stop) for stop in stops]:
+            continue
+        _retime_stops_in_order(settled)
+        entry["stops"] = settled
+        resettled.append(day_number)
+    return resettled
+
+
 @_serialized_mutation
 def add_hotel_stay(
     name: str,
@@ -2006,7 +2034,9 @@ def update_trip_plan(updates_json: str) -> str:
         }
     restored_legs = _restore_undeclared_legs(before, plan, declared_legs)
 
+    resettled_days = _settle_plan_legs(plan)
     _save_active_trip(plan)
+    broken_invariants = _newly_broken(before, plan)
     restaurant_warnings = _restaurant_itinerary_warnings(plan.get("day_wise_itinerary"))
     empty_day_warnings = _empty_itinerary_day_warnings(plan.get("day_wise_itinerary"))
     transport_warnings = _round_trip_transport_warnings(plan)
@@ -2021,6 +2051,20 @@ def update_trip_plan(updates_json: str) -> str:
         )
     if added_flight_legs:
         warning_text += "\nAdded missing trip legs: " + ", ".join(added_flight_legs) + "."
+    if resettled_days:
+        warning_text += (
+            "\nReordered Day "
+            + ", ".join(str(day) for day in resettled_days)
+            + " so each journey opens or closes its day."
+        )
+    if broken_invariants:
+        warning_text += (
+            "\nThis change broke the itinerary: "
+            + " ".join(broken_invariants)
+            + " Replan the affected day or days as a whole — move, retime, or drop the "
+            "stops that no longer fit — and resubmit the full day_wise_itinerary. Do not "
+            "report the trip as updated while this stands."
+        )
     if merged_partial_itinerary:
         warning_text += (
             "\nPartial itinerary update merged: only the days you sent were replaced, "

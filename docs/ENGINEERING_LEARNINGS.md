@@ -920,6 +920,37 @@ the outcome.
   Automatic credential fallback is valid only when both identity and required
   package scope are verified; otherwise fail with the exact refresh command.
 
+## 2026-08-13 - A Matcher That Cannot Match Turns Its Invariants Off
+
+- The trip envelope recognised its arrival and departure legs by looking for the
+  plan's `destination` string inside a leg name. A regional trip names its real
+  cities, so "Flight Bengaluru to Jaipur" never contains "Rajasthan" and the
+  envelope came back empty. Nothing failed: leg ordering silently stopped
+  running and the return-coverage invariant silently stopped firing, so a flight
+  home landed mid-afternoon between two attractions and a missing return leg was
+  never reported.
+- Anchor on the fact that is always present. The traveller's home city appears on
+  both bounding legs by definition, while the destination is a label that may
+  describe a region, a country, or nothing the legs ever say.
+- An invariant that returns early on unparseable input is indistinguishable from
+  an invariant that passed. When a guard depends on a match, test the case where
+  the match cannot succeed, or the guard will report health it never checked.
+
+## 2026-08-13 - Validate Where the Write Happens, Not Where It Is Convenient
+
+- The deterministic invariants existed and were correct, but `validate_plan` was
+  reachable from exactly one mutation (`add_selection`). The tool that writes
+  flights and whole itineraries never called it, so the guard that would have
+  caught a stop stranded after the flight home simply never ran on the path that
+  produced the defect. A rule enforced on one of five write paths is a rule the
+  product does not have.
+- Repair and detection belong together and belong at the persistence boundary.
+  Ordering ran only as a side effect of a hotel change, which meant adding a
+  flight reordered nothing. Anchoring both to the write makes the guarantee
+  independent of which field the edit happened to touch.
+- Stage a new invariant before it can block. Continuity (I9) reports on the edit
+  that introduces it but does not gate completion, because a new rule meets its
+  real false-positive rate on existing data, not in tests.
 ## 2026-08-13 - Remote-Call Cost Belongs to a Runtime, Not to Call Sites
 
 - `httpx.get`/`httpx.post` build a throwaway client per call, so every provider
@@ -979,3 +1010,24 @@ the outcome.
   date aged past the FX rate TTL, the assertion started reaching the live rate
   service and failing on a real published rate. Seed freshness relative to now
   and keep the fixed value only where the assertion depends on it.
+
+## 2026-08-13 - A Surface That Cannot Render a Stop Must Not Drop It Silently
+
+- The itinerary renders every stop verbatim, while the map renders only stops it
+  can resolve to a pin. Anything it cannot resolve is skipped with no marker and
+  no message, so the two surfaces disagree and only the map looks "wrong".
+- `_transport_terminal_refs` understood a flight only as `Flight: A to B`. When
+  the agent wrote one stop per terminal ("Kempegowda International Airport,
+  Bangalore (BLR)", kind `flight`), endpoint parsing failed, and the caller's
+  `if kind in {"flight", "transport"}: continue` discarded the stop. The same
+  name with kind `airport` produced a pin, so a tag the user never sees decided
+  whether their flights appeared. Parse the route form, then fall back to the
+  stop as its own named terminal.
+- The guard that rejects a geocode whose provider name does not match the stop
+  name prevents wrong pins, but it also drops real ones: "Seine River Cruise"
+  resolves to "Bateaux Parisiens" with correct coordinates and shares no token
+  with the stop, so it vanished from the map while staying in the itinerary.
+- Audit cross-surface consistency by diffing the surfaces themselves, not by
+  reading the builder. Comparing `/trip/itinerary` stop names against
+  `/trip/map` pin names found seven missing stops in seconds, including one this
+  investigation was not looking for.

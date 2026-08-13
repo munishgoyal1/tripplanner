@@ -320,7 +320,10 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
         "outcome": "completed",
     }
     set_user_id("anon")
-    assert chat_store.transcript(None) == [
+    assert [
+        {"role": row["role"], "text": row["text"]}
+        for row in chat_store.transcript(None)
+    ] == [
         {"role": "user", "text": "plan goa"},
         {"role": "assistant", "text": "Goa is ready"},
     ]

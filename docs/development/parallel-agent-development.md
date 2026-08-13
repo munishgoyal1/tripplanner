@@ -12,6 +12,16 @@ Create a sandbox from the primary checkout:
 
 On macOS, use the matching `.command` launchers under `scripts/mac/user/sandbox/`. Each sandbox has an isolated worktree, branch, port slot, and local emulator database. `Update-Sandbox` merges current `origin/master` into an in-flight sandbox. Promotion is the only path from sandbox code into `master`.
 
+`Merge-Sandbox` lands finished work without ending the lane. It runs the same
+validation, pull request, merge, and verification steps as promotion, then
+resynchronizes the sandbox onto the updated base and leaves it registered and
+active. Nothing is discarded, no promotion is recorded, and UX Lab records are
+untouched. It fetches the latest base before syncing and again after the pull
+request lands, and runs the sandbox conflict resolver automatically on both
+syncs, so a conflict git can already settle never stalls the merge. Use it when a
+sandbox has more work ahead of it; use `Promote-Sandbox` when the lane is
+finished.
+
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/user/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default.
 
 Promotion requires the primary `master` checkout to be clean and exactly equal
@@ -24,6 +34,14 @@ After a successful `Sync-Latest-FromRemoteMaster`, each registered sandbox may b
 `master`, but both its local branch and its pushed remote branch must contain the
 exact current `master` commit. The sync commands verify this ancestry invariant
 before reporting success.
+
+`Sync-TwoWay` is the rare counterpart that also sends work the other way: it
+merges every sandbox into `master` through the same `-Merge` gates, then brings
+all sandboxes back up to the resulting `master`. Because that publishes several
+lanes at once, it refuses to run while any sandbox holds uncommitted work or
+unresolved conflicts, prints the exact commits each sandbox would land, and then
+requires the phrase `APPROVE_SANDBOX_TO_MASTER`. Use it only when every sandbox
+is known to be feature-clean; the routine refresh remains one-way.
 
 If `Update-Sandbox` reports `SANDBOX_CONFLICT_PENDING`, resolve its marked files
 in the sandbox worktree, then run `Resolve-SandboxConflicts` for that sandbox to

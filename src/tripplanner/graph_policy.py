@@ -153,7 +153,9 @@ def trip_update_requirement(
         )
     if (
         not active_trip.get("day_wise_itinerary")
-        and len(update_positions) < MAX_INITIAL_ITINERARY_UPDATES
+        # Counting every save in the conversation retired this gate after the
+        # second one, so a trip created later was free to end with no itinerary.
+        and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
     ):
         return (
             "The new trip has no itinerary. Save a complete structured day_wise_itinerary "
@@ -162,8 +164,13 @@ def trip_update_requirement(
             "updates_json argument with the full itinerary."
         )
 
+    # Research the user already got an answer about belongs to the turn that ran
+    # it. Leaving this unscoped made a new request inherit the previous turn's
+    # unfinished work and answer the wrong question entirely.
     research_positions = [
-        index for index, name in positions if name in COMPLETION_RESEARCH_TOOLS
+        index
+        for index, name in positions
+        if name in COMPLETION_RESEARCH_TOOLS and index > latest_human
     ]
     if not research_positions:
         return None

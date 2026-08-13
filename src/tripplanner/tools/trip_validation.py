@@ -23,6 +23,21 @@ from tripplanner.tools.trip_common import (
     _stop_name,
     _style_caps,
 )
+from tripplanner.tools.trip_guard import leg_touches_home, validate_plan
+
+#: Invariants that mean the itinerary contradicts itself about time or place.
+#: Opening hours and travel feasibility are left out on purpose: they degrade
+#: with missing cached facts, and a gate must not fire on what it cannot know.
+_COHERENCE_CODES = frozenset({"I1", "I2", "I5"})
+
+
+def itinerary_coherence_gaps(plan: dict[str, Any]) -> list[str]:
+    """Ways the saved itinerary disagrees with itself, in the user's terms."""
+    return [
+        violation.message
+        for violation in validate_plan(plan)
+        if violation.code in _COHERENCE_CODES
+    ]
 
 
 def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
@@ -114,11 +129,15 @@ def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
          if _stop_kind(last_stops[index]) == "hotel"),
         -1,
     )
+    # A regional destination names its real cities, so a leg that simply leaves
+    # or returns home counts even when it never spells the destination out.
     has_outbound = first_hotel < len(first_stops) and any(
-        has_direction(stop, origin, destination) for stop in first_stops[:first_hotel]
+        has_direction(stop, origin, destination) or leg_touches_home(stop, origin)[0]
+        for stop in first_stops[:first_hotel]
     )
     has_return = last_hotel >= 0 and any(
-        has_direction(stop, destination, origin) for stop in last_stops[last_hotel + 1:]
+        has_direction(stop, destination, origin) or leg_touches_home(stop, origin)[1]
+        for stop in last_stops[last_hotel + 1:]
     )
 
     warnings: list[str] = []
@@ -276,11 +295,31 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
                 "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
                 "or explicitly label intentional leisure; do not add filler."
             )
+    itinerary = plan.get("day_wise_itinerary")
+    # Every other check walks the days, so a trip with none of them reported
+    # nothing at all and could be narrated as planned while holding no plan.
+    missing_itinerary = (
+        [
+            "No day-by-day itinerary is saved. Save the full structured "
+            "day_wise_itinerary before presenting the trip as planned."
+        ]
+        if plan.get("destination") and not (isinstance(itinerary, list) and itinerary)
+        else []
+    )
+    coherence_gaps = itinerary_coherence_gaps(plan)
+    if coherence_gaps:
+        coherence_gaps = [
+            "Itinerary is not coherent: "
+            + " ".join(coherence_gaps[:3])
+            + " Replan the affected day or days as a whole rather than moving one stop."
+        ]
     return [
+        *missing_itinerary,
         *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
+        *coherence_gaps,
         *density_warnings,
     ]
 

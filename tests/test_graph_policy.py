@@ -26,6 +26,67 @@ def _tool_phases(count: int) -> list[BaseMessage]:
     return messages
 
 
+def test_a_new_request_does_not_inherit_the_previous_turns_research() -> None:
+    """The reported defect: asking for a Goa trip answered the earlier Paris
+    flight question and saved that research instead."""
+    answered_turn: list[BaseMessage] = [
+        HumanMessage(content="show me the flight segments and layovers"),
+        _tool_call("search_flights", "flight-1"),
+        ToolMessage(content="segments...", tool_call_id="flight-1"),
+        AIMessage(content="Here are your Paris flight segments."),
+    ]
+    decision = resolve_completion_policy(
+        messages=[*answered_turn, HumanMessage(content="plan a trip to goa for 7 days")],
+        active_trip={"destination": "Paris", "day_wise_itinerary": [{"day": 1, "stops": []}]},
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.requirement is None or "not been persisted" not in decision.requirement
+
+
+def test_research_in_the_current_turn_must_still_be_persisted() -> None:
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="add some museums"),
+            _tool_call("search_activities", "act-1"),
+            ToolMessage(content="museums...", tool_call_id="act-1"),
+        ],
+        active_trip={"destination": "Paris", "day_wise_itinerary": [{"day": 1, "stops": []}]},
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.requirement is not None
+    assert "not been persisted" in decision.requirement
+
+
+def test_a_new_trip_must_still_save_an_itinerary_late_in_a_conversation() -> None:
+    """The reported defect: a Nashik trip was narrated but saved with no days,
+    because earlier turns had already spent the itinerary-save budget."""
+    earlier: list[BaseMessage] = []
+    for turn in range(3):
+        earlier += [
+            HumanMessage(content=f"earlier request {turn}"),
+            _tool_call("update_trip_plan", f"old-{turn}"),
+            ToolMessage(content="Trip plan updated.", tool_call_id=f"old-{turn}"),
+        ]
+    decision = resolve_completion_policy(
+        messages=[
+            *earlier,
+            HumanMessage(content="plan a trip to nashik"),
+            _tool_call("create_trip_plan", "create-1"),
+            ToolMessage(content="Created", tool_call_id="create-1"),
+        ],
+        active_trip={"destination": "Nashik", "day_wise_itinerary": []},
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.requirement is not None
+    assert "no itinerary" in decision.requirement
+
+
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="Create a separate new Hawaii trip")],
