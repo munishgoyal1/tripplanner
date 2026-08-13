@@ -1187,6 +1187,121 @@ def test_map_view_connects_flight_airports_to_destination_stay(
     assert departure_day["legs"][-1]["intercity"] is True
 
 
+_LONG_HAUL_COORDS = {
+    "Kempegowda International Airport": (13.1986, 77.7066),
+    "Bengaluru Airport": (13.1986, 77.7066),
+    "Charles de Gaulle Airport": (49.0097, 2.5479),
+    "Paris Airport": (49.0097, 2.5479),
+    "Hotel Lutetia": (48.8515, 2.3266),
+}
+
+
+@pytest.fixture
+def _long_haul_geo(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+        lat, lng = _LONG_HAUL_COORDS.get(name, (None, None))
+        return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+
+
+def _long_haul_trip(stops: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "destination": "Paris",
+        "origin": "Bengaluru",
+        "selected_hotels": [{"name": "Hotel Lutetia"}],
+        "day_wise_itinerary": [{"day": 1, "stops": stops}],
+    }
+
+
+def test_intercity_mode_reads_a_flight_filed_as_a_generic_transfer() -> None:
+    mode = trip_view._intercity_transfer_mode
+    assert mode("Flight: Bengaluru to Paris", "transport") == "Flight"
+    assert mode("Fly Bengaluru → Paris", "transport") == "Flight"
+    # A flight mentioned without a route is not itself a journey between places.
+    assert mode("Airport lounge before the flight", "transport") is None
+
+
+def test_map_view_flies_a_transfer_the_plan_filed_as_generic_transport(
+    _long_haul_geo: None,
+) -> None:
+    trip = _long_haul_trip(
+        [
+            {"name": "Flight: Bengaluru to Paris", "kind": "transport", "time": "08:00"},
+            {"name": "Hotel Lutetia", "kind": "hotel", "time": "16:00"},
+        ]
+    )
+
+    day = trip_view.build_map_view(trip)["days"][0]
+
+    assert day["legs"][0]["mode"] == "Flight"
+    assert day["legs"][0]["intercity"] is True
+
+
+def test_map_view_flies_between_terminals_the_plan_never_connected(
+    _long_haul_geo: None,
+) -> None:
+    """Two distant airports back to back are a flight, not a drive."""
+    trip = _long_haul_trip(
+        [
+            {"name": "Kempegowda International Airport", "kind": "airport", "time": "05:00"},
+            {"name": "Charles de Gaulle Airport", "kind": "airport", "time": "14:00"},
+            {"name": "Hotel Lutetia", "kind": "hotel", "time": "16:00"},
+        ]
+    )
+
+    view = trip_view.build_map_view(trip)
+    pins_by_id = {pin["id"]: pin for pin in view["pins"]}
+    day = view["days"][0]
+
+    assert [pins_by_id[pin_id]["name"] for pin_id in day["pin_ids"]] == [
+        "Kempegowda International Airport",
+        "Charles de Gaulle Airport",
+        "Hotel Lutetia",
+    ]
+    assert day["legs"][0]["mode"] == "Flight"
+    assert day["legs"][0]["intercity"] is True
+
+
+def test_itinerary_does_not_bookend_a_long_haul_day_with_the_destination_stay(
+    _long_haul_geo: None,
+) -> None:
+    trip = _long_haul_trip(
+        [
+            {"name": "Kempegowda International Airport", "kind": "airport", "time": "05:00"},
+            {"name": "Charles de Gaulle Airport", "kind": "airport", "time": "14:00"},
+            {"name": "Hotel Lutetia", "kind": "hotel", "time": "16:00"},
+        ]
+    )
+
+    day = trip_view.build_itinerary(trip)["days"][0]
+
+    assert [stop["name"] for stop in day["stops"]] == [
+        "Kempegowda International Airport",
+        "Charles de Gaulle Airport",
+        "Hotel Lutetia",
+    ]
+
+
+def test_map_view_keeps_a_same_city_terminal_pair_local(_long_haul_geo: None) -> None:
+    trip = _long_haul_trip(
+        [
+            {"name": "Charles de Gaulle Airport", "kind": "airport", "time": "09:00"},
+            {"name": "Paris Airport", "kind": "airport", "time": "10:00"},
+            {"name": "Hotel Lutetia", "kind": "hotel", "time": "12:00"},
+        ]
+    )
+
+    day = trip_view.build_map_view(trip)["days"][0]
+
+    assert all(not leg.get("intercity") for leg in day["legs"])
+
+
 def test_map_view_connects_origin_and_destination_segments_after_road_transfer(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,

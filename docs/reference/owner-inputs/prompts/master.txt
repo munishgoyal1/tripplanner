@@ -1143,3 +1143,9 @@ fix this 2 way sync error
 
 [2026-08-13 22:25] [master] ! Fix two-way sync Write-Host error
 fix this 2 way sync error
+
+[2026-08-13 22:55] [master] ! Paris replan drives between airports
+weird behaviour: on askign replan paris trip. it is giving airports and flight connections probably but asking to drive between airports instead of flight. no flight connection legs shown on map
+
+[2026-08-13 22:55] [master] Bug reproduces in sbx2 stack
+this is happening in sbx2 stack under my id in case you are not able to find. else continue with ur task work

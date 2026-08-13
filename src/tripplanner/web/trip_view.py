@@ -29,6 +29,7 @@ from tripplanner.decisions.store import list_decisions
 from tripplanner.decisions.trip_cost import build_cost_ledger
 from tripplanner.tools import user_preferences
 from tripplanner.web import map_view, places_cache
+from tripplanner.web.day_journey import implied_terminal_hop_mode
 
 # Budget/money helpers live in ``budget`` (tech-debt #7); re-exported here so
 # existing ``trip_view.*`` callers and tests are unaffected.
@@ -1763,11 +1764,36 @@ def _render_day_stops(
     return stops, booked
 
 
-def _has_intercity_transfer(stops: list[dict[str, Any]]) -> bool:
-    return any(
+def _has_intercity_transfer(
+    stops: list[dict[str, Any]],
+    place_coords_map: dict[str, tuple[float, float]] | None = None,
+) -> bool:
+    if any(
         _intercity_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or ""))
         for stop in stops
-    )
+    ):
+        return True
+    return _implied_terminal_hop(stops, place_coords_map or {}) is not None
+
+
+def _implied_terminal_hop(
+    stops: list[dict[str, Any]],
+    place_coords_map: dict[str, tuple[float, float]],
+) -> str | None:
+    """The unnamed journey between two back-to-back terminals, if there is one."""
+    for previous, current in zip(stops, stops[1:]):
+        from_coords = place_coords_map.get(str(previous.get("name") or "").strip().lower())
+        to_coords = place_coords_map.get(str(current.get("name") or "").strip().lower())
+        if not from_coords or not to_coords:
+            continue
+        mode = implied_terminal_hop_mode(
+            str(previous.get("kind") or ""),
+            str(current.get("kind") or ""),
+            _haversine_km(from_coords, to_coords),
+        )
+        if mode:
+            return mode
+    return None
 
 
 def _insert_transfer_day_stay_anchor(
@@ -2012,7 +2038,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         )
         total_booked += day_booked
 
-        if _has_intercity_transfer(stops):
+        if _has_intercity_transfer(stops, place_coords_map):
             if idx > 0 and current_hotel:
                 _insert_transfer_day_stay_anchor(
                     stops, day_num, current_hotel, hotels, activities
