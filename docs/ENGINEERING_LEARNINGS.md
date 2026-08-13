@@ -986,3 +986,27 @@ the outcome.
 - Owner-facing launchers resolve the interpreter explicitly through one shared
   helper and fail with the install command. Bare-name lookup is a convenience for
   interactive shells, not a contract a one-click entry point may rely on.
+
+## 2026-08-13 - A Rewrite Must Carry the Recovery It Replaces
+
+- Consolidating the sync launchers into `sync-latest-from-remote-master.ps1` kept
+  the happy path and silently dropped the conflict-recovery retry that
+  "Recovery Belongs in the Flow That Broke" had already established. A rewrite
+  that reproduces the primary flow is not equivalent until it also reproduces the
+  failure handling; port the recovery step in the same change or the lesson is
+  re-learned from the owner's next stalled sync.
+- Three scripts each carried their own registry lookup, so only `sandbox.ps1`
+  understood a bare sandbox number while the resolver silently accepted fewer
+  forms. Duplicated lookup logic does not stay equivalent; the shared
+  `lib/sandbox-registry.ps1` resolver is what makes "1", "1-stay-comparison", and
+  "stay-comparison" mean the same thing from every entry point.
+- An unmerged path with no conflict markers reads as resolved to both the editor
+  and the eye, because the merge state lives in the index rather than the file.
+  `fx.py` had been rewritten with `_SOURCE` referenced but never defined, so the
+  merge looked finished while every real conversion would raise `NameError`.
+  Judge a conflict by `git diff --diff-filter=U`, then run the code, not by
+  whether the file still shows markers.
+- A test that seeds a cache with a hardcoded timestamp expires. Once the fixed
+  date aged past the FX rate TTL, the assertion started reaching the live rate
+  service and failing on a real published rate. Seed freshness relative to now
+  and keep the fixed value only where the assertion depends on it.

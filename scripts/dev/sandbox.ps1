@@ -125,6 +125,7 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
 . "$PSScriptRoot/lib/node-tools.ps1"
 . "$PSScriptRoot/lib/vscode-cli.ps1"
+. "$PSScriptRoot/lib/sandbox-registry.ps1"
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -194,19 +195,7 @@ function Resolve-SandboxEntry {
         $launcher = Get-SandboxLauncherPath -Name "New-Sandbox"
         throw "No sandboxes are registered. Create one with: $launcher <name> `"<purpose>`""
     }
-    $match = @($entries | Where-Object { $_.slug -eq $Reference })
-    if ($match.Count -eq 0 -and $Reference -match "^\d+$") {
-        $match = @($entries | Where-Object { (Get-SandboxNumber -Entry $_) -eq [int]$Reference })
-    }
-    if ($match.Count -eq 0) {
-        $match = @($entries | Where-Object { (Get-ShortName -Name $_.slug) -eq (Get-ShortName -Name $Reference) })
-    }
-    if ($match.Count -eq 1) { return $match[0] }
-    if ($match.Count -gt 1) {
-        throw "'$Reference' matches more than one sandbox: $(($match | ForEach-Object { $_.slug }) -join ', '). Use the number instead."
-    }
-    $known = ($entries | ForEach-Object { "#$(Get-SandboxNumber -Entry $_) $($_.slug)" }) -join ", "
-    throw "Unknown sandbox '$Reference'. Registered: $known."
+    return Select-SandboxEntry -Entries $entries -Reference $Reference
 }
 
 function Get-Registry {
