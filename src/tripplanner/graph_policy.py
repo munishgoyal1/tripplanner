@@ -162,8 +162,13 @@ def trip_update_requirement(
             "updates_json argument with the full itinerary."
         )
 
+    # Research the user already got an answer about belongs to the turn that ran
+    # it. Leaving this unscoped made a new request inherit the previous turn's
+    # unfinished work and answer the wrong question entirely.
     research_positions = [
-        index for index, name in positions if name in COMPLETION_RESEARCH_TOOLS
+        index
+        for index, name in positions
+        if name in COMPLETION_RESEARCH_TOOLS and index > latest_human
     ]
     if not research_positions:
         return None
