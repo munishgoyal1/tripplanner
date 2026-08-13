@@ -186,6 +186,30 @@ def test_a_regional_trip_missing_its_return_is_still_reported() -> None:
     assert "back to Bengaluru" in warnings[0]
 
 
+def test_a_stop_stranded_after_the_flight_home_blocks_completion(located: None) -> None:
+    """A turn may not report success while the itinerary contradicts itself."""
+    broken = plan(
+        [
+            [stop("Flight Bengaluru → Indore", "09:00", "flight", 120)],
+            [stop("Rajwada Palace", "10:00")],
+            [
+                stop("Flight Indore → Bengaluru", "11:00", "flight", 120),
+                stop("Mandu Fort", "15:00"),
+            ],
+        ]
+    )
+    gaps = trip_validation.itinerary_coherence_gaps(broken)
+    assert any("Mandu Fort" in gap for gap in gaps)
+    assert any(
+        "Itinerary is not coherent" in gap
+        for gap in trip_validation.planning_completion_gaps(broken)
+    )
+
+
+def test_a_coherent_itinerary_reports_no_coherence_gap(located: None) -> None:
+    assert trip_validation.itinerary_coherence_gaps(ROUND_TRIP) == []
+
+
 def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:
     broken = plan(
         [

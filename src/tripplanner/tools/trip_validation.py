@@ -23,7 +23,21 @@ from tripplanner.tools.trip_common import (
     _stop_name,
     _style_caps,
 )
-from tripplanner.tools.trip_guard import leg_touches_home
+from tripplanner.tools.trip_guard import leg_touches_home, validate_plan
+
+#: Invariants that mean the itinerary contradicts itself about time or place.
+#: Opening hours and travel feasibility are left out on purpose: they degrade
+#: with missing cached facts, and a gate must not fire on what it cannot know.
+_COHERENCE_CODES = frozenset({"I1", "I2", "I5"})
+
+
+def itinerary_coherence_gaps(plan: dict[str, Any]) -> list[str]:
+    """Ways the saved itinerary disagrees with itself, in the user's terms."""
+    return [
+        violation.message
+        for violation in validate_plan(plan)
+        if violation.code in _COHERENCE_CODES
+    ]
 
 
 def _restaurant_itinerary_warnings(itinerary: Any) -> list[str]:
@@ -281,11 +295,19 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
                 "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
                 "or explicitly label intentional leisure; do not add filler."
             )
+    coherence_gaps = itinerary_coherence_gaps(plan)
+    if coherence_gaps:
+        coherence_gaps = [
+            "Itinerary is not coherent: "
+            + " ".join(coherence_gaps[:3])
+            + " Replan the affected day or days as a whole rather than moving one stop."
+        ]
     return [
         *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
         *_round_trip_transport_warnings(plan),
         *_hotel_selection_warnings(plan),
+        *coherence_gaps,
         *density_warnings,
     ]
 
