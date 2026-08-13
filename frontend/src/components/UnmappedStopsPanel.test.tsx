@@ -70,6 +70,56 @@ describe("UnmappedStopsPanel", () => {
     const rows = screen.getAllByRole("listitem");
     expect(rows[0]).toHaveTextContent("Hotel Chambiges");
   });
+
+  it("breaks the count down by how many are key stops", () => {
+    render(
+      <UnmappedStopsPanel
+        stops={[stop(), stop({ name: "Hotel Chambiges", tier: "anchor", day: 1 })]}
+        onConfirm={vi.fn()}
+        busyName={null}
+      />,
+    );
+
+    expect(screen.getByText("2 stops not on the map · 1 key")).toBeInTheDocument();
+  });
+
+  it("does not repeat the breakdown when every stop is a key stop", () => {
+    render(
+      <UnmappedStopsPanel
+        stops={[stop({ tier: "anchor" }), stop({ name: "Hotel Chambiges", tier: "anchor", day: 1 })]}
+        onConfirm={vi.fn()}
+        busyName={null}
+      />,
+    );
+
+    expect(screen.getByText("2 stops not on the map")).toBeInTheDocument();
+  });
+
+  it("focuses the stop on click so every surface can show its context", () => {
+    const onFocus = vi.fn();
+    render(
+      <UnmappedStopsPanel stops={[stop()]} onConfirm={vi.fn()} onFocus={onFocus} busyName={null} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /not on the map/ }));
+
+    fireEvent.click(screen.getByText(/Day 2 · Seine River Cruise/));
+
+    expect(onFocus).toHaveBeenCalledWith(expect.objectContaining({ name: "Seine River Cruise" }));
+  });
+
+  it("does not focus when accepting the candidate instead", () => {
+    const onFocus = vi.fn();
+    const onConfirm = vi.fn();
+    render(
+      <UnmappedStopsPanel stops={[stop()]} onConfirm={onConfirm} onFocus={onFocus} busyName={null} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /not on the map/ }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Use it" }));
+
+    expect(onConfirm).toHaveBeenCalled();
+    expect(onFocus).not.toHaveBeenCalled();
+  });
 });
 
 describe("unmapped stop tiers", () => {
