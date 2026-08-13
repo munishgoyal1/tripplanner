@@ -98,7 +98,7 @@ export default function TripSwitcher({
         tone: "error",
         message:
           error instanceof ApiError && error.status === 409
-            ? `${label} is busy finishing another update. Try again in a moment.`
+            ? `The Assistant is still finishing an update. ${label} will open once it completes.`
             : `Could not switch to ${label}.`,
       });
     } finally {

@@ -11,8 +11,12 @@ from __future__ import annotations
 
 import re
 
+_ROUTE_SEPARATOR_RE = re.compile(r"\s+(?:to|->|→)\s+|\s*(?:->|→)\s*", re.I)
+_VIA_RE = re.compile(r"\s+via\s+", re.I)
+_CONNECTION_SEPARATOR_RE = re.compile(r"\s*(?:,|&|\band\b|->|→)\s*", re.I)
 
-def _transport_route_endpoints(name: str) -> tuple[str, str] | None:
+
+def _strip_route_affixes(name: str) -> str:
     route = str(name or "").strip()
     route = re.sub(
         r"^(?:(?:drive|driving|road journey|road transfer|transfer|private car|"
@@ -21,19 +25,41 @@ def _transport_route_endpoints(name: str) -> tuple[str, str] | None:
         route,
         flags=re.I,
     )
-    route = re.sub(
+    return re.sub(
         r"\s+(?:drive|driving|road journey|road transfer|by (?:private )?car|by road)$",
         "",
         route,
         flags=re.I,
     )
-    endpoints = re.split(r"\s+(?:to|->|→)\s+", route, maxsplit=1, flags=re.I)
-    if len(endpoints) != 2:
+
+
+def _transport_route_waypoints(name: str) -> list[str]:
+    """Every place the leg touches, in travel order.
+
+    A connection is a place the traveller is actually in, so "Bengaluru to
+    London via Doha" and "Bengaluru → Doha → London" both yield three stops.
+    """
+    route = _strip_route_affixes(name)
+    if not route:
+        return []
+    main, *via_parts = _VIA_RE.split(route)
+    legs = [part.strip() for part in _ROUTE_SEPARATOR_RE.split(main) if part.strip()]
+    if len(legs) < 2:
+        return []
+    connections = [
+        connection.strip()
+        for part in via_parts
+        for connection in _CONNECTION_SEPARATOR_RE.split(part)
+        if connection.strip()
+    ]
+    return [legs[0], *connections, *legs[1:]]
+
+
+def _transport_route_endpoints(name: str) -> tuple[str, str] | None:
+    waypoints = _transport_route_waypoints(name)
+    if len(waypoints) < 2:
         return None
-    origin, destination = (endpoint.strip() for endpoint in endpoints)
-    if not origin or not destination:
-        return None
-    return origin, destination
+    return waypoints[0], waypoints[-1]
 
 
 def _named_terminal_ref(text: str) -> tuple[str, str] | None:
@@ -62,19 +88,19 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
         # real place, so the map must pin it rather than drop the stop.
         return [named] if named else []
     origin, destination = endpoints
+    waypoints = _transport_route_waypoints(text)
     if kind == "flight":
-        origin = origin if "airport" in origin.lower() else f"{origin} Airport"
-        destination = (
-            destination if "airport" in destination.lower() else f"{destination} Airport"
-        )
-        return [("airport", origin), ("airport", destination)]
-    if "train" in lowered or "rail" in lowered:
         return [
-            ("station", f"{origin} Railway Station"),
-            ("station", f"{destination} Railway Station"),
+            (
+                "airport",
+                waypoint if "airport" in waypoint.lower() else f"{waypoint} Airport",
+            )
+            for waypoint in waypoints
         ]
+    if "train" in lowered or "rail" in lowered:
+        return [("station", f"{waypoint} Railway Station") for waypoint in waypoints]
     if "bus" in lowered:
-        return [("bus_station", f"{origin} Bus Stand"), ("bus_station", f"{destination} Bus Stand")]
+        return [("bus_station", f"{waypoint} Bus Stand") for waypoint in waypoints]
     if _intercity_transfer_mode(text, kind) == "Drive":
         return [("origin", origin)]
     return []

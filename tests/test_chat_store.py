@@ -39,10 +39,15 @@ def test_save_and_load_roundtrip() -> None:
     assert loaded[1].content == "Sure! When would you like to go?"
 
 
+def _spoken(rows: list[dict]) -> list[dict]:
+    """What was said, without the display timing stored beside it."""
+    return [{"role": row["role"], "text": row["text"]} for row in rows]
+
+
 def test_transcript_shape() -> None:
     chat_store.save("goa_2026-01-10_2026-01-15", _convo())
     rows = chat_store.transcript("goa_2026-01-10_2026-01-15")
-    assert rows == [
+    assert _spoken(rows) == [
         {"role": "user", "text": "Plan a trip to Goa"},
         {"role": "assistant", "text": "Sure! When would you like to go?"},
     ]

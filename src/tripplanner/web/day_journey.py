@@ -135,12 +135,21 @@ class _JourneyWalk:
         ]
         if len(terminal_ids) == len(refs) and len(terminal_ids) >= 2:
             self._place(terminal_ids[0])
+            # A connection is a place the traveller actually passes through, so
+            # each hop is drawn instead of one line that skips the stop.
+            previous = terminal_ids[0]
+            for terminal_id in terminal_ids[1:-1]:
+                edge = (previous, terminal_id)
+                self.journey.intercity_edges[edge] = mode
+                self.journey.circuit_edges[edge] = circuit_id
+                self._place(terminal_id)
+                previous = terminal_id
             if mode == "Bus":
                 # Bus arrivals come after the meal and viewpoint stops made en route.
                 transfer.arrival_id = terminal_ids[-1]
                 self._open = transfer
             else:
-                edge = (terminal_ids[0], terminal_ids[-1])
+                edge = (previous, terminal_ids[-1])
                 self.journey.intercity_edges[edge] = mode
                 self.journey.circuit_edges[edge] = circuit_id
                 self._place(terminal_ids[-1])

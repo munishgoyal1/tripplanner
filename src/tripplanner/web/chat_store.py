@@ -21,6 +21,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
+import time
 from collections.abc import Callable
 from pathlib import Path
 from threading import Lock
@@ -40,6 +42,9 @@ _MAX_TURNS = 80  # keep the persisted transcript bounded
 _MAX_RECENT_WRITES = 80
 _MAX_RECENT_OPERATIONS = 80
 _MAX_WRITE_ATTEMPTS = 3
+#: Written for the reader, never part of what makes a turn the same turn. Merge
+#: and overlap detection compare rows, so timing must not make one row two.
+_DISPLAY_ONLY_KEYS = frozenset({"ts", "seconds"})
 _LOCAL_LOCKS: dict[str, Lock] = {}
 _LOCAL_LOCKS_GUARD = Lock()
 
@@ -167,28 +172,75 @@ def completed_operation(
     )
 
 
-def transcript(trip_id: str | None) -> list[dict[str, str]]:
-    """The display transcript ([{role, text}]) for the SPA to re-render."""
-    return [
-        {"role": str(r.get("role") or "assistant"), "text": str(r.get("text") or "")}
-        for r in _read_rows(trip_id)
-        if str(r.get("text") or "").strip()
-    ]
+def _stamped(
+    suffix_rows: list[dict[str, Any]], turn_seconds: int | None
+) -> list[dict[str, Any]]:
+    """Record when the turn landed, and what the reply cost, on its own rows."""
+    stamped_at = int(time.time() * 1000)
+    rows = [dict(row) for row in suffix_rows]
+    for row in rows:
+        row.setdefault("ts", stamped_at)
+    if turn_seconds is not None:
+        for row in reversed(rows):
+            if row.get("role") == "assistant":
+                row.setdefault("seconds", int(turn_seconds))
+                break
+    return rows
+
+
+def transcript(trip_id: str | None) -> list[dict[str, Any]]:
+    """The display transcript ([{role, text, ts?, seconds?}]) for the SPA to re-render."""
+    rows: list[dict[str, Any]] = []
+    for r in _read_rows(trip_id):
+        text = str(r.get("text") or "")
+        if not text.strip():
+            continue
+        row: dict[str, Any] = {"role": str(r.get("role") or "assistant"), "text": text}
+        for key in ("ts", "seconds"):
+            if isinstance(r.get(key), (int, float)):
+                row[key] = int(r[key])
+        rows.append(row)
+    return rows
+
+
+def originating_request(history: list[BaseMessage], destination: str) -> str:
+    """The user's own words that asked for this trip, from the previous chat.
+
+    A new trip is usually created a turn *after* it is requested, because the
+    kickoff question comes first. Without this the new chat opens on an answer
+    to a question it never shows, and the request itself stays in the old trip.
+    """
+    place = re.split(r"[,;/]", destination, maxsplit=1)[0].strip().casefold()
+    if not place:
+        return ""
+    for message in reversed(history):
+        if getattr(message, "type", "") != "human":
+            continue
+        text = message.content if isinstance(message.content, str) else str(message.content)
+        if place in text.casefold():
+            return text.strip()
+    return ""
+
+
+def _comparable(row: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in row.items() if key not in _DISPLAY_ONLY_KEYS}
 
 
 def _longest_common_block(
     current: list[dict[str, Any]], incoming: list[dict[str, Any]]
 ) -> tuple[int, int]:
     """Return the incoming start and length of the longest contiguous overlap."""
+    stored = [_comparable(row) for row in current]
+    arriving = [_comparable(row) for row in incoming]
     best_start = 0
     best_length = 0
-    for current_start in range(len(current)):
-        for incoming_start in range(len(incoming)):
+    for current_start in range(len(stored)):
+        for incoming_start in range(len(arriving)):
             length = 0
             while (
-                current_start + length < len(current)
-                and incoming_start + length < len(incoming)
-                and current[current_start + length] == incoming[incoming_start + length]
+                current_start + length < len(stored)
+                and incoming_start + length < len(arriving)
+                and stored[current_start + length] == arriving[incoming_start + length]
             ):
                 length += 1
             if length > best_length:
@@ -333,6 +385,7 @@ def _merge_body(
     request_key: str | None = None,
     completed: bool = True,
     agent: str = "trip",
+    turn_seconds: int | None = None,
     trip_id: str | None = None,
 ) -> dict[str, Any] | None:
     writes = [str(value) for value in current.get("recent_writes") or []]
@@ -356,7 +409,7 @@ def _merge_body(
             {**row, "request_key": request_key, "interrupted": True}
             for row in suffix_rows
         ]
-    rows.extend(suffix_rows)
+    rows.extend(_stamped(suffix_rows, turn_seconds))
     updated = dict(current)
     updated["messages"] = rows[-_MAX_TURNS:]
     if request_key:
@@ -402,7 +455,9 @@ def _merge_migrated_body(
     ]
     for current_index in range(len(current_rows) - 1, -1, -1):
         for source_index in range(len(source_rows) - 1, -1, -1):
-            if current_rows[current_index] == source_rows[source_index]:
+            if _comparable(current_rows[current_index]) == _comparable(
+                source_rows[source_index]
+            ):
                 row_counts[current_index][source_index] = (
                     row_counts[current_index + 1][source_index + 1] + 1
                 )
@@ -416,7 +471,7 @@ def _merge_migrated_body(
     current_index = 0
     source_index = 0
     while current_index < len(current_rows) and source_index < len(source_rows):
-        if current_rows[current_index] == source_rows[source_index]:
+        if _comparable(current_rows[current_index]) == _comparable(source_rows[source_index]):
             merged_rows.append(current_rows[current_index])
             current_index += 1
             source_index += 1
@@ -518,6 +573,7 @@ def _append_rows(
     request_id: str | None = None,
     completed: bool = True,
     agent: str = "trip",
+    turn_seconds: int | None = None,
 ) -> None:
     write_key = _write_key(trip_id, base_rows, suffix_rows, request_id)
     request_key = _request_key(request_id) if request_id else None
@@ -537,6 +593,7 @@ def _append_rows(
             request_key=request_key,
             completed=completed,
             agent=agent,
+            turn_seconds=turn_seconds,
             trip_id=trip_id,
         ),
     )
@@ -673,9 +730,11 @@ def persist_turn(
     completed_turn: list[BaseMessage],
     carryover_text: str = "",
     *,
+    origin_prompt: str = "",
     request_id: str | None = None,
     completed: bool = True,
     agent: str = "trip",
+    turn_seconds: int | None = None,
 ) -> str | None:
     """Persist one chat turn, handling a mid-chat destination switch.
 
@@ -705,6 +764,7 @@ def persist_turn(
             request_id=request_id,
             completed=completed,
             agent=agent,
+            turn_seconds=turn_seconds,
         )
         return target
 
@@ -726,6 +786,7 @@ def persist_turn(
                     request_id=request_id,
                     completed=completed,
                     agent=agent,
+                    turn_seconds=turn_seconds,
                 )
                 try:
                     storage_cosmos.delete_doc_if_version(
@@ -751,6 +812,7 @@ def persist_turn(
                     request_id=request_id,
                     completed=completed,
                     agent=agent,
+                    turn_seconds=turn_seconds,
                 )
             return tid_after
 
@@ -766,6 +828,7 @@ def persist_turn(
                 request_id=request_id,
                 completed=completed,
                 agent=agent,
+                turn_seconds=turn_seconds,
             )
             source_path.unlink(missing_ok=True)
         return tid_after
@@ -780,9 +843,20 @@ def persist_turn(
             request_id=request_id,
             completed=completed,
             agent=agent,
+            turn_seconds=turn_seconds,
         )
     else:
         suffix: list[BaseMessage] = []
+        first_asked = next(
+            (
+                str(message.content)
+                for message in completed_turn
+                if getattr(message, "type", "") == "human"
+            ),
+            "",
+        )
+        if origin_prompt.strip() and origin_prompt.strip() != first_asked.strip():
+            suffix.append(HumanMessage(content=origin_prompt.strip()))
         if carryover_text.strip():
             suffix.append(AIMessage(content=carryover_text.strip()))
         suffix.extend(completed_turn)
@@ -793,6 +867,7 @@ def persist_turn(
             request_id=request_id,
             completed=completed,
             agent=agent,
+            turn_seconds=turn_seconds,
         )
     return tid_after
 

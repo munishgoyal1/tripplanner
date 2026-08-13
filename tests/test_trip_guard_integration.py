@@ -409,6 +409,125 @@ def test_a_relocated_stop_does_not_carry_its_old_clock_time() -> None:
         assert _overlaps_a_drive(_stops_on(plan, day)) == []
 
 
+def test_a_return_leg_added_later_still_closes_a_regional_trip() -> None:
+    """The reported defect: flights added after planning put the flight home in
+    the middle of the last day, because a regional destination never matched."""
+    plan = {
+        "origin": "Bangalore",
+        "destination": "Rajasthan",
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Flight Bangalore to Jaipur",
+                        "kind": "flight",
+                        "time": "09:00",
+                        "duration_min": 150,
+                    },
+                    {"name": "Hotel Sayaji", "kind": "hotel", "time": "14:00", "duration_min": 45},
+                ],
+            },
+            {
+                "day": 2,
+                "stops": [{"name": "Rajwada Palace", "kind": "attraction", "time": "10:00"}],
+            },
+            {
+                "day": 3,
+                "stops": [
+                    {
+                        "name": "Flight Udaipur to Bangalore",
+                        "kind": "flight",
+                        "time": "11:00",
+                        "duration_min": 150,
+                    },
+                    {"name": "Kaanch Mandir", "kind": "attraction", "time": "15:00"},
+                    {"name": "Mahakaleshwar Temple", "kind": "attraction", "time": "16:30"},
+                ],
+            },
+        ],
+    }
+    trip_planner._reflow_unbooked_attractions(plan)
+    assert [stop["name"] for stop in _stops_on(plan, 3)][-1] == "Flight Udaipur to Bangalore"
+
+
+def test_flights_added_later_are_reseated_through_the_real_update_tool() -> None:
+    """The reported defect, driven through the tool the agent actually calls:
+    a return flight added after planning sat in the middle of the last day."""
+    create_trip_plan.invoke(
+        {
+            "destination": "Rajasthan",
+            "departure_date": "2026-09-01",
+            "return_date": "2026-09-03",
+            "origin": "Bangalore",
+        }
+    )
+    planned_days = [
+        {
+            "day": 1,
+            "stops": [
+                {"name": "Hotel Sayaji", "kind": "hotel", "time": "14:00", "duration_min": 45}
+            ],
+        },
+        {
+            "day": 2,
+            "stops": [
+                {
+                    "name": "Rajwada Palace",
+                    "kind": "attraction",
+                    "time": "10:00",
+                    "duration_min": 90,
+                }
+            ],
+        },
+        {
+            "day": 3,
+            "stops": [
+                {
+                    "name": "Kaanch Mandir",
+                    "kind": "attraction",
+                    "time": "09:00",
+                    "duration_min": 90,
+                },
+                {
+                    "name": "Mahakaleshwar Temple",
+                    "kind": "attraction",
+                    "time": "11:00",
+                    "duration_min": 90,
+                },
+            ],
+        },
+    ]
+    update_trip_plan.invoke({"updates_json": json.dumps({"day_wise_itinerary": planned_days})})
+
+    # "can you include the flight connections as we are based at bangalore"
+    with_flights = json.loads(json.dumps(planned_days))
+    with_flights[0]["stops"].insert(
+        0,
+        {
+            "name": "Flight Bangalore to Jaipur",
+            "kind": "flight",
+            "time": "09:00",
+            "duration_min": 150,
+        },
+    )
+    with_flights[2]["stops"].insert(
+        0,
+        {
+            "name": "Flight Udaipur to Bangalore",
+            "kind": "flight",
+            "time": "07:00",
+            "duration_min": 150,
+        },
+    )
+    update_trip_plan.invoke({"updates_json": json.dumps({"day_wise_itinerary": with_flights})})
+
+    plan = json.loads(get_trip_plan.invoke({}))
+    last_day = [str(stop.get("name")) for stop in _stops_on(plan, 3)]
+    assert last_day[-1] == "Flight Udaipur to Bangalore"
+    assert last_day[0] != "Flight Udaipur to Bangalore"
+
+
 def test_a_place_is_never_scheduled_on_top_of_a_drive() -> None:
     _round_trip()
     _excursion_day()

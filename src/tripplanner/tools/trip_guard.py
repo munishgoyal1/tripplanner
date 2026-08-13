@@ -39,6 +39,8 @@ ROAD_SPEED_KMH = 42.0
 DEFAULT_VISIT_MIN = 90
 DEFAULT_LEG_MIN = 120
 DEFAULT_HOTEL_MIN = 45
+#: Far enough apart that no ordinary day trip explains it without a named journey.
+CONTINUITY_KM = 150.0
 
 _TRANSPORT_KINDS = {"flight", "transport"}
 _CITY_ALIASES = {"bengaluru": "bangalore", "mysuru": "mysore", "mumbai": "bombay"}
@@ -56,6 +58,7 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
     ("I6", "Stay coverage", "Every night away from home has a stay."),
     ("I7", "Return coverage", "An outbound leg keeps its matching return leg."),
     ("I8", "Blast radius", "An operation may only change the entities it declared."),
+    ("I9", "Continuity", "A day must begin where the day before it ended."),
 )
 
 
@@ -135,6 +138,47 @@ def _is_journey_between(stop: Any, source: str, target: str) -> bool:
     return name.find(dst, src_at + len(src)) > src_at
 
 
+_MODE_PREFIX_RE = re.compile(
+    r"^\s*(?:non-?stop\s+|direct\s+)?(?:flight|train|bus|drive|transfer|ferry|taxi|cab|car)\b[\s:—–-]*",
+    re.I,
+)
+_JOURNEY_SPLIT_RE = re.compile(r"→|-+>|—>|\bto\b", re.I)
+
+
+def _journey_endpoints(stop: Any) -> tuple[str, str] | None:
+    """Normalized ``(source, target)`` for a transport stop that names both ends."""
+    if _stop_kind(stop) not in _TRANSPORT_KINDS:
+        return None
+    parts = _JOURNEY_SPLIT_RE.split(_stop_name(stop), maxsplit=1)
+    if len(parts) != 2:
+        return None
+    source = _normalize_city(_MODE_PREFIX_RE.sub("", parts[0]))
+    target = _normalize_city(parts[1], first_part=True)
+    return (source, target) if source and target else None
+
+
+def _home_bound_leg(stop: Any, home: str) -> tuple[bool, bool]:
+    """``(leaves_home, arrives_home)`` for one transport stop.
+
+    A regional destination names its real cities, so "Flight Bengaluru → Jaipur"
+    never contains "Rajasthan". Anchoring on the traveller's home city instead
+    keeps the envelope — and every invariant that depends on it — working for a
+    multi-city trip.
+    """
+    endpoints = _journey_endpoints(stop)
+    if endpoints is None or not home:
+        return (False, False)
+    source, target = endpoints
+    from_home = home in source
+    to_home = home in target
+    return (from_home and not to_home, to_home and not from_home)
+
+
+def leg_touches_home(stop: Any, origin: str) -> tuple[bool, bool]:
+    """``(leaves_home, arrives_home)`` for one stop, given the trip's origin."""
+    return _home_bound_leg(stop, _normalize_city(origin, first_part=True))
+
+
 def _duration_of(stop: Any) -> int:
     kind = _stop_kind(stop)
     raw = stop.get("duration_min") if isinstance(stop, dict) else None
@@ -201,14 +245,20 @@ def envelope(plan: dict[str, Any]) -> Envelope:
     if not origin or not destination:
         return Envelope(None, None, "", None, None, "")
 
+    home = _normalize_city(origin, first_part=True)
+
     for day, _entry, stops in days_of(plan):
         for stop in stops:
-            if _is_journey_between(stop, origin, destination) and arrival_day is None:
+            leaves_home, arrives_home = _home_bound_leg(stop, home)
+            if not leaves_home and not arrives_home:
+                leaves_home = _is_journey_between(stop, origin, destination)
+                arrives_home = _is_journey_between(stop, destination, origin)
+            if leaves_home and arrival_day is None:
                 start = _time_of(stop)
                 arrival_day = day
                 arrival_name = _stop_name(stop)
                 arrival_end = _abs(day, start + _duration_of(stop)) if start is not None else None
-            if _is_journey_between(stop, destination, origin):
+            if arrives_home:
                 start = _time_of(stop)
                 departure_day = day
                 departure_name = _stop_name(stop)
@@ -301,6 +351,7 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
     out.extend(_feasibility_violations(structured, destination))
     out.extend(_stay_violations(structured, env))
     out.extend(_return_violations(plan, env))
+    out.extend(_continuity_violations(structured, destination))
     return out
 
 
@@ -499,6 +550,50 @@ def _stay_violations(
         Violation("I6", "Stay coverage", f"Day {day} has no stay for the night.", day)
         for day in missing
     ]
+
+
+def _continuity_violations(
+    structured: list[tuple[int, dict[str, Any], list[Any]]], destination: str
+) -> list[Violation]:
+    """I9. A day that starts in a city the trip never travelled to is a gap.
+
+    Silent unless both sides are located and neither day carries a journey that
+    would explain the move: a guard that guesses geography is worse than one
+    that stays quiet about it.
+    """
+    days: list[tuple[int, list[tuple[str, tuple[float, float]]], bool]] = []
+    for day, _entry, stops in structured:
+        located: list[tuple[str, tuple[float, float]]] = []
+        has_leg = False
+        for stop in stops:
+            if _stop_kind(stop) in _TRANSPORT_KINDS:
+                has_leg = True
+                continue
+            coords = _coords(stop, destination)
+            if coords:
+                located.append((_stop_name(stop) or "An untitled stop", coords))
+        days.append((day, located, has_leg))
+
+    out: list[Violation] = []
+    for index in range(len(days) - 1):
+        _day, located, has_leg = days[index]
+        next_day, next_located, next_has_leg = days[index + 1]
+        if not located or not next_located or has_leg or next_has_leg:
+            continue
+        if _haversine_km(located[-1][1], next_located[0][1]) <= CONTINUITY_KM:
+            continue
+        name = next_located[0][0]
+        out.append(
+            Violation(
+                "I9",
+                "Continuity",
+                f"Day {next_day} starts at {name}, far from where Day {_day} ended, "
+                "and no journey connects them.",
+                next_day,
+                name,
+            )
+        )
+    return out
 
 
 def _return_violations(plan: dict[str, Any], env: Envelope) -> list[Violation]:
