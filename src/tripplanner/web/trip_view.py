@@ -29,7 +29,6 @@ from tripplanner.decisions.store import list_decisions
 from tripplanner.decisions.trip_cost import build_cost_ledger
 from tripplanner.tools import user_preferences
 from tripplanner.web import map_view, places_cache
-from tripplanner.web.day_journey import implied_terminal_hop_mode
 
 # Budget/money helpers live in ``budget`` (tech-debt #7); re-exported here so
 # existing ``trip_view.*`` callers and tests are unaffected.
@@ -42,6 +41,7 @@ from tripplanner.web.budget import (  # noqa: F401
     fmt_money,
     traveler_count,
 )
+from tripplanner.web.day_journey import implied_terminal_hop_mode
 
 # Gallery selection and itinerary occurrence indexing live in ``gallery``
 # (tech-debt #7), a leaf module; re-exported here for callers/tests.
@@ -1787,13 +1787,22 @@ def _implied_terminal_hop(
         if not from_coords or not to_coords:
             continue
         mode = implied_terminal_hop_mode(
-            str(previous.get("kind") or ""),
-            str(current.get("kind") or ""),
+            _terminal_kind(previous),
+            _terminal_kind(current),
             _haversine_km(from_coords, to_coords),
         )
         if mode:
             return mode
     return None
+
+
+def _terminal_kind(stop: dict[str, Any]) -> str:
+    """The terminal a stop names, whatever kind the plan filed it under."""
+    kind = str(stop.get("kind") or "").strip().lower()
+    if kind in {"airport", "station", "bus_station"}:
+        return kind
+    refs = _transport_terminal_refs(str(stop.get("name") or ""), kind)
+    return refs[0][0] if len(refs) == 1 else ""
 
 
 def _insert_transfer_day_stay_anchor(

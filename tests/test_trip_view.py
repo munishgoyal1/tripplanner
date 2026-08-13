@@ -1302,6 +1302,75 @@ def test_map_view_keeps_a_same_city_terminal_pair_local(_long_haul_geo: None) ->
     assert all(not leg.get("intercity") for leg in day["legs"])
 
 
+def test_connecting_terminals_filed_as_transport_fly_on_both_surfaces(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The shape a real long-haul replan writes: terminals as ``transport`` stops.
+
+    The airports are named one per stop with no leg between them, so nothing in
+    the plan says "flight" — the journey is only implied by the terminals.
+    """
+    coords = {
+        "Kempegowda International Airport Bengaluru": (13.1986, 77.7066),
+        "Zayed International Airport (AUH)": (24.4330, 54.6511),
+        "Paris Charles de Gaulle Airport (CDG)": (49.0097, 2.5479),
+        "Hotel Chambiges Elysees": (48.8672, 2.3020),
+    }
+
+    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+        lat, lng = coords.get(name, (None, None))
+        return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+
+    trip = {
+        "destination": "Paris",
+        "origin": "Bangalore",
+        "selected_hotels": [{"name": "Hotel Chambiges Elysees"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {
+                        "name": "Kempegowda International Airport Bengaluru",
+                        "kind": "transport",
+                        "time": "04:35",
+                    },
+                    {
+                        "name": "Zayed International Airport (AUH)",
+                        "kind": "transport",
+                        "time": "07:00",
+                    },
+                    {
+                        "name": "Paris Charles de Gaulle Airport (CDG)",
+                        "kind": "transport",
+                        "time": "19:20",
+                    },
+                    {"name": "Hotel Chambiges Elysees", "kind": "hotel"},
+                ],
+            }
+        ],
+    }
+
+    day = trip_view.build_map_view(trip)["days"][0]
+    assert [leg["mode"] for leg in day["legs"]] == ["Flight", "Flight", "Taxi"]
+    assert [leg.get("intercity") for leg in day["legs"]] == [True, True, None]
+
+    # The traveller has not reached the Paris stay yet, so the day must not open there.
+    stops = trip_view.build_itinerary(trip)["days"][0]["stops"]
+    assert [stop["name"] for stop in stops] == [
+        "Kempegowda International Airport Bengaluru",
+        "Zayed International Airport (AUH)",
+        "Paris Charles de Gaulle Airport (CDG)",
+        "Hotel Chambiges Elysees",
+    ]
+
+
 def test_map_view_connects_origin_and_destination_segments_after_road_transfer(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
