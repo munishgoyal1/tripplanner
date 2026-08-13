@@ -93,6 +93,24 @@ export interface BudgetWhatIf {
   proposals: BudgetWhatIfProposal[];
 }
 
+export interface DecisionBatchChange {
+  decision_id: string;
+  option_id?: string | null;
+}
+
+export interface DecisionBatchApplyResult {
+  ok: boolean;
+  stale?: boolean;
+  message: string;
+  results: DecisionApplyResult[];
+  failed_change?: DecisionBatchChange;
+  total_cost?: number | null;
+  delta?: number;
+  currency?: string;
+  view?: TripView;
+  itinerary?: Itinerary;
+}
+
 export type WeatherCondition = "clear" | "partly_cloudy" | "cloudy" | "fog" | "rain" | "storm" | "snow" | "unknown";
 
 export interface WeatherDay {

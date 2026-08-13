@@ -1,5 +1,7 @@
 import type {
   BudgetWhatIf,
+  DecisionBatchApplyResult,
+  DecisionBatchChange,
   DecisionApplyResult,
   DeselectItemOptions,
   Itinerary,
@@ -380,6 +382,20 @@ export class TripplannerClient {
       { method: "DELETE" },
     );
     return this.decisionResult(response, "Could not undo this change");
+  }
+
+  async applyDecisionOverrides(
+    changes: DecisionBatchChange[],
+    updatedAt?: string | null,
+  ): Promise<DecisionBatchApplyResult> {
+    const response = await this.post("/trip/decisions/overrides", {
+      changes,
+      updated_at: updatedAt ?? "",
+    });
+    if (!response.ok && response.status !== 409) {
+      ensureOk(response, "Could not apply budget changes");
+    }
+    return (await response.json()) as DecisionBatchApplyResult;
   }
 
   /** A 409 is not a failure to hide: it carries the trip as it actually is now. */

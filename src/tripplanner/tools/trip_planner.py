@@ -1344,6 +1344,66 @@ def apply_decision_override(
     return {"stale": False, **result.as_dict()}
 
 
+@_serialized_mutation
+def apply_decision_overrides(
+    changes: list[dict[str, Any]], *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    """Apply several decision changes atomically against one trip revision."""
+    from tripplanner.decisions.apply import apply_override, restore
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+            "results": [],
+        }
+    if not changes:
+        return {
+            "ok": False,
+            "stale": False,
+            "message": "No budget changes were supplied.",
+            "results": [],
+        }
+
+    candidate = deepcopy(plan)
+    results = []
+    for change in changes:
+        decision_id = str(change.get("decision_id") or "")
+        option_id = change.get("option_id")
+        result = (
+            restore(candidate, decision_id)
+            if option_id in (None, "")
+            else apply_override(candidate, decision_id, str(option_id))
+        )
+        results.append(result.as_dict())
+        if not result.ok:
+            return {
+                "ok": False,
+                "stale": False,
+                "message": (
+                    "No changes were saved because one or more choices could not be applied."
+                ),
+                "failed_change": {"decision_id": decision_id, "option_id": option_id},
+                "results": results,
+            }
+
+    _save_active_trip(candidate)
+    total_delta = round(sum(float(result.get("delta") or 0) for result in results), 2)
+    return {
+        "ok": True,
+        "stale": False,
+        "message": f"Applied {len(results)} budget changes together.",
+        "results": results,
+        "total_cost": candidate.get("total_cost"),
+        "delta": total_delta,
+        "currency": str(candidate.get("currency") or "EUR"),
+    }
+
+
 def _mirror_to_history(plan: dict[str, Any]) -> None:
     """Persist the plan into the per-user trips collection under its trip_id."""
     tid = plan.get("trip_id")

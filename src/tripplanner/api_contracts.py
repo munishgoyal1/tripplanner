@@ -47,6 +47,17 @@ class DecisionOverrideRequest(BaseModel):
      updated_at: str = ""
 
 
+class DecisionBatchChange(BaseModel):
+    decision_id: str
+    option_id: str | None = None
+
+
+class DecisionBatchOverrideRequest(BaseModel):
+    changes: list[DecisionBatchChange]
+    user_id: str = "local"
+    updated_at: str = ""
+
+
 class TripIdRequest(BaseModel):
     trip_id: str
     user_id: str = "local"

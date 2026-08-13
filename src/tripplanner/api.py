@@ -46,6 +46,7 @@ from tripplanner import config as _config  # noqa: F401  -- import triggers load
 from tripplanner.api_contracts import (
     ChatRequest,
     ChatResponse,
+    DecisionBatchOverrideRequest,
     DecisionOverrideRequest,
     DeselectRequest,
     DocumentDeleteRequest,
@@ -1109,6 +1110,35 @@ async def trip_decision_restore(
     return await _apply_decision_override(request, decision_id, None, user_id, updated_at)
 
 
+@app.post("/trip/decisions/overrides")
+async def trip_decision_batch_override(
+    req: DecisionBatchOverrideRequest, request: Request
+) -> Response:
+    """Apply multiple decision changes atomically against one trip revision."""
+    from tripplanner.config import get_settings
+    from tripplanner.web import trip_operations
+
+    if not get_settings().decisions_ui_enabled:
+        return JSONResponse(
+            {"ok": False, "stale": False, "message": "Decision records are turned off."},
+            status_code=404,
+        )
+    resolved = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(resolved)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.apply_decision_overrides,
+            [change.model_dump() for change in req.changes],
+            expected_updated_at=req.updated_at,
+        )
+        if payload.get("ok"):
+            payload["view"] = await asyncio.to_thread(trip_operations.build_view)
+            payload["itinerary"] = await asyncio.to_thread(trip_operations.build_itinerary)
+    finally:
+        await release_workspace_exclusive(workspace)
+    return JSONResponse(payload, status_code=409 if payload.get("stale") else 200)
+
+
 async def _apply_decision_override(
     request: Request,
     decision_id: str,
@@ -1946,11 +1976,11 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
     - ``clear_all_data``: delete trips/chats + reset preferences + clear usage/cache.
     - ``delete_account``: same as clear-all; identity provider account remains external.
     """
+    import tripplanner.tools_cache as tools_cache
     from tripplanner.tools import trip_planner
     from tripplanner.tools import user_preferences as prefs_store
     from tripplanner.usage import clear_usage
     from tripplanner.web import chat_store, travel_documents
-    import tripplanner.tools_cache as tools_cache
 
     user_id = _set_request_user(request, req.user_id)
 

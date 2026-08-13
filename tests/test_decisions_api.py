@@ -23,6 +23,7 @@ from tripplanner.tools import trip_planner
 from tripplanner.web import trip_view
 
 DECISION_ID = "dec_transport_mode_lisbon_porto"
+SECOND_DECISION_ID = "dec_transport_mode_porto_coimbra"
 
 
 def _option(
@@ -59,6 +60,19 @@ def _plan() -> dict:
                     }
                 ],
             }
+            ,
+            {
+                "day": 3,
+                "stops": [
+                    {
+                        "name": "Train: Porto to Coimbra",
+                        "kind": "transport",
+                        "time": "09:00",
+                        "duration_min": 165,
+                        "price": 120.0,
+                    }
+                ],
+            },
         ],
     }
     upsert_decision(
@@ -76,6 +90,21 @@ def _plan() -> dict:
             ],
         ),
     )
+    upsert_decision(
+        plan,
+        Decision(
+            id=SECOND_DECISION_ID,
+            created_at=datetime.now(UTC),
+            scope=DecisionScope(day=3, from_place="Porto", to_place="Coimbra"),
+            subject="Porto to Coimbra",
+            rule=Rule(code="door_to_door_time", text="Fastest door to door."),
+            chosen_option_id="opt_train",
+            options=[
+                _option("opt_train", TransportMode.TRAIN, "Train", 120.0, 165),
+                _option("opt_air", TransportMode.FLIGHT, "Flight", 286.0, 60),
+            ],
+        ),
+    )
     return plan
 
 
@@ -84,7 +113,7 @@ def client(monkeypatch) -> TestClient:  # type: ignore[no-untyped-def]
     plan = _plan()
     monkeypatch.setattr(trip_planner, "_load_active_trip", lambda: plan)
     monkeypatch.setattr(trip_planner, "load_active_trip_dict", lambda: plan)
-    monkeypatch.setattr(trip_planner, "_save_active_trip", lambda p: p)
+    monkeypatch.setattr(trip_planner, "_save_active_trip", lambda saved: plan.update(saved))
     monkeypatch.setattr(trip_view, "build_view", lambda p, focus: {"has_trip": True})
     monkeypatch.setattr(trip_view, "build_itinerary", lambda p: {"days": []})
     get_settings.cache_clear()
@@ -147,6 +176,69 @@ def test_a_matching_revision_is_accepted(client: TestClient) -> None:
 
     assert response.status_code == 200
     assert response.json()["ok"] is True
+
+
+def test_batch_override_commits_all_changes_and_returns_synchronized_views(
+    client: TestClient,
+) -> None:
+    response = client.post(
+        "/trip/decisions/overrides",
+        json={
+            "changes": [
+                {"decision_id": DECISION_ID, "option_id": "opt_air"},
+                {"decision_id": SECOND_DECISION_ID, "option_id": "opt_air"},
+            ],
+            "updated_at": "2026-05-01T10:00:00",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ok"] is True
+    assert len(body["results"]) == 2
+    assert body["total_cost"] == pytest.approx(1332.0)
+    assert body["view"] == {"has_trip": True}
+    assert body["itinerary"] == {"days": []}
+    assert client.plan["total_cost"] == pytest.approx(1332.0)  # type: ignore[attr-defined]
+
+
+def test_batch_override_is_atomic_when_one_change_is_invalid(client: TestClient) -> None:
+    response = client.post(
+        "/trip/decisions/overrides",
+        json={
+            "changes": [
+                {"decision_id": DECISION_ID, "option_id": "opt_air"},
+                {"decision_id": SECOND_DECISION_ID, "option_id": "missing"},
+            ]
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ok"] is False
+    assert body["failed_change"] == {
+        "decision_id": SECOND_DECISION_ID,
+        "option_id": "missing",
+    }
+    assert client.plan["total_cost"] == pytest.approx(1000.0)  # type: ignore[attr-defined]
+    assert client.plan["decisions"][0]["chosen_option_id"] == "opt_train"  # type: ignore[attr-defined]
+
+
+def test_batch_override_rejects_a_stale_revision_without_partial_changes(
+    client: TestClient,
+) -> None:
+    response = client.post(
+        "/trip/decisions/overrides",
+        json={
+            "changes": [{"decision_id": DECISION_ID, "option_id": "opt_air"}],
+            "updated_at": "2026-01-01T00:00:00",
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.json()["stale"] is True
+    assert response.json()["results"] == []
+    assert client.plan["total_cost"] == pytest.approx(1000.0)  # type: ignore[attr-defined]
 
 
 def test_unknown_decision_is_a_plain_refusal_not_a_crash(client: TestClient) -> None:

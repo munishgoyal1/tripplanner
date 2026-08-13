@@ -680,9 +680,9 @@ implemented capability baseline.
   requires an owner-selected direction.
 - No complete cost-optimization layer (DEAL-01). Exact-response stay and flight
   comparisons support deterministic selection and reversal. User-owned budget
-  targets, evidence-labeled headroom, published FX provenance, and explicitly
-  requested exact-alternative savings proposals are implemented. Cross-source
-  comparison, coordinated multi-item proposal acceptance, finalized-but-unbooked
+  targets, evidence-labeled headroom, published FX provenance, explicitly
+  requested exact-alternative savings proposals, and atomic coordinated proposal
+  acceptance are implemented. Cross-source comparison, finalized-but-unbooked
   re-checks, loyalty, card-benefit, and portal-offer modeling remain gaps.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
