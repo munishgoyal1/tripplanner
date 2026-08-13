@@ -55,6 +55,7 @@ function uniqueDetailTexts(...values: Array<string | undefined>): string[] {
 
 function terminalTimingLabel(stop: ItineraryStop): string | null {
   if (!stop.terminal_role) return null;
+  if (stop.terminal_role === "connection") return "Connection";
   if (stop.terminal_role === "departure") {
     if (stop.kind === "station") return "Station arrival";
     if (stop.kind === "bus_station") return "Bus stand arrival";

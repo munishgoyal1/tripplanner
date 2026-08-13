@@ -500,13 +500,19 @@ refresh updates shared planner state.
 **Expected:** Itinerary, Map, Details, and Assistant use one current trip revision
 and focus owner. A stale or aborted response cannot overwrite a newer trip,
 identity, mutation, or focus state. Focus-only navigation does not reload or
-rebuild unrelated itinerary data.
+rebuild unrelated itinerary data. An intercity route exposes the same ordered
+terminals and connections in Itinerary and Map in both directions; an all-days
+map separates outbound and return paths that reuse the same terminal pair.
+Destination Guide remains scoped to the current trip destination rather than
+inventing guide content for the home city or a connection airport.
 
 **Executable proof:**
 
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `keeps the removed place focused when an older refresh resolves later`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `does not reload itinerary data for focus-only navigation`
 - [`frontend/src/App.test.tsx`](../frontend/src/App.test.tsx) - `shows an already-loaded focused place before its refresh completes`
+- [`tests/test_trip_view.py`](../tests/test_trip_view.py) - `test_connecting_round_trip_keeps_itinerary_and_map_terminals_in_sync`
+- [`frontend/src/components/map/routeDerivations.test.ts`](../frontend/src/components/map/routeDerivations.test.ts) - `separates outbound and return while keeping both attached to the terminals`
 
 ## Account settings
 

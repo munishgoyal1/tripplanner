@@ -411,7 +411,7 @@ export interface ItineraryStop {
   decision_id?: string | null;
   arrival_time?: string;
   arrival_time_estimated?: boolean;
-  terminal_role?: "departure" | "arrival";
+  terminal_role?: "departure" | "connection" | "arrival";
   duration_min: number | null;
   distance_km?: number | null;
   route_circuit_id?: string;
