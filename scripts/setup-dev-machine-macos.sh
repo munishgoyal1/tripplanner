@@ -54,9 +54,21 @@ if ! command -v brew >/dev/null 2>&1; then
 fi
 
 if [[ -x /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  brew_prefix=/opt/homebrew
 elif [[ -x /usr/local/bin/brew ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
+  brew_prefix=/usr/local
+else
+  brew_prefix=""
+fi
+
+if [[ -n "$brew_prefix" ]]; then
+  eval "$("$brew_prefix/bin/brew" shellenv)"
+  # `brew shellenv` prints nothing when it is already inside a brew command, and
+  # brew sanitizes PATH for its children, so the bin directory can still be absent.
+  case ":$PATH:" in
+    *":$brew_prefix/bin:"*) ;;
+    *) export PATH="$brew_prefix/bin:$brew_prefix/sbin:$PATH" ;;
+  esac
 fi
 
 if [[ "$skip_tool_install" == false ]]; then

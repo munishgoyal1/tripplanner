@@ -1075,3 +1075,11 @@ a. it added only bangalore to jaipur connection., no return udaipur to bangalore
 
 [2026-08-13 00:00] [master] \! Make the system fast with caching and parallelism
 Analyze the performance of various calls, i see many of them taking seconds instead of milliseconds overall, and a post chat/stream taking 20s for p95. what can be done to make the system performant, super fast breezy, any caching will help ? or any paralellization on making calls etc. do the enahncement if you have any in a right archtiectural pattern so that it can be scaled when new providers get added, and newer logics or remote calls get added.
+
+[2026-08-13 00:00] [master] ! macOS launcher fails with pwsh not found
+(.venv) mugoy@Munishs-MacBook-Pro user % ./Run-Latest-Master.command
+./Run-Latest-Master.command: line 5: exec: pwsh: not found
+(.venv) mugoy@Munishs-MacBook-Pro user %
+
+[2026-08-13 00:00] [master] Ask why pwsh terminal option disappeared
+looks like pwsh terminal is missing now as an option . what happened ?

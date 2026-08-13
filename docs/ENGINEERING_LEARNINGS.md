@@ -940,3 +940,18 @@ the outcome.
 - Composite responses assembled from unrelated sources cost their sum only
   because nobody made them concurrent. Fan them out; keep ordered fallback
   within a single capability sequential, because there the order is the policy.
+
+## 2026-08-13 - An Owner Launcher Must Not Depend on the Inherited PATH
+
+- A GUI-launched `.command` runs with a minimal PATH, and any process started
+  from inside a running `brew` command inherits Homebrew's sanitized PATH, which
+  substitutes the shim directory for the Homebrew bin directory. `pwsh` was
+  installed and runnable in both cases; only the bare-name lookup failed.
+- `brew shellenv` is a no-op inside a brew command context, so a `.zprofile` that
+  relies on it cannot repair such a shell. Even a login shell stays broken, while
+  a pristine `env -i` login shell works, which makes the fault look intermittent.
+- Diagnose the launching process, not the shell: `ps eww -p <pid>` shows the PATH
+  a GUI application actually holds and hands to every terminal it spawns.
+- Owner-facing launchers resolve the interpreter explicitly through one shared
+  helper and fail with the install command. Bare-name lookup is a convenience for
+  interactive shells, not a contract a one-click entry point may rely on.
