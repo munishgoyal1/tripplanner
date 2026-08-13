@@ -933,6 +933,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             "days": [],
             "available_days": [],
             "unscheduled_pin_ids": [],
+            "unmapped_stops": [],
             "airport": None,
             "empty_message": (
                 "Start planning a trip and your hotels, attractions and daily "
@@ -940,12 +941,15 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             ),
         }
 
-    pins = _map_pins(trip, destination)
+    unmapped: list[dict[str, Any]] = []
+    pins = _map_pins(trip, destination, unmapped)
     airport = None if any(pin["kind"] == "airport" for pin in pins) else _airport_pin(destination)
     itinerary_days = {
         int(day["day"]): day for day in build_itinerary(trip).get("days", [])
     }
-    return map_view.build(trip, destination, pins, airport, itinerary_days, key_configured)
+    return map_view.build(
+        trip, destination, pins, airport, itinerary_days, key_configured, unmapped
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1065,7 +1069,7 @@ def _normalize_stop(
 def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
     terminal_refs = _transport_terminal_refs(stop["name"], stop["kind"])
     mode = _intercity_transfer_mode(stop["name"], stop["kind"])
-    if len(terminal_refs) != 2 or mode not in {"Flight", "Train", "Bus"}:
+    if len(terminal_refs) < 2 or mode not in {"Flight", "Train", "Bus"}:
         return [stop]
 
     settings = get_settings()
@@ -1109,19 +1113,27 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
         kind: str,
         time: str,
         role: str,
-        duration_min: int,
+        duration_min: int | None,
         time_estimated: bool,
     ) -> dict[str, Any]:
-        operation = departure_operation if role == "departure" else arrival_operation
+        operation = (
+            departure_operation
+            if role == "departure"
+            else arrival_operation
+            if role == "arrival"
+            else "connection; layover time not provided"
+        )
         return {
             "name": name,
             "kind": kind,
             "time": time,
             "arrival_time": "",
             "duration_min": duration_min,
-            "duration_estimated": True,
+            "duration_estimated": duration_min is not None,
             "operational_time_display": (
                 f"{_route_duration_display(duration_min)} {operation}"
+                if duration_min is not None
+                else operation
             ),
             "time_estimated": time_estimated,
             "note": "",
@@ -1134,7 +1146,10 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
             "terminal_role": role,
         }
 
-    stop["name"] = f"{mode}: {terminal_refs[0][1]} to {terminal_refs[1][1]}"
+    connection_names = [name for _, name in terminal_refs[1:-1]]
+    stop["name"] = f"{mode}: {terminal_refs[0][1]} to {terminal_refs[-1][1]}"
+    if connection_names:
+        stop["name"] += f" via {', '.join(connection_names)}"
     departure_terminal_time = (
         _clock_display(departure_minutes - departure_buffer)
         if departure_minutes is not None
@@ -1150,9 +1165,20 @@ def _transport_terminal_stops(stop: dict[str, Any]) -> list[dict[str, Any]]:
             bool(departure_terminal_time),
         ),
         stop,
+        *[
+            _terminal_stop(
+                connection_name,
+                connection_kind,
+                "",
+                "connection",
+                None,
+                False,
+            )
+            for connection_kind, connection_name in terminal_refs[1:-1]
+        ],
         _terminal_stop(
-            terminal_refs[1][1],
-            terminal_refs[1][0],
+            terminal_refs[-1][1],
+            terminal_refs[-1][0],
             arrival,
             "arrival",
             arrival_buffer,

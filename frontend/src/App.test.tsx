@@ -296,6 +296,31 @@ describe("App responsive workspace", () => {
     expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-focus-name", "Eiffel Tower");
   });
 
+  it("retries a map add while the Assistant still owns the workspace", async () => {
+    const unselectedView = {
+      ...emptyView,
+      has_trip: true,
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: false }],
+    };
+    const selectedView = {
+      ...unselectedView,
+      focus: { kind: "attraction", name: "Eiffel Tower" },
+      items: [{ name: "Eiffel Tower", kind: "attraction", selected: true }],
+    };
+    fetchTripViewMock.mockResolvedValue(unselectedView);
+    selectItemMock
+      .mockRejectedValueOnce({ status: 409, retryAfterMs: 0 })
+      .mockResolvedValueOnce({ view: selectedView, alerts: ["Added Eiffel Tower."] });
+    setDesktop(true);
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "false"));
+    fireEvent.click(screen.getByRole("button", { name: "Add Eiffel Tower" }));
+
+    await waitFor(() => expect(selectItemMock).toHaveBeenCalledTimes(2));
+    expect(screen.getByTestId("trip-panel")).toHaveAttribute("data-selected", "true");
+  });
+
   it("does not let an older details refresh overwrite a switched trip", async () => {
     let resolveOldRefresh!: (value: unknown) => void;
     const parisView = {

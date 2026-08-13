@@ -366,6 +366,28 @@ export interface MapAirport {
   lng: number;
 }
 
+/** What is lost when the map cannot place a stop, worst first. */
+export type UnmappedStopTier = "anchor" | "place" | "label";
+
+export type UnmappedStopReason = "no_match" | "no_location" | "not_a_place";
+
+export interface UnmappedStopCandidate {
+  name: string;
+  place_id: string | null;
+  lat: number | null;
+  lng: number | null;
+}
+
+/** An itinerary stop the map could not pin, and why. */
+export interface UnmappedStop {
+  name: string;
+  kind: string;
+  day: number | null;
+  tier: UnmappedStopTier;
+  reason: UnmappedStopReason;
+  candidate: UnmappedStopCandidate | null;
+}
+
 export interface MapView {
   enabled: boolean;
   destination: string;
@@ -376,6 +398,7 @@ export interface MapView {
   drive_circuits?: MapDriveCircuit[];
   available_days: number[];
   unscheduled_pin_ids: string[];
+  unmapped_stops?: UnmappedStop[];
   airport: MapAirport | null;
   empty_message: string | null;
 }
@@ -388,7 +411,7 @@ export interface ItineraryStop {
   decision_id?: string | null;
   arrival_time?: string;
   arrival_time_estimated?: boolean;
-  terminal_role?: "departure" | "arrival";
+  terminal_role?: "departure" | "connection" | "arrival";
   duration_min: number | null;
   distance_km?: number | null;
   route_circuit_id?: string;

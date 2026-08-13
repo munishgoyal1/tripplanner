@@ -22,6 +22,16 @@ from tripplanner.web.gallery import (
     _place_occurrences,
     _selected_names,
 )
+from tripplanner.web.place_confidence import (
+    ANCHOR,
+    LABEL,
+    PLACE,
+    stop_is_booked,
+    stop_place_tier,
+)
+from tripplanner.web.place_confidence import (
+    confirmed_bindings as _confirmed_bindings,
+)
 from tripplanner.web.schedule import (
     _INTERCITY_SPEED_KMH,
     _apply_saved_transfer_metrics,
@@ -208,19 +218,31 @@ def _hotel_identity_matches(left: str, right: str) -> bool:
     return left_tokens <= right_tokens or right_tokens <= left_tokens
 
 
-def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
-    """Geocoded pins for selected items + destination top-places (suggestions)."""
+def _map_pins(
+    trip: dict[str, Any],
+    destination: str,
+    unmapped: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """Geocoded pins for selected items + destination top-places (suggestions).
+
+    ``unmapped`` collects every itinerary stop that did not become a pin, with
+    the reason, so no surface has to guess why a stop is missing.
+    """
     itinerary = trip.get("day_wise_itinerary") or []
     selected = {
         "hotel": _selected_names(trip, "hotel"),
         "attraction": _selected_names(trip, "attraction"),
     }
     itinerary_names = _itinerary_names(trip)
+    bindings = _confirmed_bindings(trip)
+    chosen_names = selected["hotel"] | selected["attraction"]
 
     # Structured itinerary stops are authoritative for what should appear on
     # the map and in which order/day. Keep an explicit day map so duplicated
     # names across sources don't lose their itinerary day assignment.
     explicit_day_by_name: dict[str, int] = {}
+    tier_by_name: dict[str, str] = {}
+    from_itinerary: set[str] = set()
 
     # (kind, name) in display order: user picks first, then suggestions.
     refs: list[tuple[str, str]] = []
@@ -268,6 +290,12 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 kind = ""
             if not name:
                 continue
+            tier = stop_place_tier(
+                name,
+                kind,
+                selected=chosen_names,
+                booked=stop_is_booked(s),
+            )
             terminal_refs = _transport_terminal_refs(name, kind)
             if terminal_refs:
                 if _intercity_transfer_mode(name, kind) == "Drive" and has_route_anchor:
@@ -275,6 +303,8 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 for terminal_kind, terminal_name in terminal_refs:
                     _add(terminal_kind, terminal_name)
                     explicit_day_by_name.setdefault(terminal_name.lower(), day_num)
+                    tier_by_name.setdefault(terminal_name.lower(), ANCHOR)
+                    from_itinerary.add(terminal_name.lower())
                 continue
             if kind in {"flight", "transport"}:
                 continue
@@ -282,6 +312,8 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
                 kind = _infer_kind_from_name(name)
             _add(kind, name)
             explicit_day_by_name.setdefault(name.lower(), day_num)
+            tier_by_name.setdefault(name.lower(), tier)
+            from_itinerary.add(name.lower())
             has_route_anchor = True
 
     # 2) User selected places (ensure presence even if stops list is absent).
@@ -302,22 +334,70 @@ def _map_pins(trip: dict[str, Any], destination: str) -> list[dict[str, Any]]:
             _add("attraction", name)
 
     places_cache.prefetch(
-        [n for _, n in refs], destination, max_photos=1, with_reviews=False
+        [
+            name
+            for _, name in refs
+            if tier_by_name.get(name.strip().lower()) != LABEL
+        ],
+        destination,
+        max_photos=1,
+        with_reviews=False,
     )
+
+    def _report(name: str, kind: str, reason: str, candidate: dict[str, Any] | None) -> None:
+        key = name.strip().lower()
+        if unmapped is None or key not in from_itinerary:
+            return
+        unmapped.append(
+            {
+                "name": name,
+                "kind": kind,
+                "day": explicit_day_by_name.get(key),
+                "tier": tier_by_name.get(key, PLACE),
+                "reason": reason,
+                "candidate": candidate,
+            }
+        )
 
     place_occurrences = _place_occurrence_index(trip)
     pins: list[dict[str, Any]] = []
     for i, (kind, name) in enumerate(refs):
-        info = places_cache.get_details(name, destination) or {}
+        key = name.strip().lower()
+        if tier_by_name.get(key) == LABEL:
+            # Naming no place, it has no pin to be missing; say so rather than
+            # letting the geocoder invent one.
+            _report(name, kind, "not_a_place", None)
+            continue
+        binding = bindings.get(key)
+        info = (
+            binding
+            if binding
+            else (places_cache.get_details(name, destination) or {})
+        )
         provider_name = str(info.get("name") or "").strip()
         if (
             provider_name
+            and not binding
             and kind not in {"airport", "station", "bus_station"}
             and not _provider_name_matches(name, provider_name)
         ):
+            # The provider found somewhere else. Offer it as a candidate rather
+            # than pinning it, so a wrong pin needs a person to agree to it.
+            _report(
+                name,
+                kind,
+                "no_match",
+                {
+                    "name": provider_name,
+                    "place_id": info.get("place_id"),
+                    "lat": info.get("lat"),
+                    "lng": info.get("lng"),
+                },
+            )
             continue
         lat, lng = info.get("lat"), info.get("lng")
         if lat is None or lng is None:
+            _report(name, kind, "no_location", None)
             continue
         photos = places_cache.get_photos(name, destination, max_photos=1)
         is_sel = (

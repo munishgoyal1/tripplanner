@@ -13,6 +13,7 @@ import {
   formatLegLabel,
   hotelLabelsForDay,
   hotelReturnForDay,
+  parallelLegPath,
   routeStyleForLeg,
   roadCircuitForId,
   visitOrdersForDay,
@@ -120,6 +121,19 @@ export function synchronizeMapOverlays({
   const bounds = new google.maps.LatLngBounds();
   let hasBounds = false;
   const pinById = new Map(view.pins.map((pin) => [pin.id, pin] as const));
+  const pairKey = (from: string, to: string, mode: string) =>
+    `${[from, to].sort().join("|")}|${mode.toLowerCase()}`;
+  const pairCounts = new Map<string, number>();
+  if (activeDay === null) {
+    for (const day of view.days) {
+      for (const leg of day.legs ?? []) {
+        if (!leg.intercity) continue;
+        const key = pairKey(leg.from_pin_id, leg.to_pin_id, leg.mode);
+        pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
+      }
+    }
+  }
+  const pairSlots = new Map<string, number>();
   const roadWaypointRoleByPinId = new Map(
     focusedRoadCircuit?.waypoints?.map((waypoint) => [waypoint.pin_id, waypoint.role] as const)
       ?? [],
@@ -255,11 +269,12 @@ export function synchronizeMapOverlays({
       const start = pinById.get(leg.from_pin_id);
       const end = pinById.get(leg.to_pin_id);
       if (!start || !end) continue;
+      const key = pairKey(start.id, end.id, leg.mode);
+      const total = pairCounts.get(key) ?? 1;
+      const slot = pairSlots.get(key) ?? 0;
+      pairSlots.set(key, slot + 1);
       overlays.push(new google.maps.Polyline({
-        path: [
-          { lat: start.lat, lng: start.lng },
-          { lat: end.lat, lng: end.lng },
-        ],
+        path: parallelLegPath(start, end, slot, total),
         geodesic: true,
         ...routeStyleForLeg(
           leg,
