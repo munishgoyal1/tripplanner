@@ -1,29 +1,36 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-  Two-way synchronize every registered sandbox with master, behind a typed gate.
+  Two-way synchronize sandboxes with master, behind a typed gate.
 
 .DESCRIPTION
   Merges each sandbox into master and then brings every sandbox back up to the
   resulting master, so all worktrees end on the same commit.
 
+  With no argument this covers every registered sandbox. Pass a sandbox number,
+  full slug, or short name to merge only that one; the closing refresh still
+  levels every sandbox so no lane is left behind.
+
   This is the only script that pushes sandbox work to master in bulk, so it is
   deliberately rare and gated: it prints exactly what would land, then requires
-  the phrase APPROVE_SANDBOX_TO_MASTER. Use it only when every sandbox is known
-  to be feature-clean. For the routine one-way refresh use
-  sync-latest-from-remote-master.ps1 instead.
+  the phrase APPROVE_SANDBOX_TO_MASTER. Use it only when the sandboxes involved
+  are known to be feature-clean. For the routine one-way refresh use
+  sync-sbxs-from-master.ps1 instead.
 
   Each sandbox is merged through sandbox.ps1 -Merge, so it keeps that verb's
   gates: latest base, automatic conflict recovery, validation, pull request,
   a verified merge, and the sandbox left active afterwards.
 
 .EXAMPLE
-  ./scripts/dev/sync-two-way.ps1 -WhatIf
-  ./scripts/dev/sync-two-way.ps1
+  ./scripts/dev/twoway-sync-master-sbx.ps1 -WhatIf
+  ./scripts/dev/twoway-sync-master-sbx.ps1
+  ./scripts/dev/twoway-sync-master-sbx.ps1 2
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
+    [Parameter(Position = 0)]
+    [string]$Sandbox = "",
     [string]$BaseBranch = "master"
 )
 
@@ -44,7 +51,7 @@ if ($LASTEXITCODE -ne 0 -or $branch -ne $BaseBranch) {
     throw "The primary checkout must be on $BaseBranch before a two-way synchronization."
 }
 
-Start-RunLog -Name "sync-two-way" | Out-Null
+Start-RunLog -Name "twoway-sync-master-sbx" | Out-Null
 
 Write-Host "[sync]    fetching origin/$BaseBranch" -ForegroundColor Cyan
 & git -C $primaryRoot fetch -q origin $BaseBranch
@@ -61,11 +68,17 @@ if ($registered.Count -eq 0) {
     return
 }
 
+$targets = if ($Sandbox) {
+    @(Select-SandboxEntry -Entries $registered -Reference $Sandbox)
+} else {
+    $registered
+}
+
 # Preflight before anything is offered for approval: a sandbox holding
 # uncommitted work cannot be judged from its commits alone.
 $blocked = [System.Collections.Generic.List[string]]::new()
 $plan = [System.Collections.Generic.List[object]]::new()
-foreach ($entry in $registered) {
+foreach ($entry in $targets) {
     $label = "#$(Get-SandboxEntryNumber -Entry $entry) $($entry.slug)"
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         $blocked.Add("${label}: worktree is missing")
@@ -95,12 +108,14 @@ if ($blocked.Count -gt 0) {
 
 $withWork = @($plan | Where-Object { $_.Commits.Count -gt 0 })
 
+$scope = if ($Sandbox) { "sandbox '$($targets[0].slug)'" } else { "every registered sandbox" }
 Write-Host ""
 Write-Host "╔═══════════════════════════════════════════════════════════╗"
 Write-Host "║  TWO-WAY SANDBOX SYNCHRONIZATION                          ║"
 Write-Host "╚═══════════════════════════════════════════════════════════╝"
 Write-Host ""
-Write-Host "Every sandbox below will be merged into $BaseBranch, then all sandboxes"
+Write-Host "Scope: $scope."
+Write-Host "Each sandbox below will be merged into $BaseBranch, then all sandboxes"
 Write-Host "will be brought back up to the resulting $BaseBranch."
 Write-Host ""
 foreach ($item in $plan) {
@@ -115,7 +130,7 @@ Write-Host ""
 
 if ($withWork.Count -eq 0) {
     Write-Host "[current] No sandbox has work for $BaseBranch; refreshing sandboxes only." -ForegroundColor Green
-    & (Join-Path $PSScriptRoot "sync-latest-from-remote-master.ps1") -Confirm:$false
+    & (Join-Path $PSScriptRoot "sync-sbxs-from-master.ps1") -Confirm:$false
     Stop-RunLog
     return
 }
@@ -155,17 +170,20 @@ foreach ($item in $withWork) {
 
 Write-Host ""
 Write-Host "== bringing every sandbox up to $BaseBranch ==" -ForegroundColor Green
-& (Join-Path $PSScriptRoot "sync-latest-from-remote-master.ps1") -Confirm:$false
+& (Join-Path $PSScriptRoot "sync-sbxs-from-master.ps1") -Confirm:$false
 if ($LASTEXITCODE -ne 0) {
-    throw "Sandbox work reached $BaseBranch, but the final refresh failed. Re-run Sync-Latest-FromRemoteMaster."
+    throw "Sandbox work reached $BaseBranch, but the final refresh failed. Re-run Sync-Sbxs-FromMaster."
 }
 
 & git -C $primaryRoot fetch -q origin $BaseBranch
 $baseHead = (& git -C $primaryRoot rev-parse "origin/$BaseBranch").Trim()
-foreach ($item in $plan) {
-    & git -C $item.Entry.worktree merge-base --is-ancestor $baseHead HEAD
+# The closing refresh levels every lane, so verify every lane, not just the
+# sandboxes this run merged.
+foreach ($entry in $registered) {
+    if (-not (Test-Path $entry.worktree -PathType Container)) { continue }
+    & git -C $entry.worktree merge-base --is-ancestor $baseHead HEAD
     if ($LASTEXITCODE -ne 0) {
-        throw "Sandbox '$($item.Entry.slug)' does not contain $BaseBranch $($baseHead.Substring(0, 7)) after synchronization."
+        throw "Sandbox '$($entry.slug)' does not contain $BaseBranch $($baseHead.Substring(0, 7)) after synchronization."
     }
 }
 

@@ -51,7 +51,7 @@ returns to `master` only through its validated promotion flow.
 
 To synchronize primary `master` and start the canonical stack, double-click
 `scripts/user/Run-Latest-Master.cmd` or run the VS Code task **Tripplanner: Run Latest Master**.
-Use `scripts/user/Sync-Latest-FromRemoteMaster.cmd` to update every registered
+Use `scripts/user/Sync-Sbxs-FromMaster.cmd` to update every registered
 sandbox, or pass `<sandbox>` to update only one.
 
 Use these launchers by outcome:
@@ -60,7 +60,8 @@ Use these launchers by outcome:
 | --- | --- |
 | `scripts/user/Start-Dev-Spa.cmd` | Start the canonical `dev-spa.ps1` stack directly without synchronizing code first; all dev SPA options are forwarded. |
 | `scripts/user/Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start the canonical `dev-spa.ps1` stack. |
-| `scripts/user/Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`; without an argument update every registered sandbox, or update only the selected sandbox. |
+| `scripts/user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`; without an argument update every registered sandbox, or update only the selected sandbox. |
+| `scripts/user/TwoWay-Sync-MasterSbx.cmd [sandbox]` | Rare, gated two-way sync; without an argument merge every sandbox into `master`, or merge only the selected sandbox, then level all sandboxes. Requires typing `APPROVE_SANDBOX_TO_MASTER`. |
 | `scripts/dev/ui-snapshot.ps1` | Rarely list, preserve, or inspect an owner-accepted UI snapshot. It never merges or starts the app. |
 
 Every launcher writes a transcript to `logs/last-run/<script>.log` in the primary

@@ -679,6 +679,11 @@ export async function setStopBooked(
   return sharedClient.setStopBooked(day, name, booked);
 }
 
+/** Accept the map's candidate place for a stop; returns the redrawn map. */
+export async function confirmStopPlace(name: string): Promise<MapView> {
+  return sharedClient.confirmStopPlace(name);
+}
+
 // ---------------------------------------------------------------------------
 // Travel documents. The server keeps the fields a document contained, never
 // the document. Nothing here uploads a file for storage: the bytes are read

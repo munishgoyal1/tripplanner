@@ -157,6 +157,36 @@ export function routePathForPinIds(pinIds: string[], pins: MapPin[]): Array<{ la
     .map((pin) => ({ lat: pin.lat, lng: pin.lng }));
 }
 
+export function parallelLegPath(
+  start: MapPin,
+  end: MapPin,
+  slot: number,
+  total: number,
+): Array<{ lat: number; lng: number }> {
+  const endpoints = [
+    { lat: start.lat, lng: start.lng },
+    { lat: end.lat, lng: end.lng },
+  ];
+  if (total <= 1) return endpoints;
+
+  // Use one canonical direction for both A→B and B→A, otherwise reversing the
+  // leg also reverses its normal and puts both curves on the same side.
+  const [canonicalStart, canonicalEnd] = start.id.localeCompare(end.id) <= 0
+    ? [start, end]
+    : [end, start];
+  const deltaLat = canonicalEnd.lat - canonicalStart.lat;
+  const deltaLng = canonicalEnd.lng - canonicalStart.lng;
+  const span = Math.hypot(deltaLat, deltaLng);
+  if (span === 0) return endpoints;
+  const position = slot - (total - 1) / 2;
+  const bend = Math.min(0.6, Math.max(0.08, span * 0.03)) * position;
+  const midpoint = {
+    lat: (start.lat + end.lat) / 2 - (deltaLng / span) * bend,
+    lng: (start.lng + end.lng) / 2 + (deltaLat / span) * bend,
+  };
+  return [endpoints[0], midpoint, endpoints[1]];
+}
+
 const visitOrdersCache = new WeakMap<MapView, Map<number, Map<string, number>>>();
 
 export function visitOrdersForDay(view: MapView, dayNumber: number): Map<string, number> {

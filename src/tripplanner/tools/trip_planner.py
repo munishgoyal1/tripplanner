@@ -1293,6 +1293,38 @@ def set_stop_booked(day: int, name: str, booked: bool) -> bool:
     return False
 
 
+def confirm_stop_place(name: str) -> bool:
+    """Bind an itinerary stop to the place the provider found for it.
+
+    The map offers a candidate when a stop resolves to a differently-named
+    place; agreeing to it is what makes that pin appear, and it stays agreed to
+    on later builds. Resolution happens here rather than from the request so a
+    binding can only ever be what the map actually offered.
+    """
+    plan = _load_active_trip()
+    if not plan:
+        return False
+    target = str(name or "").strip()
+    if not target:
+        return False
+    details = places_cache.get_details(target, str(plan.get("destination") or "")) or {}
+    if details.get("lat") is None or details.get("lng") is None:
+        return False
+    bindings = plan.get("place_bindings")
+    if not isinstance(bindings, dict):
+        bindings = {}
+        plan["place_bindings"] = bindings
+    bindings[target.lower()] = {
+        "name": str(details.get("name") or target),
+        "place_id": details.get("place_id"),
+        "lat": details.get("lat"),
+        "lng": details.get("lng"),
+        "address": details.get("address") or "",
+    }
+    _save_active_trip(plan)
+    return True
+
+
 def _save_active_trip(plan: dict[str, Any]) -> None:
     # Stamp a stable id + freshness so the trip can live in history and be
     # listed / resumed later. Every save mirrors to the trips collection so

@@ -26,13 +26,14 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/check-local-cosmos.ps1` | Report the local emulator connection coordinates |
 | `user/Start-Dev-Spa.cmd` | Start the canonical local stack without synchronizing first |
 | `user/Run-Latest-Master.cmd` | Owner-facing synchronize-and-run launcher for primary `master` |
-| `user/Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every sandbox or only the selected one |
-| `user/Sync-TwoWay.cmd` | Rare, gated two-way sync: merge every sandbox into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
+| `user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every sandbox or only the selected one |
+| `user/TwoWay-Sync-MasterSbx.cmd [sandbox]` | Rare, gated two-way sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
 | `user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
+| `user/sandbox/Rename-Sandbox.cmd <sandbox> <new-name>` | Rename a sandbox's name part; its branch, worktree, and database follow while the number keeps its ports |
 | `user/sandbox/Resolve-SandboxConflicts.cmd` | Finish a manually resolved sandbox merge and push the sandbox branch |
 | `user/sandbox/Merge-Sandbox.cmd` | Same gates as promotion, but keeps the sandbox: fetch latest `master`, auto-resolve conflicts, validate, push, open the PR, merge, verify it landed, then resynchronize the sandbox so work continues in the same lane |
 | `user/sandbox/Promote-Sandbox.cmd` | End to end: sync, validate, push, open the PR, merge into `master`, verify the merge landed, and discard the sandbox |

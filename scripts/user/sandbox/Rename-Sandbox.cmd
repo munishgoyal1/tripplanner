@@ -1,5 +1,5 @@
 @echo off
-pwsh -NoProfile -ExecutionPolicy Bypass -File "%~dp0..\dev\sync-two-way.ps1" %*
+pwsh -NoProfile -ExecutionPolicy Bypass -File "%~dp0..\..\dev\sandbox.ps1" -Rename %*
 set "exitCode=%errorlevel%"
 if not "%exitCode%"=="0" pause
 exit /b %exitCode%

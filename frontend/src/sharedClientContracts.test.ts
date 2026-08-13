@@ -67,14 +67,14 @@ describe("shared chat stream contract", () => {
     };
   }
 
-  function streamResponse(chunks: string[]): Response {
+  function streamResponse(chunks: string[], init?: ResponseInit): Response {
     const encoder = new TextEncoder();
     return new Response(new ReadableStream({
       start(controller) {
         chunks.forEach((chunk) => controller.enqueue(encoder.encode(chunk)));
         controller.close();
       },
-    }));
+    }), init);
   }
 
   it("retains split SSE frames until a terminal event arrives", async () => {
@@ -99,6 +99,19 @@ describe("shared chat stream contract", () => {
 
     await expect(client.streamChat("Plan a trip", handlers(), { requestId: "request-1" }))
       .rejects.toThrow("response stream ended before completion");
+  });
+
+  it("preserves the server reason when a stream is rejected by the workspace lock", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ detail: "A workspace update is in progress. Please retry shortly." }), {
+        status: 409,
+        headers: { "Content-Type": "application/json", "Retry-After": "2" },
+      }),
+    ));
+    const client = new TripplannerClient("/api", () => "local-user");
+
+    await expect(client.streamChat("Replan Paris", handlers(), { requestId: "request-1" }))
+      .rejects.toThrow("A workspace update is in progress. Please retry shortly.");
   });
 });
 

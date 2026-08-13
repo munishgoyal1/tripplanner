@@ -388,6 +388,7 @@ def build(
     airport: dict[str, Any] | None,
     itinerary_days: dict[int, dict[str, Any]],
     key_configured: bool,
+    unmapped_stops: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Assemble the map view-model from pins the caller already resolved."""
     _annotate_pin_occurrences(trip, pins, itinerary_days)
@@ -454,6 +455,7 @@ def build(
             if isinstance(day, dict)
         ],
         "unscheduled_pin_ids": unscheduled,
+        "unmapped_stops": unmapped_stops or [],
         "airport": airport,
         "empty_message": None if pins else (
             "No mappable places yet. Pick hotels and attractions and they'll "

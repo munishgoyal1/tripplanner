@@ -2185,6 +2185,94 @@ def test_a_connecting_flight_pins_the_airport_it_stops_at() -> None:
     ]
 
 
+def test_connecting_round_trip_keeps_itinerary_and_map_terminals_in_sync(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Bangalore Airport": (13.1986, 77.7066),
+        "Delhi Airport": (28.5562, 77.1000),
+        "Paris Airport": (49.0097, 2.5479),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Paris",
+        "selected_hotels": [],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [{
+                    "name": "Flight: Bangalore to Paris via Delhi",
+                    "kind": "flight",
+                    "time": "10:00",
+                    "arrival_time": "19:30",
+                    "duration_min": 570,
+                }],
+            },
+            {
+                "day": 4,
+                "stops": [{
+                    "name": "Flight: Paris to Bangalore via Delhi",
+                    "kind": "flight",
+                    "time": "12:00",
+                    "arrival_time": "23:00",
+                    "duration_min": 660,
+                }],
+            },
+        ],
+    }
+
+    days = trip_view.build_itinerary(trip)["days"]
+    terminal_rows = [
+        [
+            (stop["name"], stop.get("terminal_role"))
+            for stop in day["stops"]
+            if stop.get("terminal_role")
+        ]
+        for day in days
+    ]
+
+    assert terminal_rows == [
+        [
+            ("Bangalore Airport", "departure"),
+            ("Delhi Airport", "connection"),
+            ("Paris Airport", "arrival"),
+        ],
+        [
+            ("Paris Airport", "departure"),
+            ("Delhi Airport", "connection"),
+            ("Bangalore Airport", "arrival"),
+        ],
+    ]
+
+    map_view = trip_view.build_map_view(trip)
+    names_by_id = {pin["id"]: pin["name"] for pin in map_view["pins"]}
+    map_terminals = [
+        [
+            names_by_id[pin_id]
+            for pin_id in day["pin_ids"]
+            if names_by_id[pin_id].endswith(" Airport")
+        ]
+        for day in map_view["days"]
+    ]
+    assert map_terminals == [
+        ["Bangalore Airport", "Delhi Airport", "Paris Airport"],
+        ["Paris Airport", "Delhi Airport", "Bangalore Airport"],
+    ]
+
+
 def test_northeast_drives_keep_waypoints_and_hotels_in_map_circuits(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
