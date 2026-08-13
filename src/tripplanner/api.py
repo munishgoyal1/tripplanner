@@ -46,6 +46,7 @@ from tripplanner import config as _config  # noqa: F401  -- import triggers load
 from tripplanner.api_contracts import (
     ChatRequest,
     ChatResponse,
+    ConfirmPlaceRequest,
     DecisionOverrideRequest,
     DeselectRequest,
     DocumentDeleteRequest,
@@ -1087,6 +1088,19 @@ async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
         return await asyncio.to_thread(
             trip_operations.set_stop_booked, req.day, req.name, req.booked
         )
+    finally:
+        await release_workspace_exclusive(workspace)
+
+
+@app.post("/trip/stop/place")
+async def trip_stop_place(req: ConfirmPlaceRequest, request: Request) -> dict:
+    """Accept the map's candidate place for a stop it could not pin."""
+    from tripplanner.web import trip_operations
+
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        return await asyncio.to_thread(trip_operations.confirm_stop_place, req.name)
     finally:
         await release_workspace_exclusive(workspace)
 

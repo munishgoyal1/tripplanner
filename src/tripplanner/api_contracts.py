@@ -63,6 +63,11 @@ class StopBookedRequest(BaseModel):
     user_id: str = "local"
 
 
+class ConfirmPlaceRequest(BaseModel):
+    name: str
+    user_id: str = "local"
+
+
 class PreferencesRequest(BaseModel):
     user_id: str = "local"
     display_name: str | None = None

@@ -933,6 +933,7 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             "days": [],
             "available_days": [],
             "unscheduled_pin_ids": [],
+            "unmapped_stops": [],
             "airport": None,
             "empty_message": (
                 "Start planning a trip and your hotels, attractions and daily "
@@ -940,12 +941,15 @@ def build_map_view(trip: dict[str, Any] | None) -> dict[str, Any]:
             ),
         }
 
-    pins = _map_pins(trip, destination)
+    unmapped: list[dict[str, Any]] = []
+    pins = _map_pins(trip, destination, unmapped)
     airport = None if any(pin["kind"] == "airport" for pin in pins) else _airport_pin(destination)
     itinerary_days = {
         int(day["day"]): day for day in build_itinerary(trip).get("days", [])
     }
-    return map_view.build(trip, destination, pins, airport, itinerary_days, key_configured)
+    return map_view.build(
+        trip, destination, pins, airport, itinerary_days, key_configured, unmapped
+    )
 
 
 # ---------------------------------------------------------------------------

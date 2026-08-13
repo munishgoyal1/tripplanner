@@ -193,6 +193,12 @@ def set_stop_booked(day: int, name: str, booked: bool) -> dict[str, Any]:
     return {"ok": ok, "itinerary": build_itinerary()}
 
 
+def confirm_stop_place(name: str) -> dict[str, Any]:
+    """Accept the map's candidate for a stop and return the redrawn map."""
+    ok = trip_planner.confirm_stop_place(name)
+    return {"ok": ok, "map": build_map()}
+
+
 def override_decision(
     decision_id: str,
     option_id: str | None,

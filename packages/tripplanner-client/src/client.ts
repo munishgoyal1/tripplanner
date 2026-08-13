@@ -296,6 +296,13 @@ export class TripplannerClient {
     return data.itinerary;
   }
 
+  async confirmStopPlace(name: string): Promise<MapView> {
+    const response = await this.post("/trip/stop/place", { name });
+    ensureOk(response, "Could not confirm the place");
+    const data = (await response.json()) as { map: MapView };
+    return data.map;
+  }
+
   async streamChat(
     message: string,
     handlers: StreamHandlers,

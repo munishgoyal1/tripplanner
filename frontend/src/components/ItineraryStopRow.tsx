@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { ItineraryStop } from "../types";
 import { isIntercityTravel } from "./map/routeDerivations";
 import { formatCostDisplay, useDisplayPreferences } from "../lib/displayPreferences";
+import { useUnmappedStop } from "../lib/unmappedStops";
 
 const KIND_ICON: Record<string, string> = {
   hotel: "\u{1F3E8}",
@@ -102,6 +103,7 @@ export default function ItineraryStopRow({
   onRemove,
 }: ItineraryStopRowProps) {
   const focusable = canFocus(stop);
+  const unmapped = useUnmappedStop(stop.name);
   const routeFocusable = isIntercityTravel(stop.kind, stop.name);
   const removable = !!onRemove && ["attraction", "activity", "meal", "restaurant"].includes(stop.kind);
   const [removing, setRemoving] = useState(false);
@@ -250,6 +252,21 @@ export default function ItineraryStopRow({
               <span className="font-bold uppercase text-slate-400">{timingLabel}</span>
               <span aria-hidden>·</span>
               <span className="font-bold uppercase text-slate-400">{circuitReturn ? "Hotel return" : stop.kind}</span>
+              {unmapped && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span
+                    title={
+                      unmapped.candidate
+                        ? `The map found “${unmapped.candidate.name}” instead. Confirm it on the map to pin this stop.`
+                        : "The map could not place this stop."
+                    }
+                    className={`font-semibold ${unmapped.tier === "anchor" ? "text-amber-600" : "text-slate-400"}`}
+                  >
+                    Not on map
+                  </span>
+                </>
+              )}
               {durationText && (
                 <>
                   <span aria-hidden>·</span>

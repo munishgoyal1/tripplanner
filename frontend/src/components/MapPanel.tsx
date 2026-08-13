@@ -1,7 +1,10 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Route, Search, X } from "lucide-react";
-import { fetchMapView, fetchMapsConfig, type DeselectItemOptions, type SelectItemOptions } from "../api";
-import type { MapAirport, MapView, MapPin } from "../types";
+import { fetchMapView, fetchMapsConfig, confirmStopPlace, type DeselectItemOptions, type SelectItemOptions } from "../api";
+import type { MapAirport, MapView, MapPin, UnmappedStop } from "../types";
+import UnmappedStopsPanel, { loudStops } from "./UnmappedStopsPanel";
+import { publishUnmappedStops } from "../lib/unmappedStops";
+import { dismissNotice, notify } from "../lib/notices";
 import { filterMapView, type ItineraryFilter } from "../lib/itineraryFilters";
 import { focusedDayForPin, focusNameForPin, pinMatchesFocus } from "./map/focusMatching";
 import { mapPinFromGooglePlace, optionsForStopDay } from "./map/googlePlaceCandidate";
@@ -149,6 +152,7 @@ interface Props {
 
 function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, focusName, focusDay, focusStop, focusToken = 0, circuitFocusDay, circuitFocusToken = 0, routeFocusDay, routeFocusId, routeFocusToken = 0, onPinFocus, onDayFocus, onAllDaysFocus, onSelect, onDeselect }: Props) {
   const [sourceView, setView] = useState<MapView | null>(null);
+  const [confirmingStop, setConfirmingStop] = useState<string | null>(null);
   const view = useMemo(
     () => sourceView ? filterMapView(sourceView, filters) : null,
     [sourceView, filters],
@@ -738,6 +742,41 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
     </div>
   ) : null;
 
+  const unmappedStops = useMemo(() => view?.unmapped_stops ?? [], [view]);
+
+  // Only an anchor interrupts: a stay or terminal missing from the map is the
+  // day's shape gone, not a cosmetic gap.
+  useEffect(() => {
+    publishUnmappedStops(unmappedStops);
+    const anchors = loudStops(unmappedStops);
+    if (!anchors.length) {
+      dismissNotice("map-unmapped-anchor");
+      return;
+    }
+    const [first] = anchors;
+    notify({
+      id: "map-unmapped-anchor",
+      tone: "decision",
+      message:
+        anchors.length === 1
+          ? `${first.name} isn't on the map`
+          : `${anchors.length} key stops aren't on the map`,
+      detail: first.candidate
+        ? `The map found “${first.candidate.name}” instead. Open the map to accept it or fix the stop.`
+        : "Open the map to see which stops could not be placed.",
+    });
+  }, [unmappedStops]);
+
+  const handleConfirmStopPlace = async (stop: UnmappedStop) => {    setConfirmingStop(stop.name);
+    try {
+      setView(await confirmStopPlace(stop.name));
+    } catch {
+      setRetryToken((token) => token + 1);
+    } finally {
+      setConfirmingStop(null);
+    }
+  };
+
   return (
     <div className="relative flex h-full flex-col">
       {(loading && view || error && view) && (
@@ -1054,6 +1093,11 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
           )}
         </div>
       )}
+      <UnmappedStopsPanel
+        stops={unmappedStops}
+        onConfirm={handleConfirmStopPlace}
+        busyName={confirmingStop}
+      />
     </div>
   );
 }
