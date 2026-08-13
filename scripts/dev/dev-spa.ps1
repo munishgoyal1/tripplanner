@@ -58,6 +58,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
+. "$PSScriptRoot/lib/node-tools.ps1"
 # Sandboxes run this script concurrently on their own ports; keying the transcript
 # by API port keeps a second stack from losing its log to the first one's lock.
 $devSpaLogName = if ($ApiPort -eq 8000) { "dev-spa" } else { "dev-spa-$ApiPort" }
@@ -369,6 +370,7 @@ if (-not $FrontendOnly) {
 
 if (-not $BackendOnly) {
     $frontendRoot = Join-Path $repoRoot "frontend"
+    Use-CompatibleNode
     $npmCommand = if ($IsWindows) { "npm.cmd" } else { "npm" }
     if (-not (Test-FrontendDependenciesCurrent -FrontendRoot $frontendRoot)) {
         Install-FrontendDependencies -FrontendRoot $frontendRoot -NpmCommand $npmCommand

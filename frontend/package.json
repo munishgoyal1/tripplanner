@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "description": "React SPA for the AI trip planner — talks to the FastAPI backend.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "dev:ux-lab": "vite --config labs/vite.config.ts",
@@ -34,5 +37,10 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "fsevents@2.3.3": true,
+    "fsevents@2.3.2": true
   }
 }

@@ -123,6 +123,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/run-log.ps1"
+. "$PSScriptRoot/lib/node-tools.ps1"
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -266,6 +267,7 @@ function Invoke-SandboxValidation {
 
     $frontend = Join-Path $Worktree "frontend"
     if (-not (Test-Path (Join-Path $frontend "package.json") -PathType Leaf)) { return }
+    Use-CompatibleNode
     Push-Location $frontend
     try {
         Write-Host "[check]   tsc" -ForegroundColor Cyan
