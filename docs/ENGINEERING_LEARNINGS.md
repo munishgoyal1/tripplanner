@@ -951,3 +951,38 @@ the outcome.
 - Stage a new invariant before it can block. Continuity (I9) reports on the edit
   that introduces it but does not gate completion, because a new rule meets its
   real false-positive rate on existing data, not in tests.
+## 2026-08-13 - Remote-Call Cost Belongs to a Runtime, Not to Call Sites
+
+- `httpx.get`/`httpx.post` build a throwaway client per call, so every provider
+  request re-loaded the CA bundle and re-handshook TLS. The same defect existed
+  one level up: a model client built per graph round re-handshook Azure OpenAI
+  before every tool phase. Connection reuse is a property of the process, not of
+  whichever call site was written last.
+- A per-call `timeout=20` is not a budget, it is a tail. One sick dependency
+  then costs twenty seconds on every attempt, repeatedly, for the whole turn.
+  Latency budgets belong to the endpoint so they can be reasoned about together.
+- Without a circuit breaker, a failing dependency keeps charging full timeout to
+  every caller. Deriving the endpoint from the request URL means a newly added
+  provider inherits pooling, budget, breaker, and telemetry with no registration,
+  which is what keeps the pattern true as providers are added.
+- Make the fail-fast error a subclass of the transport error the call sites
+  already catch. An open circuit then degrades through the existing fallback
+  path instead of needing a new branch at every provider.
+- Composite responses assembled from unrelated sources cost their sum only
+  because nobody made them concurrent. Fan them out; keep ordered fallback
+  within a single capability sequential, because there the order is the policy.
+
+## 2026-08-13 - An Owner Launcher Must Not Depend on the Inherited PATH
+
+- A GUI-launched `.command` runs with a minimal PATH, and any process started
+  from inside a running `brew` command inherits Homebrew's sanitized PATH, which
+  substitutes the shim directory for the Homebrew bin directory. `pwsh` was
+  installed and runnable in both cases; only the bare-name lookup failed.
+- `brew shellenv` is a no-op inside a brew command context, so a `.zprofile` that
+  relies on it cannot repair such a shell. Even a login shell stays broken, while
+  a pristine `env -i` login shell works, which makes the fault look intermittent.
+- Diagnose the launching process, not the shell: `ps eww -p <pid>` shows the PATH
+  a GUI application actually holds and hands to every terminal it spawns.
+- Owner-facing launchers resolve the interpreter explicitly through one shared
+  helper and fail with the install command. Bare-name lookup is a convenience for
+  interactive shells, not a contract a one-click entry point may rely on.

@@ -19,6 +19,7 @@ import json
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.liteapi import LiteAPIError
@@ -238,11 +239,13 @@ def search_flights_duffel(
     }
 
     try:
-        resp = httpx.post(
+        resp = http_client.post(
             f"{_BASE_URL}/air/offer_requests",
             params={"return_offers": "true"},
             headers=_headers(),
             json=body,
+            # An offer request fans out to airlines, so it keeps a wider budget
+            # than the shared Duffel default.
             timeout=45,
         )
         resp.raise_for_status()

@@ -12,6 +12,7 @@ from typing import Any
 
 import httpx
 
+from tripplanner import http_client
 from tripplanner.providers.models import (
     FlightOffer,
     FlightSearchQuery,
@@ -146,13 +147,15 @@ class LiteAPIProvider:
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")
 
-    def _post(self, path: str, payload: dict[str, Any], timeout: float = 20) -> dict[str, Any]:
+    def _post(
+        self, path: str, payload: dict[str, Any], timeout: float | None = None
+    ) -> dict[str, Any]:
         try:
-            response = httpx.post(
+            response = http_client.post(
                 f"{self._base_url}/{path.lstrip('/')}",
                 headers={"X-API-Key": self._api_key, "Accept": "application/json"},
                 json=payload,
-                timeout=timeout,
+                **({"timeout": timeout} if timeout is not None else {}),
             )
             if response.status_code == 204:
                 return {"data": []}

@@ -103,7 +103,7 @@ def test_check_place_hours_returns_schedule_without_when(_configured, monkeypatc
             ],
         },
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
     out = json.loads(place_hours.check_place_hours.invoke({"place_id": "P1"}))
     assert out["name"] == "Louvre"
     assert out["business_status"] == "OPERATIONAL"
@@ -126,7 +126,7 @@ def test_check_place_hours_open_verdict(_configured, monkeypatch):
             ],
         },
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
 
     # Monday noon → open
     open_out = json.loads(
@@ -154,7 +154,7 @@ def test_check_place_hours_permanent_closure_warning(_configured, monkeypatch):
         "businessStatus": "CLOSED_PERMANENTLY",
         "regularOpeningHours": {"weekdayDescriptions": [], "periods": []},
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
     out = json.loads(
         place_hours.check_place_hours.invoke(
             {"place_id": "P1", "when_iso": "2026-07-14T12:00"}
@@ -172,7 +172,7 @@ def test_check_place_hours_invalid_when_iso(_configured, monkeypatch):
         "businessStatus": "OPERATIONAL",
         "regularOpeningHours": {"weekdayDescriptions": [], "periods": []},
     }
-    monkeypatch.setattr(place_hours.httpx, "get", lambda *a, **k: _mk_response(payload))
+    monkeypatch.setattr(place_hours.http_client, "get", lambda *a, **k: _mk_response(payload))
     out = json.loads(
         place_hours.check_place_hours.invoke({"place_id": "P1", "when_iso": "garbage"})
     )
@@ -182,7 +182,7 @@ def test_check_place_hours_invalid_when_iso(_configured, monkeypatch):
 def test_check_place_hours_sends_correct_field_mask(_configured, monkeypatch):
     captured = {}
 
-    def fake_get(url, *, headers, timeout):
+    def fake_get(url, *, headers):
         captured["url"] = url
         captured["headers"] = headers
         return _mk_response(
@@ -194,7 +194,7 @@ def test_check_place_hours_sends_correct_field_mask(_configured, monkeypatch):
             }
         )
 
-    monkeypatch.setattr(place_hours.httpx, "get", fake_get)
+    monkeypatch.setattr(place_hours.http_client, "get", fake_get)
     place_hours.check_place_hours.invoke({"place_id": "P1"})
     assert captured["url"].endswith("/places/P1")
     assert "regularOpeningHours.periods" in captured["headers"]["X-Goog-FieldMask"]

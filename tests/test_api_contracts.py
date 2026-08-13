@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from tripplanner import api
+from tripplanner import api, http_client
 from tripplanner.api_contracts import ChatRequest
 
 
@@ -31,6 +31,7 @@ def test_provider_status_exposes_readiness_without_secrets(monkeypatch) -> None:
         ],
     )
     client = TestClient(api.app)
+    http_client.reset_breakers_for_tests()
 
     response = client.get("/providers/status")
 
@@ -43,5 +44,6 @@ def test_provider_status_exposes_readiness_without_secrets(monkeypatch) -> None:
                 "active": True,
                 "access": "active_free_or_sandbox",
             }
-        ]
+        ],
+        "outbound": {"endpoints": {}},
     }

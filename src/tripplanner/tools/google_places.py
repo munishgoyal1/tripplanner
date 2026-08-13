@@ -14,6 +14,7 @@ import json
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 
 _BASE = "https://places.googleapis.com/v1"
@@ -85,11 +86,10 @@ def search_places_with_reviews(query: str, city: str = "", max_results: int = 5)
         "places.internationalPhoneNumber,places.currentOpeningHours.openNow"
     )
     try:
-        resp = httpx.post(
+        resp = http_client.post(
             f"{_BASE}/places:searchText",
             headers=_headers(field_mask),
             json={"textQuery": full_query, "pageSize": min(max(max_results, 1), 10)},
-            timeout=20,
         )
         resp.raise_for_status()
     except httpx.HTTPError as e:
@@ -112,10 +112,9 @@ def get_place_reviews(place_id: str, max_reviews: int = 5) -> str:
 
     field_mask = "id,displayName,rating,userRatingCount,reviews,editorialSummary"
     try:
-        resp = httpx.get(
+        resp = http_client.get(
             f"{_BASE}/places/{place_id}",
             headers=_headers(field_mask),
-            timeout=20,
         )
         resp.raise_for_status()
     except httpx.HTTPError as e:
@@ -159,11 +158,10 @@ def nearby_restaurants(
         "places.userRatingCount,places.priceLevel,places.types,places.websiteUri"
     )
     try:
-        resp = httpx.post(
+        resp = http_client.post(
             f"{_BASE}/places:searchText",
             headers=_headers(field_mask),
             json={"textQuery": query, "pageSize": min(max(max_results * 2, 1), 20)},
-            timeout=20,
         )
         resp.raise_for_status()
     except httpx.HTTPError as e:

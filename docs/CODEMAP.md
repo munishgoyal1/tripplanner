@@ -46,7 +46,9 @@ trip through shared API contracts.
 | `src/tripplanner/config.py` | Pydantic environment settings |
 | `src/tripplanner/models.py` | Core trip and itinerary models |
 | `src/tripplanner/json_store.py` | Atomic local JSON replacement and Windows-lock retry |
-| `src/tripplanner/http_client.py` | Process-wide pooled outbound HTTP client (connection and TLS reuse) |
+| `src/tripplanner/http_client.py` | Outbound HTTP runtime: pooled connections and TLS reuse, per-endpoint latency budget, circuit breaking, and `outbound_call` telemetry. Every remote dependency goes through it |
+| `src/tripplanner/circuit_breaker.py` | Pure per-endpoint breaker state machine (closed/open/half-open) |
+| `src/tripplanner/concurrency.py` | Shared bounded fan-out for independent remote work; a failed branch degrades to `None` |
 | `src/tripplanner/web/trip_view.py` | UI-independent trip view model and display semantics |
 | `src/tripplanner/web/map_view.py` | Interactive-map view-model assembly from resolved pins |
 | `src/tripplanner/web/day_journey.py` | Transfer-day journey model: path, terminals, inter-city edges, map framing |
@@ -172,6 +174,22 @@ evidence.
 
 Booking means grounded selection and verified handoff material. The application
 does not purchase, pay, cancel, or manage provider orders.
+
+### Outbound call rules
+
+Every remote dependency is called through `http_client`. Never use `httpx.get`,
+`httpx.post`, or a per-call `httpx.Client`: that rebuilds the TLS context per
+call and opts out of the shared budget, breaker, and telemetry.
+
+- The endpoint identity is the URL host, so a new provider is pooled, budgeted,
+  breakered, and measured with no registration step.
+- A latency budget belongs to the endpoint (`_ENDPOINT_POLICIES`), not to the
+  call site. Pass an explicit `timeout` only for a call that is genuinely slower
+  than its endpoint's normal work, and say why.
+- `CircuitOpenError` subclasses `httpx.HTTPError`, so an open circuit degrades
+  through the same path as an unreachable provider.
+- Independent remote work is composed with `concurrency.run_parallel`, not run
+  in sequence. Sequential fallback within one capability stays sequential.
 
 ## Key Data Flows
 
