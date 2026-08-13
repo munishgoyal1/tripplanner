@@ -12,6 +12,13 @@ Create a sandbox from the primary checkout:
 
 On macOS, use the matching `.command` launchers under `scripts/mac/user/sandbox/`. Each sandbox has an isolated worktree, branch, port slot, and local emulator database. `Update-Sandbox` merges current `origin/master` into an in-flight sandbox. Promotion is the only path from sandbox code into `master`.
 
+`Merge-Sandbox` lands finished work without ending the lane. It runs the same
+validation, pull request, merge, and verification steps as promotion, then
+resynchronizes the sandbox onto the updated base and leaves it registered and
+active. Nothing is discarded, no promotion is recorded, and UX Lab records are
+untouched. Use it when a sandbox has more work ahead of it; use `Promote-Sandbox`
+when the lane is finished.
+
 The primary checkout owns the canonical local app stack. Before starting it, run `scripts/user/Run-Latest-Master.cmd` on Windows or `scripts/mac/user/Run-Latest-Master.command` on macOS. Sandboxes use their own ports and server-free validation by default.
 
 Promotion requires the primary `master` checkout to be clean and exactly equal

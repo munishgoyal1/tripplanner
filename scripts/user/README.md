@@ -11,6 +11,7 @@ Windows launchers live here; matching macOS launchers live under
 | `Run-Latest-Master.cmd` | Fast-forward primary `master` from `origin/master`, then start its local stack; optional dev SPA flags are forwarded |
 | `Sync-Latest-FromRemoteMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every registered sandbox or only the selected sandbox |
 | `sandbox/Resolve-SandboxConflicts.cmd <sandbox>` | Finish a manually resolved sandbox merge and push its branch |
+| `sandbox/Merge-Sandbox.cmd <sandbox>` | Merge the sandbox into `master` and resynchronize it, keeping the sandbox active |
 | `Show-Prompts.cmd` | Read the master owner prompt log |
 
 `Run-Latest-Master.cmd` is only for the primary `master` checkout. It fast-forwards

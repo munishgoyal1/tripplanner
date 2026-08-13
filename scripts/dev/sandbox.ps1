@@ -16,6 +16,7 @@
     .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock -IterationSummary "Adjusted the dock and passed focused UI checks."
     .\scripts\dev\sandbox.ps1 -Stop 2
     .\scripts\dev\sandbox.ps1 -Update 2
+    .\scripts\dev\sandbox.ps1 -Merge 2
     .\scripts\dev\sandbox.ps1 -Promote 2
     .\scripts\dev\sandbox.ps1 -Discard 2
     .\scripts\dev\sandbox.ps1 -List
@@ -36,11 +37,17 @@
 
     -New and -Update fetch the latest origin/master before branching or merging, so
     each sandbox starts from the current canonical baseline. Pass -NoSync to skip
-    that refresh. Sandbox work reaches master only through -Promote.
+    that refresh. Sandbox work reaches master only through -Merge or -Promote.
 
     -Promote is end to end: sync, validate, push, open the PR, merge into the base
     branch, verify that the base branch really contains every commit and that the
     worktree is clean, then discard the sandbox. -Ship is an alias of the same verb.
+
+    -Merge runs the same gates but keeps the sandbox: after the base branch is
+    verified to contain the merged commit, the sandbox is resynchronized onto it
+    and stays registered and active. Nothing is discarded, no promotion is
+    recorded, and UX Lab records are left untouched. Use it to land finished work
+    and carry on in the same lane; use -Promote when the lane is finished.
 
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
@@ -72,6 +79,9 @@ param(
     [Alias("Ship")]
     [string]$Promote,
 
+    [Parameter(Mandatory = $true, ParameterSetName = "Merge")]
+    [string]$Merge,
+
     [Parameter(Mandatory = $true, ParameterSetName = "Update")]
     [string]$Update,
 
@@ -84,6 +94,7 @@ param(
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
     [Parameter(ParameterSetName = "Promote")]
+    [Parameter(ParameterSetName = "Merge")]
     [Parameter(ParameterSetName = "Discard")]
     [string]$BaseBranch = "master",
 
@@ -109,9 +120,11 @@ param(
     [Parameter(ParameterSetName = "New")]
     [Parameter(ParameterSetName = "Update")]
     [Parameter(ParameterSetName = "Promote")]
+    [Parameter(ParameterSetName = "Merge")]
     [switch]$NoSync,
 
     [Parameter(ParameterSetName = "Promote")]
+    [Parameter(ParameterSetName = "Merge")]
     [switch]$SkipValidation,
 
     [Parameter(ParameterSetName = "Discard")]
@@ -126,6 +139,7 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot/lib/node-tools.ps1"
 . "$PSScriptRoot/lib/vscode-cli.ps1"
 . "$PSScriptRoot/lib/sandbox-registry.ps1"
+. "$PSScriptRoot/lib/gh-cli.ps1"
 
 # Isolated port slots. Canonical stack uses 8000/5173/5175 and stays untouched.
 $ApiBase = 8100
@@ -548,9 +562,10 @@ function Get-SandboxPromotionLabel {
         $cleanup = if ($Entry.cleanupIssues) { " (cleanup incomplete)" } else { "" }
         return "promoted$pr$cleanup"
     }
-    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { return "unknown (gh unavailable)" }
+    $ghCli = Resolve-GhCli
+    if (-not $ghCli) { return "unknown (gh unavailable)" }
     $base = if ($Entry.promotedBase) { [string]$Entry.promotedBase } else { "master" }
-    $mergedPr = (& gh pr list --repo (Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
+    $mergedPr = (& $ghCli pr list --repo (Invoke-Git -WorkingDirectory $scriptRepoRoot -Arguments @(
             "config", "--get", "remote.origin.url"
         )) --head $Entry.branch --base $base --state merged --limit 1 --json number --jq ".[0].number" |
         Out-String).Trim()
@@ -936,7 +951,7 @@ $registryPath = Join-Path $worktreesRoot "sandboxes.json"
 # One transcript per sandbox and verb. The reference is resolved first so that
 # -Run 2 and -Run 2-lab16-chatdock write to the same log instead of two.
 $runVerb = $PSCmdlet.ParameterSetName.ToLowerInvariant()
-$reference = @($New, $Run, $Serve, $Stop, $Promote, $Update, $Discard) |
+$reference = @($New, $Run, $Serve, $Stop, $Promote, $Merge, $Update, $Discard) |
     Where-Object { $_ } | Select-Object -First 1
 $runLogSlug = $reference
 if ($reference -and $runVerb -ne "new") {
@@ -987,6 +1002,7 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
     Write-Host "Any verb takes the number, the full name, or the short name:" -ForegroundColor DarkGray
     Write-Host "  $(Get-SandboxLauncherPath -Name 'Serve-Sandbox') <n>     $(Get-SandboxLauncherPath -Name 'Stop-Sandbox') <n>" -ForegroundColor DarkGray
     Write-Host "  $(Get-SandboxLauncherPath -Name 'Update-Sandbox') <n>    $(Get-SandboxLauncherPath -Name 'Promote-Sandbox') <n>" -ForegroundColor DarkGray
+    Write-Host "  $(Get-SandboxLauncherPath -Name 'Merge-Sandbox') <n>     (merge to master, keep the sandbox)" -ForegroundColor DarkGray
     return
 }
 
@@ -1237,17 +1253,108 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     return
 }
 
+if ($PSCmdlet.ParameterSetName -eq "Merge") {
+    if (-not (Test-Path $entry.worktree -PathType Container)) {
+        throw "Sandbox worktree is missing: $($entry.worktree)."
+    }
+    $gh = Get-RequiredGhCli -Verb "-Merge"
+    $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
+    if ($changes) {
+        throw "Sandbox has uncommitted changes. Commit them before merging."
+    }
+    $action = "Merge into $BaseBranch, then resynchronize the sandbox and keep it"
+    if (-not $PSCmdlet.ShouldProcess($entry.branch, $action)) { return }
+
+    Write-Host "== 1/6 sync with origin/$BaseBranch ==" -ForegroundColor Green
+    Sync-PrimaryCheckout -Base $BaseBranch -RequireExact
+    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -NoSync:$NoSync -Confirm:$false
+    $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
+        "diff", "--name-only", "--diff-filter=U"
+    )
+    if ($conflicts) {
+        throw "Resolve and commit these conflicts, then re-run -Merge ${slug}:`n$($conflicts -join "`n")"
+    }
+
+    # The commit the base branch must contain afterwards. Captured before the
+    # merge so the post-merge resync cannot be mistaken for the merged work.
+    $mergedHead = (Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("rev-parse", "HEAD")).Trim()
+    $unmerged = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
+        "log", "--oneline", "origin/$BaseBranch..HEAD"
+    )
+    if (-not $unmerged) {
+        Write-Host "[current] origin/$BaseBranch already contains every sandbox commit; nothing to merge." -ForegroundColor Green
+        Write-Host "[kept]    Sandbox '$slug' stays active on $($entry.branch)." -ForegroundColor Green
+        return
+    }
+
+    Write-Host "== 2/6 validate ==" -ForegroundColor Green
+    if ($SkipValidation) {
+        Write-Warning "Validation skipped (-SkipValidation)."
+    } else {
+        Invoke-SandboxValidation -Worktree $entry.worktree
+    }
+
+    Write-Host "== 3/6 push $($entry.branch) ==" -ForegroundColor Green
+    Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
+
+    Write-Host "== 4/6 pull request ==" -ForegroundColor Green
+    Push-Location $entry.worktree
+    try {
+        $prNumber = (& $gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        if ($LASTEXITCODE -ne 0) { throw "gh pr list failed." }
+        if (-not $prNumber) {
+            & $gh pr create --base $BaseBranch --head $entry.branch --fill
+            if ($LASTEXITCODE -ne 0) { throw "gh pr create failed." }
+            $prNumber = (& $gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        }
+        if (-not $prNumber) { throw "Could not determine the pull request number for $($entry.branch)." }
+        Write-Host "[pr]      #$prNumber -> $BaseBranch"
+
+        Write-Host "== 5/6 merge ==" -ForegroundColor Green
+        # Never --delete-branch here: the sandbox keeps working on this branch.
+        & $gh pr merge $prNumber --merge
+        if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
+        Write-Host "[merged]  #$prNumber into $BaseBranch"
+    } finally {
+        Pop-Location
+    }
+
+    Sync-PrimaryCheckout -Base $BaseBranch
+
+    Write-Host "== 6/6 verify and resynchronize ==" -ForegroundColor Green
+    Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("fetch", "-q", "origin") | Out-Null
+    & git -C $entry.worktree merge-base --is-ancestor $mergedHead "origin/$BaseBranch"
+    if ($LASTEXITCODE -ne 0) {
+        throw "#$prNumber reported merged, but origin/$BaseBranch does not contain $($mergedHead.Substring(0, 7)). Nothing was discarded; investigate before retrying."
+    }
+
+    # A repository that auto-deletes merged branches would strand the sandbox,
+    # so restore the branch before handing it back.
+    & git -C $entry.worktree rev-parse --verify --quiet "origin/$($entry.branch)" | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[restore] remote branch was deleted on merge; republishing it." -ForegroundColor Yellow
+        Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("push", "-u", "origin", $entry.branch)
+    }
+
+    & $PSCommandPath -Update $slug -BaseBranch $BaseBranch -NoSync -Confirm:$false
+    $conflicts = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @(
+        "diff", "--name-only", "--diff-filter=U"
+    )
+    if ($conflicts) {
+        throw "Merged #$prNumber into $BaseBranch, but resynchronizing the sandbox conflicted:`n$($conflicts -join "`n")"
+    }
+
+    Write-Host "[verified] origin/$BaseBranch contains $($mergedHead.Substring(0, 7))."
+    Write-Host "[kept]     Sandbox '$slug' stays active on $($entry.branch) and is current with $BaseBranch." -ForegroundColor Green
+    Write-Host "Sync your other lanes so they pick up $BaseBranch." -ForegroundColor Cyan
+    return
+}
+
 if ($PSCmdlet.ParameterSetName -eq "Promote") {
     if (-not (Test-Path $entry.worktree -PathType Container)) {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
-    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        throw "GitHub CLI 'gh' is required by -Promote. Install it, or open and merge the PR yourself."
-    }
-    & gh auth status --hostname github.com *> $null
-    if ($LASTEXITCODE -ne 0) {
-        throw "GitHub CLI is not authenticated. Run 'gh auth login --hostname github.com --web' before promoting."
-    }
+    $gh = Get-RequiredGhCli -Verb "-Promote"
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."
@@ -1305,18 +1412,18 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
     Write-Host "== 4/6 pull request ==" -ForegroundColor Green
     Push-Location $entry.worktree
     try {
-        $prNumber = (& gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+        $prNumber = (& $gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
         if ($LASTEXITCODE -ne 0) { throw "gh pr list failed." }
         if (-not $prNumber) {
-            & gh pr create --base $BaseBranch --head $entry.branch --fill
+            & $gh pr create --base $BaseBranch --head $entry.branch --fill
             if ($LASTEXITCODE -ne 0) { throw "gh pr create failed." }
-            $prNumber = (& gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
+            $prNumber = (& $gh pr list --head $entry.branch --base $BaseBranch --state open --json number --jq ".[0].number" | Out-String).Trim()
         }
         if (-not $prNumber) { throw "Could not determine the pull request number for $($entry.branch)." }
         Write-Host "[pr]      #$prNumber -> $BaseBranch"
 
         Write-Host "== 5/6 merge ==" -ForegroundColor Green
-        & gh pr merge $prNumber --merge
+        & $gh pr merge $prNumber --merge
         if ($LASTEXITCODE -ne 0) { throw "gh pr merge failed for #$prNumber; merge it manually." }
         Write-Host "[merged]  #$prNumber into $BaseBranch"
     } finally {
