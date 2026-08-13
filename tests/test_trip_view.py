@@ -1525,6 +1525,51 @@ def test_map_view_uses_origin_terminal_when_partial_flight_is_first_stop(
     assert day["legs"][0]["intercity"] is True
 
 
+def test_map_view_pins_flight_stops_named_as_single_airports(
+    _map_geo: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The agent may write one stop per terminal instead of "Flight: A to B"; the
+    # itinerary shows those, so the map has to show them too.
+    coords = {
+        "Kempegowda International Airport, Bangalore (BLR)": (13.1986, 77.7066),
+        "Indira Gandhi International Airport, Delhi (DEL)": (28.5562, 77.1000),
+        "Charles de Gaulle Airport, Paris (CDG)": (49.0097, 2.5479),
+        "Hotel Chambiges Elysees": (48.8667, 2.3020),
+    }
+    monkeypatch.setattr(
+        trip_view.places_cache,
+        "get_details",
+        lambda name, city: {
+            "place_id": f"pid-{name}",
+            "name": name,
+            "lat": coords.get(name, (None, None))[0],
+            "lng": coords.get(name, (None, None))[1],
+        },
+    )
+    trip = {
+        **SAMPLE_TRIP,
+        "destination": "Paris",
+        "selected_hotels": [{"name": "Hotel Chambiges Elysees"}],
+        "day_wise_itinerary": [{
+            "day": 1,
+            "stops": [
+                {"name": "Kempegowda International Airport, Bangalore (BLR)", "kind": "flight"},
+                {"name": "Indira Gandhi International Airport, Delhi (DEL)", "kind": "flight"},
+                {"name": "Charles de Gaulle Airport, Paris (CDG)", "kind": "flight"},
+                {"name": "Hotel Chambiges Elysees", "kind": "hotel"},
+            ],
+        }],
+    }
+
+    view = trip_view.build_map_view(trip)
+
+    pinned = {pin["name"] for pin in view["pins"]}
+    assert "Kempegowda International Airport, Bangalore (BLR)" in pinned
+    assert "Indira Gandhi International Airport, Delhi (DEL)" in pinned
+    assert "Charles de Gaulle Airport, Paris (CDG)" in pinned
+
+
 def test_map_view_does_not_mark_hotel_to_unmatched_airport_as_flight(
     _map_geo: None,
     monkeypatch: pytest.MonkeyPatch,
