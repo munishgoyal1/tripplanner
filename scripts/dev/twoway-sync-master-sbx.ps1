@@ -142,7 +142,8 @@ if (-not $PSCmdlet.ShouldProcess($BaseBranch, $action)) {
 }
 
 Write-Host "This publishes sandbox work to $BaseBranch. Only proceed when every" -ForegroundColor Yellow
-Write-Host "sandbox above is feature-clean." -ForegroundColor YellowWrite-Host ""
+Write-Host "sandbox above is feature-clean." -ForegroundColor Yellow
+Write-Host ""
 $approval = Read-Host "Type $approvalPhrase to continue"
 if ($approval -ne $approvalPhrase) {
     Write-Host ""
