@@ -223,6 +223,7 @@ def _save_chat(
     request_id: str | None = None,
     completed: bool = True,
     agent: str = "trip",
+    turn_seconds: int | None = None,
 ) -> str | None:
     """Persist the turn under the trip that's active *after* the turn.
 
@@ -263,6 +264,7 @@ def _save_chat(
         request_id=request_id,
         completed=completed,
         agent=agent,
+        turn_seconds=turn_seconds,
     )
 
 
@@ -453,6 +455,7 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse | JSONRespons
             req.request_id,
             True,
             agent,
+            max(int(time.monotonic() - started), 0),
         )
         if not req.proposal_only:
             _schedule_learning_sweep(user_id, req.message)
@@ -828,6 +831,9 @@ async def chat_stream(req: ChatRequest, request: Request) -> StreamingResponse:
                 base_history,
                 completed_turn,
                 req.request_id,
+                True,
+                "trip",
+                max(int(time.monotonic() - started), 0),
             )
         except Exception as exc:
             app_event("api_chat_stream_save_error", error=type(exc).__name__)

@@ -259,7 +259,7 @@ function dispatch(event: string, data: any, h: StreamHandlers): void {
 /** Restore the persisted transcript for a trip (or the current active trip). */
 export async function fetchChatHistory(
   tripId?: string
-): Promise<{ role: "user" | "assistant"; text: string }[]> {
+): Promise<{ role: "user" | "assistant"; text: string; ts?: number; seconds?: number }[]> {
   try {
     return await sharedClient.fetchChatHistory(tripId);
   } catch {

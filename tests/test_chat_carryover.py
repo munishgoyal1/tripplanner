@@ -12,6 +12,12 @@ from tripplanner import storage_cosmos
 from tripplanner.web import chat_carryover, chat_store
 
 
+def _spoken(rows: list[dict]) -> list[dict]:
+    """What was said, without the display timing stored beside it."""
+    return [{"role": row["role"], "text": row["text"]} for row in rows]
+
+
+
 def test_distill_empty_transcript_returns_blank():
     assert chat_carryover.distill([], "Mexico", "Kashmir") == ""
 
@@ -37,7 +43,7 @@ def test_persist_turn_no_change_saves_history(monkeypatch, tmp_path):
     turn = [HumanMessage(content="hi"), AIMessage(content="hello")]
     out = chat_store.persist_turn("mexico_x_y", "mexico_x_y", [], turn)
     assert out == "mexico_x_y"
-    assert chat_store.transcript("mexico_x_y") == [
+    assert _spoken(chat_store.transcript("mexico_x_y")) == [
         {"role": "user", "text": "hi"},
         {"role": "assistant", "text": "hello"},
     ]
@@ -334,16 +340,59 @@ def test_persist_turn_switch_keeps_prev_and_seeds_new(monkeypatch, tmp_path):
     assert out == "kashmir_p_q"
 
     # Mexico bucket untouched.
-    assert chat_store.transcript("mexico_x_y") == [
+    assert _spoken(chat_store.transcript("mexico_x_y")) == [
         {"role": "user", "text": "plan mexico, 2 adults"},
         {"role": "assistant", "text": "Mexico draft ready"},
     ]
     # Kashmir bucket: carryover note + the switch turn only (no Mexico verbatim).
     kashmir = chat_store.transcript("kashmir_p_q")
-    assert kashmir == [
+    assert _spoken(kashmir) == [
         {"role": "assistant", "text": "Carrying over: 2 adults."},
         {"role": "user", "text": "actually plan kashmir"},
         {"role": "assistant", "text": "Switching to Kashmir!"},
+    ]
+
+
+def test_a_stored_turn_keeps_its_time_and_duration(monkeypatch, tmp_path):
+    """Timing lived only in browser storage, so every turn but the newest lost
+    its clock on reload and on any other device."""
+    _use_temp_chats(monkeypatch, tmp_path)
+    first = [HumanMessage(content="plan goa"), AIMessage(content="Here is Goa")]
+    chat_store.persist_turn("goa_a_b", "goa_a_b", [], first, turn_seconds=26)
+    chat_store.persist_turn(
+        "goa_a_b",
+        "goa_a_b",
+        first,
+        [HumanMessage(content="add a beach"), AIMessage(content="Added")],
+        turn_seconds=8,
+    )
+
+    rows = chat_store.transcript("goa_a_b")
+    assert [row["text"] for row in rows] == ["plan goa", "Here is Goa", "add a beach", "Added"]
+    assert all(isinstance(row["ts"], int) for row in rows)
+    # The duration belongs to the reply, not to the question that prompted it.
+    assert [row.get("seconds") for row in rows] == [None, 26, None, 8]
+    # The agent's context is still only what was said.
+    assert [message.content for message in chat_store.load("goa_a_b")] == [
+        "plan goa",
+        "Here is Goa",
+        "add a beach",
+        "Added",
+    ]
+
+
+def test_timing_never_makes_one_turn_look_like_two(monkeypatch, tmp_path):
+    """Merge and overlap detection compare rows, so display metadata must not
+    take part in deciding whether a turn is already stored."""
+    _use_temp_chats(monkeypatch, tmp_path)
+    turn = [HumanMessage(content="plan goa"), AIMessage(content="Here is Goa")]
+    chat_store.persist_turn("goa_a_b", "goa_a_b", [], turn, turn_seconds=26)
+
+    chat_store.save("goa_a_b", turn)
+
+    assert [row["text"] for row in chat_store.transcript("goa_a_b")] == [
+        "plan goa",
+        "Here is Goa",
     ]
 
 
@@ -371,7 +420,7 @@ def test_persist_turn_switch_carries_the_request_that_started_the_trip(monkeypat
         origin_prompt=chat_store.originating_request(paris, "Rajasthan"),
     )
 
-    assert chat_store.transcript("rajasthan_p_q") == [
+    assert _spoken(chat_store.transcript("rajasthan_p_q")) == [
         {"role": "user", "text": "Plan a trip to Rajasthan for 7 days"},
         {"role": "user", "text": "2 adults, mid budget"},
         {"role": "assistant", "text": "Rajasthan itinerary ready"},
@@ -400,7 +449,7 @@ def test_persist_turn_switch_to_existing_appends(monkeypatch, tmp_path):
     ]
     out = chat_store.persist_turn("mexico_x_y", "kashmir_p_q", base, turn)
     assert out == "kashmir_p_q"
-    assert chat_store.transcript("kashmir_p_q") == [
+    assert _spoken(chat_store.transcript("kashmir_p_q")) == [
         {"role": "user", "text": "old"},
         {"role": "assistant", "text": "prev"},
         {"role": "user", "text": "back to kashmir"},
