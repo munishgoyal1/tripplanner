@@ -1116,3 +1116,6 @@ I am thinking if we should take this approach instead of dropping, while still f
 
 [2026-08-13 17:57] [master] ! Implement unmapped stop tiering in sandbox 2
 Implement all of it as you planned. Do it onto sandbox 2
+
+[2026-08-13 18:46] [master !] Queue map add while chat runs
+does the map add stop not accept a request while another chat request is in progress. In Paris trip on sbx2, adding a pin from map resulted in 409 error. at same time re-plan paris trip prompt was ongoing.

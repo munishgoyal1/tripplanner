@@ -568,11 +568,38 @@ export default function App({ initialRequest = null }: { initialRequest?: string
     handleFocus(navList[next].kind, navList[next].name);
   };
 
+  const selectWhenAvailable = async (
+    kind: string,
+    name: string,
+    options?: SelectItemOptions,
+  ) => {
+    for (let attempt = 0; attempt < 90; attempt += 1) {
+      try {
+        return await selectItem(kind, name, options);
+      } catch (error) {
+        const status = typeof error === "object" && error !== null && "status" in error
+          ? (error as { status?: number }).status
+          : undefined;
+        if (status !== 409 || attempt === 89) throw error;
+        const retryAfterMs = typeof error === "object" && error !== null && "retryAfterMs" in error
+          ? (error as { retryAfterMs?: number | null }).retryAfterMs
+          : null;
+        notify({
+          id: "action-error",
+          tone: "progress",
+          message: "Waiting for the Assistant to finish before adding this place...",
+        });
+        await new Promise((resolve) => setTimeout(resolve, retryAfterMs ?? 2000));
+      }
+    }
+    throw new Error("Could not add the place.");
+  };
+
   const handleSelect = async (kind: string, name: string, options?: SelectItemOptions) => {
     try {
       setAssistantTurnStatus(null);
       dismissNotice("action-error");
-      const next = await selectItem(kind, name, options);
+      const next = await selectWhenAvailable(kind, name, options);
       const nextKind = focusKind(kind);
       setPlaceFocus({ kind: nextKind, name });
       ++refreshGeneration.current;
