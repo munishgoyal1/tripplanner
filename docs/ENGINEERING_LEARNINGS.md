@@ -919,3 +919,24 @@ the outcome.
 - Release automation should establish a fresh registry session before building.
   Automatic credential fallback is valid only when both identity and required
   package scope are verified; otherwise fail with the exact refresh command.
+
+## 2026-08-13 - Remote-Call Cost Belongs to a Runtime, Not to Call Sites
+
+- `httpx.get`/`httpx.post` build a throwaway client per call, so every provider
+  request re-loaded the CA bundle and re-handshook TLS. The same defect existed
+  one level up: a model client built per graph round re-handshook Azure OpenAI
+  before every tool phase. Connection reuse is a property of the process, not of
+  whichever call site was written last.
+- A per-call `timeout=20` is not a budget, it is a tail. One sick dependency
+  then costs twenty seconds on every attempt, repeatedly, for the whole turn.
+  Latency budgets belong to the endpoint so they can be reasoned about together.
+- Without a circuit breaker, a failing dependency keeps charging full timeout to
+  every caller. Deriving the endpoint from the request URL means a newly added
+  provider inherits pooling, budget, breaker, and telemetry with no registration,
+  which is what keeps the pattern true as providers are added.
+- Make the fail-fast error a subclass of the transport error the call sites
+  already catch. An open circuit then degrades through the existing fallback
+  path instead of needing a new branch at every provider.
+- Composite responses assembled from unrelated sources cost their sum only
+  because nobody made them concurrent. Fan them out; keep ordered fallback
+  within a single capability sequential, because there the order is the policy.

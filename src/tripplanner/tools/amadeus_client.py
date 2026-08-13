@@ -13,8 +13,7 @@ from __future__ import annotations
 
 import time
 
-import httpx
-
+from tripplanner import http_client
 from tripplanner.config import get_settings
 
 _token_cache: dict = {"token": "", "expires_at": 0.0}
@@ -39,14 +38,13 @@ def _get_token() -> str:
             "Sign up free at https://developers.amadeus.com"
         )
 
-    resp = httpx.post(
+    resp = http_client.post(
         f"{_base_url()}/v1/security/oauth2/token",
         data={
             "grant_type": "client_credentials",
             "client_id": s.amadeus_api_key,
             "client_secret": s.amadeus_api_secret,
         },
-        timeout=15,
     )
     resp.raise_for_status()
     data = resp.json()
@@ -64,11 +62,10 @@ def is_configured() -> bool:
 def get(path: str, params: dict | None = None) -> dict:
     """GET request to Amadeus API."""
     token = _get_token()
-    resp = httpx.get(
+    resp = http_client.get(
         f"{_base_url()}{path}",
         params=params,
         headers={"Authorization": f"Bearer {token}"},
-        timeout=30,
     )
     resp.raise_for_status()
     return resp.json()
@@ -77,11 +74,10 @@ def get(path: str, params: dict | None = None) -> dict:
 def post(path: str, body: dict) -> dict:
     """POST request to Amadeus API."""
     token = _get_token()
-    resp = httpx.post(
+    resp = http_client.post(
         f"{_base_url()}{path}",
         json=body,
         headers={"Authorization": f"Bearer {token}"},
-        timeout=30,
     )
     resp.raise_for_status()
     return resp.json()

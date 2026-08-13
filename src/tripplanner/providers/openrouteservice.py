@@ -6,6 +6,8 @@ from typing import Any
 
 import httpx
 
+from tripplanner import http_client
+
 
 class OpenRouteServiceError(RuntimeError):
     pass
@@ -37,11 +39,10 @@ class OpenRouteServiceProvider:
                     [longitude, latitude] for latitude, longitude in coordinates
                 ]
             }
-            response = httpx.post(
+            response = http_client.post(
                 f"{self._base_url}/v2/directions/{profile}/json",
                 headers={"Authorization": self._api_key, "Content-Type": "application/json"},
                 json=payload,
-                timeout=20,
             )
             response.raise_for_status()
             payload = response.json()

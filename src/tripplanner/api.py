@@ -2316,9 +2316,10 @@ async def public_demo_run(request: Request, region: str = "EU", currency: str = 
 @app.get("/providers/status")
 async def providers_status() -> dict[str, object]:
     """Expose non-secret provider readiness for MVP diagnostics."""
+    from tripplanner import http_client
     from tripplanner.providers.registry import provider_status
 
-    return {"providers": provider_status()}
+    return {"providers": provider_status(), "outbound": http_client.outbound_status()}
 
 
 @app.get("/metrics/tools")

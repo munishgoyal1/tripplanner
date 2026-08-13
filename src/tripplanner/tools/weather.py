@@ -19,6 +19,8 @@ from datetime import date, datetime, timedelta
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
+
 _GEOCODE = "https://geocoding-api.open-meteo.com/v1/search"
 _FORECAST = "https://api.open-meteo.com/v1/forecast"
 _ARCHIVE = "https://archive-api.open-meteo.com/v1/archive"
@@ -69,10 +71,9 @@ def _parse_date(s: str) -> date | None:
 
 def _geocode(location: str) -> dict | None:
     try:
-        r = httpx.get(
+        r = http_client.get(
             _GEOCODE,
             params={"name": location, "count": 1, "language": "en", "format": "json"},
-            timeout=15,
         )
         r.raise_for_status()
     except httpx.HTTPError:
@@ -124,7 +125,7 @@ def _build_daily(payload: dict) -> list[dict]:
 
 def _fetch_forecast(lat: float, lon: float, start: date, end: date, tz: str) -> dict | None:
     try:
-        r = httpx.get(
+        r = http_client.get(
             _FORECAST,
             params={
                 "latitude": lat,
@@ -142,7 +143,6 @@ def _fetch_forecast(lat: float, lon: float, start: date, end: date, tz: str) -> 
                 "start_date": start.isoformat(),
                 "end_date": end.isoformat(),
             },
-            timeout=20,
         )
         r.raise_for_status()
     except httpx.HTTPError:
@@ -152,7 +152,7 @@ def _fetch_forecast(lat: float, lon: float, start: date, end: date, tz: str) -> 
 
 def _fetch_archive(lat: float, lon: float, start: date, end: date, tz: str) -> dict | None:
     try:
-        r = httpx.get(
+        r = http_client.get(
             _ARCHIVE,
             params={
                 "latitude": lat,

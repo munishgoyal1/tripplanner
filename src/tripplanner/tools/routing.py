@@ -16,6 +16,7 @@ import json
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.openrouteservice import OpenRouteServiceError, OpenRouteServiceProvider
@@ -106,7 +107,7 @@ def _post_routes(payload: dict, field_mask: str) -> dict:
         "X-Goog-Api-Key": get_settings().google_places_api_key,
         "X-Goog-FieldMask": field_mask,
     }
-    resp = httpx.post(_ENDPOINT, headers=headers, json=payload, timeout=20)
+    resp = http_client.post(_ENDPOINT, headers=headers, json=payload)
     resp.raise_for_status()
     return resp.json()
 

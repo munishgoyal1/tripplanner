@@ -90,7 +90,9 @@ def test_get_weather_forecast_end_before_start(monkeypatch):
 
 
 def test_get_weather_forecast_geocode_miss(monkeypatch):
-    monkeypatch.setattr(weather.httpx, "get", lambda *a, **k: _mk_response({"results": []}))
+    monkeypatch.setattr(
+        weather.http_client, "get", lambda *a, **k: _mk_response({"results": []})
+    )
     out = weather.get_weather_forecast.invoke(
         {"location": "Nowheresville", "start_date": "2026-07-10", "end_date": "2026-07-12"}
     )
@@ -110,7 +112,7 @@ def test_get_weather_forecast_uses_forecast_within_horizon(monkeypatch):
             return _mk_response(_forecast_payload(start, days=3))
         raise AssertionError(f"Unexpected URL {url}")
 
-    monkeypatch.setattr(weather.httpx, "get", fake_get)
+    monkeypatch.setattr(weather.http_client, "get", fake_get)
     out = json.loads(
         weather.get_weather_forecast.invoke(
             {"location": "Paris", "start_date": start, "end_date": end}
@@ -139,7 +141,7 @@ def test_get_weather_forecast_uses_archive_beyond_horizon(monkeypatch):
             raise AssertionError("Should not call forecast for far-out trip")
         raise AssertionError(f"Unexpected URL {url}")
 
-    monkeypatch.setattr(weather.httpx, "get", fake_get)
+    monkeypatch.setattr(weather.http_client, "get", fake_get)
     out = json.loads(
         weather.get_weather_forecast.invoke(
             {"location": "Paris", "start_date": far_start, "end_date": far_end}
@@ -167,7 +169,7 @@ def test_get_weather_forecast_falls_back_to_archive(monkeypatch):
 
     start = (date.today() + timedelta(days=5)).isoformat()
     end = (date.today() + timedelta(days=7)).isoformat()
-    monkeypatch.setattr(weather.httpx, "get", fake_get)
+    monkeypatch.setattr(weather.http_client, "get", fake_get)
     out = json.loads(
         weather.get_weather_forecast.invoke(
             {"location": "Paris", "start_date": start, "end_date": end}

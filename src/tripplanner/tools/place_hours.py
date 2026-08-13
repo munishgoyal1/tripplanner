@@ -17,6 +17,7 @@ from datetime import datetime
 import httpx
 from langchain_core.tools import tool
 
+from tripplanner import http_client
 from tripplanner.config import get_settings
 
 _BASE = "https://places.googleapis.com/v1"
@@ -123,7 +124,7 @@ def check_place_hours(place_id: str, when_iso: str = "") -> str:
         "X-Goog-FieldMask": field_mask,
     }
     try:
-        resp = httpx.get(f"{_BASE}/places/{place_id}", headers=headers, timeout=20)
+        resp = http_client.get(f"{_BASE}/places/{place_id}", headers=headers)
         resp.raise_for_status()
     except httpx.HTTPError as e:
         return f"Failed to fetch place hours: {e}"

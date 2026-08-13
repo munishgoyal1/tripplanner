@@ -8,6 +8,9 @@ from __future__ import annotations
 
 import operator
 import time
+from dataclasses import dataclass
+from functools import lru_cache
+from threading import Lock
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.callbacks import BaseCallbackHandler
@@ -44,38 +47,61 @@ class AgentState(TypedDict):
 # ---------------------------------------------------------------------------
 # LLM
 # ---------------------------------------------------------------------------
+@dataclass
+class _RunContext:
+    """Prompt shape and start time for one in-flight model call."""
+
+    started_at: float | None = None
+    message_count: int = 0
+    prompt_chars: int = 0
+
+    def elapsed_ms(self) -> float:
+        if self.started_at is None:
+            return 0.0
+        return (time.monotonic() - self.started_at) * 1000
+
+
 class _UsageCallback(BaseCallbackHandler):
     """Record per-user LLM token usage after every chat completion.
 
     Pulls ``token_usage`` out of ``LLMResult.llm_output`` (Azure OpenAI puts it
     there) and feeds it to :mod:`tripplanner.usage`, which handles the monthly
     cost bucket and persistence.
+
+    One instance is attached to the shared model client, so per-call state is
+    keyed by LangChain's ``run_id`` rather than held on the handler. Otherwise
+    two concurrent turns would overwrite each other's start time and prompt size.
     """
 
     def __init__(self, model: str) -> None:
         self._model = model
-        self._started_at: float | None = None
-        self._message_count = 0
-        self._prompt_chars = 0
+        self._lock = Lock()
+        self._runs: dict[Any, _RunContext] = {}
+
+    def _take(self, run_id: Any) -> _RunContext:
+        with self._lock:
+            return self._runs.pop(run_id, _RunContext())
 
     def on_chat_model_start(
         self,
         _serialized: dict[str, Any],
         messages: list[list[BaseMessage]],
+        run_id: Any = None,
         **_: Any,
     ) -> None:
-        self._started_at = time.monotonic()
         batch = messages[0] if messages else []
-        self._message_count = len(batch)
-        self._prompt_chars = sum(len(str(message.content or "")) for message in batch)
+        context = _RunContext(
+            started_at=time.monotonic(),
+            message_count=len(batch),
+            prompt_chars=sum(len(str(message.content or "")) for message in batch),
+        )
+        with self._lock:
+            self._runs[run_id] = context
 
-    def on_llm_end(self, response: Any, **_: Any) -> None:  # noqa: D401
+    def on_llm_end(self, response: Any, run_id: Any = None, **_: Any) -> None:  # noqa: D401
         try:
-            duration_ms = (
-                (time.monotonic() - self._started_at) * 1000
-                if self._started_at is not None
-                else 0.0
-            )
+            context = self._take(run_id)
+            duration_ms = context.elapsed_ms()
             from tripplanner.ops_metrics import record_model_call
 
             record_model_call(self._model, "ok", duration_ms)
@@ -86,9 +112,9 @@ class _UsageCallback(BaseCallbackHandler):
                 "llm_call",
                 status="ok",
                 model=self._model,
-                ms=round(duration_ms, 2) if self._started_at is not None else None,
-                message_count=self._message_count,
-                prompt_chars=self._prompt_chars,
+                ms=round(duration_ms, 2) if context.started_at is not None else None,
+                message_count=context.message_count,
+                prompt_chars=context.prompt_chars,
                 prompt_tokens=prompt,
                 completion_tokens=completion,
             )
@@ -104,13 +130,10 @@ class _UsageCallback(BaseCallbackHandler):
             # Accounting must never break a turn.
             pass
 
-    def on_llm_error(self, error: BaseException, **_: Any) -> None:
+    def on_llm_error(self, error: BaseException, run_id: Any = None, **_: Any) -> None:
         try:
-            duration_ms = (
-                (time.monotonic() - self._started_at) * 1000
-                if self._started_at is not None
-                else 0.0
-            )
+            context = self._take(run_id)
+            duration_ms = context.elapsed_ms()
             from tripplanner.ops_metrics import record_model_call
 
             record_model_call(self._model, "error", duration_ms)
@@ -118,30 +141,53 @@ class _UsageCallback(BaseCallbackHandler):
                 "llm_call",
                 status="error",
                 model=self._model,
-                ms=round(duration_ms, 2) if self._started_at is not None else None,
-                message_count=self._message_count,
-                prompt_chars=self._prompt_chars,
+                ms=round(duration_ms, 2) if context.started_at is not None else None,
+                message_count=context.message_count,
+                prompt_chars=context.prompt_chars,
                 error=type(error).__name__,
             )
         except Exception:
             pass
 
 
-def _get_llm() -> AzureChatOpenAI:
-    s = get_settings()
+@lru_cache(maxsize=4)
+def _build_llm(
+    endpoint: str, api_key: str, deployment: str, api_version: str
+) -> AzureChatOpenAI:
     return AzureChatOpenAI(
-        azure_endpoint=s.azure_openai_endpoint,
-        api_key=s.azure_openai_api_key,
-        azure_deployment=s.azure_openai_deployment,
-        api_version=s.azure_openai_api_version,
+        azure_endpoint=endpoint,
+        api_key=api_key,
+        azure_deployment=deployment,
+        api_version=api_version,
         temperature=0.3,
         max_retries=5,
         # Stream tokens so astream_events emits on_chat_model_stream chunks —
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
         streaming=True,
-        callbacks=[_UsageCallback(s.azure_openai_deployment)],
+        callbacks=[_UsageCallback(deployment)],
     )
+
+
+def _get_llm() -> AzureChatOpenAI:
+    """Return the shared model client.
+
+    A planning turn makes one model call per tool phase. Building a client per
+    call also built a fresh HTTP client, so every round paid a new TLS handshake
+    to Azure OpenAI before the first token. The client carries no per-call
+    state; usage accounting is keyed by run id instead.
+    """
+    s = get_settings()
+    return _build_llm(
+        s.azure_openai_endpoint,
+        s.azure_openai_api_key,
+        s.azure_openai_deployment,
+        s.azure_openai_api_version,
+    )
+
+
+def reset_llm_cache_for_tests() -> None:
+    _build_llm.cache_clear()
 
 
 _MAX_MODEL_TOOL_RESULT_CHARS = 1_500

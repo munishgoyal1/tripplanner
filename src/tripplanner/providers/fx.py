@@ -13,11 +13,12 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 
+from tripplanner import http_client
+
 logger = logging.getLogger(__name__)
 
 _BASE_URL = "https://api.frankfurter.dev/v1"
 _RATE_TTL = timedelta(hours=12)
-_TIMEOUT_SECONDS = 8.0
 
 
 @dataclass(frozen=True)
@@ -41,9 +42,7 @@ def clear_cache() -> None:
 
 def _fetch(base: str) -> RateTable | None:
     try:
-        response = httpx.get(
-            f"{_BASE_URL}/latest", params={"base": base}, timeout=_TIMEOUT_SECONDS
-        )
+        response = http_client.get(f"{_BASE_URL}/latest", params={"base": base})
         response.raise_for_status()
         payload = response.json()
         raw = payload.get("rates") or {}

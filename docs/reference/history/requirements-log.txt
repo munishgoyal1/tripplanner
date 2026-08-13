@@ -3473,3 +3473,16 @@ validated active artifact from a dedicated Cosmos container when available.
 Monthly refresh writes versioned immutable documents and promotes one active
 manifest only after the complete set validates. Trip and decisions always move
 together as one artifact version.
+
+[2026-08-13] Outbound calls run on one pooled, budgeted, circuit-broken runtime
+Owner direction: many calls take seconds instead of milliseconds and chat/stream
+p95 is around 20 seconds; make the system fast and keep it fast as providers and
+remote calls are added. Implemented: every remote dependency now goes through
+src/tripplanner/http_client.py, which owns connection/TLS reuse, a per-endpoint
+latency budget derived from the URL host, a per-endpoint circuit breaker
+(src/tripplanner/circuit_breaker.py) that fails fast instead of paying repeated
+timeouts, and outbound_call telemetry exposed through GET /providers/status. The
+Azure OpenAI client is reused across graph rounds, with usage accounting keyed by
+run id. Independent remote work is composed with concurrency.run_parallel; the
+destination overview now costs the slower of places and news rather than both.
+Ordered provider fallback within one capability stays sequential by design.
