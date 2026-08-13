@@ -1040,3 +1040,35 @@ Prod deployment is failing on No valid GHCR publish token. fix it
 
 [2026-08-11 12:19] [master] ! Fix deployment authentication fallback
 fix the deployment failures
+
+[2026-08-13 13:48] [master !] Fix chat handoff and flight itinerary bugs
+Few bugs to fix: (Start a new sandbox for all these fixes)
+
+1. [chat assistant] - If in an existing trip request for a new trrip is place, then that initial prompt for this new trip should also get copied over to the new trip chat. Otherwise later when referring tot his new trip indepenxcently , user will not have context what they asked agent to plan.
+
+2. [itinerary] rajasthan itinerary was initally planned without home city links, because home city was not available in profile. later when user asked to add flights to and from bangalore, the return flight link was added in the last day before some other attractions' plan whichw as weird. Flight/Travel links whether asked later should always maintain entire itinerary sanctity.
+This happened in production, so if you can fetch logs and itinerary data from production (munish goyal google login) to analyze the root cause.
+
+3. [Travel/flight] - account for non-direct flight stops (airports) to be shown on the map with the broken up travel legs just like a normal leg. dont combine it up in single leg if the connection has stops.
+
+4. [chat] when a new destination (Rajasthan) trip plan is asked in chat of the current Paris trip, 
+it continues to mention updating your Paris itineratry, we already implemented picking the new place to update in the notifciaiton title.
+
+5. [chat] - when a trip building (say Rajasthan) is ongoing, if user siwtching to another trip (say Paris) from list, it errors saying "Paris is busy finishing another uptade. Please try again in sometime" 
+and when switching back to Rajasthan it again says "Rajasthan is busy finishing another uptade. Please try again in sometime"  .
+
+One thing is we shoudl think whether we can still allow to switch while another trip building is in progress ?
+and the messaging should be related to trip.. sounds weird "Paris is busy...."
+and since Rajasthan trip iniitiation prompt was started from Paris trip chat, find a way to cleanly handoff and seperate it out. Once Rajasthan trip is built, dont mix up 
+Rajasthan trip chat with Paris one. Currently all subsequent prompts in Rajasthan trip are also being show in Paris trip chat.
+
+
+6. [itinerary] - refer local Rajasthan trip - 
+
+Initial prompt was explcitily telling not to add flights from home city
+"Plan a trip to rajasthan for 7 days, just showing the rajasthan in itinerary without flight links from originating city"
+Then asked to add flights (we ware testing the product)
+"can you include the flight connectiopns as we are based at banagalore"
+
+Wrong behaviour observed:
+a. it added only bangalore to jaipur connection., no return udaipur to bangalore added.

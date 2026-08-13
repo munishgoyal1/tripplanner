@@ -1,0 +1,9 @@
+1. [new] sometimes it takes time to switch between itinerary item to day level item or even between day level to trip level and any such switch to day level also causes lag and getting stuck. debug and fix it.
+2. [Inprogres with opus now, chatgpt Sol could nto fix it despite multiple tries] 
+the drive circuit is still not fixed and in some cases the black dotted line has bad resolution or not clearly mapped on map.
+think hard this time: use noreth east trip as reference. it trip has gangtok to lachung drive still done better and acceptable, but the darjeeling to bagdogra car trip is not shoing on map and not zooming in on clicking in itinerary. Madurai trip all car drives have issues. at the end you should add appropriate regresstion tests and also do a playwright screen testing if needed but get it right this time. ask me if you need more inpout
+The drives are still not fixed. It is not properly mapped and on click It doesnt show zoomed on map as it should for that drive leg. 
+Build it as a seperate construct probably that is not only source and destination, but has stop points on the way as well just like you would map the inter stop day circuit. create a seperate drive circuit. these are just suggesitons but yous hould think on your own best way to do this 
+
+
+3.

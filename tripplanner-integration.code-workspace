@@ -22,7 +22,8 @@
       "statusBar.foreground": "#ffffff",
       "titleBar.activeBackground": "#115e59",
       "titleBar.activeForeground": "#ffffff"
-    }
+    },
+    "powershell.cwd": "Tripplanner MasterAgent"
   },
   "tasks": {
     "version": "2.0.0",
