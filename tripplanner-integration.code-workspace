@@ -29,7 +29,7 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Tripplanner: Sync Latest From Remote Master",
+        "label": "Tripplanner: Sync Sandboxes From Master",
         "type": "shell",
         "command": "pwsh",
         "args": [
@@ -37,7 +37,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-File",
-          "${workspaceFolder}/scripts/dev/sync-latest-from-remote-master.ps1"
+          "${workspaceFolder}/scripts/dev/sync-sbxs-from-master.ps1"
         ],
         "options": {
           "cwd": "${workspaceFolder}"

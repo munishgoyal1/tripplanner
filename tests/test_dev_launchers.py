@@ -23,14 +23,14 @@ def test_primary_master_launchers_are_named_and_wired_consistently() -> None:
 
 def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     root = Path(__file__).parents[1]
-    sync_script = (root / "scripts" / "dev" / "sync-latest-from-remote-master.ps1").read_text(
+    sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(
         encoding="utf-8"
     )
     mac_launcher = (
-        root / "scripts" / "mac" / "user" / "Sync-Latest-FromRemoteMaster.command"
+        root / "scripts" / "mac" / "user" / "Sync-Sbxs-FromMaster.command"
     ).read_text(encoding="utf-8")
     windows_launcher = (
-        root / "scripts" / "user" / "Sync-Latest-FromRemoteMaster.cmd"
+        root / "scripts" / "user" / "Sync-Sbxs-FromMaster.cmd"
     ).read_text(encoding="utf-8")
 
     assert '[string]$Sandbox = ""' in sync_script
@@ -38,15 +38,15 @@ def test_sync_launcher_defaults_to_all_and_accepts_one_sandbox() -> None:
     assert "merge --ff-only origin/master" in sync_script
     assert "if ($Sandbox)" in sync_script
     assert "$targets = $registered" in sync_script
-    assert "sync-latest-from-remote-master.ps1" in mac_launcher
-    assert "sync-latest-from-remote-master.ps1" in windows_launcher
+    assert "sync-sbxs-from-master.ps1" in mac_launcher
+    assert "sync-sbxs-from-master.ps1" in windows_launcher
     assert not (root / "scripts" / "dev" / "sync-latest.ps1").exists()
     assert not (root / "scripts" / "dev" / "all-worktrees-sync.ps1").exists()
 
 
 def test_sync_recovers_pending_conflicts_without_manual_steps() -> None:
     root = Path(__file__).parents[1]
-    sync_script = (root / "scripts" / "dev" / "sync-latest-from-remote-master.ps1").read_text(
+    sync_script = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(
         encoding="utf-8"
     )
 
@@ -156,7 +156,7 @@ def test_github_cli_is_resolved_instead_of_trusting_path() -> None:
 
 def test_two_way_sync_is_gated_by_a_typed_approval() -> None:
     root = Path(__file__).parents[1]
-    script = (root / "scripts" / "dev" / "sync-two-way.ps1").read_text(encoding="utf-8")
+    script = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
 
     assert '$approvalPhrase = "APPROVE_SANDBOX_TO_MASTER"' in script
     assert "Read-Host" in script
@@ -172,7 +172,7 @@ def test_two_way_sync_is_gated_by_a_typed_approval() -> None:
 
 def test_two_way_sync_refuses_half_baked_sandboxes() -> None:
     root = Path(__file__).parents[1]
-    script = (root / "scripts" / "dev" / "sync-two-way.ps1").read_text(encoding="utf-8")
+    script = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
 
     assert "has uncommitted changes" in script
     assert "has unresolved conflicts" in script
@@ -184,22 +184,41 @@ def test_two_way_sync_refuses_half_baked_sandboxes() -> None:
 
 def test_two_way_sync_reuses_merge_gates_and_refreshes_sandboxes() -> None:
     root = Path(__file__).parents[1]
-    script = (root / "scripts" / "dev" / "sync-two-way.ps1").read_text(encoding="utf-8")
+    script = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
 
     # Sandbox work reaches master only through the gated -Merge verb.
     assert "& $sandboxScript -Merge" in script
     assert "-SkipValidation" not in script
     # Every sandbox ends on the resulting base, and that is verified.
-    assert "sync-latest-from-remote-master.ps1" in script
+    assert "sync-sbxs-from-master.ps1" in script
     assert "merge-base --is-ancestor $baseHead HEAD" in script
 
 
 def test_two_way_sync_launchers_exist_for_both_platforms() -> None:
     root = Path(__file__).parents[1]
-    mac_launcher = (root / "scripts" / "mac" / "user" / "Sync-TwoWay.command").read_text(
+    mac_launcher = (root / "scripts" / "mac" / "user" / "TwoWay-Sync-MasterSbx.command").read_text(
         encoding="utf-8"
     )
-    windows_launcher = (root / "scripts" / "user" / "Sync-TwoWay.cmd").read_text(encoding="utf-8")
+    windows_launcher = (root / "scripts" / "user" / "TwoWay-Sync-MasterSbx.cmd").read_text(
+        encoding="utf-8"
+    )
 
-    assert "sync-two-way.ps1" in mac_launcher
-    assert "sync-two-way.ps1" in windows_launcher
+    assert "twoway-sync-master-sbx.ps1" in mac_launcher
+    assert "twoway-sync-master-sbx.ps1" in windows_launcher
+
+
+def test_both_sync_commands_default_to_all_and_accept_one_sandbox() -> None:
+    root = Path(__file__).parents[1]
+    one_way = (root / "scripts" / "dev" / "sync-sbxs-from-master.ps1").read_text(encoding="utf-8")
+    two_way = (root / "scripts" / "dev" / "twoway-sync-master-sbx.ps1").read_text(encoding="utf-8")
+
+    for script in (one_way, two_way):
+        assert '[string]$Sandbox = ""' in script
+        assert "if ($Sandbox)" in script
+    # The two-way run narrows only what it merges; the closing refresh and the
+    # ancestry check still cover every registered sandbox.
+    assert "Select-SandboxEntry -Entries $registered -Reference $Sandbox" in two_way
+    assert "foreach ($entry in $targets)" in two_way
+    assert "foreach ($entry in $registered)" in two_way
+    assert not (root / "scripts" / "dev" / "sync-latest-from-remote-master.ps1").exists()
+    assert not (root / "scripts" / "dev" / "sync-two-way.ps1").exists()
