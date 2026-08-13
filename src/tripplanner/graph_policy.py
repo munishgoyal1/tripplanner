@@ -153,7 +153,9 @@ def trip_update_requirement(
         )
     if (
         not active_trip.get("day_wise_itinerary")
-        and len(update_positions) < MAX_INITIAL_ITINERARY_UPDATES
+        # Counting every save in the conversation retired this gate after the
+        # second one, so a trip created later was free to end with no itinerary.
+        and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
     ):
         return (
             "The new trip has no itinerary. Save a complete structured day_wise_itinerary "

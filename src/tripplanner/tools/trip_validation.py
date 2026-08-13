@@ -295,6 +295,17 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
                 "Sparse itinerary: " + reasons + ". Rebalance meaningful nearby stops "
                 "or explicitly label intentional leisure; do not add filler."
             )
+    itinerary = plan.get("day_wise_itinerary")
+    # Every other check walks the days, so a trip with none of them reported
+    # nothing at all and could be narrated as planned while holding no plan.
+    missing_itinerary = (
+        [
+            "No day-by-day itinerary is saved. Save the full structured "
+            "day_wise_itinerary before presenting the trip as planned."
+        ]
+        if plan.get("destination") and not (isinstance(itinerary, list) and itinerary)
+        else []
+    )
     coherence_gaps = itinerary_coherence_gaps(plan)
     if coherence_gaps:
         coherence_gaps = [
@@ -303,6 +314,7 @@ def planning_completion_gaps(plan: dict[str, Any]) -> list[str]:
             + " Replan the affected day or days as a whole rather than moving one stop."
         ]
     return [
+        *missing_itinerary,
         *_restaurant_itinerary_warnings(plan.get("day_wise_itinerary")),
         *_empty_itinerary_day_warnings(plan.get("day_wise_itinerary")),
         *_round_trip_transport_warnings(plan),
