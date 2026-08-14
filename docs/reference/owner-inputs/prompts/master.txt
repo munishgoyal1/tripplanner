@@ -1214,3 +1214,10 @@ Yes implement this, and not only just this particular day bug. Figure similar mo
 
 [2026-08-14 14:08] [master] ! Rename must migrate sandbox data too
 yes as part of the rename script handle data migration and everything. All i simply need is the sbx name change for reference, ret everything shoudl work as it is.
+
+[2026-08-14 16:34] [master \!] Labs sandbox and chat input lab
+Create a labs sbx whose purpose will solely be to create new labs. 
+New lab: Some trips may not genuinely have origin as user may be interested just in the destination focussed itinerary and want to plan the reaching there on their own. We should someway give user a choice to add/remove out the origin (home city.) from where they will be travleling. Dont fix the trips , that is like back adding data, because those may be genuine as the home city might been missing in user's profgile. We should make it explciit to ask for it in the chat agent any such quick inputs that agent thinks are missign and will help it plan better. Create a lab with different type of inpouts agent takes in from the chat itself -- not just text based but all other standrd ui controls based , but as always elegant, breezy and intuitve simple UI no complex forms to fill.
+
+[2026-08-14 16:58] [master !] Two standing Lab lanes
+no need for a speerate sandbox for each lab creation or impleemntation - you can promote sb5 and discard it. I will use 2 chat sessions - one sbx6 for labs creation and one sbx4 for labs implementaiotn. remember that.
