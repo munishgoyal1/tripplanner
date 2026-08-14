@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, UsersRound, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 24;
+export const LAST_ASSIGNED_LAB_NUMBER = 26;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 26,
+    id: "family-details",
+    title: "A family profile that grows with the trip",
+    category: "Family and traveler details",
+    description: "Compare five low-pressure ways to capture shared family context and individual traveler details, while letting chat and future trip interactions fill the profile naturally over time.",
+    createdAt: "2026-08-14",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-14",
+    decision: "Open · Recommended starting point: D · Chat-led profile",
+    href: "./lab-26-family-details.html",
+    icon: UsersRound,
+  },
   {
     labNumber: 24,
     id: "localization",

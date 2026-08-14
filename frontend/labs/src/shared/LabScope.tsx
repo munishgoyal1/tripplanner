@@ -10,6 +10,19 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "family-details": {
+    changes: [
+      "How a family is introduced: roster, trip question, shared defaults, chat suggestion, or comparison matrix",
+      "The boundary between family-wide details and individual member details, including visible exceptions",
+      "How passive facts from chat and shared trip context are proposed, confirmed, corrected, and attributed",
+      "How much information appears before the user asks for it, so setup stays quick and non-threatening",
+    ],
+    context: [
+      "Identity, authentication, travel-document retention, privacy controls, and the existing profile persistence boundary",
+      "The planner's ability to use confirmed preferences and trip-specific overrides; this Lab does not alter agent behavior",
+      "Provider searches, booking handoff, emergency-service workflows, and family sharing permissions",
+    ],
+  },
   "localization": {
     changes: [
       "Where country, interface language, display currency, date/time, week-start, distance, and temperature preferences are first confirmed and later changed",
