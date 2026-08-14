@@ -22,6 +22,7 @@ from datetime import date
 from typing import Any
 from urllib.parse import quote
 
+from tripplanner import place_facts
 from tripplanner.concurrency import run_parallel
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import build_provenance
@@ -1265,8 +1266,14 @@ def _weekday_name(day_iso: str) -> str:
 
 
 def _opening_hint(summary: dict[str, Any], day_iso: str) -> tuple[str, str]:
+    """The hours line to show, and the worry to raise, from the same facts.
+
+    The concern here is the soft, always-visible half. Anything it can state as
+    a fact is also an invariant in ``trip_guard``, so the itinerary is corrected
+    rather than merely annotated.
+    """
     weekday_lines = summary.get("weekday_descriptions") or []
-    open_now = summary.get("open_now")
+    facts = place_facts.facts_from_summary(summary)
     day_name = _weekday_name(day_iso)
 
     matched = ""
@@ -1279,15 +1286,17 @@ def _opening_hint(summary: dict[str, Any], day_iso: str) -> tuple[str, str]:
                 break
 
     opening = matched
-    if not opening and open_now is True:
+    if not opening and facts.open_now is True:
         opening = "Open now"
-    elif not opening and open_now is False:
+    elif not opening and facts.open_now is False:
         opening = "May be closed now"
 
     concern = ""
-    if matched and "closed" in matched.lower() and day_name:
-        concern = f"Likely closed on {day_name}; review day assignment."
-    elif open_now is False:
+    if facts.unavailable:
+        concern = "Reported closed for business; replace this stop."
+    elif facts.closed_on(day_iso) and day_name:
+        concern = f"Closed on {day_name}s; move this to another day."
+    elif facts.open_now is False:
         concern = "Check opening hours before visiting."
     return opening, concern
 

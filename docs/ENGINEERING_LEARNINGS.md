@@ -1063,3 +1063,29 @@ the outcome.
   real coordinates, so `validate_plan` runs at full strength offline. Seven real
   trips produced exactly one new violation and zero false positives, which is
   the evidence that let continuity join the completion gate the same day.
+
+- A fact stored in one shape and checked in another is not a check at all. The
+  places cache wrote `weekday_descriptions`; the guard's opening-hours invariant
+  read an `opening_hours` string nothing produced, so I3 could never fire and a
+  museum closed on Tuesdays was scheduled on a Tuesday while the view layer
+  quietly printed "Likely closed" next to it. Renaming the key would have fixed
+  that one trip. What actually closes the class is a single fact boundary --
+  `place_facts` -- that every consumer reads, a contract test asserting the cache
+  still emits the keys that boundary needs, and a rule that a fact good enough to
+  show the traveller is good enough to hold the turn open. Display-only knowledge
+  is knowledge the planner has decided not to act on.
+
+- Tri-state is the whole design, not a nicety. `closed_on` had to distinguish
+  "the schedule says closed", "the schedule says open", and "we never fetched a
+  schedule", because an invariant that treats unknown as false blocks real plans
+  and one that treats unknown as true is decorative. Keeping unknown separate is
+  what made it safe to promote the fact-based invariants into the completion gate
+  alongside the envelope rules, while travel feasibility -- which degrades on
+  guessed coordinates -- stayed out.
+
+- An integration test that reads a developer's home directory is a bug factory.
+  `test_trip_guard_integration` scored placement against whatever coordinates and
+  opening hours this machine had cached from real use, so the same commit passed
+  here and would have failed elsewhere, and a genuine improvement to the guard
+  looked like a regression. Isolating the suite from `places_cache` made the
+  failure legible in one run.

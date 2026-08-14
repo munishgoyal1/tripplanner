@@ -21,8 +21,22 @@ from tripplanner.tools.trip_planner import (
     get_trip_plan,
     update_trip_plan,
 )
+from tripplanner.web import places_cache
 
 _TEST_DIR = Path.home() / ".tripplanner_guard_test"
+
+
+@pytest.fixture(autouse=True)
+def _no_machine_facts(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Read no place facts, so the result cannot depend on a developer's cache.
+
+    ``places_cache`` persists to the home directory, so these tests were quietly
+    scored against whatever coordinates and opening hours this machine happened
+    to have fetched before. The guard's degraded mode is the honest baseline
+    here; facts get their own tests.
+    """
+    monkeypatch.setattr(places_cache, "get_summary", lambda *args, **kwargs: None)
+    monkeypatch.setattr(places_cache, "get_details", lambda *args, **kwargs: None)
 
 
 @pytest.fixture(autouse=True)

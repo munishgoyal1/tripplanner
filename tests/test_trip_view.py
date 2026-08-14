@@ -3661,7 +3661,7 @@ def test_itinerary_enriches_stop_metadata(monkeypatch: pytest.MonkeyPatch) -> No
 
     assert trek["cost_display"] == "Mid-range"
     assert trek["opening_hours"].startswith("Monday:")
-    assert "Likely closed" in trek["concern"]
+    assert trek["concern"] == "Closed on Mondays; move this to another day."
     assert trek["insight"]
 
     assert it["days"][0]["reachability"]

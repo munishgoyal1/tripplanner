@@ -572,3 +572,99 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
+
+
+# --------------------------------------------------------------------------- #
+# facts the system already fetched                                              #
+# --------------------------------------------------------------------------- #
+
+# 2026-08-10 is a Monday, so Day 2 of this plan falls on a Tuesday.
+_DATED = plan(
+    [
+        [
+            stop("Flight Bengaluru → Indore", "09:00", "flight", 120),
+            stop("Hotel Sayaji", "13:00", "hotel", 45),
+        ],
+        [stop("Rajwada Palace", "10:00")],
+        [
+            stop("Lal Bagh Palace", "10:00"),
+            stop("Flight Indore → Bengaluru", "18:00", "flight", 120),
+        ],
+    ],
+    departure_date="2026-08-10",
+)
+
+
+@pytest.fixture
+def known_places(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Rajwada shuts on Tuesdays; Lal Bagh has gone for good."""
+
+    facts = {
+        "Rajwada Palace": {
+            "weekday_descriptions": [
+                "Monday: 10:00 AM – 5:00 PM",
+                "Tuesday: Closed",
+                "Wednesday: 10:00 AM – 5:00 PM",
+            ]
+        },
+        "Lal Bagh Palace": {"business_status": "CLOSED_PERMANENTLY"},
+    }
+
+    def summary(name: str, _destination: str = "") -> dict[str, object]:
+        return dict(facts.get(name, {}))
+
+    for module in (trip_common, trip_guard, trip_effort):
+        monkeypatch.setattr(module, "_summary_for_place", summary, raising=False)
+
+
+def test_a_place_closed_that_weekday_is_a_violation(known_places: None) -> None:
+    violations = [item for item in trip_guard.validate_plan(_DATED) if item.code == "I11"]
+    assert [item.stop for item in violations] == ["Rajwada Palace"]
+    assert "Tuesday" in violations[0].message
+
+
+def test_the_same_place_on_an_open_day_is_left_alone(known_places: None) -> None:
+    moved = plan(
+        [[stop("Rajwada Palace", "10:00")]],
+        departure_date="2026-08-12",  # Wednesday
+    )
+    assert not [item for item in trip_guard.validate_plan(moved) if item.code == "I11"]
+
+
+def test_a_place_with_no_fetched_hours_raises_nothing(located: None) -> None:
+    assert not [item for item in trip_guard.validate_plan(_DATED) if item.code in {"I3", "I11"}]
+
+
+def test_a_place_that_has_shut_down_is_reported(known_places: None) -> None:
+    violations = [item for item in trip_guard.validate_plan(_DATED) if item.code == "I12"]
+    assert [item.stop for item in violations] == ["Lal Bagh Palace"]
+
+
+def test_the_same_attraction_on_two_days_is_reported(located: None) -> None:
+    repeated = plan([[stop("Rajwada Palace", "10:00")], [stop("Rajwada Palace", "14:00")]])
+    violations = [item for item in trip_guard.validate_plan(repeated) if item.code == "I13"]
+    assert len(violations) == 1
+    assert violations[0].day == 2
+
+
+def test_a_hotel_repeated_every_night_is_not_a_repeat_visit(located: None) -> None:
+    nightly = plan(
+        [
+            [stop("Hotel Sayaji", "20:00", "hotel", 45)],
+            [stop("Hotel Sayaji", "20:00", "hotel", 45)],
+        ]
+    )
+    assert not [item for item in trip_guard.validate_plan(nightly) if item.code == "I13"]
+
+
+def test_placement_refuses_the_day_a_place_is_closed(known_places: None) -> None:
+    placement, rejections = trip_guard.choose_placement(
+        _DATED, "Rajwada Palace", "attraction", duration_min=90, preferred_day=2
+    )
+    assert placement is None
+    assert [item.code for item in rejections] == ["I11"]
+
+
+def test_known_fact_breaks_hold_the_turn_open(known_places: None) -> None:
+    gaps = trip_validation.itinerary_coherence_gaps(_DATED)
+    assert any("closed on Tuesday" in gap for gap in gaps)

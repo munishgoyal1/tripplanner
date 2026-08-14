@@ -398,6 +398,32 @@ def _headers(field_mask: str) -> dict[str, str]:
     }
 
 
+def normalize_place(p: dict[str, Any], name: str = "") -> dict[str, Any]:
+    """Shape one Google place into the cached summary every reader expects.
+
+    Pure, so the contract with ``place_facts`` can be tested without a request.
+    """
+    loc = p.get("location") or {}
+    return {
+        "place_id": p.get("id", ""),
+        "name": p.get("displayName", {}).get("text", name),
+        "address": p.get("formattedAddress", ""),
+        "rating": p.get("rating"),
+        "review_count": p.get("userRatingCount"),
+        "price_level": p.get("priceLevel"),
+        "website": p.get("websiteUri", ""),
+        "editorial_summary": p.get("editorialSummary", {}).get("text", ""),
+        "business_status": p.get("businessStatus", ""),
+        "open_now": (p.get("currentOpeningHours") or {}).get("openNow"),
+        "weekday_descriptions": (p.get("regularOpeningHours") or {}).get(
+            "weekdayDescriptions", []
+        ),
+        "lat": loc.get("latitude"),
+        "lng": loc.get("longitude"),
+        "photo_refs": [ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")],
+    }
+
+
 def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
     """One Text Search call to grab id + photos + summary in a single hit."""
     if not is_configured() or not name:
@@ -406,7 +432,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
         "places.id,places.displayName,places.formattedAddress,places.rating,"
         "places.userRatingCount,places.priceLevel,places.photos,"
         "places.editorialSummary,places.websiteUri,places.location,"
-        "places.currentOpeningHours.openNow,"
+        "places.businessStatus,places.currentOpeningHours.openNow,"
         "places.regularOpeningHours.weekdayDescriptions"
     )
     try:
@@ -424,27 +450,7 @@ def _lookup_place(name: str, city: str) -> dict[str, Any] | None:
     places = resp.json().get("places") or []
     if not places:
         return None
-    p = places[0]
-    loc = p.get("location") or {}
-    return {
-        "place_id": p.get("id", ""),
-        "name": p.get("displayName", {}).get("text", name),
-        "address": p.get("formattedAddress", ""),
-        "rating": p.get("rating"),
-        "review_count": p.get("userRatingCount"),
-        "price_level": p.get("priceLevel"),
-        "website": p.get("websiteUri", ""),
-        "editorial_summary": p.get("editorialSummary", {}).get("text", ""),
-        "open_now": (p.get("currentOpeningHours") or {}).get("openNow"),
-        "weekday_descriptions": (p.get("regularOpeningHours") or {}).get(
-            "weekdayDescriptions", []
-        ),
-        "lat": loc.get("latitude"),
-        "lng": loc.get("longitude"),
-        "photo_refs": [
-            ph.get("name") for ph in (p.get("photos") or []) if ph.get("name")
-        ],
-    }
+    return normalize_place(places[0], name)
 
 
 def _photo_uris(refs: list[str], max_width_px: int = 800) -> list[str]:

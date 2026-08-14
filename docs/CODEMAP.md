@@ -38,6 +38,7 @@ trip through shared API contracts.
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
+| `src/tripplanner/place_facts.py` | The only reading of cached place facts: weekday schedules, business status, and the unknown/false distinction the invariants depend on |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |

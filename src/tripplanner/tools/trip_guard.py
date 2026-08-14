@@ -19,8 +19,10 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 from typing import Any
 
+from tripplanner import place_facts
 from tripplanner.tools.trip_common import (
     _coords_from_summary,
     _fmt_hhmm,
@@ -67,7 +69,15 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
         "Guard coverage",
         "A plan must say where the trip starts, or the envelope invariants cannot run.",
     ),
+    ("I11", "Closed day", "A place is not visited on a weekday it is known to be closed."),
+    ("I12", "Availability", "A place that no longer operates is not planned at all."),
+    ("I13", "Repeat visit", "The same attraction is not scheduled on two different days."),
 )
+
+#: Invariants decided by a fact the system already fetched, rather than by
+#: arithmetic over guessed coordinates and speeds. Each one is silent when the
+#: fact is missing, which is what makes it safe to hold a turn open on.
+KNOWN_FACT_CODES = frozenset({"I11", "I12", "I13"})
 
 
 @dataclass(frozen=True)
@@ -281,48 +291,38 @@ def envelope(plan: dict[str, Any]) -> Envelope:
 # opening hours (best effort)                                                   #
 # --------------------------------------------------------------------------- #
 
-_HOURS_RE = re.compile(
-    r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*[-–—to]+\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?",
-    re.I,
-)
+_PLACE_KINDS = {"attraction", "meal"}
 
 
-def _to_minutes(hour: str, minute: str | None, meridiem: str | None) -> int | None:
-    value = int(hour)
-    if meridiem:
-        lowered = meridiem.lower()
-        if value > 12:
-            return None
-        if lowered == "pm" and value != 12:
-            value += 12
-        if lowered == "am" and value == 12:
-            value = 0
-    elif value > 23:
-        return None
-    return value * 60 + int(minute or 0)
+def facts_for(name: str, destination: str) -> place_facts.PlaceFacts:
+    """Everything known about one place, read through the single fact boundary."""
+    if not name:
+        return place_facts.UNKNOWN
+    return place_facts.facts_from_summary(_summary_for_place(name, destination))
 
 
-def opening_window(summary: dict[str, Any]) -> tuple[int, int] | None:
-    """Parse a single unambiguous open–close range, or return None.
+def day_dates(plan: dict[str, Any]) -> dict[int, str]:
+    """Calendar date per day number, from the entry itself or the start date.
 
-    Anything with several ranges, a day list, or wording we do not understand
-    yields None. A guard that guesses opening hours is worse than one that stays
-    quiet about them.
+    A weekday closure is only checkable against a real date, so a plan that
+    never wrote one simply keeps those invariants silent.
     """
-    text = str(summary.get("opening_hours") or "").strip()
-    if not text or "\n" in text or text.count(";") or text.lower().count("closed"):
-        return None
-    matches = _HOURS_RE.findall(text)
-    if len(matches) != 1:
-        return None
-    o_h, o_m, o_ap, c_h, c_m, c_ap = matches[0]
-    opens = _to_minutes(o_h, o_m, o_ap)
-    closes = _to_minutes(c_h, c_m, c_ap)
-    if opens is None or closes is None:
-        return None
-    if closes <= opens:
-        closes += 1440
-    return opens, closes
+    start: date | None = None
+    raw_start = str(plan.get("departure_date") or plan.get("start_date") or "").strip()
+    if raw_start:
+        try:
+            start = date.fromisoformat(raw_start)
+        except ValueError:
+            start = None
+
+    out: dict[int, str] = {}
+    for day, entry, _stops in days_of(plan):
+        text = str(entry.get("date") or "").strip()
+        if place_facts.weekday_of(text) is not None:
+            out[day] = text
+        elif start is not None:
+            out[day] = (start + timedelta(days=day - 1)).isoformat()
+    return out
 
 
 # --------------------------------------------------------------------------- #
@@ -355,7 +355,9 @@ def validate_plan(plan: dict[str, Any]) -> list[Violation]:
 
     out.extend(_envelope_violations(structured, env))
     out.extend(_presence_violations(structured, env))
-    out.extend(_hours_violations(structured, destination))
+    out.extend(_hours_violations(structured, destination, day_dates(plan)))
+    out.extend(_availability_violations(structured, destination))
+    out.extend(_repeat_visit_violations(structured))
     out.extend(_feasibility_violations(structured, destination))
     out.extend(_stay_violations(structured, env))
     out.extend(_return_violations(plan, env))
@@ -457,33 +459,108 @@ def _presence_violations(
 
 
 def _hours_violations(
-    structured: list[tuple[int, dict[str, Any], list[Any]]], destination: str
+    structured: list[tuple[int, dict[str, Any], list[Any]]],
+    destination: str,
+    dates: dict[int, str],
 ) -> list[Violation]:
+    """I11 then I3: the wrong day is a different mistake from the wrong hour."""
     out: list[Violation] = []
     for day, _entry, stops in structured:
+        day_iso = dates.get(day, "")
         for stop in stops:
-            if _stop_kind(stop) not in {"attraction", "meal"}:
+            if _stop_kind(stop) not in _PLACE_KINDS:
                 continue
-            start = _time_of(stop)
             name = _stop_name(stop)
-            if start is None or not name:
+            if not name:
                 continue
-            window = opening_window(_summary_for_place(name, destination))
-            if not window:
-                continue
-            opens, closes = window
-            ends = start + _duration_of(stop)
-            if start < opens or ends > closes:
+            facts = facts_for(name, destination)
+            if facts.closed_on(day_iso):
+                weekday = place_facts.weekday_of(day_iso)
+                named = (
+                    place_facts.WEEKDAY_NAMES[weekday] + "s"
+                    if weekday is not None
+                    else "that day"
+                )
                 out.append(
                     Violation(
-                        "I3",
-                        "Opening hours",
-                        f"{name} is open {_fmt_hhmm(opens)}–{_fmt_hhmm(closes % 1440)}; the "
-                        f"Day {day} visit runs {_fmt_hhmm(start)}–{_fmt_hhmm(ends % 1440)}.",
+                        "I11",
+                        "Closed day",
+                        f"{name} is closed on {named}, and Day {day} is one. "
+                        "Move it to a day it is open.",
                         day,
                         name,
                     )
                 )
+                continue
+            start = _time_of(stop)
+            if start is None:
+                continue
+            ends = start + _duration_of(stop)
+            if facts.fits(day_iso, start, ends) is not False:
+                continue
+            out.append(
+                Violation(
+                    "I3",
+                    "Opening hours",
+                    f"{name} is open {facts.window_text(day_iso)}; the Day {day} visit runs "
+                    f"{_fmt_hhmm(start)}–{_fmt_hhmm(ends % 1440)}.",
+                    day,
+                    name,
+                )
+            )
+    return out
+
+
+def _availability_violations(
+    structured: list[tuple[int, dict[str, Any], list[Any]]], destination: str
+) -> list[Violation]:
+    """I12. A place the source says has shut down is not a scheduling problem."""
+    out: list[Violation] = []
+    for day, _entry, stops in structured:
+        for stop in stops:
+            if _stop_kind(stop) in _TRANSPORT_KINDS:
+                continue
+            name = _stop_name(stop)
+            if not name or not facts_for(name, destination).unavailable:
+                continue
+            out.append(
+                Violation(
+                    "I12",
+                    "Availability",
+                    f"{name} is reported closed for business; Day {day} plans it anyway. "
+                    "Replace it with somewhere still operating.",
+                    day,
+                    name,
+                )
+            )
+    return out
+
+
+def _repeat_visit_violations(
+    structured: list[tuple[int, dict[str, Any], list[Any]]],
+) -> list[Violation]:
+    """I13. Two days at the same sight is almost always a replan that half-ran."""
+    out: list[Violation] = []
+    first_day: dict[str, int] = {}
+    for day, _entry, stops in structured:
+        for name in {
+            _stop_name(stop) for stop in stops if _stop_kind(stop) == "attraction"
+        }:
+            if not name:
+                continue
+            seen = first_day.setdefault(name.casefold(), day)
+            if seen == day:
+                continue
+            out.append(
+                Violation(
+                    "I13",
+                    "Repeat visit",
+                    f"{name} is scheduled on Day {seen} and again on Day {day}. "
+                    "Keep the better one and give the other day its own place.",
+                    day,
+                    name,
+                )
+            )
     return out
 
 
@@ -735,7 +812,8 @@ def choose_placement(
     env = envelope(plan)
     summary = _summary_for_place(name, destination)
     coords = _coords_from_summary(summary)
-    hours = opening_window(summary)
+    facts = place_facts.facts_from_summary(summary)
+    dates = day_dates(plan)
     visit = duration_min if isinstance(duration_min, int) and duration_min > 0 else (
         DEFAULT_HOTEL_MIN if kind == "hotel" else DEFAULT_VISIT_MIN
     )
@@ -745,6 +823,21 @@ def choose_placement(
 
     for day, _entry, stops in days_of(plan):
         if preferred_day is not None and day != preferred_day:
+            continue
+        day_iso = dates.get(day, "")
+        hours = facts.hours_on(day_iso) if kind in _PLACE_KINDS else None
+        if hours == ():
+            weekday = place_facts.weekday_of(day_iso)
+            rejections.append(
+                Rejection(
+                    day,
+                    "all day",
+                    "I11",
+                    "closed on "
+                    + (place_facts.WEEKDAY_NAMES[weekday] if weekday is not None else "that day")
+                    + "s",
+                )
+            )
             continue
         for window in _windows(day, stops, env):
             label = f"{_fmt_hhmm(window.start % 1440)}–{_fmt_hhmm(window.end % 1440)}"
@@ -773,14 +866,16 @@ def choose_placement(
             begins = window.start + inbound
             begins = -(-begins // 5) * 5
             local = begins - _abs(day, 0)
-            if hours and (local < hours[0] or local + visit > hours[1]):
+            if hours and not any(
+                local >= opens and local + visit <= closes for opens, closes in hours
+            ):
                 rejections.append(
                     Rejection(
                         day,
                         label,
                         "I3",
                         f"arriving {_fmt_hhmm(local)} does not fit "
-                        f"{_fmt_hhmm(hours[0])}–{_fmt_hhmm(hours[1] % 1440)}",
+                        f"{facts.window_text(day_iso)}",
                     )
                 )
                 continue
@@ -807,7 +902,7 @@ def choose_placement(
                 reasons.append("Penalised for being the arrival day, when delays are most likely")
             if hours:
                 reasons.append(
-                    f"Open {_fmt_hhmm(hours[0])}–{_fmt_hhmm(hours[1] % 1440)}; "
+                    f"Open {facts.window_text(day_iso)}; "
                     f"this visit is {_fmt_hhmm(local)}–{_fmt_hhmm((local + visit) % 1440)}"
                 )
 
