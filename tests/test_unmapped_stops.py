@@ -204,3 +204,20 @@ class TestUnmappedStops:
 
         assert "Seine River Cruise" in {pin["name"] for pin in view["pins"]}
         assert "Seine River Cruise" not in {stop["name"] for stop in view["unmapped_stops"]}
+
+
+def test_a_day_heading_is_not_a_locality() -> None:
+    """Searching "Musee d'Orsay Day 4 - Montmartre" matches nothing."""
+    from tripplanner.web.map_pins import _day_place_context
+
+    assert _day_place_context({"title": "Day 4 · Montmartre & Sacré-Cœur"}, "Paris") == "Montmartre"
+    assert _day_place_context({"title": "Day 5 · Versailles Day Trip"}, "Paris") == "Versailles"
+    assert _day_place_context({"title": "Day 6 · Departure"}, "Paris") == "Paris"
+    assert _day_place_context({"title": "Day 1 · Arrival in Paris"}, "Paris") == "Paris"
+    assert _day_place_context({"title": "Day 2 · Free time"}, "Rome") == "Rome"
+
+
+def test_an_explicit_city_still_wins() -> None:
+    from tripplanner.web.map_pins import _day_place_context
+
+    assert _day_place_context({"city": "Lyon", "title": "Day 2 · Departure"}, "Paris") == "Lyon"
