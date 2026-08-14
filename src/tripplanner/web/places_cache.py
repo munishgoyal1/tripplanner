@@ -348,9 +348,21 @@ def _is_miss(entry: Any) -> bool:
     )
 
 
+def _has_location(entry: dict[str, Any]) -> bool:
+    return entry.get("lat") is not None and entry.get("lng") is not None
+
+
 def _fresh(entry: dict[str, Any] | None, ttl: float | None = None) -> bool:
+    """Whether a cached entry may still be believed.
+
+    An entry with no coordinates is not knowledge about a place, it is a lookup
+    that half-worked, and holding it for a week kept eight Paris stops off the
+    map with no request ever being retried. It expires like a miss instead.
+    """
     if entry is None:
         return False
+    if ttl is None and not _is_miss(entry) and not _has_location(entry):
+        ttl = _MISS_TTL_S
     effective_ttl = (
         ttl if ttl is not None else (_MISS_TTL_S if _is_miss(entry) else _META_TTL_S)
     )
