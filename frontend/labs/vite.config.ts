@@ -46,6 +46,8 @@ export default defineConfig({
         multiCityItinerary: resolve(__dirname, "lab-15-multi-city-itinerary.html"),
         paneControls: resolve(__dirname, "lab-10-pane-controls.html"),
         productThemes: resolve(__dirname, "lab-23-product-themes.html"),
+        profilePreferences: resolve(__dirname, "lab-25-profile-preferences.html"),
+        familyDetails: resolve(__dirname, "lab-26-family-details.html"),
         shellVisualRefresh: resolve(__dirname, "lab-9-shell-visual-refresh.html"),
         travelDocuments: resolve(__dirname, "lab-20-travel-documents.html"),
         tripSnapshot: resolve(__dirname, "lab-6-trip-snapshot.html"),
