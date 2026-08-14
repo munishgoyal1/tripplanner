@@ -241,8 +241,39 @@ Not applicable.
   generator version)` and are never stored. Planner-generated trips are stored
   and committed because regenerating them costs money.
 - **Retention:** the corpus is preserved, not regenerable. The golden set is
-  permanent. Reference records store structure and a source URL, never
-  third-party prose.
+  permanent. Reference records keep third-party text quarantined in one
+  `source_text` field that analysis never reads, so it can be stripped in one
+  command if the licensing position changes.
+
+## Tag vocabulary
+
+A tag is **not new state**. It is a named bundle of values in the preference
+document the planner already keeps: `trip_style`, `budget_level`,
+`planning_preferences.target_active_minutes_per_full_day`,
+`planning_preferences.major_attractions_per_day`,
+`planning_preferences.preferred_free_time_ratio`, `preferred_day_start` and
+`preferred_day_end`, `interests`, `dislikes`, `transport_preferences.*`,
+`food_preferences.*`, `hotel_preferences.*`.
+
+Example bundles, to be confirmed against the corpus rather than assumed:
+
+| Tag | Sets |
+|---|---|
+| `relaxed` | fewer major attractions per day, higher free-time ratio, later day start |
+| `see-it-all` | more attractions per day, low free-time ratio, early day start |
+| `party` | later day end, nightlife interests, later meal timing |
+| `mountain` | nature and viewpoint interests, road-break preferences, drive limits |
+
+Two consequences:
+
+1. There is one source of truth for preference, so a tag click and a free-text
+   statement cannot disagree.
+2. Because each tag declares its fields, the harness can test whether the tag
+   changes anything. Tags whose generated itineraries are indistinguishable are
+   the same tag, and a tag that changes nothing does not ship.
+
+The user-facing selector built on this vocabulary is **out of scope here** and
+belongs in its own brief once the corpus has proved the list.
 
 ## Corpus tiers
 
@@ -322,11 +353,16 @@ Not applicable.
 - **AC-13:** `Audit-Trips` analyses every tier by default, and reports findings
   attributed by provenance so a reference or synthetic artefact is never
   presented as a product defect.
-- **AC-14:** A reference itinerary is stored as structure, tags and source URL
-  only; no third-party prose enters the repository.
+- **AC-14:** A reference record keeps all third-party text inside a single
+  `source_text` block that no check or report reads, alongside `source_url` and
+  `retrieved_on`, and a documented command removes that block from every record
+  without changing any finding.
 - **AC-15:** Given a reference tag set present in the corpus, the report states
   how our generated itineraries differ structurally from reference itineraries
   carrying the same tags, on at least stops per day and meal coverage.
+- **AC-16:** Every tag in the vocabulary declares the preference fields it sets,
+  and the report shows, per tag pair, whether generated itineraries under those
+  tags actually differ — so a tag that changes nothing is visible as such.
 
 ## Validation matrix
 
@@ -369,14 +405,15 @@ Documentation: `docs/CODEMAP.md` gains the harness entry;
 |---|---|---|---|
 | D-01 | Store the corpus in the debug store or separately? | **Separately.** The debug store is committed, owner-facing, and hands out human-readable trip numbers; hundreds of synthetic trips would bury the owner's real trips in `show`/`restore` and consume the numbering sequence they asked to expose in the UI. Five provenances, one reader. | **Resolved 2026-08-14: separate store.** |
 | D-02 | Commit the synthetic corpus, or regenerate it from a manifest? | **Commit it.** Measured on 2026-08-14: a real 7-day trip is **7.3 KB** of JSON, so 100 trips is **0.7 MB** and 1000 trips is **7 MB**. Synthetic generation costs money and cannot be reproduced byte-for-byte anyway, so the earlier "regenerate from manifest" recommendation was wrong. Commit the corpus, keep the manifest for lineage, and fail the build if the corpus exceeds a declared size budget. | **Resolved 2026-08-14: commit and preserve.** |
-| D-03 | Should the harness gate commits? | **Not initially.** Run on demand until new findings per run is near zero, then wire into pre-push. Gating on a noisy harness trains everyone to ignore it. | Open |
+| D-03 | Should the harness gate commits? | **Not initially.** Run on demand until new findings per run is near zero, then wire into pre-push. Gating on a noisy harness trains everyone to ignore it. | **Resolved 2026-08-14: no gating initially.** |
 | D-04 | Template synthesis, or real planner runs? | **Both, two backends behind one command.** Templates are built in code from the request matrix and cost nothing, but their shapes are the ones we imagined, so they stress guards and discover nothing. Only real planner runs produce authentic shapes such as the three-airport `kind: "transport"` Paris leg. Default `Build-Corpus` uses the planner backend; `--templates` adds free volume. | **Resolved 2026-08-14: both.** |
 | D-05 | How much corpus is enough? | Default target **100 planner-generated trips**, stopping at whichever of trip count or budget is reached first. Grow only while new findings per 100 trips stays above zero. | **Resolved 2026-08-14: default 100.** |
-| D-06 | Nondeterminism of planner runs breaks regression comparisons. | Discovery uses fresh runs; regression uses the frozen golden set. Never compare two planner runs to each other. | Open |
+| D-06 | Nondeterminism of planner runs breaks regression comparisons. | Discovery uses fresh runs; regression uses the frozen golden set. Never compare two planner runs to each other. | **Resolved 2026-08-14: agreed.** |
 | D-07 | Does the corpus include real trips from the debug store? | **Yes, by default and first.** Real trips are the highest-value records and cost nothing. Additionally, each debug-store record holds up to 50 **revisions** of one planning run, and intermediate states are exactly where guard defects live — the Nashik empty-itinerary defect was an intermediate state. Importing revisions as separate corpus records multiplies real coverage without a single model call. | **Resolved 2026-08-14: yes, default on.** |
-| D-08 | Reference itineraries sourced from the internet: store the prose? | **No — store the structure.** Keep day count, stop kinds and sequence, pacing, geography, cost band and tags, plus source URL and retrieval date. Storing third-party itinerary prose in the repo is a licensing risk even for a private repo, and the analysis only needs the structure. | Open |
-| D-09 | Are reference itineraries part of the golden set? | **No, a separate tier.** Golden records are *our* pinned known-good/known-bad shapes and must stay stable for regression. Reference records are *other people's* itineraries used as a benchmark. Conflating them would break regression the moment our planner legitimately differs from a reference. | Open |
-| D-10 | What vocabulary tags a reference itinerary? | **The planner's own preference vocabulary** (`preferences_snapshot`: planning, transport, family, food, plus intent tags such as relaxed / party / see-it-all / mountain). Tagging with anything else makes reference and generated itineraries incomparable, which is the whole point of holding them. | Open |
+| D-08 | Reference itineraries sourced from the internet: store the prose? | **Store it all for now, but quarantine it.** The owner's call: the planner is too small to attract attention, and the full text is more useful while the vocabulary is being derived. The risk is deferred, not accepted, so every reference record keeps third-party text in one `source_text` block that no analysis code may read, alongside `source_url` and `retrieved_on`. Stripping is then one command over one field, with no effect on any finding. | **Resolved 2026-08-14: store all, keep it strippable.** |
+| D-09 | Are reference itineraries part of the golden set? | **No, a separate tier.** Golden records are *our* pinned known-good/known-bad shapes and must stay stable for regression. Reference records are *other people's* itineraries used as a benchmark. Conflating them would break regression the moment our planner legitimately differs from a reference. | **Resolved 2026-08-14: separate tier.** |
+| D-10 | What vocabulary tags a reference itinerary? | **The planner's existing preference model, and the list is derived rather than invented.** A tag is not new state: it is a named bundle of values in the preference document that already exists (`trip_style`, `budget_level`, `planning_preferences.*`, `interests`, `transport_preferences.*`, `food_preferences.*`). Tagging the reference corpus in that vocabulary is what makes reference and generated itineraries comparable, and the corpus is then what proves which tags are real. | **Resolved 2026-08-14: planner's own model, derived from the corpus.** |
+| D-11 | Should the tag vocabulary also become a user-facing click selector? | **Probably yes, but as a separate brief after the corpus has earned the list.** A tag qualifies only if it demonstrably changes what the planner does; a tag that changes nothing is decoration that creates expectation. The harness can settle this: generate the same request under two tags and compare. Two tags whose itineraries are statistically indistinguishable are one tag. Shipping a user-facing list before that check risks a preference contract we have to migrate later. | Open - propose as brief 005 |
 
 ## Agent execution contract
 

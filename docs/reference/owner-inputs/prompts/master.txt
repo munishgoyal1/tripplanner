@@ -1226,3 +1226,10 @@ Feature brief is good.Few things to clarify:
 4. Then owner will run Audit-Trips and you will analyze the corpus and come up with bugs and new feature ideas. By default it should analyze everything. Is that correct ?
 [2026-08-14 14:08] [master] ! Rename must migrate sandbox data too
 yes as part of the rename script handle data migration and everything. All i simply need is the sbx name change for reference, ret everything shoudl work as it is.
+
+[2026-08-14 15:36] [master] ! Decisions on gating, reference text and tag vocabulary
+my decisions:
+D3 - No gating initially.
+d6 - agree
+d8-10 -  agree. slight changes - initially go with storing entire externmal itinerary, keep a mechanism to strip out the license-sensitive parts if needed quickly. Right now no one care as my planner is not even properly known outside it is just very small to be noticed by anyone.
+On vocabulary - explain me clearly what is the plan. Do we plan to define a set of tags that we can allow our users to select as their preferences to store, so taht they dont have to think much. THey can always override and provide through free text. And you are always learning afresh from their past itineraries and feedback. Should we have a standard set of tags per category already defined and provide it as a tag click selector also than free text format alone (which is hard to fill usually, people prefer easy clicks than typing).
