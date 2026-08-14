@@ -1226,3 +1226,6 @@ Do another round of analysis - check other popular AI trip planners like mindtri
 Bring a high value feature list to me and we will dsicuss and implement those
 [2026-08-14 14:08] [master] ! Rename must migrate sandbox data too
 yes as part of the rename script handle data migration and everything. All i simply need is the sbx name change for reference, ret everything shoudl work as it is.
+
+[2026-08-14 15:49] [sbx1] ! Store market research under docs/research
+first thing- write this brief under docs/reasearch and later you can refine . this is the time to time market reasearch folder
