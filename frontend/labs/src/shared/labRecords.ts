@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, UsersRound, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
@@ -65,6 +65,19 @@ export const allLabs: LabRecord[] = [
     decision: "Open · Recommended starting point: D · Chat-led profile",
     href: "./lab-26-family-details.html",
     icon: UsersRound,
+  },
+  {
+    labNumber: 25,
+    id: "profile-preferences",
+    title: "Profile, in choices you can see",
+    category: "Profile and preferences",
+    description: "Reimagine About me as a quick, confidence-building profile: predefined preference tags, a clear durable home, and internal values that stay precise without asking people to type their way through setup.",
+    createdAt: "2026-08-14",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-14",
+    decision: "Open · Recommended starting point: A · Preference shelf",
+    href: "./lab-25-profile-preferences.html",
+    icon: SlidersHorizontal,
   },
   {
     labNumber: 24,

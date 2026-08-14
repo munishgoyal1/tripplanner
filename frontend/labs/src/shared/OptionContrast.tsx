@@ -36,6 +36,17 @@ const contrasts: Record<string, ContrastDefinition> = {
     same: "The same family of four, shared home airport and emergency contact, individual age bands, mobility, food, sleep, pace and room needs, provenance labels, optional notes, privacy controls, and trip-specific overrides. No option asks for a full biography or stores an original document.",
     verdict: "D is the best product default because the planner already has the richest natural moment for learning: the conversation where a real trip is being built. A provides the review surface D needs, C accelerates families with genuinely shared habits, B keeps first use effortless, and E is a specialist review mode rather than the first experience.",
   },
+  "profile-preferences": {
+    axis:
+      "Every option uses the same typed preference values and saves the same durable profile. They disagree about how much structure the user sees while choosing and where the profile's story starts.",
+    rows: [
+      { option: "A · Preference shelf", score: 94, idea: "A calm profile home with category rails and large quick-select tags.", buys: "Fast scanning, visible choices, and an immediate feeling of progress.", costs: "The shelf asks users to understand a few categories before they edit details.", choose: "Most durable travel preferences can be expressed as a small set of known choices." },
+      { option: "B · Trip briefing", score: 86, idea: "A guided profile story that asks one preference group at a time.", buys: "A friendly, low-cognitive-load path for a new user with useful defaults.", costs: "Reviewing or changing several preferences takes more steps.", choose: "The first profile visit is more important than daily editing speed." },
+      { option: "C · Command palette", score: 78, idea: "Searchable command-like chips with a compact editable summary.", buys: "Power-user speed and a single place to find less common fields.", costs: "It feels like a settings tool and hides the breadth of the profile.", choose: "Users already know what they want and need frequent precise edits." },
+    ],
+    same: "The categories, labels, internal keys, mapped values, save behavior, free-text notes, identity details, privacy boundaries, and production Profile destination. All options offer typing as an escape hatch, but none make typing the primary path.",
+    verdict: "A is the strongest default because the profile is a reusable travel instrument, not an onboarding quiz: people should see what the planner knows and correct it in one glance. B is the best first-visit variant when we need to teach the model, while C is a useful power-user fallback once the profile grows beyond the visible shelf.",
+  },
   "localization": {
     axis:
       "Every option formats the same four trips and keeps provider currency honest. They disagree about when locale is confirmed, where the durable setting lives, and whether a trip can temporarily override display currency.",

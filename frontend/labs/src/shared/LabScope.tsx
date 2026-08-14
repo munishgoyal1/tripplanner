@@ -23,6 +23,19 @@ const scopes: Record<string, ScopeDefinition> = {
       "Provider searches, booking handoff, emergency-service workflows, and family sharing permissions",
     ],
   },
+  "profile-preferences": {
+    changes: [
+      "The complete Profile and About me information architecture, including durable preferences, personal context, and identity details",
+      "Whether preference categories are edited as visible tags, a guided sequence, or a searchable command surface",
+      "How each friendly tag maps to a stable internal key and value such as trip_pace: balanced, see_it_all, or relaxed",
+      "The balance between quick selection, optional notes, confidence, and a clear saved state",
+    ],
+    context: [
+      "The existing profile persistence contract, authenticated account boundary, and production settings route",
+      "The planner's preference application and agent prompt assembly; this Lab visualizes the contract but does not change runtime behavior",
+      "Travel documents, analytics, privacy controls, sign-in, trip selection, and the rest of the workspace",
+    ],
+  },
   "localization": {
     changes: [
       "Where country, interface language, display currency, date/time, week-start, distance, and temperature preferences are first confirmed and later changed",
