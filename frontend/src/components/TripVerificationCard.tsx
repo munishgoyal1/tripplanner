@@ -12,6 +12,7 @@ const TONE: Record<VerificationStatus, { icon: typeof CheckCircle2; className: s
 const HEADLINE: Record<TripVerification["verdict"], string> = {
   clear: "Everything we can check, checks out",
   partial: "Checked, with gaps we could not confirm",
+  advisories: "Checked — a couple of days look tight",
   issues: "This plan contradicts itself",
   unverified: "Nothing to check yet",
 };
@@ -38,7 +39,12 @@ export default function TripVerificationCard({ revision }: { revision?: number }
   if (!report || report.counts.total === 0) return null;
 
   const { counts, verdict } = report;
-  const failed = report.checks.filter((check) => check.status === "failed");
+  const failed = report.checks.filter(
+    (check) => check.status === "failed" && check.severity === "contradiction",
+  );
+  const advisories = report.checks.filter(
+    (check) => check.status === "failed" && check.severity === "advisory",
+  );
   const Icon = verdict === "issues" ? AlertTriangle : verdict === "clear" ? ShieldCheck : HelpCircle;
   const tone =
     verdict === "issues"
@@ -71,6 +77,19 @@ export default function TripVerificationCard({ revision }: { revision?: number }
               <li key={`${check.code}-${finding}`} className="flex gap-2 text-slate-800">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-600" aria-hidden />
                 <span>{finding}</span>
+              </li>
+            )),
+          )}
+        </ul>
+      )}
+
+      {expanded && advisories.length > 0 && (
+        <ul className="mt-2 space-y-1 text-xs">
+          {advisories.flatMap((check) =>
+            check.findings.map((finding) => (
+              <li key={`${check.code}-${finding}`} className="flex gap-2 text-slate-600">
+                <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" aria-hidden />
+                <span>{finding} (estimated travel time)</span>
               </li>
             )),
           )}

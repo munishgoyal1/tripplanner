@@ -108,3 +108,28 @@ def test_a_shut_place_is_unavailable_whatever_its_hours_say() -> None:
     ).unavailable
     assert not place_facts.facts_from_summary({"business_status": "OPERATIONAL"}).unavailable
     assert not place_facts.facts_from_summary({}).unavailable
+
+
+# --------------------------------------------------------------------------- #
+# identity                                                                     #
+# --------------------------------------------------------------------------- #
+
+
+def test_an_extra_word_is_a_different_business() -> None:
+    assert not place_facts.names_match("Le Consulat", "Le Consulat Voltaire")
+    assert not place_facts.names_match("Cafe de Flore", "Cafe de Flore Annexe")
+
+
+def test_articles_accents_and_punctuation_are_forgiven() -> None:
+    assert place_facts.names_match("Musee d'Orsay", "Musée d’Orsay")
+    assert place_facts.names_match("The Louvre Museum", "Louvre Museum")
+    assert place_facts.names_match("Palace of Versailles", "Palace of Versailles")
+
+
+def test_word_order_is_not_identity() -> None:
+    assert place_facts.names_match("Versailles Palace", "Palace Versailles")
+
+
+def test_nothing_to_compare_is_not_a_mismatch() -> None:
+    assert place_facts.names_match("Louvre", "")
+    assert place_facts.names_match("", "Louvre")

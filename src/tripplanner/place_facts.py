@@ -16,6 +16,7 @@ Only a fact we actually read is allowed to contradict the itinerary.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -133,6 +134,32 @@ def weekday_of(day_iso: str) -> int | None:
         return date.fromisoformat(str(day_iso or "").strip()).weekday()
     except ValueError:
         return None
+
+
+_IDENTITY_NOISE = re.compile(r"[^a-z0-9]+")
+_IDENTITY_FILLER = frozenset({"the", "la", "le", "les", "l", "de", "du", "des", "of", "a"})
+
+
+def _identity_tokens(value: str) -> frozenset[str]:
+    folded = unicodedata.normalize("NFKD", str(value or "").casefold())
+    stripped = "".join(ch for ch in folded if not unicodedata.combining(ch))
+    words = _IDENTITY_NOISE.sub(" ", stripped).split()
+    return frozenset(word for word in words if word not in _IDENTITY_FILLER)
+
+
+def names_match(requested: str, returned: str) -> bool:
+    """Whether a place lookup answered the question that was asked.
+
+    A search for "Le Consulat" returns "Le Consulat Voltaire", a different
+    restaurant across the city, and its evening-only hours then contradict a
+    lunch stop that was never wrong. An extra word is a different business, so
+    the token sets must agree; only filler and accents are forgiven.
+    """
+    asked = _identity_tokens(requested)
+    got = _identity_tokens(returned)
+    if not asked or not got:
+        return True  # nothing to compare is not evidence of a mismatch
+    return asked == got
 
 
 @dataclass(frozen=True)

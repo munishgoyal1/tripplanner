@@ -668,3 +668,19 @@ def test_placement_refuses_the_day_a_place_is_closed(known_places: None) -> None
 def test_known_fact_breaks_hold_the_turn_open(known_places: None) -> None:
     gaps = trip_validation.itinerary_coherence_gaps(_DATED)
     assert any("closed on Tuesday" in gap for gap in gaps)
+
+
+def test_facts_from_a_different_business_are_not_used(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A lookup that answered about somewhere else must stay silent."""
+
+    def summary(name: str, _destination: str = "") -> dict[str, object]:
+        return {
+            "name": "Le Consulat Voltaire",
+            "weekday_descriptions": ["Tuesday: 6:00 PM - 12:00 AM"],
+        }
+
+    for module in (trip_common, trip_guard, trip_effort):
+        monkeypatch.setattr(module, "_summary_for_place", summary, raising=False)
+
+    lunch = plan([[stop("Le Consulat", "13:00", "meal", 90)]], departure_date="2026-08-11")
+    assert not [item for item in trip_guard.validate_plan(lunch) if item.code == "I3"]

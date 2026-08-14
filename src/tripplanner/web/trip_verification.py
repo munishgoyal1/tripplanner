@@ -39,6 +39,15 @@ _FACT_LABELS = {
     "date": "a calendar date",
 }
 
+#: A finding is only as strong as what decided it. Contradictions come from a
+#: fetched fact and are worth interrupting for. Advisories come from straight-
+#: line distance and an assumed road speed, so they may speak but must not
+#: accuse. Coverage is the guard reporting that it went blind, which is the
+#: definition of unverified rather than a fault in the plan.
+CONTRADICTION_CODES = frozenset({"I1", "I2", "I3", "I6", "I7", "I11", "I12", "I13"})
+ADVISORY_CODES = frozenset({"I4", "I5", "I9"})
+COVERAGE_CODES = frozenset({"I10"})
+
 #: What each invariant needs before its silence may be read as a pass, and which
 #: stops it applies to. Keeping this beside the guard rather than inside it is
 #: deliberate: the guard decides truth, this decides how much to claim.
@@ -193,8 +202,16 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
             continue
         found = by_code.get(code, [])
         gaps = _gaps_for(code, stop_facts, envelope_known)
-        if found:
-            status: Status = "failed"
+        if found and code in COVERAGE_CODES:
+            # "I could not check" is not a fault in the itinerary.
+            status: Status = "unverified"
+            gaps = [
+                {"name": "", "day": None, "missing": [violation.message]}
+                for violation in found
+            ]
+            found = []
+        elif found:
+            status = "failed"
         elif gaps:
             status = "unverified"
         else:
@@ -211,6 +228,9 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
                 "rule": rule,
                 "statement": statement,
                 "status": status,
+                "severity": (
+                    "advisory" if code in ADVISORY_CODES else "contradiction"
+                ),
                 "findings": [violation.message for violation in found],
                 "gaps": gaps,
             }
@@ -222,8 +242,14 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
         "failed": sum(1 for check in checks if check["status"] == "failed"),
         "unverified": sum(1 for check in checks if check["status"] == "unverified"),
     }
-    if counts["failed"]:
+    contradicted = any(
+        check["status"] == "failed" and check["code"] in CONTRADICTION_CODES
+        for check in checks
+    )
+    if contradicted:
         verdict = "issues"
+    elif counts["failed"]:
+        verdict = "advisories"
     elif counts["unverified"]:
         verdict = "partial"
     else:
@@ -254,8 +280,20 @@ def _day_rows(
         unverified_by_day.setdefault(day, set()).add(name)
 
     rows: list[dict[str, Any]] = []
+    advisory_only = {
+        item.message for item in violations if item.code in ADVISORY_CODES
+    }
     for day, _entry, _stops in trip_guard.days_of(plan):
-        findings = [item.message for item in violations if item.day == day]
+        findings = [
+            item.message
+            for item in violations
+            if item.day == day and item.code in CONTRADICTION_CODES
+        ]
+        advisories = [
+            item.message
+            for item in violations
+            if item.day == day and item.message in advisory_only
+        ]
         unverified = sorted(unverified_by_day.get(day, set()))
         if findings:
             status: Status = "failed"
@@ -268,6 +306,7 @@ def _day_rows(
                 "day": day,
                 "status": status,
                 "findings": findings,
+                "advisories": advisories,
                 "unverified": unverified,
                 "holiday": holiday_by_day.get(day, ""),
             }

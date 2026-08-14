@@ -1236,3 +1236,6 @@ I like your plan. Can we start implementing. Share the implementation plan of al
 [2026-08-14 16:19] [sbx1] ! Approve holiday source and finish M1
 1. Yes include it
 2. Agree. for this run lets do M1 first and i will validate in the UI. Include it over existing trips in this sb data
+
+[2026-08-14 16:56] [sbx1] ! Verification card reads too alarming
+i see plan contradicts itself erorr notification flagged in itinerary with 5 different flags for paris trip and 8 stops not on the map being flagged

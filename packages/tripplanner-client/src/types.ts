@@ -552,6 +552,8 @@ export interface VerificationCheck {
   rule: string;
   statement: string;
   status: VerificationStatus;
+  /** A contradiction rests on a fetched fact; an advisory on estimated travel. */
+  severity: "contradiction" | "advisory";
   findings: string[];
   gaps: VerificationGap[];
 }
@@ -560,13 +562,14 @@ export interface VerificationDay {
   day: number;
   status: VerificationStatus;
   findings: string[];
+  advisories: string[];
   unverified: string[];
   holiday: string;
 }
 
 /** "unverified" at trip level means there was nothing to check yet. */
 export interface TripVerification {
-  verdict: "clear" | "partial" | "issues" | "unverified";
+  verdict: "clear" | "partial" | "advisories" | "issues" | "unverified";
   counts: { total: number; passed: number; failed: number; unverified: number };
   checks: VerificationCheck[];
   days: VerificationDay[];

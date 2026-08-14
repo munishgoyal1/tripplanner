@@ -295,10 +295,17 @@ _PLACE_KINDS = {"attraction", "meal"}
 
 
 def facts_for(name: str, destination: str) -> place_facts.PlaceFacts:
-    """Everything known about one place, read through the single fact boundary."""
+    """Everything known about one place, read through the single fact boundary.
+
+    Facts belonging to a different business of a similar name are worse than no
+    facts, so a lookup that answered about somewhere else stays silent.
+    """
     if not name:
         return place_facts.UNKNOWN
-    return place_facts.facts_from_summary(_summary_for_place(name, destination))
+    summary = _summary_for_place(name, destination)
+    if not place_facts.names_match(name, str(summary.get("name") or "")):
+        return place_facts.UNKNOWN
+    return place_facts.facts_from_summary(summary)
 
 
 def day_dates(plan: dict[str, Any]) -> dict[int, str]:
