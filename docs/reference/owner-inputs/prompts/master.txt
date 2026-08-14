@@ -1220,3 +1220,7 @@ Can you build this in sbx1 instead of in master lane. Move your edits there plea
 
 [2026-08-14 13:14] [sbx1] ! Sandbox chat implies its own lane
 i always assume since this is dedicated sb1 chat session so u should use sb1 lane
+
+[2026-08-14 14:32] [sbx1] ! Competitive research for high-value features
+Do another round of analysis - check other popular AI trip planners like mindtrip and others. Check pain points travellers usually face while building and booking their itinerary, what are the top things they want solved or these competitors have solved, why people love them.
+Bring a high value feature list to me and we will dsicuss and implement those
