@@ -14,6 +14,7 @@ import re
 _ROUTE_SEPARATOR_RE = re.compile(r"\s+(?:to|->|→)\s+|\s*(?:->|→)\s*", re.I)
 _VIA_RE = re.compile(r"\s+via\s+", re.I)
 _CONNECTION_SEPARATOR_RE = re.compile(r"\s*(?:,|&|\band\b|->|→)\s*", re.I)
+_FLIGHT_WORD_RE = re.compile(r"\b(?:flight|fly|flying|flies|flown)\b", re.I)
 
 
 def _strip_route_affixes(name: str) -> str:
@@ -89,7 +90,7 @@ def _transport_terminal_refs(name: str, kind: str) -> list[tuple[str, str]]:
         return [named] if named else []
     origin, destination = endpoints
     waypoints = _transport_route_waypoints(text)
-    if kind == "flight":
+    if _intercity_transfer_mode(text, kind) == "Flight":
         return [
             (
                 "airport",
@@ -112,6 +113,10 @@ def _intercity_transfer_mode(name: str, kind: str) -> str | None:
         return "Flight"
     if kind != "transport":
         return None
+    # A flight the plan filed as a generic transfer is still a flight; reading it
+    # as a local hop is what turns an ocean crossing into a drive.
+    if _FLIGHT_WORD_RE.search(lowered) and ("to" in lowered.split() or "→" in lowered):
+        return "Flight"
     if "train" in lowered or "rail" in lowered:
         return "Train"
     if "bus" in lowered:

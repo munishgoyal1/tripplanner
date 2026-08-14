@@ -28,7 +28,7 @@ from tripplanner.tools.trip_guard import leg_touches_home, validate_plan
 #: Invariants that mean the itinerary contradicts itself about time or place.
 #: Opening hours and travel feasibility are left out on purpose: they degrade
 #: with missing cached facts, and a gate must not fire on what it cannot know.
-_COHERENCE_CODES = frozenset({"I1", "I2", "I5"})
+_COHERENCE_CODES = frozenset({"I1", "I2", "I5", "I9"})
 
 
 def itinerary_coherence_gaps(plan: dict[str, Any]) -> list[str]:
@@ -90,9 +90,18 @@ def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
     origin = str(plan.get("origin") or "").strip()
     destination = str(plan.get("destination") or "").strip()
     itinerary = plan.get("day_wise_itinerary")
-    if not origin or not destination or origin.casefold() == destination.casefold():
+    if not destination:
         return []
     if not isinstance(itinerary, list) or not itinerary:
+        return []
+    # Without an origin this check used to return nothing, so a trip that never
+    # said where it starts passed every transport gate by being unaskable.
+    if not origin:
+        return [
+            "The trip does not say where it starts from. Set origin so the outbound "
+            "and return journeys can be planned and checked."
+        ]
+    if origin.casefold() == destination.casefold():
         return []
 
     days = [day for day in itinerary if isinstance(day, dict)]

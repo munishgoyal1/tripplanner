@@ -1144,6 +1144,17 @@ fix this 2 way sync error
 [2026-08-13 22:25] [master] ! Fix two-way sync Write-Host error
 fix this 2 way sync error
 
+[2026-08-13 22:55] [master] ! Paris replan drives between airports
+weird behaviour: on askign replan paris trip. it is giving airports and flight connections probably but asking to drive between airports instead of flight. no flight connection legs shown on map
+
+[2026-08-13 22:55] [master] Bug reproduces in sbx2 stack
+this is happening in sbx2 stack under my id in case you are not able to find. else continue with ur task work
+
+[2026-08-13 23:08] [master] ! Always triage from my Cosmos emulator data
+yes ofcourse i am being your test helper in doing the QA and UAT. i am re-iterating just figure form chat session context which sbx or master stack is being referred then go and find data under that cosmos emulator and my google id.
+
+[2026-08-13 23:24] [master] ! Audit all coherence guards, not one by one
+yes ofcourse. instead of us finding these guards one by one, can you being AI intelligently do an audit to ensure that all such kind of guards are in place
 [2026-08-13 22:29] [master] Why auto conflict resolve did not run in two-way sync
 why did auto conflcit resolve not run as part of 2way sync
 
