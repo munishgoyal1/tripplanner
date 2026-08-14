@@ -1252,3 +1252,8 @@ What about the issue of flagging 8 stops not on map
 
 [2026-08-14 17:27] [sbx1] ! Question the one-tap repair premise
 where is this one-tap to move it to right day. Are you suggesting to provide the user with such 1-tap action clicks so you can act if they tell you to do so ? But why and in what cases in first place they will need to act on such actions
+
+[2026-08-14 18:52] [sbx1] ! Global itinerary scoring and predated trips
+Actually for predated trips you should just bring them to a state that they will be after the fixes that werre done after that trip was created. Right ?
+
+I agree with you now. If you assess there could be an impact to user's other things, then presenting choice is fine, but what if user never put in their own input ever and they had been completely relying on the planner to plan the best for them. How do you distinguish - in latter case planner taking decision makes more sense but i will leave it open for you to argue more. But overall any such changes should also be thought of in full trip's context, if full trip needs adjustments for an overall better scored itinerary then why limit to few days. In effectr, shoudl we evaluate itineraries and score them - different combinations of stops across days again on any change , how slow will that be ? We want global maxima also while passing local constraints.
