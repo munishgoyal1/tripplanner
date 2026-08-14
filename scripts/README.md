@@ -19,6 +19,8 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/dev-spa.ps1` | Canonical local FastAPI, SPA, Labs, and emulator launcher |
 | `dev/sandbox.ps1` | Create, run, update, promote, discard, or list isolated feature sandboxes; linked Lab sandboxes version successful iterations and promotion |
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
+| `dev/debug_store_cli.py` | Show, maintain, restore, or tear down the local debug trip store |
+| `dev/debug-store.ps1` | Dispatcher the debug-store launchers call |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
@@ -28,6 +30,10 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/Run-Latest-Master.cmd` | Owner-facing synchronize-and-run launcher for primary `master` |
 | `user/Sync-Sbxs-FromMaster.cmd [sandbox]` | Fast-forward primary `master`, then update every sandbox or only the selected one |
 | `user/TwoWay-Sync-MasterSbx.cmd [sandbox]` | Rare, gated two-way sync: merge every sandbox (or only the selected one) into `master`, then bring all sandboxes back up to it. Prints the exact commits and requires typing `APPROVE_SANDBOX_TO_MASTER` |
+| `user/debug/Show-DebugStore.cmd [query] [--days N]` | List or search archived local trips by number, destination, keyword, or label |
+| `user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
+| `user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
+| `user/debug/Clear-DebugStore.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole debug store and restart numbering |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |

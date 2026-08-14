@@ -21,3 +21,9 @@ def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
     from tripplanner import storage_cosmos
 
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)
+
+
+@pytest.fixture(autouse=True)
+def _disable_debug_store(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep fixture trips out of the committed debug archive."""
+    monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE", "0")

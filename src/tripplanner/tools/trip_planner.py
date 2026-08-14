@@ -21,7 +21,7 @@ from typing import Any
 
 from langchain_core.tools import tool
 
-from tripplanner import storage_cosmos
+from tripplanner import debug_store, storage_cosmos
 from tripplanner.decisions.provenance import make_check, record_check
 from tripplanner.decisions.rules import money
 from tripplanner.decisions.store import upsert_decision
@@ -1465,9 +1465,10 @@ def _mirror_to_history(plan: dict[str, Any]) -> None:
         return
     if storage_cosmos.is_enabled():
         storage_cosmos.upsert_doc(_COSMOS_TRIPS_CONTAINER, get_user_id(), tid, plan)
-        return
-    _ensure_dirs()
-    atomic_write_json(_resolve_trip_history_dir() / f"{tid}.json", plan, indent=2)
+    else:
+        _ensure_dirs()
+        atomic_write_json(_resolve_trip_history_dir() / f"{tid}.json", plan, indent=2)
+    debug_store.record_trip(plan, get_user_id())
 
 
 def _load_history_trip(trip_id: str) -> dict[str, Any] | None:
