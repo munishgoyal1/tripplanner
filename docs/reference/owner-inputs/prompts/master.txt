@@ -1211,3 +1211,6 @@ Proceed with your plan
 
 [2026-08-14 12:56] [master] ! Structural fix for itinerary fact checks
 Yes implement this, and not only just this particular day bug. Figure similar more issues and implement a structural fix so we dont need to iterate over again for similar smaller bugs.
+
+[2026-08-14 14:08] [master] ! Rename must migrate sandbox data too
+yes as part of the rename script handle data migration and everything. All i simply need is the sbx name change for reference, ret everything shoudl work as it is.
