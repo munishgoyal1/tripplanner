@@ -318,15 +318,60 @@ def test_a_continuity_gap_blocks_completion(located: None) -> None:
     )
 
 
+def test_a_few_minutes_late_for_something_that_waits_is_not_a_violation(
+    located: None,
+) -> None:
+    """Arriving a little after an ordinary sight costs nothing and reports nothing."""
+    tight = plan(
+        [
+            [
+                stop("Rajwada Palace", "10:00", "attraction", 60),
+                stop("Sarafa Bazaar", "11:05", "meal", 60),
+            ]
+        ]
+    )
+
+    assert not [v for v in trip_guard.validate_plan(tight) if v.code == "I4"]
+
+
+def test_the_same_few_minutes_late_for_a_booked_stop_is_a_violation(
+    located: None,
+) -> None:
+    booked = plan(
+        [
+            [
+                stop("Rajwada Palace", "10:00", "attraction", 60),
+                {**stop("Sarafa Bazaar", "11:05", "meal", 60), "booked": True},
+            ]
+        ]
+    )
+
+    assert [v for v in trip_guard.validate_plan(booked) if v.code == "I4"]
+
+
 def test_a_plan_without_an_origin_reports_that_the_guard_cannot_run() -> None:
     blind = plan([[stop("Rajwada Palace", "10:00")]], origin="")
     violations = [v for v in trip_guard.validate_plan(blind) if v.code == "I10"]
     assert violations
-    assert "where the trip starts" in violations[0].message
+    assert "Ask the traveller" in violations[0].message
     assert any(
         "does not say where it starts from" in gap
         for gap in trip_validation.planning_completion_gaps(blind)
     )
+
+
+def test_a_traveller_arranging_their_own_arrival_is_not_asked_again() -> None:
+    """A destination-only trip has answered the question; it is not a defect."""
+    own_arrival = plan(
+        [[stop("Rajwada Palace", "10:00")]], origin="", travel_scope="destination_only"
+    )
+
+    assert not [v for v in trip_guard.validate_plan(own_arrival) if v.code == "I10"]
+    assert not [
+        gap
+        for gap in trip_validation.planning_completion_gaps(own_arrival)
+        if "starts from" in gap
+    ]
 
 
 def test_a_plan_that_names_its_origin_reports_no_coverage_gap(located: None) -> None:

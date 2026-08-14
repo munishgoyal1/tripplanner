@@ -1239,3 +1239,7 @@ write the brief but also get started as per your plan.
 
 [2026-08-14 16:19] [master] ! Proceed with phases 2 and 3
 Proceed with next phases. while you do this first give me bit more explanation of phase3 mutaiton and metamorphic
+
+[2026-08-14 16:36] [master] ! Tolerance for soft deadlines, ask for origin
+1. few minutes should be tolerable on other side not being on short side, say if it risks missing a critical timeline - attraction ticketed entry time or a flight time then not acceptable, being early 9 minutes is still ok - that way tolerable.
+2. Some trips may not genuinely have origin as user may be interested just in the destination focussed itinerary and want to plan the reaching there on their own. We should someway give user a choice to add/remove out the origin (home city.) from where they will be travleling. Dont fix the trips , that is like back adding data, because those may be genuine as the home city might been missing in user profile. We should make it explciit to ask for it in the chat agent any such quick inputs that agent thinks are missign and will help it plan better.

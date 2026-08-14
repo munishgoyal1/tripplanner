@@ -1063,3 +1063,24 @@ the outcome.
   real coordinates, so `validate_plan` runs at full strength offline. Seven real
   trips produced exactly one new violation and zero false positives, which is
   the evidence that let continuity join the completion gate the same day.
+
+## 2026-08-14 - Missing Data Can Be An Answer, And Slack Is Not Symmetric
+
+- The audit reported seven trips with no `origin` as a defect. It was not one.
+  A traveller may want a destination-only itinerary and arrange their own way
+  there, so the absence was sometimes a genuine choice and sometimes a question
+  nobody had asked. Backfilling the field would have invented a home city the
+  user never gave. The fix is to let the trip record the answer
+  (`travel_scope: destination_only`) and to make the guard ask rather than
+  accuse. Before adding data to satisfy a rule, check whether the rule should
+  have asked a question instead.
+- A tolerance has to be asymmetric around what the traveller cannot undo. The
+  feasibility rule fired 21 times for arriving nine minutes after a restaurant,
+  which no one would call a defect, while the same nine minutes against a
+  ticketed entry or a departure is a missed trip. Slack now depends on who owns
+  the clock: a stop with a booking or a timed entry gets none, an ordinary sight
+  gets ten minutes. Occurrences fell from 90 to 82 and the only surviving
+  feasibility finding is a real one, thirty-eight minutes short.
+- Both changes came out of reading a grouped report rather than a single trip.
+  One count of 21 identical findings is the signal that a rule is miscalibrated;
+  the same 21 spread across weeks of manual testing read as noise.
