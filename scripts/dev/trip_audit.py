@@ -65,6 +65,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-debug-store", action="store_true")
     parser.add_argument("--no-revisions", action="store_true", help="final plans only")
     parser.add_argument("--no-fixtures", action="store_true")
+    parser.add_argument("--no-render", action="store_true", help="skip view-model checks")
+    parser.add_argument("--no-mutate", action="store_true", help="skip metamorphic checks")
     parser.add_argument("--database", action="append", default=None, help="repeatable")
     parser.add_argument("--json", dest="as_json", action="store_true")
     args = parser.parse_args(argv)
@@ -74,6 +76,8 @@ def main(argv: list[str] | None = None) -> int:
         debug_store=not args.no_debug_store,
         revisions=not args.no_revisions,
         fixtures=not args.no_fixtures,
+        render=not args.no_render,
+        mutate=not args.no_mutate,
         databases=args.database,
     )
 

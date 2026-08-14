@@ -94,8 +94,13 @@ def audit(
     *,
     records: list[CorpusRecord] | None = None,
     baseline: dict[str, Any] | None = None,
+    render: bool = True,
+    mutate: bool = True,
     **collect_kwargs: Any,
 ) -> AuditResult:
+    from tripplanner.validation.mutations import check_metamorphic
+    from tripplanner.validation.render import check_render
+
     sources: list[str] = []
     skipped: list[str] = []
     if records is None:
@@ -103,6 +108,10 @@ def audit(
     findings: list[Finding] = []
     for record in records:
         findings.extend(check_record(record))
+        if render:
+            findings.extend(check_render(record))
+        if mutate:
+            findings.extend(check_metamorphic(record))
     grouped = group(findings)
     if baseline is None:
         baseline = load_baseline(baseline_path(repo_root))

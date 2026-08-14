@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from tripplanner.validation import corpus, findings, runner
+from tripplanner.validation import corpus, findings, mutations, render, runner
 from tripplanner.validation.checks import check_record, plan_names
 from tripplanner.validation.emulator import assert_sandbox_database
 
@@ -174,8 +175,120 @@ def test_a_saved_baseline_round_trips(tmp_path: Path) -> None:
 
 
 def test_the_audit_reports_the_corpus_it_actually_read(tmp_path: Path) -> None:
-    result = runner.audit(tmp_path, records=[_record()], baseline={"accepted": {}})
+    result = runner.audit(
+        tmp_path, records=[_record()], baseline={"accepted": {}}, render=False, mutate=False
+    )
 
     assert result.corpus_size == 1
     assert result.provenance_mix == {corpus.REAL: 1}
     assert any(item.rule == "I9" for item in result.new)
+
+
+# ---- render ---------------------------------------------------------------
+
+
+def test_a_leg_drawn_as_ground_travel_across_a_continent_is_reported() -> None:
+    """The reported defect: a taxi from Bengaluru to a Paris hotel."""
+    return_day = _plan()
+    return_day["day_wise_itinerary"] = [
+        {
+            "day": 1,
+            "stops": [
+                {"name": "Charles de Gaulle Airport", "kind": "transport", "time": "09:55"},
+                {"name": "Kempegowda International Airport", "kind": "transport",
+                 "time": "23:20"},
+                {"name": "Hotel Lutetia", "kind": "hotel", "time": "23:59"},
+            ],
+        }
+    ]
+    record = corpus.CorpusRecord(
+        id="return-day",
+        provenance=corpus.REAL,
+        source="test",
+        plan=return_day,
+        places={**_PLACES, "charles de gaulle airport|paris": {"lat": 49.0097, "lng": 2.5479}},
+    )
+
+    reported = render.check_render(record)
+
+    assert any(finding.rule == render.RULE_GROUND_LEG for finding in reported)
+    assert any(finding.rule == render.RULE_LEG_DURATION for finding in reported)
+
+
+def test_render_checks_stay_silent_without_the_facts_to_measure_with() -> None:
+    blind = corpus.CorpusRecord(id="x", provenance=corpus.REAL, source="s", plan=_plan())
+
+    assert render.check_render(blind) == []
+
+
+def test_a_stop_missing_from_the_stored_facts_is_not_called_unmapped() -> None:
+    """The audit's own blind spot must not be reported as the product's defect."""
+    view = {"unmapped_stops": [{"name": "Somewhere Uncached", "day": 1, "reason": "no_location"}]}
+
+    assert render._unmapped_findings(_record(), view, []) == []
+
+
+def test_a_place_the_provider_swapped_for_another_is_reported() -> None:
+    view = {"unmapped_stops": [{"name": "Seine River Cruise", "day": 2, "reason": "no_match"}]}
+
+    reported = render._unmapped_findings(_record(), view, [])
+    assert [finding.rule for finding in reported] == [render.RULE_UNMAPPED]
+
+
+# ---- metamorphic ----------------------------------------------------------
+
+
+def test_every_mutation_is_offered_in_a_fixed_order() -> None:
+    plan = _plan()
+
+    assert [item.name for item in mutations.mutations_of(plan)] == [
+        item.name for item in mutations.mutations_of(plan)
+    ]
+
+
+def test_a_mutation_never_edits_the_plan_it_was_given() -> None:
+    plan = _plan()
+    before = json.dumps(plan, sort_keys=True)
+
+    mutations.mutations_of(plan)
+    assert json.dumps(plan, sort_keys=True) == before
+
+
+def test_blanking_an_origin_that_is_already_missing_is_not_a_mutation() -> None:
+    assert mutations.blank_origin(_plan(origin="")) is None
+
+
+def test_an_edit_that_changes_nothing_must_change_no_finding() -> None:
+    record = _record()
+    for mutation in mutations.mutations_of(record.plan):
+        if mutation.kind != mutations.NEUTRAL:
+            continue
+        mutated = dataclasses.replace(record, plan=mutation.plan)
+        assert {f.key for f in check_record(mutated)} == {f.key for f in check_record(record)}
+
+
+def test_a_guard_that_stops_running_is_caught_by_the_relations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC-07: silence the origin guards and losing the origin goes unnoticed.
+
+    Two rules cover a missing origin today, so both have to go before the hole
+    opens -- which is itself the evidence that the coverage is real.
+    """
+    from tripplanner.tools import trip_guard, trip_validation
+
+    record = _record()
+    assert not [
+        finding
+        for finding in mutations.check_metamorphic(record)
+        if finding.rule == mutations.RULE_UNNOTICED
+    ]
+
+    monkeypatch.setattr(trip_guard, "_coverage_violations", lambda plan: [])
+    monkeypatch.setattr(trip_validation, "_round_trip_transport_warnings", lambda plan: [])
+
+    blinded = mutations.check_metamorphic(record)
+    assert [f.rule for f in blinded if "blank-origin" in f.message] == [
+        mutations.RULE_UNNOTICED
+    ]
+
