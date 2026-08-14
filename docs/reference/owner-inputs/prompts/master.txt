@@ -1211,3 +1211,9 @@ Proceed with your plan
 
 [2026-08-14 12:56] [master] ! Structural fix for itinerary fact checks
 Yes implement this, and not only just this particular day bug. Figure similar more issues and implement a structural fix so we dont need to iterate over again for similar smaller bugs.
+
+[2026-08-14 14:30] [master] ! Draft auto-validation brief and corpus design
+Before we proceed:
+1. draft the feature brief of such large feature anyway.
+2. Do you want to store this data in a seperate store than the debug one. Why i am saying, because i wnat you to generate lot of synthetic data also. Generating 100 trips is hard manually - so to gather large corpus that can bring out feature ideas you will have to build that corpus
+3. What will be the mechasim to initiate this data-build, and run/analysis over the data
