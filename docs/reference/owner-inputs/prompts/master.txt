@@ -1208,3 +1208,6 @@ We want all local data to be union saved per user (prefix/tag by user) on every 
 
 [2026-08-14 10:40] [master !] Proceed with debug store phase 1
 Proceed with your plan
+
+[2026-08-14 12:56] [master] ! Structural fix for itinerary fact checks
+Yes implement this, and not only just this particular day bug. Figure similar more issues and implement a structural fix so we dont need to iterate over again for similar smaller bugs.

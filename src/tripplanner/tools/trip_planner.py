@@ -1506,6 +1506,7 @@ def _trip_summary(plan: dict[str, Any], active_id: str | None) -> dict[str, Any]
     tid = plan.get("trip_id") or _compute_trip_id(plan)
     return {
         "trip_id": tid,
+        "trip_number": int(plan.get("trip_number") or 0),
         "destination": str(plan.get("destination") or ""),
         "departure_date": str(plan.get("departure_date") or ""),
         "return_date": str(plan.get("return_date") or ""),
@@ -1523,6 +1524,37 @@ def _trip_summary(plan: dict[str, Any], active_id: str | None) -> dict[str, Any]
     }
 
 
+def _next_trip_number(plans: list[dict[str, Any]] | None = None) -> int:
+    """Next per-user number, or 0 when history is unreadable.
+
+    Numbering is a display aid, so a storage hiccup leaves a trip unnumbered
+    rather than failing the save that carries the traveller's actual plan.
+    """
+    try:
+        known = plans if plans is not None else _all_history_trips()
+    except Exception:  # noqa: BLE001
+        return 0
+    return max((int(p.get("trip_number") or 0) for p in known), default=0) + 1
+
+
+def _ensure_trip_numbers(plans: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One-time numbering for trips saved before trip_number existed."""
+    missing = [plan for plan in plans if not plan.get("trip_number")]
+    if not missing:
+        return plans
+    following = _next_trip_number(plans)
+    for plan in sorted(missing, key=lambda p: str(p.get("created_at") or "")):
+        plan["trip_number"] = following
+        # Re-read before writing: the listed snapshot must never overwrite a
+        # newer version of the trip that another window already saved.
+        current = _load_history_trip(str(plan.get("trip_id") or ""))
+        if current and not current.get("trip_number"):
+            current["trip_number"] = following
+            _mirror_to_history(current)
+        following += 1
+    return plans
+
+
 def list_saved_trips() -> list[dict[str, Any]]:
     """All saved trips as compact descriptors, most-recently-updated first.
 
@@ -1530,7 +1562,9 @@ def list_saved_trips() -> list[dict[str, Any]]:
     """
     active = _load_active_trip()
     active_id = (active or {}).get("trip_id") if active else None
-    summaries = [_trip_summary(p, active_id) for p in _all_history_trips()]
+    summaries = [
+        _trip_summary(p, active_id) for p in _ensure_trip_numbers(_all_history_trips())
+    ]
     summaries.sort(key=lambda t: t["updated_at"], reverse=True)
     return summaries
 
@@ -1764,6 +1798,7 @@ def create_trip_plan(
     plan: dict[str, Any] = {
         "status": "draft",
         "trip_id": trip_id,
+        "trip_number": _next_trip_number(),
         "created_at": datetime.now().isoformat(),
         "destination": destination,
         "origin": origin,

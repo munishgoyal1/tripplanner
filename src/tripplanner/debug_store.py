@@ -31,6 +31,7 @@ _HOSTED_ENVIRONMENTS = {"canary", "prod", "production"}
 # run's file without losing the shape of how the trip evolved.
 MAX_REVISIONS = 50
 MAX_KEYWORDS = 60
+MAX_PLACE_ENTRIES = 200
 
 # Fields that decide whether a save is a meaningful change or just a re-write.
 _MEANINGFUL_FIELDS = (
@@ -293,7 +294,10 @@ def iter_records(root: Path | None = None) -> list[tuple[Path, dict[str, Any]]]:
 
 
 def merge_revision(
-    record: dict[str, Any], plan: dict[str, Any], where: dict[str, str]
+    record: dict[str, Any],
+    plan: dict[str, Any],
+    where: dict[str, str],
+    bundle: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Fold one save into a run record, adding a revision only on real change."""
     revisions = list(record.get("revisions") or [])
@@ -303,6 +307,8 @@ def merge_revision(
     else:
         revisions[-1] = {"at": where["at"], "content_hash": fingerprint, "plan": plan}
     record["revisions"] = revisions[-MAX_REVISIONS:]
+    if bundle is not None:
+        record["bundle"] = bundle
     record["descriptor"] = {
         **describe(plan),
         "label": str((record.get("descriptor") or {}).get("label") or ""),
@@ -316,6 +322,51 @@ def merge_revision(
         seen_in.append(where)
     record["seen_in"] = seen_in
     return record
+
+
+# ---------------------------------------------------------------------------
+# Offline-render bundle
+# ---------------------------------------------------------------------------
+
+
+def _safe(producer: Any) -> Any:
+    try:
+        return producer()
+    except Exception:  # noqa: BLE001 - a missing side store must not lose the trip
+        return None
+
+
+def referenced_places(plan: dict[str, Any]) -> dict[str, Any]:
+    """Cached place entries this trip renders from, keyed ``name|city``."""
+    from tripplanner.web import places_cache
+
+    names = {word.lower() for word in collect_keywords(plan)}
+    destination = str(plan.get("destination") or "").strip().lower()
+    with places_cache._CACHE_LOCK:  # noqa: SLF001 - read-only debug snapshot
+        snapshot = places_cache._live_snapshot()  # noqa: SLF001
+    wanted: dict[str, Any] = {}
+    for key, entry in snapshot.items():
+        name, _, city = key.partition("|")
+        if name in names or (destination and city == destination):
+            wanted[key] = entry
+        if len(wanted) >= MAX_PLACE_ENTRIES:
+            break
+    return wanted
+
+
+def collect_bundle(plan: dict[str, Any], user_id: str) -> dict[str, Any]:
+    """Everything besides the trip needed to re-render it without providers."""
+    from tripplanner.tools import user_preferences
+    from tripplanner.web import chat_store
+
+    trip_id = str(plan.get("trip_id") or "")
+    return {
+        "captured_at": _now_iso(),
+        "user_id": user_id,
+        "chat": _safe(lambda: chat_store.export_state([trip_id])),
+        "preferences": _safe(user_preferences.load_preferences),
+        "places": _safe(lambda: referenced_places(plan)),
+    }
 
 
 def capture_trip(plan: dict[str, Any], user_id: str) -> Path | None:
@@ -347,7 +398,10 @@ def capture_trip(plan: dict[str, Any], user_id: str) -> Path | None:
     record.setdefault("user_id", user_id)
     record.setdefault("created_date", day)
     record.setdefault("first_captured_at", _now_iso())
-    atomic_write_json(path, merge_revision(record, plan, provenance()), indent=2)
+    revisions = record.get("revisions") or []
+    changed = not revisions or revisions[-1].get("content_hash") != content_hash(plan)
+    bundle = collect_bundle(plan, user_id) if changed else None
+    atomic_write_json(path, merge_revision(record, plan, provenance(), bundle), indent=2)
     return path
 
 

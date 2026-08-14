@@ -21,6 +21,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `dev/sandbox_seed.py` | Seed, drop, or capture data for a sandbox emulator database |
 | `dev/debug_store_cli.py` | Show, maintain, restore, or tear down the local debug trip store |
 | `dev/debug-store.ps1` | Dispatcher the debug-store launchers call |
+| `dev/capture-screens.ps1` | Capture screenshots, API view-models, console output, and DOM from a running local stack |
 | `dev/ui-snapshot.ps1` | Preserve or inspect accepted UI tags |
 | `dev/record-lab-implementation.ps1` | Append an agent Lab state version; defaults to implementation evidence and owner review, with `-State` for park, discard, completion, or reopen |
 | `dev/lib/run-log.ps1` | Shared last-run transcript logging for every entry-point script |
@@ -34,6 +35,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/debug/Maintain-DebugStore.cmd` | Repair descriptors, reassign duplicate numbers, trim revisions, and report store health |
 | `user/debug/Restore-DebugStore.cmd [sandbox] [days]` | Restore archived trips into an emulator; sandbox `0` or omitted means primary `master`, days defaults to 7 |
 | `user/debug/Clear-DebugStore.cmd --confirm CLEAR_DEBUG_STORE` | Delete the whole debug store and restart numbering |
+| `user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |

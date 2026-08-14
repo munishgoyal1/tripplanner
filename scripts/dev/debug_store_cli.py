@@ -28,6 +28,11 @@ EMULATOR_KEY = (
     "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
 )
 TRIPS_CONTAINER = "trips"
+USERS_CONTAINER = "users"
+PLACES_CONTAINER = "places_cache"
+PLACES_PARTITION = "_shared"
+PREFERENCES_DOC_ID = "preferences"
+CHAT_OPERATIONS_DOC_ID = "chat_operations"
 
 
 def _fail(message: str) -> int:
@@ -255,10 +260,53 @@ def _emulator_database(name: str):
         connection_verify=False,
     )
     database = client.create_database_if_not_exists(id=name)
-    database.create_container_if_not_exists(
-        id=TRIPS_CONTAINER, partition_key=PartitionKey(path="/user_id")
-    )
+    for container in (TRIPS_CONTAINER, USERS_CONTAINER, PLACES_CONTAINER):
+        database.create_container_if_not_exists(
+            id=container, partition_key=PartitionKey(path="/user_id")
+        )
     return database
+
+
+def _restore_bundle(database, record: dict[str, Any], user_id: str) -> dict[str, int]:
+    """Rehydrate chat, preferences, and cached places for one archived trip."""
+    from tripplanner.web.places_cache import _doc_id  # noqa: PLC2701 - shared id scheme
+
+    bundle = record.get("bundle") or {}
+    written = {"chat": 0, "preferences": 0, "places": 0}
+    users = database.get_container_client(USERS_CONTAINER)
+
+    chat = bundle.get("chat") or {}
+    for bucket, body in (chat.get("buckets") or {}).items():
+        if isinstance(body, dict) and body:
+            users.upsert_item(body={**body, "id": f"chat_{bucket}", "user_id": user_id})
+            written["chat"] += 1
+    operations = chat.get("operations") or {}
+    if operations:
+        users.upsert_item(
+            body={**operations, "id": CHAT_OPERATIONS_DOC_ID, "user_id": user_id}
+        )
+
+    preferences = bundle.get("preferences")
+    if isinstance(preferences, dict) and preferences:
+        users.upsert_item(
+            body={**preferences, "id": PREFERENCES_DOC_ID, "user_id": user_id}
+        )
+        written["preferences"] += 1
+
+    places = bundle.get("places") or {}
+    if places:
+        container = database.get_container_client(PLACES_CONTAINER)
+        for key, entry in places.items():
+            container.upsert_item(
+                body={
+                    "key": key,
+                    "entry": entry,
+                    "id": _doc_id(key),
+                    "user_id": PLACES_PARTITION,
+                }
+            )
+            written["places"] += 1
+    return written
 
 
 def cmd_restore(args: argparse.Namespace) -> int:
@@ -267,9 +315,11 @@ def cmd_restore(args: argparse.Namespace) -> int:
     if not selected:
         print("Nothing matched; no trips restored.")
         return 0
-    database = _assert_restorable(_database_for_sandbox(args.sandbox))
-    container = _emulator_database(database).get_container_client(TRIPS_CONTAINER)
+    database_name = _assert_restorable(args.database or _database_for_sandbox(args.sandbox))
+    database = _emulator_database(database_name)
+    container = database.get_container_client(TRIPS_CONTAINER)
     written = 0
+    totals = {"chat": 0, "preferences": 0, "places": 0}
     for _, record in selected:
         revisions = record.get("revisions") or []
         if not revisions:
@@ -281,8 +331,16 @@ def cmd_restore(args: argparse.Namespace) -> int:
             continue
         container.upsert_item(body={**plan, "id": trip_id, "user_id": user_id})
         written += 1
+        if not args.no_bundle:
+            for key, count in _restore_bundle(database, record, user_id).items():
+                totals[key] += count
         print(f"  restored #{int(record.get('archive_no') or 0):04d} {trip_id}")
-    print(f"Restored {written} trip(s) into {database}.")
+    print(f"Restored {written} trip(s) into {database_name}.")
+    if not args.no_bundle:
+        print(
+            f"  bundle: {totals['chat']} chat bucket(s), "
+            f"{totals['preferences']} preference doc(s), {totals['places']} cached place(s)"
+        )
     return 0
 
 
@@ -328,6 +386,8 @@ def build_parser() -> argparse.ArgumentParser:
     restore.add_argument("--all", action="store_true")
     restore.add_argument("--trip", default="")
     restore.add_argument("--as-user", default="")
+    restore.add_argument("--database", default="", help="Target database instead of a sandbox slot")
+    restore.add_argument("--no-bundle", action="store_true", help="Trip documents only")
     restore.set_defaults(func=cmd_restore)
 
     clear = sub.add_parser("clear", help="Delete the whole store.")

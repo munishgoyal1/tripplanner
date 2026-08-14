@@ -469,6 +469,7 @@ export interface TripWorkspaceView {
 
 export interface SavedTrip {
   trip_id: string;
+  trip_number?: number;
   destination: string;
   departure_date: string;
   return_date: string;

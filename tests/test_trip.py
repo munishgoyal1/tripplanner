@@ -2694,6 +2694,32 @@ class TestSavedTrips:
         trips = list_saved_trips()
         assert len([t for t in trips if t["destination"] == "Mumbai"]) == 2
 
+    def test_trips_are_numbered_in_creation_order(self):
+        _make_trip("Mumbai", "2026-07-10", "2026-07-15")
+        _make_trip("Vietnam", "2026-09-01", "2026-09-10")
+        numbers = {t["destination"]: t["trip_number"] for t in list_saved_trips()}
+        assert numbers == {"Mumbai": 1, "Vietnam": 2}
+
+    def test_trip_number_is_stable_across_updates(self):
+        _make_trip("Mumbai", "2026-07-10", "2026-07-15")
+        before = list_saved_trips()[0]["trip_number"]
+        _make_trip("Vietnam", "2026-09-01", "2026-09-10")
+        after = next(t for t in list_saved_trips() if t["destination"] == "Mumbai")
+        assert after["trip_number"] == before
+
+    def test_older_unnumbered_trips_are_backfilled_once(self):
+        _make_trip("Mumbai", "2026-07-10", "2026-07-15")
+        _make_trip("Vietnam", "2026-09-01", "2026-09-10")
+        from tripplanner.tools import trip_planner as tp
+
+        for plan in tp._all_history_trips():
+            plan.pop("trip_number", None)
+            tp._mirror_to_history(plan)
+        first = {t["destination"]: t["trip_number"] for t in list_saved_trips()}
+        second = {t["destination"]: t["trip_number"] for t in list_saved_trips()}
+        assert sorted(first.values()) == [1, 2]
+        assert first == second
+
     def test_switch_active_trip(self):
         _make_trip("Mumbai", "2026-07-10", "2026-07-15")
         _make_trip("Vietnam", "2026-09-01", "2026-09-10")

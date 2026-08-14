@@ -46,8 +46,21 @@ describe("TripSwitcher deletion", () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
   });
 
-  it("deletes only the checked trip", async () => {
-    deleteTripMock.mockResolvedValue([ROME_TRIP]);
+  it("shows the trip number before the destination when one is assigned", async () => {
+    fetchSavedTripsMock.mockResolvedValue([
+      { ...GOA_TRIP, trip_number: 3 },
+      { ...ROME_TRIP, trip_number: 0 },
+    ]);
+    render(<TripSwitcher version={1} onSwitched={vi.fn()} />);
+
+    fireEvent.click(await screen.findByTitle("Switch between your saved trips"));
+    const menu = await screen.findByTestId("saved-trips-menu");
+
+    expect(menu.textContent).toContain("#3");
+    expect(menu.textContent).not.toContain("#0");
+  });
+
+  it("deletes only the checked trip", async () => {    deleteTripMock.mockResolvedValue([ROME_TRIP]);
     const onSwitched = vi.fn();
     render(<TripSwitcher version={1} onSwitched={onSwitched} />);
 

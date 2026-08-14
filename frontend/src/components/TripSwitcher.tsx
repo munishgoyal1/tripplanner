@@ -234,6 +234,11 @@ export default function TripSwitcher({
               const details = (
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
+                    {trip.trip_number ? (
+                      <span className="shrink-0 text-xs font-semibold tabular-nums text-slate-400">
+                        #{trip.trip_number}
+                      </span>
+                    ) : null}
                     <span className="truncate text-sm font-medium text-ink">
                       {trip.destination || "Untitled trip"}
                     </span>

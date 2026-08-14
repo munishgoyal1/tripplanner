@@ -124,3 +124,36 @@ def test_capture_can_be_switched_off(monkeypatch):
 def test_record_trip_swallows_bad_input():
     debug_store.record_trip({"trip_id": object()}, "google-123")
     assert debug_store.iter_records() == []
+
+
+def test_capture_attaches_an_offline_render_bundle():
+    path = debug_store.capture_trip(make_plan(), "google-123")
+    bundle = debug_store.load_record(path)["bundle"]
+    assert set(bundle) == {"captured_at", "user_id", "chat", "preferences", "places"}
+    assert bundle["user_id"] == "google-123"
+
+
+def test_bundle_is_only_refreshed_when_a_revision_is_added():
+    first = debug_store.capture_trip(make_plan(), "google-123")
+    original = debug_store.load_record(first)["bundle"]["captured_at"]
+    debug_store.capture_trip(make_plan(updated_at="2026-07-09T10:00:00"), "google-123")
+    unchanged = debug_store.load_record(first)["bundle"]["captured_at"]
+    assert unchanged == original
+
+
+def test_referenced_places_keeps_only_this_trip_and_destination(monkeypatch):
+    import time
+
+    from tripplanner.web import places_cache
+
+    now = time.time()
+    cache = {
+        "grand wailea|maui": {"rating": 4.8, "__at__": now},
+        "some cafe|maui": {"rating": 4.1, "__at__": now},
+        "eiffel tower|paris": {"rating": 4.7, "__at__": now},
+    }
+    monkeypatch.setattr(places_cache, "_CACHE", cache)
+    found = debug_store.referenced_places(make_plan())
+    assert "grand wailea|maui" in found
+    assert "some cafe|maui" in found
+    assert "eiffel tower|paris" not in found
