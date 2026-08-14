@@ -93,6 +93,12 @@ def build_itinerary() -> dict[str, Any]:
     return trip_view.build_itinerary(trip_planner.load_active_trip_dict())
 
 
+def build_verification() -> dict[str, Any]:
+    from tripplanner.web import trip_verification
+
+    return trip_verification.build_verification(trip_planner.load_active_trip_dict())
+
+
 def select(
     kind: str,
     name: str,

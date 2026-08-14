@@ -1232,3 +1232,7 @@ first thing- write this brief under docs/reasearch and later you can refine . th
 
 [2026-08-14 16:09] [sbx1] ! Implementation plan for research features
 I like your plan. Can we start implementing. Share the implementation plan of all these features
+
+[2026-08-14 16:19] [sbx1] ! Approve holiday source and finish M1
+1. Yes include it
+2. Agree. for this run lets do M1 first and i will validate in the UI. Include it over existing trips in this sb data

@@ -22,6 +22,7 @@ from typing import Any, Literal
 
 from tripplanner.tools import trip_guard
 from tripplanner.tools.trip_common import _coords_from_summary, _stop_kind, _stop_name
+from tripplanner.web import holidays, place_country
 
 Status = Literal["passed", "failed", "unverified"]
 
@@ -69,6 +70,7 @@ class StopFacts:
     has_status: bool
     has_time: bool
     has_date: bool
+    holiday: str = ""
 
     def missing(self, needed: frozenset[str]) -> list[str]:
         present = {
@@ -78,15 +80,46 @@ class StopFacts:
             "time": self.has_time,
             "date": self.has_date,
         }
-        return [fact for fact in sorted(needed) if fact in present and not present[fact]]
+        labels: list[str] = []
+        for fact in sorted(needed):
+            if fact not in present or present[fact]:
+                continue
+            if fact == "hours" and self.holiday:
+                labels.append(f"opening hours on {self.holiday}")
+            else:
+                labels.append(_FACT_LABELS[fact])
+        return labels
 
 
-def _collect_stop_facts(plan: dict[str, Any]) -> list[StopFacts]:
+def _holiday_by_day(plan: dict[str, Any], dates: dict[int, str]) -> dict[int, str]:
+    """Named public holidays among the trip's days, where they can be known.
+
+    An unreadable calendar leaves the weekly hours standing. Retracting a fact
+    we did fetch because a second source was unreachable would make every trip
+    look unverified without telling the traveller anything.
+    """
+    destination = str(plan.get("destination") or "").strip()
+    if not destination or not dates:
+        return {}
+    code = place_country.resolve_country_code(destination)
+    if not code:
+        return {}
+    found: dict[int, str] = {}
+    for day, day_iso in dates.items():
+        name = holidays.holiday_on(code, day_iso)
+        if name:
+            found[day] = name
+    return found
+
+
+def _collect_stop_facts(plan: dict[str, Any]) -> tuple[list[StopFacts], dict[int, str]]:
     destination = str(plan.get("destination") or "")
     dates = trip_guard.day_dates(plan)
+    holiday_by_day = _holiday_by_day(plan, dates)
     out: list[StopFacts] = []
     for day, _entry, stops in trip_guard.days_of(plan):
         day_iso = dates.get(day, "")
+        holiday = holiday_by_day.get(day, "")
         for stop in stops:
             name = _stop_name(stop)
             if not name:
@@ -95,19 +128,21 @@ def _collect_stop_facts(plan: dict[str, Any]) -> list[StopFacts]:
             is_place = kind not in _TRANSPORT_KINDS
             summary = trip_guard._summary_for_place(name, destination) if is_place else {}
             facts = trip_guard.facts_for(name, destination) if is_place else None
+            known_hours = facts is not None and facts.hours_on(day_iso) is not None
             out.append(
                 StopFacts(
                     day=day,
                     name=name,
                     kind=kind,
                     has_location=bool(_coords_from_summary(summary)) if is_place else True,
-                    has_hours=facts is not None and facts.hours_on(day_iso) is not None,
+                    has_hours=known_hours and not holiday,
                     has_status=bool(facts and facts.business_status),
                     has_time=trip_guard._time_of(stop) is not None,
                     has_date=bool(day_iso),
+                    holiday=holiday if known_hours else "",
                 )
             )
-    return out
+    return out, holiday_by_day
 
 
 def _envelope_known(plan: dict[str, Any]) -> bool:
@@ -127,13 +162,7 @@ def _gaps_for(
             continue
         missing = stop.missing(needed)
         if missing:
-            gaps.append(
-                {
-                    "name": stop.name,
-                    "day": stop.day,
-                    "missing": [_FACT_LABELS[fact] for fact in missing],
-                }
-            )
+            gaps.append({"name": stop.name, "day": stop.day, "missing": missing})
     return gaps
 
 
@@ -150,7 +179,7 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
         }
 
     violations = trip_guard.validate_plan(plan)
-    stop_facts = _collect_stop_facts(plan)
+    stop_facts, holiday_by_day = _collect_stop_facts(plan)
     envelope_known = _envelope_known(plan)
 
     by_code: dict[str, list[trip_guard.Violation]] = {}
@@ -204,7 +233,7 @@ def build_verification(plan: dict[str, Any] | None) -> dict[str, Any]:
         "verdict": verdict,
         "counts": counts,
         "checks": checks,
-        "days": _day_rows(plan, violations, unverified_stops),
+        "days": _day_rows(plan, violations, unverified_stops, holiday_by_day),
         "unverified_stops": [
             {"name": name, "day": day, "missing": sorted(missing)}
             for (name, day), missing in sorted(
@@ -218,6 +247,7 @@ def _day_rows(
     plan: dict[str, Any],
     violations: list[trip_guard.Violation],
     unverified_stops: dict[tuple[str, int | None], set[str]],
+    holiday_by_day: dict[int, str],
 ) -> list[dict[str, Any]]:
     unverified_by_day: dict[int | None, set[str]] = {}
     for (name, day), _missing in unverified_stops.items():
@@ -239,6 +269,7 @@ def _day_rows(
                 "status": status,
                 "findings": findings,
                 "unverified": unverified,
+                "holiday": holiday_by_day.get(day, ""),
             }
         )
     return rows

@@ -176,3 +176,49 @@ def test_days_carry_their_own_verdict(fully_known: None) -> None:
     rows = {row["day"]: row for row in trip_verification.build_verification(broken)["days"]}
     assert rows[2]["status"] == "failed"
     assert any("Rajwada Palace" in message for message in rows[2]["findings"])
+
+
+# --------------------------------------------------------------------------- #
+# public holidays                                                              #
+# --------------------------------------------------------------------------- #
+
+
+@pytest.fixture
+def indian_holidays(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Day 2 of the sound trip falls on a named public holiday."""
+    monkeypatch.setattr(
+        trip_verification.place_country, "resolve_country_code", lambda _place: "IN"
+    )
+    monkeypatch.setattr(
+        trip_verification.holidays,
+        "holiday_on",
+        lambda _code, day_iso: "Independence Day" if day_iso == "2026-08-11" else "",
+    )
+
+
+def test_a_holiday_retracts_the_weekly_hours_claim(
+    fully_known: None, indian_holidays: None
+) -> None:
+    report = trip_verification.build_verification(_SOUND)
+    hours = next(check for check in report["checks"] if check["code"] == "I3")
+    assert hours["status"] == "unverified"
+    assert any("Independence Day" in text for gap in hours["gaps"] for text in gap["missing"])
+
+
+def test_the_holiday_is_named_on_its_day(fully_known: None, indian_holidays: None) -> None:
+    rows = {row["day"]: row for row in trip_verification.build_verification(_SOUND)["days"]}
+    assert rows[2]["holiday"] == "Independence Day"
+    assert rows[3]["holiday"] == ""
+
+
+def test_an_unreadable_calendar_leaves_known_hours_standing(
+    fully_known: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        trip_verification.place_country, "resolve_country_code", lambda _place: "IN"
+    )
+    monkeypatch.setattr(
+        trip_verification.holidays, "holiday_on", lambda _code, _day: None
+    )
+    report = trip_verification.build_verification(_SOUND)
+    assert report["verdict"] == "clear"

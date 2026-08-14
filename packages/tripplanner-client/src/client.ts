@@ -15,6 +15,7 @@ import type {
   StreamOptions,
   TripInputRequest,
   TripView,
+  TripVerification,
   TripWorkspaceView,
 } from "./types";
 
@@ -201,8 +202,16 @@ export class TripplannerClient {
     return response.json() as Promise<Itinerary>;
   }
 
-  async fetchMapView(signal?: AbortSignal): Promise<MapView> {
+  async fetchVerification(signal?: AbortSignal): Promise<TripVerification> {
     const response = await this.request(
+      this.url("/trip/verification", { user_id: await this.userId() }),
+      { signal },
+    );
+    ensureOk(response, "Could not load the verification report");
+    return response.json() as Promise<TripVerification>;
+  }
+
+  async fetchMapView(signal?: AbortSignal): Promise<MapView> {    const response = await this.request(
       this.url("/trip/map", { user_id: await this.userId() }),
       { signal },
     );

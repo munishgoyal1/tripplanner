@@ -1087,6 +1087,15 @@ async def trip_itinerary_endpoint(request: Request, user_id: str = "local") -> d
     return await asyncio.to_thread(trip_operations.build_itinerary)
 
 
+@app.get("/trip/verification")
+async def trip_verification_endpoint(request: Request, user_id: str = "local") -> dict:
+    """What the planner checked on the active trip, and what it could not."""
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    return await asyncio.to_thread(trip_operations.build_verification)
+
+
 @app.post("/trip/stop/booked")
 async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
     """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""

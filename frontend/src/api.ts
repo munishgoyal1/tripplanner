@@ -1,4 +1,4 @@
-import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripWorkspaceView } from "./types";
+import type { TripView, DecisionApplyResult, DestinationOverview, MapView, MapsConfig, PlannerReview, Receipt, SavedTrip, Itinerary, PlaceGuidePage, TripVerification, TripWorkspaceView } from "./types";
 import {
   type DeselectItemOptions,
   type SelectItemOptions,
@@ -668,6 +668,11 @@ export async function fetchMapView(signal?: AbortSignal): Promise<MapView> {
 /** Structured day-by-day itinerary for the Itinerary tab. */
 export async function fetchItinerary(signal?: AbortSignal): Promise<Itinerary> {
   return sharedClient.fetchItinerary(signal);
+}
+
+/** What the planner checked on this trip, and what it could not check. */
+export async function fetchVerification(signal?: AbortSignal): Promise<TripVerification> {
+  return sharedClient.fetchVerification(signal);
 }
 
 /** Toggle one itinerary stop's booked flag; returns the refreshed itinerary. */

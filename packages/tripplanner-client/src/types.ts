@@ -538,6 +538,41 @@ export interface Itinerary {
   stats: { days: number; stops: number; booked: number };
 }
 
+/** A check the planner ran, or could not run, over the trip. */
+export type VerificationStatus = "passed" | "failed" | "unverified";
+
+export interface VerificationGap {
+  name: string;
+  day: number | null;
+  missing: string[];
+}
+
+export interface VerificationCheck {
+  code: string;
+  rule: string;
+  statement: string;
+  status: VerificationStatus;
+  findings: string[];
+  gaps: VerificationGap[];
+}
+
+export interface VerificationDay {
+  day: number;
+  status: VerificationStatus;
+  findings: string[];
+  unverified: string[];
+  holiday: string;
+}
+
+/** "unverified" at trip level means there was nothing to check yet. */
+export interface TripVerification {
+  verdict: "clear" | "partial" | "issues" | "unverified";
+  counts: { total: number; passed: number; failed: number; unverified: number };
+  checks: VerificationCheck[];
+  days: VerificationDay[];
+  unverified_stops: VerificationGap[];
+}
+
 /** Every panel's view-model for one trip, returned together on a trip switch. */
 export interface TripWorkspaceView {
   view: TripView;
