@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import ReactDOM from "react-dom/client";
-import { Check, ChevronRight, CircleHelp, Clock3, Heart, MessageCircle, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { Check, CircleHelp, Clock3, Heart, MessageCircle, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
