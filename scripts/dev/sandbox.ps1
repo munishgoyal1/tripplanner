@@ -53,10 +53,16 @@
     lands, and runs the sandbox conflict resolver automatically on both syncs, so
     a conflict git can already settle does not stall the merge.
 
+    Promote-Sandbox (the user launcher) defaults to -Merge's keep-alive behavior;
+    pass -Discard to it to get -Promote's discard-after-landing behavior instead.
+    Call this script's own -Merge / -Promote directly to bypass that default.
+
     -Rename changes only the name part of a sandbox: its branch, worktree folder,
     and database name follow, while the number keeps its ports. A new name may
     repeat the existing number but cannot change it. The emulator data moves to
-    the new database name, so the sandbox keeps the trips it already had.
+    the new database name, so the sandbox keeps the trips it already had. Pass
+    -Purpose to update the recorded purpose in the same step; otherwise a reused
+    slot keeps showing its prior occupant's purpose in -List.
 
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
@@ -114,6 +120,7 @@ param(
     [string]$BaseBranch = "master",
 
     [Parameter(ParameterSetName = "New", Position = 0)]
+    [Parameter(ParameterSetName = "Rename")]
     [string]$Purpose = "",
 
     [Parameter(ParameterSetName = "New")]
@@ -1034,7 +1041,15 @@ if ($PSCmdlet.ParameterSetName -eq "List") {
         $state = if ($serving) { "serving" } else { "stopped" }
         $age = ""
         if ($item.createdUtc) {
-            $span = (Get-Date).ToUniversalTime() - [datetime]::Parse($item.createdUtc).ToUniversalTime()
+            # ConvertFrom-Json already turns an ISO-looking createdUtc string into a
+            # [datetime]; re-parsing its current-culture ToString() (e.g. "08/13/2026")
+            # both mangled the age and threw outright once the day-of-month exceeded 12.
+            $createdUtc = if ($item.createdUtc -is [datetime]) {
+                $item.createdUtc
+            } else {
+                [datetime]::Parse($item.createdUtc, [System.Globalization.CultureInfo]::InvariantCulture)
+            }
+            $span = (Get-Date).ToUniversalTime() - $createdUtc.ToUniversalTime()
             $age = if ($span.TotalDays -ge 1) { "{0:N0}d old" -f $span.TotalDays } else { "{0:N0}h old" -f $span.TotalHours }
         }
         $purpose = if ([string]::IsNullOrWhiteSpace($item.purpose)) { "(no purpose recorded)" } else { $item.purpose }
@@ -1323,7 +1338,16 @@ if ($PSCmdlet.ParameterSetName -eq "Rename") {
 
     $newSlug = "$number-$newShortName"
     if ($newSlug -eq $entry.slug) {
-        Write-Host "[current] Sandbox '$($entry.slug)' already has that name." -ForegroundColor Green
+        if ($Purpose) {
+            $entries = @(Get-Registry)
+            foreach ($item in $entries) {
+                if ($item.slug -eq $entry.slug) { $item.purpose = $Purpose }
+            }
+            Save-Registry -Entries $entries
+            Write-Host "[purpose] $($entry.slug) -> $Purpose" -ForegroundColor Green
+        } else {
+            Write-Host "[current] Sandbox '$($entry.slug)' already has that name." -ForegroundColor Green
+        }
         return
     }
     $clash = @(Get-Registry | Where-Object {
@@ -1368,6 +1392,9 @@ if ($PSCmdlet.ParameterSetName -eq "Rename") {
             $item.branch = $newBranch
             $item.worktree = $newWorktree
             $item.database = $newDatabase
+            # A renamed slot otherwise keeps its prior occupant's purpose text,
+            # which reads as a stale, misleading answer to "what is this for?".
+            if ($Purpose) { $item.purpose = $Purpose }
         }
     }
     Save-Registry -Entries $entries
