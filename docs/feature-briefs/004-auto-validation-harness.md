@@ -153,9 +153,12 @@ must confirm before its checks are allowed to gate.
 
 - A rules registry: one table mapping rule id to the rule stated in the owner's
   words, its severity tier, and its evaluator.
-- Agent-driven synthetic generation against a dedicated sandbox, resumable and
-  budget-capped.
+- Planner-driven synthetic generation against a dedicated sandbox, resumable and
+  capped by trip count and budget, whichever is reached first.
 - Corpus observation report (statistics, not violations) for feature discovery.
+- A tagged reference corpus of proven real-world itineraries, and a comparison
+  that reports where our generated itineraries differ structurally from
+  reference itineraries carrying the same tags.
 
 ### Could ship later
 
@@ -225,19 +228,32 @@ Not applicable.
 
 - **Source of truth:** every finding is derived from a stored plan; the harness
   keeps no independent state beyond its baseline and corpus manifest.
-- **Provenance is mandatory.** Each corpus record declares `real`, `synthetic`,
-  `mutated`, or `golden`. Findings are reported with provenance so a synthetic
-  artefact is never mistaken for a real defect.
+- **Provenance is mandatory.** Each corpus record declares `real`, `revision`,
+  `synthetic`, `template`, `mutated`, `golden`, or `reference`. Findings are
+  reported with provenance so a synthetic artefact is never mistaken for a real
+  defect, and so a reference itinerary is never reported as our bug.
 - **Isolation:** the harness refuses any database not prefixed
   `tripplanner-sbx-` or the local store, reusing `sandbox_seed`'s existing
   refusal of `tripplanner-canary` and `tripplanner-prod`.
 - **Trip numbering:** synthetic trips must never consume `debug_store`'s
   `archive_no` sequence, which is owner-facing.
 - **Determinism:** mutations are a pure function of `(source plan, seed,
-  generator version)` and are never stored. Agent-generated trips are stored
-  because regenerating them costs money.
-- **Retention:** the corpus is disposable and regenerable from its manifest; the
-  golden set is permanent and committed.
+  generator version)` and are never stored. Planner-generated trips are stored
+  and committed because regenerating them costs money.
+- **Retention:** the corpus is preserved, not regenerable. The golden set is
+  permanent. Reference records store structure and a source URL, never
+  third-party prose.
+
+## Corpus tiers
+
+| Tier | Provenance | Source | Committed | Purpose |
+|---|---|---|---|---|
+| Debug store | `real`, `revision` | every locally saved trip, automatic | yes (exists) | authentic shapes, free, includes intermediate states |
+| Corpus - generated | `synthetic` | our planner driven by the request matrix | yes | authentic shapes at volume; costs money |
+| Corpus - templates | `template` | built in code from the matrix | yes | free volume to stress guards |
+| Corpus - reference | `reference` | curated real-world itineraries, tagged | yes (structure only) | benchmark: what a good itinerary looks like |
+| Golden | `golden` | pinned known-good and known-bad shapes | yes (exists) | regression |
+| Mutations | `mutated` | derived at run time from any of the above | no - zero bytes | metamorphic testing |
 
 ## API and integration contract
 
@@ -293,12 +309,24 @@ Not applicable.
   fail — the harness demonstrably catches a silently disabled guard.
 - **AC-08:** Corpus records carry provenance, and findings are attributable to
   `real`, `synthetic`, `mutated`, or `golden`.
-- **AC-09:** Synthetic generation refuses to run without an explicit budget, and
-  stops cleanly at the cap, leaving a resumable manifest.
+- **AC-09:** `Build-Corpus` stops at whichever of the requested trip count or
+  the budget is reached first, defaults to 100 trips, and leaves a resumable
+  manifest recording seed, matrix, generator version, model, date and spend.
 - **AC-10:** No harness code path can address a database outside
   `tripplanner-sbx-*` or the local corpus directory.
 - **AC-11:** `debug-store` `archive_no` values are unchanged by any corpus
   operation.
+- **AC-12:** `Build-Corpus` imports the debug store by default, expanding each
+  archived planning run into its final plan plus its stored revisions as
+  separate corpus records.
+- **AC-13:** `Audit-Trips` analyses every tier by default, and reports findings
+  attributed by provenance so a reference or synthetic artefact is never
+  presented as a product defect.
+- **AC-14:** A reference itinerary is stored as structure, tags and source URL
+  only; no third-party prose enters the repository.
+- **AC-15:** Given a reference tag set present in the corpus, the report states
+  how our generated itineraries differ structurally from reference itineraries
+  carrying the same tags, on at least stops per day and meal coverage.
 
 ## Validation matrix
 
@@ -324,8 +352,9 @@ against the seven real trips already stored.
 - **Phase 2** - render-level and cross-surface checks.
 - **Phase 3** - mutation engine and metamorphic assertions.
 - **Phase 4** - rules registry, so a new owner rule costs one entry.
-- **Phase 5** - agent-driven synthetic generation, budgeted and resumable.
-- **Phase 6** - observation report for feature discovery.
+- **Phase 5** - planner-driven synthetic generation, budgeted and resumable.
+- **Phase 6** - reference corpus, tagging, and structural comparison.
+- **Phase 7** - observation report for feature discovery.
 
 Phases 1-3 carry nearly all the speed-up and do not depend on 5. No feature
 flag: the harness ships disabled by virtue of being an explicit command. Rollback
@@ -338,12 +367,16 @@ Documentation: `docs/CODEMAP.md` gains the harness entry;
 
 | ID | Question or decision | Recommendation | Owner answer/status |
 |---|---|---|---|
-| D-01 | Store the corpus in the debug store or separately? | **Separately.** The debug store is committed to the repo, owner-facing, and hands out human-readable trip numbers. Hundreds of synthetic trips would bloat the repo, bury the owner's real trips in `show`/`restore`, and consume the numbering sequence they asked to expose in the UI. Keep four tiers: `debug-store/` (real, committed), `sandbox-seed/` fixtures (golden, tiny, committed), `corpus/` (synthetic, large, gitignored, regenerable), and mutations (derived, never stored). One reader, four provenances. | Open |
-| D-02 | Commit the synthetic corpus so both machines and CI see the same data? | **No by default.** Commit the manifest (seed, matrix, generator version) rather than the trips, plus an explicit `--publish` for a small curated subset. Agent-generated trips are the exception worth storing locally because regenerating costs tokens. | Open |
-| D-03 | Should the harness gate commits? | **Not initially.** Run it on demand until the new-finding rate is near zero, then wire it into the pre-push path. Gating on a noisy harness trains everyone to ignore it. | Open |
-| D-04 | Cheap template synthesis, or real agent runs? | **Both, as two backends behind one command.** Templates give thousands of trips free and stress the guards; only real agent runs produce authentic shapes like the three-airport `kind: "transport"` Paris leg that no one would have invented. | Open |
-| D-05 | How much corpus is enough? | Start at ~100 trips across the request matrix. Grow only while new findings per 100 trips stays above zero. | Open |
-| D-06 | Nondeterminism of agent runs breaks regression comparisons. | Discovery uses fresh runs; regression uses the frozen golden set. Never compare two agent runs to each other. | Open |
+| D-01 | Store the corpus in the debug store or separately? | **Separately.** The debug store is committed, owner-facing, and hands out human-readable trip numbers; hundreds of synthetic trips would bury the owner's real trips in `show`/`restore` and consume the numbering sequence they asked to expose in the UI. Five provenances, one reader. | **Resolved 2026-08-14: separate store.** |
+| D-02 | Commit the synthetic corpus, or regenerate it from a manifest? | **Commit it.** Measured on 2026-08-14: a real 7-day trip is **7.3 KB** of JSON, so 100 trips is **0.7 MB** and 1000 trips is **7 MB**. Synthetic generation costs money and cannot be reproduced byte-for-byte anyway, so the earlier "regenerate from manifest" recommendation was wrong. Commit the corpus, keep the manifest for lineage, and fail the build if the corpus exceeds a declared size budget. | **Resolved 2026-08-14: commit and preserve.** |
+| D-03 | Should the harness gate commits? | **Not initially.** Run on demand until new findings per run is near zero, then wire into pre-push. Gating on a noisy harness trains everyone to ignore it. | Open |
+| D-04 | Template synthesis, or real planner runs? | **Both, two backends behind one command.** Templates are built in code from the request matrix and cost nothing, but their shapes are the ones we imagined, so they stress guards and discover nothing. Only real planner runs produce authentic shapes such as the three-airport `kind: "transport"` Paris leg. Default `Build-Corpus` uses the planner backend; `--templates` adds free volume. | **Resolved 2026-08-14: both.** |
+| D-05 | How much corpus is enough? | Default target **100 planner-generated trips**, stopping at whichever of trip count or budget is reached first. Grow only while new findings per 100 trips stays above zero. | **Resolved 2026-08-14: default 100.** |
+| D-06 | Nondeterminism of planner runs breaks regression comparisons. | Discovery uses fresh runs; regression uses the frozen golden set. Never compare two planner runs to each other. | Open |
+| D-07 | Does the corpus include real trips from the debug store? | **Yes, by default and first.** Real trips are the highest-value records and cost nothing. Additionally, each debug-store record holds up to 50 **revisions** of one planning run, and intermediate states are exactly where guard defects live — the Nashik empty-itinerary defect was an intermediate state. Importing revisions as separate corpus records multiplies real coverage without a single model call. | **Resolved 2026-08-14: yes, default on.** |
+| D-08 | Reference itineraries sourced from the internet: store the prose? | **No — store the structure.** Keep day count, stop kinds and sequence, pacing, geography, cost band and tags, plus source URL and retrieval date. Storing third-party itinerary prose in the repo is a licensing risk even for a private repo, and the analysis only needs the structure. | Open |
+| D-09 | Are reference itineraries part of the golden set? | **No, a separate tier.** Golden records are *our* pinned known-good/known-bad shapes and must stay stable for regression. Reference records are *other people's* itineraries used as a benchmark. Conflating them would break regression the moment our planner legitimately differs from a reference. | Open |
+| D-10 | What vocabulary tags a reference itinerary? | **The planner's own preference vocabulary** (`preferences_snapshot`: planning, transport, family, food, plus intent tags such as relaxed / party / see-it-all / mountain). Tagging with anything else makes reference and generated itineraries incomparable, which is the whole point of holding them. | Open |
 
 ## Agent execution contract
 
