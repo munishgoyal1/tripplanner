@@ -1249,3 +1249,6 @@ no need for a speerate sandbox for each lab creation or impleemntation - you can
 [2026-08-14 17:13] [sbx1] ! Louvre still wrong, explain unmapped stops
 i still dont understand what are you trying to do here. Louvre museum is still on a wrong day. DId you fix the other issues , why ?
 What about the issue of flagging 8 stops not on map
+
+[2026-08-14 17:27] [sbx1] ! Question the one-tap repair premise
+where is this one-tap to move it to right day. Are you suggesting to provide the user with such 1-tap action clicks so you can act if they tell you to do so ? But why and in what cases in first place they will need to act on such actions
