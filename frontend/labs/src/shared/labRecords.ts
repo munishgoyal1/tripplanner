@@ -1,4 +1,4 @@
-import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, Workflow } from "lucide-react";
+import { BookOpen, Compass, DoorOpen, FileText, Globe2, LayoutPanelTop, ListChecks, Map, MessageCircle, Palette, Radio, Route, SlidersHorizontal, UsersRound, Workflow } from "lucide-react";
 
 export interface LabRecord {
   labNumber: number;
