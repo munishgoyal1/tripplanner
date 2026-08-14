@@ -24,6 +24,18 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "chat-inputs": {
+    axis: "Every option asks for the same missing facts with the same tap-sized controls and the same explicit opt-out. They disagree about where the request sits relative to the conversation and how much it interrupts before the plan appears.",
+    rows: [
+      { option: "A · Inline chips", score: 93, idea: "The answer set appears as tap targets directly beneath the agent's sentence.", buys: "The lightest possible ask; it reads as conversation, not as a form.", costs: "Only suits small answer sets, so richer facts still need a second surface.", choose: "Most missing facts have a handful of likely answers plus an opt-out." },
+      { option: "B · Compact ask card", score: 88, idea: "One small card pairs the question with the control that fits its value type.", buys: "Handles ranges, counts, and dates that chips cannot express honestly.", costs: "Each card consumes thread height and starts to look like a mini form.", choose: "The fact needs a stepper, slider, or date range rather than a choice." },
+      { option: "C · Stated assumption", score: 84, idea: "The agent commits to a sensible value inline and invites a correction.", buys: "Zero taps when the guess is right, which keeps first plans fast.", costs: "A wrong guess can be accepted silently, which is how phantom data appears.", choose: "The value is highly predictable and visibly reversible in one tap." },
+      { option: "D · One at a time", score: 79, idea: "A short queue asks the next most useful question and always offers skip.", buys: "Calm, finite, and easy to finish without feeling interrogated.", costs: "Sequencing makes the assistant feel like onboarding rather than a planner.", choose: "Several facts are missing at once and order genuinely matters." },
+      { option: "E · Context bar", score: 74, idea: "Unresolved facts live in a thin bar above the composer until answered.", buys: "Never blocks the conversation and keeps pending asks discoverable.", costs: "It is the easiest option to ignore, so useful facts stay missing longest.", choose: "The traveller prefers to plan first and refine details afterwards." },
+    ],
+    same: "The same Rajasthan fixture, the same six facts, the same non-text controls, the same explicit destination-only opt-out, the same visible summary of what the trip knows, and the same rule that an unanswered fact stays unanswered rather than being guessed and stored. Free-text chat is available in all five.",
+    verdict: "A is the strongest default because the product's promise is a breezy conversation, and a chip row is the only pattern that answers a question without changing the shape of the thread. B is the necessary companion whenever a value is a count, range, or date rather than a choice. C is excellent for predictable values but must never be the pattern for the origin question, where a silent wrong assumption is exactly the failure this Lab exists to prevent. D and E are useful modes rather than the default posture.",
+  },
   "family-details": {
     axis: "Every option captures the same shared family context and member-specific details, and every option lets chat or a trip add information later. They disagree about where the first small step happens and how much of the family structure is visible at once.",
     rows: [

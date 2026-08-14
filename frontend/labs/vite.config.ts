@@ -30,6 +30,7 @@ export default defineConfig({
         catalog: resolve(__dirname, "catalog.html"),
         chatAgentWorkspace: resolve(__dirname, "lab-16-chat-agent-workspace.html"),
         chatAssistant: resolve(__dirname, "lab-4-chat-assistant.html"),
+        chatInputs: resolve(__dirname, "lab-27-chat-inputs.html"),
         completedLabs: resolve(__dirname, "completed-labs.html"),
         destinationGuide: resolve(__dirname, "lab-13-destination-guide.html"),
         firstVisit: resolve(__dirname, "lab-21-first-visit.html"),
