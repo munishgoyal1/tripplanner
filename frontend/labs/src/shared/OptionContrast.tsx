@@ -24,6 +24,29 @@ interface ContrastDefinition {
 }
 
 const contrasts: Record<string, ContrastDefinition> = {
+  "family-details": {
+    axis: "Every option captures the same shared family context and member-specific details, and every option lets chat or a trip add information later. They disagree about where the first small step happens and how much of the family structure is visible at once.",
+    rows: [
+      { option: "A · Family roster", score: 88, idea: "Start with people cards, then add only the details that matter for this family.", buys: "A clear shared-versus-individual model and a reassuring sense of completeness.", costs: "A roster still feels like a form if too many empty fields are shown at once.", choose: "The family wants to review and maintain a known group together." },
+      { option: "B · Trip questions", score: 81, idea: "Ask only what the next trip needs, one small group of questions at a time.", buys: "No profile feels empty; every answer has an immediate purpose.", costs: "Durable details can stay undiscovered until a later trip needs them.", choose: "The planner should avoid any standalone profile setup." },
+      { option: "C · Shared defaults", score: 85, idea: "Set family-wide defaults first, then add exceptions for individual travelers.", buys: "Fast for common diets, pace, rooms, and mobility needs across a group.", costs: "An exception can feel hidden if the person-level override is not visible.", choose: "Most family preferences are genuinely shared." },
+      { option: "D · Chat-led profile", score: 94, idea: "The planner notices useful facts during chat and offers tiny confirm-or-save moments.", buys: "The lowest pressure path and the strongest fit with passive incremental learning.", costs: "The profile grows unevenly unless there is a calm review surface later.", choose: "The product should learn from real planning without turning setup into admin." },
+      { option: "E · Profile matrix", score: 76, idea: "A compact grid compares each family member across the important travel dimensions.", buys: "Excellent at spotting conflicts before a trip and reviewing the whole group.", costs: "A matrix looks operational and can intimidate families with many members.", choose: "The family frequently needs to reconcile different needs before booking." },
+    ],
+    same: "The same family of four, shared home airport and emergency contact, individual age bands, mobility, food, sleep, pace and room needs, provenance labels, optional notes, privacy controls, and trip-specific overrides. No option asks for a full biography or stores an original document.",
+    verdict: "D is the best product default because the planner already has the richest natural moment for learning: the conversation where a real trip is being built. A provides the review surface D needs, C accelerates families with genuinely shared habits, B keeps first use effortless, and E is a specialist review mode rather than the first experience.",
+  },
+  "profile-preferences": {
+    axis:
+      "Every option uses the same typed preference values and saves the same durable profile. They disagree about how much structure the user sees while choosing and where the profile's story starts.",
+    rows: [
+      { option: "A · Preference shelf", score: 94, idea: "A calm profile home with category rails and large quick-select tags.", buys: "Fast scanning, visible choices, and an immediate feeling of progress.", costs: "The shelf asks users to understand a few categories before they edit details.", choose: "Most durable travel preferences can be expressed as a small set of known choices." },
+      { option: "B · Trip briefing", score: 86, idea: "A guided profile story that asks one preference group at a time.", buys: "A friendly, low-cognitive-load path for a new user with useful defaults.", costs: "Reviewing or changing several preferences takes more steps.", choose: "The first profile visit is more important than daily editing speed." },
+      { option: "C · Command palette", score: 78, idea: "Searchable command-like chips with a compact editable summary.", buys: "Power-user speed and a single place to find less common fields.", costs: "It feels like a settings tool and hides the breadth of the profile.", choose: "Users already know what they want and need frequent precise edits." },
+    ],
+    same: "The categories, labels, internal keys, mapped values, save behavior, free-text notes, identity details, privacy boundaries, and production Profile destination. All options offer typing as an escape hatch, but none make typing the primary path.",
+    verdict: "A is the strongest default because the profile is a reusable travel instrument, not an onboarding quiz: people should see what the planner knows and correct it in one glance. B is the best first-visit variant when we need to teach the model, while C is a useful power-user fallback once the profile grows beyond the visible shelf.",
+  },
   "localization": {
     axis:
       "Every option formats the same four trips and keeps provider currency honest. They disagree about when locale is confirmed, where the durable setting lives, and whether a trip can temporarily override display currency.",
