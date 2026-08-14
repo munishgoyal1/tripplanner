@@ -1217,3 +1217,6 @@ Yes implement this, and not only just this particular day bug. Figure similar mo
 
 [2026-08-14 13:13] [sbx1] ! Move fact-check work into sandbox one
 Can you build this in sbx1 instead of in master lane. Move your edits there please now and continue working. leave the master lane clean for other agent to work
+
+[2026-08-14 13:14] [sbx1] ! Sandbox chat implies its own lane
+i always assume since this is dedicated sb1 chat session so u should use sb1 lane
