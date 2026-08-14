@@ -1233,3 +1233,6 @@ D3 - No gating initially.
 d6 - agree
 d8-10 -  agree. slight changes - initially go with storing entire externmal itinerary, keep a mechanism to strip out the license-sensitive parts if needed quickly. Right now no one care as my planner is not even properly known outside it is just very small to be noticed by anyone.
 On vocabulary - explain me clearly what is the plan. Do we plan to define a set of tags that we can allow our users to select as their preferences to store, so taht they dont have to think much. THey can always override and provide through free text. And you are always learning afresh from their past itineraries and feedback. Should we have a standard set of tags per category already defined and provide it as a tag click selector also than free text format alone (which is hard to fill usually, people prefer easy clicks than typing).
+
+[2026-08-14 15:53] [master] ! Draft brief 005 and build the harness
+write the brief but also get started as per your plan.
