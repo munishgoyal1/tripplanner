@@ -22,10 +22,12 @@ export function loudStops(stops: UnmappedStop[]): UnmappedStop[] {
 export default function UnmappedStopsPanel({
   stops,
   onConfirm,
+  onFocus,
   busyName,
 }: {
   stops: UnmappedStop[];
   onConfirm: (stop: UnmappedStop) => void;
+  onFocus?: (stop: UnmappedStop) => void;
   busyName: string | null;
 }) {
   const [open, setOpen] = useState(false);
@@ -36,6 +38,10 @@ export default function UnmappedStopsPanel({
       TIER_ORDER[left.tier] - TIER_ORDER[right.tier] || (left.day ?? 0) - (right.day ?? 0),
   );
   const anchors = loudStops(ordered);
+  const keyBreakdown =
+    anchors.length > 0 && anchors.length < ordered.length
+      ? ` · ${anchors.length} key`
+      : "";
 
   return (
     <div className="border-t border-slate-200 bg-white/95 px-3 py-2 text-xs">
@@ -51,7 +57,7 @@ export default function UnmappedStopsPanel({
           <MapPinOff size={13} className="shrink-0 text-slate-400" aria-hidden />
         )}
         <span className={anchors.length ? "font-semibold text-amber-700" : "text-slate-500"}>
-          {ordered.length} {ordered.length === 1 ? "stop" : "stops"} not on the map
+          {ordered.length} {ordered.length === 1 ? "stop" : "stops"} not on the map{keyBreakdown}
         </span>
         <span className="ml-auto text-slate-400">{open ? "Hide" : "Show"}</span>
       </button>
@@ -59,7 +65,11 @@ export default function UnmappedStopsPanel({
       {open && (
         <ul className="mt-2 space-y-1.5">
           {ordered.map((stop) => (
-            <li key={`${stop.day ?? 0}-${stop.name}`} className="flex items-start gap-2">
+            <li
+              key={`${stop.day ?? 0}-${stop.name}`}
+              onClick={() => onFocus?.(stop)}
+              className={`flex items-start gap-2 ${onFocus ? "cursor-pointer rounded-md hover:bg-slate-50" : ""}`}
+            >
               <span
                 className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${
                   stop.tier === "anchor"
@@ -81,7 +91,10 @@ export default function UnmappedStopsPanel({
                 <button
                   type="button"
                   disabled={busyName === stop.name}
-                  onClick={() => onConfirm(stop)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onConfirm(stop);
+                  }}
                   className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 font-semibold text-slate-600 transition hover:bg-slate-200 disabled:opacity-50"
                 >
                   {busyName === stop.name ? "Pinning…" : "Use it"}

@@ -1155,3 +1155,32 @@ yes ofcourse i am being your test helper in doing the QA and UAT. i am re-iterat
 
 [2026-08-13 23:24] [master] ! Audit all coherence guards, not one by one
 yes ofcourse. instead of us finding these guards one by one, can you being AI intelligently do an audit to ensure that all such kind of guards are in place
+[2026-08-13 22:29] [master] Why auto conflict resolve did not run in two-way sync
+why did auto conflcit resolve not run as part of 2way sync
+
+[2026-08-13 22:29] [master] Why two-way sync updates all sandboxes
+i ran 2way sync with only sbx2 as param, why did it still update sbx3 ?
+
+[2026-08-13 22:53] [master !] Varanasi trip empty itinerary, similar to Nashik
+varanasi trip again similar to nashik shows empty itinerary. map has some stops shown. not sure even if that is complete. chat shows the itinerary
+
+[2026-08-13 22:57] [master] ! Itinerary coherence checks and flow
+we need to work on delivering trip level coehrent and smart itineraries. In one example of paris trip in sbx2- louvre museum is added on tuesday when it already found that this attaraction may be closed on tuesdays. Do we already have such checks.. these are basic checks, what all else is there.
+
+Where is the deterministic rule based check, and whjere is the AI based intelligence. explain me the trip building flow also
+
+[2026-08-13 23:03] [master !] Deleting a different trip blocked by in-progress chat
+to test this fix i initiated a new trip chat and same varanasi itinerary build prompt. While this in progress i clicked to dleete oldd varanasi trip. It said could not delete. Both are different trips anyway, so it should allow to delete
+
+[2026-08-13 23:10] [master] ! in masteragent varanasi trip some stops are not shopwing part of circuit on map. example anand bhavan 
+
+[2026-08-13 23:14] [master] ! at the end always in all chat sessions do mention if it was UI only fix or backend also fixed that needs a stack restart
+
+[2026-08-13 23:15] [master !] Unmapped stops list clickable + count breakdown
+it should make the unmapped stops list each row clickable to show that stop to give full context to user. - Just similar to valid stop click on itinerary similar make this also clickable and all surfaces should show respective info.
+
+change text to add breakup with 3 key stops not mapped in messaging at bottom saying 8 stops
+
+[2026-08-13 23:23] [master] ! varanasi trip 
+day6 - at end there are 2 items - the hotel, and the return to hotel. why are both needed. usually we have it as return to hotel.
+day7 - no plan given , no timings of anything given. no guidance on checkout time given.
