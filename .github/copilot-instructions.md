@@ -20,6 +20,17 @@ not override the canonical documents above, which govern current behavior.
 
 - Keep the current chat title to a concrete 4-5 word summary of the latest task.
   Reconsider it after every prompt in the primary or sandbox VS Code window.
+- A chat session titled or opened for a specific sandbox (`sbx-N` / `sandbox/N-*`)
+  stays scoped to that sandbox's worktree for the rest of the session: keep
+  reading, editing, testing, and committing there instead of wandering into
+  `master` or another sandbox unless the owner explicitly redirects it. This
+  keeps parallel sessions mapped 1:1 to a lane so which session owns which
+  track stays obvious without switching windows to check.
+- End every substantive reply with a one-line status: what was fixed/changed,
+  which part of the stack (frontend/backend/both/docs/scripts), and whether a
+  dev-stack restart is needed to pick it up (and which stack: primary or the
+  sandbox in scope). Skip this line only for pure question-answering turns
+  that changed nothing.
 - After each owner prompt, append it verbatim to the **bottom** of
   [master.txt](../docs/reference/owner-inputs/prompts/master.txt). Entry header:
   `[YYYY-MM-DD HH:MM] [master] <short title>`, with ` !` after the lane for feature
