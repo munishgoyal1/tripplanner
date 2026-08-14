@@ -35,7 +35,7 @@ export const LAB_STATUS_LABELS: Record<LabDisposition, string> = {
   discarded: "Discarded",
 };
 
-export const LAST_ASSIGNED_LAB_NUMBER = 24;
+export const LAST_ASSIGNED_LAB_NUMBER = 25;
 
 export function effectiveLabDisposition(lab: LabRecord, selection?: LabSelectionState): LabDisposition {
   return selection?.disposition ?? lab.defaultDisposition;
@@ -53,6 +53,19 @@ export function resolvedLabRecord(lab: LabRecord, selection?: LabSelectionState)
 // Committed defaults are the fallback only. The tracked canonical selection store
 // in docs/ux-experiments overrides them at runtime and merges any newer local draft.
 export const allLabs: LabRecord[] = [
+  {
+    labNumber: 25,
+    id: "profile-preferences",
+    title: "Profile, in choices you can see",
+    category: "Profile and preferences",
+    description: "Reimagine About me as a quick, confidence-building profile: predefined preference tags, a clear durable home, and internal values that stay precise without asking people to type their way through setup.",
+    createdAt: "2026-08-14",
+    defaultDisposition: "ready",
+    defaultStateChangedAt: "2026-08-14",
+    decision: "Open · Recommended starting point: A · Preference shelf",
+    href: "./lab-25-profile-preferences.html",
+    icon: SlidersHorizontal,
+  },
   {
     labNumber: 24,
     id: "localization",
