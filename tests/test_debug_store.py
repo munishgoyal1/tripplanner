@@ -157,3 +157,33 @@ def test_referenced_places_keeps_only_this_trip_and_destination(monkeypatch):
     assert "grand wailea|maui" in found
     assert "some cafe|maui" in found
     assert "eiffel tower|paris" not in found
+
+
+def test_saving_a_real_trip_writes_through_to_the_archive(tmp_path, monkeypatch):
+    """The capture hook must fire from the real trip save path, not just directly."""
+    from tripplanner.tools import trip_planner, user_preferences
+
+    home = tmp_path / "home"
+    home.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(user_preferences, "_PREFS_DIR", home)
+    monkeypatch.setattr(user_preferences, "_PREFS_FILE", home / "preferences.json")
+    monkeypatch.setattr(trip_planner, "_TRIPS_DIR", home)
+    monkeypatch.setattr(trip_planner, "_ACTIVE_TRIP_FILE", home / "active_trip.json")
+    monkeypatch.setattr(trip_planner, "_TRIP_HISTORY_DIR", home / "trips")
+
+    trip_planner.create_trip_plan.invoke(
+        {
+            "destination": "Maui",
+            "departure_date": "2026-07-12",
+            "return_date": "2026-07-17",
+        }
+    )
+
+    records = debug_store.iter_records()
+    assert len(records) == 1
+    _, record = records[0]
+    assert record["trip_id"] == "maui_2026-07-12_2026-07-17"
+    assert record["descriptor"]["destination"] == "Maui"
+    assert record["descriptor"]["nights"] == 5
+    assert record["revisions"]
+    assert set(record["bundle"]) == {"captured_at", "user_id", "chat", "preferences", "places"}

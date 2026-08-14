@@ -1224,3 +1224,5 @@ i always assume since this is dedicated sb1 chat session so u should use sb1 lan
 [2026-08-14 14:32] [sbx1] ! Competitive research for high-value features
 Do another round of analysis - check other popular AI trip planners like mindtrip and others. Check pain points travellers usually face while building and booking their itinerary, what are the top things they want solved or these competitors have solved, why people love them.
 Bring a high value feature list to me and we will dsicuss and implement those
+[2026-08-14 14:08] [master] ! Rename must migrate sandbox data too
+yes as part of the rename script handle data migration and everything. All i simply need is the sbx name change for reference, ret everything shoudl work as it is.

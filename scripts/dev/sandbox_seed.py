@@ -15,6 +15,8 @@ Examples::
     python scripts/dev/sandbox_seed.py seed --database tripplanner-sbx-feat-x --if-empty
     python scripts/dev/sandbox_seed.py seed --database tripplanner-sbx-feat-x --source fixtures
     python scripts/dev/sandbox_seed.py capture --trip-id maui-7d --label S1-single-destination
+    python scripts/dev/sandbox_seed.py move --source tripplanner-sbx-1-a \
+        --target tripplanner-sbx-1-b
     python scripts/dev/sandbox_seed.py drop --database tripplanner-sbx-feat-x
 """
 
@@ -210,6 +212,71 @@ def cmd_drop(args: argparse.Namespace) -> int:
     return 0
 
 
+def _count(database, container: str) -> int:
+    from azure.cosmos import exceptions
+
+    try:
+        rows = database.get_container_client(container).query_items(
+            query="SELECT VALUE COUNT(1) FROM c", enable_cross_partition_query=True
+        )
+        return int(next(iter(rows), 0))
+    except exceptions.CosmosResourceNotFoundError:
+        return 0
+
+
+def cmd_move(args: argparse.Namespace) -> int:
+    """Carry a sandbox's whole database across to its new name.
+
+    Renaming a sandbox must change nothing but the name, so every container
+    comes across — caches included, so the new name does not re-pay for
+    geocoding the same places.
+    """
+    from azure.cosmos import PartitionKey, exceptions
+
+    source_name = _assert_sandbox_database(args.source)
+    target_name = _assert_sandbox_database(args.target)
+    if source_name == target_name:
+        print(f"{source_name} is already the target; nothing to move.")
+        return 0
+
+    client = _client(args.endpoint, args.key)
+    try:
+        source = client.get_database_client(source_name)
+        containers = list(source.list_containers())
+    except exceptions.CosmosResourceNotFoundError:
+        print(f"{source_name} does not exist; nothing to move.")
+        return 0
+
+    target = client.create_database_if_not_exists(id=target_name)
+    if not args.force and _count(target, "trips") > 0:
+        _fail(f"{target_name} already holds trips; refusing to merge into it (use --force)")
+
+    moved: dict[str, int] = {}
+    for properties in containers:
+        name = str(properties["id"])
+        paths = (properties.get("partitionKey") or {}).get("paths") or [PARTITION_KEY_PATH]
+        target.create_container_if_not_exists(id=name, partition_key=PartitionKey(path=paths[0]))
+        docs = _read_all(source, name)
+        written = _upsert_all(target, name, docs)
+        moved[name] = written
+        print(f"  {name}: moved {written} docs")
+
+    # Only give up the original once every container is provably across.
+    short = [
+        name for name, written in moved.items() if _count(target, name) < written
+    ]
+    if short:
+        _fail(f"{target_name} is missing documents in {', '.join(short)}; kept {source_name}")
+
+    print(f"Moved {sum(moved.values())} docs from {source_name} to {target_name}.")
+    if args.keep_source:
+        print(f"Kept {source_name} (--keep-source).")
+        return 0
+    client.delete_database(source_name)
+    print(f"Dropped {source_name}.")
+    return 0
+
+
 def cmd_capture(args: argparse.Namespace) -> int:
     from azure.cosmos import exceptions
 
@@ -283,6 +350,14 @@ def build_parser() -> argparse.ArgumentParser:
     drop.add_argument("--database", required=True)
     _add_common(drop)
     drop.set_defaults(func=cmd_drop)
+
+    move = sub.add_parser("move", help="Move a sandbox database to a new sandbox name.")
+    move.add_argument("--source", required=True)
+    move.add_argument("--target", required=True)
+    move.add_argument("--keep-source", action="store_true")
+    move.add_argument("--force", action="store_true")
+    _add_common(move)
+    move.set_defaults(func=cmd_move)
 
     capture = sub.add_parser("capture", help="Export a real trip into a reusable fixture.")
     capture.add_argument("--trip-id", required=True)

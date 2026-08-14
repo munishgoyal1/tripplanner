@@ -55,8 +55,8 @@
 
     -Rename changes only the name part of a sandbox: its branch, worktree folder,
     and database name follow, while the number keeps its ports. A new name may
-    repeat the existing number but cannot change it. The previous emulator
-    database is left in place and the renamed sandbox seeds a fresh one.
+    repeat the existing number but cannot change it. The emulator data moves to
+    the new database name, so the sandbox keeps the trips it already had.
 
   Only a sandbox that -Promote has verified is safe to discard; -Discard refuses
   to drop a worktree that still holds uncommitted, unpushed or unmerged work
@@ -1391,8 +1391,18 @@ if ($PSCmdlet.ParameterSetName -eq "Rename") {
     Write-Host "[branch]  $newBranch"
     Write-Host "[worktree] $newWorktree"
     Write-Host "[db]      $newDatabase (emulator)"
-    Write-Host "The previous emulator database $oldDatabase still holds this sandbox's data;" -ForegroundColor Yellow
-    Write-Host "the next run seeds $newDatabase fresh." -ForegroundColor Yellow
+
+    # A rename must change the name and nothing else, so the sandbox's data
+    # travels with it instead of being left behind under the old name.
+    $python = Get-VenvPython
+    $seedScript = Join-Path $scriptRepoRoot "scripts/dev/sandbox_seed.py"
+    if (Test-Path $seedScript -PathType Leaf) {
+        & $python $seedScript move --source $oldDatabase --target $newDatabase
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Renamed, but the emulator data is still in $oldDatabase. Start the Cosmos emulator and run:"
+            Write-Warning "  $python $seedScript move --source $oldDatabase --target $newDatabase"
+        }
+    }
     Write-Host "Reopen any editor window that still points at the old path." -ForegroundColor Cyan
     return
 }
