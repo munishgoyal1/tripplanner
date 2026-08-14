@@ -1221,3 +1221,6 @@ New lab: Some trips may not genuinely have origin as user may be interested just
 
 [2026-08-14 16:58] [master !] Two standing Lab lanes
 no need for a speerate sandbox for each lab creation or impleemntation - you can promote sb5 and discard it. I will use 2 chat sessions - one sbx6 for labs creation and one sbx4 for labs implementaiotn. remember that.
+
+[2026-08-14 17:24] [master] ! Session mode brainstorm and implement on master
+i want to use this session for ideas brainstorming and implementation also. so remmeber that. and it will work on master lane directly uunless i tell to work on a sbx
