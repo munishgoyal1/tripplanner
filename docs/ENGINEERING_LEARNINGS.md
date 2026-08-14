@@ -1031,3 +1031,35 @@ the outcome.
   reading the builder. Comparing `/trip/itinerary` stop names against
   `/trip/map` pin names found seven missing stops in seconds, including one this
   investigation was not looking for.
+- A journey the plan never spells out is still a journey. Recognizing legs only
+  by their written form (`kind: "flight"`, or a name with a drive/train/bus
+  word) made a Paris replan read as a local day: the two airports it listed were
+  dropped from the map route and the day was bookended by the destination stay,
+  so the trip asked the traveller to drive between Bengaluru and Paris. Derive
+  the leg from what the stops imply — two terminals in different cities are an
+  inter-city hop — and keep that rule shared between the itinerary and the map
+  so the two surfaces cannot disagree about whether a day is a transfer day.
+
+## 2026-08-13 - Audit The Guards Against Real Trips, Not Against The Code
+
+- Running every invariant over the owner's seven real stored trips found in one
+  pass what three separate bug reports had been finding one at a time. Two
+  classes of gap showed up, and neither was visible by reading the guard.
+- **A guard that fires with the wrong words is a gap.** A Paris stay listed
+  after landing back home was reported by I4 as "cannot reach Hotel Chambiges
+  Elysees in time; short by 11294 minutes" — arithmetic that treats a
+  wrong-continent stop as a scheduling problem. Nothing said the traveller was
+  not in Paris. Continuity (I9) only compared the last stop of one day with the
+  first of the next, and switched itself off whenever either day held any leg at
+  all, so the intra-day case it was written for could not reach it. A trip is
+  one body moving through one sequence of places; the rule is the same inside a
+  day and across midnight.
+- **A guard disabled by missing input is worse than a missing guard**, because
+  the plan reports clean. Two trips had no `origin`, which silently turned off
+  the envelope, presence, stay-coverage and return invariants, and made the
+  round-trip transport check return an empty list rather than a complaint. Every
+  early return on absent input should be a report, not a pass (I10).
+- Audit with the owner's own data. The emulator's `places_cache` container has
+  real coordinates, so `validate_plan` runs at full strength offline. Seven real
+  trips produced exactly one new violation and zero false positives, which is
+  the evidence that let continuity join the completion gate the same day.

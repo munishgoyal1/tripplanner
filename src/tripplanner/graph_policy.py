@@ -380,17 +380,38 @@ def resolve_completion_policy(
 ) -> CompletionPolicyDecision:
     tool_phases = current_turn_tool_phases(messages)
     if not proposal_only and tool_phases >= MAX_TOOL_PHASES_PER_TURN:
-        try:
-            gaps = tuple(planning_completion_gaps(active_trip))
-        except Exception:
-            gaps = ()
-        return CompletionPolicyDecision(
-            tool_phases=tool_phases,
-            forced_tool=None,
-            forced_reason="tool_phase_budget",
-            budget_exhausted=True,
-            completion_gaps=gaps,
+        # A broad multi-city research turn (e.g. two destinations plus "nearby
+        # sites") can spend the whole budget on search before ever calling
+        # update_trip_plan. Trapping the turn here left the trip with no
+        # itinerary at all, narrated in chat but absent from every other pane.
+        # Let the still-owed first save through before honoring the cap.
+        positions = _tool_call_positions(messages)
+        latest_human = max(
+            (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+            default=-1,
         )
+        current_turn_names = {name for index, name in positions if index > latest_human}
+        current_updates = [
+            index for index, name in positions
+            if name == "update_trip_plan" and index > latest_human
+        ]
+        still_owes_first_save = (
+            "create_trip_plan" in current_turn_names
+            and not active_trip.get("day_wise_itinerary")
+            and len(current_updates) < MAX_INITIAL_ITINERARY_UPDATES
+        )
+        if not still_owes_first_save:
+            try:
+                gaps = tuple(planning_completion_gaps(active_trip))
+            except Exception:
+                gaps = ()
+            return CompletionPolicyDecision(
+                tool_phases=tool_phases,
+                forced_tool=None,
+                forced_reason="tool_phase_budget",
+                budget_exhausted=True,
+                completion_gaps=gaps,
+            )
 
     creation_tool = (
         None if proposal_only else trip_creation_tool_choice(messages, active_trip)

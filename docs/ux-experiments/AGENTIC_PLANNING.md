@@ -87,6 +87,8 @@ Hard invariants are checked on every write and cannot be overridden by the model
 | I6 | Stay coverage | Every night in a city must be covered by a stay |
 | I7 | Return coverage | Every outbound leg needs a matching return home |
 | I8 | Blast radius | An operation may only alter the stops it declared |
+| I9 | Continuity | Every move between stops must be explained by a journey |
+| I10 | Guard coverage | A plan must say where it starts, or I1/I2/I6/I7 cannot run |
 
 I1, I2, I7 and I8 are precisely the four the production pipeline does not have, and they
 are exactly the four that would have prevented both reported defects.

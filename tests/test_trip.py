@@ -426,6 +426,46 @@ class TestPartialItineraryMerge:
 
 
 class TestTripPlanState:
+    def test_save_normalizes_duplicate_return_stay_and_departure_checkout(self):
+        plan = {
+            "destination": "Ayodhya",
+            "departure_date": "2026-09-10",
+            "return_date": "2026-09-16",
+            "day_wise_itinerary": [
+                {
+                    "day": 6,
+                    "stops": [
+                        {"name": "Drive: Chitrakoot to Ayodhya", "kind": "transport"},
+                        {"name": "Ayodhya Hotel", "kind": "hotel", "time": "22:30"},
+                        {"name": "Ayodhya Hotel", "kind": "hotel", "time": "23:59"},
+                    ],
+                },
+                {
+                    "day": 7,
+                    "title": "Departure from Ayodhya",
+                    "summary": "Check out from hotel and depart from Ayodhya.",
+                    "stops": [{"name": "Ayodhya Hotel", "kind": "hotel", "note": "Check-out"}],
+                },
+            ],
+        }
+
+        trip_planner._save_active_trip(plan)
+
+        saved = trip_planner.load_active_trip_dict()
+        assert saved is not None
+        assert saved["day_wise_itinerary"][0]["stops"] == [
+            {"name": "Drive: Chitrakoot to Ayodhya", "kind": "transport"},
+            {
+                "name": "Ayodhya Hotel",
+                "kind": "hotel",
+                "time": "22:30",
+                "note": "Return to hotel",
+            },
+        ]
+        departure = saved["day_wise_itinerary"][1]["stops"][0]
+        assert departure["time"] == "11:00"
+        assert "confirm with your hotel" in departure["note"]
+
     def test_planning_completion_requires_round_trip_intercity_transport(self):
         base = {
             "origin": "Bangalore",
@@ -2670,6 +2710,32 @@ class TestSavedTrips:
         _make_trip("Mumbai", "2026-07-10", "2026-07-20")  # longer stay
         trips = list_saved_trips()
         assert len([t for t in trips if t["destination"] == "Mumbai"]) == 2
+
+    def test_trips_are_numbered_in_creation_order(self):
+        _make_trip("Mumbai", "2026-07-10", "2026-07-15")
+        _make_trip("Vietnam", "2026-09-01", "2026-09-10")
+        numbers = {t["destination"]: t["trip_number"] for t in list_saved_trips()}
+        assert numbers == {"Mumbai": 1, "Vietnam": 2}
+
+    def test_trip_number_is_stable_across_updates(self):
+        _make_trip("Mumbai", "2026-07-10", "2026-07-15")
+        before = list_saved_trips()[0]["trip_number"]
+        _make_trip("Vietnam", "2026-09-01", "2026-09-10")
+        after = next(t for t in list_saved_trips() if t["destination"] == "Mumbai")
+        assert after["trip_number"] == before
+
+    def test_older_unnumbered_trips_are_backfilled_once(self):
+        _make_trip("Mumbai", "2026-07-10", "2026-07-15")
+        _make_trip("Vietnam", "2026-09-01", "2026-09-10")
+        from tripplanner.tools import trip_planner as tp
+
+        for plan in tp._all_history_trips():
+            plan.pop("trip_number", None)
+            tp._mirror_to_history(plan)
+        first = {t["destination"]: t["trip_number"] for t in list_saved_trips()}
+        second = {t["destination"]: t["trip_number"] for t in list_saved_trips()}
+        assert sorted(first.values()) == [1, 2]
+        assert first == second
 
     def test_switch_active_trip(self):
         _make_trip("Mumbai", "2026-07-10", "2026-07-15")

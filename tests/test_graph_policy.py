@@ -87,6 +87,51 @@ def test_a_new_trip_must_still_save_an_itinerary_late_in_a_conversation() -> Non
     assert "no itinerary" in decision.requirement
 
 
+def test_a_broad_new_trip_must_still_save_before_the_phase_budget_traps_it() -> None:
+    """The reported defect: a Varanasi/Ayodhya religious-circuit request spent
+    the whole ten-phase research budget across two cities and never reached
+    update_trip_plan, so the turn ended with a narrated but unsaved itinerary."""
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a varanasi and ayodhya circuit trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 1),
+    ]
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={"destination": "Varanasi", "day_wise_itinerary": []},
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is False
+    assert decision.forced_tool == "update_trip_plan"
+    assert decision.requirement is not None
+    assert "no itinerary" in decision.requirement
+
+
+def test_the_phase_budget_still_traps_a_turn_once_the_first_save_was_attempted() -> None:
+    current_turn: list[BaseMessage] = [
+        HumanMessage(content="plan a varanasi and ayodhya circuit trip"),
+        _tool_call("create_trip_plan", "create-1"),
+        ToolMessage(content="Created", tool_call_id="create-1"),
+        _tool_call("update_trip_plan", "update-1"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-1"),
+        _tool_call("update_trip_plan", "update-2"),
+        ToolMessage(content="Trip plan updated.", tool_call_id="update-2"),
+        *_tool_phases(MAX_TOOL_PHASES_PER_TURN - 3),
+    ]
+    decision = resolve_completion_policy(
+        messages=current_turn,
+        active_trip={"destination": "Varanasi", "day_wise_itinerary": []},
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.budget_exhausted is True
+    assert decision.forced_tool is None
+
+
 def test_new_trip_kickoff_preempts_incomplete_active_trip() -> None:
     decision = resolve_completion_policy(
         messages=[HumanMessage(content="Create a separate new Hawaii trip")],

@@ -41,6 +41,7 @@ from tripplanner.web.budget import (  # noqa: F401
     fmt_money,
     traveler_count,
 )
+from tripplanner.web.day_journey import implied_terminal_hop_mode
 
 # Gallery selection and itinerary occurrence indexing live in ``gallery``
 # (tech-debt #7), a leaf module; re-exported here for callers/tests.
@@ -1780,11 +1781,45 @@ def _render_day_stops(
     return stops, booked
 
 
-def _has_intercity_transfer(stops: list[dict[str, Any]]) -> bool:
-    return any(
+def _has_intercity_transfer(
+    stops: list[dict[str, Any]],
+    place_coords_map: dict[str, tuple[float, float]] | None = None,
+) -> bool:
+    if any(
         _intercity_transfer_mode(str(stop.get("name") or ""), str(stop.get("kind") or ""))
         for stop in stops
-    )
+    ):
+        return True
+    return _implied_terminal_hop(stops, place_coords_map or {}) is not None
+
+
+def _implied_terminal_hop(
+    stops: list[dict[str, Any]],
+    place_coords_map: dict[str, tuple[float, float]],
+) -> str | None:
+    """The unnamed journey between two back-to-back terminals, if there is one."""
+    for previous, current in zip(stops, stops[1:]):
+        from_coords = place_coords_map.get(str(previous.get("name") or "").strip().lower())
+        to_coords = place_coords_map.get(str(current.get("name") or "").strip().lower())
+        if not from_coords or not to_coords:
+            continue
+        mode = implied_terminal_hop_mode(
+            _terminal_kind(previous),
+            _terminal_kind(current),
+            _haversine_km(from_coords, to_coords),
+        )
+        if mode:
+            return mode
+    return None
+
+
+def _terminal_kind(stop: dict[str, Any]) -> str:
+    """The terminal a stop names, whatever kind the plan filed it under."""
+    kind = str(stop.get("kind") or "").strip().lower()
+    if kind in {"airport", "station", "bus_station"}:
+        return kind
+    refs = _transport_terminal_refs(str(stop.get("name") or ""), kind)
+    return refs[0][0] if len(refs) == 1 else ""
 
 
 def _insert_transfer_day_stay_anchor(
@@ -2029,7 +2064,7 @@ def build_itinerary(trip: dict[str, Any] | None) -> dict[str, Any]:
         )
         total_booked += day_booked
 
-        if _has_intercity_transfer(stops):
+        if _has_intercity_transfer(stops, place_coords_map):
             if idx > 0 and current_hotel:
                 _insert_transfer_day_stay_anchor(
                     stops, day_num, current_hotel, hotels, activities

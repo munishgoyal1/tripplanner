@@ -1146,3 +1146,71 @@ fix this 2 way sync error
 
 [2026-08-13 22:25] [master] ! Fix two-way sync Write-Host error
 fix this 2 way sync error
+
+[2026-08-13 22:55] [master] ! Paris replan drives between airports
+weird behaviour: on askign replan paris trip. it is giving airports and flight connections probably but asking to drive between airports instead of flight. no flight connection legs shown on map
+
+[2026-08-13 22:55] [master] Bug reproduces in sbx2 stack
+this is happening in sbx2 stack under my id in case you are not able to find. else continue with ur task work
+
+[2026-08-13 23:08] [master] ! Always triage from my Cosmos emulator data
+yes ofcourse i am being your test helper in doing the QA and UAT. i am re-iterating just figure form chat session context which sbx or master stack is being referred then go and find data under that cosmos emulator and my google id.
+
+[2026-08-13 23:24] [master] ! Audit all coherence guards, not one by one
+yes ofcourse. instead of us finding these guards one by one, can you being AI intelligently do an audit to ensure that all such kind of guards are in place
+[2026-08-13 22:29] [master] Why auto conflict resolve did not run in two-way sync
+why did auto conflcit resolve not run as part of 2way sync
+
+[2026-08-13 22:29] [master] Why two-way sync updates all sandboxes
+i ran 2way sync with only sbx2 as param, why did it still update sbx3 ?
+
+[2026-08-13 22:53] [master !] Varanasi trip empty itinerary, similar to Nashik
+varanasi trip again similar to nashik shows empty itinerary. map has some stops shown. not sure even if that is complete. chat shows the itinerary
+
+[2026-08-13 22:57] [master] ! Itinerary coherence checks and flow
+we need to work on delivering trip level coehrent and smart itineraries. In one example of paris trip in sbx2- louvre museum is added on tuesday when it already found that this attaraction may be closed on tuesdays. Do we already have such checks.. these are basic checks, what all else is there.
+
+Where is the deterministic rule based check, and whjere is the AI based intelligence. explain me the trip building flow also
+
+[2026-08-13 23:03] [master !] Deleting a different trip blocked by in-progress chat
+to test this fix i initiated a new trip chat and same varanasi itinerary build prompt. While this in progress i clicked to dleete oldd varanasi trip. It said could not delete. Both are different trips anyway, so it should allow to delete
+
+[2026-08-13 23:10] [master] ! in masteragent varanasi trip some stops are not shopwing part of circuit on map. example anand bhavan 
+
+[2026-08-13 23:14] [master] ! at the end always in all chat sessions do mention if it was UI only fix or backend also fixed that needs a stack restart
+
+[2026-08-13 23:15] [master !] Unmapped stops list clickable + count breakdown
+it should make the unmapped stops list each row clickable to show that stop to give full context to user. - Just similar to valid stop click on itinerary similar make this also clickable and all surfaces should show respective info.
+
+change text to add breakup with 3 key stops not mapped in messaging at bottom saying 8 stops
+
+[2026-08-13 23:23] [master] ! varanasi trip 
+day6 - at end there are 2 items - the hotel, and the return to hotel. why are both needed. usually we have it as return to hotel.
+day7 - no plan given , no timings of anything given. no guidance on checkout time given.
+
+[2026-08-14 10:05] [master !] Local debug store for trips
+If we have to save any local run's trip and related metadata for future debugging of issues. where to save it . at every new trip or updates, all of that can it go to some common store. Current emulators we may delete data and lose it, or each sandbox will have its own emulator data copy.
+
+We want all local data to be union saved per user (prefix/tag by user) on every local acitvity to some store that you can always access when i ask you to fix bugs. This will help save time and provide more probability of fixing actual bugs avoiding you time spent reproducing issues and token costs. Suggest a plan
+
+[2026-08-14 10:20] [master !] Debug store spec and launchers
+1. I feel this should be committed to repo so that we always have a reference across machines. Comitt at next opportunity along with other real code file changes when they happen. No need to seperately keep comottitng. Dont worry about unredaction , it is for now only me and my data.
+2. How should ir efer the trip to tell you. There may be multiple Maui trips, you may store some free text to describe the trip as it may help you when i say maui trip from last week or 5 day maui trip or maui trip having xyz beach etc. so you should be able to quickly locate from any reference i give you.
+3. how do you plan to store under user. if my user is my google id , so all my trips across emulators will append under my user?
+4. i dont want to manage the prune and maintenance here. you should be able to do that through a script. Write me one launcher script under scripts/user/debug folder that time to time wheni run takes care to maintain it.
+5. provide another launcher script to restore the data into an emulator, along with sbx number whose emulator to use. 0 or default means master's. allow for a param as last x days data to restore instead of all, default is 7 days.
+6. Add a simple trip number to the trip schema in general applicable outside of this. this can always help user to refer to a numbered trip easily. Show it in UI also in a simple way, in drop down show number before trip name and elsewhere only wherver it makes sense. When unionizing from different locals you may see number conflict, but your debug store counter should assign this number plus your own ever incrementing counter starting from 1 until this store is not teared down completely.
+7. create a launcher script for this store cleanup/full tear down also, create any scripts for any other maintennace you foressee needed
+
+[2026-08-14 10:35] [master !] Debug store dedup, cache and screenshots
+1.Yes Github remote is private. At some point later we may remove from Github when product is solid enough.
+2. Land debug store first. then trip_number.
+3. you said dedup in #3.1 in your repsonse - I want you to not overwrite any trip just because it is same destination - if time created, dates etc. it is really the same trip then fine latest can overwrite to keep things simple. But if created on different day or dates/duration, or slight meaningful change then may be we dont treat them as duplicate. I jsut want to make sure we dont lose vluabale data but at same time dont want to create unecesary confusion and complexity for our debugging. This whole store is primarily for debugging.
+4. can you think of storing other cached data - like destination guide, images etc. and all other stuff that is needed to instantly recreate and show the trip. related to this, do you want to store everything in filesystem or some cosmos emulator storage dump file ?
+5. can you also plan to store screenshots for each day map circuit, itinerary, chat etc. so that we can refer to UI bugs also
+
+[2026-08-14 10:40] [master !] Proceed with debug store phase 1
+Proceed with your plan
+
+[2026-08-14 12:56] [master] ! Structural fix for itinerary fact checks
+Yes implement this, and not only just this particular day bug. Figure similar more issues and implement a structural fix so we dont need to iterate over again for similar smaller bugs.

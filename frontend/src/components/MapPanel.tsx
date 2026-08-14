@@ -1096,6 +1096,7 @@ function MapPanel({ filters = [], reloadToken = 0, tripId = null, seed = null, f
       <UnmappedStopsPanel
         stops={unmappedStops}
         onConfirm={handleConfirmStopPlace}
+        onFocus={(stop) => onPinFocus?.(stop.kind, stop.name, stop.day ?? undefined)}
         busyName={confirmingStop}
       />
     </div>

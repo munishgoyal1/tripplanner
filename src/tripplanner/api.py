@@ -1231,14 +1231,20 @@ async def trips_delete(req: TripIdRequest, request: Request) -> dict:
     from tripplanner.web import chat_store
 
     user_id = _set_request_user(request, req.user_id)
-    workspace = await acquire_workspace_exclusive(user_id)
+    # Only the active trip is mutated by an in-flight chat turn, so deleting a
+    # different saved trip does not need to wait behind it.
+    active_id = await asyncio.to_thread(trip_planner.active_trip_id)
+    workspace = (
+        await acquire_workspace_exclusive(user_id) if req.trip_id == active_id else ()
+    )
     try:
         await asyncio.to_thread(trip_planner.delete_saved_trip, req.trip_id)
         await asyncio.to_thread(chat_store.clear, req.trip_id)
         trips = await asyncio.to_thread(trip_planner.list_saved_trips)
         return {"ok": True, "trips": trips}
     finally:
-        await release_workspace_exclusive(workspace)
+        if workspace:
+            await release_workspace_exclusive(workspace)
 
 
 @app.post("/trip/new")

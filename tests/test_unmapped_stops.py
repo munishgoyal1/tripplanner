@@ -5,6 +5,7 @@ from typing import Any
 import pytest
 
 from tripplanner.web import trip_view
+from tripplanner.web.map_pins import _provider_name_matches
 from tripplanner.web.place_confidence import ANCHOR, LABEL, PLACE, stop_place_tier
 
 SAMPLE_TRIP: dict[str, Any] = {
@@ -41,6 +42,10 @@ class TestStopPlaceTier:
 
     def test_an_explicit_pick_is_a_place_even_when_named_generically(self) -> None:
         assert stop_place_tier("Shopping", "attraction", selected={"shopping"}) == PLACE
+
+
+def test_map_pin_matching_accepts_a_strong_place_alias() -> None:
+    assert _provider_name_matches("Treta Ke Thakur", "Tretanath Mandir")
 
 
 def _details(coords: dict[str, tuple[float, float]], provider: dict[str, str]):
@@ -144,6 +149,39 @@ class TestUnmappedStops:
 
         assert "Eiffel Tower" in {pin["name"] for pin in view["pins"]}
         assert "Eiffel Tower" not in {stop["name"] for stop in view["unmapped_stops"]}
+
+    def test_a_day_trip_uses_its_locality_for_places_lookup(
+        self, _paris: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        looked_up: list[tuple[str, str]] = []
+
+        def details(name: str, city: str) -> dict[str, Any]:
+            looked_up.append((name, city))
+            if name == "Anand Bhavan" and city == "Prayagraj":
+                return {
+                    "place_id": "pid-anand",
+                    "name": "Anand Bhawan Museum",
+                    "lat": 25.4594,
+                    "lng": 81.8601,
+                }
+            return {"name": name, "lat": 25.0, "lng": 81.0}
+
+        monkeypatch.setattr(trip_view.places_cache, "get_details", details)
+        trip = {
+            **SAMPLE_TRIP,
+            "destination": "Varanasi, Ayodhya, and nearby religious sites",
+            "day_wise_itinerary": [{
+                "day": 1,
+                "title": "Prayagraj (Allahabad) Day Trip",
+                "stops": [{"name": "Anand Bhavan", "kind": "attraction"}],
+            }],
+        }
+
+        view = trip_view.build_map_view(trip)
+
+        assert ("Anand Bhavan", "Prayagraj") in looked_up
+        assert "Anand Bhavan" in {pin["name"] for pin in view["pins"]}
+        assert not view["unmapped_stops"]
 
     def test_a_confirmed_binding_pins_the_stop_and_clears_the_report(
         self, _paris: None, monkeypatch: pytest.MonkeyPatch

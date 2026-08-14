@@ -259,6 +259,81 @@ def test_continuity_stays_silent_when_a_place_has_no_coordinates() -> None:
     assert "I9" not in codes
 
 
+def test_a_stop_far_from_the_one_before_it_is_a_gap_within_the_day(located: None) -> None:
+    """The Paris shape: a stay in the destination listed after landing back home."""
+    stranded = plan(
+        [
+            [
+                stop("Rajwada Palace", "09:00"),
+                stop("Gateway of India", "20:00", "hotel", 45),
+            ],
+        ]
+    )
+    violations = [v for v in trip_guard.validate_plan(stranded) if v.code == "I9"]
+    assert violations
+    assert "Gateway of India" in violations[0].message
+    assert "no journey connects them" in violations[0].message
+
+
+def test_two_terminals_in_a_row_are_the_journey_the_plan_did_not_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    coords = {
+        "Kempegowda International Airport": (13.1986, 77.7066),
+        "Zayed International Airport": (24.4330, 54.6511),
+        "Charles de Gaulle Airport": (49.0097, 2.5479),
+    }
+
+    def summary(name: str, _destination: str = "") -> dict[str, object]:
+        pair = coords.get(name)
+        return {"lat": pair[0], "lng": pair[1]} if pair else {}
+
+    for module in (trip_common, trip_guard):
+        monkeypatch.setattr(module, "_summary_for_place", summary, raising=False)
+
+    connecting = plan(
+        [
+            [
+                stop("Kempegowda International Airport", "04:35", "transport", 60),
+                stop("Zayed International Airport", "07:00", "transport", 60),
+                stop("Charles de Gaulle Airport", "19:20", "transport", 60),
+            ],
+        ]
+    )
+    codes = {violation.code for violation in trip_guard.validate_plan(connecting)}
+    assert "I9" not in codes
+
+
+def test_a_continuity_gap_blocks_completion(located: None) -> None:
+    stranded = plan(
+        [
+            [
+                stop("Rajwada Palace", "09:00"),
+                stop("Gateway of India", "20:00", "hotel", 45),
+            ],
+        ]
+    )
+    assert any(
+        "Gateway of India" in gap for gap in trip_validation.itinerary_coherence_gaps(stranded)
+    )
+
+
+def test_a_plan_without_an_origin_reports_that_the_guard_cannot_run() -> None:
+    blind = plan([[stop("Rajwada Palace", "10:00")]], origin="")
+    violations = [v for v in trip_guard.validate_plan(blind) if v.code == "I10"]
+    assert violations
+    assert "where the trip starts" in violations[0].message
+    assert any(
+        "does not say where it starts from" in gap
+        for gap in trip_validation.planning_completion_gaps(blind)
+    )
+
+
+def test_a_plan_that_names_its_origin_reports_no_coverage_gap(located: None) -> None:
+    codes = {violation.code for violation in trip_guard.validate_plan(ROUND_TRIP)}
+    assert "I10" not in codes
+
+
 def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:
     broken = plan(
         [

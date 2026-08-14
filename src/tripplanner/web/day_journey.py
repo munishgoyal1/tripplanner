@@ -18,7 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from tripplanner.web.map_pins import _route_circuit_id
+from tripplanner.web.map_pins import _haversine_km, _route_circuit_id
 from tripplanner.web.transport import (
     _canonical_transport_name,
     _intercity_transfer_mode,
@@ -32,6 +32,22 @@ TERMINAL_KINDS = frozenset({"airport", "station", "bus_station"})
 # the arrival that closes the inter-city leg.
 _ENROUTE_KINDS = frozenset({"attraction", "meal", "restaurant"})
 _GROUND_MODES = frozenset({"Drive", "Bus"})
+
+#: The journey a pair of terminals implies when the plan never named the leg.
+_TERMINAL_MODES = {"airport": "Flight", "station": "Train", "bus_station": "Bus"}
+IMPLIED_HOP_MIN_KM = 100.0
+
+
+def implied_terminal_hop_mode(from_kind: str, to_kind: str, distance_km: float) -> str | None:
+    """The inter-city mode two back-to-back terminals imply, if they imply one.
+
+    A plan that lists a departure and an arrival terminal without naming the leg
+    between them still moved the traveller between cities; reading it as a local
+    day is what turns an ocean crossing into a drive.
+    """
+    if from_kind not in _TERMINAL_MODES or distance_km < IMPLIED_HOP_MIN_KM:
+        return None
+    return _TERMINAL_MODES.get(to_kind)
 
 Edge = tuple[str, str]
 
@@ -73,8 +89,14 @@ class _JourneyWalk:
         self.saved_metrics: dict[str, dict[str, float]] = {}
         self._resolve_pin = resolve_pin
         self._open: _OpenTransfer | None = None
+        self._pin_by_id: dict[str, dict[str, Any]] = {}
 
     # -- path primitives -------------------------------------------------
+
+    def _remember(self, pin: dict[str, Any]) -> str:
+        pin_id = str(pin["id"])
+        self._pin_by_id[pin_id] = pin
+        return pin_id
 
     def _place(self, pin_id: str) -> None:
         if pin_id not in self.journey.map_pin_ids:
@@ -126,7 +148,7 @@ class _JourneyWalk:
 
         refs = _transport_terminal_refs(name, kind)
         terminal_ids = [
-            str(pin["id"])
+            self._remember(pin)
             for pin in (
                 self._resolve_pin(terminal_name, terminal_kind)
                 for terminal_kind, terminal_name in refs
@@ -160,7 +182,7 @@ class _JourneyWalk:
         if not self.journey.route_ids and refs:
             origin_pin = self._resolve_pin(refs[0][1], refs[0][0])
             if origin_pin:
-                self._place(str(origin_pin["id"]))
+                self._place(self._remember(origin_pin))
         self._open = transfer
 
     def _visit_place(self, name: str, kind: str) -> None:
@@ -170,7 +192,7 @@ class _JourneyWalk:
         pin = self._resolve_pin(name, kind)
         if not pin:
             return
-        pin_id = str(pin["id"])
+        pin_id = self._remember(pin)
         pin_kind = str(pin["kind"])
 
         transfer = self._open
@@ -180,7 +202,30 @@ class _JourneyWalk:
             # A ground transfer stays open through its waypoints until the stay.
             if transfer.mode not in _GROUND_MODES or pin_kind == "hotel":
                 self._open = None
+        elif not transfer:
+            self._imply_terminal_hop(pin, pin_id, pin_kind)
         self._place(pin_id)
+
+    def _imply_terminal_hop(self, pin: dict[str, Any], pin_id: str, pin_kind: str) -> None:
+        """Draw the leg the plan forgot to name between two distant terminals."""
+        if not self.journey.route_ids:
+            return
+        previous = self._pin_by_id.get(self.journey.route_ids[-1])
+        if not previous:
+            return
+        coords = [(place.get("lat"), place.get("lng")) for place in (previous, pin)]
+        if not all(isinstance(value, (int, float)) for pair in coords for value in pair):
+            return
+        (from_lat, from_lng), (to_lat, to_lng) = coords
+        mode = implied_terminal_hop_mode(
+            str(previous.get("kind") or ""),
+            pin_kind,
+            _haversine_km((float(from_lat), float(from_lng)), (float(to_lat), float(to_lng))),
+        )
+        if not mode:
+            return
+        self.journey.intercity_edges[(self.journey.route_ids[-1], pin_id)] = mode
+        self.journey.transfer_mode = mode
 
     def finish(self) -> DayJourney:
         self._close_pending_arrival()
@@ -239,9 +284,10 @@ def start_journey_from_stay(
         _rebind_edges(journey.circuit_edges, origin_id, stay_id)
 
     journey.route_ids = [stay_id, *(pin_id for pin_id in route_ids if pin_id != stay_id)]
-    if len(journey.route_ids) >= 2 and journey.transfer_mode:
-        journey.intercity_edges.setdefault(
-            (journey.route_ids[0], journey.route_ids[1]), journey.transfer_mode
+    # Only claim the opening edge is the transfer when the walk found no other one.
+    if len(journey.route_ids) >= 2 and journey.transfer_mode and not journey.intercity_edges:
+        journey.intercity_edges[(journey.route_ids[0], journey.route_ids[1])] = (
+            journey.transfer_mode
         )
     for extra_id in extra_stay_ids or []:
         if extra_id not in journey.route_ids:
