@@ -10,6 +10,32 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "family-details": {
+    changes: [
+      "How a family is introduced: roster, trip question, shared defaults, chat suggestion, or comparison matrix",
+      "The boundary between family-wide details and individual member details, including visible exceptions",
+      "How passive facts from chat and shared trip context are proposed, confirmed, corrected, and attributed",
+      "How much information appears before the user asks for it, so setup stays quick and non-threatening",
+    ],
+    context: [
+      "Identity, authentication, travel-document retention, privacy controls, and the existing profile persistence boundary",
+      "The planner's ability to use confirmed preferences and trip-specific overrides; this Lab does not alter agent behavior",
+      "Provider searches, booking handoff, emergency-service workflows, and family sharing permissions",
+    ],
+  },
+  "profile-preferences": {
+    changes: [
+      "The complete Profile and About me information architecture, including durable preferences, personal context, and identity details",
+      "Whether preference categories are edited as visible tags, a guided sequence, or a searchable command surface",
+      "How each friendly tag maps to a stable internal key and value such as trip_pace: balanced, see_it_all, or relaxed",
+      "The balance between quick selection, optional notes, confidence, and a clear saved state",
+    ],
+    context: [
+      "The existing profile persistence contract, authenticated account boundary, and production settings route",
+      "The planner's preference application and agent prompt assembly; this Lab visualizes the contract but does not change runtime behavior",
+      "Travel documents, analytics, privacy controls, sign-in, trip selection, and the rest of the workspace",
+    ],
+  },
   "localization": {
     changes: [
       "Where country, interface language, display currency, date/time, week-start, distance, and temperature preferences are first confirmed and later changed",
