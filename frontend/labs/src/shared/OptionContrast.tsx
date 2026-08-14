@@ -2,13 +2,22 @@ import { Columns2 } from "lucide-react";
 import { allLabs } from "./labRecords";
 
 interface ContrastRow {
+  /** Authored as "<letter> · <name>"; the letter is provisional and gets
+   * reassigned by score rank at render time, so authoring order and letter
+   * order don't need to match. */
   option: string;
-  /** 0-100 fit for this product. Rows are authored A-C but always render best first. */
+  /** 0-100 fit for this product. Rows always render best first. */
   score: number;
   idea: string;
   buys: string;
   costs: string;
   choose: string;
+}
+
+/** Strips the leading "<letter> · " so options can be matched and relabeled
+ * independent of whichever letter they were originally authored with. */
+function optionName(option: string): string {
+  return option.replace(/^[A-Z]\s*·\s*/, "").trim();
 }
 
 interface ContrastDefinition {
@@ -940,7 +949,16 @@ export function OptionContrast({ labId }: { labId: string }) {
   const lab = allLabs.find((candidate) => candidate.id === labId);
   if (!contrast || !lab) return null;
 
-  const ranked = [...contrast.rows].sort((a, b) => b.score - a.score);
+  const chosenName = contrast.chosen ? optionName(contrast.chosen) : null;
+  // Reassign the letter by rank instead of trusting the authored one, so the
+  // best-scored option always reads as A regardless of authoring order.
+  const ranked = [...contrast.rows]
+    .sort((a, b) => b.score - a.score)
+    .map((row, index) => ({
+      ...row,
+      label: `${String.fromCharCode(65 + index)} · ${optionName(row.option)}`,
+      isChosen: chosenName !== null && optionName(row.option) === chosenName,
+    }));
 
   return (
     <section
@@ -977,7 +995,7 @@ export function OptionContrast({ labId }: { labId: string }) {
                 <th scope="row" className="px-4 py-2.5 text-left font-semibold text-ink">
                   <span className="flex items-baseline gap-2">
                     <span className="text-[11px] font-bold text-slate-400">{index + 1}</span>
-                    <span>{row.option}</span>
+                    <span>{row.label}</span>
                   </span>
                   <span className="mt-1 flex flex-wrap items-center gap-1.5">
                     <span
@@ -985,7 +1003,7 @@ export function OptionContrast({ labId }: { labId: string }) {
                     >
                       {row.score}/100
                     </span>
-                    {contrast.chosen === row.option ? (
+                    {row.isChosen ? (
                       <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 ring-1 ring-emerald-200">
                         Selected
                       </span>

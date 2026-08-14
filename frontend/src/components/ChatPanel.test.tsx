@@ -430,6 +430,20 @@ describe("ChatPanel progress", () => {
     expect(screen.getByText("Assistant")).toBeInTheDocument();
   });
 
+  it("renders persisted timestamp and duration from chat history", async () => {
+    const at = new Date();
+    at.setHours(9, 5, 0, 0);
+    vi.mocked(fetchChatHistory).mockResolvedValueOnce([
+      { role: "user", text: "Plan Goa", ts: at.getTime() },
+      { role: "assistant", text: "Here is Goa.", ts: at.getTime(), seconds: 27 },
+    ]);
+    render(<ChatPanel onTurnComplete={vi.fn()} />);
+
+    expect(await screen.findByText("Here is Goa.")).toBeInTheDocument();
+    expect(screen.getByTitle("This reply took 27s")).toHaveTextContent("27s");
+    expect(screen.getAllByText(at.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }))).toHaveLength(2);
+  });
+
   it("keeps the docked assistant on one row and expands only when asked", async () => {
     const onChangeLayout = vi.fn();
     const onHide = vi.fn();
