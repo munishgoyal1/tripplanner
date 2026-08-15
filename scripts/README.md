@@ -38,6 +38,7 @@ maintenance remain in [`../infra/`](../infra/README.md) with their approval gate
 | `user/debug/Capture-Screens.cmd [-Sandbox n] [-Label name]` | Capture UI evidence for a bug: screenshots, `/trip/view` and map JSON, console errors, and DOM |
 | `user/sandbox/New-Sandbox.cmd` | Create an isolated feature sandbox (branch, worktree, ports, DB) from latest `master`; add `-LabId <id>` for a Lab implementation |
 | `user/sandbox/Run-Sandbox.cmd` | Seed and run a sandbox on its isolated ports (holds the terminal) |
+| `user/sandbox/Run-All-Sandboxes.cmd` | Seed and run every registered sandbox in independent background processes |
 | `user/sandbox/Serve-Sandbox.cmd` | Start a sandbox detached, wait for API, SPA, and Labs readiness, and record a linked changed iteration with `-IterationSummary` |
 | `user/sandbox/Stop-Sandbox.cmd` | Stop a served sandbox and free its ports |
 | `user/sandbox/Update-Sandbox.cmd` | Merge the sandbox's remote head and current `origin/master` into its local branch, then push that sandbox branch; never promotes to `master` |
@@ -96,7 +97,12 @@ On macOS, use the matching launchers:
 ./scripts/mac/user/sandbox/New-Sandbox.command lab16-chatdock "Assistant dock rework"
 ./scripts/mac/user/sandbox/List-Sandboxes.command
 ./scripts/mac/user/sandbox/Serve-Sandbox.command 1
+./scripts/mac/user/sandbox/Run-All-Sandboxes.command
 ```
+
+`Run-All-Sandboxes` starts every registered sandbox concurrently, using the same
+seed and foreground `Run` path as an individual sandbox. It returns immediately;
+per-sandbox stdout and stderr are written under `logs/sandbox/run-all/`.
 
 Every verb except `New-Sandbox` accepts the number, the full name, or the short
 name without its number prefix.
