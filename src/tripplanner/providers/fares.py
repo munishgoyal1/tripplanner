@@ -16,7 +16,7 @@ import asyncio
 import logging
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Protocol
+from typing import Any, Protocol
 
 from tripplanner.config import get_settings
 from tripplanner.decisions.models import Confidence, FareBasis, TransportMode, UnpricedReason
@@ -51,7 +51,37 @@ def _fare_cache_ttls() -> dict[str, int]:
 
 # Keys are plain lowercase mode strings because CacheKey.mode is built with
 # str(mode).lower(); an enum member would not match on lookup.
-_FARE_CACHE = FareCache(ttl_seconds=_fare_cache_ttls())
+def _encode_quote(quote: FareQuote) -> dict[str, Any]:
+    return {
+        "amount": quote.amount,
+        "currency": quote.currency,
+        "provider": quote.provider,
+        "basis": str(quote.basis),
+        "amount_max": quote.amount_max,
+        "url": quote.url,
+        "checked_at": quote.checked_at.isoformat(),
+        "confidence": str(quote.confidence),
+    }
+
+
+def _decode_quote(payload: dict[str, Any]) -> FareQuote:
+    return FareQuote(
+        amount=float(payload["amount"]),
+        currency=str(payload["currency"]),
+        provider=str(payload["provider"]),
+        basis=FareBasis(payload["basis"]),
+        amount_max=None if payload.get("amount_max") is None else float(payload["amount_max"]),
+        url=payload.get("url"),
+        checked_at=datetime.fromisoformat(str(payload["checked_at"])),
+        confidence=Confidence(payload["confidence"]),
+    )
+
+
+_FARE_CACHE = FareCache(
+    ttl_seconds=_fare_cache_ttls(),
+    encode=_encode_quote,
+    decode=_decode_quote,
+)
 
 # Telemetry: track provider choices and performance
 _PROVIDER_STATS = {

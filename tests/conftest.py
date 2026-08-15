@@ -27,3 +27,19 @@ def _force_local_storage(monkeypatch: pytest.MonkeyPatch) -> None:
 def _disable_debug_store(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep fixture trips out of the committed debug archive."""
     monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE", "0")
+
+
+@pytest.fixture(autouse=True)
+def _memory_cache_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Never let the suite reach the shared Redis.
+
+    A developer's ``.env`` may enable it, which made the tests both slow and
+    non-hermetic: they read entries another environment had written, and wrote
+    their own fixtures back.
+    """
+    from tripplanner import caching
+
+    monkeypatch.setattr(caching, "_BACKEND", caching.MemoryBackend())
+    for cache in list(caching._REGISTRY.values()):
+        cache.rebind()
+        cache.clear()
