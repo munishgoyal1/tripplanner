@@ -50,6 +50,7 @@ choose." Canonical documents answer "what is true now."
 | [`development/new-machine-setup.md`](development/new-machine-setup.md) | Reproduce the Windows/macOS toolchain, VS Code/Copilot settings, and four-agent layout |
 | [`development/parallel-agent-development.md`](development/parallel-agent-development.md) | Parallel coding-agent worktrees, merge checkpoints, and VS Code voice input |
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
+| [`eng-backlog/`](eng-backlog/README.md) | Deferred developer-tooling and engineering-reliability work; not active implementation scope |
 
 ## Operations
 
@@ -96,6 +97,8 @@ active Word document while that lock exists.
 - Put dated external research in `docs/research/`, and state the verification
   date in the document so a stale finding is obvious.
 - Put local setup and contributor workflows in `docs/development/`.
+- Put deferred cross-cutting developer-tooling and reliability work in
+  `docs/eng-backlog/`.
 - Put deployment, reliability, observability, and performance runbooks in
   `docs/operations/`.
 - Put native-platform testing runbooks in `docs/mobile/`.

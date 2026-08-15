@@ -537,16 +537,26 @@ function Write-SandboxLabVersion {
         -Evidence $evidence -StorePath (Join-Path $storeRoot $store)
     # The recorder only writes the store. Leaving that write uncommitted made the next
     # promote fail its own clean-worktree gate, so it is committed with the record.
-    if ($storeRoot -eq $Entry.worktree) {
-        $storeChanged = Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
-            "status", "--porcelain", "--", $store
-        )
-        if ($storeChanged) {
-            Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("add", "--", $store) | Out-Null
-            Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
-                "commit", "-m", "Record $($Entry.labId) lab $State for $($Entry.slug)", "--", $store
-            ) | Out-Null
-            Write-Host "[lab]     committed the lab record" -ForegroundColor DarkGray
+    # This holds for the primary checkout too: a completed record lands there, and
+    # leaving it dirty blocks every later promotion and looks like abandoned work.
+    $storeChanged = Invoke-Git -WorkingDirectory $storeRoot -Arguments @(
+        "status", "--porcelain", "--", $store
+    )
+    if ($storeChanged) {
+        Invoke-Git -WorkingDirectory $storeRoot -Arguments @("add", "--", $store) | Out-Null
+        Invoke-Git -WorkingDirectory $storeRoot -Arguments @(
+            "commit", "-m", "Record $($Entry.labId) lab $State for $($Entry.slug)", "--", $store
+        ) | Out-Null
+        Write-Host "[lab]     committed the lab record" -ForegroundColor DarkGray
+        if ($storeRoot -eq $primaryRoot) {
+            # Promotion also requires the primary checkout to equal origin, so a local
+            # commit that is never pushed fails the next run just as a dirty file did.
+            & git -C $storeRoot push -q origin HEAD
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Recorded $($Entry.labId) as $State but could not push it. Push $primaryRoot before the next promotion."
+            } else {
+                Write-Host "[lab]     pushed the lab record" -ForegroundColor DarkGray
+            }
         }
     }
     if ($State -eq "implemented-review") {

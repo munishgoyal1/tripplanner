@@ -20,6 +20,24 @@ function optionName(option: string): string {
   return option.replace(/^[A-Z]\s*·\s*/, "").trim();
 }
 
+/** Options best-scored first, each with the letter its rank earns.
+ *
+ * Exported because a Lab's own option cards have to letter and order
+ * themselves the same way the contrast table does. Deriving both from this
+ * leaves the scores as the single place that decides.
+ */
+export function rankedOptions(labId: string): { name: string; label: string; score: number }[] {
+  const contrast = contrasts[labId];
+  if (!contrast) return [];
+  return [...contrast.rows]
+    .sort((a, b) => b.score - a.score)
+    .map((row, index) => ({
+      name: optionName(row.option),
+      label: `${String.fromCharCode(65 + index)} · ${optionName(row.option)}`,
+      score: row.score,
+    }));
+}
+
 interface ContrastDefinition {
   /** The single sentence naming what the options genuinely disagree about. */
   axis: string;
@@ -962,15 +980,13 @@ export function OptionContrast({ labId }: { labId: string }) {
   if (!contrast || !lab) return null;
 
   const chosenName = contrast.chosen ? optionName(contrast.chosen) : null;
-  // Reassign the letter by rank instead of trusting the authored one, so the
-  // best-scored option always reads as A regardless of authoring order.
-  const ranked = [...contrast.rows]
-    .sort((a, b) => b.score - a.score)
-    .map((row, index) => ({
-      ...row,
-      label: `${String.fromCharCode(65 + index)} · ${optionName(row.option)}`,
-      isChosen: chosenName !== null && optionName(row.option) === chosenName,
-    }));
+  // Letters come from rank, not from authoring order, so the best-scored
+  // option always reads as A here and on the Lab's own option cards.
+  const order = rankedOptions(labId);
+  const ranked = order.map((entry) => {
+    const row = contrast.rows.find((candidate) => optionName(candidate.option) === entry.name)!;
+    return { ...row, label: entry.label, isChosen: chosenName === entry.name };
+  });
 
   return (
     <section
