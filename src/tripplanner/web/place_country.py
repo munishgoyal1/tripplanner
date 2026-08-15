@@ -22,12 +22,12 @@ Anything short of that resolves to ``""``, and the caller stays silent.
 from __future__ import annotations
 
 import unicodedata
-from threading import Lock
 from typing import Any
 
 import httpx
 
 from tripplanner import http_client
+from tripplanner.caching import get_cache
 
 _GEOCODE = "https://geocoding-api.open-meteo.com/v1/search"
 _TIMEOUT_S = 8
@@ -39,8 +39,9 @@ _MIN_POPULATION = 50_000
 # ...and the winner must outweigh any same-named place in another country.
 _DOMINANCE = 5
 
-_cache: dict[str, str] = {}
-_lock = Lock()
+# Which country a place sits in does not change, so this is retained for a month
+# and re-looked-up only when it falls out.
+_cache = get_cache("place-country", default_ttl_seconds=30 * 24 * 60 * 60)
 
 
 def _normalize(place: str) -> str:
@@ -139,10 +140,9 @@ def resolve_country(place: str) -> str:
     key = _normalize(place).casefold()
     if not key:
         return ""
-    with _lock:
-        cached = _cache.get(key)
+    cached = _cache.get(key)
     if cached is not None:
-        return cached
+        return str(cached)
 
     resolved = ""
     complete = False
@@ -155,9 +155,10 @@ def resolve_country(place: str) -> str:
             resolved = answer
             break
 
+    # A completed lookup that found nothing is still an answer worth keeping;
+    # an incomplete one is not, so the next caller retries it.
     if complete:
-        with _lock:
-            _cache[key] = resolved
+        _cache.set(key, resolved)
     return resolved
 
 
@@ -173,5 +174,4 @@ def crosses_border(origin: str, destination: str) -> bool:
 
 
 def reset_cache() -> None:
-    with _lock:
-        _cache.clear()
+    _cache.clear()

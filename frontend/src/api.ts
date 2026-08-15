@@ -520,6 +520,40 @@ export async function fetchPreferences(): Promise<Preferences> {
   return res.json();
 }
 
+/** A fact chat noticed that is waiting for the user to confirm or decline. */
+export interface ProfileSuggestion {
+  id: string;
+  kind: "preference" | "family_member" | "note";
+  label: string;
+  summary: string;
+  detail: string;
+  provenance: string;
+  source_text: string;
+  created_at: string;
+}
+
+export async function fetchProfileSuggestions(): Promise<ProfileSuggestion[]> {
+  const params = new URLSearchParams({ user_id: getUserId() });
+  const res = await apiFetch(`${BASE}/profile/suggestions?${params.toString()}`);
+  ensureOk(res, "Could not load profile suggestions");
+  const data = await res.json();
+  return data.suggestions ?? [];
+}
+
+export async function resolveProfileSuggestion(
+  id: string,
+  action: "save" | "dismiss",
+): Promise<ProfileSuggestion[]> {
+  const res = await apiFetch(`${BASE}/profile/suggestions/${encodeURIComponent(id)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, user_id: getUserId() }),
+  });
+  ensureOk(res, "Could not update that suggestion");
+  const data = await res.json();
+  return data.suggestions ?? [];
+}
+
 export interface SavePrefsResult {
   ok: boolean;
   about_me_extracted: string[];
