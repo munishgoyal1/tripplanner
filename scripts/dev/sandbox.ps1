@@ -1451,10 +1451,9 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     try {
         Sync-MasterBaseline -Reason "update sandbox '$slug'"
         Invoke-Git -WorkingDirectory $wd -Arguments @("fetch", "-q", "origin") | Out-Null
-        Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.enabled", "true") | Out-Null
-        Invoke-Git -WorkingDirectory $wd -Arguments @("config", "rerere.autoupdate", "true") | Out-Null
-        Invoke-Git -WorkingDirectory $wd -Arguments @("config", "merge.conflictstyle", "zdiff3") | Out-Null
 
+        # rerere and the zdiff3 conflict style are configured repo-wide by
+        # scripts/setup-dev-machine.ps1, which every worktree inherits.
         # Preserve any uncommitted sandbox edits behind a safety stash, restored
         # (or retained on conflict) after the merge.
         $stashCommit = ""
