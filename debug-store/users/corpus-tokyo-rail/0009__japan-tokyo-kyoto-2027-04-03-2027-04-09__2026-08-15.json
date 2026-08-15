@@ -1,0 +1,1958 @@
+{
+  "archive_no": 9,
+  "trip_id": "japan_tokyo_kyoto_2027-04-03_2027-04-09",
+  "user_id": "corpus-tokyo-rail",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T13:53:20Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T13:55:01Z",
+      "content_hash": "d590502e12569e58",
+      "plan": {
+        "status": "draft",
+        "trip_id": "japan_tokyo_kyoto_2027-04-03_2027-04-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:23:20.170845",
+        "destination": "Japan (Tokyo & Kyoto)",
+        "origin": "Delhi",
+        "departure_date": "2027-04-03",
+        "return_date": "2027-04-09",
+        "travelers": "2 adults",
+        "notes": "Train between cities preferred. Balanced pace, moderate budget, minimum 3-star hotels.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Japan",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-04-03",
+            "title": "Arrival in Tokyo",
+            "summary": "Arrive in Tokyo from Delhi, check in to hotel, explore nearby area and enjoy a local dinner.",
+            "stops": [
+              {
+                "name": "Flight: Delhi to Tokyo",
+                "kind": "flight",
+                "time": "08:00",
+                "arrival_time": "18:00",
+                "duration_min": 600
+              },
+              {
+                "name": "Tokyo Hotel",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              },
+              {
+                "name": "Shinjuku",
+                "kind": "attraction",
+                "time": "19:30",
+                "duration_min": 90,
+                "note": "Evening stroll and dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-04-04",
+            "title": "Tokyo Highlights",
+            "summary": "Visit top Tokyo attractions: Senso-ji, Tokyo Skytree, and Asakusa. Lunch at a local restaurant.",
+            "stops": [
+              {
+                "name": "Tokyo Hotel",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Senso-ji Temple",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Tokyo Skytree",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Asakusa",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Uobei Shibuya",
+                "kind": "meal",
+                "time": "18:30",
+                "duration_min": 90,
+                "note": "Sushi dinner"
+              },
+              {
+                "name": "Tokyo Hotel",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-04-05",
+            "title": "Tokyo Culture & Shopping",
+            "summary": "Explore Meiji Shrine, Harajuku, and Shibuya. Enjoy shopping and local cuisine.",
+            "stops": [
+              {
+                "name": "Tokyo Hotel",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Meiji Shrine",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Harajuku",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Shibuya Crossing",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Ichiran Ramen",
+                "kind": "meal",
+                "time": "18:00",
+                "duration_min": 90,
+                "note": "Dinner"
+              },
+              {
+                "name": "Tokyo Hotel",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-04-06",
+            "title": "Tokyo to Kyoto by Shinkansen",
+            "summary": "Take the bullet train to Kyoto, check in, and explore Gion district.",
+            "stops": [
+              {
+                "name": "Shinkansen: Tokyo to Kyoto",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 160,
+                "distance_km": 450,
+                "note": "Bullet train"
+              },
+              {
+                "name": "Tokyo Hotel",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "12:10"
+              },
+              {
+                "name": "Kyoto Hotel",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "14:10"
+              },
+              {
+                "name": "Gion District",
+                "kind": "attraction",
+                "time": "16:10",
+                "duration_min": 120,
+                "note": "Historic streets and tea houses"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-04-07",
+            "title": "Kyoto Temples & Gardens",
+            "summary": "Visit Fushimi Inari, Kiyomizu-dera, and Nishiki Market. Enjoy local cuisine.",
+            "stops": [
+              {
+                "name": "Kyoto Hotel",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Fushimi Inari Taisha",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Kiyomizu-dera",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Nishiki Market",
+                "kind": "attraction",
+                "time": "14:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Ganko Sushi Kyoto",
+                "kind": "meal",
+                "time": "18:30",
+                "duration_min": 90,
+                "note": "Dinner"
+              },
+              {
+                "name": "Kyoto Hotel",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-04-08",
+            "title": "Arashiyama & Departure",
+            "summary": "Explore Arashiyama Bamboo Grove, Tenryu-ji, then return to Tokyo for flight home.",
+            "stops": [
+              {
+                "name": "Kyoto Hotel",
+                "kind": "hotel",
+                "note": "Checkout"
+              },
+              {
+                "name": "Arashiyama Bamboo Grove",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Tenryu-ji Temple",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Shinkansen: Kyoto to Tokyo",
+                "kind": "transport",
+                "time": "14:00",
+                "duration_min": 160,
+                "distance_km": 450,
+                "note": "Bullet train"
+              },
+              {
+                "name": "Flight: Tokyo to Delhi",
+                "kind": "flight",
+                "time": "22:00",
+                "arrival_time": "04:00",
+                "duration_min": 480
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:25:00.997042",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:24:55",
+            "expires_at": "2026-08-16T07:24:55"
+          },
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:25:00",
+            "expires_at": "2026-08-15T19:55:00"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T13:55:46Z",
+      "content_hash": "a8e9434c17d824ea",
+      "plan": {
+        "status": "draft",
+        "trip_id": "japan_tokyo_kyoto_2027-04-03_2027-04-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:23:20.170845",
+        "destination": "Japan (Tokyo & Kyoto)",
+        "origin": "Delhi",
+        "departure_date": "2027-04-03",
+        "return_date": "2027-04-09",
+        "travelers": "2 adults",
+        "notes": "Train between cities preferred. Balanced pace, moderate budget, minimum 3-star hotels.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Japan",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Sunroute Plaza Shinjuku",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp6555ad8e"
+            },
+            "checkin": "2027-04-03",
+            "checkout": "2027-04-06",
+            "price_per_night": 17000,
+            "currency": "JPY",
+            "total_price": 51000,
+            "address": "2-3-1 Yoyogi, Shibuya-ku, Tokyo",
+            "rating": 4.3,
+            "reviews_count": 2100,
+            "room_type": "Standard Double",
+            "amenities": [
+              "Free WiFi",
+              "Breakfast available",
+              "Non-smoking rooms",
+              "24-hour front desk"
+            ]
+          },
+          {
+            "name": "Hotel Granvia Kyoto",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp1fa7a"
+            },
+            "checkin": "2027-04-06",
+            "checkout": "2027-04-09",
+            "price_per_night": 21000,
+            "currency": "JPY",
+            "total_price": 63000,
+            "address": "JR Kyoto Station, Karasuma Chuo-guchi, Kyoto",
+            "rating": 4.6,
+            "reviews_count": 3200,
+            "room_type": "Standard Double",
+            "amenities": [
+              "Free WiFi",
+              "Breakfast available",
+              "Fitness center",
+              "24-hour front desk"
+            ]
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-04-03",
+            "title": "Arrival in Tokyo",
+            "summary": "Arrive in Tokyo from Delhi, check in to Sunroute Plaza Shinjuku, explore nearby Shinjuku and enjoy a local dinner.",
+            "stops": [
+              {
+                "name": "Flight: Delhi to Tokyo (VietJet Air)",
+                "kind": "flight",
+                "time": "00:05",
+                "arrival_time": "06:35",
+                "duration_min": 390
+              },
+              {
+                "name": "Sunroute Plaza Shinjuku",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              },
+              {
+                "name": "Shinjuku",
+                "kind": "attraction",
+                "time": "19:30",
+                "duration_min": 90,
+                "note": "Evening stroll and dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-04-04",
+            "title": "Tokyo Highlights",
+            "summary": "Visit Senso-ji, Tokyo Skytree, and Asakusa. Sushi dinner at Uobei Shibuya.",
+            "stops": [
+              {
+                "name": "Sunroute Plaza Shinjuku",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Senso-ji Temple",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Tokyo Skytree",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Asakusa",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Uobei Shibuya",
+                "kind": "meal",
+                "time": "18:30",
+                "duration_min": 90,
+                "note": "Sushi dinner"
+              },
+              {
+                "name": "Sunroute Plaza Shinjuku",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-04-05",
+            "title": "Tokyo Culture & Shopping",
+            "summary": "Explore Meiji Shrine, Harajuku, and Shibuya. Dinner at Ichiran Ramen Shibuya.",
+            "stops": [
+              {
+                "name": "Sunroute Plaza Shinjuku",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Meiji Shrine",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Harajuku",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Shibuya Crossing",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Ichiran Ramen Shibuya",
+                "kind": "meal",
+                "time": "18:00",
+                "duration_min": 90,
+                "note": "Dinner"
+              },
+              {
+                "name": "Sunroute Plaza Shinjuku",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-04-06",
+            "title": "Tokyo to Kyoto by Shinkansen",
+            "summary": "Take the bullet train to Kyoto, check in to Hotel Granvia Kyoto, explore Gion district.",
+            "stops": [
+              {
+                "name": "Shinkansen: Tokyo to Kyoto",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 160,
+                "distance_km": 450,
+                "note": "Bullet train"
+              },
+              {
+                "name": "Sunroute Plaza Shinjuku",
+                "kind": "hotel",
+                "note": "Checkout",
+                "time": "12:10"
+              },
+              {
+                "name": "Hotel Granvia Kyoto",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "14:10"
+              },
+              {
+                "name": "Gion District",
+                "kind": "attraction",
+                "time": "16:10",
+                "duration_min": 120,
+                "note": "Historic streets and tea houses"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-04-07",
+            "title": "Kyoto Temples & Gardens",
+            "summary": "Visit Fushimi Inari, Kiyomizu-dera, and Nishiki Market. Dinner at Ganko Sushi Kyoto.",
+            "stops": [
+              {
+                "name": "Hotel Granvia Kyoto",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Fushimi Inari Taisha",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Kiyomizu-dera",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Nishiki Market",
+                "kind": "attraction",
+                "time": "14:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Ganko Sushi Kyoto",
+                "kind": "meal",
+                "time": "18:30",
+                "duration_min": 90,
+                "note": "Dinner"
+              },
+              {
+                "name": "Hotel Granvia Kyoto",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-04-08",
+            "title": "Arashiyama & Departure",
+            "summary": "Explore Arashiyama Bamboo Grove, Tenryu-ji, lunch at GYUKATSU Kyoto Katsugyu, then return to Tokyo for flight home.",
+            "stops": [
+              {
+                "name": "Hotel Granvia Kyoto",
+                "kind": "hotel",
+                "note": "Checkout"
+              },
+              {
+                "name": "Arashiyama Bamboo Grove",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Tenryu-ji Temple",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 90
+              },
+              {
+                "name": "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Lunch"
+              },
+              {
+                "name": "Shinkansen: Kyoto to Tokyo",
+                "kind": "transport",
+                "time": "14:30",
+                "duration_min": 160,
+                "distance_km": 450,
+                "note": "Bullet train"
+              },
+              {
+                "name": "Flight: Tokyo to Delhi (VietJet Air)",
+                "kind": "flight",
+                "time": "22:00",
+                "arrival_time": "04:00",
+                "duration_min": 480
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {
+          "flights": 163168,
+          "tokyo_hotel": 51000,
+          "kyoto_hotel": 63000,
+          "shinkansen_roundtrip": 60000,
+          "meals": 30000,
+          "activities": 20000
+        },
+        "total_cost": 387168,
+        "budget": 0,
+        "currency": "JPY",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:25:46.699888",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:24:55",
+            "expires_at": "2026-08-16T07:24:55"
+          },
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:25:00",
+            "expires_at": "2026-08-15T19:55:00"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T13:55:46Z",
+    "user_id": "corpus-tokyo-rail",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {
+        "flight_class": {
+          "economy": 1
+        }
+      },
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": "",
+      "_promoted_signals": {}
+    },
+    "places": {
+      "shinjuku|japan (tokyo & kyoto)": {
+        "place_id": "ChIJPyOTG8KMGGARh_IXobWxHmo",
+        "name": "Shinjuku Gyoen National Garden",
+        "address": "11 Naitōmachi, Shinjuku City, Tokyo 160-0014, Japan",
+        "rating": 4.6,
+        "review_count": 45505,
+        "price_level": null,
+        "website": "https://www.env.go.jp/garden/shinjukugyoen/index.html",
+        "editorial_summary": "This former estate is now a 144-acre park with diverse garden areas, grassy expanses & a greenhouse.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 9:00 AM – 6:00 PM",
+          "Wednesday: 9:00 AM – 6:00 PM",
+          "Thursday: 9:00 AM – 6:00 PM",
+          "Friday: 9:00 AM – 6:00 PM",
+          "Saturday: 9:00 AM – 6:00 PM",
+          "Sunday: 9:00 AM – 6:00 PM"
+        ],
+        "lat": 35.685176299999995,
+        "lng": 139.7100517,
+        "photo_refs": [
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydgUQA3telDK-kE1-qxNn9pYk7TNPCVnSq-oXRT63uZAMmHGiMonLOhjwuuVtzdd3anhzbimqH0zF1xzdWLNWokBQIxa9yUndBuy2w1IrPEeXbI6rg-LqA67Y6SalfUyb5rSag4rEwZB0u5RJq0crMk9dcVeMBt7IwUOTHUU23QcR40XOprg4V54jk3by0x8Qiy85uAmvInGSuSIY-tcAKAfv_xH9jbOkRaUvZkFmD9kpTYITpsNDwm4whnH8k1r6thZQ_1UvROgALMOLID9YZrUj-tYMHbn0A8o8QNvP7sETFXk62wJtED393GTblu6CxaRy6oszPYCSZMRXbYkuVrXXDA4fYJPhWwKvcU3FZhmRANDOtNTmGpr8KWOrfxbOJTwG3L3HnNvyX69jYNGUfAHY3JByAvl2o91tqhp-bqVdx1k",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydhNOs6ZgAHgRssu6p4vnCKXe3VDz2ByU0zCiT9iFXFdtkksrPnJuXK1As0KqzuG5gI30HlpsO1Q4oON32jV_ERCUHR3FT78c6AL1TU5TzDqbh5Oi66UGF23BSTgkK9qyAd5PFmtrzatl6vE4efz9O-aMGusvNg2Tm1CErcgVJ-FRP-hMty5EEmBvk3FMiaZUtXAWF02tHRFJFh0jQ9h3qCH_r-JrjBSWI6whU3ukQx7jL_b2T7z-ffNuVv6df_q86ziO7efEg4jITveUOMdZpc0H3SI0PxD737B2g9UDFU7MauKs6rgNq1i_YLD2knovn7swq8nce1zsjxYzX0zOSYV33KQ10-fj4GHCzc5cfHUhtgnQO7QtE8WI6frRfoHju2W8oBosxMtvC2zSC3dDr-96KDMejh6aeJmOVZ5Y20",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydjkvrL53S7l1OOMgY6PPXOz25J6zvfqRahe8MtcV_bSg8bMzM3C0mGEgVKjbO-TgPcK_Vt0h_MFqvlZG1i9BEmaXtGhejdgvhksbIIwkdOwj3bZtQ2whZSN8JTNhoLKQbyMwkJt5zyfwbpTUhf30eRAIofHoMwadMsYwY4gkDP85yMminn9HO1Gc9SSC6VO94bxtAhA8z8EFgnXOM8LCuEwAY-CdnxEy7EoeFWxgWwdyr-FUwD_r-oVGLdjC400tmuRFL9GqNZoF4viBbEnuG9pjnPsoJhY_JbOew_Iw87KxzlDiTz-jLZS6Fvz8Gw2gzROF-ETAcgTuh-Ngw1d5oFvl_oeXZ4QrG2zwZBUV2jvxBlfyIolAXauqfsVJlkWQFQk5aN033UtMmXoHTXAc0u0ccoFXU7aVbu3GnariIXetA",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydgqwHyPuAyxNhvEZmbLWf4o9Ftiv2zmhADIQ-YprTddd0tfTCO7inbjJIAfoK-Tl-OCpgrzyDESyrxtc6o6BMCXCueLlP9t3Y5p7jj4DH7hhPXf2uCG3q5a022qdmWoWgMyEIutIaTuIAYxheweJPRKkY2kUyXXz-TiTcOcEJpRdYosg1FuvjIQJpuqXeCL2HbSdYvaJ-mR_aMue4w4pNFakHNY6HDAgtXb2KljbOzpu7baMDHbXnMU8x3kabCQESAiz--vRkPtlF_Rlrzq8VnYTdqzhETVV_5zTcH_fQBhz1pN4UmWzUa_Ek-ksCUOk1uqPqBggCbtyfrKkbe1GXG_oeXv5Y2BwvrW5Q2RBb4fJEUg1OroXsQirSF0QxxNGLulzy7YQJnm0po-G6lUiRSyurJSaP5aenACD2mOFcLvRg",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydiqpmErWZF2G1n7OkF5CR1Pj3RKPKMJku0VcXmxxEx6LGRGev8jfyqS9juqLm-_LAUmYdieq9dc9uUhb1TMRdCBOk-UXX28Rko_R8tM_f5zI_C8NFO-1szhNUc3Qbo8MVm-KYmPNWnGQLs4AoKJccFkdNf13oTlGys3KiDvNAcOwYospk_ZbHXjH2wizJcsb1NLHT7O1PxmddMxMiHU8ayYxV52j4ZOA61n74GNGbncdsg3gsSqQxDxTfyZi2X4s5wIeW2yMZTQ962bfyyQb8IVDDfPkM5QwdwbhjZp8FoQXtUOn9nNx6pQVTs8lLMLFHAx3U3jICkE70ulDZCEClZFXm8InwP1txtr9xampLqgJv4qHzlAx7OwG51M0F6fLvbsbhAFoOvUESZUci0msFp4QRb9uoDvQPdfRAH4Hkwbs0_f",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydhVC19lJUU0CvpXKlnb26zv2_vpLMNE9t4ljQis3MeZ1ezkW0ibtSFRirk1frE4LejVYcGwxLzci8f0n5mVqAAUbLx4EczUagKgYEKUEcTCdSkBql9OhFfV7LP3cB-Sz0rs2aPQAZeLhFk0u74u8BAY1kiRDZSzeKeRd2oVvmtq9hXcSFTQryCrM0h86_7JwwIVZv5PZp3AXHT8fSSN1nyjbMuQtRTkSzDmsTcQjXhIjJKRxmsgnoOdtHsr0nnJdn8FX6ncUo6NGjSnztblzsqaam70ojux1HvoIKFHX6I3_N2DRUuImYvbLkN0o2FZOymkFhHuH8IaAw6yNwW3AV_bwPKOaFMNrRVLivSimQdR8C6sWj104xm58b_xNmETyjPZI9-X3OoUgh1qUIeUQB_IZJbN9OM4Y91xdYJ1SuhXSH597AJudgn7X_QLf8Up",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydhZ-kJTdDEb3SGJfbzfRME0EWm_DgWmbrmB3DqLl7Q49lI2uLx1rm2saKoVMI4_WyrSM8czDURuXbWVO1oPesdoCJP1PKFlmYaxjj7bbfGHWxkL0OvqlLqEgk7mUAPC7-qnMWzfEu-og1XcDRjNp58ltpiXZylkmGVZG3dIhHY6VfEalxLyJqSHquJ-BH4p4_hRP6ePaTLiiU9EOPJIK7jmTfVNC8vcMJfng188rQeULc4y7YDN--OojQNZ19RAypH1txzeHDWB78sVGgFYMamxIMBMHlXpare7wSeImc2uDyGXvYs5rxTMQoWfZp07NRAUR-5P1XqbiC8rNkl1OZ0InrXyvShZhwtI5qhwjUgPaCX8rQl8y2KCuuzom2j9l4VgW9sEzRCgDpb-C_IaQpmSCf8Khqa7py-GKvkSGys",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydjz_dmtachenmdxBlrn2-Znh53nt3yEpElM_o5ZN5cnYbUTqzKKsLP8Ql2R6HDsZzVhak3VQ1t5TTdKAdTouIE51s6eT7061vYk_WU2V-IKluP3zm1gVs8GYhguJfMhSPkdZWdbx0qRDthsix2GTac6HQm7fHlZjnV-smJs7ZX8ZwA05X2Ul87IrbVB4I2HDK5HbJwNd8nDe0K6FnrIpVIeD0zvdVnkpd0-0K5kI8OwABsRbYFzplOiIn4Xp_l-u0hr5CGNhstHabWEBmrt_0vb6No5cP0aQe00DbT3-pTd1ctlTmeCxbW6o3cmwi-8HHVyhwf9BX4tQVqMp_jJ7hpPC6eQh1gi-4z8AtZx-MefiZw_O5zNq3uLPkXie1fhT2J5kuaLfDU6IFe0l9zKhgNIiVr9QHZeCHVf5neFLcORuR4H",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydirbOUTXQxn-H2w_xYxuP8EEHGK-h3M_fRNrA3aIZ17tVlVVtVMNEbpMLSsqaByTULMrhC4AeM1658zMj10DrHhKhN097oy482hiY-WNVyxWJW0OKyRdINVcUGGMYKsOemdYBXw-caCOOBnA8mKzCQ5V9BZeWColmCH6c-D5iuOv9TGC-NFi0gE0tlObcJKzIcrxyCtclaHAiPZoJSQdBxNwd_7cTGDmwRx3he8D-41zSkjuKi-zYSVLZZeVm5DWIMEby0uxz83PNNktO5arzJN1UEoUgS4aE4OMyHzSD4BPpixWLQcoZYZkNJkNiAoStoaPoL6qxOz9ZFz28iINOV3FgTcUiDPlHzNWQJSfLzU-UpPPUofvxM1At0m6jH7NSTZjxvvOyY_1OuUO0vh4iTMglNcnAhqUaWRj8Ut1lYp-Yc",
+          "places/ChIJPyOTG8KMGGARh_IXobWxHmo/photos/AWCwydhPCrm8HsFSf7Axnio9DMTRwLevpUWLYiUr9dOxnhjblaPzKMY9IxCn7mgM38qC70QTu_TSssi4NdD8YijIzHDNa9siGwxN07lmuFQ4f1qqFWYV-AntbH-OuNzbA7b82BPTO4pl3MulfsSVq7PkefG7yG8yHXm1wWyTM0Htdwz-lX4Mshm8PzeNx1t0WVI3EgHnZZkB2fO2Bg28C2NGHuutGR89Fn4JdvZvHr0Bq0GGSGsBTL1zOzqRax7DRUPVVe2YTmcaD3FO4-2KV4y8Csx4n1ql4_ffPi0E5YF6uwovpLvSrJBC1Zqw01aKgPWEAP_sQg3fu9GkveVaEYv0R8fpj5uMHUSazkiuPGKkTP6TjF_MHMGpU6KLXHY32mETkUt_tsmmCtmE1nWK3comeufXGgK7nWNjqNWWB1Uue0f5d8Tj"
+        ],
+        "__at__": 1786802034.317745,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Shinjuku Gyoen National Garden is one of the most well-balanced green spaces in central Tokyo, and from a local perspective it feels like a place where the city actually slows down for a moment.\n\nWhat makes it stand out is the variety inside one park. You have a traditional Japanese landscape garden",
+            "author": "Miles & Passport"
+          },
+          {
+            "rating": 5,
+            "text": "It's a beautiful, refreshing and relaxing walk through the Shinjuku national garden.  Well maintained, very green and open in the very center of the city.  Multiple options to drink and cool down through out the park and beautiful views every turn you take.   What a moment of peace in the otherwise ",
+            "author": "Vince L"
+          },
+          {
+            "rating": 5,
+            "text": "This garden was such a beautiful garden. I loved the information centers that gave you an ecological overview of the life that lives in the garden.\n\nIt is such a nice and calming escape from the city, with its beautiful grass fields and amazing flowers.\n\nWe were there in April and also got to see a ",
+            "author": "Mohammed Maswadeh"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Shinjuku Gyoen National Garden during peak spring and honestly, this is one of the best sakura spots in Tokyo.\n\nThe cherry blossoms here feel different. Instead of being packed shoulder to shoulder like other parks, the space is huge, calm, and almost therapeutic. You can actually sit on the",
+            "author": "Xin Hao"
+          },
+          {
+            "rating": 4,
+            "text": "Beautiful park in the heart of Tokyo and a real escape from the busy atmosphere of Shinjuku.\n\nI have visited several times and each visit is inspiring, especially during spring when the sakura trees are in full bloom. The park is very well maintained and offers large open lawns, traditional Japanese",
+            "author": "Ryan GLOBETROTTER"
+          }
+        ]
+      },
+      "senso-ji temple|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ8T1GpMGOGGARDYGSgpooDWw",
+        "name": "Sensō-ji",
+        "address": "2-chōme-3-1 Asakusa, Taito City, Tokyo 111-0032, Japan",
+        "rating": 4.6,
+        "review_count": 97903,
+        "price_level": null,
+        "website": "https://www.senso-ji.jp/",
+        "editorial_summary": "Completed in 645, this temple, Tokyo's oldest, was built to honor Kannon, the goddess of mercy.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 35.7147651,
+        "lng": 139.7966553,
+        "photo_refs": [
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydjxLwHBkDiDtF33duF-AD9mdXOCYmMiGo4dhhSleis3_qG1Ig0am6LDBheJnPG3UlOv8mtx2QHzWAvGz6-k59WzJbeZwiTCPgLpL5wedB_iw_VpAPQ3Epd1X49Le_3AgVZ07AbLAivObeM_mD_jb8B0D2sv9OYBj96eoqMmjjjYr0cXhQtJRUEULmBRcf0eZz2a6dg1PMVH19MqymUGlFq8J6pr1FynI_xt99TNcIB3JdQpYw7aJ8vZ0zwvjLPIaz7FuYXVpPBeyWhU_sujBVsxmcOu4r0NIUFwAjvBOXi5GlGCS3hvh1JFA3gxoZ2ol83ZYr-ZspBXkytDu99QdrLWMV5-W7B-Hypb7_F-gCjPGpDMS-s7ftbwBWgN2CQsn8QV3RG2bMP6tR3DsZwuidmMTeSSyFm4YNfwUWpiBL4AO-t5",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydj2uzT5zHJ6qyh5KJE_yVzmn5ntCxcANtji-Vd4qI28sQl-RKb1IuP2mGyDeCmlePGfMUUw-BjTWzRJxLKzgbyFmdjFv7WrWodIZl7p3dTSUadoSk5b5lVCJWUnQ25z98z7uqlCAd7bewfE55zvHyhJ-GRibb5sZxiT5RU1hLu25ALd1MnGmfFHQp8yU_eX3WKrWa_mAfdH7Yfr3wA2toJCRigoysugNPVGfWsFW02AJRsqQczldyqcX1Y_YIntZnDGU9tscHyFTyNki3P3FWuPaispzQop-i3u-02aF-AHURqPgdEmK-lazyINMeDPlGwKPM7Q5XAiaKxhQkkb1tc2FgyhQo-DdSpIle9Nj1qhGoj1G-ngeyJWcXmTjdJ_m84LyV8RngKzXlOhQgSXhhQeTZEO6eNolTieeFR69TSqDeg",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydgucK0uXTcn7bkRJXYXmwwZBelXKxeyGIp8GLPqgcEZRtjYWYFa_i20TArzf0J6boTWZOlbtMByvdMFqPE62Deaa2OcKIIiLLe5gm8teOTIjHfwmBEIuYhsE4hiDZI5zXfMkW5SUGac8aEMTZ0Ewb9RBTx_4Kq-Y3ue948OQIuiZzzt490fRg0n91RGHeDSLnGq7lX8gaTbldF2SAijPJ0Lgfcyp4PvFrX4RHMauJeEEopgMafi8gUk1yc7bZH28Jtwq45J0Agg41zKXPQwNSwlzPrsUDxu9jnDYjmHgdtBprhjORcfk8ejgdCQOCbH3ik6rZvhmYBRIaMSWBn6x6TgrqJrN0qNuKW2v5alOHMIkBeWq_T9C-DkEJEmxseGttTFXXkiiK9_6qq-95ZXLnv0-scsjK0p-74zJ_M3hTVgGZBXkTGso17jTA_LN6la",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydiPA2HCdwP35quexzTMbrqso3TCviLGqmHePLhKbf1Ob136eUUVDqt0gmUO_A1p_u-iDMlwAU4aaZ0W51-KeMNHyVBUxtmgVNnHbhY744FQ3iRRMUQzdeDEZ2_YyCqDhihWwNNA_KrkcLgssHnifWbszsDmgc29F2ThY5NbuK5t5hEH3GUDD5tWgJTPqH3ObNB9l2gwbL2EMhV7_DKDlTLEmRWWPR6eKXr4qtHbZjMq5fFQpKjisxlJYeE1jqNs-fGcgsDwvHz_UNbqxNq01kyqGXrZEY9YO5nMfEzt4xkHYzMBT9GsBjO0WkhxIEiw93UKNkIsZtBAjUjBDzmjV1MXhF4JcCUw0ztWUMBbzjz0lxiUAtDOA1XIKPprguppuLGj1z4z7WSzn1sMWReD1eCED3Mk2QDXYmNaGzIyZKBhuKFz",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydirIC3W2HrNL0pDAUxz7ADr9XiiMdw1S2UTM2Jwnz94xYD5rt_mw2XPzk7y0BtO-BQj9zT_Egn7h3xnm4d_Vxf016MqUYnR_QnuMfMQAOGXrCHzyXCIyZZie8sdulIpMz1vB_1t5HQR361MCLgyd79GqyLZfkwsrjgTLcs0Ngd8P-kQtVbLBGD6IY-a1i3HgmcO5gu4MwwTWshC0J6d5JDml6qQQpSzvm_f979KwbCfjjozdU-NldZBSBiDFwXLis3IIqOBaxE_el-JI2rUIPwWaqOBgLHHUxXKeyCZaAGkAugno8F6DN0DNOh7xpWyfU4MgCv5W8eVfjkvOVR5EsFfWN8br9HjzJb1_zzWKqIsfmBL9xavBd8Lv_WBVAXD-XySkd7FPZPSt-n9VNrkp93ydnjfSvfULrmCpUt3SN_euDbP",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydjOyu8Tqo5x5Ajg-M1lnadkZJWXYpwq1EUtrziOwcCov825Cq2GcVZgmo2bPwvs3ehKMuLD8aBGy0-YmHPZExkDpVnJ3Vuajm_TPOEhWqT24RQWUzEQwdoUo77GXxQv3U75KU294DsNC8OEbN5qkC02QvC1-b-HsHaLmqCVPYsQz_gZ_ZeuBgN2JhSc2yTjIDZ-6rAAWLlj6JiHLDFagt8kBPlUviDUc1ztfKYXLsZsUUPWm_sUx7ABf7nkqtzN-dyKbrRgUqcX_eUCUHJtu8F1wHFfLgvaVrWZ-6JWaL8oeFIwO3-Ixov7cTUxahpNx_1y_Drj7QDD3HjAEySpgH4KXUrFO8Va7se9nbASP7LxeAZrBZvEwb40IaR9ERxdUEozumNpZD9of2WmzOaiZIPyYDw_dGXQwuq-T68CQWiolRzN",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydj-TcPMMPp1y9IyNeOXu4W3zhoNlUdNZmlmHolfi6BWFDsJ_tu20jtgApph3lcmk7ycTLK_oMuIxxSYaTMC77MmjCl8QWWkIXIUuKvZbw5qQaKjG4W_Ejg6XPtzUEQRrzqt465nPJchWw7Vy9lbTNoQT36OQtqjM0A6hbUc-1t0Uiptdx6kUURliLszQG4d50veI_B0dosZewsYt5VFrvD0902EegmJCr1s5vZKREn9Yogq4iQRR7nkiePy38N0Oj7NMYYZt0c921c1pZ3pTxpAlOlwwJlKJqqRCiPWkbIr70Xgg4jxFEyz6rWWHW3L5u4-YL-t_RjIx8mHtb7eLceMs0-2rvhlO9BoESdOE_MjgeYDSvbL240cl_yMLr2BUmRkjmzViCKZmqf3DxNofhgRw3eulEoxSAkt4KYblu8",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydhp3q2Fwaa-HMXmTN_i49M_WIHdUWVQVZbY89NNWljU2q5FnW-C8HcTunVZ6qrOWGcYFfw5fHy8ZObk1HycVsAF0bTNphzFqNFyf_X_HvJDbZRmUJO-RYGSfSGifSyFVnvFOrUZ68mEnEuKqrm7CG0taU3jjrQDX3QlDsn9lSZBC6tCuvjJg8PfILnDX2yrfyNQlqSmPiYlFarL_Cy7WvjsuyhsKgoXB224ln7u-p4j2Gs5VcRVbXSWExBfrz5rLcxnNwmCsXSW9FfSlBwZCOG2NB5Rkr5iHq1lz3UuyJ0kV_F0XXhAHM3u2b0WRHF01yulTVPliMZRubV19LGpi0uXeUdEGbhQ50xDfyeHA63ZZE4BbwtaZES8xwIwBj2saUWV-9le4YfYMjkuq9PMKVE8EN3fifxcV9A86-BuW8EYHNTQkQ_DRUwkea7xAVz5",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydjv3X2GLBeccPi-WLJhY8VUgeXJDy4oJuB3SijR2Z7naGac3-NfXfjlGu6o7CPiMmv6GeNEEtBsB7nNGpTCkVMcldbw6BdUzWv0wVf0Ww3j9MAt_BCoKQcGQ4fpFm9IGZGpYh8P8uz-EDBDsBfo9XdSPzfLcXyHk6TSGOWei6dIjEb5KdSnzHy1kkoU8Gwjb4BIz3sLxdJfjtJ1X7LVhpSKkV7eKO_TLNeJkz-BAYaH9k4H19n6FNImDMQWXfxjLedSnAXfedWhLc4ChOKT8HJyAIaQdIXiVEkHD0X_9rO-Ni28l_k4nCgqlcbmVOCmlrGOP9-io03UG4j-5qE1D37M4AqXjsoIOqm1P125DllyRAwj6qZuq--91wgsc1Hj04R1ya75fxQzrGVlQuoshuyU2kvCWQXFZserdShd-vrV7ck",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydiKcuPTssvTpTkPcDNdbnI_3gcRwChKnxB3CZiG8bbG5n_7bQm12zG3le5JidbISRScbxhbqCckj9EaLdHUxGhJh7GsnvXLJ2CY1xWf1FfIy7MSGm4R3ew5Fb9fsSc1qfI_Qk5mWuBiBcSgBLW5HKrmR_pP2Vgz0F7L6VrrC2wSinWcQ-6CwLY9lNwDgsX1hGjzol5WmyYWltNAw87mYCDm_CUX7683gytb5IJ-sqrExiBBeqfPJEQRqgEiU2G7vO_tKb_FsXwtADEAos7omLHMU2ZpkOP151gS8soiZ8-e9nnrZix3NhzW0EgNeCxuMRO5O0xZakAuS88vVYNIHdmogGjY_4QJCA93JEFntau2fbPVRaUGHgPkGP63mi065xMJqja3xY0T5l0pt4KU1uM5uVibB8ViOnw1iFHhGcGXOw"
+        ],
+        "__at__": 1786802034.936791,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Sensō-ji Temple is one of the most beautiful and unforgettable places I visited in Tokyo. From the moment I entered through the iconic Kaminarimon Gate, I was amazed by the vibrant atmosphere, rich history, and stunning traditional architecture. Walking along Nakamise Street before reaching the temp",
+            "author": "Franco Alonso Zicaro"
+          },
+          {
+            "rating": 5,
+            "text": "Senso-ji Temple is a beautiful place to visit and definitely one of Tokyo’s must-see landmarks. When I visited around 11 a.m., it was already very crowded, but it was still enjoyable to walk around and admire the temple and its beautiful architecture.\n\nThe shopping street was lined with many stores ",
+            "author": "Cecillia Yoana"
+          },
+          {
+            "rating": 5,
+            "text": "Built approximately 1,400 years ago, it is Japan's oldest and most prestigious budist temple. Located at the main entrance of the temple, Kaminarimon—renowned for its massive red lantern—is one of Tokyo's most iconic landmarks. Although I have visited during the day multiple times, visiting in the e",
+            "author": "Ahmet Özkan ÖÇALAN"
+          },
+          {
+            "rating": 5,
+            "text": "Sensō-ji Temple is one of the most beautiful and unforgettable places I visited in Tokyo. The moment you walk through the Kaminarimon Gate and make your way toward the temple, you can feel the history, culture, and peaceful atmosphere all around you.\n\nThe temple itself is stunning, with incredible a",
+            "author": "sabina urban"
+          },
+          {
+            "rating": 5,
+            "text": "One of the most iconic spots in Tokyo and totally worth the visit! You’ll know you’ve arrived when you see the giant red Kaminarimon Gate with its massive lantern — everyone stops here for photos. Walking through it leads you straight into Nakamise Shopping Street, a long stretch of traditional stal",
+            "author": "Vivian Pham"
+          }
+        ]
+      },
+      "tokyo skytree|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ35ov0dCOGGARKvdDH7NPHX0",
+        "name": "Tokyo Skytree",
+        "address": "1-chōme-1-2 Oshiage, Sumida City, Tokyo 131-0045, Japan",
+        "rating": 4.4,
+        "review_count": 118291,
+        "price_level": null,
+        "website": "https://www.tokyo-skytree.jp/?utm_source=google&utm_medium=maps",
+        "editorial_summary": "World's tallest freestanding broadcasting tower with an observation deck boasting 360-degree views.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 10:00 PM",
+          "Tuesday: 10:00 AM – 10:00 PM",
+          "Wednesday: 10:00 AM – 10:00 PM",
+          "Thursday: 10:00 AM – 10:00 PM",
+          "Friday: 10:00 AM – 10:00 PM",
+          "Saturday: 9:00 AM – 10:00 PM",
+          "Sunday: 9:00 AM – 10:00 PM"
+        ],
+        "lat": 35.7100627,
+        "lng": 139.81070040000003,
+        "photo_refs": [
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydhC1imu8xtsetG9lOuV534YmP5wIQJaiK5kpkkfeYz2u65g7C0r4sg1iP1t-Jjnvo_BO_S9dOf4qZdyCvLUKiFRaF_2kjhGUdtnQokndUZDI1cSbF5HDlcwxGkX7I-hXRNsbInloMeojb1B0r-QeeHfJS751M2P6Xa0Yss6qyrOQWYt05vi_zfwZwx6KJBxU42Oij1RORn6Oiw1Mup2yKij6skdC-_VkZRUU8mVM8hm5-R-7sgEv0enm_Gu7kSw_KV8J_RsebMXFF42lvHRLPsLdWhoOBp0tS-5UEfBl8nSykvEq8IhSp6K6HaDP-XlWNdERgLoHTcS76oRFYR1iSMgVvtXvHaKwsBl6FjajG_W4nFCs3O61yfZ7qs085ahhX4adjpMT6xa7XAAtIJXPM5mdCBATO2nWGUw1p4UlxJPg9s",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydj5sYEo-9seYzUBX5_eFYxfJ-hRLy_M9XABSJzcl6rZBUSmHR3GRr6qEuJ6g-l77qwA5lIEHUIOO6H4q-3H04Hl5KU14odMzeMI3popIAatqb1jAQRmN2-vlUTLloy7CNg4mbLdWvqLly3AZXZ7KZVW_YmKavi0pjr4ej_1ERu78dO5wG1SNtsdOogcw_464V0KFVL1JJn4QUtGTwJlieoMuDRKNWATgFqKPkD-mFUmzCLL8eiESWElPrAi4Sy3RKAYUcYdZkxquhahZow49krEs61MfW-UtSCgmIC81x8VheZCM8WE3NyWUi-dzgGsszT6khs87Pdc5VUV3dz_sKfDalmRwJwubDmNu_RgGksyguGk3bU2yQxQx4y_8fq8DBC0-V3yp1L2MOfY11VPMXDXGYtcxp2pNICErGVC37ltflLC",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydi10VsdsnvaN58q_2qNzMJqDSx1X8bkLpNHM22aLQ2UPNo7tueg2PsSdNKCYpVrTXZGkgx95EPkTAEF5JiBpG7OQc34lJJcusjfM3kiI-gZf_Y718Sy0-VVkaAETKDJhEFPNHOE0y7eYkItgfEK1bAPOQ7S0y3bKdw2IK3bHsDaX_Xoqt6xpNRQtRr-bWgHfRAI-0maFM0ABNZoFIH3HFGpZ4aEJh7dM_nW9n7DitTktM1bsNdxOocq6WZGyK6xUTvcV4D5zhfGRDIgbTqy5InVQtooJ77KJ2Hu2bgrEm_vo2_9J4Qzj26W-OaVEDHYWsRAaB6gAz3ASYzsIXEiAWo7mb7Qz5B_TcNnFUYBZLE1KoD2l-AgrTCG3Pw-IA8mRV3z3zmHe1UUfgDoWI06Dd8PFHgx5Zdiwp07dH-fRMGWu88",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydhwNAh9s9Hpu93gYGagMlf6V5Skfg4eG-wIz4xMt0OmyGXC63YUWvQIRz1Ge3PuXE3vxWjhmZLGf0eNQhX3e6EFMM56ujvOt0jrwiSL-zsvN60cIP4KwKHr6EpHllEpqngxhRTL5gYeLffal6c8wrqfB_piTZnsHoOcQzWQTHBQbEp50eqQ1db2s3C9--maXJ984Lny05TNxgI0WnGNcal4sA3oKTtLAssBlv6283PY7IQV-KNAK1WNoBPso4eau57LvhMDhOzZgFyKPACNDBD4lWCDHfElJY5TlVyJl0J4h3kyd1oud8q9nEHVmzTIOItOUJHKEfdIfOYWJv6QRA4zGMRpJyp2gbDF0OcbbFEtNbOkgghKVE58-tDsnvSfDKzNqw1VOmYivmm21EWuDHS4-2tfHwV-V_zzDTbPmL8Eu7-1",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydj62jYtIUCb4ykWPTb_eKmwF4-rkX1x9c9SOfJcsate3bgInjjSBEXo7sEpU24Xit1VzVDhZBCkfFCPxPuWjKcj9fnFbshHCCptLthEF86CePzzXFUzlk1CUd83yZYXJ8-8tWBFYzPUYBvFok8e64vZlSEkX0509VsD421NQnN35yAjzD4lW6vEPYhxQqixIT3N_JzDNCELbSZqBf98pVyKu8F1aU3QimbUwgq1vyBiIHWeDqXH9An0n5k4ArtLCOLbXlNC0gTp6BBJXC_U_pWBFidpg7o3chqu9nwvYsAmrJvL598Jy_ZN4CljEIT0XWX18Hz9H0mJUIhFh1QAjVv5mMJnnyta9sk86v-o88fuDFqyR5FmVOCWeWZi-BcOKrIXn9U08iPEDksS1fWEvytskgQkl-oqGGpjANDiKX-Xbg",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydgJ3bZn3Y1HBIV0jtpKG-YDGmDK8onQi0uYhKSVjzW2orxQ_27T7nfUF7YKXNUWco0zISbqn8GHraMpb2_uHHeRFWA3knkK0cWY-J8qmc4b1q-QDeu260dyPKdY61hIbQVxLkSfKPmaJBxrIIHxvJKzFOOHwYZTd-xGMdMuw7_t8KZCI3IE3namqBabki2mkEM2q3Yx9g1a3zBp21TW6OA8w6AGmHCOURWqHBfwelnUquK8wOKGjg1BecXtNTadyxXXYPaeoPeRnBHmQ7v3OqylGMLqJ6OGXa5xA__DM6BRnQC5TK5tDAYoegI3fgJzsg3NH_LPVUDLr8vrSMszyXCb48KB1zA9dkuenZsYFyeHyESDP0HIwNKvpe9BoaU1OBVTmOOA3L-o0VOrnbcRHJXAYcrj5kl-FNo8leSPT2h4Aw",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydjT8Mgco_cmTsC9pj47aaiCWTuXvZoQZfOv8j8y4NFdlYfy9utJcSGCVrp8guMyG98b7qjbnPZrkjWCI9GfqGZjuzjEaqdPIdib9kYNLjYT2kf7N-d_UlpNGS6k2WthwUAzhOIlFFmoMqXJS_OQZiJlv6iQN27lOG2OqO2-2BhGtTthBD86fZjIt2ylwfW5PmXkuchtFzv6KQP2f83-pzs8QLTCR_iHNL7Tjn8sZ2BkB0tdZfmYYpXBHFe6hhvUIWOXjHA9NQ2D1zG1QmCUXGfn2vL1Gi8DJ82_n3Y4X3TSX5HKIzLmuvYPOVGvswYKZvYUDh04lWH3gAYA6bZa5blv6Pl7dw1hE7mghCnCeZ7cB5Ja6YbtQfxgvz-wUfnSBoTWNFLFoOYWPQI401dG9g7FOtDO8Wr_dXDtBbE9PPXgBg",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydgtzn2MqUHXgbGAGaNyt2ZoS8LbG63W1yWknnEOhM6LPEltIkvorCXfumqk_5ib9HScV4Z4X7RhxsbY7TYwqFTeIkslj4FH3fesI-iRhuuhTx_MNyHydYxtUPd5lbdv8KciOd-ZJ0mDXo2yXeZ5oQMUQWfs_n4xWzMIYCrezpyxOOvJM7EsNBntEhS3DYBctLFZrdl3wj_4XJqRiCapTqEWXYLBDVf2SI4Jhw3e2GdWVzo00DDtuiI2mfpd5kddgIMozLUUZ548Nyn3dk2MN1O8WFUqo7zndxtcCx1ahG65XQ99yx9hEfW7hdafz4nuHCC14FBFKNCSTpluoxBIA4BycpIEI-FRD8nLyBwuTAtabAnbMQCkXV9NvTGfl3lXJXnmKTspZQ-KAmb91E6S0_rDgh5Fo_-7_fY1_zDsHfHEF8B2",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydi0Ognw3CEJ9H7y9RFq5ZudkMahctRwi3rKLXdHcuQ-e42-iNBvTTMWOmaivJ_0_pTn188PAey1i7JJggLscKUwE-d-VAhq2YLzCCGW4zQWRXE0_gHTDc7CshSj2nG6htiBcFiRgtrtE6eQDRjq0h6NLEKfDEcLkiNXKirSLVMSFmdsI5FOZgWe5O2qVp6BFGFanWlXUO0XtUHb_DNvSOPgeiTFv_l7e1qpWZruZNETKRCsleKINBLSBkIM98L211GLcK6RBr1hvTP7fV0ARbSYU26z9YeASjursOiW-ab5H82cRVVGzv8Y3gBYohTW4KHdEXXxHqY5Wb87woJcixU6I_vFXB2aHjXjFst9TsKD1jSYTcboNVjlWb59B1BgkjkpbDeZMGEoDO4MOjRWBlVR0qoA6b401faR2MCqrv_BMA",
+          "places/ChIJ35ov0dCOGGARKvdDH7NPHX0/photos/AWCwydgzsxuk1Ulbcls58hKEeLefYyRhkkJ3hj3uFi-UrDLzB0f4NcsVU9J_Vgh3Lopz8FYShw7WHXzsS0KnE-JvvuPb5SPYD9DvJkcdh9nk46VqGRoRKRSLx2gpew-W5PZavY1VUjIXrF22Ri2LaiH50RqrFGWbA8utRuOghZwCipqKI9eINKDh1IoY-F1Ki7REAMuDkUoXrYj8bvI_gAQp3yRaIhJ-XGt7PUKIIkoKG1mAunmnpkPiEuxTuIldR36uWTc5FzsfaWPGwzuaXOIQyejiz0TNGywW0Z4aJP3UD9raWmr605ru2DtKNqmZkHu_9qXvRHPevb9PpSLz6o8osGxe17ySMZS7w0TpUa0i-FuHW6qHPNkFWZTO3lnDtm_e4oaTBbsBtxxHxiQXaU-36J-MStxNOAlE9BmC4nfU-2LRmfJim-eDcRizhzEiQ8rb"
+        ],
+        "__at__": 1786802035.627528,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Tokyo Skytree is an impressive landmark and one of the best places to experience the scale of Tokyo from above. The tower itself is massive and beautifully designed, especially at night when it lights up against the skyline.\n\nThe observation decks offer breathtaking panoramic views that seem endless",
+            "author": "Miles & Passport"
+          },
+          {
+            "rating": 4,
+            "text": "On holiday in Japan with kids and a compulsory iteniary to see the famous Tokyo Skytree. We booked the tickets on line and headed straight to the location.\nEvery step is well organised and taken care of, smooth elevator ride, museum stop with amazing staff .. evrything was good. What was bad was tou",
+            "author": "Mallika Jamy"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting the Tokyo Skytree was one of the highlights of my trip to Japan. The tower is incredibly impressive, both because of its modern design and its incredible height. From the observation deck, the panoramic views of Tokyo are simply breathtaking. On a clear day, you can see the city stretching ",
+            "author": "Franco Alonso Zicaro"
+          },
+          {
+            "rating": 4,
+            "text": "Tokyo Skytree is one of the most iconic landmarks in Japan and an impressive example of modern engineering and architecture. As the tallest tower in the world, it offers breathtaking panoramic views of Tokyo from its observation decks. From the top, visitors can see the vast city skyline, rivers, an",
+            "author": "Muhamad Arzan"
+          },
+          {
+            "rating": 5,
+            "text": "Tokyo Skytree is definitely one of the highlights of Tokyo. The views from the observation deck are absolutely breathtaking, especially on a clear day where you can see the city stretching as far as the eye can reach, and even Mount Fuji if you’re lucky.\n\nThe entire experience is very well organized",
+            "author": "Justin Saw"
+          }
+        ]
+      },
+      "asakusa|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ8T1GpMGOGGARDYGSgpooDWw",
+        "name": "Sensō-ji",
+        "address": "2-chōme-3-1 Asakusa, Taito City, Tokyo 111-0032, Japan",
+        "rating": 4.6,
+        "review_count": 97903,
+        "price_level": null,
+        "website": "https://www.senso-ji.jp/",
+        "editorial_summary": "Completed in 645, this temple, Tokyo's oldest, was built to honor Kannon, the goddess of mercy.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 35.7147651,
+        "lng": 139.7966553,
+        "photo_refs": [
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydgi5iDsOqUXTpe5A6ZVEzpBwA2mD9P_iggOdpcJ1z2YQrsFgaw_U7fsfCND8DlYTZiwPQeDvuFyC7GDJqI0NfWLHD41jBymOBxh8asVED02AMNja-h4-oVGQGjDOk5u_uYc7XAf9FALgNRz0R6QEBurUgjKvHf2USp1BZgojni02i9e_CnhOTz-LgHntA6u7Nm5o4hJJyePhnE0ZRbom08NxmIqqNWt32ON-cjPW13SZs9WZIv90D6XChh69Jy7fddX9eX2_gj8P6rZkSEqogNQDzlSZJXExzBmoewxNWRyJQY8i8lheTCJgExNexDwFt-svz0afeqXMR9ixfqgGK_NokVFaTWSGW3eB-uQqHSleX9UtWkxYTF5P2-HNEIQfYpbo41RyLs1ASZCaiQZrrPK70mVpqBItDG9V9qbUXjSHJ8q",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydgaW4f3cDNYCqzqfRgGz147QFhKrw9d2eEe22Q04lE9SsOuna_IcdCPhsQ8STOujf1hTrjgqMk51X5PN-2nURGXqKup6Q3HyNm0Z4C9ZXw3WQBMl4Z8OgbdZ-S30Uoxf0t6fC-qRsftkd2-e76ELjeWQmcSQd4JpYxUkp27hsQQuF0lh1NjoQnSWbjV9udM3t9LApt8f0zocGQW6yRs-qVoP9UDxn9KSgCV5MI0Fqba6h3IUfJqNnFYvFLdAj-2OcEcRe09nKoEVXUFEhsx5tUC_z-fyrOWuElmWGVrXY61wWLTOvjE6VZ3j-2eJQBIyPbjSQLBCT0MtLphbN31oYHTFy-UNgCaNfr519DV2ChQTnPO0eY2KqgFOXNyk0NbWYjP1WLgZEl-6ctxYhav_CnLPC8nDm3LDAjqaItoiBVAE8o",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydjeKeLPsYP3PWY2vnVaqnn4Pw0IgmvcyMYvnshPZJYtueco_VjemXfT5VwpdrzPMa-Vrph_J6sTBCAEjCS5bNYJL4JT8qYn6UoXOXLNLTdd97WNdYNNBCi00byoOa_s4XnS11cr3tr33Gd9JkmqO7jlEKHaxZ5_z9-47vTQc3PjDu9HiuIdJ2cL5zGMFBspvAxCvb3sHx3m1G1mSAi_Td2GaNyAWJ4rhCmEZCe7ptcd8_01aT_M0kdv79W3giDlLLeu1X8DZCLs8BtEmqiRlrT0zqkYUS4jQ9zk5GmPzWjpYm3ZggHz5bKrnpdseUDMmDbtM1MSxV7JAO09hbvuuHVlY4CgYB3wicgKxWiNIoJrOytMw150Ch6Ubd4D8u7K8f333InVSIxy_r3XnhklS7KEIIYiBs4d-AD2OSJIf4KK_rUDRZffQzeW_SBlnp2H",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydh9jRObdJXOEvF4aBlj5KuZ5NG_ZLOQRHjKlggGu3wvicdE5aEjLURxFoXvMTboGeZsamYy8f6Ge1zV6otxUxLWtU9iK3wVjeC7HAtJBS2AXM8w3mHRxU-rpmNWoqTdObQjqN2OCUbTGbo1oY5UX5SYECRkxgE8uz2IKSuesLtQmRuEIsQMshzqRTKnaM_CmcPrRZ1ecYay7VQ7a6FqyGEOsBpqURuPy93iKDVodN4BAc-k8DHxrShiKZAE33WbiBxoTBmomQbauFDOd_mXRxXhNc-yoqiKaXTNLQI7EA4UWXs--gcvn2vqa9f-VKVGOij7Mw0_lM1XIwzp2eHClIS6FkVRyHTrEmZBXL2K8-zMtfAUsHfKZBT6Bsa-Lezsy8h-kQ9hyE_sx9vtFM43UmSYij4yiOlzojHt5wdlAOWALAhe",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydgE1JoByDHq-Wyf1JHLhXaFI1rT-V6yWqRK_p8YvMW_tdPb0zJDabe9vn4VRNLLC7geZK1JhBzSlvSde3djbSCqlG7E2o8M-a8d7nuedrqFyLRtp_ZtEHTCxhNuT5X0weZS_LiBLVlc5_fy2YOf8IoNPIkvU-aMbiJa1dkJXi-gaCkvg3PQEJoZ7-1jzOhpzyk3rBlyHwyvwYop6xy-NV72XnXx_xr4e-AExgiO_IerWICMeEzfbvAinUJQiEQAPV2F5Zkt9m-uiTEBvAUOBk0wqwrOuRHXEZByDwfB3Olgw_bKU3ijYHLCWQfwMdnv3wbFCVfkwRRwYzPkF1hoc1htDFP4P3fTTNoTiZEKu6TlXxlvGF4sXWfcFASrw9zuc6huV1_EZyPYm_GUptkLquVKWo3tRtQlqBwl3zlepwfnsrwb",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydhqKGSoduWEikueb6JFGHkCCwIAf0zeX_Z9fAPOkmGtxhPAVIIjty3l4yxQRY0SM9buMBwB8Qez4wxtfjObUHjFhrPgusPqLRoY4TuzKpbEa48U3aXZATlWtTESm3HUYmwRjNqO1nSmwKdZe5s2xp03tLzOfADVohLP5CvU7BjzNNp2Qr5TaNWe_8BsIiLxSkRQlQP9tG2qtxKCPh6UjVDKME_QwNsKbqq11mMqssNreknyGcIrHuM96MywVhtBuCbzvOxAkBSUhmIxyz6GX7GzEXns9mJigzDMp0_55NF53HinDiNNsIHNCSzF9yB3QJc4UMXSPS-ED_W3ipVjUG99deE-429a3Fvzu5vum63YSkM2l8Z_VpwqBURFlhZbBWwyxnjxmZZoOQ0i5GORIV9t9hTmQFiV7jUwlEp-kLE1ConT",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydjh21AO3-hlwdPP4OQRFnoi8H5nIcAq5DomvTX3Jn6W7YnRnBgDOBqpA6I5I2gbt_4WeLG7t2uMN2fEzLXk06JIBFWkVnwjyuUKtr54eLmPp_QdvQoeJlir2l8TJNfUfpTZVl6AMhAdtV_IehfdBupQxb7NtXZAaBQ1qy5TNeeGsBj-J1JGuDEPZGdn_6PaAvWjRUI4v_UiR1Pmx4JlzfYUJSCD2ZcN25HqP-IbDjfPpw3JBlOuLu8nekEMsFDuqp9gAn59_YjEI3t3384lhLJw_DamTR1bmq8QaxJUdeSWgKWoki749BIyhrE4X000cvRuWxBSE-3a37a6h9uLYvh7L7WsfsNJZVBw-C5yEyKd8HgLYE7O2VvI3tz53KmvWwK4-uWm5lY6wuiRCi1EMFHcx34ez0XAfE7gqQJtYa4",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydj7_1vM_WUmdW-lxXwHjMLcdlqNeRNwAZ5EMWcFsnwbNZbk4aIK_lGo9raG8xeyxAwvDwV9wCIx4HmIqZm3AXE5PcfYoi1iiqtkrRDQaSQM-7ZVhLpfE22OnS9nEa7E59I5FAiqpaAOrpj4SDB-35Luj3efs2vYvmkb3RgCo3YGV0o_hFzOkBNHWu7SZifjT8dUwcgXBmNY2ETzeViGNsG87ejs-fj7xN_a3fgWu3u2XNgGAp4sfRcvcDqAAMaTt3c32VKHbj1m8sisyvTN8mkkA2bDjaIrAjnmwLhA7UBG5--CRFoVa-3UlElsnpWogXFLAtVUl44LRxahCSkUZZLpjK4aNO7LTd2SE4nrKYfdauKz_h4MXEwSzwctfRHFgP8krOzIK68Zu3Yt_5Ce4fmkOifu39TlTabp6hs-mGAee2J_ahUHz1a-kmyv6QLG",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydio--yMg8htdgJFgV0DI2n-VMGocT6qQ6nko4Ea0lO4vF5N6vxbi4wj-lbO0O2CV1faKR9c1nnDbbAbVGUF-_HbS1Mpr6-xJJV7kukTIho9ykPizoYymEQIsdpQCHC4pVXZSWnyrVtwbagr7CW0XGb6i4FeiQo70oYEyu6dHLEF4McU7E0_BSTKEotxAYTX1pdJ0Ns92OOUt1pGUrzoLHoLuhnJ6R46JuNKS_Yv0PqjfxF9JJZhwERsYv4gM7UrQnr4JHPkMEIytFO6NPNj3lITj1oq0wbvUXMaKuaLm5rhc8oMCuLvWmq_fxxK0lJpJ7vWBpnoLQFN6TZSfZPX6j8VpFcyGy-Xwc8Lt3KKj_TGU5lLWhAFkYMOt5qcJJv-UDVHT-riM203mz-yUsB3MQMzrzMAD25GnvcM0piaKu8nmH8",
+          "places/ChIJ8T1GpMGOGGARDYGSgpooDWw/photos/AWCwydjPIfgqgQkQRMyPQ61m2pz-Gp7aSQug4kyvw3g3nEjtYwZ2CTgNYI8JWo4rdGdorci7InMMjpmM3-lXWX_cuB8fH1eoJi6loCd5sZI6H-cY_-rP4U5HxCZSmlAE6aT-7Xq8vnGij5hj6erWIwtM15YOJhFMwTct23ST7Wc_gcmurODN8vZDCnn2zgvJdd4Y-5WPPoFaGrGN6OlVu_pz-AIJ3WH1Wvkxpap9FHbWoTBVCibuuBlEXSH8Hx2O03KBS42qbD0vrhdCaqMu7T_BZnn-IDlbX--qxCg4WwTg8lVp5TDti201yDOE5Kop_k3bsDNQw74hZpGhiPCHMDSL1wjVgGPAG7qnAYdYahdqfKII97DsyzguX4NOufvWbmRDNLD2-I36tcen2D9vituf5NzJv6EIkY87Xhd_QTFXK0WESQ"
+        ],
+        "__at__": 1786802036.5324311,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Sensō-ji Temple is one of the most beautiful and unforgettable places I visited in Tokyo. From the moment I entered through the iconic Kaminarimon Gate, I was amazed by the vibrant atmosphere, rich history, and stunning traditional architecture. Walking along Nakamise Street before reaching the temp",
+            "author": "Franco Alonso Zicaro"
+          },
+          {
+            "rating": 5,
+            "text": "Senso-ji Temple is a beautiful place to visit and definitely one of Tokyo’s must-see landmarks. When I visited around 11 a.m., it was already very crowded, but it was still enjoyable to walk around and admire the temple and its beautiful architecture.\n\nThe shopping street was lined with many stores ",
+            "author": "Cecillia Yoana"
+          },
+          {
+            "rating": 5,
+            "text": "Built approximately 1,400 years ago, it is Japan's oldest and most prestigious budist temple. Located at the main entrance of the temple, Kaminarimon—renowned for its massive red lantern—is one of Tokyo's most iconic landmarks. Although I have visited during the day multiple times, visiting in the e",
+            "author": "Ahmet Özkan ÖÇALAN"
+          },
+          {
+            "rating": 5,
+            "text": "Sensō-ji Temple is one of the most beautiful and unforgettable places I visited in Tokyo. The moment you walk through the Kaminarimon Gate and make your way toward the temple, you can feel the history, culture, and peaceful atmosphere all around you.\n\nThe temple itself is stunning, with incredible a",
+            "author": "sabina urban"
+          },
+          {
+            "rating": 5,
+            "text": "One of the most iconic spots in Tokyo and totally worth the visit! You’ll know you’ve arrived when you see the giant red Kaminarimon Gate with its massive lantern — everyone stops here for photos. Walking through it leads you straight into Nakamise Shopping Street, a long stretch of traditional stal",
+            "author": "Vivian Pham"
+          }
+        ]
+      },
+      "uobei shibuya|japan (tokyo & kyoto)": {
+        "place_id": "ChIJaTXpw6mMGGARP-d-_tbssVE",
+        "name": "Uobei Shibuya Dogenzaka Store",
+        "address": "Japan, 〒150-0043 Tokyo, Shibuya, Dōgenzaka, 2-chōme−29−１１ Central Bldg. 6, １階",
+        "rating": 4.3,
+        "review_count": 9026,
+        "price_level": "PRICE_LEVEL_INEXPENSIVE",
+        "website": "https://www.uobei.info/?utm_source=gmb&utm_medium=referral&utm_campaign=map&utm_content=U312",
+        "editorial_summary": "Busy sushi joint with plates delivered via conveyor belt, plus noodle dishes & fried sides.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 11:00 PM",
+          "Tuesday: 11:00 AM – 11:00 PM",
+          "Wednesday: 11:00 AM – 11:00 PM",
+          "Thursday: 11:00 AM – 11:00 PM",
+          "Friday: 11:00 AM – 11:00 PM",
+          "Saturday: 10:30 AM – 11:00 PM",
+          "Sunday: 10:30 AM – 11:00 PM"
+        ],
+        "lat": 35.6594349,
+        "lng": 139.6979207,
+        "photo_refs": [
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydhVSS3PwDb4oR_XfFk6n__EzfaeFkxjF2n9uYciUh0fyU-l3WhPSayxnug2gUXkfSNI-WqC2o1tCOdvhGGQwcrZLH3uh-RhtW74xE6r6xvtWZxh95e8c2YgkSZcyOdE7Jx57XCfBAK-5LQYfwpob8G0C30qtt4zZatwlVIir1-57IrIVvgbmKLjCktVLK6Sm6SRQQ8WEKnwq8YKJFNH5ZV5GGHEln6LjCIrgSSb0zpBU7aAAYtnjXkD4v7im4KrwredS4X4UMW383dlP5R7sRlhAOo_62ACcw2a1j-Q7qqP-kYrr3KC6g9oiBuj0XmNbq1CayWW4s-3NGggS4rdAJxJWQYqRZ_2C5jlHi8ClgxXClRd9fTUWu362Okty48xbkDuLqmfOSClSIcJZlom7gPGxPIHyZ5T-U0NPv197AeOYNM",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydgXc6t0LJ3T18QomRFjmb1hhAuQzo5AiK16eVYaM3OPnvgwhu73Ope4LzBv1q2UnyR4pDjFEbdc71JqJsK9BFUNYONIOmTUo_wUaOmfiGQke5SNZux9Ijjb2R6U89y_gxHlWBewKvpDdgLksncDS0irRumvOw2rXktrCJpwCHWZYYaSedJM_2ax5WU1HNn8s0LFV0z852A3xPAgqPN7ia-iS_0GoSKKVJ1J2-pxY7Zf4qWQAyMvPj_MI5Z_a21jCai5J3IaCwLQ2fbxSrgUIUz9DjbOuT3ptABXWR05ZcgtU_t2x376n8255EbX7t9ZNbz8JNSei64u7gZiO2kGGaaO_lDqKLufr9guVKpdI8s7egzAefsqDEcz8KAdFHD3rN5iW7RiZjbm1XY8FlkA-9L348WJjh_LLhjw2nLH8VAH0kmizEzaDwD7OVRduD9m",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydggxzitmfw0fbADtkcBewNjB2kc3nvQdWe3ipcA-C60m4apK5nbklXvoxGSpuVm10eSiM8BzGPn2KwlZJMwsJv-7rCKTQjPQ33KIHU8FSC0dI9rBXhMlNmLXznnB7cmh7205zUujBQ9aTO-CyCNaUHMFlPzcRJGst9NdBbyd14gl2IYOA1fcu21MADZUWkTPgPY3fFDQewdkHcyRW-_lxqTz0gwcY_SqTg0j-MAx9uKIeuz18-Rl5ON6K3a24sZbbPP4Ci_ELNXm4eQn8VLJ_2zAqSdI_Yvyh9qfEbccipDtBrHcKf6riqLadFJKSwh_zKP3yZK0tD73uHD21EyPlkDio1NJnmGx8j3-Yi4IFtdJBsnW6VJoxQ2G6NqjWwvjIN3-rgnxpSwQ25fG6ngzGwd3lOK6a8KVtdSN511eWa3yr2WCbNdDx-6UCG297Cv",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydiTb6t7T_iiVv_S_4JbFYRn1LE5v37pvW0DXjVmJZFot5tqsjHSJvgTzTM3e8VpTrvQgnc6NFjuRt0g87g3l0K3TJo_X1LmYlFodqbEf1eP_U6bEy-bPnqPJDyqa0y3ieVuL-sygVj52nkHzHMUFvoSl1FoTFpgTzxxBtYYqxfi1mTHCijscRnfvqdrmXTyq5XJ2ipxHCOxi5CKxKleu21CLIpv-DEVdKvh1qPBCIKm-Etwrb12J-PBkvF38n3fyHlbt-zfaPefNR4muVP0ql5MD2PO-K0flArQdU23zMXFjdQYbU-SQPwDuxfoNd-zgXRHPa19XzM7mfK6iigd-0XWG4OmqyKZD09UqO4gq9cYub-Y74v1hYn9ysxYuZjGEErgAECuQ4IxdxrwXe21Nfm0SWvcs0mMGAUa4FZ6USlDyRSJldbJ-tjRogEo0Rv5",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydhe9yhkl8rd7EzpuRO-L05SyuIX7xPt8cpqMQToXKZKpo0E8kSpIagBFdXxpA5suuPfQza4MEQZEbuCKeri1oT6DLxaS59hSnTrXO-o-ge_wSEs2vI3zGhMh41VyKKXV7368D4GUtTLg3TxSg3UXaHZad7h5YVKYfcRUMu97_axWsns8t_iBCbCaPYy3JagCfDeb9FLhDeGJC9v0rlVLJFfzCweMEhAns6LC64I85ct98nkDjypDIiFIVSo2Deh4MDfVcQBXmOQZu4ofAgNBq-QzlFpY1UJaZNQ1vfBZQGZkWbOh5uuVCQFKmFZvI2jRdBunS0nYe_DQGGSsYXUCnt77knrq1N2H9Klz7EwUQSmzDNQR9sZWAYrFNIuBvHxo2swWMkt_WOt1ym7QiHUhBrJ1VeK-gp30YIHxKGJ1yoho7Gr8LhEIs4mqxydSJWX",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydijkiyLpdE8xCo6Nnu1BwiIWym3TYAZ6w-4k7KBLX_8if5FjAxuk9PTcraA4lSohToB7yXfe5tbsjWX3Z0ALhM9Dsbpl66zmMVZ363eWHBLDf4ls-iKUdrSRA9gKAkEbsvG4LdxVrkO2VXqmaP3JdrDgOhGXvFnjtKDiutHTYjWMwiW0J49mSIB49NSgvnGPHfN3D-SJhCD3s2WYYvdFnSaK88gKF4AoqcXazGbWRsyF-OOlFmr13h_22ynQ9-A1JcgNh4-GY7CsXJcJFpEZ47H5DhrNqcSX3HywbX3fdVBmmVTDiRG3PGiYhICrqPdmBv5we11-60IoalQJGyIVhGtm3AQfFPp3L-piYKCX9p4UpbIUAhYjnGPDCsLUjrGlBktNxC7mdbqBMMZPeL5P4MfWTa-Moz7ZZaa2Zp8WiXNsOPqrDEGuzc_zimCDHrA",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydgKVaQaCNyPHXTPiwuWuFgrifdCGrj-bPcks9g13IX3PiJAMX0GuOzc00-Z3PAfGyPRBwN7z8Cssb4-cn9KpI3jlVHGM3gxZKEuMumwGj3C55M5b_2uonR1wUlnNTlaLbOW5kobBL_AXaOn9DZBeUOkKWYyI1a3vIoT5zu-3sPKd5LbiiZkA8izhm59uWtlcXDh58Is15mZxIO9RMLgtS_i7ox7eHDn3cytEnnIiBraZAFIYuf38y3l1ATnSjgJEBn_X4efaxCT1fEl1IDqMmSjfj_zmeyS3xzFOOQeAwSAnIis0HNIfAVas59otNkDltV1jRztBp7hRVzZDgZFSnOZEK6pGv-4sgLDQ3zrO6VZ9AsdWKgYzUJmiJtpjTs17v16FipIEfWsDfvXakVyxSgNu8phcdxrMg5IoreSTQtLIZVnfgEkftqDAErxxQ",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydj-vtUsyC0jF9wmnrQ_b7yJxFzszK18I41nR07dfKo7XbP31cpkHlqgcArWZ9C6jZJPR9vMxGSlYUVMb58wkbZgQYx5C4wgaAcDfLYgVfdfAGGN6noP7MvD8ll_J6Bv2l4iNm-qOLDf3GJYV3NlAKTae6MepIszvqWggs4aGCuSjZ3zAIrTS6vI2x_I_PkH5E6KCqMPq_6_gH5sGm2fzzS9q6YM5x8yvhk04ukO_wiOkPBNF5zI_8rftyKUcSO1i0Vn7HjDTA_OvgtluSUBAb7rj66mY-Bj1v0_VtWoVT7Mj2sk6neaHQ6v_PBqUdrLRdBbA-tYE8ufgW8bcXymYpzkbfEmaHlC_CLAax5iWRzWSXm6RTB9HI16hOHDt3rtJoaUKLOl10cfRyvpnJrKTn9z6f2D3QZUbNXt-ZY5bXpx-kNOiY0cz5hqgLadwgLE",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydhHC-LejydWs-Z2Wcl5n-Q0e6eXEgwAecUIiWRj84ohjsGb7cKVp2wUGmUUsk3QnHjfWXyUnkNwHitHfcXILxJ3OnfTrCDxq1caO7HLUdhR4W8Lwd8DVA_ls3dx7epulh3h54nchbHFhqKbOKHzlPvEo_Beqh2-9CxT1RzQ87gbILoMvZuq_kPAISZk7RVTw4E46j3ZAJKxy01SqRvGHkE02qRNF4oTXE0uA9JGyDiwAHDVKs7H3pMWE8uQv4KG2ZTnvL6BlrS1QSQBv5WSjEkKIEdRzoGNh8PBGkLQYeej12nPysH-Qp8ig5nFyhzdQljvlzF2Dvbc79GuHYse2jf5cUG623tnroH9feVsv7csUdTVYEvpVcIyEL-AHPypqx_7UewGlBqvUWSG6Ybj1ndu0tngzbPp81TRvZzE1J23bKhr1wvfjo2aMs5jDO49",
+          "places/ChIJaTXpw6mMGGARP-d-_tbssVE/photos/AWCwydjY16s7wGLSGz1OZMnm3tu5SOOEIybFX_noe5zUorigX92FQ6GflgJefohCJddJQ0ovEVWMgt-Kc9VnXmembA6G-xi1pS6rp9gMquMdM_b2U17v48pre941TMR4HjeAkrS2EY9x8QLPYJ84QTZRP1fTqInzua3oj-zICkXMRaZMHYJ9wWSiqykPgt3Nwo5QP6D3T6okmlXJCBKkL0DIVz7UDuS_RszRuww3C8cmLOKXe-nT98Tu-oz-fGtYwlW_JzDWB-7ub6WMUeDGmFIQfb0evnLP-X4fjP2AOSZx6TVUN2fsLtsP3sG-fYbqvwNqULQA9fya6v_WTzKD0TSxKgJhKyZwkNRUkLxlIBo29PAFCvrpTu01Luc2gMgl88pOlENtgYB7caWUTX25xD0JsUzPka7mUZce7BGAG3XAKu87c8fAZx5CjJ-mWKYTAg"
+        ],
+        "__at__": 1786802036.892742,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Dropped into a sushi train spot earlier and it honestly hit the mark. The place had a great buzz without feeling chaotic, and the constant flow of fresh plates made it hard to stop grabbing “just one more.” The variety was impressive too, from classic nigiri to some more creative rolls, all looking ",
+            "author": "Tony V"
+          },
+          {
+            "rating": 5,
+            "text": "We really wanted to try a sushi conveyor belt,  just for the experience in Japan... this restaurant was on my list if we were in Shibuya and indeed we were ... there was a line around 12pm so we were so discouraged to wait. Any way, we decided to wait , the line moved pretty fast and we , 12 ppl, go",
+            "author": "roostahktchn M"
+          },
+          {
+            "rating": 5,
+            "text": "We totally enjoyed our dinner here. From outside it doesn’t look to promising but it is. We waited only about 5 minutes to get seated. The menu is in Japanese but you can easily switch to English on the bottom left of the screen homepage.\nThe Tuna steak nigiri(see pic 1 and 2) was my favourite - I o",
+            "author": "Binedoter"
+          },
+          {
+            "rating": 4,
+            "text": "The place is very nice with the conveyor belt. Theyprepare the food, send it to you, easy.\nThe allergens are still only in japanese and it turned out not every item is in it 🙃 it was difficult, I think I had something gluten unfortunately. But most of the time I didn't have symptoms (we were there 3",
+            "author": "Bernadett Kaszás"
+          },
+          {
+            "rating": 5,
+            "text": "Conveyor belt sushi - convenient, cheap and tasty. You take your little clipboard and sit at your numbered seat, then use the touchscreen to order, with English descriptions available. The food arrives on the belt, you take it then press the button. At the end, you take your little clipboard back to",
+            "author": "Seiriol Dawes-Hughes"
+          }
+        ]
+      },
+      "meiji shrine|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ5SZMmreMGGARcz8QSTiJyo8",
+        "name": "Meiji Jingu",
+        "address": "1-1 Yoyogikamizonochō, Shibuya, Tokyo 151-8557, Japan",
+        "rating": 4.6,
+        "review_count": 52230,
+        "price_level": null,
+        "website": "https://www.meijijingu.or.jp/",
+        "editorial_summary": "Surrounded by forest, this venerable Shinto shrine features a seasonal iris garden.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 35.6763976,
+        "lng": 139.6993259,
+        "photo_refs": [
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydgWwnFPDkMhHFOgKnC7gEMz1K4Ja9DWu5ov3yaWv-mWD5AhSUHsUcBW0BDqKsk4slwoyFybbOE_e1kGFijioKPPKhgHyaNsMRzvqH5cfwvLF5ddLZg6Api2LCMnvdDjam4UNcxEqAJC5vyF_LEiNJhACVBdRurgki2QZAh8Wpp9D7Ck9oCwb-kcLktfGI1_t-svGBIkCYPyQKYdbT--DLhSMm3QjaNWMaA2q4qtpOXU9RIbQNoK2ZaYqrvWI6_KO3s24FAE8fPswrqqM0Li2ZhqbugXSECH_P4NYgI2GByO5-7ybouZATyuxhJX154ck8hzaTD9OxpTOpd2LwdmEeNrGcYQLcp-QbFOEIHu5S6ceCxPYyCHMmrFLtJEn2g1W4vW_flVf-Z-_WGmRUW1oV_enNcnfLlX58RDJ0oW6kaNSw9NFvINhrHb3S2z3ibG",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydgxmi8jEnzSbwK4AGoFwuVfcQABP7i1qBs2XXMkZ1awArgCKucQXqhBr9JO_x_HcP17EUtu_T6HCh0vLJCLzWzKD6kLLzMzr3tMtyf9jS7V8gTucPx3uWMdox35h_RaxDEsrwKeOzm_PSSQVwYAPKvbiUc6WzOzwLTsmToMlHj7LAY_DYKSoQK-eOzuMLD6E8aD1N4etQz1dxDnFB20vOCBqionRIQvvTDU3aeyG_ZoZBfHlpujibSEUqVizBNm-Lu6-6l3Qeiws2ZPsSApj92srRQMM67VWlc3Af4obtKpMRoC-7UKGb-nCb0nO4YSKWEyynQi0hNRhTd2jdMx7pDbir0Crirrf-WxVg10UK0e3-wOvfGisL8lv4PkPMC_-56jMjeGjXzC9pfOesCPQUUi2dW3oDdJf2Q3k9ltGhberLqk",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydjjazUchqyqb1mjdFGCpUr5_SqU6N5jd0YPPNrSGrDLcbYae0oDqX1i3m6li-8XoK_CVEQgx0tLjd9gDQL_1afI0o0yYMvD4rkM7BikLK5JfgQUMsMU5aHQrgiBsspMMwCDMUVRFyw0TDL5xKNrHJcRq_VK4rETcbny0e8M2rObh8eCkJtg9X-x5H_XKk-nfjEeg4ihqjvE7CPPT7QbI8LXNwJ83jTEJbeCqiOUFhkBlN_yl69THrVxYXfbbCW8Nmmg-VZrKnhEwOmT6VRkIneY_QH-s1u_YglaQB4r38-6AzfXRUL7kvdnudrgGLxNir3us8OMHfAjnreuHt4L1ZSr5p1u0_5UHgi8oicJWCwE3wvcxSr1StRkRnY2Mtp9uIcNn8saU6XA6Lyu-BlirsspZmDRFh_Cl4BNHqHwxoFj9g",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydhR5bUxNFkMnrUQZJYMFY9aIcN9FKqxvxQz4ihzgQcYGC1QOM42w701JBrbvpdxW6V7yIoBMl_AExWDpMcPWqld_8BfJrcxvOHAKJ2wGpGN_vaqktYyE0yAEvhtFt79fZ5u3J2qST70llHQROUnHHKAmJpxAjRa7TrzmmhOyJGXh2RLgyx5RGundpBNWFCTmYpZbgzdXq77ZdQG24Ms_Yt1Sej8tsr_eEMrCvSSguUIPg7xZD11sdwwPkcG4vy3FNvFscVjvSdRLjfXe4e1UUfnjclqjfNr9KIbEu_o3_0NFkK2D5OvahONk6Zi3VALTtxt6g45242NlAOeIYG7r-uIcg_5zm93oe85Rrw9h2yVOeI8Lb8qHD0-Sy1-O7I5hCBOqxTOT0eOkv1pmraKeJ42cMrawRYrZve9sKWNxa70IhER",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydg83cUqnWvfAXbdMHqVtk2-RpikN-BD3KZ5ubT4zzEAk0cmfforl2kLVo1G9UnQwPt2dfO9RdxrSa6SKMgRFy2CD4CttEKNW89yPSxkiBFBrJT0HfysZBPnp0sHpzTWQaF_IP36Kgg473bhZQUYNiNzQ8oEjhfWaDN35PqOu13rPbdqrsf3-bhVLa-57GhGe2MfZ22_ameXVoWFOou_G8WuJBcKkCE2W7ysbaYBeWaOr8GpR65udlmjuMD7M_KMXS_J_pqhixBEtpklbyOdijpjjmJ8hPO7XNKLYjGuSNQ3Dhrj2ScbHFnMIUIBcs4gz1LiDEqZPHpiwi_vyGVnymRgtdjyvVIvsavmhFiFDxbDSPht7kEGTdZ3HLskVfBx_5iU9DTux-uJqINKNhO2OSCc1LTUvKg3B-JA9T--ZcppTw",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydgAYDlAorPlf5TY20dFDYNAkqzXtDt1_J5F9ahG8Xo9aw_zKNwts7LyqeJCyEmq6sTT8tPq_S9fU2IJ5tmYXsViQH2273MRve0sAHMnH8wW2GkGBUFdjFEnQraNW0MgyllvTXPG3PURUup5nzzj8EMBR6yvdhLGq-gayvF77101RlPQDRCg5zUsRcqQ7QVO1z16qbEs1GXgYAkD62OJNo99C09-NMdiS5lO4gh-ZUrq8q0wHAcCV4z54IfNR2yIifrdEDpgVbeSszFVjPtV00Nx7FFggT1GahaHl_ycImivFzHiPykZNDX2_07uMn50wdn6GaAeJ2ee_JKNcy2X45q4qKsPaZIMWA_0adG2L42U6duSJLlkhRWuqre85wvLpBh74IbspvxMx8hLgyJf9wjGB_ldW93K0IkU9KXgenINvtFoeb4c7TgaRJkk",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydj2ORxNj5ipTC70nwFsEygFN8KnKVlCTP3LY4H1bc9YFy8L8s5utsvslQ4G4L_RH-QXj4Haofyp_i3Be7HxUqU_hbMXrVCqeU389OyAlfXkyrdInTKk9LKeBVu4jXTYg1Z3dPkgIHlDcDhVk-8q8v0cdB7XRLNIkwJrt7wMd17CfC_n4FuhbYPOW6vT2pOVJUDdSvLy2MaQ0wi3YAP-BKiB9jnSnx3--qAbhc8gfC38FY9EgvC2FeC4e_Ohbwa0zT82zF7QfYThOEy9jqLUqI9lC5g7oB1Vr8gSzkcr63-exsoWZ-87ASGxngX5XWInbesG6-bl7Hwmenv1BCQPkWi5IJ_JeVPulUjNKxgc8McQ4rMvvucbwlePtYcCrKroTAaaPIG_GGRbiW8s0pPMUel9jVVzL4_k6dbhKaAHQUKLCYGRbbLgfYU8cAPy7mAR",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydgK7Tzx0pEJMyRp5rTxobthKt5dBCzZkQqr1Zr-wXfLLG_cNey-ldfujwpCpAmUvhtPLo5SXEPbmSen_WoNZRGHWrYKpC_DZlHeJ76o9zfwL_pE71ZP2yDItXxBllfBRJfk4-q_h3rlOlGkraFf4ckY1ueou_KHXtII2gjqftrbXsvKJ8awCCcQmUA7tVXVlTb1VzdTPQqgSTisrCXHnyD3oVsXszIeo_qorpOQVXxmMKMbwqKyNyMnAmExUBsuQBpE-iAvyBkiASaVMSCmZpvS68GR3-ZQvVrFEZ8aUFzHR6FExSRF64XdPHpwg-4Rq8Q6I5BItvCqbUSEXe4cqOnXZ9IU5djMc9LKIueTTNRNugryc8HBfkmPJFyiUcMKUd2Y4Fcq2ow2hDT9xvJHvtqKweRtgZzNaDLUksJCYMyMWNGJ4vD6Es4qM1bCWw",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydjWIpoI4kNMM8xKNF1HlqnkZ7UkbROP-k_9fuZXqH1mYsH61EDzIjPEvJwtICgz770KpKSAaId5xzzo27MOh4lSREdSP4xBfQcegjkYXnBcmboy-53TBFTDsEgmkWQWbSPi4gxVqTzypENBgihd4Cc6twcjkueHrV3ic_0bu26bkAWF_7P3IbDNkEpojo5QyRg8FW1hJHYun1zBcj049zbdlHl6X7ABppFfF2yBrGNvQ2i3R0l1_0ctkozh5XvrXDIIassNhAcuSLH_nNCAWRLZl8sRKeWJRlNgQv1bC9PvUee7MPEf-gWv065TdqHWApO4d_j1qmINqB62akyC4-z8WM-g9lobAs602qzlrWLHiwHyO_VS24lHrHwng4BZvkrOgdwRS50jJZGp0-cK2Dob2fo5RCFRFwoKvxts_MICZ--h8bEtOrt501On_NdF",
+          "places/ChIJ5SZMmreMGGARcz8QSTiJyo8/photos/AWCwydi0TA513fXT_yqyRpA-9gZgs1VaV92OIh1njCufbW8xD4zUlgbzmJZDdcG6FTOKhGnRqnAsCs4p64tsg50WJ7Tqt651I5ljs9Hzg3bKOicOfMNGNlH_yi2n6vbSvSSc4_D0NJM5YXVRtWJ10Mf00k-k_2tWTOyq836c3VO3DtcRsZncBhvS9Tziohai0_gvGXQRitXjW3jtSkqj1BSO9zt95wWGukSOCKauWiSBEJyAUqcIPQlTvt_NWq2TFH0pvWRYSGtJMWcVhC1_ppefa_zd6XY-gp1ZB0aOf6Y5Luj2e5ulWIf6Rk9VzV9f0-n_bMOCmQY9zN8DUk0_2uscZnYcWVvZ8MY8g_wb_wyuhUx8nbUJpBcKPGBTFXkQN8guv8lppauVwjl38aiayunW8d7_lng3OuvNKPjXCiSPANk2_lc"
+        ],
+        "__at__": 1786802037.360727,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Meiji Jingu was one of my favorite places in Tokyo. After spending time in the busy city, walking through the peaceful forest to reach the shrine felt incredibly relaxing. It’s amazing how quiet it gets, even though you’re right in the middle of Tokyo. The shrine has a simple beauty that makes you w",
+            "author": "Shrikant Rapelli"
+          },
+          {
+            "rating": 4,
+            "text": "Peaceful, serene and a perfect place to take in a little culture. The main attraction is a the Shinto shire in the centre, which is stunning. There is a Buddhist temple on site too but we didn't go.\nIt gets a little \"touristy\" at places, which is good on one level, because there's cafes and a restur",
+            "author": "Nick Ta"
+          },
+          {
+            "rating": 5,
+            "text": "Meiji Shrine is a beautiful escape from the energy of Tokyo. Walking through the towering forest and massive torii gates creates a sense of peace that makes you forget you’re in one of the world’s largest cities. The grounds are immaculately maintained, and the atmosphere is calm, spiritual, and inc",
+            "author": "Petek S."
+          },
+          {
+            "rating": 5,
+            "text": "An unforgettable visit and a absolute must-do !\n\nWe had an amazing time visiting this place during our trip to Japan ! It is a total must-see for any tourist.\n\nThe shrine is absolutely beautiful and surrounded by a deeply peaceful and relaxing forest.\n\nBest of all, it is fully accessible to everyone",
+            "author": "Dylan Eder"
+          },
+          {
+            "rating": 4,
+            "text": "Meiji Jingu is a breathtaking oasis right in the heart of Tokyo. Walking through the massive torii gates into the towering forest makes you completely forget you are next to Harajuku. The scale of the shrine grounds is magnificent and deeply humbling.\n\nPro Tip: Come in early! There are loads of crow",
+            "author": "Phil Pena"
+          }
+        ]
+      },
+      "harajuku|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ_wrPgb2NGGARr9UWUC8cbXM",
+        "name": "Gyukatsu Kyoto Katsugyu Harajuku",
+        "address": "Japan, 〒150-0001 Tokyo, Shibuya, Jingūmae, 4-chōme−31−１１ Ｂ１Ｆ",
+        "rating": 4.8,
+        "review_count": 6350,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "https://gyukatsu-kyotokatsugyu.com/store/harajukumeijidori/?utm_source=google&utm_medium=map&utm_campaign=not",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:30 AM – 9:30 PM",
+          "Tuesday: 10:30 AM – 9:30 PM",
+          "Wednesday: 10:30 AM – 9:30 PM",
+          "Thursday: 10:30 AM – 9:30 PM",
+          "Friday: 10:30 AM – 9:30 PM",
+          "Saturday: 10:30 AM – 9:30 PM",
+          "Sunday: 10:30 AM – 9:30 PM"
+        ],
+        "lat": 35.6693269,
+        "lng": 139.70620449999998,
+        "photo_refs": [
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydgu5nlNM958RMrL-y3OrCHaGoUZ1afq1S1wqr0sL5jgCh8njaxZjyj42_MqjwsB-y1zxXUF3hmhQiRSr8IhheMSFv98JO9jvxP-nXaI0_NAVg0UGu8E5aFdf2psOvq79Hu7l4WOYR_02Pwgois7u3WHPnT0iImciZMgVG1n1znOrpDGUR4GzAjXw1cfhFj9mSUXH5YlCljtDQMS8HpCnBTl1Rlohqlorlx2HkNnyEMXW85dwu3R0o8zWzizLiTq64V6AZQwrFhG-d-z1ZHW1UAw1J--8tz37PyAwuYh2PllLdksL_AxpjIibgwmX4hup7Xch8jky_f-dXwX-AFkp1XKRoe4AOvwpw8fFEqR3AmDPxYUraz8_ntR73CEcZ9oi4sun94stTfcl2kLMon5XEoQB9M2s7uBVTFOJwrA9b2u0kCP",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydjYBrVaXerEric5wS1gl0m20NZ4AG4IEhwvAruQA207m_tin8viZX8LV4ttuAHiVTkB35sxry8usrJ4RmISCOfAyLkLntHKerif6nbSCPKWOrq93i0DKd8VlCoeyUsiaBGkIeGMaY0t1oK7uHohSkREwx2BrtcylKRwUrMT_MjMIXNfn0Izv-iWshEwNliu0Dzyn4wGv8hYYdc3OBc7OZKPu1hEuOwt6NQzIM08MJsiNIEM1o7jbEPAd1hd1HBoUjAc8dc_fXTA29bGEckeN3Ob8aG-Q755QvbAgc4Rj9oSHTSLY5xwrqE-JdUVJQRkOOeY7bH377xZfFp4llEhgxnnqdSe1GxhQC2-jITrJh5sl_gnypqcLZctDDB141F3-X35T8L4CtzRj_5ZUiAsWsf7Dop_pUFhxPoBd_-_d7-KVMKR",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydh7Rd655KPEfEqj6bfJw6r1BkqhhzrX6OhwXhFYkMCA3GOcAUvMUwzrJeHnt70QrE-xVIOe00tM7ypefNClvUiiduP7TCrOMnZ7a2y1drSrDuEq5hJTS7R5GW_LCnITMtkrRm6PY3dU2LdZTiPKqro-PzU7h5TsdlI9oO-iDiU6uuBEl8Udgz-ZLjqzQGfyvzeXfq0-n9oxAJIP8Ys2HMk9vojJQgAJeZ7nO260oO8398Pl5W52T7y25sJe2uTE108y5HOEBjHhp1BBJjcQyV8SGYHVt7C33Tyf2sy9BRFFaN3J0onazJniLQdPMbp8WxjiFOGBN2dWrmL6uugpmPEGHsROsuBqnw-_PLROb5vjHT4YxTKTV9Sf67l6ai2qz-eDFfYFSW9duHNkrPsVfNP17ly-aeERbfeeDs0xl7nQ06WQx134RuuFHPFQthNG",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydjq33yxZHjqnBJFZyLKexx0nLwSkbMxEHZjZsANfaXNtNthz1Hy56SSFrLdDGhdoj6QooLAIk0TVeKHgn2rMLwgr7rRKSp2gwGrksyDLgO6jXIJlj-Q1aqzbz5DndBxfZuUyAqHAnXOR-_bQYtWEpHv_nSCf7C8who1z6421Sy_7JTOvH7I4I1QIPWgTQ-awTsXnYCrowFWEPQ68Ov01fLu4SVHzmFSrbxgXIulAQOmXhDHnbXpaNPflb8qMeZqxK_4m4KsUP2aRXcRG63asbImy6chWAVKknIgt8o_zY4F2uJ1NK93k0G4XTfBwYJh4XrUC3lF08kI8x0YpmLZ5BMI61euL0fqQ3Q6bBHl7u9CmNuUP3jvAg5h7rWeUgXa0WXsbAx3yMFT_uFcZ-0a9ek2eWu4mGfG1yJnHbLM1EjSgWM9ZqwYrz8xyWkiort-",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydj1sehuS6o03b4re6YSBIEKqp5DXBI4haH71uKq6AYz-adBDBOrlF1Ms3kV01SJChAG40D5dtQqV5xCzqn6lv9vf1dknXpWBx7nlfSRLogVIGSTfNANHd1GNyKss3mzJn4dAIojZlqD19o0116TivCj-dMEPfx9kWQ_sU5yMixLPk7cBJQ-27wiFvMeNtUJYkjLASMo9xiSyKTgzxBgp0okYtwKiR7dKkcZjl5AZBGdbD4m2NO3HMV3ickqaeDjQ_qxeG7GyAnuOeFLMmx9nFPLp5Xuw-s52K8LBeWxHsSBw4EwpNQB2W8OSUSjifFmgYo_yoo5gU-gbStlJn471FxRy2WPQGrDOIoBXjMWsURwj3g2TwZlFrFhY9XKKyN1FcXt8ElsOwN1L7ek0BE-45lj_zMBnFZGzHVDFWCBCzejBYt65uOjqZMCzj-lKKW-",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydhSMJAvr81epPenAp98xE0PhRcfKMfcpF4ixdQq9z4XmCtl72Dwu8PVVllheNoDRWECxyEJuXcIw70GSOvl4mOCXeJOh9FjELM5oAsjtNJb413FbZNHbebCp-r5hJ0SOrTE3g6gWM00neuH-7AtyJicQC2XL2cBL-AmegvQSX7CJI1QdMpzeWNBW0xzmpCM2Jmr6EHqkDvc0gIGUFPsI-tUXmx7VFT3pu9WyrP9srkmAAbV4uIvAbLQ0Iz5YLi1St8IDTxDqejAi14V-ivoyVhXTOMjl72M1Xadi6kGA2jyvqMU9C1rjXO6MENI1513ywTBfhMGbVoqyIhmrghqBovcCy5paRkOugphQH1ew9k6HZC7vnlhmEjHFc0UUVtYTPk_CVhl0FMBC3o-HpX1rxgk5KBrs00afwtBVLjwVftiT6bP0Yv_Pnsw9WCSXd8-",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydjiSljoS_q8-p6RpZqiYlQ8wdLhwOWvUNYE3GVB4VRW3hscE8mVl7iySieTX9Dl9AeywMbBrcdCdGQ77wEU33-QPUo7X19xopaIxFnjoAPlVV0ksEOqJbDVOIGmX14iUgX6mPOZ9OpWT42nz9RyneQ9naIJWkjzKsCIR3jgEh_IpsRkpJBHtaizc107RdyuPB_1XQJs1wZFkohYr_J3YcvakxQDRWYbTcoQozYWFDM7DDV3BBbBXP3gnV-jQvHRgPE2-TPCala8vWK19qG3df6vUB1Ly-E_6-6mW_8oEntLkQrU2OqEr6LyIKwl34LczkIBihr17ptkoFVV8jY9YUG4zLlZuPSSvbrzLpS8WdSbaapRNx3af-pALFYdCLaVTXoWga16NA9sctsZE_TW4wgeegmBT9fZQq7qScazEgEYUvFPqzRAFAaTxehAkWmw",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydgJlXsLrNuoBnw_mMBKLrmnrKr6AZGjxeRW3ySt3xh7WO5ys5pZYRmGBY2bYO1cgvEpdSRjKAUkvMCl8H30knoNb_8m-yDq2LrsdrBiaksW4SUARF-Bd2Cqrt2agjm0We3njP6hM22xxt8FwyO9zUOJdOIeODZhRmkYtH6X3EMJ3nheaGcSV4DBczK5GvKwkHfc7dGMpO8wffN4IAFS46_9uv9piIhr1kaptK9AVApfUd07eSlk6SilyWVDVJJ349N7WqoALGYtFC9FKvzkEJ80jMN_WhEnud0bq58kQRmCUAFyYz6efbb5Xh6Q2IoUq35tuAmfyoSpOeQg721COrdNb5XZq1GfowFABHmbdZxRa6KGB6tW2TvbtL2ip9FOVNjdDZRprtBCvCXWKLryfWyoZ7tgwwiDogYNYPVR73O629Wd9KIy3edPDME9nJEw",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydgo-Slli9W5n7WA5o_cUHg1CLwCBMC3sRYkey-HiXpul5qTaV4AtBL4PsVpgocmpIM_mE-o_dtNBGcDX4637B3GVht0GRkNzdfbKK1lKjb9aMuJuHXagP7EhPJlP-snu2omTcfB9sh0uy3Z0OxIdQzsESKhJLRsAexHW613XpurjVxWj0Y5Bt3M0-xLpZM-6O8iq4RV-yJw3ym4HoUVTU0NYPAjbz0ljicLHbap_h6USuCShs27i-sBceHXB3z5WI8fm4SE9R1Z1wErgyL7QFp1UYqpOVh87k04Go7yjkK_RWyujM-AE0A1blq6E-XYCWhh6zJpYCJV6ACcQLaNCHdYFdDoPnWVBNkiojf49ma6wPJcvN2dr1OkhLcXXK2rp0wflBlnxv4QZL1S2gQ-1-6vQypHz_HGrHVuIJFY9dd4MmYbBeCGfY_uDhBy03NO",
+          "places/ChIJ_wrPgb2NGGARr9UWUC8cbXM/photos/AWCwydh9lbBWxYgWpMNvNDfsN_DN-2TLBtfX0AjoSQtwH97LXOoaoX2Q99bsjVfmjDmFrXncYFrFRWdPdxZSTCA9nSHYfr_BEClHbRHXMbo-t_rvwjaYtHhQ2WBmobu3wNEPD_WtQDGL5Dzcg6iLaxttapbVcO-cGdquLi31JLo4S2vSCFW-kYMufy_vbYtZpkl8Y7sJQEDOtVylBcacYHiHhIOJmKZbHQJfpCGaK49dUFIAZdE8AkPkx_VvzsiIYMpWhyDKA29bzkMfnGa74nh2AAgsQF1-Fdvwsah4NX1MZHvYreJVo0cq4tHhqkV0a1xxk-L_W789-mOF3SJqwt5CNkyaMA6VKEhjmLFN9iyJQDqnAJx47yQXTWFXndx854t4HPwPbtq_pSZRtvyZ5xDvlSOqVpxPILtAww6sI7Rq_LYQOcnM8h4vWBaRFD591Ww8"
+        ],
+        "__at__": 1786802037.961211,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Absolutely fantastic experience! We visited on a Monday evening around 6–8 PM, and despite it being dinner time, our food arrived in less than 10 minutes. We ordered the Japanese beef sirloin gyukatsu and the chuck tail flap gyukatsu, and both were incredibly delicious, tender, and flavorful. All of",
+            "author": "Toki A"
+          },
+          {
+            "rating": 5,
+            "text": "I really enjoyed my meal at Gyukatsu Kyoto Katsugyu Harajuku. The gyukatsu set came with a nice variety of ways to eat it, which made the experience feel a little more interactive and fun. Everything felt better than I expected, and the atmosphere matched the quality of the food nicely. I’d happily ",
+            "author": "Hong Calvin"
+          },
+          {
+            "rating": 5,
+            "text": "If you love beef, you have to try the gyukatsu here. Crispy, golden panko crust on the outside, and beautifully rare, tender wagyu on the inside. They give you a hot stone grill to sear each slice to your liking that sizzle and smoky flavor takes it to another level.\n\nThe set comes with grated wasab",
+            "author": "Just for Fun"
+          },
+          {
+            "rating": 5,
+            "text": "We had an amazing lunch. Happened to walk in as it opened, seated immediately. Ordered the Wagyu set and it did not disappoint. So buttery and so many options for toppings. Showed us how to grill very nicely. Would absolutely come back and want one nearer to us.",
+            "author": "Braden Hahn"
+          },
+          {
+            "rating": 5,
+            "text": "amazing food, best melt-in-your-mouth beef ive ever had, so delicious, i didnt really queue because i came early (around 18:48) but this place does get a lot of demand because of how good it is. staff was so friendly, they explained how to eat it and recommended ways to enjoy their food. will come b",
+            "author": "EJ LL"
+          }
+        ]
+      },
+      "shibuya crossing|japan (tokyo & kyoto)": {
+        "place_id": "ChIJK9EM68qLGGARacmu4KJj5SA",
+        "name": "Shibuya Crossing",
+        "address": "21 Udagawacho, Shibuya, Tokyo 150-0042, Japan",
+        "rating": 4.5,
+        "review_count": 23097,
+        "price_level": null,
+        "website": "https://play-shibuya.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 35.659482,
+        "lng": 139.7005596,
+        "photo_refs": [
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydgxo5QJ4--DICijjIwAuyxIktOaKmyCI95EZvDS9lERidrebonCFFavzt0ZxYTqSIN8nTXm07maHAV1RxX_opk-lDgwVoy6KQ8nzwJ_MDQ9JBAbauINCOStDHF1wlqW4cimIrISk2q7bgrXsqUzMJUClmmjZNgP9vNr8_pCQcRo2eUcIJqAcTL9_SaX5Kh8Aak4YagabLP-0P2Mq0J_2-pZG6_G2LdhKkgJ9tD9SAyWHNW6IgF-mG-Z5E-v5ykDSkxT1Dz39DgICqHNKHMA1W9GfRlnERfbtn7_PsGAedArYcHzTKXcMaCFk7Ka2aa8QtgvYzpWxtcrPanedTjk30GIBSldawOkVMqta9plXyGCtU8hoc_NR4tqhfRbNUJzkt8BU34jTrXEuHFiwmsDegav3AO0n05WqUJl_DzXWj1W7_A",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydi5VRgdSHF9Sd2KsLFcN9GyLmInSrbEAQPRkUJBqixD6R-WxEhJ6YQcOA1PnN8v7ZebLJx-Y9J3ExdZZnyQGJ3iYWMWgqZ5JzAO1vGQ0h9YFF-mperMvgdLuz_AuwJr_pColD5HnBB3iLbtBR31w_q3VhAEhmVkDAMuxEngW9SO6BPvnTNB2zPyQkaP2ltfcliUOo9QSyUtsCAQVaRQaGnkUmOk6nMKzkYedybkR0Ip9i9Qd__wxH6NnQh-qJ8Vm6Qo2G5-f8uToiqOAEHTrnTFuUFaRM3UybILEggny331JnD5Zx2lL1mKirks3GARoSexPeOjckLbRVQHNb3Yr2VpTJ2UWlbbuRdnkMkqrLI3lignmBqh2tY-VWw-FztK2HGu10umEDPpVcrodbhfzlUfP7_j_PQQy52EFuvwu4s8U401Qe2cPbOgoKWgQQ",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydimA1FQm7iish9dMPQmr2gXsAb3AutSncdakk6SwuyIZ9Jn28uRHd2pJYEN5RzuqIbGqMMBEckOsFSwpRbvL5UATOt2b8dbrOSWI4HEQ_XhyyF0WfJf4_drDGYe9_-9p7fSY43FeytMYaTMnhNwyCuahx3CvCTonbDXdKkFmoNj2dtqj3XZPelA5Jn8yMlesL-ZWqry_eOa13eU483K2mOskn6TugCFfrzy7UgOTzWjsseMtDLghk358mrAYxARGBJxnfobmKVlkVBSRoA2ucDxpHvKWDQLyT2FJciYdPsnKnkAq8b3TDLVicC9-CqjOYFERjMvBmH703Cq_O9Pq8qJQbIsHG4ne_AF4GMIhWFD0fYVIgi_UU_7oglZQWg1t7Tyrdk2b0zKl7HWzsgT4U1Q8bzGYrISs1Ozten7lCc9T1ZfPyZtEH1yEhhzRw",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydh7du7AfrVprV4AGi11VF_6Dx3j8WwkzfAbNntPKPNi368P7NdEVhFa9uYM9VH7jDBqC8tgy8s3lrem0AM3xDYp-UNRefYf-ty2swK9ifrFURvSumJfF5ooQ5hJW4RN5KuNOuLsSYnoaUJZaQNWnVpJmkk2gw5qRefjvUD0yljtrFfe4FN0WYu4ri0QMVOZnikBJ02j31EKhFdrcvbgrEDWonUUfyjxvFgSZ8L_mM5wLCwzmnaiqquDcttHisD7B9nLY2HIFZ0bx4kvMmtySxyXYW2-5Ol8CdZsu2Uc2g0PeGP26iBJC5RIHdNboVFjIU_XIAW-Bwd6wJqZneBBzQ_U2o3m6MZJd09BW2-e2nqrXwqKofMRfQ1tojXJ0jIOZqZNR7NBWb7xv630AIIKcAn78sgNNruwnSRpdj9yVuaLrFUX5jTO-wcgu2paQAIN",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydj30kg1fryKjBaPzZ2nlwVVLBe_XCMZzZlIP2EypASf8fLTbgUA1Brsm6Mgj9C2PMErUfCqP0PkB1LF40iiQj5UUlRryNOwQGDO3BaQ9-FtPYUT4Z9EQEEi113gcMcOQuEYDNiKWnA6c7We6Q8TUlzOQV4RLDiyvi3Y1C90j5z7Z9J2keFY1DHCmRkjSGQsePn5hAHU0Rb-M9ECYSXrA0S7DJ7xgTiyaSBb7AcCQXXLp7YH6tszXAW3RSBJ9lQHkl67OeItFaCA18nUPzNk0GerkQAbbWnqf2JuZSTGl5aKIvIvkkB55iZ8-DMmWJjygYhMD_YiCj6SAB6l4y3Th4BmFAfL8ZF1WFw_RRcwqKZjruY8_O8lYsG3gHQQc0zjv174K1BRK6Ad27ZljjSqLss6T1QNMsLao1QF1c0xDxyu_Y0CBkT3WYO3yGutrg",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydiPua42L3EWv5ydOc1VUt8a5R-isb1I8ZrcwFZitZrStWzSomc8ZVvJNQjB4GpF1O3kDgT3TmyrinijVYrTe7MY85SsDQYK32kfzxMWn6uGyHGwHHwwuqg_VBHyPu_Plpe8SOdcyYdbHlbezsKn3V793t6UmIC-OS8F43L4B0TAOQNziD8WIkzjvW3L5bxk4XX_7JFaQPhLo7O5hblD3VRIjgA3Sflsz-CrdlMZ3tzU7hDbTcQ5-9tsKIGBikejpZMnx5tG3s4T4bL0YPSwKbdjSEurNDR1cyQ4BWfpr1jvPHEfQIaop4CwfV2wR7S2YVjJnaSePZW9_1Skzh4Lhv2AZD2xHxPzEDqfwn8g9lYdUIyN74_8rszkFp7wdolhuyPblf7Kfvkyki1WicNTKMh7f2m9tqahvHbnuMFE4xt7JA",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydgQqNQzspxhJqHd7yOMtuZ27OMvV6UAlqzz5goUYjKmgWsuxm9KuzpB3S3_LBH9I2y2j1BwEf3ZbsA7DNRJJcy3EYVyGT6mB5h0hfirRfxGdW_pIYK4jem2O_-lPQnTpx-38ss5PC1GykEmwZhCGMBT8XzfetVGZ7bw93TGJZpcwEzkGM98fzPCqj4XW1deXzsdjBUcenGKXQM0-DDaJrlGrE3GOle66ABIVbVepUHTgP8JjcUhVJ3pabU2k39unrZqvPF4jers8qMawAFEoDAQJk0rf-j59PLOVsUx_0GHL0rxolQdzR7nadRg_DGxnnZ0agm4R95ps1Lv03cC-SWG-veURdJ5K6zXEpR-YXNFKLzv1yFWKw9hKldvoEN8TGQIbWbcYzY1yJbIjkivuTO0dW1vCUPfOQD0d9gwvfZfZQXZFYZoMhb_Wy6zA9Tq",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydia2R-UEPO4GcYT8-hoxlCGDdG0VEcGJa3DpozeiMhyY--4k79LoGr3sPtesZZaTp9EWOXwAAE4h19AusnceJjPfM-iQPK2Oxwosh1IWVzngSW1Xx12TeRJ9FhFgQxztvwEVpsqSzkDgpDrzYN2SPC78aGVekic1tUb0-6MEkqpP9mRHtVINF9rWvrKyEcsYqW21OvjRLuDv8HEyUTeatIz-q8kuxw5yDr9C8elBX_i-eV8wpgtnKr1GCE_8c6chRVgl3TAe-A31xX9bS1kSMe0cJpvWy1NBO3Fzj0HLg20kZb2GS7pI6OUuuTcSjXAr7frDl-maDkwjCs0gij2jXKQaoIf-XNcz0wsN12GuBlxOBU8YT_zKahmCeNHQonpiWHtQHf41ssHykT2KQAJiNnF_dJ-wQPg9ZLdfiB3twZcysWRIvQFS1XWAI6ge4eB",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydiCsrB5pJZzDWQJ3bcTsFw6H1MbqYuZDdZjsfgPOtXgTLTjaa5VLPgsHdrhGbKbVnNz3tFznbguJuuxtz_6j9CZehsUigTwzk4RZZQZ0J7rQwpzUZyLRelcDrU2YGIcIiBP1BYxYuHl9fgxz_CLVjeXN31RZybJeOhIhPE-PYB6Q67ntflAfp3G7eT_sdD_F6Hx3IeUGqxjzMS0-L0wd-kCc6OnpVGfvYr1NTmA8L9h2VPpPtoeMxIu1RqvpbtKihZDtPPg_AoTq7y6jKM8FtLjwTuJ0wJg69GmXO54GiIXFvyYJoS7LXTJpazQvRKSufHIguuIJjUYARsjkQQQ07Pvu83VArf416i9uEjSB9gxfag3vff1dZVuPFAeQ7CZ8vWVc9JcVpNHuI14RvXQuXre00gggCWMRUSSeZk765D9nNE68Rm_AiUR8jWDb1y0",
+          "places/ChIJK9EM68qLGGARacmu4KJj5SA/photos/AWCwydhmjcsI8z4rpYS_1P6F_2vLm8LQqgxCzwFhOqSKJYkMZLCv35-u2qDiATvH7qpnoinGGlYzYok1QKVVWrgnHASGKLBIR5hu35zFpleJXLSx6kwqHTRq50VuaEn88w0ah994QHbocGbRn6lTzatb1cfVFKcN9c42sS2310-jK6suQuqzq43cBfnZSDaQccInCY1ALkiXeXGiNNIGBucq3ibhdaBlOtFYbLvszXipycsUTPNYB8QdBGr67boCLQGM-Q7GwgBT-Bxk6bUuNfeKMr-gCpzriabw0_et6y1MlsvB3Kl5FPkLWx3pj3qJaRiiniAkvOAKnG1pa3j9b3O0g7IDTt8ZsUWcs3RqMtqtYCK8n-0b4fdQ7uYn_5FmjfrwoUr6CrP2L-KHn-dRc-uVs5rr8gNcGA1Jr2gje_HkdAs9YA"
+        ],
+        "__at__": 1786802038.4410539,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "It was a very fun experience although all it is, is a road crossing. You just wait at the red light until the green light shows then cross the road within the time limit before the lights turn red again. Just like any other road crossing. This crossing however is a different experience all together.",
+            "author": "Razia Samad"
+          },
+          {
+            "rating": 4,
+            "text": "Visiting Shibuya Crossing was interesting, but personally, I found it a bit overrated.\n\nYes, it’s definitely very crowded and iconic as one of the busiest pedestrian crossings in the world. We passed through both during the day and at night since it was on our way, so we got to see both sides of it.",
+            "author": "Alper Öner"
+          },
+          {
+            "rating": 4,
+            "text": "It's everything you think it will be. If you are anxious about crowds either have a plan in place or visit EARLY. Night life is very busy and the local restaurants fill up fast. The pop up shops are cool. We had a Night life photoshoot booked from Klook we did in Shibuya which was a highlight.",
+            "author": "Meghan Hermann"
+          },
+          {
+            "rating": 5,
+            "text": "An iconic experience that absolutely lives up to the hype.\n\nShibuya Crossing is one of those places you’ve probably seen countless times in photos and videos, but being there in person is something else entirely. The sheer scale of it—the waves of people moving in every direction at once—is both cha",
+            "author": "JD Mendiola"
+          },
+          {
+            "rating": 5,
+            "text": "This is my second time here and it hits just as hard as the first. Maybe harder.\nI've seen this place in movies, anime, music videos, and travel guides more times than I can count. None of it captures what it actually feels like to stand there when that light turns red and the whole world starts mov",
+            "author": "Yakir Itzhaki"
+          }
+        ]
+      },
+      "ichiran ramen|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ73n36IYIAWAR0OYK9dUDK5g",
+        "name": "Ichiran - Kyoto Kawaramachi",
+        "address": "598 Uraderachō, Nakagyo Ward, Kyoto, 604-8041, Japan",
+        "rating": 4.3,
+        "review_count": 5877,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "https://ichiran.com/shop/kinki/kyoto-kawaramachi/",
+        "editorial_summary": "Informal ramen restaurant with a specialty for tonkotsu ramen in a pork bone broth.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 11:45 PM",
+          "Tuesday: 6:00 AM – 9:45 PM",
+          "Wednesday: 9:00 AM – 9:45 PM",
+          "Thursday: 9:00 AM – 9:45 PM",
+          "Friday: 9:00 AM – 12:00 AM",
+          "Saturday: Open 24 hours",
+          "Sunday: 12:00 AM – 9:45 PM"
+        ],
+        "lat": 35.0057681,
+        "lng": 135.7678063,
+        "photo_refs": [
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydhMPdwMDt3Lpyh0dpGnqt3I7DdbWOI29v1_MuJV-zFZQtghsXeCduVIFG8kftisJJ_zrGWsUD2HQmo7dS_fPB8IrQN_Z97ukqczrmQLYRH2ZAsBjmArqFS1dbth5j8bvC0JcAL4hgdsDYs4TYULO77e95VZp2RqpgvOgVOfnafBbmwu0feF-R9I-pzL0IzXwpIGDd3hjKDdK2sisWn7ECCVrY4NRm_zsiWKbFFtdAg1Avd7gZiykAJ76EslrsWR0VQFxCIygaImGp8HENim-pgAPZypcsInPC-M51M7Ohc6dLpWkrJ_AnJV5LW1Y_vvGe4DSe5Z_5NMEX_hWTPGTTZr38DWLKezJei1LkJ9ChtLyqHwfos7dqLe9GmP-4gwgd6gIH_3fu3ZSJP0faHxZjXl2o-te_73iON_P2OYjTYW_BlT",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydhzQvHlSyCaX9EDoWGaTdflsd8O3Hxp0fyIbAaUVg-VEJC4Ii6uUMB3v2JDpWeen_4gGTfebzAEMzJoFtQ4cSLXIxN7YKuBjB46pJO2N2g6F6oX9L9GbrWPHkub2d7w5yOU59qwhB-W7rbKJQMRzzFuQTwjMUEAyUASOj8ln7RE68sRC7_s4PhwyW3gNIlb0kUp8NUDnyY4aEm947vMAZpyTOMyuY-BxbBgO5C3wIqncU0T9ZN_7rb0l_0GaIHTRcGaiKEXEEeMilbIGb2pQxyfwU17VUHYInpNCWoUlhiRlY5brEwlvhLf5HaUy4FMRSg4QB8RDW-SUv5n5mCx-x0QbOhDfWEnk5E5hgmcxvoiRmrCf-h23FknR2t8hQBuztyNVWFAl4Ab9O0FQjRhBgULrqNZ4FQ-8U9MpNnfY_0",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydjypAZGrnmq37xmOJiyeX-TRyAfaYyaWMWBrTIUbBb6mUGrvEu-EDUS_r8UKNhzMQ7H-hq7ehXFMw_fupcs6IEliH6aN7abnFSIZDIOzBujbpO1Aj0PYGENkHrLOq9Vu7RDGiHijMwbYDzu84sDk4KyZlDe69b9ak7Lz6WXRtDWcmkhDQMvEt583jfPzRULYmDfUYTW8cTH_qXawz-Bf9lO7e3haTZzUzxTzS-eFaL5tONYD_OCF4vD8tf-PWM6VYRlkvqeRjO7JGgsTY6IOaYzATZGH0TuRdXP1nQlT8273fUj2rZnCNPyl7AgYWsxEt2_pPk7E5Q2vAWKt3nc6Br75M6bD-uv_ge6liRAyCkrzBaAs2hz_Zl8FQ2gQcqjFYfLd2yVVNNzUmFVlmIpH9ag2DS0Fbc2Phy0QelIsTGgmhWBF2yQ2rzCXa4emgrS",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydjECNjo-0wSrm8kyli-UOn5CeunZpBtFDZAnSeyKpByuvZVHp7OEhhuF6GSBDhLTLhwZg427IsI53QSipile25qVykVMVDVhiau5HRLZ3GAxEL5ENns8j9M8vmtI64T6gh8kBhRYxxi1s6TNNVJ79hxI3PyVLDNX65i6d6fyorXUJjtu_BSelgU8Gv5jIENBEXYHohPcTxhVBkXdH0j5CKFqJiIahyAJsRkTiwO8PWhpiq0NWq-UZE6FysHbVDvyKmHrITk55dDOICH7pM2oUyYOQE-9b22-4HlpFdWxmij_id070ZnzjAaQyRrf2BJBXHM4mEHGrhCkmUee4utejcyHgFtPh73tf8XOV2Ogk_2wliviIfgWHAw-dpMFSfDOFhFFEpHcUoEnOgCVC3EjNI0tir1xZquQFzJxwAL7EjdVyIOtaL1ZOaBxzZVXnwC",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydh3805s8fMyHyPMDXUHqxmTV03xEGP0jz_xpZmZTS3zTu7oCAxMIsRDpCTIf5XNwTz11-VglKA35GD4MZfM0UcPi5fnSdcLn0YyaJ2UjpbhEyKnqlh0Tv1xDSbczqXsCGCUoAnHKHJvlqpTbfE9lwc1suHjrM4Z0Kts40aImMUnLchixim6z4abSEyaHG1eVRe8F9u1LtPgUgphI9sYhG3cf5of__SiVdz6ba3RUvGAMaIR7T9PTr6FnJky5zVdYfUN38KSTr7pMdm63TYYT9eV8jx8DQLBEtXublbrw15WF5oG7LO8xGdKObNMiBkPA1KB0z8-9Oj8sICgutn2wSPzDUbRRvX1VW4i2Fjg5LLFVFx4oyrUpOUuj584KI84rdFLQXiFYJLLGSmb-0S93z2yWxOb1IfMJjc2p_xcrhz-mJrgRvzbdN7RNzniZw",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydiKcGiiD75YF9pxIzxZKB0IFyO5Eg9722G9Nt2Nezm9FZlIWKaTxHiAUmXZqauIbe8CpDJbQDrKKWY769CgKfIP3bWG-dGwZejWs6ZOqyHZDUJAX9xPx_11IOXoAr4hJMZ26DYU6Gfd-SHLQMkqNtrXLUKmJ9svQO-KW9mcGFpcoNnQx5qyUYxj6kkb3Z8qVTa3Y82ONkkt1UAURRQqlm_33E_8fvJWqVMvfu8t1US4mJdHNPnUtNLQnf4M3czuyq6y7DnzaRwkxtFDpjnPBe3TmLBP0modmk45znGjt0PPDi_Pkn55D7auOgY6KdmIO2nfNxJP1tSIp9owxU3k-rcodOzIQNdhTapapcAYTK4YZiWi2sJM7C-SsyW9whqGUeAejUwg4I8VceIcZxESE-YOnBgXheOxacvihAc4na-n3Nr2HGV8PaByFfyymprs",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydgYOuQvi4cH8B73ippNJXt9dtGRPgAFjaJblR0bsnv6MEoy-l3IEHRykj6WzBtR_ylhPStsuL_qSh5i3y5Vw1urBbG6R6mFvMR45Q9pIaoi5U_jnA2fhrQmj6ssJz_j_mlNihYoRfBBoAvigS_olhTao6I3FnIBk1qbFguHCBsbfwVlUudNqCgP1CqEixpbz7awHs-vXnnsIHf1VmFBBQTH2bJinuNeSazC3-fXagkc2toUPdzAIJ_KU05aClcNqIORB1h4X-yOerPiS6mtpVjnUSbdtrwbW3KnqM4jGRiVsvae5nX7TZVn_lcmvzHMa5kge6nFIflqMDxiUZtYGlxQVNOaL-A1hBGnAvhodiyFc02RfkZrcsSfdFKMLTcgJN3g0P6TC_U6Ln6Kf-Gpm2w2Fj4tIN49Gf-4dbVkplePpjvcFolz2CssZosFLJ9Z",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydieO2YyXNi9jK1TfYaPanNiMdkn_4w5NHybxvTvNMn_KR6bJJ3SSDV4Y0pb9ar7TRsqU2h8eWxukbo9HdtjaOqkv5zK17KIw3ZAqevFnNdkqentMfRz222xVYFY2Jz6nHdUS_jdieXqlAM47dhr2QS_V-oXMpTHLaLafukAqqjsdZZZL0WvaFdvVJ6rEQHAijL9lD14h3LEbMKjV2JavtjTc-JuDdqTijEyMeXN3az-HBnUrPkdrtS5m8xHbibrz2zSN994EbwIdps4DdsmAY75WuGTk9bxVzsd13GiWcoll2ijeUDOnSMkd1abv7bRj8a6DmsZ9_EQrlDr1FHOHzM8Yq5y7O1ZWpNAm7lhmQVBrSI5quNWINu-BeUeulmSI81chg4SvaexUVa3hO1QM-UnbxVbxey9jkLUs3SPjkK0eyreyFZsEjvk8jluQOOJ",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydgaGBqXjSceVNz_WHvuswkJgMg3F6UsYyRCxehZaPrM_z1v8M_8vL3v6FBSn3-T2COUizLg0bEKL3i3lNHVRi6R14M9WVkIAJznfchi59WEzqgPWVqGogDeqwyx5CQQP0vV_Jt2mclnCIW8RezhVIKYUKWRtbaInfQXQwTIsumZBKJhR8ycbjUp-UJEshKF_kX-bladp2P5f8AxPOoLCQ3-NhKdb7dHnfAyQjuCGqEDT_Lkbssaj9yTcIXhVxmVPu_X7miFXfWyb4ZFKhuM4SFD1x82jn9AtgGttgfdCgi0WcT8iAZLunoTSSr9VTuxzB9vM9sItAUiKQ2NScQRL35qU_F0PuLAdSd81D5zgfpPc8LszrjThJpIARrqPOcn6LC9ifL9ZJqxjpcNRSLJ2KLvXeIvZwUJbkbLb506-To07FA",
+          "places/ChIJ73n36IYIAWAR0OYK9dUDK5g/photos/AWCwydihextKbbFEwgDpEgIO-y96DRWZXMcKaflXDA11zamt1FLPEjCDg-rmvpkprv4vw6fZF7gPFgLELiGMSd13NZvlxFtTWifFCAIHwJ9nFhkJKjjbmX_L3upHoBy3cTGsgqbTQoUavWgz8dRrXBfpGCyeICGphloRWn-mFryN3aOgJS00SFuTr11g5tSpYA8-Ckd5utyKqbJuN8S-yj7T-h9-G2UVNryms1tIi08dn07JpVsX3hcHPc2pQUUV0GwLbEKPW2yS1JwvULKzC8HKvS8-FfI4LIxE7iCGXw66tHQ2CXcQy9I0-x4c2oiwGb2kHk3nCuX1ttR-YEHRIbFWZbvYfrObCEN-uG4PGCBpY6ri9QbtwnbIwTkjnJlu-bnapMIwpGVbSF1Td0j22WmiiRdB2JvcWi9-8kKP-iUlTCBaBbtf1i6W2R_o0344nOZ9"
+        ],
+        "__at__": 1786802039.041752,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "No Japan trip feels complete without finally trying Ichiran, and I totally get the hype now. We went later at night and there was still a bit of a line, but it moved pretty quickly so we decided it was the perfect time to give it a try.\nWhat makes it special isn’t just the ramen—it’s the whole exper",
+            "author": "Li Nh"
+          },
+          {
+            "rating": 5,
+            "text": "Waited half an hour for a table so we’re hoping for great food and can say did not disappoint. They have order screens ready before you queue so your order is ready pretty much straight after you sit down. They then hand you cards for you to circle loads of different options for your ramen. Weather ",
+            "author": "Hannah Rose"
+          },
+          {
+            "rating": 5,
+            "text": "The long queues at Ichiran in several cities have always deterred us, yet we were still keen to discover the hype surrounding this famed ramen spot.\n\nWe finally got our chance to dine at Ichiran Kyoto Kawaramachi when we decided on having an early dinner.\n\nDiners are seated at partitioned solo booth",
+            "author": "Amy"
+          },
+          {
+            "rating": 5,
+            "text": "ICHIRAN Kyoto Kawaramachi absolutely blew us away—this was our first time experiencing it, and it exceeded every expectation we had.\nFrom the start, the process is smooth and well thought out. The ordering system is simple but highly customizable, letting you tailor every aspect of your ramen—from b",
+            "author": "Joe Garcia"
+          },
+          {
+            "rating": 5,
+            "text": "Ichiran Ramen is one of Japan’s most popular ramen chains, with outlets all across the country. We visited the Kyoto branch, and it was our first meal in Japan — a great way to start the trip.\nBefore entering, you place your order at a self-ordering kiosk machine, which is quite fun and efficient. Y",
+            "author": "Sandeep B"
+          }
+        ]
+      },
+      "gion district|japan (tokyo & kyoto)": {
+        "place_id": "ChIJZ3vGwcMIAWARtO-YE6oEyw0",
+        "name": "Gion",
+        "address": "Gion, Higashiyama Ward, Kyoto, Japan",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Geisha district featuring high-end shops & restaurants, a Zen garden & women in colorful kimonos.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 35.003781599999996,
+        "lng": 135.777245,
+        "photo_refs": [
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydj-YsugiIojMGnCa8Xd6p6tSEjXqmlUIcSZx7_3fNtwb79mnOsKWI-UTyRFaMvj5aseroKi1TBD0B-l-e8465YgNXdf2ZyT-9nSWC6xW6QePxiFjDzH0PRH24EKkR7MsezgaYtM6BDvKys_RctZnKHavyB2y62NZcNs8Fx0uNdYlrOW8fPaAfjytrE1XsWk52jNdLGadj1n4Rvovb_OMwZnPs73lTbCNwGl8_FPgTBLnL35vC9ply3HWANyQcc7o7Yr_sxgWwSWt4Xx6Ms93w7-bUcIsJuBcCV5IksKxc5GU80iVQUCrlrpjy_FgtbZEnopSgOw22JA0_NQsThKK2h3GJcrlkIqGSsxVM5QjidP1hYoUvbdpUz5ASWWi5t7e1BLLf095S4DRaTibI-Wqhd_PxsYfPofmzt9530n2bYF-A",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydhC1MRG6CyvtC8h8CyCvXfBotKDBeOcXsAHXiVMPRh_WFOg8fkTjW5Mkxj97e3mTHBfoGfLv1oat1K2atvkT1DZboaO1jtVNnTeVzE9rd6XwNJGFebsvtvVcpZ1Xt4Lt67Doz_1L0JOLwq09sUP1oda1wUW1gXxcB8RmXDqDIywQpPcF6aPYf4PC89qF6kfcXhse0uE32_WjnWNWWjBGNBiRz30vs5-8Vslz7zwwL1d-pCGWs2GtOEP32iHH4xXbiCdGpJcdU53epRSrOm9MKCmnAnXRpbf24cdx70Gga0K_kFH4I31IQjZvj4zc1tOC7TsJL2K93OPJ-UWJxlNCCyd7MoULg5uJxklZ2N9nOmgEbrdNe_weWZQw7sht1KePzDChdl0qUYD9FfH0XLkz5K0yHTNnRYArqmRYP7jfU6i7w",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydhTZCOGYECXVo2eyoI5SoTgkPFvoM1wDM_lbmEDDfu2zwLi6CGLRNV6Rdt9WnfDVRtHOay-GclUU5C96PJyDp2imqcx3nxeK81oP2Rnnqmajq9VHH7sM2W4AjEz_4jZ2JNdBKmr38zzapLTixAlZZtaCDS9BaokUC7BXHrvfKS9WTEvUgwS-iVqPz5TyjcYhm-aiH0CFkjVqhBEzzWvAA97E5o8TbDNml5qJVdQO2MRP0dzQaRHX9OZ49FKENaI_0ImrhdLH7uczMUHjNuoO-gfF15AGwx8TSk4dvg71DO9FmrSM4NIVXu2XcYh9nAXvj_7doiMPnGEsKUf-IgYrTTM4GgsVCbeRSAoCpGcItWwOvbyUch2gflsLw5qhHnEmnnE3OX4xSuFjzyWBdQs41z5m-Src-95BWy-LllUEQTQV8zB",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydh7P1l3Qx8r_Cjl8VUafbRBrSK68z2a7uqftykyeO3Pzwe5mQccBFvZ2WxOH4qH1LiICi7gDOdBEDYT_K3IQLGfq2aQ12ebPYmhsT2sGHePol0LWDsAhyXEocBvv61C8guWBU-rnwNyer-zi-Ou49hvSKR9E2zru2y0FiWH4hXYwauTpP_qjsPFW6Fe6kBC9EiPbSHkQga4ZlQjH7j3DQpBmZTStA_fwkHsJCGALk_RmUckVi0-HHiGB-llLAZhRlg5dyRFUbeOzFrnPyP378ToapPK8_MISzNaCfFLNlk2tq41dD747YrB3eaD6AcN0xTnPrf8PuZaVorMl23lWtkRYg26oJ2QjGGkimcnmotH6JHWyyYSYOf7xOyC58C0rvUIuRBMKjXzC97mAPNkEO5_TeRlhbpgkMg4qGnUbHZCTIqd",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydjnI4UWt-pGwgZ8lof2CHDbzCRrkUC6aC2vdDObr9metgksMqE-EhdlqOK4A5xS2FBNyy3WJ3z4qP0R8sUd_Cg1dwnyL26oueyOAG9Hpvzwa2V3N7JL3qEN5pSUupGYyhsagU_pAzV-bo-MqM2COT_HfUs0iR_-y0Z-y_-ggwxYAWiBvT05YSmCT3Ol_jzKa7QXxrvJULHw9EUqcHhr08W2F0gFEXsKD-xEQKobNMU_1SYJbHxcekgMxx6PXig3pU553uXAXtPrCCRYbLrVGgbZj7D3X64fiE2rdhsJFWqdYcneuf8cDX5Gn-lFl_AOi9mwTr3T3E4lgX5SwJceiv4DpDQ3aB2STJbdLCmemohq2pSHOrNZJIQEnRE909iqVRvf5H7_N66f8aVfeYv3pjwAMrAuNL9teIPXNFHAMVvXnw",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydg8Nta9HFdttvh8AKO07VRejyEY_HDlxOuDFF7iye-3LrG1HHaqVE2gd7ebRXzIjKXWrNXZAoax0zxfk_hlUgRrZp5PLBYTQGq7LfRQGUtwLk-SsnbgcjJtzVDvLfsAu3vaZCn3iFu2FlwMlKdafaPVM7jb1bi7eieKx5UxWZoqTQiA5Q8-RYgP2UxEef7wAH0nRJc3YQWhm07cckRJLlhC6KyzFdFOpgdGF7CiMyUN3LwN33-H1coqIyvPZwu-vyjtuYWx8XGXWxBqqZS-9xPb7OvMFPlOfdUYwdgOoO66X7nbBCj1Cu87yrbhh8YjdcgyTWfUQeYmhhWmwmqbe7oRb4y1ap-ixOlDqBgY40DAiG3N9mak-wE3QAiNb-OzccR_S5jHa8dNVIdt-zLD95k-KQty7DhGlomhxCzCndQiQ4et",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydjqyn3sneAdRxiA26uG_SqxSkpE9sVxw2idDBPkQ8s_xutMwuGujFylPv9lr05ZgczbqkpIXESGp_E0wcpFcRFN0Fqil6jo9ze_UefAPYRWcYGCkt4trMysZ0cIvOCAK7kExDZJIhMDwAq2Q_ybLcnJw7VXh3mQESR6Rbg_nBOBB6eljNY2TjbU3Y2BYgA9Lx8fh8USWCUNlZSY1KzTXoAoWN-uBVGo1L1k3WcTBu7AXUVd4u9xeRjUcDR_0rkhvr4z8M7ySK8nKvAXMwLe-YkhfRLEYVCRkCmZqS3SZ8umlvObT2u5-I_ubpLM55s9StCdpb-AOhlxI0nuws0fle3i7CKfDwTa61EmqSTNrRpnBkdDof-3t1QoHYduTc5cokzyzHG-bCbhMDQzuf06vQVGZSlHxLpmzfADkJ_lNFiboZUY",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydg8WSOAq2EfiJp9vuExHOhjv06GWnxp6JA2kKs7nb7jMO3so9-dDTGFR-euE3ZrW8PS-pwXyfezHDIDd6y_Mo9mvXv8Ek-8vN3YeU3pKjJFvswsi6VQrF2absy6CBfRV4YV4MS6ARUWlFLdseSVRQ3ovkuPdw-WtBO3_0HkXOAqJN-asK_r-plrd-mlmSj9odDuqfPIzmKQFKzfcBJjkgpOWNK5IglRgHznVtjjK2571u8auXk2cmbNfgFxHCYIIj7xQ1-yCBk7E5VmJq5ftVbVjI_ZEVYQ51djE7MvcoTZvJgNiPmqDGn2DdzbZ5wly7Ljeruj6pxmpCXnFrOGkolub7_bxZ3OGHJQYPRIxDlNn792VhT0xRoVPfVi3peDJa0Fvx2RM9kV194InlCMwKxqrqVlBUFQ5_lzmwNTH8dGCGmk5k5ROhjmudiT4EP2",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydi4uvbXkXLDltz_GgyM82vXVpWFNbDSjgTDthlQEkXsrit90SEAcoPiwN2tTLhKpf5_-gFdYXHCCPLawBS6Ebyzvs-Ea0nYrKHHHkaImxpoCvr4b_np8ioG5gjBwn0PoYE1b9M4qrJ21gC-pMZP0QqL2t8ssivmK-qkLlrLFoZymL7OYA67nq-wTaX8v24V_aZzCiNbRx4zDVtZmVwfHW3wDO97POHlXEdcmrN2vge2nnPsZ3Y1-S1QlPrKgoJ1YHU5VBjuH-ZismvmBWCDC7n_jQUo-rbJ71uKLUAlxfAjdzcHHAQNiwSfoITr0umve_5diUA_uh8hKh6oeK7tADam4ZS2TygmS4vglwZoFGNrVh7T6e1b3v4o780I1ACEIqqcr5-Cdtiy_50_yRM_RtRUggYWKngjtKNqosIhQDS2nVMK",
+          "places/ChIJZ3vGwcMIAWARtO-YE6oEyw0/photos/AWCwydi4pv9njA3RTARPIusJqHRQWuP2ad7YLyq3Zb64ljCPbvY4DkWw7ExtOt5iYZN_tiEJj8ZFdi3upXB6vB1JrEP4IM0KTl3SPtDj8WTdlu5dCpgOjdG7o-CtcHXKW4Z-MA3n3DdSi1XRRWYf1uKfC60s1nI2QxxqHuGvE-xfAuVaNVWDlrKjJSnu5iRh_tUKtfI6CXjxUY1F_sL7baXVqEZsxpRmO0HPOnpIdKMNAzK1rMT_ZQTQAXj2IqoUmkMvUvhV8kcu9XrBkB-S4MH1cS7SOcJdseN1XbJBQrsWkTDRi-Mh0hueAbAP1c59_Ign5nfUhg2njY9L8MslMyukmbAnVujgZEN2nbDUINoAJAzaUWFmWsat-hPV8hzaDSONibRY6eMu9QY-RE7M4tvWVS_4rAvFPBH-TS3Datz6s3WHooty"
+        ],
+        "__at__": 1786802039.5348039,
+        "reviews": []
+      },
+      "fushimi inari taisha|japan (tokyo & kyoto)": {
+        "place_id": "ChIJIW0uPRUPAWAR6eI6dRzKGns",
+        "name": "Fushimi Inari Taisha",
+        "address": "68 Fukakusa Yabunouchichō, Fushimi Ward, Kyoto, 612-0882, Japan",
+        "rating": 4.6,
+        "review_count": 90496,
+        "price_level": null,
+        "website": "https://inari.jp/",
+        "editorial_summary": "Mountainside Shinto shrine dating from 711 A.D. featuring a path with hundreds of traditional gates.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 34.9676945,
+        "lng": 135.7791876,
+        "photo_refs": [
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydjbLwUm_3d-yUFk_pr_vDJp-nvURhZzgYQ7VZvKlI50IkPEqMhfZtDfU8suEV7OBsAKsUHcJ6n5wE0tfHFARspMmgn-FTfGPGseCScBVFXpFyPATsuXIKdoyhZvYxXPr_SiKyw98gd5js1Wwz-3D7Kn04qkRrQzyl5GqgRmJk5d0t2Pe-nx49Afi7yTsoWPHM4NRsz-uar9I94vQ36VTrWHmnNWh4tZnJRxdDkU4h4Ktkd4t0P8pIV7npATBYYgg9wiyNAk1JQZ_yber3i7XhSkLSRmBM-UqQC60BkpXkQcEnBNMzRZWCTW6_6l3u-5Wr62ZAYAAp1GhF_PrOawnkjVyD2j1CXvp7EqmvmW4YzIS9c020FsRr48lTzl5JCBk7okTEcWzL--BGpBZlklFZD-Q9ZdLLFzJfp712Wmdr3ALQ",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydgKnnZ2OFRzqGSXuFraI-yBDnj1qa12XNKPyH2HUMYIPnmJZPgG_1ecq26rG_BebARd174y8BclYK3i_v5whJB4aLwtv3BGnUvNLFgPNueEtsrqVWE6OQ9O7TAa4U2bVIp7sfNfu0REDjrI70aKPl4Wb5jxCfvvJqeFzVQSpRyI7Aym_xKifx_OC2eZzGOBc4kALIvGUQj0iYUsxgeCB1vO7HJ_j7kTRmepzT_FVCaqWCZtgnk1LNnMu9qxtEJyPS0Q9dSslmbl55A3NqpW8ltZHYsrGlDHH3rswwWBy3uviLiuicr-IYyIMzTzX6PZqLNgimCSufgAqQthGEcsamH4ToAlA93qvFcwv_21LlUrwsYwLcVzuH8A5sQiW8OrQYxQUQIzc1aDSW7edMCSKP0hz10Dvrtx12crMg-9eyua0hdEVgjuQ2QKLmqm6A",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydhbBE91VJ8cpiHqwnvLWT2oNGKGAjTtuREyUfzz5u67bKZuS9AwRgbN5BBmqmvoLig7kVPMuk_bN8GpK2H8YukoM2b04X4xx7qvvpryDYSYZ6UZOZsCQDN3Aecrsvopczd6oT2XqGPwkQLNwFB8Btz4wVaqpMij6Z4_FeW8p8oj5iBX2W-R9hlvOP6sC5NvBK7qX1a6m2tO7TA_6sEiyBMCK_45K_DRa-Ru6NnlpPqJJNttq2Kvlh49B6qVjavKJyJDhiJ0lFs4KFVukmEQ5Xv5rnRLVXQoUpzdk51P907_Myb5tFrLuw4_vYn-w9rdA9JbC_gEqUcHsfMcThNEB1QvwoHINAHzMoCFDwMGtBY6ocYIdkdysOnknEJs2nFr6K9znetQY4Sz_NmC7WzwXsWr-oyREhfhNSgHoC4cFX1fb3N1CnEBzhNu5-7RzQ",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydiUea0lYav304BFQuDV7oyAYKq0ZpEvrc1H90KZA-B1crg22g0XcMUgmwhw-aBU6jMnk7ztAlZ-ZjeUBU6A8WNZYzrsUv_vQFDdaGtlCCDaLwzbBQo6xp1vVpw1wlMKaIRxqXtuYr4McJVZ-F33yaz9CyRjKIWuqWrrUtc4rChCleZB6WNicYI2y2-MEIKG37XrGs8Hruw8NTm98nHxa7Ov2Z8q51X4hPsZ2xDwg0GRsdzxY5C-n_1kMX78cwcI-H7p4_jv9-UtLqtSYjAUxbxhBRYCM24nSoM3xzfJNUq4aUcb6OUXmMxFvDhG6rOL1BVx28hfsCf0oZ8kVRHcuNw9l8IOnJklzAeLRZIJmCo4_qnV2Po9Mhc4cBFfws8VzaT3nXqVeU-7gS532Svw3wWmIb78L3xMnF_u0IjOfhVjKlu1",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydj_bW2psjkgu2aDIkeqQ0SP2uVWqvUs0nOdGaPp4JoVYVYPi239uaF11SejQK3qJUJeDY8sN9kIPDu03D_RGkBa9YCO5X5XCMoEHurEbiYvVXFf4UzB7L_p0fWF3thSX3JuXiHtg-BLTbQyj2sPVq4VAZbXmJRkwfpWcVGnywLGV2OTnAfMcg_F4k2PfAcC5MMJ-BIVAjCRq3nXCwXFdgcOqwo6ZAZe_pWxuBiCwWNOOp68WONB_OxNvsaSBNdS3Bx7xNHbfqkqvEIt214y7wTttiquwuTl7y2f05fUfprCt_v9QGHirHtD2g0DQcr00WOiWCTxNeT4KeWOqCJSQ9hiVlqAVvGhN9HtJIsHKwmZKtF1BsGnwgtt5VlCRIUMU6VH-Or3JlXypGREXyUNoE-yBML570qv_Ma-FzKjwLSlWA",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydjNrQ7KcH5mUVqyWz6ojBcI6B_P2Rxhikx_ftwdMmu06aINn0vsT0PuD87MRv8F0bJeKQLOR7NAzoo2wwCjuIRmU8eihw68zvmuJHp7fhD9KeFqkbHNVFMyYuonhQyhKQP74LBb4l2jvY-crigh2z3dS5npiibU3_c6CeaSva3c2hiz_rMXSUsHNXbgcq5IEWJ52Mx-js7wNz2wN3B_rAd5w7oRhf0y40uuuCqEUxdwOzY0uYpfSrUJ9hpng7UvjGTm67WqAX92Ko3nBXXEMcnXZHyXKBu5qsriOrpxUvt4finHR7lIwGZ-mczIlBDIO5K8Agpyo76C16Pxiz1LRPjlNmONnu_Pp_TugFt8xxFK4sYLamovwXy7MMnRylhkVHViIHBpN7Us_O31YsBr11tCrVMU86aZ-B8MjKJrRU-udg",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydjstUIfMqvavHNNxlta8cekTuS9ygEEnqi7ol75lu35Rab3tXqaLVFNwd5-hbYCbjjc883nzWX7iPPXcIiBLllTVMwy4JMjy6YxYN_QX3-FielgG169ttLgA5iR1gkTBfvHwPhMMKm9I5yvAnlyrXB_3C6TnokB40JG56pkqi4Nk_JduGaY3EboKE8h26EpZfih1S6CIcJ_jdkGZADBTOH4aqZA24-tRmAfPnopCBCflE_mi0PN1zf6ZofRiexOykXe1jeMoaaD8M5U3Ko6HhmwyjnMv7NhCZSqt3Od9UVjM5ElCmdFzCe9TCHAG1D9EesaM6US6XBZMvvCiXwW7qy0YgfMGQUEocjFzGINKg_bJ0IBun-vUeak_zQbtspoOar-262bWKrmqduCUpeQA1Wzz8c8VdkYty58p3Rl-LhVn6eA",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydgtkwJI9jGklw0puevWA_wdeRGvhs1VK_8pTmnyIEESGqtIzb2d2VZdoBb1VHnkjoucG0gpl6rMZV1eB6FcU2X6itoJiDnFpYbYKraFPtmJ14z7Q9ZlBUfiUnamzdfVaX7zciMU3rJ04MUUY_hpbfEhdfxRZjmyyLIvYmKMKozqodFAx1jiJRKMJgLSn_RRfc-_9RzAbipt1ZsngrEsMO_ZUzyXEMwlUrhMhU3IjjGihVAsVByTeHNFKhIYhcsCvoJbfu2WSpUqTg7UiCFB_ogg6GMfnchGzs-rEQdRilML0YFF9YsPWGC8ff-fDRiYmdAvfbkAUXJW5OPwmnWZjNX3SAHokH201K5b83heBCEJ3oVfEtLNoaiffAsOp2pIXUS2DcFIasC3KZMZXJTYPck3PEO8LnHPKipC3PyXhDHZCQmL",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydjQIchWEoCb57hWcR1N4I_bo8tzp2836BC08RBqczdx-WECqm4gBbcLMziywxks0rxc-n_w0T4myDGmRDTvIOfAW4BIMl-UdfnC0MsLWa6R9xjSfKTPICpYw4PgXfEyRg-ywjDubUU2wgqKJz5gTr7NplgghZXIh_V-Hm949Jg8q6mGp3aj7s-yBIhHjxUwdevLt1f3yTOSCRJc_i4F-HWt6p0K4VBFNpDU-iV7LQec5-M3bADLF8r53Gg6a5lay23tk_fOjLH2P46YtB8SNUBFmRnnptGvu_GrltZuSts2fPXd18d6uXvWyS51C4nm_wI1G-pzDL3JW4Cg5sVD4Ql3hEwLOSHJCoBDC7Wah_7Ou3L4wQnryWt3neFEBsK8Bv5ET4Vurnxm0RWRvrKcYC0IbzyHR8CQOAJih5pMmoEXaRAp8QsU_4QNNot1BVff",
+          "places/ChIJIW0uPRUPAWAR6eI6dRzKGns/photos/AWCwydiSs8F3ziiHA8rUsKl4E9_iWuTpzG8R7J70IamXUIW61C1Vp4D8VB4e29oPNfnj259Ay9ts2gibPw2PmNjqnrYD-rnUOhyewNUqPfBLBhOP33le1_ZJ41Gdl973ELMKn_uoRwwJ5r6NewQOifBK3SK68Rpi1jUm_rK61Odxy6DNQr1KUKdRiyoHMGHkyy1iGldeippxNpNrgVS5zIFuawVBfSVGRkq9LrdfHuKqf1RcLdQtp7EwFjUyremqVyOABHh-oQmcHZQYDQP07iBD_9Rb_ZJKyDLPdII4yCi-ngkkbxUAOJyz9mnauROUh7Bw3MlPFdh8_mROBxgJur-AuCw1m-m9sicP2Whb6f2WeaUQJMv3-tsmGgOAJugXAM56GrJrajjiBnGieG5jDp1w_1iDdPRkGeTpuRQWCOvUL2l-Cw"
+        ],
+        "__at__": 1786802040.0408142,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "If you're planning to visit Fushimi Inari, do not show up at 11 AM — that's when the crowds turn this spiritual place into a tourist conveyor belt of selfie sticks and Instagram posing. You want to be there at 5 AM. Yes, 5 in the morning.\nI got lucky and arrived early. Here's the game-changer: inste",
+            "author": "Sebastijan Placento"
+          },
+          {
+            "rating": 5,
+            "text": "This was one of the places I was most looking forward to visiting in all of Japan. I had read quite a bit about it beforehand and knew that if I wanted to enjoy it properly, I needed to arrive early—very early.\n\nWe reached the start of the trail at 7:00 a.m., and even then there were already quite a",
+            "author": "Mario Martín"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited Fushimi Inari Taisha, and it was one of the highlights of my trip to Kyoto. We decided to go in the afternoon, and it turned out to be a great choice because there were fewer people than we expected. The atmosphere was much more peaceful, making it easier to enjoy the walk and tak",
+            "author": "Pimpo"
+          },
+          {
+            "rating": 5,
+            "text": "It is not a hike, it is a battle of perseverance and determination with yourself. Most people don’t get to the top of the mountain, but it is 100% worth it. You want pictures all by yourself, go to the top.\n\nBe prepared, especially in the summer. Wear sunscreen, mosquitoes repellent, and a lot of wa",
+            "author": "DAGG"
+          },
+          {
+            "rating": 4,
+            "text": "This is one of the most iconic and memorable places in Japan. The famous rows of red torii gates create a truly unique atmosphere that you won’t find anywhere else.\n\nWalking through the gates feels almost surreal — it’s peaceful, cultural, and very photogenic. The deeper you go, the quieter it gets,",
+            "author": "HendraTPR"
+          }
+        ]
+      },
+      "kiyomizu-dera|japan (tokyo & kyoto)": {
+        "place_id": "ChIJB_vchdMIAWARujTEUIZlr2I",
+        "name": "Kiyomizu-dera",
+        "address": "1-chōme-294 Kiyomizu, Higashiyama Ward, Kyoto, 605-0862, Japan",
+        "rating": 4.6,
+        "review_count": 71652,
+        "price_level": null,
+        "website": "https://www.kiyomizudera.or.jp/",
+        "editorial_summary": "Iconic Buddhist temple on Mount Otowa known for the scenic views afforded from its sizable veranda.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 6:00 PM",
+          "Tuesday: 6:00 AM – 6:00 PM",
+          "Wednesday: 6:00 AM – 6:00 PM",
+          "Thursday: 6:00 AM – 6:00 PM",
+          "Friday: 6:00 AM – 6:00 PM",
+          "Saturday: 6:00 AM – 6:00 PM",
+          "Sunday: 6:00 AM – 6:00 PM"
+        ],
+        "lat": 34.9946662,
+        "lng": 135.784661,
+        "photo_refs": [
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydhnfBX8cdoS72-82cNywj2g5L7bfbgkbqULq5MghFUpBZvA-qpi2KTW1S6PmbUxemYK4Ut5TPzguf1NBPItyxpxsuRLDmCgemJ77SE2NXExsv8vi4fE9E2_9F4lQ3m2GJys6uFUVpMsRZlhc5ZhEzGvKQqsGF4OAuwb8e4eYVRagVwKy8WIy2Rcbg8M_HHvhkm7-mf9_PWd7jiJfjZ9YTFyKD4dglnULQpJ5A5oTKKUvGPoH84872oBh58R-BKAJ2BWyvdpSGw7jJ5ipsvaVTM3CS1CeggOCSeHsoPhM2gOm6luAv9BqOUtYhdGut7AogF7yQ9hY7QpbVI1TWL8_GMNiKy3Yp0Y8Q83ru15D2RD-6g98exJZqMi_2rcv7o4ILxMypj7czBDuQtTOR6Y0h-SIesoxJIw0rf9xkRoNfaC9cVIcvVYwvde4DOwbQ",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydjccfSUyd9QPq06edb-ggce4V5l2SGdlSJ8xeh2C---ieDsmy7mZpf-jt4qBWI_N5QWd1RykkTAYAce-DZpgTF1_BfZMT9rBhtvrB9hRI4eZw0K6zirEOzoEt2YxuR3IIjsO8URylfxJ2uUgKnHJd_ODl7vCIpXq7HEH2vfdpZgXYHRitOapgbPZDHG2xOaKKGftPufRVogJcSnpDjfc1gWfkFKv7aor18gC3Z7RtAjx3D-kMZc37KCVTrWGQvjj1lR7iuaJk8WSCsDG5-FFJcvijmll3fgekSR4xQ-Vs9diH1BTdgfPXYt95nBGfqn9sPQxCW_98BH-diI-yZXuSQFjAs2TJLQ0toNoXcwdGUfaJRP8NHUrr2RA54Bc9Jfd9fLKJub72H5lXmlT7oFKJzgbvnLCP4kgXwbQqpZVk-55Q",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydhPViP9O8N3DxOgwCuzto3FI6Wmxld9HyAGi29mUZFSYBp9FhBnBxOR60JIyyFgTVrMcV-iqVco4RfrYPleBkrv37kKYXsk1FlvQ_0NLzs0SE6exDm8rJNwJgOmiUvQoKuZi1rz8iQnl5sgUXiTtHi1exxXXBr4ngCnawsCKgxUIzS9mDn3UXCP8ytxKaslGuYMGgHrvJbC6OaYJGmgA9gbo32xn7i29yS1YSLbMHL8bfFHT6_lsEy1rakMSc171PCezH390c0ZWjkHLaPmOrFymRsCGcErKKeFz1g98C9aDioWCYXAtOHhaUUSHc-6h4eseS4gTG4_t4Yds98Re7DDghgiH2zW9t19Ya0ujjRb8wnG2r0jGZsSW8IU4HksTBM2at9wyU1UZH3yrO00vBNgqjDRJ1OKAAGJIKXRKxiK8A",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydgNN-_WWGqaO_JeO4-kK72gs6GzmoA61K_w6-cot3B2VLCSFMCdYoZLRaYhj9jZS9mRStrAjKlD_goISR5yeUXT_kbqTDlgmsqlocZtBTjRpjNxJIq-ULToukYiq32nPj3W-y3fPJTo-5olCj-eXC2JioATi3G9SizhuwJwWx2q-wycAE0dwTsLN5wBRbJO0KEKOEr0dPrZXSBhCufm9459tdVY3Awo4zK01KQy1Jud5bCgUKGypVeETVBz1jkTogCQQERp5QbnJ8J1tONKNWiSldLIEhCEeOSZGGhXnHGRb1PHjPNJg8Ho9QY5gfzoykt1M7VtWKFZjvZ865HEUFYs03XcrOSetanfUmEOW4xoNvn3_1-sYlFczf0RVBNpB-CIzkNFBVBZRgtLccqA_40wRzvU5Tt38_MpwgloUoxIGhs",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydiPZHov1EVtYxgKvnzZ7ZXg-hpzG7VsHjr6l4d1sD1_RU6Cpk9lsdGz91cj4IuY31Ayul3BKUzqxN8b8cGGwWO85fsEuAsUlO8EVl4cn_Ymbb0CuXENi6nOIkK6J8cHCcxJ63wLhxJ8sTB5x_QKMiImZccXyp9ALnh6DP3IguVTfXEe4g2jkaKp9l56OWBY8YylfC74_4LstnU20LS8ZdJs9dhlzbfmHc8T0jLJPt5R-2-yf0_1m66EwupBH9ygBdSGa7SRE-r1PPzJCNwz4kesiH2RgxTKmuABtgnHu5cQwu_Ex3ChGxoTbAH68JTrhNzJWSUoHrfgss4hovRkhkKevlpkoTR-ov2UeaoCmyJjzQ2upF3jvIU_gVV9dl--qBdvT87rwBBfAl8z6aTo2L4lcrmS_yfzIcA9LHgvqOwGsKJc",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydhen8aGEabvCezGET2j1UT3i4ZufSgCuHX_wf2b7UEeNHAx05Wts1YfB3z_3N7M2ENUP0keV8IZs7ouO7BynXRJJAKpI9c-Ux_sQmruuKGgHmZP9_PASPPBktqv6rx-jhg78VOxg5jTa3d0uNvBPB73fILGTvVKNqQukLJavJoEshsO7X5_iId265eKiECvGL6P2o4Ftho2pAx37FOBZO6jytWNwYuRjIi6n2VQD4ZGOy3jAVjfEkCtXZPc0CruqCT4mHfRVKRJYxjdpi7TFaHsfVz_pxhExllmKEJdx1HZVP-LeLxLLHzSYG6_d8ljBK0ZX4Xhf3rmw8uAvIwh_28PkaHnDs1ZF7BtB6BRlnfpz2QBZvXvNHCvR0JT5UoKUSN5BclSnPDKEVeULOIHem1gR89mbCsMzWhvqRt4UDkUtuA",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydh6ddhiH4a8OueaEnyc2X44r4vuOxpAg5NaExdQa-QbdCg9V2MyMIdbZJP6hlmOghPYyFi7KWOE5LmSTmD_iSxxYHlWOhUj9MR6MFbCapq6dvSj8lyD3T0aJbVdxm25p6fbfHBszy9OHGrQYRCxRxKsxMrlOL6_zXnxJhJpkpiIVN3rbds3vUswJXLwm3I9aXDNAug7VFLYtJ3H9cZH4CaKKbXh8iT8bOyBI5L1gyOs5q_9KDIjXC5ZFCdYiTb0b5fGHJxo5eINK_LnJjUmI4i9Gk06reZWXsLVHpkTdQK8cHRSowqEnt34B-pUVQjgqQ1Elbvrl05MqEyz_zEEKeiHoFC7FMoSSZLC00A30j3X2MkY0umo9nsG9RSl4864o4BQpvzC-h0OQwdt-iHnp2KJJu57L-7VaRlcEDKiADuULv0Q",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydjJM2KHUmiHrAOAX0GXjmiteG0AyY5Dtby7VlTaWVHlKr1VldcerVJbPQvcvZ76WlnKWa7-2R-FhPgj_goGax-d6VT9jtmX6VJVtxM_y_UGwh0Oh1sKI-NKjqNt6aSzcqPhbhjr2ScmIaL2DTsO10H2Z7XASZlb6bopM69YZDs3kOQshqk178oMMUIvKQ0tvWcOdzKifhvRAso-Egj7dFYJU37nyktCloQbsPsvkQ2oV7zbSGleIT_umC2T48QnG15jlRBVSVLUCTL1PsYWcDd16wy4iAAT-rkj13HvjRFCy0pLWJxxLKBMtdrequrordJoB905LOVElWipjlUAbRkyj0GUtA3IModtW1vgo8fZ7fvAkCz0OEuapeHTnqJqw4Pi8Ba3zXvmVoWy4KYpyT2jKIv-rBnV4EJZ41ZtTqwLrQ",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydiThnfwQV8RhIXSBbqo1sntM_eMIKEJ8-JwKE4ca99yHWVGyUUOfMj-KQAvuWF0JhIruuptEHCrbYRbs7mcYBT6QFkB5wcEBlKdYUuuJ3kRgqkHVbhw0pnOitJAN4z1WcP2Yy-uduWkE21R_v0R_wJFrRhzTz-yppHMskaynNTZb4HmfD8sAz9bcRcvic1-cnVJNJpcw3PIXMHOT8PyZ-06QvbFCC3GJpBnWLuExBuZ2LvXH2Rl72Uh-m68ZrYY-tx7il_ORPgZs7nmlFE6xgF1grKlOVdfcfyGXsw2cwC_JUmcGubz5qJPWXllUVVO8Oh09U4zqCvon1ZhZbbAJ75gXnvyIB_pRpiQEYnBNV22iTea3K8kpgoVBgaAObdQsAsZyN6vbHru9C2X-4B6z_nNCluEG3almvxLgAuwrDAj8w",
+          "places/ChIJB_vchdMIAWARujTEUIZlr2I/photos/AWCwydhqNu_sFwvR49ZLAQPZcSRx3xrySorBja6KY04OoS-xvzwqnWiIVrXuFOAScJKgSWLIB90N3oIdOy5ZhEgdVEY2fLl6VTpLFadxq1dFAwpdMrW1qNQba2ZjGLt76RQwt4yEQ_JdFKrIS_6a2empr1zmLbgYJA3Q4CO0XtIfETXbJ3yBCgtfJvisJojQfbvR7eK5B5JCbiwFveO6_pPWULzFtLD-Puxvr0h8Vs-ADGp1a3uibTt8cPB823DuqOohn-c4JRn5MAmcMrZ66N-W41AihrOeOpzfZ0SdFQjLSnaqxXxxjdV_RyV6RvDILuaK9-7rhapIIjIF5NPK-bh4HTvcdJSuxgVj6I82IvgRdR--4U8BRh3zIbsR_dg5x8P92-lmObpNSDmmGmsrl4YRBNZeNlDIDJdc3FTRfwMcuC4EPA"
+        ],
+        "__at__": 1786802040.698011,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Kiyomizu-dera is one of the most visually striking temples in Kyoto, set against a mountain backdrop with dense tree coverage surrounding the hillside.\n\nThe elevated viewing area offers wide panoramic views across Kyoto and becomes especially impressive when seen through the surrounding trees.\n\nThe ",
+            "author": "noel medina"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Kiyomizu-dera was one of the most unforgettable experiences of my trip to Kyoto. The temple is absolutely breathtaking, blending history, culture, and natural beauty in a way that photos simply cannot capture. Standing on the famous wooden stage and looking out over the city and surrounding",
+            "author": "Petek S."
+          },
+          {
+            "rating": 5,
+            "text": "We arrived by bicycle as we were on a bike tour. I did notice not a lot of car parking available.\nWe arrived at around 7:30am and it was a great time to visit. There was already a number of visitors both locals and tourists but it still felt very relaxed. The architecture of the buildings both the s",
+            "author": "David N"
+          },
+          {
+            "rating": 5,
+            "text": "Kiyomizu-dera was honestly a pleasant surprise. I initially thought it would just be another temple where you'd take a few photos and leave, but the entire area turned out to be much more enjoyable than I expected.\nThere are plenty of kimono rental shops nearby, and walking up the streets in a kimon",
+            "author": "Sean Yam"
+          },
+          {
+            "rating": 5,
+            "text": "It's a must in Kyoto!, I went in winter and just for one day and this place was one of the first things to explore. It's such a gorgeous and traditional temple, with a extensive history and such particularities that makes it instantly recognizable.\nIt's best to go at morning or afternoon hours so yo",
+            "author": "Coffeelover20"
+          }
+        ]
+      },
+      "nishiki market|japan (tokyo & kyoto)": {
+        "place_id": "ChIJT8uMzZwIAWARnGzsARCjnrY",
+        "name": "Nishiki Market",
+        "address": "Higashiuoyacho, Nakagyo Ward, Kyoto, 604-8055, Japan",
+        "rating": 4.3,
+        "review_count": 53412,
+        "price_level": null,
+        "website": "https://www.kyoto-nishiki.or.jp/",
+        "editorial_summary": "400-year-old iconic market studded with stalls offering all manner of Japanese edibles.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 35.0050258,
+        "lng": 135.764723,
+        "photo_refs": [
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydgVMXmao2g-bIZTWw_MrnB_Hutb0Ad_MzYOKB_AUoWtx0PCa-tPf_dW7r0DlhJAv-4LElYfiTBXC6Qzap4W8LQ4UJE_3TkbUCxco1ojSCIPMbBaXfJiRr_WQnDOve4AFnM717asMCdtoaYf6ITm7p407UC3QLwhBwi2lKZK9fsRhuzBWfgGMd7OVrCRcxrYp-lVua0MjKHlhgeokeLYt3BtvFmnKNpf2k2YV6SFVhbuMw6iTIRokh897pGj3B5gN4iVC_g0J7nEol6WVIITVbqI_5v1fNRhSiFsGNELIVmzGZAy6tF2gcZjRMB_RN977Al0RgmhSHANvWZKcfbrpBJkBOGy0zkiDmZ4ji8NuCxwvpd5GXW9mG06UH07FRu0YuqkMQD9NQHp3AD-OIrNIBBDEA24Rn_18JwdMq5vXaCHByqi6fzOvjw0GCyT1Kf1",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydgfbemOeGxI6PgIzyklp2MNDtfmF9pzJdj60PoGUlLr-WTjUoeTPHGRo4r3eFjH9jrrh3lRfiAfyVV7d_9FDYihonfMvB7g7fKnPdetZK6F-Ly74xkkg7uFHqZHYmMe8OGcNqL806PyA93j85R2iu90ATsFaLbP1M5ncGecwTiVz7crcMsbZkYY60Vsh8XRZdqz2ikIfos8uH7PZXqj3OReO0f1uf5M3rhRH3FieIjW_gAhM0YQF1ygJn7a_VUj8x7QqEXByXY5r_vptSmB6_e9VxJVPZHc-9bCoSIV7JofU5ph1O0dkYAbHe5vueFJQPR8Bz8KmUa-0bLXpqRf5MJ0YOcpQt1_KWRdoT3GcJKsL_Ff-9Euj-NIZnvusLrZcIZFQ3WguiOSNi7NEioDJLS1lfLt0wrRHOkxENTi9iqQKRWe",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydgfs63rz3cWLr22eGasFj6bsOt4zfHC3uOcE3gyy05PAhv4tU9wvqrV5wlCWwTDDy_cSYU_qbLNtGprtnES-QPrn3Lm_LAPhj8JeT9HghaPJsTT0f_EFMQvqREBEcOiYQ7yo6wrqFzMgu71qtz8VRM5INFkfnTtk_agOiat58kTvToPQ5Wdfoa38M8_Ztlz7h6h45a7G4NFx-_c3Miu_u-tLs6_bfeajd3KxJ0T5Dto41i9gKgYjj9DgncP3g31IVtdoaJz4j5ZW0DteShGtObA4AgWkn6VGZiu59xpKm5U6IDj6z1FM2DlcN8nJulD1oY37fuFz8hgdGFG0hvomuidKpFXNAygNVp8vQPEjsHDLobrWK4kIu-4xWIIMSD3PI9dTIyrVMy_U133SKU3KfPqwsJxYMMOCkZpZc6JiIA62zNjwu_d_ab93AeO1D95",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydjbV_oGuiaXoNpppK6B_WxfmwktuPQdW_OgLXExstOlp51nj7tir6gsc0Beucj5BBmSXiZAtX_QovW0TSgKl3Ar6IdJYWdo0zTD-sj6SQCxYyZ5iqhb59xq8waTc1qDSmjyTJpBrvfDPqQilfMpNc0c7dBzOecyZhRSpyxlbaewsUzHAQHZl19XiMT3bGS8EBk2S1X_RaFrMWheXIbX5yM43eD49gSBozL054w3P9bW-SO-vS3EwqYynFbnDymi5BB2SHV5_Y5z6IKS_yXtWTH6YEuLAkEc5htKE-4CZaeLm8JDvCwFjhbwMojXn0wCMi6ZkvpoPag72UPVgbLd3fgwr9dz0nXl26YxSIAIDba1BrsABkYkrei-GKYxoAfjFLFKsjOo4IACDHEhMoWrtrMlbCGoCuVRxPTMkwN5rWILMEAR4jFUnesj-D12eafh",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydjWqJ-7NbZqBuu0t7-Qdx0hNZD5pPvIZ-Ynhu8SIRi8Xb4UjaEWUv4vEsaPBEqLXvHALmQCyYZ8vN6wK2RlyKfsf1yo_SzKqfr6V61U9XbbFx73CWmUHWPZtbyJhCkObqmeSXzWfEdXCQ-0CuD2Lm1hqGa37zwdiycpxhfcaWkmsBWGIQAKuiNberp9gYl4EYjWG-OZuccSBG8zBqcRa6-XBrETLant5pcxeHRsdre11hTaqnD_aUv--C1Eqp7Oc6iJRIeqoUu5P7m631ysyW3E-5rdgdYiD7aJ-CFgCSypc60WIk6JS0CweCWFBB4M_5WtepiRz2qtQlLtA-U_QxSojwzNhL9v976mddLyKghGt6li_RkODUcPLjC4LUY3425XK6zf7tyAcDykCEqqEp0diWT5GCHqb11q_42km3HSRQ",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydhpQMPHz_5o5B61XBZa9FmROHDN_KLJQ68RIuVoEFxhShlaCPJEqOtBNKERbn3BcrvvqSDX0lbdR1yq_u5FWY5f34j6qzxHcGpl0nrMRbAwNbtmaWEOjvftNfMHZonNrQo6Nm5poD_oCcNbmVGbUyXKzsqAlw0gOQL24faNasmq8_xfok5fbsGZOx5W2MBMAhnnsXPhoNTRKn0vSRj1QAvnG7mHKHHTblTjoHlY8kHvRR1AW7B4qWSIbQeyoUZ6L6KniUUrGS0BJwaQtYu9LegYmDfp_7ia73R1-7AplmjCkak_9T0FfygLT9mt5ftZ6F0W3K0n-4wWlCYfoaQRjPJBCY4oM6z15vXmv_R-8nwFu7MKKdAQRCBHcg1oINxy_JxWSVPq-AP3U4Bfja8aBcotS3zAK5xbYptjz-Q5PDU",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydinu_6DNmZscPp-vEcr0ov0mGn3OFyxsdbFb0NPfNQGUtVbIauiIMJ8VQna0cPsJbwPriSyTghtobMbz8fk_Bt04Q6tdSCR-x3x7zP_XKQzPYh9vEsiMP1yP9Wx7_nHe8azfcfnH7KlabQeJj1smND8LlCXgpMFXNKRdix4Yms7NCLwuo6CtsDDxTl0vFk_E6_u21wV9W0_3JN9YEi_KenU_5ck_lN-Y-tRXVcGe_sPZNrg70JZkgU8hTeTHxDTUtU7vipHfq4S9ughVZ4xdY4E7wukjLKargnu0lbCJef6yjm5L8_Mzr49WkSWxP0HJjTl2gCR7NPZlFB2zvHOShOIDiFO3ib-BFv1pOwHUs7uPvrLUhyXw3Q1f2arR73Srbe-E46NcyL7egMAzsyugLpBYPzC9g9CacUaWI0vjpa3NA",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydhq6fu4snaGjbNZuI7Orp57M2upsTyWuozky-bFOKuFfWf6Ji57eC7Y7lZZ9oHbv-qhSjF2Y4quFaZ3OftJP7XEwbACADIIKm3KNNfj_FjnDdvSzbQ-RpgecvxHvq-luasVtmVTUThZY0TBColgw8h08PbAQKLQOIgwnbRH6yOtLSiPD01Z-eKMe676xQmcBYt1a7B8puh7s5NHagQsJTXxadbEMEnW9ncXUGR9Y5nBNg3vaUURjht15CzdcfFpnQARHlLqD8jot2Rt1af-W7lXK7-eHUGcS07Z-1tpgK_sJ02sHQwZ4YE7jzD3RbL7tfqhPrtI3IBKuC59wsgmdEc9tMxdjxtRP4dliUrG0K_PSWn-yZ7V-Jvdeb1vPvPjRiBVU9yYt3SmwkgcJSTx-VuXNvmJ71nPKlD0EYmLgWef0A",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydgprW_po2PtKgPJhfjj_GIxAcBdj9j6qXg5n3GZLD5kWLJJyjIkH_tUlbkFhZp_drwuEraZnAg4i37sa_7mN8UDi8zUg993MT6CO3_Rtv2Mjpq8wFT8F59oK7KbFHPlDP4d8hsZFfnf0z8iTFs8hWpqoyGO4uf5NwlcwvzIaND_35pOn_aGo63bbKIzuo3Y97y_N2zCldRwzki4nQJ4JN5qtBVv8jizDdTHHxIFc5i-14SHVZbSbVNCtzlUuqGUaH_QZE4UULiafiZpslfu9SgOXeKubz9isMm4CDK7u2XXDY29oY6RPTH3rWsD0virizYQt0yfK_t0O5VqMFzhaNSaiyRwuLyWotXHMTBJr09HITuOIJIc_p-kLvM14Xk60R0L5E-s3VAcckbQVNatvSPQQzFLI14FS6jcB05RxyJ-IYsx",
+          "places/ChIJT8uMzZwIAWARnGzsARCjnrY/photos/AWCwydinGq0RCGQH00fO_g-4OvZ8X8Ht7e7jOmmsxX3ti03bAWUnWeSdZfR-u7q3_cm3VpkiafKl407fCMr9N4WjOQq9rDlY2EY6wpIOgMj1BSzvdd3Pw5OSZ3cfuG0swgTLSJ3EHP2QxkapuYki83XfOdiMwN0_e1wYjiXufnEzu9Sj2dpFqPNaXGwLqcA68lFtSf1UHDDvbS4K2azpZDma77sMJpuxsFTfDthPTE8EQwvhwhCYBhL7Yc08wEPxk320j8FCmLbXwd1ndyeRCmlOY0FyCMERynEFNJ87zZ0N3OUiRN7Q0ck6gTWl4d0dtmO8ogdP0HcwtaVrrQfDeBVy6omDDt_L-Qqsn1VYMW_7lqnhbizLlAsntfQ06zwm_PhGfzOfHx2d_km-TBMzBIrIJ9rtbq0Gde4Hml224bbn9iY"
+        ],
+        "__at__": 1786802041.285134,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I had an amazing time exploring Nishiki Market! The energy, the incredible variety of food, and the endless little shops made it one of my favorite places to wander around in Kyoto. Everywhere I looked, there was something new to try, and I loved being able to sample so many unique flavors and local",
+            "author": "Morgan T"
+          },
+          {
+            "rating": 4,
+            "text": "Burger Revolution Kyoto was honestly one of the biggest food surprises in Kyoto. You expect Kyoto to be about kaiseki, ramen or traditional Japanese cuisine — and then suddenly you find a tiny burger place serving some of the best wagyu burgers in Japan.\n\nThe restaurant itself is quite small and coz",
+            "author": "Michał Pszczoła"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting was an unforgettable experience and a must for anyone exploring Kyoto. The market offers an incredible variety of food stalls, with something for every taste—from fresh seafood to traditional Japanese snacks and sweets. Everything we tried was freshly prepared and full of flavor, though som",
+            "author": "Graciela Cornell"
+          },
+          {
+            "rating": 4,
+            "text": "Lots of local brands and authentic Japanese products here. Prices slightly marked up but overall acceptable and not a tourist trap. Not too sure about the fresh seafood as I try not to eat raw seafood when overseas, but there are quite a few oyster stalls in the market too.\n\nSome elderly stall owner",
+            "author": "MH Tham"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐☆\n\nNishiki Market is a popular tourist spot in Kyoto with many food stalls and souvenir shops. It’s nice to walk through and try some local snacks, but it can get very crowded. Worth visiting if you’re nearby, but not a must-see if you’re short on time.",
+            "author": "Hoa Pham"
+          }
+        ]
+      },
+      "ganko sushi kyoto|japan (tokyo & kyoto)": {
+        "place_id": "ChIJkwnlNZMIAWARn5Uz7eU9VJY",
+        "name": "Ganko Sanjo Honten",
+        "address": "Japan, 〒604-8004 Kyoto, Nakagyo Ward, Nakajimachō, １０１ 地階",
+        "rating": 3.8,
+        "review_count": 1356,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "https://www.hotpepper.jp/strJ000660912/",
+        "editorial_summary": "Expansive izakaya joint serving sushi, sashimi & udon noodles in a bright & airy dining room.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 11:30 AM – 10:00 PM",
+          "Tuesday: 11:30 AM – 10:00 PM",
+          "Wednesday: 11:30 AM – 10:00 PM",
+          "Thursday: 11:30 AM – 10:00 PM",
+          "Friday: 11:30 AM – 10:00 PM",
+          "Saturday: 11:30 AM – 10:00 PM",
+          "Sunday: 11:30 AM – 10:00 PM"
+        ],
+        "lat": 35.0090979,
+        "lng": 135.7708127,
+        "photo_refs": [
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydh5-iTP1oh5_hb_ircQ6H2X3ZvdTdV928EnOJ6uRuQ2txwc3stLpj5YSGQ27ZO9-Iu4pZTkKYkc9eXg6HXmRjUlpE3r_FxBSK5F3vjCX5CkntSHAaFW7eXYzx-Pply-ewMMMA4kLYS3jgy3Bou_q10z1Byn5G_Ulo8q26lHzSlStfKk6ocj1Kl8iDTfYPrWA5SzR4dsjpvr5FbrmN5TzBqW_X9uo6DbaHBDMYpgRUs0QtjugLqv_8I_Ro3ysMyhSc-qrlusxooorON8cLogsWnH6pVPIbFW2OyB_YJnml5N7rTvIs2xokQKcSTnoQ8-83lS0ti7LoSI-NnoodZysdAtsmD666VdfKyBAutdvGe9S2qmMhN2q6d1R43KMAxYSqgGkPx5pncGkvSQDQ-Ajat2PF_YiFrY5iwJDLbP-hxoAgQMJInVODIaVJvRXfhg",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydi8_cBkvdgZxllQ4yl4vFDvjYlX5MVA0ioWej5yHDYsOlIlmNtTYB4auorSoofg6JB7cfA1B5nc-oC-4b-CxFjiVYbDWLcFXcQsJBbrCZ88NWAP3ls23OVG4oAiLTUeYZkRJigQt3yz7VQVsNDExXDLm_L9-Bl4Sg1lz2XYMxJz4_avWfbO2TVJqyddE3shRJoQ0A8NV2QSab7S6_lyiU7vIRSggQzfUnd2DprOBkL97l-E0kJe2dqAqYM4P2JNWH90mLUTarAXqPBAPaiGM-Tvge4CaIEgNB8HCLlrA1rv1yKE5eY6AVLLMVfBnHIioUNMPK0_-ffz3-7-ECR7m6RYKoGI9Q-qGueiSJJ2CZiM0lVG019CvqMhdcOHYzhVTjQzNcDytptAF6ixGtOkoF_QYBuMtrqT_6FU1TClIfLCwz4YJaoqFU60lRXUx-OK",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydgWOitOYqLoTV0YHG1nV7Y4dNzfspmt6A6Sx_rmhfhKxDCn43iCtquC-vsNNJkv-p4XZ9FDyImYG3VdprNOEMghmO1hCOG5uRtPC2YGYb9I4zGWpUapGTcmHAocEZzXeJQb_Qw6biooryxqmbVhrByJcCyuunBcTW5R9nkt7VuD7G1Lsew-bIAIuEV4AgptrJBzRH8i8y5U4pPg3wtVJieHS7cWgk8-VlCa69BjAzxCzaik1xUil9THAnWjRnTvDdyOuKzy7B1goSDzt1lPUMnurxXLWHUice8O5VkF3G0bB1PWscUmxL1gWKZD_0V9h9pv7uwvCFBRte7g7JP-OrpSc5EvHg8ObXqdOPcovxxjnbDN98RIavJyn0wkRV5kgOwkkWSm5fRYH-MIHOPlmNi0qaAXiK21XykIAujPNKdGmfEc",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydinzSoDIIgq5RCnkFBWSfcbmJdGMh5s3zDYZQ7UgquTfjHOqP9ROy7fy3jnMDMnC_bn10dBj_Wd4m0kkzmCHA7WDUi5dMm-sEioZMjWaC8UBsTgltqoCY5NYskMykQ75AwwyLNVEO8A6wZa-XEYSDO19VZK8CEmusfqDfEqJGLGQ7wd80r1Cq7VRWxaWYy1PTzMmwwjZbknAwzRIacCg22Xuj8yP9KPPQIddF6b9Y-L5C0cx8fO19zQSlEdhkUrcuzrnkvQKWquSXjE_n7SUHaxx2I9oRmmx5iychzoqhWWDUKcJMuqGLUYYExqbaQ38x_reLogvMBzCuKkRKdieK6_lLSpCJqkTCcEj3VmYLFZLYNUbiYe0FIrvmUdgW2_NUQUrlG-BtfMnH-8zl3WKTmRjZrLxK5UU48DR7cl_Emn_XeVqml4qw4SpfDZbJk3",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydhoIRhfRE7ZswThZ_DFv05nQCtYJ3m5K2KWcsE7cGXvbb7TdDgYUS_dfoH6DhHe9ZzjXEk-XMdkZzGXbFS3s1rxtUr4LpjBXLXxAklFbOHeg75NjbVrRIoxweqKuXvuzm1egAuFmSQ24tL4_1ehbY27oc0YKbeeqnu2Z56qu8Tqw4pgFmf54LJcu-5m2dsy8rt30Ciy7cHdkAaeN4L-W7KOQNJkHJYfIC15pYw8Su8ut4-LVx-nsw1_VTWowWaopDZZCKAo-zcXKnHOBOZ4QZKP7k1KLQOiGVon7oO-sEKiletMrLJtgnwtFw5x7f86eK5FEleu9OaSBX4ptjRzhrS8PCqPgcLX89R2fqQ7a0D5aeVkhY1OaXWDxaZeRz7NP01Ps1pdWr9h-QuHdcVYTVL1-gK4xfpmm5N257HJuxSDKfB9SK2QtCzEjeseQ8Aq",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydjzw2Ft3noBHFR5nqsxwDSU1nxRoAp6IoNj7RpXLI_9_Cci_yEuDMCklSOZ7DTCAmYiw76OBw20GeptZ8d2RJTUGCgJkN6PLbp_zV0hcVh4AmfYGlEh8x7eIAi_TCvEG3-gpD2C1F_SaUVusIC_XfLb2vFxFNklvLo_j0xgyZEr0p5E7GS0gVq0AG2tZjUcStU7LVVDePVOi5bbLnCRJZrQg_vL58rmq97GZaXsRgHol_pGV6SHw4KfAYFkr2r15MEcEBSqAY6WRgzp8eFtXkX93B47xnlYLpzADx6igv8EzEOfZZLpeKpmhwMhcPYK5rf7KQiuHv5Ko-ouhyb8whimKLMN4Mvx61QfFFxeQl3b8zcLc03VBLkhG8L7zlkP4BS1ursmH182FsxqX8JBoqXyBh237Xk0GVlIM1KvASC6CzOe9cYeI2mmfjaOUJno",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydjBcjuZG4C2FchtreHwlJOEBcgR-9RbSsF2WuFmVvOsSkxM-8xEJ28uFgOWOg4AV4KrAMH8214nVvDG-bsnBjHgyVBF9IobIIJUA_ciPRqS7MQ9TGjfDD74l2kocLaip2piiUF5eUAJ0t2IYC720PB3TwJ4VpQ4gqLgnQNsjBqxfngFi3qLLOQRUDggw2h1T2R-g7iB8FMWDsMC6RmEZWKgf-YkbJB8YHdA-a9Laub3_rkhEjU69O9EjiwhpJaXpOf1AkBUne-06hxg_PLbemCuMPuKLEAeoEh0PMdihhWDzkIZsQYRDcvNUx5eZCT6GLK5Xt6_RtwWoikOiccawcRY5-Bx2ADnZ02iVZnEWUiLlb4QHtsUONMqLTp_KlrKepEfPKEIs8KVgWFxuXcOl4aKkJe3A-MxJ6FD0GfmyxkPO5G_-sEZn4kcH77NhofG",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydj9VzCBNqPEr3x1oFoc5MVGjqTewEh_4sbvQcPaV1x0w-KILQYDTZmAP6knFR_EWpVQ-RQcgaI1dfj5uSvuhP8WfvqJRrxvgn32er0QHOCaGkH2or6kjrNOvKNK6ysBmX8w5-1d6JOmRdILedBvAPb6rgmoUTuMQ3UuL1kNJuUR326TUSkkhnm--gKYsN9seD3BAOoKIE8Jg55sd9UeWiYiUhkJl9FAgy7-DgaI3of0r0mquuvO40I6jl9d0kKMtfe9e0f-zeq4eutEr_7DnuH-Upzb8vnYEt8kl3PktGBXDBhf83siYBKAyNJKbDlv45UhG3FRjPf0RC_4RIayZjipehZQniqXa3nQT9VcGYodBll3eoRGpOiv8t7puDCy50Bz9GCJxipHC7r6tiCkGq_wfHEFJGmXW-4M4IaLs13ftTJxHIJTxsr-ehYG5aQv",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydiklKw8PpGi0Z2tMITUbRpvA5AfYNZxcFE4oqJIwOGeBXAFMmIStca0Gf0xVitc9So2wzUvDA-sU54mjHpw5SZo9UXN-adiKbLtEwZVFCix0poIXRnz6rN2jt4-0iM2kCHe7pQ-fmsGGcn-fOyezRz4gXusdqo2AgWT83j2_j_ODwCKBhGacO_MRlZ-ZBsqLKnmu5YEgJmjpy2w_Fs_NkXI186wFWDI4QkGu-baH2aFq8EvfoveN7xcPgqo7X8da5qDYnM2OHBSWIgxN69ZXYca23Q0ZwTj5i_BSGblg1N5lBXgtn1DUhq4SsdE2y0SiOJAK370emWKntTswND57cx6EMSLk5ugeCzrI5S_xyqjeImLN7RqFseZ_Zl3ngTxymCy7BBIE3aOUVY_g2paMWDFbi8EklgVHcL4fNFMZ2AnR4XUk3A8ROBMgyIspdqN",
+          "places/ChIJkwnlNZMIAWARn5Uz7eU9VJY/photos/AWCwydiG6O_6YT3OpLLmlfFugyQp9ZZa0Bo1WSoKcpTp-cV6ywR7JaH6rjol6F2YqeU0gX3O4ns47fz1H6v5qfk5o0iQfn3C2IySpZ1ZE8HDFmtoVtHtaKJJU_8kQtuaroRqWoSYO95Bhi0i0M5OCp4ZAsLarKW5bJiuM_aZiDGOCwv4Mo5wFioHFCSz-aeCbEpA4n8i2G0iGtySvDR6eVJGVxbZCSQRJG5ZPD3ImurHMx2-qNENyOOyucYRAQfjFq0F3h6BNlqc5lFmqKzfPJ0hQZM4NDUhpOTzDQvgUky7JKFyv_uuKArkEhyZkotaozR6owWSZ_yhevTgfITMAdmoTYgp5d7RtTjl1T0pmyVFzVlrTTeT6mlltzW8pyOE1w_NL1rZpatEgtM_-_7vRRefKQtiuRA-5pq7lDnOUOYvgm6ZsfeHQy9DKjqWF-LqVg"
+        ],
+        "__at__": 1786802042.3956978,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "The food were good, the service is very good. You don't realize it's tax-exclusive price until you go to pay the bill. And then you find out there is 330JPY alcohol fee?!?",
+            "author": "X.B Lin"
+          },
+          {
+            "rating": 4,
+            "text": "After arriving in Kyoto, went to see the Sanjō Ōhashi Bridge. Had late lunch at Ganko Sanjō Honten that was randomly chosen on the way back to the hotel. It is an izakaya serving sushi, sashimi & udon noodles. Had tempura bowl and sushi set. The food is delicious and prices are reasonable. Ordering ",
+            "author": "Le Rock Steady"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent service by the staffs here, super friendly, ordering done through a tablet with multiple languages including English and Chinese. Having little bit knowledge of Japanese does make the experience much more enjoyable. Food are high quality and very tasty. Best for traditional Japanese food. ",
+            "author": "Chen Pheng Lim"
+          },
+          {
+            "rating": 3,
+            "text": "No English at all, it’s unfortunate to see that super tourism places in heart of Kyoto speak 0 English and they don’t have any device to help translate Japanese to English\nI had no way to let them know I’m allergic to shrimp so pls be careful , our food tasted good, the waitress are not super helpfu",
+            "author": "Atlac Mdzh"
+          },
+          {
+            "rating": 1,
+            "text": "I seldom leave reviews so quickly, good or bad, but I would give this place ZERO star if I could. My sister in-law made the reservation for us because we wanted to have some Japanese dine-in experience and this place has English menu on the ordering iPad. Food was mediocre but the service was good U",
+            "author": "Emmy Deng"
+          }
+        ]
+      },
+      "arashiyama bamboo grove|japan (tokyo & kyoto)": {
+        "place_id": "ChIJrYtcv-urAWAR3XzWvXv8n_s",
+        "name": "Arashiyama Bamboo Forest",
+        "address": "Sagaogurayama Tabuchiyamacho, Ukyo Ward, Kyoto, 616-8394, Japan",
+        "rating": 4.4,
+        "review_count": 24310,
+        "price_level": null,
+        "website": "https://ja.kyoto.travel/tourism/single01.php?category_id=8&tourism_id=2683",
+        "editorial_summary": "A popular sightseeing path runs uphill through this forest of towering bamboo stalks.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 35.0168187,
+        "lng": 135.67130129999998,
+        "photo_refs": [
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydiVyfuGe6DD5UgG0CDyogzJQatEWGbkqQHVdlp8LmJz6pjw-hS0CSbe1SGJGhZ4pOtxuR2nYA9HxwWYlrB0iznAFlpmlcgBWp63mCAXzBIxpVzOMHcav3yDvZC933-Q8csez4mfKUMxmv702ZmYjVPvc3kzQZPRr71qkmqazCpxTqoi80bzsshnAsV2zVsfCc_4muNvIgF80WYF2J3q4R69Nm7QxCWjt3CmDG84fnu-zfdy9XgvRM3qt3p4q4r3Po_s2Pf2cba4zU7NoCozBaUXcf6VDgZ8uA6jIk3NOMXbm5EB6JHR2eR_K14Wysmu8oKKIIK7iFzgN2qKA_4pM37cpKwJc0VOt6x1-4GJjehCVUu7tuboVtrQxtr2NLEWLSq8Bl4g0ZQiIfyy4ABiaP2bGaXaVBoFZ_JW-olTWkDzrNGX",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydi2RJCHPxw8YLtT6yqhfAynYIHx2irj-ZjpRrkNtEq4ybr97tMfX40HHnBu-ga0z-pDCDxGICfBSHyA8RE-v6D4YAbUHM_emNEkrKAxX23uLWajSp63c3vZrMsg52aB5C1Fc7RHnY1WaBLRoAl-P-qNG-v3KImDTF2OQXyZyhMhpMlhtONWVbJnq5Ui0AxTbV958Riky7JJqtZ68sQEEp56iuNVzZWPgIulnHDX1-2L0JLbZf33S9uMo-VRImzVdf3uSAm7UUaXLGP3cjzQYAtax6_8udEzEKhnyhVRaVDhijbPvYJW5u-R1tkSvHncfbn1AG2DV4j8rxozicwOtvkOb8dXSxDkgT8GmvcHKv-vyQ7toK_Rj9kX4VWPxUm0s6a6OCfXQLJ6pLQ5B1xpdqzAj9UzL_1mqX__7vjGha17J0ldgEbUTMEMRyJB413p",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydhyfax0ALhlh8V5hFJ1M6oVNmwAvZwgFwT6nxQTIxCeXz4QTGFPDthWYkn-pClOftCZrt6-uoferaZpzIhuXLHbBkfIkXpAokrdhLCeyzT6KhHZZV4KP1XZdxwB0RPaARaAA202q-xVxx7FGqtKYrBmZBYFmnJFJ4m3NHBzOp6g0B_MYqWCOwKC0LtEaLL1mjO6D-g0JA43iWgkjFw1ia5xr1kKIlogHA30BBKMYQpOvYU5h3WdhW2hPPN_mkUGSVtLAQgsNAk9SVS0jNRtHNEKOijxpyra975Dm8V8FTrBBQsD1Qu6tC9BHEu1ks8cG4MrUVl8LsVkWTSEBDXd5db4eMsIO2dzkR2690_8pUqEbKCowR3KwHec7hXCUFOCGRasXbzhImYSkluaF2AD3ac_5Ns58dUM4lkkDzNDLRvQpZRq",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydhr2ZbAdOxQVAFADm-edOAA5WmirMctssjV31vmhCxX-2OFyLNoxQMiCkAVHqrb9MsfhVXkvrGNo6gjD57ID0NUdyQZLDXy_U_3BVDSGUMsksB499AtY7gw1_V8aejWToVzAfu23VQF6Fref-qstnbSMLAylk5EsGGEZNT2UZ9iYNGR2gROvFRX_oNSyOwsymBt82z8n4zI7z1BV0gIQRCXVoNVgSXI5_MKm4G_k3-CVEsRit9rSxYNCzo31BndhijpK2mASvU8qItiMFUssJb7I-zCoMNgW74iVHkpEVg62uqVv3pzexDCGy_56okX6fWQB9MgpBQuKang-o_SNqxocHgRQmOcb1kVWtjojAA25ay_jZKDV8ppEFC7U-mbjhJWMv7DGBsnxV0m82o4fzC50ek5jcqrGQvi-5NqEwOmew",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydioEIS-xR2CcU9lEL9y9pSrW1Q55kG_OzperqDyWeB1R4cuADdRTNdO2QOQHlq7EZMGu5DRbcm2SzbumLUqDrafjzOYkMgcuxoUD6mpzmXEjnQwTl6OB1lkpm0_ns1bdGPtUmExqfR-qn8yiZ5CWbKZxK0DVtEa_z8__ZMC-c2ibrTEbtITOX4DfD4NfnQtiiSnyCCa6xs3S7jmV2e8McrsU60rneCC52GWEPBMVWRuwrHuDED7LtzAKw0HDfDxyZqrZfGGlfrMu9Qefm7PKBHGmKtr7HYT1ziWfCs7G6EVUEnSak-qBLow6H2uuVhdJFslrehf5tR3_gQTu0TLNTv8QDX7wbwghQIeqa4TyrLEp1Bkuw4PRVy1imxLeO5FbbNs4MbP12Jqf6tlB-E57r5z_np5hfpdMrdExtyg_Te4BFM2PxjMQpuoBVkEme47",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydjLfzjW7Dmn84boIObTtpUxVQBG1oHocuO4BMbfLUOwwVxckhX6EhV7_pa3vNKY651cDZRPshHdcud4boSNmRiT7Oi9U2Zw04yWheu2dvTVzQcgUqm5uHCNrkimkaVOlBmquUg1lHOCZQClOxAZzQ7vvCJRulne97HdTNXCCyMo0HiaygnhM-gi1XKavlBc06Q2u6H_QsswPD2fFN6lkVVOB9zLYaeNjhdPNbwyq7vaFcrEtUEC4Sr9oE4Bxe6qKSWL5ELMhDXSPwFxPl6BAzkSKe3WjJMXDkt-H9cqrLRXBp6pHEcfaZGrSSBwPjRm6pXopERO4YOBWuaQio-xwogIsNKbO6QqQ_DdbSS7_Sqi8Hzev14PNQeRE3VW8-efFj-tSOpeEL_Gd9HA0f8RsUXeUoTkD3xi4ff-tI0hiBEbXGsHzrHJ4307vy3mRxtJ",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydhv5jzisXIcauz9ZXv_zgONclbtibwLqNaaORrIuTgBQlNfgse1TsSEbD-ri3Vb2DhYgjJD7LiOvP4wVixjUM3FvQSILnyE5RBCfxOsHAxLbNUVRmr1Z6SIak1wJnC4Yyk-LP742pOVWktz-yG2n57diWBwimrF5E5EOooA60ykkB_lbYHqwyR60dEkkm4dnk-uAOa6wisljG_s0bcWFBG5GSO4dVl4hW8nv3Ay4uMtmQYxO3Q3PLGuTbS9vgqYXQ3puZAfM4-Y9cYmoMfQiewHrpQ_Ha9mGTRLANG3IczAnp8wV7CIWEL_XT1QK9jZEv-hfVbhIpekvCrAsCdvUk8IMa2lhAp3Vz8EArn2TNUlMe0PoaarjYzpH9tCNKnEIaUj-gFgPVydtupoWshNKLSgpQKbQLUwbQmtdgP0gqrtQw",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydgRLfzUOuzNXZYYpEppNNqPeJsxyJzYBXMH6K56KhJtfA8G_x_iu6tDE88m1OUUZauTD7sqMPsizjTr69DKTwZRn7o1r-3FtmEn_WUu-upvPxK820M8LdHl9fN1pI6KboU8HczktdBD-_zeXH7u0pT_GHUje8d18A_r-suvI0zFG2NRGDXknbeRtt009E69o15wP2b9kpJNiVOAT51tQ4uN6WJaDmthRUjVFxuxhhS3cj9c7AgsxIEx62q7xR8XuAaLynLyh5jHkTROS_Id9RmH6CbDnpCGKnDtaf38KYrEJqcTV4Szz3CaLLDDp3QTD2lC0rGqf95l561IZ-QIAGbzSzCjjFRAUvk9ghidgweQXcaqu8SCGzpzloX9EaVt_IPFhQMjSBQBwomxyhVaqddmDcfTH7pqtQRqXzok3luIrQ",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydiCvJbeM_aVz6e2JD4MHuaW9ccpJqcIiMm8rp42a4nu1oTqOmlTwW9emtjjstr04JzQSeQFHgZSOp_hYY1ywWUXwJDb_rUosOiw6McheWax7Z7e5ZeGVctPdS2c7o7fRezpcXwbWah68DzHdFBf9zeyE761ZktUy5As6PYbDXkkBWnaRCOCSayUJPTcBFcVaMqWNl_PANdAW0BPYIldzx7qHwCVwh71gxYMf2h0eEMeCqU1z90YoeZWroM6BUtL1fJbME6ScQCTt64GjGyaHnjtp-w7XAxfOeYNcMr4XA7_l1wjASKbASSO4Lw1xNqkiIFqCgq5FqgLydhpnk5X5OazAjtbQhrwVT3xDTJpzfQUDLCNqRVkTmBVYNVTHPDoEumde2SbQfwoBTVCK1GHrKAJutJFs-KSEERqta_LXEmQYvd64XSOdtqG6YVKNLhb",
+          "places/ChIJrYtcv-urAWAR3XzWvXv8n_s/photos/AWCwydgO-1Ac61O6-OsgkIJ7zOELJ2z1gtYJBHbjXMuNMX4-BcVc-GjwEqtI0KcWYCUFDHplTd3WzKafAvMWWZ3vwgfUYTEz3PRmpEZpv3KoMZVqQTRg_eW5ktv5wKv8m76055ZWYCUsYVXUdSeGhp6qJfLw-sWmmQhzASVo9ezmubRStWf8efeK9-WsuSKMGd2A8dS0OvLfkSk8gKyYpiPCDTr-SN5XnrGLOf_R1IVKYsli0uJhhpnQOItDllGyK9yMm_RgH-1IQTUjLlGlzduFLy_KbCy8nhw2MzefRwGgkaFoG81TzZhHGoWt7KEID1NS6JrCvjkHHDNXDFo_-WRVTbfGU4RVKPMaUt8xTQzPHGX-E1jJb63HzQOA4BfOfmMqc40q5ojB2FgDNWzIOFlI4HqXnUScv-MKzeXqLMaSv_d8PIR1zfCSNQ_BhBz5LGHg"
+        ],
+        "__at__": 1786802042.8721411,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Stepping into Arashimaya's bamboo forest feels like entering another world. The moment you pass through the entrance, the air turns noticeably cooler — a refreshing escape from Kyoto's summer heat, as the dense canopy acts like a natural air conditioner. Towering stalks sway gently, creaking and cla",
+            "author": "Peter"
+          },
+          {
+            "rating": 5,
+            "text": "The Arashiyama Bamboo Forest - beautiful and serene. Walking through the towering bamboo stalks feels almost surreal—like stepping into another world. Even though it can get crowded, the atmosphere still feels peaceful, especially if you visit early in the morning.\nThe path is easy to walk, and ever",
+            "author": "Andrew T"
+          },
+          {
+            "rating": 3,
+            "text": "Arashiyama Bamboo Grove is visually striking, but it works best if you arrive early and manage expectations. The main path can become extremely crowded quickly, so finding a quieter corner and being patient while taking photos makes a big difference.\n\nWhile the bamboo itself is impressive, the exper",
+            "author": "noel medina"
+          },
+          {
+            "rating": 5,
+            "text": "Arashiyama Bamboo Forest is one of those Kyoto spots that really does feel magical in person. Walking between the towering bamboo stalks is peaceful and almost otherworldly, and the quiet side paths make it even better if you arrive early before the crowds build up. I also loved how the area around ",
+            "author": "Yami An"
+          },
+          {
+            "rating": 5,
+            "text": "The Arashiyama Bamboo Grove is undeniably beautiful and one of the most iconic sights in Kyoto. Walking through the towering bamboo stalks feels peaceful and almost otherworldly, especially when you find quieter moments where the wind and light create a truly magical atmosphere.\n\nThat said, it can g",
+            "author": "Petek S."
+          }
+        ]
+      },
+      "tenryu-ji temple|japan (tokyo & kyoto)": {
+        "place_id": "ChIJk54PuAGqAWARwEgz_9o-nM0",
+        "name": "Tenryu-ji",
+        "address": "Japan, 〒616-8385 京都府京都市右京区嵯峨天龍寺芒ノ馬場町６８",
+        "rating": 4.5,
+        "review_count": 16914,
+        "price_level": null,
+        "website": "https://www.tenryuji.com/",
+        "editorial_summary": "This venerable Zen temple at the foot of mountains features teahouses & serene, expansive gardens.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:30 AM – 5:00 PM",
+          "Tuesday: 8:30 AM – 5:00 PM",
+          "Wednesday: 8:30 AM – 5:00 PM",
+          "Thursday: 8:30 AM – 5:00 PM",
+          "Friday: 8:30 AM – 5:00 PM",
+          "Saturday: 8:30 AM – 5:00 PM",
+          "Sunday: 8:30 AM – 5:00 PM"
+        ],
+        "lat": 35.0158379,
+        "lng": 135.6737654,
+        "photo_refs": [
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydi-N2KCvs8_Nj3dHAtZWlUT_4TDbh6WY6Iw8ebODVQM5kOQFQZXqW59Jn03OQOv6iPCdAfsz47294moRTs9V25IwvBwR90w6B4XOieOjmml2COin_TKCmLRGrZfOGv8u9rgPKWbG7XBK5ZnEg--SuHPY-xGbqonDTFnqAEIWD9Sbs0OjWMuvjHqb6nc37noi-1O8epnRSZZSDAnBZfa5iSRbkECmSQoJZ-G9ekGx0nwyA1n4pcKLqGxyXD4MMjY0YaOE9-orMqC6_BB5GbZiwEpKF_k68RMjRQvzduaz5wiuyIKNOgcogL0y6DZ4WhLZ80ZCbaxyMps_5H0u1vOp8CWG8qc5Pvys_7PYKF-SSfJk9h8UsrVpw3_By9M1x0ALP0yig5gwUqERee62CqzUJ4lpP6LAkZM_qypxg4h7ehoS07C_lMVfIT0b-fnSg",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydjMH9ADTq327PzpIawBxLiVVFaS_j3UEHxjWoiO5GefxZ71O1h0nOpLUpET8_NcH9DXRXX-EQNZOi6-IPmauxrLAG9s3FxtQU_ACXZwzYdGHTr0kzSlTuljZIVz98Gu7Ihyrj6roS7Vq9ZaOrBIIkK2ZSguBeIhDX4flbmTBPnxXIFyCKJmpHjAwk9Evt94qk4wVtW8QpiHPFa8t1C5qZBdyCCsgmYfhIFIAeNz2L9Oku8McCmm6O_Leol2wyDCbzgvk4-H9yiLNStOnKawiYuTjMtBzOiKX1gAiC4Cp0hbuBt_9jHbnufDmlgTmZU1YuiOX5EKKcHAz9Qi7-YuDMSRpOs_FDKykukjb-1aRuk6S46XDoNDGQPEZpQNk3KRdpJvB5GnHZlrOTgeyShHAIa5PaB1FQmVngrhez4m22FtUw",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydiCKlnIfcY_y8fyFdTYhIxUpoGr_ubPTiM4U5hnLuIijZz_XdMUjITqs8e9jH2hAWxCxylHvwJf3MQBI8CNDDzu_0rNZeJQeH7KCtOMGesxCJW4CIg4T_aXTk1X4WtJBV8IcHdHCNn2c3GySxgbCoV-uL4YPNZOGfsKTJOhYJOSim8GqV-b7JV9ku8FnjSJ0aq1GWYRFuovkK-V7Y8PJ0VEq09n-WjEfpVKi2huNGxs--sHJKKH7TjhboVCHgtYKrtcnb2zqXgQQCOyIMfuJCG4i_oPDSlTxIFyR_Lsb5HMWbcBLW4UiH6UrSUBuwaUdkfxkj2KxyigjUbNdiRHojhVSiDvXMZ2GivNVJz9CeNb-sATvqzpnoSGR75ZgI0tYj9JXiWSqSsgrDN0007vGMRRVkd-oUBLs8uoCgMTE1BUMT1X6nu9l5vT6e8oQdLS",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydhW3p8Krd1_c6pMsg9pdD0DCiRDflbrlL_hkY0LFefbUf8OdTLvdttlLF5NLl3HXDgLKhmRjcqAOVZFDaI5e2DdMSJgeGbdZGePJn-gvciYA6KfizPc-3pwAIX8im_J730-q0EIB0Nq4sShtknTvwCv-_s2E3WSxQoBPNja5LqtXWscO61kbpuZHpqNNgepKn2vM16jjIYWp_hoFti638YJJPkIN02SXV43eGFVEXG_HuY5MetIbvmQVWrr_a8TsxnMza-IoTmog5MdSg53IMT4X8_4752TVFqOuAa9vFdYq4InayqNXZcyiOl_OQWIE75rCwMUgAU9UJxgXoPnztIlxEXZlKDyoPT6iqgl553CQqfJsTFpei4zT0Y0Nuvzrh8hvzzqknVx8vdnQYGPyxAX70G4hbCuFkqn9k_BOXky_A",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydj8WF1MqNK8qDxeA6GHmDxL_jqk6SyR0pMHA2oHudRMYKi2wd0z9NfnXB5fV_L6AQW9RsgC7tu2vHNJOyUwhcvJkiQ0M9L3vYe0PFcsqY7lwQgMDYBIwGotUDjieoFIa7XIUQjaveO_eBZSQXtcXFrm9BR0I9FahZrL5_q-GtsByFoKpvXAEY7XQM0wwAfOSeOJRMM-PV50tKQ7Bk9BiwZwpRnE2bUqJr1-q_Ns5lq_p-7wrxbbhcUalGwvwPnCLQE9MbRI1PJDYGzUdo5LP_OjEq81QGgN0QUrWXN5tLjKosdsPiuvgAGwBaFZEBOYEqxhATIUFdWcOv3mpGk3gYdW8PRgY11194JSioLmOsfNxer-B8V4ecvPmxXaOzUQMoThuUTSiNmmchsYqeUVm7awlxEnfrcgR9w63U0KeSTnCw",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydgJZ9bIGbB7z5L8vUMqEEl2MxZSUuXikry2Xtxfq22dQj4kbU7LpNkmrXjtvthc4F8lNtM74kE3Q_B9wXLmm-FzPcNqXiyurB-vPtd3Bb_k1ZudAor0n-Rrzw-ilG_DNWLy2YNmbcdTQ1-zdBE8vIif7LF87hXO9dj6qZlqwqztktf8KJxsxSaispLR3i_tJkAoAk0SfPyYVN5lY2mcbvtF4eJv5vJQcPsjjK93EHBqP2VzXzJqSbtzKiXWedCmdpSc_LkF74nJAZXVdEKgiF_aYUycSscNUlNVPUhCXDQ7T8H-McnFEB75RWUJonL-rrs9FkiHrIFhaAOqUBQj05FStTL7sdDHRAh9ILSDZ_NM-I9vpTzVKW_A1MZ5GlQpdZ_tHrUvatce1Q3UAnWMnW-Hl3C9orhM03T7DOrILWS4OcquuTXnvrJ3wDKQ7HvU",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydg0RYXBnhIVcr0NqG94ShmtShRlAvTeE0FRN9E2nfwYB4qHroDaUo-DwS85eTYJDqiZ8NCY6qHNypjiZMXOhG-W6j6sx4g7HEpuXGfC2YuJqXFD7IDHvNr_sLSNvBP33FR1J3nTAa6dJ4DVGItp9rvJ8aMdoNrIxAKPUpDpklcZGwqITGncfVp-sev7p4HcZ3IPFfNNmiqAjpiGSauycfZZyyyCuz0-UPmJY3Jksfuug2p8BcW9rP_AGHwR8GdCute_vhRRE1QwVJA-u33bwDcQC10D9EMu8_QDuFYTH_Awt0fE-MKNmB76kwGVXa2MhfNcmY031DCR9cbVjSr-DuVy01crzB-6Z4oNFZjyOX4q0VuL6Tf9JnDSC2fDcwqLjPzw_qXoD5EJFdlv1_j45bgGC5mCdQu1v6wSOUVii52HYXaKguNOpOHb_zsMz-Mq",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydik7MRraiCitJ6yn3uG6vvzRzREZwKHPoIEcQX0eNlwRFk6dgkPbUFck2v73LXWhVVzmBl7neSQmlUcJcKYRRLwYfKZnwQtLRoo9_cltICCWeIlIg-imN7VxS53xFMsFBwZAXIAh-SkLVU1sWfkTq9U_E0mzb1k48i-EkUNJTFYVj4Qw0qyOH9hfJwOPSpQ7ql_LT-H7esKABc6N1a6an_kBVg4CzjAxyklpGNjEIvk3z9iHjs_b836fl04pJMGx6m6BLmBsef1PgcXfkZlFS3CUSduiB0XD9oaKga3cGaMttgD2hcBl-IFQ-7NtL4CEbdQLlfkyG0WA_cralTdczhgd4te_g19wpMl0ZDpbxMQP8m72cOXM-Vet8KAaicETF_X2DQqUBZ1wIcnKkkkF_qEcLcroEDriXEqwdV_4SY",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydhjiK9YSOlhLFqJ7xuXHll_NfX6oQ3nNjqPLG0STjM6R7K1Me1JZJL3qgKqwNSRThGFNe-9KxifKTEecjlJBPa2Dtfm7c7StLGajMywFupIDkGddCGmfv0d0-N7izw66rRM-1W4cZu5iqiRls6KIC_3rr-h9v4BQOH8lcWTe6AeUnPSeZD23h345fldLFbhPey9cvKem58jpdiTN3gKAT742707opRVRY8gF-IrWB7xZbfk3o4MF0d7_IVWedluO_h13aW5_8E0JlGyj6zdPJjIqClzGy_IOrQELlVzH8gTZdMyk_xN1JRDnxHJSb1ktCGX_WbuopNPi2omk_vn3sWEWfUY-9xZdpL3tjbSORqljL5WnZeDwjjais5fSWJw7skGt0n-YnS_ErrWANq6Mxw_ZEuxP-8yZFIOPRaqy-8Skew",
+          "places/ChIJk54PuAGqAWARwEgz_9o-nM0/photos/AWCwydg66ZRjERRniMg1DMhaB3Ky8jkIrTSWHySC0YOoty1jEAgT4aGEE9kvPwixvVJXsRF67jQs7EjBzXsAP81GLgjuikt4JqVB3xdnBk_EPICYVpoLNPTjB6zyAKMh30ejV5R7GkmqJu48SGyy10k65ip8NEGq31yEO63XpVNH5mUv1UCKVXITa0yoSHEFqK_uROGom6acLjIQe6DL2eYWxfKL7TCrA-pF9R7th2PV4N6Vr_1acEVEb43GD-AUWDu5wWKAwC_l9GXU-9VcLpT6_Z4vtvyNLhTm6FbAvyBXzv_LN9OZZCAofvDe68MufvND8uCR62fay5Ny8B9CTyPSCsWgVMcK1-sfb0Ftgw0ZL3ryaf-MJn8r_scggpJtacZOqp6G-1A159S034wjf5UGzMseQmxf_pQ98D4WHQ"
+        ],
+        "__at__": 1786802043.349789,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Sogenchi Garden at Tenryu-ji is an absolute masterpiece and well worth a dedicated visit! The landscape design is incredibly beautiful, featuring a large, serene central pond that perfectly reflects the surrounding nature. ​The highlight is the spectacular way the garden blends seamlessly with t",
+            "author": "Chalermchon Suttaluang"
+          },
+          {
+            "rating": 5,
+            "text": "Nice shrine. To be honest I went to so many already that I couldn't tell you which is which but I know it was nice. You can walk around the area inside and really feel the history. Access to garden included in pass. Lots of nice Buddhist statues and the dragon walls and ceiling was cool. You cant ta",
+            "author": "Josef Rezac"
+          },
+          {
+            "rating": 5,
+            "text": "Tenryu-ji Temple in Arashiyama felt like stepping into a perfectly painted landscape. The whole place is incredibly calm, with a beautiful pond right at the center that reflects the trees and mountains like a mirror. The garden is stunning and so well maintained that every corner looks deliberate, a",
+            "author": "Vash"
+          },
+          {
+            "rating": 4,
+            "text": "Tenryu-ji Temple is a great stop right at the base of the Arashiyama Bamboo Grove.\n\nIt was not busy when we visited, which made the experience feel even more peaceful. The grounds are very clean, well maintained, and have a calm, serene atmosphere that’s perfect for slowing down and taking it all in",
+            "author": "C J"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful temple located right next to the Arashiyama bamboo forest. We first visited the forest and then made our way to the Tenryu-ji complex. The most impressive part, imho, is the stunning traditional garden that includes a beautiful pond. Take your time to enjoy the scenery and absorb the balan",
+            "author": "Christian Charles"
+          }
+        ]
+      },
+      "shinkansen: tokyo to kyoto|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ7wKLka4IAWARCByidG5EGrY",
+        "name": "Kyoto Station",
+        "address": "Higashishiokoji Kamadonocho, Shimogyo Ward, Kyoto, 600-8216, Japan",
+        "rating": 4.3,
+        "review_count": 10955,
+        "price_level": null,
+        "website": "https://www.jr-odekake.net/eki/top.php?id=0610116",
+        "editorial_summary": "Sprawling 15-story railway station with shops, eateries & services plus a movie theater & hotel.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 34.985849,
+        "lng": 135.7587667,
+        "photo_refs": [
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydgoFV0dKB3coQeA5GMSYHOeVKhmeWYoyfAb2wmG12luFF82vKJW2I6DFLnwDyFlz3x5AaYUpdFyF51WTgHOzL0Rs2gcmK4RjVCpSaiUBjCBKyO5k696u6ThagZTSAWumhpqF5_KTzMEG_fLobG0woAOfd3mI9HHWJTsh2EvUPBXlcJHvmvmU9pNCeFhLpSs_MQ9xiKpGQIAoil0oHl7B4m7tiKKf4oUBcBXNwTDhj28OWLW4M-TsFK608hXJIjpEobJzJd1wfG2GROw0uCWGtJatd62f-ur4f4vTF5bNnE6KW3-ZLhb0Zci_EGo-mzPGAQxwQquSibgkOHwX9_CXx0z3J54kv8F1L6-vFtFdqynfSWnOzpxBp8_dReboPwNr7QLi8hVMydrk8Y43BFqRM_DZRNcqSwUBmop_KxKz8KV_kQ0M4I42YSM2-HUQk44",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydg0Og4zM02cxy-gX9oY8zp7tA1kwNOYSOa5X6SFqBhXkTehVWmKSmvhI1g4oTlDIQgIJVmdFXak9oSb404HP8F3whhtzOMVA_5fLTGz8LEu8glGgBx96OiTJmxuDIFJJnQVZTIkOLzNDgT9D6kyvwu81qaw6-PY97_k6k5nOo4zWI0QSPJGIVdVjhvwufBLbapG2Y5ypq80kUTMcJ3eyTf1CgUVyYO50Y6JIeSCwoHCulahv6UKEPLyQ3yg9-PP3RyOg8aI0dczZZfdd_YQmCL1RwUchxN7PpViU_u3yfAq-DAtS7PHYTthkaEoFRm0xEI2f1oQt30QjE4T9kzTkag3vyTZqqqSKG0bYl6d2qYlAjXdlCLOyrqCoquYQ2RsRsmVUG4IEwfcVJD59sp9gh2LRwfItu7aiffRPlvZNlPYcQ",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydhDCQ0ngT0FhwtPK4no5WzNkJBzOYiI0HpedjkA8Okby_v1TvB4cfx3NVDHD15YxiitwtdMUCIW2myi7e1919Ckix43PR_DMrebMxcCWBGgMCWVu7szax49yesT74NdIgP8v5aMRnCLw7HB0gCMxmEhHdzAwaqBLEjvYgz41gGo3Ri2YEzow5q0wuu-uwAmzB-wDkR9nAa_2Hm-U9iSCBT06Hf0w3TfQ7Vbx7iLmDyoVg9SPmi3cctriw0Z4JJFNjv9HQiC7H5musmXooBNUbK2wKv77AHnaEnd7wwi7VsvZxN6TuateR-LQDrNeLdeZcIuXzXZkkUKeoWJcIDZzyh8AC7T0PaOAmiXZUS1yUug1i2PH0VdAj9LqPhp-VETdTH4cbgIXiXLrL4hemSpyf7fP7bFH_XsKSwT3uPxYWWVk7g",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydgW8Yvw5M5NN_n-S6j_A9KDpeTUJ6LQEcQPz7WxFVoYC3pyf18V4GYTAvX5jKc4eTStVbHe_0VjYS7sAQTIPCsQuFZv_SdJS6g0Mb3ygc-loRpkOCHmb1XEorAU2TosKqu1DVPuN1T5kOyxOy2QAYte3poYI3TFJjtiC1E48qZcaeXdXdTFcFRafFZe3ITtOQZty1KGD34A27WYAPNS0GUNdOgWl3JxHeFOqSDHkoWPDv9UxU6TZh2XQJ6pjfQibTx28XcxGmmkSRnlb9l0MIFBOu5MqtLxtnH0Zp622zqP3o8Dw8Eca9Z6hRRRUgl6M9UoihOMDhKgfXV-eBAiHIjbfWRDkAanz5BugNSJTqsCHuu_wd2fRnMkVe2EEGcikj-nayd731XTOcJZadKzerwmKJZyKF5u64DB4uNbyFGiiw",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydhaW4THcMqbzLLGeoDWFtKiwopH80JMOrKo6rGU5Rcv9aQqSJd3LoXxuK6lAnq-hxy11JxHkctIrpoEavmm5iDPP35ZF6ZxjirU-C3B7ZaerePWgkzfO2ZsAyrbuEFQMiACmcgYvglr6xsIPRIC15E7mORbmYLcOoZ7oH-aj77P6-6APhsVHm6g0qZ4wOP_enZywkO5hra_i3xn7AkARlMwaOMrzpy3_sGQSKnyBupzNGhJPiveeepmJXI-o3jU1oWwYiXiNmq5HTU4L01a07FV8KH8KVvW_aerkCymtWOD3XBvqZnbiI1GvPB-jkw6a7iGh8cNqN_2Epo7h4cnT9fOhBjN9LMdmFtkeHOuuHMCWCXH299tyRXprO9mthqKeoLI7snD3MpXAE2mxVZrX6Nw6TrB4rT-rdu8ZV11HeUFeA",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydjSwyyDwRa7Prfi5K3FuLa7GU46vF0H8DJDT6cVwUbtZO0bzo39l-mRwQr9lJt4C3ZNgZIvk6b6GOL01TMzgoftqy2FGOJxU0ycCheY32BMsfowyechk6JHCGymyhBzIQb44q1q09KucoBHR9K3y7WFR4HDLSU-Mah8xLU01Me09AmddQ1cQiC7twmVepo5O93j3pyzUa8tg_8kzJEjdRSwhVYeGzwHunZe07fUAXV3Znr0t7DRuefwzOb7LuVqYwJy5woxT4DLw_efXyUQAnbqAPZo-gGzhQLYUSXDOKgXOzJ52TcEGxgwAtv_TEe4QKq0AlD4_aVmyOFwzsh3_B2Q5Btt46FIFABY6inkeC4hjddc3vm_vopPxHIwPCgbsGgKbIHfddfLgbWva2HFW4dbFGRq8zgAj0tzZrr1WPLcyaAz",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydjieGW6uPYoXq7XyOIuj-zlmzFCAPxWKm4XrLAR_2ey1POlwReuv6aburwqMdVbjvUwP3QpXrEQXdE_kR23Ho_NFTQAaopYp9uxAxhpZcIySk2b8ODZT4aRhfUx8B-ZCY-a_tzyEOZI-cCVFFNOVyOPgC_ZE5UDM0utcCMWhbEU_n48zwTuH9I7jm9sfAeGFL1TCYMJa3Y6olfTrJUM9RL2MmcXUmSaiYTchtItn0im0qs-4b-buLHzXZg-LX9gbGq2Z87j0aMSycmYrw-_Twsn39qMlBlphwNLz5kGEo4IxHEb_bEgqTJHc36kU5pfu95_iOugkmevw_GN3SHjtYcpPhFwJZn2Fd0qFFp-mbNy188vWc8WuqbXNNlXQ48FObw3fNnHhql3h7aRnLwiwvna0TaDgcO5SqkJCu3FtYwn0uru",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydhuy3YHWwBoW64m3kXA4UFFgB2IL1d6kjaFOrikgXTHpYc-6H91pY6zwQdWemnf2FuV3liS4n0nXJElM_Y9AwT_zZAbnkmDb2j5YjU5wVyIFTLxBVvnoXLwMCCEpik0uMG-V-WQ0LEe2p8xPDDlvjjr4V3QKkXxGYzfcBLZqumeyxcgBTm5CmnOzjn-mHgpH40Zefagr-2xsknbSqlFXjHBVKA3wZdFKuZrHmhmjcC_KAR7KW5WlbC4fNJcgNMsdGOBSGG6K4KNc0_8bttAO8kbYsMIavTh8MvqUpShYsdVXOhdCO4uYN9ucZM5mEek9zi9uAZ5UIX7_gFZfRbuO55ixohsh90NansS5LgjyAABQu4H-zIaDjTsiAJU5ZLfKREjRIn5gkFBrYGqzZHxKkHsptvwczrI7dJVX8gumrXogu0",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydiLcgGS8zY4sepPrPo1EuoImz7dd6NF67C1L7E2hppqJD-5-GtACGvMypC7GIdsclOSgaYRIPPphw6WAFENXCHLsGDS99zBseUphKxoZfuMPKEgPaWTa-t3UEZLnh-XWGk-n65cNEV_LxBYdpaCJqEaxL47WdLqo5Gj8JjXtw2JHdbYr57CBeIDFp9bA2VkUUl96ncLpoAHJ8q_t58ZvI9c_ouY-fT_MMSIBNvBb8KlFxiJamHWmqEQztVMtSGA8MZvEbCzfuW4qvpLS97ibxV3oZvQoIcMd31Rd_wYe5gHQd2W_qKFkeFDxVyyeVthzykOrG---9YAV2eRbpA3QyClDxJ7hiWX08REwG9ULR5JWQswXL_SSbP67E4pgI1G_HrLAc13HF1yP4i9-3BVgf9_Nsp5p7h1Z7K5kjFY75JKwvQJ",
+          "places/ChIJ7wKLka4IAWARCByidG5EGrY/photos/AWCwydiYTycYO776bDqQKTgiBCRCK3DzVxVobA83klREAPIjgCSmbKeWlrzIIdLTALR25SNzmDCNjDXCFfUodujYxRIRzYa3iHpBz8DIBDZignuFffAPqh1d9l7yGXgruAjMpOuQLau95yMq9EpsXusldQAFshSwsoRRFXCvCrsaXUdYFq1yf4AJaj5w9_XE9laapdKKtyfHWSeM6PvyTIp7rEdxlCS4Y26PDMCZouayb-qVBm7kzttJciYrICmdcdPaGQsdpg0qikPFqAwsa2AItoG-DqEtbQ1xEMXeVTggg2NRGm1YFdLN4S13LHEqvL1uqp0oVDWC867RD6HY8FyUXbwIzWCmFT1yAg1Ah966JWQPbVCxScCT6XA0j5hrw67xvSsnpus45EAD_RjdbVd_KM-M1BOOpdd6Ihs0QGwheE8mEG7o"
+        ],
+        "__at__": 1786802044.564658,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "One of the largest and most complex railway stations in Japan. It can feel like a labyrinth on your first visit, but once you become familiar with its layout, you'll discover that it's far more than just a transportation hub—it's a destination in its own right.\n\nDespite its sheer size and complexity",
+            "author": "TIMOTHY LOI SOSMENA"
+          },
+          {
+            "rating": 5,
+            "text": "Easy to access with two main entrances and very clear route descriptions, making navigation simple even for first-time visitors. There is a great variety of stores, restaurants, and services inside, plus hotels connected directly to the building, which is extremely convenient for travelers carrying ",
+            "author": "Sanciro"
+          },
+          {
+            "rating": 5,
+            "text": "This was my favorite station during two weeks in Japan. All the stations can be quite confusing but Kyoto had the best and easiest places to find. Once we located the department store inside the station we found ask the restaurants in their top two floors. We ate at one of the restaurants and after ",
+            "author": "Linda Braudy"
+          },
+          {
+            "rating": 5,
+            "text": "Just like other big stations in Japan, this place is well connected. It's got all the information in Japanese and English with many train station assistants around to help. With the JR, Local and Shinkansen connection, it is a breeze to transit through the station. Sucia, IC cards and/or local curre",
+            "author": "Nand Kishore Gajarajan"
+          },
+          {
+            "rating": 5,
+            "text": "Impressive station — more than just a transit hub, it’s practically an attraction on its own with its striking modern architecture and open atrium design. Lots of shops, restaurants, and easy access to trains and buses. A great starting or ending point for exploring Kyoto.",
+            "author": "Jerry Lituco"
+          }
+        ]
+      },
+      "tokyo hotel|japan (tokyo & kyoto)": {
+        "place_id": "ChIJ61_yo2-NGGARtWcDq3rgIGU",
+        "name": "HOTEL TOKYO TRIP",
+        "address": "5-chōme-18-14 Nishinippori, Arakawa City, Tokyo 116-0013, Japan",
+        "rating": 4.3,
+        "review_count": 398,
+        "price_level": null,
+        "website": "https://hoteltokyotrip.jp/",
+        "editorial_summary": "Functional rooms with flat-screen TVs & minifridges in a low-key hotel near a train station.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 35.7317445,
+        "lng": 139.7684562,
+        "photo_refs": [
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydiJ_swsLzdii-ibScR5bnKgCdCSnvjT-jPB_WyXpUawF2aVl66SjwuO_icq5DnP1S01uQ4_5cNyNL5wgNuksw_QESe9IRIUD4IyCzQld8CL-MSKEgkr2aDt6VTBSp2KjRmSx-C5V6YjH9ZfWozxrK643YideoaNuy06booGxMhU6_OihGOONOq1-dlwGRo-Ihan8q5s1_SO3v-Nx5WUh84YqXWJicKN-DRsYk9J3XJMhQbn-kZP387Wx7SNmjuAec6WGc4sLDJszBonhu5h61wFa4ChxG-VoyHM3Avy0x-A-MfztLb35S-SWuajdRl83PSUn-pQNOCtrcPEQsdaPm7a0QUZJVkMb5hrLcfW-gfybji_DQGSAXMw1iFtKWiIUxgPkqAJjBhgiIywzFEp_VEX9AlmUHrWNeg4shgn1hu0bDU",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydi-HC8h1TTP9WnHGvv12kLRh2xVvcN-Qo_vgBcBodFGIsenseZT7PsZirNs1qlW3CsykRVM73VOcLihK_2TQyPtqQ3A2g4had7URZY-g3TxtvRh-pRVZJzHg3UiCq9V7PBXbQRzqRmcAgiibzw1gvL-wEnIilhEieGGJNGvt5hSvPuEFvda1xTRSbKEGk4WTU-A7HRCSzQwbC2i4RoNFWWOytH5s8JZXUlEHjyPUIa7zpjonvOkUhkHEieX29XgEj1nQ5FmONaOgIq2ZH3Niychv0ITD-14bswb6MxOZeLFGxac_oycESu-CbPXlTfKo209Vp80Rg2McbBXOCSDDzcrL4lxaBAhM7Xx-VRUiU9CGGBcy1ljEfrTXnapzAHOtskBHnmxjVLf7pNvoAx7NpeTFBfzILvb6TI1udDrj2qHAg",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydh-0KM0vRdMp3oITkToVWkoLl3E2na882xvAa7sjAh7MifMGjC0R5vIqjhWM2kOnZVmFa_rSvsNCFQ3Jt7lmxICtuPwgOWArnlzrpxscFO-ma4xJZm6qQqNkHKCUrN0UCTLQfOVeYmKmcLbDQfDvzkhVHDT9OMV4bl2Gz-NSpz0udAExQCjSsKVs4J_OzR0owTfRoZ-2i2xXtjCHZKbKylSBguKXh_0XaQYVW8UJJ11VpOmaDU9W66lgt5lwpR-XhxVSPCw2ZgEUD8lwji9SSBX3LibqEUgH9y6fippc7B6j4hXSMgx2s2RmYYVMYNJ6kFUk92Tqr4jR_8BMmwLy-IoGL0ph72TzIsdLN0Ks_FvRQzHh6_1qlS-PkXT5qNOpAPBL0adUaxPAnLXVxASiLOp5fVi1QnTlsc_025wApI8kEvoW0n-DBf_fPheIm74",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydiiqmttWfKSOZK7HlONyq3Z3y-RVOrg-hbc_27XEcrrys8FZCMgecGix_8bNFjqeXgCsyMiVTRmZO9gpvf8db_3TszyG5VbSasN3kucxsO8S0xgFbm7wHPFlxdy3c4TzYc8XP-weWEBSJhn9GZvXDoakIdIO88s1Bag2ibCXxjDKmM8WlsQNw3f5j4AwpQZqipfhLeGe0uOVLDjYb7nysXtI98X3TZ8vaLw-sM3ttIJAPW5_HHXhlCqlDUAohRLIshNSbbpAs5pxXClYPw5Cfsu50pc_qB8gT9XBAIl7D9alJwEpJO9pQ83dj8GmW241wnxMf9mZIWYMDAEk9dkzRlYzrRDswB0FTv08zD8n2VJC21NeePluV1GzgT67MN60NFO_7Z3OuG9iP06HFpovSwpwS7FdPThxtGL0BIPwMJ0LPM2",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydgr7an5KpBtmy_nca02nzRIK7Dga-rnWN3GPhNkiUO6rdYQ0Aj357jIBUogrqCw3JTHbVa_9Uo19nu7kZr7Zl3E8mqzFh9tES018iBgnnRGoGk2QspD9zSzXVC7IDMV842WP_YhAhp6JOTOB1lGZo8dkfI2UN_W2f-sfPFHHGzHLQ5UonfGqA9yHVxFUVftvTkWW8ORaJPpKSYjH77XjmAduMoiggRCqC2iFc2nTcLOCjS70JqYQNE61798g9ORAXo-V4R4SpPCHgE5udDocZa4m4N0RkYZRp98FdQ9vPxeQWnYuEJ7o2W_lXYZfu0myc5ItgUfy7Mt2FeRNVcir__A2qOdo0bzwqEWzVV--ysdE4TG9KeJono9fWXxqH7zz_iXv7m8kSZMk5OfJlW_SvB7IO9sSXpywW0TzWvAI04Llg",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydjBdCL1JtvPYDiqQQ1C0ZmoZhyG6ZO10U1RAouOIxD13GIM_nBIOJ4GtI1sQ21g-h34oKj6kv2dXRYp2WXXxphVhns-GV-XxyLJ0A_E9kDqDk_tcbVjS6ZVNTcyBn94UpGmyqPZKoQHiLtnkDfyDnaBqWdbBcNbPrgk-OyJNCkHeSh7FJZyyAlRuj7WBGJqvcRO7jVqxkphWLD4rjPU98mqRlhNKt6G1e10Tiwk1IF-Sc_fuwTA19x8jkUYznCNJuq3lnk0bO9W29qHU-RUNqzbHRhKXbAS2NzAO8u-hdpTGxWD3Ijk5fEEihY9ixYbL-OSn_B_TUxhnJ1xws4ITsDDNNBhiH1bF7kPiv-ZzfbbY4GNDJIS2M5_AsimwERyhu7zRjKhirEZA_aQpBQBspBWt9rP8ClAFNOlnasH7jBscQ",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydhzCPier4aB8owbiRWCprdberI-7sI-qaT8Y5zX01Ut3iWeZDc3UNdWegD9uXcTLeqqSj2pU6Zj6lYMYHNnrYUKfP4KN61DfT1tjS6oqwRzh6CLsv9QsvaDJS9Aw-eHFjLe8KbwEIE313ib2atrwYxT0nW3M562TAWrPdRHZxf2omTnMCxYkdrtZ4DWS_9hHzmsVoPbGtDaShjK-ivUSqjvS8EYTLff4UlhiASgt6OiDP6Q1UsIA3Rt8uYrL9codQVEuWonQ-CFNJUR3-uZUno_eDiym9ZsXjs4FTW_EFqrVJ5OzZqCOJk9T529nkX5l6TtvaaKvl_9BNYb498SO2m5XCzVMVPCUNn4m4_La_tP4Iaz_x9InZMF-h84j544hJPeamtWB7ICRrdxEZxzEASnMPPEg0m_GttA3Bs_Beo",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydhXyMz8A1rexaMZRYAybfvFkkphDrMPYSiEYBmaiJDK7p8qws9VQcSgBf9Cgyzza-_y8Eb4uj2cLnsp_aXKsVCCyYBoanHSDk3BZ2oagZGZQpqqcIaqCBK_4S-17D1rKj3hC6F11KEYZEbGoQjVHUkY4ZsHmp2b97BjtPBsiNRITTAdoODR3sE_PKoj0mB_ECE1M0iMDj4gZ165OHRWwsVXGGOf81JX2EHcFOGG82BjYwS6xUpC6jcmvtWDyZUcbpbSaryqSdeJFGpFzIDYWTL7718qdW82ckQ6e4MHVxTDPKVrKgClaZMOQPbdYVHF0prebcmV0SnBfyfKG6TfLyGJXco8zgCTgTZlPBREBdYniUZ0KgBYXDByZFix2j-PSFhtF85O71IyWElGILTeigcnJ31Vntf-3Z3i3K8PXL9JMg",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydgsq2JxksoSyDtRHbvy_R22Wl6-He-Ysk5s4fQwKPTPUkrYKWPluiBucv1ljYU2Z3mkC-4Z4Vqbd1_h25eCg2pixg259qLrsRcINXBKWJfKQxH4zVwqYat-CF7VTQRMe7M0Nw8_UBvBngzl4ESqXs8vVIiKgZR_S10gjEvJLbK0SbUdWBKehulZ_mHxTedQxLNvTh0sh7ksVgWQxwzBiNOn4U3dKDXUbFgbRw8KtMIS3oHYpUleJG_uAGdn3ecwE0ygoVr6YAvTmS_3GFFxoUUHpB92d6mdZC522BCYQzEyh61iT961hKNFlEIN5nNUKAZiiUjMq_Zug4fJrfwTv0g1Z385Rx5l-F6tB8HdKgTnfmL7IG7RXUFN89RmDz1MIrKV3YAMZVz5YMa2fj_gvHpA9gmjM6di3jYv67A8UAKaCFY",
+          "places/ChIJ61_yo2-NGGARtWcDq3rgIGU/photos/AWCwydjL9e6S7jhIcOktp-bHaicckQqmvKhKK1PmFt88DA4q1UyFI4Mojiswih9HCtzFQMp1WCatux_FFMqSDbeEJ5ksuApXRYgE46vgagVsJEO2a9M8ddZSD008Fb30NX86C_pt7QBsDyiavJ_YkxgDb-eoT4vrzMJb5qDc35fyjDXOHXrNsmXSrl0CKokq3T8PRt9wlx31f5VyusKNH25r5U8saOQ8l7Oq_FhsUGV-kHGloW1YhGK8XWA6jxaSCYQ3V_JjHvTEChp-EdRkwGx8gK8TGESZm2ex2SDOPAVkzNVkVX0owCgOeIbt642udUDeBpCu7gvyPs5dDiHNHMW6kgwgL36fGvzG9FcEZgznr-4Zuv5Xhwjk587oApXCeO6yhbmJWA-9cWJWN85Awy1UnQU_j9VUqAnJbMNuiIRjs2KWv-0N"
+        ],
+        "__at__": 1786802046.374733,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "7 nights stay in Hotel Tokyo Trip was amazing - strategic location close to JR railway, great staffs (esp manager Manda who is friendly and speaks English very well), great varieties of restaurants nearby and not forgetting free amenities / coffee / ice cream / water / biscuits!\nOverall, great exper",
+            "author": "Kit YW"
+          },
+          {
+            "rating": 4,
+            "text": "Stayed three nights here and it was great. Even the single room which I booked had enough space for me to open my suitcase. By Tokyo standards it was a very nicely sized room. Had lots of windows (as opposed to the typical single square window in a business hotel). Shower and water pressure was grea",
+            "author": "Sueanne Teo"
+          },
+          {
+            "rating": 5,
+            "text": "Clean, big, and affordable room. The bed and pillows were very comfortable. Close to the train station. You can hear the train, but it didn’t bother my sleep. The staff were friendly and can speak English. There is a washing machine and microwave. The area is quiet, with convenience stores and resta",
+            "author": "Kanyanat"
+          },
+          {
+            "rating": 5,
+            "text": "Very convenient since is close to 2 train stations. One which comes from narita airport, and the other one i used mostly for the daily activities in tokyo. Additionally, there is a convenient store on the block next to it. It isnt visible because it is under the trail rail, but still. The only point",
+            "author": "Vinicius Santos"
+          },
+          {
+            "rating": 5,
+            "text": "The highlight of our stay was the exceptional service. The staff members were incredibly enthusiastic and friendly, and the fact that they speak Chinese made it so convenient and reassuring for us traveling abroad. The room was exceptionally spacious, and everything else was great. The only downside",
+            "author": "arby Huang"
+          }
+        ]
+      },
+      "kyoto hotel|japan (tokyo & kyoto)": {
+        "place_id": "ChIJNVg1AyAGAWARce4JCgb-RyE",
+        "name": "Kyoto Tokyu Hotel",
+        "address": "580 Kakimotochō, Shimogyo Ward, Kyoto, 600-8357, Japan",
+        "rating": 4.2,
+        "review_count": 3675,
+        "price_level": null,
+        "website": "https://www.tokyuhotels.co.jp/kyoto-h/index.html",
+        "editorial_summary": "Casual rooms & refined suites in a polished property with 4 restaurants, a floating bar & a spa.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 34.9951315,
+        "lng": 135.7516374,
+        "photo_refs": [
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydgJCNgd24iX8GN1ogCNYorqGTL2tbG38jYHwr-mR_WyZbcvLojq8_5xJ1yD1Tl2FWs453FUxV0JTgCRrHsfzZnW8JRTtCecdNElJJVxt2njM2gm2F6tnonu4roOqujpe0baI9PMou4rMVkCuCElKhz9pPWPsubRhJUJxAMIE6QJn-bzmobonJ2bY7W-skGCpsK-hxEVh3BiotfwWgqrR6OkqEq7n5Px5RxcLE6TKJDE5G9AKG1MOb1ecbDWKr_r7LmduhIm2el9CCvvDkcJ2WzZoNrrXXRlditcseO4oQUu1b_9OVcKfmBCdLXbHX9bk7lekteHlrVtKU9C-p2QA-TH5BwtBcGjhaA5pG6qVHqPGaz4NIiUPRvviy6nvFHdwdKMsfbewS6pOveQebDZUINHJVe8vxvHHzWFpxhZ9DsvEQ",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydhpy-kT4mXjqLqfwexCwx_HecQoqDkMlmaOBm3_8t8_jtNsFF6hG47OZfrhUnxzWJTBHxh2prk_axTfuxyo7M3xetrsi6SzPOzCfyGORA6r-6WSkl1-rrAQIEEPjAeDpRd9GY4rLP2v798JavUexMbN_aTBxjF4NGb3MbRbczouPK04hSVr6jWKo6wLX5UJpaagHX0EslQv0saQSTXFebO1LMMq66XJaq41xVmCrAta1kvo_dSIAkhKfOFcDYS659kHU6YI43T5o8fjWbPsFgHQ0MOtAYbH11dzJziquXojClhSy44boTd1BdrNyp97XrvqlS_Zz1_d7MZo4yLZYKwc4obFRpK_koAC_1YfLVu6GU3RsBDNgd6WQl93ZYQxqSadnpaMm8E-ydQFYM4zhNJVG0UEV32XplQEfmZmzuCbYxyK",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydiT7mngyXabhnPMqq_nZwZFMEz_oHyz4prqC-6MzqfF7sXxnvredHdIEWelUHL6ftuBtkmnEPc9DZNlJtMqKxOtamegA58UbCA42iEMAfzcoIhVildwdGTPIvrqI_u9iiLQEm_sb9pmrj6nT65q-wr0VKFuC8_55nnQWGm4qg9Vv3G86KASHcXbr7zEJMRPpVFXbPEnfoUbzDkuAMNjXSnme1_f7I2257F52z_KMgNbfFs49Dc7C803Bxr-TqFuMBpWZWzT8K0-sk_KLTILbxyxSqri6dpLsHg7jEfznd-fHA2Ppq-C9877JyqcYcXnhxPUTpL_LXXdEbAH-177CUKNoElgeI8MDM3h1Z6cFot5D7l-HIbfCpr9jaUje7E4SMNIT7mJZrwIOOkFF9FvgrOJdizponSot2-a1o_nBinwtw",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydiY7SmDQ88jcvE-S2HbQq69mwri1GnQ9yMKMM1d2vjx9PNJ0pIoYF2xo_EbWx5zQLoYj6lji1KNNfZ2U76toISLYuZGqUu-Yqwy55ERExlEExqzFGNu9-rrSgCa4S48CW6JL5hC8m1efGLha1UWq4UkO4rLN_pHnbRaMRPsOMCCAyy6Qtb-0yxFNnQzDCwbnMgIekno3nUuTvL1q4_AtU5R8XR-k-gSFGLEqK2VUvt_9tgGjCyLPbD35Fz27lkv8NJ6Dvch3OjTgtXBCn5Z0LyVm3keuBrccXlM60gMaZH0EO2JXCljRnXFApgVqefFgmIP19zjj65ud3UTe9a6gpGKEYjfmC8vg-VpknkTAfQGCNCKS408gDJesHOJdsHBrn76iTfY2r5FjTsAic3eCe3QTbGtMZEOn3ybkF28qlOPbH5x",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydh8KNODQQnT1_BbujXjqyd-yumzVnsi3nnbwo3wTyV4-r84FhUimj2uCdnO7BBXp5_Iix4QK8C3uWYLQebEl1S9BXx7aVxGwpgyVaUjKe3kzkV37uCDD4Mk_sqvdJmn97LoGlLqff8HVPhFyM9lnGpBwUANIELahtKmdwu-ITTzSOcdhffKQv6xatsNFupcEAgGTX7A6-YACoRL-Wv01YgXKOoJU4oo1p5q9zS1VHQq9GNRG7PIxzbPqnOJEIHSLhKPK02iS6UBKyhbdlQSoqcX95Fouw3yhJJzWFT_10uoaxpbebywA4CU_Rcd3muDxOwly2AFg1lqoZBDOtM1iUFl1q00ipuyY00hVIYyhh_8K1A9K24o_tKF2fe94vL9akCup-yrO9GJ6ZZ0ufQSPzCL7tkm0th_zs6usclfiMGUmj_4",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydjBS--DnjcZMlXmur5H5QCylac3O0sPiUYReTrPjeRc4tAGKfzyNI7Bu8EgCkye0Ms0PWTBlYXM525waMOd7cCOpcrypf0aLJ8eDVVooXhBentVLHH0mIkpyFUrhWP7sJgmlzbPTx3TwBiqzm0T0xrGCqdcWReCyBGJDeNFVu9w6SnGkme6aNsiZrT7yy7ELeRVQX7QYOLAKIbt8a6IvI55D2wik58kpfCfurcvdgPfVGbHvganuEgnKAZ1ZYYBgjEbGH3ulyCKxIE-5LUH2USiKf3RGGNqG5y6HQegS3UE0E7iD1AuV2rBcSjEI49gMBww-Io1j4vX0lHZBT2u8n9c9-dQBE_DfuUywEnixgojGwRgD2tqLLSJyYBuriMWKEA5I9hHMQ5w-sAvYRwZeJMCLO2bH8OU0XDLZEFM-tWmTg",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydj1YPcb8UadduczgnmXvnJqptBR7Dijk5c0UFdCPNOKffGjPwKSFphorP5YANAGxM3W8H52bP1TjT2TrX7IjzB6UraRTfTqrdUQf6EJgmdxP6jN1OHrd2Sx9AlUPaK7RoRBA-co3OGbK3ydG5AkT2f4rNCuFELOk8bOOPMHTYyKfcacA-WfqSaY_T6FfB-Ijtk3a7oZMGtUdJAx_UJIZgrLm9K3DUJpkggCAA9lhrhSWasTZuCpNmypGS7_dqP_sbi5StnmZdyUO2z9ac5BijGUrg5YvpbpmCmLxFIHuvcl3xSfo1O0xJDcZ5pQOhZ-oMCA_ftUyNrN3mI9KPLagCTPecEIrgmApPWvQbLbFaECKp_iaszj1NnkkFlcmOWH0qhQyt8qAuo7FeFH4VyKzcVabLljiOhzjuEyoRAWWlUHpg",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydhlU4uTbvYN9zhD4pWNl4tSRmQQDd00knFrpkEU5GwIW9MuLzlRguZoGcXBmIrDRmWxt6e7f85T625x5lGToQawyQdw_o_1Ttj0fQ78cMZyefI3vv9ec7yz_Fc5KD_qhxoGrBA3IG8vnGpAMy-wT_swQLJ34iShEvTcoHI-21v9rCEm4PoPa3KmCvecPwBLOP-cJHrlVGFloP9mCCjSNL3TsMwHWLhIvEQp2E8dqPZM4jULI3b_0ecPjyTfn8BckiDPeJ1lXm8rTp6hExdgBbKuetFTA95wD7NLmG1_j--D4iWS5wVtgGTSXNqMxA_c81MrajVW1Xn3U3qmSmPKuCn5rlGfrndoSnIwsYgY-elsLOcdgofovs9QinPQHbCWWXD1d6IhVv6k2qpLh_4bGlKW72i4Pa0pzbdiO0UDtuOHvfai",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydjLPcKBbvJmIdrTgLODw0qHZbZw0ZsbtbYBEs3Lyx_gI8p33Kru4QErUf40yOxzEwzMECcPyaKMIhAd49pOgHYzguDqDE9xsVzSIaQhS8WW_-XS_tFOB-uNLNnKmEH9spUzvOwzqeNdob-m_4Y53-Wz9VcxDkZkvI1TQbGDXRszeSeeM_k26YXZTLvP0epcUXxePm5lfZipLOY69XO5ozIllU9UW72Rtcvxg2If40rjPnfVrPFuLl08mi3z5KVrv4GX6vdhSXIWB0hBZVuCg7M7lC-lXHn8qrwdfnl8DFxAgOAcOZRVgA8nYuw4vwX0DcsLMX5inuBR6DKX9rRHZ2vBN2B9keIF9TOIviZ_h9pLEGF8-az1YQi_LziZ9Dcz2jNj7wqI4wwpz8VCIIuPb_7JCwMvkdn52jIy6PY58uEw0gU5",
+          "places/ChIJNVg1AyAGAWARce4JCgb-RyE/photos/AWCwydinjbshSi_yUxGQ6S3hHCgc_viG_7JXnuWY4X3_cbDUyBhOVoryoIsBkZa73Lvp0qflppTLEY1aHByE7uSHj9w2zAOrSu4-JHMuWss_aHL0AOjTOJ9g0JyuKWRMWiwTRWNcDpIXwZFcsD6n63ifcptLsZP7TV4ZTH_fsebd2uzWMaw0u6n1j__v0OUn-rE8a_Di_VmVUs6f3UDw0-XOTqXd8-7pKB_bbBCB8qTyrmQXKroBcvGjyVpvuQI2Ku46BS8Bfz5if4hTlKqDFHfC4J3lLha5vihhsJP3TumFj33TyBHQ7w6H0-GfESymE0ZDykl2RXxoSrCf7oDcX7M42qmJdbpONYaZPKRTOSMylWU2uOaUY9PUcTAQKf_wSVFe6K2q8_QZ69MemV699uzN5iCznsNt70hRE-TDqnBkcM32VlZh"
+        ],
+        "__at__": 1786802047.324495,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "This is a great hotel. It is very aesthetically pleasing. I enjoyed my stay here but I would say that the rooms are on the smaller side. The rooms also don’t have individual AC but fans which keep the room warm/hot and needed to request a fan from the front desk to stay cool at night.\n\nI enjoyed the",
+            "author": "K. Kattoor"
+          },
+          {
+            "rating": 3,
+            "text": "The hotel is made for really big groups traveling by bus. It isn’t located in the nice part of Tokyo, there is nothing in walking distance. The food seems to be made for Chinese and American tourists. The noise isolation isn’t great. We stayed there because of spacious rooms, but next time we will c",
+            "author": "E. Y."
+          },
+          {
+            "rating": 5,
+            "text": "This was the best hotel I ever stayed at. The hotel is incredibly clean, every employee is extremely kind, the food is amazing, the ladies and gentlemen at the reception are very competent (even with complicated billing questions), the shuttle drivers are amazing and helpful, the employees at the en",
+            "author": "KindPlaces"
+          },
+          {
+            "rating": 4,
+            "text": "We stayed for four nights.  The hotel reception area  is modern and spacious.  The htoel breakfast buffet was yummy with lots of options for asian and american preferences.  The rooms were a bit cramped for the 2 of us.  There is a tea kettle and refrigerator in the room.  No dresser to speak of exc",
+            "author": "Winnie Bracco"
+          },
+          {
+            "rating": 5,
+            "text": "我想要留言感谢酒店前台的工作人员Amindi和所有酒店工作人员的帮助😻😻\nI am writing to appreciate the help from concierge lady Amindi and want to express my sincere gratitude to all staff in the hotel.\n\nWe finished our Osaka tour on 18th and planned to spend 2 nights at Kyoto Tokyu Hotel. On 19th, which is the second day after we le",
+            "author": "liezl Island"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Japan (Tokyo & Kyoto)",
+    "departure_date": "2027-04-03",
+    "return_date": "2027-04-09",
+    "nights": 6,
+    "month_year": "Apr 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 2,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Japan (Tokyo & Kyoto)",
+      "Japan",
+      "Sunroute Plaza Shinjuku",
+      "Hotel Granvia Kyoto",
+      "Arrival in Tokyo",
+      "Flight: Delhi to Tokyo (VietJet Air)",
+      "Shinjuku",
+      "Tokyo Highlights",
+      "Senso-ji Temple",
+      "Tokyo Skytree",
+      "Asakusa",
+      "Uobei Shibuya",
+      "Tokyo Culture & Shopping",
+      "Meiji Shrine",
+      "Harajuku",
+      "Shibuya Crossing",
+      "Ichiran Ramen Shibuya",
+      "Tokyo to Kyoto by Shinkansen",
+      "Shinkansen: Tokyo to Kyoto",
+      "Gion District",
+      "Kyoto Temples & Gardens",
+      "Fushimi Inari Taisha",
+      "Kiyomizu-dera",
+      "Nishiki Market",
+      "Ganko Sushi Kyoto",
+      "Arashiyama & Departure",
+      "Arashiyama Bamboo Grove",
+      "Tenryu-ji Temple",
+      "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+      "Shinkansen: Kyoto to Tokyo",
+      "Flight: Tokyo to Delhi (VietJet Air)"
+    ],
+    "auto_summary": "6-night Japan (Tokyo & Kyoto), Apr 2027, 2 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T13:55:46Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T13:53:20Z"
+    }
+  ]
+}

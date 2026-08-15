@@ -1,0 +1,1655 @@
+{
+  "archive_no": 17,
+  "trip_id": "coorg_2027-07-15_2027-07-19",
+  "user_id": "corpus-coorg-monsoon",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:26:10Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:26:10Z",
+      "content_hash": "1042fe8df53aa9ec",
+      "plan": {
+        "status": "draft",
+        "trip_id": "coorg_2027-07-15_2027-07-19",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:56:09.943578",
+        "destination": "Coorg",
+        "origin": "Bangalore",
+        "departure_date": "2027-07-15",
+        "return_date": "2027-07-19",
+        "travelers": "2 adults",
+        "notes": "Monsoon trip. Balanced sightseeing and downtime. Moderate budget. 3-star+ hotel.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Coorg",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:56:09.943608"
+      }
+    },
+    {
+      "at": "2026-08-15T14:27:03Z",
+      "content_hash": "756adec7b70c8c00",
+      "plan": {
+        "status": "draft",
+        "trip_id": "coorg_2027-07-15_2027-07-19",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:56:09.943578",
+        "destination": "Coorg",
+        "origin": "Bangalore",
+        "departure_date": "2027-07-15",
+        "return_date": "2027-07-19",
+        "travelers": "2 adults",
+        "notes": "Monsoon trip. Balanced sightseeing and downtime. Moderate budget. 3-star+ hotel.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Coorg",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-07-15",
+            "title": "Day 1 · Bangalore to Coorg & Arrival",
+            "summary": "Drive from Bangalore to Coorg (approx. 5-6 hours, 250 km), check in to hotel, relax and enjoy the resort in the lush monsoon setting.",
+            "stops": [
+              {
+                "name": "Drive: Bangalore to Coorg",
+                "kind": "transport",
+                "time": "07:00",
+                "duration_min": 360,
+                "distance_km": 250,
+                "note": "Private car transfer or self-drive recommended for flexibility in monsoon."
+              },
+              {
+                "name": "3-star+ Hotel in Coorg",
+                "kind": "hotel",
+                "time": "13:00",
+                "note": "Check-in and relax."
+              },
+              {
+                "name": "Resort Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner at the hotel or nearby."
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-07-16",
+            "title": "Day 2 · Abbey Falls & Madikeri Sightseeing",
+            "summary": "Visit Abbey Falls, Raja's Seat, Madikeri Fort, and enjoy local cuisine. Explore coffee plantations if weather permits.",
+            "stops": [
+              {
+                "name": "3-star+ Hotel in Coorg",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel."
+              },
+              {
+                "name": "Abbey Falls",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90,
+                "note": "Best viewed in monsoon; carry rain gear."
+              },
+              {
+                "name": "Raja's Seat",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60,
+                "note": "Scenic views, especially lush during rains."
+              },
+              {
+                "name": "Lunch at Coorg Cuisine",
+                "kind": "meal",
+                "time": "12:30",
+                "note": "Try local Kodava dishes."
+              },
+              {
+                "name": "Madikeri Fort",
+                "kind": "attraction",
+                "time": "14:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Coffee Plantation Tour",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Weather permitting."
+              },
+              {
+                "name": "Dinner at Taste of Coorg",
+                "kind": "meal",
+                "time": "19:00"
+              },
+              {
+                "name": "3-star+ Hotel in Coorg",
+                "kind": "hotel",
+                "time": "20:30",
+                "note": "Return to hotel."
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-07-17",
+            "title": "Day 3 · Dubare Elephant Camp & Nisargadhama",
+            "summary": "Morning at Dubare Elephant Camp, then visit Nisargadhama island, relax at the resort in the evening.",
+            "stops": [
+              {
+                "name": "3-star+ Hotel in Coorg",
+                "kind": "hotel",
+                "time": "07:30"
+              },
+              {
+                "name": "Dubare Elephant Camp",
+                "kind": "attraction",
+                "time": "08:30",
+                "duration_min": 120,
+                "note": "Arrive early for elephant interaction."
+              },
+              {
+                "name": "Lunch at Atithi Restaurant",
+                "kind": "meal",
+                "time": "12:00"
+              },
+              {
+                "name": "Nisargadhama",
+                "kind": "attraction",
+                "time": "13:30",
+                "duration_min": 90,
+                "note": "Nature walk, boating if weather allows."
+              },
+              {
+                "name": "Dinner at Raintree Restaurant",
+                "kind": "meal",
+                "time": "19:00"
+              },
+              {
+                "name": "3-star+ Hotel in Coorg",
+                "kind": "hotel",
+                "time": "20:30"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-07-18",
+            "title": "Day 4 · Relax & Return to Bangalore",
+            "summary": "Morning at leisure, check out, drive back to Bangalore.",
+            "stops": [
+              {
+                "name": "3-star+ Hotel in Coorg",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Breakfast and check-out."
+              },
+              {
+                "name": "Drive: Coorg to Bangalore",
+                "kind": "transport",
+                "time": "10:00",
+                "duration_min": 360,
+                "distance_km": 250,
+                "note": "Private car transfer or self-drive."
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:57:03.268587",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:57:03",
+            "expires_at": "2026-08-16T07:57:03"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:28:21Z",
+      "content_hash": "77499e68e320dc11",
+      "plan": {
+        "status": "draft",
+        "trip_id": "coorg_2027-07-15_2027-07-19",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:56:09.943578",
+        "destination": "Coorg",
+        "origin": "Bangalore",
+        "departure_date": "2027-07-15",
+        "return_date": "2027-07-19",
+        "travelers": "2 adults",
+        "notes": "Kodava Hockey Festival is ongoing during your trip, adding local vibrancy. Some outdoor activities may be affected by rain; plan for flexibility.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Coorg",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Coorg Wilderness Resort",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp1e7b3"
+            },
+            "address": "Madikeri, Coorg",
+            "rating": 4.6,
+            "reviews": 1248,
+            "price_per_night": 9800,
+            "currency": "INR",
+            "checkin": "2027-07-15",
+            "checkout": "2027-07-19",
+            "room_type": "Superior Room",
+            "total_price": 39200
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-07-15",
+            "title": "Day 1 · Bangalore to Coorg & Arrival",
+            "summary": "Drive from Bangalore to Coorg (approx. 5-6 hours, 250 km), check in to Coorg Wilderness Resort, relax and enjoy the lush monsoon setting. Dinner at the resort restaurant.",
+            "stops": [
+              {
+                "name": "Drive: Bangalore to Coorg",
+                "kind": "transport",
+                "time": "07:00",
+                "duration_min": 360,
+                "distance_km": 250,
+                "note": "Private car transfer or self-drive recommended for flexibility in monsoon."
+              },
+              {
+                "name": "Coorg Wilderness Resort",
+                "kind": "hotel",
+                "time": "13:00",
+                "note": "Check-in and relax."
+              },
+              {
+                "name": "Coorg Wilderness Resort Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner at the hotel."
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-07-16",
+            "title": "Day 2 · Abbey Falls & Madikeri Sightseeing",
+            "summary": "Visit Abbey Falls, Raja's Seat, Madikeri Fort, and enjoy local cuisine. Explore coffee plantations if weather permits.",
+            "stops": [
+              {
+                "name": "Coorg Wilderness Resort",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Start from hotel."
+              },
+              {
+                "name": "Abbey Falls",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90,
+                "note": "Best viewed in monsoon; carry rain gear."
+              },
+              {
+                "name": "Raja's Seat",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60,
+                "note": "Scenic views, especially lush during rains."
+              },
+              {
+                "name": "Coorg Cuisine",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Try local Kodava dishes. 4★, 7.4k reviews."
+              },
+              {
+                "name": "Madikeri Fort",
+                "kind": "attraction",
+                "time": "14:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Coffee Plantation Tour",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 90,
+                "note": "Weather permitting."
+              },
+              {
+                "name": "Kailash Parbat- Pure Vegetarian Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Dinner. 4.7★, 7.7k reviews."
+              },
+              {
+                "name": "Coorg Wilderness Resort",
+                "kind": "hotel",
+                "time": "20:30",
+                "note": "Return to hotel."
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-07-17",
+            "title": "Day 3 · Dubare Elephant Camp & Nisargadhama",
+            "summary": "Morning at Dubare Elephant Camp, then visit Nisargadhama island, relax at the resort in the evening.",
+            "stops": [
+              {
+                "name": "Coorg Wilderness Resort",
+                "kind": "hotel",
+                "time": "07:30"
+              },
+              {
+                "name": "Dubare Elephant Camp",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 120,
+                "note": "Arrive early for elephant interaction."
+              },
+              {
+                "name": "Lunch at Coorg Wilderness Resort Restaurant",
+                "kind": "meal",
+                "time": "12:00"
+              },
+              {
+                "name": "Nisargadhama",
+                "kind": "attraction",
+                "time": "13:30",
+                "duration_min": 90,
+                "note": "Nature walk, boating if weather allows."
+              },
+              {
+                "name": "Dinner at Coorg Wilderness Resort Restaurant",
+                "kind": "meal",
+                "time": "19:00"
+              },
+              {
+                "name": "Coorg Wilderness Resort",
+                "kind": "hotel",
+                "time": "20:30"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-07-18",
+            "title": "Day 4 · Relax & Return to Bangalore",
+            "summary": "Morning at leisure, check out, drive back to Bangalore.",
+            "stops": [
+              {
+                "name": "Coorg Wilderness Resort",
+                "kind": "hotel",
+                "time": "08:00",
+                "note": "Breakfast and check-out."
+              },
+              {
+                "name": "Drive: Coorg to Bangalore",
+                "kind": "transport",
+                "time": "10:00",
+                "duration_min": 360,
+                "distance_km": 250,
+                "note": "Private car transfer or self-drive."
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {
+          "hotel": 39200,
+          "transport": 9000,
+          "activities": 4000,
+          "meals": 6000
+        },
+        "total_cost": 58200,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {
+          "source": "agent_climate_estimate",
+          "note": "July is peak monsoon in Coorg. Expect daily highs of 22-25°C, lows of 16-18°C, frequent heavy rain, lush greenery, and mist. Outdoor activities may be affected.",
+          "days": [
+            {
+              "date": "2027-07-15",
+              "high_c": 25,
+              "low_c": 18,
+              "rain_mm": 30
+            },
+            {
+              "date": "2027-07-16",
+              "high_c": 24,
+              "low_c": 17,
+              "rain_mm": 40
+            },
+            {
+              "date": "2027-07-17",
+              "high_c": 23,
+              "low_c": 16,
+              "rain_mm": 35
+            },
+            {
+              "date": "2027-07-18",
+              "high_c": 22,
+              "low_c": 16,
+              "rain_mm": 30
+            }
+          ],
+          "packing_advice": [
+            "Quick-dry rain jacket",
+            "Umbrella",
+            "Waterproof shoes",
+            "Extra socks",
+            "Mosquito repellent",
+            "Light warm layers"
+          ]
+        },
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:58:21.874244",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:57:03",
+            "expires_at": "2026-08-16T07:57:03"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:27:18Z",
+    "user_id": "corpus-coorg-monsoon",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "raja's seat|pondicherry": {
+        "place_id": "ChIJO_c_fqKqpTsRMn4pdatm7EQ",
+        "name": "Raja Seat Garden",
+        "address": "Stuart Hill, Madikeri, Karnataka 571201, India",
+        "rating": 4.4,
+        "review_count": 18815,
+        "price_level": null,
+        "website": "https://coorgtourism.co.in/raja-s-seat-coorg",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 8:00 PM",
+          "Tuesday: 9:00 AM – 8:00 PM",
+          "Wednesday: 9:00 AM – 8:00 PM",
+          "Thursday: 9:00 AM – 8:00 PM",
+          "Friday: 9:00 AM – 8:00 PM",
+          "Saturday: 9:00 AM – 8:00 PM",
+          "Sunday: 9:00 AM – 8:00 PM"
+        ],
+        "lat": 12.4144899,
+        "lng": 75.7368986,
+        "photo_refs": [
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydgFaJ0kgX6adY-E0rqLoaMABFFOHqhFf5_ZVDMkFPVqkU53H0ToyUAv_4RXrFK9Xt3nDWnsxcuFy2IEU3UPqd0SYfcYS40WnOGypACfdnt_bejDC0CyuVycd-_EVy-23otZutXA6pBCBHyiejnM_lutx0ciqwQ0op0F67Yxsb1VjFvjPLNN-dzO4L5M4pHuB4d3iJIEgPMGMy8LEs6zoqF2enU1gMS40YLYj3oOhb1fv9I0RBxUuPleagpNd7_qFdZHEjL-EMoaGVs5v1kkm_IMxJUTywjfuS-bSO2EJhJD6tEDd8P4E_02OTekH0qu_w6-C8LyXuZYS1YPb7yRTMWQ5nCYrFvsSu5YPGu4gmmpMN-lNwxqwdv0IFVnD4fEV3QzcHXh64X29GJFi8whWuNLmolcJD60_RVtIjeY3S1YUaSd",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydhXh__tbQ-HfurBVaWDOrqwOkbx8BZ3xpuLRSHGaUIB-K8I-Uoj_87Hwn1GeOQba0Jd4C7TOqUvofndXHxZeDeN7Fcdl-haxtr4opfIYgKbwYLdXUxxmJri0pKwLTKgCfPBODzWkGHmXtbigSqVAsGjfNiQz8vFgFDzS_wfOSYTZab1NQbvXiF8IFryMHiSyI_tqFk-JbVOiP-5SlOo7rVIzHyfKkWZuyL50nbZ45P70VWcMKSDvTx51kA1WtulCmnA3WJOww2qLjrlefTsyIX24j4lqmvb-d0t3IHIAopKxPy24UdKUYKz6givvhdPxt2ftYvK4FJ6rfF7gZYB4RQEKhILZvqWqoYGoeFE0jkqxDyKlBhzKcwmkXPqVZWxxY0uF4etd0ZcAH1X8MNwk51pSF5_OlKmBozthaRMj59Uqc0kex9kWuIB_uOIMQ",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydhTuAP-extQmPRmX990zb5UQFRYdCGyCypARqnFIhR1bsWr1pnR2-InGyUa1tunPBUEakwe_riTymQVqJV-HkosD0pJFAwiSm1H0zdLA3_fsOrAo8pm_K6Bs6b20HGbJNuEzGGKCIQc013UyTA3jcZC7lpTQu7VGigpuzJCiqaJ6wKPoLcBaVA0rBjDO3xN_6LPIbIu-D-NH4MUXOOZrRSWR6cdZKM_k4BfkhNK00Js8at-p_WqxaXPX5kLBYWoGEV6edxhpS3OD0X7iFBXMUohX9DmROYjROYy5uCcuMEsnyrQv41j4lEYiyPGm8pPkgHeoiUo1HwXzqfEJvFGnt-0m8ZPxBe9VU3I1XcyXJhrUK_koMZoBGXaiWjXmE4Qd6_oUXRrMItxitzoKuVrZRFqQ9PoEbbqILiYn9lSn6E9rXet9Pnwgst8nupMO6wd",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydibYfL5uc1IpCMEdEsoFp5gCjK-2awjWqFo4V5e41FUIOdY4xSoan5_mlSfE0y8mR_JL1kQPmujEzlulF3dCNUAq4Rgz-jTv-qh05r4oFzlVeCtiQa0WA4Ja4Jgc9XqKyoRBq_UheH1icAr8MSJxgfJVkoMExkl_Mtn7IibQ9l8tV9NC-36Dvzf3u6lX4d3iJNaLXgCZKmAjyWdg8Z8DyX7GNMk_mUOR643IUH1NPE2Qu6xcOi2tlSUCeAqQx-Nx7eVYQQkdddagpUTcie9rOqkJNTm97JZvEynaJmmnSjxvCwpySh5MNymt2ZShTt-F23KKbWmD9iEZi0WVRHgX5ZT5A5ZHAnaJUXK9d04FAIm_4ly4UFAsCJZ1IJuayNYJInWGL1Y2aRJNZyMCHrbr-tQrdOGUbihC8JIVeuQLhX9uhMM",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydj8ySaMV51xg2_2JBHggxcC983ftvz_ozlPtvU7uShthnlRnFqcyVrhzEUOmsDRH4kyPLiPFWXRwNeNaQnpTy7DJPolCYXFbj8gTztzQzCYrbwiMCSrJKktRDgafEgXK7W7_Bzw_DWsE5BjqxTYl38GFG8cx9f5f1BpRP2pGZxPpHWJY7IGR6nsh1-qpsuXRLYvXMtlasU4-aD7RcJktsBK1ZZ69zYYWYE2aew9OqLDm6ihkLRaxnvPFAAWkQQUlzj903Hk1Q3hkIfFu1YPGijzpJxMRYxbvWzhX5J4V62vYrBqum5zsYf34kxrif-OvNizaTej7fTpkHbg-9RMKOR18AFPewbLbfo9ymB6gc0kf2TWd6c8hESQRzHrBycujnzMlZ7fzVtB12lTbPPLy-mufo5ywGlt9-eNtU5DjxYzQ6Dj",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydibOGEGi5sT-iJUAd0Dczqvku45Fn1NUaH2bi4aPGRS1h_3xzd7Z0VEPTQ1cQ3qz29VfGg3kLx3MPT0VR8S72S6WytyBNElhS_vnySbPU-dywbtrQLGihBrUE37UEed9p6uY8PASryIokE7orjUtpQ8CrHnZD14kp1rBtzLHWSe4chsTTrJza5GfKUZ_yhiVz0Z_ahTwjd4amdJ1i3Zw82Z1jfjtxwJHfsi6rMPa9GM2tH2MI4rdqV0ocrnwIZTEoS1vs1mkU9ZviYvcWoAtNz-zzSNom00JhkJPgIiXOg5drBSYieFQgtxJK9R2Lq6Z_IiCfhw2NeoVB574Wdoz-_82Yo6VVDPOuSyJgVWQMVbYvkLUedSVbqPVIdcwCmEQll2kupISSGTHyUe1Lg6Cn0IyvuzvrmEV5Xky5UD5eVfOIduK88j36cMH6j7Lw",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydgDW5ymOx0N80qnlSKUSn8qnTxZb_2jpbdRQRXZO5msPi_1QJ73THxCQGNMRNqfP71-IJipNohdx4J4uMDNmLsI2Gu334Y-xOi1hVN-aygV9wl_2864luaObvLSGFao3eIw41Jb4cytrrd_nxUeAMz4pUQF-pna-ruGCtiD2MYy6_5nDQ1jM-9gBSdQQ-f1l5I8-ZMIvkm_ZYMQfk3tjXRy0kLI1DKfns8pUEp2c5dKnfNwXpyJgOdUBxrDzLKpUAIltGckQ3d_vJO_awcSFaK8B3N2t6LjKqb5DP3Y8H82Rr2EPOJjxqYwrJ9BAkzXCscHhigH1SMW457d9jEK3tj_fkgQmHlPN_nuNyYORdiLuWZ0BE-U0O_DIvbeoHIUkIbD5L5pgC8r9lrY3UdlyF7mpO41AB244gn0uiHcO8s",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydiIIEwLHXpN4l-QQnluXRDURHXbkFgjsYK8rivDf_SPO0cmDrm2ijtnpbrUjj5swOjSGOs2lg2CQK78NDyok-z7zQn1CWpFPAM2PIGONxkLqC066Orkaq47Hto7-ayUV2ygdwhzDNFSj1fn60pupiAXqcpXBvEdgqRQMYvvIbh0j-8SPUDer_dBLWplos32JE_fAvB-UPcmwyTpxrIZ6iMKEhnTB7tFmYFgbcWjDhi511pqldCae3j5Sk0fzpF_qygU1DyXi9XSODpCaaCzKZdG6JBApOIyAhNbBi18GzH-Y9XDKzJzSuZfuje3C2IZcTktnqm0sBAGMbDMGx4CME0AkZIsDX6YKbx4lq0FXg-fHOD7v-B-Wmm_GGXy_MyiGphU36x3fTQT8rNmxe0Dr8_ijJlHSreSTS2UE2xOY_cgIN0",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydghm1eaGK6hE8gXqBy3a3oAIl09Am4Ey4Md7tBCqlF6ZaG_HgoroNGEfYbhQFaThqao-RwqZwLohVS2V7RP-zdaCuxXW8h9n3hakQMlpx43YJdc3qogDQLtqorDrVPvWJl7NSTDtNDAouZ6rfjKZRw3XgOlqzNfoPROlYkR3OXiiu2UO0ac2x45KHU9oAUwz12ShPUzZN8GEoj0Ua9yUbNP7bdNMGra1_46tIMcAikKK4aPLZw-uikFSlsO4O-PDTpt3CtjmdmRu6iKE_4F0D54IDhmc3RachEqne4gx827NY3yiTib2nrPOaetR6HrR8LJs6V-iPs8aGlAt3bIiOpTzt4ckAW-nzWzDKiSHW8mypYezgmEsnkB-7IBHvZDQmeuFHo1aG3noexM0_OwuZ2luPI5HRjgOmD4fQ6SQtyn8AWm",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydjsdZxfyCZ7UykzJ1nJegLNXsqAzvOmJB3OzWRNBW_ORWnPT-d5zp2AXfoqIoMZA9z1z28Z6gRyoy-EQtd78-ZjjZwC--by_LEB3G5cl0ipUFeRHa3yzSI7nAsTSR28Ia3SLn3ZHBFnZVRnslbRQNRFHkNLHtZdg0GzWnX5ECkua9RwTYAaQjI53Xd6fnCBjwFQSVfVRMKR1mX8VwpMKunJx7Bb3dA6bFuOwFN-xxAWQpbKAuczJxMz1Y1bjvypF8oG6rQDEuSk6krjrbm7JVxLm0TifI1ZeW5g0_fLC7SfP2Sm9OeN7U8Fr9-0mtASYdnpH7kyTk0GRzGYIOYrHu39w3lhr3qzLKP9BKQvHlfHnXjCC2tx8SlczbNlD7LbuQWf1erGgr06ExhBouoXMd492omu4ejrQpvKdev_DNHSbA"
+        ],
+        "__at__": 1786799281.465943,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Raja's Seat is one of the most famous tourist attractions in Madikeri, the headquarters of Kodagu district in Karnataka. The name \"Raja's Seat\" means \"Seat of the King\" and refers to the spot where the kings of Kodagu are believed to have spent their evenings enjoying the breathtaking views of the v",
+            "author": "Koushik Inagandla"
+          },
+          {
+            "rating": 5,
+            "text": "Raja Seat Garden is an excellent spot to watch the sunset. The view is absolutely stunning and feels completely different from a typical beach sunset - calm, elevated, and truly refreshing. The garden is well maintained, and the availability of free parking makes the visit even more convenient. The ",
+            "author": "Overlander"
+          },
+          {
+            "rating": 4,
+            "text": "Visited Raja Seat Garden in the evening, and the sunset views were so beautiful. The garden is clean and well-kept. The place offers a great panoramic view of the hills. It's a nice place to enjoy a pleasant evening and enjoy the fresh air. The atmosphere is calm and relaxing making it one of the mu",
+            "author": "Bhumika B"
+          },
+          {
+            "rating": 5,
+            "text": "I went to Raja's seat on a Sunday with my spouse during our trip to Coorg. We hired a 2 wheeler which we parked outside premises. There is a small food setup stalls from where we bought fruits. It is not allowed to take any eatable inside so you need to have them outside only.\nWe purchased ticket an",
+            "author": "Khwahish Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Situated in Madikeri, very beautiful and scenic attraction. This point is big with good view of hills and nearby weather. Very well maintained, neat and clean. There are few steps leading downstairs at the end, so be careful if you have people attendint with knee or leg issues. Best time to visit is",
+            "author": "Shanmukh Nair"
+          }
+        ]
+      },
+      "dubare elephant camp|pondicherry": {
+        "place_id": "ChIJ6eSXFnkWrjsROF6gtDRS8jU",
+        "name": "Booking Office of Coorg Dubare Elephant camp",
+        "address": "Tourism House, 2nd Floor, Papanna Lane, No.8, St Mark's Rd, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001, India",
+        "rating": 3.9,
+        "review_count": 372,
+        "price_level": null,
+        "website": "https://www.dubareelephantcamp.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 5:30 PM",
+          "Tuesday: 10:00 AM – 7:00 PM",
+          "Wednesday: 10:00 AM – 7:00 PM",
+          "Thursday: 10:00 AM – 5:30 PM",
+          "Friday: 10:00 AM – 5:30 PM",
+          "Saturday: 10:00 AM – 5:30 PM",
+          "Sunday: Closed"
+        ],
+        "lat": 12.970950400000001,
+        "lng": 77.6003982,
+        "photo_refs": [
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydjqgzS9RnhDJo7c-6vgbBgBKIOapAHqC9vHiZV-4htha7Bjj2hiqfVcmvzRSJtOD75kh6i5blwGnQi8Pj5XEpQE3jWwGIexxs9TgCA2-eyzp1KARTeY8Wv_x6Wk7qXt5zPnHiXc6VqUjLbXgOeaIa7nxHmHPbgL7BhbmYp-SKsAXK9NNJuVce7VJBVSc3T25TY_h-iqKQqHnWCuEhAFARKJ5dpFnkJ1Ir1YSvnovalpbDpx_gXUS4-8kLrQZTbh5Oz3MvXKXSrK9XWqwXrhjIT-DSe1eBWiKIoxEtb74D3qWrnlRnsPkRUBj_ZDWW6iUJGzXauSrIPQmyl9_1hWSvLjvzdbI868SetrpldCnWatmfuiX4N_tzO6RH66SP3qxoOCyFcmQMCvvfCDTU6mFS9PvTpo-skQsGSt1mAENeEBIw",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydiLYXRV07xOSakpgqq-ENwzKY933AoHV_1bOG5M4VDbn04eKnI0ZEjLz0apqEpA-IujWUzvUAF-My4lgd3yjtrUZEQkUpmYFCDFkqI_3rapBdmx6jHqjk_ftrSyV6UvFLT6iLVY-jqMZMVk_gQBRo0RUmWBHgItPeGaA2nU5wRY3Mhd9sEvJh4P1vKiqlQt16b3_qKYpW7UitiKAPJyr5FTXkcMcUTRLCTE8CoGpAGbDQa6LlAGsmbaD19QdwJLxgKsIdHkFFe5mj-bbec9dgr0Az6QiaAxqmn-SlaCahXZCyXNPprVvQyvL5UhqAvEOZ2TIw6-q4d4Ty4Fx0vv3SXLMSpwDKAq4yDgrUdcg_z58zvdqTCrBb73_ZsEP1m_bufhRRMN54DqF5rE5pcQfTjxWxUxTObYsM-FDf6Rg9U",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydiO8GMigdNv2DL0N8X_Fs95LRNqZsmsCKuSwwryf9xmkFDteiy5AMO3HqmwYygZ3A6PSjSqA9O4FjWlUS2toHEhdN1Gu61JpMJ7S5TPYE3YODKeKeR5eTHLisMXyL8eKUb5Ri4R4VUK-uf1xT7u0U2As46Gs2QP_vQrFmGTTaiJMo4kIymPdqt9ywsmVpQpgKF9U-ldGMfXb4FG-F1ccH6-OLxn-Nd3BOs930x2cqj3l_IQWFTsJBgRC_kBU5EjkfhQdyPslWc1wplNXD0Ddm6aZgpfih9EyEplHU7FHP3HCyILzrkVP4QhPFLAr9xIaZqe-aOuDwu4SVZAKggh0Jy-VIqiwjJv-GdO7GaCBrg9D8QKNS24Nyv7RnEvaUt7MP6CMsWP7Schrofv9f0OhlIYzQzIDK1PCcEX-H23lx_GSow",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydgaL3-ekz10orbQXywRl8vhXgvnFMEnjll_1cK-K7ynRuY3_3AoZThRt7Ip-UBwa7DWlBfnOymA2JXsJWKK5lyzFt0VQ-ViJG6q7cbS5_fLhJL9G2CyF77dGAvcNB2_mBDFS9OlU_JZryweihn8LBaVgs2KGWijvej2Vy307SkfwGFmBjT3MbSUv4t1asoJVTt1eACMsETIrDSCAKj7Qa7dwF-ymZXlEBMJf3lyMvs3NpQatiZH8p9Ctr7SArBRLpOySsVU0jQ3uZOfq2WZBMd3YnD4eBfnLh-hvMfUZKG7fuZGFDti9MQ8yu6KQbzxFK5GiV4rSKufZq9shZfbfC7hGRm4ITYIVEGtA1mxHDUDX5ZN3Ja1SX1MEdOdAiaSEJ81f4h1iEOmzUDElsfXv_AHni8h7ZNI3PJaN6NkvpU",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydgQAASqKHiiqAmIIxvSMijI8KpCZlm-KXgKKpW2Xmmiyhrz3KP2Sr8_bx_B6K160pHRZ2_pyRXenR11aJd3ctyNe0XtEC3v-VRasj5YmNZbK9ag8CkMTFiSHY5fPk8QpZfsCakYaa_rKH8eLZb678kSCyLIscd0VTH54puddIjzJ_kE6uwlY3GcEPz6uC77enCcqRXU-GUN_t9EwDoyWfKXf8sMjT9Ij-48LOveEv8w-nII1VPllpp5E34_MZ56zHQw0ALOEyF6A7VyMSHzxIH2zVXeN3pUX-b8D79lRqcVYgjlPHq32NB-tFtIjW9XwkXwNAJHDXXnWK8t_Z-DgTnHRvsmu46kxuVjSIuCJX5Q-JhppC3PGi53BqwMEIogLEe6JqJIvpXAxp1TA8k9ARgzCBznkqNSIj0xQxst6klzqQ",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydjTQcZNmTGN-T9SBWwKfpwaucXdOR6fmWBE_IN_dBycc3LelYadaX7MhlrXyi8sn2TS7pVAGT9gRZts3MyHlQ6mxsCEznXAARJZKgADADLEg1oILv9iHDdqbVANa7bM4Lvtx-BoU8Aai4rEcL4hT8xtNMlzq6DIBildv43ETbFz6e4wFvgMNdyQR4d89YBOgDWLlmnVMNVEROflVZAfM4Dna-QxMzodqd-Fuf3OsU9jeeAdKKag5SMsSlTCO-gocBjXnxJqeBX-5KToKU_xN2sZ5aF1lfSkwQ4zqDXENxdLpCbpUnFOQ4UtUkePGKG2-eXzVbKzygns0ugS0Y7UmUfwD0EkGSY7CJ39-F-Np1Uzdw150L6DR2rMJV3u2_NkMHtsHr7eyd6Ex8NyMDsc9VQK5uMQOo1QCa2551bdI0uZ08U2",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydgFwkEMN3OUcPy9cpoHB32vw9xlUA0o3y6l3tg0vymhfMSIYLp263xNKDnp9IqRRN0PB8PtjVSUzGG_-SajTI6MAZYX_zgLEoCG0q5ZIJ6GNmnS9khJxVrKutFoBXdM5NJTcWWR9XD_ViEC3FHAGRcR3z7MBIVpfhhG0bsv3H1KCOffUm2Qsz5UTCfNcWFlx2zldLIIAONr0GC0NdhtNR7jihYbuCHuatXfRz8tmJXIazMA_JgNFR6HSuthNxJdvFBAShztVVfpgeChpPAhLtkXL0Kkb1EvLjanc_H7wwDjW7ZDIEoyKMUr8o04XpyMRohw8jgtChJgZlk8obMjtWtfzILk1MTdacNIDjvAvsq20nR_vAEgQ4eTx93w9TBtRgd94naLAEhA8kcyQ7TBIw8wh3A0Cg3Wwb6jwTpQH0cx4fSU",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydhPPiLQRsEvCHcYn-5_XI8hbZ1vWmdMxaj1hWz-ckLhgzp5-uw2J3sfjpyCVuAPEbKzR_JJ7kjid-nvtZXoNgxwAnAQRkKqj6XwIWKxwu6g2ihW6ixLCmpc9HwRo1LqVT1KG9AYOcorVd-S7feXGS9p5Qa25a-jroERgKoA7EKH1j1eDmYk_ajti4qqWS7gWNzF4dlUeybp3un94hoNwxc9SVNIZGWHD2mehpd_WcqGBfss9IrkiZIEsaMb9S9Z9GVZ8gc6WXO0VxQ8JBpio-GEd15e8EF14qETUQA0c1j_7O2MFOpbnMm3_wpd2vMqU8vX02-SznN3JepP2Gr__cVwvnbUun9w-cE2-GZlb--_wzaXAozL_KzXcMssI5mFzzAxHWcNH3Rco1qS_p0ko-D3Z7CoWXGj4qobwTkKyQFJ3Zv4",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydjxVXmSWIfb80ObyR031-BhEtDxlwU1xOrfQIFJfiwMnx5jA6ijXTWDSuxDZtqtCUJNRjkSfyNT-ubGD0x0ouCb01YoWy6-AXmPekTfhY6J5AQgELiTCnTQMijGPoabWQs82UahjGZFBZgEN-nG8xclWY7qp7TZMu4dgj5XMiC0ipjN76fPNeoA6POsqCOTPMDbitASVuAGbgIrtNaG2dq2_HknIkaKKWUVb4jvrbbBGsHG9httzIFPBbbbVYCooUmM8FL5wMvh9YXbVhZzsUKvOPzHfT8hzOrb2gj-2dojaRQJ9BXRsxlTnuyNrep1_3fjoUZaB7dS6pGS7FyEaAaFqmPDgLy5HY6D8lbccgWf9RyumnyfDuDFrAj8MPcA9lbIor2fYhBU4KGHZnINN_VoyUCRo9_jzu5iO3ZdqxSK02A",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydiJy15ydLDsVSy9jhoG9I9DyCyDFNTgfWAEj6laqNTIl6ibvgvy83_6AcDCFecNUg7TOLFDQfkV3rU3jMTpybsDnN_idS79aToU1DhjA1hMrOoaNu8TMt70ZTS4NwvnQsjPVX43ttSoFad8dgvkWXTI7WuMuRTuVErOryspc6TcZBCPvl8x_2vD8vFHE6OAWq2RTfCF-yy6cnat2oJA2GgrYrHdbas_7Aq6KTCqsQ3X7hCiuU341wXN62WXk79HlwcunJxZGT8O-aQmlSJaqCXNKprLAhYBMD7_jyMIvdmcsvym0Ce0Z0uyOXs6KUfoQjUd3eAABCHh7T1LK8psW76rMOCEN92cmZ9zt99FAsXwZI0XwyYIjLu1ZyreGonYBRv7xWUn1Acak9rZtH1X294lbyUJnuIijTjwxHjPsAUT2UU"
+        ],
+        "__at__": 1786799281.8464692,
+        "reviews": [
+          {
+            "rating": 2,
+            "text": "I've visited dubare elephant camp 6 years back when there was lots of elephants and there were elephant rides as well. Now the elephant rides are banned which is a good thing but there are very less elephants as well and they charge for every single thing. The entry fee is 100 and due to low tides t",
+            "author": "Sridhar"
+          },
+          {
+            "rating": 4,
+            "text": "Dubare elephant camp:\nThis place is good for young kids and family. For younsters added attraction is the river rafting and enjoying in the river. Timings of the camp are a bit stringent so be sure before you travel because if the camp is closed then it's only the river you can enjoy till the camp r",
+            "author": "Yashashri Potdar"
+          },
+          {
+            "rating": 1,
+            "text": "Worst and arrogant management. We came long way to watch Elephants but it was closed. Also entry was closed with ribbons. Officials were giving lame excuses for the closure. When asked we got reply that “tum dur se aya toh tumhare liye khole ga kya”. It was disrespectful. This people have no idea, b",
+            "author": "RIGVED THAKUR"
+          },
+          {
+            "rating": 5,
+            "text": "\"\nIt's a cozy coffee shop offering a diverse menu. You can savor delectable omelet noodles, paired perfectly with a range of refreshing soft drinks. And for those seeking hydration, they also serve crisp, cool water. Indulge in this delightful culinary experience at this charming coffee shop.",
+            "author": "Ramaa A K"
+          },
+          {
+            "rating": 5,
+            "text": "Had Taken the Elephant Interaction Program inside Jungle Lodges and Resorts Dubare from Skyway Travels .\n\nThere was a private boat pickup , followed by breakfast and then followed by the most awaited elephant interaction ,to be able to touch and bathe the mammoths in the riverside was an amazing exp",
+            "author": "Ashwin Ramesh"
+          }
+        ]
+      },
+      "resort restaurant|coorg": {
+        "place_id": "ChIJYQujTwBVpDsR5R71Mb7vln4",
+        "name": "Coorg hills resort",
+        "address": "Mangalore - Mysore Hwy, Katakeri, Madikeri, Karnataka 571201, India",
+        "rating": 4.9,
+        "review_count": 454,
+        "price_level": null,
+        "website": "https://coorghills.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 12.420608999999999,
+        "lng": 75.7053657,
+        "photo_refs": [
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydhzgZ8sD8MLFhlHwYsj2FjdZKvI31L98nzMN6AOOVSB00m3o0rBqtLEpJq32E2y5rt2bdHFOIgJrDVasGcOlOSlpsGxNhgGE3w0rzBtE4o57rwg-Qqh4wZR9vAfkgw8i4bVmVbzQaicl4EMBPXpXT_wf8Y5A4-_8OQw7CgmafwMZcRntLNUD_oHug8ms4Z3yKIlLD_sJXjp_cU0RCAmvNkBxSUZd7RouBQxc6bx_-w2eagEdsUGx-gGOFtDz8OOW7Bn7nlsRPeT2FZDOBit_HyEbmUkvMxlVQUyoSpj9-cEfMxOp8ZGqVP4URSCvwV5noRdorf1jgW78iGVFX4tjFywtBjG-xjpNXJJ3B_Ou_Y4XemNyicHmM3cKFu020yxbKsphql4hmOjVwIMSbC8Abl9oylSrsYBu3KWjUNY8fT5SD2oMAZFr1vajlMYQBXM",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydhYMc5yrfccD6OhJ5phOcBbuthUpXZGOMA1oZzRRHtyAKxkHHw5AKIZbx8q57u0wJVOlGaWvgMFRzTXMhz2YV4wGN5baWLLpVqHBD6vzs-SKpXryFqSaxX8Js2H-hZccZZHUTIoMCaRhTFn86Mi5_pD6TfklliGo7wp1Ugkl3ypQY7e0YXIhpT5kkCEoIvwFKfQ3vm96IE1UWVTAIAzo64T3M6v3c4MOPsgJ_erQgL5fl7aYUuP4AlzzmIBNwVyAUEo4u2pIo9bhpW7GO14kpLaMhtV_x805WPzBrUY_mCJ2Pi00hwRKDBh6SaDaCh2V9SymievMOTj9RyJcfQbLTKCTx1OFPEVN074Gbprrmv6rVF4q2BFISE3_uiDXjESlsi43x6wkctowipx2RHcSyTxg4OxHzj_ZUvVEZCWl9FFlYbxhldqlFsNrdo1h9dX",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydgpRkeaycTvFMw2mMuJPIHpTEsfksitWzDrvCy5cqmOaXXyxpYODE3AItD3JPjc4DlubX2IRnIk5wDHXG85UBFlV0VNmIWhpLKkrK5xYSwlkcP7QSDGuHDsMDtCfFcKcvYYYwKMhVPOmCwXHDAOCROAS-kMFHaHtOfC8iYp3zhstOOHEx4hcJUuMsNcFWXxNULch_CBFcNypqKLnFLI0aOEhfJTbmafZNqEf-5Qlvn-MpBVTdWmVmvIzROQQPXF9y824fOFLLaIxFruFjOaZFCGJs6KeHCAorJD3cfPrsovJxOM8tcrHFij86-LuuKBbC6kCJGDOfF-qou4mZnWEOIzTNzNudrFFCfdyB__rcIP2vNoZTHSATV_-JnmhEOzNY9ugF-1am6ar_1OCQDNxKKO3RojeLYCMqAfig2mhLbM32Cl36q5wYqAatQ0Frml",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydhcOmJXRCRoeD8VAzDZb-k_MwHBACpHYSRMc4jqQFFIrKcdz3NOsCeP3WRfpYDuW-4Mj6eqk8zC1axXLA3prs_mN848CCH7bNNbnl4XFk3s5QbfM9VEpvXezMlrIpdEjFHbixo1HwSts6W1Ise9u9q7m60NlpA8WTIVlkXiZ_KTTXuPTrDVZ3laQg6jp9-tsIYIQUBsuQVxI75yfAn2aYtb2i8p5xtIFho0VeKXuh2TgERxIiCutyYXmXI5uz5prBC2ij8vxp114LmJrC2akHtvrPeyqeKF8lkuzCU2WhXNCqwmBnqI8NI02qG0K-JQWN0682AELHbXNtpvdq3hRGvNz49h2jgjNtF_9CV8K3V5KR0Ej4X2KVU2g-PPopGzIqFupE602KN6K1gIZiEbfhIuWWVssRjtdvhGIv0VH9UTTazwLm-PjWmfWdx04ofq",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydjL8wBGSMcV919NpS1vC_qjXrId_5xceKTUP3USQBlcuvP5TQU0r4cIvMuZTvB4okj42CGDYDn1ZACrFoHIMrzEeYal-EYQrUcfojk8fAesaClOF2nQ9czbBHNM0T8mihOyGSVEkFVqHtrlncL1CfKuccVceWG8fiHJbaGBpWlu2AMB2SHhSmdXF_uKfD1RajAyBn1An-Kjl-J38uxNgSK0iN63eRsEHexgsY0qCjzyCCJnCLQif1iqSdeX3_t_YkDlMoH53p-vx67HMgpJy5AbVFFjViEk6cqkAf-1C1Xcq8vgiO9R1uKTi7ijofSxGSzxWQTq3COBe6YE32u7CTTBOigYeovv1jMWDHYayCqysB3cjhfa0BeAmrrWI4WJqzi5x87qJSlxf8k3pM82ILkvp3p_xByEWvx1HEkuOApB0vvx1ctKniHfEhuovw",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydgF0UMB7JLIWX3HpcqV11oNYyRlonzkWrIkHVF8J3VHc244ZH9OIzFe3bzqhZoDeHFXX9nQgxfM6A_dSW5q1AeV6tPj7A2bEH8YTNQEOcJMa-ho7cohORFdJJQUCuE4Vtb9MGw3X7A4TJSLhfYePzi4HPiZ10lGSl4qv9UUuJ3x9PcuzrADa8DCWPy7u-CDynKad5WtlkWJ-LpCZe6QQx6ld2W-TMo6AzJNCRQTnCy-sPvczRl-Pur5wOXNW2I6oqbbAeAPkIHZNpQZyAde1HtB0ec1c0yrytLtH4_xXZ31wgp4V5l8opAqDS9vkyypLo9s-hPF4TUIVSbC4fLxeuRuOoS5SqSw8ZPzHV-LR46BsxawZx-awxaVfCIvExsOGpQ0kB0GRTRTZSHItQD4AE-SGjrSGW9RYQGpBVKUOWkr30sWKPteGtv-HCBmhzUH",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydigigph_k6gy8nWeCjxJRGuOxWAmCZfWXVwooJExiiOUgaN5z15S0xC6peuf5qqyx3-o8rsagWS4LS53XMHcKxN9NQ9EZfkUh-rKo-pmyta-bUv3nrJhDxmMfzRlu2kxHHjpreGYfRLd_FrhBdoEQD7j3OUpS7CvX1j1yOeP-v7FACNQkZ80OHtXr7kr0uMl8EA9f8-t-v0Z-cHQdPikMz2YB0ZUBiKU56-MtxKxSmhWi8WMQd8l04n0YpJxqSYVAfSUyDmNN-RSn21CTEAOz3lL0ZzY8UilLq79rGGeXji6MfHHHw6UPAyHSC5vZARG-jvoDKzxJiW13uQu_XscXhZDIhuQ5hjPTM0Zb_iB9CzB6EICWXh6UbOrocfKgSXC8KJF08ExtxcnP8A7OYvt5uURCujjdNeXraA53pjQWClbcwEDVcNPdtELeJzLe8r",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydhC-D656jQWLhJv8Jt1Vnc2P86V1NUCD9R1px_MdiBlujqAaQkxPrQUF9dieacNZTo7OGHmSP4En7S3vrN9slmErikvYlJSAu0XorrHeDP1b9l6gIgPGNEnN2wD1QQaD250MIclRfUSex6nmY_HubYM8CC16m4nMkDi_Ec97dYZHjtStPz-FRjRA4Jr4kUANw70Qnz4beqv1BHzHJLzGComJFDlKU0JdQibeVtqnLAPgoWMK5L1Ck486JZrX2DqK9lqmSmB4zi1uGu8dmQNOxd_XaURrJxN-6VvsZapK-6VpQy06Bszxn4LA6svpcP7ez6DVnTYRvadD54N19L2_BUSAh5HG8Y9p74m6vvyG2FmN6Qe8ZSWYxgrSJ66qqjweAnqWtPHFqdntb8SPiWNyyEgvF8pzmAZSBX46QG2AK622pH94lilMtR2Ip3zZw",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydgv7VMjRyIb-Cy5hFvub8QTrp9JRhcyRRPfqSZV-eS5kfYqAnzxjMAkNRUAtp_Wc0hS4fJneeFCt8dAPphO5BWwt8BwPw5332ukOaIh3-YpVHxYpfVTCqTqz_0lvHiTUfHhccN7HACOmZmbjC4_IMlvw1rEEzaydVUHRSqR2ZtYbCyIv2ZUhkIxfZuiJ3JIM3r7vJlfh_nQZDhs-gQLzHNOJmmOgWNWsSH9Ig0IBDwwiHr9hdwAOktsGmVywVXhVA4F9cO1EpDLGQZJSqphX3YA_XFL6CeKNUhkm55gHgF94FwNfPHY4CjazBTRsck0RRXt7w1t5FWdGTKfLGsodSI5vA0PwmgFMj-3nEkzpqN6PGTcNd_ZyMuiA3Zj-E19R7NldLjuktDbt7zueCSKnu7zrgrI-QMDI8zpcOKYec5GM_wwG11lj5dC59T1iWI_",
+          "places/ChIJYQujTwBVpDsR5R71Mb7vln4/photos/AWCwydgPrPYv46sq16fdqmQUeJTnh_iXcFfE04S-Mnyp9IgIfmV_EUltj3aVFdfiBx9xV-IUsGC56QobzHdBS4xtNFcLp7xxTii_a9pmSe1yw2rMAxeprNcvTTaKpKKChTjZO4lHNvfenAsmvGFReo-uGmTC4wIYyno0_JpT5WF8qowhPcpxCxA1Rp_8Dhk3V27A9UoX9MxHSlfGNdS0FlOiGKfUcauZj_fjQU7IYPHDtuwsn5hb4EfuKslOYMO75tvjMM4plmCF98Qi6UNBtptXZEBXEz7neMAfb4UPFl-RW0_sjPM17GHLLsthEGW_vJ4grsTjqhWGjZXA9ATlZr07vh5AYDL1AIb_OxiWsNAP_MrwWLJa6VwzuE3uST1lOppNkKw2CMBk_4VnD733NLTFPh47f3qDSvuF9vud96fy3rzynSidV1FMdKFIw2imeLx7"
+        ],
+        "__at__": 1786804011.114659,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "An unforgettable family stay at Coorg Hills Resort!\n\nWe had a wonderful stay at Coorg Hills Resort and it truly exceeded all our expectations. From the moment we arrived, the warm and professional team made us feel completely at home.\n\nSpecial mention to the fantastic team — Prajesh, Naresh, Jayant,",
+            "author": "Dr M tak"
+          },
+          {
+            "rating": 5,
+            "text": "Had an amazing stay at Coorg Hills Resort! The property is beautiful, and waking up to the cool weather and breathtaking views was the highlight of our trip. The bonfire in the evening made the experience even more memorable.\nOne unique part of the experience is that you park your car at the foot of",
+            "author": "Ashwin Raveendran"
+          },
+          {
+            "rating": 5,
+            "text": "A lovely property set amidst beautiful natural surroundings, making it the perfect escape from the hustle and bustle of everyday life. The peaceful atmosphere and scenic views create a truly relaxing experience with less crowd.\n\nThe kids play area is also good and  Hospitality was excellent. All the",
+            "author": "nishit hirpara"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing place, quite and serene. Not too crowded, and that's what we loved about it. Good view and best location. Hospitality of the property manager and the staff is too good. They are very polite and helpful. We enjoyed the bonfire and my daughter enjoyed the short hike (one of the staff accompani",
+            "author": "Madhusudhan Rao"
+          },
+          {
+            "rating": 5,
+            "text": "We stayed at Coorg Hills Resort for one day, and it was a wonderful experience. The resort offers breathtaking views, making it the perfect place to relax and enjoy nature. The food was delicious, reasonably priced, and offered great value for money. The staff were extremely friendly, welcoming, and",
+            "author": "Kaviya Rajendiran"
+          }
+        ]
+      },
+      "abbey falls|coorg": {
+        "place_id": "ChIJJ-a10A4BpTsREOa0mU7bOK0",
+        "name": "Abbi Waterfall",
+        "address": "Abbey Falls Rd, Kalakeri Nidugane, Karnataka 571202, India",
+        "rating": 4.2,
+        "review_count": 10192,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 5:00 PM",
+          "Tuesday: 9:00 AM – 5:00 PM",
+          "Wednesday: 9:00 AM – 5:00 PM",
+          "Thursday: 9:00 AM – 5:00 PM",
+          "Friday: 9:00 AM – 5:00 PM",
+          "Saturday: 9:00 AM – 5:00 PM",
+          "Sunday: 9:00 AM – 5:00 PM"
+        ],
+        "lat": 12.457894600000001,
+        "lng": 75.7164803,
+        "photo_refs": [
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydgJUEoMSB8hlPFz5KcQkALHm_WhiF4Vm4SglYx9ufVNPeS6HU1lzT27ABhts2GNxl72J4OdMcqj0TO1FfXepyEzAKDVh_SXYxUjoW2_68g-icDgJKq7fMYjokTjurQBIcLn_Ypb5lvXsqVPIGq4qfNLQxx1NDLwLAReirrQ2n6YbZRLkSPuI2ihCjbtZfJvriVN6iidjL2FaNGYSI4hbY0ltP4_RpPgi_1mJzxUlFnjMeTzwIRhb2Hwve6s1yUjtHV90nwrBVzdpLxl29kg1HyM2u3Hi5MjrScXcbpOEEjFvKz3NiP4b9TrvjntILjXa7jfu20-ZjMVvpFKLA0IRwu5fSZcLiU_LKFX6G6w5eLmug6V0BNzYI2iTwNIPBAUDxdJhd808c0kx_qjsTA52VF0oiKyjdUTzpvQ-KNxyB00gA",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydhn6Lw9O2fJEW1aa-GjPz576nJatuFMkBxZXyONkYA9GSEvR8wxXfZZykVxqfUS53ErjdYEoW4dejMAuOmVG5aP3UrhkoEhGfMJupJD790Kcn8SorN-MQTk4uyLb0ayNjdUXJ3ueaWtlGEtnDYB1Nl90oNZ6jLQ8pnnDeiwdBtJe4mGiskFut7tm4D_VzBnKHzjFRy7TjmQsBNr2dsB3Pwm3IoEndidxggmkTwHuP939DP_68DMyicQP_arURhUFoShmgql6fhokLuysp0GaNB0I18_cF1FlDEPtyn7u5KLje7TPCUcHrL8g_Sw4bij8UUX-QkHfFUgtuRhhdq70C-SVYfyDwEFhdMRYttFXWUjG2JDdc-dm9cTZKNprRWFQW5u1xqJwnj02CGAr-cmnrd9ElGARFHgg_jCOPQdce7hI9TM7wfcy4DPFlSKEg",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydhY7m2ZQ331iDeCQIt7L4jnxiZEmoQ8saKUtwxWWyfwbVqHHQGMJtK2swKQUHVo2qedhWM9UroIXtinsuK81OX7gc0sy04FU-rw5MezTYaUX-o9CEQqz7AgQHJg1qyGC_e_QM3-4a_tArtB9yK593rSSVGdvBZ6ZZWTayPly3iEOKMMQ1av202AhIDP5jjIiLDLsQQ_WNgY8290XXrztY8_sAOgMLmAYUlpwQe-vTavu20cjr6SnUBCb28ny9PA9XmykXzRq-vRb3TJ0Qnw_Wq4wOhmDUWh85gjXZRqHg1QMpFrBlUBtFMnaDYSlPsHydzl05whCGjX2Hr6ixDdTGnhSKe1AHX9urREJDVQFp56_dXhbHCyeDstqnryRsCu8-maz6uUwNnXQWrKqrWz5uxLkrADKGETghjZNRqQLiiAVw",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydjkWbZr_ZQwM16lYkDBbR62ubmiYcxCYdlRrGiQDK0NWijyhURBVxlwKbzyIWOufO_Hmc-ECpCGkhF41NxLz4rCSl5E_pvqybcXNs2IQPdpbL0pR6Qpz3EArsILdnPIEraBKUAGxNwzeUNJN4LZCge3RT-dvZV0s5_6Zpre3hgo0YPWht_zXirsUpg4ytsSBS0-Hg-3UuAeoUkiVzj7IfFzU6niWVr4cpCVujfldSAgtujBEXkL0_OtpT64DH8zRGE6L-udpwQ22aDueAxfeaW44DyEGYPCp9oQ8X0FGoDgquamAMvwmQpVCU1uCeLzDJ4QiD_W2VCPlK5_z8z7Bz1RKX53QbjP2I93055UXpZj30e-QfDPXEAwuhkcLeZpZ0nsCvqbMxrVx8g4nseeypvK2daHjGgjE9PUkrYLdLHBTU2jNm-6MfdXXsCxzGo3",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydgrawhc-NxLityFOs3ObTMt6ocMNzI9EnWVD4g6AalaQkmFzMVXJjIgoUdQGq-wbZj_BCVT67msgzi6mDRUoZZ6QQvXdz1uJMHnpauz5twE3uPnxssoJoMwrohx_N1xE98j9rgDLE9EDRKUs-RHGezxmOYJxSvTqduxfiHDi12xEqNtdZS7cZJw_RFYz13nCcHc8uiy0JRWbT6D4UWUAFIEl95IDU8tv7uv7PSc-OTkv6nD20fzwVfU7zMrdYRymFlrEIWP8nxtJUSg1dkOOr2mbwH9QbaXb13d7CJ_gqwvpQd-nhz06F_Nqv3TjsUaTbPkECpvSVBSQMMQyJKOVqaio6OC-bYCDVy0yB1ITIo5X_GWtyqV4mkQGRIJaAg48bu_5Rq4HfuC0ftNbGjM-hAjNxzOENPZ_IojuOJzqKNVxb-VAF7oYGyJe6fypI3e",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydh72sA-7Bq1-oD6k0xim0HjcE_rGMhyg9zW26E6vZob1rw3Ggpnr-urbiADbf9dE-tMBtni10HJWCI8G3mwDq6uOeWhIPwTjUQ5a7GufK1No2ydIGFzsVA-YvLN1pLuonhKa6i9k8uxwHXn6ZTEjRgN2K6dxhLSzoiEU6WGjPa_jYSgLu6pGtBUomGcvhwjFcMrmrlFzciktigoDK0jZMZYxbYvtHUY3AOvNmsgene5ivWcwk4v2qrHX26WETHVplXtAaVi-iUs9s_qha8HbhX6x41Bvi9V9PNqKjvnCL1i9z2eLsNPMpNcXOLaNkF-k8a36GA6afqLrKG9Jcdn2qIbZ4Ku_vknfDEi1LyGr5hBsKcnLzCWe8ifRRFiayHpSIpCZzXKsgRndPmLQRVM5NXfes90nG655lxzPndkkl8Y0A",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydg03m-KP-miQbrRVY0yJmAf2VSvy6eSkcV8U-GSGwRTPtAukSQUpcnzIni6JNfp0g38zsoOd8sR10zW5HCw_70A4g0LVQOew7_aKBUsTQJsxQ2M8meR0sNJcgOPKgSyIehcQfNbX0q-1efCfh6MmgcV6r9KVfreiAII_xxlLi1DkRGjiX8IkU1-77CKNav0PqilyreODw3tzlpYyD0Tkk5hXTjE__dLChPAOERLUt6N6wn_8ukiB-BN57YGbsjw-c3plHOlxuLzPJ-eNAJkToI_W7JYoDsuAiDB7c3dFWK7OATsBVvA11-x93hYqxn71GMTgfFF8A68zmWWFSOIeQewQo9m1k4TJhQlty1JEtaFONhkkAop6gJ9DNmZKq3xsJEKBHZ8FXdCZXUP-lglHWl9Fm9c_BvHDZ5P4od-DdvKDQ",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydjO8GKUOdovu_jPzTlh0O7Ax9DBVBSmkc4LaHETD64s5TGsUCBzp_ZCRuXbyGORm-T0bKgb_gspbf3fshCNR4BcSP2ZEvgVq13xqbWxyIyzE4Eol_m6G-oYo3EyZvkv2hTxCNyPRj3SYx2TgAZWv7g3KcovmAKUzGOJB6u4xG4avDqglcwnUcwRS8o7uXkxlCaYxm24f7W6R_rkC_8I2GH2fIIrsd7iNImbvKIuL1JeiBNf8Jle8vfPJ5Yn7COpR58Zu_PrOyyCkNnrX9__Y4UlXDVhcTwTrNd5f7xaVjCX7PIRpGnbyWiPsE7vx_81nWB5uKuG8onfN5y22GwX6F3A9rSo4vapSiZEC-14y1fRiGpMnBfOD8ENFL8Tp-PMiVPq174unU8VKLdu7bSYH1vSYmVtm21dPGU_ICjmMAJn_E5oCriRkcdW-dfrOA",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydhCZ5n5ZOV0ITt3MHxWGv5h5zcDrwJw9aIuqP1MrNHBRYZZN75s1Yl9ELUHeS5Sn6aadwZWg65o3E3s4E-w3eAXgEEkNxR7FLJdS_W72UzXxST8WQI4_4Nne9NX6Ui9RmWjgc05Cv1KfCf-beIT1MvA-GSjgbEVeDWt7OixTsWPUrfTWyR8RDKJWkcDLySLpsQzjYiYC_89Lqi7t4mmPKteNR5RYuHGQn9QdiwmFG3VtIcN75upssWYxLUp6O_Qh7mIKkv2l4E78RTv7lbBOCKdYHeJ38jnFFMUSiJ4qv9lm0Bwe-lgv6Gt0H3YcJYV52M8V3kceTURJFOqDRT-114U9vaAOcQef2_pTKzhNw7WMzoD2_-2-RV8ts5j5rDxxFgWgi9UJ_RIgy_Xr5QAP8IPIqR1i6XPLL7uzUVcOjuxz00E",
+          "places/ChIJJ-a10A4BpTsREOa0mU7bOK0/photos/AWCwydi1Wz3jn8t45THLdDWbmWvXFh436uboaI53ZHqCBh0VSzKexTyb3VMIn694nC43_n5L7DVMRljPeoM95E9nV_WVX29kfBpWLXmJsGyV28j72GlSzGcSCHVWZR5g4yrqRzHTSUiioUl0dNYXd5U3Xe6N9r1-urAOIrNIht0Kw0a-wpa6rji0LRDE0Zh4PFySalXWi59KVnTbVmzHtLRepgsWCSqzGKduMJ-Wjv5HbRJq2UZSgpsmsHboFbQ2cNVWTSofMzFru_YwJWtBb0QKHWC5N0g6FFpzhfqE9PQ5zc5H9iKYJ_QgpazTbGc6jkwoh23WEpMP58SzN7WKuVlUaOpLhWG8jO0mlXhC1wF_igfbQO-LiFa0ekVfykmaPsHHxaFNcUtTftL2GBg3Sd6RklNRzaoG0Y_W97vefnJX7Szy3sd0-pLzNUN3G1z8tYbO"
+        ],
+        "__at__": 1786804011.6123798,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited at the beginning of the monsoon, and it was one of the best times to go. The waterfall was full, and the whole area was covered in lush greenery. The walk to the viewpoint is short and passes through a beautiful coffee plantation, which adds to the experience.\n\nThere are two separate entry f",
+            "author": "Amaan Khan"
+          },
+          {
+            "rating": 3,
+            "text": "Visited Abbey Falls during the holiday rush. The walk to the waterfall is enjoyable and comfortable, especially with the pleasant cloud cover and weather. Currently, the water flow is not very strong, but the surroundings are still beautiful and worth visiting.\n\nThe place was quite crowded due to th",
+            "author": "Nehha AK"
+          },
+          {
+            "rating": 5,
+            "text": "Abbey Falls,the most popular tourist attractions in Coorg, just  20minutes drive from Medikeri, amidst lush coffee and spice plantations. It offers scenic and refreshing walk through the tall trees , on easy steps to the fall site, ample parking space, added with adventure zipline activity.",
+            "author": "J C Das"
+          },
+          {
+            "rating": 4,
+            "text": "Abbey Falls, Coorg – Beautiful Waterfall but Be Prepared for Heavy Crowds\n\nI visited Abbey Falls around 3 days ago during the monsoon season. The waterfall was absolutely stunning, with a very powerful water flow because of the continuous rain. The view from the bridge is breathtaking, and the lush ",
+            "author": "RAHUL SASTE"
+          },
+          {
+            "rating": 4,
+            "text": "To reach this place you have to pay 10 rs entry fees per person. Then walk for like 15 min. The Abby’s falls you can see from far away you can’t touch water there is grill so your view is blocked. As it is tourist place in Coorg it is more often crowded so plan accordingly to reach early at this pla",
+            "author": "Adv. Pratik Tirmare"
+          }
+        ]
+      },
+      "raja's seat|coorg": {
+        "place_id": "ChIJO_c_fqKqpTsRMn4pdatm7EQ",
+        "name": "Raja Seat Garden",
+        "address": "Stuart Hill, Madikeri, Karnataka 571201, India",
+        "rating": 4.4,
+        "review_count": 18817,
+        "price_level": null,
+        "website": "https://coorgtourism.co.in/raja-s-seat-coorg",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 8:00 PM",
+          "Tuesday: 9:00 AM – 8:00 PM",
+          "Wednesday: 9:00 AM – 8:00 PM",
+          "Thursday: 9:00 AM – 8:00 PM",
+          "Friday: 9:00 AM – 8:00 PM",
+          "Saturday: 9:00 AM – 8:00 PM",
+          "Sunday: 9:00 AM – 8:00 PM"
+        ],
+        "lat": 12.4144899,
+        "lng": 75.7368986,
+        "photo_refs": [
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydg9N1r41XiGFc6sQ-zstPzRmjh3qqQECRWtFcfxRG09k0FLo0Q5b00G8XAflqeE6POT1lFeFI-UGhHJWpVRboqJIU4UdLwCxvjQbL4X-ctSsA_maNWs9WOKSSK3u7gTL4R6SS0zr5CvFDerUN-e8nRjf-jrnHCcVy0MadT_Whz4mQXN0t4FbkMtswC1V_5z3Exhv9icDthP4rsdQpjZQ-KYnh0eJHfN3Ejb9bmG7hmr0zon_jIhB62OBNeaGh4ZpEnDUa1DWmFc3q289KULY2yT3HHa1huqEFOfVWNnaWHGqVvsvnwDteCYNwBoxw-U07mZqYAwOf7EcNDmLfPgBBPGBQ6WW4EOv5LZoEjQWmCksMZ1MWwzcTDsopoFahZLkJ91Vj6DT82z_DCRARvBHfI_0MbFO-iiMPvFzFp2jzTEp2qz",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydj3bpP2sVKxTnDBVZPv776QtpsdtwLKnR69FXXJzCbsYsTqYgsgVqOMFl6kZ-GLH1VhhkjOUgXtKA_lC2jEsvRGOsw0EGxh0zCDuMkysc3QJKlh5CXxkvTNkmXjegfkL1SaT3aYRJBFA1EJWZZAAF3HODVIDixSlKAWQHPrFoFtvyvZ1xHzk5d0xCDft9E2_1uCulbMZkeiic1jZQxJ5wbqGvcyCR_N0LOJmktK3VU9HFBZbvbvxZIHeUFRCxdpqJ3z2rSMDuKqc1iobPgMfOdL-rry2fMdT6Ucs_7xM2Miy_J-NBsQbJa28pQehiexBuPg5lGUFDAMDFU9Q_Ez7ubhSVp4WpEwAxxW2vy3makBkQ1tACZyRKIpnz83HEv9erqXAb62QYVsd2S6BMgp_IKVtMGf--u9vwHA7rDZ9X1bshOwHlzr-APIo-dGuw",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydg1VFWO1I6yCa56mIkn4mG3_24_9B8ABIRAtmhibtkSxbudqjxHYH7IM4_ZlA-A4EQZDcZ3I66H6L-Qiy1IMIfY1CkFHzXE4YabDxHTaH6AOvES_Gu1M8UirCAp-HDAO61zvYXGqpuBwz4KliL0lR2VU_8kiV_85q1bxq0triH_7inD3S7zGQGc4h3smcEsuSF3-cHCaui4sk1GiU9QLPicQmJc41zVSoM6b_2YXaF0SA9d88pZtpNuv-RVVdGz09cjIhwBYqqG0Y-kYha3dhLYoAGZPW86gKdPR-woHvAKpbpK2BMytBPwHKlAh88dA7Zs53a2Bb5C7CFxJevdA-XAnrSxVIK-UB4_tqRA_FspOY2MzY6KdjGhvv3-X305-p5q_SQKnOSxOpkJtmJCQdzeORYaJB9M5YBVpAwB54ucHT1jR9ZJ5GlzD_cL9Mav",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydhi-AMBYba7m-EaFXGduGMfGEg5l27e2vI-3dhvJ0Fw1BCVwktFbhMUPFv7y0ArnHPZ2ZAlg9vo6qttzKRlPZPNvJ2UM1H5EKSrhUs1aNnXfKrFxsxNrO0Zzv_Cm8KzFR5jdaDe781fiHbjDqOfHg-ImjsOiQ3El6PX0DfKWw2phiEP_99TiYW2f1n2AovEiyeRQ3KGHa9RLzXVqIdWR3R-Ki-zMj4WsbgRhKqbjnbO4nLWU3KlN2kcLyDI0bEVK_pjbcWoeUie8jZYWIpLe-JlxnvFS18NxmW-rAHBAwSzCpjxb4lPB1p2wa-UaJZFFHgGVvDiKqG4uCMiJ_K4Vwvy1q69cZhCceXzOIinCcaTsjxNWUsMhiKguHROXLZAswNRjMl6UVEzlBRSz3ShHamW7xv__VQaFcAZd-oten-XLzKD",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydhaxCjgQHLBteeFmW5HFOUc6KS9CbXBmVo3tf73sjadLd4RrFTYUFXyuKPyzPgh9X-ksCDhPghaeCwM4Tl5LrnChc_vLocuQmtLQP-xRnX8_a5ShwzaUPl3SapPd6Kru90Xm_9izFPa77C16JOLUd68sJq3DRyiJZgiPpQdmlFU252kCTzvpfTLy-bC5bGdfXsbziwDv96eWeMBHowql1DKErjbe4zocEcKrajH4dOaYOIZmvrWNsycakCfIWSWJKWjp0La5r9wZjGOTY-TrXz70lwlTUKhM6PGuLRiO2QP5aUjEdOEx4C9QgTANXhG0488Pr_Ffrc5WPUo-tFELJw_P3KUWFXXW5UHnJuvAcfN7dITPBRg8ya5eBVteZxe37jTHpYka7XOHU_jBe2_rMe7jxzUaD0adRowXoMMupw3f9b_",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydjZDPOKyKnNvETIOFDpnW68wo-GyLrLkSNM1NBqmed5TSmtGHN7Fu0jqJ75iyXFuOlgnwyBXSjD4CqqFlNVXuMVP8ImE0nsRRZPPPZHavCvRw7SchFmleG3r_NjIUQZNFhClGOCGaFTwYFbW5Ru9wBLmuVqXnlVMOP0cM3sXoVPzbpSNGn3keuyUqp-rkO-AXkphNEpisp87ATBKC0G0jhXzbBSP3bPDtMZZS5-eafSuY1yxEKP7c5ZlOVRT7xL82ceRMKmqhtx45nXjiiP2J8VQ_c1rvysOQpbXlj2tgPZzLsRdifzgmVRmIWTjYPPZCH5HQQ5VxFDZHxFtH2fcOvGvo8Eeb2BwoetjSQzi0JH1a4CDnd-vmKSlyRWbhYo8r-NNBP2hdYHm1P0c8LqapY_yOJtwjYGYji_rXeY8DnW69qLdMA3jgPHUTJPOQ",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydiIFsssgbfY7pdeykPc8gPxPiiKoIAypaEGMk6oW0Ib5poxDsoqgw_A8MKeLQUDSrGvRB1DxTdOYhzZxwfE8SM3TQXjHmYen054GdjkIyYn_HclvlGKACQxY4YUih6pgHU4neR7TMAFkQj-nc-tQreOKGTnKrshtHm7N8ra765s_qMjzupOhTgt0TiPnVctbuC0Xwx_GTM3RerKxHokd4a6vdq5IRilYWOjL09wk0S2LIShMjwoeeCjMBrhwSYA2bNSngKuP-aYM-IyF7TGcCPEb5SJ1DDakDWb7E4p_POYAaTfTmIuxr-6KBq_v02uSn0GYstnNVpOQFP1sHuPenPYkrYO5FHFvmqHIbBHIZOTPM6HDkuTvJqfAloFVsrWckLXVa6dthhS4PjXB2pqmK6RpopQ0OdV1kPwSJNsLSM",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydhkDMVp6CON4aYf-jGkNaMQX9cW0SIJ0Q4aqctGuMbLJt5_H0cpce0iLKFc3IaBh11BbVIyfdPxqvEbBi2Hda2_-WzYwQTWlXAlmLtGE70YkIK5Jf5eFJ2tx3O8fU6szXtRAESgzKP3m8NeiPI6lvtCjMU5NWuh_JXHQ-zkiyIwoO4pzS_N3Z3lvC0DjhJOeTyfbrFr27vu1x3tS0QDNqtuM2HPeS0TZrO31kwgCAuH9TaLsFHIaxf52opUkfqbLwmFE_pnb28CzKx8CNi-EKBzwvfsM4YomKTnFoPV3frm8PhhOsO5KAYBGSnX38V-2hvfS0rQUacovH0i0VoM0n5tKVYt7Bvbyx1gNqcWwS6LUHkyw--eDi8iMNrfFgfklK-mFT2II5UTDwmDuwBtBSDjsH5PTfnQksoVp1vgsItYOEw",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydjmlxTAgnmFWfrYRFr94Xhw-GCdI2X8bbQqIPEhF-_BsE9-f535iflxrHe4CKgMJ77mJt-nhZMq0wOSfQYpRBOY1NMk3SxEPFur79PMGkrGTsOWawNjtqx3X0yk8ip-_9KinlwNYd8pNonXUMjwhG1goz7JQ23EjX-0cHWJOGCOPHA74OTA9P21a8bfTnjawztOvE3MDJgRzsygUEH3yEOmtBgWCOJmIvJlq5_Ufc2uAt-Hu9-MdWEqSpkA8zHBj9qQLkpNHelF9nEu8a4y5lI1tOisygWFHUGV_2_XSkXmwkfO8RtsWaL3IDAF3Jn4qwB9W8oDpjhwAsOje4P0nXTR6ViZ1j23Fjc9zLCj7AwjYTQQj-dilkXyCq6V92NbO-qIVHku_R_ewA7obsaGNxEqr1B2HA7SUX2VzKSG04Bi3TJa",
+          "places/ChIJO_c_fqKqpTsRMn4pdatm7EQ/photos/AWCwydh556GS_mmELGb-Z8_qFOStyZkMLlt0W5gOLWfFsFugTJqURVkeahe5yRSGfn-UIblCanmFxLqWTpIqyDUimxE3rW_E6CVtRZazN6FbGNuf1QqKuaPg0Ahn0WtyI7P7sXqSWfNsXuyw6vYpiHR_5g2QD5H-UogPRlOxX6IrTJ1kEb6CA5QNGEtjmFsV4ixrM-Hv2U7OaQEnOzDoF7URg_YJgNPxx-lrH7zsuGqaTAEMF8o2UIPqKnLQgKu4YhFds5wZ_V47Jc3XPwQbp7-BvcpjhUq8Ns29VT3jhMDqjW8OrwKJP3fQ4t7vcqd2mZjDtIjdBotwbWzz_fBahCN2tfMYUQekKg6fqljF2U9_nvH88fHZLhu7HS9PQUW3I2BTuODIiGzqfbkr_d5b97gwGOYrp-1J3ZWA-efCe7u2hFWXhg"
+        ],
+        "__at__": 1786804012.0360131,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Raja's Seat is one of the most famous tourist attractions in Madikeri, the headquarters of Kodagu district in Karnataka. The name \"Raja's Seat\" means \"Seat of the King\" and refers to the spot where the kings of Kodagu are believed to have spent their evenings enjoying the breathtaking views of the v",
+            "author": "Koushik Inagandla"
+          },
+          {
+            "rating": 5,
+            "text": "Raja Seat Garden is an excellent spot to watch the sunset. The view is absolutely stunning and feels completely different from a typical beach sunset - calm, elevated, and truly refreshing. The garden is well maintained, and the availability of free parking makes the visit even more convenient. The ",
+            "author": "Overlander"
+          },
+          {
+            "rating": 4,
+            "text": "Visited Raja Seat Garden in the evening, and the sunset views were so beautiful. The garden is clean and well-kept. The place offers a great panoramic view of the hills. It's a nice place to enjoy a pleasant evening and enjoy the fresh air. The atmosphere is calm and relaxing making it one of the mu",
+            "author": "Bhumika B"
+          },
+          {
+            "rating": 5,
+            "text": "I went to Raja's seat on a Sunday with my spouse during our trip to Coorg. We hired a 2 wheeler which we parked outside premises. There is a small food setup stalls from where we bought fruits. It is not allowed to take any eatable inside so you need to have them outside only.\nWe purchased ticket an",
+            "author": "Khwahish Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Situated in Madikeri, very beautiful and scenic attraction. This point is big with good view of hills and nearby weather. Very well maintained, neat and clean. There are few steps leading downstairs at the end, so be careful if you have people attendint with knee or leg issues. Best time to visit is",
+            "author": "Shanmukh Nair"
+          }
+        ]
+      },
+      "lunch at coorg cuisine|coorg": {
+        "place_id": "ChIJl1CYN56qpTsRCHq3IN3aaeg",
+        "name": "Coorg Cuisine",
+        "address": "Main, Bus Stand Rd, opposite Post Office, Stuart Hill, Madikeri, Karnataka 571201, India",
+        "rating": 4,
+        "review_count": 7486,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 12:00 – 4:30 PM, 7:00 – 9:30 PM",
+          "Tuesday: 12:00 – 4:30 PM, 7:00 – 9:30 PM",
+          "Wednesday: 12:00 – 4:30 PM, 7:00 – 9:30 PM",
+          "Thursday: 12:00 – 4:30 PM, 7:00 – 9:30 PM",
+          "Friday: 12:00 – 4:30 PM, 7:00 – 9:30 PM",
+          "Saturday: 12:00 – 4:30 PM, 7:00 – 9:30 PM",
+          "Sunday: 12:00 – 4:30 PM, 7:00 – 9:30 PM"
+        ],
+        "lat": 12.422141199999999,
+        "lng": 75.7406025,
+        "photo_refs": [
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydjV_w-KiCT33K6XNGD8QkHmjWmc0Skfaf27ZHx1bt3xJ_b6hwceFWN7dfOjXC6Wn1oLjWWi0Qxc5TmUa06QZDcnB94Yf3gBJywNxQEKRpLS-p-o1rQGlfWGckY6eEBhhmko7e4vt8Jz8fb5hb5VSVmmesMfHQzWW7UpDEZRXQBDxDaLTrgcgOMP7lZjHmcXm9yAuhyvWG0Vo-ogsSz2wcbNyTod-a4achaHyPqWrsKuZ0yspQuopErd0nmhIls4c20WzOem51818yUyGUDZmW_OdGLWXlO6jrxQnwLFsqdsEMSB9W0OdiY-G3FlAgTZM-rGCbZXjZ5t0_Q3GOq3bp_kSazbnxU4aWaKU_WxanTeknKkqHJtPETd8kTTQ0teX3adaxExGtw-kC-kBj3Y2aKnTJIOOv1GarOh-T_GJuyS2Q",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydiRSPjfAfntXTDTE_rbtGiZ_848V8sQ6DpiMjzFMnPlQqmmH6prJ-bcRAiz5TwEFv8E3mE77BSGZrmRYHsZvtlHq85xb1iwl0Z4cWwUc3ds9SuKUboqawHrX8Uto9dEHkcZFxjP1GW8Nmjfx9w1GqecPqTRgFknyJ3ommdbBwj5P0LhimDZ08iW8rDNwmQSezEIvwfYLTHYRfk21Jc6wBEwN_deK656wGX7KQiVBtkqHg3swDy_G0Bm5UQPbRzflopD89LZX0ZfvnpIasZ6GD0BW7gYZB8G0omK41YV7AKoMUWEjdoJ78tu5zMSJkoDvCeSGJvNRuUMAvpmRpvfNyfVY2pVKUncd9Yhk5wE4tva_tvhw5XzLCsaUyNuVgVsHOmYEvEfVrHbN3hg_D2udF0exqlxkyDPg_2Vc720u_5zg0Te0b2FKRl_3MXDnI4t",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydgKucQpWLQZ25-W3pw8408BEAH19pA2EXn1Bu1oei0se_6lwD49MKiKyL9Kgk5krCfCvRy-nVE6zhRn0qNYccEj2v2tam2Q7dSteAHeYErcShuBisuy5guXSUv0INjqtOVGwNTKFlpq7nkcAUFTRs8MS6hB_Qftxrj18NOSXXlmA-QpucmbbsMLo0A6Q3vyxf85cT5GT98dd7kFnptPR-0qidnyvn7hIfNzR6PHUcLywUW9yJD823q2D0pI2oLUfAh2asdOkkhpn--rNN9u0ycZWNvblMEGDYyGenjvyfFks1pMAVw2144H0XA3cC-FbMA6KK7acpmMdWiTpx8w13mpgi_aP0snI514XUe_mW9a_lVMIr-lcapSgDUenX4tK4KxFWuLIPd6CbNnUHLj6ErcGGn3_tKBddo-cWJfmU7FCsi3z_CP6V8hqPh7Q0ux",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydh89hIOKEfX8xf-lLEhr3L5CUftMAzc4T0pAO_SZEGXectvwQT38OVZnxqqMXV8SSQ7cUWOI0Ec_F5j0gZrsVAZK7y6NA2dKI4ev-qDb9kkkoySd1aLRgSbU_k6G_IdepLah0Gr7SGtId-qQSSpzjwbdFcNhxYA5Q2-WJ06uSWpkgrEIuya-gjxFvl3keCbTZPqdZ_EoGkBTmn77BJ-9wHRy3H62xWcEuK7Ymjmflf7oDBZKmrHWmLSm1lXWlyQ0xNIEYBynzSHFm0EF9Nbl3cQuRV6FHPPCb7vRUv38cPVpVkHlnpWejzO5cxqzimBQUcV3yy7JlxfElI9aVDTqwz6lBs22yEI1Ry_gYUttOKl-0kVPjhUC0SlLJRHTG16ad6XlplBpEz8MLf2UMKx4cRh_QGLLeJNyUuNks5iTCUU0w",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydgo-d_kc4pW0G9UnbmExfvTCZOe_k_aOGNqmRUm3Y_nTZlEfKZ8yE6r9Loid7faL7q9xUDWuHxFdThk9dDoPAvZR9-KWDK8y2S5pceJow7p_yXdg5V6KODyUgcS2OrcLNnKs80c3SLWhWN6HBWpdUYmhXwezDRtLOXHwxD9MPPsqftD509257gthpojbKtin10hx3AnkCv0eCjKhHuJfKoOgI5kPpVr64x0mFo4od8z8hl_JEOYjcKzZsygUXCv90WIYs3HzcL2NXkIkxEVO0Oc8Q88a9YkJRFpsPQI92Cof98alN-atya6zN3j0BC5hp5nJTJkUhh4Gd2ulNkXCvgZ7NMPfkT2Ok8sll4b8MBvYacRVYTvhG2CEFuXwuAOmZVZeLsVhWFBrNILknAG9_DiiXkEqn6dwLYm1GebDcSLScUJVVAK3p2LQjmW_i5m",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydh5v_lkV-wZK8Imja6p0Ra1OcdLp9Y8GriM4bo_YeTyB_T1L5rtTmKd0ambuuVKpwL8yTlHoAY5_8zGecCvewB8uU22ZWMeE9OnBjWrawHUnyCURE-KsjUPTOU38AbwObEq6JeEMp2V6x-dewSSZN-dUA0IcDgIn50PxvKXo_QvuIkVLYv502xMcGhwLofx8a_s919hnfUWTXh12tL2lm7tTho9fdGHrFgxYWg95uqPUosf5j8VacfmkbkW3x66dLfCegJI_I33lQUu4H-gehHY_CT8bNZIQJeUwWxhV8pV0dendzL1oQ2_944xsNg8TGFMS-bQ-vxJae6e5-fJrwYwy6aVW856PdoSo9w0HY_8rAHEzThNh-iZUaVu9tn2b3YeHVeEnuM7rGTfO6eP-awKdPVYp2lqkVp5RsHH-KIuDRlHGC4fQilI4r57bg",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydgiGUGLDsLvLqddzELqez3XEi_JMJpiMmrdCKhg8v0WWCJvBCzbZ_EQizbGK1hON5ZYibje85daETbP7l477d2rrNVnNVirj3O9RhPn0JmRXlUoz3THbTaZ11q2drRtFJQCUuaHf_RP4r1nUf4VObXPqU-IuazUqtlwlxtKDjQKZM13Hi-QchEws4WLA9Ehy_AcmXE9e6KpztTYp2y1UKa67crCVRWPvuKgA5-AINOyX5d7S7v7LQv38raEzQHjVTGbp4HS-Q_TjnSG7XJTBtrdNOShagxPkqfK_C9HYRc5A1l6PqyKCbsz0ccw8oIgn8NSwCtq1xiYeCYekI3yv7kpZjkLPvsSpFOYb5l9_CXE7Er_7a9jX2cLvEL9xwyGvr4x46z0ggp1vSxCYqybyRb2pvMSu19sOa8TmJfTXrBEK_ohzKvqm0srQEdRT1ZC",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydhfRlsRF-t03WA1QByauexUoHgrLGPYVUNnfrbqEtCUlG9hJwittZGmESFjSZDzYwmM5QzpYglrjkTXUHtNZA9VF7XbogZvF7yuHLQ5C2VBfqDhP9iMvZoruJsl6vUZl5sWcTs216hnzFUGPWZ4N1LcxwP_86xYv1GpFLOWgBFOoLq5qlbkSXFlTUGJ6oh8V-jMVq10ijqvIFhW9RDd30gqeIT9ZuirqyA1KMvGn6TWaX_AxGfVuEq2L_NznuM_bon-8Ag4AZ1DDYm-dO1AV9vzDpxPRxthVOZSPT_oIqp4Rwix-0p4H3uvbxnxb9Kv5KlHjelPjkY2jXDgup4kWQMUfO98hI-_1ISEbkcQMgiiAXpPjDAabsMG1BoKO8p71QomQtssCc7Zq6km6raBOhOCjpS8Ql9Yp2uBGrIkQW3STY0tmL-hKDnKYdNDcfNl",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydgd4xwzRn_VsWlVMXOQMPMg5e2OjBwOEpLdAVmoaYtMMDOxLRTr2ah43bmabMOFYZi2gPFdO3QVX80kyD6xS8km19pfLUQLIDlFVGAt0iZv9_a97v1CwHhf9bu5oGORVVlfqAfwjNnVRFMB77Sw5eX8FHav5OWKGPxOcLc8VcaLLcV42DKeOILhRTr4QlyJYK5LiYDkehVE3KjiSAOz9mMStXoEWQOhUcyelBjHuYOdy7So53mWafhyMDBQvCw4oUev3d7FY7G7Ue6Y2YDVTBpEn6fhwkdiOykfmydmQhSXGaTFJxmQkOmOiix9UQ0H8erTAESjDE-4jtvbjmD8JcMUA69ECoWhGCH1VJfpl-wr3lueGeA35a3950_uus6Bybb8Mr2FiBb343FoewggiF2EzHrEiQpI9TzqSvxCckgp4EBLD4QviGWOeCcHsdNB",
+          "places/ChIJl1CYN56qpTsRCHq3IN3aaeg/photos/AWCwydh8T8oGeHQbTf6FGZSObth-7OzhAlm_Ry57wtyyRwRNWV_cdQQ-0oYFwJME8YegSsIKiv974Bpude5R76txNPRVFCltzbkgq24ZrQLLnBgZbOBgtWKj_jQ8yCC311m2e-bjHhKwj9BTWfg1GWVUD6h6A78JVNhz19kNCdHtuAmTR48neuvvqe2jl7v65-2oF2c1ZDVQqsgVmgihfw1vciwhIiuxc3BOxfab2iSaj2wn7rcDPZjEe8tXildXELKx82BunKQ_DLBbFkQdqiMIM6I5jxWR6OMAFAOyfFqmkH5-CHG2ThHcdHsfgGrv7Hd_ESEssqXIXxYWBd4AP5-w7MdEz_0wUiVmLFBiVd0jHTcu1Surk-JsWNHrsQ8SR5os2Uk5xdz_GZJZNdP1iMtqmGZXCy_npbn--KjqCxDF8F9JyS8LzE6B2OBTzBRuE8UA"
+        ],
+        "__at__": 1786804012.665662,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Gem of a place to have traditional Coorg food! When we reached the place around lunch time, it was packed and we waited 30 mins to get a seat. It was worth the wait. We ordered Pandi curry, Chilli pork, coconut chicken curry and nool puttu (unfortunately they ran out of Akki roti). Every dish was re",
+            "author": "samarth sikand"
+          },
+          {
+            "rating": 3,
+            "text": "We visited Coorg Cuisine restaurant based on reviews and main intention was to taste Coorg dishes. Overall experience was ok but somehow food didn’t meet our expectations.\n\nWe had Akki Roti, Noolputtu, Kadamputtu,Pandi curry, Coorg Cuisine Special( Pork+ Bamboo shoot) , Tender Coconut Pudding, Fresh",
+            "author": "Smitha Jacob"
+          },
+          {
+            "rating": 2,
+            "text": "Very disappointing experience at Coorg Cuisine.\n\nThe restaurant is highly rated, which raised my expectations, but unfortunately the food did not live up to the hype.\n\nRatings:\n\nPork Chilli – 2/10\n\nPork Curry – 4/10\n\nPork Dry Fry – 5/10\n\nChicken Curry – 7/10\n\nDosa – 9/10\n\nUnda – 8/10\n\nThe biggest is",
+            "author": "Sarath BC"
+          },
+          {
+            "rating": 4,
+            "text": "🍴 Ambience & Setting\nLocation: Situated in Madikeri town, it’s easy to access and often busy with both tourists and locals.\nAtmosphere: Simple, no-frills interiors with a homely feel. It’s not about luxury—it’s about authentic food and a community vibe.\nService: Quick and straightforward. Staff are ",
+            "author": "saurav sawant"
+          },
+          {
+            "rating": 5,
+            "text": "The best fish curry rice I've had in coorg!\nWe also loved the puttu and curry combination.\nI wouldn't recommend the bamboo shoot dry fry though.\nOtherwise a wonderful place if you want to try authentic kodavu cuisine!",
+            "author": "Mitali Kharul"
+          }
+        ]
+      },
+      "madikeri fort|coorg": {
+        "place_id": "ChIJq6qqpp-qpTsRjm6-WylirFI",
+        "name": "Madikeri Fort",
+        "address": "Madikeri Fort, Fort Rd, Stuart Hill, Madikeri, Karnataka 571201, India",
+        "rating": 3.6,
+        "review_count": 18263,
+        "price_level": null,
+        "website": "http://www.karnatakatourism.org/",
+        "editorial_summary": "Museum in a historic 17th-century fort & palace with 2 whimsical elephant sculptures.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: Closed",
+          "Tuesday: 10:00 AM – 5:30 PM",
+          "Wednesday: 10:00 AM – 5:30 PM",
+          "Thursday: 10:00 AM – 5:30 PM",
+          "Friday: 10:00 AM – 5:30 PM",
+          "Saturday: 10:00 AM – 5:30 PM",
+          "Sunday: 10:00 AM – 5:30 PM"
+        ],
+        "lat": 12.4211545,
+        "lng": 75.73871609999999,
+        "photo_refs": [
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydirOyF0smuC3aNXFbJ_nzK_2wM9zP-Y_XIBX455BSNkcvsHOaKdmUfFV_AuYbQJ6uY6GiBl827vVbg9NZPLzMapTHCbQ83FcKuOAVpLzjkR7wp0S9FeK1kR-yBEA4_YwTM10k2jA8s0HEL1QM4z6Ws2Tvr0HZknAJdd645CgeDu3M7cpLaqjMKyO3vz8gxiI5fG0-km21OOMJdgb4cAx8Z7QRQa7UFbbXZfG3XbJlCNY0k3EQP7gxCE6FuywJZ8hpWu7lmU5eERvL6qFqZZ5-BepVCZY2u1EFIXiUgYYuevO4ed4HL2dXyYKDdgaVlM9rugomcmurWeMMUxZpCYaAI6PVFU0JqLGGhikRDrjlcBsaWvJ-MkcmCZuLTr97PjLy0EpgLtUrh6Qs42DAIeV_4f87dveDgZdvyZWEWck2WH9w",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydjvoze3rDxM_c80I0yBpEuv_-gwNiawRWzklJisxXALkgRY3Glp55Pii-zS2VUfiRLflz3Iu2RwHL_koO-KLRWfOTbQDj-RJmWzjvnjoCVrURhnTmp4wCz_VsImOTeMnoMqd3yTXejpEx-GYaGkOMuhuOUrp7Hg6raMuv4UQZs-6K754KdliiN5Ai10_Fvkv2zQtCxvdqMyeRZdIYJQoi82wIy_b_ycCufz9U8viQ2g066liZ833jCMHTjaCRtCcU-bAGD787xqGGtYbRjFkyBgIQVadKMTgggf8JSKcI2q-nBoeTXSRxtev7sTIK52ZpktFBsqSkCJ-g77LRTDWFu1JYQsddkZYtD80ZsBboaN-0rVnkVOyOgxl6w6utr18kB6s0A-Vf61aBQbBSypm9nAgRmylHs48Hxw2iZ6Jh4dTA",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydi1OghjOhucRuMpU5O7n3x5L69WGC2vJgh0wApLoIqhA93OzBojwAZBpA3fwbqYTw-Dy89hrCmbiYiWrCbuHADmFgydqflbJfHyQli9LiqyAOWZu4OHX_bP3DC7COkfgP99Y2T1GUIhbpLYkgdt21iGVS-_WON0WkA5Q8tSb17RhENg4jnZ9w3PdLl9qn-YPHjHvubBTUT9cD8kUfMq4X-WpFYFboA4Lg3ssDnEQhIxdBGTOmQOiTw90783a_lro8ZZ58ET8TDys_UT7FIggTwVA03tTehh_IUnNAzdD7BLS9bumLRgnEJJfxv8cr4oG2IulLYWMYIb4WA85mb4ghK-mmnd0y817VoNz9i4fYcshKmrmkUTiBJVradgpbmvb6UyuQ9GRAFelZ5nvg-VB8fLkMBP9Ub_SpE_bp94jYyqqfYG",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydhPjUHCntCV0UqMuDxFQlhyO9WEjDuqLz9yTAceOKDOUNiL2V7Xm1gqffvlWfIfnseROdPUPR5lbQ4UILLcsZiBQy6PHr4EKAEhk_pWlCY7Zgc-W961osy-K4RiY1tVDTF29OyYEL6WA9hIozSIfHGJmFTBPQ-my_khxrItRkVBj0zAy8qE8B88RUXJB5lUs5w9Itx0evWIJiJEiXHrupYyz_JAft4CD9JzWtR9MeXLOfCEEknG3G0yDleGteffPxrCKvioF8t4wSFJEcDmxX7GtdN_JU0IgTZvORRY9BYdQqrl9mMYaZTnEk3hNo6KwruNvjdzYaZK_SbQUFsisNp2xgaoqjrfog98etW8VVBDCHuq_JUlg1iYCtiYRxhwisvJOs7Otwk2CTDAQLpEvJVhTmO8fUXIFaE410h_owLOujPI",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydhNn7rr6WRuMK9b1TzrSlaiX_Ne_mIjarTDJKEDu0fnMdPHr45u5UhitunqM9PzOBUJ9-YcPHs95ZidNUD00RyFqR7fwNhxzKgkjyc57a_Qv1AHINjHuzrNJHiQ_mCpO7ieLsURFdlSpAS7GIuUsYokVOSaaito88wW55iMPjUpW4RFdDQXwgbZ35brTVEpm0YYv3_H7a_ZbTN3KcrTxcU29I4KlEaEJFh5swHdvvbR0MCTHsnpD8JPQkT7waow6c82vSA7OfV6FDkNkdndemFoxBFMF5vmzGMkiBQymYvV9IVlLTtfyOtDlaMj6xKzJTQSncmeh6P3bVKZVh38c9k_kb3fUotgZgmrPlq-kaf7wz-v96bQpxtb-eocBXX7DIFoEBMMAIHs62i1eWcBehq3F75FL-5ShSB_gxI5OH3HSKDM",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydhDKHB2TPe3PftSVA3rAPWz-aQFo96ufZ4EXAbDPp2OW9dkGCx0auluA3pOo5z0aSTg4gvJoXLLxu9yjNpHHKqD5ef396YK2-wujE_ZuN_dmflybQHYGPe9FmHt0NG-w2ofIgYJnXdgxwGghJWM0ENG9moTVrKxaKomIif6EM7Qf4G13M-WydGNBtYV77AiiuPt6fSsGScrt8j_1JA8GSbJEXxc1GYsolMP9d5151Rn4qw1q1kvVOS5bkzwIvjtf4c9a82MmyZpRoRUhdzRxEY_ik6I9jIBNOMTs0dopvYf6v8sy1nKh0NNrftQ-5qL64PyAx7NPG8y85I5j_wEtk-oZMNy1n-1AIjV99P9TjgEjuO7IQ70dN2EAk1oXIApqEPK-8Tu-xkGl4Kfk8hJAx6fn9XT7zQ1o2HtYMu8fD4",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydgQ7nyHO2tOJPcZiDpx4KyvwYVRVQKn0wSQo8oBXyPqXrcIj3KqfQe8gKugSefE8_aIotE3_t0n0BOarUi3cUIHS7q4sTu8t3DWO5KTZFwpg-wR4z1M9MIZntvoi6_c_ywS2c_mDjvM9vwS5ObG8_gemqcVKL0LpEd6tVwmeVblQmnM2McwTBQw1QnQoHfDXqZErIswd81N5M5TwfpzKgR1bQJLpapE7QHtfPtM-TRMwOsDSLtnQO0aTGqnsGEylqcR3_lFSCZ6MQzRAoR5f1Fd_iaNBsKSphx2-CgT3jxG969STqaB5oOxkgjOLKNnONHh8YS860Z9r5eF9SfwFRCtJfy4pTjTga5EFhExDOF2qQv5HoqTrJr_LyqhdqzfDOQSQDHKtR59091hlmojQovqPrUwNLJ0vRYDDuQxVg6k79_T",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydiBFU1VMUuDlvBzmbu545tvU2HCeZFrVq3GoblO-Qzryo1nX3yM8ABcdWtjMMT84HUidDDL3xSsxF-uJh_uyQsheuAHIyI2Z0xVwTs7XbajqU2SgWD_TzemBtIG1Kl3ysU9QFOGa15SAfX-Qn9ew7f-WqMugbU-PXPGhNBnfqcFF5PET7cFRXceyzq9VjesIPK0IrAZzx-mx0WHqbIaNTCuODO-W6CG_8ptv0HCc6hN29JupAy06FNCiZvH0pgF977qebKDPXcbyGP-Jt9Gpuo9Si33OGcz6iS_xb0yjJ9OCQxfHFz0kOhdWKmkKNRxBsi3NcZuDw8mSc4FQreeENRllrQeMsq-hde3i-6hdT-Ei-s4xS-twjGQt-Id3Cxh3uyJXHMcFsS0W52ue37cKXTXEkZ4Rx_qOj4Z_EbTVPc",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydj1IiiFKuvDrSJ2WrXhbXieTMqfWsDxob12VxM-7AulT5AD0KjsSCwybcFeOycaWHxIvhTjlFoAr6QIz36_wJf8GosHu6_lrKLVUL6_mgkMLGMeJ06ypyjviU_rnTeExAdBJoi3QfjsX1F-QaHKjDRCvV4uPbq0SGeYSxNSqnPpSzprHlxmTlNWAV1f3Tws-of_JmL_Eq5xUy2ngkJAork516viuXU9Lf_hdR2KI2vqUCxefliorchVa8v5Y7h13PEhhdKMPyGOy74GKAB6KnAkuhDOWIpAH9t881PqHLa8Nh1qKPPX826dztlRBqOYlNULC0b-kvwcltmOAO5IeAh7ntjpv9FZ0PDms_aMoeHdSwPz8leq5Sx4uwgpjNQKMK0gwKyQPQ5Jdk1a7dYPG_vamBLNjmgLYsVIcx-2r-Rt84VB",
+          "places/ChIJq6qqpp-qpTsRjm6-WylirFI/photos/AWCwydj_GEB1xosUi5rfa57B1WBs8LC-1-j6qPBbUnb9M32Z6pmprUeAGC4ad2usu6BouN_K592afek1do-C5uael-lpD4BA7-KvA-2w8v_3_8SRMT0lb6lsmXxRNnVo-xaRKiiFaDN-vINklcea4qcwmduPD0Qwbz-4p-JpqpKTqjDcaa5cElEixAUCelT-HRb1qWoTkPPJIcibgT8fGjnugo1jBMqbDkRuMmRpnjbkNKmyb8VGzyCvynYEM8zXgz7DxIwffdwkxqlb1JU9H66Chqaz_g_5MxzZznsJX3lF32Louj7_zC3foTptM8LsHAADYcVozy-FuN3UZKUa7kWy4x0AJELNbz6ShB3Ux4n6eMtvtyhpUWCDSuVvVEnrAqWRIYlyCL3lA4lDf7i-1zOWuefMVsrdVVnG4B0Z9fJqzHwZaRI"
+        ],
+        "__at__": 1786804013.132852,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Madikeri Fort requires no entry ticket, which is convenient, and parking is available inside the premises. Inside the complex you will also find a small museum housed in the old church building that charges a nominal ₹10 fee and can be explored quickly.\n\nVisitor experiences commonly highlight the ab",
+            "author": "Manwithoutname"
+          },
+          {
+            "rating": 5,
+            "text": "Madikeri Fort is a beautiful historical landmark that offers a glimpse into the rich heritage of Coorg. The architecture is impressive, and the fort is well-maintained with spacious grounds to explore. The views around the fort are lovely, and the atmosphere is peaceful. The museum inside adds to th",
+            "author": "Shana"
+          },
+          {
+            "rating": 4,
+            "text": "One of the most peaceful places to visit, especially if you enjoy historical sites. The place is very spacious, with a cool, refreshing breeze that makes it perfect for relaxing. It's also a great spot for couples to sit, chat, and spend some quiet time together.",
+            "author": "sudharsan"
+          },
+          {
+            "rating": 4,
+            "text": "One of the better places to visit in Madikeri, but timing and weather make a significant difference. It’s best to visit in the evening or when the weather is pleasant; otherwise, the experience can feel underwhelming.\n\nMuch of the fort is now in a worn or abandoned state, with only sections of the o",
+            "author": "Mudit Singhal"
+          },
+          {
+            "rating": 4,
+            "text": "A piece of almost forgotten history. Quaint and quiet. We spend quite a bit inside.\n\nAlthough the collection is good, its not that intensive. Furthermore, there is very little to no data on the artifacts.\n\nHopefully the government and the archaeological establishment will take care of the damages to",
+            "author": "Jyotsna Dash"
+          }
+        ]
+      },
+      "coffee plantation tour|coorg": {
+        "place_id": "ChIJmclWrUtVpDsRnwnQiecYVd0",
+        "name": "Mercara Gold Estate Coffee Plantation",
+        "address": "Unnamed Rd, Heravanadu, Karnataka 571201, India",
+        "rating": 4.5,
+        "review_count": 1926,
+        "price_level": null,
+        "website": "http://www.mercaragoldestate.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 6:00 PM",
+          "Tuesday: 9:00 AM – 6:00 PM",
+          "Wednesday: 9:00 AM – 6:00 PM",
+          "Thursday: 9:00 AM – 6:00 PM",
+          "Friday: 9:00 AM – 6:00 PM",
+          "Saturday: 9:00 AM – 6:00 PM",
+          "Sunday: 9:00 AM – 6:00 PM"
+        ],
+        "lat": 12.4022281,
+        "lng": 75.71027459999999,
+        "photo_refs": [
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydgo1p8I7ZpvN8vp5YCoWa1HgZiRgy8oTqVYwbgUsnNKYQXLeN8bVN3HmE4B1cBqxOnlsmtcRuKxwHF-iY0YQV5V7A_3cmDUH-r7s5SGDnagjT_0dms8JaYFIOvxUaDWMIbKKDVz5PXkgxpBk0IQlx9pKFlAPHlxxNaB2RYaT8uPT5_K74foHGxx2d_Z4iu76UgBnOSKYVtUqwZnU3sFRZJzmWkvQ9ObwUgLQYwH5qJ_ho11aKjNr0twohwZkYqXJC-ZQgycQpkGbJM6bzBycaKk6ZMmmGwD6fu2DkPWvKo4SuBhfnosqZsoyYXxVIBh9mABjjWz18b2remfSjCAmwPexMbNjjjkeFzJ97lRXnhYdwiXtMN2WpWGC3Sy23jW3eiw6mUmSGhjwg8W2iECIFAl5z5XsuzrTXTTE1spoCf35g",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydhZAXGumb1Dhfk45Ri3f-JlmoKvKOrwtKLeSZwS1Mif9g7sBNbA_9a6jXuzmvARuf6nb0Q9KeHlIQKPl9g9A0fsccm1sJf4ZC4_M117Bp3YSWWHZL4OslmNNxrlO92KYTvzpQ0cMLcRKKId_hMf25Hple2KKl3RBRCw9gdbAEIKNPZMAFodlfBx8tseJrFYthX8pYE6ZSzvCOO8XmzR1PYpK0W5V9kXAHfo8kIIrAozGUmmGS_g17JY5nPRUOuiQMCBxFOv75ThA7SdA4vQ6sxGILaWG-2B9jOI7WmI-vDxpg8IuZPKQA6BrgmxzQ5HgUY7IU7teGxo9W47CToBMLZKfLhM059shJq23msFY4XqmSwHB3XioNMvFIw49_XW1xQkiCcA06eDohtqDR1ZSJq_7nj6atrDQ5DiLpkKHsjDfg",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydg2VXgY2LZgaMRmpYbpPKeessa2TMgyU4Wv16W86Xvq0K31S7cDhRXEAINd2q6JKfvCe7fjnH4XahQzjk-frNtRBBIJaqJdHZjlbMcNKHuV-iKgNHHmHTafFBs2IpHY8y-y9wu7kLOjQNkk7uOSnXx74MmqumMROt69nzZI8gDYvxxvGaxpXqOumCrihdE26Ut0ws882LIzeZua4vnGLcaBEcS_5MHTghV0zfKixqjdAU90hFchGWw7eHLkt2Kn8wfTSyNyjQZi_fTM1S2LJGlApIU5BjNAwU0uFjAaDZ86wGIobOOOma9aPF7rverOcZzo9iMXVVhsoIphEEExtN3Xzj-SvGtJr6wvUaM22zvbDihM4S8QUUQwSbJ-iP6FzY67cUEEuFdfKCBLqSg8pzGMRlwOo5ro5pLK7-dhsjfTApJQ",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydiQ0FsJ4xGGkXIeEeg-UUjiAryVvIO8hMGG68DgpGutL2fmEA6d8ubJ7_5i4oBzevl-yooo6t2qC2mDepuCEac4QiOgm6dp_zqAyYNc5Nu77mCqlQB7QZTCVTXkUeT8zm80UqGV1IHc4_NXkihGL5XjCrCisDmvHxwIM0TMJInVmCKv5Bf46_dvgpOzidOn-A7-S40o3v_QlrBKAaX1_QIdCQUxGdkl90tRnqml74k40YgWCOtuKuGaiML-GBm6d7Qbzwm8R1DJV8rhGjYUUPvFjCzYuTturqng33hD3-5iQzklMRKexL3byixyH9csvri5pN6CjwbZuRyfWppngIUeCe13B3uyzbQ1Z-KLmpXRSiYqIeLEkMw8jCEB2_i_RBLUjGXUnQd6Q_fyBuFXcPB0pvmUCKxOHeBbQTNdIk-4hUzMXAp0w0EsJtbY1A",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydi4BLKWCSs9aoN0D19ldLcrceOD_FECfTlssk4UpNiQoJ8whsuDDbNcTKR-EX7WocTB5MQjKMKS8vwrQKDbEbSxfI2AzxDBIltvux3flyvsOviSAiSPdUbGTMu16OaBM8E41IEg17m92oDoMOdB0wXe5q66TTHAWPI9rgNuKFA0uS3G0SfLq5A4hCKz3x6LDBO7HxJGK4-vLgwhMSPS40VD6ZIXlfiwnbSJxh9vxYeJIRu9x2pma-h989mV0HIl5VftqbzLfHLnBbhQCwTEBYgX3M5Rnt-skJKfXDay6iac7AUytcZjrdRJsWK5h0d9MUHMkGVU-L9ZukZs_90_lrSzkvcfWmJsCCLABJiZxwku-hw3grLNomPNwI6_-gTZkbKCeDCoKazGEor63SoAXFX6nnjiEVStSRsUJ9eq30sBWkU",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydgsreDUAJ7SLAs0ASnBCoUzdJJMf6Xll64qaXrn5dvazuMNW7ZvLJLpIGpwqDCNoX1_y4zsLz5RODUnvIxb6GE-k-tBD_KzaMnIaCDtz50vMZN3RHRc0zr88YK09a0iH0wdslHgQDEoZp0eI3PdxcQBnE5Mn3MyThAkkSlBOflRa_aGhrzO5hsGOKD0AdFEIahAZ9-nqH7_mrJZKWjm8IRkqMN-644RncstNSsdWb6m8eBWqiIkObc0z1tBOI6779fMKZC51-yw3ZNfAM-bnM7pupFRqShq2lsnsfNepR61E_EluP8w1FkO_fW0WVYb6ptP8lW1QLmbnwzFC9eSbXGGYQ3qpUM4OujgJDAm-issmbMHZT1eCuogXChKCqsWR_kVyThDAGl7hJSzVxkyKfv2KB5myOzfWm17LrpDuai_NA",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydhbHmBpi41iR1To9QxQPG5Js8g85CMBuhTy9XmYfWMKuiuCIgExa-ye43ciC7U4QgYh1SbNFr3G2xG5GuWz8LNZmtWJP0ONquAudBqYjT0L8Q0u-ibJryQqybGFX_JWreQLCxd21mTCiSzPm-kjchHUiJNyNkrFTNoknPMZs9f9Ps5MQVnMjBVfXeRXXNFVgWNRPGqfqQKuGtaHyH2fIGg4gQOsu35zC6adYM5fpE963FAfl_tYnmZnYQksAHj99XvD16T-lKBCd7NHxfno433OkHbV5NYAAseTUKTZdN6Oi39o5_mc1ZAVgySciPZLfF4C_FU0YAiLhKUGWF_XC0ervfn7aeWGfToHRpZYOl-a26wyW7fwb3NhmYhe6oX5fXKO7VkkjeNUvb1-1wqLdoOADA6JzqzMVRWZFkx2tuWLAg",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydhKG0jg2ieMPSHzj1d4XbA33VzpfiFYDVtvhSTv1vS1K_Y5j-fszWTuLMIbFz4ZWZjTcIkJuCThC7vX8KVXV48FcvUBzEUVWn3zR5twJd9TuSaDFYrO2dtJpUM27VQLki_uwTppF0Q31jXGemJsiYHdrZPzXXu06X71Cgjh1VjmN_DAeTM0KvFL08ph0DUE2Tj1h0PZB5hNq-US8-_ede4GMWWVV4x8bokESSw_rI6dnGOhKg_3i2LHOe5EktkOUulADK7ACyVTi3Lh4efHJPdK651BcJypN5BCzIMSiiQKh18FR9sBC4l-FubFSx9nQdcNMx03sYBOhRlFFxtjqFvSD5_MVaEawKaeuPlkc77ovzPdJ98IxTTt__mRtRvgfmaGq86A0VXigSPQXcWyLR6wgdgV7iEFqJ97oAtoM_iDNg",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydgIUBMMtBK-wQLz3J60q4iQ6VPbTpCxDs-2VNApEx0rEX_KCC8Q6DFrM74-FGnXAfHrfyYBMTHdzjYeAT683ZIOhOqSBfkyWkcMeAm55XokI49SrLXDe7EjBUwfp7szwsJeXJCC0YQiO3rW8CN6OL0zHFbRXZmXc1bfDRFhn49R8dHjQ4Jo64OVXtmdMshA2cr0elCIa8S_FPdzsUAeOuZy0TQpJfcn79zvJXzGd8i35UcMfHiPo5GqypWw5xfD6U3CNAztmUOA-QqI2wMWBXFuuTCXXdrUHsxxP4HdCBqTRrHVq89lQeVPfTyjKg-J_dT6HnNhIVLfTaWtqEHOfqyX8jLVUP2L-DevzepNu32ijGKbmUB_wR9DgE8ROC8ovxQLRkfXHjRBygDpCEViRZ_GZ8rOsn5Zh7BYVB6bTOk-ltuQ",
+          "places/ChIJmclWrUtVpDsRnwnQiecYVd0/photos/AWCwydh7g5_V36Mum4qloLlPofuqKhgHZA9dJighx1i8zCEYCMFtEe8HruPrmVOsY1pHWLFWU2xe7bIdueIWrQbmS3u1PnKLUBFGM4cYgT59Upw6TVUqaAt2qZgtx8bsYgRV2jtx-T0CSH_yZtK3DijyXFpPBXHks-TGHjcosCv0bk5pMoGU5Q3--sHVXTO9CYHL5Oq12NQBy-uiNka7-m-AFiMrFk1EanwU0YKIfzsWJG6ZFkamL29Nm6ZoQpXbirqpbTLQXodIYP8d0_bnUEwh2VCuRfNtbz2teyxSEG1VpPNNaxgCNhtkHRY-dTqbA4M_6hCRLVuYaDjoPvQVB3s3TZvgKQdwoysN6vc20fe99MMMv37Ock0Pph65Gxz9-C-hxVy_6E76GstolmdflNNc7nzUSXlpt3svieSWze-a93iu2g"
+        ],
+        "__at__": 1786804013.747008,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Last month we visited mercara gold estate🍃🌿 it was a great experience. Our tour guide MR.MANJUNATH explained very well. We experienced 300 rupees package only for coffee estate. It covers spices and coffee☕ plantation areas even we saw a  chocolate tree. Then they explain about the process and verit",
+            "author": "abinaya Abi"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent experience from start to finish! We learned about the complete history of coffee, cultivation methods, growing stages, environmental factors, processing techniques, and different coffee varieties. The chocolate tour was equally informative and enjoyable. Special thanks to Manjunath Gaud fo",
+            "author": "Viraj Talawar"
+          },
+          {
+            "rating": 5,
+            "text": "Had an amazing experience at Mercara Gold Estate Coffee Plantation! The full plantation tour was an absolute delight, especially for a coffee lover.\n\nA special thanks to Manjunath, he explained everything beautifully—from growing and harvesting coffee to roasting and grinding—and showed us every sta",
+            "author": "Bhumika"
+          },
+          {
+            "rating": 4,
+            "text": "We came here for a coffee plantation tour along with parents as this was their first time visiting a coffee plantation tour. If you have been to such a tour before or you are staying in one of the coffee estates in Madikeri,.then you can skip the tour. But if you are interested in knowing some detai",
+            "author": "kaushal agarwalla"
+          },
+          {
+            "rating": 2,
+            "text": "An overly commercial, hyped estate\n\nWe visited for the coffee plantation + chocolate factory tour, having high hopes to learn a lot about coffee and chocolate, and also have an interesting tasting session. However, it upsets me to say that this tour was mostly a waste of time.\n\nFirstly, we were take",
+            "author": "Ilyan Kheraj"
+          }
+        ]
+      },
+      "dinner at taste of coorg|coorg": {
+        "place_id": "ChIJiydV7NsBpTsR9FTzokyGZoM",
+        "name": "Taste of Coorg",
+        "address": "Madikeri Rd, near police station, Stuart Hill, Madikeri, Karnataka 571201, India",
+        "rating": 3.8,
+        "review_count": 395,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "",
+        "editorial_summary": "A menu of multicuisine meals in a family-friendly ambience wit a modest, relaxed atmosphere.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 9:00 PM",
+          "Tuesday: 8:00 AM – 9:00 PM",
+          "Wednesday: 8:00 AM – 9:00 PM",
+          "Thursday: 8:00 AM – 9:00 PM",
+          "Friday: 8:00 AM – 9:00 PM",
+          "Saturday: 8:00 AM – 9:00 PM",
+          "Sunday: 8:00 AM – 9:00 PM"
+        ],
+        "lat": 12.419510299999999,
+        "lng": 75.7393065,
+        "photo_refs": [
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydhV3nSPmWQRxKUym2On95pWqdlS5XKW29i3hBJIEL929uiFco_PC6R61eHQf2WaR0bbs_7aZXWdzy2rmavM7VPcA-sIhiWXoYqDNRz-OKLJAynqqnz-RETXMwxu_JS0AgOItzHVRGIBfc_fncRF_T0jmFmeR_b52el5LygwWepcPwV7q-pZzOVn9gSEsd0XLQtmsW7kGzyqXgU6Meu1Fh28535BfOgHtyn8S-Vf56tht2EpIg7jjb8darSFcW1fvu59AMdzq0hBAixvhu1mES2-3ZuzxyO7QdlothYe6Oj9rjJfWaebi3bIEukViAnV4EYUQ7KpOVUTFShlyyUS6unhhQq21kjCrrMs1DXP6GUjL89pbB97E-4FX_mjZI6Ff91IlYaL6C37C9l57NAiUPgj6NCf5STv_1DKkgqJ3TlLoA",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydi7IkO_lA4twpbsNS27aRc-pP1ChvtYlx7xVyV0Y2cykxZ5E1s5mbcwld1xj6CgVJDC0x_AGoN6FnWFV4NgpCXNBcUHmOmJv8Uv3OcYNoxx6KeX1qpR-SYVjIO_cDKeKiZzJdsBLX0uiBtP0ErY2FTkEz4VygZat2iF_qneaQhfpKLvAOoCl1kMHPCMCcKVZGKgJNLBoXkTvzNPxWtz5BRSzWMEuoFJaVHC3O_LkYlG4uUb5mcv9-tzteJJ7ysuX87FVu-fQA3vr5O8gSDihazgV1dQlWRsoLwX1ACEW5a3LK6_j6NQd3p0gtSdaFxvrTDmijiLW1CePwv21jlkHW95co62ewTTKyw294F76C7jHDBnWUhkWRRjH7UZmkzvJOvkT9ToJf1eHI86YI5zaUXd-nh4oxyyJnJQyPygjnMU3_3vSv97J6tx7RMJvw",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydhk46OTmdTyjdAVGmHYy5oNVsiy_L7cR0oQ_Hg6TwgXt4-YCaTzU84hBqm8SNEPyf5bId9300koEHIlkxNooqHzFtOWmiUI5GAfaIxnCYQfMzqKi9zXDG2G5XFFNtibBnqOAVDo176eRVo6d4VAozfkU-6RTm1_5E7mOlbQTCnuesZNtzBm01YmBP_gcJzUPvoK5OmkDgHfLQ9InNlTI4O_Zg9x1UMf3p1IxNG2rIRDGAEuL3SI5fKdVfem-mu-94i4dbL18M3p7Et09HRqge66z4YzQEPmE7IWgbBCMLMMJ3z0AiOS_CkOlMRb9T-wiLCxQTklRYehIyeQRlM1VpTFUm6rYgHgHKtDRVFnDAUSlqADBq6G_iXQD8lh9kTEEogrUr1KXU1CKEqRgG41JbHHIS4M9R_CbfyGEPvUsOMCIjnvcq2zjLXO4EVyqYpV",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydgVPZeWsgt2OLT9bgvlcZtpPi5xE8XfUXzXx4ctmOKxBo-mj39tb2KRYGCfPb5s8DLYUehil14kJWpcXohmIA2axz1UdRwm-0ifbvKt9hVZfeckeZrvRTC0tJ2AAJ9D_P40sJkhVriabVtxJ2vyUr3Y_zxUsa_LNIaSRdvz9x_uoaCsP8JRqXoBOz6ek73w-EHjHz-iw2VdRcAMC7RJspkRgoHo0T1QZ2RxpQVkvWZ6IWRp4uyqZhdAZ0Jd2nJ9rFuSzNHpWpROodyo7-8rM4KorZfrmvnZpoQSOZxzALRbhHeFfsQ0uWVCcDgF0eugeBTCoegfJfnnHVxR8z7fSfpdCoCKBFmelX5i-wAe6Yf4yXjFCZMvreoo22xcbfcm7PTMJV-VeMFvuEa30Y3eTYhdWa7ZSc5wp5tkJTcfCHwVKA",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydi6ybqk4EYb9Df6G5amBfslpTGPfPY3dI6mSABCHUBDR326oJfCmAIQ8UDbckaiRtiWdF4QZc5tYdWiN5Fxc0FcCbEyYwd7gw6DbYKZ7bNgjbRGkqEbRiHAczz3DLA9BS_-T2Rr9Xg_BGnPK-VmCFtQH4H-NTv89sltnJVzGCnZmwNVSnsunV-lAYuUlCLTcXcoX-MHv-_8SpkW37y3CK125917ifvgnLufr4nFLgiJ_AY_JOLhHf0-fM5VeC3IaafSArerncnaLg2mndgUJwNojwUG1V7h9DYVVmZb_uj6j4SKB1Rzu97Kx8WOECg2rO1p_vVG-RPgfWUnmoo3DT7acgYyPTHGLRJx9qCCT0pxlh04mlOlEazGxQswAUkAX-fLwzmfCEOoszA6iPKsLw3fZ71TKN8w2op1fL2rSEk",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydgssGvBl7Cg5Qxr4daPN2ByasmJnUj0qgfMFSr_L_DdvbYRqdtE1YHHewO6dlEjan_P4kFsok6AEVJvg6tHPwGoiVYvEvAqSBzvE68SL_4bgN8mdsl4zf-a4CO1DUbjGG7F5xanaygnCH8K7npimrnZ40moYttlzN1I4vJje1UIcQjqmVr8iVRjaofYMvUu7MncfloNnlg1GU94H9Iiw-lGwOJskcH-SO5B4A_UqFQVJhGHOyAzjzoHJJaYBT727f0gYFnsmn4loLJY0G1oX6bEdKkZFdaz5wJSRUFstrXjSRv491qcqt2d6sVoA3Y9RFvmxNpp5VdSkBFkmSUw-uHLqG2Vq9F96Mcl-6pSSVyIok4fYsfYtTGODwX7ALlxf1n3Urt6Llau-hE6DET4SEzkSypNoUU4ex99aVb4__nwdQ",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydgaMy_4kx1hFvcufl2UBCRaBzWwBYAyt4wc49Jo0M_EW8W09Ud9zsQyyevpEXfEJ6L6745xCdlN4gffq2q1a9Mfgxf7FJkLlVK6SmokMeK5x8W9vZEYWWsYyG0SnmbeBpdeEKtrGQSHfCTFhJwx1ak71lDu0srdyxon-TSG1y-ietasOyapZ_nkhq1FuRMXZ7Apl2wLQHNvrD0I6Xt_NMgpzdMMsOYuIsCmayVLrMXeiWzdXcYPbxlTK4HlyrHkGZ3YFRQFni085W24rbRJ5Um6faValnhpmsG2Foxq7UWnwBxV-138SW0KTha276LqP-U79L6Y4ZDCRzBjQoVLys05kVNpyB1nxhFzIO_4qg0HaZJDQOMaK6NT6U4g_AiG_pD4jMOQI1gBxvNf1eXw2QyRSvdPryrMutiP_SCiGO0o7w",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydiOhcI5c8fD3Cqq1HahitS-LckCf3o72507O8ILzSvc5PAuf1h9UE_yJn1Cg_4D41mTzDDSfgny7Mjij22dbZ6xxKunsiXXU4Px33YZqtDokHOyOy9wvxZGUyX1Cl6TcXLKYNcTbtT9U3lCvtCUrJQKy1GWuzLvexooo9FQesIC7_68d6VTTkdgLZKwP5ws6BU9auHCtwYg6YDZPO83WojAbG9UZF2OA-WH2r3nrwmhr9ZL0qlRyXJIVVFe_UKxDYCFsdqP5dgtjGAMEL6-eAoX-VwQN-IeYgsa0N7srfPqXCgVoYLPH8ztYPVRxdgabYRfOHRylDZP0brvDgbF9Hj0-hJSQZuBVOb996uxtoMcLnd2I_-MY4RPEsyQ1tLGlqr3ynNvHfs1bBZNzsx61QWkzrT7zsNHvDGmpxHttfclWtPREo-UgiVhjpMJ8Q",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydiwkD5_Gb4l25rCDGuQoQlWuma1JuIBqQLbXpuO-fZ9DAKs2rIabX6zmzzEVex2d7SrJNwbELJva6TFwU6QNH6ZfSXl_3N7BI6H-VZM4EfWePraUS6BPG-EYx_1EQGaxR_nucz4y9Jbo9NHUOQxrNToxmhHwyn_ADZ4ZUFnGDvurBNDpFGmAJV7B-wMl8kffXs0Xl1EnG1c5UXxQBR6_aBrrWCDMjI-hKq5JLsUJ4PutyTsTdWAoC7nMick6wUk20ITsWcgEhSXzCbnookf3wnmmMBFPgw_MFBIOUMXCNIGe6jsXaSlA0HKLzulSDBRx_rrEhtMyXdCClI-ZaVgOQ21Yz6Y4Drsu4fVruiBBKfaH4saLw-oU6YaiojwpD6mBwfJ7MqjpbuLrtlzql5BB5u2cn_pDtW269tTnJmQjza3shl9iqba6n6S-jxr06t2",
+          "places/ChIJiydV7NsBpTsR9FTzokyGZoM/photos/AWCwydh3ig6DOKb3pggUb3k0nXG4BQb-bwwBM2Bw_LSunozkzJdMeHE-oPzje0cLrcALXNnRJF7oVz11k9sZHEx76UnW3U8PR7eAQPR-qxUA9swyIxyz624hRcqX1wLJUqJJwjBmBP72E-HwoF4ld69j3OAkVwxn8G0k1GGb1my2-Ljft4nBW7o8E-ee96QWnKyRBHKdcKFPxYgruOjNsoK-jcdGmQt7CLdCmkkK_oUllPEdFqTEqSWjCdrkUZ64TmogyUtipVCd5sFU_z4Gyw8M1F9oODrjSRgTDn6Xj0gq3N73oUzYiZe8VgKLaYu8rCu3WIfTyBo40I-AG0OUfHbznI1XfqrrnnLIwk4RD8KBkGsWZBIa4Apg-UekjQ8VCaKcUsix7l4acXBzwevuRruH6uKkFKPX3-8C85pqiSQPgHMseA"
+        ],
+        "__at__": 1786804014.2121751,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "This 16-20 seat Restaurant is a must try if you want to try the local cuisines. I tried Kudubu, Pandi Curry, Akki Roti, Sweet Lassi. Everything was delicious and at a very reasonable price. The lady there was very accommodating and friendly. Overall it's a great place to go to.",
+            "author": "Abhirup Chatterjee"
+          },
+          {
+            "rating": 5,
+            "text": "i'm from kerala. ... A great spot for a budget-friendly and satisfying meal in Madikeri. The restaurant has a very relaxed and family-friendly atmosphere. We tried the local Kodava specialties, and everything was fresh and delicious. It's located right near the police station, making it an easy stop",
+            "author": "SHERIN RAJU"
+          },
+          {
+            "rating": 1,
+            "text": "Last days I had food from here. The taste was very poor, the food was overpriced, and the quantity was too small. When I ordered chicken fry, they simply took the chicken from the biryani and fried it. The food was not good and was difficult to eat.",
+            "author": "Sayanth C"
+          },
+          {
+            "rating": 5,
+            "text": "Hotel Taste of Coorg exceeded expectations with its delectable Neer Dosa, Akki Roti, and Chicken Curry. The authentic flavors and well-prepared dishes make it a highly recommended dining spot for anyone eager to savor the best of Coorg's culinary delights. The delightful combination of taste and aut",
+            "author": "Sambeet Mohapatra"
+          },
+          {
+            "rating": 4,
+            "text": "It's a very simple, local place with the best Coorgi food that you must try! The pork chilli and mutton curry along with neer Dosa were to die for!",
+            "author": "Aditi Silveira"
+          }
+        ]
+      },
+      "dubare elephant camp|coorg": {
+        "place_id": "ChIJ6eSXFnkWrjsROF6gtDRS8jU",
+        "name": "Booking Office of Coorg Dubare Elephant camp",
+        "address": "Tourism House, 2nd Floor, Papanna Lane, No.8, St Mark's Rd, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001, India",
+        "rating": 3.9,
+        "review_count": 372,
+        "price_level": null,
+        "website": "https://www.dubareelephantcamp.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 5:30 PM",
+          "Tuesday: 10:00 AM – 7:00 PM",
+          "Wednesday: 10:00 AM – 7:00 PM",
+          "Thursday: 10:00 AM – 5:30 PM",
+          "Friday: 10:00 AM – 5:30 PM",
+          "Saturday: 10:00 AM – 5:30 PM",
+          "Sunday: Closed"
+        ],
+        "lat": 12.970950400000001,
+        "lng": 77.6003982,
+        "photo_refs": [
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydifgTB704-LejpJnZQzLkMuTEMMPo1SOslUu7Ger7kYY77-j_Yl4PErFV4DPy8OAwMPYYtxtAFnRmwoMLB8I7Yeasjff_6nMGiGD1A6ousDREoS30k4M8JADG9xpa77sPZMHRgcCArsYZu_o0qXXHE7i54hO6ZtV2e94XKgXKOXt6tGJzb-V8yZSbR4hATbyMtl9Puw-Ab-qPMJ1UuLRVq28sTvSgJrKsvS32M0zloNiV-Niami09qszCgxicXT7ECflNBe-Z7N32lb6VT_mmmIidkM_knF6IYB5i8tP82KK9_Cvl3aBQSqS64J7ztTvs6j_O_RB8fLn21RCy1bXSLZ3fK0YcBfdoyEX3NRS0hF6e457BIKGNr6TJxjK2zQRwKkjy6Qg4m0NQx-YzUt4AXrbwh420sJrL7fCyP8YyS1tQ",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydiu0YP8LpaSbc7CUJbhiVc3MT6JsgxDZG8dJxh7YAdiWcUAInibjJiQHEBHlBeZ1XU1StGFQfwZj_fRT6cF3U8cgVX_r0Ezinc7KR8w4GnIAcW_-DRvJXY15r8_Zm5Q7e80tJyd6Ls4LYBIN-G_wvx6ueyhptii_6BbXiXhEZhCQuubqn-hiuqTy-kum_YzFbh7_Xuy45N9rpYiMtm51tS7uKetub7JaqTNbnVF5qzWvBW1_4gHVR4iz8YMMV2tdDpjV_uFYtDguOW5DZUDO7VkuV8WBVvIQPXmxwkbk4p6oniWfTjorUX0yd6ozzNEt5GOyrcy6UE4V6XsBqPfHOykhQI_zDcD1OoVHGUzLw-w65MQscuKNX4XG6aPH5l1DZNkV1Ra_WfRPGnihHISYy8F9iHWmwOZKaB4jVNmAUs",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydguTTRxLGYLzxvA8MNwbI0Az3lgU-A6xMLJRAZBggTDtZzBIrjJoFfDimrG161fI1olNxiq5SrDlUNXTenK07OM6M8K_QIPqadSCVE8pwXF8WL7K3dZbMsP4X5-2z3ZrmxX3L0fNjuebPYqRXxXgbFANdo8JPY7pofh49z2q4ye1tP64s_5LMpfdwQYqnOqOnkeGp9UIG8lt5xYekel53S0uaCJYLilX9SP7NasT6qwkXwia-UYVUmua5Doesj6yx2AsABj-Exc_alI_ibWN9GZE-Ne0m7roQm3HDCIzg3M16Bab9R41YAIYWPLlT0Vr0QG5OcLSyOCBgcRuAX7R48gMnwhgteH8LatWU-qPinDLfUvOTikpwHQmJpE71BUR4fv5TfH3lvldzF-I1QGrX8u58R1nFSI9gBAEnrtLnDENXs",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydhAggKhiBIFqdPPy1Ih3qz4Rgxl7zU5VmkTiF51J8GezocEFTukYNMDd6WqTuG4_tuNxJIqs7Q1JRMFzzxoqEdLntAc5tMmAasouEhl9HAQC2L4dfuDy43I0QI0n_wptA59IkjTPJJ1zHE8svNJlE27Z3drxx2hfNynTIlibcBjBsimSX9MPkxcrGVRPmXjImNULq7cqafA2jCCvTXPzEIC1sOT-p_uGpqFpUkEM5iC34WgjW5LJ-Tnk3zpBQUwhAsPgPtZcSEQU03fPRJw4MeUlKN5BCyA20dxZs0hoi_kXfUPUIYsjODaqLMZcxnX-y6ytIWs9AFO2oPvreeQJnxy-xDGH6ZhyOPhPg3nOe0WucWqWIEtrnLaOc5vPuSSgHGxFGcaXt3KUwusqyGhuXCPyJ5A6UgsryeKn1_-K70",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydhyhPgMcW-hZn4v8YalSjon7wMQd2sVASO5p8rH2ZqjV4u-a5jRra2bp6WBQDxq9MphT0TRWVFfeq2SVuGQwaKfLqiDwyAEXUhB5sqFtobc8UCQWr4r7TQOT2raOksC_a359IeemibwCyaXqrlpy78YNqqv9MGyGbqY91HfmF_zCCbrM7Er_qBBZV-2vj7I6nIzb8hVdoHPY1iTFFN7IOzbsgrjxADRgw8-QNeRKNPss1nIOt8cI-AtdSzkFCijaj--wFTajuT1wHTgO_G0XkXUDMZPw6OiWagB-J4Ix3qqQx6iP-AQBR4i07YnwI4w1Ihdm4Wy_2mfQ6argYt7ajZlZjS_H1rkOuR-_9keS5RGyvD95gS0493Qgb5j8kTQhKcmkpZxLtejcIV-N2LKqHLE3io_BhI8em7pVW-1Zfq-kQ",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydgm5r8Klf37kF9DGGcc8ugaopYrQ9HoDtGhfdqfE_l1AxdHeE1WqXlgTmr4o36QyXylHBIMISdgyMmua9uCMXDNixULNnGhr9mTqtz8xFno8_qLrtT_28EoMmUdgPz9sQdBnehMgxbQThfkZh_ueNHxx2FfUW29cAUTj_lkzY5XESgeUZj7na3UPo0NPxjKEJdjwRUSGV3JdN22agaWJ8Rbkaa7FWXrdNPEl7q8Wi76d902vbJudg0c6AfK54L_XQunEzSvgTjVNlwbw-46yt37NNAapUn8lET_fPTvHP0BZewdb1peqlJSASMcsuDRwASe741XZLh5UUkTk6zHmSQq9TZlSYAuuBAXnwb5V8PqIi0PoImmZXvO7_KwGkqtwDEtY3cDPjNdDkGj01L0sVEayEbf7S0LrIAyGk2_GIbH81d8",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydgRo_11B-hJpPk5XtW5fqyqT9kATOO9dTEwRe9ylv7f1Fy12FH1fvUyP9T7tP2Dq6t1RrPIbpfXLD2XfVoZdJMsTqG8zavQI88lPi4EyjLiuxpe6blaw7p1VZ0IqewdSFztAEZtXUC23xBtbCgfgN_arm1zy8Q_wAuFLeMfaZJ1Nw4RTebzhTx4ejQK_dqjoWkbi2JKcSDqEthbdHbjQafy_FTWC3fFuc6-bAK2qXqG3-bNpF5l5tvHZbJVFnM_S9eup9dWpHrJ1QnHnHBtcXZ9a6Ej6PcsJefFksHPTjTb4b1tDQvG-BwX5Q8ob59fskiGQyjaBDdJWajR5Q1TmgcHTOc_CiQdNV-SXd-VWi7eakxp2CbwqhNaeu6pgpS1XWEOwAGUdkorj9bWydpeIPVtY47RwH7b1MlU9r_Nq9PHix0H",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydjbEvOUIse0ch8N8ObClbDmpDx1f7kOZBNYtGybL3jvxApp-VDhcsDLYAYFLLTFGOqIPYoECXc3Q9fHYLhulyuIiwZVYYujnvSrgA5uYwn8Yz-2i7YgLT8W_k2C61aqThfxerv2se1PXsOu4llAD0fiJ8TpUsfbGk0BRfipRj-qPx4TE9qmjVru1MjnWgxUg38yQoep3xxDnBMp-K8mhQsAXlimRzi041Ga9Xz2IDm58pN5vH48N4gvV-RFQc6olLvrCfiSX_eiNTkoB0kYBEQDU085vGstg6btZEC2A_aAxRK3jEDrQqYMSCxKLPRsl2zh53I-8e41TvfU36H9XLh3rm8nco_V7t5FedGNvvcsUBY4zbZY1gqtadhePnby35iRW0kTRcHyWnrnp28aXkDrGEfAdzqnvu-cxC1pMw5OYKhk",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydgatijB63yg3vW5UDoHoEuN6l8t1FWeGBw3UYVZJA1HKCybLzB5qTFej5ErZrbcj1osVRMe-FbpS2y7ks7aOXtUuu6auJvGxfROG3JKaTsy1Tk4MBjOaFJs_B94DR-Rx8T218SdGELXSD8GF1yHofq0RCLlHC2lS1nVzvItCBb3Wpym0wGcbBzbFUd5yaAhYgb4aUlyjS9pFmMu7BwBdqkLN7_xUr4tCDWFe9BUgjApcOeNilBgDG3rhrwzji2bQd_EwWPk5rAFx3cijezKTirjo5nYmRzuaikymrMbQvOwRrYlzW2CtTKgRQdyLB_t8cmKpbTaowfSTWVkhUnLUKUrVydmJJvA5u8eVVz6Uysk9A8mziqJCKY21h081jn8FJ02JDr74-YLOODiH_AxqrLo1xKx3UXXz6ntrUV2vbBbOwA",
+          "places/ChIJ6eSXFnkWrjsROF6gtDRS8jU/photos/AWCwydhYRrWP655A2HmUg-VDQtkUjyYuO5QniJtToQk8js0Ii1DIE3V7hzBZ1hF9-UvuLvh46qo2ln05-ux1381PKLXTRj4S_1dTtLQqOllyVeh2mpMEiqs0ak3u1GA3H4Eq7EHxa_wQlh-8f5zVXeKU8GHrHNopZQs1KySeBWHLpi6Kl_euFM8ADJBIO3WyZSOiMl1A657q1VcNO7pnS5mUFO0232EBDTMbbMR6blIoa7Gi8lmYKQS0VSFexZ9gYAbwU2J1Xv1K_i3yl-o3jWHLGmejsLPjV38axYvbYuIuXilfzlzod4F4quRR2uQk0pzBSC2KMIj3vbUa4Fv95KQOOLIuPPRvafsOSikLS00YeKzfjQgF_OYHtbUxYCwGE6hf9eiveGSvJqARpjI1p4H9PXAp5xZf84Gf73yCf6OZ8mK28rQ"
+        ],
+        "__at__": 1786804014.582927,
+        "reviews": [
+          {
+            "rating": 2,
+            "text": "I've visited dubare elephant camp 6 years back when there was lots of elephants and there were elephant rides as well. Now the elephant rides are banned which is a good thing but there are very less elephants as well and they charge for every single thing. The entry fee is 100 and due to low tides t",
+            "author": "Sridhar"
+          },
+          {
+            "rating": 4,
+            "text": "Dubare elephant camp:\nThis place is good for young kids and family. For younsters added attraction is the river rafting and enjoying in the river. Timings of the camp are a bit stringent so be sure before you travel because if the camp is closed then it's only the river you can enjoy till the camp r",
+            "author": "Yashashri Potdar"
+          },
+          {
+            "rating": 1,
+            "text": "Worst and arrogant management. We came long way to watch Elephants but it was closed. Also entry was closed with ribbons. Officials were giving lame excuses for the closure. When asked we got reply that “tum dur se aya toh tumhare liye khole ga kya”. It was disrespectful. This people have no idea, b",
+            "author": "RIGVED THAKUR"
+          },
+          {
+            "rating": 5,
+            "text": "\"\nIt's a cozy coffee shop offering a diverse menu. You can savor delectable omelet noodles, paired perfectly with a range of refreshing soft drinks. And for those seeking hydration, they also serve crisp, cool water. Indulge in this delightful culinary experience at this charming coffee shop.",
+            "author": "Ramaa A K"
+          },
+          {
+            "rating": 5,
+            "text": "Had Taken the Elephant Interaction Program inside Jungle Lodges and Resorts Dubare from Skyway Travels .\n\nThere was a private boat pickup , followed by breakfast and then followed by the most awaited elephant interaction ,to be able to touch and bathe the mammoths in the riverside was an amazing exp",
+            "author": "Ashwin Ramesh"
+          }
+        ]
+      },
+      "lunch at atithi restaurant|coorg": {
+        "place_id": "ChIJc4hawI9VpDsR_cpolMZVQZU",
+        "name": "The Heritage Table Coorg",
+        "address": "Unnamed road, Katakeri, Madikeri, Karnataka 571201, India",
+        "rating": 4.9,
+        "review_count": 199,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "https://www.mercaragoldestate.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 6:00 PM",
+          "Tuesday: 11:00 AM – 6:00 PM",
+          "Wednesday: 11:00 AM – 6:00 PM",
+          "Thursday: 11:00 AM – 6:00 PM",
+          "Friday: 11:00 AM – 6:00 PM",
+          "Saturday: 11:00 AM – 6:00 PM",
+          "Sunday: 11:00 AM – 6:00 PM"
+        ],
+        "lat": 12.4025459,
+        "lng": 75.7101898,
+        "photo_refs": [
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydizawliTNOpiPEWP8AB3voEMk8h3DzgjiKK2vtD1T9MIL6D9nUtVqv_71H-6XswtpTBuk7MEuMC9HzUNeNidejFyRKsV7hUbiCBxysNJoXojc93QG4dUtv1juyqHr0hPwRYJDS-vCNCWpteYeU2X1xGmdPUr8XxzJW9B4o-m69f7KIi1xAGmSN6okofqJl2ZICg-clWrpxmP3wBDsZMeP9_Kt-UymsopwqXpZtIdglFcVnM4T0Qxp1yHwskXxRsCAc7foT5Sc4xLvFVkI9mjOq882qOQT7n-_ctw_QuklPi8Mn729gOQUlOMhbHMpSMXvb8h8Y6TsVoT44BH79AnLBCOi5xf5QkFgKzU87qJnd82KVNipgPLTTXM6XDwoqXyaVMSUmh4DuwJRZWrQ5uUgPBDXaBuqyBuHpFma2fhFrWpK6IHO7VIcrR7bARaGnm",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydi6jrhK3jbUvqXp2Qyy6BRRkK4dkA8asKOcJeVgFBakDXBmuNb_Q-qaCoWHAT52ToKc2J3Gous9qYw6sBNAHdA-g2Z8ynupKGLIKp2MSeYVxnfMb1NxE8C2MhszVn4sK2UTf9oYObxuvuNenkx4VcTIE1ka1QmAPGNAoREPNts1K9FC1KhNxcFRR_8kSZpKALZOJ0w2EBGfj9mZkK_U3eGNOkup436sOt4AiybBo9pA2GCGD2tuuvWA6vtpcIXLQNsTfbgZ3j8KZ83uCtmk3Ti_ulbyQFEuczHwQuvy5uVQa4eWNwcXKi5XuZ0j30cZfWk3bpTLuu8aubkXdKYW_9sihQmsB1AHmoX7Bj-0BxxcQxEjMIDOGiKyOO8iOpHJizhwerHCxcNJwQt8a12TintAgk0jufq2gBDkA1M186wmd2Qu4fTSoDpbRArCA4zE",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydiltxY-fwjAmI-hPdmiXXvun2HZ1OzXDc6qqCCH8JUvgpSIv_9uFySaNFZ1kEr3TDkbB8FaQh11wMwJSZ6XreIDXq6pbuldIPBPE4wa8VSmd9PT2uUhlTaXx2fpzhXhrQ1kmfs0e1NKdadhVUimruhfIMn63sqVbyTM9qhvXJTdlO8jx0wpfOLFJI3VkE0tsdtEBSI8RviKJt9J_fLnXVJIht23pVeGqXZ68_nNS-8g8Zwkxz_xscp3xLtrIvWB34rvz0lNAP2xqNBOq-ZbiDCsI6rxXCq7fou2AYw4Qn6hcHo7b1wusjP4qtuGvfnLRYIxvsW5PnCSdczqcGRvsmhpsZDmFNmpCae1qZFo5FScNFaCAVF9H67npv5mDUGKOB2EpKKEB1Y0UMFIBOgqCFzW7bJvWFD4vAVPxqPdoSDA5lffmRB1Fs440wJHsiPE",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydgVecdWyhueqoOclKO0tTc13RmfRQcZWulIlpZJbDtGFI9xGn6DWd5tzLdcODycmD4yIGlx7eBece4GTZ6sTLhQ3lOeC5H2CRWzDl9N7EZiKiHnxPTqV8LD_QYxtB7tTYLJqCeyiYsRpKfmbz8Q5rq_skObv7FTr_1JHizPFgNCIZZSDM0WDJl3OWO2RzpD0bvMkEoN2tlKY7I9lCAaaCLhlvfawP_OdX-vC-V3klfluYE_HRvV9Y9SCB9OWAIQ0T_kbPStEAoqKZ-e47ZkvLtlO3tjSY4J26mLrCJPd2GZ-U27XClQchdJ1-ax6xPu4VMAW5L5xgvy2LkyI0ApoAAklhy19Qt9v9c4ztEL8Hnj3KIpty88pbJa7aRJL7XHAzDd19ZJBUVXR-M5ixnvEtz3izgPx7bEywcCib91_-76T2OIQ3RPXzl7rDuKmeh6",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydg-a0xVu1mCocGMMrq9G3iVjl68FqJ9pVxRfJQj-MQ8dOaXuf3fBAFhAz9iBnKZn29knAk0KOuG9v1100f4Dh2JtYXg3YnLYwqxPievUEPy18TDBOtvTGyhuDpfJdeA40UolVyMh82R6t5Y8y_dijTKjj7KVpAlP2Lj4vhYAn7flxPzsZYib-vhKxjVFK9BsQFsGILTwf3kmU-FYsR6DIHHOIf2c1OndOWOgPBk_HMgHPgdD8eI9j1soYJ5cMVTm8_LK4uneEYVE85FGYlkDC_ZRUsvDtf_Afl9aRdY1BIZbe1ELofBMNxQkgmLOVtv99uCoFF3TH3HxHh9NEPB9cDfSfajZdYOttZ0FgZK6324N0HNQL3pbCOFC9l2ydVrspEynkG5mdOSrmyGQyPqX2CC5-MmhVfEbThLC9inGWM0AgRFt8wY6-FRifGcGVCA",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydi7hjqPN7MWKyqiAAke1ir6CTlwRrbmkWnjE_IdNEyCTzNKJmGWE2ONPRK-StvldJsADJnweGeRs3bRh7IuUgP7zFVSV7jd7PoBvLS1a_Ee1YHjl5W614HBh57eU5-G1TSavusRqDDqWeMDENBKc6vL0a9K8KAHFfVkRyiufb4Z0MCHjS1flbdVJlbnngeQo_gnSPwB_FsfbmjOzkXm4y55CXRXv0no1m1iiV6u3wXlyU1XYYqmOybBrzZxIkeEUoR6gjZ-R-r3BfFdrAPZyumMeJ7X2znLq_NvIcq20VXCtap7lrS9O8cwjDYiAkSh-8e0CbUE06hPm7IAKf8oDCTAMMdek8HxA4ZO1n7PW5e8Uvmlj5UqYye87IVofxpoxcHTThkPdQUmS_uXX-ec7OznlDSBeKQuyR1XYeplP2gG_5PuhvIo-hENtH876TR6",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydhVTy-SCQA4KFLoDKj0BgDKt_6dQuNMFnH409PHjv484OE3fChwvp4tJRi3nfwdmTtIyPg4JOSGQnOTZegQnIDXZQ2DQgBYcP_DT15E1AGwz56IjC29KtkaS4agu0BqHuG9_uyF4JBovc0rV3WPSliKZdwP1-6Msy3sNVpvpYamJAHwGqN6Vpf1-SEgrC8Ie7U7jiLtB3KrHdaMvpTPcresMCKjxOvncDFavCFJOt6DbKnv0dgsMaDXVNIIvK3Unt5k2BXSufRiwQgsD0eG0qOqt4BsBRGGyuenpUp6JOO5fkjDewcV-9STDpLdY6uM4RZgZZ3FfBJ62-TqR8ahz4h-7PvHoDGYNvRwo_wPE4SSjOLN1l4S_lEIDFLaWXAl11hcm4Kj-vPN2wTHSBsEfbeTWY4G4QJndylkVvDvwY-jTG_Bg6XC0iHI3Eyg1w",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydjkSMESyR3kRIlgOpNZA2_YBOgHjQ-6HcmCiTl4tWfTTNRrfm-_G1KFkOmIjg9xB2ZVMo6q4NNspD8Fh_UJGL4jH08ohh-jn4LRPA1EnUzDZgObvMMjsu70kyUtXYB2oopsQx8M_dNNfpNZpsl-1SMtvH_mikPV7Eha8fVBF7jX7bhvhQ0Z2iZeh8YQj9DcX_YuBn_xv8U16Z3PmY5pVyeUaBRSZHCHfFSx6Zfpl_fXPrjJKXgkj07rHfUZSQmR1lzZJ18xqrkdbXc0nNfUxhRpt1gZCwlrG68Cd9lQ32-jL8gH1UBtWjbi8ev_TamJxIxTnV-DpJ97aHb8nKYBq3acI1tFm-8Myz_M4t1Qds0cxQXkwSOPXLTeiOGj8axjkTgCH6B1jgD4bRYnl8idPSt9JahzPINJ-6OPNTrIAUNSRUjeerKla4Yd6hay261p",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydj7MZZAljVOMcSnqZ0tqslrPdE-9QyeZxvCYqI1RZRv_p8B_WOabeg-XZHRqEechGo4xUoH3LXSD-POnuR_y7682g3bWf6QZNGvdtqVBr5BMm0B9ueVCu-fnn-QGaD95XTUJEFhb5sjpcZVj_0n02YU8nIUgAR6H_fGT5bthQGVMN1zp-Bles2BcIz4CM6U402IdGmkAsYKlimHKKfamKNukxUBetsr5YHZD-qMiZBk-DIpCXj3uXWzzrIHlsQOWv9K2TlwN9LDgpqD32Z83FnMxaA8Nt2jBF0jvzv4usr5H_U2iBW1cp1EgInQq-DbeT6rbmzNedsmtayjzGTQYyooT6YswFhC1qoFA2EtmAXCHxd5bvd-3ujBjJ7s8Bxaj3curP4JNlifUuDdXpKOy0qU8rkGcTREZ3J8dp74yFMaSaSVeaEvAJfI-7IJo0iz",
+          "places/ChIJc4hawI9VpDsR_cpolMZVQZU/photos/AWCwydgNx30TymeqvTe6MKH7-JcsUmTFtDSvOgN7AGkbooXuwe1EYIqsHJhohgeaLGKPjPmXH1Gak7abydPveRswehLNEag9mw02uuZOTKwRKFJ0TETLgzBFrqljQNbgHa1ISOV-2IbuNGNYY5Dx0sXnd2wZzPTNR71LkjwyTR5lTL3B2gdwc__XpKBEEDMRAvZxV9U2qDQ2ay3chgJ24wa75eGoGYtdCmnB77NOWSXftifjNoCPCaZlk5jhtls09nBkAbzET_S8MS2rlfpMvKmfb79D-A2yeXpFcIEDS9ZFmMetbvfLlzic7fuWUsOzdQyvfuRfuhbI1GADMSx43ZvaafYD6b-fgfTcRkPldatf-AFuAcfxJ5TWxfitsGeEy_zHCi8T2Hfzmlv-kVY5ju_AKRUSTgtxv7RdZH8fpDxcjli4_2pWWI_bXv1qh5a4qnJM"
+        ],
+        "__at__": 1786804015.3942971,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Really loved the atmosphere.. the vibe is awesome. The place is pretty airy and open and the ambience is beautiful and serene. We were attended by JP who is the manager here and he is very amiable and was explaining each and every course as we enjoyed it. I would love to come here again.",
+            "author": "Shreya Saxena"
+          },
+          {
+            "rating": 5,
+            "text": "They serve Thali over weekends. It was one of the best authentic Thali we have tasted and it's a MUST TRY in Coorg at least once .\nWe had pork Thali and Veg Thali. I have never eaten Pork before but my first taste pushes me to taste pork again, the taste was spot on. All of the quantities served wer",
+            "author": "Shiva Prakash"
+          },
+          {
+            "rating": 5,
+            "text": "Coming here was a wonderful experience. The five-course meal was excellent, and the staff were extremely friendly especially Pramathesh, who was very kind and welcoming. The way they explained each dish added to the overall experience.\n\nI tried the veg thali, and it was absolutely delightful. The ta",
+            "author": "KASHISH SAMDADIYA"
+          },
+          {
+            "rating": 5,
+            "text": ". Had a wonderful experience here. The food was great, but what really stood out was the service and pet friendly environment.Pramathesh  was incredibly helpful, attentive, and made sure we were comfortable throughout. Truly appreciated the hospitality. Highly recommend",
+            "author": "lipi kalita"
+          },
+          {
+            "rating": 5,
+            "text": "Go here for unique vibe, local thali and great service. Sitting on a 2nd floor clean restaurant on the level of the coffee estate canopy in the midst of mist alternating with monsoon drizzle is simply the best! Lunch -> started with passion fruit juice -> chicken or mushroom starter -> thali spread.",
+            "author": "Dheeraj Kalladka"
+          }
+        ]
+      },
+      "nisargadhama|coorg": {
+        "place_id": "ChIJPzRSfi8IpTsRTWliYhFj-Kg",
+        "name": "Nisargadhama",
+        "address": "Nisargadhama, Karnataka",
+        "rating": 4.1,
+        "review_count": 4611,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Accessed via a rope bridge, this river island features bamboo, elephant rides, a playground & more.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 12.4407439,
+        "lng": 75.9361629,
+        "photo_refs": [
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydgS5GajCC2SCLJJRAepNM9a82YF42w_iFs6kGs4pjWU5vUQcHb-gdD6bZl3eo7ihfn2XrwMu1leuh9WXYZtAqKu-9ZgWjJ47DyPAbcEEdAdIGQh015GnFan5eok8pnW27TaFJ8qwWWTfj0EiG6QRvTM6QOL7bsofaN2bSBwYKy3ZLlbyTw48TA7FJcTPIzXu44RfBsbzGVkbD4tQMnGKe_5zV-vUvgxvAjPwFZrJdaNIDCrlTzBeGQAxCnCI52n0bCY0Meer9sFPLK13FGEMMgFTEmFkYpgEc6Ls4zflb06Xi7NWngKJQIuuniTTR9oEYeX14pHt5QIRyJozdRFBcvEiGrqIpa47QcrFR8BL8LyIyK8BuNiiFfR7S6ZRYIu2NMfzJeUs7POhsJc_VmKZ2bYqhw1b2yF5VeRAHx-iZP_ZuGW",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydgWsr5YkhVzgwxtVxsGniRppgMYBWX44_-AKEVSsX4ahrknRJJUcuxVJRb1NCIE8nVQykSX49u4Eq09IF2FKxiUu5chWvpo3lTvl5DYT_pSMyFVXEj1mW_3pKWNOE2bpEE1Hm6hi2DIlkU8b1PTLqUBVIrtIn3PEX9cW0Rqnezn0wYHFxLtDrWnmR4MkU7704FVkZwDFG-AXQ_3bw7wfsxvmcrdOMj4Wa-F4nXcuXLx1p2_lvyuMm5jo__KNB2pa7quzabZyVUhAyp60S2U5c81uezTxtUgxu0pZgE83HUfW8CsdgGXARNsdtsQ31Q-iLrJpuzZLAVsk5RO7UogOtlTBLqFi16ZNXvxwyVJx8wyJowT9F6w4tgOBAMCnSmT6JmWok-7sN2CgLGTt4_cV8rqaIzl4fQz-5sux4QOkUS9mSAE",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydhdIQoWfVOQ1IqzNzas1ug1bGLPRGVf_O5DFYEDfObnMaPwEh4Tjl768YxvPE6TQ0TZYFIW20jqyfTMsUmu9YiUlJWvcmTmvSKcQupmOSj_24N2kMMWR-1Os_x3NvSxNYft7s_oWcECe-hc8vW5gJmkPUyNabobThCeUYALedKaMWoR4KxShYWRVGnqS0Kyme4Gc5uMOkA-nGFvM2l46ieXXtuMctk1TzscDaRi2GWsc-NGy2pjC8P2_vgxXmyHEimfrGIzxfg-VZC4A5sLoQO7gSJYsxRzFeik2tSjlq85vHAH4eDLstCWC4d8oedZdJtUlHP1hmGazyAKxoDvwiPxDV-sP5O4NmXAbN4dVtcWYnxmzsXxa9VASt7UrzeVEn9y1eb1S6HsP3ISrWwCreNv8BKRehWJ5CJDcyRi-GNKiSo",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydiBJMW5bGIrz2AWxfcjz0Rva_8n1b7cKSQep7TdZ7N_lwC-hhlZTtMRy5hCQ0N9XIc8V7Hbiv7P8kVfNwKN9GhmS9Nd-BXqaljS2oG6s4ob0NO0FdiLBkSza4jYHswjwNGpKu1A0VvhuSj8A7tiBBrnx3TOu_TupJXDAqXTkgbls5xy7PZtRLaanMevaOK9JLln-vU5SZXnZRwlGZ6Z-YGOj_5Sgyi4tC3AdFBdf22p9-Zy4zJC0EC4VoitnzK9CTshILsFwI5D45LBu3tjPIT6HkgkX0LDFpCgRGbDur-mlWbGFFKYu7wta9oFWcpZRqrbGXPaGaY3-YyUC5ssLJ4nVAIJL7FTe9KB5Nf1NV-YEgLLML5OR6bbvc5pZQbVbB0n9BynFfgVIO_MPaVPkliZcueqaloBY5BcToDnYUefiBlP",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydjKRZ2SY0kr-bLetncSuVMYBSI9IrSCtZkJIRwTUR9guAHtfHdgP8v7J4iDh-PMKLCEhhm-O0dPEJ68tQ7N9QLGWjdwSi-utuKfTK1VXoidPTycQJ1Q1y1nFPC9WhIndTQ2irKxnWXuTetOpc7H0wz3FDy7EC6_TTJ-UojNN1_db5U_Kb8tq6jvucjPpmGzm5--0hSKonTyvydiv5HShcfC2o8mCmLgLp0gWz6Za8LaLU8xgQUkAL8FOjmyqu61ba-j_8BrZtXKQs5k062C5WmLV1re68-igpGMal8oRgSiccQP-FrK7luHchcOJIiryT8ENYJd5P9yYIxXptxDijHsvzNEvZM8sQ_XHVNgrIqcix5NNyMGEy7IgpQe3p4xjCTMOvFlg2QVAfbnKxgJnMdlcpbg0ouqmsLGM97yUic00ON1JTZEp1-rTzQWR6Pc",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydgEvFk_-4--Q8Zjriidpy-CQrik7WCozphw8WCm9ekAM_cEayPfpldw7tlN2zusGjUx-8M7uvd0QDbn7yl4rTxqXl1R3IoZhjm7STAQ00IjwIPd8bTWvA4pQapdGMep077-EcJPy--fscbd4i0CfNBE6liTurJwZcX8e0OD7T0VjxGc4QVfjNkJMzoJiiRmv9JTJYssGnKGCek8O3rs30II64-1SkGFbC8djRxl5uUMESzBYmdXUF1lsQSvS-eSfMjffTYMsHB70P99gNTFjt9cqaiAiwjh9cpThZDqIo4E7in8Zok0fpP99Y1UpI9sLsSFPmg1cbdswht_OicUN_VEpFDADRHACcTfKc2ZlzawIohn21ppGPWASKOEYySomm3A7VInayVMgDwSQLb15D8aaL__aUbkhpea0XM7gVc",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydib56eT-X_WRD5lZVsDb6HVnVnM1jNhVUE1oCsRpHHpXTC41V4GRPvUxVsA-k8xqN9tBJOw9RAt_icEfueuEcRCLeNQ5vM7YpX3roOiWwJrsEh_gL3ZA4EjT_skjsxmrJGMYj26njFYhgSfehMhxZjWWyCV3c2u0szCxDcjrVYOs9TDqu3c9R_73KaXrryR1HSapk7mamUJphYLw7GRj0QEm08D4PGRJ-73-TaFFDt28jVfIp9t6rPoarIFjDjcUhmACFcH_Z4d6Bj9i33j2tr7w9FaaUWPd_yk2s6dqbJYzON62Oni_HGUtmd-KPs6gmZfdtXgUT4NBufUwSm0HyVFmZZeR6UcTxvwoTDhqtdljA05SAaNQFnhtM4sB6UhcOeydn-wBjgdHZBsuDPzSfd_HvipslcwKcg4M_7N7bq3eBvy",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydhRz2arCCFzANI1fydxzJF4rrbL8xhZkgn2r1IBpavtcU1ZqXNqeW1jh6GIr6fimsSdzkZVx_tmIYUkZ2iv043fK4u6-Eu5GRe1uBVJcGDPFSb9gK9Vqyn727UwYYxJzvu3LcXpPnkBExBe-oP7jj6XumPRBT6WRYxpqW-pr7Jz4KNsAGsClev6_fljDdxCr3Uv2VUscv1I4fJA1C3lE__3CZNocpelbHFYdh1Tb7gNjAcMGNhR7NIl6ehIkyKSOMGqpgoDs6weKs6nvFOQLDuelbEq5aDFwaihzd-EujUNyYnkzYpJ2ZgEljrbxercIv7YPIc_hdVk7WXQPHZuoe-9YF_1rUsVUklwrUmuCM4tChq4C7QZ-oqIVyUboiJI1ZSRFmyb5J66TK1R5rZ7fDUALNi-jeGhKNGB78XgtZ5mDYMy",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydghht8h20cXi4wZ-DSSN659bhXFGhow1A7uGUkIo9pEpYbvZeuLYkABjzDa7p-PVfWDdT6_tZu0zCXX9SGhYwS9P5isa7RXnXq5X5jM9DY3GxkydkPyiy0OiZq27xiRNZUO0QsqixkDFsUCx5jFFHlDGkUsGHNhcW4GZ4M_aZsljAzscsT_vUVlO7l4YQ9BHYHKGSwH9BDM1wBQH6hDooWo3rMdtv75vVLM8xDWLVQ_8YOjiYQVqHk2vUmDCbmurBu98XrN1YWFCPPstZRbkytgrej_rfj0yrWjggw36pQB_GBHaT2luqsU7IDIMDjqSbccjXWNA5ft80zajclzt7CkxdTh6Xgtv5qEPr2EjJM6IvQ2wWjq9zTtm93phxM9yOrg0h79rCVcbHxZheLVMeCrBsI6KPPmZBIFaD-olM5x2Q",
+          "places/ChIJPzRSfi8IpTsRTWliYhFj-Kg/photos/AWCwydjWVMZS4SLLj_hSwDKIoAlDNSTIkbmCo6qxlnyaNWZyK9SaBosNbBjk_eikJeImu1dYXjBp1qKfx0okint-xuwfQIzEsi1mH3xvn7MK1oaOzYD8i08Ij1xiHSYq-k6mwFk84Dx4VrjSLKGiQ9ETTC97T_XoAJa_4WdwQJ1zgmmxSgNi5_t4uYBffIn-hbYYAbs6_6nykL5p-3xSF6FJkStNtLj6189TtUORQgK-suZndknUaLc2d6i9Dhbb0MSDjc5nQIHQWcQQY94IWJxROh3zI53tBan8LURu-ZgWy7aLoAsc6yN44QSE1q5gzGl5YjV67m-mobWbUpXAoOYAgSWtfBYEoscdfEz4pI2JuuF9R74DFyF09ggUFQ7z9a5LVVXCSWdleJGjesYqI-XKu6nUAS4bqYh8VqNaPV05l77ubX2-"
+        ],
+        "__at__": 1786804015.744131,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visited on a sunday. It is a good place to hangout with friends and family. So calm and peaceful vibes.\n\nPaid Parking available. 50/- per vehicle.\nEntry fee : 80/- per person\n\nShopping village is located near the parking area. So many activities like sky walk, zip lining, horror house, birds park ar",
+            "author": "varsha varghese"
+          },
+          {
+            "rating": 5,
+            "text": "*Nisargadhama, Coorg, Karnataka* 🌿🦜\n\nNisargadhama is truly one of Coorg’s most refreshing gems. Set on a 64-acre island formed by the River Cauvery, the place feels like a quiet escape into nature. As you walk in, you’re greeted by tall bamboo groves, dense teak trees, and the gentle sound of the ri",
+            "author": "Mist & Milestone"
+          },
+          {
+            "rating": 5,
+            "text": "Truly one of a kind place! My Favourite spot in Coorg. Wow what a fantastic place is this!!\n1.Walking over Hanging bridge was absolutely fun experience..\n2.it was like walking inside dense bamboo forest and lush greenery  was awesome. 3. Deer park and play park was good.\n4.Birds park inside is also ",
+            "author": "Sreemallika Praveen"
+          },
+          {
+            "rating": 5,
+            "text": "Had an amazing experience at  😍🌿🌉✨\n\nKaveri Nisargadhama is one of the most beautiful and peaceful places to visit in Coorg. Surrounded by lush greenery, tall bamboo trees, and the flowing Kaveri River, this place offers a refreshing escape into nature. The moment you enter, you can feel the calm atm",
+            "author": "OM SONANI"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful place.\nIt has a tons of bamboos everywhere that look extremely good, an hanging bridge over the river, deer space, a bird cage where you can feed the birds as well. Overall a very fun experience with all natural beauty surrounding you. There’s a huge market also near it that you can explor",
+            "author": "natasha irani"
+          }
+        ]
+      },
+      "dinner at raintree restaurant|coorg": {
+        "place_id": "ChIJOypdFp-qpTsR6BMSoZKkC7c",
+        "name": "Raintree Restaurants",
+        "address": "Pension Lane, behind Town Hall, Stuart Hill, Madikeri, Karnataka 571201, India",
+        "rating": 4.2,
+        "review_count": 5434,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "http://www.raintreerestaurantcoorg.com/",
+        "editorial_summary": "Relaxed venue offering a range of classic & innovative Indian dishes, plus terrace seating.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 10:30 PM",
+          "Tuesday: 11:00 AM – 10:30 PM",
+          "Wednesday: 11:00 AM – 10:30 PM",
+          "Thursday: 11:00 AM – 10:30 PM",
+          "Friday: 11:00 AM – 10:30 PM",
+          "Saturday: 11:00 AM – 10:30 PM",
+          "Sunday: 11:00 AM – 10:30 PM"
+        ],
+        "lat": 12.419060199999999,
+        "lng": 75.738976,
+        "photo_refs": [
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydgX344h-h3A6RqA9pzFG6PWW2Zef3IShPgnYxX9vYRmxGzbJK_zmGWjblnIyxY7aRaxXvahmjWE0LRDhQfB-Nk1qn-jiUphCkWK8O-9HFMNpSlhjL-HqacIFVnM5FIVuCgqoVQRIf7OQXD_lviVubGjkIs2zLttStEUCDBQJp9_-Aij7__VI_j5Bmb9RtZd7sufBr3Yxv_MmrgqtV5HrA9gQVQVzSr5Ttem_NNogMca8qrfnMSIPsfEtdFjiBJo5LZUglk0pCzuarsB7SV-nHjDiGZytVXTO9dIyEjYq9Et2NVUCTowU-AGDMzabDTgSXfcsANsoS6sayfjTGSJnYcJtblqCri5JCu4md3yXukzV5_-LiSx45GN3hal8NOFzKXQAg2j3vMULLeOJy3yaoPf500fWiSfSO04sF8z3Jdumg",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydglKTEZporkqHZUvgzXpd3T1jOaPOsdYzbDfT68wZoCUZfSiH0z8ZxqMuw_bgrRw0JFBt2tYo0_xYebjkmOuUOhWjIibW9i_lnROprm4uJkXnbKf1JbtAF2BtW6gaCeO_8-EmTcRKWfuNdTY0CAdPpQzqScQzPLXSV0B-9lsXnzxq7t4b5rC7O9Xp29wd-ObvQW-aeBSEcBmCtH-mChuLsI3EYwZdech6UVODtGgfd57YZ0Pi8dE_QjE7QcwxGLc2ChinV921k_Vb-cYY895xfci58zho4Ewu2TuM_QMQ6DiDNH7YVWvwA3KDAMBuLFQ7OAabq679wYEalLe0TzdMI_zXOhy3Ln0-gVIvlTojWPDIIpxJv94Gynui2cHDYeVMPoAH6DKw48fSGUNK3CaD7pH7dMDH7nuY5JpzMQwbTr0rKES9H0CRnjW3eb0vqI",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydh6DeBx4ktb_3CvJmbPxJYfKYMC87zN8Khs9cq7KbYW88DfEpB2PqmcY06u82g9JctHUYdctuOZ0wfA6ao4nNneaZ1gaFlsvUKqYXveDz_ECql5gKcbgUn0TkZ8aCr7ydtM17Zinz4b7UOkC2GsmRGJdx4AwX2gIpC4evJYKtrxZ_UNBI6dwrIbtnPLnlAMpBNCHNw_XgbPqZzH4uaH-UHnTG8dmt7hc3vK4WPxouvXkRdWPxdFF-gZt9rMB_FM_3QaeZhGmCMwF2ByAZ_ZH25e46IskWu9Dzg8yYPtZWog-9DkZUKCZAWHpfW--FfGkbpFyfFa29V_8jmZAot7hnBSrkJH-moM_7tRF3rozcg5HGR7IpKglGYS_Bh-V-f5pGo3Z_w9GUtQle4uBCEZRNU-iOwC477NCw7BFFj-ECk",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydiRafXefskMRLYRAS6tHG0jF_UeT8eCeh3bnw8MJaKwPVIb6r7gALBK3rnm7E2xQmCYGC6cF4zp9bOLKiaoGkQejMo_3Z7ihjak4os29x-0Sat1IRoU-qYc7OCS-cr1G-tSd-UAUuAnzpAU5hZFFfZu9_2FXQEm4pRXHjcjSvJYMzpqo59HIL21tCeIk5sGyMfuwK89JNjoC0Nd1S6yvvNUVQQ92afrf-lHvvA4a3C3P66GlDpUqGCqTktESj2WbQynsnqnS6VyAzbFwXntga1fidw6vpwCqqJyNUDcuImBzDLe_xLjtwgMHTmLLd3T_p-ApE2HL3DiUpuM1mc_D1BOqUKiQcurFEzslRC73R6YlGPcKXVoW6QBxBRDaOqqXvL9kdbuquDSO_Z0eJbpsWfVhj0zhv348B1IDPgqcnSqnDqc-3wOw5fpC10FnElY",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydgl98Dy12LnQWueL7c5FYaTFWl5wbfyZv-ErcanTG87zQKByLOH_k0phm7QYkgypPcjG4yWZIMWAVxMbEp7VW0J_1-ZSkSmpb3GBEb_9siFY9BRIJ5BcbnAoTNmSckyOrZ7hrcIhfVWp_RquopANZflWd9GxGGFc4U9lkx3sC0qxXa6V2Nk2RSmnsenoWJ0cm-WX2O_t0mLJDIiVIK0_xSbGSlJVnFgbQN0exPwjdoQpZRwswceZW53hQrDxHYcXTFIj6bXMwilTgDmL-FyMfXRLO1NCQRAD3uEQncEbkiXfCU-QiOtBNWvwO-JqIUmJkpafhG1JrqYHq9cYuCbMNKuz6ZplRbIdDmKbdsIh2lTfEK3IjA4GyPYE1urbgNw3uiHG39QSowE7EFZ7MdCCcgmr-jyTe941rGpmjEaNXKeZdqyOqsXiZNY3XsRzw",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydius2gz7F8P18Pi2bjfUx5ytxU7c4CyOrBIv4_I6vuuNDO6TmIwUkr7Y_u6ozVsUxn_Nht9-r7TSINS6Vzfk7XkKawSVEkTo3qRkkPzmsIE7e75YpzO_zr1bGuw47nCoHRIpAqfxheGvNFd2v7C_VvgN4BIcCTKfw0fPO3SYQtm1xmsOz6IG92E4KHZD_kjxrLPU8J-63gbbuCH7iAGHMvXcsjEshv43_A6BlmH8Oj2ODno_G4pLMyc0viX9e2Ts0DDGZ6YW4MemvS_vF0Bbq61DDLwrO7Jc3SmLR_anRJHySXKb0gtkigp3mZsIMz2FZtPtAP-GAQb38R7tn8bnVdMMKS-gBxVE_LddHk4zblirtBrm6xqhqhXGxsCP21vBSm05JXbEvsgIKtJBWVDcrl_ZqbsCWMkPpOi0WiXvWdtCNIsp_wbEcG_KvI3ZA",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydjElG_9ppcMVQ0kRVKp9QZuuLLog9MLSLahlL793edYIAfbOG22qlVH91almR1unNYNwjmbnqUivIxIbO-QPsEiaa29GyFEvOleEps_wXXRT0QSTH9DHiJT0Cj7ogBrlU9jcIUxHmQehcwqfcXs27oTQxaiBfKHhaBJfBnRR0coXZEmgh6GwvbGJIabM6PRKWeCXS-zg6IgVTSLV4ZM6LAcmMwuGfFoOOuLV1AzsCQn5dKjhP_lVLwj1oIkfsecvcKsyycfx2lxMNS1wPAESC3bV1u6F1iAI8fSHfWJC1usN8ZNR3ow9BZGNd1u3wwM10Fxcv-b0vOQQuhxyMoGpl-Srm3I7HL8gIXtlR13GRCsLHSCYdfavDSAS4eomA7-ogpX13XSC1ziCF1OD95l9ng5Qgs922ud35Gy37eULg38oCUV9votaI3_ICL92tKz",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydjhQjMattS5wLrox-kjO36yn4G6nTzV8UmDLVUqYFUGAMT01TM31hqB4KgkwmVWeeyfoqeGVjLzTCNaCTR8Yap7uFLXQghugbnqPCfkOjbP4aCZlFnei1Ep-2PpYbiJUzyYD265WUZxG6TZ8eXcV5kkjDnZp0lDj6wfe3gCVK8GG5TrLIXiXbE0bAjLKRXozAQIdFqE-hbWhnrTywq3DOkD-2I26Wd0GRsCkK9baXzhIwIvdus6V36eqPSdNZQ28Jl3CAiNhL8l2U_rjgOhOz0xBsCRCpZUQ-bSac8xYzoueKOnTdXSVSAGpE78ImoblWpJ7v45R2AtyZLl58o8g5o-0jiexvZAtsDuP3z2L5pJD69ZGsk8iFh0Cr_n5YAcoqpgUe-RcCvVuI-e0WRXLIksb3-kAg8FA5rhkcax9EI4XWcJAS1Rl84fJEXi9Ygl",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydjzNl_9lgFkNupIsIrrYWEFgpH1po_Oj9V749PK36KfAORqTOjRe1qYgHTiiiNP4m8FxB-nFcap4a1TomjzIh-5i8OO1gu9AwkxxEEinZX9OIGkUxA2hfmcUP6MsHXkaE-eAQGsePnat1vXcVZCBn-6pzGi2YHeQj9IZ6qMWqVlNaXXawIOsq1AQYQr9T0Zvz9dceJQ-RBFDztG9uLo5JOLDbEh0rxITimaGYvfO1CayhZUSai7p0QMLwNbu0gLwI8P3_17rjpLsVZfotUR6SLJaTJlLw7NsbjcvQM26nhhAk3KICL7imMF-967ZbztMDYx5dx7kC5As6zsRawqnXUEJbZkj58BJbebrs41eiJpIGOXtGtdRlXK0Ftnv6tETYOgr-FOAEcwz5zXMTXPgSQpMwddFe4A-nJnU2ccG9sulNUUtyNScBXx_r5hdJKq",
+          "places/ChIJOypdFp-qpTsR6BMSoZKkC7c/photos/AWCwydjYHUhat-AAEouV5wVcCl1Sd-fLak-FzPF9DJpAU5vRGBWk6MxsNz5j8fgKjX2j_I1OgJpDE-E5IIBxMAbM-vFhq41sQcEShk7FbX9PKUsqzZ30z_ioo77-Xvm9JWV5FAO-g5F_vDK7IQxxZqK11S7FWxA_qdWCjZ6PNil_xe73QZ1bE1g76O1fMDCXEgGIRIyP3KenQVVTR0IBdVo9QAWsOlitYOZROqK_-pkwGX2Dw-MFMqOS2zaor27GBfsZG9RLC9WE9ewo6G8YXVAbra32dm4RUBj4kMXCTZaeAuR5GeByqjrDuJDSIWwbjG4ljkOV2QFtmYyn1jBssL_k1P1DjCR6n_kQkKOtSWOP4EsTdoCWrXMbxtYRyByjB2hxjYxQpilUjYdIdFID4qzyGCtyLiOODbVCjL33mGzYniGO4w"
+        ],
+        "__at__": 1786804016.202219,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The moment I stepped into the restaurant, I was transported back to my childhood. It felt less like a restaurant and more like an old home, with its timeless interiors and cozy little corners that instantly put you at ease.\n\nThe experience became even more memorable when we met Vim Singh Sir. Betwee",
+            "author": "Ankulekha Bhattacharyya"
+          },
+          {
+            "rating": 5,
+            "text": "We stopped by Raintree for lunch and had a mix of dishes. The mutton ghee roast was the absolute standout — rich, perfectly spiced, and something I’d call a must-try here. The appam with chicken curry wasn’t really to my taste, but it was well-prepared for those who enjoy it. The prawns biryani came",
+            "author": "Chetan Varma"
+          },
+          {
+            "rating": 3,
+            "text": "We didn't know about this place but our auto driver randomly took us here, despite us wanting to go somewhere else. However, overall it was an okay experience. Started off with me asking our server if they have bamboo shoot curry, to which he replied saying \"go to coorg cuisine if you want authentic",
+            "author": "Dr. Nivedita Ghosh"
+          },
+          {
+            "rating": 5,
+            "text": "An absolute gem in Coorg! We had an amazing dining experience at Raintree Restaurant. The food was outstanding, with authentic flavors that were perfectly balanced and incredibly delicious. The Chicken Ghee Roast and Chicken Tikka Biryani were both exceptional and are a must-try.\n\nWhat made the expe",
+            "author": "Shraddha Tiwari"
+          },
+          {
+            "rating": 5,
+            "text": "It wasn’t just a meal — it was truly an experience for us.\nThe owner, Mr. Bhim Singh, is an absolute sweetheart. He welcomed us with the warmest smile, shared the history of the restaurant, and told us beautiful stories from his journey and experiences. His passion is evident in the way he receives ",
+            "author": "Reddy KeerthanaAnurag"
+          }
+        ]
+      },
+      "drive: bangalore to coorg|coorg": {
+        "place_id": "ChIJfegCTZQVrjsR3orxub-Vv4Y",
+        "name": "Coorg Cabs Banglore | Bengaluru Car Rentals | Oustation Services",
+        "address": "45, 8th Cross Rd, 2nd Block, 9th Main, Jayanagar, Bengaluru, Karnataka 560011, India",
+        "rating": 4.2,
+        "review_count": 42,
+        "price_level": null,
+        "website": "https://coorgcabs.co.in/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 12.939723299999999,
+        "lng": 77.5835591,
+        "photo_refs": [
+          "places/ChIJfegCTZQVrjsR3orxub-Vv4Y/photos/AWCwydiCrvyilQ6X3lBgf_X9E-xBhke6neb-YAjtggjHx7ubJPjNqPtyr6FzJKS2YAmYN6TTpA2sdgzCt_S9mpZG79l5zsI8AoCRu17anqjAHpAuVz4NOZ_mFRaO0ajRK9T185aISXJaE5Ad6V6nDZ4C3dxiOPI_rvFNFhhivX11pow3JNtU5AwAY_06bcNCSFc925A6bSxYzOhziUukQlyd6WB0sD1qs30uUcnF-VrNAYprnPwIgWBdD50ftICuSQg-IvbA_GqF8BV3ubn94mf00GJLeaNFk-5HiKYnbJwZ3wG4vjSC-ED4iuVRFv3trTDVYN3QBXr75eRAr9LZ-XznCnsn_Tn6FAgofn_dZeTXKWsRk6QG3h-UNo3OlEHU7_nF2i_S2bIEUE1C5ERwdjojrM6ZiY54DVC3Ykcn98L9CsvwKLEXYOTTzODjLB4OXg",
+          "places/ChIJfegCTZQVrjsR3orxub-Vv4Y/photos/AWCwydi74kTcUwm880I_Ov-8k5ANfIZAKAEdEVXqbXYJ7VctGBL_7bU_SNZOH0KtfIq-6idrYsiyMGrZ4g2um3FnEV1jqRIuhok4ypzCDixuSsT6yaM5grN0jNb3TQ43E4e3oeYaR46cJ1n0twFzArzFbYScBmkC7ki8tUb12gYzCuQVK2ujC8VJH_To1LN8Xfv8u2UJd4x-eJq7uEcn0YrKWQG_-jVc2-m1Pe3sFnVbbJDO5r4pnV5ghLtRCdm_sK9m8zQLSH4mVwoKxh9CkuRTkVF3YNVPEqYYmr04wIwA3zq7wxAODMJtIaShLlVbASLuyDBm6ZiRpwEZQhb78oTDGpUwUG2dvUJV7V6LbDBfDOytxFyhtA5qCWRB9CZi8sXnKbL-CDm94WvFvTdNZeIj58TQuHI---tEghKi0OQpicMv3QKGhOzrsCP2x_MXQA",
+          "places/ChIJfegCTZQVrjsR3orxub-Vv4Y/photos/AWCwydiygfgZcip7hfyiJFzawNbmHp_g2W0eo11DheN7ZTnz8gOTF5sxIzfHbhKeBoq9KB_mqwgwqQp-h8fbnWnG2Z_9-ISM3DsZPUOzHaA8n33WKQn_V0OErp1xp2RKLV-WZz4m0Ze0DAgTyyy_9NNjZcTKNFlsn0dyGUtl3Ggp4woCTO8txizigAAXJnJh6QJ7rNhDDRz8Iri_fjAVAxiv9hhem8OPweSNO8lIcz_G71elYdPqkyjJdUiaUEw6IAbloapW70a-tGmBo_n2NS02c2KwIaxXpNb0oXepcDpEto_X2P7ty46SJ_43icRxlaNNN_YpM0bvjy5B9RU3juqQnE3662q-j6XSt91lL5Xcw7iWpeCABKSgICZglZTz36J13hXgQztTBq4q-hMxBIkdrpUj78RfalcbZwRDb-Od-dLFRAHXTgt9z8pMPAoWXpcI",
+          "places/ChIJfegCTZQVrjsR3orxub-Vv4Y/photos/AWCwydh8eZrf_uHBz-ArPUIVqcomlAyc0yUTulBAe8ZMo5UEMiCPeLt2XJppioYm2HSViXD07RDOIzKZV5k4HKrRRju-dItpDWlUh9DIJUB0Y7Ej0DQwmvpnC30JsAADlyB93rxnL7lJQfwb2Lb0HcNvvDyNFNG5bOL6_Rou9YGob4yhy4qAHr8-kL9FkfJ_g1M0whiPYxYiVS1XrKC1dAu9tBlux-q3wHIiNuyHeKnuIuih9wv1ABF72d2F7l9Thqce7r25CFEUhwgE1giaLMC2w2K7RSWtqyD-cdERFOEpAsNgEaj_HUWdT0NzLsWbqtBt3MIXXdKAd70AotRxIT-1cgoL6I2L18fOhAUIXZc1afTUWZYfUBGBLrtNnKIsOI0O0DEN9TKOgP1c14TKJmZ_yoP_CrQnugeA36z_SEIU4qbVvVIyxB1mpik0Pehd6R0D",
+          "places/ChIJfegCTZQVrjsR3orxub-Vv4Y/photos/AWCwydjMtDLHNk1vKR4y-KQheBQtImyS4KtCb6cKcVsEMI840AqM2q0I0fz9AziPfTbfc3FHb-IMv69cvnMf_MmOTOawZ4lDiN6MNodxxpp1eolI1yldRVuREyZUvI5mnm1rBjkuDDJJH8ItudQ5EriPr79QFDTMLybqoCEAgewBbg0SdlXFlFpg1qvWOroIOkp8a0k2tBG5LLeed_9W1erYbsalWMVKNw_FBFywnaF2X8p-ysC0XyRYuhlx-OAvUdwZKb9wmazuZbAAWol7XtQoWgDVDZYrJh1-1kuEAxmsqnWcYiiWVJR5bhcyJEA99USjivVE4-JRj-_EmcDQCaRJjzygxNz9HTXHmUQO_NkBYKXhruX4mKVh6KSwbUlfUl-rPCTwP7iboQa_C9qyRIFv82_rhGgFV8lWtipLqF_zzCpydM3ei__RLD5-YSuOkly_",
+          "places/ChIJfegCTZQVrjsR3orxub-Vv4Y/photos/AWCwydhfwlC0A2_GZSmgo1-kP87_blWu0TQIqRnP_LRXO4F49wdm_D38ItCe6VRq0MbYsxgxe7BMo6ol-qmVBioBfSLUbPEyMmKHUi2V120xmH5f1boofFQssVq9mc1uvy68qHiXe7ha9xAMGrmc8C6AmGHnY7ED6icl7Ztg5PUS5ZKgrna0Q9wgUrMtZrtAt4WK9V8Me4OxvjhiicGcSunxAo9z3ZuoF7ncYnvJA6hrqnYN-hYaztR-nFLR38QoG0XhgKZIv39E8eEwBMIDo6Ugnd0lPLDiuhyky8o1T7-pgslTu03QJCqv-ZRHD2-xu_O0Ab9ceNLGAy544qhGiduWNisZurnUbZXsvJeU4XfLpij15JcxrgOM6vNWoc2JgnOpZYo5ZOqTMDlqXGrpL5hvIccOhtLfUTDggVitJCAs4CYKoQcvRhtkTRzLxO2m2VfL"
+        ],
+        "__at__": 1786804016.629418,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I recently booked a cab(Innova ) from the reputable Coorg cabs service for a trip lasting 2 nights and 3 days, traveling from Bangalore to Chikmagalur.\n\nFirstly, I want to express my sincere appreciation for the prompt and professional response from the owner of the cab service.\nI must highlight sid",
+            "author": "Neha Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "We hired Kia Carens for a 6-day family trip from Bangalore to Coorg, Ooty, and Mysore, and the experience was excellent. The car was in good condition, neat, clean, and comfortable throughout the journey. Our driver was courteous, well-mannered, and very knowledgeable about all the sightseeing place",
+            "author": "Samit Singh"
+          },
+          {
+            "rating": 5,
+            "text": "Booked Coorg Cabs for an airport drop. The driver Vinay arrived on time despite the early morning schedule. The car was clean, comfortable, and the drive was smooth. I appreciated the punctuality and clear communication. Would definitely consider them again for airport travel.",
+            "author": "Vansh Goel"
+          },
+          {
+            "rating": 4,
+            "text": "I recently had the pleasure of experiencing excellent service provided Coorg Cabs who went above and beyond to ensure a seamless and comfortable travel experience. I had booked the car for a business meeting, with pickup from Bangalore Airport to Electronic City, Bangalore, and a return drop-off as ",
+            "author": "mayank gupta"
+          },
+          {
+            "rating": 5,
+            "text": "For a business visit, I booked the Honda City from Coorg Cabs. The driver Kumar was very professional and the car was in a very good condition. Past experience with other cab providers has not been so good.  The ride was comfortable and on time. Overall a dependable service",
+            "author": "Kajal Gupta"
+          }
+        ]
+      },
+      "3-star+ hotel in coorg|coorg": {
+        "place_id": "ChIJze_drg4ApTsRf0b5kZkamY0",
+        "name": "Hotel Coorg International",
+        "address": "Convent Road, Bhagavathi Nagar, Madikeri, Karnataka 571201, India",
+        "rating": 4.1,
+        "review_count": 2324,
+        "price_level": null,
+        "website": "https://indoasiaheritage.com/madikeri/",
+        "editorial_summary": "Relaxed property featuring simple rooms & suites, plus an outdoor pool, an airy restaurant & a bar.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 12.428877199999999,
+        "lng": 75.73069819999999,
+        "photo_refs": [
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydiW0pmMqtXk97IYAv8qFmdmUxdsAl7zAkHK_W1PF3LSsdmHgghYABb5nTsIKwmXWiY1q8iazgXHwF0ZZmclCE9-UR85luOQKNPt-jXfKNcwkO0ltT7kkJGUT9tx1-N_DWULdyY5fdDQHOXcvSwBrZ8q1JMSTIbbCg3LARAywMh9fpx9Jtd_AsU4nr97cP-On323CWZDdPWg6MAOTrKa0vfgSYFjm59mH0wbwDuvW7aHBPJ98xJwKyso7x1cJXTgh0Mlj7bkjmhRtcVsnRHRxE7c7tys3poLvRISQGpqHBLfS9tCNeLzuGwNTYbBrz0vIIzWVheiog-q3x0FUgdfv1Urwo-PZPlEeeXwDyoHG_8NbvXgOZsUqA44bgLe1xVpw2x5HPVJiyGXYYgDJwqrHRNllmouzP1fRnFeE5FatnNzayX4qds7ZghcQAl36_qI",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydi2ZNcTcEFdlCNSwGlCJ3GwN2rcW4AgImiLHDzDaYBcwuGrcK_i-EOU0tizzt64yn9XMq1qxij5g1P9yVqgxCbf1tMY5Puz-qm0X28_v_-oWXXJOo_mDlwQSdr64O368sBPJ8ubaiLS1JUEO2pIZg6Z6sMl9ptbWYwHCp9UhjNVAxwWSOYEp5SHIAbK_rbZq9zO7w8j0Jx92DD7UlEVCaxNvlhSb8pWSgiC95FsLXDEVUBlywbz-JVPd4Zi4G1WaNySrYu2Zhr-iH46TboU9Y8Z-0jCzkaq-eYVTx2DYshLNoQGpX3gxH50Jgt46rKyw_l68kzRj_iPDZCkvQQhj6LiTujh4PZG0CoUC1HYrKnfexKFR1SOJ5SiJWodjwjoJPgqrta2t-uQ1OhNwLhnI3rWsNwVKMfrxlaOe5XNHd_1_K7O8VVVkK5pHCTEPw",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydhjra_d8nVDHoVU7oxCSXvCT1gUkW3yZ6gRARMDztIqnxwkxw6WSljPnI5PMZZDlTWRVRoIyu2CDb24B9aQDNa1nrP94KFklOJ-yUiNuFbmDHUEQTUm6lcYomHrnIKL_aqklqHJC4UodDJ-imX5PaBZ5mkDFteynHhIs1ZQip-Dx06tgv5MsUAkra-N4pJ9BwPKHOtg6jpJHU0xyQ4VRCEKC353-BtiqJOTAzxEvpoKwNZOW6RFSQj_L85XAqKdKfUVkyssZqt1zHah6sYTI1PZZtvmpQ96bvniD9QrVJ53iXOHSUcYPpjRqaPaBAScvfbaZzVKuTTRme37ewNGgLwWrbKICX6R3KSYBJl5ET3fXRj5CZ-7Jflv7P7xnkNdabNqMwVUKZetgNyIyaER6vv1C33zRBWJD-KMOESdMJRG2rz5",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydi4BFgplZiOkc9WJaknB9ZUfrdUbFlrDnpxPAKEiNhosOwnT8jt3DKcdtu95NGpQl5Vyfh3FDnx8IobF3qZTwAQse_HdytN9il1eix4S4WvGnNn5aQXRaseazndrDJMJeIbjGtaROYu39dXoHH_RqzKizORw0n3FSoZxR8-fKxKpoHszECXEvKf60Hyd5vmUx1aax0JP6QmI3k4ZYaXLB3sxWNyCnFWrjUhIb1JUjB2WLnhI8_7vp3PexXRcfw1MK8MVtOKCGyLEEVPEg5NjnoeHZ1UvP6Fc0WHvZCy0T0HFtabEWROjZMCyaNjrXtVtspsZG-fkS0W9DJ-V7lAs3xO_BMwNEBwrtjyq_eskTm-jnw1RoZoVz69OENhiHBWBAQ7Bp94EsbK7nvyZWTwnGOva-jDuGANWPhaquN9aNwVig",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydjNSS9jP9agaByPXfByPYzzqmcXVgjIBnxULVWMeuRPMKpze50JkcQbWzMSWCpcZBF5gIQUKlmIwcCaJh8P2arM2pKo1dH_MH01FFbljjhWIMrHuZs_Rk8_emlWY72GaR2C_tuIyrmxOpE3kHXzkf9wI0KjwwzjPO0BQNafcxICMF9sSIlhZrWU4cxc2ouf47HXLDRE2VHsnvpnoOEKYLIdvAocMjgoE8Q9nmr7_C6KLgarLPJONSdv6vbtX7js1iAOGp5C7Sku7PsrS7pkvKo6iAXgjfc5Op4loAgJqTWRcVhgG1MUhDjW51nXMNIoICPdTpI_T0DhgkxGykJHECan5bfvaFrdu9qXqcwDXRqzCFMMH8u_ggCPwkAK6LNMon_Qnuh6HCzsMObDIn2ppOgDBq3QNKByE7GzOZA6JjQncaCmoxODM5l5vpz_ds03",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydh_LxDzkgtNKgyefkfH4pWD7-s3sYfnQ97guB1JxukEl-Kwy9s9nDOBF5XQe0wWJAHxD2XybuVvGdVLFd-0AsZZmw8PMm9rCAURv2JsgxO2zZKO3R6LCYs8rzaBfOGNjjJG4_2Lv97Cv-nAln_AGDmBcFgKW6WV37ecW_peLG6aSwUq4fzDKsbQkTy9M9va5cTtxkVAPRQ9RsJ4JFCffYnTOiEaXPniYTJTZKHQLYOYpwV7E9sE2WUCw2sBnqgaWOSpQ1JaLG7hVRiPaToQleRHgxqfNma_A-s3DJ8U0NBSap_zP_neUt7W3XcHaqSwh65ut-HuCR3jpFCDVrebCSdrdLTnw3oGTdy5PLc2Ek4gwyXfcuvc95e1j0gNkWKAlf5fQC8WDjTHjoLLtmOg2gQMclUGrJ1Lmk55vvgxJXaWOQVSYIhnma4c_qmjgg",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydi0i37gBvfQLJafh8AZMMcvKYuvvxSYdio3gEB2ipBuEWa-zT4g2DQKVMZPsrEKm0UknjzSLBCMm_OPAExUxZa3zmNbj0JSDegolOyBsr7cMaFKkZvZLKYRmj3K_6brO9ny8UINKKVAxd3I3TfqoBjFvERnjnGIxbiDsccgft3btVaqgz18-CtJQgRCK67YEeV3XqGU09oRnOvSAI97WbhAn6l9TYDbMnsIRNUnzZMw5WajRwuHFWZKXboLk73E5G17ohp7q2chl2zxnPzhczYFC7xYCOIApCxHxlLPxxnw6Es3eDhPeRybVS_VNacL3eQcNf5CPOUdFP12SKVQawFc0VqMcWIabjRx187kdJngQKM20wl_xPQYsJ6evt4-rUf-1lrUnjfSrQ3xxukXkm3dWofTu4SeX62ObXBPM5utcOFFv988Jz1P2sob63Xh",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydjOhiLBNdwEbdTqJ-JbhwGL6ET71lny87HOCLZQGjZbQ_WfFp49iIrgAZqcw5jjhM_hs1hFqGNQ-RJZItxzqpKODWwz00tCJeBGWrLojcvPQUUQ8oYA2VOz9JhUA7BPknOMGfawxP9YcV5dhB1U9VPV6p_LPXjAvdCMPmGU-dBKilXEyfsFxLLoekA1wxMpUHZ8dRxfR4hrqGDTvr1BCq7zRjUKVXHIUJEgSM7pkcQdyYbpmyvERMOF4r72HeadgS6B9E2AG57xZ7XoNLEhfNia68t-A1LgAaLvCZKq5d4PjLFbJt6V38hPx73HcKua3KXFYpBZa7vgt672V-DL2SqfWnCrRCkAjRr-GOB5A0s9SvJtyEg0kYWpFVPKESQabqHiMNutqjPveGHptjwaem1URL4MRqyoC_HXEOsBOOy5rkEfPofaC9gWR3x1_u20",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydjJs6s_medXtWiX_LYQUbq_If_NDnMhxf-BUpZpOPyHLmw_fK7qiWRiMQLY7SuqlDNJKUSxHQJFxCgnuhrz2jFKWQqTYhANL475Ghhqmy7MZXHIsR-rM69oR8eiIAuKqoVssIYM_RaoXf71JMFN_r7Vg5qTSysm3FKJATFE2fCnBI8Fe9L2pX6J3nZtQbpUIbUmzRbZctKQTgISaJIiGAYECb-0a4z1L5Sil0tmUxciSoNZJMoDg6WRt4kAlE4t2Meo1XrqqELql5rJHnNEKF_6BfEFBqt_xuV7EpdEeDYE9GAyXIpx2-GmshOzjB5MA0TZPqe80YYzltD1RX_ZuplRPcAGHid1CIAC4uioUXnWJsQHSpQSibwFyTEd1Ux1auFJoWSK5ies8Lp4sVj-zzLliz7hFWDZMBRfDK8Py7xe9EesL90KdDGy6nARm5cw",
+          "places/ChIJze_drg4ApTsRf0b5kZkamY0/photos/AWCwydhTvoNlfdoIkHUq8pbs2Ub9tzZtyoifHqi8ecrd7r_lQC9QIGXismLYZMvO6wxsrfqf3-KziY7O7H_7s1aUx4UFrpkOkxpDf7qPJ-yPqX9y40jdB7dG4fCdkAfL4i3NP5Q_pmrHM91F-XXY2ikjFSFgzn3r6oV2KcRsPK5zu75Rk3VvxO3CtpyLSMwG51FmTVlNuQWmYPj1B4iunFeCZ43DQLF4AZCE13N7wfRNEqv0MywMMfZ22IMe2UEp7kHfmemJXPmwSNEnKqJRps9u43oooR2ODNmULp4zEkHZrg3WlQgPTHfiyUzlitaIrUEe5K1kNzP2tXSR-D8wRmZ7ydyTXDzVtyYa2H_cTbEubRfHWIngZmSyve259O_Xx7gH9h0MS87jNtxi6XmwVCJhSqsOkYV7VK8uDMibVWMnIOjo9cmyLbj2eDwwmN_Z6g"
+        ],
+        "__at__": 1786804017.306359,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "The rooms and the ambience were good. There were minor problem like shower not working, main doors not aligned while closing, there is no lift. Hard to press flush buttons in the toilet. Service and cleanliness were good. Food and beverages can be still improved. Spa and cab facilities were good. Lo",
+            "author": "Muthu Kannan"
+          },
+          {
+            "rating": 5,
+            "text": "The rooms were clean, fresh, and beautifully maintained every day. Housekeeping staff were efficient and respectful of privacy. Overall, the hotel offers excellent hospitality, making it a great choice for families and business travelers alike.",
+            "author": "Dhanshyam Gowala"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best hotel experiences I've had. The housekeeping staff pays great attention to detail, ensuring the rooms are spotless and comfortable. Overall service was excellent, and the hospitality made us feel at home",
+            "author": "Jai Oraon"
+          },
+          {
+            "rating": 5,
+            "text": "Fantastic hospitality—highly recommended!\n\nHaving spent the last couple of days here, I can confidently say that the service at this hotel is top-notch. The front desk manager, Mr. Masood, set a wonderful tone for our stay right from the start; he is extremely polite, helpful, and attentive to guest",
+            "author": "Priyansh “Priyuuunsh Sarvang” Sarvang"
+          },
+          {
+            "rating": 5,
+            "text": "I had a wonderful experience at Hotel Coorg International. The hospitality they offer is truly priceless and something that genuinely stands out. I had forgotten my iPhone charger, and with just one mention, the staff went out of their way to arrange one for me for nearly 12 hours. That level of ded",
+            "author": "Tahani A.R"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Coorg",
+    "departure_date": "2027-07-15",
+    "return_date": "2027-07-19",
+    "nights": 4,
+    "month_year": "Jul 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Coorg",
+      "Coorg Wilderness Resort",
+      "Day 1 · Bangalore to Coorg & Arrival",
+      "Drive: Bangalore to Coorg",
+      "Coorg Wilderness Resort Restaurant",
+      "Day 2 · Abbey Falls & Madikeri Sightseeing",
+      "Abbey Falls",
+      "Raja's Seat",
+      "Coorg Cuisine",
+      "Madikeri Fort",
+      "Coffee Plantation Tour",
+      "Kailash Parbat- Pure Vegetarian Restaurant",
+      "Day 3 · Dubare Elephant Camp & Nisargadhama",
+      "Dubare Elephant Camp",
+      "Lunch at Coorg Wilderness Resort Restaurant",
+      "Nisargadhama",
+      "Dinner at Coorg Wilderness Resort Restaurant",
+      "Day 4 · Relax & Return to Bangalore",
+      "Drive: Coorg to Bangalore"
+    ],
+    "auto_summary": "4-night Coorg, Jul 2027, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:28:21Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:26:10Z"
+    }
+  ]
+}
