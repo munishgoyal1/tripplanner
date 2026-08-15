@@ -289,10 +289,15 @@ class Cache:
         self.default_ttl_seconds = max(1, default_ttl_seconds)
         self._hits = 0
         self._misses = 0
-        self._backend = get_backend()
+
+    @property
+    def _backend(self) -> CacheBackend:
+        # Resolved per call, not at construction. Modules build their cache at
+        # import time, and connecting to Redis that early dialled out before a
+        # test or a settings reload could choose a different backend.
+        return get_backend()
 
     def rebind(self) -> None:
-        self._backend = get_backend()
         self._hits = 0
         self._misses = 0
 

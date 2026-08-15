@@ -29,6 +29,36 @@ def _disable_debug_store(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TRIPPLANNER_DEBUG_STORE", "0")
 
 
+_LOCAL_HOSTS = {"127.0.0.1", "::1", "localhost", "0.0.0.0"}
+
+
+@pytest.fixture(autouse=True)
+def _no_outbound_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fail loudly instead of calling a real provider.
+
+    The suite was reaching Google and the shared Redis for real. That made it
+    non-hermetic and billable, and it was the reason the run time swung between
+    27s and 95s: with the network unavailable each attempt waits out a connect
+    timeout instead of returning. A test that needs a provider response should
+    state what that response is.
+    """
+    import socket
+
+    real_connect = socket.socket.connect
+
+    def guarded(self, address, *args, **kwargs):  # type: ignore[no-untyped-def]
+        host = address[0] if isinstance(address, tuple) else address
+        if isinstance(host, str) and host.split("%")[0] in _LOCAL_HOSTS:
+            return real_connect(self, address, *args, **kwargs)
+        raise OSError(
+            f"Outbound network is disabled in tests (tried {host}). "
+            "Stub the provider response instead."
+        )
+
+    monkeypatch.setattr(socket.socket, "connect", guarded)
+
+
+
 @pytest.fixture(autouse=True)
 def _memory_cache_backend(monkeypatch: pytest.MonkeyPatch) -> None:
     """Never let the suite reach the shared Redis.
