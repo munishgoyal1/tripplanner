@@ -21,6 +21,8 @@ vi.mock("../api", () => ({
   runPrivacyAction: vi.fn(),
   fetchGuestDataSummary: vi.fn(),
   migrateGuestData: vi.fn(),
+  fetchProfileSuggestions: vi.fn().mockResolvedValue([]),
+  resolveProfileSuggestion: vi.fn().mockResolvedValue([]),
   getUserId: vi.fn(() => "web-test"),
 }));
 

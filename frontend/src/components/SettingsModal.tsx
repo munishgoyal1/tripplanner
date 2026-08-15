@@ -4,7 +4,10 @@ import {
   fetchPreferences,
   savePreferences,
   regenerateProfileSummary,
+  fetchProfileSuggestions,
+  resolveProfileSuggestion,
   type Preferences,
+  type ProfileSuggestion,
 } from "../api";
 import {
   displayCurrencyLabel,
@@ -176,6 +179,7 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
   const [extracted, setExtracted] = useState<string[] | null>(null);
   const [regenerating, setRegenerating] = useState(false);
   const [summaryConflict, setSummaryConflict] = useState(false);
+  const [suggestions, setSuggestions] = useState<ProfileSuggestion[]>([]);
   const [familySuggestion, setFamilySuggestion] = useState<FamilySuggestionState>("new");
   const [dirtyFields, setDirtyFields] = useState<Set<keyof Preferences>>(new Set());
   // Raw editable text for the comma-separated list fields. Kept separate from
@@ -200,6 +204,30 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
       })
       .catch(() => setPrefs(null));
   }, []);
+
+  useEffect(() => {
+    fetchProfileSuggestions()
+      .then(setSuggestions)
+      .catch(() => setSuggestions([]));
+  }, []);
+
+  function resolveSuggestion(id: string, action: "save" | "dismiss") {
+    setSuggestions((current) => current.filter((item) => item.id !== id));
+    resolveProfileSuggestion(id, action)
+      .then((remaining) => {
+        setSuggestions(remaining);
+        if (action === "save") {
+          // A confirmed fact lands in the durable profile, so re-read it.
+          fetchPreferences()
+            .then((p) => {
+              setPrefs(p);
+              syncListText(p);
+            })
+            .catch(() => undefined);
+        }
+      })
+      .catch(() => undefined);
+  }
 
   function set<K extends keyof Preferences>(key: K, value: Preferences[K]) {
     setDirtyFields((current) => new Set(current).add(key));
@@ -321,6 +349,42 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
                 shown below; review it and save again.
               </div>
             )}
+            {suggestions.length > 0 && (
+              <div className="rounded-xl bg-amber-50/70 p-3 ring-1 ring-amber-200">
+                <p className="text-xs font-medium text-amber-800">
+                  Noticed in chat · not saved yet
+                </p>
+                <p className="mt-0.5 text-[11px] text-amber-700/80">
+                  Nothing here is part of your profile until you keep it.
+                </p>
+                <ul className="mt-2 space-y-2">
+                  {suggestions.map((item) => (
+                    <li key={item.id} className="rounded-lg bg-white p-2.5 ring-1 ring-amber-100">
+                      <p className="text-xs font-semibold text-ink">{item.summary}</p>
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => resolveSuggestion(item.id, "save")}
+                          className="h-7 rounded-full bg-ink px-3 text-[11px] font-semibold text-white"
+                        >
+                          Keep
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => resolveSuggestion(item.id, "dismiss")}
+                          className="h-7 rounded-full px-3 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200"
+                        >
+                          Discard
+                        </button>
+                        <span className="ml-auto text-[10px] uppercase tracking-wide text-amber-700">
+                          {item.label}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="mb-2 flex items-center gap-2"><MessageCircle size={14} className="text-brand" aria-hidden /><p className="text-xs font-semibold text-slate-700">Learned while planning</p><span className="ml-auto text-[10px] font-semibold uppercase tracking-wide text-slate-400">Reversible</span></div>
               <FamilyLearningCard state={familySuggestion} onRemember={rememberFamilySuggestion} onDismiss={() => setFamilySuggestion("dismissed")} />
@@ -333,8 +397,7 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">
                   What I've learned about you
-                </span>
-                <div className="flex items-center gap-2">
+                </span>                <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={regenerate}
