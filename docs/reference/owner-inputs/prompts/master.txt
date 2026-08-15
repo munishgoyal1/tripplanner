@@ -1343,3 +1343,6 @@ the sbx5 containing lab27 didnt ask me anythign during manali trip plan. How do 
 [2026-08-15 20:03] [master !] New lab for profile width and consolidation
 create a new lab: the current profile section opens up in limited width and its hard to edit all family data and preferences etc. make it bit larger and better and consoldiate the design , keep family detaisl may be bit seperate. Provide some good fresh UX options.
 I hope you will first get latest form master. And do this work in sbx 6. that si our lab creation factory (not lab implementaiton)
+
+[2026-08-15 22:43] [master !] Corpus rerun replays stale run
+I am trying ot rerun the build corpus in lane2 for second time but it completed not moving ahead with generating additional trips, and looks like using stale old run instrcution or so. the corpus setup is new for us.
