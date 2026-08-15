@@ -21,6 +21,12 @@ Assistant build its first proposal.
 
 **Expected:**
 
+- The structured kickoff asks only for unresolved, materially useful facts. Explicit
+  prompt values and configured preferences are not repeated; schema defaults are not
+  treated as user choices. Budget level, trip style, and pace are included when
+  unresolved, while destination-only travel never invents an origin. The inline
+  controls preserve prefilled values, skip/not-answered behavior, and existing
+  structured labels.
 - The Assistant batches hotel research for every overnight city in one parallel
   tool phase and accepts usable results when another city-specific query fails.
 - While planning is active, the top command bar beside the trip selector shows

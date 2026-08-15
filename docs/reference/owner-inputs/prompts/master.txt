@@ -1244,3 +1244,5 @@ update the labs logic to name and order the choices in descending order of the s
 why the main url of sbx5 is not working
 
 - Frontend: `http://localhost:5313`
+[2026-08-14 20:45] [master] Lab 27 implementation !
+start lab27 implementation , look at handoff notes and first answer those before starting the implementation.

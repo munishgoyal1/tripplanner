@@ -121,8 +121,8 @@ re-describing the whole product.
 - The backend emits the validated versioned payload as an additive `input_request`
   SSE event while retaining a concise text fallback for older clients.
 - Shared web/native TypeScript transport retains the event contract.
-- The main web app renders all validated field kinds in a prefilled compact card
-  inside the selected Option B lower-right Assistant conversation sheet. The visible
+- The main web app renders all validated field kinds as compact inline chips and controls
+  inside the selected lower-right Assistant conversation sheet. The visible
   workspace remains usable while the sheet is open; explicit close, Escape, and
   command-bar reopen preserve the mounted conversation. Submission and default-skip responses continue
   through the normal retry-safe chat path.
