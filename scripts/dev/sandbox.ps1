@@ -335,6 +335,27 @@ function Get-SandboxOutstandingWork {
     return $outstanding
 }
 
+function Commit-SandboxDebugStoreArtifacts {
+    param([Parameter(Mandatory = $true)][object]$Entry)
+
+    $status = @(Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+        "status", "--porcelain=v1", "--untracked-files=all", "--", "debug-store"
+    ))
+    $jsonPaths = @($status | ForEach-Object {
+        if ($_.Length -lt 4) { return }
+        $path = $_.Substring(3).Trim()
+        if ($path -match '\.json$') { $path }
+    } | Where-Object { $_ })
+    if ($jsonPaths.Count -eq 0) { return $false }
+
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (@("add", "--") + $jsonPaths) | Out-Null
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (
+        @("commit", "-m", "Capture debug-store trip archives", "--") + $jsonPaths
+    ) | Out-Null
+    Write-Host "[debug]   committed $($jsonPaths.Count) generated debug-store JSON archive(s)" -ForegroundColor DarkGray
+    return $true
+}
+
 function Save-SandboxPromotion {
     param(
         [Parameter(Mandatory = $true)][object]$Entry,
@@ -1471,6 +1492,7 @@ if ($PSCmdlet.ParameterSetName -eq "Merge") {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
     $gh = Get-RequiredGhCli -Verb "-Merge"
+    Commit-SandboxDebugStoreArtifacts -Entry $entry | Out-Null
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before merging."
@@ -1558,6 +1580,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
     $gh = Get-RequiredGhCli -Verb "-Promote"
+    Commit-SandboxDebugStoreArtifacts -Entry $entry | Out-Null
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."

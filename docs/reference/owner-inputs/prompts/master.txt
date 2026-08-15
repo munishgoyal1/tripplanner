@@ -1260,3 +1260,6 @@ yes add that, but for guest users who never had a trip it should first open welc
 
 [2026-08-15 16:58] [master !] Run all sandboxes launcher
 give me a sandbox launcher script that can Run all sandboxes cleanly. effectively behaviour si similar to calling Run sandbox in a loop for all sandboxes.
+
+[2026-08-15 16:59] [master] App root wrongly believed to redirect to catalog
+http://localhost:5313/ should not default to /catalog.html page it should be going to the welcome page. Why this change. can you fix it
