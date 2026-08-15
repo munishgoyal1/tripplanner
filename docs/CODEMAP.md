@@ -38,7 +38,12 @@ trip through shared API contracts.
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
-| `src/tripplanner/place_facts.py` | The only reading of cached place facts: weekday schedules, business status, and the unknown/false distinction the invariants depend on |
+| `src/tripplanner/place_facts.py` | The only reading of cached place facts: weekday schedules, business status, place identity, and the unknown/false distinction the invariants depend on |
+| `src/tripplanner/authorship.py` | Per-stop ownership: which stops the traveller chose and a rebalance may not move |
+| `src/tripplanner/web/holidays.py` | Public-holiday calendar per country and year; an unreadable calendar stays unknown |
+| `src/tripplanner/web/trip_verification.py` | The certificate: which checks ran, which failed, and which could not be evaluated |
+| `src/tripplanner/tools/trip_rebalance.py` | Whole-trip arrangement search over legal slots, priced in minutes of regret |
+| `src/tripplanner/web/trip_repair.py` | Repair pass: clears the planner's own contradictions, reports the ones it may not touch |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |

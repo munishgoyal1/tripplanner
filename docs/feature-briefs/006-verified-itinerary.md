@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Brief ID | `006` |
-| Status | In progress |
+| Status | Must-ship shipped; should-ship outstanding |
 | Owner | Munish Goyal |
 | Created | 2026-08-14 |
 | Updated | 2026-08-14 |

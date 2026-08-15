@@ -89,6 +89,7 @@ re-describing the whole product.
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
+| TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | OPS-03 | Owner-only Business and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and explicit data-window labels |
