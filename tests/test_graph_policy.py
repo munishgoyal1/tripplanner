@@ -175,6 +175,26 @@ def test_unphrased_planning_request_still_blocks_creation() -> None:
     assert decision.block_trip_creation is True
 
 
+def test_emitted_kickoff_still_blocks_until_the_user_answers() -> None:
+    # The same turn must not ask and then answer itself: the card has been emitted
+    # but no reply has landed yet.
+    decision = resolve_completion_policy(
+        messages=[
+            HumanMessage(content="plan a chennai trip"),
+            _tool_call("request_trip_input", "kickoff"),
+            ToolMessage(content="ok", tool_call_id="kickoff"),
+        ],
+        active_trip={
+            "destination": "Dehradun",
+            "day_wise_itinerary": [{"day": 1, "stops": [{"name": "Clock Tower"}]}],
+        },
+        proposal_only=False,
+        has_planning_intent=True,
+    )
+
+    assert decision.block_trip_creation is True
+
+
 def test_answered_kickoff_unblocks_creation() -> None:
     decision = resolve_completion_policy(
         messages=[

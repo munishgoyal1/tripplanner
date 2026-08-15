@@ -315,7 +315,9 @@ def trip_kickoff_owed(
     """True while a trip may still be created without the user having been asked anything.
 
     Wording-independent on purpose: the model creates trips on its own initiative, so
-    no phrase list can decide this. Answering or skipping the kickoff clears it.
+    no phrase list can decide this. Emitting the request is not enough -- the block
+    holds until the user's reply lands, otherwise the same turn asks and then answers
+    itself.
     """
     if not has_planning_intent:
         return False
@@ -324,9 +326,21 @@ def trip_kickoff_owed(
         (index for index, name in positions if name == "create_trip_plan"),
         default=-1,
     )
-    return not any(
-        name == "request_trip_input" and index > latest_create for index, name in positions
+    latest_kickoff = max(
+        (
+            index
+            for index, name in positions
+            if name == "request_trip_input" and index > latest_create
+        ),
+        default=-1,
     )
+    if latest_kickoff < 0:
+        return True
+    latest_human = max(
+        (index for index, message in enumerate(messages) if isinstance(message, HumanMessage)),
+        default=-1,
+    )
+    return latest_human < latest_kickoff
 
 
 def pending_trip_kickoff_answer(messages: Sequence[BaseMessage]) -> bool:
