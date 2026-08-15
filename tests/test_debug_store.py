@@ -187,3 +187,48 @@ def test_saving_a_real_trip_writes_through_to_the_archive(tmp_path, monkeypatch)
     assert record["descriptor"]["nights"] == 5
     assert record["revisions"]
     assert set(record["bundle"]) == {"captured_at", "user_id", "chat", "preferences", "places"}
+
+
+def test_reopening_an_unchanged_trip_elsewhere_does_not_restamp_it():
+    plan = make_plan()
+    bundle = {
+        "captured_at": "2026-08-15T11:32:23Z",
+        "user_id": "u",
+        "chat": [],
+        "preferences": {},
+        "places": {},
+    }
+    first = {
+        "at": "2026-08-15T11:32:23Z",
+        "workspace": "sbx-7",
+        "branch": "sandbox/7",
+        "database": "d7",
+    }
+    record = debug_store.merge_revision({}, plan, first, bundle)
+    revision_at = record["revisions"][-1]["at"]
+
+    later = {
+        "at": "2026-08-15T12:44:03Z",
+        "workspace": "sbx-6",
+        "branch": "sandbox/6",
+        "database": "d6",
+    }
+    record = debug_store.merge_revision(
+        record, plan, later, {**bundle, "captured_at": later["at"]}
+    )
+
+    assert record["revisions"][-1]["at"] == revision_at
+    assert record["bundle"]["captured_at"] == "2026-08-15T11:32:23Z"
+    assert len(record["revisions"]) == 1
+    assert record["last_seen_at"] == later["at"]
+    assert [entry["workspace"] for entry in record["seen_in"]] == ["sbx-7", "sbx-6"]
+
+
+def test_a_real_edit_still_adds_a_stamped_revision():
+    where = {"at": "2026-08-15T11:00:00Z", "workspace": "w", "branch": "b", "database": "d"}
+    record = debug_store.merge_revision({}, make_plan(), where, None)
+    later = {**where, "at": "2026-08-15T13:00:00Z"}
+    record = debug_store.merge_revision(record, make_plan(destination="Kauai"), later, None)
+
+    assert len(record["revisions"]) == 2
+    assert record["revisions"][-1]["at"] == "2026-08-15T13:00:00Z"

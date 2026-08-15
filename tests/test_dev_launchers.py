@@ -267,7 +267,9 @@ def test_both_sync_commands_default_to_all_and_accept_one_sandbox() -> None:
 
     for script in (one_way, two_way):
         assert '[string]$Sandbox = ""' in script
-        assert "if ($Sandbox)" in script
+    assert "if ($Sandbox)" in one_way
+    # The two-way script also accepts an explicit "all" value alongside omission.
+    assert '-not $Sandbox -or $Sandbox.Trim().ToLowerInvariant() -eq "all"' in two_way
     # The two-way run narrows only what it merges; the closing refresh and the
     # ancestry check still cover every registered sandbox.
     assert "Select-SandboxEntry -Entries $registered -Reference $Sandbox" in two_way
