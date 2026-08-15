@@ -1,0 +1,380 @@
+{
+  "status": "draft",
+  "trip_id": "andaman_port_blair_havelock_2027-01-08_2027-01-14",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:48:13.063490",
+  "destination": "Andaman (Port Blair & Havelock)",
+  "origin": "Kolkata",
+  "departure_date": "2027-01-08",
+  "return_date": "2027-01-14",
+  "travelers": "2 adults",
+  "notes": "Balanced itinerary, moderate budget, 3-star+ hotels, economy flights, direct preferred.",
+  "planning_recommendation": {
+    "confidence": "medium",
+    "destination": "Andaman",
+    "estimated_planned_minutes": 990,
+    "evidence_place_count": 2,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "2 preference-matched places account for about 990 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "SeaShell Port Blair",
+      "city": "Port Blair",
+      "checkin": "2027-01-08",
+      "checkout": "2027-01-10",
+      "star_rating": 4,
+      "price_per_night": 8500,
+      "currency": "INR",
+      "address": "Marine Hill, Port Blair, Andaman",
+      "provider": "liteapi",
+      "provider_ref": "lp33ec2"
+    },
+    {
+      "name": "Havelock Island Beach Resort",
+      "city": "Havelock",
+      "checkin": "2027-01-10",
+      "checkout": "2027-01-13",
+      "star_rating": 4,
+      "price_per_night": 10500,
+      "currency": "INR",
+      "address": "Govind Nagar Beach, Havelock Island, Andaman",
+      "provider": "liteapi",
+      "provider_ref": "lp33ec3"
+    },
+    {
+      "name": "SeaShell Port Blair",
+      "city": "Port Blair",
+      "checkin": "2027-01-13",
+      "checkout": "2027-01-14",
+      "star_rating": 4,
+      "price_per_night": 8500,
+      "currency": "INR",
+      "address": "Marine Hill, Port Blair, Andaman",
+      "provider": "liteapi",
+      "provider_ref": "lp33ec2"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-08",
+      "title": "Arrival in Port Blair",
+      "summary": "Fly from Kolkata to Port Blair, check in to SeaShell Port Blair, visit Cellular Jail and enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Flight: Kolkata to Port Blair",
+          "kind": "flight",
+          "time": "08:00",
+          "arrival_time": "11:00",
+          "duration_min": 180
+        },
+        {
+          "name": "SeaShell Port Blair",
+          "kind": "hotel",
+          "note": "Check-in"
+        },
+        {
+          "name": "Cellular Jail",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Historic site tour"
+        },
+        {
+          "name": "Ananda Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Local cuisine dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-09",
+      "title": "Port Blair Sightseeing",
+      "summary": "Explore Port Blair: visit Ross Island, Anthropological Museum, and Corbyn’s Cove Beach.",
+      "stops": [
+        {
+          "name": "SeaShell Port Blair",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Ross Island",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120,
+          "note": "Ferry ride and island walk"
+        },
+        {
+          "name": "Anthropological Museum",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Corbyn’s Cove Beach",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "New Lighthouse Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Seafood dinner"
+        },
+        {
+          "name": "SeaShell Port Blair",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-10",
+      "title": "Transfer to Havelock Island",
+      "summary": "Ferry to Havelock, check in to Havelock Island Beach Resort, relax at Radhanagar Beach.",
+      "stops": [
+        {
+          "name": "Ferry: Port Blair to Havelock",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Morning ferry"
+        },
+        {
+          "name": "SeaShell Port Blair",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "10:30"
+        },
+        {
+          "name": "Havelock Island Beach Resort",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "12:30"
+        },
+        {
+          "name": "Radhanagar Beach",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Relax and sunset"
+        },
+        {
+          "name": "Something Different Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner by the beach"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-11",
+      "title": "Havelock Adventure",
+      "summary": "Snorkeling at Elephant Beach, leisure at Kalapathar Beach.",
+      "stops": [
+        {
+          "name": "Havelock Island Beach Resort",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Elephant Beach",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Snorkeling adventure"
+        },
+        {
+          "name": "Kalapathar Beach",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 120,
+          "note": "Leisure beach time"
+        },
+        {
+          "name": "The Blue Cafe",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        },
+        {
+          "name": "Havelock Island Beach Resort",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-01-12",
+      "title": "Leisure & Water Sports in Havelock",
+      "summary": "Try scuba diving or kayaking, enjoy a relaxed day.",
+      "stops": [
+        {
+          "name": "Havelock Island Beach Resort",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Scuba Diving Centre",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 180,
+          "note": "Scuba or kayaking"
+        },
+        {
+          "name": "Cafe Salt Water",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch"
+        },
+        {
+          "name": "Havelock Island Beach Resort",
+          "kind": "hotel",
+          "note": "Rest"
+        },
+        {
+          "name": "Venom Bar & Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-01-13",
+      "title": "Return to Port Blair & Departure",
+      "summary": "Ferry back to Port Blair, visit local market, overnight in Port Blair.",
+      "stops": [
+        {
+          "name": "Ferry: Havelock to Port Blair",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 120,
+          "note": "Morning ferry"
+        },
+        {
+          "name": "Havelock Island Beach Resort",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "10:30"
+        },
+        {
+          "name": "SeaShell Port Blair",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "12:30"
+        },
+        {
+          "name": "Port Blair Market",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Souvenir shopping"
+        },
+        {
+          "name": "Ananda Restaurant",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-01-14",
+      "title": "Departure from Port Blair",
+      "summary": "Fly back to Kolkata. Trip ends.",
+      "stops": [
+        {
+          "name": "SeaShell Port Blair",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Flight: Port Blair to Kolkata",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "12:00",
+          "duration_min": 180
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:49:45.678241",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:49:08",
+      "expires_at": "2026-08-16T07:49:08"
+    },
+    {
+      "kind": "flights",
+      "provider": "Duffel",
+      "checked_at": "2026-08-15T19:49:45",
+      "expires_at": "2026-08-15T20:19:45"
+    }
+  ],
+  "id": "andaman_port_blair_havelock_2027-01-08_2027-01-14",
+  "user_id": "corpus-andaman-ferry"
+}

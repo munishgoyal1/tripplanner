@@ -1,0 +1,249 @@
+{
+  "status": "draft",
+  "trip_id": "goa_2027-03-10_2027-03-14",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:10:21.045377",
+  "destination": "Goa",
+  "origin": "Bangalore",
+  "departure_date": "2027-03-10",
+  "return_date": "2027-03-14",
+  "travelers": "2 adults",
+  "notes": "Relaxed pace, focus on beaches and good food.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Goa",
+    "estimated_planned_minutes": 1128,
+    "evidence_place_count": 7,
+    "reasons": [
+      "The user's explicit 4-day duration is authoritative",
+      "7 preference-matched places account for about 1128 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 4,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [
+    {
+      "option": 1,
+      "airline": "Nuitée Air",
+      "price": 29581.8,
+      "currency": "INR",
+      "provider": "liteapi",
+      "provider_ref": {
+        "offer_id": "h6NwaWTZJDAxYTAwNWE3LWQzZDItNzAwNC1iNDRjLWE4NmM3MDQ3NTVlYqJ0cMtA3ONzMzMzM6JtdcsAAAAAAAAAAKJtZMsAAAAAAAAAAKNjdXKjSU5So3VpZM4ABdEaoWyShKFvo0JMUqJkZaNHT0miZGGqMjAyNy0wMy0xMKJkaahPVVRCT1VORIShb6NHT0miZGWjQkxSomRhqjIwMjctMDMtMTSiZGmnSU5CT1VORA==",
+        "journey_key": "f7ded929ef215e2d"
+      },
+      "departure": "2027-03-10T19:45:00",
+      "arrival": "2027-03-10T21:06:00",
+      "origin": "Kempegowda International Airport Bengaluru",
+      "destination": "Goa Dabolim International Airport",
+      "return_departure": "2027-03-14T06:55:00",
+      "return_arrival": "2027-03-14T08:21:00"
+    }
+  ],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-03-10",
+      "title": "Arrival & North Goa Beach Walk",
+      "summary": "Arrive in Goa, check in to your hotel, unwind with a gentle walk along Baga Beach, and enjoy a beachside dinner.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Goa",
+          "kind": "flight"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Baga Beach",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Relax and stroll"
+        },
+        {
+          "name": "Beachside dining (TBD)",
+          "kind": "meal",
+          "time": "19:00",
+          "duration_min": 90,
+          "note": "Local Goan cuisine"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-03-11",
+      "title": "Candolim & Fort Aguada Sunset",
+      "summary": "Spend the morning at Candolim Beach, enjoy a leisurely lunch, and visit Fort Aguada for sunset views.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Candolim Beach",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Swim & sunbathe"
+        },
+        {
+          "name": "Lunch (TBD)",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Try Goan seafood"
+        },
+        {
+          "name": "Fort Aguada",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Sunset views"
+        },
+        {
+          "name": "Dinner (TBD)",
+          "kind": "meal",
+          "time": "19:30",
+          "duration_min": 90,
+          "note": "Relaxed evening meal"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-03-12",
+      "title": "South Goa & Palolem Beach",
+      "summary": "Head to South Goa for a relaxed day at Palolem Beach, with beachside lunch and evening free time.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Palolem Beach",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180,
+          "note": "Relax, swim, enjoy the scenery"
+        },
+        {
+          "name": "Beachside lunch (TBD)",
+          "kind": "meal",
+          "time": "14:30",
+          "duration_min": 90,
+          "note": "Local specialties"
+        },
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Return and unwind"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-03-13",
+      "title": "Anjuna Beach & Departure",
+      "summary": "Enjoy a slow morning at Anjuna Beach, sample brunch, and depart for Bangalore in the afternoon.",
+      "stops": [
+        {
+          "name": "Hotel (TBD)",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Anjuna Beach",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120,
+          "note": "Final beach stroll"
+        },
+        {
+          "name": "Brunch (TBD)",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 90,
+          "note": "Cafe by the beach"
+        },
+        {
+          "name": "Flight: Goa to Bangalore (TBD)",
+          "kind": "flight",
+          "time": "15:00",
+          "duration_min": 120,
+          "note": "Return journey"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:11:59.436510",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:10:53",
+      "expires_at": "2026-08-16T07:10:53"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:11:26",
+      "expires_at": "2026-08-15T19:41:26"
+    }
+  ],
+  "id": "goa_2027-03-10_2027-03-14",
+  "user_id": "corpus-goa-relaxed"
+}

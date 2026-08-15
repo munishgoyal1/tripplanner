@@ -1,0 +1,397 @@
+{
+  "status": "draft",
+  "trip_id": "paris_2027-04-05_2027-04-12",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:18:43.412610",
+  "destination": "Paris",
+  "origin": "Bangalore",
+  "departure_date": "2027-04-05",
+  "return_date": "2027-04-12",
+  "travelers": "2 adults",
+  "notes": "Flying economy, central hotel, balanced pace.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Paris",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 7-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 7,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Le Littre",
+      "address": "9 Rue Littré, 75006 Paris, France",
+      "star_rating": 4,
+      "price_per_night": 295,
+      "currency": "EUR",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp3aee8"
+      },
+      "checkin": "2027-04-05",
+      "checkout": "2027-04-12",
+      "room_type": "Superior Double Room",
+      "breakfast_included": true,
+      "google_rating": 4.5,
+      "google_reviews": 1200
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-05",
+      "title": "Day 1 · Arrival in Paris",
+      "summary": "Arrive in Paris from Bangalore, transfer to central hotel, settle in and explore nearby cafes.",
+      "stops": [
+        {
+          "name": "Flight: Bangalore to Paris",
+          "kind": "flight",
+          "time": "02:00",
+          "arrival_time": "13:00",
+          "duration_min": 600
+        },
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Check-in and drop luggage"
+        },
+        {
+          "name": "Le Petit Cler",
+          "kind": "meal",
+          "time": "15:00",
+          "note": "Lunch at a classic Parisian bistro"
+        },
+        {
+          "name": "Eiffel Tower",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Evening stroll and views"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-06",
+      "title": "Day 2 · Louvre & Historic Paris",
+      "summary": "Visit the Louvre, stroll through Île de la Cité, and enjoy dinner in the Latin Quarter.",
+      "stops": [
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Louvre Museum",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Book tickets in advance"
+        },
+        {
+          "name": "Café Marly",
+          "kind": "meal",
+          "time": "13:00",
+          "note": "Lunch with Louvre views"
+        },
+        {
+          "name": "Île de la Cité",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Notre-Dame Cathedral",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Le Procope",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner in the Latin Quarter"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-07",
+      "title": "Day 3 · Montmartre & Art",
+      "summary": "Explore Montmartre, visit Sacré-Cœur, and enjoy the art scene.",
+      "stops": [
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Sacré-Cœur Basilica",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Le Consulat",
+          "kind": "meal",
+          "time": "12:00",
+          "note": "Lunch in Montmartre"
+        },
+        {
+          "name": "Place du Tertre",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Musée d'Orsay",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Bouillon Pigalle",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner in Montmartre"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-08",
+      "title": "Day 4 · Versailles Day Trip",
+      "summary": "Day trip to the Palace of Versailles, gardens, and return to Paris.",
+      "stops": [
+        {
+          "name": "Train: Paris to Versailles",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Palace of Versailles",
+          "kind": "attraction",
+          "time": "09:45",
+          "duration_min": 180,
+          "note": "Book tickets in advance"
+        },
+        {
+          "name": "La Petite Venise",
+          "kind": "meal",
+          "time": "13:15",
+          "note": "Lunch near the gardens"
+        },
+        {
+          "name": "Train: Versailles to Paris",
+          "kind": "transport",
+          "time": "16:30",
+          "duration_min": 45
+        },
+        {
+          "name": "Versailles Gardens",
+          "kind": "attraction",
+          "time": "17:45",
+          "duration_min": 90
+        },
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "19:45"
+        },
+        {
+          "name": "Le Comptoir du Relais",
+          "kind": "meal",
+          "time": "21:45",
+          "note": "Dinner in Saint-Germain"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-09",
+      "title": "Day 5 · Museums & River Cruise",
+      "summary": "Visit Musée de l'Orangerie, stroll Jardin des Tuileries, and enjoy a Seine river cruise.",
+      "stops": [
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Musée de l'Orangerie",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Jardin des Tuileries",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 75
+        },
+        {
+          "name": "Angelina Paris",
+          "kind": "meal",
+          "time": "13:45",
+          "note": "Lunch and famous hot chocolate"
+        },
+        {
+          "name": "Seine River Cruise",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Book cruise tickets"
+        },
+        {
+          "name": "Le Meurice",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner near the river"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-10",
+      "title": "Day 6 · Marais & Shopping",
+      "summary": "Explore Le Marais, visit Picasso Museum, and enjoy boutique shopping.",
+      "stops": [
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Le Marais",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Musée Picasso",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "L'As du Fallafel",
+          "kind": "meal",
+          "time": "13:45",
+          "note": "Lunch in Marais"
+        },
+        {
+          "name": "Rue des Rosiers",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Galeries Lafayette",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Shopping"
+        },
+        {
+          "name": "Chez Janou",
+          "kind": "meal",
+          "time": "19:00",
+          "note": "Dinner in Marais"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-04-11",
+      "title": "Day 7 · Departure",
+      "summary": "Final stroll, breakfast, transfer to airport for flight home.",
+      "stops": [
+        {
+          "name": "Central Paris Hotel",
+          "kind": "hotel",
+          "note": "Check out"
+        },
+        {
+          "name": "Café de Flore",
+          "kind": "meal",
+          "time": "08:30",
+          "note": "Breakfast"
+        },
+        {
+          "name": "Flight: Paris to Bangalore",
+          "kind": "flight",
+          "time": "11:00",
+          "arrival_time": "23:00",
+          "duration_min": 600
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "EUR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:21:36.212651",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:21:15",
+      "expires_at": "2026-08-16T07:21:15"
+    }
+  ],
+  "id": "paris_2027-04-05_2027-04-12",
+  "user_id": "corpus-paris-longhaul"
+}

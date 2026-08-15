@@ -1,0 +1,416 @@
+{
+  "status": "draft",
+  "trip_id": "manali_2027-10-01_2027-10-07",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:07:56.737238",
+  "destination": "Manali",
+  "origin": "Delhi",
+  "departure_date": "2027-10-01",
+  "return_date": "2027-10-07",
+  "travelers": "4 adults",
+  "notes": "Self-drive road trip with stops on the way. Balanced pace, moderate budget, 3-star+ hotels.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Manali",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "No place-duration evidence was supplied; used the road_trip scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      6,
+      8
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Hotel Lake View, Bilaspur",
+      "city": "Bilaspur",
+      "checkin": "2027-10-01",
+      "checkout": "2027-10-02",
+      "star_rating": 3,
+      "price_per_night": 2500,
+      "rooms": 2,
+      "total_price": 2500,
+      "note": "Estimate, real-time rates unavailable"
+    },
+    {
+      "name": "Hotel Snow Valley Resort, Manali",
+      "city": "Manali",
+      "checkin": "2027-10-02",
+      "checkout": "2027-10-06",
+      "star_rating": 4,
+      "price_per_night": 5500,
+      "rooms": 2,
+      "total_price": 22000,
+      "note": "Estimate, real-time rates unavailable"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-10-01",
+      "title": "Delhi to Manali · Road Trip Begins",
+      "summary": "Start early from Delhi, drive towards Manali with scenic stops at Murthal for breakfast and Chandigarh for lunch. Overnight halt at Bilaspur.",
+      "stops": [
+        {
+          "name": "Drive: Delhi to Murthal",
+          "kind": "transport",
+          "time": "06:00",
+          "duration_min": 90,
+          "distance_km": 50,
+          "note": "Breakfast stop at Murthal"
+        },
+        {
+          "name": "Drive: Murthal to Chandigarh",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 180,
+          "distance_km": 200
+        },
+        {
+          "name": "Drive: Chandigarh to Bilaspur",
+          "kind": "transport",
+          "time": "13:30",
+          "duration_min": 120,
+          "distance_km": 110
+        },
+        {
+          "name": "Amrik Sukhdev Dhaba",
+          "kind": "meal",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Famous for North Indian breakfast"
+        },
+        {
+          "name": "Indian Coffee House, Chandigarh",
+          "kind": "meal",
+          "time": "17:30",
+          "duration_min": 60,
+          "note": "Lunch stop"
+        },
+        {
+          "name": "Hotel Lake View, Bilaspur",
+          "kind": "hotel",
+          "time": "19:00",
+          "note": "Check-in and rest"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-10-02",
+      "title": "Bilaspur to Manali · Scenic Drive",
+      "summary": "Continue the drive to Manali with a stop at Mandi for tea and sightseeing. Arrive in Manali by evening.",
+      "stops": [
+        {
+          "name": "Drive: Bilaspur to Mandi",
+          "kind": "transport",
+          "time": "07:30",
+          "duration_min": 120,
+          "distance_km": 70
+        },
+        {
+          "name": "Hotel Lake View, Bilaspur",
+          "kind": "hotel",
+          "time": "10:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Drive: Mandi to Manali",
+          "kind": "transport",
+          "time": "12:15",
+          "duration_min": 180,
+          "distance_km": 110
+        },
+        {
+          "name": "Raj Mahal Palace, Mandi",
+          "kind": "attraction",
+          "time": "15:45",
+          "duration_min": 60,
+          "note": "Quick sightseeing"
+        },
+        {
+          "name": "Chawla Restaurant, Mandi",
+          "kind": "meal",
+          "time": "17:15",
+          "duration_min": 45,
+          "note": "Tea/snack break"
+        },
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "18:30",
+          "note": "Check-in and rest"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-10-03",
+      "title": "Manali · Local Sightseeing",
+      "summary": "Explore Hadimba Temple, Manu Temple, and Mall Road. Enjoy local cuisine for lunch and dinner.",
+      "stops": [
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Hadimba Devi Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Manu Temple",
+          "kind": "attraction",
+          "time": "10:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Cafe 1947",
+          "kind": "meal",
+          "time": "12:00",
+          "duration_min": 60,
+          "note": "Lunch with river view"
+        },
+        {
+          "name": "Mall Road, Manali",
+          "kind": "attraction",
+          "time": "13:30",
+          "duration_min": 90
+        },
+        {
+          "name": "The Johnson's Cafe",
+          "kind": "meal",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "Dinner"
+        },
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "20:00",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-10-04",
+      "title": "Solang Valley & Adventure",
+      "summary": "Visit Solang Valley for adventure activities. Enjoy lunch at a local restaurant and evening leisure in Manali.",
+      "stops": [
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Solang Valley",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 180,
+          "note": "Paragliding, zorbing, ropeway"
+        },
+        {
+          "name": "Solang Valley Restaurant",
+          "kind": "meal",
+          "time": "13:30",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Drive: Solang Valley to Manali",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 45,
+          "distance_km": 14
+        },
+        {
+          "name": "Old Manali",
+          "kind": "attraction",
+          "time": "15:15",
+          "duration_min": 120,
+          "note": "Explore cafes and shops"
+        },
+        {
+          "name": "Drifters' Cafe, Old Manali",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner"
+        },
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "20:00",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-10-05",
+      "title": "Naggar Castle & Roerich Art Gallery",
+      "summary": "Day trip to Naggar Castle and Roerich Art Gallery. Lunch at Naggar, return to Manali for evening leisure.",
+      "stops": [
+        {
+          "name": "Drive: Manali to Naggar",
+          "kind": "transport",
+          "time": "08:30",
+          "duration_min": 45,
+          "distance_km": 22
+        },
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "09:45",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Naggar Castle",
+          "kind": "attraction",
+          "time": "11:45",
+          "duration_min": 90
+        },
+        {
+          "name": "Drive: Naggar to Manali",
+          "kind": "transport",
+          "time": "14:15",
+          "duration_min": 45,
+          "distance_km": 22
+        },
+        {
+          "name": "Roerich Art Gallery",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Castle Restaurant, Naggar",
+          "kind": "meal",
+          "time": "17:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Cafe Meraki, Manali",
+          "kind": "meal",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "Dinner"
+        },
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "20:30",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-10-06",
+      "title": "Manali to Delhi · Return Drive",
+      "summary": "Check out and drive back to Delhi with lunch stop at Chandigarh. Arrive in Delhi by evening.",
+      "stops": [
+        {
+          "name": "Hotel Snow Valley Resort, Manali",
+          "kind": "hotel",
+          "time": "06:00",
+          "note": "Check out"
+        },
+        {
+          "name": "Indian Coffee House, Chandigarh",
+          "kind": "meal",
+          "time": "12:30",
+          "duration_min": 60,
+          "note": "Lunch stop"
+        },
+        {
+          "name": "Delhi",
+          "kind": "other",
+          "time": "18:30",
+          "note": "Trip ends"
+        },
+        {
+          "name": "Drive: Manali to Chandigarh",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 360,
+          "distance_km": 320
+        },
+        {
+          "name": "Drive: Chandigarh to Delhi",
+          "kind": "transport",
+          "time": "13:30",
+          "duration_min": 300,
+          "distance_km": 250
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "road_trip_car_rental": 12000,
+    "fuel": 8000,
+    "hotel_bilaspur": 2500,
+    "hotel_manali": 22000,
+    "meals": 9000,
+    "activities": 6000
+  },
+  "total_cost": 59500,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:10:10.032767",
+  "id": "manali_2027-10-01_2027-10-07",
+  "user_id": "corpus-manali-roadtrip"
+}

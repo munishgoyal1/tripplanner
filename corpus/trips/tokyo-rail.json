@@ -1,0 +1,384 @@
+{
+  "status": "draft",
+  "trip_id": "japan_tokyo_kyoto_2027-04-03_2027-04-09",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:23:20.170845",
+  "destination": "Japan (Tokyo & Kyoto)",
+  "origin": "Delhi",
+  "departure_date": "2027-04-03",
+  "return_date": "2027-04-09",
+  "travelers": "2 adults",
+  "notes": "Train between cities preferred. Balanced pace, moderate budget, minimum 3-star hotels.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Japan",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "No place-duration evidence was supplied; used the region scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      4,
+      6
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Sunroute Plaza Shinjuku",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp6555ad8e"
+      },
+      "checkin": "2027-04-03",
+      "checkout": "2027-04-06",
+      "price_per_night": 17000,
+      "currency": "JPY",
+      "total_price": 51000,
+      "address": "2-3-1 Yoyogi, Shibuya-ku, Tokyo",
+      "rating": 4.3,
+      "reviews_count": 2100,
+      "room_type": "Standard Double",
+      "amenities": [
+        "Free WiFi",
+        "Breakfast available",
+        "Non-smoking rooms",
+        "24-hour front desk"
+      ]
+    },
+    {
+      "name": "Hotel Granvia Kyoto",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1fa7a"
+      },
+      "checkin": "2027-04-06",
+      "checkout": "2027-04-09",
+      "price_per_night": 21000,
+      "currency": "JPY",
+      "total_price": 63000,
+      "address": "JR Kyoto Station, Karasuma Chuo-guchi, Kyoto",
+      "rating": 4.6,
+      "reviews_count": 3200,
+      "room_type": "Standard Double",
+      "amenities": [
+        "Free WiFi",
+        "Breakfast available",
+        "Fitness center",
+        "24-hour front desk"
+      ]
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-04-03",
+      "title": "Arrival in Tokyo",
+      "summary": "Arrive in Tokyo from Delhi, check in to Sunroute Plaza Shinjuku, explore nearby Shinjuku and enjoy a local dinner.",
+      "stops": [
+        {
+          "name": "Flight: Delhi to Tokyo (VietJet Air)",
+          "kind": "flight",
+          "time": "00:05",
+          "arrival_time": "06:35",
+          "duration_min": 390
+        },
+        {
+          "name": "Sunroute Plaza Shinjuku",
+          "kind": "hotel",
+          "note": "Check-in and rest"
+        },
+        {
+          "name": "Shinjuku",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 90,
+          "note": "Evening stroll and dinner"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-04-04",
+      "title": "Tokyo Highlights",
+      "summary": "Visit Senso-ji, Tokyo Skytree, and Asakusa. Sushi dinner at Uobei Shibuya.",
+      "stops": [
+        {
+          "name": "Sunroute Plaza Shinjuku",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Senso-ji Temple",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Tokyo Skytree",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Asakusa",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Uobei Shibuya",
+          "kind": "meal",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "Sushi dinner"
+        },
+        {
+          "name": "Sunroute Plaza Shinjuku",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-04-05",
+      "title": "Tokyo Culture & Shopping",
+      "summary": "Explore Meiji Shrine, Harajuku, and Shibuya. Dinner at Ichiran Ramen Shibuya.",
+      "stops": [
+        {
+          "name": "Sunroute Plaza Shinjuku",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Meiji Shrine",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Harajuku",
+          "kind": "attraction",
+          "time": "11:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Shibuya Crossing",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Ichiran Ramen Shibuya",
+          "kind": "meal",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Dinner"
+        },
+        {
+          "name": "Sunroute Plaza Shinjuku",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-04-06",
+      "title": "Tokyo to Kyoto by Shinkansen",
+      "summary": "Take the bullet train to Kyoto, check in to Hotel Granvia Kyoto, explore Gion district.",
+      "stops": [
+        {
+          "name": "Shinkansen: Tokyo to Kyoto",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 160,
+          "distance_km": 450,
+          "note": "Bullet train"
+        },
+        {
+          "name": "Sunroute Plaza Shinjuku",
+          "kind": "hotel",
+          "note": "Checkout",
+          "time": "12:10"
+        },
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "14:10"
+        },
+        {
+          "name": "Gion District",
+          "kind": "attraction",
+          "time": "16:10",
+          "duration_min": 120,
+          "note": "Historic streets and tea houses"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-04-07",
+      "title": "Kyoto Temples & Gardens",
+      "summary": "Visit Fushimi Inari, Kiyomizu-dera, and Nishiki Market. Dinner at Ganko Sushi Kyoto.",
+      "stops": [
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Fushimi Inari Taisha",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Kiyomizu-dera",
+          "kind": "attraction",
+          "time": "12:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Nishiki Market",
+          "kind": "attraction",
+          "time": "14:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Ganko Sushi Kyoto",
+          "kind": "meal",
+          "time": "18:30",
+          "duration_min": 90,
+          "note": "Dinner"
+        },
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-04-08",
+      "title": "Arashiyama & Departure",
+      "summary": "Explore Arashiyama Bamboo Grove, Tenryu-ji, lunch at GYUKATSU Kyoto Katsugyu, then return to Tokyo for flight home.",
+      "stops": [
+        {
+          "name": "Hotel Granvia Kyoto",
+          "kind": "hotel",
+          "note": "Checkout"
+        },
+        {
+          "name": "Arashiyama Bamboo Grove",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Tenryu-ji Temple",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 90
+        },
+        {
+          "name": "GYUKATSU Kyoto Katsugyu Teramachi Kyogoku",
+          "kind": "meal",
+          "time": "13:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Shinkansen: Kyoto to Tokyo",
+          "kind": "transport",
+          "time": "14:30",
+          "duration_min": 160,
+          "distance_km": 450,
+          "note": "Bullet train"
+        },
+        {
+          "name": "Flight: Tokyo to Delhi (VietJet Air)",
+          "kind": "flight",
+          "time": "22:00",
+          "arrival_time": "04:00",
+          "duration_min": 480
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {
+    "flights": 163168,
+    "tokyo_hotel": 51000,
+    "kyoto_hotel": 63000,
+    "shinkansen_roundtrip": 60000,
+    "meals": 30000,
+    "activities": 20000
+  },
+  "total_cost": 387168,
+  "budget": 0,
+  "currency": "JPY",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:25:46.699888",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:24:55",
+      "expires_at": "2026-08-16T07:24:55"
+    },
+    {
+      "kind": "flights",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T19:25:00",
+      "expires_at": "2026-08-15T19:55:00"
+    }
+  ],
+  "id": "japan_tokyo_kyoto_2027-04-03_2027-04-09",
+  "user_id": "corpus-tokyo-rail"
+}
