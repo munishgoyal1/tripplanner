@@ -410,3 +410,29 @@ def test_the_conversion_rate_is_recorded_with_every_run(tmp_path: Path) -> None:
 
     assert entry["usd_inr"] > 0
     assert entry["model"] == "gpt-4.1"
+
+
+def test_the_audit_never_reaches_for_a_provider_even_without_facts() -> None:
+    """A record with no cached places must not send the audit to the network.
+
+    Leaving the real lookup in place made an offline audit hang on live Places
+    calls, which is both slow and billable.
+    """
+    from tripplanner.tools import trip_common
+    from tripplanner.validation.checks import place_facts
+
+    called: list[str] = []
+
+    def provider(name: str, city: str = "", **_kwargs: Any) -> dict[str, Any]:
+        called.append(name)
+        return {}
+
+    original = trip_common._summary_for_place
+    trip_common._summary_for_place = provider
+    try:
+        with place_facts({}):
+            trip_common._summary_for_place("Eiffel Tower", "Paris")
+    finally:
+        trip_common._summary_for_place = original
+
+    assert called == []
