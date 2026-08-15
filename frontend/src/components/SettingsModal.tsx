@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Check, Clock3, MessageCircle, Sparkles, X } from "lucide-react";
 import {
   fetchPreferences,
   savePreferences,
@@ -65,6 +66,8 @@ const DISPLAY_CURRENCIES = supportedDisplayCurrencies();
 const DISPLAY_REGIONS = supportedDisplayRegions();
 const DISPLAY_LANGUAGES = supportedDisplayLanguages();
 
+type FamilySuggestionState = "new" | "saved" | "dismissed";
+
 function commaList(v: string[]): string {
   return v.join(", ");
 }
@@ -73,6 +76,36 @@ function parseList(s: string): string[] {
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean);
+}
+
+function FamilyLearningCard({
+  state,
+  onRemember,
+  onDismiss,
+}: {
+  state: FamilySuggestionState;
+  onRemember: () => void;
+  onDismiss: () => void;
+}) {
+  if (state === "saved") {
+    return <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800"><Check size={15} className="mt-0.5 shrink-0" aria-hidden /><span><strong className="font-semibold">Remembered for future trips.</strong> Rhea prefers relaxed mornings.</span></div>;
+  }
+  if (state === "dismissed") {
+    return <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500"><X size={15} className="mt-0.5 shrink-0" aria-hidden /><span>Nothing saved. We will not ask again about this fact.</span></div>;
+  }
+  return (
+    <section className="rounded-xl border border-violet-200 bg-violet-50/70 p-3" aria-label="Suggested family detail">
+      <div className="flex items-start gap-2">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-violet-700 ring-1 ring-violet-200"><Sparkles size={14} aria-hidden /></span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2"><p className="text-xs font-semibold text-ink">A small thing I noticed</p><span className="inline-flex items-center gap-1 text-[10px] font-semibold text-violet-700"><Clock3 size={11} aria-hidden /> Suggested from chat</span></div>
+          <p className="mt-1 text-xs leading-relaxed text-slate-600">Rhea mentioned she likes relaxed mornings. Should I remember that for future trips?</p>
+          <div className="mt-2 flex flex-wrap gap-2"><button type="button" onClick={onRemember} className="inline-flex items-center gap-1.5 rounded-full bg-violet-700 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-violet-800"><Check size={13} aria-hidden /> Remember</button><button type="button" onClick={onDismiss} className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-300 hover:bg-white">Not now</button></div>
+        </div>
+      </div>
+      <p className="mt-2 border-t border-violet-200 pt-2 text-[10px] text-violet-800">You decide what is saved. Change or remove it anytime.</p>
+    </section>
+  );
 }
 
 function PreferenceShelf({
@@ -143,6 +176,7 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
   const [extracted, setExtracted] = useState<string[] | null>(null);
   const [regenerating, setRegenerating] = useState(false);
   const [summaryConflict, setSummaryConflict] = useState(false);
+  const [familySuggestion, setFamilySuggestion] = useState<FamilySuggestionState>("new");
   const [dirtyFields, setDirtyFields] = useState<Set<keyof Preferences>>(new Set());
   // Raw editable text for the comma-separated list fields. Kept separate from
   // the parsed arrays so a trailing comma isn't stripped mid-typing — parsed
@@ -175,6 +209,19 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
   function setList(key: "dietary" | "interests" | "dislikes", value: string) {
     setDirtyFields((current) => new Set(current).add(key));
     setListText((current) => ({ ...current, [key]: value }));
+  }
+
+  function rememberFamilySuggestion() {
+    setPrefs((current) => {
+      if (!current) return current;
+      const fact = "Rhea prefers relaxed mornings.";
+      const aboutMe = current.about_me.includes(fact)
+        ? current.about_me
+        : `${current.about_me.trim()}${current.about_me.trim() ? " " : ""}${fact}`;
+      return { ...current, about_me: aboutMe };
+    });
+    setDirtyFields((current) => new Set(current).add("about_me"));
+    setFamilySuggestion("saved");
   }
 
   async function save() {
@@ -274,6 +321,10 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
                 shown below; review it and save again.
               </div>
             )}
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="mb-2 flex items-center gap-2"><MessageCircle size={14} className="text-brand" aria-hidden /><p className="text-xs font-semibold text-slate-700">Learned while planning</p><span className="ml-auto text-[10px] font-semibold uppercase tracking-wide text-slate-400">Reversible</span></div>
+              <FamilyLearningCard state={familySuggestion} onRemember={rememberFamilySuggestion} onDismiss={() => setFamilySuggestion("dismissed")} />
+            </div>
             <PreferenceShelf prefs={prefs} choose={set} />
             <details className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <summary className="cursor-pointer text-xs font-semibold text-slate-600">Advanced preferences</summary>
