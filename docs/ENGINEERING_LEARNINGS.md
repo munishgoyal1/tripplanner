@@ -1105,3 +1105,20 @@ the outcome.
   E402s elsewhere in the file. Compare the lint profile by rule count before and
   after, not the raw line list, because inserting three lines renumbers every
   finding below it and hides a real regression among the noise.
+
+## 2026-08-15 - The Day That Never Came Home
+
+- The audit reported a Nashik excursion drawing an "inter-city Drive that covers
+  no distance". Chasing it found a larger defect standing next to it: the day
+  left the hotel, drove to Igatpuri, visited three places, and simply stopped
+  there. The plan clearly returned -- it held a return drive and the stay twice
+  -- but the map left the traveller at a temple.
+- The cause was in the reorder that anchors a transfer day on its stay. It moved
+  the stay to the front and filtered every other occurrence out, which is right
+  for a day that ends in a new city and wrong for an excursion that comes home.
+  The walk had already produced the correct path; the reorder deleted its ending.
+- The finding that led here was not itself the bug, and calibrating it away
+  would have buried the real one. A rule earns its place by what it makes you
+  look at, not only by what it names. The rule was then narrowed to flights and
+  trains, where a zero-distance journey is unambiguous, because a waypoint hop
+  inside a drive is genuinely part of that drive.

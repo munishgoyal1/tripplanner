@@ -3605,3 +3605,51 @@ def test_itinerary_title_falls_back_to_day_number() -> None:
 
 
 
+
+
+def test_map_view_brings_an_excursion_day_home_to_its_stay(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A day that drives out and back must end at the stay, not at the last sight."""
+    coords = {
+        "Express Inn Nashik": (19.9526, 73.7553),
+        "Bhatsa River Valley": (19.5254, 73.3783),
+        "Ghatandevi Temple": (19.6994, 73.5245),
+    }
+
+    def fake_summary(name: str, city: str) -> dict[str, Any] | None:
+        lat, lng = coords.get(name, (None, None))
+        return {"place_id": f"pid-{name}", "name": name, "lat": lat, "lng": lng}
+
+    monkeypatch.setattr(trip_view.places_cache, "get_summary", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_details", fake_summary)
+    monkeypatch.setattr(trip_view.places_cache, "get_photos", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "top_places", lambda *a, **k: [])
+    monkeypatch.setattr(trip_view.places_cache, "prefetch", lambda *a, **k: None)
+    monkeypatch.setattr(trip_view, "_maps_browser_key", lambda: "browser-key")
+
+    trip = {
+        "destination": "Nashik",
+        "origin": "Bangalore",
+        "selected_hotels": [{"name": "Express Inn Nashik"}],
+        "day_wise_itinerary": [
+            {
+                "day": 1,
+                "stops": [
+                    {"name": "Drive: Nashik to Igatpuri", "kind": "transport", "time": "08:00"},
+                    {"name": "Bhatsa River Valley", "kind": "attraction", "time": "10:00"},
+                    {"name": "Ghatandevi Temple", "kind": "attraction", "time": "14:00"},
+                    {"name": "Drive: Igatpuri to Nashik", "kind": "transport", "time": "15:00"},
+                    {"name": "Express Inn Nashik", "kind": "hotel", "time": "17:00"},
+                ],
+            }
+        ],
+    }
+
+    view = trip_view.build_map_view(trip)
+    pins = {pin["id"]: pin for pin in view["pins"]}
+    route = [pins[pin_id]["name"] for pin_id in view["days"][0]["pin_ids"]]
+
+    assert route[0] == "Express Inn Nashik"
+    assert route[-1] == "Express Inn Nashik"
+    assert "Ghatandevi Temple" in route

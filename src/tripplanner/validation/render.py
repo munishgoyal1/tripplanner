@@ -31,7 +31,7 @@ RENDER_RULES: tuple[tuple[str, str], ...] = (
     (RULE_CRASH, "A stored trip must be renderable at all."),
     (RULE_GROUND_LEG, "A leg drawn as ground travel must be a distance you could drive."),
     (RULE_LEG_DURATION, "No single leg of a day may take longer than a day."),
-    (RULE_EMPTY_LEG, "A leg between two points in the same place is not a journey."),
+    (RULE_EMPTY_LEG, "A flight or train between two points in the same place is not a journey."),
     (RULE_UNMAPPED, "An itinerary stop must reach the map or say why it did not."),
 )
 
@@ -114,7 +114,7 @@ def _leg_findings(
                     Finding(RULE_LEG_DURATION, symptom_of(message, names), message,
                             record.id, record.provenance, number)
                 )
-            if leg.get("intercity") and distance <= 1.0:
+            if leg.get("intercity") and distance <= 1.0 and mode not in _GROUND_MODES:
                 message = (
                     f"Day {number} draws an inter-city {mode} from {start} to {end} "
                     "that covers no distance."
