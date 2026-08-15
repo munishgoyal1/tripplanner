@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Preferences } from "../api";
 import SettingsModal from "./SettingsModal";
 
@@ -35,8 +35,12 @@ vi.mock("../api", async () => {
 });
 
 describe("SettingsModal preference shelf", () => {
+  beforeEach(() => {
+    mocks.savePreferences.mockClear();
+  });
+
   it("shows visible choices and saves the selected internal preference value", async () => {
-    render(<SettingsModal embedded onClose={vi.fn()} />);
+    render(<SettingsModal section="travel" embedded onClose={vi.fn()} />);
 
     expect(await screen.findByRole("heading", { name: "A better trip starts here" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Trip rhythm" })).toBeInTheDocument();
@@ -49,5 +53,30 @@ describe("SettingsModal preference shelf", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => expect(mocks.savePreferences).toHaveBeenCalledWith({ trip_style: "packed" }));
+  });
+
+  it("keeps an unrelated food tag selected when adding another (union)", async () => {
+    render(<SettingsModal section="travel" embedded onClose={vi.fn()} />);
+
+    await screen.findByRole("heading", { name: "Food and flavour" });
+    fireEvent.click(screen.getByRole("button", { name: "+ Vegetarian" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(mocks.savePreferences).toHaveBeenCalledWith({ dietary: ["local favourites", "vegetarian"] }),
+    );
+  });
+
+  it("replaces a mutually exclusive diet tag instead of combining it (intersection)", async () => {
+    render(<SettingsModal section="travel" embedded onClose={vi.fn()} />);
+
+    await screen.findByRole("heading", { name: "Food and flavour" });
+    fireEvent.click(screen.getByRole("button", { name: "+ Vegetarian" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Vegan" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(mocks.savePreferences).toHaveBeenCalledWith({ dietary: ["local favourites", "vegan"] }),
+    );
   });
 });

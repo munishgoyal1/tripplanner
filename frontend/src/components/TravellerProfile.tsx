@@ -5,8 +5,56 @@ import {
   savePreferences,
   fetchProfileSuggestions,
   resolveProfileSuggestion,
+  type FamilyMember,
+  type Preferences,
   type ProfileSuggestion,
 } from "../api";
+
+const RELATIONSHIP_LABEL: Record<FamilyMember["relationship"], string> = {
+  self: "You",
+  spouse: "Spouse",
+  partner: "Partner",
+  child: "Child",
+  parent: "Parent",
+  sibling: "Sibling",
+  friend: "Friend",
+  other: "Traveller",
+};
+
+function memberTags(member: FamilyMember): string[] {
+  return [...(member.dietary ?? []), ...(member.mobility ?? []), ...(member.interests ?? [])];
+}
+
+function MemberCard({ member }: { member: FamilyMember }) {
+  const tags = memberTags(member);
+  return (
+    <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+      <div className="flex items-baseline gap-2">
+        <strong className="text-xs font-semibold text-ink">{member.name || RELATIONSHIP_LABEL[member.relationship]}</strong>
+        <span className="text-[11px] text-slate-400">{RELATIONSHIP_LABEL[member.relationship]}{member.age ? ` · ${member.age}` : ""}</span>
+      </div>
+      {tags.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {tags.map((tag) => <span key={tag} className="rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-slate-200">{tag}</span>)}
+        </div>
+      )}
+      {member.notes && <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">{member.notes}</p>}
+    </div>
+  );
+}
+
+function SharedByEveryone({ prefs }: { prefs: Preferences }) {
+  const tags = [prefs.trip_style, prefs.budget_level, ...prefs.dietary].filter(Boolean);
+  if (tags.length === 0) return null;
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <p className="text-xs font-semibold text-slate-700">Shared by everyone</p>
+      <div className="mt-1.5 flex flex-wrap gap-1">
+        {tags.map((tag) => <span key={tag} className="rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-slate-200">{tag.replace(/[-_]/g, " ")}</span>)}
+      </div>
+    </div>
+  );
+}
 
 type FamilySuggestionState = "new" | "saving" | "saved" | "dismissed";
 
@@ -41,14 +89,18 @@ function FamilyLearningCard({
 }
 
 export default function TravellerProfile() {
+  const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [suggestions, setSuggestions] = useState<ProfileSuggestion[]>([]);
   const [familySuggestion, setFamilySuggestion] = useState<FamilySuggestionState>("new");
 
   useEffect(() => {
+    fetchPreferences().then(setPrefs).catch(() => setPrefs(null));
     fetchProfileSuggestions()
       .then(setSuggestions)
       .catch(() => setSuggestions([]));
   }, []);
+
+  const members = (prefs?.family_members ?? []).filter((m) => m.relationship !== "self");
 
   const familyMemberSuggestions = suggestions.filter((item) => item.kind === "family_member");
 
@@ -60,7 +112,7 @@ export default function TravellerProfile() {
   async function rememberFamilySuggestion() {
     setFamilySuggestion("saving");
     try {
-      const current = await fetchPreferences();
+      const current = prefs ?? (await fetchPreferences());
       const fact = "Rhea prefers relaxed mornings.";
       const aboutMe = current.about_me.includes(fact)
         ? current.about_me
@@ -74,6 +126,15 @@ export default function TravellerProfile() {
 
   return (
     <div className="space-y-4 text-sm">
+      {prefs && <SharedByEveryone prefs={prefs} />}
+      {members.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-semibold text-slate-700">Each traveller</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {members.map((member, index) => <MemberCard key={member.name || `${member.relationship}-${index}`} member={member} />)}
+          </div>
+        </div>
+      )}
       {familyMemberSuggestions.length > 0 && (
         <div className="rounded-xl bg-amber-50/70 p-3 ring-1 ring-amber-200">
           <p className="text-xs font-medium text-amber-800">Noticed in chat · not saved yet</p>

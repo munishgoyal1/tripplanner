@@ -489,6 +489,16 @@ export async function importSharedTrip(token: string): Promise<TripView> {
   return json.view as TripView;
 }
 
+export interface FamilyMember {
+  relationship: "self" | "spouse" | "partner" | "child" | "parent" | "sibling" | "friend" | "other";
+  name?: string;
+  age?: number;
+  dietary?: string[];
+  mobility?: string[];
+  interests?: string[];
+  notes?: string;
+}
+
 export interface Preferences {
   display_name: string;
   home_city: string;
@@ -511,6 +521,8 @@ export interface Preferences {
   profile_summary_updated_at?: string | null;
   /** "direct" = jump straight to full plan (default); "interactive" = agent may ask questions first */
   planning_mode: "direct" | "interactive";
+  /** Read-only: collected passively from chat, not editable through the settings save path. */
+  family_members?: FamilyMember[];
 }
 
 export async function fetchPreferences(): Promise<Preferences> {

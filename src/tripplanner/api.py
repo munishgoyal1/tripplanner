@@ -1725,6 +1725,8 @@ async def get_preferences(request: Request, user_id: str = "local") -> dict:
         "profile_summary": prefs.get("profile_summary") or "",
         "profile_summary_updated_at": prefs.get("profile_summary_updated_at"),
         "planning_mode": prefs.get("planning_mode") or "direct",
+        # Read-only: collected passively from chat, shown but not edited here.
+        "family_members": [m for m in (prefs.get("family_members") or []) if isinstance(m, dict)],
     }
 
 

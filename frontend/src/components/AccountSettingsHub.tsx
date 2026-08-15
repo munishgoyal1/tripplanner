@@ -121,7 +121,7 @@ export default function AccountSettingsHub({
         <SectionRail active={destination} onSelect={setDestination} />
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-8">
-          <div className="mx-auto max-w-3xl">
+          <div className="max-w-5xl">
             {destination === "profile" && <>
               <SectionHeader icon={CircleUserRound} eyebrow="Identity and access" title="Profile and sign-in" description="Your signed identity owns saved trips, conversations, and travel preferences across supported devices." />
               {auth.authenticated ? <>
@@ -137,13 +137,13 @@ export default function AccountSettingsHub({
               </div>}
               <div className="mt-6 border-t border-slate-100 pt-5">
                 <p className="mb-3 text-xs font-semibold uppercase text-brand">Display defaults</p>
-                <SettingsModal embedded onClose={() => setDestination("profile")} />
+                <SettingsModal section="identity" embedded onClose={() => setDestination("profile")} />
               </div>
             </>}
 
             {destination === "travel" && <>
               <SectionHeader icon={SlidersHorizontal} eyebrow="Reusable defaults" title="Travel profile" description="Keep your travel style and preferences available for future plans. A single trip can still override any of them." />
-              <SettingsModal embedded onClose={() => setDestination("travel")} />
+              <SettingsModal section="travel" embedded onClose={() => setDestination("travel")} />
             </>}
 
             {destination === "family" && <>

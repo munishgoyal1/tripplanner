@@ -12,12 +12,17 @@ const preferences: Preferences = {
   flight_class: "economy",
   prefer_direct_flights: true,
   hotel_star_rating_min: 3,
-  dietary: [],
+  dietary: ["vegetarian"],
   interests: [],
   dislikes: [],
   about_me: "",
   profile_summary: "",
   planning_mode: "interactive",
+  family_members: [
+    { relationship: "self", name: "Munish" },
+    { relationship: "partner", name: "Rhea", dietary: ["vegetarian"], notes: "Likes relaxed mornings" },
+    { relationship: "child", name: "Kabir", age: 8, mobility: ["shorter walks"] },
+  ],
 };
 
 const mocks = vi.hoisted(() => ({
@@ -55,5 +60,18 @@ describe("TravellerProfile", () => {
 
     expect(screen.getByText(/Nothing saved/)).toBeInTheDocument();
     expect(mocks.savePreferences).not.toHaveBeenCalled();
+  });
+
+  it("shows each traveller's own preferences alongside what the whole family shares", async () => {
+    render(<TravellerProfile />);
+
+    expect(await screen.findByText("Shared by everyone")).toBeInTheDocument();
+    expect(screen.getByText("balanced")).toBeInTheDocument();
+    expect(screen.getByText("Rhea")).toBeInTheDocument();
+    expect(screen.getByText("Kabir")).toBeInTheDocument();
+    expect(screen.getByText(/8/)).toBeInTheDocument();
+    expect(screen.getByText("shorter walks")).toBeInTheDocument();
+    // The account holder's own "self" entry is already covered by Profile and Travel profile.
+    expect(screen.queryByText("Munish")).not.toBeInTheDocument();
   });
 });
