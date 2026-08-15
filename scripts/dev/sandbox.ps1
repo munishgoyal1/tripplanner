@@ -336,11 +336,37 @@ function Get-SandboxOutstandingWork {
 }
 
 function Commit-SandboxDebugStoreArtifacts {
-    param([Parameter(Mandatory = $true)][object]$Entry)
+    param(
+        [Parameter(Mandatory = $true)][object]$Entry,
+        [Parameter(Mandatory = $true)][string]$Base
+    )
+
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("fetch", "-q", "origin", $Base) | Out-Null
+    $baseFiles = @(Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+        "ls-tree", "-r", "--name-only", "origin/$Base", "--", "debug-store"
+    ) | Where-Object { $_ -match '\.json$' })
+    $baseRecords = @{}
+    foreach ($baseFile in $baseFiles) {
+        try {
+            $record = (Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
+                "show", "origin/$Base`:$baseFile"
+            ) | Out-String) | ConvertFrom-Json
+            $revisions = @($record.revisions)
+            $latestHash = if ($revisions.Count -gt 0) { [string]$revisions[-1].content_hash } else { "" }
+            $key = "$( $record.trip_id )|$( $record.created_date )"
+            if ($key -and $latestHash) { $baseRecords[$key] = $latestHash }
+        } catch {
+            Write-Warning "Could not inspect base debug archive '$baseFile'; leaving the local archive untouched."
+        }
+    }
 
     $status = @(Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @(
         "status", "--porcelain=v1", "--untracked-files=all", "--", "debug-store"
     ))
+    $statusByPath = @{}
+    foreach ($line in $status) {
+        if ($line.Length -ge 4) { $statusByPath[$line.Substring(3).Trim()] = $line.Substring(0, 2) }
+    }
     $jsonPaths = @($status | ForEach-Object {
         if ($_.Length -lt 4) { return }
         $path = $_.Substring(3).Trim()
@@ -348,11 +374,34 @@ function Commit-SandboxDebugStoreArtifacts {
     } | Where-Object { $_ })
     if ($jsonPaths.Count -eq 0) { return $false }
 
-    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (@("add", "--") + $jsonPaths) | Out-Null
+    $commitPaths = @()
+    foreach ($jsonPath in $jsonPaths) {
+        try {
+            $record = Get-Content -Raw -Path (Join-Path $Entry.worktree $jsonPath) | ConvertFrom-Json
+            $revisions = @($record.revisions)
+            $latestHash = if ($revisions.Count -gt 0) { [string]$revisions[-1].content_hash } else { "" }
+            $key = "$( $record.trip_id )|$( $record.created_date )"
+            if ($baseRecords.ContainsKey($key) -and $baseRecords[$key] -eq $latestHash) {
+                if ($statusByPath[$jsonPath] -eq "??") {
+                    Remove-Item -LiteralPath (Join-Path $Entry.worktree $jsonPath) -Force
+                } else {
+                    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments @("restore", "--", $jsonPath) | Out-Null
+                }
+                Write-Host "[debug]   dropped unchanged archive $jsonPath (already in origin/$Base)" -ForegroundColor DarkGray
+            } else {
+                $commitPaths += $jsonPath
+            }
+        } catch {
+            $commitPaths += $jsonPath
+        }
+    }
+    if ($commitPaths.Count -eq 0) { return $false }
+
+    Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (@("add", "--") + $commitPaths) | Out-Null
     Invoke-Git -WorkingDirectory $Entry.worktree -Arguments (
-        @("commit", "-m", "Capture debug-store trip archives", "--") + $jsonPaths
+        @("commit", "-m", "Capture debug-store trip archives", "--") + $commitPaths
     ) | Out-Null
-    Write-Host "[debug]   committed $($jsonPaths.Count) generated debug-store JSON archive(s)" -ForegroundColor DarkGray
+    Write-Host "[debug]   committed $($commitPaths.Count) generated debug-store JSON archive(s)" -ForegroundColor DarkGray
     return $true
 }
 
@@ -1299,7 +1348,7 @@ if ($PSCmdlet.ParameterSetName -eq "Update") {
     }
     $wd = $entry.worktree
     $label = "Sandbox '$slug'"
-    Commit-SandboxDebugStoreArtifacts -Entry $entry | Out-Null
+    Commit-SandboxDebugStoreArtifacts -Entry $entry -Base $BaseBranch | Out-Null
     $actualBranch = (Invoke-Git -WorkingDirectory $wd -Arguments @("branch", "--show-current")).Trim()
     if ($actualBranch -ne $entry.branch) {
         throw "$label must be on $($entry.branch), not $actualBranch."
@@ -1493,7 +1542,7 @@ if ($PSCmdlet.ParameterSetName -eq "Merge") {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
     $gh = Get-RequiredGhCli -Verb "-Merge"
-    Commit-SandboxDebugStoreArtifacts -Entry $entry | Out-Null
+    Commit-SandboxDebugStoreArtifacts -Entry $entry -Base $BaseBranch | Out-Null
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before merging."
@@ -1581,7 +1630,7 @@ if ($PSCmdlet.ParameterSetName -eq "Promote") {
         throw "Sandbox worktree is missing: $($entry.worktree)."
     }
     $gh = Get-RequiredGhCli -Verb "-Promote"
-    Commit-SandboxDebugStoreArtifacts -Entry $entry | Out-Null
+    Commit-SandboxDebugStoreArtifacts -Entry $entry -Base $BaseBranch | Out-Null
     $changes = Invoke-Git -WorkingDirectory $entry.worktree -Arguments @("status", "--porcelain")
     if ($changes) {
         throw "Sandbox has uncommitted changes. Commit them before promoting."
