@@ -4,12 +4,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import Root from "./Root";
 import { markPublicEntrySkipped } from "./publicEntryState";
 
-const { isAnonymousUserMock } = vi.hoisted(() => ({
+const { isAnonymousUserMock, fetchSavedTripsMock } = vi.hoisted(() => ({
   isAnonymousUserMock: vi.fn(),
+  fetchSavedTripsMock: vi.fn(),
 }));
 
 vi.mock("../auth/authSession", () => ({
   isAnonymousUser: isAnonymousUserMock,
+}));
+
+vi.mock("../api", () => ({
+  fetchSavedTrips: fetchSavedTripsMock,
 }));
 
 vi.mock("../components/AccountSettingsController", () => ({
@@ -37,6 +42,8 @@ describe("public entry routing", () => {
     window.localStorage.clear();
     window.history.replaceState({}, "", "/");
     isAnonymousUserMock.mockReturnValue(false);
+    fetchSavedTripsMock.mockReset();
+    fetchSavedTripsMock.mockResolvedValue([]);
   });
 
   it("always shows the landing page at /welcome", () => {
@@ -79,6 +86,59 @@ describe("public entry routing", () => {
     fireEvent.click(screen.getByRole("button", { name: "Plan mine" }));
 
     expect(window.location.pathname).toBe("/");
+    expect(screen.getByText("Workspace request: Kyoto in April")).toBeInTheDocument();
+  });
+});
+
+describe("the /planner route", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.history.replaceState({}, "", "/planner");
+    isAnonymousUserMock.mockReturnValue(false);
+    fetchSavedTripsMock.mockReset();
+    fetchSavedTripsMock.mockResolvedValue([]);
+  });
+
+  it("opens the workspace for a signed-in visitor without asking the trip list", () => {
+    render(<Root />);
+
+    expect(screen.getByText("Workspace request: none")).toBeInTheDocument();
+    expect(fetchSavedTripsMock).not.toHaveBeenCalled();
+  });
+
+  it("sends a guest with no trip to the landing page", async () => {
+    isAnonymousUserMock.mockReturnValue(true);
+
+    render(<Root />);
+
+    expect(await screen.findByRole("heading", { name: "Public landing" })).toBeInTheDocument();
+  });
+
+  it("opens the workspace for a guest who already has a trip", async () => {
+    isAnonymousUserMock.mockReturnValue(true);
+    fetchSavedTripsMock.mockResolvedValue([{ trip_id: "t1" }]);
+
+    render(<Root />);
+
+    expect(await screen.findByText("Workspace request: none")).toBeInTheDocument();
+  });
+
+  it("opens the workspace when the trip lookup fails", async () => {
+    isAnonymousUserMock.mockReturnValue(true);
+    fetchSavedTripsMock.mockRejectedValue(new Error("offline"));
+
+    render(<Root />);
+
+    expect(await screen.findByText("Workspace request: none")).toBeInTheDocument();
+  });
+
+  it("stays on /planner when a guest starts from the landing page", async () => {
+    isAnonymousUserMock.mockReturnValue(true);
+
+    render(<Root />);
+    fireEvent.click(await screen.findByRole("button", { name: "Plan mine" }));
+
+    expect(window.location.pathname).toBe("/planner");
     expect(screen.getByText("Workspace request: Kyoto in April")).toBeInTheDocument();
   });
 });

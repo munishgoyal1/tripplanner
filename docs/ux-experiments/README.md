@@ -36,6 +36,11 @@ Implementation sandboxes are linked with `-LabId`. The sandbox resolves
 ambiguous handoff details with the owner in that sandbox chat before editing. Each
 coherent changed iteration records a concrete `-IterationSummary` only after the
 sandbox is healthy, and verified promotion records Completed before cleanup.
+Every recorded version note ends with a provenance marker naming the lane and its
+branch, the commit, the UTC recording time, and the agent chat session title, so a
+note read months later still says which sandbox and which session produced it. Supply
+the session title with `-SessionTitle` or `TRIPPLANNER_AGENT_SESSION`; an omitted
+title records `(unlabelled)`.
 
 Do not delete a Lab after a decision. Update its machine lifecycle record, retain
 the page, and update its experiment document with the final choice and date.
@@ -316,7 +321,8 @@ history. After committing and validating a coherent sandbox iteration, the codin
 ```powershell
 scripts/user/sandbox/Serve-Sandbox.cmd <sandbox> `
   -LabId <lab-id> `
-  -IterationSummary "<validation and material deviations>"
+  -IterationSummary "<validation and material deviations>" `
+  -SessionTitle "<agent chat session title>"
 ```
 
 This verifies API, SPA, and Labs readiness, links a new implementation record to
