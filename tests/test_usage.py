@@ -347,3 +347,41 @@ def test_a_deployment_named_with_hyphens_is_priced_as_the_model_it_is() -> None:
     assert cost_for("gpt-3-5-turbo", 1000, 1000) == cost_for("gpt-3.5", 1000, 1000)
     # A genuine gpt-4 deployment keeps the gpt-4 price.
     assert cost_for("gpt-4", 1000, 0) > cost_for("gpt-4-1-local", 1000, 0)
+
+
+def test_token_counts_are_read_from_wherever_the_client_reports_them() -> None:
+    """This deployment leaves llm_output empty, so every call recorded zero.
+
+    Spend tracking was silently dead and the monthly cost cap could never fire.
+    """
+    from types import SimpleNamespace
+
+    from tripplanner.graph import _token_counts
+
+    legacy = SimpleNamespace(
+        llm_output={"token_usage": {"prompt_tokens": 10, "completion_tokens": 2}},
+        generations=[],
+    )
+    modern = SimpleNamespace(
+        llm_output={},
+        generations=[[SimpleNamespace(
+            message=SimpleNamespace(
+                usage_metadata={"input_tokens": 31000, "output_tokens": 900},
+                response_metadata={},
+            )
+        )]],
+    )
+    older = SimpleNamespace(
+        llm_output=None,
+        generations=[[SimpleNamespace(
+            message=SimpleNamespace(
+                usage_metadata=None,
+                response_metadata={"token_usage": {"prompt_tokens": 5, "completion_tokens": 1}},
+            )
+        )]],
+    )
+
+    assert _token_counts(legacy) == (10, 2)
+    assert _token_counts(modern) == (31000, 900)
+    assert _token_counts(older) == (5, 1)
+    assert _token_counts(SimpleNamespace(llm_output={}, generations=[])) == (0, 0)

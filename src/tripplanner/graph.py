@@ -61,12 +61,43 @@ class _RunContext:
         return (time.monotonic() - self.started_at) * 1000
 
 
+def _token_counts(response: Any) -> tuple[int, int]:
+    """Prompt and completion tokens, from wherever the client reported them.
+
+    Only ``llm_output`` was read before, which this deployment leaves empty, so
+    every call recorded zero and the monthly cost cap could never trigger.
+    Modern LangChain reports the same numbers on the message instead.
+    """
+    usage = (getattr(response, "llm_output", None) or {}).get("token_usage") or {}
+    prompt = int(usage.get("prompt_tokens") or 0)
+    completion = int(usage.get("completion_tokens") or 0)
+    if prompt or completion:
+        return prompt, completion
+
+    for batch in getattr(response, "generations", None) or []:
+        for generation in batch or []:
+            message = getattr(generation, "message", None)
+            if message is None:
+                continue
+            metadata = getattr(message, "usage_metadata", None) or {}
+            prompt += int(metadata.get("input_tokens") or 0)
+            completion += int(metadata.get("output_tokens") or 0)
+            if metadata:
+                continue
+            fallback = (getattr(message, "response_metadata", None) or {}).get(
+                "token_usage"
+            ) or {}
+            prompt += int(fallback.get("prompt_tokens") or 0)
+            completion += int(fallback.get("completion_tokens") or 0)
+    return prompt, completion
+
+
 class _UsageCallback(BaseCallbackHandler):
     """Record per-user LLM token usage after every chat completion.
 
-    Pulls ``token_usage`` out of ``LLMResult.llm_output`` (Azure OpenAI puts it
-    there) and feeds it to :mod:`tripplanner.usage`, which handles the monthly
-    cost bucket and persistence.
+    Reads the token counts from wherever the client put them, then feeds them to
+    :mod:`tripplanner.usage`, which handles the monthly cost bucket and
+    persistence.
 
     One instance is attached to the shared model client, so per-call state is
     keyed by LangChain's ``run_id`` rather than held on the handler. Otherwise
@@ -105,9 +136,7 @@ class _UsageCallback(BaseCallbackHandler):
             from tripplanner.ops_metrics import record_model_call
 
             record_model_call(self._model, "ok", duration_ms)
-            usage = (response.llm_output or {}).get("token_usage") or {}
-            prompt = int(usage.get("prompt_tokens") or 0)
-            completion = int(usage.get("completion_tokens") or 0)
+            prompt, completion = _token_counts(response)
             app_event(
                 "llm_call",
                 status="ok",
