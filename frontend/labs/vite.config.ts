@@ -1,11 +1,32 @@
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import { labFeedbackPlugin } from "./feedback-plugin";
+
+// The labs root has no index.html (every lab is its own entry), so bare
+// http://host:port/ would otherwise 404 instead of reaching the catalog.
+function catalogRedirectPlugin(): Plugin {
+  const redirect: Plugin["configureServer"] = (server) => {
+    server.middlewares.use((req, res, next) => {
+      const path = (req.url ?? "").split("?")[0];
+      if (path === "/" || path === "/index.html") {
+        res.writeHead(302, { Location: "/catalog.html" });
+        res.end();
+        return;
+      }
+      next();
+    });
+  };
+  return {
+    name: "labs-catalog-redirect",
+    configureServer: redirect,
+    configurePreviewServer: redirect as Plugin["configurePreviewServer"],
+  };
+}
 
 export default defineConfig({
   root: __dirname,
-  plugins: [react(), labFeedbackPlugin()],
+  plugins: [react(), labFeedbackPlugin(), catalogRedirectPlugin()],
   css: {
     postcss: __dirname,
   },
