@@ -370,7 +370,7 @@ def test_live_chat_requests_enforce_same_user_concurrency(monkeypatch) -> None: 
     entered_model = threading.Event()
     release_model = threading.Event()
 
-    def invoke(_state):  # type: ignore[no-untyped-def]
+    def invoke(_state, **_config):  # type: ignore[no-untyped-def]
         entered_model.set()
         assert release_model.wait(timeout=2)
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}
@@ -419,7 +419,7 @@ def test_live_chat_blocks_workspace_mutation_until_release(monkeypatch) -> None:
     entered_model = threading.Event()
     release_model = threading.Event()
 
-    def invoke(_state):  # type: ignore[no-untyped-def]
+    def invoke(_state, **_config):  # type: ignore[no-untyped-def]
         entered_model.set()
         assert release_model.wait(timeout=2)
         return {"messages": [AIMessage(content="ready")], "current_agent": "trip"}

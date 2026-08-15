@@ -279,7 +279,7 @@ def test_sync_chat_retry_replaces_interrupted_attempt(monkeypatch, tmp_path):
     monkeypatch.setattr(chat_store, "_resolve_dir", lambda: tmp_path / "chats")
     calls = 0
 
-    def invoke(_state):
+    def invoke(_state, **_config):
         nonlocal calls
         calls += 1
         if calls == 1:

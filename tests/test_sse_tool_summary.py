@@ -89,6 +89,29 @@ def test_graph_recursion_uses_explicit_limit_and_best_effort_recovery() -> None:
     assert "except GraphRecursionError" in source
 
 
+def test_json_chat_handles_budget_exhaustion_like_the_stream() -> None:
+    # Native and scripted clients post here; an unhandled overflow returned 500
+    # and left the freshly created trip with no itinerary.
+    source = inspect.getsource(api.chat)
+
+    assert 'config={"recursion_limit": _CHAT_GRAPH_RECURSION_LIMIT}' in source
+    assert "except GraphRecursionError" in source
+    assert "_best_effort_plan_reply" in source
+
+
+def test_recursion_limit_outlasts_the_policy_tool_budget() -> None:
+    # The policy degrades gracefully by forcing the still-owed first itinerary
+    # save; LangGraph's step counter just raises. A turn that spends every tool
+    # phase and both forced saves has to fit, or the trip is saved with no days.
+    from tripplanner import graph_policy
+
+    nodes_per_phase = 2
+    worst_case = nodes_per_phase * (
+        graph_policy.MAX_TOOL_PHASES_PER_TURN + graph_policy.MAX_INITIAL_ITINERARY_UPDATES
+    ) + 1
+    assert api._CHAT_GRAPH_RECURSION_LIMIT > worst_case
+
+
 def test_best_effort_plan_reply_reports_saved_plan_gaps(monkeypatch) -> None:
     from tripplanner.tools import trip_planner
 
