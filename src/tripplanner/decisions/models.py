@@ -102,9 +102,36 @@ class RunningCost(BaseModel):
     assumptions: str = ""
 
 
+class LodgingFacts(BaseModel):
+    checkin: str = ""
+    checkout: str = ""
+    room_name: str = ""
+    board_name: str | None = None
+    refundable: bool | None = None
+    cancellation_summary: str | None = None
+    address: str | None = None
+    rating: float | None = None
+    review_count: int | None = None
+    provider_ref: dict[str, str] = Field(default_factory=dict)
+
+
+class FlightFacts(BaseModel):
+    origin: str = ""
+    destination: str = ""
+    departure_date: str = ""
+    return_date: str = ""
+    cabin_class: str = ""
+    segments: list[dict[str, Any]] = Field(default_factory=list)
+    stops: int = 0
+    seats_remaining: int | None = None
+    baggage: dict[str, Any] | None = None
+    terms: dict[str, Any] | None = None
+    provider_ref: dict[str, str] = Field(default_factory=dict)
+
+
 class Option(BaseModel):
     id: str
-    mode: TransportMode
+    mode: TransportMode | None = None
     label: str
     detail: str = ""
     price: Price | None = None
@@ -118,6 +145,8 @@ class Option(BaseModel):
     day_cost: float = 0.0
     rejected_because: str | None = None
     running_cost: RunningCost | None = None
+    lodging: LodgingFacts | None = None
+    flight: FlightFacts | None = None
     source: Source = Field(default_factory=Source)
 
     def model_post_init(self, _context: Any) -> None:

@@ -22,6 +22,7 @@ from datetime import date
 from typing import Any
 from urllib.parse import quote
 
+from tripplanner import place_facts
 from tripplanner.concurrency import run_parallel
 from tripplanner.config import get_settings
 from tripplanner.decisions.provenance import build_provenance
@@ -332,6 +333,7 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
     except Exception:  # pragma: no cover - storage failure shouldn't break the view
         prefs = None
     symbol = currency_symbol(trip)
+    cost_evidence = build_cost_ledger(trip).as_dict()
     return {
         "destination": trip.get("destination") or "",
         "origin": trip.get("origin") or "",
@@ -343,10 +345,10 @@ def _build_overview(trip: dict[str, Any]) -> dict[str, Any]:
         "counts": counts,
         "total_cost": total,
         "total_cost_display": fmt_money(total, symbol),
-        "cost_evidence": build_cost_ledger(trip).as_dict(),
+        "cost_evidence": cost_evidence,
         "cost_baseline": _build_cost_baseline(trip, symbol),
         "provenance": build_provenance(trip),
-        "budget": build_budget(trip),
+        "budget": build_budget(trip, cost_evidence=cost_evidence),
         "weather": build_weather(trip),
         "family_pills": family_pills(prefs),
         "constraints": [
@@ -800,7 +802,7 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
             "options": [
                 {
                     "id": option.id,
-                    "mode": option.mode.value,
+                    "mode": option.mode.value if option.mode else None,
                     "label": option.label,
                     "detail": option.detail,
                     "price": option.price.model_dump(mode="json") if option.price else None,
@@ -813,6 +815,22 @@ def _build_decisions(trip: dict[str, Any]) -> list[dict[str, Any]]:
                     "duration_estimated": option.duration_estimated,
                     "rejected_because": option.rejected_because,
                     "source": option.source.model_dump(mode="json"),
+                    "lodging": (
+                        option.lodging.model_dump(
+                            mode="json",
+                            exclude={"provider_ref"},
+                        )
+                        if option.lodging
+                        else None
+                    ),
+                    "flight": (
+                        option.flight.model_dump(
+                            mode="json",
+                            exclude={"provider_ref"},
+                        )
+                        if option.flight
+                        else None
+                    ),
                 }
                 for option in decision.options
             ],
@@ -1248,8 +1266,14 @@ def _weekday_name(day_iso: str) -> str:
 
 
 def _opening_hint(summary: dict[str, Any], day_iso: str) -> tuple[str, str]:
+    """The hours line to show, and the worry to raise, from the same facts.
+
+    The concern here is the soft, always-visible half. Anything it can state as
+    a fact is also an invariant in ``trip_guard``, so the itinerary is corrected
+    rather than merely annotated.
+    """
     weekday_lines = summary.get("weekday_descriptions") or []
-    open_now = summary.get("open_now")
+    facts = place_facts.facts_from_summary(summary)
     day_name = _weekday_name(day_iso)
 
     matched = ""
@@ -1262,15 +1286,17 @@ def _opening_hint(summary: dict[str, Any], day_iso: str) -> tuple[str, str]:
                 break
 
     opening = matched
-    if not opening and open_now is True:
+    if not opening and facts.open_now is True:
         opening = "Open now"
-    elif not opening and open_now is False:
+    elif not opening and facts.open_now is False:
         opening = "May be closed now"
 
     concern = ""
-    if matched and "closed" in matched.lower() and day_name:
-        concern = f"Likely closed on {day_name}; review day assignment."
-    elif open_now is False:
+    if facts.unavailable:
+        concern = "Reported closed for business; replace this stop."
+    elif facts.closed_on(day_iso) and day_name:
+        concern = f"Closed on {day_name}s; move this to another day."
+    elif facts.open_now is False:
         concern = "Check opening hours before visiting."
     return opening, concern
 

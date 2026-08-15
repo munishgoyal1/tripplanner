@@ -89,6 +89,7 @@ re-describing the whole product.
 | DATA-01 | Local JSON/emulator and hosted Cosmos persistence | Implemented |
 | REL-01 | Stale-request protection, serialized mutations, recovery, and caching | Implemented |
 | SAFE-01 | Usage limits, grounding critic, secrets, and data isolation | Implemented |
+| TRUST-01 | Itinerary verification certificate and ownership-aware repair | Implemented; per-check passed/failed/unverified state, weekday and holiday closure, place-identity gate, and a rebalance that never moves a stop the traveller chose |
 | OPS-01 | Reproducible setup, canary promotion, smoke, production approval, and rollback | Implemented |
 | OPS-02 | Production failure email alerting and non-production error analysis | Implemented |
 | OPS-03 | Owner-only Business and System Health operations dashboard | Implemented; hidden route, server-side verified-email guard, consented funnel/activity aggregates, chat/tool/provider/cache health, and explicit data-window labels |
@@ -678,10 +679,12 @@ implemented capability baseline.
 - Structured Assistant input is not yet rendered in production web or native UI.
   The selectable overlay/control prototype is active in UX Labs; production wiring
   requires an owner-selected direction.
-- No cost-optimization layer (DEAL-01). Provider prices are shown as returned;
-  there is no cross-source comparison for the same choice, no re-check of a
-  finalized-but-unbooked price, no total-trip cost model the user can act on, and
-  no loyalty, card-benefit, or portal-offer modeling.
+- No complete cost-optimization layer (DEAL-01). Exact-response stay and flight
+  comparisons support deterministic selection and reversal. User-owned budget
+  targets, evidence-labeled headroom, published FX provenance, explicitly
+  requested exact-alternative savings proposals, and atomic coordinated proposal
+  acceptance are implemented. Cross-source comparison, finalized-but-unbooked
+  re-checks, loyalty, card-benefit, and portal-offer modeling remain gaps.
 - No server-rendered public edge. One FastAPI process serves the API and the
   client-rendered SPA, so landing, destination-content, and shared-trip URLs are
   not indexable and not first-paint-fast for anonymous visitors.

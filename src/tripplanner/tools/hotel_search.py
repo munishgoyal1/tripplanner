@@ -7,6 +7,7 @@ import json
 from langchain_core.tools import tool
 
 from tripplanner.config import get_settings
+from tripplanner.decisions.lodging import build_lodging_decision
 from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.models import HotelSearchQuery
@@ -131,6 +132,17 @@ def search_hotels(
         offers = result.value
         if offers:
             note_price_check("lodging", result.provider)
+            decision = build_lodging_decision(
+                offers,
+                destination=city,
+                checkin=checkin,
+                checkout=checkout,
+                cached=result.cache_hit,
+            )
+            if decision is not None:
+                from tripplanner.tools import trip_planner
+
+                trip_planner.record_trip_decision(decision)
             return json.dumps(
                 {
                     "quote_status": result.quote_status,
@@ -138,6 +150,8 @@ def search_hotels(
                     "cache_hit": result.cache_hit,
                     "checked_at": result.checked_at,
                     "expires_at": result.expires_at,
+                    "decision_id": decision.id if decision else None,
+                    "recommended_option_id": decision.chosen_option_id if decision else None,
                     "offers": [offer.model_dump(mode="json") for offer in offers],
                 },
                 ensure_ascii=False,

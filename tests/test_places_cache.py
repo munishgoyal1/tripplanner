@@ -345,3 +345,13 @@ def test_concurrent_same_place_lookup_is_coalesced(_isolate, monkeypatch):
     assert all(summary and summary["place_id"] == "id-Taj" for summary in summaries)
     assert _isolate["lookup"] == 1
 
+
+
+def test_an_entry_without_coordinates_expires_like_a_miss() -> None:
+    """A half-worked lookup is not a fact about a place."""
+    minutes_old = time.time() - (pc._MISS_TTL_S + 5)
+    no_coords = {"name": "Musee d'Orsay", "place_id": "x", "__at__": minutes_old}
+    assert not pc._fresh(no_coords)
+
+    located = {**no_coords, "lat": 48.86, "lng": 2.32}
+    assert pc._fresh(located)

@@ -26,6 +26,7 @@ from tripplanner.web.place_confidence import (
     ANCHOR,
     LABEL,
     PLACE,
+    names_a_place,
     stop_is_booked,
     stop_place_tier,
 )
@@ -224,14 +225,23 @@ def _hotel_identity_matches(left: str, right: str) -> bool:
     return left_tokens <= right_tokens or right_tokens <= left_tokens
 
 
+#: "Day 3 · Louvre & Marais" is a heading, not an address.
+_DAY_LABEL_RE = re.compile(r"^\s*day\s*\d+\s*[·•:\-–—.]*\s*", re.IGNORECASE)
+
+
 def _day_place_context(entry: dict[str, Any], destination: str) -> str:
-    """Return a useful locality for Places lookups on one itinerary day."""
+    """Return a useful locality for Places lookups on one itinerary day.
+
+    A title that names no locality must fall back to the destination. Passing
+    one through sent Google "Musée d'Orsay Day 4 · Montmartre", which matches
+    nothing, and eight Paris stops were reported as having no location at all.
+    """
     for field in ("city", "location", "destination"):
         value = str(entry.get(field) or "").strip()
         if value:
             return value
 
-    title = str(entry.get("title") or "").strip()
+    title = _DAY_LABEL_RE.sub("", str(entry.get("title") or "").strip())
     if not title:
         return destination
     if match := re.search(r"\bto\s+([^,]+)$", title, flags=re.IGNORECASE):
@@ -241,7 +251,14 @@ def _day_place_context(entry: dict[str, Any], destination: str) -> str:
         if marker.lower() in title.lower():
             title = re.split(re.escape(marker), title, maxsplit=1, flags=re.IGNORECASE)[0].strip()
             break
-    return title or destination
+    if not names_a_place(title):
+        return destination
+    # A title that already says the destination narrows nothing and only adds
+    # words the geocoder has to forgive.
+    city = re.split(r"[,;/]", destination, maxsplit=1)[0].strip().casefold()
+    if city and city in title.casefold():
+        return destination
+    return title
 
 
 def _map_pins(

@@ -38,6 +38,12 @@ trip through shared API contracts.
 | `src/tripplanner/public_demo.py` | Validated bundled regional demo fallback, Cosmos active-manifest reads, ETags, and atomic monthly refresh |
 | `src/tripplanner/chat_interactions.py` | Validated prefilled Assistant input requests |
 | `src/tripplanner/planning_intelligence.py` | Pure trip-duration, personal day-capacity, and sparse-itinerary policy |
+| `src/tripplanner/place_facts.py` | The only reading of cached place facts: weekday schedules, business status, place identity, and the unknown/false distinction the invariants depend on |
+| `src/tripplanner/authorship.py` | Per-stop ownership: which stops the traveller chose and a rebalance may not move |
+| `src/tripplanner/web/holidays.py` | Public-holiday calendar per country and year; an unreadable calendar stays unknown |
+| `src/tripplanner/web/trip_verification.py` | The certificate: which checks ran, which failed, and which could not be evaluated |
+| `src/tripplanner/tools/trip_rebalance.py` | Whole-trip arrangement search over legal slots, priced in minutes of regret |
+| `src/tripplanner/web/trip_repair.py` | Repair pass: clears the planner's own contradictions, reports the ones it may not touch |
 | `src/tripplanner/platform_planning_insights.py` | Privacy boundary for versioned cross-user aggregate planning priors |
 | `src/tripplanner/tools/trip_shape.py` | Read-only model tool exposing auditable trip-shape recommendations |
 | `src/tripplanner/request_identity.py` | Signed web, native, and guest principal resolution |
@@ -167,8 +173,9 @@ evidence.
 | --- | --- | --- |
 | Destination discovery | `tools/destinations.py`, `tools/search.py` | Return grounded options with source context |
 | Flights, hotels, activities, and tickets | Stable agent tools plus `providers/registry.py`, `providers/runtime.py`, and `providers/cache.py` | Prefer free/sandbox active providers, cache before fan-out, fall back in order, and label evidence/freshness accurately. A provider that returns nothing must fall through to the next source, never end the search |
+| Item comparisons and overrides | `decisions/`, provider search tools, `web/trip_view.py`, and `frontend/src/components/DecisionPanel.tsx` | Persist candidates from the exact search response, rank with kind-specific deterministic rules, mutate through the active-trip owner, and keep opaque provider references out of display and share contracts |
 | Currency normalization | `providers/fx.py` consumed by `decisions/rules.py` | Published ECB reference rates, cached; an unavailable rate drops the money term rather than comparing raw amounts across currencies |
-| Trip cost evidence | `decisions/trip_cost.py` surfaced as `overview.cost_evidence` | Classifies every selected item against recorded price checks as live, stale, unverified or unpriced; never sums two currencies without a rate and never estimates |
+| Trip cost evidence and what-if | `decisions/trip_cost.py`, `decisions/budget_what_if.py`, `providers/fx.py`, and `web/budget.py` | Classify selected items as live, stale, unverified or unpriced; retain published timestamped FX provenance; label incomplete headroom as estimated; generate cheaper exact-alternative proposals only on explicit request |
 | Gated provider candidates | `providers/registry.py` catalog plus disabled experimental adapters | Do not auto-enable without current approved API access and acceptable terms |
 | Maps and geocoding | `tools/routing.py`, optional `providers/openrouteservice.py`, and frontend map utilities | Google Routes is primary; OpenRouteService is a coordinate-only free-tier fallback; keep coordinates and selected itinerary synchronized |
 | Preferences | About Me extractor, apply logic, and store | Merge additively unless the owner explicitly removes data |

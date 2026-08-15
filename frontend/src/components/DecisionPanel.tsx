@@ -46,12 +46,14 @@ function durationLabel(minutes?: number | null): string {
 
 function OptionRow({
   option,
+  decisionKind,
   active,
   isAgentPick,
   busy,
   onTake,
 }: {
   option: DecisionOption;
+  decisionKind: Decision["kind"];
   active: boolean;
   isAgentPick: boolean;
   busy: boolean;
@@ -59,6 +61,30 @@ function OptionRow({
 }) {
   const { currency: displayCurrency } = useDisplayPreferences();
   const door = durationLabel(option.door_to_door_min ?? option.duration_min);
+  const lodgingFacts = [
+    option.lodging?.room_name,
+    option.lodging?.board_name,
+    option.lodging?.rating != null ? `${option.lodging.rating} provider rating` : "",
+    option.lodging?.refundable === true
+      ? "Refundable"
+      : option.lodging?.refundable === false
+        ? "Non-refundable"
+        : "",
+  ].filter(Boolean);
+  const flightFacts = [
+    option.flight?.origin && option.flight?.destination
+      ? `${option.flight.origin} → ${option.flight.destination}`
+      : "",
+    option.flight?.stops === 0
+      ? "Direct"
+      : option.flight?.stops != null
+        ? `${option.flight.stops} stop${option.flight.stops === 1 ? "" : "s"}`
+        : "",
+    option.flight?.cabin_class?.replaceAll("_", " ").toLowerCase(),
+    option.flight?.seats_remaining != null
+      ? `${option.flight.seats_remaining} seats left at check`
+      : "",
+  ].filter(Boolean);
   return (
     <li
       className={`flex items-start gap-2.5 rounded-lg px-2.5 py-2 ring-1 ${
@@ -71,12 +97,24 @@ function OptionRow({
       <div className="min-w-0 flex-1">
         <p className="flex flex-wrap items-baseline gap-x-2 text-[13px] font-semibold text-ink">
           <span>{option.label}</span>
-          {door && <span className="text-[11px] font-normal text-slate-500">{door} door to door</span>}
+          {decisionKind === "transport_mode" && door && (
+            <span className="text-[11px] font-normal text-slate-500">{door} door to door</span>
+          )}
           {isAgentPick && !active && (
             <span className="text-[10px] font-semibold uppercase text-slate-400">Original pick</span>
           )}
         </p>
-        {option.detail && <p className="mt-0.5 text-[11px] text-slate-500">{option.detail}</p>}
+        {option.detail && !option.flight && (
+          <p className="mt-0.5 text-[11px] text-slate-500">{option.detail}</p>
+        )}
+        {lodgingFacts.length > 0 && (
+          <p className="mt-0.5 text-[11px] text-slate-500">{lodgingFacts.join(" · ")}</p>
+        )}
+        {flightFacts.length > 0 && (
+          <p className="mt-0.5 text-[11px] capitalize text-slate-500">
+            {flightFacts.join(" · ")}
+          </p>
+        )}
         {!active && option.rejected_because && (
           <p className="mt-0.5 text-[11px] text-slate-500">{option.rejected_because}</p>
         )}
@@ -87,7 +125,9 @@ function OptionRow({
         </span>
         {!option.priced && (
           <span className="text-right text-[10px] leading-tight text-slate-400">
-            {UNPRICED_TEXT[option.unpriced_reason ?? "no_source"]}
+            {decisionKind === "lodging"
+              ? "We have no verified room rate for this"
+              : UNPRICED_TEXT[option.unpriced_reason ?? "no_source"]}
           </span>
         )}
         {!active && (
@@ -146,6 +186,7 @@ function DecisionCard({
           <OptionRow
             key={option.id}
             option={option}
+            decisionKind={decision.kind}
             active={option.id === activeId}
             isAgentPick={option.id === agentId}
             busy={busy}

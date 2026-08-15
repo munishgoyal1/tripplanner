@@ -21,6 +21,11 @@ function BudgetSummary({ budget, displayCurrency }: { budget: Budget; displayCur
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase text-slate-400">Trip spend</p>
+          {budget.estimated && (
+            <p className="text-[10px] text-amber-700">
+              Estimate · {budget.evidence_coverage_pct}% live price coverage
+            </p>
+          )}
           <p className="mt-0.5 text-base font-semibold text-ink">
             {formatSourceAmount(budget.spent, budget.currency, displayCurrency)}
             {hasTarget && <span className="text-xs font-normal text-slate-400"> / {formatSourceAmount(budget.target ?? 0, budget.currency, displayCurrency)}</span>}

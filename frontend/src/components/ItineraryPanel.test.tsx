@@ -4,15 +4,23 @@ import { writeDisplayPreferences } from "../lib/displayPreferences";
 import type { Itinerary, TripOverview } from "../types";
 import ItineraryPanel from "./ItineraryPanel";
 
-const { fetchItineraryMock, setStopBookedMock } = vi.hoisted(() => ({
-  fetchItineraryMock: vi.fn(),
-  setStopBookedMock: vi.fn(),
-}));
+const { fetchItineraryMock, setStopBookedMock, fetchVerificationMock, repairTripMock } =
+  vi.hoisted(() => ({
+    fetchItineraryMock: vi.fn(),
+    setStopBookedMock: vi.fn(),
+    fetchVerificationMock: vi.fn(),
+    repairTripMock: vi.fn(),
+  }));
 const scrollIntoViewMock = vi.fn();
 
+// The panel renders TripVerificationCard, so its API calls have to be mocked
+// here too. No report means the card renders nothing, which keeps these tests
+// about the itinerary rather than about verification.
 vi.mock("../api", () => ({
   fetchItinerary: fetchItineraryMock,
   setStopBooked: setStopBookedMock,
+  fetchVerification: fetchVerificationMock,
+  repairTrip: repairTripMock,
 }));
 
 const itinerary: Itinerary = {
@@ -129,6 +137,8 @@ describe("ItineraryPanel", () => {
     writeDisplayPreferences({ region: "IN", language: "en", currency: "USD" });
     fetchItineraryMock.mockReset().mockResolvedValue(itinerary);
     setStopBookedMock.mockReset();
+    fetchVerificationMock.mockReset().mockResolvedValue(null);
+    repairTripMock.mockReset();
     scrollIntoViewMock.mockReset();
     Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
       configurable: true,
@@ -187,7 +197,31 @@ describe("ItineraryPanel", () => {
   });
 
   it("uses the itinerary entry point for the authoritative trip snapshot", async () => {
-    render(<ItineraryPanel overview={overview} />);
+    render(
+      <ItineraryPanel
+        overview={{
+          ...overview,
+          budget: {
+            currency: "USD",
+            spent: 45000,
+            spent_display: "₹45,000",
+            travelers: 2,
+            per_traveler: 22500,
+            per_traveler_display: "₹22,500",
+            breakdown: { flights: 20000, hotels: 25000 },
+            target: 60000,
+            target_display: "₹60,000",
+            remaining: 15000,
+            remaining_display: "₹15,000",
+            pct_used: 75,
+            over_budget: false,
+            estimated: true,
+            evidence_coverage_pct: 50,
+            verified_spent: 20000,
+          },
+        }}
+      />,
+    );
 
     const snapshot = await screen.findByRole("region", { name: "Trip snapshot" });
     expect(snapshot).toHaveTextContent("Paris");
@@ -204,6 +238,7 @@ describe("ItineraryPanel", () => {
     expect(snapshot).toHaveTextContent("Live forecast");
     expect(snapshot).toHaveTextContent("D1");
     expect(snapshot).toHaveTextContent("Compact umbrella and light rain jacket");
+    expect(snapshot).toHaveTextContent("Estimate · 50% live price coverage");
   });
 
   it("keeps summary and weather visible when an older trip has no forecast", async () => {

@@ -7,6 +7,7 @@ import json
 from langchain_core.tools import tool
 
 from tripplanner.config import get_settings
+from tripplanner.decisions.flights import build_flight_decision
 from tripplanner.decisions.provenance import note_price_check
 from tripplanner.providers.cache import ProviderTTLCache
 from tripplanner.providers.models import FlightSearchQuery
@@ -156,6 +157,19 @@ def search_flights(
         offers = result.value
         if offers:
             note_price_check("flight", result.provider)
+            decision = build_flight_decision(
+                offers,
+                origin=origin,
+                destination=destination,
+                departure_date=departure_date,
+                return_date=return_date,
+                cabin_class=travel_class,
+                cached=result.cache_hit,
+            )
+            if decision is not None:
+                from tripplanner.tools import trip_planner
+
+                trip_planner.record_trip_decision(decision)
             return json.dumps(
                 {
                     "quote_status": result.quote_status,
@@ -163,6 +177,8 @@ def search_flights(
                     "cache_hit": result.cache_hit,
                     "checked_at": result.checked_at,
                     "expires_at": result.expires_at,
+                    "decision_id": decision.id if decision else None,
+                    "recommended_option_id": decision.chosen_option_id if decision else None,
                     "offers": [offer.model_dump(mode="json") for offer in offers],
                 },
                 ensure_ascii=False,

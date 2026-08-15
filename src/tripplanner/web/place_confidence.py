@@ -49,6 +49,12 @@ def _identity_tokens(name: str) -> list[str]:
     return [token for token in re.findall(r"[a-z0-9]+", str(name or "").lower()) if len(token) > 2]
 
 
+def names_a_place(text: str) -> bool:
+    """Whether a phrase identifies somewhere, rather than describing a day."""
+    tokens = _identity_tokens(text)
+    return bool(tokens) and not all(token in _GENERIC_TOKENS for token in tokens)
+
+
 def stop_place_tier(
     name: str,
     kind: str,

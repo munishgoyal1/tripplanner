@@ -39,6 +39,20 @@ def build_view(focus: dict[str, str] | None = None) -> dict[str, Any]:
     return trip_view.build_view(trip_planner.load_active_trip_dict(), focus)
 
 
+def build_budget_what_if() -> dict[str, Any]:
+    from tripplanner.decisions.budget_what_if import build_budget_what_if as build
+
+    return build(trip_planner.load_active_trip_dict())
+
+
+def apply_decision_overrides(
+    changes: list[dict[str, Any]], *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    return trip_planner.apply_decision_overrides(
+        changes, expected_updated_at=expected_updated_at
+    )
+
+
 def warm_guide() -> None:
     """Background warm of the destination-guide dataset for the active trip."""
     trip_view.warm_guide(trip_planner.load_active_trip_dict())
@@ -78,6 +92,15 @@ def build_map() -> dict[str, Any]:
 def build_itinerary() -> dict[str, Any]:
     return trip_view.build_itinerary(trip_planner.load_active_trip_dict())
 
+
+def build_verification() -> dict[str, Any]:
+    from tripplanner.web import trip_verification
+
+    return trip_verification.build_verification(trip_planner.load_active_trip_dict())
+
+
+def repair_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
+    return trip_planner.repair_active_trip(expected_updated_at=expected_updated_at)
 
 def select(
     kind: str,

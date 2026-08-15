@@ -396,7 +396,6 @@ def test_no_violation_ever_reports_a_number_as_a_verdict(located: None) -> None:
             for token in ("score", "rating", "/100", "out of 10", "%")
         )
 
-
 # --------------------------------------------------------------------------- #
 # guarded placement — the defect this layer exists to close                     #
 # --------------------------------------------------------------------------- #
@@ -617,3 +616,10 @@ def test_a_drive_does_not_demand_airport_check_in(located: None) -> None:
     """Two hours of buffer before a car ride is noise, not a rule."""
     codes = [item.message for item in trip_guard.validate_plan(EXCURSION) if item.code == "I5"]
     assert not codes
+
+
+
+
+
+
+

@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from tripplanner.providers.fx import convert_with_provenance
+
 # ISO code → display symbol. Anything not listed is shown verbatim (already a
 # symbol, or an exotic code we just print as-is).
 _CURRENCY_SYMBOLS = {
@@ -94,7 +96,22 @@ def traveler_count(travelers: Any) -> int:
     return count or 1
 
 
-def build_budget(trip: dict[str, Any] | None) -> dict[str, Any] | None:
+def _budget_target(trip: dict[str, Any]) -> tuple[float, str, str, str]:
+    raw = trip.get("budget")
+    if not isinstance(raw, dict):
+        return _to_number(raw), str(trip.get("currency") or "").upper(), "legacy", ""
+    amount = _to_number(raw.get("amount"))
+    currency = str(raw.get("currency") or trip.get("currency") or "").strip().upper()
+    owner = str(raw.get("owner") or "user").strip().lower()
+    updated_at = str(raw.get("updated_at") or "").strip()
+    return amount, currency, owner, updated_at
+
+
+def build_budget(
+    trip: dict[str, Any] | None,
+    *,
+    cost_evidence: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
     """Live budget meter view-model: spend, per-traveler split, remaining-vs-target.
 
     Pure aggregation over the active trip — no network. Returns ``None`` when
@@ -117,7 +134,16 @@ def build_budget(trip: dict[str, Any] | None) -> dict[str, Any] | None:
     from_items = sum(breakdown.values())
     total_cost = _to_number(trip.get("total_cost"))
     spent = round(total_cost if total_cost else from_items, 2)
-    target = _to_number(trip.get("budget"))
+    target, target_currency, target_owner, target_updated_at = _budget_target(trip)
+    plan_currency = str(trip.get("currency") or "INR").strip().upper()
+    target_fx: dict[str, Any] | None = None
+    if target > 0 and target_currency and target_currency != plan_currency:
+        conversion = convert_with_provenance(target, target_currency, plan_currency)
+        if conversion is None:
+            target = 0
+        else:
+            target = conversion.amount
+            target_fx = conversion.provenance()
 
     if spent <= 0 and target <= 0:
         return None
@@ -134,11 +160,18 @@ def build_budget(trip: dict[str, Any] | None) -> dict[str, Any] | None:
         "per_traveler_display": fmt_money(per_traveler, symbol),
         "breakdown": {k: v for k, v in breakdown.items() if v > 0},
         "target": None,
+        "target_currency": target_currency,
+        "target_owner": target_owner,
+        "target_updated_at": target_updated_at,
+        "target_fx": target_fx,
         "target_display": "",
         "remaining": None,
         "remaining_display": "",
         "pct_used": None,
         "over_budget": False,
+        "estimated": not bool((cost_evidence or {}).get("complete")),
+        "evidence_coverage_pct": int((cost_evidence or {}).get("coverage_pct") or 0),
+        "verified_spent": (cost_evidence or {}).get("priced_total"),
     }
 
     if target > 0:

@@ -47,6 +47,7 @@ from tripplanner.api_contracts import (
     ChatRequest,
     ChatResponse,
     ConfirmPlaceRequest,
+    DecisionBatchOverrideRequest,
     DecisionOverrideRequest,
     DeselectRequest,
     DocumentDeleteRequest,
@@ -60,6 +61,7 @@ from tripplanner.api_contracts import (
     SelectRequest,
     StopBookedRequest,
     TripIdRequest,
+    TripRepairRequest,
     UserRequest,
 )
 from tripplanner.chat_interactions import extract_input_request
@@ -929,6 +931,15 @@ async def trip_view_endpoint(
     return view
 
 
+@app.post("/trip/budget/what-if")
+async def trip_budget_what_if(request: Request, user_id: str = "local") -> dict:
+    """Generate grounded savings proposals only when the traveller asks."""
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    return await asyncio.to_thread(trip_operations.build_budget_what_if)
+
+
 @app.get("/trip/places")
 async def trip_places_endpoint(
     request: Request,
@@ -1078,6 +1089,37 @@ async def trip_itinerary_endpoint(request: Request, user_id: str = "local") -> d
     return await asyncio.to_thread(trip_operations.build_itinerary)
 
 
+@app.get("/trip/verification")
+async def trip_verification_endpoint(request: Request, user_id: str = "local") -> dict:
+    """What the planner checked on the active trip, and what it could not."""
+    from tripplanner.web import trip_operations
+
+    _set_request_user(request, user_id)
+    return await asyncio.to_thread(trip_operations.build_verification)
+
+
+@app.post("/trip/repair")
+async def trip_repair_endpoint(req: TripRepairRequest, request: Request) -> dict:
+    """Rearrange the planner's own stops until the saved trip reads correctly."""
+    from tripplanner.web import trip_operations
+
+    user_id = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(user_id)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.repair_trip, expected_updated_at=req.updated_at
+        )
+        if payload.get("changed"):
+            payload["view"] = await asyncio.to_thread(trip_operations.build_view)
+            payload["itinerary"] = await asyncio.to_thread(trip_operations.build_itinerary)
+        payload["verification"] = await asyncio.to_thread(
+            trip_operations.build_verification
+        )
+        return payload
+    finally:
+        await release_workspace_exclusive(workspace)
+
+
 @app.post("/trip/stop/booked")
 async def trip_stop_booked(req: StopBookedRequest, request: Request) -> dict:
     """Toggle one itinerary stop's booked flag (the Itinerary checkbox)."""
@@ -1122,6 +1164,35 @@ async def trip_decision_restore(
 ) -> Response:
     """Undo an overrule and put the agent's own choice back."""
     return await _apply_decision_override(request, decision_id, None, user_id, updated_at)
+
+
+@app.post("/trip/decisions/overrides")
+async def trip_decision_batch_override(
+    req: DecisionBatchOverrideRequest, request: Request
+) -> Response:
+    """Apply multiple decision changes atomically against one trip revision."""
+    from tripplanner.config import get_settings
+    from tripplanner.web import trip_operations
+
+    if not get_settings().decisions_ui_enabled:
+        return JSONResponse(
+            {"ok": False, "stale": False, "message": "Decision records are turned off."},
+            status_code=404,
+        )
+    resolved = _set_request_user(request, req.user_id)
+    workspace = await acquire_workspace_exclusive(resolved)
+    try:
+        payload = await asyncio.to_thread(
+            trip_operations.apply_decision_overrides,
+            [change.model_dump() for change in req.changes],
+            expected_updated_at=req.updated_at,
+        )
+        if payload.get("ok"):
+            payload["view"] = await asyncio.to_thread(trip_operations.build_view)
+            payload["itinerary"] = await asyncio.to_thread(trip_operations.build_itinerary)
+    finally:
+        await release_workspace_exclusive(workspace)
+    return JSONResponse(payload, status_code=409 if payload.get("stale") else 200)
 
 
 async def _apply_decision_override(
@@ -1991,11 +2062,11 @@ async def account_privacy_action(req: PrivacyActionRequest, request: Request) ->
     - ``clear_all_data``: delete trips/chats + reset preferences + clear usage/cache.
     - ``delete_account``: same as clear-all; identity provider account remains external.
     """
+    import tripplanner.tools_cache as tools_cache
     from tripplanner.tools import trip_planner
     from tripplanner.tools import user_preferences as prefs_store
     from tripplanner.usage import clear_usage
     from tripplanner.web import chat_store, travel_documents
-    import tripplanner.tools_cache as tools_cache
 
     user_id = _set_request_user(request, req.user_id)
 

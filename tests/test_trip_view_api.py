@@ -36,3 +36,24 @@ def test_trip_view_preserves_exact_itinerary_occurrence(
         "day": 2,
         "stop": 1,
     }
+
+
+def test_budget_what_if_is_generated_only_by_explicit_post(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = 0
+
+    def fake_build_budget_what_if():
+        nonlocal calls
+        calls += 1
+        return {"generated_on_demand": True, "proposals": []}
+
+    monkeypatch.setattr(trip_operations, "build_budget_what_if", fake_build_budget_what_if)
+    client = TestClient(api.app)
+
+    assert calls == 0
+    response = client.post("/trip/budget/what-if")
+
+    assert response.status_code == 200
+    assert response.json()["generated_on_demand"] is True
+    assert calls == 1

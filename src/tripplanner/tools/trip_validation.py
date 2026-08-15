@@ -13,6 +13,7 @@ import re
 from typing import Any
 
 from tripplanner.planning_intelligence import assess_itinerary_density
+from tripplanner.tools import trip_guard as validate_guard
 from tripplanner.tools.trip_common import (
     _HOTEL_PLACEHOLDER_RE,
     _MEAL_PLACEHOLDER_RE,
@@ -26,8 +27,8 @@ from tripplanner.tools.trip_common import (
 from tripplanner.tools.trip_guard import leg_touches_home, plans_own_arrival, validate_plan
 
 #: Invariants that mean the itinerary contradicts itself about time or place.
-#: Opening hours and travel feasibility are left out on purpose: they degrade
-#: with missing cached facts, and a gate must not fire on what it cannot know.
+#: Temporal feasibility is left out on purpose: it degrades with missing cached
+#: facts, and a gate must not fire on what it cannot know.
 _COHERENCE_CODES = frozenset({"I1", "I2", "I5", "I9"})
 
 

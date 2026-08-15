@@ -9,7 +9,7 @@ number be described as current.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 MAX_CHECKS = 12
@@ -74,7 +74,14 @@ def is_expired(check: dict[str, Any], *, now: datetime | None = None) -> bool:
     if expires is None:
         # No expiry recorded means we cannot vouch for it. Say so.
         return True
-    return (now or datetime.now()) >= expires
+    current = now or (datetime.now(UTC) if expires.tzinfo else datetime.now())
+    if expires.tzinfo is None and current.tzinfo is None:
+        return current >= expires
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=current.tzinfo)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=expires.tzinfo)
+    return current.astimezone(UTC) >= expires.astimezone(UTC)
 
 
 def describe(check: dict[str, Any], *, now: datetime | None = None) -> str:

@@ -132,6 +132,10 @@ def sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
         "updated_at",
     }
     public = {k: plan[k] for k in public_keys if k in plan}
+    if "selected_hotels" in public:
+        public["selected_hotels"] = _strip_private_fields(public["selected_hotels"])
+    if "selected_flights" in public:
+        public["selected_flights"] = _strip_private_fields(public["selected_flights"])
     decisions = sanitize_decisions(plan.get("decisions"))
     if decisions:
         public["decisions"] = decisions
@@ -142,6 +146,18 @@ def sanitize_plan(plan: dict[str, Any]) -> dict[str, Any]:
 # only means something inside our own ranker.
 _PRIVATE_OPTION_KEYS = {"provider_ref", "day_cost"}
 _TRACKING_PARAMS = ("key=", "apikey=", "api_key=", "token=", "aff", "utm_", "partner")
+
+
+def _strip_private_fields(value: Any) -> Any:
+    if isinstance(value, list):
+        return [_strip_private_fields(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            key: _strip_private_fields(item)
+            for key, item in value.items()
+            if key not in _PRIVATE_OPTION_KEYS
+        }
+    return value
 
 
 def _public_url(url: Any) -> str:
@@ -172,6 +188,7 @@ def sanitize_decisions(decisions: Any) -> list[dict[str, Any]]:
             if not isinstance(option, dict):
                 continue
             clean = {k: v for k, v in option.items() if k not in _PRIVATE_OPTION_KEYS}
+            clean = _strip_private_fields(clean)
             source = clean.get("source")
             if isinstance(source, dict):
                 clean["source"] = {

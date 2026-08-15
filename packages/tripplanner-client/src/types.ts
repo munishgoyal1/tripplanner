@@ -58,11 +58,57 @@ export interface Budget {
   per_traveler_display: string;
   breakdown: { flights?: number; hotels?: number; activities?: number };
   target: number | null;
+  target_currency?: string;
+  target_owner?: "user" | "legacy" | string;
+  target_updated_at?: string;
+  target_fx?: CostEvidenceLine["fx"] | null;
   target_display: string;
   remaining: number | null;
   remaining_display: string;
   pct_used: number | null;
   over_budget: boolean;
+  estimated: boolean;
+  evidence_coverage_pct: number;
+  verified_spent: number | null;
+}
+
+export interface BudgetWhatIfProposal {
+  id: string;
+  decision_id: string;
+  option_id: string;
+  kind: "flight" | "lodging";
+  subject: string;
+  label: string;
+  savings: number;
+  currency: string;
+  tradeoff: string;
+  personalized: boolean;
+}
+
+export interface BudgetWhatIf {
+  generated_on_demand: true;
+  estimated: boolean;
+  evidence_coverage_pct: number;
+  currency: string;
+  proposals: BudgetWhatIfProposal[];
+}
+
+export interface DecisionBatchChange {
+  decision_id: string;
+  option_id?: string | null;
+}
+
+export interface DecisionBatchApplyResult {
+  ok: boolean;
+  stale?: boolean;
+  message: string;
+  results: DecisionApplyResult[];
+  failed_change?: DecisionBatchChange;
+  total_cost?: number | null;
+  delta?: number;
+  currency?: string;
+  view?: TripView;
+  itinerary?: Itinerary;
 }
 
 export type WeatherCondition = "clear" | "partly_cloudy" | "cloudy" | "fog" | "rain" | "storm" | "snow" | "unknown";
@@ -95,6 +141,14 @@ export interface CostEvidenceLine {
   checked_at?: string;
   expires_at?: string;
   reason?: string;
+  fx?: {
+    from_currency: string;
+    to_currency: string;
+    rate: number;
+    source: string;
+    rate_date: string;
+    fetched_at: string;
+  };
 }
 
 /** What the trip costs according to recorded provider checks, not the model. */
@@ -107,6 +161,7 @@ export interface CostEvidence {
   unverified_count: number;
   unpriced_count: number;
   complete: boolean;
+  coverage_pct: number;
   summary: string;
 }
 
@@ -161,7 +216,7 @@ export interface DecisionSource {
 
 export interface DecisionOption {
   id: string;
-  mode: TransportMode;
+  mode?: TransportMode | null;
   label: string;
   detail?: string;
   price: DecisionPrice | null;
@@ -172,6 +227,29 @@ export interface DecisionOption {
   duration_estimated?: boolean;
   rejected_because?: string | null;
   source?: DecisionSource;
+  lodging?: {
+    checkin?: string;
+    checkout?: string;
+    room_name?: string;
+    board_name?: string | null;
+    refundable?: boolean | null;
+    cancellation_summary?: string | null;
+    address?: string | null;
+    rating?: number | null;
+    review_count?: number | null;
+  } | null;
+  flight?: {
+    origin?: string;
+    destination?: string;
+    departure_date?: string;
+    return_date?: string;
+    cabin_class?: string;
+    segments?: Array<Record<string, unknown>>;
+    stops?: number;
+    seats_remaining?: number | null;
+    baggage?: Record<string, unknown> | null;
+    terms?: Record<string, unknown> | null;
+  } | null;
 }
 
 export interface Decision {
@@ -458,6 +536,74 @@ export interface Itinerary {
   currency: string;
   days: ItineraryDay[];
   stats: { days: number; stops: number; booked: number };
+}
+
+/** A check the planner ran, or could not run, over the trip. */
+export type VerificationStatus = "passed" | "failed" | "unverified";
+
+export interface VerificationGap {
+  name: string;
+  day: number | null;
+  missing: string[];
+}
+
+export interface VerificationCheck {
+  code: string;
+  rule: string;
+  statement: string;
+  status: VerificationStatus;
+  /** A contradiction rests on a fetched fact; an advisory on estimated travel. */
+  severity: "contradiction" | "advisory";
+  findings: string[];
+  gaps: VerificationGap[];
+}
+
+export interface VerificationDay {
+  day: number;
+  status: VerificationStatus;
+  findings: string[];
+  advisories: string[];
+  unverified: string[];
+  holiday: string;
+}
+
+/** "unverified" at trip level means there was nothing to check yet. */
+export interface TripVerification {
+  verdict: "clear" | "partial" | "advisories" | "issues" | "unverified";
+  counts: { total: number; passed: number; failed: number; unverified: number };
+  checks: VerificationCheck[];
+  days: VerificationDay[];
+  unverified_stops: VerificationGap[];
+}
+
+export interface RepairMove {
+  name: string;
+  from_day: number;
+  to_day: number;
+  time: string;
+}
+
+/** A finding the planner may not fix alone, because the stop is the user's. */
+export interface BlockedFinding {
+  code: string;
+  day: number | null;
+  stop: string;
+  message: string;
+  reason: string;
+}
+
+export interface TripRepairResult {
+  ok: boolean;
+  stale: boolean;
+  changed: boolean;
+  message: string;
+  moves: RepairMove[];
+  blocked: BlockedFinding[];
+  before: { contradictions: number; travel_min: number };
+  after: { contradictions: number; travel_min: number };
+  view?: TripView;
+  itinerary?: Itinerary;
+  verification?: TripVerification;
 }
 
 /** Every panel's view-model for one trip, returned together on a trip switch. */

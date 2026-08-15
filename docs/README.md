@@ -21,7 +21,7 @@ canonical set below instead of reading every file.
 | [`roadmap/`](roadmap/README.md) | Possible future outcomes and deferred decisions; never implementation approval |
 | [`feature-briefs/`](feature-briefs/README.md) | One owner-approved outcome translated into bounded scope and acceptance criteria |
 | [`ux-experiments/`](ux-experiments/README.md) | Isolated visual decisions tested before production implementation |
-| [`research/`](research/) | Dated external findings — provider access, cost, and terms — that inform a decision but are not themselves approval |
+| [`research/`](research/) | Dated external findings — market and competitive landscape, provider access, cost, and terms — that inform a decision but are not themselves approval |
 
 ## How planning becomes current truth
 

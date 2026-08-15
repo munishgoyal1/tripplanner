@@ -1458,6 +1458,100 @@ def apply_decision_override(
     return {"stale": False, **result.as_dict()}
 
 
+@_serialized_mutation
+def apply_decision_overrides(
+    changes: list[dict[str, Any]], *, expected_updated_at: str = ""
+) -> dict[str, Any]:
+    """Apply several decision changes atomically against one trip revision."""
+    from tripplanner.decisions.apply import apply_override, restore
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+            "results": [],
+        }
+    if not changes:
+        return {
+            "ok": False,
+            "stale": False,
+            "message": "No budget changes were supplied.",
+            "results": [],
+        }
+
+    candidate = deepcopy(plan)
+    results = []
+    for change in changes:
+        decision_id = str(change.get("decision_id") or "")
+        option_id = change.get("option_id")
+        result = (
+            restore(candidate, decision_id)
+            if option_id in (None, "")
+            else apply_override(candidate, decision_id, str(option_id))
+        )
+        results.append(result.as_dict())
+        if not result.ok:
+            return {
+                "ok": False,
+                "stale": False,
+                "message": (
+                    "No changes were saved because one or more choices could not be applied."
+                ),
+                "failed_change": {"decision_id": decision_id, "option_id": option_id},
+                "results": results,
+            }
+
+    _save_active_trip(candidate)
+    total_delta = round(sum(float(result.get("delta") or 0) for result in results), 2)
+    return {
+        "ok": True,
+        "stale": False,
+        "message": f"Applied {len(results)} budget changes together.",
+        "results": results,
+        "total_cost": candidate.get("total_cost"),
+        "delta": total_delta,
+        "currency": str(candidate.get("currency") or "EUR"),
+    }
+
+
+@_serialized_mutation
+def repair_active_trip(*, expected_updated_at: str = "") -> dict[str, Any]:
+    """Rearrange the planner's own stops until the saved trip reads correctly."""
+    from tripplanner.web import trip_repair
+
+    plan = _load_active_trip()
+    if not plan:
+        return {"ok": False, "stale": False, "message": "There is no active trip."}
+    if expected_updated_at and str(plan.get("updated_at") or "") != expected_updated_at:
+        return {
+            "ok": False,
+            "stale": True,
+            "message": "This trip changed somewhere else. Reloaded it for you.",
+        }
+
+    outcome = trip_repair.repair(plan)
+    if outcome["changed"]:
+        _save_active_trip(outcome["plan"])
+    return {
+        "ok": True,
+        "stale": False,
+        "changed": outcome["changed"],
+        "message": (
+            " ".join(outcome["sentences"])
+            if outcome["changed"]
+            else "Nothing to rearrange; the plan is already the best I can make it."
+        ),
+        "moves": outcome["moves"],
+        "blocked": outcome["blocked"],
+        "before": outcome["before"],
+        "after": outcome["after"],
+    }
+
+
 def _mirror_to_history(plan: dict[str, Any]) -> None:
     """Persist the plan into the per-user trips collection under its trip_id."""
     tid = plan.get("trip_id")
@@ -1963,8 +2057,8 @@ def update_trip_plan(updates_json: str) -> str:
     - day_wise_itinerary: list of day plans
     - cost_breakdown: dict of cost items
     - total_cost: number
-    - budget: number — the user's total budget for THIS trip (drives the live
-      budget meter in the UI; set it as soon as the user states a budget)
+        - budget: {"amount": number, "currency": ISO code, "owner": "user"} - the
+            user's total budget for THIS trip. Set only from an explicit user target.
     - currency: ISO code of the sticky display currency ("INR", "USD", "EUR",
       ...) — set it once when you pick the plan's currency so every surface
       (including the budget meter) shows the same symbol
@@ -2036,6 +2130,26 @@ def update_trip_plan(updates_json: str) -> str:
     merged_partial_itinerary = False
     for key, val in updates.items():
         if key in allowed_keys:
+            if key == "budget":
+                if isinstance(val, int | float) and not isinstance(val, bool):
+                    val = {
+                        "amount": val,
+                        "currency": str(updates.get("currency") or plan.get("currency") or "INR"),
+                        "owner": "user",
+                        "updated_at": datetime.now().isoformat(),
+                    }
+                elif isinstance(val, dict):
+                    val = {
+                        **val,
+                        "currency": str(
+                            val.get("currency")
+                            or updates.get("currency")
+                            or plan.get("currency")
+                            or "INR"
+                        ),
+                        "owner": "user",
+                        "updated_at": datetime.now().isoformat(),
+                    }
             if key == "selected_hotels" and isinstance(val, list):
                 val = [
                     hotel
@@ -2054,6 +2168,14 @@ def update_trip_plan(updates_json: str) -> str:
         plan.get("selected_hotels"),
     ):
         _reflow_unbooked_attractions(plan)
+    if "selected_hotels" in updates:
+        from tripplanner.decisions.lodging import reconcile_selected_lodging
+
+        reconcile_selected_lodging(plan)
+    if "selected_flights" in updates:
+        from tripplanner.decisions.flights import reconcile_selected_flight
+
+        reconcile_selected_flight(plan)
 
     added_flight_legs = []
     if {"origin", "selected_flights"}.intersection(updates):

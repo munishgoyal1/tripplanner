@@ -92,6 +92,82 @@ describe("DecisionPanel", () => {
     expect(screen.getByText("We have no fare source for this")).toBeTruthy();
   });
 
+  it("shows sourced stay facts without transport language", () => {
+    renderPanel([
+      decision({
+        id: "dec_lodging_lisbon",
+        kind: "lodging",
+        subject: "Stay in Lisbon",
+        rule: {
+          code: "verified_stay_total",
+          text: "Lowest verified stay total; provider rating and refundability break ties",
+        },
+        chosen_option_id: "opt_memmo",
+        agent_option_id: "opt_memmo",
+        options: [
+          {
+            id: "opt_memmo",
+            mode: null,
+            label: "Memmo Alfama",
+            detail: "River view king",
+            price: { amount: 640, currency: "EUR", basis: "per_party" },
+            priced: true,
+            unpriced_reason: null,
+            lodging: {
+              room_name: "River view king",
+              board_name: "Breakfast",
+              rating: 4.7,
+              refundable: true,
+            },
+          },
+        ],
+      }),
+    ]);
+
+    expect(screen.getByText(/4.7 provider rating/)).toBeTruthy();
+    expect(screen.getByText(/Refundable/)).toBeTruthy();
+    expect(screen.queryByText(/door to door/)).toBeNull();
+  });
+
+  it("shows flight route, stops, cabin, and live seat evidence", () => {
+    renderPanel([
+      decision({
+        id: "dec_flight_del_lhr",
+        kind: "flight",
+        subject: "Flight from Delhi to London",
+        rule: {
+          code: "flight_stops_then_total",
+          text: "Fewest stops first; lowest verified party total breaks ties",
+        },
+        chosen_option_id: "opt_direct",
+        agent_option_id: "opt_direct",
+        options: [
+          {
+            id: "opt_direct",
+            mode: "flight",
+            label: "Air India",
+            detail: "DEL to LHR · Direct",
+            price: { amount: 900, currency: "USD", basis: "per_party" },
+            priced: true,
+            unpriced_reason: null,
+            flight: {
+              origin: "DEL",
+              destination: "LHR",
+              cabin_class: "PREMIUM_ECONOMY",
+              stops: 0,
+              seats_remaining: 3,
+            },
+          },
+        ],
+      }),
+    ]);
+
+    expect(screen.getByText(/DEL → LHR/)).toBeTruthy();
+    expect(screen.getByText(/Direct/)).toBeTruthy();
+    expect(screen.getByText(/premium economy/)).toBeTruthy();
+    expect(screen.getByText(/3 seats left at check/)).toBeTruthy();
+  });
+
   it("applies an overrule through the state owner with the trip revision", async () => {
     overrideDecision.mockResolvedValue({
       ok: true,

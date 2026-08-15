@@ -83,8 +83,8 @@ def _population(result: dict[str, Any]) -> int:
     return value if isinstance(value, int) and value > 0 else 0
 
 
-def _confident_country(results: list[Any], name: str) -> str:
-    """The country of the one substantial place this name clearly refers to."""
+def _confident_country(results: list[Any], name: str) -> tuple[str, str]:
+    """Country name and ISO code of the one substantial place this name means."""
     target = _fold(name)
     named = [
         result
@@ -94,11 +94,11 @@ def _confident_country(results: list[Any], name: str) -> str:
         and str(result.get("country") or "").strip()
     ]
     if not named:
-        return ""
+        return ("", "")
 
     best = max(named, key=_population)
     if _population(best) < _MIN_POPULATION:
-        return ""
+        return ("", "")
     country = str(best.get("country")).strip()
     abroad = max(
         (
@@ -110,12 +110,12 @@ def _confident_country(results: list[Any], name: str) -> str:
     )
     # Two comparable places of the same name say the trip cannot be placed.
     if abroad * _DOMINANCE > _population(best):
-        return ""
-    return country
+        return ("", "")
+    return (country, str(best.get("country_code") or "").strip().upper())
 
 
-def _lookup(name: str) -> str | None:
-    """Country for one query form. ``""`` means no confident match, ``None``
+def _lookup(name: str) -> tuple[str, str] | None:
+    """Country for one query form. ``("", "")`` means no confident match, ``None``
     means the lookup itself failed."""
     try:
         response = http_client.get(
@@ -135,23 +135,25 @@ def _lookup(name: str) -> str | None:
     return _confident_country(results, name)
 
 
-def resolve_country(place: str) -> str:
-    """Country containing ``place``, or ``""`` when it cannot be determined."""
+def _resolve(place: str) -> tuple[str, str]:
     key = _normalize(place).casefold()
     if not key:
-        return ""
+        return ("", "")
     cached = _cache.get(key)
     if cached is not None:
-        return str(cached)
+        # A JSON-backed cache returns the stored pair as a list, so both
+        # backends have to agree on the tuple the callers unpack.
+        country, code = cached
+        return (str(country), str(code))
 
-    resolved = ""
+    resolved = ("", "")
     complete = False
     for candidate in _candidates(place):
         answer = _lookup(candidate)
         if answer is None:
             continue
         complete = True
-        if answer:
+        if answer[0]:
             resolved = answer
             break
 
@@ -160,6 +162,16 @@ def resolve_country(place: str) -> str:
     if complete:
         _cache.set(key, resolved)
     return resolved
+
+
+def resolve_country(place: str) -> str:
+    """Country containing ``place``, or ``""`` when it cannot be determined."""
+    return _resolve(place)[0]
+
+
+def resolve_country_code(place: str) -> str:
+    """ISO 3166-1 alpha-2 code for ``place``, or ``""`` when unknown."""
+    return _resolve(place)[1]
 
 
 def crosses_border(origin: str, destination: str) -> bool:

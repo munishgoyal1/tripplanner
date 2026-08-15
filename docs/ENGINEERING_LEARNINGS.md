@@ -1064,6 +1064,60 @@ the outcome.
   trips produced exactly one new violation and zero false positives, which is
   the evidence that let continuity join the completion gate the same day.
 
+- A fact stored in one shape and checked in another is not a check at all. The
+  places cache wrote `weekday_descriptions`; the guard's opening-hours invariant
+  read an `opening_hours` string nothing produced, so I3 could never fire and a
+  museum closed on Tuesdays was scheduled on a Tuesday while the view layer
+  quietly printed "Likely closed" next to it. Renaming the key would have fixed
+  that one trip. What actually closes the class is a single fact boundary --
+  `place_facts` -- that every consumer reads, a contract test asserting the cache
+  still emits the keys that boundary needs, and a rule that a fact good enough to
+  show the traveller is good enough to hold the turn open. Display-only knowledge
+  is knowledge the planner has decided not to act on.
+
+- Tri-state is the whole design, not a nicety. `closed_on` had to distinguish
+  "the schedule says closed", "the schedule says open", and "we never fetched a
+  schedule", because an invariant that treats unknown as false blocks real plans
+  and one that treats unknown as true is decorative. Keeping unknown separate is
+  what made it safe to promote the fact-based invariants into the completion gate
+  alongside the envelope rules, while travel feasibility -- which degrades on
+  guessed coordinates -- stayed out.
+
+- An integration test that reads a developer's home directory is a bug factory.
+  `test_trip_guard_integration` scored placement against whatever coordinates and
+  opening hours this machine had cached from real use, so the same commit passed
+  here and would have failed elsewhere, and a genuine improvement to the guard
+  looked like a regression. Isolating the suite from `places_cache` made the
+  failure legible in one run.
+
+- An absolute ordering is not a strong preference, it is a blank cheque. Ranking
+  contradictions lexicographically ahead of cost meant no arrangement that
+  cleared one could ever lose, so the first real run moved the Louvre onto the
+  departure day and a Paris district onto the Versailles excursion -- the theme
+  penalty fired on both and was simply outranked. A cleared fault is now worth a
+  large finite number of minutes: heavy enough to beat any ordinary saving,
+  finite enough that it cannot buy an arrangement which ruins the rest of the
+  trip. Reserve lexicographic ordering for things that are genuinely
+  incomparable, and price everything else.
+
+- A rebalancer needs exchanges, not just relocations. Lifting one stop off a day
+  and adding it to another always leaves one day heavy and one light, and that
+  imbalance costs more than the travel it saves, so a search over relocations
+  alone found zero improving moves on a deliberately scrambled trip and was
+  right every time. Trading two stops keeps both days the size they were. If an
+  optimiser reports nothing to do on an obviously bad input, suspect the
+  neighbourhood before the objective.
+
+- Rearranging a plan without rewriting what it calls itself leaves the plan
+  lying. "Day 3 - Louvre & Marais" holding neither is worse than the crooked
+  schedule that was just fixed, because the traveller now cannot trust the
+  labels either. Any operation that moves things has to own the words that
+  describe them.
+
+- Do not point a new mutation at real data on its first run. The repair pass was
+  wired to a button and tried against a live trip the same hour it was written;
+  it degraded the trip and there was no undo. A corpus harness would have shown
+  all three defects without touching anything a person cared about.
 ## 2026-08-14 - Missing Data Can Be An Answer, And Slack Is Not Symmetric
 
 - The audit reported seven trips with no `origin` as a defect. It was not one.

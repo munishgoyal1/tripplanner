@@ -7,6 +7,7 @@ import { formatDistance, formatTemperature, useDisplayPreferences } from "../lib
 import ItineraryFilterControls from "./ItineraryFilterControls";
 import ItineraryStopRow from "./ItineraryStopRow";
 import TripSnapshot from "./TripSnapshot";
+import TripVerificationCard from "./TripVerificationCard";
 import WeatherIcon from "./WeatherIcon";
 import { hotelIdentityGroups, hotelIdentityMatches } from "./map/placeIdentity";
 
@@ -506,6 +507,9 @@ export default function ItineraryPanel({
             </span>
           )}
         </header>
+        <div className="mb-3">
+          <TripVerificationCard revision={retryToken} />
+        </div>
         <div className="space-y-3 pb-6">
         {visibleDays.length === 0 && (
           <div className="py-8 text-center text-sm text-slate-500">No itinerary items match these filters.</div>
