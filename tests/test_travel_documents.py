@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from tripplanner.web import travel_documents
 
 @pytest.fixture(autouse=True)
 def _isolate(monkeypatch):
-    root = Path.home() / ".tripplanner_test_documents"
+    root = Path.home() / f".tripplanner_test_documents-{os.getpid()}"
     root.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(travel_documents, "_DOCS_FILE", root / "documents.json")
     monkeypatch.setattr(storage_cosmos, "is_enabled", lambda: False)

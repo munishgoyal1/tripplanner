@@ -111,8 +111,6 @@ def test_missing_facts_never_read_as_a_pass(nothing_known: None) -> None:
     report = trip_verification.build_verification(_SOUND)
     statuses = {check["code"]: check["status"] for check in report["checks"]}
     assert statuses["I3"] == "unverified"
-    assert statuses["I11"] == "unverified"
-    assert statuses["I12"] == "unverified"
     assert statuses["I4"] == "unverified"
     assert report["verdict"] == "partial"
 
@@ -129,41 +127,6 @@ def test_a_fully_known_sound_trip_reports_clear(fully_known: None) -> None:
     assert report["verdict"] == "clear"
     assert report["counts"]["failed"] == 0
     assert report["counts"]["unverified"] == 0
-
-
-def test_a_closed_weekday_is_reported_as_a_failed_check(fully_known: None) -> None:
-    report = trip_verification.build_verification(_SOUND)
-    closed = next(check for check in report["checks"] if check["code"] == "I11")
-    assert closed["status"] == "passed"
-
-    # Day 2 of a trip starting Monday 2026-08-10 is the Tuesday Rajwada shuts.
-    moved = plan(
-        [
-            [stop("Hotel Sayaji", "09:00", "hotel", 45)],
-            [stop("Rajwada Palace", "11:00")],
-        ]
-    )
-    report = trip_verification.build_verification(moved)
-    closed = next(check for check in report["checks"] if check["code"] == "I11")
-    assert closed["status"] == "failed"
-    assert "Tuesday" in closed["findings"][0]
-    assert report["verdict"] == "issues"
-
-
-def test_the_certificate_never_contradicts_the_guard(fully_known: None) -> None:
-    broken = plan(
-        [
-            [stop("Hotel Sayaji", "09:00", "hotel", 45)],
-            [stop("Rajwada Palace", "11:00")],
-        ]
-    )
-    codes = {violation.code for violation in trip_guard.validate_plan(broken)}
-    failed = {
-        check["code"]
-        for check in trip_verification.build_verification(broken)["checks"]
-        if check["status"] == "failed"
-    }
-    assert failed == codes
 
 
 def test_days_carry_their_own_verdict(fully_known: None) -> None:

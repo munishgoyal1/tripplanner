@@ -1118,3 +1118,61 @@ the outcome.
   wired to a button and tried against a live trip the same hour it was written;
   it degraded the trip and there was no undo. A corpus harness would have shown
   all three defects without touching anything a person cared about.
+## 2026-08-14 - Missing Data Can Be An Answer, And Slack Is Not Symmetric
+
+- The audit reported seven trips with no `origin` as a defect. It was not one.
+  A traveller may want a destination-only itinerary and arrange their own way
+  there, so the absence was sometimes a genuine choice and sometimes a question
+  nobody had asked. Backfilling the field would have invented a home city the
+  user never gave. The fix is to let the trip record the answer
+  (`travel_scope: destination_only`) and to make the guard ask rather than
+  accuse. Before adding data to satisfy a rule, check whether the rule should
+  have asked a question instead.
+- A tolerance has to be asymmetric around what the traveller cannot undo. The
+  feasibility rule fired 21 times for arriving nine minutes after a restaurant,
+  which no one would call a defect, while the same nine minutes against a
+  ticketed entry or a departure is a missed trip. Slack now depends on who owns
+  the clock: a stop with a booking or a timed entry gets none, an ordinary sight
+  gets ten minutes. Occurrences fell from 90 to 82 and the only surviving
+  feasibility finding is a real one, thirty-eight minutes short.
+- Both changes came out of reading a grouped report rather than a single trip.
+  One count of 21 identical findings is the signal that a rule is miscalibrated;
+  the same 21 spread across weeks of manual testing read as noise.
+
+## 2026-08-15 - A Test Suite That Six Lanes Share Is Not Isolated
+
+- Seven test files pinned their fixture directory to a fixed name under the home
+  directory (`~/.tripplanner_test`, `~/.tripplanner_chat_test`, ...) and deleted
+  it in teardown. One suite at a time, that is fine. Six sandboxes running their
+  suites at once means one run's teardown removes another run's fixture between
+  two assertions, and the failure lands wherever the timing put it -- 15 failures
+  in one run, 4 and 7 in the next, none of them reproducible alone.
+- The tell was that the same test passed in isolation, three times in a row,
+  after "failing" in a full run. A failure that will not reproduce alone is a
+  statement about the environment, not about the test.
+- The fix is one line per file: put the process id in the directory name. Proven
+  by running two suites concurrently before the change (4 and 7 failures) and
+  after it (both clean). `test_observability.py` already had the better pattern
+  -- patch `Path.home` to a tmp_path -- and was the only one unaffected.
+- Beware the automatic import fix. Running `ruff --fix` for the import sort my
+  edit disturbed silently split one aliased import into five and added three
+  E402s elsewhere in the file. Compare the lint profile by rule count before and
+  after, not the raw line list, because inserting three lines renumbers every
+  finding below it and hides a real regression among the noise.
+
+## 2026-08-15 - The Day That Never Came Home
+
+- The audit reported a Nashik excursion drawing an "inter-city Drive that covers
+  no distance". Chasing it found a larger defect standing next to it: the day
+  left the hotel, drove to Igatpuri, visited three places, and simply stopped
+  there. The plan clearly returned -- it held a return drive and the stay twice
+  -- but the map left the traveller at a temple.
+- The cause was in the reorder that anchors a transfer day on its stay. It moved
+  the stay to the front and filtered every other occurrence out, which is right
+  for a day that ends in a new city and wrong for an excursion that comes home.
+  The walk had already produced the correct path; the reorder deleted its ending.
+- The finding that led here was not itself the bug, and calibrating it away
+  would have buried the real one. A rule earns its place by what it makes you
+  look at, not only by what it names. The rule was then narrowed to flights and
+  trains, where a zero-distance journey is unambiguous, because a waypoint hop
+  inside a drive is genuinely part of that drive.

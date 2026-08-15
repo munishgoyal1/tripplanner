@@ -2070,6 +2070,10 @@ def update_trip_plan(updates_json: str) -> str:
       apply to THIS trip ONLY (e.g. "3-star hotel is fine just for this trip",
       "OK with one connection this time"). Use this for anything the user says
       is a one-time exception; NEVER save such one-offs to durable preferences.
+    - travel_scope: "round_trip" when you are planning the journey there and
+      back, or "destination_only" when the user says they will arrange getting
+      there themselves. Set it as soon as the user answers, so the trip stops
+      being asked for an origin it does not need.
     - visa: what check_visa_requirements found, so it outlives the chat. Shape:
       {"passport_country": "Indian", "destination_country": "Mexico",
        "status": "required" | "e_visa" | "on_arrival" | "visa_free" | "unclear",
@@ -2120,7 +2124,7 @@ def update_trip_plan(updates_json: str) -> str:
         "selected_flights", "selected_hotels", "selected_activities",
         "day_wise_itinerary", "cost_breakdown", "total_cost", "notes",
         "origin", "budget", "currency", "weather", "trip_constraints",
-        "visa",
+        "visa", "travel_scope",
     }
     before = json.loads(json.dumps(plan))  # deep copy for diff
     merged_partial_itinerary = False

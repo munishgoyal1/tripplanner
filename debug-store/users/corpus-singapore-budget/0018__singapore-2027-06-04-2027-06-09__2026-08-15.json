@@ -1,0 +1,2203 @@
+{
+  "archive_no": 18,
+  "trip_id": "singapore_2027-06-04_2027-06-09",
+  "user_id": "corpus-singapore-budget",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:30:10Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:30:10Z",
+      "content_hash": "f0addf00c7b03c43",
+      "plan": {
+        "status": "draft",
+        "trip_id": "singapore_2027-06-04_2027-06-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:00:10.314177",
+        "destination": "Singapore",
+        "origin": "Chennai",
+        "departure_date": "2027-06-04",
+        "return_date": "2027-06-09",
+        "travelers": "2 adults",
+        "notes": "Tight budget: INR 90,000 total. Balanced itinerary. Economy flights, minimum 3-star hotel, prefer direct flights.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Singapore",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:00:10.314334"
+      }
+    },
+    {
+      "at": "2026-08-15T14:31:02Z",
+      "content_hash": "b9a49e0ddf587a90",
+      "plan": {
+        "status": "draft",
+        "trip_id": "singapore_2027-06-04_2027-06-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:00:10.314177",
+        "destination": "Singapore",
+        "origin": "Chennai",
+        "departure_date": "2027-06-04",
+        "return_date": "2027-06-09",
+        "travelers": "2 adults",
+        "notes": "Tight budget: INR 90,000 total. Balanced itinerary. Economy flights, minimum 3-star hotel, prefer direct flights.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Singapore",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-06-04",
+            "title": "Arrival in Singapore",
+            "summary": "Arrive from Chennai, check in to hotel, explore nearby area, enjoy local dinner.",
+            "stops": [
+              {
+                "name": "Flight: Chennai to Singapore",
+                "kind": "flight",
+                "time": "07:00",
+                "arrival_time": "14:00",
+                "duration_min": 330
+              },
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              },
+              {
+                "name": "Little India",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 60,
+                "note": "Walk and explore"
+              },
+              {
+                "name": "Komala Vilas",
+                "kind": "meal",
+                "time": "18:00",
+                "note": "Affordable Indian dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-06-05",
+            "title": "Marina Bay & Gardens",
+            "summary": "Visit iconic Marina Bay, Gardens by the Bay, and enjoy affordable meals.",
+            "stops": [
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Marina Bay Sands (outside)",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Gardens by the Bay",
+                "kind": "attraction",
+                "time": "10:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Satay by the Bay",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Merlion Park",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-06-06",
+            "title": "Sentosa Island Day",
+            "summary": "Explore Sentosa Island with free/low-cost attractions, beach time, and affordable meals.",
+            "stops": [
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Sentosa Island (beach)",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Sentosa Boardwalk",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Good Old Days Sentosa",
+                "kind": "meal",
+                "time": "13:30",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Fort Siloso",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-06-07",
+            "title": "Cultural & Chinatown",
+            "summary": "Explore Chinatown, temples, and enjoy affordable local cuisine.",
+            "stops": [
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Chinatown",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Sri Mariamman Temple",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Maxwell Food Centre",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-06-08",
+            "title": "Shopping & Departure",
+            "summary": "Last day: Bugis Street shopping, local lunch, check out, return flight.",
+            "stops": [
+              {
+                "name": "Budget Hotel Singapore",
+                "kind": "hotel",
+                "note": "Check-out"
+              },
+              {
+                "name": "Bugis Street",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Kopitiam Bugis",
+                "kind": "meal",
+                "time": "12:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Flight: Singapore to Chennai",
+                "kind": "flight",
+                "time": "15:00",
+                "arrival_time": "18:30",
+                "duration_min": 330
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 90000,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [
+          "Tight budget: INR 90,000 total for 2 adults"
+        ],
+        "updated_at": "2026-08-15T20:01:02.535121",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:01:02",
+            "expires_at": "2026-08-16T08:01:02"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:31:45Z",
+      "content_hash": "943ea979246b4d9c",
+      "plan": {
+        "status": "draft",
+        "trip_id": "singapore_2027-06-04_2027-06-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:00:10.314177",
+        "destination": "Singapore",
+        "origin": "Chennai",
+        "departure_date": "2027-06-04",
+        "return_date": "2027-06-09",
+        "travelers": "2 adults",
+        "notes": "Tight budget: INR 90,000 total. Balanced itinerary. Economy flights, minimum 3-star hotel, prefer direct flights.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Singapore",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Hotel 81 Orchid",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp65547954"
+            },
+            "address": "21 Lorong 8 Geylang, Singapore",
+            "checkin": "2027-06-04",
+            "checkout": "2027-06-09",
+            "price_per_night": 3500,
+            "currency": "INR",
+            "total_price": 17500,
+            "star_rating": 3,
+            "google_rating": 3.7,
+            "google_reviews": 1877,
+            "notes": "Clean, basic, well-located for budget travelers"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-06-04",
+            "title": "Arrival in Singapore",
+            "summary": "Arrive from Chennai, check in to Hotel 81 Orchid, explore Little India, enjoy affordable dinner.",
+            "stops": [
+              {
+                "name": "Flight: Chennai to Singapore",
+                "kind": "flight",
+                "time": "07:00",
+                "arrival_time": "14:00",
+                "duration_min": 330
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              },
+              {
+                "name": "Little India",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 60,
+                "note": "Walk and explore"
+              },
+              {
+                "name": "Komala Vilas",
+                "kind": "meal",
+                "time": "18:00",
+                "note": "Affordable Indian dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-06-05",
+            "title": "Marina Bay & Gardens",
+            "summary": "Visit Marina Bay, Gardens by the Bay, and enjoy affordable meals.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Marina Bay Sands (outside)",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Gardens by the Bay",
+                "kind": "attraction",
+                "time": "10:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Satay by the Bay",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Merlion Park",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-06-06",
+            "title": "Sentosa Island Day",
+            "summary": "Explore Sentosa Island with free/low-cost attractions, beach time, and affordable meals.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Sentosa Island (beach)",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Sentosa Boardwalk",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Good Old Days Sentosa",
+                "kind": "meal",
+                "time": "13:30",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Fort Siloso",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-06-07",
+            "title": "Cultural & Chinatown",
+            "summary": "Explore Chinatown, temples, and enjoy affordable local cuisine.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Chinatown",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Sri Mariamman Temple",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Maxwell Food Centre",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-06-08",
+            "title": "Shopping & Departure",
+            "summary": "Last day: Bugis Street shopping, local lunch, check out, return flight.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Check-out"
+              },
+              {
+                "name": "Bugis Street",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Kopitiam Bugis",
+                "kind": "meal",
+                "time": "12:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Flight: Singapore to Chennai",
+                "kind": "flight",
+                "time": "15:00",
+                "arrival_time": "18:30",
+                "duration_min": 330
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 90000,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [
+          "Tight budget: INR 90,000 total for 2 adults"
+        ],
+        "updated_at": "2026-08-15T20:01:45.044556",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:01:02",
+            "expires_at": "2026-08-16T08:01:02"
+          },
+          {
+            "kind": "flights",
+            "provider": "Duffel",
+            "checked_at": "2026-08-15T20:01:45",
+            "expires_at": "2026-08-15T20:31:45"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:32:12Z",
+      "content_hash": "67346cdba45f1935",
+      "plan": {
+        "status": "draft",
+        "trip_id": "singapore_2027-06-04_2027-06-09",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:00:10.314177",
+        "destination": "Singapore",
+        "origin": "Chennai",
+        "departure_date": "2027-06-04",
+        "return_date": "2027-06-09",
+        "travelers": "2 adults",
+        "notes": "Tight budget: INR 90,000 total. Balanced itinerary. Economy flights, minimum 3-star hotel, prefer direct flights.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Singapore",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [
+          {
+            "option": 1,
+            "airline": "Duffel Airways",
+            "price": 470.4,
+            "currency": "USD",
+            "departure": "2027-06-04T02:19",
+            "arrival": "2027-06-04T09:17",
+            "origin": "Chennai",
+            "destination": "Singapore",
+            "return_departure": "2027-06-09T06:11",
+            "return_arrival": "2027-06-09T08:09",
+            "return_origin": "Singapore",
+            "return_destination": "Chennai",
+            "direct": true
+          }
+        ],
+        "selected_hotels": [
+          {
+            "name": "Hotel 81 Orchid",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp65547954"
+            },
+            "address": "21 Lorong 8 Geylang, Singapore",
+            "checkin": "2027-06-04",
+            "checkout": "2027-06-09",
+            "price_per_night": 3500,
+            "currency": "INR",
+            "total_price": 17500,
+            "star_rating": 3,
+            "google_rating": 3.7,
+            "google_reviews": 1877,
+            "notes": "Clean, basic, well-located for budget travelers"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-06-04",
+            "title": "Arrival in Singapore",
+            "summary": "Arrive from Chennai, check in to Hotel 81 Orchid, explore Little India, enjoy affordable dinner.",
+            "stops": [
+              {
+                "name": "Flight: Chennai to Singapore",
+                "kind": "flight",
+                "time": "07:00",
+                "arrival_time": "14:00",
+                "duration_min": 330
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Check-in and rest"
+              },
+              {
+                "name": "Little India",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 60,
+                "note": "Walk and explore"
+              },
+              {
+                "name": "Komala Vilas",
+                "kind": "meal",
+                "time": "18:00",
+                "note": "Affordable Indian dinner"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-06-05",
+            "title": "Marina Bay & Gardens",
+            "summary": "Visit Marina Bay, Gardens by the Bay, and enjoy affordable meals.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Marina Bay Sands (outside)",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Gardens by the Bay",
+                "kind": "attraction",
+                "time": "10:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Satay by the Bay",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Merlion Park",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-06-06",
+            "title": "Sentosa Island Day",
+            "summary": "Explore Sentosa Island with free/low-cost attractions, beach time, and affordable meals.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Sentosa Island (beach)",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Sentosa Boardwalk",
+                "kind": "attraction",
+                "time": "12:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Good Old Days Sentosa",
+                "kind": "meal",
+                "time": "13:30",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Fort Siloso",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-06-07",
+            "title": "Cultural & Chinatown",
+            "summary": "Explore Chinatown, temples, and enjoy affordable local cuisine.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Chinatown",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Sri Mariamman Temple",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Maxwell Food Centre",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Return and rest"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-06-08",
+            "title": "Shopping & Departure",
+            "summary": "Last day: Bugis Street shopping, local lunch, check out, return flight.",
+            "stops": [
+              {
+                "name": "Hotel 81 Orchid",
+                "kind": "hotel",
+                "note": "Check-out"
+              },
+              {
+                "name": "Bugis Street",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Kopitiam Bugis",
+                "kind": "meal",
+                "time": "12:00",
+                "note": "Budget lunch"
+              },
+              {
+                "name": "Flight: Singapore to Chennai",
+                "kind": "flight",
+                "time": "15:00",
+                "arrival_time": "18:30",
+                "duration_min": 330
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {
+          "flights": 39300,
+          "hotel": 17500,
+          "meals": 5000,
+          "local_transport": 4000,
+          "attractions": 6000,
+          "misc": 3000
+        },
+        "total_cost": 69800,
+        "budget": 90000,
+        "currency": "INR",
+        "weather": {
+          "destination": "Singapore",
+          "country": "Singapore",
+          "latitude": 1.28967,
+          "longitude": 103.85007,
+          "source": "seasonal_estimate",
+          "note": "Trip is beyond the 16-day forecast horizon — these values are last year's same-week archive as a seasonal proxy.",
+          "days": [
+            {
+              "date": "2027-06-04",
+              "summary": "Light drizzle",
+              "high_c": 33.5,
+              "low_c": 27.7,
+              "precip_mm": 1.3
+            },
+            {
+              "date": "2027-06-05",
+              "summary": "Drizzle",
+              "high_c": 34.1,
+              "low_c": 25.9,
+              "precip_mm": 2.8
+            },
+            {
+              "date": "2027-06-06",
+              "summary": "Light drizzle",
+              "high_c": 33.8,
+              "low_c": 28.8,
+              "precip_mm": 0.5
+            },
+            {
+              "date": "2027-06-07",
+              "summary": "Light drizzle",
+              "high_c": 33.2,
+              "low_c": 27.6,
+              "precip_mm": 1.5
+            },
+            {
+              "date": "2027-06-08",
+              "summary": "Light drizzle",
+              "high_c": 33.3,
+              "low_c": 28.1,
+              "precip_mm": 1.1
+            }
+          ],
+          "packing_advice": [
+            "Pack a light rain jacket or umbrella.",
+            "Quick-dry clothes and sandals.",
+            "Carry sunscreen."
+          ]
+        },
+        "visa": {},
+        "trip_constraints": [
+          "Tight budget: INR 90,000 total for 2 adults"
+        ],
+        "updated_at": "2026-08-15T20:02:12.237544",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T20:01:02",
+            "expires_at": "2026-08-16T08:01:02"
+          },
+          {
+            "kind": "flights",
+            "provider": "Duffel",
+            "checked_at": "2026-08-15T20:01:45",
+            "expires_at": "2026-08-15T20:31:45"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:32:12Z",
+    "user_id": "corpus-singapore-budget",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {
+        "flight_class": {
+          "economy": 1
+        }
+      },
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": "",
+      "_promoted_signals": {}
+    },
+    "places": {
+      "little india|singapore": {
+        "place_id": "ChIJpeUFx7gZ2jERm6KzXQVkAVk",
+        "name": "Little India",
+        "address": "Little India, Singapore",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 1.3065597,
+        "lng": 103.85181899999999,
+        "photo_refs": [
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydjRJOymYOuLcQe3Mmta6ERchJ-YCc1G6x2gfAJfRYJgxnsyFKerTGWDxUL_GOhAAUDOlfhNmbyJU8ursvP_-cFDOrPND2Iq276Zpb9_BgGz3HixW2xrLAfPoChxTKoY6G7jPuFAW0yzY3ND5lxpfMJ-rPTeD_Ch2vAbnP8KDNS7KPSqEbipxGpe4THhtEhYjUTSdbHiaqHoVqnBq5VtDZE3Rk0xXQb0B8n8zQ-pmUIqbDS-skH8bRI5DAzlcnGsK0s5YkaQzcJ1ixgKuSrHQwLTpibsLMxhbd4k4FU1kDYqTt5SojgWy2ztQsNdIK89rUWR6ZYIc5khDdeqZZwM8CoCdsNEtS6hA5YgDZconr3qw5Ht0-lje3VLfYyEiDotzuTWrQVD3t0eepu6wGITbMu8NBDJwIscCtrGHjEtDBvGRaBo",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydgZI8szZL8FsAgimsWhnzUHF0jyaeQJG_4Q1GxBOMh01po1WKgkURpuDWLxOz_wTxztsYLYmt7PKyfYyx386d6L0J5QQYbqMCSZ1rLBqDSh-ZqtODeuLbXzvTZhbvp-nx4wwBfrCx1_IpxURErU3d3rc6xf56m0o6fb1fgqPmqACu7H5bLaJonP9rObc_kLafN2W__5ahCf8LtZhEUpGcCgxemxuU1MmNglEHoyXUgZ1IelHkHaSsIMw4N5q13f1wFhY0UK9ubiVTc32X0R9WgNvsUaehy91jvRQhueXiQf5zJb0WqS7m-NIQ4KmnYRvsvUcHcCg0AT7Uf5EmaNVm4ye_AYy-2Kei3tFwbb3AZ0eYKrROGx2c5hwCyK_QwwAYroFmIKEn0-_5K2r1I48XYaY0Xo47Mxi_tyhIWqV5MO66w-",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydh5QyvCTcyoDMuifKYU1fWusQR3s7jl21EtiNzAWA_yNTyIg_ZQ8io8OqQw5R0zEx9flFKl6WEEugG89UTw9_2Ofs0Qjht-mnaEvXycc1lhhpFdG7u8MmKyC7ikZrgMieYROt7NNqWyplIUm6GBaGBn638P4qg5Tm_5NhUE8_-z7JowMzHsX1Z1NzyAg66wFx5IFUlBs4Gj4nZFMBJxT-0OkPAwHqrAytnYlErF36ZK7ekXNuBjjoyumdF2cUBDf5iufoB1-zywFxLM92G_NHcUY9Wa4p-0NaKfFtChPRtCUcRr3BQHoQiGJLbUnZzhpkyZdNg60sJYjcgK_i8J2w0gIGuNay37-R3szdXVNNnjqR9gV5DjDc8bxjwNvzqJ9m-SwKJ2HF6k_AkWBArEjMSzTeEvDu6pWxxfjSxVXPF6Hg",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydgT3BN5NGSTrmp6hXiC6602VS3J6LbIn7E0A2WHti7C1cd3m5ls0yeRGnd-zQC82dUdQ2XKAi-BYHIkPU6wcGHwVvbZoPI9L9EpNiPF1yh1GvuOx2TpNIbK-xsxOxlJlwgOBZhYtKjdV9zxAN7tXbQwcp--AQbLdFP_xgXQSEG_b7JMtuBFgSu03Uev_pDkbsui1qc64Xfv7jhsNF5zyb6bTqhJhcxYN2-TtTtwYUUm6YuYrop6_iNegUrv9upWs6ElRW9u298ByBl6lD3VdHsY4jzK3uuvlQ4pH3w-Un7_Pbn47Q7G0QadECAucZzuWJxnXqOOVm_u6L3TTLYinf6L8wrX9SCkRRwBZ68QoRDW8cfhkSIN2tlBEWlxUWtcQzn_2osjY3H1zrPphySSwyUbPkMSly45YQJysBmFS4oSxA",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydg1wEweOqOKfunMMnHLwoGxcE4fgtAilxYSMhhcy0FtpeImWu2NnRtvy7HRnNTIMpE0s76jcQBYzNHSuzjDzjPMVFMRCppCkYWn-U63kms6GziOkW--X97TrQXzqdHij6pF-LIfTtJr_rStJIUpr0k4LFdi76vjFb-MaUcHVNW127fxxIOXqtZYmbp2NQCP2eswy7MXTVglCZv7LkjBaGXjnUsgwdO2tPamQd-KYrK10lw79IM8OMdImt9peICT2IjfW-bHyrNcWJirRjZDGEZH2-LqiWSKHr4ErV3HF2g_XBivMtiVCysVfdvARqQUhVF7e6O7w1D8bkB2RjItaOzcQiGlW1JCAOSmrArCbTCQBt6Fp6Aj6CB4vW4F82LHh-9gRIdKHZ1jEtK9Yg1NaGnEcPqcc1Oxeh8zsO-J-GMlMw",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydg13YollspSPUrIx5H1CE-MH-yMrfGTwlq6zuQhrjrHGy-71N1dp9lacS2zohkBrkIjxfSQ0KErlojn4KXhOoUvn5KtZuCtrDnGwQ04rDcADkzNZ8ylqR3WlHY11lAuw_-_BsG4tC2plmQ1djekOHZuyRp8DBZoPLHXRmRT_IvLa4XbO31Ul7ZnRCcRlJ1lVsoY8T6v__W0rBV1SyECwEF7NSumSYEtA9Mvtc8HP9kItr737JzxRZRf7oKikjvhbFzhEJM9JPp1ACfo1jLoTtbLsvnYuDRjGM5KRDrYUa3GB7sXPbEhYRmV7Lv8mPKjoqKuZbeujhLWz2Jv29rCjUle1Dm3GXIJJjmx3z4lWxf8p1CfUUQz2bMSJd_lpKtcgb2W1oFuZ-2LgKd--c5Nx7s-38iKVzQXw5MgNvaAEoA",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydjOgIQmazXW6rJGtL8wDbLwqA8BHjgHyLWr0dXeHFEC571CRHRVCocZ3-C57rhvKykkSpMzCN9gLUlVfq3AmNFnvxdOOye4NoSepiRmTFCvghWflclYmIg-eH2gFnpMNIPoGkqjWBZJZKG3DSrVTNioCSKBMYq5qaRi9yfakGA2AgV9icTVlWC2WFMiOV0kG9me7CQQH3IAdX5Iy-Ym-_llia1HJKGiQexzKz5HVUl2l6E9AOP7VVaKqHAQ7bP4BUn4-NmwYjcX59IX80MwKlaFD3-Er3Enzp9MREeVEh63S1fR7jEF7IzuurFWswCkqd4Jfh0fLZD7wd-SR2QNheUD7ReuevJOX4ijphl1ItMokIqvlZZ0hXKsjqA9qqDX2cX16OAzwbDSRm-_YT4TaWEyzRnrPTo5lV3u427KHMu1qO7z",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydgCFbzlbIb5gQFyZ3Zv6PcQoyaI8DQtlJPF4NvVWxWeCVzWXv1RDBlsJ5KAJLE_n1WBnLtnpML74sTJkXfl6UaksUU28fGXToLNVsOJAfWOWdhhGX4ZG1NJAd5yYBaXzeIl6KZ1gIydy3dJ6dcGGK5_J37paRdjH7a5SyAf4_NnRDWE6XGgYLPofO-u39t7x3DT6Nj2TbOL7WLIY6AISxlZiy9dlPov7RvYTvvZ5JuOptfZuA9HfnC_j9jvyG8ZCh57ditIxzF5drb4pniwlmm_TcT_0htUlyaI9depWnbnnPEmGwnhJBBB1ZiayJsZEhNDvokTFl2kU2x2tnOmbcqg4ePA3qJOweyr1MrappRY_mFxEDoN9oWWaNt3dXnuOb7PsVOJc76_R1pVPJ43b9T-p9YXVN0nmxUSDqhd2ycHYn0",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydiyYCBRG13NQixtYWc7kVStqsifbtSJJ65aQOQ3vyfsYmeY1DmCIaYeeYgQkYvdjvHVlWg2a2d9F5KapQ0UtXVJwDv9d3n0GtMsbek2yFqmyAYUewXx-A9_Sv_g_Lhq1Rz_Olcc0LBrEbKuGrhkbreXeyAHB4vQ6fhbQ1UKN0RN9gJB6QzTKbt0Ls_yL5gdamSs3Aw2vAdkkXdaHFj2UdtQ0sMsdgkaubKlNBKVhH7PKaH0tD_yOCqsm8gaGFlmVnJt7JK5DcaTtrW3uLxnKaFxWP5vPueKeqEwiHauDaslR1SBNO2A7qQROwWjHsl_FGflVGozdxuoMiFntsWbxv-hhCnuJjI_xJt9ihX3ZgCLfsJ4JLh2JBlcrMQ8FPuzJPBX52HEDeJLOT5mEhQBFX_iEz4Fh8-1QRXwEg-Vw--aYzRQ",
+          "places/ChIJpeUFx7gZ2jERm6KzXQVkAVk/photos/AWCwydhbnkvqH_Bt9aW-hpC12iIH6f8yIExT5TjadAlzLuWHFNrTGrYcP3Qd9y0-1fPjmdb0XO96CyvJDMawjPykqhnYSzN4ILUCXRVsbZBy5AkO0iVZmaUvl6ANzH5WtWKBb4ChFjtgxNTzYeRoOBy4wR0_TVSM0znl9OojzNofVL7HJDiZCJarDp2eWK-xHvUBmYRDzA3VuJvDvm1MjVIkOYGw-4pyieac2Ng7JorbUsCS0AnrjGlXeC6MWD77PSro_KjZEWb3GZJXWWnn8og5RSWVnPOI45Fwatnvem3AizEP5UXKvGioy-pJg6h6fPpxa7MMY8hyvaqJDEBKkg5Q4Omenc5d_YIwmRYh905CbPpFYZDqYLZ1hHd_-zEG0fTB_u0p-qX4nLmIfYf5yGN2GVA78IMU92vm1r8Adc3DLtLovw"
+        ],
+        "__at__": 1786804241.359783,
+        "reviews": []
+      },
+      "komala vilas|singapore": {
+        "place_id": "ChIJCXYS9GMZ2jER3VTObljuSjc",
+        "name": "Komala‘s Restaurants",
+        "address": "42 Race Course Rd, Singapore 218557",
+        "rating": 4.1,
+        "review_count": 590,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "http://www.komalasrestaurants.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 10:00 PM",
+          "Tuesday: 8:00 AM – 10:00 PM",
+          "Wednesday: 8:00 AM – 10:00 PM",
+          "Thursday: 8:00 AM – 10:00 PM",
+          "Friday: 8:00 AM – 10:00 PM",
+          "Saturday: 8:00 AM – 10:00 PM",
+          "Sunday: 8:00 AM – 10:00 PM"
+        ],
+        "lat": 1.3081398,
+        "lng": 103.8508054,
+        "photo_refs": [
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydh_YifpJlCrG1Ssbleg7kBTu-KVcpczrHFWCQWD2vGlnNBfR8dj1YOgQqfEm5OAJQE_VX-DABQvT-xynKxwRqnaW9YR3ImAq_6V8ENEUEemkyVajSEcWDQg4o2PMy9Ia7_YDphX9xFjggraejH9ZCN04C0flV4Z1xPMQAUOc1LNznmoMSzKIhNXr2tmy3X6jyZvUC-KUbeNQhrWi_fSNAghKsUmTWE_2s8AUZw-JJRunackBSdcd0IslAOVEIpYp3kPxXJRNAe1N4Ihja0FqzPUMshMg5Bxn8Rc-tCcS17S6QQjO-0U4QKBrQIwadKVa3zGKo0f_7R4GQCXSEHZryggPVv5q_TztEOaaEiJXACMoxRnKmzbEu5uCW0NOIYu7ai-EhguFL0w_eXzxAxIadxDslpK8GQ_ThHTXpvny3K6e7k4RoiXCzMagsyaUWZk",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydj7lTy4A8vDl3hdTRhiJ-umu-Dnpn8NKRdFlhI5zPWFH0bf6nafwF6-kgNE0iX-XGiEG1LxCvgRXAw-P5Fz2F3JW6kVaapZFypg5Di_jX2YVg583mAIMrZchUvyjh-8CbBHMaec8S4if680kci4qbDUxJ_tbi3s8F3i1DWUF7I5r31ACsvMS649RgZGN9hBgO_2ndi8eriMvymbELswuNWtwRwsBNioew_XXoS5i8AwMk7kohITkxvkyqWhL28lkwgFAPVmUI20JK3VXzntZvLOyLJXwQxyzDBQ-IuKZCwFik-sRiVm2dFa4T724ZTs1P10gJ2bMoxjJRlstfbUWy0z_OFLOPlZEQ21KK6ZSKcuoIImiVwsPCIK2b3r3V3XlHs4oez69e3w8ZqfrzcLiSB6v66ZT15IBBPHGFoLhESckWE",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydieHXZklTGjGGhq1zmg5UFhn0BvaaG5uuDt1CtUDRRGtrrFTkF5Us-fjIg1BhKretSsaauxXGJpLT8HF2QjLwzx_tuNmZch7_ITw3B450jTCs2QU_jerqsz0_0nnqVn5BhVXy4S6v5HvfX818sA1KKKSFBM-Bzl-ztMULKL_TqSoMYZLCZwvNQHrP02IDkheQH1ZxBjGJGBb3onB5IP85kXVs5HGLkIHDCn_3cG1hayjxAKj2TbEL1XujFwi_WvH9e7F8sPWf_L6eJfoi8K14uRi-J1wdahDErYcvZ_8eC-dz-HDZdoM_cZ_kVPrZbki38EawbscYflogeiewNHRqR6P_vsEtM4Dwyj2TBMb8joK0HKQXvzHdylJB49NAaFDdVYzQFiS9PES8k8HRPDmsjiZAjUdMilql7IHwGB0JVtU1T-5R57W0OaGOJzHJRa",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydgD8n9cDMm-NDDV35ICwg2XB8BRYY7oB3YJT0D8Li-CGIisCOxvGfBKmg4i4HY4Lf1qaOAB7cqJ9OwCohqbpEdm-48B4T82NYO7A0M_SmxCH3VioWdLBoSH-ouzm4KeTnWB6XcsLF9bQnElajfcGJV-UO1qGk6fFAQxP84TPGILDHE-ulfFjKcERI-e7KRQi08_kt1CqDn_PVgcWy5QAffPlJ-NEXaFt_WrycDiXsAFzkf0x5iU8ueIgIEgXqUvh-cF0VWc9V31d7EUNwLorfLFFnySLGVCv-6OHwwE6mOM5PqDflgzgT9u4LhNpI8ly6N64PQlZgP49rlZGM23rFA6r0Gdw_99IpeXBCSY6lDc1_Y4YkIU7YwtN8LUCNjK2OMIYHzNiLAHLLzE6yQkwoGfNLW-c-locOu4Wbb4moo",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydj_tZczwnnPowTk3Ez8uXloSenEDkJARUq0okhwDZOEgPQnvBVx9_ARp86NkJ4HEJHzWDk3Nr_jS7dxdyaKK8gc8ihivOmp8dmftFUUPrcth8z2z84Bfldbuh3rMIbtrb8xDYMCvErJRIu7-nZ9IchWs52JNSqKxBg5PeMl3kjG7RUsJr8xI3dbMys3VjFkIVPjyfM-sCq4g4UagGKeXH7KO9DBSqm0MqVpMsqOffIl6SnjHu4vetCGlOsQsjlYVsYmRaSm4SLkHy_yGe120F04LBI7zoiwrpn8APFb8-Qf9p-mU06mSDz-OBHR43USX-6ALRf9R753hIO5J5OjC1b1TsnxAAGguYgCrJGP6euVV3WlGi3YjQunzDSAA9hIj4BIw9umm79CV0cF6J17z-qxRHCWUQkQsg6D0_xbmXsKJZNfTuMlgXMhgC5Cau-Q",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydghsp6P0XFv0H3RZSnsVKvAabaZpVGtyNsBGmYD8AzFx3A0j8vsZa9k_PjJsupJitjFq5EExmthqhS_6x2anhA8PfmMfg7RFfWb6rR7TsIAZDh5m5J_et7G9IA_6aIrPwkmzlnm7gQQjmiBrdbo3Z9HwwV4-6ajy-y1sROCVGVom9shTEzpDfGS2_z58tbZEsPMDjIFDxheIvdXI6C3IS5qXxJpfk5vbvEQnLHz7ylHSqzj_dOspQVefvlao0aFX2NSBR0ZPzOoG1ILMpV5Twt1YLGISUG_7NiYPFVRoZEe2WgrKFije3JW0qET-9aDrXkhLtoc6Mv4tn1VcWTrrWM7JOSQDS8nZJ-TtWzLSBu_CFGDU0xdH5LYQk5ucWoAfm8ZFRw73Z1oRx9aWqbvH7OuCfYGqBEfT4AIm2N__REeSv4ItfzoiIFIL7kYg-hh",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydiJLaTKQ5aG0S0fs0I8UZpa5i_csqCOQL5wPqZJFDimMDiB03aF_bsBmNkRySt5nRr8lZyk-BBhWYrFWmVamJdKDH-LI29TkN1P2HQBTDLUcj-KDnJB_TcWczQYISPxOU5YGUry5o3CNKNIYn9IUH3W-hYY7cG03FHprboUpmmkaVu8HpTYNvc96KAzLewmhgcbn73Vs9ZoJQIjVU-f_N_WAgl_XH4UaWVfpGR-t4DqA9bm1_spvVPCrDDhxgGwFpHznk2GCEP-7FzmcDUowHk4Jj3z_4X0zPBxvrhdqBYg5fig6cb5gm9VSIwARpmv6GUKL2L7GxyvzmAgyD_-apBbAiWlFrL9bNbZRKsdK1yKAMzNxY7T5zZO4xvtULq89XcD8RcrZX4BHK59J5xuccrrDORWbufhSEiO5f0_XVoPgf4Jqol6utnp8TAJieuc",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydj-8WBFiAMoJ-tD_HhCY5JWK5MGnN33LjYtP2hnsHWaoyWThrJhM9tOAQ-3DzazFTIziNx2ipPvCOlcPK2W7deWLQWeiC-zl4Z-QSnuMMw9tfYVi1qVoLUbO8FXXbxmCgpATWde4hGPpz-Em8PP0FSzneUfZ8YQlHtoxYNzn5wf14QwjQwdT0kxkM_GrnCeqwyHmS62YGq3P7ZnVrfZmljOclmQPQNx5CK8Mv9dDMTVK1ZU4WmUUVIsI1hyJjjRAVuP84uSh18cbJrD5I68tKW2jrAKK4rF8Ydm22PPmfdEL8pEsBhqh71RKTmt6qHTc5V5fw5J9CqHoCSBdFLNV1W4ifZ3-ybHV3OjW7V9wD_FmUK_y-Bmc6m8RO_v7entafDg7A1ogrvrrTyJNnRnkcu4ql-05ZoIHzn3PmDZkf55pvCzWAusHteSgnenrQ1o",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydimY2NznyAf8rYkD8vdqw58aNlClKXQJuhTupKbA0f7NT7H85b4iMcBKDvyoOBxW0Ow-W0dRUcMIQ1uuEBn03bzaRwx4xGKekOIPYJ1xyH2vHAdyq9JFAQqPMpp3WgSntdTxwBEB7qfzrCIzlb0JiPEnq868aqrBH2jcddTy0NlgC0OuJwc-gzkCdK8ws0SQ9MeMKWpw2m75pGn4ZtJoatKxDCUqDTPs75uQCLFdMQUTPZL9bTDMefVg5vM3k33Ks254QrPLkWqnMuNw8kbjADuX1oZCqNrQr2FcNvIKbn-99474j6n0ruK34VpJy_9ExNzCkBZ3FHr8uy6TJPlhMI6P2WXsD4eUT5e6XQ1c8XJaLRUjwluJEn9z-zHeYOY9taRa8Zqok6gXfqlMYRGX2Ld74chu-ykKluu3BGBm9POmMC8",
+          "places/ChIJCXYS9GMZ2jER3VTObljuSjc/photos/AWCwydhMZ3gexvtqVFNCpUpdfpPEkgXrgkWKnz4KvjF996gm6XSeWqblshiTp2e85yReT-xpJv9EbIeMNw6SqY0ldk6R-C1olJcuq63Bern31oY4ryK8iuAKymT81U65GjN5EhsKA7WO8wkY6sCjmsoxIMYGQxuOMzw6nyHfcuA9CqIICyi1K_Tks4UhORt_Z8oGgZf3HNyByGKImT09Pv1IMJv5XogusBce4PHy5Iex2l9sAwquDEOTZj1JH5r4uaI2EqzijzAd1d3CLQe2j91rMoswMv7x4gbpaRPuU7Zk0KZGdOyNiFQY6vJt94Z-Tg-910v4lPD9XV2s2gG_LfP94j8gPXkTYlUwRuMCM2f6T3ZURELuKBrc7GcSAK8tlAh14MVCmkel6xlvT1Cnip-mkrH0E2kZJSZajGEnY_pnWLjHmMXdOQKiEpHTFgAPEwQL"
+        ],
+        "__at__": 1786804241.794245,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The beauty of Indian cuisines.\nI do enjoyed my visit today to the Race Course Komala. Greeted by lovely man, perhaps the boss? The rest of the team was also friendly and attentive. Craving so much for Indian vegetarian and finally satisfied. I often eat 2/3 only and my partner would help finish them",
+            "author": "Bernagram"
+          },
+          {
+            "rating": 3,
+            "text": "While the legendary main KOMALA VILAS restaurant remains closed (for unknown reasons) we found this place, known simply as \"Komala's\" now. Seems to be going thru some rebranding.\nOrdered Podi dosai (4/5) and vadai set (3/5) with ginger tea and Bru coffee\nThe sambar n chutneys need ALOT of work. Alth",
+            "author": "Metal Bhai"
+          },
+          {
+            "rating": 5,
+            "text": "Popped in for breakfast and ordered the masala thosai & bru coffee. Good hearty portion that doesn't make you feel too heavy or too full. Perfect delicious combination that won't go wrong to start the day!",
+            "author": "Sya Az"
+          },
+          {
+            "rating": 4,
+            "text": "I ordered food online from here.\nThe food is okayish.\nParotta was very well made and crisp. Kurma was poorly prepared and watery.\nThe schezuan fried rice was good.",
+            "author": "Adeesh Goyel"
+          },
+          {
+            "rating": 4,
+            "text": "went to opposite the road after Pickleball dining at a cosy Indian restaurant - Komala\n\nExcellent customer service and chatting with the very nice boss\n\nEnjoyed the afternoon tea there with sambar vadai and dosai , need to try their masala tea next time ( today it’s too hot to drink hot tea 🤣)\n😋 👍 😋",
+            "author": "Maggie"
+          }
+        ]
+      },
+      "marina bay sands (outside)|singapore": {
+        "place_id": "ChIJA5LATO4Z2jER111V-v6abAI",
+        "name": "Marina Bay Sands Singapore",
+        "address": "10 Bayfront Ave, Singapore 018956",
+        "rating": 4.7,
+        "review_count": 64379,
+        "price_level": null,
+        "website": "https://www.marinabaysands.com/?utm_source=google&utm_medium=GMB&utm_campaign=hotel_info_main",
+        "editorial_summary": "Luxe hotel offering multiple restaurants & bars, plus bay views, a spa & a rooftop pool.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 1.2837574999999999,
+        "lng": 103.8591065,
+        "photo_refs": [
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydhrQOz_iFgPm2VNuq3NqyeBCH5L2WJINxuYlE1N4HKlJqbqy8iLuUdF61TbuETPT-_lUS4zbY2XRl5GkTcpD4HqIhmhjKm72hSV6iAl05BKo_5mCq6YCNsZJ96MRklywDw0zU5cj5BNnOQc77BsqCPZ5r2Eu0bAyeM5dcu2RbYMQK1lYHUyz2aGjUJo3XpV3eFlnlBEt80VQIH87dhX6XqZlU3WoviWswpxeeVqpKtLDphiLIcBTG-n4YVXFpuX-Obb6fixX-SiWhkOKNw7GhdP0GIbP17jRo6gyZwU7_hA39rcnrYoV3VvV5xOxzA4eRoBpitwNtHBdRhH9mFXyjTdfINOKBFduMznaMRDli0VlLKMEEU06MAzeMdaxYYZ48Dy2MuHmftlKZH4n5MYAwF-IwWQ74BHOpp-z9EDT-8vCPNJpfoM2wp2HxhB7g",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydhPYSz_NsK5weNZxtqzOg08zWlApCPMpYpWjzRta7fcjXyiKmVVJvRIqUofAOnpWt0b-56MV0L82CAvVmcjjpSfm8ENTSf_DaNctC6E6_clx23zDlmeaGe6u4arZPsrAQZmOT40KIiucgj_SwdIGNKCswjg8Ljqn9eA0e6ElL-I6qfN1VKHfHPCKY9IxA7Jpfigq6ritX3vVfRCo0a1Oszy3GB2IwSHfCvyTIleVi6df5snJgh5VQKwElYVfy1h0IK9omJZllQnYf4NPEhO4jmKT_RvBxL_QIUxvFvXf_-kkUxJMYc0tMH8dlVXji7HSXqp0lE2CkoHy9cD6nUC6wfc1L4CJEiayUm5QC343CBrWVPhLv2DiOE7DTdPtcjc92ZVppksrrEtonHA3mD7xSlgRD1q44TA2fUsDsn8dNGLGX4b",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydje6ZKj2piQyl79s7ablpQ4xDuO6OA86S3QHLI8cCYYWBbTF6X4g__TOrRkOah5-5e4QqHZCVna2WK9o7QkmSNVWkHrhX5Wdba_m-Gew6Khfwvrd5E4KyTBhonz-g2yP_PA7zb0gTZctjB-qGgQyEcefrjLWLw8X_cCJS-ht9k6njPFo9eVU6UAAiz5Nk-Z1sdSNHTXjwLhkcoZ32mFNhjsfJaQvneA7TXJ0wnldtGfT0sUFZDlxN12cUl0xX3pzZ7jV6WoiOwiJEfBDL75otmgwvUZdzHBQvMzGvBEQkR2eXkrbnbw14ngIdoY_zunZRF3Hvk5VrJm_hf9pJknYG_SmH4DYXkG41E810_R7A6VDjBulhyEIJoSN0s88a5klMGKdKbJXgOsZaipMyYgEw8QgihKa-n_hUK633PUURhtMFSu",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydhKvb41HClb_MEt5xjamDFWQGlbr57QpiY_IaqT2ocHO5qLsnT-GHneUGrMZXZXrHLpNgMEYKEeivsHTBhe9Hs5BL1k_nYshLcavVPN1SYKicZss-E74Z9Gm7glsPmOTXPo_LPe1qA0EakiMRiR1_nLpCUoL19MGCkVgW2DQTtgvDDZmdFaDSDZuJFWWRjW45XBvrxD1yJEi7AbeH6fiNcHb5jJU1NDxpsZJq_BnVZQ9_L6MxnvqH1R-PxOke40mIC3KVrFPcu-2oDn9vF6wA2lPs-XIEdZ7yzbaYbS6ShSpmUoeJgtZ56Ljhyoo6J_jrGXl0ibTqSWdr4xXQFRNj4o7_iwvzGfHIiVmt76_WtbfuWXQCHedsH-GtWMJDJssZP_XTc40970OwvP25YIpGDcaw_vtthyl78oeSJ7nNdbAur2",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydhR9NauvDPC-Lh8p1znqvKaQ6n4vycmqsYouSNZK_sb1MVFhI2CFtOL70K-x1NyE9qrbustPxxiZVMzqLxe0m8LcVH7Od5HmE0_nVcr0xm9fv55GaBjsg6sSeY1xkNXiM4fGkJ2tmORR9quLcx-iu7aH00LNlvbDjWUD22zNYSpwmNrTckOL-SjReTAECsfGLX7nGSaXHqXMtKxNEE7dn-qM_GvPZNtVBljHe5ZDsHiQWhMd2of5pvQI_DZ5oxvKer4njBM5kvjKfgnXuEXq2TGll4-jMffMCaucFpIa4XcwzdmJTEXKZlEbB2wkPcm5D8qkkw8gfyI0PIJA5ogmKdAF6gHvQpmFlC0PDA26MI60LKLj8tM5Om-gTEhyGFxeK_AxDA-1mtvG87fQCF2LeQ2yEkNWdEzMc1TLNUGctTLw-0",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydhhDuFabwNyLtdGv7DvF2lTg9bcaJQMYah6Cw9HsuDBCGg2t4BEjILqRoL43bnsY6yin-gMcR5vHoWrhWmMC6bLPTLwp8Z5YSkkhVp7xFI7MlEVuRuidICeJtD1MJ9AFSgrW1O40sUkg3CkCgmDiM6eJDHEdQXNISjlZBRKz38v6CSlsVYfP9h09S_YhfO6kNzcBkuBu3JVP1YH_7R9fO7hs1gTFkqgwaoE2GeIDpXwJuSZbYvwPu6Qjatcd-NiXNA4MyXxJNr8SY6hYNKeV1C_T23sAPRy6PSv6ZA11FVbLx0Pt4PrgmQfvvX0BNyfqsUPNGj_ZkgHv7N7XjfoWwzvKdPRRD7TCHrAdZJqQaFVhPL01toJRIfeikiSn4JLb1WVPod_6i4e7TSZKYI0psf5RwBw5-0TASrLnJB6N-dip8qPsu2XQASwVlSdzg",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydjjxYyYKG8qrDuHXJForX2wLThACb8WHtglusZQnvTS_j4L4BFNFtHg7MfC7rkCUIQJmSfwmzD3s8u8ogpVFChas15F0a5_yeEWm9ADlj_70eWnMeg0ZYFbPQD6NwwYYMkNJ9Tyu_7hQ9SJBfU29VpadadA0XjyGgBcbY3ZBvbLihy6zzABAQT1DFP8u3w6qPdDIELJOBrgroMU2jpjZbsyB76Io_o5A9vN4WXyzf8HetbhLTFMD5_Br3ZLjeYHOIgCP8YjVsTlwetiSVuuAsSS5rq9DcFaOADMyrDzl96uzjUovxtJpYt6-3dui8u_lzjIpFdB-LizcSbFFP41A_y18DOUlHmxZ1aX8NuCYxMs-OBkspB8WANDy0aeJqSrXrvgqDPWbTNt5eHeWtNqo64PGUVYhQ_r8z_b0zNC8K7uOg",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydhqo9z6_euxhiJ5rN3HP6w_Ln4ib_NoE6sM_aNYEaTL_ChD6Xf6QSgNgJoJmY8JqOqxTSIebqBAoHf3chdpNfrKULoF-eWB4aurA0Rt5-gMQzd5ZudGcHFbGBcyp9SimRny37WOnTs30ErqGUlG-A5eh_s2qvkoPkBi3feg-pJkgGRPePQ2vhOF0ObjRvknJ6DxIybIdaaGSwXZDVpb-N5gH3NalGZARrLJXgIcXyC3Slp-4l7XmjkFLXZALXtfp4NhgMFdk6pSCnnjns1Vn76ndJi5JskT0rNwCxxD0VOLXidMp5UghRdxdgAzy8d6UNUw2oVtTDEA6OnoAX0s9_YEuVWD-YkuiQsEqpU9V8PcWnLZyUQqrJ815hZVug1fezfKFQU-5slbm5Xto9lOyKYgsU2iHYVmKw-oSPU71x2aMw",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydg27dsVWsTZp2w7LrC_H8quGZyOaNvdGtVNM47Z0H5IocghQLbzYJcxjIVrfHW6s9L5oTR2nJb2u394zFTdnwLBcGsvJOeQMw2aAJnE_awP7Q2S32iwFJ_GfiGI1R7fNZR8I5fsDkIG2-zJCto8qZbNiMImJO7eDunIPsDsF0LLvf6jvVUgK7vrfx42c_wC5Ib5Xiwex2Pdj9HKNaTIIZtdK7ijjRtm0nfPDs8w5fhG7pE0BBdwDHTryZHJqcWI_9Os0vsosJGVr9eX9Eun-3pusaanasQ0vKcRW87wMBwMVDn8oDp43pRrBMiLiV0ss34dwrNIRi-Vcg1wOZxB_0MEPd327Lxg6GUwm315H3bZwZ4O5wEl0pYubvuxYCD8kWVCI6g-ag9Tj69IlAIMMf9pOMw47x77hissVdtp21GsLORA",
+          "places/ChIJA5LATO4Z2jER111V-v6abAI/photos/AWCwydgBjW19R8m0Fwep3V6W1qaYD00PNxQxKG9w1BcfII02Q0mdcsSRmbGpeGTCOQIRGMDPZ2YuvfPJcUSgqK10i07Ncv9wtFKVdmwf7gWSD7CVOh6QvkyeSSGm1u0lQzX5ZhJw5vFjqRcfUCofk6io_ndI4g6j7TmeApECsw3Q-AcWvZtMc8ptZLDJgEQyQPfR5Sa4X477vo_lgLshbPwAM64CilaZfuZEj7RpfpiL6IkBT8bGJtnx3iRIyMSsLIL6KzGviMJ3H9z5fa8rInKSt4dDXJuADujyQF3VuNh9sYY9uQZSIa7LGW_vSznUTE-IaYdn0n9mAZ1bwiyuJm575DoaNjj-lK6ZsEmUMk3_EIpmahnLTkdiBeXaEZPW27VTTqPLkpu1rUW7rgEsA8JU3XyWnJEEsRz18lRw-Q4bE10"
+        ],
+        "__at__": 1786804242.4130912,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "This is a review for the overall development including the mall side. Nice landmark with some scenic views around the area. Iconic architecture with good natural lighting. Well maintained and upkeeping at a very high level. Good to take photos if you are bringing friends and family that have never b",
+            "author": "HoHo Yang"
+          },
+          {
+            "rating": 5,
+            "text": "Our recent stay at Marina Bay Sands was a fantastic experience overall. We had a beautiful room with a balcony overlooking the gardens, which gave us the perfect view of the nightly light show. It was such a great way to end each evening.\n\nThe staff on the hotel side truly bend over backwards to mak",
+            "author": "Nicky Tong"
+          },
+          {
+            "rating": 5,
+            "text": "Extraordinary experience staying at this iconic hotel. We were upgraded to a room on the 37th floor with a view of Gardens by the Bay. The room was spacious, and every detail was thoughtfully designed. High-quality toiletries, a huge comfortable bed, sophisticated timeless interior finishes, and pre",
+            "author": "Bartosz Swacha"
+          },
+          {
+            "rating": 5,
+            "text": "The mall at Marina Bay Sands is very impressive and feels quite luxurious.\n\nYou’ll find a wide range of high-end brands, well-designed interiors, and a very modern atmosphere. Walking through the mall itself already feels like an experience.\n\nThere are also plenty of dining options, from casual to p",
+            "author": "HendraTPR"
+          },
+          {
+            "rating": 5,
+            "text": "We stayed one night in the Paiza Family Suite as a family (two adults and our 15-year-old daughter), and it turned out to be the best hotel experience we’ve ever had—even compared to other top-tier luxury properties.\n\nFrom arrival, the experience is on a different level. Private arrival, in-suite ch",
+            "author": "Marco Gavin"
+          }
+        ]
+      },
+      "gardens by the bay|singapore": {
+        "place_id": "ChIJMxZ-kwQZ2jERdsqftXeWCWI",
+        "name": "Gardens by the Bay",
+        "address": "18 Marina Gardens Dr, Singapore 018953",
+        "rating": 4.7,
+        "review_count": 158492,
+        "price_level": null,
+        "website": "https://www.gardensbythebay.com.sg/",
+        "editorial_summary": "A network of modern greenhouses & waterfront parks containing super trees lined with solar cells.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 5:00 AM – 2:00 AM",
+          "Tuesday: 5:00 AM – 2:00 AM",
+          "Wednesday: 5:00 AM – 2:00 AM",
+          "Thursday: 5:00 AM – 2:00 AM",
+          "Friday: 5:00 AM – 2:00 AM",
+          "Saturday: 5:00 AM – 2:00 AM",
+          "Sunday: 5:00 AM – 2:00 AM"
+        ],
+        "lat": 1.2815683,
+        "lng": 103.8636132,
+        "photo_refs": [
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydhjZnA5jXNtWkAOeui9oc-NjzI-2lAsfJLQRMQntOY46XdV_B2wUO2S9cuDnGz8VwsJRu_BT1gG6QiOvCmJzYj0S2sFhqjafJIP3kZR0-SElCcjr_7qg1J1y0OBwDZYiUsTNLSRu1f9HKmpbkrntTEuUsIIgARI4sVCAUVJswuYBkqhxZUVJKRANHaCkhhKXEQBKwuzJMXNYUj0EeNU7Z7NVk71LR9FxynwMFhpxBHYIQOeaZ9IhUw6TJrWXJMSVubbpgYHfjIQrjdx_czgVcYu700q3I3Ph1iWcX36UVVBRvngzk5EFDDsX81QWm9QJPASJRNFcHeFhSUJNz5vPUzrTWY7p6Bkwzvf0Fe1o2EkQdclwTs70SQrDRtn4oGqtuKlxSKzLrBop6NgiM5u549NHU2eSNIeH_T3VAkI--HlD84",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydjwfydA_73E_pf56128gYTqvJFXRSRfSxp2KiiI6aLhLQK966skzTovYRWhXnjtmSO1YggUDzpplXlpYsyrrgoKLawYdd0jv4qHeNPn1arNiZoH-vFW96Ubur4TjJYw1N_jUji1u98GbWeSrfGNOaQL4hRG57pR2cBD6JbkDpoR7E8bBYv5uuAI7vZc7WKcSANxygCXFM_lyupJ68-1Q4hJY3dAcRzl-edCMJyusGR3nnZX-Ti54ztzrToilllHnMubL3QZ0kPl6DRcfGeuaNKOfMNs4ez0Bxmm5evqiYL4k7hiWYoiGF-YgXveiFImpMCoOyV8zIacv0y2QPFdN_Huq3a6-g2Jg7WrJPDy_ZPlId2dO5FbG8JSYqBTWUa47reP67uX6pvB8LInseXlnJ8H0L9-eFhhTfKH6gbVhNjyhkoC",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydgddeF4q7f_m3vkxZPhDk5sxJ7SSVJzIxOHF1pZ-iTMcDusdJp0cB_vF3IC82BhObmbbOJa9D6nr50lF-T_HTRkhqB4Qp4_Li-fggao-PuvhQ8KJkDQSMGoHxD--JqctYjUrJRFdDyNYq61_ms4RSoyoInfsGvVcX2I16TQWNSR_bJepCTyAgsaJBYB6Lc-segrKlq_-MNuwexYdrOAnpxgwNbYzjxQfQmjzQl0WponI3Qs7gWEZZn2N_VwmgB9xl8B4AvH7H75UJjvru6VNsHNZcXFsMQMsdifEhHjksh8w7hBcTw-LE49mPwYQ03FoiP0FljOjLJg1CSgKNoKOlpKwfhpAsAWkwP8WME_Hy8P8KlkXAMv-w0A2lqICe1b755mpc-LYFOIwbyU00EoLnwK7E24cKSACk8iFxvSk0CUTzSi",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydhTFejM41doDVED2r2MfCLf2pyQuOLg1P7F6-xbqbZNNcZqFSRviYJMdDZmelGZ9Q_IjaFF8T5r2psx4nb1wlQrGwqJTMaSIS6W3PYLugRgvH7vwZFFoXwND0oUO6nnJpeO93WyZloUjbjMumeuGlwbMR9yftD7tzzMVf_6PLKnNXkTo7sn5M4ZtKU1JbqDfI2CEGX5_MPaZgi29CtdBtaktJCO4NfCmZObEjXJ8GEZsL0Twa9OFJVJPN6B7aN7HKcInVIUmhNEL1wsNEGJMay8N3K1d-Br1Lxv100Db-03u9e0tG-7XvCjsLarqSNw0d3b2l_penKefKWByycvCGz1lGSJuvPpGKgsfWbzidy8CxwwaiVL1iigsXXm4H_xb1MXROrJ6pV36XbpeE19ETOmV8k3UdzPx6Ca9tq4E5DlRQ",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydjvNcVPKjqTn4fe3RTLwJLRjOLSBJ3hZ25RCZGqOwlbO4qtdyBod4XEYEI2xrn9DDXpJVPjG_hBdqJGJ3uZd8QabUCxHadhFa-qjNIuPyp87NHed0o-3E1XK4mR3Dy9wCVSRTGuewckEqsLvCXCnCai0YrPTnb80xGswu9D2PRHv-sMUbsS7P2mHXK1J1y0d8QDkBqrZYFtY0ZFGbwOd8HqlRUZSLumFBOrfdteLDTTY4l3M0b_EzUYFNNPZ60FPtVO5EloZiJGRfvD7uJdnPraO8OrAAtNKKzGPY4TGrrOfizB0jej6eT_R6O2wlDCj74-Jc2uv_ZzsrUyiilyTZ43l-uthT7zsQCg5X42OaTptzULZiJwPRg_asFVs6pugqDq882FhpqJusXCp5MbJ-KWisydR0TRxTxhNp5iMNw",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydhsxVKj5f1wtchLg20nqnSz1-HsMTI5SI2_4IAp8PEanO29ndCOUALK6OdcX-tI81ieydQVFYRFqGiCqS567PfojyyRI27EgTDFMX-Whm6Cmf2BncRwTYJSJvUL-YAnFHaE2h45JR82d1hRSvl6eiAuK9qaMkSNRjKNdIB8dEQZAi-rmNElHHk3i0Qsrs4qNFPNQdVEah87d76nYFUmeM00z1_yfIZCn6UEQJx3N7mbzjFKJ4dfg3GGVVSZDsbex5Oc1pxJqn5i0ipgevRAEStqQzcxoOKbT0t5PCBHXnFnBHa_3xcXMpnXPuXnSARssXq6HF-hbah-ZEk1iWJ55jjhPeuBxkFOne47zSM_UfgLTX4-YNu1fQW6u2XPgk7oVanMDniLJyX6GaMZgXKULplaIipp1VYIRdsSWzjHT_D0sHXn0l22mngXys5sCV6K",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydhmLolqAcPtsSw-Gjde_4jF4KOysu_x2ds9Uhz5fmCUxYiO96Pvv71I4FE9R7VzvFhugOp0EgOxw5pK8TB70BiRhdF9HbmxCayCgOkVR0-gUlyDBPMQHLin_1MbPFs-UNj0BkK-rqbO3O96EywTkpx9RXydKf3YMVPt_BvkO9-ncxhLFbeM6XsZ00rqAr-t4w99gm1Sgif6vqQFc-PkPXsZtlblfWl_YiYOuumStZIvwTQLZU47RfSC1RQEZpMqNEiwFuo84OlOEGB4WcifeS05aCKTBNdHHZlrPpLqc-ZzypzPyIuDmFkurtCZcL7WIprh2KZeuBvzyPJAGblt4nuz8eJkNNmGrr9ZLrkKvw5qoWxNsiBt9lb26nU4ftDIQRLWMcFEaEqb-CJSmYX9A7OgADVvkPUnom32sX2KjjE",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydhqCugZAkOvjHQBRSJfuxLJEFVbHVIMjPaX4HiEKtH9owoMGR--qC8QwqZ398yDZyvF68tiIlIobCW0_oS5J1UJ1Os-_PFJQX5lFuqoIl5J1YGcwZqhCTNwVNpmD6bXwajd1iWrlWZ3zfN-taxaxtO1EHKbdicvgvoLXWY4cp-v-KdgCuN9_TedVISu9HP50DlMZ5-oK4fgXwfYIN3BwrsENvQV8V6hZ38i9c2fJZewXYGLTTWK9VGcdWJviZmm3gnmvVV5MTmPiqU9Kbj_zm3UJnQ9Joi-Gt8CKwZolfLjXFhMNyFYUwZEkkYSJ9xTiqx4eDUKq7rqGoNQbsoDY6Fw7AfUEvo_eRd0BcRaEBUggm-mygJWavjfwtGQqszs-0TOFks88KCsYTI6Y5nLUCmTSFSChn2WgGf29aesICU",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydjHBfLcegqsEbe7MPlW9vXNdtsCFjNgsPVu4r9UHVUXMv253T_eZTwvdBb5gH6SELhkcurArqh_ZWTshCJpCkHShWdak3MVJHJY1kEU1xLLfuVkPAZ8_u8a4bU7WUrBaCPCD74rZcuqKFTnq03pPhSF6KkUizG2uezy-Wa3qGS3J_Bs4wxoflL6AFREqLz40ti5TMzFrNv5m6IkYrL903WggC-gp_aEoShN0hnYJnP9NEyvOvhcmgrDB63erisKotT7ifF-6biU9GQD0YFbR4aMgWKJG1CCJYzzAHY2MAhDhTuwRkqWA5bklY0lJnExK4zHDmTrGo07DzAwBJdsfIvB0ViYvFqi17xrQRJA37xwHgET9nwwvnP0Hq4OALFwo53NElBa4Zk7AbvT8XiXL3Y3vILtbH7-0zDwzI9LxJJOYdv5",
+          "places/ChIJMxZ-kwQZ2jERdsqftXeWCWI/photos/AWCwydjQFxxVM8UJtFdBCilfIN4Mqrxk7sGM0CH_DdiWqneBU7N_4H5tUV_dwIYAWKHK_q5pCJJm9456HEUZ1E2gChcbMO-qMqwjZsT6F4gZq5ABZNlUBkzfXzPHbozSvksUnEYDqop63FDx3P6kW8ixEkz71HyVLAGng9bhoRPtMiQRs7_hXqRdI4KbYVNFE9TWp8kwfsnzQ73DNXDwFdIwWexKLaobP5dczrcFZmgSnGq-lVV1KKOG3hE6vtbXNyC3T9kD2DS-D0uyma9uu6DEgi6RikyiZzJE9eSkNuZiMvPfVJ78rrzd8i91j0FDjKG0_vgTCMiKQGud1Lho_ZZqQ5nayq61XxohURGvdP2TmtJSZ3PH5oIwqNg_YoFHw1qGthdJqWFOZg74unt4W-nEzBwJED42Y3JGx1vQpwXFobYoRo9w"
+        ],
+        "__at__": 1786804242.8940952,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Gardens by the Bay is truly an amazing place and definitely a must-visit attraction in Singapore. The entire area is beautifully designed, extremely clean, and very well maintained, making it a wonderful experience for visitors of all ages.\n\nThe Flower Dome and Cloud Forest offer a unique opportunit",
+            "author": "Aleena Sara Varghese"
+          },
+          {
+            "rating": 5,
+            "text": "Gardens by the Bay is truly a highlight of Singapore and absolutely not to be missed. I’d highly recommend getting a combo ticket for the Cloud Forest and Flower Dome—plan for about 2-3 hours to cover both.\n\nThe Cloud Forest is spectacular, almost Jurassic Park-like in parts, and enjoyable for both ",
+            "author": "Sheetal Shedbalkar"
+          },
+          {
+            "rating": 5,
+            "text": "Gardens by the Bay is absolutely magical and one of my favorite spots in Singapore. The Supertree Grove is stunning, especially at night when the light and sound show begins—it feels like stepping into a fairy tale. I loved walking through the Flower Dome and Cloud Forest; both are beautifully maint",
+            "author": "Ayo Cordova"
+          },
+          {
+            "rating": 5,
+            "text": "During my recent visit to Singapore, one of the most memorable places I explored was Gardens by the Bay. This remarkable attraction is a perfect example of how nature, technology, and sustainability can come together to create something truly extraordinary.\n\nFrom the moment I entered the gardens, I ",
+            "author": "Soumendra Nath Singha"
+          },
+          {
+            "rating": 5,
+            "text": "Gardens by the Bay is one of Singapore’s most impressive attractions and a place that keeps rewarding repeat visits. What started as a quick visit to the Supertrees has grown into an entire day of exploration, from the Flower Dome and Cloud Forest to the outdoor gardens, lakes, sculptures, and hidde",
+            "author": "Loki"
+          }
+        ]
+      },
+      "satay by the bay|singapore": {
+        "place_id": "ChIJp6HV3hwZ2jERvuwjdrUPNRg",
+        "name": "Satay by the Bay",
+        "address": "18 Marina Gardens Dr, #01-19 Gardens by the Bay, Singapore 018953",
+        "rating": 4,
+        "review_count": 6644,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "http://sataybythebay.com.sg/",
+        "editorial_summary": "Sprawling open-air food court offering satay & international cuisine in a lush garden setting.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 10:00 PM",
+          "Tuesday: 11:00 AM – 10:00 PM",
+          "Wednesday: 11:00 AM – 10:00 PM",
+          "Thursday: 11:00 AM – 10:00 PM",
+          "Friday: 11:00 AM – 10:00 PM",
+          "Saturday: 9:00 AM – 10:00 PM",
+          "Sunday: 9:00 AM – 10:00 PM"
+        ],
+        "lat": 1.2821346,
+        "lng": 103.86887279999999,
+        "photo_refs": [
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydgcE_FgmbFnNnN_an6TSb9kuaPCJ8BZJWSqBH6kvVBKUoMY4inFDh5Xox4uzL25YrJ2awm_YjPSityPq3r6T_RZAgaozdGl32-kGA0O_eKZ-67Y4wuF686NuSs5PTeu5Rt4lBAt4jqxV7vAAupnj2aRuVOgb0f7OiCAuWKHWL_uhwAHdp3le1zXs4AUQMi9ad9fZ66wP0-6GxZQUuJkfJ6c3Ot1Om-i57E_5ev4-3Io5V-bvV_nhTNWD15-XRPY7hYclSuI4uziej7UXMkHKI9WrpOU1JgJinERh7kFQffrvdaceXCzGZt9cCCDsa2z68WT3vApnuYPMELeM3jBXz7uX8xYn4YCQnGerkUshlNJimFnPIT7crTVWoEXSvTJuSO2IuogaboXiNoWiybeZsb_Wz0ShtssIsf93evLJzeWaPgOLFRHGEXYK5webw",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydgcfmDEakOJXGI2GwfaC_JCeds5BkP1tzA_qseSXMw9NB5gx4GS0NklluAKr0qTlI7N6qVE46vZKoOHZPhzbOMVKkUFacVnktzS0xp2zw6fU6AJr5hkRBFct4XVRxNcgyEak0x9sm3sMfQt-YpMAv2BKYHLlweGIYCI-H58_fDhTUr1IIhW9k-wI-aNON7jqWDS0uVMBJcJYJXynwfch19gQgFyDXE1zCh4Z5ClRFuc0_7FkOIX-MCVeqbM0hbvKRQMWddZTrIpQuiaqiUTPIu0YyLfQbFxOCisJliG1Xkt5mlKybLPbiSQ3J5iG39cK4AuzB-7rG66yiAVSbhwXHD8_UIDrWxJ4xF0Rzd9xuKEfKJC4O1pj6EeMtyQPMOCu0vfbZu91zYMltZtA3qkQRClvQQWjL63KB0QWtSUi-0ecMccMwIZ-Em5kgEz5a2V",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydjIWW5rIWIPwuUj6KlY-VK6CJ870Oq6ljOQMlA6GiFNPH22QvFf8-1Od8vUTlAQN1ORZPd-GlKxeLVHxEk7SKzw7-2W9YJJtWK3ta-_YF8eP1M9HlvN6c06DF56JLvBUboyEgdcZujkX_e8rvO1p7iy1Uv-p1qiNhZQ2M-NOqgRo7oni2MlgO6JlumvMprbRSCEo_l2dn9Uf614dx1_wWo_DgPlaUaSa1Uz5vfV4dk7GSpCZ9dgz_xH78NaT6In5o8pCh5X11VjDAkL4Obra3biwD9-Lj1lvZPzae5FEiLtoT07COy45b-zx5ZH_ZmsB_xbx2Is2j279Bt3yKtIR17BJrfpyabUTq0i3-GxNe2WveQr1GbR2A86c3D1O-sgQSp6em276WWoI8xu7AAQfH42cCqF_YcJltxyvkJgdY72M4BfncRjgIO9SFJdzBt1",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydiR2XFk4pwo4qEJX_pfC-keiFRePF4L0kdh7mDaL1u4JIR_OUbzZGJnRpVkwnQAylEmfD4P-Xl7QKW8UGCB-pK3Np6R65jSHP1OyCeIsQK54tPNhs5txa1roNLJy5Ja_M-jVMtZQprNXPbUKeCnMlHpYFSeVYP_cfpscLTXxNu2mfwg0Zl-pZ4UPZppxaWKGqYRCiZD5HoebLbcknK1qc2jgkSWD67Yvd9AG0kn1NwLjekj_tiEHIgEZN8YIUJQIRjyNRPf-Nswy_pX5IXbYEKVcWGd8xFCyJ96tFyj7SJsghaWYE9ShKcOHl28qRwglDZLW6e7OIAC5MrGPLOXKLoNLA6BZ2QL1gREoUA9t18EaWf9VkjB4UlGdFg6saoKBClfrlap7aTD8km2qlOhJ6qeBXmA-G2TZP4WIw-yo_OihB-exshNo-cRDua22w",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydiDEjfjErEFT6gX9e8e9zyFe-bIlUbUFUdCMXYBrc1fsxSJqkkV-u1KQmRE_dB55Hz7IARoTFmbB5X-fTESjprB6wMNgU7q7exSmeRO-sjALxYGK4jN5qljJc0tMlFy1Rgw3iVIZpId8ouwAHH137OWniEV67-uSpFHohy4W03yLl-JNr5UBs5Hd9C2mC53ihHyDt9tv1v5jYaRAnmWzotFZNy4nMNGpNLrlrkXRiUl9V0Lymbh6XHNzqoHgx-b_SY7gTTaPrSqSQMpCeIcX4DsmKnBsXVoRLS83borLwJoRJmRbVX4BiNMGWVvdZpvInAREdHaN-b8ltNc9PMMFQ3Td5DBaDc9MuYhSoXIiVh20mCHPbWqF7EFGepbAXXpoojL-htGwDY0ih3cv9vt6ZII8eG4FUe-bc-SCtwTp4q1Qg0_sRFFeQubSUIe0ROL",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydhiavENVNsoEyv8pxQqk5bHJGc2h1NGhQlkvy1ul90pIUCgJrad6sJqV98SJkqjHEWyV2imOQFWmoFxSl3EbUE3mRuxG5LhfsMfRgGBItyLwCvl9tvY44kYPEbvqhwVSsaWGP7btwQpx8Wwgw_z0IoEXVj6KJk7lhuek4yP23U6mFYgRiPo9teUvZW_laxQv4bN2VH4StClXtt7-Wjtodqa97KYMq5YwoO38OzZludk7OAVeWH-pg7LgUO1JF1C2D1aUv3hkxdTbX-OUvEHMOG6pJ9pPUtrZvQklomlOOpU1ZBczRODL5KR5vMvGBq6kOjYe0y5WaPiLr8qLMMFgPLD-3p0dmHVUrripN7aggvWmoZtkd29qG9h1DmrBmOAoCOW3ncDkGLg2zV8NUVPwq4Wz_soZ0tHBVxIgo-HerW7yyUrUqsFYmJJmbbgKV0r",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydgbHopglbZhv-G83qYfGZQqPN3vMo1FWY6sj8g4LzXFdBEi2gaKKTGcmLpE9A4vt0Zu7LgaN9F9DqK4vFHdoEiZqVmy-Fll9Rne2Y4C5Z_MQnWjEpYLi34_XdYcqpE0TqOpYDTP_XVCmkA3kXVwTGxbROx-pdEzg7E51YA4z8tIacTBzFP03SdX-bAPjCycmHvhsEfEFytIWBujsY_GO4OaesPf9NeGWB9EVzVWr4zRLVP2WEKbJ4VLSDY8bb6r5586CXSlm7R_aDOf2WuInuJH8W7D56ac4bHuTzMG4-Rb2d5gT51J_T_HEcE3-Ilfx1UaSGn-grSsySSxgiIjdH0HSO_wzhU60wN7oswvCzsUTufA28NDzEi2iQT_ZCZMhreE447dKWaV3hY6OpT8hCKXeeSpUpYXQH8ayvlA10qGq2sPf3qJnZy-Ux2wzemH",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydgS0lYkw7mnpULnX4DTKMu_398TM5X2RV6OtUNSRFDuApALJWdwWBg_Fws84Z2-KDxqOkVFDDBz8pVB5ilH7QS41hFbf-6nc1NKnKcBbkoRK5DmDg6q3hn-8zf1FZa5yD9Nai96ma2x0EUkBZpa505-Yn8CfWaFufv1mjDwoBtFNeY6gPF-q4YuMo1YXRy_VuuKayDdTpF8qQPchOnZSaKPiDnn7Iic38ZJ19QGd7HW4HS6Eh63ZIDt3BzN3OesPenBdQDLVN2gaVOcTHgPUwmgh44v1g3NRJFj-U5aX6Tlkq8fw8ksmEWuT8uYF3QxjIflb7FWEKS4_A8XPkYez49Wm2nPz6Jb_kUecKSMCj-oMTP-7re9tXqN9AcArUJKof2JfskLRJLtOn6_g-20QjQVhddli_MEz-BOOVMukqMxgiUlENrTxWs1YpMdjw",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydiy0GinZac4ky45-HN1K5glv0FMX6Nffw0B1cInb3d3KrPNC1HzHaaupIOg2QXTzhxLFEea-HO6WmhmgINlkaTTHxKW8WvFRTexa2_jAQvdFQsI0FIMv1oeghogojhnxZDy3mayKyLNI5WVuqOFi4vFmHRW9d0FuwqU2GEZLbLUWLVfFalR8gqRjs-nKWQnN7ne4jrECQrWSicr-2Jz58WAycTkd510hvaIC_QDtGkfhcbLuzx0gZcV1WuL_5uRJpo1M-iBANFpXZ7bgGCVFaskgDQBPcJeFNVUIg0SUZmnAn2V6wzXLBDTnnOObuf5ojecmGi1Be9xHD2Ch4VZdDqE8pJvkR3Bcdh1ae45AID6kOt1DqJ_vak6kqgUoICZ1GG0vzon3Fx23cqxv-XPSzWkycbnlksQudA1CpeazjqZNQ",
+          "places/ChIJp6HV3hwZ2jERvuwjdrUPNRg/photos/AWCwydhu9ImNYzORLbArL2e6n-6h3Q3jd7eNzy-rNkAo1WHhmn9OvyKAHB0ryYX8bx5G5lqZXlxSLh5fyv3NnXMQgjvQ7vXiZJ9GQXRG17IobfiAHactMPfzThDgqO3ENZTqwde_hCtV6lDhpM90tj5AbWJPEKxUiTW40LMwCngrPCu7vTMVfe_nxAchEz759cqq6eBqtvfB4OogDljWcUBrRxOo-6_yjbEzJ8F9f4gwwydTTJMSTfue9zVQt6SRlVBBZJ85QfpsGHCYfsTXzbOviTjEgcjnzFzec9sR9GOvnDWM2U-A1_OaUzz06U3Gw2U5on2OkSCArrzgeWpVmsEKCVJk67vikYzEUG5mt5sAQK0B3Uys57Un8_yWt_kTpH43EnGlg5UDJjika4wC8ekLVeHyaHtDBVu_C3sdYw1YRjrN_qeH5s5rY_gsBsTVpw"
+        ],
+        "__at__": 1786804243.542343,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Satay by the Bay is a great place to enjoy local grilled food in a relaxed, open-air setting surrounded by greenery. I visited during lunch on a Sunday and was pleasantly surprised that it wasn’t crowded, making it easy to find a seat and enjoy a leisurely meal\n\nThere is a good variety of grilled fo",
+            "author": "Loki"
+          },
+          {
+            "rating": 5,
+            "text": "Satay by the Bay offers a lively open-air dining experience with a wide variety of local hawker food options. The satay was nicely grilled with a good smoky aroma, tender meat, and decent seasoning. The peanut sauce was rich and nutty, with just the right balance of sweetness and spice, pairing well",
+            "author": "ivan T Teo"
+          },
+          {
+            "rating": 3,
+            "text": "Stopped here for a quick snack on our way to Gardens by the Bay. The dumplings were okay, but nothing special in terms of flavor. The prices are quite high for the quality and portion size provided.\nIn a city like Singapore with so many amazing food options, this place unfortunately falls short. We’",
+            "author": "Shurrlian Bösch"
+          },
+          {
+            "rating": 4,
+            "text": "We ordered kue pie tee, popiah, and hor fun, all of which were really tasty\nI’m a big fan of kue pie tee and popiah, so whenever I find a place that serves them, I usually order them without hesitation\nThis restaurant, in particular, served one of the best kue pie tee I’ve had\n\nBut, as soon as we pl",
+            "author": "moon Luan"
+          },
+          {
+            "rating": 5,
+            "text": "Satay by the Bay is an absolute gem! Located in the heart of Singapore, this vibrant food court offers an unforgettable dining experience. The atmosphere is lively, with beautiful views of the marina, making it a perfect spot for both locals and tourists.\n\nThe star of the show is undoubtedly the sat",
+            "author": "Zackery Goh"
+          }
+        ]
+      },
+      "merlion park|singapore": {
+        "place_id": "ChIJBTYg1g4Z2jERp_MBbu5erWY",
+        "name": "Merlion Park",
+        "address": "1 Fullerton Rd, Singapore 049213",
+        "rating": 4.6,
+        "review_count": 76366,
+        "price_level": null,
+        "website": "http://bit.ly/river_cruise_singapore",
+        "editorial_summary": "The 70-ton merlion statue is one of the city's most iconic sights & is located in this park.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 1.2867449,
+        "lng": 103.85438719999999,
+        "photo_refs": [
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydhBzqSjChqaeJRQRyo3gqjt5POV26pFtRTjv7-88RF99peJZ7m0TtfpcOkZTzuCm1Hu5UAXsmFYtNiDUpFTfj0hnJN-c4TlvyDRdINXWJaQpTGnAcKJeiCgqy07vUfiiTAVg46DUTvyfpx1iBH2FxcweSQuEO-wwa93QS93zXR__6SXfTVuN5Acmq6Mz3EFKBnnRQseDWQrO7XABezPrdemmAewnwj894efV4IDxu4Oc109-6wEJpOA63LIc8vevuh2sHh-b6dzEy74p_Knuhq6wMES7-TejFu5h9_jnWbw_8DpoHctTTKDUJErWkhOiLWxmEq_eLWraRbVhRMI2fSRf1cTVBSVF29sUOdcmhKnhWyE8gLWMxeq1FfdnmJW9vYgIHMhqw094qUvMGNdZPKQ4myTO7eNWLfdLMm2NN2NzA",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydhT-A78biChvm41Gwf9s7OHg3zoNcYqPVVTfxFJFIFOEny3CD2IV_h7sq_iCzYGMm2gnEDf9bB9LyhGLUxmr-FgYPX1AV9n1T6WUwXZcWtYOBSpqrSmlRtVLRdG4DU8kKvFnu3A8OJEepmNBWaFt_iWvpHhsYW7iSrKVz0QkvoZzM9naXKHHhGfIS4PpbLloiOkglxUv9eqaolSJuylbdtYAMBwg-Hkd3fHiarFUJHfQOYUEjQNQ6qViDLWMgDBAJfS6bcFCq8mmY67HpNdWIV9C_eSdnFxpRFx7XvdR8tm_Dcg7NX5KnJcwtYg72eUCUazILpjSwAFSTpiLWDBOcTU85S01zNrqaZUQgvRLydaGqzU0aIcXlBKWKAiiuuzQ-uVV7YBwh78yhNAVN8LwYrv4U9uWDW8317IDrqSJqds8g",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydjyphPziIH4Yo3u0IHvmllxJsZpaNbFauj-jnFO249cG5mcYHpIAfigZ7lF2wfzBqp0E8Grr9JQ-DUBFgQ04-JaOOKxWPB5xIIsLPW4SnNGQPonqswRq5MC2zQ2gnA8Tyq40MKKHPOwdW36U50zFZgiH_cvIahHn-qzl-vfjgCyMX4XKASPkYQVGeLfSeMnvSMQuwMgKwibPZW_Cm11Ua0VNBC7S4yioc3cfWc19FOYr-BAZIGo8vqr8TolyIZ49-ZF_FBL02A4PRHPrT5dAaXZCNRbv91WXj1iaIv0zNShB06e2zSZ5OH3kizPUDexaz6JfVJ644aA9m8_OEq4aLsCfuwQrtAvuaqFBjxLuLth3PJ4UBfNr4_knJovPgqf0sQ8qPE32UYT2DP-SwebfxfYflEH62bZXJIcqOeCXTP7yw",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydgWYnqQfTtx5VJVfeB55eSHJvsWUoxEUv11IfqbjRPYkitEqZOBAurNd1ioQG_boxmBuVxeRy0FAzfX7LIv7KY2g7qIFw8_-0gvSgkSEUM_6ztO5N-cV0V4E73POIr7tbYGqXkqhRtM_dMPYBO2GwBMaB1EDQZ-vBJO87iEbtQXIutWelrHysAyNUfGGhELteQ4OGztVSyngG6uQDl1unrmq0uSCSqJSdejQv4fZsWbvFk1KCBghDDKgeziY-5c4B0LmYnzGpz7cJWaDPVSYWbBb54jAeYs-ccA8DovtNi5f6NmOo3AiCvzEXB1QRbs-wGlws3IKzyY9AfP1H77E5sE7e3UQPWPEKz6ctUYQnJdWZpt6qZZe3COMQHVbJV6q3wtC5bt1IT2d1LMU5fd9prVi7Dufsene5wAS9iGcvceUf91",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydjepNK7w6GRL_VwdxD6-9HBaNoqoo6oxEY67D2kP6Z2JnfM0-VQ4KKj4Fo3A_lUbvu9Y2OUt3aSvvHl_a_0V4Feb_Scm9Jexy1urp1glXF-MGuhnO7maIK6E4LnzaHtmi-PEh5KPzz-xfNqK6XnOV-lUZ2neotQB-eDhvcEFlp7KiI_OFHDOWt0Gnp7vxnyXaS_SlnUwLXRYL1VMa02Dk5mrBM4Dlh4xYnCjDCyYhGOenJEjsNTTdejBoCXO6V0aE0HKRN1Rz6Wqe8FMlnEAReqprueLiMuOtw6iFk_A1vMat2Sn-PoeVUmOVBYpOrgWV0o9hEIXIzzDmzoSlmQ643RyNBHRgpj1A19ShAdSVwS0J172tdLWwBNo0ymReTO_na-Zd8wZnF1Iapx-Szq7tr3zBh55IAtW9Q27X3G7BMaCZg0HwyTZHHZR8-KAwKR",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydgLi-2HJ-ubSIfcvjfd4phFIIfSC6xX9qWSEXTRP9LydKLvRYEmDlixWlX3aDqATJ89dGFFYHy5V2OwODOw27MKjs98dGewL9-DCXb4Ka-SvrznPGXEIIxJxKSrccJy5wb0RfZPi17ixPsfjGze-JX5rVGLfg6KoXCsLxkhB3CuuEqQfr37ImjXt8NYTZBe9hsjlDO6NNs3KgnNf_be-Bk3bs7CkeIUNuRm6k-YBznsXEr5QaLSIfzCgtr7wY956POp8pnNIAxrvwIktU9OZcd4h9S3o-TSTE6yslVeaF7oRckyR-0niRBg5K1XodS_6YvhsjUqzdjUaZDPCxRE8SZG3dlgOKp2IffkhR3XCul8jJqBVH3dPZPgYU3Y5n5uNhAa1Xxix8MMmBNq_1qQeZKm8URRHLBGRyvNloyQbvIULWhB",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydhStNPhKp0wvGdLZkwPJXHYzkm2-MMaoyxdSqw-b836VSp7TR3SDMLqIki9mEZ6OMDtGQxNRUj-r4uufHv0uscy74fqucVET1hOgE76oqT-H31tcZ3JTjRDuWBB2EaxW31wfbN4_C2078mAXAC-MuWBC6KGzOiNEc08CEUljGk57XyzFezLnYmPRxB0brOIF2Q9Gd0yuCuXXQKDHIX2ZTRTMDHZF6NKW_9cgdrCjQIj2kz5AWycasDN3RwKY01bdWOBNDdzsBVhlbSNM_enyBweEFWqEj77C657yTOsAK56JlMjd5vs--hDEUo5XZPzh3w-uu8wW1uwyqsDT0J2QiGxVBarqOqn3DZtS947IHwU0i8FtLgzYoeIMxkzDS1xMTEaFG5Ol9iPaAbUcD5vG09Zp3t6D-JJjqkXUr7UgdxHnNJz",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydjrzFHywGCJGdClyLpQE1JtRMrqXPX07tBnfjoYqYlKD4rMxXOqzeKX9R_LYADScsRAklZ1efeK9LQaE9x86P1HJkCl0pIcbV8MgdZVn9rt1p3fxIEaEXQDDVbiC1ucyhhcvpwrvJtiJLPCyPD_PKl9T6nVq3N_pKfwpm27nFXlMmsJiPQkSHEYEtUlI7XYV23Xt_XZwe0DECbt1gFvKP8OQj4-_f1MLiZgrcbpDFZ2z3cjIXtWbACqSJwWqBeZW0pZf7kS4Qf_W4aE4XwRa-0iQmKFujo-lUnxgyppbj32dHwWhEAHiRi_tD19GPSfgalv2A0VckXrgZoNw-9GL8uf6VSncKqph4s_gc1ZELfCDbzNpsxyFDwWqX_jFopr8GmIGDDdGa4VmX5Ss0vl1juAA8gPHr86KRJg9cP4IrFC0w",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydhaYkMYmiay81ly8_kLz_BydWCeo6gn-vKaz9BqzRbEXgVgHgmO0IEPxoEPgvfLMfkXQyou0vmSvJrAzdWysPPQxCacK-ADrG2HEbm1Qt5rpuz8D6g5RbgNgHqIhMAGpuxS3vNAexVIptLlEUzOk8g4xRXpcNsxoBrKNZa2VdO0IvW9JbZc8mT_s5cfmgDH5F3Rjm4m0E7HGpv5b0IwygOJctqdLFXoOJGF3fZxD4nxMVOk-gZ6Ix_6s5NSpEjHkbknFeS3zSlp_OK0bQNFOaHgqX8JgfGTS0_I_I3eZeZXRq1ms0JZn8sX0RzDXFMFkk61zALu-_8ZtgDqw_XWNvEDSlJvovB1_s31IufnU657Ez73KZWIYgksSasGhv5YGzzw-W4jMgzoiube_33Yjv3gppq9iwBNkYoJLCIekloVFw",
+          "places/ChIJBTYg1g4Z2jERp_MBbu5erWY/photos/AWCwydiaAiTMUzvnECkKTAOwuKfUj7cdLhp_yXPepEb6qMDZVLenddT8poGdLXVMRN4p1PgGm9yzhuH_SXKiI3_ma1xlW_Rv8fO369TRTS77BjOzrq3a779U45pm81DseCvN1IbhDmlrWdDZzyGQTRd5idO5kl-CX0foK0srelqbHUi66ieMpE-NNS8VrmEl1ubhdKnj-d_DnzQ_dpVvQRMF3XJMAhP5WGO00JDzEYS3ma9xOha9aqxUHelksCRIdoD-6ZXaz73KQIvzBg3RaoTaE8A8FX4qJPNStBzAHoZtQ2W9w5I2RFPIA1hUP8CyRnqVKqR3xJmufCzMTh3wVg2fRQkUAXScmBi8tU1DRaDBi762xaTGk9Muj9RgLXEhsljOPAxQTaXywdgh_ADuLBGt-Lfo-STbQmbpLx5Rj76VRcdiej8g4tg2oUaPheRSU0dI"
+        ],
+        "__at__": 1786804244.027963,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Merlion is one of the most iconic landmarks in Singapore and a must-visit destination for tourists visiting the city. Located at Marina Bay, the famous half-lion and half-fish statue represents Singapore’s history as a fishing village and its nickname, “Lion City.” The area offers a beautiful waterf",
+            "author": "Rosli Sulaiman"
+          },
+          {
+            "rating": 5,
+            "text": "Majulah Singapura! 🇸🇬\n\nIconic spot with amazing views of the skyline and MBS. Free to visit, but it definitely gets packed with tourists trying to get their photos.\n\nYou can’t really say you’ve been to Singapore without taking the classic water-drinking pic with the Merlion! 😂 Beautiful view of Mari",
+            "author": "Dilip Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "A must-visit in Singapore! Even though it was crowded, we still had so much fun taking photos with the Merlion and Marina Bay Sands in the background. Beautiful views and a great place to create unforgettable memories with your loved ones.",
+            "author": "Nur Syuhada"
+          },
+          {
+            "rating": 5,
+            "text": "Next, the Merlion.\nIt is one of Singapore’s most famous landmarks. Early in the morning, it was quiet and not crowded, which made it the perfect time to take photos alone. From daytime to night, many tourists naturally come to visit, and the scenery was truly amazing. Try to look for the small Merli",
+            "author": "カワカワウソ"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Merlion Park and it truly offers one of the best city views in Singapore! The iconic Merlion statue with the stunning skyline in the background makes it a perfect spot for photos and relaxing walks.\n\nThe area is lively, with plenty of shops, cafes, and places to explore nearby. It’s a great ",
+            "author": "swapnali salgare"
+          }
+        ]
+      },
+      "sentosa island (beach)|singapore": {
+        "place_id": "ChIJa46EIgAf2jERfvBEe33AtHI",
+        "name": "Sentosa Beach, Singapore",
+        "address": "120 Tanjong Beach Walk, Singapore 098942",
+        "rating": 4.5,
+        "review_count": 143,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 1.2429782999999999,
+        "lng": 103.82866299999999,
+        "photo_refs": [
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydht6WpcKI9z-lZXZltf3WwfeGzsWEga1xKiRe0W45aoOqxK8MSQAE8sW_ZRhnPd4bRw8QsRX62hC9lnptvyhE7UkHKhJ3R9z_1xc9-fcERp5DCulSy7YPzoflf0K730r9sLavj0aL4B0XJqYzqBkAVIsPsiqqhDe6bMWPUBmmORVmT-mJOEHP3PeVZA1Dx9AAisEYQ4PGgUO73vFPwboIh0FwxDuyA45G8NqV3kI0lT00RGqPATjERSZX3JgJFpJn2TlzUfUIA39dO_8qphzno-v0BFF1T9GxBi3lytN518kSmH_YQvnfAK0JLvc7JKhlyRWcVRieHiycG_L147LtKPiTUQrFuZ1dN8ZBa3iyzBR9nl40-VDMRt5bi1wTTB5MvGZDtlqBEBsu0xhRn8eb8GaUm2TP8WfdnwMhZIKSj8lInfaCLetKAJGllsuQ",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydhWBIokn7PIdoew7XcI06EP7-gfJXEuPm0kZYnfGFiOISXnRuJw1YyEnIr4F_S8lOw6xfAzTAmHb52F1mkO4ftezmx-aPH7-pH5bh8u_YH14UTSs2zAxqvEzawee3GSyqHhj7jwTkRl4lWOrUekfVqfT51dyHNZMMiOj87Bkd_Bc4py4KguhJuHfeNJSEDRkC5XxZptLbte3suyO-rKdx1kudqfwJ3QoRWf67kq7s42jak4JMxj4mM80yKLyJ-vXxYTQdkI-TSLYeaZIdie0MuT6eDJTc96Fffu2oIEh7IZgB-xr33fktmqh9VBaQI_On_bn2mxXjoOEpB9b3ZOKR2PiPluwZVepUDU4HQrD5EkE1lE6ck5eec2YmJyOrKoLlUctAL8psQqzSMQTJI05zlQHb72CGP0RyVeZRcH2H0vc4gylRZ6NbY2prp1kw",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydhFhw0Rf_LR_qiefORixodj7-0CEam9WPpmLYgNRl8NSbXDQL16nN_EPiGemy-81jG6jYv4L0ytjJzJYb2SpkJc4Y4WzeffulKtbb0uhjCbMJ42NbHGCK-ReRrhpc107rqs4baDgz1kvu5nuiiHxRC3NHImKZYx0vkItbdjkMMU4mWsnxaFujT6L4kwvLz2U81lk3Ikppq_Tmblmv6IPaXesfk5-FxNfXs7oVEMd6LQ_Ebzm5F41yIPdCxH9E-AJAbugUqbK-aRBFZl00cczp1x-5iT7jD2jDTaEO7ujPVRu2ssDsPNJxKF697QN_IFFHm7JCHtDnnqrlhfidaOiH--WIX9Yl6URBe8KlKW0ukL7dl4QQy1aUYeOH4D1-j-WPk-le9BnvLdaZTTgh0aRVOttWRoDses-C-mZnfmVo_-utgNRAE7q5Rjq87rpw",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydglaDub-q1OTOgzIuqx7NxGArlST54Zg1EpZ7QKuOuuVfcVkOPWz-JVcgMIV41_T-4fgakyYENLVq30ob0z9nLxe5ekv8h6Qjo7Pi8rKjRPqY-bpCgmPvcVR1-6SAw-zdoW0GBEr8e-wXfSx-o2Flo7I3V8RFtUG0rsf5Q95-_WlCLkrcNTql--l5WCZG3X1D5ZX1xY0JZehgg8wkQuYAfgK4mlDQ1Ty-6R_3RtVwC-8sHhIc1AxT4SriNep-9l04Xuz9x-p22X6KVw4gyiwI0NChyLWhX2_VgfFHtYwFe8lyvQFJiplVNS2MYEGhsgSNWXuMPLvmVhKoRvbt8Ywrf_Hn893HP3XDAjJXOXLoOL1Z5fU6_NahLxuj5ZIO3MNUZ0sqxEjjSF5fKe0hp_jZB9WgqPUe9fH26x1Rdp1YWszX7-BRuF4d7sqhEq3g",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydjng7bVxvRdvdbUWt1cL874UzzOSD3gFlnnwRDnfL8z59CEf_HothsBLfquEhlAEmRtetbg5WDpfwxAyl2XyEEzUcpkvEa-EPLYwQeGWwvYUZTK4gO13GiEhKL89ZqVCjECujLPlnPmcljYRkLc3sAK8R0q7svXiUdtzsK7xpUCOc7gYYWoe-fst5ZLURpl7p6mE-IM7inaUC8-n36VrFOOpsVpdL1UX-rV6_aNMs8wAzj3xxP7h-ssHcmO8vONpV-MSAli0aHCc591jA7qHB5QS-teevqLr2Vt6mzRUIYNSNVMBZJJHPJXDBVhMbPY7bFLAAtMG8D_Qi_8TWEVdJOCH7WjhcElG1-sSho9arLx7a43IOI5fxYJfyrXYxrpGmyXqRb8JvsiaXzN6FI_5DABcJqy3HloF_6EK7K3-XYV5OwKiS3bXSZq0zw5LA8z",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydh1bJjKPo_e4v8B1edzu-1PEfOHyhiVWioytQnt8wNsN4XDh2GdTpb9m6GjGswV6mojsb1TuAWjae8u0fXD7PxpyDt_YgmcpnAiH2mJfNw9cMW5KxwyhMw7vexxp_y5lZG6Tfik1FvNOPdXXVTte8qRyznMtyPaoOb2G5LbFW-IFzw7dnrRW3VSeaTWshFmS3YFqd9YLAr-UViVVewtYG76peZaxIstQEeKUmZPsTisN6rkQQnxyT8b1C9EM0MGdo6RaCamK--tUVe-Ug3Wj__wQcCpyKkFaovCb6JZ33ahc1TegLHUn-5KFxJbDJ2u1sMs9ksFF2EJ5cD9T-Olb-pXcXnma4qd8j70co1jN6W2nZWdNTMNR_3_MTjZy-92S1wuYDz8CpRSsZInq6DBEmYZI0xMs8iHwCwUwyXmSmu9Yu_y",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydjyBk2LaxFNkvU6BU8IpiESyIheFFdODAOHKON9jJ484jjqo19S_1k3DLK0A1U-vEl4Ljkpw1PiAnr4Wg1AW5Oqn81yT7oLVc7qvMS6ozogJ5OnWiuUTPPL2ShtYxo3R37kCNfYobLV-UBeXkbZep0eu_Gn-v8V7kPKswpQzYhm3YWCi-Rl_yZhN3wdBsmkHZrbL2XbXwrhoVU02Ci2rvnXzHpjXDEmICWkEBFkAHTYhFWP_8aAcVk0Q1zswdbF7rFXHFitu1cNUbwPdMMEtxl9QTmIFNFRl8fV_jOoS03ueFE65rc7iHy55YzElinEInzosNdcg0_ECmqffwMdC4qeAgLbGDWdPD1NgrqyDdJ0hn3jeeKecY31nPsSj8NnKjSSFMRtBIJGiUwLG5t-GwHTxvhuM2TW9QS7hOjEovf0bN5uwKaEz9dTDQOOfvlH",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydhsJm5q4gU5Hbtp4twJsdJESIAqEbIFsCLVPTCZNXRlpdUOewZngCYMpEyZ5TWJf7DycsiUrTCtCHwUJKvnaxKe5ILsyHv31w4lUOgBVHA4iv-dgCdKZerOFUh-vba_Hj2wx1-fLbUqAIzlgGyUloscQ3GqzGwzPDku9jYLgnV-mlIt4GGcO_ABj_mKy1bwqZB2GwQa7-k6aPt0WRiDxX9zhao5O9UxU7eES7hpWY5uko-OB3e4bIS3-BPy478whkQgHfiAlvVovaQCNMSlj3kAUtLlD-nAU5JR-UKuEy4cPJnmbglpWnQTJH2qimm1oCoUpPrgVi3cPoBAxOpgn1JQiPx7qzwMjP3Qkt3AKEy_t16DwQdocKkV6iZa5VlErd3fxGmYYVTxLldg5v2e862pgu1SxIpZNQPydAPXWD4sIA",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydh7R439gGMvoRxnP5uKiXMmpaoVeZotMkEvBAacwNnktU34mLQUCZPI9l9-7_lEHgbLLhVBaJpQ1ihyXs4oyk2CT6G8vdpcvLSlzJfxUBjClclhLiPuhf7xw3x6I4YMxPmgnSkPsvFmKWERocDwe-QMfAcFEtBXmm3S5tseHaL-ZOdX0EEZGEJLtP68U8jlIacmE1w5UCf4xHwegrJCU1aGJ1dV-VmT7Bj7xJtdzJ4GG1Pv_e7KOG0j9gE38zjG2TVz0puqGI8SNwwIRKtoiNpaasAZ3g35dFLbHxMbD8t2hWvsAn-OhaQb8sXjxcURIWwg6vbr11qb9-tOA96zRVHQdBzZVuYgbsjFXYWhm7abdIGQNaaK4ZneVEtBxvpTM5WP4_vZHVFXtCg-J-Jcfo9oIDfILoIVq5WtRF9UUgwjHQg60aD98u-Ku3jwgzcO",
+          "places/ChIJa46EIgAf2jERfvBEe33AtHI/photos/AWCwydi6UwqK_HOr-YXJAiiZ0ykie-lp3hqmzc-_OxF6Quoe3XgaeAco9y3aUbDNl8vStRXMVBKysi2f9FtF1eQn2rFqFxEcmTAew3V-WqhVGVN5ZYxQINTnEdG526JrEyo8TIMoZWwbPI1mLyQaMCVqUplvYIhJyc-fMfu5vpk5fEpj9kel8NFiv3Q7Fz6lDZovNh3L_2wMCcqmTTc0ZRPI5K76-Jocbrbf7mmL815fJ3Fwu77ZDp4yzY7OrKeC174Yjg3OPEhY37K3gzmAjSIA_LnhculznfzqcCWP0QyQ06zY2K5t7lgwSolH41a7CneUPxgwCSEPyhzmPqSNnqWIdMzrhxl8d-kKng3JXFoX2nYfxtsff3iLsCRJXRl8YBEaUoxO2gTHRZdtsEw61YuEU7-DtzVLE1o86mQ0KoaBdYkpLl2xhCQ76L_LbYcU9A"
+        ],
+        "__at__": 1786804244.685228,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Beautiful beach , no crowds in july and got lucky with weather.Cable car/Rope way/bus/walk  , all four ways to reach the beach from sentosa cable car station is easy and great views.",
+            "author": "Kavya Sri"
+          },
+          {
+            "rating": 5,
+            "text": "Sentosa is a beautiful island with a lot to see and do. Clean, well-maintained, and very family-friendly. Great beaches, fun attractions, and a relaxing vibe. Loved the mix of nature and entertainment — perfect for a day out in Singapore!",
+            "author": "Ali Talib"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful place to unwind and enjoy the ocean. The beach is clean, the atmosphere is relaxing, and there’s a good balance between lively areas and quieter spots. It’s great whether you want to walk along the shore, sit back and relax, or just enjoy the scenery for a few hours. One of the nicest beac",
+            "author": "Abdul Jabbar M."
+          },
+          {
+            "rating": 5,
+            "text": "Exceptional Experience at Sentosa Beach\n\nSentosa Beach is a remarkable destination that truly stands out for its pristine environment and vibrant atmosphere. The beach boasts impeccably clean, soft sand, making it a pleasure to walk along and relax.\n\nThe crowd is well-mannered and adds to the positi",
+            "author": "Anuj Soni"
+          },
+          {
+            "rating": 5,
+            "text": "Beautiful beach, not too busy on a Sunday. Lifeguards were paying great attention, everything felt very safe. There were no dangerous animals in the water when I was swimming.",
+            "author": "Nino Kiers"
+          }
+        ]
+      },
+      "sentosa boardwalk|singapore": {
+        "place_id": "ChIJDxyQUAAZ2jERVmLHwcPgzqI",
+        "name": "Sentosa Boardwalk",
+        "address": "Sentosa Gateway, Singapore",
+        "rating": 3.8,
+        "review_count": 64,
+        "price_level": null,
+        "website": "https://www.sentosa.com.sg/en/getting-to-sentosa",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 1.2627867,
+        "lng": 103.8234749,
+        "photo_refs": [
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydhxtSQi69S0diqfCk927cpTWF5MiPFwvCUoTGFQ483dHINWigjkUGJWT8w04l2Mc7SmSHa388G7w4q2d3S5hEvzkOuFA20_3m-myBETMfO2sphNt-_Zr_FKMvRvMk2mkJD7najStmTvX3906KN7c5cN-yI6LMHF3WVtBMvOW7RtlCK2_rH2mwVARy5fBr1bxEoNz-T8B9e0xzUINULzfRP1HGgG_uZ39mwWGyjLgI8iZzYd6xIQbab8u4NZH7bd1O0SxPgr2Am3ZydMwHQ3QfL1ftAV75yB7jwSpF3Nw_LNfbgxVDLyMEfdCrmDHSYa6r-Pki7NGnwoTqkt42EL5IgiHE8KDi0FFnaD2_ycKELkkfLRHUkVm3w87q-JwvhlqdtR3F80BcgiXHm_1qxo7QCYXB7ZFw-woco4aGVvy8b9mYM",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydiR2v_qlIpN5iJ0OS4aMMKRpFR4ROvK5gn_TRNEhJRCUypKFXgipdXxMAcFBlDjmQtY0HGVEzag-vla27VUI8vsVafpQ4k7zQACUQgpSxHahULxA4Y74DnfHI2_NLutsdaZVCg6GhtkWUi119le0mfrbNOTzJHREf3z8XzmWabQVMIsMphHlpYGj78JJHqTkFJx3g0ijSFY-H2P2RwVAxqI61HYiHz_8iPtdeTfEB-1TQjVcsckdeptniIjAzzX7eIfrxjHuhSj7qCRvRnPFao5kMGzDlPjT11UZrY4wiL4EBO1wENuGp5r5PjWNJ8NSrbBmbXLQC-bJwz-4E8_F_iPLrXWL2eS_jqB8w5IWS_JQTwoxNtyD74TcXMj203T-2FLRMfpLct4ZexpA0vHN9MMwMny8AJC4HgpPhdqPoS94v2z",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydhQLKKZdF8lDCt2NTFkjFnu6zzosmqLEYjGO72hX9xVXSGtx5la33XtNDUyRxNeQj_brSKvPxRCLVl_mIEJcGH80eLh6KLESOEUZcm7YIxp3FMDoSme9twq6RqWYJ12l4zfkWL3LC8ZPm9nVy9nePTssbZ-SKf2q44ArEZe2eMbRAqkocaTtvgnPgIhNmvxHGyRd9J55FBEGSZ4_YAjwoP-KVnl_Cc7KvvDnE5C4L6hv-aJ94N2EAaKANj6Gxv83Soi6nUTDuUIekFCTqsJTGbyAU9slSZllIW50Ah9RSorcsTgVbu7hR6wnV34FllUF0u1-RpYhzRFoaE-yW4H_-M3wy1LodeR4CqkUVpbGcmyp_ukcIFOOx4Hmk3nT__SjWS6U4fYGbwEgyHqUl9haZ9pGnph7CGxLgTM2gTcCAnqaIMQh-Rzy4RHIMfGd37g",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydgcdWugtzsZ0M2jos9J1JEni8GolhjBNTgRKEuSn0A-jor1C2KTo7lX7qZBKw2N6bzUyBVTcS-nHaq4k5kOtknWCJB0O8DNflDnetYYv7nZYXF927mG5XQiNEvExGEtOOyQWAL3CnFULwkE9UZsh3BT3XYw8HNgQRESJ8mOxvlNCeHv1aWhydBm3wlJtibAS7XAVGZd6LQdmg9r3QV9qv2bH3Won51gxxX6p_mFArWwM6beshe0F_REBkod3JQ9BBbvmySCS67Jf6JzeXTrdW8U3mEj9_1wZlU5QxWxk8FvxjNC1RtkYUeOz8Rhfh2zTBHJ6bgMDH38aDdeqmuqLoqxx4MNAQ2o07BQdB9Cc7Z9LPHO03s2cVJ5EtS7EMEEAwP63yjwYDByivSIQr5cGgnL_IhIWZQd15773s559B9dRi1XKoAbQuxL_NcTeL-6",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydhyhIcxbPe9SQEAwIS2KuV6wa3GMkyOv4EaLRc8YDxV3clDTFK5hPXt9l8p1BY4x0sa6l8B94h0GYz-bCYC9Y9Hn1BJ1pTx5Dz186YLV4V7QNcBeHbODm57X3lEmQ48vFdX18VLkFolHLitghPPo0m8sztuMU7MFkNDU-65zVvXU4zBPqfQ8NAztUtQOpiKtyX-M0Qn56UW7i3yYzYbXBt8iMRPOZ0axqKvYn2SnwSPsFQaNV1VdEAtnQddmjwF5iJElytMO1CbGV01M2pu814qbEeSjlXrMFWvYWXXh_gCfZiUYdX7CF9agwU5hLQEsq3g4ePDrUoPSoaSWwVB7bJwo2ayjwLmcMniDnbkqvieBjmw0aBWOssnw5et0QxkbPODgyljXblh4nC9HG7qtqcq1CgGB_KU_gclEWj0NxSWDhJR8JuftuUHDzFgJO4H",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydjaWXMw23kLOPcEAE6L_yVEo_vHvu7HZOcjZ-NxMeNENB-emyQDDAt2YYerUHcBTJUR_ny1oBCS8Fn_jEgDiJLDzuRNufFSAs1ihYPXUJkSWylkZ-mxJonuZMqFZmExvFzqGB1tXP-Qlrjpq9vEf1kpvGBZWGEEZm5d7quJU_dmSYCF4FGG6NBW8Uhbxdwy5Y6AMk42-sPwIQusCRvyopBULm3m17PTuh9Yruv7G92CQ3jh0PFMzSRpi0YkhwtP6eQtTHkKS2QF4Ls0O3zCC5f8TxCxH9XI-VzhkrB45FnpVPCTqZqsiIIY1233axnil6GhzOcqDIo1Vn9HNpNhF-XcFz5kElSnRirkHJ8O-cV2k4wtDmrOgDRfm51rztpyXucEn3KBMOSXzMJdh_s12CkxFIJorTDmX-0-ps4AC61R5w",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydilZO1li8zjiqpsj3y4pQepCKQjkIcJrjeCLO_OtCfiKSgf7_EpGEYYDTGdMa9SYnzp6t4f23sTCBFB2zzPOSxNEcFP3btiG6HCN09Eaf1aKReslOt-ml-OWoH40ppSAZqZHC0u_8ZGPqN9aK0RRgHS1zmkCkq-TMB80j-0l03MFmAssu_yHfPhZwT2ia9R4tBnmHN74t86D9TYTwjh0IiaXEp2T53296bw24SXGgZ855fZl0vXNcTOEiiAf7FqI4zJsGneMH41-KpYOSAfn0OO3sUJ0Dp4tTTBhcEPlXxwx9uPzYzLPRgK_VGrRKbrNNWZXXzzSMT7nIeR3ZvnS90LoiQ64j8BXc-81W4U1vNyruOnABnPSyhtqD9c86nq8xrp2qP16uEDSmsLXHVgMuyP26dT_0JYPRGv_7z4ixOMUz-C",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydigyr9StFkKHOnc0ifCMsxtnAmz0I6iP4p-bU_YwfzbnGXY-yZOyEOJbNgcqM8ji2b-bkLm1ElR7xyUK0YFw6_GEX-6TGR3gmGnFLESB6pwN1fU1t1fEs_7_28es-g91MMPnKLZmN92GpBfjSw1ImKPwaKSorj9DOeF-uzf1UxZXfsKsOdakm9G0hzq4Gg3f6x5DPrVmfZwXiuwBYz8bQDovlgb2-dqFNsP7JhTXHsSJKiS1EYAOjqD-Yt5AErleaicTlOhZdQfcN50SEF4e2MqUNJlk2Z5JworKazcIxVXIEJ96FsJqOROR4Nw4Scx0nxt6uDSzYQy1EYnz8L9QHyxboGGofhSzAq8hIBHICzumVDBAsqwXldClLxt84xF8E6xF5eLe4fANqm24e3_q68ygdsuTgf_S3My7YrdTKc8eOyTwGcObuYIeoy6RQDN",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydgHgBk2O7Hd8Puk6AOyEVtkTNfVaLXf1jxtUTbSm0KRZ5JFZ8Wgy1PggjQh6j6rnAfvJTSI_GC_9dkN6KIglJfuVN9afb-u5w2CkEBGLrpJpwpJjL_iDLqY7DYK9zInv4kst2dA8uK7BIaYdpc7xPHAN0qftXEQ7ONq3KgIn6hkn-K55YpRCdzuXpl8n7k5gz_d2kjc6Csz3IGA9B0s3qt8FsfVjk_E-QbUrz7GBTSp_DHYJkYjzPTaCLphCN0uhf-LeReJvIAU0bwsSJhL0nIH-xBJNtn7-ft4xYCiwPgSONUODg5R-AS2QAXfjTPb_0asfYpOU5bz295zpsi4BJo2ad5t0Yd0xgmOz-_C_bRaO34xTbkvwZhCvK_VqzUXsCspS04IsA3YUXUjSPP0KRZKWwGgFuPuxyVyzFMYW1_KoEMlMDxGyq8IwvEuD_r0",
+          "places/ChIJDxyQUAAZ2jERVmLHwcPgzqI/photos/AWCwydiqbVV2Iy0HCgMsgA71xdmf3RXzr6KGx9YmZc24XhyQiS0ivvFZTNWfXqa_5cfqj5flO6Y1kRCP9CGnO9D4eB9lcwOh-6dPgB5OFgwzboh1CEwMD1LbcGoizr5zRP95eQdU58Oyf3MxvB6O_lAAs29FhZqnxrFWvSe-d-0-WRYP1_oCaXjtNaJGs2W--dI9F7Fu6vWMUc1_boAeOSnhg78sMuD0auH6_qDllAl-rDZm--HNT9-eJSz9HSzK5rl3sUuhadMyIuacgkw6jI6HszIN_Zk75IzSWC0J20h4XqwiB9ZFjluJNBFv2cSdplHYWd4jZT9uBERTiZdrwi3EkN4O4g8QkzGY8SDv90OYfOExTXW2fCaw7ecd7WEDQPTvHjvjym_jqK17hTk9UiSfCAgr7RIXYlWzVdTpioNJztM"
+        ],
+        "__at__": 1786804245.08369,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Beautiful and relaxing walk with great sea views. Loved seeing the cable cars and yacht pass by — makes the whole place feel calm and scenic. Perfect for a chill stroll, especially in slightly cloudy weather. 👌👌",
+            "author": "Suresh SVD"
+          },
+          {
+            "rating": 1,
+            "text": "singapore is one of my favourite cities in the world, which is exactly why this makes me a little sad. 💕\nthe sentosa boardwalk used to be one of the city's most wonderful invitations....a beautiful stroll above the sea that made arriving at the island part of the experience itself.\nfor many months t",
+            "author": "Larah Oh"
+          },
+          {
+            "rating": 4,
+            "text": "Always a great option to walk to Sentosa Island if exercise is the order of the day. Nice view of surroundings too. Otherwise, take the monorail instead!",
+            "author": "Yoke Fei Phan"
+          },
+          {
+            "rating": 4,
+            "text": "Alhamdulillah, the Singapore Boardwalk is a gateway to Sentosa Island and itself a tourist destination. You can just take a walk from Vivocity Mall to reach there.",
+            "author": "Afsan Hasan Khan"
+          },
+          {
+            "rating": 4,
+            "text": "Travelator stopped working due to the upgrading project. There's covered walkway links to Sentosa island. Take the free ride monorail back to Vivo if you wish.",
+            "author": "gan beehong"
+          }
+        ]
+      },
+      "good old days sentosa|singapore": {
+        "place_id": "ChIJAQAAsAAc2jERbbHzLY1ImcM",
+        "name": "Good Old Days Singapore Flavours",
+        "address": "60 Siloso Bch Walk, #01-03/04, Singapore 098997",
+        "rating": 4.4,
+        "review_count": 3621,
+        "price_level": "PRICE_LEVEL_MODERATE",
+        "website": "https://www.mountfaberleisure.com/restaurant/good-old-days/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 10:00 PM",
+          "Tuesday: 11:00 AM – 10:00 PM",
+          "Wednesday: 11:00 AM – 10:00 PM",
+          "Thursday: 11:00 AM – 10:00 PM",
+          "Friday: 11:00 AM – 10:00 PM",
+          "Saturday: 11:00 AM – 10:00 PM",
+          "Sunday: 11:00 AM – 10:00 PM"
+        ],
+        "lat": 1.2516524999999998,
+        "lng": 103.8171855,
+        "photo_refs": [
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydgPEaFoTnzZXKZ4vEPyxh6VqD5RHD0RO2BZdvv2_9ERjy8iRFm87T5IGihzQTfjZjVMX_UUAyg8A5pwi6kqHju-aaSRFZkYAEft-jvVvbIfITsW0hEUv1_WFIatSxh_Q-_999NoSGuzu0K4GMKCVGNI2OczhKdSPR1jswOPmBY07LYGXa3b3SgXaUU52ojbRblw2y9qWddX3CoKV9xJpi2OKGgA9w4TKMY5hOMOpZQbgFABRfeOChPylR51Co7B93N_4Dtb8xWwFGhBMK5rGuS7fMkj1neFGlfrXeJKLGcHTvUz9PnF-ZuAWNpccbOqC6ABacJrltENnt0OWx1XVI0Te_MT1cs9_64L8t5lnn0y5vggy5dcGLi07yrnOQdrYFcF2xGfK9H0hI6jH5fz4rLvFgPPL7VBRnTJC6rOgKEwov87",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydjUyZmdF7xrrMnE8FiWPTm-2zKcmXy2mht4XP7oWtIm2ZFwC5V7PZOELS8Ol90kMLnxXPZoGtM7_g0cjIW3faYoNXP4-SsDkV4961vVedDTwBw7ubs4DJFfsxEYck5SBWEuDWxKWxHFsUlRsEKMQzCHJg6bEvyoTv2PvwKnVJkWx7UdUu6J8qrDa5Q-_GTz3m2vLBQYdvIjJQM1WYp_9jRKkMxdBpaL56bfb3AaL-rlaqYqaVgvNJcr6fLfT61oX8TsR-2BypDlPDy_2q65OVUwquSmMIAqer2Hh5m5vgaC6LmehoZhweK0NxZjPba0Wx7esNcfaNM7G9tqKN1XnauVFS5USU_rkafBDWi1A6Ko9BaLv8QZskfFb3r8JWptb9ohlVaE66LUzHzDuI_WC-isuaAnkpcTy0bFeT1juzl48p-Kjk0U9pi0WIHH6w",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydhPunLxARxRXBxQ7FzN4KRHKsE-wM9z1f7dwElearECLG24Xe4uJZD9cJidXnZQOxVVFvq_31EFrQ-X7W_-sT-IXIHwY0uQkV65ZH2ruPpCaGIZGwIbj_AENPjbNfg02dacKc2f8nQZ8z1HOKEhPPnbFLasVyCoUkxpZURHumnMGv62gK2uLsW_3eU4w0SwgHc-UY2JfuwyuKsrNcrJbxfAOZ-cRpldVvZG8B8Pt9Nd9pA4dvz-4vUKa-73ZBs8CWjA0-DOfkQwgh4msKIvggWkmyoydT2vB3UQ3hy9hI2RHJX_Rm_l8F8GxYHazuK3Zfk7KUJSQoHvjMG_vYyNcIuTX1U7rsWFWVAf5LkSd-aiDXiKv0_czlQgEsgI0xq2EE9riELfVo6oqRMpH_FwwWrifQ2A-wM4mC8ddSje52tPdTs",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydjw5rG3DlRAXAUUqZh7xcQoIpHpAxj2y3PrzRGEXaGHVcwZ1yW-17StZC76Ds4uWTFW1oUEDdgBbycH4SwpN67Qq8iw32bkB2W1GbxWXRaSx1VI5maGose8pxwFf7MXhnrOOCa2guz6_aIzVGLAG6iKSm5YHi5JNSKvip2rroSA2KEoeG6_utM8V0oTsaxaJ7XzC4ZPIHrG6UzTLbzbh70zF3U_ca0xITsGenndWv4LyMcCtMQMzLekbioQmwQvaXU6zdAnpy3qS8Pwz0Zk5kSbyN8nkreJ8UdqKfhcB8mxy3kYjOu-7PGkGg5B7ETdKEkgXUNZ7ctKATHhsMF7zzoWnBAWUsdZcaFv-WC5tY1jptWTVfcdbmYawzYA3Nngqp5bwCgwEnwZv_pHSyFUXte6r6FM2zYjCCUMTRSrnBujnnuev12roXovloSXBEYw",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydgILl-8neLnss6w5nDqw4XeWUi1VvXTIRaJ9Y01jt0fq13Rf1Ux8p_kjRjNqhLHkBV6fA_ni8MOXXhZP0pjEVe4mxtjZ286fb3gOD10LqyOM8MQLHYnuk1cJkjB8UmCMLeuGU2gboBNwH9wEbNYgckyt_lh6lpkT6p-3v06-r-gHY-yC8fcBmBuj0h3vHIvIDpUXc-dq4fz95IuKRnZ2jj55Oc2r0eSYlCGs40AIap1gblxxDuAyZnJGQoLQWNE6RMdgVWYBepp6eeH9zOpZklmzpyppuIPEbYBRWh3jZLyfMFYhU3dqFeONsKQjlTyreUItrKCLeUMcZw0v7q8ZwxujYtoE5EJVK0tBDu09Zqpw48V5D898rYGJKxeLC14PzwOw8FZjIoAqX5IxkTgGLQeCOKCDjS53OLoAuczB2Xdhc7vnj57ZsFo6kKGy_MJ",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydi0DHgoBU3u-OP6fAi18HGHaHQTDUZ2jD2tv3lol72sfQ7EjkZ_IgGFOIu0PvIzqW0-QZGdAEYSHG7qfPzBxwW97T7r2Uea472YTHjQbVhYOOwcJmxRTrPdogR-1vj95vHiAigE4avbUNkfwSHorpKbh15-xJOelQsHfZaWD1uxypdqAmrmEltunOH20lquVGNwnjXjPIjPP4UT6Gi9aWZWBUlEbB6D4yII9po1DS_MB8-gy0iUQtaxOukGh85t3EfkUPUPurE7MT3El6jTgrNYn3x4EVS7LTrcr-4Q8cloOH3jt06k1x5_UpIWxp3RFjm5H25QsJKg434mFV4o-9_q2gvgpv12nesVuvGfDmwTIhU_eHwVa8P4X_-LL8aEO1jSWfSopuO0_zV3nA3AqCAnmMY3hkCgtIwELBpFP5Q0bQ_3fCKb42PlBuUknA",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydh0N2NL_6r5m4tRIyuOhDDE_Shgv7X54L7BQcA3SAjRshh-XiNm_WBG_kxXF4pG4EurZC6WDdBTR5z9JQJIRjVibuDA_loWd9GRTbJY6Dcvg3Lih2A6Wdch8IGPXMrL9K7v56ax0P9SUPI6dsu_UWmGRjo3vXNQWj2RTc0VGvXXjJXCaGxmkCqN9gqsAmRtdZ_f8r_3Ll2XyvFHIVk5MPe6LLrEFmVDhBi7B9yMCPo8H9gbrnimuuLjqXT-r9VvIhBin60dDBcjGS72NwMztcODAz1wppVm0RnSXUJXV5GcSgnwvuBOzA2tFCOohlGJHXExgZAjXuYurLZk_7-SoC3S1H83AUlrU5vAc__jzjwGouk4AxkzQkqjrtno13RL8_xqZuUiOaOSWuBMuZj9U9BXUDcFd-Xubdvg-2IkWK3SX1FnlqKmsgi47sddJ6FC",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydiedbKVQUf_gPwbGoRK6HDLxYgIdmc92EGNtaTfktw4e0U0efh4SOyKCygjGkc2pzLGr-Mcmh8jqYMczOcymMUfKS5TquerWyHZzZc-lrOWsx-MIf2P7KrF6sRpPn50jMtFGC8VhunsazsM74wedhgQvpHtj8ysDDKMKBwxr2PRcz8HhQHXAYieyelMQeS9O_DqY6nC_r0Rbheg2XX8EC9nr-18vEU9CtS340knhV42ZzPAKyEnBsKcCLukLO21F6wb3EwxevcjBzqJMLAEgvQ6xJcMChAexTtLcf0YxY1sQh-dMi4e-YZcOTMvOPdljyQom36Bql2TfUvmORdK5hdo2O-4vcDzOmTzLCb8njGNG8-Ehf_rNU3fykXypneIVeIQqFBlilgJGVlegWoQVEyo3r6Sf2Jf6vrsChi_3g6FFDDrrRPjzFQnVIhZTQ",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydh-5Yq4j57PEr4Pbncbaw5nUN8Tmk6LcbJwr3gi0PE2EwA5O3KBX_CpdIONO1Q1VSqQnTlVPn2q0P73nzdzQxyA9hlpFJGGN08fTxN9JvoM6NX0N9SNDYjvgDo_7usRYvk8jcCdIWhv8a5TzIFQRRm9pa1wzo7ZJwSDCWgwNwu2T2FONrBhR1vc9oqn3QOC_guxs8d3HVg4i_mZBmU_UFMvGio9S5xRvVw3YDGgIEy8PlvcFRbPSyTeMcoo3uqSD1sxCGl0pzTJfv1aYYXta8XCa5anAR5CwltS2Fg63cGfbwKKS8CIivMZDraALuB0ZUVCox2d10vcvbeHX6F58uIRj2BHaiKYXBJfqb_3Y5bKyTRGs9Gi9pwnSmK66sOCnfSQl0yAPizIGf-0kGyAI4B31tF9eTbNxCFdo3LQJlJIHzY",
+          "places/ChIJAQAAsAAc2jERbbHzLY1ImcM/photos/AWCwydheHRFbz8NfsLGlL4qwYfLgmhpaVkIyFd8vrFrUWgolb4gIu160svhjJ4ievg_S9RAUavuRwlbdRZpNOGMubzhRJSbMx-oiRzRjq0egtkWxAz-WptTktyKW2JK70HOHRmo12jWdTliTTxMcQ3gDlN-Pll-GaOPfIrZ61ZZ12Jv9ASfSS_nqLUureYTvs-eHZnJ_-p181L9SOeQIk0QiUXZs7mHHMqh6qzH5uXu3-Gp-H5tpctkbJy2nS-MUUATJgxA2ko3Bpnvd3WYJNEbucPqTaf1YcetXK7W9BnxGfvStDa7PRRMUeTI6_vmrmOXyFxDbKsCh63MOu2TC_E0DWmexXUAA20Cex7JYxF10vG9zR7y7PBZ3tlxGhJB7KhHe0wOVtVxAW0d8sw05rSbmRCGoN2Ol7CDL_Dk2T7u1un94tFh6hH9Aj5lmX3CABg"
+        ],
+        "__at__": 1786804245.676092,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Had a good experience at Good Old Days Singapore Flavours Restaurant. It’s a decent place to try Singapore-style food, especially for tourists and families looking for a convenient meal option in Sentosa.\n\nThe buffet had a good variety of dishes, including options that Indian visitors may also enjoy",
+            "author": "Aleena Sara Varghese"
+          },
+          {
+            "rating": 4,
+            "text": "This venue essentially incorporates four distinct food outlets in one, so its probably a good chance to find something for everybody's taste on the menu. Its air conditioned and you place your order using self-service kiosks and collect your meals from the counter, once ready. Our meals were all ver",
+            "author": "Barry Rob (Badsnake)"
+          },
+          {
+            "rating": 5,
+            "text": "One of the best places to eat in Sentosa without spending too much. The food is reasonably priced, the seating area is spacious, and the air-conditioning is a huge plus after walking around in the heat.\n\nSince it’s a halal hawker centre, all the stalls are halal, which makes dining here easy and wor",
+            "author": "Robin Kid"
+          },
+          {
+            "rating": 5,
+            "text": "Affordable and a good variety to choose from. The place was clean and aircon was a saviour from the heat outside. It was easy to order from the self-service screens and the waiting time was short. My kids enjoyed the spaghetti and fries from the western stall.",
+            "author": "Qiao Qing Yong"
+          },
+          {
+            "rating": 3,
+            "text": "For months in 2025, this was the only \"affordable\" dining place in Sentosa after the Malaysian Food Street at Resorts World closed down in Feb 2025 after 13 yrs. A new food court with 10 stalls (Feast Food Hall at Weave) has opened since Oct 2025 but awaits to be reviewed, although initial look show",
+            "author": "Ronny Tan Yong Hui"
+          }
+        ]
+      },
+      "fort siloso|singapore": {
+        "place_id": "ChIJWbbHWvAb2jERpIJ56UdMj_E",
+        "name": "Fort Siloso",
+        "address": "Siloso Rd, Singapore 099981",
+        "rating": 4.6,
+        "review_count": 2601,
+        "price_level": null,
+        "website": "https://www.sentosa.com.sg/en/things-to-do/attractions/fort-siloso/?utm_source=google&utm_medium=organic&utm_campaign=gmb-listing",
+        "editorial_summary": "Restored World War II coastal fort housing a military museum with interactive exhibits & tours.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 6:00 PM",
+          "Tuesday: 9:00 AM – 6:00 PM",
+          "Wednesday: 9:00 AM – 6:00 PM",
+          "Thursday: 9:00 AM – 6:00 PM",
+          "Friday: 9:00 AM – 6:00 PM",
+          "Saturday: 9:00 AM – 6:00 PM",
+          "Sunday: 9:00 AM – 6:00 PM"
+        ],
+        "lat": 1.259363,
+        "lng": 103.8086242,
+        "photo_refs": [
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydjeKII4twUMoxwAdsKP9QrdFXpOewanXJl4gomGCoG47PmcoScnJCroUxQRxBO02CtOgDrm9WVgstop8z-cpK3kTTUPHb-TfxNF0CDp3Y9vYvlU5J1a7TbTwS7qvMKRfjsWL5HpLvZRU-mGt2gJg8N9Y96M0Ap4PIjpfBAF9964lAtOOSk8T9lihgncsqdPVPhMqNpwOgojS118IQDHUgrKz9EAfNf5q6Dj4HJoDu4P6ovMxlJ6mvyqInpKEI7RT-VqBuwfDIF5osIpNF4wwtqGsUQV1XfYSc1vhPIjeBY8mTzQJEMan3v8EYj2UdpUD7gFlaUorAEQa3l8i7S-osHatjJxH1Qk6FINGpo21b0j9AykgtdXAxvttpR6i2NIWxFrH6hbZitsGa30s-OE9behdZRNmm2AsZZWHK2tLB7lcQ",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydj6luGFHdutOv8oiEfWPKe0oxdjodj7GbSi9JZXMt0dzqU4f4RfCpGS7YvyimP04RoRmNyo9j-w3_UTSeK-tY5L-PznRe4DLljUmBrpTyk-URbk0VvbBI7mCaeERyhd6A3DlgY_PYUW9tQ64jSFpdEUXuAYKb2fdZVUlR7u4tFntsLe3yLBPMwg9nsWXL7VPlCF4QY1IzRlznXk-PvmaQKdCVgTNwrLZ1-RdNChrG4IzXEWU6xHYeKbB73jg-fd4pFpX4HodN-7UqUIHEg5alSzgOeB7KGzu5t6IUYIJwjZuYyPXIMw3H3y81mky9qmlriP8ZQBdVKy7NdTnxnNO8Xc0z8GZaqDKXotxCztQEb3Wn6qza0BXVAyhqRexBn2AClJtrOoHMJJVUDbuoJWiir85clHMEiP-4Shti3F4VhUKw",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydgMb9H-mLZRYJp9pa5PuaWmRoWOgpn1aUzjcvMhWjoHE9BRYDUWcWeip168_s8mMyFc-FjyZdMFIQHXIe0OVsAAFrHGYqTv-2NLPAVZfIlHaZXWP7AYrRGiXY8GNxet8TA0-lRvtCyV7rDUnAZa7sp22zyUhIPefAv0aAkJGMvfG42x-NU5UDM585ub8HTlEei09CqqjrEn2FTZ_Hx0tJa1MA_KWv0ukzs2gX4b83QUgft_iBmC6PQV4rrauXZ4j-mAvLWlQtRDBZlkOv_YvhivXSJoBWIOgtYq8LRVRt1PjZ-PaCJ1rSn-mUr_uCR9opRuil0thgwZ16-Vui89mUOf7j0RucpspgFkw8kovTRChDZgZomDtVsYuLkQr3ZVARItm9CF6GkI1srhFbYklFf8ETWxLfU5W_dotaqXisyi2yHfPuG-kzdMzGMbVA",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydgLdm3NiYAuPOUHwaqOLpQqnApK-jxDAtGsMyPLEyCdzULktezCsAesYA-Gry4fFtU1X1HZ3au5v0BGOX9rhscyFFLfSPgwKF7toG7cCOKTGUfNXkOw3jyHDD3_j08svLHAltTJQiZVGyjMGl38mjcCOgBOAwuviz5w0CbDnnldnlGja4zCYwihYKuhDEJ_dLE3K36FwiMN0OAX_U9ByNxPcmGwbHICGpn73z7_goKp6-1U2C06ls14N_1DaJscVb16oc1rxIJ1jKPThdi8SxRGvGRxjmVL8jUhJ3DtO9cwnxhX4XWvBbByJH0900_Z-XNYS_1L2pxsBQo_5iChaQ5ZcKP5bGYoEV4gvTKG3HJE65fuBuPMuPr5KmGly97x_0dlt-lLq-BrVQsU2u7ObCF-Gqp3TB85-38ChvydmCCbdMY",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydg-0cU-ZYq2pccy0IJB7PqlOWWOUGPXEOhTiRxQCokHxLOisXevF35hRRbRhxJVyUwjSbliFOqRjCLMLsPnnr0pNoUJn5alpSpuMsBANuHatyOmn_gkVHhIMsMd2moVt4tpg_mk0W4eAU196K-BFepNXGNzAG7sS_XxmMhkKHsSxz6H1YVRLgg0YjCmZXVWkMozXfD1kxxsaszsKeIeCsQJm2OXQGOjV2inwsz9M4FtVczWM7p36Ejhvx8ORGarTPTSowxUH9JAADRCeRxpDC3gLg5nGc7hBEKtSTHyFYiWqGa5e93FG8YpJSyK9N-KpyaNJYSO8nbbO2RxBfkYCkhI863v58wAjTJvrlcbqcdzB1QtOhpqSR8mrf6HBF0GlJ7u0N-O_JPa-lghj1JX9fGXtZaFzdxdpi2JhWQuu9ldoyEF",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydgUBnH5-CraHnt6DYsUJW9ssnXTA7yz27qGahgN2i8VfAV9iOLq7cHSEWx2JEuWFBi-c5cuz9MmR5q3SqBf9a5BoEv53yhMVB0tHR8MALYkmLdJ9g3owIaPMb3cPt_ijjww7QUs0iK_mM1p8CbmDFbyMfHuFl1dFJh0kBl6n2s2SbQWGJDOan-QEqKdsO38C_uO9F6lJyHGjeT7OkWUL04nREXqqZQkpgbeoT8uorwxHQzKeRr8APu8pZFfvyuCIstTC0nGzt1glzNHSx-KRZEPWs0YxgUU6K6fwugmFoQ1e8SK_GHc2plmrZTR4VZWAf9rTcqFii8Kr__tbZS-spFWrWtys1IyVDukxmXAQlICUCeKWNqCybxTCXnadsMVm-pCWyxxFxBpI2mcgiGQEZrueMWLwkE2_gnEMkSp8L4gwXY",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydiDyToRWpW9lpZTQ04Vhahha6kadDQESB5vSdGJNzVYJonpfLGyps5p-fdMBzISD17zR7qczCyFygFsKuMhyKcGrLM8N3HWuIy-4XvLwfgEkG8NYUOSrmkTwlpCPEvKCSz29XoG1CPLj3GWYtWyD0DxzJG6bgboJTDjGEywGSMxQeWYk80oAYY6F_RMGRpwO0y3nVSXGIwdRj9Bm1miB8GOR9wGQIxBATLw0JRxvZyo0a9zfpPoJ0gV4iRPu45um38eqi5qTOFPpT721eG91gTKNs_i1A-mbUueTMlly8gs0r1yK6qtAD76cBKJ5mSyEJCT8b15VV4nLfA3qPfUu9RYH36E4XikTGT8BLIZQFtWamhdTubQK4eXtKYC1AdGL8j3I4EEhTjCAyj33WvUOln5buixIcix-jmCDlwS22yautjV",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydjjetQj-IhyGIaPPoiZyUIHWgYdEHGFT-Z3P3f58R7NCSWDRCfsHxbwT68bhQ5kiEbdkb-Z1YGm7Xkf6kRisAkcXqoWesqED6ECRhc_a0h2RaC95ooFzjIf_r13Jm_pBPaGqUPhlp0WRuWBlSyAYBhJYiu2SFiWikwDpy-XIOdrrKq2iYz0jhBRn2loM4VzP4jO-SLRRr8pXisZBA74oI88_j8wMzlE-g7mrIbALLqyJozernsOBFyxyTADcfJorLSVKARPTsg0qFaPCaHVGCvVfaHXM-fhhBZ7IUmI1t9jGX4vDeQCn_5mGRmP92ZrlBRjwumTTeOeTebCXc-eGlEhJnE6qSE2fya4DUjaI3OFFSRsSjSddDT0nQ5Mvs3eGNM8guphPs5jqe4RmU3aE34Okwfvj-OyUxpIe43ZzIVHp8M",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydgNtjI53r5umiZZ5OlF9_aYwMCLmjQOxnNjZ46VObyPR5hs8eGq3CQPgcMBlab-5KfgsYVi_LdGwclWfZ1F-J-6WOdgj01y2L6VWJi65kBbh0TWNosno6PxRZIyVgAGxKspjCtACregcsUbBQIRM246KT34TuQmsFPV9z8D5SaAs7-0hg51OMzPP4ITY7iKgM2vRpc1kRg2p0yAkX1iYQin2QON-ind4KU0PSg91vTzGUmnqSigH9qtmdRNPfxHqI-pF1kN0zfN9md-6JCgvxvUnE_-3IHSHeyPec7dqKKqKdosbJ_QXnrxp0rUkfpFHMukmaWTjSi9w689grQNMKsubnMEwNnw2bQ_6I3ICwXk82I_aENyFyqU78Pyf839_3eFfENZKH7xNls8egKmHtsQuIU03N2CfSkeMmNFTmUGsJaAPhfdPIhFN28f1_oh",
+          "places/ChIJWbbHWvAb2jERpIJ56UdMj_E/photos/AWCwydgoRrGgjct0TM_qzHw2XNdxjpOGgKv_GA-2yho-BbYFy6ofTKFjmnem8Pw1Nk6fQtRyISPi7__LnEckqtqSYnvR4jZb8hNdZU72htU055EmHctVtllP-vQ-yVwX9zuscAy3nx_0rlkExPs6SBgkKHsmtz9tEbvG18-JPoR4izeuT7PdFZZyf2AMeAUGCgwLByKBDuCccMG-2wMLPbUk2c3ecu8caQ4f5hofkhkODLoTTzu3TJYbUeR6oz3P2nLRm0VGtg8eIxA9EoYNvOn2n-SAt1iO99Oe1n_UM05c38kmVqWzBG5cTbsxreBVK5Pkznfi8QT4B0rl2XQQWSMOMHb57A4KRu3ccNJswwL7awxLXEhW9h77s1MtcrYZ19oQ5lQHZ1wDjJ5dpgl3URNmzulBlt4O3IPRMsxptuMR7tc"
+        ],
+        "__at__": 1786804246.097505,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "You can reach the starting point using the free shuttle from Beach Station. To access the Skywalk, you need to take the elevator, and from there you can begin the Fort Siloso walk.\n\nA really interesting place with many of the old colonial fort structures and infrastructure well preserved. Even thoug",
+            "author": "Lanil Marasinghe"
+          },
+          {
+            "rating": 5,
+            "text": "Fort Siloso, Singapore's only remaining coastal fort, is located on Sentosa Island and is a fascinating piece of Singaporean history. Built in the 19th century, it played a key role during the Battle of Singapore during World War II. It serves as a free museum with some fascinating exhibits, and is ",
+            "author": "Piotr Treter"
+          },
+          {
+            "rating": 5,
+            "text": "We recently brought our students to Fort Siloso for an educational outing, and it was a wonderful experience. The students had a great time exploring the historical site, especially the tunnels, which they found exciting and engaging. It was both fun and educational, allowing them to learn more abou",
+            "author": "tRipLe A"
+          },
+          {
+            "rating": 5,
+            "text": "Entered via the sky walkway which was quick and let us enjoy spectacular views of the beach! The museum itself was incredible,  we only planned to be here for 1 hour but we stayed for 2 hours due to how extensive the grounds and museum displays are, as well as being very educational. As a tourist, i",
+            "author": "Selina"
+          },
+          {
+            "rating": 4,
+            "text": "Neat piece of WW II history here. The Japanese over-ran this position in 1942 and likely held it until the end of the war when it was returned to the British after the Americans defeated the Japanese in 1945. You can likely go through most of this in about 2 hours. If you are in Singapore for a whil",
+            "author": "ricksherman34"
+          }
+        ]
+      },
+      "chinatown|singapore": {
+        "place_id": "ChIJ42h1onIZ2jERBbs-VGqmwrs",
+        "name": "Chinatown",
+        "address": "Chinatown, Singapore",
+        "rating": null,
+        "review_count": null,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 1.2814942,
+        "lng": 103.8448202,
+        "photo_refs": [
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydgqLbyOV4kK5JSbYtW5N_EIf4NQS9LYnv5XUAU0Otyl4SCrNadla9DBDfzW3L9OtdDb-XsGeVqZFJ2lATDbtD3AD8Mw7hUDRQbEtxtq0EltC_6Dd7xHAPY0y7feJYMzte9AogtITjJE1fy__pn440T79duNx_doy91v1OYl7BZtblp6Pd039-yU-KGG9oJH7AsuftzdM32Rh948tJdPhlhJ1Uvzm5J4Wrv1rSpjD3k97NK3zq7Hz2YabCEs5Id5s1qJH64FFu_3UMOQ-fJZ-vE0FsrC6dRvWjMr5QXxAywRcJbbOHqVvfHdjqkySqvAYumVCd_892T5UveZzoFN9H20tcxKL8o1EQ7i5NsRA9Io2zp1F3b5wYnwM7pIrm6VoQyxdYsoToUnoJE8UkWAdM6wiz-DFDMRyzOz_1ik-T6xJ6L3",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydiPMMLSr0hjEauDH9KH6H6xR-Osh8RR8Qd6ETL2-4PXpb_C5mhgldw89Vd4w4Tnbsqdd3c-PGcpD2vYFNX2kNvCPHFSXkpMvzG9QF8H3eWqfh9lB9oka_j9Ysp2_p9RfKJtecyU0OXm1br-iba94y0vIaKkfGau25DNGSjYkt2AeVfrK-th6uZq4EKKWLtskElOGLSlcx-gYujlphFxkZJ7cHaF0zGRIqkbIGquecqYsVAg33f82tlZ7od-9bLMhnsbmEf07nUIOInGL1w48N9mO5toL9tXc7rNaZX8W452MbXcm6LCBMTK5tPz9gf31p2vgZJ3qMLXUQliGlectousxpDhV-AWJmxPp-_pmvqJVSbTDMFzSSsxBf2rzYBI38Cf5y1pOZBUFGQJk7no0oN0ucMXB-8kCpwOR-KcS9ua4Q",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydgmQfAmutH5grIZY-9AkF2kUqUK4m_FcBASQRZcxtHpbxjsjGhK80sX1WLj2_JlatY__A0KWUeDUhRmVgRXO1GLcKfLVpZriBXJO84M_lbAdEM57a0d8zLBO0WgFKE-_rpYLyZJ-BgplLxV0x39bdcZNw-N5QJNyfSutoz-1Zb0Fuw09RUAamB691zwcqbTUL1oihlvVz-O3jnsvVXJVog_9Zq85nUn5c_I1nGnapp1MPp9B9583E6k2CLFRIJnEEMhLOxuaguBMdg8AO6tFMPLaO17EZd9b0fHFW6BqB0AhbxiPZkQMQn6VXiiwUPTBCm0IJYjdHOPoNBJzI1jMD0OvaFQ1cxGYKWxxvEban8Dd3A6rSzzuI0McAnbFMUTbVg2Dwl2_w2HhZngFP07R7RA0vJt6_DLhwVqDXk543Z6ZBXS",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydgHaxHIYKYC61mw_BAccirfTGpjA4QgTY7efd1SxjBqCukzut9n3gomZwi1eIntBbye_pgkiSdcyGtYPCpOPZ812Y3pWJlw5VVXzqKU1qo2RNSNUpKFD27te9PedpEtq2Uj1KOZODG79qAt13gSv9AGkWFEarUPPUt0ki1Yaq1wzsfwj-XuppfG_-0whNYCli3QFbohuZlZWhPYO551AA71rPmj1H1l1t-79OUNF-olOLD6__65tIsx3lofxThJ6w1ioAx0GrSRL_VrY9OtABUv803jO70jgC5cu-uO93ItAnAGC-NJVrFKyWKaNtyIV_vkYX9HbUAdED6ffUlCpfNxw7jliApF5MUg84iuEA6a5g9gu-7Ou1sXB2Wc-nMirVorIfxvyOVfT5Gffuy_ZPXTTfgG_6gS-APZMpwzqLgz6rg",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydgGoJ1tUlvnOUOaJUoZpJhhPhVwsKVxfX18x63aXjNajZrqH0JuTtQ3llAtuOaFsHBYkULsOWyvSE7r4jtu2a-3e_wEMDCysxDG2wrvYYm3QrxiTmqrDJQl_Fa-usD_EFKjTYXrSvjCVgQTnE14dL1KH6XNJHEYhxIjnknujQbgx6txus__kLbD06nzegtWvhbAmBBI5yX_JxTvejYERMIUSbJoz-CO0PF9rGyHCmcPytVATxYOxrFW2qyJ6hCfyi41c2tcVFDmt4hJp_A3U4-UjOWw03p7z6RWv1VZAZf15KhLI6Nk2qgOd86wuxVjqD8KbGFsNTgA3GXi3IDe8M3_qQTmTbzoyEmP4ITG9taUPGkUybpnfjMrh96koK-lqDXK-nbPNF515KAMtiFMtJatSLG8qvwSVgLkNlshmhV53Bp4",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydhVjXn7HRFtXTISMLO2cSmoyaizT0HLueUB1BQzbGVLeakHqZw5ns3usbA_T6Dy9pkRGrtHUY3p1xtoao7ygMrhTotr2ydKRC6FosBRzgKQvxzj3bzx8ZHrIVxM_R8_QGQOiznPt4TbAj0vRxR-KxnF9WQbTl0TNZe1azSiRyZ5l2FMuEbnygn4-OlRLGiMVTAqhHRr81nHME3m_3iZyP_QhRjH04lCgdxHn3AjC82NNNvLih5I_2sgzp70JBh5u3dRPrrwZXn0KaIlmzfz3KtohqsVy7QMoE9swH7vUEsMwcSsZRnAZ3dbkt52b8mlvQiTCI6DZ_mVNEAC34C2zuQ84SfGfTvOdP85LqFoTVeVOPVjcgcqCbrmQc_3EqtjOc_QK4zwqAA1nm6hvStuNl_3LRk5J8cPj_REEalF_pu3nhf8",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydgatUZWMelROb1L_2IuyHqAu-icG1rsOtIBkvoBlOojsoBcHeDiqr3X8TRJKHwnu2Kn5SohRqyu6PsH7fwK3nKB42sZ077xcya-cyxuF8_vZNKEjaIlld6pjZ9D3Mgv8hRQiatLPi-RKmsLdCKTlqRo6PIdpGgy7PK2OK1vhAzbUaRS5nzJCvOwCzsVA_f3uDmOte5KAwGsnHNmVx6cwEKE9DgERAlUBRlFOW_4ZSzlwyKW1Vwm2NbewfNUvHOeFMrN37XQlaMBp023dRYjiu_q5-yABCAI0Cz2Foc6ZNWMDoTwpqYDRXbBLbmh8KviihJ9irz17JUT3QoMNiV_qFq0jKqAywLOH5RfH9Q_ITDSa5VH6IpX0swyIvIb-dMXHm5lLHqIGEAnNRobKrDC9Q9oAZGR1vNwJBQvSplXfndzWCA",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydjJ4maoHbGWx9FLAWwcXgyr8L6Q8Ds_9cEjIJeu-XdxakDlngdDILcVeZSpcVG91RqzO_BaDzZSJBTxURsj7nWl5gFbcN-a5TkL8Lmn-ZA1zwmRZpk-cwmHY9f6CrB-OFcECWEzrV8R3VFFICmIakUl2E9OSaE15JzdZ0NUQWKzcH1AoDkdNpGNDYvPiKK_seV15v0mDRYq088JABJ_tqNG9JKi4gO0yEztp-is0ew6GBSwaTkrJfH0GQ34xGIx-tQ41WRMzKy-G--aFOp4_tVpbGYXy7gWCW0_mC6XUXn6gwmwHz0vOXn1agDb3AQG9J5UOkHN84SNhYSinEdRtUvGHA3kGcznFH4sq3CUp0XASR_goJUmcz_7mv3For43xu1tog3FWsyslbZ2ErPjmyqLDIYNQ3B0LZl6tEowp6UUaw",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydivjvD-SNeQAkVR7qafN33BR-LFAp6gw5ZD8REXU98VEHmoJtNNTmUjtNs5S5ijjL9J7DT9nmmPKdaeZrxPw5FqSOM6n-bNmu-7NT39kBpZq4pkf7FIdIOshkhtak8HAN16pB-AmXK_Doto2v9IvyH1oEukzTwTp7foo3hfIwOqjiZn2IJdei8bqtFHLnmPyinc6MdGMAZKdBVMXABNzSIo5ujAR_Y9YxSGK5Z9tvJrZkL3kl-4DnoV-F73PUY6sTNbWHt-HXNjqgVdGWKOkdzen4nV89Y5-j-9klWFDELAUuJR01_Qpzqx0HHErMJRT_W9rYijN0-Q_sUg1kS2JPyT2MyYawWQ2NONVny8X1fZvGSjFK5Js039Wvh8dBP8Mn9pV27i4CCc7SguqEh5yTI91sekmglfhfhf7erTwLSqIaSq",
+          "places/ChIJ42h1onIZ2jERBbs-VGqmwrs/photos/AWCwydgTYj6Y3Je0kAB2BTDS3KB4mE6oLza_wYPdI7aXR_LPGynUp4fsZu5ilNjXQaVYB57K92PxVLgzZ82eA31ZFxfFCSdV28HtKGu3c3r9YoV2036sMUXZwR_k3M_TdV4OC-pOz1jTilvG3-jZctpqicvfaoTCW41BIQAORi5QrP7lTZQLf94PMRuOyhQ5WXDXXH9THkg_qnuJePXXh-bjMC3iLLWV3nzCwqLFEZ3l9nPOV40obNNQee_SbpJSqk-rYg-rXA9lKnNVVmp-VPLVnZDGzsKVro2FDC3zZ0xX2_v-o7O3so2sDplIDlnuruDIdn3-RdplKCHPJ0I55BeUDdjGlO4KJ8mib0DYnKnttGysQ8oHdm_Cq1lPuJc88Nzlp4y7bQk614NIb4RKwQFTk0wioS_9DZ6bEMIHFi0K_WZruQ"
+        ],
+        "__at__": 1786804246.435502,
+        "reviews": []
+      },
+      "sri mariamman temple|singapore": {
+        "place_id": "ChIJ0yjU0QwZ2jER6gg0ImuCTRU",
+        "name": "Sri Mariamman Temple",
+        "address": "244 S Bridge Rd, Singapore 058793",
+        "rating": 4.5,
+        "review_count": 5815,
+        "price_level": null,
+        "website": "http://www.smt.org.sg/",
+        "editorial_summary": "Built in 1827, the city's oldest Hindu temple features a tower densely ornamented with deities.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM",
+          "Tuesday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM",
+          "Wednesday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM",
+          "Thursday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM",
+          "Friday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM",
+          "Saturday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM",
+          "Sunday: 6:00 AM – 12:00 PM, 6:00 – 9:00 PM"
+        ],
+        "lat": 1.2826867,
+        "lng": 103.8451462,
+        "photo_refs": [
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydicQArglSqcO7DEGsj4j4L8htBFGyWZuS7-MxffRVPq_Aoc2idWfy9cZKU5IK93gglI2KZTBU9d0TtomCCgwW_JGopg3d_e5zxuE0B4n_GOs0-rMrISCfP1YX7Znfc-mvVskBYVWLevpApVGYnTan8b7ubc0icZ-CIQRkvVp8TKAZWtO0X50aJgqCgswOj-uyZp1gtR4hu45qtE08Gq3OH2pMl55KX2Njy_xzjJdPbgRkX_MjBlfvXMofmIytCAcH5N0n0F-5yHfD4u6iSVeJeXHvpU_aB9edEo-N4b8iJ_NEHFkKntUvo9mSC052oeTnU4xd4MB2j7sBF3SSaFGR-FB7vjAp7IxXCC-utO-wvGhBes_Ge0y59qjA0luvZuz37DUlknTbziTfsRIY8sCPCoXkkS46KoqH9THnCVp_bAtVZRpLG7kegWPFb80Waz",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydjBkpWyUSfKRacSu1Wq1n9DJQaQK3b7Wo4UlAQz3v0mWuVaGvF_t4BUuLThitcrIGH3ajPqNeyePSvUi4m7FlD_KPnzA1zNjr9_1v0s2PNHSgZVIwVr09hC3ARO5Kaw4VmMfHQ-qwNwE1whtaRFcBA4vUlA3iFLMRMt9yrOXm-IbRXi-OYu3aH4fpxFCkybmu8Ag11Jw1HcDv0Waywolv7JeTz14dXEghcG40apTKjXHag1vVq-SizOVSwDogwpLTgtBWmU3yBTEKpTq0IodUw1adKfu4svpTEmXWn2I2I0EhjqC0KY7PKcV6LyfL7VkFPF_ADgIeC1OTDGn2ZTAIwR_C2CmV9ObiJTaXqEIGJlQn_36S5abt1Qq3WQst2bZ0OfMb0nJNbncvCLpXKRX88T5tlA1sm3Zu0Xt708xpLL5ITGr8Eb5dKlUATSFgzP",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydjSJrW92Zq8cA9HQFIX5Ef7C8JNQAm0DsfUYOm7INZqfT_Q8YPL7Y6V6pIPA4gKoXZ86aRKNB8f3bcmm9GmAVeoupzgrFs_DDuggnqCrVIGllkjM-i7rXI2nGMfbOYMBcnC9HxZ5K_QeyO2w7OzVFXKDa_JLQPl1NcwJBNssaCA_TfIF3Viy8gb2EOBgWxcWFua6b7sVOvpThBiiQCLVZNjl9zfOV1QDP06z6J3rdqHVL2zKQLCdwTSHyvl_YhV-V_1C_34fQX5knArntBBlXR6yXPl6xmhoSSI7x0R9ptAj1ZenkRlSbIUhETFP5ACvTFGKtViD2fLEIpvbYL67Z2juvgfyAyfENN-4CNbvW4QqdPdPy_s04dvwlpo0s5S24lhc-JnL6ddSkuYZGWRzX1SBfOn5qP0GRebyEzB79o",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydjvH47bTiLA_QonvwRKkBsL90jrD5njEkNNakmJJfEIbI7O7NDGwPGYdzvj9Fw9Mj3SlB4iM8_CmFmLma8Q6tVk3chJ-6D_6GO9wib9C-C0RNh5gaFQfV8IO7xjJZxwEBp1OoGpfLTsWNBOUi2MQIQ0HoBPb83qssbszSrZNAK5UF2J-LKUB7UYxzyhlYYISdPK8_Uf6GgOzutWc6VNq8kJSRvS5IEDAl3zrJpcPqyjuPm2ZI4oJ3uSVjl49nzAcw3Rin_d5_mNDgTr-yn8ejAZgVbz3tPA4Gv_65OVhjReUWKzFPSfrxnGBO4LdkAIMIjceUPowFldAu8-5aZuCUPzJvXCnrEgm4oF1O533xs2dHnBbTEOHCIvCXTaT6MsuZxYUBTjc0Q-BDT3WjVSBsIr60fD507BzyFYmB4pRkh2RyzVWdOxVmIlJEppUc5p",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydgcNHnzUm3249ny23yUtG-YAcOTH3GFqx6vxPs2VTFvOoLr1li5ngwwB-A4TYO4NTSmNBIX_RLgocGeEXZUQN3FgTos5IGC3bsap-vfSK7tDHJW59jIFdsTNqCcR2pmEbgEdiYLSeQlvltuhvaPx2DMUeDQdm4942JuB8ezEMXVW80L_oJig63GrAE3lQu5RV0dAUeklsQgouTp8H3q6xMcCrZ9mQSI4xKw5C4fLR61VCvFL0zf5nvE96mBtltqyGya1Xx1RKyVEHhqLgD1BI4vEfGHpD6VF5iJvPv3hfV1Irvt6MYM81C339_EvyrmtRuvRWoRm1i3ZaGYRXU-jBsItOx-7ADwmghfLf9B-ejTrirPMesYpQsLhxVDBA6XYSieIi2I8tCmVcEWmdiIhKSL0SUHTxlsig9VMiu8YJIxuA",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydiqgpoyRLdB2IhwfiE4JhPsgTCekecx3Gf2QWcWeeii4qzSrMxxLCnrLU76oF1KiWhisvIrlLYeQTKlVwtsElLYJuJy1lOuTi7zVo2bfP7NsKNzNq7sWpMNXKv8Rxv_-k39o0N_3Q3QhcTnt8_oDaSxIdFuCqbOMega4Wy2ik6VUXDcHPk5FEO7tz_XcTYycyQ4EAo4AgI5UNPkhADLtE4fMeNbqRePrdPzPGN5TU34KgwMiwOE27rQQQFJtK3mz-SCEQ1yvvaxU_o3E4om_4ALSWV0plEc8y0cgyIIlSa2o7mwfCmQK3LsJEWrM5fbfw3pXJdtjeHPHMBg7jXmWrgO626ov31xXX__yfVM54KgHnaKCaN4QUG8Cr2J1-m8pkhi37VwejGdLdtj9XhNiX9DvSIaFBnNcqyPFZiKlPK0Eg",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydjXuZuZIh5CR5ptIJB17jFSGH-6HxfCduG-kJ4pDgCISdf1Cmx3SB7hD3UVp9ACM-d-WMt1kCrH9MhDz7GMDvU9jEbFkdc-JAw0HtS6AIJmz5vOIdYxk7ORaIowjMS3-XwOJRA-5ncwRV3fwtBqCfz65dvHHW5cMWeN4j2UxxJN7Pn9UZQFGniFLHpEDKhmApWdc3WEGJb0l28mzTqZI_nGIDq76tcqKNhdFRCzmRDr1nzIV9H5b_wjIMzPD9LdMXW20LCohuoK-LF1Bxp_ctwd9NjfaogmbOqkrEIh4BsVgZS6fFaZbUuwhQVkTJDd27KdYZeg7u6dVZvcI5oEzKoOaaGY23j3VPhefDJstD_tf0-iF_rIyF3jIpP_DEMJUguKXpsynN0rcRj8HFtgBFZq1f2wOxIwHkysbTgT24ZFQw2Z9Wb7bxh-S4SKe2TR",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydipsy3Sh_KM-b6XBxmAaqrZ2oy8_jXQvqjDW1ITUcIvTIcAd8g6-YViHO9uMMxcf9A6F9lJ9BnXUQmTlzAvb-eE_SZI0BY90Jh3wXbNquzz_gq0dw_tKFzCzYw_YdvemPw6uWDD6wkjNpSR11Brxb53rbcdlhHaDD-Bp7IlspFPSpcdPJfCrPLnnbFIe564O1z9cGMEk8-1TZ-GDLKQadlI07vVIgOIovK30qNeBTVrbtD-6_7Skb_pT597_FZ8J7HBQi3ILwJHTPaJrhvQhuniiyASqUANo8fwSNXwTVugRau0HrnNEwRso6kzq1tcqG6803iM5bW8AycC9jvprMB3LRmXIJbwYeAAmdFIo2AoYQXwDJ8d0xw7iLpV3DXSmfhdgJGxZl2w-5ns6ok8RCBSDf5QBnb3G0dQO8c5_0FLzlF3xb88dePE63qY6U-5",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydjKukOPeVd9zam4QmZKAm_UQLyyAIEJ5wwQLh_hiw_t6sOWnm7ZcM9Y4uaOe323kgVp0hERuDgZWnwyK1CRIlBkmjhEDQiNhBIJngFvUqbWhacSC1Imb3L5ZqhbsoTPqP6n9OCH9kyCtvxXlYlYOgh708gkNBaHO6MVLVbYp9iQMUrCw1mjKh0xCO4vbztzsbYnAaO4T7HPYfooFvdYkTLz46gSal-sUiFnncUc9EpT8RaxExKNANrysKVztGnDOiDajmTNHF5_JmgFdFbKaR7s5uk76HiTWQpAH3oUcy56daIbOpbJC6WuWOUV51N1cKyHVOKmL7e6D-y8S4PH1VUZ5_7CDH6q4UzW8wlE6MsGlWfiHFmg4kxWdBvza6hCMFO8X7SXwefz99j5wXFRG6DvPYJoILqRYMWxHBHX-VuxNanX-1CKGoXStn3MseGq",
+          "places/ChIJ0yjU0QwZ2jER6gg0ImuCTRU/photos/AWCwydjYfhNi7hIQUC4j-6XxUXan3xTCuzLxEqA85xz41soxGAzZXLsX_W7gjA8Hmz1KJ69WQnTgvUBZeVZSDDqe8Cuf3DvjAS_-Gu0xUWwXt3iTfsA2qgd045o3s8r_2W8WIN7fMsbMRCvuCHf8A6II574Keg50s_BAqEOm4KObgwqhJn3u9xdtWyKpIs4AuR1pUlWywWg9wiOK8a4jp-d7K2a3sDxuwjA_a7PJI_-CwXKuVhOiLtZ-apQGHIDKBVPnSTRYvLHDqnaQxZ2XKLQn2i9vaiF4JnK9JifvxCHDNhjPP7dq1CPh2JRdl7qeKUw0GnmQY10NsSux5UHkg2c7IMH1f0IiXeC_7_UWBxpYDllCg45q2h-N2K5bW0aTe7thA9gEspu1SNemRiSPtHB_Gh4T9p4iiey8x1ew7uoCzY0"
+        ],
+        "__at__": 1786804246.949121,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The Sri Mariamman Temple is a breathtaking masterpiece and a vibrant pillar of Singapore’s multicultural heritage. As the oldest Hindu temple in the country, it sits majestically in the heart of Chinatown, its colorful and intricate Gopuram (entrance tower) serving as a stunning landmark that you si",
+            "author": "Ricky"
+          },
+          {
+            "rating": 5,
+            "text": "We arrived during a prayer ceremony, which we were lucky to experience. Gentlemen were playing instruments, there was plenty of incense wafting around, and it was exciting.\n\nWhen I wasn't watching this spectacle, I appreciated the lovely use of color throughout this temple. There are wonderful paint",
+            "author": "Dan Pieloch"
+          },
+          {
+            "rating": 4,
+            "text": "interesting temple. The Gopuram at the entrance is spectacular. It must takes a long time and effort to create such wonder. Although it has closed when I get to here, I can still feel the peaceful vibe inside the temple. As I know, everyone are allowed to enter the temple as long as you follow the d",
+            "author": "Svart Ryokōsha"
+          },
+          {
+            "rating": 5,
+            "text": "Free to visit, but they do accept donations. However, I was having an issue with the QR code, so bring USD with you. It’s a beautiful temple & I was able to hear & see a bit of the worship. Pay attention to the signage on the stands, as they tell you where you can walk around to. As it is a temple, ",
+            "author": "Lauren Keenan"
+          },
+          {
+            "rating": 5,
+            "text": "A very peaceful and fascinating Hindu temple to visit. Even as someone who is not of this religion, I felt genuinely welcomed and appreciated the chance to observe the traditions with respect. They provide beautiful gown-style coverings for anyone wearing tank tops, shorts, or short skirts, which is",
+            "author": "PinkPanda"
+          }
+        ]
+      },
+      "maxwell food centre|singapore": {
+        "place_id": "ChIJseQsTQ0Z2jERqpBTWF0Zf84",
+        "name": "Maxwell Food Centre",
+        "address": "1 Kadayanallur St, Singapore 069184",
+        "rating": 4.4,
+        "review_count": 23643,
+        "price_level": "PRICE_LEVEL_INEXPENSIVE",
+        "website": "https://www.nea.gov.sg/our-services/hawker-management/overview",
+        "editorial_summary": "Chinatown hawker center with stands selling street food including famous chicken rice & dim sum.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 10:00 PM",
+          "Tuesday: 8:00 AM – 10:00 PM",
+          "Wednesday: 8:00 AM – 10:00 PM",
+          "Thursday: 8:00 AM – 10:00 PM",
+          "Friday: 8:00 AM – 10:00 PM",
+          "Saturday: 8:00 AM – 10:00 PM",
+          "Sunday: 8:00 AM – 10:00 PM"
+        ],
+        "lat": 1.2803361,
+        "lng": 103.844767,
+        "photo_refs": [
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydj0MdM_FVYx_cpBQQF9HsMuO031api_cCWuI3Wylx8KgGkll7xERoIeSMhFmIJ-3V6IYTCVx-CLPSsUfOaiAtxoPHvk8goL-OYHdQTYCok5yvm09dz57nNw6ZDuqwU53Ko4Gahdgh0_i3UirIiswh2Br6PlTIzSzdxLneVZFDddfSeCOvPwLCEZCN7uEB3kltI40s-FNM-8jA3J7nb4lwNvjOLdOUlH9amP64ScDMGTsvmLpV-Obcmxo8Nsf2oOP26tkWScec2yplQ5k501JotEbUBxpyOkclHYJQN23qGYE84UmXseKSHflEiOXjpNqatgKGjWETElT8QXVdPV79A3lKan9oIKR-FuvhcvoWe_nbfU7TsQBMkb8dPAlxaT_kSVhyEzMBrpGW3VCbt4qaAv_Urk4xhhEH1OpQxuOjPVGw",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydho8gVptVa9E2HN-Ov7wWjFRSRAyK7JLyMRn_VBpf7_FFnJNA83cx2nWqVM3bBuh6CtfX1cPUHKcYSx8zHai_BaYE7vYqrNyniHlSLVqALYt9ki6cv7sy8aiG76pma2jbwNBnSueOveFMcXCfVaFUT5ipB6ntEZxfS0UCdk4JA4vZpuvK9bKdw0ioLh99jWj6B4kwDk5SOoYitBh80lmMQLFsMnnbK60hqoqOCFNYgmKA7mRkke68Q1UkYRzRl-z25skjZDFP4b5GjQZOjdcB6qB1PcV2aKUVdaPxWixd8A7l0wfXYzeF3V2OANwgz74CORgY_05fU_heSMkqcTB_xikN7XhKZ1RDIma4g9EbjKZCSFHr3kk5wirlC1Zo6IPhPnF20n0F2-zTcx4gaMcbP9eQj9l9By5VL7YJAqHBU",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydjXFKQfHR4QgRKimQKZKB2k0poqac4SstwF6W0JThtdXPsMnfafHmfshEUihaGEI7Bp4EV4LchSJq17sJEq9x2qIarn4bGWEu6ywItsCn-jUH_VfPSSNPMm3a7dep29oQmU9WdY4kxVgoffieCe21V96SJF_YMJaatW2DRXSvBpenvdcnmzLTA-7rLC2H-Tg8c4wwIixPcPypofUSwfOyJmpVPnbOIw-zFTrDEtHb-4TupgkKzEBPi-4tqeDVMfPBElrqq7fTIZfoYgMIvQ3L-U52wa-WGJ_NzPwwgKQY8gVY_9gI0zylErsWxGLGXE1I301MPiZZ_HDva-iz2z_pVMTbR-krhsLO-XqnuqjXNxZDY7yZm9r_porcAuYk2t4sBNbtQY9DvfZGfk36QhlsGrTtmjKgSG4EmbKX1wlGMbehgcFujZYEKlFeXXJw",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydjBGCMWlQeX_7h6FtpsIFgMwS_uzxxaA0FhprvEIo4EBjlwjtMv4FCW69ApKzgKgMYdlf23N4IUjc0wh0M62ZjBPH4iiQ3n-M9KWnu3CRYDbyl_On56fAG_tMG1mXw7P-XJCnwOyzXECTER_NeDxT0ITrEvxnaFhgf0-p_3voWJQR2O1jZ4ug7dDtOgAA5JRTtuiAslr1YuwiyDrCpa8-TKAE18G2TIr7BoSvGzKoqUEmB0x6912Bg9_PiR3iCRRxrQX3rTudwM8omhuA2-snJG-LlxAkkg6coLQsjtUfswLVKxFn-xsRaF8ClzVujCb47P8cM98To1KR8EZidmsO3jSkdzV5mse-dlM-D_cDzTa2CBpUcuwaF7QkfJNn9jkyu5xc5mvnX-1uiSVqbWWVRv7PmjhD4z1f_Iyiw9yv8DdeS5jOyQBMRmkV4I_Ulp",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydg2WxYGLrpWmXj7T_nDbnixnDLyaBIbsYq6M_HpTd5MzlPl-NUIh1OUiWjAt_DcJOkLC7mcS7ou5Vpb9TV-0WhZm2LspNZs2S7jTJwneXb5BtHQguP8MRFIewn4-49h5i_mBArij27RqTG9JALjU8FHo2TVQg2UX3xVvdaS5WcsoHoD0oAR6pmklGOASm-8B3V0AGXeZLGJVzjpRkGrbvAh7iB_rHF2MzeAN0Fa35vxk4TQWUGWMaR6Dz8VDgUvbBkWvjWKWkcyjAeLbPfj_eyQX3EHa58X9Xd162Pj7ck4RaoXvXi4c0Hwz1GBFE3QdtcTiel6NIGCLk84u7KwahFUrmwiiPxfDMGRlj_IvXonwUbzavD4PUXib6DSyKDJyBs9VSjzY-O7lHytPFYb3ONuy7wuME2LW5rSvkb7zUkqZjpwsnFT9q7pRuFtZ2xe",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydjvhAaOrX54fuQ2SPXJXBDz6wYXMwwSzy75eaaLMD7VwjltL5KkYrkcJYe35aIfulHSqjg2Tr1uVeLmw56O7IqVLfzUghN-ohk6iA0NYGsYT5T4zyYWicx9yd5BrUCi_JUeS9Z1kIEZWJrkgR7hFa4SnJ_rco9xKHCHklExKBbYkA1q5XoyUCfG3PvF_kpH-C8soaj5Gn634Ab6PX_uGgXiNq0Qn3jj4J4QIVaJ3EUOEekWPllzqszvBNjkvzHCFsYV5Hh38wmxflxoGEDaITVuZZUaitlu62dlRK7g-ZsOm8ufSPCz9k_v3WdJt91Xo-gjszhIrAQYTGP0TcIKrKixk0C8wJgfDuuO2hv5OaOJRJVUo1hNPId1PwUfRSg9IJmk69CueoFDin1R8Qh4jtLX65_0a5mcaYneHPZh4wkXmnnaYx7ZTswmSEiwQhnN",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydhDzWTRBTafZXiBcn5qMYphxjQczk444yqcvEAWixf4vmCJzHQVZ5h0kIoGbxaBswW1zfGHeP2vRGPH5nwRv4E9XeWjyQkgddvXAyMKDAlZjC5uYHnxrHoOAXvGSvhaePpUHYNnc3WRi6jcDWAetZMf2WR3hENwKqh9LGlniPRTOuYIWOod5oJo9TXdND8ZlbEpLMKJtiEEXsoZsRjVADnkM-ewBmJplm-dYt5ygBJVEYrsGMpG_4_4kvW2WD-MzK47zkQ9V7u81-zTa3lLCyxtCRMSGlQk9xfyIA7NKzUzOQYM06abaJ5c684LCxpIY0_RK6_YWkZjSfU208SlSZEZPkp82ygmvxqwfeOEvsSbd4fSzacfw-wejCpvZQFJh6ipEYrBxVhVl_w8rD8A2qRLotDY9Ij31Gq979Loh96tIP7qI556gaf1Zwj6Wu9A",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydjOjOzf7tooEouBieR6BSev-VflEeBvzqNceBVntwV2zpWPdkcnx51KxXTcfQOp1Mx-XqaYWykfeIwhO9aN7DCz0O7NWLzr0EGkqGTf5MOOj_d1gNz0O8o9EN0NBsJC4sLaM1piXFQnOKNo7JgGYL2fWL6GgrcfMs9dPOolJqAiQcsAImeQiAkzdgbu7tXUjjqHi-bpMqfk4SetKC94tDMUJHbqAmnnlfrMvnMZwATN79r7-HA0zaZDcoStEBVM4v00nqACaUSZCJDX_TBO6GHFv2mLQPNWd3YebhZQ5W-LoRKCvNuiC04x5RQBcP73qzkkH1WyP6QrtsfBENVaedCSPWyccbBEC6IEsjh4-Gva3HLGF_KbQWdH5miEcK7HdNqTBoBDX4evqoUiwUkSzFzA4mRce4hK7o9pf_Ty-JtQhUTKog0LIbEdnPHdCR0B",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydjj7pDvU-gIpjdSkMUFWRUcIUTQdw6-jK9MDSGd-Ie1Bc7XvwDg6oQ2psw_BmVZ_FvOWah0GGDDoWrklY7-EyVWq2gmxTcFiamBvLVGjtxLr-YGtg7mOkKAl-luABxu4hOJJR4BZM2wzP0SR_gfxzrGziAWM1533xz71EazPQXeYp0xWnnK_nLiW66cd3MChpUpPo0yNpi7Q1ERcCGGjriPtUt0hfqER5__DzLbPNl_IkgujuUCOuO6ljiThiT-8DR3TJ3U1LDR8TFAHAOWKaW7Q59jEw2FDdBRhbYuM9mVIiBpi5i3rXz56bfbP7HY3I8OSLhgwMKYEwxB9IIgCkIfSRK1BTwwYYZelP0nI1-w194_SqmxXwU_aZe0YhQzh2_E0Yv1Ck383yaFx6tlYajHbcO_wXjs0F-UrfSwcWBrgjhhcjP48N2OSK703sH_",
+          "places/ChIJseQsTQ0Z2jERqpBTWF0Zf84/photos/AWCwydjJ00ogRCZMvWirwuxK4G7CWyAvyZSpV-DGsibrjqZy1CEefXpNq6NPJi_vydGMUKC60u3Xl-YI6pcXSJ8bnk1qet-FW27aJxEz_mvzyVKYNuNxv3Gpo1A7YFenQmS0GyzaMB1mBNHfZkt_xriPOytcgaiYSP_6URiraUBixBlrMXDNmn5MyEnAga_yKJopttS8IUX2AR6AXneCc64HX8LPivT0Q6DsmBkuIPif_omrHJVUWGjNZ9olbLoi0uMgZEsW-lGzFHVWFjKD0L-6vaNxZjivj8HqzyIhQ6I8mPPuM6mtwaDga14m40_jhZqlno95PJxmotX0JZkiWBJ7T6UA-oHh5bWcyI1VZ-JdvBvMysQdnp0e7UjtHIIdR9ttmjyhA0cKBrt75KJz8uoIEzRE0z9jgE_GjuKBT3CYBChQi7NNCW-hDaqfUggjTGdj"
+        ],
+        "__at__": 1786804247.372351,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "There’s a wide variety of food and the laksa was absolutely amazing. It’s cheaper if you pay cash instead of card. The staffs in charge of cleaning the trays were really proactive. We didn’t try the super crowded stalls, but the ones we had were pretty solid in terms of quality. Also no bad odor",
+            "author": "Eve"
+          },
+          {
+            "rating": 5,
+            "text": "We visited Maxwell Food Centre at around 8:00 AM on a Monday, so it was still relatively quiet with very few queues. Unfortunately, the famous chicken rice stall was closed, which was a bit disappointing. This was actually my second visit, and I still haven't had the chance to try it!\n\nThankfully, t",
+            "author": "Mela Pineda"
+          },
+          {
+            "rating": 5,
+            "text": "A step back in time with fantastic food variety at really bargain prices. Only one of the 3 stall rows has high velocity fans for extra cooling. A few obvious winners among the vendors. We had Vietnamese  Tofu and noodles and vegetarian rice paper rolls.\nA local character has found a way to always g",
+            "author": "John Raberaba"
+          },
+          {
+            "rating": 5,
+            "text": "My favourite eating place in the city by far. So much to choose from, foodie heaven. There's always a good selection of shops open. Can be very busy at time with queues for the most popular places.  Don't be scared to share tables. When finished, put your tray in designated area before leaving.",
+            "author": "Gerhard Geldenhuys"
+          },
+          {
+            "rating": 5,
+            "text": "📍Xi Duo Duo 喜多多, Maxwell Food Centre\n\n🥟 𝑺𝒉𝒂𝒏 𝑫𝒐𝒏𝒈 𝑭𝒓𝒊𝒆𝒅 𝑫𝒖𝒎𝒑𝒍𝒊𝒏𝒈𝒔 [$7]\nloved the spr light & crispy crust— paired so well with the dumplings & gave it that extra satisfying crunch! 😩✨ each one was generously stuffed w minced meat & chives & the skin had js the right thickness!!\n\n🍜 𝑩𝒆𝒊𝒋𝒊𝒏𝒈 𝒁𝒉𝒂 𝑱𝒊𝒂𝒏𝒈 ",
+            "author": "Amanda"
+          }
+        ]
+      },
+      "bugis street|singapore": {
+        "place_id": "ChIJj7TW9LoZ2jERQgNlXkKhASQ",
+        "name": "Bugis Street",
+        "address": "261 Victoria St, Singapore 189876",
+        "rating": 4.4,
+        "review_count": 21941,
+        "price_level": null,
+        "website": "https://www.capitaland.com/sg/malls/bugis-street/en.html",
+        "editorial_summary": "Lively shopping street with dozens of apparel shops, food markets, souvenir stores & eateries.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 10:00 PM",
+          "Tuesday: 10:00 AM – 10:00 PM",
+          "Wednesday: 10:00 AM – 10:00 PM",
+          "Thursday: 10:00 AM – 10:00 PM",
+          "Friday: 10:00 AM – 10:00 PM",
+          "Saturday: 10:00 AM – 10:00 PM",
+          "Sunday: 10:00 AM – 10:00 PM"
+        ],
+        "lat": 1.3001991,
+        "lng": 103.85520149999999,
+        "photo_refs": [
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydhWk2LU5ogSYaBF1m4Hhi6JWYCo8b0EAd5MY68rRML_p38Eg3p0s7TK3K3F2p1wFIIvPHip-4b2ABFXJnRqaFfH2TTjgE2v-4JspjygMsm9S96qQtJvEEsTPO9sros5j89wrQwITKsFvSMBArGNUx5Ns0WqN3GERptt9eplvP-uxLvsyMPmrSkzOpFeoK61c0qETzMSMkm5q0srbPVSgtTfIeh9u5s6qpDaeePwd2S7ycLEBK2Z1i8d8_H8F2VGVsst1C11GjwBwj00dq-y7jsQ99ySK8YmjfiQLACGZ7eM62rRnrzRDA9zm3uOCIIgpW6YXQBkthjPDwPYRwCnRMQ--0l51QJx4eIQUnA8L7sPx3XOjMf4Q6axPSfcmGcLLo0NNcjMG1YSlIr8My2iIKeNn84TQ6p8NVhtp6TsBd7srlP5l_IfDE_L_CnKbB8t",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydjGwSmgLfgTUglMV95jqhcDRu3HzO6ctjOqRVvCbX8eAdhZoiIsWcKXSw3BsuosGdC2C5RXA1u0Alvkk_KIIkrNvvuFFuvC7xaS_EzjxxvMPLNlYaT4aVZZTuki84Q1Sb7ao1FDFRuAhWxuZKv8HBGtiClpAOKTWLnpQ7k_tI7i1KK3-JUeZYGf12Sv8puJgvHr5ZQCf683q5six59e4D1SV97rsNFONmAE8O1CBQMJ7t-c6RMD5apTd9Ijk3dzz_GtAN6fQg6k_cPYI4AW0G0ngGqW_Bo9ttuOYITHzLK9jw0eNWob1GGDw3bHJkXpTi8EAxbl2RSWghHY4mC9CSmDazIR7BGOYJnjibnq6WRMk1v86DOQcAbiipWJvuHByCTnxcORiRoDxbccDdTzbu86Y9RIUVmdwBzWpCSKWSm-SvfRZLO2C5e9v8d6YqQG",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydhVwaXJTyJwlS2QzCCLW47nmov4UwTnXXH9B3wLWztATt-ndB69qgX6ZJgwis7BssGvU34hYeVH3LkRUOzw8n9GB59e4BaJuPU_nQVc3vCAyM5N75lFr3vgh49IQyaDsGiCsNnPZrR86plF-NCzW0siFvC_bHnxGwyglx_9ih1rcTqMUJdLJEAJOqOY8OT6WVBTB8G1u2L16-ScUmgzDba9_bsxjQyhNykn2SQJvUKdo013sNScny6H93oRw5Z7ocN77NtPMG4OD5901xGLs3XfV75nxLJgqJORHBGhcLJhi3Ji01jd-DYQUh-4HrhQd2V_jPdds9K_oP3jKO782YdvmksloYKhQo368htEr_oamRcfxH41xBuNsISV4AuoRYsKzi4xM1GbUq1LeJLA3TmFv1zO6bMS2xCbAqx2KcEOLA",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydgRwYIJdJvn8XFYqWU3Lwr-NHT-MS6_thxuDQ7mG-_32-P62wpbFX-B99HWfbhi2kfViOwRmq0YGB3cF2AlZq3kANjhSLJ8vEITM0VTMuYoZp8QTLKIuRYmbsTZteqEqgZ1Cbb_Pq6lntxn2s61erkaXEsZLgsxmEdLrf-hBsNPyPCgqYsYHPUNsBZcCBwMX-5dV3UgTX3hq0AK968SlGNcacH3dCY1LGidViCPoQcEymPGHBeySmVpRxOXK2n_7YbZpO6DBuWeyHgi7hAEQnIR6LF-OHcyg1erVzCmjKzcOswI90Zf4rL1kIxPbP6ic0tj0EBrgo1eTWLrI6_k90D-6eQzJilRic4z9e7C7HKehZFDavMlzGRXUpdcVYN9KrbfpRsGzsEx2k8MtEVLwcZH8SARflUJRetStX3nb1Gv1g",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydi4hgieNDgeXrub-7OADLUblGxNJwoInPai3-qvn7Bonn08fD4Dl9GQ73sYYgQGXGbVB-Z8BCYH9zyGSzXAHncAzm6I-h9D_KxAtXTHLvfwPWCzUUK9tZGr1xfFeUad8hbbhAT02J1BZ3QpHJ8codsG8n5bf-MMbK99ViW03zVdDtjUhrg5734_xLf4Cn8_cWSDsvD84lJ2FLd4Wk953UWIZOQRnPDKh1NVUFj4jTFeRiOkp2jH82mhErCysZoWvtXJKqg_xud1B5wkjrJXTZZNppJUEFSSRbNxEOJBQch9pENmpvxV8J0BQM5fe9_A0pL9wzjEckv_axapn6jtZnBE6W2iOdMaVOZ8egPTi5lpkCyD7KrDBc-5zNjW0HiCuVtlVjvXnWABo7b0-s3MVcCIRV3XTkxJDJuQpmeigKAmjk8",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydhqk9dO0nSyxVUG2fSm2qIf_vezwyokUvIJw1TjsyaZf-XN99sm3idIMtCTPmylsV21c5FsDRfHkmD_wvotN8GHcmx84Bj0KWOXby6S_3hhsGxlU73UsjEG-_vsPT6RaYbjH4H4Kj5ZbIXzexgY5FIfn6NRz2xqAUGg-GTwjGfuirFvczZbxyk30K4pmxmu0vKo1lV1eiPVAMVduRQeEQr0TK_78eVyRNg4a3w9V0o5Exg5khqA873rrlIDIC8LgS5lVTVGCCx8waBH5EUpfVb5P9ULBZr8UnA7wrwXawn2wb-nLh4uH13TOPXgH5gOd5FEvbXx1jp8ZdUQzNHZaypNWFNtpNuxJeYixqeW7jlL64KvFwTag539bd_-KmwMS5TGnUfGktNF4_G6JJ5j8pg-webT51JbPITfJMcptMSd0Z0Z",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydgm038kNvRyCitMKnzIZIQHwXrxwJv4dZKp8sAQOy6IFeV3_jFUjsZMhnOWYDJfQJXXkiJg5xcVYEY24oXy5sicNFiSHvpUqQ9-CYayYv2FSm8rLrtR8dWdf30ebOXAK4bZC-kt8tM4LLVZfSyNk2r85rGkU6DgtjbVnDGXJSUNyKp8V_2hy45_Ju-EXLUp6Ue9GGWVq75YhliDxQvD7FwOCAO-Mz4WP20bTf-ZULg6TKR20MJp_bi3lLvYezvaJV2oFSdfROLDAleTP3m2eiatNKrykMdNCBcQ87MnzapWljHRblnQeP5u-v2QrjGsByt77C4UM15TmIbxtwYJTZyFTWh_hdXs2rTitIvtNjYhWzSbEzD0a9_taP94sEL6ETY9kgke7OO9HI7duaTF506nE8XiyhcoWAgdSAft-Yx7sJFW",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydgslCJ2POCl4C5klFTg5KIUOYY_siRIls2TgKJ5VXarVnIunTmb8ytMalRxYAIMxjDGGI8CcvHcBfDsdAjBlHaZ6waqJK-9OoT8Jfg4xTdi3et2ODliOl-RS1dS3Xgh_bFoDSJKaE5b-7cy5IxML3xJQJcyDtn3qRst9a2OkFw0hqAOirKmk6mGiTCBN5yvRb03vFdv_K5zWCrFel1tSwYI10QL3_KA1zZWWCIs127iMQXWcA5T9jtTAppF7GURecovtA2qqSf0OW0pni9jo-Pa-kvgMlih5GkgN-mb6UFSw6feVOXSXcOJNbE5W0PJisBmLHs7kE_SSt7bkCfQpziMFFRQDhbBTAreQd5rVMWNj928qLhgo_nI-Zq-5IdXh644K76ewelkmJT_ipD1ZCTtCLb8jjwXQKkg5RSZnNI",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydgLTE79u-CU22MlxD8M7im1GcQvGN0MKAWswLnKqU-J1CXpLFyCAEblmZFlAUiAZ6EDjYPC3_MLykqYOMo5y8tGUrDlLMckPc6wfcCs4bNNUal49IKeWGidZHc38Zo6ajlF7KBmgRXpsQemYLPw7lk1Lbl3dZvIk8dReVrM7PGKu8PQjJooENjb4hBWEIGWSVRWTssIlhoLBoqXp9MjC6KwBQYqS2z6XR9InfhFgOheNWpVCDUCRRF5_zfh7Va4kds5G6elrYWidg_p7qLfRK0MRwNprOEkttaGtn9qbDesPx67YB0iTo96fku5oUs9U_smB2wKne1nAE3Cr2TNzNCgC4WNPdEvl6xag4jV0jHzECHGaQyVlbfgN6gHL3gCntK8y7wl-EYX4KfCa8zOH6Dpco_rNoeZraHj9uUHrjQQGRv9vvdiUOw1Xpoy3w",
+          "places/ChIJj7TW9LoZ2jERQgNlXkKhASQ/photos/AWCwydjqeAEJhzBuLWZBbiflEdDAYTvnwtMvXxsj7aLKVKyIsVv5UbDx70Ydqz5Fl7f7d9IAPVmRYn5v2qZiMaudyIvMtRirK2m7DWXJAIr61Mr1-GntVXInVY225iLhJvWGFBnlSrkmmgunIHk9e-EYg04lRQOkvBabfC_UjNAQ_ifuADh7Zb-xmQHLYu1cQ6GqHm80QK0eZWkTdmOfgP-FpvkQjt_CAbo7-j3WaT6aRJ80RhS_wP3BEAjM9kFmIo3pHvlHYMn_idYDs5IZIeCJb1nSd1Q80824iPvSmNeWLKrTnD5RnMTj5p61bOPCXWAvX8jkOUAXSbTPNJSU899_zDNkCd1MDKOfVjrrrzzMYHQmmG2dhoMwZ0ow2mI5bvMdh31__aRsSQNceiFUF8bLBsElx6SUZ513J4uaKhJsYXSyJQM"
+        ],
+        "__at__": 1786804247.7759511,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Bugis Street is one of the best places to visit in Singapore for shopping, street food, and local vibes. The area is always lively and full of energy, with many affordable fashion items, souvenirs, snacks, and accessories to explore. Really suitable for tourists or anyone who enjoys walking around a",
+            "author": "Rosli Sulaiman"
+          },
+          {
+            "rating": 5,
+            "text": "The street is always bustling with energy, filled with countless small shops and stalls offering trendy clothes, accessories, souvenirs, and much more at affordable prices. It’s a great place for budget shopping and picking up unique items.\nEven if you’re not planning to shop a lot, just walking thr",
+            "author": "Darshana Arpan Pawar"
+          },
+          {
+            "rating": 5,
+            "text": "We went to check on the souvenir prices and among all souvenir places we’ve been, we think bugis street has the best prices already. Super affordable and not so much crowd. You can haggle a little and have some food and snacks that you can try around while shopping.",
+            "author": "duchess anastacio"
+          },
+          {
+            "rating": 4,
+            "text": "Bugis Street is a lively and bustling shopping spot that a lot of visitors recommend for a fun and budget-friendly experience. Many people love how wide and varied the shops are, with everything from affordable fashion and accessories to quirky souvenirs, making it a great place to explore and shop ",
+            "author": "Varun"
+          },
+          {
+            "rating": 4,
+            "text": "If you are looking for souvenirs in Singapore, look no further. Bugis Street is the place to be to buy your typical souvenirs such as t-shirts and magnets. It gets quite boring though as it gets repetitive with stalls selling the exact same thing.\n\nThere are also a lot of small food shops available ",
+            "author": "Fan"
+          }
+        ]
+      },
+      "kopitiam bugis|singapore": {
+        "place_id": "ChIJO66cDLsZ2jER3zL38gyEZYk",
+        "name": "Killiney @ Fortune Centre, Bugis",
+        "address": "190 Middle Rd, #01-26 Fortune Centre, Singapore 188979",
+        "rating": 4,
+        "review_count": 321,
+        "price_level": "PRICE_LEVEL_INEXPENSIVE",
+        "website": "http://www.killiney-kopitiam.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 3:30 PM",
+          "Tuesday: 7:30 AM – 8:30 PM",
+          "Wednesday: 7:30 AM – 8:30 PM",
+          "Thursday: 7:30 AM – 8:30 PM",
+          "Friday: 7:30 AM – 8:30 PM",
+          "Saturday: 7:30 AM – 8:30 PM",
+          "Sunday: 7:30 AM – 8:30 PM"
+        ],
+        "lat": 1.300463,
+        "lng": 103.8518629,
+        "photo_refs": [
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydi4jHyT0kYo_R6Nr_UUlI5V9oq0N5hc8w7utLlX1GtveEM30ZC-m_pH_wJT2aEQNJ0yYqNEKauhErlgdWHUVYiH7Q-8cfqIhFLpmSooKpzxbDwFfmLljjMjwvobXAjjA71piVsoB6wn-rLx61poN5NM_3nd19OXI27KdJWrGzSXJTrQ23thCe1tk-gQmOqVhU0rmXNitPA3hnshFu9U7a9OUiJL6A8cTtsV6vpyUzVk1EzJvlWSM2KBeTOR38pOCgrFYtru9JCJXiXLvTWwauRhlE9QtMyn-U5eAbI1ySqNyInEwLfZAytWAKFcBrN2-vVZh-Fg7ABvxNfGRUAAqlXlZ0ddJDUaFJZIgjLpnV0MqVb98htstr08Ey8HzsT76UrAzNJ1tj35xRw1TUwBEKi3Do_6ucMk55j-qiIBXtWZNZkw",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydgU0BHwOnJ1zeSr0RcHG5NVRw7nHSjq32o10ds-HXx2KV_nMPTgGW_xO4PYn-fVwb6-ZxTQoWD6VPGYeyLNW8T5qdvQEVzgdvejEihGa1iUYXDQ27F3xZ4KiU1_7OR5Km0M6iBLm2PsFsleHYW8ZVyUUFXem5KfjFawnnN_iQVp9zKi9yRVER95GOSsHtkxZoVNsE5u7l2F7A4Sgn1xuneRkQC9CBqYFzLTOtDzIH6AHokkHrdLXAXl4mwhJLrg5QwSJp9Ec0S-ZyRtOSEaUlgpeTmevhZSxBMSzT1Yhdob7hOh_ijKvxQgY0quwxPiGxHZtQ6bOwttVUFcGfzPGTXwneLzhCG4R244Xdo4Nym4vrtEZXLOY4CUfWuYGouJ7xr93ni7dLfBaEwnMVUB7-hl452sBtBCj1rmjBAQSgQosbU",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydhKb53xE2tNa4SHXGSUzRchRiJs1mZ7QrgvuH9D1Rrp08xUc-bA01pYsu9TGs1R5z251hKMZFNMB18yUjuQrVrD23GvIgON6X2cLJ80RHKGiqNxHnFlcUdWeE1gYNM36FHA-ilVGEo0iN5GZT_6Ux4TR47DA1GX_BSIcFsTHoeVQAjgvVR-IHxOgOOR3uUS0jYI0QIeMlKsQGcJmWfSY9ArOWnveKNKaMAcuOcw_RTFoPTxj3Pz6UJxD1uC3iOHorUbZ7cJWkgirpIu684mFSZQlps7lqMOXND0syqnQsuBlZM8hPAjks_NjS4gzhN43lMZrg0PteD0rE5bjG9hlYwFwaYzimqTniJK2Wb4BHWEMJLiYHtxdIyKpyHdOs3ES-wavIYd0R-eNSW0EHibU8-Aq4vfKmu-xyqCNY_Hcta2ej9IoOJINkF9jOqtYjq1",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydi4O8J5sBj9bKTvHWiwl3LpYsNmL5KVrSGqjPTmK_zKzuhejNW-2IUbEv2PgA1rH6fOK9DP6kJn34RZGyNopYYrw7oqLY0qgvA5KClHl8wun_9R6y3M5-LaKC19-IcSbQlZBA5ohfP_f7rK-p24c3QYoKkYu0gjsNNiqlj74GLRiYqUxHJQ6-1f8UVzR0WPuKku_19znaCdIp7a0zNuM8NSTSHfnQNTUmCi17PTeGzFiOnc4GdoQI1ZHf2UQHdp3SxtaR7aeLVElfED39qiQjnQTXQZo-hxhqzB4o20CfUWBMeKfUELKCdrSb-hd8wGSiRg6jxJCXWjwzs1avGtMP5mCVRuvL_TPSZe8tD4Muub3cXfbUvz03bYjiBqfMqmLaapZeGWK-NAo8cBOJucjB8GX_sxGfZNH5crBc7VDDGmHjP0ZyMR0_Tw-iBxaZBH",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydjcD4KNpSK_cMMdL65VUMbeg1t684BMikaBMLBy9DGEMJgNPyWTGOG_6yzikEKZ7zFs8mp5m_2PJlyZ6X9zblx4HaDdMjcd0bEo72s3U3qA4czgf2cO82wEmL0GUaQnRT3TO5nylnBD8TPEOFkHqvpSuzGRE7Trl3zOJwWCldTaIPAx6Pvv1U8eyMJh_kqtKoKy6TsT0I_77X_ra8-b2c53tcEyemQGLXpFdtprZHvds-ttxpu0ApoeLmQIFfP2az3HIPZsGz65XT9xEAwDMrP7taL_4WyCAUiTbi7529DrOxzNQ5W9QzxiwL9ZD6ce9X9sLimsXFREMrBj-uwlo_7hXu3qpDMGVWHjWPF2JZafao2qxzYSsQ6Rg8zo3hGsU0kfURn2uJaHJAb81HszHk7_3VAeQutLcGT_C3CGSU8IzX8yBqYpXE0mjV6txqhx",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydi9FSJECHwozmkRPFEZoJojSHCa9ADynugbMSs-WR0EeFN2lOgmWi7BgJX-j0ykkbKu2f6c0qLtYGjYjaSopxUPiKtefI1EBm0fOpDCN7Lfxu35hLDFwG9TYvTRlU4QuGM3_u8Qahv9DEq5Yj9FsSIbhpHhQETnlJeIEtozhr2TrBtjRWAe-JIL36DL7bYq6t2BbfnnJuvRGCDfPgUBZcdsOO1YYYGld6nK_lEiVn7LKWx_4l-nuEgtl4nr99yeqUih5MHde2I9jYrYSJq83Q1kcDYbD-qTumuv7IZY9EG1vm5oEeFXUQBGbEsbZyyrow9aWADVxZVRgBXrFRJnRaBM58qsp9p7QfMqn4j_i7gfp5zAIEy8VVnmNhjbqaU_LgBWKX-WYR_-WGuVNe3tFH85LEVcVeAO85w2oeOtPGYHSAcEpIgbGL7BOxBbAvRr",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydhJkqX6CzXEG_LiygxuxTOVzeSqagAAbhreZYPJYfiOQUAQCe4VLwyOrHRqK4jd1jq_1o6uGIY2ey1encO9m4DOGR8UbY3OST8bzYhaakn5dI1_L2xf43QO4UQu_yOJIq0V2M8yP7WHNfiqxxYE0I0MOHDtX9i5HqbsjIikg7KkJEIJNmH_qfsyCOqFvgRJN3pL5soUjZnPyxE4yl5T4qiM8Ll1ICk74SATGKteJsygZQr4ltFvF9AMufMnKyYf5LbivNOE_0Dkvuzzy5pberiE_0B2isa5_RcugRzZ2IWv94dcA8QrOW1CQEoHu5fxRwFgNjB7Y8fCknPFkxp8H3Z99eUM5Egvj8DAKL8mzQvoFCI3OaKpS63ZLwzkqqNLJye2JAYgjxCtGArNOrNzPOY9GQXc2OvWDlfwOXLOHgId9lZjTS8gv6hzaOFkDrVl",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydj2YdJE5vrEAaZHMUVudSiBzMGjwU-4Sfg9HcU2muLRdSWPDsFKgzHNunbKy1ONrHt_yucAw-m7ffv9YNR9NmNw7S6fSExFTh9TwwAYjR5jGYtU_DL29oyR8xM1OJgZWzVZrelTputFhu3RQqf8m6WAKRu6EWHtgDtPv703PxeOkI8j4VIvYKyfPGVG02VwrzVrCZ5tGZaaTXrWzvbLEDaZgtcPxG_h-Jbu29bu3dpu1WyGH_FFHLOUZxU94PAiccgAe2CYAqbL-8wyX-3UfQl-apr5ZDdzia3A4jGa0t5605SoXnifIFdXQCL-kGBvS1V1TeeqpV4Fvoe15RL0nCK9biexy3BfLfFq2HiQ5xWAAnvkvFS_mIRYD75UG4ithns0W76HyxFB4gMuLX7Jbtya2crTtQGOYxv45a3ye5R56H5qsmAIS36gjsR7Tg",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydh9-PVMlqg-7_6ufXW2FEODUlS-NgxA9ybZEoNW9e_Dqksy-AKcn8QLPzGn1dSDDyo6P78VTdhUgDTGJyu8dohIIhOlfEVTZAdpGhRzXUFGNhZuu6FlJETgY11OphFNN3zzO_bmEgyfuvjCO4l5KjtAQRqtiHLxm4Ld4GJ4t0qqLx_qKlKurHP6hYk3anOcJyfJYf1jaZb0Q84c6eI5m6TImS54Ibiu2WhqVDrsJKo-GIQXXvXusbZc2kYFS7dHT_dHaWeFI1_Nf-STzmOdkbc-Fs7PTX_grdAvAquQVGKLd51QSfXtMzDQd5ZKAKp2v47_2uqCFMQZa5C0bBqmTxZKvlMi2-EmKk2ZDtHnsXBOBS7L-06iauHGz6HrXLnDCZAaRGgYLYggTe5khQKzIwcrIlEPiAPnliFY9SiEGhlrTYU-7-bRvDvDcMRdWDvX",
+          "places/ChIJO66cDLsZ2jER3zL38gyEZYk/photos/AWCwydhcF5DT2hNr25D8310ttT9wHt8MJjALF5MZR5FquhT-yTNgDjZtMkxeF8WCAQfuaTf0YWTGU3W9M4wfMVFhbzpA3M_UHNBcMByR0iBBgPB9dklDChIImht5RWOgmR8BCgLfmYZl8c3xSfkkYs0dtNK5Tw8yyUwvViTbWBo27St6sbwh9EIt0yS6HHdomI_oDCx03pAMbrQSQjr41hVq7L56HIH61ZYnooPBb0bmAfwWwTla1HdNZzVx1Hk5TLIWC6Do0YVQ7fbU5O8h92f5F7yl0sYB79WLfSEtgEaD5M6qJHGe7z1jLxHBNmUw7MfYwPKLoF5UpHBnfmIvfot0YmOorGksZJ1Yse709x0AOYgO-uK4NPi8hhcFsDZdSI_PL7hEms4RvJt-jc5FLVXarN9AGtydY-dDS_TSDC_KNkcPyi6f9j3CGkvmjaMwkdeZ"
+        ],
+        "__at__": 1786804248.180164,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Brought here by my Myanmar friend who told us we can taste Myanmar food here. We thought we heard wrongly, since when did Kiliney sells Myanmar food.\nAm really surprised by the food here. The mohinga looks bland but soup is good. The laksa seems like local flavor but with a bit of twist in their ing",
+            "author": "Adrick Loh"
+          },
+          {
+            "rating": 3,
+            "text": "A nice spot to chill during off-peak hours and enjoy a cup of tea. The place feels comfortable and relaxing — perfect for a short break.\n\nI was surprised to see Burmese dishes on the menu, which are rather rare in Singapore.\nHopefully, Killiney will add more meatless or vegetarian options in the fut",
+            "author": "Yellow Bear"
+          },
+          {
+            "rating": 3,
+            "text": "This place actually has a menu targeted for Burmese cuisine lovers . Saw they had mohinga  noodles . The staples are local fare for laksa , mee siam , curry chicken . Local toast such as butter and Kaya .\n\nThe laksa was Gao but lack depth , the dry mee siam was below average . The sweet sambal was s",
+            "author": "Whiskey Tea"
+          },
+          {
+            "rating": 3,
+            "text": "Killiney at Fortune Center is conveniently located near the escalator, but that also means the environment can get quite noisy with people constantly passing by. If you’re stopping by for a classic coffeeshop experience, their bread and egg set is decent but nothing extraordinary—standard fare for a",
+            "author": "Wesley Wong"
+          },
+          {
+            "rating": 5,
+            "text": "Loved this place.   I prefer my Kaya toast the way they make it:\n1.  a little thick, not too well toasted.\n2.  overflowing with butter.\n3. easy to access in the morning without waiting in queue and hoping for a table.\n\nliked it so much I went back the next day.\n\nthe best part is enjoying your breakf",
+            "author": "Jay"
+          }
+        ]
+      },
+      "flight: chennai to singapore|singapore": {
+        "place_id": "ChIJ423xiS1mUjoRFlj-GQvoqj8",
+        "name": "Singapore Airlines",
+        "address": "No 108 1st Floor, West Minister, Dr Radhakrishna Salai, Mylapore, Opposite To Hotel President, Jagadambal Colony, Othavadi, Mylapore, Chennai, Tamil Nadu 600004, India",
+        "rating": 4.1,
+        "review_count": 47,
+        "price_level": null,
+        "website": "http://www.singaporeair.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 13.044556199999999,
+        "lng": 80.27135849999999,
+        "photo_refs": [
+          "places/ChIJ423xiS1mUjoRFlj-GQvoqj8/photos/AWCwydha8sstc560JQpipSNR3aEj46A702gtH4VDUHYa9p1__GAJsGLsjISwk-ff2W_rXU1mDnS-66F4S9VyQDOoxOXJp0T24mYACzzjE5fGpprXbAMBQk8cztnoWPg9KEMTrIfaP-oB7jhnwtbfs21go4v42qmsNSfnf19Sxf35ltSAcb7um74ysTpeu0JiRCj7wHXDCz_oYswYE6WanfSdZqJGMNOmX3rFRsxDT2-1QSWUj8BU0dOgwaJhOVxIVmGrx9Q1VjhGdfCzjzt50NUVMag1AKsEZfVOmmmbS9jiJqTQMtxo0--YMdOpcAxcKzRu0rnWD7SfswdH82E29fLPO5Vo4EsCTd6qLPlnSIu9XyAXYZe8eMQUl5Yx7Fbc9uuQixKdCIIzeY0RG7HWmgmQUQnx6wFpT0z8QvZ8I9o05eM",
+          "places/ChIJ423xiS1mUjoRFlj-GQvoqj8/photos/AWCwydh72zyOexzreGj-Bzsbjr5nXQP7uK5iBdC8CST_lcDvwgkDYwNrcpltVRfZhQsyiXwaUxhYIGkwb5wXpwhuFGfTuyEWKwlHzQUCCx-qWCDawqMiaQBSXfbI19q4WZ7Y2fOKtrmx8tj4sNTOmFDJbrlimiSUWH7qj_urt_dZEcI5VQ1-_EKhzt7dnvz4nyjkLKWjpGTaxCiH2yFQwx57Tq_Xy_ZpVKDkr00uJK48jfDAHcR0cjTSSnx9bypMwOqooN03v3Q_Fa9dZevMVgATRIi-Op-_n0t1S7dZVxImOOnM6OmVgDx3RLRprVuVIbVFjcBgB_SS71RTY9CpZAx3xP33ELcda15iV0H_qo8zR7NvfcpLXBZ2_6RTgUm_WGBSaOge_87_lK3YnEM5pnzwTHgMYZ7VNReAKJjSWWaabXDnxw",
+          "places/ChIJ423xiS1mUjoRFlj-GQvoqj8/photos/AWCwydg1I74iMObt-fdaYo6vD2xYsJN9KTcrAVOZQR0rt86lZrbPF2dvku1xzd-MyRwWk2uTcsXqZjQIDtwWpeVxRz380S6DswlGwv2IpOHrOxqICc8uk9po8xCMJIoeboXDCga1sWS7jy0X6jn5dj72keXiSU607Ik3o6gykMYvY-QswMguoD2Pb8OJStBgRH5Yf9fkQCsEIQ10oBsFjUJiqnK_NIEUFRMV19-8f9nOiTLzhivdcVS11jhHQo65T7dU6ALqwZMwXhP6F1OkXuTnWN5nFo9sDVmODsHLZd8luhsFCYwMMyyXenSLh29DyS920RvnIvEKnzgPX4UTWz21vxjvZy8Hb46PkM3ijKE5ftDe_2YdV-3QQx56jZgGyhP2vJ7lCSlLqX_GhTYKbiUGb3K5x8zYd0SOdV17LlAsytMuow",
+          "places/ChIJ423xiS1mUjoRFlj-GQvoqj8/photos/AWCwydg5Vb3pVRsfBymOXVrVo0CGbA0Ug1gYpVmC1JUmHp9FPLrMidqPLEBs5W1tFVLborh6F4B6seFjmwaqBxoS9RxVCEXl3gXaUfQU5ZxZvi8WeITzF_S-eYE9dQUOpvNDe9EbNCzMJpr7UZMk_XqP7QJYEkV1u1bWVLZVxE52UgMg4KJLYX5CkltYXgm1VXcI8Ulrax78q3kCyqmnE-zubS2MX_DtHfzGnXOxRO9qZ6rMSuJViwMDAnhKi0dTGc6EQhrSWhKgsE3DILh6fprS_8r7YZ-7XMhj6PfcvHRaYDeOMcbjPEcoQuP4iK5ZHdLES1tx2E5tzOJPw2uCyfveWrdzQRTEiemIUhilbXkzfbhjHS2LEmE2D0vYp7vRodM0183DAx49QzjsL2SY-tR6Dz6b82rNbK4eQKY1LUZk9PBNOw",
+          "places/ChIJ423xiS1mUjoRFlj-GQvoqj8/photos/AWCwydjxm64NncEgC-b1_RynZgmkKEbUEaJ8YyDseFESv7HoBllUTMnhXoyyaCeQDrwEbTz-ygEYxat_BPBKnCiEWUxFKEKe-uVWae5QvMiFe8fD7z-9jHj6EQd5o0QEOaqEhRJtGY5bY5h6eiicPxjsx0iAUJ9ntZK-d6Q-LJme8eRNs2z4CzV9slMinqHc2bkSCfD4mpMYMnoBa_BDiyzz9snTy_GtyDH7s6eKvA-xDgT1JWdajE8JLt2Iax-diio8BYLOWXsX1znFXshYQ2z6RIjfTUzp6aFJ0p5pyo36eAg2TFmDfTzLnAgyhZ-xa-I-CWdil4KQ-1F2JlwyN6Yeo5pW2ELKioY8uixnsLX_unIqa5mzDw2N4lR5JP7xSeSHPevwlJ-yznk-hq3yz7LyXZ1-oJDIRUdz26DcAZUuZeAGV9U",
+          "places/ChIJ423xiS1mUjoRFlj-GQvoqj8/photos/AWCwydjlnMc0vdNBfokUGfh8v451jhXOvLUXszoDzg2a3xWWJpYGDDN8Rl53vJK3j7goERHqztIWiw3s-nRCKzyKLO33qsZxrGMpb2Y5sEhkGvxhHr1-1MBwbs_mJ3ZSh44NUA5_UPWoxBSKNVSaAoWiMqok2vfPjqw6ZNYZHAl73E6mjxLwrg_4_ThbtdwG8M66PIch93gHKCq7fq741L47BxjAiBcC9bAd5O0t4MZKsU4gpFXUOpJf5CGMtZPv5A0ZRjKnmzN75Nu7FRk3sAjxN2tWaOBSB-_YkvVaIkP1DglcCxOBovuOtkpaXhMoJfrQP2UDaPSlRlJYYQv2R1VeriAvBAhm6HNwHRhGk7MLGTpa4lpyZjGrtf0yOW34YFKc7YN0g3cmNrifXZcOzhjXKSG4lRjWA5G1QyVxUBqALrsf2h4"
+        ],
+        "__at__": 1786804248.565299,
+        "reviews": [
+          {
+            "rating": 1,
+            "text": "This place is closed as of April 12th and if you try to reach the number they provide on either the website or from the guard up front - good luck in getting them to pickup the call. I tried for 3 days straight and had no luck. Eventually, I called after hours to global Singapore airlines desk and a",
+            "author": "Venkat Girish (Girish Venkat)"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent service.Very pleasant staff but very uncomfortable guest seating while we are waiting.This is the second year in succession that I've  requested comfortable sofas.They have two or three blocks like ludo  dice with no back rest that are  a nightmare for people with back problems.And we have",
+            "author": "Divya Ashok"
+          },
+          {
+            "rating": 1,
+            "text": "The office is good. The staff are polite and courteous. The one star rating is for Singapore Airlines. Though it is judged as the world's best airline, for me it is the worst airline. For the first time, I felt very very uncomfortable flying as the seats are too small, the toilets are small. They sk",
+            "author": "Surya Narayana Murthi Duggirala"
+          },
+          {
+            "rating": 5,
+            "text": "The customer call service is bad they dint know what they are speaking .\n\nHowever on visiting they are courteous and helpful",
+            "author": "Meena Chabbria"
+          },
+          {
+            "rating": 5,
+            "text": "Very good instant service...... Polite and friendly staff.....ready to help the first time travellers abroad........",
+            "author": "Vasantha Raman"
+          }
+        ]
+      },
+      "budget hotel singapore|singapore": {
+        "place_id": "ChIJS2xZIjcY2jER-d7Gd8C9k2I",
+        "name": "Hotel 81 Orchid",
+        "address": "21 Lor 8 Geylang, Singapore 399090",
+        "rating": 3.8,
+        "review_count": 1427,
+        "price_level": null,
+        "website": "https://www.wwhotels.com/hotel-81/orchid/?utm_source=google&utm_medium=organic&utm_campaign=hotel81orchid&utm_term=gbp",
+        "editorial_summary": "Streamlined rooms in a straightforward property offering complimentary Wi-Fi & parking.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 1.3112057,
+        "lng": 103.8772766,
+        "photo_refs": [
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydg3-mts3Q5Qk_40kiSqu8gTsVOvX0QyDwhZpjPlhoGRiEYAcZbsyuBBPbtc5Y0g9hkpOX5nScETw2TUizAgZAEKNagc0mrAMz_-mXK6NfgjnK3XdK_HZ5Zfmjvbkf8249LNrhuwpZgrDJMo2F4_GTHEkPSVX7ci3BI6j_d4hR84NsAF2K2RjDReZM8tihaK9RPHrAgWUjlwDFbUSWwmzyRPMasqlReYupcSSI0NwVR8M9uz5IS21tnM_Wfaqb23GH-gNryCrPu261KVSl-PCqPKHnxcX5geIfa1HjrSUpgGf6TJuNOi9aza1MxOFLqVcv01XNXR7uSmNs4QtpiDBHcENOoL0Vi9YwvvJp1HhiC9kQ0Hx9hISkkTh7uRvz1WEDe94AC7ShF9jr59TeApi7fPeUexapxRDICOGtaWVwk",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydja3-4neyc8Ip2q5QU0-nHr3LxR2OSEOO-aBj9C1KJS2nqlKmgpsDd01W4fMeR0hhtr1zTXJtvN7OSR0hzG1k5PBH4S5u1KqJ0ILdogkETnj_yp6WMVobhv_9M1_qYYbBazC21Z4S8u_0pH6TIsuHS5ub7fJ2ZhBLwhg1oBDwPX-OBIsu69WkOJHn2EPIYtYqQWd3vlRkNocjqCC1tusuqATFeVCcU0jdzCgydgkcqh4UFs1BgRH69TazYf-e11yonKk93j-wgcH-w77Tq87wnCSaBVdUB58V3A9egBEUmWcIlSnLHUc9HtOseGrnnwE7V1dVeVkaY0WqTwvH9mhCv892UGzyaKMaRUoJQwvbEvbjUQ0h6GbvJuy5fia5OMNyVGwtdqHP7sYpnZ9SLhxB0m_kpv6Q5jSCfKexBaNxnFDQ",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydje84tsjijJRctWbSoIypfnSQfPSREkR4uSidZbrUEkSM7VY_8YUS4hi4fDbwlqyyCA7b2BbzS4eU5R0Y_DMbzm_SzRZy8UAsFiXM1d_Bsap4ZGYz-vhmRGEZfl-vb1T6Pxi64aWRjtvyQhuR4ThBzizm6MVzfWE4C9tSyGjIhK1MnLb1HStRZY_MEj8GzMIstZHxJoTe6lXB-lpPfozUH030sFrooM12Ez7UHTVcLOuD55flOmXKRaGCv2VHUYzvuiFWzeaNeWT4cZh0JYNvWZDJmG0mJknyV9LIJ5_dK1qVBOpav1_oqUvThf6FeU8s2ZXjhOwDqqCFQNBXKXtEjjVwDaaUbkV883S009osmSMoY88BGQzvKGdjZHJCn2VRLkXKaFpy3sk7uKMLjW1zyOt4Jf0uHQsERvsv3T0Snlkw",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydhSkM_PqWzaE9GmQgX-P_73CHTs9p5jUCjJ8X9Gz_xdK5hdG5IQO-OJw8ox5xpjq7himJbJWSGVmAfF8egZtFsB8CuGcI-uBO5-K7sHknbr-ZW_3hiZfoyZD1dnXUSOxZXJC2-D7Cjk4kB9iBZntJSVGS9hrYuPp563f8DeCCMcPEB6kFltKVjUG51ho_sZ0-WyBR6nxkgXjmG1wE4ACkeG_7urry7iDu61zvEBHERtssxGMZCXA6mQjb48ReKfl05vK3qC2XPZKcXYT4nfTfA8byf6ALAYmimRGegmwZjI4t4svMAqM5o1JjS5x8YwPreBZjjRXApM4LGqy8Qb5Xc1xRRAUgPRNhd27t1xcf8WIf91xKyFTRBSouo54iLkhCwbYXCpcwTYjVNIaCTsWi29UeZyCqasZdJ_PJROKlsYDA",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydgFj_ooqORctQUMqcR9RD3KKUuqtSP5N08oAjHzYhuPbP8Pj0q9WTw_DJpEeVAR4fgYiluUuE7TdxbsFxrUdPOAfL4JhntmV7Z7UchcqHhlTIRImGsj-NrC8MJzFaMImvtyZLIOaTh2fNI3SGVmSPrpcVXkpwJ98kSHJXLaeEYXB-AHU2m7xRRvvYQ6ufbptFjIaJmk7gCQhO5lH5nePgNUDlBbV4xHysEXGeM1fPjwOXk_t3SMahHdmcQJ0ojYcbDQYkyddf9UFn9cnQJvCy_D2q1a2j5wAqQwbkkagYwUG9U7Nt3GDupwPAvAzZ3-o1XtQJv6Wbp8bwcFFX4v6FZSRoc4tFksreW5Cr9qvgtY9bPsbthcUozsM77bqUWOibn5aDBKi6newqWXiHza1vhcM8E3CqtgfSX6cZnXSfMdbOmw",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydiwaCU9Ju1JLafp6D9G8jG04lsQIEfZpc_8tinL32V9zvvA0OkrHOuWxUnoItDjx6ACoc2lOZlrJmnoRgrsTaHxSP_xEKk46K5rxBG-qpfMhAkQW4cZz0LY1Yv9PSoD0PPK6Axynv_MW6hiTi6zblb6LwumqKmfefHepkgNFG67I8-1cecLdkmRFuE2B4x28Xw-c2RuEUAIJj4j0FpMhvMk69pmGVANvKyfumH99Hi4SAAcYWzNeMbXotiz8qzRCdPc3hkHyPHdpIPra-b5kjaDQ5V699p33kkuZRqifPbrD_TQTw-QrwgPqASMfyPFLnjQ1GulBrRxLcKHks50fI9eF_UNOXTs5ixF1wHTSnu4YsxRIRilzsClqmUMDsvqO1KEhZsI7lDbAFFom1klfF5Un2HRELcBxBns02VmMHXdfH7M",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydjN3Rh2Xu1ek7jdvQvzHrDRZXuQZejRPFnj43mDwZqaGHxg84M0pdwuXT27q3dWSt4jC9GnOl094eVFXf9Y8W4EryCQSMX7mmXI9iQTj2hrJshGnkNaeqE1M_73247LxBLpo7gEbvZ4aZ_uE13RzltAPpZunbj0SuambC8w1UmowGpMEgZt_NvZCNd6V-YZjj1tvdyZfhDIvDDQpjzAsSHvGNLKLyRBMAT9B2-4HpWLta6gBRzl60zY4-y9-zseWjvSN9PBs0Z-6oRYXxNOB_8dWEixTF9Ep4EedSPKTXu_wn5BeOqdvQoYeK6c1jpoXq9vaKweFJR-Pp13lkP_DTVgwkNXGPBO3y-5m7tlKqYqSZYdueqTiFRd0fQMzZpViKtfkQK6QPI3Y0_Twu_3Vab5WAbdokF9PgfNs9IlWZTrsPg",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydhvlQtuvh4bgJSNEBfO7qAnVWzGHF2rfb0WG2-2CEJTdU3v9lQ1h1wldFMtSyh22nYOavt_7saWLdVaMC28XH950lK6yo5CBL12VSkgzaUgc3l59eXpymJIZKgptPs3c6trNBTL3fJq2mZ_u9lUO7I3JdlbZb8WxFUMRc9pYs74mfnmw_8RqUM6-bQrLd72E-mCBR7vWxHKsl-Jc1Z5vBYMV5s3M8dmHEh8SXniJzJmnigbPTQIaXQOtvtXRGKl08822PegGvADtvrPWH2-Zqj81JRVUDz2LCPSP6fxoEpFj_bikFE-t0Gt2Zq361Gji2fqXeA5PcI6vcsBuFVIrTOih98W2Rc8wr9D3v1uJZmdu-4SOywB3SHBPgJ21BPb0IYKERz2ffWuHybTwCCTn6HtfybytxBryl3pIV3XA_5_r_a1",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydjfBs8JqjswWkEw3BBiPOBpE9lV1y-44uiBXo1oyb4FHGQR1dAQqTS4GHm6vIb2JUjmglzi4Zl0TLexP8myMJyDXfGwK1X-mZgmcNIGEBclKkDiMvVPAqvOizscVDtlm-d2Y4N3SPDFYmZL-653m_Y7e_qweuJdBwTkWDedA-WTZtwGhuC781qkkfuw4OssJ4nav0Y80eD73aNWvlVuPCyRxfDvwuhRNo-Ak2jFQ3jtgPjEn2QxWizP9Fq-jYY8YCkjRIBBngOZbiw_qqM3Txjg7THjSiDy_QpQltdaypbXajonndi22ocq80SANdOplqHjU6mMWDLecOU7Ed9tRfqUdLWWoOuYqErl0JbbIf43GSG7XBeAFfR1Xuh8ty5EXeGQJ3UUSGmPO3OU_RrfdiX8PG60faglyUlFz_vY1ao",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydj_oYOJAzuURXftvOblLBYJcD_5B0iCUMRlxQFGXEdNU_IFqV6Fn6Q97LW34toAUdOsFuW9VHOt0XwlMkysk4IjSh3RBY1MwdKDxCf76AsSvPlIM82qaf6ao9TaTyjL6CiUBs_BEmzd2PpeViUlK0U88YdLSp8jNyIPfbRnx_Wsuy4QEcIg_9Ca2jfLh_gWn6TUMlKRtQht9EgtVv8907sbyLeF7-YRPwO83S0iDiPsJ7J-IGm3mS3KItuCstibrexmggoIhpqQ7R3RopkJAbsQakYaDMvn1NeubdnC80nQKNbPOX2Nqz_zOb0eca5MA1pj1q-y1ME6Cv-Mm007OPXSO9yn0afPB9qDJ11ItLorA5EYqXAo0qisg_zvxif16ucNXvmz7lo7zWP67-FrLr-7IsTc2pGwmMs6DKW9gw5LsQ"
+        ],
+        "__at__": 1786804249.691092,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Overall it’s Satisfactory but can have more improvements. No room shower slippers. No complimentary beer or gaseous drinks. No titbits too. No bottled water but have a filtered water tap which is good. Location is good and near many food outlets. Area is quiet and can have a good night sleep. The fr",
+            "author": "chan steve"
+          },
+          {
+            "rating": 5,
+            "text": "Me and my family spent a wonderful few nights at Hotel 81 Orchid. The location is excellent with plenty of food spots nearby. The rooms, even thougha little small, were very clean and had all the needed amenities.\n\nI also wanted to give a special shoutout to Leon, Mokhlis and Darren for providing ex",
+            "author": "Shane S"
+          },
+          {
+            "rating": 5,
+            "text": "The staff were friendly and efficient. They upgraded our room. The room is small, but for a layover it has everything you need. Located close to shops and restaurant. Within walking distance from mrt station. Good value for money",
+            "author": "Erik Olivier"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent stay! The service by Mr. Darren, Mr Leon and team was very good, friendly, helpful, and professional. The hotel was clean and comfortable. The location is great with easy access to the bus station, and it’s easy to find halal food nearby. Highly recommended! Best place to stay and we will ",
+            "author": "shakila sham shor"
+          },
+          {
+            "rating": 1,
+            "text": "Absolutely bad service. Air-conditioner doesn't work properly, better to sleep outside. I changed to another room and same problem, temperature always at 27°C",
+            "author": "NITTISH MANIMARAN"
+          }
+        ]
+      },
+      "hotel 81 orchid|singapore": {
+        "place_id": "ChIJS2xZIjcY2jER-d7Gd8C9k2I",
+        "name": "Hotel 81 Orchid",
+        "address": "21 Lor 8 Geylang, Singapore 399090",
+        "rating": 3.8,
+        "review_count": 1427,
+        "price_level": null,
+        "website": "https://www.wwhotels.com/hotel-81/orchid/?utm_source=google&utm_medium=organic&utm_campaign=hotel81orchid&utm_term=gbp",
+        "editorial_summary": "Streamlined rooms in a straightforward property offering complimentary Wi-Fi & parking.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 1.3112057,
+        "lng": 103.8772766,
+        "photo_refs": [
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydjKRFHtqVWcC4VKDV4cEeEu_S27KZ_MrfmGOZ4mczht2d6MnVTtKliTyyWHOmjN910BENAB-eFd4GQSyb-IY5UGRK-Ukzg0feVgDU1yDwJmvmtzAp_Ak7uwDgycKAdO-Lb0WcyfZeiSIatm7f0TE-quyyKI9bD3lMc6tr3dkmCZK9dLVJIwQHzm6p3cCAW8DXZggOpGkv5igpDSVrMUEztgdV3wG_T8L5MVCZSWVueAlG6IM9g4U3PaHfNmVc9acdpGoAhcjx1qdQ_MfBEJIgzYbSlMOnmhZ6JgI0ti_0x791_ExqYBAJVLT7vj-YzLXlAt6lMLjgVdJYWD7guDI4Yv76K6To9L0uFFYfRVvSzftrsY2ntuxlL3aoOdPvqPIhhFTCnm1wE_zxgrEEqGkYE-yvQqptPpR1eY2qb8V0U",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydh8fUN-7EW6-3sOHko3nyT0fz9-_ujQO9YSbqSg99jgPIaURm4hg5Xon_0tzudaCNyYcu3swWxXtoQtrqTgQzBXmx6HpItuyvveNro_Yuhipuj8NFpNNAzT7ssy8aVL9k5kNo161x8fra07vvv0HHiRN5RqhBk00dIfCMahyDnHNF1Z7yclATX5ltFGQIxBCBCx9MQXtxlDskI0pfygouFh3VoAiyRKbt1f9VU0DjUkBqXL_1UeZA4Kr5nvy_-uUUoz_LwUnBDas_jAOvxrrIrOx4ktpOJThTOJtbaGaTQLC6dik_g9zffNKUZR3gKEvn-ScqmKTjjaEMSQayQnFxTPDe5VMsHW2HIi54avCm5vAoN53ZgvrfoAoUOkosqUmDYaVgNHxP448Cq1TaSoodc49AQ07eF55nwGXKKdTkQYkw",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydhvlxybNeIF93GtReLQCa0ZMSHB_QOclxWoSrQQsmwIH3BgOT4X_N3LDBuLEFssRrD-PdhH1gL0JOjZchGb0XzBtwGy8D_Nh9lYXAvJF0NvJIJPueC94HHP-OIjCQvkO2dQVlI8xaEQj5N_xGH39hW_eA7RPfwNfjAcKjc0MJ9Tn9pUdgHwHuk3tKP33phXH45XiG7qA3pX2urAwi4dES9WnWNtuq4gxE4a8afzv-_oOaNkIYaAnnKSaW_9QzsjATUrxPeJPq8Pzt6EM_YPNmdBIp7UEMuO4nkVOh0GeK_cevtmtu7KErzJszGtTYJmL2J97L_WQkP8EdntVmw2oUsf6rgdKSgTzaOMGpV5rb47JY5NdQQ0WKo_2bxNcxeQ3vTU4jAwA1Wr0VRuNecH0tAa1ADnEOAh_UVmupBXrIgvew",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydg-A-aqShGTbjMFoqLEjM0s_ScNo-R6fYdMHHgw5jqoYfLelEfoO8GOumGaoo84RcYBX9S1oJYGL8nnQgG4rsbGaFVOTdSyKblm3BAPVWPAaj-_NjnQURW_WvE6b5lEcZLDNlIYvu4djXpCNlFQbf7A4jD2FOalBM5SDBbbsHXcj-otCvlcVyAZ-kRZnNUiso65JHDQEWSj_xXJAAFzRWyT7xsOHyS7iFSR_oNHnJyWutUhIgmFYfp3yyjeNuLvfwqzZZtp0b0zLPxU7FmR1FWjmKj70Y2QVhRzJb7Lbh67nWQIfPz74Gyuk-vqGHnFXp-WG-YT8hcBjxOBeXHFJD7FFEmpdDiAtLxKWHeBFafLQwNlU_Q_DvEhDpdc3fJlnEE8Q4GaWT3qI-aH9DO7A7NnwW8TuaFnDG6NoUyuHFFFIw",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydhKZxRG_25_UzpAC6H5b8Ne0BgsTxzGq75qjA2elrCZoLbIvAaDolFbwo7HxKGifbvmlpEiDHVORGv3CYElrORA1rXReaupwINihY121eoUCHfpBzNF667z-91MEvNrSVRRuClW8Yp6ob8TddzwKaQqI_OXXddRiYjfrpFoksaGVS5Z5Dg8AHY8kMAIdmeTqAabPHx5fcQjsIKc7OekAUg1fE5Lr7fX-1nmebS0vhfPwXhT4Muwdwkl0hQPkN7AOvBIop1leOLWLyZ5HAEuuhQLWSClDOiOqeeeHW3LqxiWLRbYeA08dC_iNLtARd_9WxaY-4qdpQuiJlHK9dVCxR3IhWGPGHo0tRGuZqEGO7a-e7w6SMHFObEdRLalgOAMQ9FGbK1Q6oXLFzpCPuo0xRsi2hJPNZ7N-XX8zQbYapCFiRor",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydiN-BjRSZk1-OeLQR92CxnwMKEri9nku6OXg5KNqPBgKypWgYPjg97t10USEKQLVPO_sWtauuC8_B89k-HA98pw94h5ETSHggouv66__hx02gdGqweD6SnFQO9Wo5eW664QbdQhTlU2ru2SFDkg8s9t4RgVGpYsgzNR9KzV6cIc7Cgdgg9ir_v-JpnWFNZB6-s6g4IcHNU8pwWkBrkPZu_D4h7WYhgjpTJs4DWPrOtZ4YMzsldLhTUjUGN3ZsHJ1qq2eYTHzvpIRvyCkHY__pTgY0WvvF7g5WJMjJgtAoQEtTCiKq_3KAMCOzCJfOyQhQPl1ZCFmwJosgwp9adnfWMafNQt_3qN5-e-B2KNVZEOr8wAO5ZhbClY3YKA8O8FDoC5lLgDAUBKHMZ66hk4hH_rfydey5xfZEMpZWcfGnniOR1J",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydgr71yBSc5faHNJsaNMCDBm9VFOIPjWdy-eL081mU6NcefKEatYYt-jRBNGH9DLG2sPPVdea7G8L_RNfD2NhC6R20OoRImmNJLuknmLMfAvH6hEza13YRf4WtS6Ubv5RxA5_o9vfe9XuqGg3KgSAsq1avBIU113k7U1SdifSqF5uqw4NBLcB3-sZi201Tnkcfho3M7pAypYnHolRDAEhZPcyPOTU8lXSu1pz-FOKWwcivXWgUqLOgIAMUZIGD7Swaip4lvoHxCYUD9nftfBZ0R9HiaXr1qDpxJv3X2dqDQElFdgMirKlQvmcAPe3Qb-ZbRV-4PijYQbcuHMyj6PQmrc0pgvZ2h02oBLCXH0B55g4aiMpHDB8XUOMV1_E3U6PnCODCY26SjK1kdfYeacDWEd6PQ9I9aDX-ZVCyvxL1oirXY",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydhlP-5jb3ESaA6HmojmGGzRCy9KMj-6dLYSFjHrNWzZ-TI042QFXMhqGsls37kpBk2vKRtdgaUU5YabT8mo4VHjiJgPloGxxhWHOeUfXUzhVLkBUjXTIP9yrBtk9GC2fYbu8SATSsqc6hmZqgDRXMA7kONzVZ5ZQiOZvRXf7O9GuLfalmmOd_tRPixe_neoax0cdRNRrSJvAG5UMb-sKbiHLAVhYjzTDbdmmuP7lp1sCpvVZtD8aPUjpJo-bQVkqZpik-1Vlg5xZveN7HQhJHYTx6f_QbBk_O9uFRVSK-z1WHe5uOjJQ0K6TV6RbqNXsnd5BXo95p3N59npalbJgh8vwdbsbYa212c8vG_MOXsD5gNGJsN4nbl9GuUsbYCvG6SjLop8aFiCedFtN55N9umnzQq_Xz5rPfzbjFfcAUIY0WdN",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydhbM7WpQMlR5sDAVrfiPp9XVLae8FGl2rnNzYQFJMi2xijJMVwujobsUVvqjvZRH-TmNQHyf7WglHA8tPn03-Io_Ft1hTrfE6EH7haFd3mi2p3oujzDQFQ0UIVitBwQMDwWaUxRT_MMXG9lrh64HyBfSniVIfxAfwWzZ1CUS8BNm_-YuoogfbJbpm4T-C28aGsVLPAr15dxuEi-bN7qsAoX9XQLCY3WRHbuuVHkspFQPVUAEJD9brFIQN69kz6y1YAoWo524iMmXv2jnWkHH4tMpLpACoZho5JKF_2S5abxZuTExffld2EJVw-XPRLPn5G58sBmSepr4jAeffN-ksN8JKO00v6NeMZpk4NPgDUmtOiNrEpjijaZrIrCr4-lwsu2RbkkFtyX-phQTeesp4bGQSe3uPkplKyWIkRtTss",
+          "places/ChIJS2xZIjcY2jER-d7Gd8C9k2I/photos/AWCwydgZldjsmCw2wSESaGXgJs63_UAgF8HpCB8PI_BwP4YdOIj3E523k0GjQJnrJ8n-NQUIKQccAS8oRVCWCBjvlK37Vi6h4LSWQqZDpi1bhSn-0B2VJKDL9hoywfhsDePEXfsk-CJ-5oIkzQWsqwis1gFKP2wKvjaUeTTYMA242Cg-62IPhPtqHW5_DxkaQ35IQznXhwSl5CL_b0N-BUItf59jASH_Xj37giSFWYGDTLxEaQXoULvbREbsWdA5jhWVN6pUIn-ndQ7K2x2RCBw_yGXkqd3V8cswPxHQlFQVJnrMEOAvyM80sAwFcV5XyUCOW1-jZxTZlISiMIIiYKwIJW65mgKWekoQYJUxDJARalDJM8Qv2kE6n7Qd0hAxlSO5ULfUG0hOBpDVJ8Q5ne1Tt1ylrAaELaqs3RzlQhkV7h7nBg"
+        ],
+        "__at__": 1786804276.9311512,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Overall it’s Satisfactory but can have more improvements. No room shower slippers. No complimentary beer or gaseous drinks. No titbits too. No bottled water but have a filtered water tap which is good. Location is good and near many food outlets. Area is quiet and can have a good night sleep. The fr",
+            "author": "chan steve"
+          },
+          {
+            "rating": 5,
+            "text": "Me and my family spent a wonderful few nights at Hotel 81 Orchid. The location is excellent with plenty of food spots nearby. The rooms, even thougha little small, were very clean and had all the needed amenities.\n\nI also wanted to give a special shoutout to Leon, Mokhlis and Darren for providing ex",
+            "author": "Shane S"
+          },
+          {
+            "rating": 5,
+            "text": "The staff were friendly and efficient. They upgraded our room. The room is small, but for a layover it has everything you need. Located close to shops and restaurant. Within walking distance from mrt station. Good value for money",
+            "author": "Erik Olivier"
+          },
+          {
+            "rating": 5,
+            "text": "Excellent stay! The service by Mr. Darren, Mr Leon and team was very good, friendly, helpful, and professional. The hotel was clean and comfortable. The location is great with easy access to the bus station, and it’s easy to find halal food nearby. Highly recommended! Best place to stay and we will ",
+            "author": "shakila sham shor"
+          },
+          {
+            "rating": 1,
+            "text": "Absolutely bad service. Air-conditioner doesn't work properly, better to sleep outside. I changed to another room and same problem, temperature always at 27°C",
+            "author": "NITTISH MANIMARAN"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Singapore",
+    "departure_date": "2027-06-04",
+    "return_date": "2027-06-09",
+    "nights": 5,
+    "month_year": "Jun 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 1,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Singapore",
+      "Duffel Airways",
+      "Hotel 81 Orchid",
+      "Arrival in Singapore",
+      "Flight: Chennai to Singapore",
+      "Little India",
+      "Komala Vilas",
+      "Marina Bay & Gardens",
+      "Marina Bay Sands (outside)",
+      "Gardens by the Bay",
+      "Satay by the Bay",
+      "Merlion Park",
+      "Sentosa Island Day",
+      "Sentosa Island (beach)",
+      "Sentosa Boardwalk",
+      "Good Old Days Sentosa",
+      "Fort Siloso",
+      "Cultural & Chinatown",
+      "Chinatown",
+      "Sri Mariamman Temple",
+      "Maxwell Food Centre",
+      "Shopping & Departure",
+      "Bugis Street",
+      "Kopitiam Bugis",
+      "Flight: Singapore to Chennai"
+    ],
+    "auto_summary": "5-night Singapore, Jun 2027, 1 hotels, 1 flights",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:32:12Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:30:10Z"
+    }
+  ]
+}

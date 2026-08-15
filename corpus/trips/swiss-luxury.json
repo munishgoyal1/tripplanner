@@ -1,0 +1,376 @@
+{
+  "status": "draft",
+  "trip_id": "switzerland_2027-09-10_2027-09-18",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:04:01.651093",
+  "destination": "Switzerland",
+  "origin": "Mumbai",
+  "departure_date": "2027-09-10",
+  "return_date": "2027-09-18",
+  "travelers": "2 adults",
+  "notes": "Premium hotels, include scenic train journeys (Glacier Express, Bernina Express, GoldenPass). Balanced sightseeing and leisure.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Switzerland",
+    "estimated_planned_minutes": 2976,
+    "evidence_place_count": 8,
+    "reasons": [
+      "The user's explicit 8-day duration is authoritative",
+      "8 preference-matched places account for about 2976 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 8,
+    "recommended_range": [
+      9,
+      11
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "city": "Zurich",
+      "name": "Baur au Lac",
+      "checkin": "2027-09-10",
+      "checkout": "2027-09-11",
+      "star_rating": 5,
+      "price_per_night": 1200,
+      "currency": "CHF",
+      "address": "Talstrasse 1, 8001 Zürich, Switzerland",
+      "google_rating": 4.7,
+      "reviews_count": 1100,
+      "amenities": [
+        "Lake view",
+        "Fine dining",
+        "Spa",
+        "Central location"
+      ],
+      "provider_ref": {
+        "hotel_id": "lp31ba5"
+      },
+      "note": "Flagship Zurich luxury, lakefront, top reviews"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-09-10",
+      "title": "Arrival in Zurich",
+      "summary": "Arrive in Zurich from Mumbai. Check in to premium hotel. Explore Zurich Old Town and lake promenade.",
+      "stops": [
+        {
+          "name": "Flight: Mumbai to Zurich",
+          "kind": "flight",
+          "time": "07:00",
+          "arrival_time": "13:00",
+          "duration_min": 480
+        },
+        {
+          "name": "Baur au Lac",
+          "kind": "hotel",
+          "note": "Check-in to premium hotel"
+        },
+        {
+          "name": "Bahnhofstrasse",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Lake Zurich Promenade",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-09-11",
+      "title": "Zurich to Lucerne",
+      "summary": "Morning at Zurich. Scenic train to Lucerne. Explore Chapel Bridge and lakeside.",
+      "stops": [
+        {
+          "name": "Train: Zurich to Lucerne",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Baur au Lac",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "11:30"
+        },
+        {
+          "name": "Hotel Schweizerhof Luzern",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        },
+        {
+          "name": "Chapel Bridge",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Lake Lucerne",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-09-12",
+      "title": "Lucerne & Mount Pilatus",
+      "summary": "Day trip to Mount Pilatus with cable car. Evening at Lucerne Old Town.",
+      "stops": [
+        {
+          "name": "Hotel Schweizerhof Luzern",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Mount Pilatus",
+          "kind": "attraction",
+          "time": "09:00",
+          "duration_min": 240
+        },
+        {
+          "name": "Lucerne Old Town",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90
+        },
+        {
+          "name": "Hotel Schweizerhof Luzern",
+          "kind": "hotel",
+          "note": "Return to hotel"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-09-13",
+      "title": "GoldenPass Train to Interlaken",
+      "summary": "Scenic GoldenPass train journey to Interlaken. Explore Interlaken town.",
+      "stops": [
+        {
+          "name": "GoldenPass Line: Lucerne to Interlaken",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Hotel Schweizerhof Luzern",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "11:30"
+        },
+        {
+          "name": "Victoria Jungfrau Grand Hotel & Spa",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "13:30"
+        },
+        {
+          "name": "Interlaken Town",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2027-09-14",
+      "title": "Jungfrau Region",
+      "summary": "Day trip to Jungfraujoch (Top of Europe) by train. Return to Interlaken.",
+      "stops": [
+        {
+          "name": "Train: Interlaken to Jungfraujoch",
+          "kind": "transport",
+          "time": "08:00",
+          "duration_min": 150
+        },
+        {
+          "name": "Jungfraujoch",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 180
+        },
+        {
+          "name": "Train: Jungfraujoch to Interlaken",
+          "kind": "transport",
+          "time": "14:00",
+          "duration_min": 150
+        },
+        {
+          "name": "Victoria Jungfrau Grand Hotel & Spa",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "17:00"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2027-09-15",
+      "title": "Interlaken to Zermatt (Glacier Express)",
+      "summary": "Scenic Glacier Express train to Zermatt. Evening stroll in Zermatt village.",
+      "stops": [
+        {
+          "name": "Glacier Express: Interlaken to Zermatt",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 240
+        },
+        {
+          "name": "Victoria Jungfrau Grand Hotel & Spa",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "13:30"
+        },
+        {
+          "name": "Mont Cervin Palace",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "15:30"
+        },
+        {
+          "name": "Zermatt Village",
+          "kind": "attraction",
+          "time": "17:30",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2027-09-16",
+      "title": "Matterhorn & Gornergrat",
+      "summary": "Day trip to Matterhorn and Gornergrat by cogwheel train. Leisure evening in Zermatt.",
+      "stops": [
+        {
+          "name": "Gornergrat Bahn: Zermatt to Gornergrat",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Mont Cervin Palace",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "10:30"
+        },
+        {
+          "name": "Gornergrat",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Matterhorn Museum",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 60
+        },
+        {
+          "name": "Mont Cervin Palace",
+          "kind": "hotel",
+          "note": "Return to hotel",
+          "time": "16:30"
+        }
+      ]
+    },
+    {
+      "day": 8,
+      "date": "2027-09-17",
+      "title": "Zermatt to Zurich & Departure",
+      "summary": "Morning in Zermatt. Train back to Zurich. Flight to Mumbai in evening.",
+      "stops": [
+        {
+          "name": "Mont Cervin Palace",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "09:00"
+        },
+        {
+          "name": "Baur au Lac",
+          "kind": "hotel",
+          "note": "Day use before departure",
+          "time": "11:00"
+        },
+        {
+          "name": "Train: Zermatt to Zurich",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 240
+        },
+        {
+          "name": "Flight: Zurich to Mumbai",
+          "kind": "flight",
+          "time": "19:00",
+          "arrival_time": "07:00",
+          "duration_min": 480
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "CHF",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:05:07.877220",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T20:04:50",
+      "expires_at": "2026-08-16T08:04:50"
+    }
+  ],
+  "id": "switzerland_2027-09-10_2027-09-18",
+  "user_id": "corpus-swiss-luxury"
+}

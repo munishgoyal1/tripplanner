@@ -1,0 +1,356 @@
+{
+  "status": "draft",
+  "trip_id": "hampi_2027-01-05_2027-01-09",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:38:12.969064",
+  "destination": "Hampi",
+  "origin": "Bangalore",
+  "departure_date": "2027-01-05",
+  "return_date": "2027-01-09",
+  "travelers": "1 adult (solo)",
+  "notes": "Solo trip, moderate budget, balanced pace, 3-star+ hotel, open to train or rental car.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Hampi",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 4-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 4,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Mobility Accessible, Roll in Shower",
+      "address": "102063, Hampi, India",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lpf92d9",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+      },
+      "price_per_night": 2200,
+      "nights": 4,
+      "total_price": 8800,
+      "currency": "INR",
+      "rating": 4.2,
+      "reviews_count": 320,
+      "room_type": "Standard Room",
+      "amenities": [
+        "Mobility Accessible",
+        "Roll in Shower"
+      ]
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-05",
+      "title": "Day 1 · Arrival & Local Exploration",
+      "summary": "Travel from Bangalore to Hampi, check in to hotel, explore Hampi Bazaar and Virupaksha Temple.",
+      "stops": [
+        {
+          "name": "Train: Bangalore to Hospet Junction",
+          "kind": "transport",
+          "time": "06:30",
+          "duration_min": 390,
+          "note": "Morning train, scenic route"
+        },
+        {
+          "name": "Mobility Accessible, Roll in Shower",
+          "kind": "hotel",
+          "time": "13:30",
+          "note": "Check-in",
+          "address": "102063, Hampi, India",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lpf92d9",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+          },
+          "price_per_night": 2200,
+          "nights": 4,
+          "total_price": 8800,
+          "currency": "INR",
+          "rating": 4.2,
+          "reviews_count": 320,
+          "room_type": "Standard Room",
+          "amenities": [
+            "Mobility Accessible",
+            "Roll in Shower"
+          ]
+        },
+        {
+          "name": "Hampi Bazaar",
+          "kind": "attraction",
+          "time": "15:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Virupaksha Temple",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-06",
+      "title": "Day 2 · Monuments & Riverside",
+      "summary": "Visit Vittala Temple, explore riverside ruins, enjoy local cuisine.",
+      "stops": [
+        {
+          "name": "Mobility Accessible, Roll in Shower",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel",
+          "address": "102063, Hampi, India",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lpf92d9",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+          },
+          "price_per_night": 2200,
+          "nights": 4,
+          "total_price": 8800,
+          "currency": "INR",
+          "rating": 4.2,
+          "reviews_count": 320,
+          "room_type": "Standard Room",
+          "amenities": [
+            "Mobility Accessible",
+            "Roll in Shower"
+          ]
+        },
+        {
+          "name": "Vittala Temple",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Riverside Ruins",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 120
+        },
+        {
+          "name": "Mango Tree Restaurant",
+          "kind": "meal",
+          "time": "15:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Mobility Accessible, Roll in Shower",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Return to hotel",
+          "address": "102063, Hampi, India",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lpf92d9",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+          },
+          "price_per_night": 2200,
+          "nights": 4,
+          "total_price": 8800,
+          "currency": "INR",
+          "rating": 4.2,
+          "reviews_count": 320,
+          "room_type": "Standard Room",
+          "amenities": [
+            "Mobility Accessible",
+            "Roll in Shower"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-07",
+      "title": "Day 3 · Royal Enclosure & Hill Views",
+      "summary": "Explore Royal Enclosure, Lotus Mahal, climb Matanga Hill for sunset.",
+      "stops": [
+        {
+          "name": "Mobility Accessible, Roll in Shower",
+          "kind": "hotel",
+          "time": "08:00",
+          "note": "Start from hotel",
+          "address": "102063, Hampi, India",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lpf92d9",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+          },
+          "price_per_night": 2200,
+          "nights": 4,
+          "total_price": 8800,
+          "currency": "INR",
+          "rating": 4.2,
+          "reviews_count": 320,
+          "room_type": "Standard Room",
+          "amenities": [
+            "Mobility Accessible",
+            "Roll in Shower"
+          ]
+        },
+        {
+          "name": "Royal Enclosure",
+          "kind": "attraction",
+          "time": "10:00",
+          "duration_min": 120
+        },
+        {
+          "name": "Lotus Mahal",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 60
+        },
+        {
+          "name": "Gopi Guest House Café",
+          "kind": "meal",
+          "time": "14:00",
+          "duration_min": 60,
+          "note": "Lunch"
+        },
+        {
+          "name": "Matanga Hill",
+          "kind": "attraction",
+          "time": "16:30",
+          "duration_min": 90,
+          "note": "Sunset climb"
+        },
+        {
+          "name": "Mobility Accessible, Roll in Shower",
+          "kind": "hotel",
+          "time": "18:30",
+          "note": "Return to hotel",
+          "address": "102063, Hampi, India",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lpf92d9",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+          },
+          "price_per_night": 2200,
+          "nights": 4,
+          "total_price": 8800,
+          "currency": "INR",
+          "rating": 4.2,
+          "reviews_count": 320,
+          "room_type": "Standard Room",
+          "amenities": [
+            "Mobility Accessible",
+            "Roll in Shower"
+          ]
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-08",
+      "title": "Day 4 · Departure & Anegundi",
+      "summary": "Morning visit to Anegundi village, return to Bangalore in afternoon.",
+      "stops": [
+        {
+          "name": "Mobility Accessible, Roll in Shower",
+          "kind": "hotel",
+          "time": "07:30",
+          "note": "Check out",
+          "address": "102063, Hampi, India",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lpf92d9",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gFdR1pTRE1aUldHSTNEU05UREdZNFRPTkJYSEVaREFOUlJHWVpUTU1aV0dVM1RHTlpUR1k0VE1NUldNTTNES01UREdJWURPTVJXTVkzR0dOVERHSVlETU9KV01VWkRBTlpUR1k0RE1aUlhHNDNES05aU1BRWVNHTVJRR0kzVEFNSlFHVjZERU1CU0c0WURDTUJaUFJTVzRYMlZLTjZFU1RUNEpGSEZFN0JSSUVZRUc3QlVHVVpEUzdESktCVFZLU0Q0R0UzVFFOUllHQTNES09KVEdNWVRNWjJJSUpSQ0dNSlFHSVlETU1aVEVNWkRBTkpXRlVZVEFNUlFHWVpURzdDT0tKREU0N0JSSEUzRFNNSlNHTVlUQ01CUUdCNkRDN0NTR0VaREFNRDRHTTREQ01aUkc0WVNHVVNQRU5IRkVSU09FTVlUU05SWkZVWVRFTEpUR0VRRENNQjJHQVlDR6NwcmPLQOKedrhR64Wlb3JfcHLLAAAAAAAAAAClb3JfY23LAAAAAAAAAACiY23LAAAAAAAAAACjcGNkoKJydKROUkZOo2JyZKJST6RtcmlkwKNtcm7Ao2hkcMCjZnJuoKNzcm7ZI01vYmlsaXR5IEFjY2Vzc2libGUsIFJvbGwgaW4gU2hvd2Vyo29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSnMTAyMDYzM6NzaWQCo2hpZKdscGY5MmQ5o29jY5GBoWEBo2N1cqNJTlKiZ26iSU6iY2mqMjAyNy0wMS0wNaJjb6oyMDI3LTAxLTA5o2dpZKCiY3LLAAAAAAAAAACkc3NpZNkwc2Vzc2lvbl8wMWEwMDVmOGU3MDNwazVTQnh6M0JKd3BCUFhEOFhzdEROdVI2U0doo2lzaMKjc3Nwq2Jvb2tpbmcuY29to2lmbcKlaWZjaHLCo2lmcsKlc2VhaWSgom5rsWxpdGVhcGlvbmJvYXJkaW5nonR4koShacOhZNkjVGF4IFJlY292ZXJ5IENoYXJnZXMgJiBTZXJ2aWNlIEZlZXOhYctAsFPo9cKPXKFjo0lOUoShacKhZK1UYXggcGVyIE5pZ2h0oWHLQJrw9cKPXCmhY6NJTlKibHDAo2JrdAA="
+          },
+          "price_per_night": 2200,
+          "nights": 4,
+          "total_price": 8800,
+          "currency": "INR",
+          "rating": 4.2,
+          "reviews_count": 320,
+          "room_type": "Standard Room",
+          "amenities": [
+            "Mobility Accessible",
+            "Roll in Shower"
+          ]
+        },
+        {
+          "name": "Anegundi Village",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 90
+        },
+        {
+          "name": "Train: Hospet Junction to Bangalore",
+          "kind": "transport",
+          "time": "12:00",
+          "duration_min": 390,
+          "note": "Afternoon train"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:40:12.678375",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T20:40:01",
+      "expires_at": "2026-08-16T08:40:01"
+    }
+  ],
+  "id": "hampi_2027-01-05_2027-01-09",
+  "user_id": "corpus-solo-hampi"
+}

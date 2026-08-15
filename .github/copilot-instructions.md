@@ -26,11 +26,14 @@ not override the canonical documents above, which govern current behavior.
   `master` or another sandbox unless the owner explicitly redirects it. This
   keeps parallel sessions mapped 1:1 to a lane so which session owns which
   track stays obvious without switching windows to check.
-- End every substantive reply with a one-line status: what was fixed/changed,
-  which part of the stack (frontend/backend/both/docs/scripts), and whether a
-  dev-stack restart is needed to pick it up (and which stack: primary or the
-  sandbox in scope). Skip this line only for pure question-answering turns
-  that changed nothing.
+- End every substantive reply with a one-line status: the lane the work landed
+  on (`master`, or the `sbx-N` / `sandbox/N-*` branch) and the commit, what was
+  fixed/changed, which part of the stack (frontend/backend/both/docs/scripts),
+  and whether a dev-stack restart is needed to pick it up (and which stack:
+  primary or the sandbox in scope). Name the lane even when it is the obvious
+  one: a chat title and its working lane are not always the same, and the
+  status line is the only place that ambiguity gets settled. Skip this line
+  only for pure question-answering turns that changed nothing.
 - Prompt logging to `docs/reference/owner-inputs/prompts/master.txt` is paused.
   Do not append owner prompts to `master.txt` or any other live prompt-log file
   unless the owner explicitly re-enables this flow. The existing prompt files are

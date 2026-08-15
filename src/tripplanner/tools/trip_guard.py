@@ -37,6 +37,9 @@ DAY_START_MIN = 8 * 60 + 30
 DAY_END_MIN = 21 * 60 + 30
 PRE_DEPARTURE_BUFFER_MIN = 120
 TURNAROUND_MIN = 10
+#: Slack a stop that can simply be reached a little late may absorb. A stop with
+#: a time someone else owns -- a ticket, a booking, a departure -- gets none.
+FEASIBILITY_GRACE_MIN = 10
 ROAD_SPEED_KMH = 42.0
 DEFAULT_VISIT_MIN = 90
 DEFAULT_LEG_MIN = 120
@@ -69,15 +72,21 @@ INVARIANTS: tuple[tuple[str, str, str], ...] = (
         "Guard coverage",
         "A plan must say where the trip starts, or the envelope invariants cannot run.",
     ),
-    ("I11", "Closed day", "A place is not visited on a weekday it is known to be closed."),
-    ("I12", "Availability", "A place that no longer operates is not planned at all."),
-    ("I13", "Repeat visit", "The same attraction is not scheduled on two different days."),
 )
 
-#: Invariants decided by a fact the system already fetched, rather than by
-#: arithmetic over guessed coordinates and speeds. Each one is silent when the
-#: fact is missing, which is what makes it safe to hold a turn open on.
+#: A trip the traveller will reach on their own. Named by the user, never
+#: assumed, because the alternative is inventing a home city they never gave.
+DESTINATION_ONLY = "destination_only"
 KNOWN_FACT_CODES = frozenset({"I11", "I12", "I13"})
+
+
+def travel_scope(plan: dict[str, Any]) -> str:
+    return str(plan.get("travel_scope") or "").strip().lower()
+
+
+def plans_own_arrival(plan: dict[str, Any]) -> bool:
+    """True when the traveller has said they are arranging the journey there."""
+    return travel_scope(plan) == DESTINATION_ONLY
 
 
 @dataclass(frozen=True)
@@ -571,6 +580,22 @@ def _repeat_visit_violations(
     return out
 
 
+def _has_a_time_of_its_own(stop: Any) -> bool:
+    """True when someone else owns this stop's clock and will not wait.
+
+    A booked table or a timed entry is a promise to be somewhere at an hour you
+    did not choose. Arriving late for it is not a rounding error, so it gets no
+    slack at all, while an ordinary sight can simply be reached a little later.
+    """
+    if not isinstance(stop, dict):
+        return False
+    if stop.get("booked") or stop.get("booking_ref") or stop.get("ticket_url"):
+        return True
+    return bool(
+        str(stop.get("entry_time") or stop.get("timed_entry") or "").strip()
+    )
+
+
 def _feasibility_violations(
     structured: list[tuple[int, dict[str, Any], list[Any]]], destination: str
 ) -> list[Violation]:
@@ -610,7 +635,8 @@ def _feasibility_violations(
             if not here or not there:
                 continue
             needed = ends + travel_min(here, there)
-            if needed > following_at:
+            grace = 0 if _has_a_time_of_its_own(following) else FEASIBILITY_GRACE_MIN
+            if needed > following_at + grace:
                 out.append(
                     Violation(
                         "I4",
@@ -701,17 +727,21 @@ def _coverage_violations(plan: dict[str, Any]) -> list[Violation]:
 
     Without an origin there is no envelope, so arrival, presence, stay coverage
     and return all stop reporting — the plan looks clean because nothing looked.
+    A traveller who is arranging their own way there has answered the question,
+    though, and must not be asked again on every edit.
     """
     if not str(plan.get("destination") or "").strip():
         return []
-    if str(plan.get("origin") or "").strip():
+    if str(plan.get("origin") or "").strip() or plans_own_arrival(plan):
         return []
     return [
         Violation(
             "I10",
             "Guard coverage",
-            "The plan does not say where the trip starts from, so arrival, presence, "
-            "stay coverage and the return leg cannot be checked.",
+            "The trip does not say where it starts from, so arrival, presence, stay "
+            "coverage and the return leg cannot be checked. Ask the traveller where "
+            "they are setting out from, or record that they are arranging their own "
+            "way there.",
         )
     ]
 

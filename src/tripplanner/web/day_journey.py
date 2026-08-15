@@ -283,7 +283,13 @@ def start_journey_from_stay(
         _rebind_edges(journey.intercity_edges, origin_id, stay_id)
         _rebind_edges(journey.circuit_edges, origin_id, stay_id)
 
+    # An excursion that came home must still come home after the reorder: moving
+    # the stay to the front without this drops the return and leaves the day
+    # ending at whatever it saw last.
+    returns_to_stay = bool(route_ids) and route_ids[-1] == stay_id
     journey.route_ids = [stay_id, *(pin_id for pin_id in route_ids if pin_id != stay_id)]
+    if returns_to_stay and len(journey.route_ids) > 1:
+        journey.route_ids.append(stay_id)
     # Only claim the opening edge is the transfer when the walk found no other one.
     if len(journey.route_ids) >= 2 and journey.transfer_mode and not journey.intercity_edges:
         journey.intercity_edges[(journey.route_ids[0], journey.route_ids[1])] = (

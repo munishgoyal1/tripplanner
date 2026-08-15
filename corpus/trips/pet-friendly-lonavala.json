@@ -1,0 +1,327 @@
+{
+  "status": "draft",
+  "trip_id": "lonavala_2027-01-20_2027-01-23",
+  "trip_number": 1,
+  "created_at": "2026-08-15T20:33:57.227527",
+  "destination": "Lonavala",
+  "origin": "Mumbai",
+  "departure_date": "2027-01-20",
+  "return_date": "2027-01-23",
+  "travelers": "2 adults and 1 dog",
+  "notes": "Pet-friendly stays only. Balanced sightseeing and leisure.",
+  "planning_recommendation": {
+    "confidence": "low",
+    "destination": "Lonavala",
+    "estimated_planned_minutes": 0,
+    "evidence_place_count": 0,
+    "platform_prior_applied": false,
+    "platform_prior_version": null,
+    "reasons": [
+      "The user's explicit 3-day duration is authoritative",
+      "No place-duration evidence was supplied; used the city scope baseline",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 3,
+    "recommended_range": [
+      2,
+      4
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [
+    {
+      "name": "Ratnaa Resort",
+      "provider": "liteapi",
+      "provider_ref": {
+        "hotel_id": "lp1f5d2",
+        "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+      },
+      "checkin": "2027-01-20",
+      "checkout": "2027-01-23",
+      "room_type": "Petite One Full Bed",
+      "price_per_night": 4200,
+      "total_price": 12600,
+      "currency": "INR",
+      "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+      "google_rating": 4.1,
+      "google_reviews_count": 1708,
+      "pet_friendly": true,
+      "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location"
+    }
+  ],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2027-01-20",
+      "title": "Day 1 · Arrival & Local Exploration",
+      "summary": "Drive from Mumbai to Lonavala, check in to a pet-friendly hotel, and explore Lonavala Lake and local markets.",
+      "stops": [
+        {
+          "name": "Drive: Mumbai to Lonavala",
+          "kind": "transport",
+          "note": "Start early morning, approx. 2.5 hrs drive (85 km)",
+          "time": "09:00"
+        },
+        {
+          "name": "Ratnaa Resort",
+          "kind": "hotel",
+          "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f5d2",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+          },
+          "checkin": "2027-01-20",
+          "checkout": "2027-01-23",
+          "room_type": "Petite One Full Bed",
+          "price_per_night": 4200,
+          "total_price": 12600,
+          "currency": "INR",
+          "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+          "google_rating": 4.1,
+          "google_reviews_count": 1708,
+          "pet_friendly": true,
+          "time": "11:00"
+        },
+        {
+          "name": "Lonavala Lake",
+          "kind": "attraction",
+          "time": "15:00",
+          "duration_min": 90,
+          "note": "Scenic walk, dog-friendly"
+        },
+        {
+          "name": "Tiger Point",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 90,
+          "note": "Great views, dog-friendly"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2027-01-21",
+      "title": "Day 2 · Nature & Sightseeing",
+      "summary": "Visit Bhushi Dam, Tiger Point, and enjoy a relaxed lunch at a pet-friendly cafe. Evening at leisure.",
+      "stops": [
+        {
+          "name": "Ratnaa Resort",
+          "kind": "hotel",
+          "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f5d2",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+          },
+          "checkin": "2027-01-20",
+          "checkout": "2027-01-23",
+          "room_type": "Petite One Full Bed",
+          "price_per_night": 4200,
+          "total_price": 12600,
+          "currency": "INR",
+          "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+          "google_rating": 4.1,
+          "google_reviews_count": 1708,
+          "pet_friendly": true,
+          "time": "09:00"
+        },
+        {
+          "name": "Lonavala Bazaar",
+          "kind": "attraction",
+          "time": "11:00",
+          "duration_min": 60,
+          "note": "Local shopping and snacks"
+        },
+        {
+          "name": "Rajmachi Fort",
+          "kind": "attraction",
+          "time": "12:30",
+          "duration_min": 180,
+          "note": "Mild trek, carry water for your dog"
+        },
+        {
+          "name": "Pet-friendly Cafe (TBD)",
+          "kind": "meal",
+          "time": "16:00",
+          "duration_min": 60,
+          "note": "Lunch with your dog"
+        },
+        {
+          "name": "Ratnaa Resort",
+          "kind": "hotel",
+          "time": "17:30",
+          "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f5d2",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+          },
+          "checkin": "2027-01-20",
+          "checkout": "2027-01-23",
+          "room_type": "Petite One Full Bed",
+          "price_per_night": 4200,
+          "total_price": 12600,
+          "currency": "INR",
+          "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+          "google_rating": 4.1,
+          "google_reviews_count": 1708,
+          "pet_friendly": true
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2027-01-22",
+      "title": "Day 3 · Fort & Park",
+      "summary": "Explore Rajmachi Fort and Ryewood Park, both suitable for pets. Evening at hotel.",
+      "stops": [
+        {
+          "name": "Ratnaa Resort",
+          "kind": "hotel",
+          "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f5d2",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+          },
+          "checkin": "2027-01-20",
+          "checkout": "2027-01-23",
+          "room_type": "Petite One Full Bed",
+          "price_per_night": 4200,
+          "total_price": 12600,
+          "currency": "INR",
+          "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+          "google_rating": 4.1,
+          "google_reviews_count": 1708,
+          "pet_friendly": true,
+          "time": "09:00"
+        },
+        {
+          "name": "Ryewood Park",
+          "kind": "attraction",
+          "time": "14:00",
+          "duration_min": 90,
+          "note": "Spacious park, pet-friendly"
+        },
+        {
+          "name": "Bhushi Dam",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 90,
+          "note": "Morning visit, open area for pets"
+        },
+        {
+          "name": "Ratnaa Resort",
+          "kind": "hotel",
+          "time": "18:00",
+          "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f5d2",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+          },
+          "checkin": "2027-01-20",
+          "checkout": "2027-01-23",
+          "room_type": "Petite One Full Bed",
+          "price_per_night": 4200,
+          "total_price": 12600,
+          "currency": "INR",
+          "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+          "google_rating": 4.1,
+          "google_reviews_count": 1708,
+          "pet_friendly": true
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2027-01-23",
+      "title": "Day 4 · Departure",
+      "summary": "Checkout and drive back to Mumbai.",
+      "stops": [
+        {
+          "name": "Ratnaa Resort",
+          "kind": "hotel",
+          "note": "Verified pet-friendly, 4.1★ (1,708 reviews), moderate price, good location",
+          "provider": "liteapi",
+          "provider_ref": {
+            "hotel_id": "lp1f5d2",
+            "offer_id": "3gAWonJzkd4AEaRzcmlk2gElRzRZRE1OSlhHUTNEU05aVUdZMlRFTUJXTVkzR0tOUlZHSVlETU5SWEdVM0dHTlRER0lZRE1NUldHVTNESTdCUkVNWkRBTVJYR0FZVEVNRDRHSVlERU5aUUdFWkRHN0RGTlpQVktVMzRKRkhIWVNLT0tKNkRFUUpRSU42RElOSlNIRjZHU1VESEtWRUhZTUpYSEEzRFFNQldHSTRETU1KUkdCSVdRUjJFRU1ZVEVPQlVHWTNDR05SVkhFV1RDTVJZR1EzRE03Q09LSkRFNDdCU0dBWkRLTUJaR0EzRENNQlFHQjZETzdDU0dFWlRDTVQ0R01ZVEVOWlhHWTJTR1VTUEVOSEZFUlNPRU1aREFNUlZGVVlEU0xKUUdZUURDTUIyR0FZQ0ejcHJjy0Dei2mZmZmapW9yX3ByywAAAAAAAAAApW9yX2NtywAAAAAAAAAAomNtywAAAAAAAAAAo3BjZKCicnSkTlJGTqNicmSiUk-kbXJpZMCjbXJuwKNoZHDAo2ZybqCjc3Jus1BldGl0ZSBPbmUgRnVsbCBCZWSjb2NuAaRwcmtzwKNkZXTLAAAAAAAAAACiY3CCoXCQonJ0pE5SRk6kc2hpZKYxMjg0Njajc2lkAqNoaWSnbHAxZjVkMqNvY2ORgaFhAqNjdXKjSU5SomduoklOomNpqjIwMjctMDEtMjCiY2-qMjAyNy0wMS0yM6NnaWSgomNyywAAAAAAAAAApHNzaWTZMHNlc3Npb25fMDFhMDA1ZjQzNzBleXdQdlJRdWZpNmVlTlhSV0pudkFqRWI5cW14SqNpc2jCo3NzcKtib29raW5nLmNvbaNpZm3CpWlmY2hywqNpZnLCpXNlYWlkoKJua7FsaXRlYXBpb25ib2FyZGluZ6J0eJKEoWnDoWStT2NjdXBhbmN5IFRheKFhy0ByqPXCj1wpoWOjSU5ShKFpw6FkrkhvdGVsIFRheCBSYXRloWHLQLFSrhR64UihY6NJTlKibHDAo2JrdAU="
+          },
+          "checkin": "2027-01-20",
+          "checkout": "2027-01-23",
+          "room_type": "Petite One Full Bed",
+          "price_per_night": 4200,
+          "total_price": 12600,
+          "currency": "INR",
+          "address": "Off, Old Mumbai - Pune Hwy, near Wet N Joy Water Park, Kamshet, Lonavala, Maharashtra 410405, India",
+          "google_rating": 4.1,
+          "google_reviews_count": 1708,
+          "pet_friendly": true,
+          "time": "09:00"
+        },
+        {
+          "name": "Drive: Lonavala to Mumbai",
+          "kind": "transport",
+          "note": "Approx. 2.5 hrs drive (85 km)",
+          "time": "11:00"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T20:36:09.316470",
+  "price_checks": [
+    {
+      "kind": "lodging",
+      "provider": "liteapi",
+      "checked_at": "2026-08-15T20:34:48",
+      "expires_at": "2026-08-16T08:34:48"
+    }
+  ],
+  "id": "lonavala_2027-01-20_2027-01-23",
+  "user_id": "corpus-pet-friendly-lonavala"
+}
