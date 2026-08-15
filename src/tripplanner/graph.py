@@ -417,6 +417,8 @@ def trip_agent(state: AgentState) -> AgentState:
     tools = select_tools(state["messages"], proposal_only=proposal_only)
     if decision.forced_tool:
         tools = [tool for tool in tools if tool.name == decision.forced_tool]
+    elif decision.block_trip_creation:
+        tools = [tool for tool in tools if tool.name != "create_trip_plan"]
     llm = _get_llm().bind_tools(
         tools,
         parallel_tool_calls=True,
@@ -461,6 +463,12 @@ def trip_agent(state: AgentState) -> AgentState:
             "PROPOSAL-ONLY REVIEW: analyze the itinerary and offer concise numbered options. "
             "Do not create, update, finalize, book, resume, or otherwise mutate trip or user data. "
             "Ask the user to approve an option before any later mutation turn."
+        )))
+    if decision.block_trip_creation:
+        instructions.append(SystemMessage(content=(
+            "This trip has not been reviewed with the user yet, so create_trip_plan is "
+            "unavailable this round. Call request_trip_input first with prefilled choices, "
+            "including trip length when it is unresolved."
         )))
     response = llm.invoke(instructions + _messages_for_model(state["messages"]))
     return {"messages": [response], "current_agent": "trip"}

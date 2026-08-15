@@ -81,6 +81,63 @@ def test_explicit_destination_switch_requires_new_trip(monkeypatch: pytest.Monke
     ) == "create_trip_plan"
 
 
+def test_destination_switch_asks_the_kickoff_before_creating(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Mussoorie"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="plan a trip to dehradun")]
+    ) == "get_travel_preferences"
+
+
+def test_destination_switch_reaches_the_input_request(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Mussoorie"},
+    )
+    messages = [
+        HumanMessage(content="plan a trip to dehradun"),
+        _tool_message("get_travel_preferences"),
+        _tool_message("recommend_trip_duration"),
+    ]
+
+    assert _trip_kickoff_tool_choice(messages) == "request_trip_input"
+
+
+def test_same_destination_follow_up_still_has_no_kickoff(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "Dehradun"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="plan my trip to Dehradun in more detail")]
+    ) is None
+
+
+def test_day_trip_switch_has_no_kickoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        graph_mod,
+        "load_active_trip_dict",
+        lambda: {"destination": "London"},
+    )
+
+    assert _trip_kickoff_tool_choice(
+        [HumanMessage(content="Plan a day trip to Oxford")]
+    ) is None
+
+
 def test_active_trip_explicit_new_trip_starts_fresh_kickoff(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

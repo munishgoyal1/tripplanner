@@ -27,9 +27,14 @@ function Import-DeploymentEnvironment {
             $name = $matches[1].Trim()
             $value = $matches[2].Trim()
 
-            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name, 'Process'))) {
-                [Environment]::SetEnvironmentVariable($name, $value, 'Process')
+            # The target environment's file wins. Deferring to whatever the shell
+            # already exported let a local .env leak into canary and prod, which
+            # is how both ended up on the local Redis and its namespace.
+            $existing = [Environment]::GetEnvironmentVariable($name, 'Process')
+            if ($null -ne $existing -and $existing -ne $value) {
+                Write-Host "[env]     $name overridden by $(Split-Path -Leaf $Path)"
             }
+            [Environment]::SetEnvironmentVariable($name, $value, 'Process')
         }
     }
 }

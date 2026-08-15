@@ -10,6 +10,35 @@ interface ScopeDefinition {
 }
 
 const scopes: Record<string, ScopeDefinition> = {
+  "profile-workspace": {
+    changes: [
+      "How much width the profile gets and whether it stays a right-side drawer, becomes a page, a centered workspace, a two-pane surface, or a drawer that expands on demand",
+      "How the five sections are consolidated and navigated: identity, travel preferences, travellers, travel documents, and privacy",
+      "Whether travellers and family details are their own destination instead of a block nested inside travel preferences",
+      "Whether preference groups can use genuine two-column editing instead of a single narrow column",
+      "How the same surface degrades on a phone, where extra width is not available",
+    ],
+    context: [
+      "The preference fields themselves, their labels, values, and internal keys; this Lab moves and reflows them but does not redefine them",
+      "Saving, validation, conflict handling, and the existing preference persistence contract",
+      "Travel document capture and retention, analytics consent, erasure, and account deletion behavior",
+      "What the planner does with a preference once saved; agent behavior is unchanged",
+    ],
+  },
+  "chat-inputs": {
+    changes: [
+      "How the planner requests a missing planning fact inside the conversation: inline chips, an ask card, a stated assumption, a one-at-a-time queue, or a persistent context bar",
+      "Which control each fact type uses - chips, stepper, date range, slider, segmented control, or multi-select tags - so an answer is a tap rather than a sentence",
+      "How an explicit opt-out is offered and recorded, including a destination-only trip that has no origin at all",
+      "How answered, unanswered, and deliberately declined facts are shown back to the traveller and can be added, changed, or removed later",
+    ],
+    context: [
+      "The trip fixture, itinerary content, and the planner's underlying reasoning; only the request surface varies",
+      "Free-text chat remains available in every option and is never removed as an input path",
+      "Agent tool selection, provider searches, persistence contracts, and existing trip records; this Lab never back-fills a stored trip",
+      "Profile and preference storage, which is Lab #25 and Lab #26 territory rather than this decision",
+    ],
+  },
   "family-details": {
     changes: [
       "How a family is introduced: roster, trip question, shared defaults, chat suggestion, or comparison matrix",

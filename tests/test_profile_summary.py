@@ -13,6 +13,7 @@ import pytest
 
 from tripplanner.tools import (
     passive_learning,
+    profile_suggestions,
     profile_summary,
     trip_planner,
     user_preferences,
@@ -117,10 +118,11 @@ class TestTripScopeGuard:
         monkeypatch.setattr(
             passive_learning.about_me_extractor, "extract_about_me", _fake
         )
-        touched = passive_learning.learn_from_message(
+        raised = passive_learning.learn_from_message(
             "I always love scuba diving on my trips"
         )
-        assert "interests" in touched
+        assert raised and raised != ["trip_constraint"]
+        profile_suggestions.resolve(raised[0], "save")
         prefs = load_preferences()
         assert "scuba diving" in prefs["interests"]
 

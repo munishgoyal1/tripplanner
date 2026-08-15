@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from tripplanner.tools import passive_learning, user_preferences
+from tripplanner.tools import passive_learning, profile_suggestions, user_preferences
 from tripplanner.tools.user_preferences import load_preferences
 
 # Parallel sandboxes run this suite at the same time against one home
@@ -55,17 +55,49 @@ class TestLearnFromMessage:
         assert passive_learning.learn_from_message("book it") == []
         assert called["n"] == 0
 
-    def test_overlays_extracted_additively(self, monkeypatch):
+    def test_queues_a_suggestion_instead_of_saving(self, monkeypatch):
         user_preferences.update_preferences({"interests": ["museums"]})
         monkeypatch.setattr(
             passive_learning.about_me_extractor,
             "extract_about_me",
             lambda _t: {"interests": ["hiking"]},
         )
-        touched = passive_learning.learn_from_message("I love hiking in the mountains")
-        assert "interests" in touched
-        prefs = load_preferences()
-        assert sorted(prefs["interests"]) == ["hiking", "museums"]
+        raised = passive_learning.learn_from_message("I love hiking in the mountains")
+
+        assert len(raised) == 1
+        # Nothing durable changed until the user confirms.
+        assert load_preferences()["interests"] == ["museums"]
+        pending = profile_suggestions.list_pending()
+        assert [item["id"] for item in pending] == raised
+        assert pending[0]["provenance"] == "suggested_from_chat"
+
+    def test_confirming_a_suggestion_merges_it_additively(self, monkeypatch):
+        user_preferences.update_preferences({"interests": ["museums"]})
+        monkeypatch.setattr(
+            passive_learning.about_me_extractor,
+            "extract_about_me",
+            lambda _t: {"interests": ["hiking"]},
+        )
+        [suggestion_id] = passive_learning.learn_from_message("I love hiking in the mountains")
+
+        resolved = profile_suggestions.resolve(suggestion_id, "save")
+
+        assert resolved["status"] == "saved"
+        assert sorted(load_preferences()["interests"]) == ["hiking", "museums"]
+        assert profile_suggestions.list_pending() == []
+
+    def test_dismissed_suggestion_is_not_raised_again(self, monkeypatch):
+        monkeypatch.setattr(
+            passive_learning.about_me_extractor,
+            "extract_about_me",
+            lambda _t: {"interests": ["hiking"]},
+        )
+        [suggestion_id] = passive_learning.learn_from_message("I love hiking in the mountains")
+        profile_suggestions.resolve(suggestion_id, "dismiss")
+
+        assert passive_learning.learn_from_message("I love hiking in the mountains") == []
+        assert profile_suggestions.list_pending() == []
+        assert load_preferences().get("interests") in (None, [])
 
     def test_appends_learned_notes_deduped(self, monkeypatch):
         monkeypatch.setattr(
@@ -73,8 +105,11 @@ class TestLearnFromMessage:
             "extract_about_me",
             lambda _t: {"_learned_notes_to_append": [{"note": "Prefers aisle seats", "source": "stated"}]},
         )
-        passive_learning.learn_from_message("I always prefer an aisle seat")
-        passive_learning.learn_from_message("I always prefer an aisle seat")
+        first = passive_learning.learn_from_message("I always prefer an aisle seat")
+        # The same sentence must not queue the question twice.
+        assert passive_learning.learn_from_message("I always prefer an aisle seat") == []
+
+        profile_suggestions.resolve(first[0], "save")
         prefs = load_preferences()
         notes = [n["note"] for n in prefs["learned_notes"]]
         assert notes.count("Prefers aisle seats") == 1

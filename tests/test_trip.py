@@ -263,6 +263,7 @@ class TestPreferenceTools:
         parsed = json.loads(result)
         assert "family" in parsed
         assert "trip_style" in parsed
+        assert "configured_preference_fields" in parsed
 
     def test_save_travel_preferences(self):
         payload = json.dumps({

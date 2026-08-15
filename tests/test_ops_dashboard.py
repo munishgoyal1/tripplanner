@@ -133,45 +133,63 @@ def test_analytics_event_records_only_allowlisted_content_free_fields(monkeypatc
 
 
 def test_provider_cache_status_reports_memory_redis_and_fallback(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    provider_cache._PROVIDER_CACHES.clear()
-    settings = type("Settings", (), {"cache_redis_enabled": True})()
-    monkeypatch.setattr(provider_cache, "get_settings", lambda: settings)
+    from tripplanner import caching
 
-    memory = type(
-        "Cache",
+    monkeypatch.setattr(caching, "_REGISTRY", {})
+    settings = type(
+        "Settings",
         (),
-        {
-            "status": lambda self: {
-                "memory_entries": 2,
-                "redis": {"enabled": True, "connected": False},
-            }
-        },
+        {"cache_redis_enabled": True, "cache_redis_namespace": "tripplanner:test"},
     )()
-    provider_cache._PROVIDER_CACHES.add(memory)
+
+    # Redis selected but unreachable: the request still gets a cache, and the
+    # dashboard has to say so rather than claim Redis is serving.
+    fallback_backend = caching.RedisBackend.__new__(caching.RedisBackend)
+    fallback_backend._mirror = caching.MemoryBackend()
+    fallback_backend._client = None
+    fallback_backend._down_since = None
+    monkeypatch.setattr(caching, "_BACKEND", fallback_backend)
+    monkeypatch.setattr(caching, "get_settings", lambda: settings)
+
+    caching.get_cache("probe").set("a", 1)
+    caching.get_cache("probe").set("b", 2)
     fallback = provider_cache.provider_cache_status()
 
-    assert fallback == {
-        "configured": True,
-        "backend": "memory",
-        "redis_connected": False,
-        "fallback_active": True,
-        "memory_entries": 2,
-        "redis_entries": 0,
-        "redis_bytes": 0,
-        "redis_stats_truncated": False,
-    }
+    assert fallback["configured"] is True
+    assert fallback["backend"] == "memory"
+    assert fallback["redis_connected"] is False
+    assert fallback["fallback_active"] is True
+    assert fallback["memory_entries"] == 2
+    assert fallback["redis_entries"] == 0
 
-    provider_cache._PROVIDER_CACHES.clear()
-    redis_cache = type(
-        "Cache",
-        (),
-        {
-            "status": lambda self: {
-                "memory_entries": 1,
-                "redis": {"enabled": True, "connected": True},
-            }
-        },
-    )()
-    provider_cache._PROVIDER_CACHES.add(redis_cache)
+    monkeypatch.setattr(caching, "_REGISTRY", {})
+    monkeypatch.setattr(caching, "_BACKEND", caching.MemoryBackend())
+    memory_only = provider_cache.provider_cache_status()
 
-    assert provider_cache.provider_cache_status()["backend"] == "redis"
+    assert memory_only["backend"] == "memory"
+    assert memory_only["fallback_active"] is False
+
+
+def test_provider_cache_status_reports_redis_when_it_answers(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from tripplanner import caching
+
+    class Answering:
+        def scan_iter(self, **_kwargs):
+            yield b"tripplanner:probe:a"
+
+        def memory_usage(self, _key):
+            return 64
+
+    monkeypatch.setattr(caching, "_REGISTRY", {})
+    backend = caching.RedisBackend.__new__(caching.RedisBackend)
+    backend._mirror = caching.MemoryBackend()
+    backend._client = Answering()
+    backend._down_since = None
+    monkeypatch.setattr(caching, "_BACKEND", backend)
+
+    status = provider_cache.provider_cache_status()
+
+    assert status["backend"] == "redis"
+    assert status["redis_connected"] is True
+    assert status["redis_entries"] == 1
+    assert status["redis_bytes"] == 64

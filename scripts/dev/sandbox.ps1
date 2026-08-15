@@ -25,7 +25,11 @@
 
 .NOTES
   Every verb except -New takes the number, the full name, or the short name
-  without its number prefix.
+  without its number prefix. -Serve, -Stop, -Update, -Promote, -Merge, and
+  -Discard also accept a comma-separated list (e.g. -Promote 4,6) or the
+  literal "all" for every registered sandbox, to run that verb across several
+  sandboxes in one call; each one still goes through that verb's normal gates
+  and gets its own transcript, and one failure does not stop the rest.
 
   -Run holds the terminal; -Serve starts the same stack detached and waits for
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
@@ -1295,6 +1299,61 @@ if ($PSCmdlet.ParameterSetName -eq "RunAll") {
                 $number, $entry.slug, $child.Id, $entry.frontendPort) -ForegroundColor Green
     }
     Write-Host "Each sandbox writes output to $runLogRoot" -ForegroundColor DarkGray
+    return
+}
+
+# -Serve/-Stop/-Update/-Promote/-Merge/-Discard accept a comma-separated list
+# (e.g. -Promote 4,6) or the literal "all" for every registered sandbox, so a
+# batch needs one call instead of one per sandbox. Each target re-invokes this
+# same script with the other bound parameters forwarded, so it gets that
+# verb's normal gates and its own transcript. A failure is recorded but does
+# not stop the remaining sandboxes, except the last one still throws so a
+# calling script sees a non-zero exit.
+$multiTargetVerbs = @("Serve", "Stop", "Update", "Promote", "Merge", "Discard")
+$isAllTarget = $reference -and $reference.Trim().ToLowerInvariant() -eq "all"
+if ($multiTargetVerbs -contains $PSCmdlet.ParameterSetName -and ($reference -match "," -or $isAllTarget)) {
+    $verb = $PSCmdlet.ParameterSetName
+    $targets = if ($isAllTarget) {
+        $registered = @(Get-Registry | Sort-Object { [int]$_.slot })
+        if ($registered.Count -eq 0) {
+            throw "No sandboxes are registered."
+        }
+        @($registered | ForEach-Object { $_.slug })
+    } else {
+        @($reference -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    }
+    if ($targets.Count -eq 0) {
+        throw "No sandbox reference given for -$verb."
+    }
+    Write-Host "Running -$verb across $($targets.Count) sandbox(es): $($targets -join ', ')" -ForegroundColor Cyan
+    $failed = [System.Collections.Generic.List[string]]::new()
+    $pwshExe = (Get-Command pwsh -ErrorAction Stop).Source
+    foreach ($target in $targets) {
+        Write-Host ""
+        Write-Host "== -$verb $target ==" -ForegroundColor Green
+        $forward = [System.Collections.Generic.List[object]]::new()
+        $forward.Add("-$verb"); $forward.Add($target)
+        foreach ($key in $PSBoundParameters.Keys) {
+            if ($key -eq $verb) { continue }
+            $value = $PSBoundParameters[$key]
+            if ($value -is [switch]) {
+                if ($value.IsPresent) { $forward.Add("-$key") }
+            } else {
+                $forward.Add("-$key"); $forward.Add($value)
+            }
+        }
+        # A plain array splat on this script's own call operator binds each element
+        # positionally instead of re-parsing "-Verb" as a flag, so route through a
+        # fresh pwsh process instead, exactly as a caller on the command line would.
+        & $pwshExe -NoProfile -File $PSCommandPath @forward
+        if ($LASTEXITCODE -ne 0) {
+            $failed.Add($target)
+            Write-Warning "-$verb $target failed; continuing with the remaining sandboxes."
+        }
+    }
+    if ($failed.Count -gt 0) {
+        throw "-$verb failed for: $($failed -join ', ')."
+    }
     return
 }
 

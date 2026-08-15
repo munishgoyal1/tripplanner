@@ -13,12 +13,12 @@ and no price at all. That is the designed behaviour, not a failure.
 from __future__ import annotations
 
 import json
-import time
 from datetime import UTC, datetime
 from typing import Any
 
 from langchain_core.tools import tool
 
+from tripplanner.caching import get_cache
 from tripplanner.config import get_settings
 from tripplanner.decisions.models import (
     Decision,
@@ -57,7 +57,7 @@ _CACHE_TTL_SECONDS = 24 * 60 * 60
 MAX_COMPARISONS_PER_TRIP = 6
 MAX_COMPARISONS_PER_TURN = 3
 
-_cache: dict[tuple, tuple[float, dict[str, Any]]] = {}
+_cache = get_cache("transport-compare", default_ttl_seconds=_CACHE_TTL_SECONDS)
 _turn_count = 0
 
 
@@ -335,10 +335,16 @@ def compare_transport_options(
 
     travellers = _travellers_from_trip(plan, travellers)
     currency = str((plan or {}).get("currency") or "EUR").upper()
-    key = (from_place.strip().lower(), to_place.strip().lower(), date, travellers, currency)
+    key = "|".join([
+        from_place.strip().lower(),
+        to_place.strip().lower(),
+        str(date),
+        str(travellers),
+        currency,
+    ])
     cached = _cache.get(key)
-    if cached and time.time() - cached[0] < _CACHE_TTL_SECONDS:
-        return json.dumps(cached[1], ensure_ascii=False, indent=2)
+    if cached is not None:
+        return json.dumps(cached, ensure_ascii=False, indent=2)
 
     _turn_count += 1
     options, distance_km, warnings = _collect_options(
@@ -379,5 +385,5 @@ def compare_transport_options(
     trip_planner.record_trip_decision(decision)
 
     summary = _summarise(decision, warnings)
-    _cache[key] = (time.time(), json.loads(summary))
+    _cache.set(key, json.loads(summary))
     return summary
