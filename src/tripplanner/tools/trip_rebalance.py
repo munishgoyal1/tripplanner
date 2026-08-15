@@ -34,6 +34,13 @@ from tripplanner.tools.trip_common import _stop_kind, _stop_name
 
 #: Enough slack before closing that the visit is not a race.
 _COMFORT_MIN = 30
+#: What clearing one contradiction is worth. Heavy enough to win almost every
+#: trade, finite so it cannot buy an arrangement that ruins the rest of the
+#: trip: an absolute ordering once moved a museum onto the departure day
+#: because nothing was allowed to outrank a cleared fault.
+_CONTRADICTION_COST = 240
+#: Minutes of sightseeing a leaving day carries before it starts to hurt.
+_DEPARTURE_ALLOWANCE = 90
 #: Words in a day title that name no place.
 _TITLE_NOISE = frozenset({
     "day", "arrival", "arrive", "departure", "depart", "free", "leisure", "and",
@@ -54,22 +61,19 @@ class Score:
     imbalance: float
     rushed: int
     misplaced: int
+    departure_load: int
 
     @property
     def total(self) -> float:
         # Minutes are the unit; the rest are converted into minutes of regret.
-        return self.travel_min + self.imbalance * 0.5 + self.rushed * 20 + self.misplaced * 45
-
-    @property
-    def rank(self) -> tuple[int, float]:
-        """Contradictions first, cost second.
-
-        Folding a contradiction into the cost would let a big enough travel
-        saving buy one, and no number of saved minutes is worth arriving at a
-        museum that is shut. Clearing one has to win outright, which also means
-        a repair that costs travel time is still an improvement.
-        """
-        return (self.contradictions, self.total)
+        return (
+            self.travel_min
+            + self.contradictions * _CONTRADICTION_COST
+            + self.imbalance * 0.5
+            + self.rushed * 20
+            + self.misplaced * 45
+            + self.departure_load
+        )
 
 
 @dataclass(frozen=True)
@@ -148,14 +152,28 @@ def score(plan: dict[str, Any]) -> Score:
     structured = trip_guard.days_of(plan)
 
     titles = {day: _tokens(entry.get("title")) for day, entry, _stops in structured}
+    # Only a day the plan itself calls the end of the trip is a leaving day.
+    # Guessing from "it is last" would penalise the final day of every fixture
+    # and every open-ended trip that never said when it goes home.
+    going_home = str(plan.get("return_date") or "").strip()
+    last_day = next(
+        (day for day, day_iso in dates.items() if going_home and day_iso == going_home),
+        0,
+    )
     travel = 0
     loads: list[int] = []
     rushed = 0
     misplaced = 0
+    departure_load = 0
 
     for day, _entry, stops in structured:
         travel += _day_travel_min(stops, destination)
-        loads.append(_active_min(stops))
+        active = _active_min(stops)
+        loads.append(active)
+        if day == last_day and day > 1:
+            # Nothing anchors the end of a trip that never named a return leg,
+            # so the leaving day otherwise looks like a day with free hours.
+            departure_load += max(0, active - _DEPARTURE_ALLOWANCE)
         day_iso = dates.get(day, "")
         for stop in stops:
             name = _stop_name(stop)
@@ -181,6 +199,7 @@ def score(plan: dict[str, Any]) -> Score:
         imbalance=pstdev(loads) if len(loads) > 1 else 0.0,
         rushed=rushed,
         misplaced=misplaced,
+        departure_load=departure_load,
     )
 
 
@@ -313,6 +332,33 @@ def _candidates(
                 yield traded[0], traded[1]
 
 
+def _retitle(plan: dict[str, Any], touched: set[int]) -> None:
+    """Stop a day's heading naming stops that have left it.
+
+    "Day 3 - Louvre & Marais" holding neither is a plan lying about itself,
+    which is worse than the crooked schedule the rebalance just fixed.
+    """
+    for day, entry, stops in trip_guard.days_of(plan):
+        if day not in touched:
+            continue
+        heading = _tokens(entry.get("title"))
+        if not heading:
+            continue
+        present = (
+            frozenset().union(*(_tokens(_stop_name(stop)) for stop in stops))
+            if stops
+            else frozenset()
+        )
+        if heading <= present:
+            continue
+        named = [
+            _stop_name(stop)
+            for stop in stops
+            if _stop_kind(stop) == "attraction" and _stop_name(stop)
+        ][:2]
+        entry["title"] = f"Day {day} \u00b7 {' & '.join(named)}" if named else f"Day {day}"
+
+
 def rebalance(
     plan: dict[str, Any],
     *,
@@ -331,16 +377,18 @@ def rebalance(
 
     while rounds < max_rounds:
         rounds += 1
-        best: tuple[tuple[int, float], dict[str, Any], tuple[Move, ...]] | None = None
+        best: tuple[float, dict[str, Any], tuple[Move, ...]] | None = None
 
         for candidate, candidate_moves in _candidates(current, set(pinned), deadline):
             candidate_score = score(candidate)
-            if candidate_score.rank >= best_score.rank:
+            if candidate_score.contradictions > before.contradictions:
                 continue
-            if best is None or candidate_score.rank < best[0]:
+            if candidate_score.total >= best_score.total:
+                continue
+            if best is None or candidate_score.total < best[0]:
                 saved = best_score.travel_min - candidate_score.travel_min
                 best = (
-                    candidate_score.rank,
+                    candidate_score.total,
                     candidate,
                     tuple(
                         Move(move.name, move.from_day, move.to_day, move.time, saved)
@@ -352,11 +400,14 @@ def rebalance(
             exhausted = True
         if best is None:
             break
-        _rank, current, accepted = best
+        _total, current, accepted = best
         best_score = score(current)
         moves.extend(accepted)
         if exhausted:
             break
+
+    if moves:
+        _retitle(current, {move.from_day for move in moves} | {move.to_day for move in moves})
 
     return Rebalance(
         plan=current,

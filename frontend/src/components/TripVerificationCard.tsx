@@ -111,9 +111,7 @@ export default function TripVerificationCard({
         </ul>
       )}
 
-      {/* The repair action is withheld until the objective stops trading a good
-          trip for a cleared contradiction. See docs/feature-briefs/006. */}
-      {false && failed.length > 0 && (
+      {failed.length > 0 && (
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"

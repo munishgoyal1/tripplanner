@@ -148,3 +148,99 @@ def test_an_empty_plan_is_safe() -> None:
     result = trip_rebalance.rebalance({"destination": "Paris"})
     assert not result.changed
     assert result.before.travel_min == 0
+
+
+# --------------------------------------------------------------------------- #
+# what a cleared contradiction may and may not buy                             #
+# --------------------------------------------------------------------------- #
+
+
+def test_clearing_a_contradiction_is_worth_a_lot_but_not_everything() -> None:
+    """It must beat ordinary travel savings, and lose to wrecking the trip."""
+    one_fault = trip_rebalance.Score(1, 0, 0.0, 0, 0, 0)
+    long_drive = trip_rebalance.Score(0, 200, 0.0, 0, 0, 0)
+    assert long_drive.total < one_fault.total
+
+    ruined = trip_rebalance.Score(0, 0, 0.0, 0, 0, 400)
+    assert one_fault.total < ruined.total
+
+
+def test_the_leaving_day_is_not_free_time() -> None:
+    leaving = _plan(
+        [_stop("Eiffel Tower", "09:00")],
+        [_stop("Musee d'Orsay", "09:00"), _stop("Rodin Museum", "12:00")],
+    )
+    leaving["return_date"] = "2026-09-08"
+    assert trip_rebalance.score(leaving).departure_load > 0
+
+    early = _plan(
+        [_stop("Eiffel Tower", "09:00"), _stop("Musee d'Orsay", "12:00")],
+        [_stop("Rodin Museum", "09:00")],
+    )
+    early["return_date"] = "2026-09-08"
+    assert trip_rebalance.score(early).departure_load == 0
+
+
+def test_a_trip_that_never_said_when_it_goes_home_is_not_penalised() -> None:
+    open_ended = _plan(
+        [_stop("Eiffel Tower", "09:00")],
+        [_stop("Musee d'Orsay", "09:00"), _stop("Rodin Museum", "12:00")],
+    )
+    assert trip_rebalance.score(open_ended).departure_load == 0
+
+
+def test_a_heading_that_no_longer_describes_its_day_is_rewritten() -> None:
+    stale = _plan(
+        [_stop("Eiffel Tower", "09:00"), _stop("Musee d'Orsay", "12:00")],
+        [_stop("Le Marais", "09:00")],
+        titles=["Day 1 · Eiffel Tower & Pere Lachaise", "Day 2 · Le Marais"],
+    )
+    trip_rebalance._retitle(stale, {1, 2})
+    titles = {day: entry.get("title") for day, entry, _ in trip_guard.days_of(stale)}
+    assert titles[1] == "Day 1 · Eiffel Tower & Musee d'Orsay"
+    assert titles[2] == "Day 2 · Le Marais"
+
+
+def test_a_day_left_with_nothing_named_loses_its_heading() -> None:
+    emptied = _plan([], titles=["Day 1 · Eiffel Tower"])
+    trip_rebalance._retitle(emptied, {1})
+    assert trip_guard.days_of(emptied)[0][1]["title"] == "Day 1"
+
+
+def test_a_stop_named_in_its_own_heading_is_not_traded_away() -> None:
+    """The theme term has to outweigh a few minutes of driving."""
+    anchored = _plan(
+        [
+            _stop("Eiffel Tower", "09:00"),
+            _stop("Musee d'Orsay", "12:00"),
+            _stop("Pere Lachaise", "15:00"),
+        ],
+        [
+            _stop("Le Marais", "09:00"),
+            _stop("Place des Vosges", "12:00"),
+            _stop("Rodin Museum", "15:00"),
+        ],
+        titles=["Day 1 · Eiffel Tower & Pere Lachaise", "Day 2 · Le Marais"],
+    )
+    result = trip_rebalance.rebalance(anchored)
+    assert "Pere Lachaise" not in {move.name for move in result.moves}
+
+
+def test_a_heading_still_true_after_the_move_is_left_alone() -> None:
+    result = trip_rebalance.rebalance(
+        _plan(
+            [
+                _stop("Eiffel Tower", "09:00"),
+                _stop("Musee d'Orsay", "12:00"),
+                _stop("Pere Lachaise", "15:00"),
+            ],
+            [
+                _stop("Le Marais", "09:00"),
+                _stop("Place des Vosges", "12:00"),
+                _stop("Rodin Museum", "15:00"),
+            ],
+            titles=["Day 1 · Eiffel Tower", "Day 2 · Le Marais"],
+        )
+    )
+    titles = {day: entry.get("title") for day, entry, _ in trip_guard.days_of(result.plan)}
+    assert titles[1] == "Day 1 · Eiffel Tower"
