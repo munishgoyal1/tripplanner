@@ -149,6 +149,23 @@ or the separate Skip to the app action.
 - [`frontend/src/publicEntry/PublicEntry.test.tsx`](../frontend/src/publicEntry/PublicEntry.test.tsx)
 - [`frontend/src/components/AccountSettingsController.test.tsx`](../frontend/src/components/AccountSettingsController.test.tsx)
 
+### EB-PUBLIC-004 - Open the planner workspace directly
+
+**Trigger:** Navigate directly to `/planner`, the permanent address of the main
+app workspace.
+
+**Expected:** The workspace opens immediately for a signed-in visitor, without
+consulting the saved-trip list. A guest is held until the saved-trip list answers:
+a guest with at least one trip opens the workspace, and a guest with no trip yet
+sees the public landing experience first. If the lookup fails the workspace opens
+rather than blocking the visitor. Plan mine and Skip to the app keep the address
+on `/planner` instead of rewriting it to `/`. `/planner/` behaves the same as
+`/planner`.
+
+**Executable proof:**
+
+- [`frontend/src/publicEntry/Root.test.tsx`](../frontend/src/publicEntry/Root.test.tsx)
+
 ## Planner workspace
 
 ### EB-WORKSPACE-001 - Arrange visible desktop panes freely

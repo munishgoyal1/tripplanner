@@ -1244,3 +1244,16 @@ update the labs logic to name and order the choices in descending order of the s
 why the main url of sbx5 is not working
 
 - Frontend: `http://localhost:5313`
+
+[2026-08-15 16:50] [master] Labs root URL 404s instead of catalog
+still not loading 
+
+http://localhost:5315/
+
+and infact none of other sbx urls are also loading despite just starting the sbxes
+
+[2026-08-15 16:52] [master] No /planner route exists; workspace is at /
+catalog is only for local env and not for production. also we do have /planner where main app workspace is and the initial /welcome page is there. none of them are laoding too.
+
+[2026-08-15 16:57] [master] ! Add /planner route gated for tripless guests
+yes add that, but for guest users who never had a trip it should first open welcome page
