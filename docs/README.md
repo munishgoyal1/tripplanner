@@ -52,6 +52,12 @@ choose." Canonical documents answer "what is true now."
 | [`development/setup-oauth.md`](development/setup-oauth.md) | Google OAuth setup |
 | [`eng-backlog/`](eng-backlog/README.md) | Deferred developer-tooling and engineering-reliability work; not active implementation scope |
 
+Completed backlog lifecycle: when an approved feature or engineering backlog item
+is fully implemented, validated, and its canonical documentation is updated, move
+the complete entry to [`implemented/`](implemented/README.md) in the same completion
+commit. Drafts, partial foundations, deferred work, and items with outstanding
+acceptance criteria stay in their active backlog folder.
+
 ## Operations
 
 | Document | Purpose |

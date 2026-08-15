@@ -15,6 +15,7 @@ import json
 import time
 import urllib.error
 import urllib.request
+import uuid
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -95,9 +96,14 @@ def _usage_for(database: str, user_id: str) -> dict[str, Any]:
     return rows[0] if rows else {}
 
 
-def _ask(api: str, message: str, user_id: str) -> None:
+def _spent_usd(database: str, user_id: str) -> float:
+    """Cumulative spend for this user, so a run can price its own attempt by difference."""
+    return float(_usage_for(database, user_id).get("cost_usd") or 0.0)
+
+
+def _ask(api: str, message: str, user_id: str, request_id: str) -> None:
     body = json.dumps(
-        {"message": message, "user_id": user_id, "request_id": f"{user_id}-1"}
+        {"message": message, "user_id": user_id, "request_id": request_id}
     ).encode()
     request = urllib.request.Request(
         f"{api.rstrip('/')}/chat", data=body, headers={"Content-Type": "application/json"}
@@ -153,9 +159,13 @@ def build(
             continue
 
         user_id = f"corpus-{request.slug}"
+        # A repeat attempt needs its own request id, or the API replays the earlier
+        # completed turn and the slug can never recover from a failed first run.
+        request_id = f"{user_id}-{uuid.uuid4().hex[:12]}"
+        before_usd = _spent_usd(database, user_id)
         started = time.monotonic()
         try:
-            _ask(api, request.message, user_id)
+            _ask(api, request.message, user_id, request_id)
         except (urllib.error.URLError, TimeoutError) as error:
             if on_progress:
                 on_progress(f"  {request.slug}: request failed ({error})")
@@ -163,7 +173,7 @@ def build(
         seconds = time.monotonic() - started
 
         usage = _usage_for(database, user_id)
-        cost_inr = float(usage.get("cost_usd") or 0.0) * allowed.usd_inr
+        cost_inr = max(0.0, float(usage.get("cost_usd") or 0.0) - before_usd) * allowed.usd_inr
         model = str(usage.get("model") or model)
         spent += cost_inr
 

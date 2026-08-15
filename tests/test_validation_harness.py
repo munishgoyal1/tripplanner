@@ -13,6 +13,7 @@ from tripplanner.validation import (
     budget,
     corpus,
     findings,
+    generate,
     mutations,
     observations,
     registry,
@@ -21,6 +22,7 @@ from tripplanner.validation import (
 )
 from tripplanner.validation.checks import check_record, plan_names
 from tripplanner.validation.emulator import assert_sandbox_database
+from tripplanner.validation.matrix import TripRequest
 
 _PLACES = {
     "kempegowda international airport|paris": {"lat": 13.1986, "lng": 77.7066},
@@ -529,3 +531,60 @@ def test_an_accepted_group_carries_the_date_it_was_accepted(tmp_path: Path) -> N
     accepted = {item["key"]: item for item in payload["groups"]}[key]
     assert accepted["new"] is False
     assert accepted["accepted_on"] == "2026-08-01"
+
+
+_ONE_REQUEST = (TripRequest("corpus-slug", "a shape", "Plan a trip"),)
+
+
+def _stub_generate(monkeypatch: pytest.MonkeyPatch, usage: dict[str, Any]) -> None:
+    monkeypatch.setattr(generate, "assert_sandbox_database", lambda name: name)
+    monkeypatch.setattr(generate, "_saved_trip", lambda database, user_id: None)
+    monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+
+
+def test_a_repeated_attempt_never_reuses_its_request_id(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Reusing one id lets the API replay the first turn, so a failed slug can never recover."""
+    seen: list[str] = []
+    _stub_generate(monkeypatch, {"cost_usd": 0.0})
+    monkeypatch.setattr(
+        generate,
+        "_ask",
+        lambda api, message, user_id, request_id: seen.append(request_id),
+    )
+
+    for _ in range(2):
+        generate.build(
+            tmp_path,
+            database="tripplanner-sbx-test",
+            api="http://127.0.0.1:0",
+            target=1,
+            requests=_ONE_REQUEST,
+        )
+
+    assert len(seen) == 2
+    assert seen[0] != seen[1]
+
+
+def test_a_run_is_charged_only_for_what_that_attempt_spent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    usage = {"cost_usd": 1.0}
+    _stub_generate(monkeypatch, usage)
+
+    def _spend(api: str, message: str, user_id: str, request_id: str) -> None:
+        usage["cost_usd"] = 1.25
+
+    monkeypatch.setattr(generate, "_ask", _spend)
+    monkeypatch.setattr(generate, "_usage_for", lambda database, user_id: dict(usage))
+
+    result = generate.build(
+        tmp_path,
+        database="tripplanner-sbx-test",
+        api="http://127.0.0.1:0",
+        target=1,
+        requests=_ONE_REQUEST,
+    )
+
+    assert result["spent_inr"] == pytest.approx(0.25 * budget.usd_inr())
