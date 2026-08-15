@@ -4,6 +4,9 @@ Status: Deferred
 Recorded: 2026-08-15  
 Owner surface: `scripts/dev/sandbox.ps1` and sandbox launchers
 
+Cross-cutting runtime, process, logging, portability, and owner-error concerns are
+tracked in [Daily Script Reliability and Friction](daily-script-reliability.md).
+
 ## Intentional behavior
 
 `Promote-Sandbox` defaults to landing work while retaining and resynchronizing the
@@ -23,6 +26,21 @@ validated or overwrite local bookkeeping.
 Treat remote landing as the authoritative operation. Local synchronization,
 bookkeeping, sandbox resynchronization, and optional cleanup should be explicit,
 resumable post-merge phases.
+
+### Observed stale-primary failure
+
+On 2026-08-15, keep-alive promotion stopped before remote work because the primary
+checkout did not exactly equal its remote-tracking base:
+
+```text
+Primary checkout must match origin/master before promotion
+(local 11769ad5913fd1ea4b3e7a5069d62abd3d582864,
+ remote 5a83eab8e8ddb5eb804eae49ab51b453daf6f42f).
+```
+
+The error exposed SHAs but did not classify ahead, behind, or divergence; explain why
+local equality was required; say whether anything remote changed; or provide a safe
+recovery command. Remote landing should not require this local equality.
 
 ## Backlog
 

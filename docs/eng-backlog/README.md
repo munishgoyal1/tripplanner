@@ -13,4 +13,5 @@ since an entry was recorded.
 
 | Entry | Area | Status |
 | --- | --- | --- |
+| [Daily script reliability and friction](daily-script-reliability.md) | Owner-facing local workflow, runtimes, processes, logs, and portability | Deferred |
 | [Sandbox promotion reliability](sandbox-promotion-reliability.md) | Developer scripts and parallel-agent workflow | Deferred |
