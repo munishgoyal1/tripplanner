@@ -31,6 +31,7 @@ from typing import Any
 
 from tripplanner.tools import trip_guard
 from tripplanner.tools.trip_common import _stop_kind, _stop_name
+from tripplanner.web import trip_verification
 
 #: Enough slack before closing that the visit is not a race.
 _COMFORT_MIN = 30
@@ -173,6 +174,8 @@ def score(plan: dict[str, Any]) -> Score:
         if day == last_day and day > 1:
             # Nothing anchors the end of a trip that never named a return leg,
             # so the leaving day otherwise looks like a day with free hours.
+            # The arrival side gets no such rule: a plan with no inbound leg is
+            # not evidence that the traveller lands that morning.
             departure_load += max(0, active - _DEPARTURE_ALLOWANCE)
         day_iso = dates.get(day, "")
         for stop in stops:
@@ -194,7 +197,13 @@ def score(plan: dict[str, Any]) -> Score:
                     misplaced += 1
 
     return Score(
-        contradictions=len(trip_guard.validate_plan(plan)),
+        contradictions=sum(
+            1
+            for violation in trip_guard.validate_plan(plan)
+            # A coverage gap says the guard went blind, not that the plan is
+            # wrong; chasing one would have the optimiser rearranging forever.
+            if violation.code not in trip_verification.COVERAGE_CODES
+        ),
         travel_min=travel,
         imbalance=pstdev(loads) if len(loads) > 1 else 0.0,
         rushed=rushed,
