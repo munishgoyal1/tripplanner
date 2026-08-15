@@ -15,6 +15,44 @@ import {
   writeDisplayPreferences,
 } from "../lib/displayPreferences";
 
+const PROFILE_SHELF = [
+  {
+    key: "trip_style" as const,
+    label: "Trip rhythm",
+    hint: "How full should a day feel?",
+    options: [
+      ["relaxed", "Relaxed", "Fewer stops and generous free time"],
+      ["balanced", "Balanced", "A full day with room to breathe"],
+      ["packed", "See it all", "More anchors, fewer empty windows"],
+    ],
+  },
+  {
+    key: "planning_mode" as const,
+    label: "Planning style",
+    hint: "How should the planner make decisions?",
+    options: [
+      ["direct", "Surprise me", "Let the planner choose the strongest fit"],
+      ["interactive", "Show me options", "Bring back a short list to compare"],
+    ],
+  },
+  {
+    key: "budget_level" as const,
+    label: "Where you stay",
+    hint: "What makes a base work?",
+    options: [
+      ["comfortable", "Central and walkable", "Trade a little space for a better base"],
+      ["luxury", "Quiet retreat", "A calmer stay away from the busiest streets"],
+      ["budget", "Best value", "Keep the total practical cost in view"],
+    ],
+  },
+] as const;
+
+const FOOD_OPTIONS = [
+  ["local favourites", "Local favourites", "Neighbourhood places worth the detour"],
+  ["vegetarian", "Vegetarian", "Vegetarian-first choices and clear menus"],
+  ["food-centric", "Food is part of the trip", "Build the day around memorable meals"],
+] as const;
+
 interface Props {
   onClose: () => void;
   embedded?: boolean;
@@ -35,6 +73,68 @@ function parseList(s: string): string[] {
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean);
+}
+
+function PreferenceShelf({
+  prefs,
+  choose,
+}: {
+  prefs: Preferences;
+  choose: (key: keyof Preferences, value: Preferences[keyof Preferences]) => void;
+}) {
+  const selectedFood = prefs.dietary[0] || "local favourites";
+  const groups = [
+    ...PROFILE_SHELF.map((group) => ({
+      ...group,
+      selected: String(prefs[group.key]),
+    })),
+    {
+      key: "dietary" as const,
+      label: "Food and flavour",
+      hint: "What should the itinerary notice?",
+      selected: selectedFood,
+      options: FOOD_OPTIONS,
+    },
+  ];
+
+  return (
+    <section className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4" aria-labelledby="preference-shelf-heading">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand">Your travel profile</p>
+          <h3 id="preference-shelf-heading" className="mt-1 text-base font-semibold text-ink">A better trip starts here</h3>
+          <p className="mt-1 text-xs leading-relaxed text-slate-600">Choose what feels like you. These defaults shape every new trip and can be changed for one trip later.</p>
+        </div>
+        <span className="shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">Saved privately</span>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {groups.map((group) => (
+          <div key={group.label} className="rounded-lg bg-white p-3 ring-1 ring-emerald-100">
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <div><h4 className="text-xs font-semibold text-ink">{group.label}</h4><p className="mt-0.5 text-[11px] text-slate-500">{group.hint}</p></div>
+              <code className="text-[10px] text-slate-400">{group.key}</code>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {group.options.map(([value, label]) => {
+                const selected = group.selected === value;
+                return <button key={value} type="button" aria-pressed={selected} onClick={() => choose(group.key, group.key === "dietary" ? [value] : value as Preferences[typeof group.key])} className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition ${selected ? "bg-brand text-white" : "bg-slate-50 text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100"}`}>{selected ? "✓ " : "+ "}{label}</button>;
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      <aside className="mt-3 rounded-lg bg-ink p-3 text-white" aria-label="What Tripplanner understands">
+        <p className="text-xs font-semibold">What Tripplanner understands</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-emerald-100">The words are human. The values stay precise and stable for the planner.</p>
+        <div className="mt-2 grid gap-1 text-[10px] text-emerald-50 sm:grid-cols-2">
+          <code>trip_pace: {prefs.trip_style || "balanced"}</code>
+          <code>planning_style: {prefs.planning_mode === "direct" ? "surprise_me" : "show_options"}</code>
+          <code>stay_style: {prefs.budget_level || "best_value"}</code>
+          <code>food: {selectedFood.replaceAll(" ", "_")}</code>
+        </div>
+      </aside>
+    </section>
+  );
 }
 
 export default function SettingsModal({ onClose, embedded = false }: Props) {
@@ -174,6 +274,10 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
                 shown below; review it and save again.
               </div>
             )}
+            <PreferenceShelf prefs={prefs} choose={set} />
+            <details className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <summary className="cursor-pointer text-xs font-semibold text-slate-600">Advanced preferences</summary>
+              <div className="mt-3 space-y-4">
             <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">
@@ -367,6 +471,8 @@ export default function SettingsModal({ onClose, embedded = false }: Props) {
                 onChange={(e) => setList("dislikes", e.target.value)}
               />
             </Field>
+              </div>
+            </details>
 
             <div className="flex justify-end gap-2 pt-2">
               {!embedded && <button onClick={onClose} className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100">Cancel</button>}

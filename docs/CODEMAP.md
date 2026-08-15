@@ -80,7 +80,7 @@ boundary. Configuration comes from `Settings`, not scattered environment reads.
 
 | Path | Owns |
 | --- | --- |
-| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | Public-entry gating, the permanent `/welcome` route back to the landing experience, and page-independent account-controller mounting |
+| `frontend/src/publicEntry/Root.tsx`, `publicEntryState.ts` | Public-entry gating, the permanent `/welcome` route back to the landing experience, the `/planner` workspace route, and page-independent account-controller mounting |
 | `frontend/src/publicEntry/publicDemoRuns.json`, `demoRun.ts` | Ten self-contained regional public-demo artifacts, deterministic mapping, whole-artifact API replacement, and display-currency presentation |
 | `frontend/src/App.tsx` | Web application composition; trip state, refresh, mutations, pane/resize state, and panel body ownership |
 | `frontend/src/components/ChatPanel.tsx` | Assistant transcript presentation, composer, trip-input UI, and transcript loading/cache coordination |

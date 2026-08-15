@@ -1,1 +1,8 @@
-1. Itinerary tightness correctness
+1. 
+Create a new UX lab. 
+make use preferences as selectable from buttons instead of typeing alone. present a list of predefined tags for each category.
+Users prefer easy quick clicks than typing, so rethink this experience and provide a UX options.
+Reimagine the Profile settings panel entirely which in takes user preferences, About me, and othe rinfo about user.
+Make it more intuitive, easy to interact.
+
+Align it with internal tag understanding e.g. trip_pace: balanced | see-it-all| relaxed mapped internally to the corresponding tag system.
