@@ -1263,3 +1263,6 @@ give me a sandbox launcher script that can Run all sandboxes cleanly. effectivel
 
 [2026-08-15 16:59] [master] App root wrongly believed to redirect to catalog
 http://localhost:5313/ should not default to /catalog.html page it should be going to the welcome page. Why this change. can you fix it
+
+[2026-08-15 17:15] [master !] Deduplicate promoted debug archives
+proceed with this plan. Also ensure that we dont end up with lot of debug trip json files that are identical from different sandboxes ghetting promoted to master. Even if a trip is not modified multiple sandboxes will try to bring in same file duplciate.
