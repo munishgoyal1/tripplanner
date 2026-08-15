@@ -1,12 +1,13 @@
 # Owner prompt log
 
-`master.txt` is the active owner prompt log. The primary workspace appends every
-owner prompt to it, so the sandbox-first workflow has one chronological record.
+`master.txt` is a historical owner prompt log. Automatic prompt appends are
+currently paused because changing it leaves the primary `master` worktree dirty
+and can block sandbox promotion.
 
 ## Entry format
 
-Tail-append. Newest entries go at the **bottom**, so writing one costs no read of
-the file and needs no coordination with any other lane.
+When this flow is explicitly re-enabled by the owner, tail-append new entries.
+Until then, do not write to this file.
 
 ```
 [2026-08-05 17:05] [master] ! Short title of the prompt

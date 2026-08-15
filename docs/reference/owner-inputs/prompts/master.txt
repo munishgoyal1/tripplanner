@@ -1300,3 +1300,5 @@ Add some marker in the lab implementation summary version note - which lane / sa
 
 [2026-08-15 17:57] [master] ! Proceed with next phases
 proceed with next phases
+[2026-08-15 17:38] [master] Verifying lab 27 chat inputs in sbx5
+the sbx5 containing lab27 didnt ask me anythign during manali trip plan. How do i verify it implemented the lab correctly ? I cant even see any of this new feature in this sbx app

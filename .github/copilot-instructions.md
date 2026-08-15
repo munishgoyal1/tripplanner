@@ -31,13 +31,10 @@ not override the canonical documents above, which govern current behavior.
   dev-stack restart is needed to pick it up (and which stack: primary or the
   sandbox in scope). Skip this line only for pure question-answering turns
   that changed nothing.
-- After each owner prompt, append it verbatim to the **bottom** of
-  [master.txt](../docs/reference/owner-inputs/prompts/master.txt). Entry header:
-  `[YYYY-MM-DD HH:MM] [master] <short title>`, with ` !` after the lane for feature
-  work, bug fixes, critical owner direction, or reusable workflows. Do not read the
-  file first and do not number entries.
-  `prompts_executed.txt` and `prompts_executed_imp.txt` are frozen archives.
-  Read the log back with `pwsh -File scripts/dev/show-prompts.ps1`.
+- Prompt logging to `docs/reference/owner-inputs/prompts/master.txt` is paused.
+  Do not append owner prompts to `master.txt` or any other live prompt-log file
+  unless the owner explicitly re-enables this flow. The existing prompt files are
+  historical records and may still be read with `pwsh -File scripts/dev/show-prompts.ps1`.
 - Read 50-200 line chunks and batch independent reads. Start from the owning file,
   nearby test, or documented contract instead of mapping the whole repository.
 - Before every new code change, require a clean worktree, fetch `origin`, and
