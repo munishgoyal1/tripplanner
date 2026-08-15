@@ -19,53 +19,13 @@ import { DecisionCapture } from "../shared/DecisionCapture";
 import { LabNavigation } from "../shared/LabNavigation";
 import { LabScope } from "../shared/LabScope";
 import { OptionContrast } from "../shared/OptionContrast";
+import { options, TODAY_WIDTH } from "./options";
 import "../../../src/index.css";
 import "./styles.css";
 
 type OptionId = "wide-drawer" | "full-page" | "workspace-modal" | "two-pane" | "expandable";
 type SectionId = "identity" | "travel" | "family" | "documents" | "privacy";
 type Device = "desktop" | "mobile";
-
-/** Today's Account settings drawer is max-w-sm, so every option is measured against it. */
-const TODAY_WIDTH = 384;
-
-const options = [
-  {
-    id: "wide-drawer" as const,
-    label: "A · Wider drawer",
-    summary: "The same right-side drawer, widened to a two-column editing surface.",
-    cost: "Familiar and cheap, but a drawer still overlays the trip you were reading.",
-    width: 960,
-  },
-  {
-    id: "full-page" as const,
-    label: "B · Full profile page",
-    summary: "A dedicated page with a section rail and a genuinely wide canvas.",
-    cost: "The most room by far; it leaves the workspace instead of floating over it.",
-    width: 1240,
-  },
-  {
-    id: "workspace-modal" as const,
-    label: "C · Centered workspace",
-    summary: "A large centered dialog with its own rail, floating above the trip.",
-    cost: "Roomy without losing your place, but modal focus traps still fight long forms.",
-    width: 1100,
-  },
-  {
-    id: "two-pane" as const,
-    label: "D · People-first two pane",
-    summary: "A category rail plus a detail pane, with travellers as the primary object.",
-    cost: "Best for families; slightly indirect for a single traveller editing one field.",
-    width: 1080,
-  },
-  {
-    id: "expandable" as const,
-    label: "E · Expand on demand",
-    summary: "The compact drawer stays for quick edits and expands to full width when needed.",
-    cost: "No new destination to learn, but two states of the same screen to design and test.",
-    width: 384,
-  },
-];
 
 const sections: { id: SectionId; label: string; detail: string; icon: typeof CircleUserRound }[] = [
   { id: "identity", label: "Profile and sign-in", detail: "Identity and account access", icon: CircleUserRound },
