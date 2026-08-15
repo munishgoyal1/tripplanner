@@ -1257,3 +1257,6 @@ catalog is only for local env and not for production. also we do have /planner w
 
 [2026-08-15 16:57] [master] ! Add /planner route gated for tripless guests
 yes add that, but for guest users who never had a trip it should first open welcome page
+
+[2026-08-15 16:58] [master !] Run all sandboxes launcher
+give me a sandbox launcher script that can Run all sandboxes cleanly. effectively behaviour si similar to calling Run sandbox in a loop for all sandboxes.

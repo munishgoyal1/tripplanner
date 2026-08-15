@@ -13,6 +13,7 @@
 .EXAMPLE
     .\scripts\dev\sandbox.ps1 -New lab16-chatdock "Assistant dock rework" -LabId chat-agent-workspace
     .\scripts\dev\sandbox.ps1 -Run 2
+    .\scripts\dev\sandbox.ps1 -RunAll
     .\scripts\dev\sandbox.ps1 -Serve lab16-chatdock -IterationSummary "Adjusted the dock and passed focused UI checks."
     .\scripts\dev\sandbox.ps1 -Stop 2
     .\scripts\dev\sandbox.ps1 -Update 2
@@ -83,6 +84,9 @@ param(
 
     [Parameter(Mandatory = $true, ParameterSetName = "Run")]
     [string]$Run,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "RunAll")]
+    [switch]$RunAll,
 
     [Parameter(Mandatory = $true, ParameterSetName = "Serve")]
     [string]$Serve,
@@ -1168,6 +1172,34 @@ if ($PSCmdlet.ParameterSetName -eq "New") {
             throw "Sandbox '$slug' was created, but one or more endpoints did not become ready."
         }
     }
+    return
+}
+
+if ($PSCmdlet.ParameterSetName -eq "RunAll") {
+    $entries = @(Get-Registry | Sort-Object { [int]$_.slot })
+    if ($entries.Count -eq 0) {
+        throw "No sandboxes are registered."
+    }
+
+    $pwsh = (Get-Command pwsh -ErrorAction Stop).Source
+    $runLogRoot = Join-Path $primaryRoot "logs/sandbox/run-all"
+    New-Item -ItemType Directory -Path $runLogRoot -Force | Out-Null
+    Write-Host "Starting $($entries.Count) sandbox(es) in the background..." -ForegroundColor Cyan
+
+    foreach ($entry in $entries) {
+        $number = Get-SandboxNumber -Entry $entry
+        if (-not (Test-SandboxWorktree -Entry $entry)) {
+            Write-Warning "Skipping #$number $($entry.slug): worktree is missing or invalid."
+            continue
+        }
+        $logBase = Join-Path $runLogRoot $entry.slug
+        $child = Start-Process -FilePath $pwsh -WorkingDirectory $entry.worktree -PassThru `
+            -RedirectStandardOutput "$logBase.out.log" -RedirectStandardError "$logBase.err.log" `
+            -ArgumentList @("-NoProfile", "-File", $PSCommandPath, "-Run", "$number")
+        Write-Host ("[started] #{0} {1} (pid {2}) -> http://localhost:{3}" -f `
+                $number, $entry.slug, $child.Id, $entry.frontendPort) -ForegroundColor Green
+    }
+    Write-Host "Each sandbox writes output to $runLogRoot" -ForegroundColor DarkGray
     return
 }
 
