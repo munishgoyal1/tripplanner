@@ -1,6 +1,7 @@
 """Tests for user preferences, trip planner state, and trip agent tools."""
 
 import json
+import os
 import shutil
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -17,7 +18,10 @@ from tripplanner.tools.user_preferences import (
     update_preferences,
 )
 
-_TEST_DIR = Path.home() / ".tripplanner_test"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_DIR = Path.home() / f".tripplanner_test-{os.getpid()}"
 _TEST_FILE = _TEST_DIR / "user_preferences.json"
 _TEST_ACTIVE_TRIP = _TEST_DIR / "active_trip.json"
 _TEST_TRIP_HISTORY = _TEST_DIR / "trips"

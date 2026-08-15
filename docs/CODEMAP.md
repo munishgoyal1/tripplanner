@@ -65,6 +65,7 @@ trip through shared API contracts.
 | `src/tripplanner/export.py` | Export composition |
 | `src/tripplanner/observability.py` | Structured events and request diagnostics |
 | `src/tripplanner/debug_store.py` | Local-only archive of real trips for debugging and emulator restore; never active in hosted mode |
+| `src/tripplanner/validation/` | Offline validation harness: corpus reader, checks, grouped findings, baseline (brief 004) |
 | `src/tripplanner/ops_metrics.py` | Content-free rolling request, model, chat-turn, product-funnel, engagement, and acquisition aggregates for the hidden owner dashboard |
 | `src/tripplanner/error_analysis.py` | Local and canary failure classification and reports |
 | `src/tripplanner/critics.py` | Deterministic quality checks |

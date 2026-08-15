@@ -61,12 +61,75 @@ class _RunContext:
         return (time.monotonic() - self.started_at) * 1000
 
 
+def _token_counts(response: Any) -> tuple[int, int]:
+    """Prompt and completion tokens, from wherever the client reported them.
+
+    Only ``llm_output`` was read before, which this deployment leaves empty, so
+    every call recorded zero and the monthly cost cap could never trigger.
+    Modern LangChain reports the same numbers on the message instead.
+    """
+    usage = (getattr(response, "llm_output", None) or {}).get("token_usage") or {}
+    prompt = int(usage.get("prompt_tokens") or 0)
+    completion = int(usage.get("completion_tokens") or 0)
+    if prompt or completion:
+        return prompt, completion
+
+    for batch in getattr(response, "generations", None) or []:
+        for generation in batch or []:
+            message = getattr(generation, "message", None)
+            if message is None:
+                continue
+            metadata = getattr(message, "usage_metadata", None) or {}
+            prompt += int(metadata.get("input_tokens") or 0)
+            completion += int(metadata.get("output_tokens") or 0)
+            if metadata:
+                continue
+            fallback = (getattr(message, "response_metadata", None) or {}).get(
+                "token_usage"
+            ) or {}
+            prompt += int(fallback.get("prompt_tokens") or 0)
+            completion += int(fallback.get("completion_tokens") or 0)
+    return prompt, completion
+
+
+def _message_chars(message: Any) -> int:
+    """Everything the message actually sends, not only its prose.
+
+    Counting ``content`` alone hid the tool calls and their arguments, so the
+    logged prompt size grew nine percent while real tokens more than doubled.
+    """
+    size = len(str(getattr(message, "content", "") or ""))
+    extra = getattr(message, "additional_kwargs", None) or {}
+    for call in extra.get("tool_calls") or []:
+        function = (call or {}).get("function") or {}
+        size += len(str(function.get("name") or "")) + len(str(function.get("arguments") or ""))
+    return size
+
+
+def _cached_tokens(response: Any) -> int:
+    """Prompt tokens the provider served from its cache, when it says so.
+
+    Caching is the cheapest saving available on a prompt this size, and the only
+    way to know whether it is working is to count what it returns.
+    """
+    for batch in getattr(response, "generations", None) or []:
+        for generation in batch or []:
+            message = getattr(generation, "message", None)
+            details = (getattr(message, "usage_metadata", None) or {}).get(
+                "input_token_details"
+            ) or {}
+            if details.get("cache_read") is not None:
+                return int(details.get("cache_read") or 0)
+    usage = (getattr(response, "llm_output", None) or {}).get("token_usage") or {}
+    return int((usage.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
+
+
 class _UsageCallback(BaseCallbackHandler):
     """Record per-user LLM token usage after every chat completion.
 
-    Pulls ``token_usage`` out of ``LLMResult.llm_output`` (Azure OpenAI puts it
-    there) and feeds it to :mod:`tripplanner.usage`, which handles the monthly
-    cost bucket and persistence.
+    Reads the token counts from wherever the client put them, then feeds them to
+    :mod:`tripplanner.usage`, which handles the monthly cost bucket and
+    persistence.
 
     One instance is attached to the shared model client, so per-call state is
     keyed by LangChain's ``run_id`` rather than held on the handler. Otherwise
@@ -93,7 +156,7 @@ class _UsageCallback(BaseCallbackHandler):
         context = _RunContext(
             started_at=time.monotonic(),
             message_count=len(batch),
-            prompt_chars=sum(len(str(message.content or "")) for message in batch),
+            prompt_chars=sum(_message_chars(message) for message in batch),
         )
         with self._lock:
             self._runs[run_id] = context
@@ -105,9 +168,7 @@ class _UsageCallback(BaseCallbackHandler):
             from tripplanner.ops_metrics import record_model_call
 
             record_model_call(self._model, "ok", duration_ms)
-            usage = (response.llm_output or {}).get("token_usage") or {}
-            prompt = int(usage.get("prompt_tokens") or 0)
-            completion = int(usage.get("completion_tokens") or 0)
+            prompt, completion = _token_counts(response)
             app_event(
                 "llm_call",
                 status="ok",
@@ -117,6 +178,7 @@ class _UsageCallback(BaseCallbackHandler):
                 prompt_chars=context.prompt_chars,
                 prompt_tokens=prompt,
                 completion_tokens=completion,
+                cached_tokens=_cached_tokens(response),
             )
             if prompt == 0 and completion == 0:
                 return
@@ -165,6 +227,9 @@ def _build_llm(
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
         streaming=True,
+        # Without this a streamed turn reports no tokens at all, so everything
+        # the web UI does would go unpriced.
+        stream_usage=True,
         callbacks=[_UsageCallback(deployment)],
     )
 

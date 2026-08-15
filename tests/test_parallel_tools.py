@@ -163,6 +163,7 @@ def test_usage_callback_records_model_latency_context_and_tokens(monkeypatch) ->
         "prompt_chars": 24,
         "prompt_tokens": 1200,
         "completion_tokens": 300,
+        "cached_tokens": 0,
     })]
     assert usage_calls == [{
         "model": "gpt-4.1-test",

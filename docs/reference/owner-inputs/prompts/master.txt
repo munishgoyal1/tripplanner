@@ -1212,9 +1212,37 @@ Proceed with your plan
 [2026-08-14 12:56] [master] ! Structural fix for itinerary fact checks
 Yes implement this, and not only just this particular day bug. Figure similar more issues and implement a structural fix so we dont need to iterate over again for similar smaller bugs.
 
+[2026-08-14 14:30] [master] ! Draft auto-validation brief and corpus design
+Before we proceed:
+1. draft the feature brief of such large feature anyway.
+2. Do you want to store this data in a seperate store than the debug one. Why i am saying, because i wnat you to generate lot of synthetic data also. Generating 100 trips is hard manually - so to gather large corpus that can bring out feature ideas you will have to build that corpus
+3. What will be the mechasim to initiate this data-build, and run/analysis over the data
+
+[2026-08-14 15:04] [master] ! Corpus sources, storage and golden reference set
+Feature brief is good.Few things to clarify:
+1. Will it be only synthetic data or will it by default also copy in from the debug store. I think later will give more data
+2. The owner flow is run Build-Corpus with number of trips as param and budget whichever exhausts first, default is to build it till it reaches 100 trips. This step of synthetic data generation is costly so carefully take backup or preserve this data set. Will you continue to store it in filesystem like debug-store or any other plan? What is the template part ?
+3. Should we also plan to get and store a golden set of great sample itineraries already proven , although tagged heavily with nature of itinerary like relaxed, mountain oriented, party oriented - because our itinerary generation is according to user preferences. Same place Goa can have relaxed itinerary or party or hectic see-it-all . It will be an exhaustive big corpus set stored seperately under corpus - basically sourced from authetic places on internet. Other synthetic one is built through our planner.
+4. Then owner will run Audit-Trips and you will analyze the corpus and come up with bugs and new feature ideas. By default it should analyze everything. Is that correct ?
 [2026-08-14 14:08] [master] ! Rename must migrate sandbox data too
 yes as part of the rename script handle data migration and everything. All i simply need is the sbx name change for reference, ret everything shoudl work as it is.
 
+[2026-08-14 15:36] [master] ! Decisions on gating, reference text and tag vocabulary
+my decisions:
+D3 - No gating initially.
+d6 - agree
+d8-10 -  agree. slight changes - initially go with storing entire externmal itinerary, keep a mechanism to strip out the license-sensitive parts if needed quickly. Right now no one care as my planner is not even properly known outside it is just very small to be noticed by anyone.
+On vocabulary - explain me clearly what is the plan. Do we plan to define a set of tags that we can allow our users to select as their preferences to store, so taht they dont have to think much. THey can always override and provide through free text. And you are always learning afresh from their past itineraries and feedback. Should we have a standard set of tags per category already defined and provide it as a tag click selector also than free text format alone (which is hard to fill usually, people prefer easy clicks than typing).
+
+[2026-08-14 15:53] [master] ! Draft brief 005 and build the harness
+write the brief but also get started as per your plan.
+
+[2026-08-14 16:19] [master] ! Proceed with phases 2 and 3
+Proceed with next phases. while you do this first give me bit more explanation of phase3 mutaiton and metamorphic
+
+[2026-08-14 16:36] [master] ! Tolerance for soft deadlines, ask for origin
+1. few minutes should be tolerable on other side not being on short side, say if it risks missing a critical timeline - attraction ticketed entry time or a flight time then not acceptable, being early 9 minutes is still ok - that way tolerable.
+2. Some trips may not genuinely have origin as user may be interested just in the destination focussed itinerary and want to plan the reaching there on their own. We should someway give user a choice to add/remove out the origin (home city.) from where they will be travleling. Dont fix the trips , that is like back adding data, because those may be genuine as the home city might been missing in user profile. We should make it explciit to ask for it in the chat agent any such quick inputs that agent thinks are missign and will help it plan better.
 [2026-08-14 16:34] [master \!] Labs sandbox and chat input lab
 Create a labs sbx whose purpose will solely be to create new labs. 
 New lab: Some trips may not genuinely have origin as user may be interested just in the destination focussed itinerary and want to plan the reaching there on their own. We should someway give user a choice to add/remove out the origin (home city.) from where they will be travleling. Dont fix the trips , that is like back adding data, because those may be genuine as the home city might been missing in user's profgile. We should make it explciit to ask for it in the chat agent any such quick inputs that agent thinks are missign and will help it plan better. Create a lab with different type of inpouts agent takes in from the chat itself -- not just text based but all other standrd ui controls based , but as always elegant, breezy and intuitve simple UI no complex forms to fill.
@@ -1272,6 +1300,8 @@ proceed with this plan. Also ensure that we dont end up with lot of debug trip j
 [2026-08-15 17:20] [master] ! Stamp lab version notes with lane, time, session
 Add some marker in the lab implementation summary version note - which lane / sandbox impplpmented it and when , and if possible the Agent chat session title also log it for reference clarity.  DO this in master lane
 
+[2026-08-15 17:57] [master] ! Proceed with next phases
+proceed with next phases
 [2026-08-15 17:38] [master] Verifying lab 27 chat inputs in sbx5
 the sbx5 containing lab27 didnt ask me anythign during manali trip plan. How do i verify it implemented the lab correctly ? I cant even see any of this new feature in this sbx app
 

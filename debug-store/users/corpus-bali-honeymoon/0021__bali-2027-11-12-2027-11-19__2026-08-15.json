@@ -1,0 +1,2184 @@
+{
+  "archive_no": 21,
+  "trip_id": "bali_2027-11-12_2027-11-19",
+  "user_id": "corpus-bali-honeymoon",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:42:03Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:42:03Z",
+      "content_hash": "c0bd6bdcc1d6b88f",
+      "plan": {
+        "status": "draft",
+        "trip_id": "bali_2027-11-12_2027-11-19",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:12:03.578971",
+        "destination": "Bali",
+        "origin": "Bangalore",
+        "departure_date": "2027-11-12",
+        "return_date": "2027-11-19",
+        "travelers": "2 adults (honeymoon)",
+        "notes": "Romantic hotels and sunset views requested. Honeymoon trip.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Bali",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:12:03.579017"
+      }
+    },
+    {
+      "at": "2026-08-15T14:42:53Z",
+      "content_hash": "e2ec7970188d66f3",
+      "plan": {
+        "status": "draft",
+        "trip_id": "bali_2027-11-12_2027-11-19",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:12:03.578971",
+        "destination": "Bali",
+        "origin": "Bangalore",
+        "departure_date": "2027-11-12",
+        "return_date": "2027-11-19",
+        "travelers": "2 adults (honeymoon)",
+        "notes": "Romantic hotels and sunset views requested. Honeymoon trip.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Bali",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-11-12",
+            "title": "Arrival in Bali · Romantic Welcome",
+            "summary": "Arrive in Bali, private transfer to a romantic resort in Seminyak. Sunset beach walk and candlelight dinner.",
+            "stops": [
+              {
+                "name": "Flight: Bangalore to Bali (Denpasar)",
+                "kind": "flight",
+                "time": "09:00",
+                "arrival_time": "17:00",
+                "note": "Choose a morning flight for best arrival time."
+              },
+              {
+                "name": "Romantic Resort, Seminyak",
+                "kind": "hotel",
+                "note": "Check-in and freshen up."
+              },
+              {
+                "name": "La Lucciola",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Beachfront candlelight dinner with sunset views."
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-11-13",
+            "title": "Ubud Culture & Rice Terraces",
+            "summary": "Explore Ubud's art, culture, and iconic rice terraces. Romantic lunch with jungle views.",
+            "stops": [
+              {
+                "name": "Romantic Resort, Seminyak",
+                "kind": "hotel",
+                "note": "Start from hotel."
+              },
+              {
+                "name": "Tegalalang Rice Terrace",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90,
+                "note": "Stroll the terraces and take photos."
+              },
+              {
+                "name": "Cretya Ubud",
+                "kind": "meal",
+                "time": "12:30",
+                "note": "Lunch with jungle views."
+              },
+              {
+                "name": "Ubud Palace",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60,
+                "note": "Explore Balinese royal heritage."
+              },
+              {
+                "name": "Romantic Resort, Seminyak",
+                "kind": "hotel",
+                "note": "Return to hotel."
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-11-14",
+            "title": "Beach Day & Spa Indulgence",
+            "summary": "Relax on Seminyak Beach, enjoy a couple's spa, and sunset cocktails.",
+            "stops": [
+              {
+                "name": "Romantic Resort, Seminyak",
+                "kind": "hotel"
+              },
+              {
+                "name": "Seminyak Beach",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120,
+                "note": "Relax on the sand."
+              },
+              {
+                "name": "Prana Spa",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 90,
+                "note": "Couple's spa treatment."
+              },
+              {
+                "name": "Potato Head Beach Club",
+                "kind": "meal",
+                "time": "17:30",
+                "note": "Sunset cocktails and dinner."
+              },
+              {
+                "name": "Romantic Resort, Seminyak",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-11-15",
+            "title": "Nusa Dua Relaxation & Water Sports",
+            "summary": "Transfer to Nusa Dua. Enjoy water sports, white sand beaches, and a romantic seafood dinner.",
+            "stops": [
+              {
+                "name": "Transfer: Seminyak to Nusa Dua",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 60,
+                "note": "Private car transfer."
+              },
+              {
+                "name": "Romantic Resort, Seminyak",
+                "kind": "hotel",
+                "time": "10:30"
+              },
+              {
+                "name": "Nusa Dua Beach",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 120,
+                "note": "Relax or try water sports."
+              },
+              {
+                "name": "Bumbu Bali",
+                "kind": "meal",
+                "time": "15:00",
+                "note": "Authentic Balinese cuisine."
+              },
+              {
+                "name": "Romantic Resort, Nusa Dua",
+                "kind": "hotel",
+                "note": "Check-in and relax.",
+                "time": "17:00"
+              },
+              {
+                "name": "Kayuputi Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Fine dining with ocean views."
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-11-16",
+            "title": "Uluwatu Temple & Sunset Kecak Dance",
+            "summary": "Visit Uluwatu Temple, enjoy cliffside views, and watch the famous Kecak dance at sunset.",
+            "stops": [
+              {
+                "name": "Romantic Resort, Nusa Dua",
+                "kind": "hotel"
+              },
+              {
+                "name": "Uluwatu Temple",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Cliffside temple with ocean views."
+              },
+              {
+                "name": "Sundara Beach Club",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Lunch with a view."
+              },
+              {
+                "name": "Kecak Dance at Uluwatu",
+                "kind": "attraction",
+                "time": "17:30",
+                "duration_min": 90,
+                "note": "Sunset performance."
+              },
+              {
+                "name": "Romantic Resort, Nusa Dua",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-11-17",
+            "title": "Lembongan Island Day Trip",
+            "summary": "Take a day trip to Nusa Lembongan for snorkeling, beach time, and a romantic seaside lunch.",
+            "stops": [
+              {
+                "name": "Ferry: Bali to Nusa Lembongan",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 60,
+                "note": "Morning ferry to the island."
+              },
+              {
+                "name": "Dream Beach, Nusa Lembongan",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Beach time and snorkeling."
+              },
+              {
+                "name": "The Deck Cafe & Bar",
+                "kind": "meal",
+                "time": "12:30",
+                "note": "Lunch with ocean views."
+              },
+              {
+                "name": "Ferry: Nusa Lembongan to Bali",
+                "kind": "transport",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Return to Bali."
+              },
+              {
+                "name": "Romantic Resort, Nusa Dua",
+                "kind": "hotel",
+                "time": "17:30",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-11-18",
+            "title": "Leisure & Departure",
+            "summary": "Enjoy a leisurely morning, last swim, and transfer to airport for flight home.",
+            "stops": [
+              {
+                "name": "Romantic Resort, Nusa Dua",
+                "kind": "hotel"
+              },
+              {
+                "name": "Nusa Dua Beach",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90,
+                "note": "Final swim or beach walk."
+              },
+              {
+                "name": "Flight: Bali (Denpasar) to Bangalore",
+                "kind": "flight",
+                "time": "15:00",
+                "arrival_time": "20:00",
+                "note": "Afternoon/evening flight home."
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "USD",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:12:52.976733"
+      }
+    },
+    {
+      "at": "2026-08-15T14:44:19Z",
+      "content_hash": "af7e625d98becff2",
+      "plan": {
+        "status": "draft",
+        "trip_id": "bali_2027-11-12_2027-11-19",
+        "trip_number": 1,
+        "created_at": "2026-08-15T20:12:03.578971",
+        "destination": "Bali",
+        "origin": "Bangalore",
+        "departure_date": "2027-11-12",
+        "return_date": "2027-11-19",
+        "travelers": "2 adults (honeymoon)",
+        "notes": "Romantic hotels and sunset views requested. Honeymoon trip.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Bali",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 7-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 7,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "THE HAVEN Bali Seminyak",
+            "city": "Bali",
+            "checkin": "2027-11-12",
+            "checkout": "2027-11-15",
+            "star_rating": 4,
+            "romantic": true,
+            "google_rating": 4.7,
+            "reviews_count": 8920,
+            "address": "Jl. Raya Seminyak No.500, Seminyak, Bali"
+          },
+          {
+            "name": "Mulia Resort - Nusa Dua, Bali",
+            "city": "Bali",
+            "checkin": "2027-11-15",
+            "checkout": "2027-11-19",
+            "star_rating": 5,
+            "romantic": true,
+            "google_rating": 4.6,
+            "reviews_count": 9250,
+            "address": "Kawasan Sawangan, Nusa Dua, Bali"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-11-12",
+            "title": "Arrival in Bali · Romantic Welcome",
+            "summary": "Arrive in Bali, private transfer to a romantic resort in Seminyak. Sunset beach walk and candlelight dinner.",
+            "stops": [
+              {
+                "name": "Flight: Bangalore to Bali (Denpasar)",
+                "kind": "flight",
+                "time": "09:00",
+                "arrival_time": "17:00",
+                "note": "Choose a morning flight for best arrival time."
+              },
+              {
+                "name": "THE HAVEN Bali Seminyak",
+                "kind": "hotel",
+                "note": "Check-in and freshen up. 4.7★, 8,920 reviews, romantic hotel in Seminyak."
+              },
+              {
+                "name": "La Lucciola",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Beachfront candlelight dinner with sunset views."
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-11-13",
+            "title": "Ubud Culture & Rice Terraces",
+            "summary": "Explore Ubud's art, culture, and iconic rice terraces. Romantic lunch with jungle views.",
+            "stops": [
+              {
+                "name": "THE HAVEN Bali Seminyak",
+                "kind": "hotel",
+                "note": "Start from hotel."
+              },
+              {
+                "name": "Tegalalang Rice Terrace",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90,
+                "note": "Stroll the terraces and take photos."
+              },
+              {
+                "name": "Cretya Ubud",
+                "kind": "meal",
+                "time": "12:30",
+                "note": "Lunch with jungle views."
+              },
+              {
+                "name": "Ubud Palace",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 60,
+                "note": "Explore Balinese royal heritage."
+              },
+              {
+                "name": "THE HAVEN Bali Seminyak",
+                "kind": "hotel",
+                "note": "Return to hotel."
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-11-14",
+            "title": "Beach Day & Spa Indulgence",
+            "summary": "Relax on Seminyak Beach, enjoy a couple's spa, and sunset cocktails.",
+            "stops": [
+              {
+                "name": "THE HAVEN Bali Seminyak",
+                "kind": "hotel"
+              },
+              {
+                "name": "Seminyak Beach",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 120,
+                "note": "Relax on the sand."
+              },
+              {
+                "name": "Prana Spa",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 90,
+                "note": "Couple's spa treatment."
+              },
+              {
+                "name": "Potato Head Beach Club",
+                "kind": "meal",
+                "time": "17:30",
+                "note": "Sunset cocktails and dinner."
+              },
+              {
+                "name": "THE HAVEN Bali Seminyak",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-11-15",
+            "title": "Nusa Dua Relaxation & Water Sports",
+            "summary": "Transfer to Nusa Dua. Enjoy water sports, white sand beaches, and a romantic seafood dinner.",
+            "stops": [
+              {
+                "name": "Transfer: Seminyak to Nusa Dua",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 60,
+                "note": "Private car transfer."
+              },
+              {
+                "name": "THE HAVEN Bali Seminyak",
+                "kind": "hotel",
+                "time": "10:30"
+              },
+              {
+                "name": "Nusa Dua Beach",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 120,
+                "note": "Relax or try water sports."
+              },
+              {
+                "name": "Bumbu Bali",
+                "kind": "meal",
+                "time": "15:00",
+                "note": "Authentic Balinese cuisine."
+              },
+              {
+                "name": "Mulia Resort - Nusa Dua, Bali",
+                "kind": "hotel",
+                "note": "Check-in and relax. 4.6★, 9,250 reviews, romantic resort in Nusa Dua.",
+                "time": "17:00"
+              },
+              {
+                "name": "Kayuputi Restaurant",
+                "kind": "meal",
+                "time": "19:00",
+                "note": "Fine dining with ocean views."
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-11-16",
+            "title": "Uluwatu Temple & Sunset Kecak Dance",
+            "summary": "Visit Uluwatu Temple, enjoy cliffside views, and watch the famous Kecak dance at sunset.",
+            "stops": [
+              {
+                "name": "Mulia Resort - Nusa Dua, Bali",
+                "kind": "hotel"
+              },
+              {
+                "name": "Uluwatu Temple",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 90,
+                "note": "Cliffside temple with ocean views."
+              },
+              {
+                "name": "Sundara Beach Club",
+                "kind": "meal",
+                "time": "13:00",
+                "note": "Lunch with a view."
+              },
+              {
+                "name": "Kecak Dance at Uluwatu",
+                "kind": "attraction",
+                "time": "17:30",
+                "duration_min": 90,
+                "note": "Sunset performance."
+              },
+              {
+                "name": "Mulia Resort - Nusa Dua, Bali",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-11-17",
+            "title": "Lembongan Island Day Trip",
+            "summary": "Take a day trip to Nusa Lembongan for snorkeling, beach time, and a romantic seaside lunch.",
+            "stops": [
+              {
+                "name": "Ferry: Bali to Nusa Lembongan",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 60,
+                "note": "Morning ferry to the island."
+              },
+              {
+                "name": "Dream Beach, Nusa Lembongan",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "Beach time and snorkeling."
+              },
+              {
+                "name": "The Deck Cafe & Bar",
+                "kind": "meal",
+                "time": "12:30",
+                "note": "Lunch with ocean views."
+              },
+              {
+                "name": "Ferry: Nusa Lembongan to Bali",
+                "kind": "transport",
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Return to Bali."
+              },
+              {
+                "name": "Mulia Resort - Nusa Dua, Bali",
+                "kind": "hotel",
+                "time": "17:30",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "date": "2027-11-18",
+            "title": "Leisure & Departure",
+            "summary": "Enjoy a leisurely morning, last swim, and transfer to airport for flight home.",
+            "stops": [
+              {
+                "name": "Mulia Resort - Nusa Dua, Bali",
+                "kind": "hotel"
+              },
+              {
+                "name": "Nusa Dua Beach",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90,
+                "note": "Final swim or beach walk."
+              },
+              {
+                "name": "Flight: Bali (Denpasar) to Bangalore",
+                "kind": "flight",
+                "time": "15:00",
+                "arrival_time": "20:00",
+                "note": "Afternoon/evening flight home."
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "USD",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T20:14:19.232142"
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:44:19Z",
+    "user_id": "corpus-bali-honeymoon",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 4,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [
+        {
+          "note": "Tends to filter hotels to 4-star and above",
+          "source": "inferred",
+          "at": "2026-08-15"
+        }
+      ],
+      "behavior_signals": {
+        "hotel_rating_floor": {
+          "4": 3
+        }
+      },
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": "",
+      "_promoted_signals": {
+        "hotel_rating_floor": [
+          "4"
+        ]
+      }
+    },
+    "places": {
+      "la lucciola|bali": {
+        "place_id": "ChIJ7XmB1A9H0i0RC642dTRQAvA",
+        "name": "La Lucciola",
+        "address": "Jl. Kayu Aya, Seminyak, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.5,
+        "review_count": 3605,
+        "price_level": "PRICE_LEVEL_VERY_EXPENSIVE",
+        "website": "https://lalucciolabali.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 12:00 AM",
+          "Tuesday: 9:00 AM – 12:00 AM",
+          "Wednesday: 9:00 AM – 12:00 AM",
+          "Thursday: 9:00 AM – 12:00 AM",
+          "Friday: 9:00 AM – 12:00 AM",
+          "Saturday: 9:00 AM – 12:00 AM",
+          "Sunday: 9:00 AM – 12:00 AM"
+        ],
+        "lat": -8.682853099999999,
+        "lng": 115.15201180000001,
+        "photo_refs": [
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydjvPBq-DBMEdhgDfa_DTgMrMjHCg-wEKLyUho-T7FpInHULcNnmotn2ap7MBzNd_teYMP1GiMLZeIZDDHG_ch2bGFH1aNZSmKT8G5voQFBLquw5BFJtOm5NguF-afvcORKS4wM2XArVVyqbdkNzSa2jIKEYKfPzhnIFcsW7sVBeMzK04DTT-LFtO9E3lZ4rKdozPEd76kJjuwdW3wVa3TVlLWeAaohJl2PvC52PGUst5SIWnZdbe93wgzrQWwTygrB9kuqFWLbSqUaSysCNiB3GDShY48PVESOqtDJodypL57DF2l_BGR1cXMR9HesqYIAdFW3vyZjEFL6-PXWvwSYKa7TQ0aqjdO0e3oGl5yeFN1mLWIAZGLGRrSvG2WE7e4h4w1WYeLgDhRhJMNZRq_F_i-CI9vnEMs7b_HA2VwgPX0YsebTpCfdqtVBZzg",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydjO1Id1nZM0qzldrRiwEuftRhELxZYMM_t2UREtpxb1NL3lF3kXd5e4vQ0w8WYP01DM7jdfmwysxgoqUO9fSwVc7uUzi2KbVnoRTjOvKzVNEtrWAC1b_ek96zjLsHNZkV3A-UFkBY0Q2ZGRJrH90lf1zL1tbDbasJ2K6Ho6Z_lbTpymZ-Y4yvy6zGNq8Ib7KlSLeofMc2Cv4u_U0YFvz4VfyMYb_3zl9_zYAIKhl0qt62htkbdy7d6za96drD928stdu0xscZ6WGs-oLcDvER-NEbJpWRIwG5sG9Ycsawiv5tYSOwgRl_8GO29aXlnilZQ8ErkYkTX5_s5RxCnGhHt-3o1ZFEayvbO2cf7zFpT0CbNwlrsiXGYUcQSFKOXf2A4x2mYBVB3i2tMrMNXMLT_NZjm31sneTF-VmDVmDej34g",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydjTecvWPLMp1dpqiAIsaPFCm5wRrnmsa90UMFFGiKTO-Nw7txSE54QFDdiVfHFqHBD35kOrAtu1qoIfwnC-vDC7YJ6MorjatDopLA2Dx56_LkEz9bJwTm5fPZEb3SqkgnlRLYCe_MoDrAKBO5bj0s7HtkPwJLZ2DrLhMTo5IgX9TFZCnSucHI_SKvgZKytRGDPR7LZVM0DJXSxedMhhKFITwyt9KDY8ioLZHsKE_Jsh0F2eKksjIyWhkp60fBS04-f-FeOcWwQbKnRPbuLqB1ayL610v5lKmCpMGT2b2e-cbRmeKbcxb8dbRf69ENDCvqgg2_ty-V4m1EegPz1YfckQPRsZ5ldy0uc7LAJTERvUbiRgwPaUvDMhaPXs-ff_PzH6yqONhJAJzO056_JwTXgLToMSuWfNUnHY9yv2dDtlcD5FTz_LW0azNXh1cVWs",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydjeMdFu1x4hZ7fAK-TzAQ8b7WR-LjohWbtikN58_xyu2JzNYH1RnXlT4udRGI6Hl3iqrx1N01OZxcjSmAaSUpK5No3qmYimH8cqZMFCaqSsJ4f1QBuRPa6HnDZ_Kz4vwpPFN4Jb7LiVi442aRFEq6IKHjGLY5LqvQctJJAwM3Egfv6Xf_wBiAYDgyFkrwJCGY1MGR12kq38fgPnhsjsU7Z1bO2T38UFn09co34xVH25mg8eTanScaIJYPOXNKu38G4gQh17_weL2Fr60Y0AutlTNO7GFQTW2JG_XDs8HjQBpeeQD8dQBHGEbCSIyOsHsUGL0HimfJET1SajF2mmSCEK2ctxKfe1Pa9vBWPzVwl9s8vepzpzBG0uS9Bx5js_WKs0zpND-xMFy3-myczsrVe0eOsTCYXxavasa-jF6Xg",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydhUgv8B2PLPTvuyjNVnTNXaDGWaK1e1s6XqMS8ezWIsBXJC6A4aslVkdwgo3IMHRqmhHbtdxrOPxbSCV1HGaSxTMbqlkriuWGnkcu2YgfsQ7FQe6pfEn-RWSq9JZGD-C5P7Unc6Jn1NuiT7Yq7mh2oovBs8WtEe7KKqGJURDS9e-cDdZ0Xd0FPJ_aTeO2Zq_Pe6by6PFgzmeUs9W46keD4MtRtwZUY9t530W5LF7Il6D-ftZ3SwnFzTUFOjdxBnRRwLTclNkxAgL7X8Osw9HZoC7sfbebC13BzWCOOLZvF1qfS53G2pYT-MPVjtoCeWY8xr9TxW0lUWs7PdiuxN0PD71_l4yFDKOGycm5548WY_gGn6OJ5ypW2Ydubh-jRb7X5liWh7-3ahJWZCjN632vQir6GZQ9d0vCKGXNSEqB19v9mwBZEVF0bBLr6FfA",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydikMk7Zzy640J4fsPRR6oQZa-f2KbWRvRaNlfdPUvgK4hjtecKeaFyHHHTfPlR2enUWReyfHU_lT4MMOM9sGgKJ4jdkaVL4-vdWX44zzZO3vogw2aJ_DqaEsPkA-H7QTKxWrv0DPCFE8_r2nx--0JGnvusN0_xRTAvETNWhYIishm11d-QE7RYFJFHfgL7Tb19-rU7dii1FSQlgmkIZvWz0jbgiC5yPLx0xasQlSb-gySp3xX0sbkU5dVV92lp0lVd76OjO0-yIOBr8c1EacTNwEdKKYtTrsp5TW-2Y6_X0_CSqFfVk3eUEzcTtI51THsfZqCxOYpFkgnIgdqlJVD7jkgOA4-3RNDDvxl4uE3MqPATWPSCxXm_ABDX0rq58QcjOEPuPkGvacMzgeUKlgKxh0Fqq348nJrAQCTvsoKhfE89g8GZcbQV7OBg-c_Md",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydgbg7YkdkADYcrmgVDJgNuAi1LcX0BCgXUuJ9ZXfdgU_9-y_un6XtWkKird4Ul29y3qOg_4lBJ3pTJ9e7-B_5xVrlYYr-zhVIqM3UBJSP1X0FL-pLEGqCkTvMofKC4Yu3_gXwxlH5T423zmTz4gfogF4tMw3uJ2AMV0z7Q_58jp1kS5bhzoTTmif-yoMNS5N49DNTWhh6_ct8Nb9oPp3quAGS9WYgOxon-5co_lIraLGzxAZsocgzD2EYHd9Ch6OS4eztr_q4Mxc_dx4A-GGq8LMtD5Ud7gsRDX2g-zVZyKJtGd6e9OAkuSu38tplqrOeWs2j95fUre0mNQUoKj0LrNeJoeyJgzpwwEieWyV3pULXh-f4ej8-MEx8Kpb1hmtIqyskod2Gomz5oh34to5oZcKPT-5efUhNsp-x-sf1F7r30jReGm0WA2EYB30fql",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydje2VzZcg5xL7WW2INs7uNZaOdXFdR63g-jYEY49cSHJ-uJL3o8Wd-FZgR5VlMNy9Lni522mFiMQcxt3rwuu4ni6QkIWHTGk82b-0TAiHSFObgKs6d04KhysPKRMzHS8DGTXqBZrmK6GlL8bmLOLuNDXHg7CUklbg8YABJFeqjXXZD9Ernfq2wYgL1SJ7UCNFg8Fy6W_ajBndZO3cZVokcV5T-MG2awBO1eNfF0n9wcGEkthAKKNSVzPG3Bxjdxl_AQ4KannhTgL5yWEpnmZUZlTussSGzDsoFSFhbPOZNsWsnXJ9DNguW1fOwqgzvOquR73zeJ8wz74Eh_svnlPcprrLjPcEfj3BuznOmkdmq-nOVcMxkyZ3IaT6N5_6uiPQx9dIczEn1OOq4Hv3z0VGTccTkoRTrIhxP18lBAkJ_hJtId6JS76fG3a51IZOUQ",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydioRIP2luMuzYuX-110ceBx9QxEyOr5_8_w3OuFR4DmiQMEnJLBZEeoNId40lyZQYMrT9M74ZYG9ncRIMuSsh7uy-YQidN5aTp-MmcwAqP5EDdwxpVqjyE1YCQ1rnWzSnjypxzyDrDucf-y3gni5CZUqda4HOL760NewXgHnOIR1He9MdhvXxZicWUMdboeFjb_wtlvIddgoiRuBKuPPFAuyfc1EJUPBG2p9hf5sRjcjJvuWDCGlL3v2SG87P9PY7zrzyNNnuW0g8pc3XkHlG59KhEZCisSec9D0rAa2DyByUadda_SNtPeIskvuVB3dQQudRENlaWwtPunj9sEeUa2QSVoXnBWrbISmeEF6kGpsK1sXbeE2_Lk0A6qb_e_Kn2lAv_5e5C8T6OfwShjb4bmsYnT--a0gHKraoYsErg3fbQfjuNZaCL2A3GHWw",
+          "places/ChIJ7XmB1A9H0i0RC642dTRQAvA/photos/AWCwydgL8fCa4tWfo5s1YYV68xyTb7jvWKBSS1_ujce2lHL5YucR1fF4ot9Qwxiv7KVdefYiR4KFzMs88LIpVXf5P8B2UqV9OiLG7zYd-0jAxR5WHUPuMZdIdudlHkBgXf9kLuYcE-LV1GMGa-X30IVKg9eR7r68WxeuhhumN4P4KWldT3Grqm_RJZ3xmlxMA5aP42ijKHXzH1AvWAoM02OCcrJoqvyVuu3KDlm3_G9tFrBiGYrIosbFTRT8U5qhAPGAM41FWc7emjEkDM_-mxEfck6zbIte-oigevs2L3siarwD91RJa7kxnMJ1LqbEJetIhq7lzlVmXu_5Aa5ibpVUu2KEuUuYmjpPQHUWMQaAkwdu8FcqY1pBkhL72TibDkXw4hiP1Y4LmA2x3qhBQK1lo9MRm-fLUh27kUB4CjDk-5x-JeEkCr203S02y7rxsw"
+        ],
+        "__at__": 1786804973.459174,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Absolutely fantastic views. 5 star service was impeccable. Well priced cocktails and the food was fantastic as well. Worth it just for the views. Definitely check it out. Not if a taxi drops you off you need 5000 cash to get into car park. Arrive early for the sunset sitting depending on time of ywa",
+            "author": "Jarrod S"
+          },
+          {
+            "rating": 5,
+            "text": "Such a beautiful place! 🤍 The location is absolutely perfect, with direct access to the beach. The view from the restaurant overlooking the ocean was crazy🌅\n\nStarted with the Mixed Bruschetta at the bar before moving to the restaurant for dinner. The Octopus Carpaccio and Hand-Rolled Potato Gnocchi ",
+            "author": "keisha octaviani"
+          },
+          {
+            "rating": 3,
+            "text": "The atmosphere makes up for the food.\n\nWe all started with cocktails that were all average - so we switched over to wine.\n\nThe food was nice but not overly impressive. Zucchini flower just that little bit oily, my cappelletti was nice. I wish I’d just ordered the ice cream on its own (as it was deli",
+            "author": "Irena Miljko"
+          },
+          {
+            "rating": 5,
+            "text": "Probably one of the most long-standing restaurant in Bali.  After 30 years the place still has the same vibe.  Many memorable meals here.  The view is still fantastic and the staff the most friendliest.  Easy Sunday lunch and will always start with the zucchini flowers, the vongole tasted of the sea",
+            "author": "Ruby P"
+          },
+          {
+            "rating": 5,
+            "text": "The food is extremely delicious. The atmosphere is very relaxing. Garden beachfront place, so you can feel the ocean breeze. We didn’t make a reservation and walked in for dinner so had to wait but not too long. I recommend making a reservation",
+            "author": "Jay"
+          }
+        ]
+      },
+      "tegalalang rice terrace|bali": {
+        "place_id": "ChIJ4wD5Iwsi0i0R7QRsOGmJGo0",
+        "name": "Tegallalang Rice Terrace",
+        "address": "Jl. Raya Tegallalang, Tegallalang, Kec. Tegallalang, Kabupaten Gianyar, Bali 80561, Indonesia",
+        "rating": 4.4,
+        "review_count": 54382,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Scenic, terraced hillside offering rice paddies amid lush greenery, plus zip lines & jungle swings.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 6:00 PM",
+          "Tuesday: 8:00 AM – 6:00 PM",
+          "Wednesday: 8:00 AM – 6:00 PM",
+          "Thursday: 8:00 AM – 6:00 PM",
+          "Friday: 8:00 AM – 6:00 PM",
+          "Saturday: 8:00 AM – 6:00 PM",
+          "Sunday: 8:00 AM – 6:00 PM"
+        ],
+        "lat": -8.431711199999999,
+        "lng": 115.279303,
+        "photo_refs": [
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydij6MKwk1lj2pFpijyDv-EUWF-kEzJcPeUKsaI3MI9s_kQqdjLO9MgUuxqy3hS53zLimktniRjleSjgWUI9VopM0MPbq-F7xuuKogfuBBhYftC0aXG8Mf02mir6ekg-s-Rfn_kr3ekqqohl02mAt4dHiCU41xdYcZYVy13S_IqhGEyQgIZDg6uJE5zHGqiysa6ZhrBZocvzD3DZbWdg9X2E_fGW786qXEAyfq41AAaCa83G2fTqYMqWX0z2HWfFy538EFPIPYXtWrIH7xQe-A_lpH9UzUhcuX8ed3sMVhOMazaA42r2LBrgrg4_uMJ1sNihYfk1e6tS7EBj2sKtnE19mgDT5UzqXGbKVoAVGZ3eTFDg9RTd-MwCdlaOK79wKkExr_duDbgyAjRKkWV7m0FpzLpztJ2o1yYYMZnNchSGpY-L",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydgrN2083YS2jgnYxUMKh-t_E44V0uBF4Oe0zYYujzk7g4y_6DTJYA5Vo9bCEbHrDZrOBy4BB-xxsfHxoLKwZDHl8pC9lSKuygsmv3M_-VWEKIbHj1lRENCd-DVolZ1QN97CPojrQS8DUSzymXiXzen-7Bs-1sa7NBcmAhNpd7oj3FWkOeWaUrRpMpwEDhbT6fhJ5rgA8RcdUClMxdJsR78gZLwTu-g_nmdfhTwvMRkAPNsarhHcpH6cqjKRK34D9ssx3qPEnWzdhWmwDyYlvyUASBMctXu4gC4sb5t88Nc5AAHomia43amLWWruI-NTgBzZmycdDWdlGoTP6FpRAND4-umuRGeqXUYCcqjDdrZQ0sQ5cDQ60aGchRXPcKgCM2q4F36sI9JER_bgEsmKtcRU0mJF79dG9r7oMfk4vEiNbfEk0xh8no_jIX6Ryd2O",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydgi8xhfSF-G6YLrnC0UUKnREju1uR7OWc_9wCUKBjOOMm1oQYBXr2RrcYuXYszpwu7vx3NF_25Aaxu7XBpRw_yvf8Thzr6wr-AM6bzEit6ppD2ID_3cV8pDWZt2La0YOnXUlzmbhAzAPKyE4IV2h_Sj3Sz9ARGzysR6eL6fUBzaEnCid7_x1qUKgYAlhQ5STU8G463wcYP-euSW1e3ffcwSphmUG0bZgdqlJoLI37Hjl78gTin4ZyrZWsqc_llhruzZ96b3OTTXIPFSOuBsVTTOk0MmNsV31O_TEHl0btH_FDt8exA7hAc2dk_r6BYCICLs_c_5JcGlwAOvlxNcgKrH1nAIJ-_nzVhaaQYg-dawB_QnwxWKD8GKQ7bqxLwj5DH0FI-f4G8xCTXuEGukWHRKNV27TggnUHlWa4MrMgqfiq2G",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydgeHsxVrsILWlcnSa2ZE5xIQRSrBszVatyaewpVtXAzRPChYgXM_EYi3pX38G4s4G0GE-6LCZPFpo1QcaA4-fkulMsDMHaec2EMHuyuWyeIklbKw4LygSEE79UNDRLMsYZLINVqZqHPcKRZfszMmyN4zj1bgXPw75THVZ65GTcwJn7tj4qPmTOnFBiOAfuYHFDvbWVkYnKX_Xb48v8e_2nY3P3ql4euIDaJ30ehYqISxbUc3_y8AdSoakuWJ1qtgIR32-BMc83-Gfvcz4sXtChT92rLlIPB34nkcVDyY9vkd_xzobBCc3wyU-p1wGK6v893J4f-TdVbvMIkCb0-Lvb-q3tq0QJ6BvMRNLcsTQ3xRpFz2RmqTYOL5txbAsbs1Y25k1Zos2j-NKtk0RwiqO5iY5ggdAEuNZ-83YKc2S8MiCag",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydhw1bu5pW9MrqSUsOfnJNc0p8b42g3E9kLtSOzu7siYq9b6WWuIitV5kfZtnHd0DWP_SbdCv4lPpNemI0mKsUg0QagNKO2hk17kHF7KPCoVNopm7zGgvguJjz_QklRAHVLuGJILRqTevKWC55XAbbW9YX3YPFkay4rMb6UNGeoQizlt2nb7BE-Z02z4M2VhOlyMYuI3ECtQeKzvBJUTCFbYO7DtXTsAxP9IW5SsyO-OGT21Wt6Q8p1YJQU-_eM7aIkVxl3jSxTE84vFrJmrePqM_31ejgg67_kNdYakaIMf2i1QskZxgDNWM6_s8D9VyCEi9XskD9MtuB9IB9YJgZnGulAZl-3xgQgtXRpRbEOSNDDl6KDFrEzhQpSwnKDcjP2_73UzDBtzbFu5LLQDsH4PBnDX3rNEJhgj-9G0sis",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydhXYYpWyW9_RSIBPwTNtlUfkDqFelUCsQjrzIMvXzh8Me0JRoL1ZoOPlWx9eHY4eF9CQWOhOWtRYpToVKukidO0eQyeWiCF22vbH4viXQUARZP1xt4FHxBRhS7el8XdvEDkxFlc6hC1TdM0644RtRpSGlkJnZz0pVlJ94NNEFBfMad2NIoitg5yRaImpsVMFXiuEmuNHa-V5cOCAN5bYI01vt0H1vzZhN2KToMSpDxCxdFmewDQ0o6v8C9FzUXAfp58iS8pnT3NmOgBe1LXbeIcflS6V8XiqDw6cCEI7mjwOZoxfcObJ2eEbPy3fIXLAMX69wP_z1t2oj7MeM1lBGMxZAN3Zh8okUNGGoj4Xr6SGKRYnJ9MlQhruSYSmzpMx1b9HocMVeFZROPWGQ2wVFhYo3ZJMbtMEGLPguzL9ysOaKv1",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydh-JIERl3eTCdLTfj7amy34pT-ZC0-RW9ErmiKolxGwrM3KDiIyNP4s_W6RkfQupFBgvInNodYLOr4D6T94DduMri9Xyg4K1bL7QF1BJgYPoHK0D7S4_mVotC55pqhamLgRIs3YlHLdMV8CrLKQR9FVmMtlH1V_7FUl4w1O7B3D0Qqi0bvjMq7HsL3QBsGVLjy8nGiLBJi_7x0-NtcOVvgmltSgayVGt6D4Bj1pEzyOHMS6OWHJMhkhdfA5-n04GtHtDiYVj2R63ysFLiPqjYOSUmoSS1E0ckfNp4-Sy1LCscIMrvnmroPmVy4Cb-ShLi4N8gcFjnZdkN7IbjLbpsDnKa2CylKFzkEbJVs5p9dnL2Y8qq7mB6_O0L_eDpsbBZOpFIOY70RVsedNb59msK_R1s6TA4ioSYDDEVn9T46hcEU5Yg7UpRourTcN5w",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydjJeBpUNeU0f-ozYLBKBCdTE2ajcFqk6fJWf9fqVED-sxN0Znru6MB2XQA60_ixYC4j7NRTdxibi0ru3OSBfvJ8Naw5PNqTUF0Jy-qUHyE_bxEJyO_NKaRPVzjwWwLfRAY3vZDTMRrLGG9ux_0pQX1savAbYt9AY2lzUP7FdQHLdECSkTZawnAfi3ZliyUZyFj9lnm_4fx3o4hMv6nBXWypbLYb50_5NpBYh93d7B-hXos_caTpHcrHdTXwYcM4_4p0OqVXOGqsl6Cmtzrj-a0p3-Wtt1_grVppYcQ-x-cstBNE-H7TMsp067qhC80pXbwqXRKsxYkqIFpY2VK3F7CYLfRPn-RnmOUIVq-H4QiNnAlQAVEoqE3rdePjCbAQsDAUZ-Wp91UEFUsshWjAX_RD3xOK6KFyZQqOp_XGO-awbQ",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydg8D2yOVomUZIlhHjArnllupAugOmL9kX2UI1nyXSFUExv6tcGsXvud51TUsh0OqVVp_lfqami3AhsKascmCKXsaQvZXrawGYBTO19xc1eWodPJJ6fIsm1mpS8QiADFqM2yO0G6MuoEzay-KJKuAzSHUcbXE9A9mDtLsVP7dlyuE38XkmmyPgld6mKxIE6rZcfBH43_-FgLr5eylzLwhbUOgRk5qTNR7X1N7k5LqIrH6hyhYJkjgcIENUiT7pW4B44u4gs1W3aWhMmzxZEN2v8t7-Q0WCI-P71gmCIeYunJ63xbr4QRHkkOycyZuyHs9cahrGtIvk7N-QuMUIbxKjHasBrWvR02dZtg4YEoKM185J_3J_LWSOOgPrGMqqsWib-TSPCp9Rm6sHbnXALMyrVLqlfLQOFFWxIA1qd9nUCFYd4V",
+          "places/ChIJ4wD5Iwsi0i0R7QRsOGmJGo0/photos/AWCwydgl0P6drgQbsb3YyMId-WPnEuApx3CrHp_3PjjytqAMqBaTT51mJXbLpUI9q6TGmMHmBvy6-r-Gf4thuGlN43zI3XtX4gmR39v988ZBBcUxKjOXyUWFZcBhN-YerM_K4p1ZHKfZeftO8sidPvDJWBWfQgIxL7ryvIQ1qSBcg6341E4kYF4P-22sjwBVFXGh_Ke9piFue6_qYAxtq8pqg2xu0gcJQ_bt0pS0w6Dh_USKx1m1diCzYqcnAA_MuZF5X1mFMGpcfHkl8dsNDqHjPZVMf0P9VbeDwlW1xAc3GLCL04G_ksjtWxygCXqBHZ2xsBFnPFOxPTSMJlntuo8kDT8XNSAXJyv7A8pquxylJYxlGo9ZpuqJDiQBGAgy_kX9_BIoLJtrdHa0KPXK9JJrLRjI11jeMtM9o1p1qhb6zjq0l-DyAv-exzjnN1zxGA"
+        ],
+        "__at__": 1786804973.962788,
+        "reviews": [
+          {
+            "rating": 2,
+            "text": "The view is beautiful but don't except to see full blooming rice fields, there's a lot of mud and the trek is a bit demanding.\n\nYou can use the main entrance near the parking ground or there's a lot of little entrances along the main road. Entrance fee : 50000 rp.\n\nAlot of little shop/cafe available",
+            "author": "chopper id"
+          },
+          {
+            "rating": 3,
+            "text": "The Tegalalang Rice Terraces are undoubtedly beautiful and offer the kind of lush green scenery Bali is famous for. The well maintained rice fields, palm trees, and panoramic views make for some great photos.\n\nFor us personally, however, the area felt far too touristy. While that may not be obvious ",
+            "author": "Bali Hunter"
+          },
+          {
+            "rating": 5,
+            "text": "Arriving around 7:30 AM was one of the best decisions we made.\n\nThe Tegallalang Rice Terraces were absolutely breathtaking in the early morning light. It was peaceful, not too crowded, and the views were simply unforgettable. Every turn looked like a postcard.\n\nWithout a doubt, this was one of the h",
+            "author": "Yannick XXX"
+          },
+          {
+            "rating": 4,
+            "text": "Its lovely though highly touristed with horrible swings and hearts for people who don’t think nature is enough (ok it is man made!).  We got here at sunrise so didn’t have to pay and were alone, which is unlikely after 8am when the buses come.  Worth a look a a walk down some steps but keep looking ",
+            "author": "Michael Page"
+          },
+          {
+            "rating": 5,
+            "text": "Very beautiful environment. We didn't get a chance to walk the rice terrace as it was too hot when we arrived. However, we had lunch at the Cafe and just took in the lush setting. It really is something to see and admire the ingenuity of the people who take care of the gorgeous landscape.",
+            "author": "Shonda Davis"
+          }
+        ]
+      },
+      "cretya ubud|bali": {
+        "place_id": "ChIJgxo5IH8i0i0Rpy_5pkJSx58",
+        "name": "Cretya Ubud",
+        "address": "Jl. Raya Tegallalang, Tegallalang, Kec. Tegallalang, Kabupaten Gianyar, Bali 80561, Indonesia",
+        "rating": 4.5,
+        "review_count": 11068,
+        "price_level": "PRICE_LEVEL_VERY_EXPENSIVE",
+        "website": "https://cretyaubud.com/en/cretya-ubud",
+        "editorial_summary": "Refined restaurant serving meals & cocktails with views of the surrounding jungle.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 9:00 PM",
+          "Tuesday: 7:00 AM – 9:00 PM",
+          "Wednesday: 7:00 AM – 9:00 PM",
+          "Thursday: 7:00 AM – 9:00 PM",
+          "Friday: 7:00 AM – 9:00 PM",
+          "Saturday: 7:00 AM – 9:00 PM",
+          "Sunday: 7:00 AM – 9:00 PM"
+        ],
+        "lat": -8.439962,
+        "lng": 115.280982,
+        "photo_refs": [
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydiK0QWuEXCp4kGjejENsh5sn5_0R9IXvl0PKrVnJtlmnJ_OJz_TBK_uO1-fgWmFFxztm0MZB3SJxqhIfavGX-_CJdE9IaFMYg183eHi51yrC9NMP2-VRx1z70vyt0KoRoYQRIpoh4LxPz4T9G9-V_Ztad8AmP6rdYyvOdspIH6JFdnAyP-__ddEJi0LNlr4J-aB31oXkgm72XTuMkMI-4gYh2U6SOWRwHh0dTR4Jd8TTrVWaLxFIr5UV5hjqFkurxBpdz4rgMO7LzyD8yxlXTpnrB-ZrasL99mFB_U3SFQ39MGJj6WcZ3z30R7i0h9iSwp3ZdL-DKV-XwJ3qZHYkcexP13iJ5ZBYR5jJKF_3PNa4FoO4nzh1MJzmtOCBBOqz-K9Qf8enFNbnjHmPdE7dJO9zvmf6QolakT5oNsGUyVws_LX",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydjKC-vEj1jBOalhNAhfGB-o41z-UwX_1GTZpO1rr78jVK_JHQlWR_y-Nd2Ju1Z5_YIN5DfkrxMNkhCgMh5E6lGCLIW7xjkqS3ykeyf_9bs6sEGD43iSslfVgIr2LSuWjkq9cjh0PaBpVstWcsBxAFPkTZ77Z3lPBe2w42fAcqGbi8GY1vvSV74Aw8-9iEBvBBiA3-dWJ3sKCUJlXed1KuNEnIXVQV9Lbx7lw9_3VRe5JsSXwOqwgfi54iL7BWNZg99kO9tiYgeU1DGy6303mj3QbZ33LdsT6BQ8Scu5-_Ia6aL3LyIA1Vawxw0Bd4rvOR-QtEnW2MF3loaYKCYPIrIduG2u_qk9kitZV4LMsB2V3xhlDO_-H-RDAedRpVlmeozWv9CQ8jd9cmERHQ2tiGW9luSPoZ7C8AqyEjjbqg5b1ec8",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydhkrB4V-6oodgtG-rkIF8g2cwr1IRLlc1RHlt2RaYvE8J-jpso1Uhdly_tscFXpjOsUIsxQmbu_p970NTmXh4XwdPhAjV-SMrcT5d-tpmca1w_WxziS_YmqHGCg-ocCnqAWwG8-KSz8oXpMNEkdJXKKVMd2NRDbc9XJlEQBA2KcEZFy0ePIjQxlOv7hoG7gUGgtpNFl2MnhgRc-GHTH7u7wG_WqNRIR6z7MrcjcxNeXoS5oyqxshTrXLsqN3znCpVWBitN8LjaYfR4DDA5nP6x9z1xGi2BNJrwYRFo85-U2dH3njZ17xl7vleqBgjX44YOGkbgEd7RTKxGo0EtwwkU18Qht5rb-vqAa4RykpzMjzXSOI2HFC25C3E4mCEGqTJeVReRU7IXp7JcKYBhFH8khtauGBmZYw8upUgkE8nZ3Z_hs7fzLzmdLySROr45A",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydhuIYp8XM2KB-nPi8FFoO7ev4OnKs5jq7LG9OxNq_pyHSJIguoFSIUw3ersfk0X_qv0hlvkjq4BBIqc-qME5NcqUtkTxDgt5MQ8a-9Aa4y58Lcav5akElHJqdRqpnhi7rl2r_nZEA1o6Lxcwq1WvkevTXkL9I-wynMUYCrwFnvUaUAg_30xNpPN0wDtzzwwdsNsWyAaldpYGDgrZWDcJhSjOq4VLsHRk67x3gLgouBGe6DFRePeS1Unh1QI1pir_uRFpmjiblepUlb_r2ue3h-Pddbm1NNXRqZOD8DKe97Zewizd9TSNc5VBuMSwaCMmUGbiRbi-xLCHpiexyjUkoUyda6mn2ry39ocC0-IVuEI7r5IzfySvLWld2aXifQPsgE5NcubZC3MS6xvncat90JnMRUo6_nbge0FKgtrfHGkjg",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydiZw6tgJpzaVX05-gXNxmnmrDrJXSwp3qAjon7C__e0Fgap6wJFgzEp47V8zG0kqMIGl6MAx0uv_cbK7sdG9-K06IikFPx8Muw3A-wzrtmDBpEv0PgaSSoLGIV9tF256DrQ9Ay03SlfTPkDmhnk8GxtYQAHh7ricF03IzZfqfCMxPJQW2o-2WZM_3Cmqm47Cp4-lEkUSRUVyPwlU9l-RD55zgl3TTJUiQW5afpcbl2Bn6aMhX-HlYsNnro3KJjN69Gd27w8M3E7sNG480t9RSNxEon9UxWbqnhCfP6U46XUPOdkdStbFERL2oslek2-ekHsCtIKWqCpCbB2clUqlnm-xhhU8YoYhIAhsQEyVV_FuK3-2A_h8VtEmV9Nw0QogcGBzguanFDqSFG0N2mzik3r0AbFCjsVzf7TByXM26uPA0WFGkc1b_o2V7LmrA",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydhpUYbuP4tem7HkxUDItecVcDfvsareK8f5dcYoIBvcrd-_dzLwHO_zgiNJf9ap7GZVImFeMocssFPotGJolN8OP6vWxzSaqj2uevM-noT8UqGNtDyoG9SGyk1Md2FL7QQwBhovh63R5FQXdJ0-F5nBP9stSZkJSAOHAOS20xbrs_aaw7N6fcEozkOt0I2yw4PSliO8WsqpjtqlcEOLLVgRjZKd2heVhWQnBgIrBZtppolu-ojvwmI4kNchSL4tY1pAgxaQbxT1VYmN7TIp8qG2tKj0ceDRnFsdajG2f8vnv-gW9BDXWS_uDt67ZRV7FZ1wWISLQ88ZGf651D-1QI-Ue3BL9gsax0Pj9R3vKz3t4uw5ux1zP5vokpFT7zZb-QwNoJaEGrl-vvUCBD_AI92hvzzpNMV__H2ExTqvybZj0s45qhf_oewKAeri08Kr",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydg35XSqe63W22OCWbWzwbnNb1kDy4dG9fBXJRG026J22pg4GM9km8X1gEFGPb1johI4qb6FURfOW6FVwLowGv-5v5v8_kre-OFCT2lyaulR4bF79a9Ho9pdYiYEb3Vs_y5lsuf_pNRS5wV1Hx6B-EN_QO21sUITtaghXzZnl_q0F8hMTyzQ52DZ-kBxSIt1y9ieNDiW51PTT2s4DUVaJagCYGPJW_w9VSLBBYKNzMytaekLEXyYKiA8wMgbuAtAVjJyk14Y5ATnlBeHc8KiE44v-jQ4UKkm1IBq9UzE0qvGwoOCkroFQn6Q1R9S3dMIWjlUl4XFghqJAHWNf7lI4MHrHoljojgRqmOspZGAf9FtNAv_BguMuL5Ny9c-DuYUH_waCj9HJzEqzKQH2RMYylV5SO_qd3DNXgl3tfH6egoOui-7RlQq_JOUpV3G6jgq",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydgr6IW7LFX7GhubKDiUtjsM56RsXPpTcmYEYgLBAdJ0U0N0WixKRZU521LPCqhTkYR4BhHUQXgCNCv8kAKnlg_mJFnnqTH70mlYv-fCMyI1o4QZiMQBoHBHVmG3iPa3foA7yEyt6bd-m-WuuXafpTeg8sgWaowumJGUpl_SMjgipEIca5M6sGqKmrUPCzFwAgM_KpO9xSj2nVB-T73DRkZNgIHb39bCDbt4UVSoLxkKPpCkP70eDP7bMcL-2rltmYCeZWiLz45uKZdzOQCqHXBv6_PYBpXHvJg_fghRHWXAAhlAIbpmgAHN1SOVyH6mdBi5IvgsOsmivW_HwpZ-4XY1raIy9MfoKeoZQ_9UPTIjFzY6H_PnnKmpUfI9jIycyzNTBdSZVMCWr9qVuNJD4B0ZYGwphZ6xuzY2VES4NEaXNgZM-En7W326mJGya66k",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydj2RawT0iQLhKBSmzyayUsxfQszsOPyZpusJvWH_IBaM12tpZ0wfJVAm_JmEWYTV846BzDLUOhcJ982gTe_2Oi3cqshENCOVTy23UYEZX4S3H9YpDfz0RaY78R7cUXsWEqL7mB6JbFRGqLCXFr_Xax6EvZMLhyUf7hleLFDnu-e_0LL8arRUQAuYLyw0uAKsd5vCIZWQjdzk4l_dwm-JuXXniomqoNcKq4hWTPNDY0Kbtcwlggu8IpH6FMcOhK8IHyD8puwsnbf8YxYb0LZsJP4pZbF4NlOFvZ6Yt4Mp5u3wmsC5KEGSf0uLL3f1bhCyw-sISCqpPANXPZBhYKf5zo1XD4moHHfmsv5_h9NS3RFp8n4z93KzEF3sKXSYipVwfPryL9BrBbYYP2ID9dDRPBbMvqL4Vl6OtY48Epj7P1rGyNFN24FDvCJ3rmTrFyM",
+          "places/ChIJgxo5IH8i0i0Rpy_5pkJSx58/photos/AWCwydgvPgERUqDXCr2aG23DzLPPma8n2EGzr-lpmsRadFrsbAq5XY1mf4HZpRNMUwakfVk-2G4avOuXugSkLxHk1DWPUgSnVYBTM2jw8pGUcsGyrxIcMMIPxVG6LT4cXvmUlw062dW3Dx_5OlpNgjQ9mPUJF0QYKkncuV-ifJvJrj9EMduDytNuXM3uk1xv2nzSGjrn_Xn5Gx6ANe3rZQ-OLBhaGIuAESNPBJQCcTR8oeaRgESvlYlDBPLWy0Q3sf6VyhTd6bEhktnIfXPC2uT4U1jGpEG4gS42Bhm_1l7JkRrst8IjVHGd9LXuB6VM3jcXYkeFuuejTh55XtmMTGJh0FccC9xM-Hi4SfKri7AbKicC3vQECVHV6Gm28c-6qIzd939yjlEBZqYnS-w_tVyew8n2qLCGPLpfuwpblA0dAhLTI0-rmJxtTr7MbGMK_hGd"
+        ],
+        "__at__": 1786804974.413281,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had such a beautiful experience at Cretya Resort. A special thank you to Desya, Winda, and Haru for their wonderful cooperation and outstanding service throughout our visit. They were incredibly friendly, attentive, and always ready to help with a smile.\n\nThe pools were very clean and well mainta",
+            "author": "Ayush Sharma"
+          },
+          {
+            "rating": 5,
+            "text": "Cretya Ubud is an amazing place to spend the day in Bali. The atmosphere is fantastic, it can be both relaxing and fun at the same time, making it perfect whether you want to unwind or enjoy the vibrant energy of the venue.\n\nThe location is also incredible for photoshoots and taking beautiful pictur",
+            "author": "Basel Daoud"
+          },
+          {
+            "rating": 3,
+            "text": "Quite crowded, more of a party vibe than expected. We were hoping for something much more calm and relaxing.\nUnfortunately, there wasn’t any space available around the pool area at all, which was disappointing. The place itself is nice, but it didn’t match the peaceful experience we were looking for",
+            "author": "Yasodharā"
+          },
+          {
+            "rating": 3,
+            "text": "A bit below expectations\nThere is an entry fee that includes a drink but is non-redeemable\nWherever you sit there is a minimum spend apart from the entry fee and the minimum spend average is a lot like the spots I asked about where 2M+, and its annoying they didnt clarify this before entry.\nThere is",
+            "author": "Sara Samy"
+          },
+          {
+            "rating": 5,
+            "text": "Cretya was an absolutely incredible experience from start to finish. The setting is stunning, with the rice terraces and surrounding views creating a breathtaking backdrop that makes the whole place feel special the moment you arrive. The different pools gave the experience a fun and relaxing flow, ",
+            "author": "Aman Puri"
+          }
+        ]
+      },
+      "ubud palace|bali": {
+        "place_id": "ChIJS7J-82o90i0RMj8cKJr2zUs",
+        "name": "Ubud Palace",
+        "address": "F7V7+72R, Jl. Raya Ubud No.8, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
+        "rating": 4.3,
+        "review_count": 19983,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Iconic temple featuring art, Balinese dance performances in its courtyard & lush surrounds.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 5:00 PM",
+          "Tuesday: 7:00 AM – 5:00 PM",
+          "Wednesday: 7:00 AM – 5:00 PM",
+          "Thursday: 7:00 AM – 5:00 PM",
+          "Friday: 7:00 AM – 5:00 PM",
+          "Saturday: 7:00 AM – 5:00 PM",
+          "Sunday: 7:00 AM – 5:00 PM"
+        ],
+        "lat": -8.5065977,
+        "lng": 115.2625884,
+        "photo_refs": [
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydgupZ-8oddLrz3Ukxw_PXJ4OsUKnvLR2qFrSsgU9BabjICSiXerx6v0SvOoGTVd6bj4HhELb0cIYahVx45K78fJ0cz1PoB-uwS6fiNfm4JdZJWyfFGrHWltBzPj_kMdaGnEMVNBEQc6RQpuUBBxOuuXR7MooYqxNQg7riXbiXHFtOXczNu35e7frTFT25cLjhqG-PjNBIE7lPXBDGqCnn0Ojc-qsyvepyEOrTiNJdPQ4HfDaKWDdf6JzIz6pFl6pkOg5l3QewHX2c0mWdG8I7thhMPgAZC3HrTm1c6JWcde2V9VUXLiiV0QNLfjoN94-2qxStXGPJ4r7tXY64P-vot3guISzu0G37WUdZeqrNwmFmrxKHFY5tStFhC-EnHxLTfIEMLMbtFdlsvlULp-kyVkhty1SzAks7RVQxNWPOxEwq4",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydigDR2vr_27p_yEIE2qCiEBensIOzhlu5FoQk_i5af20mwVlQD9jlrbWlgEh7lJ0RzRl4E0YD16qI6W9nr6OkgJN_BQ5iwa3ok4Pi42mwREG_uELI5ZT4CmGXFCrIhyWZAlSj2vH1oC-_Yc45UjdPRCIJxXVsZc14fPbFJcIYBkbeNGHcjH9cMJIQHdz5qtoVMJ6R_0CKRzXMxHPk0hZJq9kOG-Pq8QZB3S3lZnuq7g8qPsKFG4o-YEve0MTHAw4ONMyxvTw5wF8tIbKJaCCrzVtyokfvDovcyZnItidSmcG9ML22F4FJ7nc3oMSTQk-Yuhjhpo-ZBh-5W7O3T2Xpaq5HLjYg_hyjOmF5ZqpGEhQGwyKnFOPasYKK2JUX9Vi0WOg2uHwDfORVZ5MJrMziuisHYpM9YC3-KNSNOz8HtQ2A",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydhx7oZEwRzUgHn3AEqB9VAkI97S3voB9v0Xumf2SJ5UPmxWni16MX7H_sd9ppjuComhp9HzgnMswjrNnkZjrmLGV4TEJDeLPBNFhH7h-PhknDbZClbfSAfOPyqGMTdE3UhgTXG4jMy0UpdXXX2kkjWZVQb0GCdUVIzKlB6BQFJ5ZFyIO51ANP9-MFfqCfWyEIKHhqT0CxSLkSZjNFH1fo_SjiWWxyPVnKA8DVj0zmY_3IRDWDppjPe1cip3jATB2kSg4k1aN7BSa3tetz1a9FW1_C8pu_tRrTUyUyaBnEnuocz3FrPq6Z4PMWlwL3WGIuEZfeAwGtocdG9rGpPzgVZbsVWJX53IHTXzNJxKBt0--mksbE0zf-FqkPT19zpMOkftzv5DGWVpSGqlboYoRHNsYB-oUWG3T9Fg4oKLTre6iQ85VFR5bWhM4GeEPHV5",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydjNrGMVCw0EZ5Wmdbc_xH3Oq_Kd8sDFbTcpxqXzWOuXsZwmQCGw1WqR_10X_AQ9_Wogp2iWplfUtRS84EuXv286PrqZom3Cg0SXTLMIv9-ebpSIGmVpUFtlU4ONPJXuJ_58euKXVcYlcDl70Sq2EtdDULaQ34LeBXDLc2eDmFASSYw6CML7kw_Lw4ii7Jiy6H-spyxPBeLesIBD4Z3ud8EEZnPPb49HBlVWaBmsCf6meqWi5UbQplv_1As0dYiL1oTWEsH-1vKjfV8Yxw_4O5oKOKZzTx9B8QB-0LOZ7jAWDTNjanCp8Xcd6lAbJams8Z_2B-nsf0UZOvQywELZb97pRJoSLB4oMpYFQWvGd0LX_KW3ZUgTAGszair3MO6xfn7Md_l4fo7jeXFyBbYSfhx8MNweMZpkzpQdDSwFu9UZIg",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydgh3Y-sqenv3tltD32u_f8U2VuIKdSmjNLE3k_r1gJ6TOGFNOGYn3xYtmXkrpb2hCdeLMfLXdsybbdOGFqAMwNstmQrmx1SVXsyspNR99IqbZJ_H14fDcfReAXhnXFy8yg08-jHewLOR-EAHNyTyBKbh-Q98IUIsMiddRInhEQbldWBpc472ywP4X-fGXNmvLt4qXk9V35HMTNBj4p4nRBymeHfgARpKwEMDsjNt40z3osI3oiKPTrj61JjtSfranQ80o3tNqykyvSwGdryLAWXD0tIe7VynCk0R5qy-kS3ph_65lWkySJXem4-MctYbKY7tNiFI6w5saAmgXwc1qMC7-dAwj8WzxeTvyFl2JQrLGt-mLptwh45JXdaldqrEJpYv9WlwM3q3QZF6JsBuRTcMka3ntL97NY66FPwELtyxp8",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydijg3VzsUGzC85iYLSYMaJfxe-wfXHeeSIxGeF3GvtfoUTtRQPFS9buGU4pTfPvrn1gMhI3DJewmI6cP6JodPACcPpdcRUuwgBbdCVZATuuVmhfHY4ey9VE0pkMnRZNO4s-QLj3Qq7AiPYFKc4ho5SYsVgIMW43P70eIv2ov-9uVw212g9olmpF923qXkJehUetCJtJopZMzkKNd2kvSb7YnMrphcumQRS3qPYWscvoms3K6pjdtIKyVie0AwR8D-Lqa20U7I6NtoBpIanyP6E1VkcRp33_E1nisZhZzJ51us3bJI_5grKccs5zdORHvj1SfJVNm2vVq7oJ0vjf1dSTpP2uD4Q62dQ0_nUXPMaSMR5zzSzNZWFyMwjbnAlMjR6_XamlIISxa13FIRWvTqyb09Ge45z3jQCo2CxkI2Jjs_BM",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydgK4LKCXQ4tmcltH1kzLPUyXASQiJMnauoSa0wZSEYme8iNQQMXl-_XNpwT3inhqTATvXf1Oi011Q5H0Kzeq40w-CtMI33Z1D0TT5Bq8Jjamsk-EQMm7HBXhrBSqo5gRzgbG7nYE-HO5ZA4ej6lSUPxAtq37DTCM4cDjToXhUgyGZDY6U-7zk5yRV0T81ydnvMn5gnhX1TKJnikocU-EBUgzbiZTiREVLR38Ij5j0qhGl0JbxKNwfmU00vh6CBNDQcy8I5wdPn4T_1oVL6uTpvclge23F4mGaFpi4uQu1P1AAL26jEJFZ1MA02lJswWpa3s4Ge5pzx5LP2CJ9MvmaK5jzzxGbsu-APNUbzmxc_E15kQTaiLGIMwq83HLG5WCFFG-RmNcosOl1t1MbL_cR86p3L1dces8Qf4fGi5nUg3WGk",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydg-rzgAslyip7DWSoSYipVXIGFUjyHauSmuLks-Z5lFg87He6uRXvKBhVGJObyNx6c0ApzRA5h_YnQuJCs7xPzvP4f9D-i_o9yifFh1SxcjIQQj_dSqQruPwKo7VWHP7_aDy7B3B_9TrWp7QjVcB3IRZ9nNhvrUmLTdhLPvO3_DjPfg15WYa7Atim9Gi0_vbUxlUmeDFUaVnogZVN1prQKDRETVgEWy3WiIHykWE17Y0jPuyyBjSJJalSNwxDoHDMp2ii7ppZvqTiwy8G3YvlRD5a6XSlnY5w3r3lNlVz882aJDUC2SKQy6ltntz994ScP1iEsASBB2ai8oQpLgtD3JhHVzlTezz_E5-hUVzEP7LtZDiCL-Qu2SsExMuRtC3DK4P8VWGJecnucVbsOoQd8v_qbSPr_9JBj_BYVY1ReiYA",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydhLa9a9MUyHKcYE7G_huf7p-vFPXZ5Dm_WoXnVdK_zo9kc-rCw_5RbM1MqRWlkrqD6PbuXUQ5KjDVwlaQyBfwEIEBzJ9ba8qJjLEZkeT2D8n-8ZxaV-luKz-64CamzB2E6nVbm4_MSoJy2lOaIE7YbbzQyw4ska4aRXs8d0sqq0cOBgF4ejw43mquy34O16B-72afV4QD2AMobACe3ubmhJCEH6HOYgsOBDRfuMxX52vpklQ-KfdxaYVoKpv9p0BBdx6VlNlXlw_kK97PeAy2OAfFmydUsR4yhxwXANyE_UvFRpsQckiJX2RDQm4RFEume3HNlp1Q95D10_pWmW3EMF4E37ebZqwz8DVTZariZ6TUzFJauLILx0nednicHpgP1UBT9TzVw1VBZ2hQMWTay_PJSN64y-yExFVr5pUj48V-Bb",
+          "places/ChIJS7J-82o90i0RMj8cKJr2zUs/photos/AWCwydidsvmNhK4vhAhX35fXFxsodidNdtJyebvte_xgxCS4JByoi_lUsOzd6QXwkwI1Ir174GH1WuKsu61zTfNRhmGIbn1SaTox6A4TyqC7K2NqmCwU6mKK1lFNBZL0i4Y1a3auNRDgKU1JU-9cYym_DK-Jui1l1jRwXrxdzJnO33GJckqHVxYfTPXfUI4kxlTbfdohiF1F7IQEH4-ckFsIIST-daftcThe9BsgSLOrlommOckDfoVRvaqtbPznF4xg30FkBc6b9UERsZSX38MMBN4TJ3aYzi9LVCYeJBGRC9zDwOTSThXvYQyhVC7Tfs_jxiohP4ICirWqdLrTsffu2YacXpCuhVCo_-z4dLuLwoZsCXPTt7QWn5xwP0jE8xmve_tpbwtrGglsiqHy6AIMyk5YuOH40fkRhO0fx6o7o9lGh0M"
+        ],
+        "__at__": 1786804974.817913,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We also visited Ubud Palace, one of the most iconic landmarks in the heart of Ubud. Although the palace is not very large, its rich history, traditional Balinese architecture, and intricate stone carvings make it a fascinating place to explore. Every corner showcases beautiful craftsmanship, reflect",
+            "author": "Ayo Cordova"
+          },
+          {
+            "rating": 3,
+            "text": "This place is located at the center of Ubud. The palace is small but beautiful. It has intricate carvings and sculptures. Cultural performances happen in the evening. The place is free to visit. Finding a parking spot around the area is challenging. You will need around 15-20 mins to explore the pla",
+            "author": "Alok Aditya"
+          },
+          {
+            "rating": 5,
+            "text": "Such a spiritual place. Not too crowded and not touristy. There are local folks outside selling everything from fruit to fabric.  There’s a ATM machine at the front. They will give you a sarong to wear into the sacred pools. Please if long haired, tie your hair back out of respect. Cover your should",
+            "author": "ChickaPowWow—Real Travel Info"
+          },
+          {
+            "rating": 5,
+            "text": "We really enjoyed our visit to Ubud Palace. We arrived early in the morning, before the first tour buses arrived, which allowed us to explore the grounds in a peaceful and relaxed atmosphere. 😊\n\nAt the entrance, visitors are provided with a sarong and traditional attire for the visit, which was a ni",
+            "author": "Bali Hunter"
+          },
+          {
+            "rating": 5,
+            "text": "Ubud Palace is a beautiful cultural landmark that showcases the rich history and traditional architecture of Bali. The intricate stone carvings, well-maintained gardens, and peaceful atmosphere make it a wonderful place to explore. Located in the heart of Ubud, it’s easy to visit while exploring the",
+            "author": "IMTIYAZ MOHAMAD"
+          }
+        ]
+      },
+      "seminyak beach|bali": {
+        "place_id": "ChIJBf1LgBxH0i0RgpDcY661wtw",
+        "name": "Seminyak Beach",
+        "address": "Seminyak Beach, Bali, Indonesia",
+        "rating": 4.5,
+        "review_count": 5165,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Wide sandy beach with loungers & umbrellas, horseback riding, bars & a vibrant nightlife scene.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": -8.692012300000002,
+        "lng": 115.1578837,
+        "photo_refs": [
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydjxrq8A3WiLPJ-fmKUUvFD4QjEyi8Vs_VvOJ5Br-ASQ16JI6slBrCKgtJynTBAIpEdB7nNQfix4KfBqiuxCkoefjlxbRo5BS1k4ESv4e-cwlpu1GhyZdYGdJ-HLZp1bAeq_AMSBZMt_PuhfaLIfuqk8njG5_mXOafjapUKHRdbekohDYV25epuGNylDB1qtHDOzTrak7S5VuJ6M8BvmYukiunK7n4RrD9XfHq__GzP-46Ys1xq5Ss0pJvXT3V0HHrlKSc1NTWM1y8gwpQEyQxNFu1xFdE6Hf563JuGLaeLce5O9V6-_P5C85nbgJwr3aN4X1ptRTIqFe-cIAZzDeOXxZYMAVdDH5nzN46XK_LH_fG-bUcwQYowPkN5WMkihaX3UdyPpMWLJUjeRvXkmZhyytGFFHDSGYFYz6ECvHXEJt5re",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydg3cJ_i8TVTVrHnoAp368qSifKA1aR1IudXWoFOYEDJ2GsUI2T9cWS4ZycDgj5FnGsw2Qc90sh-0hcfAXWuhW7KEaJ0hhAHmkaI8KONoGUjVjXyDPhlGAWPj0lna22hq3s41_sUdOistnOATTITKcxGYUdwUQeAEAL9-FavMvkWIof6oU_Txp2yhWTg4FtoqZUzcVhSZOjelEzqMsVRcVkmrV3Mjg6SBXQRkDowyyYufjLRUXZwpCbo44f8RDVJ0yJlc_XLALAmD-cFO1tDSvvYpKVBUpC3MDN_VsfCMZs6MFDFmEHJfhC2NOWMItKaFzhJVlgB1VXChkf0YEHZkBtrIKt_I53JvwNzdbCnXXEKLP3eapg5g3ZntZ7pTVw8TWZ8vEcUEc5WKncyFb-K4deQav5Pqg4I9wY1P3bODx10drI",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydjBdLRcMljTxdtvKh1OD6abJ9rLlGNALFk2Va1iULJ5597d0E99KfVDKIay3MyapApzFEW_KKXCPHuWnb5nev6z4kfLBoR2LXMSmUbaPWfhnbl34PBOJFx2wV-HQU7Szyniu2xriiLVaXhoFka1gYKAkJo4fZyxM_rPqi9BHc2mE4dpxglRmukjUxT8xBV0Pcx-kOxi5oATw0Ndwr6ZLr_kofUuOH_IUPnYeHvDqVwqAwGnDdnohcfy84djL0A4MxHhfiC6UrUPAiYtQVwro2azkF1PowEGjnP9yOnexy-v24j1jjE55DFZD9wzKhbDJHUFQ5nWO6hF4TTiCM-drOVKyIVAQG8KdA6Rwow5p5Gs2UIGM_IUrxb9l8cpMtcLFwi4BLQkEwJDoLpHFPIHRACMhmW5gx_uePJzxOwUXm5Rl9o",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydjGjKf8qA6RWj-KAf9mpxaG7sa2t4J-4M7ow6imCaoS0Ebc9qjGw-JWdtX5W0Bn24-8yGMXdTrVudN55qmwwN7vX-XUGJEVQMBFi6GuVcP-17sdh3eE0KgfI_i5fd2TKDQ-JQhuf09R9tDPK5IPDX_jIONzvmQ8GRJLIZ7lja6HYlWA0lZlqBUKdnn3OOh5wVklS4gnBpEkm_B5fM1c28yWMjeAsV2KPRO4eoaKMzFM94AIeMUGNdYgSmtYbO2SvRkm4p_FCPyfWzhYWYmlj-mvvc4lCa-YMPbBFP3P2ZM5hsc_okKcd5f2clBa7csGVwOMYXpKKEuEvjJmyqst-lGCPRU0mMwQF18NEpMTNVhsF1_Q6OTmuGhEpmhqhsWsGXx9-jfB12gvZYym27PjEQ_MQVPPDcaDMZ-5Fd75yPAdpTWa4eihJkzLeG8URXEC",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydhDYYpr7RSlGTgFa9dFxvnzCIq4zv7cMMmxc0UwNiLF4fyChA22x5VHB_IP2WB2r9Dq2PsoPUmL9rxqEYZDYoYNMDsxzi-4BOp1-OUGq3FMGCKiygVZ7LXF8KomiuT-CA9TcPAnuzFON77a0MoX0bIEx-XK2ot8cYvkyVmSP3nVbcYs6XaUFhFU5zJ-w09EtHHEbcPqaowQlgfIjSvmI84hpVM6cRYXVy5VDEraCv0Za2jUesMIVI9FmpsnZhUpLSoh_s9W8B3MkJUZKUV5zFsAsTp2Cximx3qPjc019LOqEhqUvIojO3x6BUwGt9ImYAIovrF8t7eQC74473SxlbOdTDqT-ceaeDGxeR0U1H0LD6AR65OwcYRvl-Q_g2rYaLM7pJZaPw5OMUNvCxQuSlYuncBmTtItoYG9_sQi8OsRGQ",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydgznWvh-sBC6mBKKUmw2Dv1QQdG3rE1JOeRMqohOyd4-MqGWwofb4q3XQrHlz7_bMXeA6J5m8sBLR8FtwdbN95nTCWomOhEmapOzM51PYFEUihrZc1QrpaVjVC8vw5bGDGqElgBGZJVtZF6LDtK5HEycwOdSzKAO5trcCdoIJNvOgXrdOClmwObQoY7LnRE7c_nmEhOwgBmK24HyzB9JqcJrOk9gOZ6OFngT-T7z7mn4P6ISZJ7l_hlOxIV5CP9BEeFP2GM91FIZJ-w2dmRc826nmOSALaXpDpZNT72xrdu3AoeDH1_aW-nSL-r08-7BtwSSKtGh5mTW8Fjl1PXafDwJAjhX_LQ_hSnHumVuR2Oct7kgZ4joHzoRF0Qkr_iIuGVnVaAVJKZy01IUDLu39bmxgKmQYn4MCT495cvX0HetQrc",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydg11ux9nHkBMZWALUJKdoWKOjOuUgB43-rW7mbaS9IQw7Ve-9VM3kE2GA09rg_O_5g28bdemrVRNSR-HJm888gRSjEmiZqFqJXdD8_wTSJEAepdR7ZfWC4sfY1MlPoUf6AejigEHiF2qG_UDYTegY6Ku8LcRNzfdiSlTvsDdc16cBCt85eTtolt1KqJbGH_l4pWaqqJi2Ur0lEiaxVAqHbA9lecxxUaft2gCjKMEnyF1pBMVim1QmkUMBUDTaXV4ULuC-tpEMbiIiVAYOd4dp4IBrOo_Ky6HXaHIt8reetwTVNrc6rrviB_5Xj2y-CF3WopnT3w9umNQ3sbeAp49ZZNXPFrVQKooSaDxLvKNw6UaB9gxjm9UDvNe-q2oSlFZrlf5vtKjoHEH3Qfuy6_MRxDDIko6wbzlDEOdW8iTPWUxXl4",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydif-F_uT8KgFlroSuMoy2JVywWO9qyOfYWirRYcvBjMVdhHzTelmchcj9Rrg9CqHosQigMiuwksNONQq3CeG0D8yd-X_K_KFCvgwu1o52mBu4qLGA810yCL45P6WUCiEoG2E2VUvoPF5NiuHDqAcuQ0IpTZUcykEwHE_xOGXoHpWK72AN7SdHVFM4owjLpw9rzkkz8-TBWazC7rZpnp1pbcz1IcFnSjUnsUMOJft1ERXCJnr0BK9UHOb1Du0jcuBq1YpEvqNDg8PKjD6NViCRVX4psDHZUoqp5qU0PX3fPA28nxgimMH8qrmPrU4LNrq1KT17-chc5EPSzlVSJbRSoZne2zuPhB1hTjtSp6ZN7bWsbB1_JTmJtkt0Nqoai8K40Q9hgbjmje1oSoYMwnH__EPPXIIFz1MbQ5L0D5nI289-NO",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydjkAG9UzVnsoRoJ8Tm0lyyeHzSZu5ACBOdEHgYN9iLDnjbP9tmttqkCo3GhEE2zwyiHQklZuxuH9dTLH_MNXia7dk5lmhB608VPq3FnRtebScoEE4vjlxuzoD6XirzRBhjUTZkoqqplXZ0co8litRrFQV-SIYeBBGWsPyInb0nAcaz5c-y-c5RJmx_Q0RqYxbQb22rMfTN5fI9SmuJy4gjcd5EQa7WfUkYEvyCbKzIzV0-yZD64mpcis08FqD6T5_nepfeSp_PigKMllZlEh52z8YYTfdhBDOHfQZ2POHniSpzKX4KPOj51nSC0o7HbMsMLKLeumBGT_ivYzuemGQBZdMJX30xd-9jAQP7kxfquM9fnTCH47pay_fLM_VhRopLCKZi_VmZmtYp83JBswRDOuPbovks4neWr_T_4_KSmIA",
+          "places/ChIJBf1LgBxH0i0RgpDcY661wtw/photos/AWCwydgzrSu4l2IDDUZhnzo1rkdGcb1zsUZqJG8v9E6y4Hixf5ZSRZThnHAtBC4YIAseaAAn99MCuNVj2l6PuwYvJFP61rg1ubcu1kbmTR_Eu8fKInXQ16DSM_fxuVqEn--gwWv3nzRr5fkFFh0OJ8IqPoKVDmHpQt--T_h1iRQTlhzkpEjGNJYSEmKw5CWBDcgZlENuYdZGkmtkv6kiaqbb0309QruUeaPccibs5w_FtwOkFH7rs4G6MtRLsv2t0imnpwSKJaXvKHi5g_EyNSc710v2KWuUkL_64Et4db98jBOC6_oaFSDiU0EkGTp9ep6uZVNWfKvNHIdbs-zcUesSAhvrpk-WRb7vCdztVyI53JSf7KS3r1oz54Yb_vF96v4TT-LCxoiUNlHFvOJ_wp6rxgzBB2hEFyT1lk0tRupKj4Rdkw"
+        ],
+        "__at__": 1786804975.2201622,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Seminyak Beach is a happening and vibrant beach with amazing party vibes. The atmosphere is lively, fun, and perfect for enjoying Bali’s beach nightlife. There are also many good food options nearby, which makes the experience even better. Overall, a great place to relax, enjoy, and have a good time",
+            "author": "Pratima Kumari"
+          },
+          {
+            "rating": 5,
+            "text": "It's a beautiful beach with a wonderful view of the sunset. I recommend you to grab a beer or something to drink and watch the sun go down over the horizon. The colours of the dusk were breath-taking the evening we were there.\n\nIt's just a little sad that it's so polluted with lots of plastics and o",
+            "author": "Mariachi out of the Jar"
+          },
+          {
+            "rating": 5,
+            "text": "A beach located less than 1 km from the accommodation and nearby areas. It’s beautiful, great for playing in the waves, and full of activities and restaurants like most popular beaches. What makes it special is being able to watch planes take off and land. Very crowded though.",
+            "author": "SPC"
+          },
+          {
+            "rating": 5,
+            "text": "What a beautiful beach in Bali, especially just before sunset, while enjoying something to eat and drink.\n\nThe atmosphere is so relaxing, with the sound of the waves and the golden hues of the sky creating the perfect setting. It’s a great spot to unwind, reflect, and end the day on a high note afte",
+            "author": "Elmer S"
+          },
+          {
+            "rating": 5,
+            "text": "I genuinely liked spending time at Seminyak Beach.\n\nThe beach was fairly clean when I visited, and both sunrise and sunset hours felt surprisingly peaceful. One thing I appreciated the most was that there weren’t too many sellers constantly approaching people, so the atmosphere stayed calm and relax",
+            "author": "Mpokgaga E."
+          }
+        ]
+      },
+      "prana spa|bali": {
+        "place_id": "ChIJD7io6sVG0i0RSp1iWmgEVEQ",
+        "name": "Prana Spa",
+        "address": "Jl. Kunti I No.118X, Seminyak, Kec. Kuta, Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.5,
+        "review_count": 431,
+        "price_level": null,
+        "website": "https://www.impianaseminyak.com/spa-wellness-massage/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 9:00 AM – 9:00 PM",
+          "Tuesday: 9:00 AM – 9:00 PM",
+          "Wednesday: 9:00 AM – 9:00 PM",
+          "Thursday: 9:00 AM – 9:00 PM",
+          "Friday: 9:00 AM – 9:00 PM",
+          "Saturday: 9:00 AM – 9:00 PM",
+          "Sunday: 9:00 AM – 9:00 PM"
+        ],
+        "lat": -8.6888547,
+        "lng": 115.17045820000001,
+        "photo_refs": [
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydi5vyoRsH8VPylgmES9Qwtz1ih-PnJd-nRzDkQcWH8TEZwyBwsy8nJydjDnRYKQ68S8FJS0znydPLDcGNsycSb1CZcxrARRB2j-R6Pd3c3mA5LtMmYrEGquxQqcyz8C8Br1MfbyLF5IYYoEp3wohyuli2vZCgEf59pXNtZHI3SCyaR0L367kBCDSnL78jK1TjXO__oK4spJ_MOGkWePV61YSmZSUyevC2kENUy5-ONs3cCtee9fWFh6VtbiZvLsWmfo9lSpunOmi8pz5dozXbc9gO6IDSfn3wtdEvgpsD_o3l5OT6i3JX98jMsM38p7Jsw0mW72VXhces22yaeA23z4a-O-xXridd8kmxXYgXhlmxlPUMSITTjBAViF5AjBT07g_UZYOhSaIXug8sNe4umcUq1PQtOa3G8V3Fs4lQYm98_0YJoIEWcYjHeONA",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydhoHPhq6NXmetsZbU2A6CMo3LDzPYRwNOg4QJJcVBsFHmpV4k2RMZsZ0RckE5OegUrBJxCnM4_FKrOPuVBce4EZZKtQip2MyX36TZghUhIjkqQDix73pfpAHHdW807IyMaHPTqit369KW4Vv1k6cujRx1Xxnhw4o-J7PVtE0c2KSJrdIg4RILhxQ2oFSQazd7v4q93uWhIoHdPdXVpYfpUc0qViYvBzpkSEeOwuTEzGytgM-WrGu2PmMkJP83ir9v9PlSSwOT1dsr1yojpR7Y9uduPXyt8O_ZGwb8IIAc6soNovWyhg23eov_8ErLI3iD0M9a4XtWKw-VsFYXWFejdEwcgnalmEijTGoPCvhTWunsMmgxB0cNyNTsI-dCED6V40egZ8OS1TskMLca4ZJP8REy8Tf9SI2sGXCB9uIBKm6Q",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydj-Qr34N0bZwMLm6E3z4MMopYxUjidHHpYfYBiA3_lF_goTAcdBfojyhe9NeXCr8TwQMzSK1xfMzjaQIB9EbFp7cq3Puk1R3OdehsUc0fLQGLLAkgx4-9WyrCwt_BJThfpIismU8ftIyVw5QUob1BAuwYDb38wnZj3WgpSC9p-7PJpoCxJg7mNKaz1bg07oF1bmDBYTtOgQRm8ZT5s9vpfn7spQYp6TBHtgJPce2W5TJe05u_aEheVt5CVZ0u9TwCusEdryIvkB2haKucD_t6qgN4VbLwDVCttE-K0TMQsAvPH8GwHQ06i_0TWmwsaFxN5NQd9U6kRgywiX1kdNK0_FJMcPgXd7x9ygYrsHLsBdXqSl5VrRaVIMjYHRyXaAySONckI_buzrUc_6f7TggJWiCqAXSTFFHNgBtv5HNqwgjSUa",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydjSjRax5YKQQJnWR9XFZw5cgV5Mew0dC0gnsEhHP6M6ageGRyNd0uWRpGORAQcHdFd8pHUCsdjSQiybiiBM1CMZt-y1rt8dZkTlXQzNvVOxYICqq-7RcEZy1jtbaIGkf5jG81JG7lAGFIPLCmkUU7fsfSCOobLM1VpRMRs2fS0-1t-roJ044SDW9IRLGJVbJdlS0x3XYQu3shA8RP5gfwGaZoocpZyAwUlEoX5vCgnDR3F5zPKG7nhEBz7Et8xBQNF9zX3ArPQ2KL0K_xf08PBgdgo5me9HeFyZ9EORKxr1idjeijBEYjF3GsEnc8aC5Fi4PHseLCopjRs_5v2fvv9-Ts98RAAidcYqv8xIcBwgsuBMX0kUg_xqUt14jvyOuztnyO-2MY-D1UCF5HCV8RhXd1KaLJ2yDmUO2pwUZDrUHOP-",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydjB_JlcpVhMd86DP_ZdRm2HJ1E6pJ5Cg90nu7fQamAW4Dwb6un7g0frDRQ7YuZWf7ATt1_lSHyjwl8HiV4NoXCcBslhFlSri6cPceSFJefatA4wmIn0LEuLYqsFihIoc_eim3E7yJGSCduJ8ta7pLpPFXoAoAEKnyABML2D93WYDCZKu9x7hGXR3XDSgd-rakgYYaobZZirp6LB6t1zdft_Ko-vFibCIJ6R62VEuH0EOG5oybKKVK721fRL2DJ6PMqGJApLVxfoAyLkSZTaV6C29CJMou5JCUcbrwSxRqTm9ebv63pXInM3uzVhV_rLgRQVEX_wlzUMkyisS0PfzQoLzsAY_AKY-qveTX3Rt4jb5UsCTYm9sCfP-6FkfdI5YOg_8auwavUU5OcL47rKaUYM4eNELbO8lpgPcnNDFAnOqw",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydgL6v0YRCUbEQJySPfR1x_spSE5-qwOF8do5cFxtLZApxeWHX1Q8wRn-NNsnj816zAdxX06VsPB_FQ3_0HeKXhQVqKE8Hw4dnBWCZAIEHJzE_RVTMTjPwnGbrmmfrqtXkPkMDNU7GQQ1Um_sUG34hZd1EtX5BRI0kaqHHvSPCNSe_8OZ0lbimJfXicyQNSVtZoX7TbQ9bBPfv2tYk3WYT_GQEmxPL0iWecJdeMCCffFe0oMSFp_DawFaRHxKpuQiTv0BXkWBxjAJsLkSCkq6wMKA0niCcnDhF_eG5r7TwQwVrDrbFnR39RaJPz7XOkJiK3PU9glI2yHg8sgnfzcJG09CsmZrWnryG9HQLa-tqmI8hG4Ncg9waqEwebdBAZ5pqh8jwRu7SbEhKn1eoAW_FLzM7I444uK9KCkHCSANVhTU6qgOPkgQoI9jkR56A",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydhig2qc5EAoGMlt4ceafb8S1gCwsEotN0y6A8mWitdjC43WBg45uADkMIHsWAOuNUaOBbZlWR3SZjXEBmukNsZ4RShAXQ75dmQnMV0RUMAxY7jHK5iup_tg2tAGF_tsCOXA0P1m_Wq1eDcNLbE3_a6u9P0HPa-sC8ad196_qlNQxlgkVBd6QUCkYAP0m-38oM9DtlxKt_ORTMmDvznQXZgVB5C458mhUq5NPHJRlLwkxxyS4NodVt3vWIKf-z8xeGeks0TbtANy5WiErSKTT9VAgigcWiwJ-kcjGEr1ew8L-kdMREPz5Q5Ep5kr3muT4SVG9Bps44ALC2LCTq7uJONZkMUsp4AAAuEJ78GDcJT9nPytp6xRBW_eS-7Y0AItndn5zi5D-3ljNO6xeYsVMY5u1fe8xKmuulRCF1efrPw",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydh2sI96x13p-Xx3S0flHA1wlj_7ZVdq-wHzoqAO5LoMUWRNksjCquDx05qLxiXdlqJ48FjKJEfjCU-yi8udHsU8lq9mnC0r6IByvrbbcSaRVOJVjRyo8VCcnQWZck8mipbzJwImCjnsIilD6-Ad5stbcVUVN1XgPEuGQR37lPtdbiRfUdE1SRnjJUj8WZSFdogbg6YuYeGnj4w_ao8roAJtqNTikHJbOuLZUZWC8DpJH5fymidYIqBt4trwucZDtimrCRJASMxUlWRQjOtlNs55Cl9o36Tfs5fqky2-E2aHc0qRMZ_OUo--P4PN4k4vd_CUKgnreaCJ5WiUwtOnzbcWMvT1fW8eKp5Y_oFViiWoilaqIcJBoN9zTM2H6C5QBsACPKIwbgLDd6rDbRwAZgOmLLUfK9SC0gX_yTK_wvGPWCHl",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydicVQ4AETaUthAV0i4rVt6ewzA0Z-ZqKGZXieSY8TaBF41eJLbbX1jfw0lsGIBrQgXKIJuaYZQtqIN7yTGzhX_-GcnJWuwNqNRvTlHJTlLH7BCXm-ML_WPwLDEVQSJCrkCNQCbeIR4JiBPxQ84Me13htaZzaE-zZ4_fcInlaRR_tiCTRoz9WOf2H_8mgsKBl9K82d00Utctw1I-Zh2u3VAcLdO9BCm6QHOb4YUq8eji2XiukJND74ooT6qw9gB26uF7kH8ITxZGuWrBX50Ns8BVAgEvf1ykDYvKPW9Zq0ELMJHuGgqO2Ty2hMO7eeYdrbXanl0m1BknUtGIBl8UVE6M_2-euifBduvWkriPmIevJr-v4P8yzUwnGOifsO7Y2hAIlcWCZqhKqIDf8WPn0yTCazm03W1eR1wY39tmStnTmX8KHXYsAmwHKdzZYA",
+          "places/ChIJD7io6sVG0i0RSp1iWmgEVEQ/photos/AWCwydg7BU5XLknIDiRY6YridCL5cW0HLSWmMUc9tFF0QZCk2kZYTO5q-INluJ1dsDhtOonRnrQ1Q_AeKvOH4fjDHLUKcUjwkIs2e4kw_Np2GVL8k3enxMISERv0Nfk9aR2OuIKsLRF87bsmrjhc6kg-zk3OZQ_Gic7prgr5HWcLWbJOS0vdUXAiAISXmU_ga0UcbYFwRTClJbih7TtlJxI9iiEWLTWZj4yblyH5Yzo47Jp7nWsREfZKXgg6wzcsclS6BPdo2_O9ID6uspVQWNoBNJccdAf238CZwvfgbWh2cfAuq1bFrfaVK4r0M4eBxPZeq-XIcB0ndfwvyREI4neUg-Yl4buO250wWhrFSbop7CorKDut2rWPPOnuRQ5qbq8SwyCybGw4OzF5ifX-Y4BJ-fZfUnkOK4dJj8oRu_3L6jwh6qiY"
+        ],
+        "__at__": 1786804976.481364,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "⭐️⭐️⭐️⭐️⭐️ An Absolutely Beautiful & Relaxing Experience\nHad such a beautiful experience at Prana Spa. From the moment you walk in, the atmosphere is absolutely stunning , so lovely, peaceful, and incredibly ambient. The whole spa has such an amazing, relaxing vibe that instantly makes you feel calm",
+            "author": "Mystery Reviewer"
+          },
+          {
+            "rating": 5,
+            "text": "Look, I wanted extravagance, and I got it.\n\nA far cry from the usual massage/spa centres that focus their exterior on simplicity and modernity with hues of white and beige, Prana Spa goes the opposite direction for the better. An opulent, extraordinary feast for the eyes, I was transported to a Moro",
+            "author": "ChoonSeng Lau"
+          },
+          {
+            "rating": 5,
+            "text": "I have never experienced such an extravaganza in all my life. It was amazing. I think every woman that comes to Bali needs to come.   To Prana Spa   To be spoilt like a princess, no matter what your age 💞 my hostess and therapist for the day for 4 1/2 hours was. Sudiani an absolute angel and the mos",
+            "author": "Debra Thomas"
+          },
+          {
+            "rating": 5,
+            "text": "So so so happy after our amazing day for my partners birthday. Highly recommend if you’re wanting a relaxing day. The staff care so much about you and want you also to have the best experience. Thank you to all the amazing ladies. I would personally thank our therapists but I have forgotten their na",
+            "author": "Nayster Taylah"
+          },
+          {
+            "rating": 5,
+            "text": "My third time to Prana over the space of 10 years. It’s an amazing spa with an amazing aesthetic. Whilst many spas go for a modern/minimalistic aesthetic Prana Spa is like stepping into an Arabian fantasy. The decor and presentation is beautiful. Always my preference for a high end spa in Bali.",
+            "author": "Kurt Bellve"
+          }
+        ]
+      },
+      "potato head beach club|bali": {
+        "place_id": "ChIJ_XZL_xFH0i0RTo0EWBqsnRs",
+        "name": "Potato Head Beach Club",
+        "address": "Jl. Petitenget No.51B, Seminyak, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.6,
+        "review_count": 24283,
+        "price_level": null,
+        "website": "https://seminyak.potatohead.co/feast/beach-club?utm_source=google&utm_medium=gmb&utm_campaign=potato-head-beach-club&utm_term=restaurant&utm_content=landing-page",
+        "editorial_summary": "Happening beachfront venue offering an infinity pool, plus international fare, beer & cocktails.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 12:00 AM",
+          "Tuesday: 10:00 AM – 12:00 AM",
+          "Wednesday: 10:00 AM – 12:00 AM",
+          "Thursday: 10:00 AM – 12:00 AM",
+          "Friday: 10:00 AM – 2:00 AM",
+          "Saturday: 10:00 AM – 2:00 AM",
+          "Sunday: 10:00 AM – 12:00 AM"
+        ],
+        "lat": -8.6794353,
+        "lng": 115.1499342,
+        "photo_refs": [
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydj5ixc0SvSRL4BXbqh7CD948cPn-TBAWiMkVEttXajVLWQbG4OBV_3gcwtSIr5eultWGGT5VKPs69nz9CZOFfK98YmDUAXBWGC-Tnj0pEWS9kGzYek4bfcVqi9wm3OiBYaVqLJthLyml2hkDHhtqg129K2L534nWxzDNAze3ZyGEmfv6M2aXXhDS3n3fbtVgwvvG8H2Rzv4Ka8-pxL5i7fIHEAgs3Psl5QgcXqy5laQvynVhn5MwnrRAhnQKI5NzRpAhsOWKCfqBnOzG04zm7J62hb_aUyVrSmt8cx06MUs9M3NGRzfkDJ2JyVi9Cgth2NLWen696SXuDh-1CcY3P3MLSUroG7WSbhDhjox04_nKp7dU5qbOH_HgwQyQaVmgact-6DE1FWR52TigmqIZudgxLr4hgTUM_yJ_o0N31e5-g",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydiX9YiUefUbqR5dasu8kZvvMunc7tt7WFNOzfmzUnNIIUIH4ri_sljJXJmaugggUEluMErP4CLp8XX7--0gnO5MQ8e7XTbsKHuphzuxYDD6OuGw5_MD14fX7GPpr86ZXVwWXFKnElL0tjNyN06gZwSADy1sUjMgOlcigIjXVlPXac5HZ_fhYrcSlHLYaHU719Bg3V0MDc0zO7h5i3pB5zbRp2_7xSpnM-nxz2zN06JfS0buzWEkEekJmQEx33mLW8VnlewGMZjp9ZbcWKmsbpWKVrQOWlbf-v_nlvi6c7M-XmIwjbWqy56b2yeJq95-vJ0owkaVjJSWL_EuzHl0vSISsNRtUHBZ8mg7hv1pBSgLHGvciy2ppg___XIrWao3K4cxkJopOI8_TP4OWE3CkGDyVRZDxYS9wTluyxEIQNPIbw",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydgNkZ6c9B2D8QFRpby9bqiLXVOWEKyuYw1M1hc8ZwC_6r210VaaQlCH6zdQ_kac-e5_JJdECOgo3FnFrSlFWQR7IQnc7jUnL41TyvQ1JVbH8ba0tWLgzezbiL-9yLiVegaNafSoHVG7pdAYhwtQDxRZ_8CGj7U5B5TlxamYLLsuert2ZRXN8WrjvsB-iWkQjlhttBxKLNsASnRrj3pifB_PbSu5cSnGqcVOAPiesR3PS5tDwml2b3gA9D4DXXkhF519iaqqJ557mH4Q-Q4W0Eo_zbh2N400nUamxCfhLKXyeNxHpwrmmq78eu2yeb2ytfx1nuXx1DdbGxQrtSOMOO0l5-OhICe4pjaMxuZv21N8VasGhb0lcwn-K3gemN7tuXe_RVgl9ofv2snI0eoOhg1FDmRk60bS4TyMyy_2QTJXmMjxlNE4dHNASz0IdXsV",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydgeesAtNaxjX7yY2-mAhete2ODAyfvBMidP_ncIPDOYwvs5ehElPp9XJI7gDqklY1R7KnKMyviOOpvZGRqLWF0a8CQSS9AbBRZyq7794lq8paA-QqnOsLlotwJKNx4RbHDRheM0xzD8rcbU3WagBfYdmJ5wnAAav4f-29E1DvTKfd1AJiCufq2RccQZyZJTUUsChn62lKBUcDQii9Yq1DhPDaQT-JJATR2W82ChvwoXqIHayP4cI4ii0m1IVsSvGDiS03isdQs71w-sADzFFBYaWYB3OKXdo_Vzlgv0P7mm-ZBfNfQ1dMokgVY18Lu7X-TieoI-82-5s6I-lm78G0mywXMVlrSZqOFp4XLl1X8_bidznaEPjtoRw40aBjUspXHFX8yo1x_hEouaVa_sMUVKzyOqaNi5N2Xxir9FzxzPbA",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwyditPb24P5fmbEHkTYf5gwBU_slydsvmeGeWCZi1jSXmcxqrd5PND-hVoYRwLk9zCcF59jMsrqWPn6f_uwrvvhv1ULXX3YMTrcJv5L-DwbqH8w0T12I_W_5PXb7J4mwUJWwiY-b9gy-DInWA9jVGMGteiEcWYS2wjpsqugexm_De0KkwjnPipMp6_b33NVdpDArj_RbHvzcoTlohbdVEjs4Rw1lEIFa2NZ6M235HDYJL43yud5vWZabT_AhuhaJX79iFlE6H9Hr9DruPDwIoiCIIYz_GWj5KGBxomzRCO8R8jUOGKt9XZcmnuVnCQJbDyhGSNF6ZI1ti1Hrxxo95aF9fDRX8V8udXsmrgi9lrn1PMUnE66S1mHJtBInWWlACFK6V1sG4GqU9cwvg6m0GZ8VdsOgIHM2wMtvrY3N9gwLGwIY",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydgUrvBGb5FFkQuGvrmQQmkKP0sMKRxBRLEdkw7XUAQjz48HY8sjdlHwVMO1VJIhtBnNAzPtFGt4noxGlFJYtL10iDizIEwQfdZIEnlcPiGJpFC9hrXDxqRbLzFVx6xxLWwuJwQEq4HeZgrEHRrkClz2Tzbp8BPduZODOaPWJ_0ITs6DeJYNgyApnbbLAGaHuUTPPe4kO2QVOVhR1VQLHfFzXjvnC4FZPOxZOmukcYQJRflxatti61yTCQy6RScHQ7BTGahzvcb_6zbbS_hN3c5vN9w6XRZK9GkMyhym8zEhzF26wexg7NDMWH4mSR6yB3Ei6oyeFIrB9Cw34ou6l95gUdsaq00lIU_sowo1XFWJixdOw3U4wRKo_MTYy-eiB2iaZ4TtEvTM_AJFkNZZu1QyV-YByaWfz_UyEuoHx_e0XQ",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydg2ZHrv7oPEdOfBRedWj1zyRSjKutR1y9QF1DBjpCNdr2R40sdzZFjTGR88VYuDI17jFw2tsDruCIY869sDnLf2ZN8imZt5_EU6z4vpIKJ_KcKZe--IyiVwnNGsFAxR0BdubDi27lvmARE8zyFepwkE1LNTgxS0ECd4W71on418M5lTfNH2pA81L0D8fCjRtbzDIQEXTEUgP1s-cM1Z3mJZ5rfM8YT8NMjILOJQXQVuEOINH_GzSeqxzvp882WCad5RPlanMK9exeoXAdHo1os7PMphfHhRIKNpfkDelhwqzI7HIMEbQmSt2nPmTltvAMVMOlxukiFCZ5PBfk88cFziV14ZZi_1S-9zG2wNP7hY_7ckWXN9kafEKi4IYZscvM48n6h78W06qj1UjwmS7pb4ILrgca4IowwgYF5FEc5eDdDB",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydgRDq66jlzak8qNfrtEChNkfWDSNfHmIqELsVQe8agkyCpLxp-PgIk-s08zUZ1EbhItdVMuvHt97gQgtnxEt6HIE2mlH2ZF91ZFRLgyXlqbtqyCbWMyA_2czX54S-JmBssN2kmzqcM4lWFqR41HVlcnb6z9bCoxLfG1Jij2h4LHHOhskIBpLL1a46w4zO-wrGdkLpEdKK5XKsrmn2Sz4_z2DdBmKlFxSh8B1MtpO70HQjGjyspLL0cIxYJApK2d3wK456ky5XHC1wczlqzQnHJkYebQ9k6SPAL-BE68bIqwOBaLlveaidtVQGT-Jo6NqvKyvCs1qEKVwBKvC3zpTcTctvvohzm3lz4VpJ-Rst_Zdw-Ic_6JmAvMbP--wxUezIvHX-dcU6f_LfzAe0AkWMOn24B_Yc_uPNv1lXljg3ESFg",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydiBmFXgsZxKsMJmkz4KnhbrFChZrm8kOxCFVxipIZaq9RHGKa4YsMDjh8XBczQLiFkYOzlSm00aD9HRr_xZx0VNs1kwwtFuZ7wGwNVV1Ddk_eseqHSsyCm0qJI9WS0ibouWA0T6ByoiE-E3RUyuoTQLxWqVuf6wjotnj8dCwAg8eo2-XOowc7GjTzw15D225zvE8w6OGk387x4T9GHA9l0eHYKLsZUoQ1wFHZr0Tk2qqc_v8L48t14rlrxyR1lIl2DpUPh52DHF7KzE8JZjnTB6qhuC2lC9Q1yL1PbTgRhZR8-ylza_d3np5wPk5vPts2Tm7gVZFxDZf7iQVimf4PWd4UfszDclW9r-Uz36GALuqKQa2QYWi2uvodLjFiYvDwIjLbsVuGJHwfy3MvcIYjH6Y-M9esuV2NTP4LDaXv2CWsDoDRTpTDNDyUC4Kw",
+          "places/ChIJ_XZL_xFH0i0RTo0EWBqsnRs/photos/AWCwydiTLGc751Ms3a69PKOMPOPRf1afaC0Lv-DWjSFCfv3tZrJZY9LF39F3cTJ8VPJ9EfFKFubv0-wdBE8gWupPx9pvFE2v4IvSPcuz7__kZ7-hZfIvC7cma-Xrjtvw4WW0vg_KhUJ8O5Zs60oJLlQClQo2YyjEvZUob0QQShsb41wmfYOAK4BA7G0QG3B08nGUY0i87hwMx2pEudc8TnkxUIqG17HE7RKGT6Q7m56NczhCW3IXXDLSbcLfkUVYngPgwcT2mfZgezTFf3v_rKdPGFDonmWNAUGrae5AugcjxhJO4d9Lm3_52ckI72dqzzPUPrIJOC76Sxr084Zl3GuXof8x6WH96Pk6A0PzQvOTAVhGt4lXypDgsXsKCHy0Ts8gG7WpNlgmeobLrpt9T9NXgCLlJO-TO3cSlifd7jmUUphyj52pdHgStHFzNhG7WA"
+        ],
+        "__at__": 1786804977.012824,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Potato Head Beach Club is one of the most stylish and unique venues in Bali. The architecture is impressive, the beachfront location is beautiful, and the atmosphere strikes a perfect balance between relaxed luxury and authentic island vibes. The music is carefully curated, creating a sophisticated ",
+            "author": "Riccardo Martinotti"
+          },
+          {
+            "rating": 4,
+            "text": "Great location with a perfect view to the beach and sunset. Great ambiance with the DJ playing great tunes and the atmosphere really chill! Our waitress was so sweet and really catered to our needs! We were celebrating our 1st anniversary and she even brought over a lovely dessert which was such a n",
+            "author": "Chosani Alexander"
+          },
+          {
+            "rating": 5,
+            "text": "This was my second time coming to Potato Head Beach Club to enjoy the sunset and it never disappoints. The place is very family friendly and has such a chill atmosphere.\n\nDuring peak hours around sunset time, there’s a minimum spend of 150k/person, but honestly it’s worth it. The food and drinks wer",
+            "author": "Nisa"
+          },
+          {
+            "rating": 5,
+            "text": "Potato Beach Head has such a cool vibe - we've been back multiple times over multiple years and it's always been brilliant. Architecturally it's quite stunning, and the food/drink/lounge aspects are amazing. Definitely drop in for a sunset if you're in the area! Sometimes they'll have a cover during",
+            "author": "Michael Luisi"
+          },
+          {
+            "rating": 5,
+            "text": "PotatyHead Beach Club is a must.\nIt is a different vibe but great pool, great pool bar.\nExcellent food. We had the Grilled Meat Platter which was exceptional.\nStaff were so awesome.\nGreat for sunset photos.\nTop Tip:\n- Get there before 4pm entry fees start\n- Make sure you get a great spot when you - ",
+            "author": "A D"
+          }
+        ]
+      },
+      "nusa dua beach|bali": {
+        "place_id": "ChIJ36guPCFD0i0Rjy6h57qPm_4",
+        "name": "Nusa Dua Beach",
+        "address": "Nusa Dua Beach, Bali, Indonesia",
+        "rating": 4.5,
+        "review_count": 1577,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Peaceful white-sand beach fringed by a number of high-end hotels, restaurants & resorts.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": -8.795761599999999,
+        "lng": 115.23282130000001,
+        "photo_refs": [
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydjM5PAFiBKDu6UpaAQMhzt2DQmBb7zqEVBMS0rkGAJvlCYafxuqVzsHNAVS4T2lSCdT4B5vBo3eoctukfBpSZN4n-JxxqDEBJwqoGmN1c2V6a9DEGD-WIgNl35yi492ON1NQBJp0WX4unbcRQ7Iv8xkW-76bN6bBlw7DCdnUIBaRqmId7ne4itpGmFqM5RPWkyDiZc64ipfCNsUZsUQWbQDsDVL_lYKZJBUJMtG0xCadXgFFddPEsxIzc5TvYqhRG12tzL07Rs10xqGXNMycfvyqxEzw_WCmIoXEZ02jQUHFZbzuw9YmUSRBA7XFVeXfkMA1ZmL03h7qer3ceVd1vuiVyau2YKxLGKp9dfBxwvqtCPYx1UhfA-lvPB6UH4xCeOEP4J3l5vK4QJxlQvjPBPxS5yKAo_OS1ru9WgE0wJfKuHZvJa6h9wvBmsVw6xo",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydg2fwWjdJRW2HP_9_Gq-aJYNlNhUihGME4m6qC-JKf19wJIxa28-EFwUNOylr-FdoJta3UbB5p-HXLKv1eFItxJ3LXYRGKUWihRlgo0FTS7sRf5dsjHh8tdcrMD8KzpRsxDdOolc8nxPqFgrL6r1YMAbU0MZcs4DTISggMniZ_tRx7mBLpnMcU6xmhVrUYGAYj6uPYN7UrgwirsBI0y4VqvQD7ouA-i2eXjCb_cTaYpiTnbVnOITpH15jYnUGfZ-83_BZ6_wthvkOPbaBXdoSJQ2JLEetnUF174tnB0CVPHg8l4raA_UcMahfWpGiYVE6a31f57LzDXMMxzh15Bt8TmFgZy17EBjh8p1po315s51IBGFrlDFBmcO3sXAMXkSVqJ-YfhUGenE4BC0meSUwOzEFiQU0tk8KGJ7rsXd5V4qVY",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydgWST-nys6wQrV1cQvJ20efTv0aUbRQ33ECJRDTJ44C1_M8WX62_-yfSnQ1GJmt2lUK4j-z5vitYLEwvf1ppoV0Tb-q48AJBfv289j-BeGCbp9woEd9szJzk86TxFVtjdvW6gJrlH2F8wKSrEJmvOno9Shsj1o1CVhHEf9818KrswkjwtxoTiC12KRP73V-jvxFXGCr0Ugk4i5rWtBzRfUGfK15aNG_t64FJd35AtxeyblvR_hR_IHtXXkPk5rxD-NfxiNIUxZNUSGKvZivvnLuUir5XuU1AKCSzo4PLh57Mxb1MLL2_9vgdPg92JebyH3dzNzI5l5ExqaRmITAbew9rJKVkiNsfZwym9rzJV9cx78lOHsOa17iw1SF1-B7vcjuM4ZTgnf-s4fSqdk_yVbRDGgmQq5-UbeDMdLfwELdhCrh",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydgq473Dv_lzGcbpPVd2MtQH7BebmaU6d1vV52ytReSr2wGEYYm06AL_viQQsEwYexS3nwtJZ1rVhTPObAHT_zTO8tvHYWcL5hdgH35ub1aAH7aiE2rcPtjHsDy7dCCUDxzU6jWMikYdo65-0suEFwgaOpT6e93CVsCJ8vNkcoR7b4AP0gm04mIRJmXqXGQ2qaJIdeuaxhuW7txOOYeBssPWAF8e4CAKZqaqaVEyLj7XJjBztM6lCBBl3NLZX7q1Yv7Sqi5CA83WHD6mHHKAuUNaVNHfm66j-VQmL16WkegSaRCWGjJBbqtDJHOaNPj4j6qjDvFvQn-vVBLyToTi9-6GhDajQk3jfAp9m5E_KYJsUYJ2O6OvtcL9nq9yUgS6iz10DKNh6MuktHFCVgq80nnxcLEDfOoOyarwwPQ78QOEz1BM",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydiVxLeRUurDu6I2odaK0k8ezT-Iwfm-5YZEwQ7SJFRXhyRVbEqCeECkwizmh8-gHKnqKMPoOP2XVepRkIKqtM5BD366Y0t05IPgZPU6K9QxgNoUWMf0nUil9Ai1gSX8nMA7ghB7CN-R4Wc2PR1D9ZLN5hAo4uoOYk3aQgHJX4Uah6semxAJHZZ0VbblBi1Bdy4F1jCfgc29Afk-cwtgUVVC6eK5tdwjJduUOvC0V9sD3rdy0GKKNtzphQpTFjNCi7LpU7XeYNLmcV4vFYjRuGo22Ana4WO-knymSydaXc84_LwO2l0wU2IE20E_F1ibBTojpHFug2DBBdP0_UMr8AQ-p_Nnsq3ALDQ8EL8fXBjagUdq7xzUK4l0gtnUBWKtRNHojkGQ708xxA1V4lj3xoy-pnHMAUihqOmyruNveFtmAuQO",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydiSZXiV2SVYNE5Dg3y37JdG5LA-N03lmRWw1gkEdOqVWj-5l92mJag0AdLKI5w7XEZ7Y6mSsAoOIXf1AwvKexkvZjv3RkLq3cYFYmU-cTe6O9r6dDwbaDPFH5R72OJWT-qf1_Od-yPJiX1xvWDn4sA_Ugek7fv-c5BVDeOex5HI4Pa4LNyEbA3_kImv3M3igyIGhXRzGDkSGzXT4TKBddLNUQWiLg9ANK3nXqd29XLrYFOQR9ifdriXJ-Z2dKuYuqT37lhAPt8vnHS2ZsxoVN0TZZf6gatUAT1de4nwxXgGjGJmEFURh4GIP4e1nvRkj07JGQn4h4ovUgZAWgpi-ytsulObys5-Hff6UiRr4RdyAWBJWsJLFjTr9oIvJUnLrsKadztu8Fz4a_5e2zTXdZ9wqnHU8CmKWBJ1sNn9Eo_v30ODYt42T70aYeAmANP9",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydg264NSrN6cXtQ0-UIMdJJYBKCY57LMz7GCsdF2Ss-zPNALWyVnUJavLppE6TRUSY5bFtb2mksJ4pKXA-ZjHYq3qx2IoHuAJD0czC0zWzvpqAikANmfSYe57KgP8-fNwXU8SAfqL0XOm2dr7SNHHBpn9ouJ9tgp3G-0uAk0VGCS3HCWkNioHU4zDbAKW4DcD3anG6u-4fRxo1nOiSSxbu6PpoUfp8M4_TPFFTJ3xIZTEltzg8C7oi-sdj5YVwoWoFyF8kbtUE7KIyuycs7lqjkJULLwlMof6yEPm6wflL4DRxVzmhZLolUF3x3upS2N5PozQOoQMybl2X5aZNC7tBismND7dErEdHjQAwJ2uJakie90XKeTJWp3GFh7ubN5MlrNvl5oR4oSxbgPRprShhHVGJ5Pv6F6HhuXTjinP8KQvzYZzv1BJ2bEkVuSfVQg",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydiw5btmj2U_skgkClqAEa3XhcKmlKeSM3xwWsTinNVu79_qE5hn-80Im94eKAy-wa-8pk2QiimNGr_fz_1jQKP7ii0sJm8mbRwmn_DxMqIoO6RfQAc00ei4PVd03_i4sftm5-Ekr8uhjTNWscvnatCXStOhhk_UEZ383LaBvGCgK9Sl1TiARGs6KN_YYGSnzDMcbvMhRGgxS-oxhCi__OxiujGpTP_KqorpQLSA9pGjR6YPwPswHo0JgY47gaLOwS4FW35boqiBYMeCK8QIZpiLi5bUSANeaf4Bvgo8zulVDPU8ZcpK6KhVkex0eE7HfjcQVORQZ9BTc6HosNnpL48pWlhBujw0AqxW5SpKBhtzLuOq-ON0UP9Vkxf8vqtO2W48A3M1_MFfBcNwP0MCXwsBn7Vdvn5nBahNb6MJ6iWZwg",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydhVeCUYjXYf1SYyphlUZOGyIRp_FofkA_2eZpUiLXfxPSCMNZIPhobKKIAGI1Pcps-pZiAoJCox38xwLekWwp2iL9yGYXkmMADoQH43x_9ohllmas4XlzNstDzD3KMlWT1xLe1QPosaipJu5bnQDoIJG3MnAaNkUjUeuh1LfMGAzINm20ulWlE-zHRH_DOeLSygNfkN59pt7vrVIc14CvnlmtWj5rZjUb_A3q_uHldxT3Sto-eqpXNXPEh7Amq47iUW88j0NNRWW781YijpOjNLBSfwuRv8wab3dzEFKAYzqFqdmQzp7cBQexeBErahPoKwQrtjBW9nTCGOJJhmvNgpRmg19Er-zA2NMzWpF7bD2UNPuDeJaDF5ZawOzkZGSX6HGFHpOl1E-HFg10HLBDgsRY8EULa3wa65V_oFoEb8mQ",
+          "places/ChIJ36guPCFD0i0Rjy6h57qPm_4/photos/AWCwydgrCo6_luNLh5HUfWLuWSfQC8-yMLnBO9XT6XzrhbBEmXxMuVzmRZ5HWE1V2dDhVYVkRbC_5ersuXCizG9Zg7hAL8-IlOMbDyTEwUV7j-adSV8csTTyuogxRKxHZTCNECdd43i05LsMvi9xlF-F9EjGkBMjFGYPHwciYNMts2EstnzEtGLFfZ82SLv-1SM3QtEjQznAZ7M90GUZOudfH7UhB7AlD7373TOp8PeO9tfNB1AY5Jvk8Z0n7xigIDtph788qT1gcMFBmIRwmG2ZwpSUEhQxukXjBZ_L2lbTZpi9R-z4nfZa7hq-aqELp1VtCAe5BZgOV1dFAsyGTeEq-f32c7aWf4Wa8l7Vz8KAK3xd4iRwYQQksLVXLczjCgBKMBxGrxWGCHoueXLmbDgFsq8R3IvBvkerCPLpbMTl3jlDltpRf4YP8W3V9azqWw"
+        ],
+        "__at__": 1786804977.571519,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Nusa Dua Beach is one of the cleanest and most peaceful beaches in Bali. The water is very calm and clear, perfect for kayaking, swimming, and relaxing with family. The beach is well maintained and not overly crowded, which makes the experience even better. A great place to enjoy beautiful ocean vie",
+            "author": "Rahul Modi"
+          },
+          {
+            "rating": 5,
+            "text": "The sand here is incredible—round in shape and full of tiny details. Holding a handful of it feels like holding millions of years in your hands.\n\nThe waves are amazing too. Usually, waves roll straight onto the shore, but here they behave differently—some come directly in, some approach at an angle,",
+            "author": "Nguyen Huong"
+          },
+          {
+            "rating": 5,
+            "text": "Nusa Dua Beach – Where gardens meet the sea\nCalm beach, shaded paths, and a relaxed rhythm.\nUpscale but open, with great tide‑pooling at low tide.\nA gentle corner of Bali – simply the Bali we chose when we were looking for a holiday, not a scene.\nNusa Dua delivered exactly what we hoped for: control",
+            "author": "Walter Schindl (SCHINDL Local Services)"
+          },
+          {
+            "rating": 5,
+            "text": "one of the beautiful beach I have visited in my life.Probably as beautiful as Bondi beach in Sydney.  We checked out at 12 from the hotel and our other cousins flight was at 4 pm and our flight to Melbourne was at 11 pm.  So we decided to relax in this beautiful beach",
+            "author": "Damodaran A N"
+          },
+          {
+            "rating": 3,
+            "text": "The hotel beaches are usually lovely but venture slightly beyond and you soon come across disgarded trash and garbage. Some looks washed up but it's dumped behind walls and trees so very deliberate. The sea is much calmer on this side of the island and there are some fun watersports in the area incl",
+            "author": "BayPirate"
+          }
+        ]
+      },
+      "bumbu bali|bali": {
+        "place_id": "ChIJdZa5pqdD0i0R6S9PqkjLIFY",
+        "name": "Bumbu Bali Restaurant & Cooking School",
+        "address": "Jl. Pratama, Tanjung, Benoa, Kec. Kuta Sel., Kabupaten Badung, Bali 80363, Indonesia",
+        "rating": 4.5,
+        "review_count": 1372,
+        "price_level": null,
+        "website": "http://www.artcafebumbubali.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM",
+          "Tuesday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM",
+          "Wednesday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM",
+          "Thursday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM",
+          "Friday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM",
+          "Saturday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM",
+          "Sunday: 11:00 AM – 3:00 PM, 6:00 – 9:30 PM"
+        ],
+        "lat": -8.7694645,
+        "lng": 115.22178649999998,
+        "photo_refs": [
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydj2fdd0MJVTEkkx48Oj56Y0e7cE_hxmuMNFYJ0Qe2h8VxyomgIy-3WyYQTD0eSjCFp31ApDUPxtTK0LxN8G0A6nmICMb9P6Uen84Go2rhboA3OtGNGtjlGyHeHjruCR4IRbo4A6-obCPlppoYdv-qqgNXWo7N3rgSkuX1-B8ZreeU1O2-xiTFh2DobiMRW51tJM7UU44lExeJlF1wGPs0M6ReqyI2fx-gL58toqnNTdMCEm4d4Zn-a15IIGnDkHHtU5Ck_4wGLiMdV5Af-MJixjUaPkfR_mprqp7CggjyJLZ9b5Qb_97xgtLsQy21ICixNpfCnALTs8OYiKNljgeTcGAwtfUNag98gYCWD1m2Q5XXUfP7FttZQSAn1v9c8ytWqdWvsD4JswI6KclMhnnwmxyZ1ZCioR4FY8vouAUsRrb3Gy",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydj78qeKL33kQ706HjVzXV38XCTumtOBJ6NrUPIfj2X-YueA5pp59Duv1r8PM4bcGJifh5nJtzNSOdi6AVNLG39JJ3jr8X6ARrAjTlt0Mt90VBRblOJ4F4KNg4S3DhhckYvcO9t7x4dSDZz5NBJCwlerxksdynJ-coklHgAMFxJNewhQK7RJgGTF0PayIBtYi1POA2dkEH85V0-FLuwoWZH8qWuX_CVBwgzrAZc7KbRUOrOcu7en8tSkLo08QLv-Ev4qjSiZ-44RU4nrw_JhBJRhiNQgPmsBCI0F7dviaxX4HWL1NNOZC4DSlomQPOp7NroZ6ZTNWeVdVEK6r967NjlShxdse8m7aixiKeZLYHJK1RBqVqkdptU9EGuFp4vbbwjVMkO-v-HrrERAEdvfURbLunFPWVD-gdyrvVOgsmfOxZ__kfkMnlO_cclJlO8k",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydiDNe2Tx5HDoGpgY9_p53G8qHpz0py4W2nGyxjunzJgXlVAE6yha_1zvaZgEQuCTpsVZMwc1admuva9L1chO1s9KBGxJ-URANyLdjgr92cb-i-8IMGu26cZ6tRMwQEThwkk524lcfcLBTQmRZrPkxoKG7HefXl8ICHkjYlR4mFodJ85pwc36ncp4MKwtrNoDt4e2GsxfG8GreF1wRRK2Hty5v5UloS2Epd0N2IWGAk4SqaAzTiYNirWoHQsTtP-ro7nhXHs5S64oDixNffco2OHJ57xyQt-Kcr_B5rfv2mUsJtr2gXxLfvG-o3ciuTt8Kqgv_GljlCjOz7PN2Ikrws7_6cf7VOrEV0mVzmAOkvbqcVgzbG9KsY5SHobnenZgu3JGp5C6EMzBDrp-vgxXTNoo27YuhH371GrRuU5uHk_Cg",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydiOE05tQxLFShwzbaBRythQkafEs5xU_5wsk4tfDcUSdMNZkrQNvKyUSMJ_ObmBTnePHsY8pnxcNeoABO4bYthVOPxHubqConcL_KIEdYcejVg5QUalIxptxeaYSGLvvZAo6YT4pWPKXsfsR19nVI_mZFuPHQUHFVjaLfuXZMIfzSd-j1oMo3Bh-H-PA11GvKqhsqeumdF0mb9zS7FebUtVxVFKA_JLQmnH-uwho8r_bODqMjIh1RTAQo3XXtHPuInmQX2BoJt2XaMC6YNCPdwiRTIl9S8irvrPQLQQ4KW8WrE8T_tRsCbr-TnUiwjKa1LpIzzw-Aq5idR5kOl-lg-un_BwBLn9fXhxBb3odNRKA2yMm4fZiZTZ2Fnir4hSheIZYSfomA5PvmF4ZYsbx5WHw3M-szAvIYHlj6RIaPa9TD_e6gyuI5ZaaPqd88fw",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydhEwq1l_0wPrP1yAtSUOifRWpBKIaOPY8VRsGNLWLt4xtVkHIP3fpkp96gn2UCl6cEX-ybPtRpxGlNY1azA-WKf_aM5vhB-8Qk08wc41HqqYRcR3ObXoVuU9kiP_czReIfjsa4_s2Hi1uTar6OnyON6mM6r3bgx693qNVZLVSNKqNsXaEhnioOlAi-dCZd0MHcZ4sFgU7E6U_0MKc0OlNr2NrGOGeLPVT8YbRbkQNwX4U_6aondokbvZSfQFrThjENVFjrA_ccvM3hOv152hoZzLIg5DNU6m3XFz4E0Ft1qKR-VIUH4Wp89AgaeZXF7zcOvWhfIW4t-XOXzU9g5feU-nqTewWAvd5W27pb7W9ABppMam_iEUhdl3IjzNvFXvr3XGHMjabTWt_t20Yhu3pij_U5OB6wW0GUHf1wDMEv8vOyAy9znRpXNm5Dwun7X",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydjiwwjpL3x4fmVnj5sVANlDM2iUsWbB_iWLwbZKCSsuG8xWJkO2XYDFnrI957sDeeekZ4ecXhofqiY5L2G_tYZcpQWMbOlCMjVAfRWhwKwdNHg_cIirg6LFonS_UwTPAgoPUUwQ4t8SLGPhL_AjhapE9YloWryTlltn36No2H3-kxksh3bmkeInnD2A0Zs6fh2dY0rCUSWBcYxuZMaKXq45UdkzkzInZ1_w7Fyw1vswm9ePq-f3ImIFPNmz7uRxmmWozaL4xmGvGTB3WMSf33kNbd3hqlNrA6GlKSt3nstyzeONERTePiZvYHQv8g22pu1cafqUU8KAbq2PJTnVpEuotr_v2hGRLJD5KLVTFux8FCrT1blKQGZnXI8TLvvm3pwHkNXfbkYrbPNlQyiSj4-gDWevF4Qei2qQsU01O6MnF8dBgpvVhFZR91m2Ng",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydiEKrMT80XDvtwiqbx9TZR3dWo7oobSDM2uuC3o_Vfsp_oCAS2SPDAoY18GSwNI5QRrJSGxETSSMxe0WqsQd03V8EoqacDoAU34tEOu-D5pnGY792rmZGu8wFpDVsSOa-Q7SdoZHBhcgMEdqCulZIXI6YDZ_wmALhM7O5egbPEJeYcPl1kqAMG3oavLTtmZzBv9gdAnIy2W2QACqQ59PkW92-qTTj3wB9ba9JvTM0Ghv9de5EjN8Bo2j--wwAtN0azeTYDr_cI4SvnCx9cxVKO2ZxT5G1Q4nYC_NDWXK6XPny6Rlvi8yf-5bjCLqBdMFXkhOtWxHpZEVR_489GbKE-Vm-wfhj9TpDIIi5EId6u6ZQf8rClQzN3zpj5qqNiqOU1LPQjtoQCy5dsla4InZrOfnRDreiGHAN4nTnsd8quzurzQM-YTG4C0F8nexw",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydhnVzJyReR_D1FKo6sEAXbnjlmDfyHV-mV0iEhxNjJvCpmfcHB_Z6fThENkCk6AklEJxAr8pE7Yo-LFAA-OxRHzIyXuUiZP7rdF9zn40BSVKp8nrUcUz96QDId7B00jJzAtxPCSmg7AGFxvT9T7Ef0i6ntKaJdLC6PicyNjKsB7QUoON30oyCfpe_-RwpTvDuf7fTSn0eRC06-4T-dW-qz5mlWBkGc7qYBkb_vSqLutAdBYMCmgGJ9Dko6LtUlhQnkY1FKPFypdGdyzI33kh_SdHskfQgw-Q0gjb2-KugdrRLjLk-yUHdFPai76b3ffPMrohPIzq3Bv-L7G32lrY0bVIhFN3HdbAa4waAT5hT4pwVVl5qHf7zGPesaqKu2Zhz2PdCkxPyhI1RckFxsQgFjYmp4hOCzvcnxe9PUVgTVyF4CdPmCPE7KVltfIPg-i",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydjn05a7LZBcJkQOqB4TAiVTuCk-q79kwkjUlDotu5cn_nESK2PwuUj0E1ukq90iov5Cs7jA-GHENCv7ogfzETVmqv2bJjrrrGchymcpBZ0hQ0RSAR1z4613Dmp4TsofzpKCbDbe6OmrpAIFCGzTxHnZwX-Kww44lbe6DQDIEr2R2qeR7_s7qKUtP9qmQdt2OqJMyWzuqYN4RhDGCrfU-MccmiS6jDyY22SyWn7w6kZhRbEC_eKQSE1ZTYMczHf8JkfBBPbOutVLxom9xBoxThuCg9u12BHUu0rvlimq2uQSSOCjvzqd7cyWKvSV9DiqgtTcw19nxUJyCk_VlwApQyOZ31vNR2Klz3V1lngH1UJx2AfgHHGJcKeAv833cU9slkkNJxiFv4lkW_HqrDo3A6arnDHV_vI2HW6vltbdHpmcC3euf2ijx0Pesq1bIB-l",
+          "places/ChIJdZa5pqdD0i0R6S9PqkjLIFY/photos/AWCwydhbwufsp5eB0IPAe6_zmSb9gk7zcUYOI7Ej-aoFazNnHeey6Byt9TQti2K7zb3UGHozoprHynCbXZ3rA_NWT4tVSUy26vEKZq7qDGuzhallNgfOlRVF3elAOJcSzk4YkgJXP8CIMJBmZ9PyDODv0DyrPn4IZ91hF3hX5ERqEypeCzH1rFcO1Xey473IdDVZ0uB7b56xW-XmTSopdjF4LAE279B7lnQIutOcRn_AoWDyntNCO8wJpm4ZI-HyIYurRGuW6SD7WqOxLkwBK4y3CDL9IqehlOlThOsSdQ1zEbPjOV1cp3WRD1p8hny54VntSPZwQKA35vKKYFiUyk-UR_0qXxibsVmTCNHsA1Oyoq8BmqfVtNwo-tIsEJO7lJpuKV1dgsh1eTzw5kol5i1Zpd-xey0aI51947bIzh8z-8cOfq3VH2BX8VWFyEZzuE3j"
+        ],
+        "__at__": 1786804978.053925,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "We tried the satay shrimp and the beef rendang. Unfortunately, we didn’t like the beef rendang — the meat was a bit chewy, quite spicy, and lacked flavour. The shrimp was good and nicely cooked. The service was good and the staff were attentive, which we appreciated. However, the prices aren’t cheap",
+            "author": "Z9"
+          },
+          {
+            "rating": 5,
+            "text": "It had been a number of years since we last visited Bumbu Bali and the service and taste sensation have not changed. Heinz is still involved across both locations. For a traditional indoor outdoor meal setting head to the original location. Food is fabulous and you can buy spice mixes to take away t",
+            "author": "Cam Wayland"
+          },
+          {
+            "rating": 4,
+            "text": "Ordered a couple set menus. Everything was very good. The papaya soup was very salty.  They have free travel back to your hotel/resort but be prepared to wait.  Had to wait a half an hour for a ride.",
+            "author": "T B"
+          },
+          {
+            "rating": 4,
+            "text": "Bumbu Bali is an excellent choice for authentic Indonesian cuisine. The food is delicious, the quality is consistently good, and the serving portions are generous, making it perfect for sharing with family and friends.\n\nWe arrived for a late lunch, and the service crew was very accommodating in help",
+            "author": "Jessie Tan"
+          },
+          {
+            "rating": 5,
+            "text": "I was so amazed at the Nasi Campur. Before I received my meal I thought it might be too expensive but then I received it and saw it was just so beautifully prepared and so delicious. It was also enough for 1 3/4 feeds so I will enjoy the rest for lunch tomorrow.Their ice lemon tea is a generous serv",
+            "author": "MLouise Macaulay"
+          }
+        ]
+      },
+      "kayuputi restaurant|bali": {
+        "place_id": "ChIJm_sdCNNc0i0RIJmaIzLcoJA",
+        "name": "Kayuputi",
+        "address": "Kawasan Pariwisata, Jalan Nusa Dua, Benoa, Kec. Kuta Sel., Kabupaten Badung, Bali 80363, Indonesia",
+        "rating": 4.7,
+        "review_count": 670,
+        "price_level": "PRICE_LEVEL_VERY_EXPENSIVE",
+        "website": "https://www.kayuputibali.com/?scid=feed67b0-9a2f-4de1-8df6-114544116108",
+        "editorial_summary": "Elegant beachfront restaurant inside St Regis resort serving pan-Asian haute cuisine & cocktails.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 12:00 – 10:30 PM",
+          "Tuesday: 12:00 – 10:30 PM",
+          "Wednesday: 12:00 – 10:30 PM",
+          "Thursday: 12:00 – 10:30 PM",
+          "Friday: 12:00 – 10:30 PM",
+          "Saturday: 12:00 – 10:30 PM",
+          "Sunday: 12:00 – 10:30 PM"
+        ],
+        "lat": -8.8134972,
+        "lng": 115.2284047,
+        "photo_refs": [
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydgHUrWrV1Q1oy2SPY44myBnZLsKMdxP6SDKw9sbDCTftE29L2hVyOcdrvyAscMDIeA5wXOicK9TQkyLxdmeFWdjBmJwoqoDv_BOTgFPmzZrKa_KZ5jb1vlWkgxQTP3Ai3WVsxl-YugrhwE_eNsitjZNlGPFmVL11HIRXOsv40ZABUGe5Tya8iNjv1EGA5kvpXdhL511LhlrTy6SmUGhrUlU0q6jPYHxhKKS0jQRs6ROWeCjBX3DfSLjt30kp-W7XhGJ8CmkeYOLbN8AIK2J__Mh6dWFag6CM9-3wovBVnc664jufHrQrPoHQPGxmmE51Y3C9WYXh88KILVtcs6cmSHEY_H63Aku4kNgY6Pz08OI13dkmtoNEGKH1smkzuwzQgg3q8TQeeJnwhYwaLA4pD7Eh1iuHh-rEYIouYoaS-mwy4Bu",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydj90xsZhJHBbPCxbSb4RKUmukXA7FyPo-O3Le02_x5JWJYrweufHb4Iq7PZkfLKg6ciJUtqBg_TqpGPYz_BGdtu76bsNnzgkUMCu9j5mhRRzsOshj3UhxL8ycqWzkLwIsbOS1mlNN75L4EfivCo9VbzHRs6YtGYDobIsMTFr3RcSbwNt7AaDY4mEbOnAHmEM6Ah3qfz0EWoFbC6U-AhEIUfQiCa-O4vPL-bos0ykPy2DRcLZvpIt2W-K_clppblV2AtNJLWlUNPs36aTUIj8L6bEa1uWi7JkKvcndv24EubkDw6wImJ7XVPV7KxnfT2hQFMqxmVbq2ogxRP-nvNKRFIWHqG3OaTBSSVODbs6bPS6Zo_zdVlJbDaoiIBF5g9cHtIGZwP5xblUaBJ2Bk5n8VMwtXhxNZzSe0X7UQIv-omcA",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydgZyddmMmeGf7jjalyYtjlFmXbnZvNGzAyer-KOgyvaWRHaZxMUyqMG8xJx0cOYBz-SORh04uDJh5Cki_Nob8goEiteElB5hyMluorNGkz0QW-LGAqm3yefOZAvHVKfajr6g12QT9dA8Mvwb6BQV_phJCB3tljYA5apAAXiYYbE03WGxS6liPq0YgDySzZHpzZhvOhdfOF6IlLCgS_zhgDGpqNTRYpZBwaopBGkyPDUY3k23G5gCeYQRliW-eAhP4bqMhKsP_vmUFyPfv0Ccd_PVuzl5JyPhF-aXFJNQB7Hsp-PuJczraCSz7j9dVv5bmaYKjOhGj7NWud7kkOLuZTqB4KR3ZIopAkZvE-DsTP84hSVbhmZQCONr5v9uaPdktPdprTx4AJ7-qbk4Y1J6HrX1tR7gsEVOdHMaxeDqy2zQYugfbjf_Sa3YKnjJg",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydiIi3x3KwRTzu15JK1WwVaZdWyxv5W8tOGbUcm-XOLecIFQ48CQ1F471B9yuuCs4QpMus6TiWDjwYxxN79Qmz-EcYwaW0hnjM85hP7RTDZppHHKnxsYPKek-pl3VTTgK37wWntagPdamB0-8NxJgHwYSCKGoOu55lX4Ti2mrXXUqDaWzGbhGPZxnaNjZtTme9iEV_Mm8RsiSJQviLZMfaoXJCJgl31Pm_6pYInK4czQk80QbwkQcg8eh-kjlatiKiUfkt0Jn5RnnAGHScuzylvZ9wZuGQxgo-HPo5hKgfkZJH4VDyO4hHdbDpHx8wdkqj3-hkmDvIrfKpAq0lKwtnxWipBL9ux5LoxyDEACk7WsorS1nnV18EXRrBueL6whNQQgP4XRqhvPndsai_X92zyC5G57SIlulwzXSS7r-rNuLY05",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydgsYZPvG_ZGEplQHDLX2tBX3zOo2yXXXt3-HVa5f5X1kvdLkOmf-DvdC5vLHi1j4wQE9Cx4IS2aTYdh8s4JKChxgu8bUuEwoka3pqsyiMqb02h8FcwBW_jK6KDMpeoG5y71ZZuWtfO0zzkgmT1p7e1nfjuDIRulQx_QY_C1jrPb2WIM6Uy5Tlv8nzA2BErGuCs-PMnVtGlL8Ey5jS6PgMn6k9iJqI_5OK7roYqZ_RIGk9usB5dHokt8cZyoAkoUuQU05RckfdzqJWz3hLzNPAonnFadHck3XZGqEt73kIAzqdh7HERd3mrUnBnzaqdAU6pg7snxEhbwUKVJEXBPT7SEnLYR3wmEAE5mApMczmn7A9UQqEDVykHKgdNsMZZG0grjoosQFxwFxKA--nOSBYnkdOXB_NU0m9Rdn4TNYdHbyLOFiV1jc7XxUceMmg",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydhZ8lKQcVi8zk5sw-MxopzpU1yTZP7jkSVzJkDkRg73LjCMlo5-cVDDSBoFJL3f5f1ht1RN12T7K5YLLmRtyXXLMg929NsGgXIwDBHlfT_dOeGGN690XI7AJM7AaeWSASme7SySYWkp6PPKXX-PNCsKYuk5YfziNzlO6MDy-d_6xXIgQCZklQMClbVy93Vx8gAkW6DiS-YHcyQ9qwR7A6jyXjM1piGa9FrITs58bBmEpEl50fTCKASGEh7szmrEexYTLIrVO-pM3-bxYFzX42FRaIQ8KpwAaAzUp10RvLW_aRfUFzW4xK3lEmpF8oqXuJ_qkY0g1Elj-M3Og149RlZK2bHXcM32CMXo0RrKgdKJrGkLGN_9SmHPFkvDBoUiOEzi2PkNahuabiziqmjqRNQInfGTMsFPnfNf41MP5EZmnbyUQ_aqROMb7s1kBWHc",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydj5f_qJyra2EMwuMiXhGXYGhCHdl7EBL2oZj2pmnFzBlCZU-fv2sE4unc33cRDo11YtSuqk3Rb9zbYZRYNUnd4e7lMhMRSu5LCf0kKT2TEERqUMRwiYTtvl1yPppqS_noDoLY_ykkJEPwY3HvyoqYXedY1XU0SOtPNpJrP_NbaQYAZnNU2gIS5VnMjA0QR-jd3N14Xt-WZC8xMlGEtwvHUmAwSENK9QBuh4qBQt71ntF0etSqYjJKUFs_xcXftGN7BEzG6LKc5H1rJyt26J9diNVXI5N8ESYT8eu3YuldUG4S6fupHfPqC-Fh1NOx_kxyTNIIsZD2y2S-ACI04r_ddesQALOScHTgRk7SmbSy-m3c24Cx4Eqff7bUGN2cgDkZLoS78V1_QLu2OZ575GWag1xHNSZnZGdY-QO_vZtqhBPc2F7IURbUScqKPGhJvA",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydiUGBl1pJVGqbFB_pHWZgfrmqBsFHVLqn5Dwm61W5HvnDZK0V0_YDUoxNshn68PDpoM5QBnG0tqFLe7i9KMybIpAB2z9_7KOkDxCAs4WO8lpKUgExw6rDOTzrFhY7wFMtsrbcHHtx6GnfpgtEJ1ZdojbWdlOo-mWP0UM-7fwSpCTH9lRN73FCo_kPEjalMlF5q6KEbUOKZ27kQpCsswyK4-FvppD2dB9dq36qFazKo5-cp03L-u__BACVKy6oOzniITmKHzpFeS3Uu7Gi6rJAn18jZoUJ9nmIsxRPufa-3ejS1gRz-Tb3XC0XlSJsQFSqlwSXbzogs2SqkJp9f_NX_Eqh5D_LYiryT-vQA04q0gZOqqj1-aznyxB6rcoumtN9QRObHqOkkL03uXsWk2S321VcPiSqJTf-4GlHb2Q6QCXVGWEevkGGEyigpvgV6B",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydivoQ3EWBrypdSkQMACinlwQNHGsCkf6gs_Dhu36g6u7fxLptY6-CvKR9b3IcvQf4O8nod9AFQLiUqsoraBjj4XVPPuN4104CD_09utwbMsu5vKGWAoovOL1ftQ48eXHuTSYyPiVa_pbFrW-x_BGeFQjhKmhd4VGnLbbNED8-9gKBWTJGy_z3If5e8s01n8V2h5QZukGIITY8SrnHTOhOhUAhSAnPIsQ5HQZ56T2foCi6aUrD_T9-J_Hdr11II5_K2lX5teHEViMs8ghuaGgw3buc_t8B1Z7D5zXDhzqTQyNK3hiT7mWAmT3KoNpgBUhDjsILsvdrkjbli5jbKxPxBSMgjWFISgaU_eHZcs7Sbfogzw1QVlar80MbVLhQtVpz5WPuY_1jG1GiBbO2WdCKmjjrgpyoBr5PTmQzwXk63WcvAtXS6IgAx_TyCpvKQG",
+          "places/ChIJm_sdCNNc0i0RIJmaIzLcoJA/photos/AWCwydgfvbDxHI45d0hy3TE8BElCQr4YJlcG3rXlwDMbuKm03Bp42L1O0J49hGozyK5ZMSC2SLJKBRDufMbwO7jmq7qW1fVpLGNtMbOuu8ZptAKDQkv8dLrv8Nh5DUBSNM_zLFwecnlRsfeU7v0xg73ejhNLJ53TL7_O5O43e5NCzFuePrGWM6B3znobIGY8cEVjGV8kSuWDCvjqEF_XjR3MqmLt2MUZhTP8VLvxHn7oPPw0ItMyc9zEZdKzixv1lrNNJzP5q5wdPwrachRLe0FlUCkncviTtqekyWVTz-DQhlx7ggGyp7ligEcdFbzn10ayTdzuyoQ4cjwWXS8jACz7XRY9Mzps87ahxNppUc8aO-P1ZwRAFkmeZrs1UOD9uTBfUU25HxpP0GbfOLOi9LP5qa4jAdwTP-vrXmQvlwC_jxD9wuqvB2P5cEYBB2_JMQ"
+        ],
+        "__at__": 1786804978.4085388,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had a dinner when we stayed in the St. Regis. Basically, my parents had Asian stomachs and didn’t expect too much. However, the 3 starters and 3 main course were exceptional tasty. Grilled octopus is my favorite starter and the Hokkaido scallops were also good. Regarding the main course, grilled ",
+            "author": "Lancet"
+          },
+          {
+            "rating": 5,
+            "text": "We came to Kayuputi at The St. Regis Bali for lunch to celebrate my partner’s birthday, and it was genuinely one of the most memorable fine‑dining lunches we’ve had in Nusa Dua. The atmosphere felt elegant yet calm, and the whole experience was beautifully paced.\n\nThe meal started with a delicate sm",
+            "author": "Ragna Pridani"
+          },
+          {
+            "rating": 5,
+            "text": "An absolutely exceptional dining experience at Kayuputi at The St. Regis Bali. We enjoyed the brunch set menu and every single course was superb — beautifully presented, incredibly fresh, and full of flavour. It was truly worth every dollar and exceeded all expectations.\n\nThe service was equally out",
+            "author": "Nancy Taouk"
+          },
+          {
+            "rating": 5,
+            "text": "Celebrated our 1st wedding anniversary at Kayuputi and it was absolutely unforgettable.\nThe food was nothing short of amazing—every dish beautifully presented and bursting with flavor. The staff were warm, attentive, and truly made us feel special throughout the entire evening.\nThe restaurant itself",
+            "author": "Tino Tabacchiera"
+          },
+          {
+            "rating": 4,
+            "text": "We came here for my birthday.\nIt's very fancy and I'm glad we came,\nBut would we come back?....\n\nThey have a good range of vegetarian choices which is nice.\nAnd the food tasted good.\n\nThey have a terrible selection of beers....\nRant start:\nWhy do fancy establishments with fancy and expensive wine li",
+            "author": "Marty Ship (Tinship)"
+          }
+        ]
+      },
+      "uluwatu temple|bali": {
+        "place_id": "ChIJkYHLIPxP0i0RlQTbpxuNuQw",
+        "name": "Uluwatu Temple",
+        "address": "Pecatu, South Kuta, Badung Regency, Bali, Indonesia",
+        "rating": 4.6,
+        "review_count": 52780,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Perched on a cliff, this ancient Hindu temple features ocean views & hosts traditional dance shows.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 7:00 PM",
+          "Tuesday: 7:00 AM – 7:00 PM",
+          "Wednesday: 7:00 AM – 7:00 PM",
+          "Thursday: 7:00 AM – 7:00 PM",
+          "Friday: 7:00 AM – 7:00 PM",
+          "Saturday: 7:00 AM – 7:00 PM",
+          "Sunday: 7:00 AM – 7:00 PM"
+        ],
+        "lat": -8.829143199999999,
+        "lng": 115.08490690000001,
+        "photo_refs": [
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydgycA-ElIzN43qnWcWtZYelo8y1o8y37nOEOdEXdGtDzy5cjHyU4UvtqT4J5VPApyHm27TUiaDJ3VXQZMoidS_83Qj95KMs3qbLXqzOTZEDr8Ym6dbXflT1rZ1oZ-VgSjRdtDnQmN1kLkLBBESDpql56rQvbEpcrOctmBfH2xXmzxLgkTn4gGe_bkt-jEq46fRgKs7yAtCyo0F413rhv9lU3AfTxOaPL3Ljkbk-AOZUHTQ86ba1QaKHgm1Oa0S_OFp7VwbPPOSOAwaiPRS1NDOkaNSSf1hLEpgZXouOMgl7Y0xvMX1fbpWwhpD0Eg1YFsorphCpr4YVNbKSiVofDzCXw4TMoTkvZ91jMKEEcTbMbhOU2xvuc0ceEjC0oiWKaCOHkCMN055gQbwSYJZlTNqOn3kESfP9QdaCtYm32XA2AA",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydhEVOB7BsMZRHeF4Hv0iYT_QNDN3g2r0qaZYO-U3C3EPlL7nVw-Bx26kFy4_zq833yoSP_NbXG56VSmx6Tf2oqjb25aQOf5oHuUrelElWH4WeWLHrrtyAymJJRpDG3zos_Mi9N4X25t1-6cPn78JxXrjdNhRWJDxtrE3VUNJ3TqT2kEv3m4tK5NwhoGnAynDIg0Z4X56T2VZ0p6akW-hX7Dcxgoj4iIiQ3Z2M0UPQTFpRWekbEGlRopFo5cuHFJnZtr7TMoE_T9zkAwdckyzTQISO5DHd5PFgXrP8kRe9d7sI3OonqERYWJF6wYsExLt_rPdBu_cNM-2LBRTcdj8ImaiAx41YBEC9RbCB-fEKtrlzGy0iHn4M3b1p5Gh9uRrtQz6rExjTGFpeRFlBig0AWUXYVGIkOQ05IFpctpMNq2Rman",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydj-QO2g9oi-eoAFuiP-vs-RJs9ACHkkvIduU1jq8m8fh4PyI3kT5Y7-l25jlqalPssjYmgHNCZeagWAN7P4-AVyJ3AlqS-iENt4H5RFgs5mqz6x4IUMW-usTpy_5MXggqEgs2V5SMeb_Tkg8lI__IspaTGEB_BUSS70MVq8ke30zg_-z55AFEdFHET6kSnCYTdLwmqHyd4okydrkqnbOChxjb3NgUxW2wTYePGxfLFt3m3LUROLYDzOvACQDZL653TT_ntdDKZD6bqcdARMTx9U5t2J115x0S_uCwE0OqYW65qy2A508gTNmJhH6HTMAt-cZGkLHSAX8_DHRw3DgjWRz7q0TOBLuIiSJ-qM2mDRINnWgjFEHdJCpIF8btlydHMGK6-i1dXBri9SdAv51Yfshtq0EgqAOKCvLr4kieYVqNOc",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydig_G3UtqI2Gv7YGo3QTmd-QGvS1hZZg9AMJHH1PuKO1svI1o5NpLDpj8y5lb3cjTbv_rICpq640NcwUCRZANHm5OTmb_J-j0C9SL1qcRpgFOumC0EMLkxkRiMfdFHfNrH_hpeHhdCWDW7aJYx4vMjfnHSekl84De2Wl-aoIUYJN9by3EH3rnPxyXXRcIHxefc7QP1KZTvW8UsOW_-0qJS_oYKTSx6fHW3Ji-QZcKCqgq-LOcflyURVP1OOn9cMawrVuQPgBQ1xtgcR8UtDmtM0wLfut9BtvsA817eiS9bZ_w607KHEsKk-EilX6Jlrf117sXWy6-K9yRVbkehU8SAhJwVLXeXxdM7G83ACNlAkpQgE7Q4Ux0bia41-c12PV2Wca9TO_REatQyffX-g80lHqpi2EzxLP1M1XAakgJMkthZUGzr3FlhGLSM0CU-t",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydgAPXZPrEkLh2WqfxJBkgM9jccUXa00gHpSplMjMn5p2Y1pxHawRKprr9ekkoRog7YZgs4ShAf9XdetozKCzU5Qun7LpH7zEWQIg0FhHk0MatOUhVm67tps_TGAgaT1cfK88PVmEL9U0NwgLxh2jGeD03mKL_CYRQBW-xMdJs4JnLz87WZm9PLdYQVlFn3SCVsocfhGWbZv7BTYhiJUCSFZVr9wBzZALsMRpW5sgSKxb0CtOfAKTsSNRVON2CBwJPosQ-dcZNvek0pCszpjRg09mvSq5v2Ecw5r3IqTL1fbXmywoDH73xR15lgrMR1sS7wutBpga1BOC4O4QcWNKuR-oADKZeRPfSOkC6U8ZXjfJImoOAcEY3YEGbjd_nUAgm-O5kaaKlk96HErh8vIaxeAHPSpQih4BWXc04ZhgjyjhAq4",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydgGx2ljDRGngBSt7cEecxz7hADAzKsJRrUp2aNYZ-BczfIITvgPgt6hG9Vq0yBLuZz2i3JfbBjaOkPKzVb11dN0xBYR99Bp8rdQWpps8lS6Z5a1hue0c2kLgEOewIU51U3AgzixwXCYn-zh9kBtEzpCEovox5vz5jcEBFjtgxhJRwN2LOsXL_yKBqZrN5GXUg5eRdxXZp5s3vy9crFkPD-5jFIIiHyJrCUBo4VY266v0xFpqfQOPsxAslGaieXUJMzJbzZZJlBDa5lLhajN175cs7cXU1oMAbS2kF3DYNUpRlPEqcRFoOKzqBottGT17ROmztHHd_DgO_PcI0-Ses-QhnnJsh2r0vy9CT_T7WD6H_dZY1jW3A9s3wfZ6jJxX5KrVFN1OqxbP88Tw8CqXO13Wt-nLZco7sQBwI7hqsluxQ",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydht_BO5iJe-8sHxW6w1gbKQ5VH6PY6IkawXf1YvDvTC1_7uSoat6T4vBsbj7ppff1yvFwohpOjE8jhZwOm9KCWiyXUQ6JRDfzaJ05QI8YzdpMACaNJEK2_By337LFBINsNjoxm2OihT6HWr9RdWBow789kY0L8jFddb4_RAq1uxgZ959dhPapGr1pNRTp57EOJoacerhG6QAnPF8Dkd7h1Qz_2PJzZ4SDLFbLaZVsg18sTG8syBkymBMxHtQqO_q_XduW9Z-jQQaLrkNEtccQLTN_Xq1pO8nfOZsmfF79LQJYVXHMAx8xgkgT8KWciBc3j9VQEB6cZvblPAFuMg-dKOsCkRVAE3NKQFuTcSX0ptC6VJmrQjPPXrL1vnIcoSnNf1hFodh-cNK89zM1Hh7Iot1bPn5uho2SBngYQ1cdPDtF2dDlAgSVrMp2euUvZI",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydhQW8zjEaRmMBA2xcag1PrCO3AbUFr1Of7AOZdH61a-cMqSPXUHEpBC9GSWAC3sIrqVgPs_0Xccl2pXu9idLJAWIgSq6hlEUB0l6_Ateq6hVstt3HJLkHcM465LXMeKCL_T2FZm3E5X-hHEFTESnaHlxg01B03mXPCXK-KCeBAmdv7F3KNOGJsgJ2HXadZoZNZJjYXX5-uu2_leNYql7yoS9DkUQ5uT816RYoP1bGqGAU7YKMQJv0I7r0JWlhDE88PxmoeJCNp7Bz1ZnKEdMWmOK3-EhXAGQDew1beBR5QhAP38Oxhi5qmZmsxCM85sVGRWl5CImbl9p1Mc4btCb8nCL9jO7-c9t6l0BZoSRDmACWrhSewgYJUIgCcgs-nShOCU0tFszdCfNJCO6vf2Pe0Op-3zHHoZqvqpeZQXjEMXd1DHz3gHTBOEX8Ittg",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydjhgDLoJxcmbZstuqaAOOhOBNhc1zNynk_ml7GJpXVW-PvpJWQ3P-KQYsDW59DNE8AbqSbmHsbB4K6Ll0hFcf9QHdzCNmtLCGqIf81V9xmT9gYkaqwhyETjJUDqIXhXZP-q-GHMA22orB2guXFNrOaPP0KpdV0vAcYRfGXcv0m65Ako5QJ3uOpHnPm0n1syoGYMaCG4aLX_1JU4XQg5doENiq2ArDswLa9roMXkFtr5JlqvuZYjo9vZxX4aNPu9y6vawNMK9zGGxY0TFZRyDxtTLONYR_9oyqyV2En70-jvmfCiSnpabG7B-q8OqFozILpdT0kT1Y9jrgyK1h089HSpn54EzXOvdwdIFYIJ9l1jDa4XpAfTFADk1C79Z6PJma_lJFYMrwgMrcjGqN-TLEfqrzHxJOSR9Vu3SmbkjvbJmQ",
+          "places/ChIJkYHLIPxP0i0RlQTbpxuNuQw/photos/AWCwydi_RUDNjxr-lSMszTBQ1yagZ9oSNlSshuaFLfaosu4E0vTAVmC0z6JePQtI7cjGJ0ywCi6g2Q5J0yD1eMs0HLOOA-DBlnZfDPcpDaZemBaQrRHLROM0uRURLPAThnP3wqNHj7OiHiQ4QuAhbIqBGFiGc4HDWf-35VxsHjUeJ7nZUlvjI_xtEt98Yeez44uz12a_7WlapmWN5vKWdNgdCNy6MrYsqMXbXYWL_FsDSeBonR4T3zdjrS11qGNFXfXVt3pfbOdRTDdpBYz6atqJ3lcVa1mqoJoOEqPE1rz2QtNQtp_L9GL6-VFph1RqarHWxbE6mozB0DocyQEi1hAqytCAhpD4Nz97VvrvXvKEcIhxGdmtQCbj_RqIydk5jnEkR_6MZ5Zv-0d1UA1jcmci4tv_UCxYmyCHS8c3XZ_6fVlUXg"
+        ],
+        "__at__": 1786804978.798271,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "The temple grounds were much larger than expected. I really enjoyed the sunset that came before the show.. the monkeys that are a little aggressive so I would advise paying to have a guide take you and look after you very cheap only 150 rupee. The dance in the show was really excellent and had me an",
+            "author": "Brooke Miller"
+          },
+          {
+            "rating": 2,
+            "text": "The views are breathtaking, and the monkeys were everywhere. Pretty aggressive. Listen to them about not making eye contact, hide your iPhones, wallet, hats, and whatever else you think we could grab.\nThe views to the beach we’re insane. The cliffs were amazing. I really didn’t understand why they w",
+            "author": "Cindy L"
+          },
+          {
+            "rating": 3,
+            "text": "Lovely temple you have to wear sarong to enter lovely purple colour, has an albino monkey in a cage, and other monkeys are out in open and more aggressive they will grab your things when least expected, temple volunteers will be there to help get your items back but at a cost 50,000 idr.  Stunning v",
+            "author": "Nosheen Maqbool"
+          },
+          {
+            "rating": 5,
+            "text": "Awesome place with a beautiful backdrop of mountain, temple and the sea. Must visit place for all tourists of Bali. We have to be very careful with the monkeys over here because they are very aggressive and they snatch your spectacles and caps without even a hint. Locals say that this place is the m",
+            "author": "Hemanth Kumar P"
+          },
+          {
+            "rating": 4,
+            "text": "This place is not bad, the temple is quite holy sacred but also too many of the monkeys which will snatch your phone, sunglasses or hat/cap and also foods and drinks...\n\nBetter beware all the time and the most stunning view should be the big waves under the temple. Evening view ain't bad also but it",
+            "author": "Leonard L"
+          }
+        ]
+      },
+      "sundara beach club|bali": {
+        "place_id": "ChIJU9lEefFE0i0R4WgI44iZFqY",
+        "name": "Sundara",
+        "address": "Bay, Jimbaran, Kec. Kuta Sel., Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.6,
+        "review_count": 1524,
+        "price_level": "PRICE_LEVEL_VERY_EXPENSIVE",
+        "website": "https://www.fourseasons.com/jimbaranbay/dining/restaurants/sundara/?utm_source=google&utm_medium=organicsearch&utm_campaign=tor-bal-fab-mid-seo-na&utm_content=na-na&utm_term=na",
+        "editorial_summary": "Restoran dengan pemandangan pantai Jimbaran dengan menu international, live band, dan enjoy sunset.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 11:00 AM – 1:00 AM",
+          "Tuesday: 11:00 AM – 1:00 AM",
+          "Wednesday: 11:00 AM – 1:00 AM",
+          "Thursday: 11:00 AM – 1:00 AM",
+          "Friday: 11:00 AM – 1:00 AM",
+          "Saturday: 11:00 AM – 1:00 AM",
+          "Sunday: 11:00 AM – 1:00 AM"
+        ],
+        "lat": -8.7828819,
+        "lng": 115.1617691,
+        "photo_refs": [
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydjtVj-eMTYMmN_QvHJzmeiSx4aY-3IJOf6hiAI0G6MRG8-9q-p1qBR4NGLateCuCecZrdkfNAvMsIqchpnecBx5jOIJ1Gu_8bipI1KajlOI56WH8qbm_K8as076l-hbMF50jmGjYIrvFyNRKlOOjSpGhBq8xaK6WJ3ziDKo68lh6RDduf0kWNtbc34g19w8EZjAZ8dGUrAjt7JCovenNOSBnsUz_HFHXdYkmIaEoP89dOFeppq21CYBPzXnSjvHkjw627RBoTmcvq3E83HYlzU-I-QB1x4b7zEmBRcZs1hVrwwxVTS3rPlNqKeBC3-sfOJAWKS-KiXgrwZiAFPictdVqroNGb81HUb5elSuH2XYud0JOpqHD16bJ9DlcHeR__uTK67zBmTykaxw91unqfc7ZGk0NjRslzEKj4qCbUY",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydhjUfaZ25x9Tr_1dWRAdUpl_elg4TYijmFDciMSEylKEy-8Uo2sXPCEls8j-xcZFSksNJEsmkcXF-WO_DbbuOFWZT-w14iHMR3Zxnwm9eqSzvDOb4000RpeWNy05IxxK3wwAU8GV2kZVD9rSRls3CXT64DsL-lfBkRbQo1VW_7H3Zh1u08FSlxJ7nKHgP-vzwsS0LB5kNoox12r2M1xFd4Vr17djxSq-KP_ArhzinRjV33w2PTmkey2wsoOIGPfXAKkTkqY8bHebkIDtWY6bYcZBajNBfsmGMI2UxQufpkq2NDWveMOETCO6OQtNhnnTq5XumQNWMhJ8eUgWRq8jnWG019H07nO-9KcML8Z4VnvcIcmGuWQRbNICTzm1L87HlH6y7WTv91nXtwWMUAmbIZWABZk32QEJ5lZ6IjmBAAxIuK-PAxHbWiIKYzXA4He",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydhPAzkHuKLm-dD3wnZJfVaGO1fr2RbM32epTxtn4XjYvhMOoubePzOfy71ZqyKgPNig2Kf5Up6SEg4lguzlpqxXqwZQ2eroUYQEm1xCrryiBHhdWZCuW6CGFI0Ui1e9I9usFs1FKDZ7sBO3BYT0FchmGRWWpcWfmWuuuetmEGW2ny9VegciRs4uRO7Q5kOtAjtwp4rKsuMBxSYtCa8p6xiSwQVnmfThkgEZlh4mR-MSze-oGpPNPO9fNuR1uEVDrGUXnVS3FmXEVclkJw6ATu4qskrl8UQ9sPqt5_AyryJw7dwyPQfcr-eQOqtlNHW8OKZvaQef82cFzvCV5NWL6wimBLidd_8mdrbD5Uxq2QU5UihVkzs8cMy2YjXtrbOF8TMNPtqpkNhRO4XDUoIaLUXmv0aMpOXzA4XHP5Yw25UINIDlxPg1r_mftumR0Apk",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydiT0nnno8z0KBacTHTlzUsirkN3klPtv_qVsKdrRLBPO25-qRd2ll6tNjWUu-XW04JXycYQk4R29pgHFEqrocPqIINfoEjQdjrpxjsHPOzKHvv7flr4CrEL8n0RY3h7BKibEiy9hxm142oaTlMlIdt6zyRks5wOb1vqNJvYU3PilOTT-vdWupi7rA5hk5TplI0pJ5BIp6Rs0IkdvCXPkxB5tqxoXBCPWluG2Do8twj3_JZ6Ezsui_gOSXCi4b_OlulWpptscMSXiNX8kls7jVYFNC3FXnSqDpUkHCr6-IXg-0omYyuou0PKaLh-qEuNpMycjX5KI50mS5gSQ1f11q_VIrhzg9E3omKGcbzKiifeDJEGdNpTSdxp9p3aD3wKWOGMK9GUsNIVNMpdPKRvdAIkULvUzXrmAgKFfWp1umNRn5z8dGnpcDWyy2bKQdGz",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydgwU5xvkzMu1rwW9-BznNTpiq_xVKtpRRH4oGrBqHpP4XQraZ8nXPS_WZlh_MdVXsRtDVG_lNDA4ZhjwOIuvbyRp4BRIVByJSA3ziKwXhkYgf_sLQKwRJoTnZrralmhUptfYJ5sK0ZdGDNEBHYhYs6PacThXv8H2CL2e5FyuRoTXFOQdbZma_utHAXLryFB56B_hE4n1uCvJJiCzpBRmlChnZsJYAMm_2KNQLglZLXzGNc3Oxbtlnsl-x2L4z1Uku5SXrmtawazOrVMeEXWG7THiDqoyfTFp_wMK5BiiFEPxj7madPbq-NaKYSdse4aV5ybUN_03R48mjww7NVxg_nS3Q-DYmohfF2JP7qCRxsUlOYsN9CBfJIlgzmqIIefKtz1SfggcNPYAqUOmSH8DMmNeCzfFM0BvyTI8-ssEpGMqJK-9NWPvQwCmZxDCg",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydhzhsY65sIXRZjuYXxSiVg0fewWdjj34g7hMAlKzg0wJmuxvAz8dwoVaVkMXs6InkPXfrRzG_q3SpPsBg1Xkj0kf1okCUn0TFrJewH1_KggHCQFck8Z4ey3ULrRPWppHCDIo6Rejx4XhGkvauJicmxU6FJBqtHdbTS8bTQpwkjzxJ58bWy59al61fPfrwPYKTcHgOEAQepcnvcvYZCrsFmRlFftPlpM-diFWwLTRjfwbeAtXQ7AlARazc_cRBpEH3KQh8MeN29CSBfvQY4mUXzwIP0gpLG6JcrlnjhWsleCiB1fb_q81DtjLNmdifRCddF-PhO_1tBZBU2bJoDgfD9G2CtP4ImCnNU3KXPRIE2a-p08HzD9BiK_GXwy7H9crHb_I14lGv7C1kJbFxKlK0aGKxTKVgWiZqBqciLWn0URv8vIx9bzvxoHO4Y555f4",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydiSzWF2JfNTAEwdTTjU9tiu04u-0Cds8_Rcd4YcBY3MrK0gXgEZFIqDIJvo4CTZ9Bk9w3vELombgW3DqRn87L_8ruxrmHrEVyoQil32cTZyL5fheeJx7BLy_A0v2Gy7nJ-RgYv28RZxhAd3F0PPlCeNf_lB_PvORL48HYr6oa7G4gGqXJPut3mScicCuYxUCM4wq7kHgCCoNq6k5lAQAgckcUhi77nJiKy2fSakdowMGpGwfiiCxMbZPPHq-PsC9Vs7rt3RS8cs1lj9-WJ6mRsqbvNLqJSfy_kkNzUb90TJ7RfV4Rt5qkx04wdpzBtoPdfVN_By_UQfnLv2cfh81TLWg3olJ1VPpcYHTnZFDamhzJXOCWIcHESOdawT1hwCboAIp0ugcwjpoAHuW1VbHyQI8JlB53nJC4vG5JUppYDukU3-LoX1_eDGxcCPyIv6",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydjtUNVOCCCBzQJFju_iMfmpEszeizgdKSdWeGf4-X6BHFwqMnofNW-t6Pm28AQ9YXN3L9r2MwdzLwBX6noOa9IzFQSijvsA40tVhWQlSqb4CRifDPiQSriAZhpyz9GfJNSmnF1hrdG2EX-BBUbim3et3zt-PdTuVPmE8giGHYLQmJuKnJ9YMEcbjkAZfpmUhZM6pvyp4lANf4BBU-F0Z-ozF5s3aHN3s1cXg6BBkbg4RJJOudO1N3dBVWgCzlP-ZiUSSJQQPrBu2O-QeP84BRv7TlfY-KmrZIaD2uGEZehtmmcD1jYDaT9J0bsUE5OoRgU3JB8amgDb5Ib4dOkrs93wrPCSNxSET-iGft6GFUiOoQNe288lxX8obNM1yEIgGas-5NdDPK9YKeU7f4SXohl8SZL2ipAD2-vUTVLgb4I1mSq2IZWX4XDGlzW1Olc9",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydjH-sMzwX5ruuj4SQZvnC6PDzSYWJ9S35cfoVhL-y1tt6GrgOSiL0kJuztHQ4-4ExNAzn9tszINQFMCqKxMD6rni3WwHnDrzKeQLyWbOhDYOPgnwGDffC58-AyxwpK5AA0MoSkNUPYd2HJoXTAVYOVsDIPuXwUPHht9sSb1S0xivX-P43Dd27jPB2_ThiXWxdr2C_Nql8KNXd-iiVKGJ6zT3d5BjLuqo1MoPtP8Ou2iw_CJQPSxiE_jreYYCDAvfkyIpLrLqrYh45QI7WoLU94sCBs_BX8p53l8jKodj073yX8frtl6jZltUFLnR89n86qSgDo69lrB-h86yFaPjMAWaLucEQ9up5Ny1cupB8kt4PlJQFs5xvKSTkCxLOehPoBPNK02tG5V5MgM5knx2koa7F8k-UVePKO7tBo6kAdfgPlb",
+          "places/ChIJU9lEefFE0i0R4WgI44iZFqY/photos/AWCwydj8xhVrcDsrD-yk5E039JOpnMi_5JDghnGwyOKnsTd1cWSNPol2WftLxUHMAWmbC2lQi3gTSZx0qvUxPFYzMqiHUHfzYIAgOTW39IAT91v8_the6yikoJcuJy-olAObq-CcEVMFn8rmwe0rvXHRB2vVss6Y-fdjByaxbC1tqvZ_a5xKoAJyAuPg7ze4CSbI2RQU8szo4hKx2xMRKh_vinTdeCjRjwqM6kbdDyeNo6FTJbmyNKUl2AJvJpWuxFyUBrwgJEl_ZwmJPmLv22gMuMu4ApvPv3GS6-bfvuL0jJpsw6oEVTorfOKEjJ5kTDWVIaHM0z1VUh9Q23vfdH5gdNP94Ry504CH1pq71IIYuW2TwAObsw9jPawNv_N_aGThtDbF7XO8_QkSYO0FSwCG7eOiTabdtqjnuJD_iIsa1abKi6tD"
+        ],
+        "__at__": 1786804979.364223,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had a dinner at indoor area couple table. It was a very pleasant experience. We had the dégustation menu. Food and service and the view, everything was good. We were here for bday celebration and was given a very warm birthday surprise.\nWould love to come back again!\nAlso noticed they have outdoo",
+            "author": "Y Li"
+          },
+          {
+            "rating": 5,
+            "text": "Sundara is a masterclass in seaside elegance. The beach views are stunning, but the atmosphere is truly elevated by the spacious, high-end seating—you can really tell they didn’t skimp on the furniture or the layout.\n​What stood out most was their cocktail menu; it’s brilliantly categorized by style",
+            "author": "Gary Yeh"
+          },
+          {
+            "rating": 5,
+            "text": "I ordered their coconut crab salad, nasi goreng and their prawns. They'll give you sourdough bread with tomoto and eggplant dip, if paired with butter, it will compliment the dip.\n\nThe coconut crab salad is so fresh and light, was quite hesitant about the combination at first but it turned out reall",
+            "author": "dette"
+          },
+          {
+            "rating": 4,
+            "text": "A classy spot part of the Four Seasons Hotel.\nAlthough it had an amazing infinity pool nice daybeds it lacks vibe and atmosphere. Not many visitors here as minimum spent is around 2.5m per couple. Beachfront is also full of youngsters playing balls and pretty loud.\nService was very nice tough - we m",
+            "author": "E D"
+          },
+          {
+            "rating": 4,
+            "text": "Beautiful restaurant in a very beautiful location.\nYou can enjoy the restaurant and the pool with amazing views.\nThe food was good but very expensive, because the location I guess.\nThe waiters are kind but for me they are annoying, she came more than 5 times to the table asking how the food was or o",
+            "author": "rafael"
+          }
+        ]
+      },
+      "kecak dance at uluwatu|bali": {
+        "place_id": "ChIJE4-AAwVQ0i0RJI17Kb5qMjQ",
+        "name": "Kecak Uluwatu",
+        "address": "Kawasan parkir Pura Uluwatu, Jl. Uluwatu, Pecatu, Kec. Kuta Sel., Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.6,
+        "review_count": 9388,
+        "price_level": null,
+        "website": "http://www.uluwatukecakdance.com/",
+        "editorial_summary": "Scenic waterfront venue at Uluwatu Temple, offering traditional Balinese dance shows every day.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 8:00 PM",
+          "Tuesday: 7:00 AM – 8:00 PM",
+          "Wednesday: 7:00 AM – 8:00 PM",
+          "Thursday: 7:00 AM – 8:00 PM",
+          "Friday: 7:00 AM – 8:00 PM",
+          "Saturday: 7:00 AM – 8:00 PM",
+          "Sunday: 7:00 AM – 8:00 PM"
+        ],
+        "lat": -8.8305729,
+        "lng": 115.0854093,
+        "photo_refs": [
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydirk1Hn9WTnC0i7grrm20qkMB9EbK5a-WVi5S29Qx2_qIIrdqP9h7P-fgNr-NUMME2Ydz5tt88hJKkUTbDIpzM1ClOdu69q8GNFDV8dsoyHY-aQkToTSjvdgJLZWald1yKR_sQRfKczuAixWzXp_ZlNX1HFsE8YTYEuiu4zTVq-MotnkJRaOEreKzcsq8W3ySZ-iHNxNoBalCPIYyqQnwU5lSgHCZbfZ1gU0uetX2QrZSlT0oJLtJgVwvn97sLVCdwpZSaKmUQJAoZo0oNAa9jAzqvoZVrAoebmKhgpPjbWbdw9pYihty3bFd0u3G32EcleFuh5Zj1ROW50CVJoP3JL88rnQydtHytYgrTGvQguZt-wqXr7Ydc9RWHn2rOr4fRdJr-WGAQ5K9--nF2WlADwEXUKWphcACxHW1cHrpJmvQ",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydglC5DY-UOKBhvlkJsS3EhiL1k5EJYxLyTTThClhs7ywX7TH5xUwktiUXgrYdo3z-Z6vSIxlepGR0EGi8gbsuym25la-aEymdqoVauD-6rtlpybNHg-zbilCqJyboCxrxchIoEffkOXA790kDSOKs9nevEiF9H9PWNTBPkGNjnt4w4kCLbii5n0XpFdc4ZQ-eKAH3FgTu1hEgMQsdNGJyLTWgIAgTXTwxaJf8csdKEnmr4DhRt-Yl3LQ3oAzZuhsk4mboFhszWVoXSvBCzfvKBjmbVZ_vs7ELl-Lo-zfYIR2RjgGTyxGcOblYEQXlDJrzKpj3d1hT80xm7VlR0o5GHZrXnVPGRAD_fcAhacsKSGRYgewnijgmu4C3x5vaD8Wwpzv-NbQaI9AQO2rl79zOCbKJMLPS8g31d5_tzcY7kcHPvJ",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydjYs9MYVecfdlU8kazOy07HRbzHAYjzPHUl2kMRKXO5mf20m_Itzsf8CU_JSxcXHitdlBiHaMidleKzrAroTyt_Ins1kMNZDkja6HLS-oOkyzIWrN3OxESD_2vO3gS93zrAU5z6ECDNp4-yt28nY7Deocm7jnLvJK_47rMWF10qVjYwoz-hwK5njXwqd6oOrBloLQzM4yjQNhuFHczrleundmE6oXxnSB9fj_zsw3a3g567WfWlfnBGa51-ZrLImNETPOZtyk2nGgu6cIlgEG-Zcm5YS03DMWU9uixJhdNrU4MgjVUCH9k29fcyd_k3hDcRGf-8NXN9GURGlkbisvuuBntIY_aEXy6BuZPltuUssh7Rd60vYmOEMHeZ6J8NttJ0sVa3sfPNX0RljN_na47G5yRoKzscyTBKL1JU2C9L1Q",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydhTfZ0QgUA7cKZlt2JGwr7E3tlTcemRhxVm7XLW1Ivkc8IwVD25CaypillF4Y8zb5KLcmOyfXLcfsovEJzwxnLDZPtlJIiOtGpas5EEekfTJjjapjKRa3Y2D9uE_UCC8_v3bw6M6hCDV2ZXkSq4Ltmos3FFnOS9tAgdmUX2Amjgn69R7IqwRljbqp9XMIs31V_SzU2qTn8z-qLzG_BNVFs01yxcmkdrceQrR9fc1zeSCtuSLNvmr4NUuTCz2aeH4XKDPjDk9GkBv1CgjH-s6DoR3JBY9UoQv_NwmR9I50Pe7HfO-wIyGJNByTcCiutLFRVNxOFgvAkV6piTbI8-eZcK4ljvbbWz0m21bO-yyTzYrd20zGBLcifQOyqZV7emKf_hzxE-bGV1yIcPUiG7qRdtdEkIUrVGd9k0qwMWcsHisO8",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydiHB0j1olSFxLjH8XzHVRkmz9o5KV8x_M2sceRk0XaAAE5z0J3UE7XNOKUO1QXWbb6qzBwssJv75POxASnPMWXiL9Zf1AVvXyNic5PLvqLasR1938Lk00xo2VzjvDDO7P-UX-DsLjf08biNFuRORE9oneB1CQLQVLcmeC4GReLX69Rp688hKFgsTV2QhZG0FbWwTb4VTzPOQHTQydnSURcEGVXfIHndZ9JLR7cCiv74CO5msXPxtrwHkJvL927jabL0A3bzSA4_lZz_THEWU4AhT-X_anQ0FrpVo8Mg9nPqRYoitlU5erTmyioI7CEc0qE22Ic5YpvsZnfoXCzc4vn3QAwVP2C-jasuNoKKUraqUAHIn3dz5JeVedPC-5vWPFKXiWvKOFdKulroCAnXC_3shuFgxBlX7uzwr3pAQAI",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydjrWL0672jcO6fjegGVuTa1jKOL_4L3FpvMbUmDI1jafApWr5xY2UV8Bv2nVZ-GSW1IfGdKfeWoDhaPIr_7bWI4kJ6OocdHzFtN4Y2mduEMPt6u09XVCUMPKydIn8W3KAqLcjQciJtDFmAkj3gUAbhrt6DPOVwJdDjBbFhSpvF5Url7OHL-ewI8ZCiKgGPgUjOEGW263l67AiiK2UywTnP0PKFCdOMaU9Y35ktFSUZlp9aOJZmVNmtiLkUXeckxmm-wupjxK7dqGJKUUcOlQDte5Pmn4PL2udYUyuMHkDpFqVquSXr3A8XWdlp8IpNhfC5SWaufShH-9wjr-HvFQcRK10b2t68-NG82GbOPBB99nAMpdlP_MmnazAofXi1erpTfcR1xN2kzgxbKxpRtjafis0pFDXNpP5c2Anj36xv-bA",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydj4kFGhEI9g52I86Yn8gaLmAogWhbailmzaB06HvGvRKYLyDJCHl0fH5iZYFfX0lQU7Rg56BzyHSOM3C3IOuO_BFO1sGxH9cDLiWBb6XqS5gZ-XsWpELC0BaaRmO1WsPLh8DZ-_2E0s6AAgGhCwi0JapSW-z16m4HTYkaNmzXfPy5-siZ9B9KRqc0XcRfWitZ9WtMh_cTcWhSN2Z502Lb-HPs04Eidx_aREH1CqliD7zrv9E5o7Ch_5Ons2vZlD_mqf0YkbMMw26ys3wBf9U8mDXJEJ6rY_kTC1xRrAUBhRNngKPYPbmRVD6IkdLWEI8Z6huXh1lOj6qp0usHRHEjJmm0MRhht8GavgFR3aqKsL33A9U4lUd1A3FoW62GTmLkZJrmMjHRmdaYy53yGcRroiwsVK2HBJWCpKNTUHHY1noGLF",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydj757eXgDzGXhq_pzpMgKxe6_eB61mnWGM0tVFN6zfrzWUxCBAvk-sUcEuz84WZP76Fz1EjWVoTIB6M12XHq-7iINVKQtVJEbwzdGzYkDScRsN8OBYDfPRo4UC7XDFPRh5ZE9VkZjDQpK7MXaeN8eTpHxK-rE3QtVLSGwg61cPLdrcdvURGEr2F6xE7NOoKqTL91l2U40q-_JrOzW5ulwnwZ3qGAt16z_qWoJZY4UaCfs8MJcTXe_0f_2YCLhwn1yHKwUs4deqwyypSgUScXrr_z9LN3BzGf3cskseZ8dbXuLsBwMn7idHcYLoYxnPAj7BFItjl5PTTW1jHlDIcErwQk1CzgqGjmd3lzXqFXvpREhqX8ZnnJ5Sc2EcrllZyrl2g0l5XFKLTN8Zq2g2birI8vP0ASJzkb9Qd4xxWsAe7dQ",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydiLuY-K5lFazGsjdKPc5vAbeZCNbixq_nXtNFv_g28fIQ6AvtbXYuAXfosC6RSjFEQSSgWzH-PrDth-jgN1FM7VRHLNNgRAroEIr1rdyhrEZH1LHQ3aJzcPJBRtkWUXT0JBv1q6bCCYo03t9NgxIU9qdEF3vtUPd4VWk4-KPLm0jYETmtkM-mNzvWUja-TBII7MfIcSZoAKzmzlaaVZNsA0z56VN2otkUqghr2DvBk4ALwyFeRtxpdIGA1wa3GZ-fhI9ylHUSiTFuDfmUCBfLc8Ph2g51Z3U5Rmzbrj8rvm_vQh9SplRyi7Lvm2qzGd1lLzmYKmxgvk9C-T5l6xfaprjetmfqY9CeROcHowGsW19iWuXmceN5Sp0d9xCHToZVBH6AISmh7ndctmzNgogYATwZtl8ocRgKIOgcn2_5Mmqe8B",
+          "places/ChIJE4-AAwVQ0i0RJI17Kb5qMjQ/photos/AWCwydiuG_bbLK-xAzk2VWoF1cRwhhUsTyhX4iaWdbusnBqcdZKwg_PFK0FmhmPEoNXvogViRdyi7QALy6y_vMDMuUIJZ4SYWWBdSAytpWJdWwMN85TExMlZXVXbwuA9BA7ulv83aXjR8Y8HO3JsDmWnfhaLXnvzswHs82PL33iUi1QPkSGeCqSlH-LCxGS9PBRQgNEO7UgM6QeGL1eMElaFPj--6ESUze44BClT_etA6R0h0h_2uySNcSV6E-XQbVl1B8KPH1BSefm0x7SB-u1pEzS-jRbu3r8DHrgsW-lte_hjR-uslDstZuqzv8-90AgLdiog-q7ESYltRYXkxpXqAhfQFHbSkxQBoBAkx_CYqbcg9U6Dmdw62lZB6WScoTJ0khSWyEwdfW-PIw0CDMfflTgh_HW0b2o6u6Y0psTqQZOMGg"
+        ],
+        "__at__": 1786804979.9024289,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Kecak Fire Dance at Uluwatu Temple is one of the most spectacular cultural performances in Bali and an experience that shouldn't be missed.\n\nDeveloped in the 1930s through a collaboration between Balinese artists and a German painter, the performance combines the ancient Sanghyang trance ritual with",
+            "author": "Cao Cao Akatsuki"
+          },
+          {
+            "rating": 5,
+            "text": "Got there at 5.40 but still had to buy the 7 o’clock show (first show probably sold out) but it’s okay because we got to walk around the beautiful temple. Hella monkeys are here so beware. The performance itself was incredible and the story is wonderful. The performers were really expressive and the",
+            "author": "emma"
+          },
+          {
+            "rating": 4,
+            "text": "The Kecak Dance was an interesting and unique cultural performance. The chanting and storytelling made for a memorable experience.\n\nIt is incredibly popular, so expect significant crowds. Entry felt somewhat like being herded through, with large groups of visitors waiting around and being moved into",
+            "author": "Global With DS (부인)"
+          },
+          {
+            "rating": 4,
+            "text": "Watching the Kecak and Fire Dance at Uluwatu was an incredible cultural experience. As the sun set over the ocean, the rhythmic chanting of the performers and the dramatic storytelling created a magical atmosphere. The combination of traditional Balinese culture, stunning cliffside views, and the me",
+            "author": "Agrim Karki"
+          },
+          {
+            "rating": 5,
+            "text": "The Kecak dance at Uluwatu is absolutely incredible! The performance is based on the epic Hindu story of the Ramayana, focusing on the kidnapping of Sita and Hanuman’s visit to Lanka. The storytelling is fantastic, and what makes it truly unique is that there are no musical instruments—the entire so",
+            "author": "Chandramohan Venkateshwaran"
+          }
+        ]
+      },
+      "dream beach, nusa lembongan|bali": {
+        "place_id": "ChIJY7_I3adt0i0R-uL1um1y0_8",
+        "name": "Dream Beach",
+        "address": "Lembongan island, Jungutbatu, Nusa Penida, Klungkung Regency, Bali 80771, Indonesia",
+        "rating": 4.5,
+        "review_count": 764,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": -8.690951199999999,
+        "lng": 115.43322189999999,
+        "photo_refs": [
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydisozDJ0QqRvx37hlaCYtJhEgwJF_iRsanAe7N_NtAxOyuoorLX5ZsO_iLSSHbMUTcH9uJW0fasORoQnpBA5WkCHIEaII-Qj4X0qK08cewkwGdTEwey3VpZcPpp2j1vgzNV0G5fz7G_MxIQkQ0cJAQZXFb59E0XOe7NCDLfE0jxfAVwjv8MB2goatd7JXdrjaWmezKe6GfLD0t8wd1sOZZzAI1Drq1NNgf2E_G_fA5OOxy0dreaiYp3W_mUPqIHwmUnUHL-ClRZlX8L2ElUMjksfbYlA7F4o-8h5FFHHG7aO7GaPS0o5Eh0C-L9YLVXfHFhVkf22x-4vtOp__uB3lDmvRFJ9bgJkjTYXSWxe-tB-9zr-5fNyOsPIHgK-5IEvb3lpHaSyEzxQGZxco9ThPyJsiu9x49lmrzQh-h0SYnZixUiTuJnVY_wWTuHPZFj",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydjmHriEZ5Dva5e37Pd9THYJkgg6er6wIkH7AZZmPHNUkGRLVWz5F1BH0sVuXXA_-U1DbqyySyuTeo4-75FaRj0GP38mv-YsvXMvgs6N5IJMcNhNUuEf6q-RaFBMfLqPLmxPFE_-9OrowVv6WVjfhXai48uzevNN8UGr5qZuyeSbbV1sqQuPtIJ6MLoWkhTrShHgto9G28t3GINRhSDuzHc3Xl9wUUGzoBcQY5EWf4NFvXCuNaTUzhygmHdN_yJh8YYA4t6gTAq9NvClAPHiBASndpKnOBNDnycNX0fqVvQpAyaCyJAkCQKom8Ct0goeS9LwGLYnnLrXpga36UBM7ienoNxmnoVkxlX4At02XLLjQkip3bzPM_8R91uYS7kYFvS9exHi6vNAPm9BMHGgYjcL1njeSRk8SJSse-z7HjPwtpnMVIaLK_3FIb4nubna",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydjpEsNuZaGxoH30oj6dVQmCVJony3w65FzOmyTi1F1BXsIoaV645JJFScSw-Y5Jxd8lSpdEqu_NMWSF9OhyEZMIHM1xvto5BUTqARo6Vnt5tx0FavPoTew53Rvkg4EiWlEf_rU7iHHwywAchWB1VYyJyHQgJLt_rMKrKBbJ2uYqD7bQo9nvuW-bYh-DW-Em1IyOV5YfdHQwpuPJE_vfidwgIVkk_DcDQ5lY3duP9HNniF2PSlPEQtWWGhgfx2zioS6pNBzjpN448wAEDFBTY1tU_25_trUhlFfkcW-6pOBicbuDQ-Xbg5t7UHZeMFeb2KnZkY2INQN6ihf6CXRJzXAW4f5QNUugOGAN6_qd4veaeo3XTEjvoZ-tqh3gQfFq_yKgjHdNDnkpta312QAVelhKdrHpq59G1zVsd0Vnx3m-5g",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydgqRriDIGgXhLwzYzEV56ekv6kGClBqA5L5Us6YREQT0MNGoiDf0l5nP9QEsfrWWmvfOZ4LCmEg5qBr0MPjJGX5ZQ5pIb1oWTGqg-sFHuGHRmpJl6oaKLFSYmzZbOtivUY9vEee0zNdoCr2Qo-lL4ra9rnblGFZQBuvBVgb8fL-CW5kXfgRnXBVu0IoZckyNw-LWQWseF3fD5qLF-Va-AxfYLjKbHOsqppdxrqxEox8PYmhW6liF-Om0PIFEm-5HTl_OYYKkRt5_MDBg-X9ZkGea1H1wqWa1RsZjJ8XR2ZCftIEXM-VQ4_ybMF_gphQ4HiPdJ2wbJc-NN1R3dbpDwSMaOO2lRSNmhzK7jrBI2d4O8RnCYA6JhpPf5b_AbFy_8I9UNgwldWXfaigGDoW5K7qCTiueSDOX_ydDfpqliYlqnC5WPDaY85v57TjG5G0",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydjtJQN9PeaXgPE8lH0IrUvp_dXRqDzfBFa7xfbS_aAmnT42oWq7AjBptmVERdzu1DQUruXy9gdPT8PA7rPzGt-OtrJgr43DY2OigqBlDyKWaAN5EdDZllcuTosyw8Czk5puv8ybttim1vNZtae2DkmbBcyTVo-M1qanzB4hvddMMlEZ8kBhyA7TDnommsCEOdH7y7PvutuxcgYzCrD_xk8EE-r1xZ2MQSTTZJ7JZgoX8Be3iuJ0R4q5z99IwQiodzssR_kffhHeWXid3X81oSBvrc1CgWT8HSXJB-eupbBWsXuarUOoHyp3UxzHVXx4EovtCVExn8fbWtqW-WCprMmdrBXsU_hesT52mHz4YflZouZLNClnHDgThWZF0Zh-6ZYTU8K-hAgM_BkHnMhKfLXJwb3tzg6oIrrFT_XU_9E",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydg54a737YgKW2x3I9jGoi7DI4w0SBRSVbl4HgFDwVasUOcPi7xygSK8sgK5gPZAEkMaGhT_-vAfeuq-4NXifV84RWi7sQq2zyzfiQyWwimLA8LV-a-7Vz5tg5ThnhmePnp5bv_H_vT_NpLNvqvd5mUCWNBdzW_hswEcJjoW3Z5sb-JOQK0eDEgYR8CYLLLq5tc1_QgIO4iHwMYLZ_Wr9FXNYDjW_m3bOnZqsR5dviJmIwCH_wtxqur-NdHehXOzdbfMhIlGcmY0u37rAIbDcAgckUymjVPLqfcqUGgoKZ71mBo2rTsoeY0qlT1YyE9dfXWtA11kG72hPdILLLGfaRne_nKoOSDnzMsbII5W4kro4dE3OkQWYQiJjRZXOlSWEPrJYSQEG_WA1NL7zF7g3gEx8nMqaG8rVr6wFhHAyYF5dA",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydivTMwnp-I1NkiDqtGE-5O40jqfG93sNkirvAX8wZStu_hmzCwuM6ZokY6qUv8z-SpJzVnaF1eSEmMYRTsCqXQ1ckgm9EdIcNaksfS3tQKhQH6xVwpSeXQFqb9G5X1t-YcMr2btz_VDf0kwjw128vECbsGA4Q0qk6vmELip_GUsnaY90FVYI8kUKfJ1x6H9MeoonCvA7HQITA-93f9cVyVHQLt9nkSRpaz3NVGW0SrlWdfs-2r7veHrRv3Gh3RcKV0Kw2MIjc_1ruSS_P1GwIr1mQXv-uhjOJLsP0-KazL11EqIJ0EHDD4CZRk2qAnxDEyXaqkOcnA-r3ZOzojUMiGktf7Tzt1-xFdFKkH7s9eZiVY3CvJN3exsfSanXISSm8iHGCZ_Omg-eVt-Yy5ezZwR2Yq2vtTtWEQUcLwZHMsk8w",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydh0mRcddWRgtkFTnOqT57Zy042Jo4diJNOML2rqSfl23plYNXgtN1KHyXj92Gx27ZynjIllg2UFZ2Fw3hvCUriPQbC2jatJ0Y9VKmZOEezkN15UHFqJmGQYMvQASjl3zATsbTrgeEWFep3TaFWxdaApXcvZ0fH42sKrjXhHUHlar4LtoCYT0xQ6PbbykIW6Zq6W_XTWjwAiQBqsnJjab5TXTvTH2k4LmIEu8vF4dFDgB3_34Yn6bGTprs2U2XlE5zIloi22GmNJMiLPJ0eFUIoL8VoAcMJp8v2RTA0iK_RwALLGoWoVW3NwXbYc2pUDmZp_7pF17M6xmRR5mpyxYTwdDubgC2590tgDoK1Zz0u3KJScVzL8LQ5wLV6jYykoAq9wiSb20nZO8Wiaq_JnbNIOCysOTV1k8Rw5CkHmpGYH8n7X",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydiiFvZh7d0BHc5aSLavOamZqtIy2yFqXfekZtGIkMH2aEW3_5hAvAdjuFqfhlX5jkJ14RXmFfKZyvZgEw4sGp-JvPdMNzgUzjofD4wR9rGDimIA3pbBIs-EUQ9jsxefQyKLRKTUGCMvuEu8l_IOR00eWxVZcI1yD8DIU8RELJe9RiUzLY4h_43G8eTtvJG0YN8GIXUzhdOcf5fXYGTT3dyRejQtoIfhQk_pLGvlPH0HPdAHQhUjnI4zuMnC4bZdw9ZGljJoy0M1pMQEAeqLXTeEyYOVcpwoW1dWIZObsqsk2XxN6Iwy1hdE91dMnlzTAoVA3s_KxWn5bFhHjiQMDzKCF1uBGljUeTOqdm0A1-MQ2nIcPyqhloe81ji-eJcttWpEWoThaYkQFtHBkQBk72wvZxu8zSjo5ViAErflAqPu6A",
+          "places/ChIJY7_I3adt0i0R-uL1um1y0_8/photos/AWCwydj--oQLuHxBVJ8yU24gMLMXNnQ1hn2GSkMF6HDUKwJdmaLPoHDyxx-gTdK_kb_sYbYfacndHf51nL6NA_4sL1YzrtO_VpP55SEdk4FC4l1mqLGe1yprKI1cM2ZR1__1clERqGhtHL0NS2NvBoIL0SQ-UkN9qVXWzZXkBXyN4Pf7N54J0W-O9B8_MA5z47jZtO6PTqEHCdt1Dh-apLJcv9JxMRGwW_nid0Xxv-uMERqneQ0uTnBbFnUW5YQ1pmpYJZpAMLTpAw6hD-bgmqw_QI7LBojFojP0qEhTp-3_7Ui1olV_047nC5Lj_hzNCuPkuGV89EmxmsuBt1gaF9NqFCQHoIL-_W25rdeM1VDGFsTzm113rsk_oEPMPE91HBPCAqENeb26CZzbAtGTfmDpYPIQclKP-NCZfKataMhFBN2zHA"
+        ],
+        "__at__": 1786804980.3640718,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Did not go down to the beach as the waves were very strong and high. Not suitable for swimming or dipping your legs. But, the view from above the stairs with the swing is very nice, great panaromic views and you can chill there.",
+            "author": "Roshini Karnan"
+          },
+          {
+            "rating": 5,
+            "text": "Dream Beach is one of those places that stays with you 🌊❤️\n\nThe aquamarine water here is absolutely beautiful, almost surreal. Even when the waves and tide were strong, I felt an unexpected sense of calm just being there, watching the sea move in its own rhythm. It didn’t feel chaotic; it felt power",
+            "author": "Mpokgaga E."
+          },
+          {
+            "rating": 4,
+            "text": "The beach itself is great! Good sand and nice blue water. The waves on the other hand are really strong! Please be careful with yourself. If you want to lay on the beach and just go crashing in the waves it’s perfect. But if you want to swim go to mushroom beach.",
+            "author": "Lucas geurts"
+          },
+          {
+            "rating": 4,
+            "text": "A beautiful place to relax and enjoy the views. The large waves make swimming unsafe, so it’s not really suitable for typical beach lounging, but that doesn’t take away from its charm.",
+            "author": "Mon Sier"
+          },
+          {
+            "rating": 5,
+            "text": "Great places but be aware swimming is dangerous. Middle underwater stream can take you quickly away from the shore",
+            "author": "Alexander Khlystov"
+          }
+        ]
+      },
+      "the deck cafe & bar|bali": {
+        "place_id": "ChIJc-2xvKBt0i0RCr0RJJMav3g",
+        "name": "The Deck Cafe & Bar",
+        "address": "Nusa Lembongan, Batu Karang Lembongan Resort, Kec. Nusa Penida, Kabupaten Klungkung, Bali 80771, Indonesia",
+        "rating": 4.2,
+        "review_count": 1367,
+        "price_level": null,
+        "website": "https://thedecklembongan.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:30 AM – 10:00 PM",
+          "Tuesday: 7:30 AM – 10:00 PM",
+          "Wednesday: 7:30 AM – 10:00 PM",
+          "Thursday: 7:30 AM – 10:00 PM",
+          "Friday: 7:30 AM – 10:00 PM",
+          "Saturday: 7:30 AM – 10:00 PM",
+          "Sunday: 7:30 AM – 10:00 PM"
+        ],
+        "lat": -8.6794691,
+        "lng": 115.44427359999999,
+        "photo_refs": [
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydgiVDu4QjCmo5sv57BqW2gGFJxPw6rf49Jd4OWpgjUbW-hgMkAHTZKimfd_b3FEwTFtuw1-g-8DLBp1l_sHHH45ESGFM-dkTY74kwzW6TpWTQBc20b0jiikPnlKpURjr1W0ixdzoGgO_QmobmZMbLi3BPKVwl3JNBY4xPfhoG9zrvyGWplZfGgE2XDn9VkAXX9IUPNqB0QnTRSMlEw82CHSnpI62NXzrZefmv4pgiyJi4uIkbn8gRAgpPy6ns57b3d9AeRPU06ilrCTt6Fbm-yZ9q2iJYKkh7GEoOaRI-Zigk1w7trhWDvUM2E9nCnejqOe-T2Pd6CqMD9jIX9aBbCpcI0dFuPQ92wTPBaq00lxQTWCIqHjpkus2Bfv0Fkv5m2DmA86HLjbqpfzanhVN8rXf9lhavHhqMVvedVWAv5y5g",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydhICq65g7vA6Er_Z2ARWPdrZv7_C1NzQRxsshMlfBRWnE6IDal8-Z0YICwkdijY0fLn8y_tWY1UdwDYA-o7Eya4GE94ZEKBXwhmoUei_L-_Spa-t40oZ4iMYOFLCgCDm6aYcv1UFgP1LCCigOiJIoBcb84vGs2gfxDBs5ysykRyX0-b-sSHo91jdAxfVdM_KvFrP2roykM0YK5vhycB2fYBkkRLNdrO--CO5qQQ5snLfK8K8pmVFVsJvR8XCjWkg2Kc0qMKozAmLYCUJ0F-kGGjzPkkM7XKQp-AKNaU3aZ20DwQVs_TcwwSvZzgIRrNQqypHh6QPaJM2MoX_cauTYQwgTzQJyfcdj7ZAkbZZpdthzsNJ2X9F-UPp1YTe4RwzoFOePI73xRQv3bEqoDg07g0akFeFwsIbG2zJn4FvvNvEdY0",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydjtdEI7UCglxpW1WMGYp2p6gGLt44PnPMNX6VwSWn3yEFnLsSnmSiqGXvsnOetgCGFuBxWJOV5wBxxDAzCGMFz6NYkE8JVY_d5t1iVxuydSBBy4884vY3GnvLqIOXrAq9n_qpBbHOv-CAQjlVRF7bLGKE2BaJ_cejBWZ_mGgeqWxLzqPE0IypKSS4sDR4mgZlDqKuZDHv1tQXyYBuCq-yIEsd6Rz-l0EgF3w32_pAOm1FdhO7cV8A5pFPKVbyUwUOC7fnnIFBgS7XR29uzf-Y3f5ZtlmK7ery4NpwEaLK_fLeDWOTFMFa6E7k7E_WLYCdtqHqsAvMjFcxYk37ptvw1uW9O3D5A6loR3D5Ru9oJEqkIKIXxm8SCmb4DuzO3TNQO5CV3feBYI2hPnVTwVBo1Dw2552mlI5APjggx1b8aR8qmEhCqrTiDymXp5Pptc",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydg9e1g24pzXpj4SEQPl5FpZBaxMF57kYfSdLEXR82qF3jy03Igvivgqa4xd4t5Awgv2EkngxuaNc-FWx4x3nMEmRpDPoAu40Td3Z6NvHMdkiJHKe5z7llsYqfySgYlRW6NXC2giLUYQdsMHhspfXrHOXmdRcM8p0fKSfjaR1pGUsccUG5Y-DLMKVcHO_a3uhwYaDV4tQll6YowiGp1Ggwvw7RHtJpys3vTKTM2LAc6Vmk9RuwheuVuK6bqqiI3hDXnJ9QTub0UJw7YEFPadacwhdfUDQXkB1utzxQBn3yMXLECbsyVZLhuRi0lqLoV04ldmbYeW8G4jcO7QM4sfzKlp1I9R_Fx-7dybbBMJausdxlL6y9YoHmMF078leVfdg89LBGDuRcpPZ4mmn6Fj78v40yAwnju71uINSwpmKPRXuVJtYXSlmK7j0gfWCDrc",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydh1E0iyQ9OhGE_zY8sRQvWwgOOzf-3Fh8WYZEcSzDW766MiYjj8uOB4yeMRXV9OuVYNaYcPvOMWHE4PFV5mBgKcWdChJuhsjw7NmVYSjiXxlj67-ziPh3h49evmCOCL0zbFE948OlAOq6DqEidusPYVIygOdmKtPBcrTNdYfd-Gx45UWY0QBnQzDDXOkBYtf7ZiceiDNrT2OeqRq1uULagr-wbTngc82pQH3mUxYBQKHAHsDnefk1DILVgPnUJt7yuytgzoRTGUk4ywTZDHf3K2GiQnQoNwvmRoQWaXaRDnXlYBJjdF4r-iEk1kkaIkPxvokNI0jy1h41yUBiZk0wAmLDsMfC5Y6MZ0Wey_bNJuUwEdp8aH8LLY3ePwylaZ4hpCYB8nA1I5cB1-4K87SJGRLagsQ06vKWAgrIs6NmYzMvGxcxc_VRXejKpAtxSC",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydibZoD4PxWHDdI1EvuC0Bnnf5C0nP_t369nu38JjJU14Y_JFhqeJ56-BnFyBkkW8iPz0FkQ06iO70L_y5SQfy6w3Dv7dnaM5qWgAfGOZiBBDtbMnfXjeBCBcP94DIFsxFQCLlFz69QV2QmEVAca1a85K4H4PMEOWuFiqFjqy0GKzEgqL7n2OQY9La0UFd1CtID56tb0yN2pkw4Iedg7_M3B8ZLmt3mbVy9l8wHOJW-_QN9b6JbayixFsyYup_seFxClaz9rd_OUktx0pVuLH_IKo6Viz1QyziAk7jdpHBFbx2V4GXloE-CfkEkd6eTDqpQ9xsoOi2fi2ZO5fK49ZEJQpoAsydGMlb-e_eiuZ7s9x2gyh58SaSa_-K1iCjHluvqy5COf1qXrrgfiWCeLLnBfKW7rnfuyZbPWnaWD6cBpbqXDHyDMZVBTA_RqjJuM",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydg82VhV_eYJgbeRO3y_9h6jbBxZJiw5M2Rnih1YJTnYGU6nhVC2wQ-IGkOLckey9NWl7NWwKJkylY2hbzU47vI37bMbhoq9naTMv4B5hGHrv9aGVV2seRHgRNmyZVm7l4CckRiA60a40uMJCZo20R5rZBHyKbo3ONhTncdN59FqLYH9xAnwvqWOguU6R10RXsHCgfZEXO0Sk0sqPlyS4zAMKneihFC6gH4q33FTZBBOgHPS7gkEYxrxmMNHgdEal7OrKFAfcX4JzezYH81JEPf_N8K3H0xDqm_4frv5tiBihOLIDbuK0qxAIUPhibWvyi-EwvD-H2NcgF6Huu55jijPklA0Oet6Xyuh-6g1zRlmAQ2NuRtiODDzURHGDo_WfzZxKHX5HSvE_JOc6u3zqnuz-3sUaPhc4O4YslbXOvrqGBw8",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydgmVi89o8lnYRL5hfUrgN9s6tUd9pTgTSBgPIsUXrKhJFvJ8Z2YtqU6DrNpgvEAZiOpln1I8AgoIWHVL593_7RXHrgCfubsVaqxbuGyxl-V3VPFwAc-RiYDQu2gVWaQ7ifoGIf0lmJO_gskfCEeAqQRb11WXwu3nt1o_K3TMP9r-rMgelFRahcIzzg21ch4Gbj-Vc0DYUFYrwHzslZFjsO48vNIfeJUOvGfoCIfRqK-sYSJTF40qxMb07qw6Jj29ZnFp-Dg_YSgiity70x5DOmBOPWQxbEsJyOBa9s6EUvKtBIGyhf3M_f9hE4OVLBiOtSAm4TjzNX2NGzbTxMVYP-j1fE-LH9ar1HDiMNtkXCQaQtkWuMYSyMZ34ZYUnp8emLjlZAFYfctzbp8DDPaYr8ffjyrW2kYewJX4vy7cEteT3aVfkdeB0oKODKQeeFN",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydjafpoZ8sFk8dkMh2vggbH6CTmgCZFEJ4Br8gygVD4km0ogUK1DaTBJaFd_bOumI-_C8_rxkXsRu3UDIGFF8H6H6TgIObY-D_j-s-OwIjOWGSX-tnMSQEbqV6srLfFISwLMr0QJ9XKvXeZVpDUFTuD7_ixb3fU_jJD3V9jJkwVcTbh1FxFnA2fzIzIrpZerKO7fM1IJCendxD9_LyTiqXhCYuLMy_sMZ2rpfC7yGcd82fwVCKX3D9J1GGLcGXMBlTYkHXSBgsBEiPx2fqwz0DR7ZJrxtJUJZ0_XwNpu8OLeZtr9rYiXorPCRY52KZxcgA0ShNiBLLV8zcdkOpGjJX34baJPEWz79Y587W1hG30MembpsNyA62Dad_gkKhr7e2Y_ithlV1bU__852giTH0AtUstFgccCdnkxstA8z-Xi5gp9f_J85b8YuU5iKQ",
+          "places/ChIJc-2xvKBt0i0RCr0RJJMav3g/photos/AWCwydg2oqP7HsJYVeckyTR8GoyG3DW3olpR2gdFgRVwRT2d0FOp4TYTGk4s3pkzIdCWwfBqUfi2SGpwySuiZnK6deURhwhhk7Qh4F1AlAI-sJmwi2lGvRwvXHfoZKUs8itfkzTYHxSsVwIXBvKxphDjxtlkosin6OILG0Kk6Hzd9Lb4Kx9a_ZqOF4jdoUEoG2CfLVUAZOwxyVwqzkXjIBOyPQRujRujYcOkbpDcQAtSX4H9csAruYJth3e14GQygPuonliVkQa_WVWee_JVNgxRcL7g7z9TN0rOkfFfrpRTnyRO3Xb0UXWbdl2k-727ic0Ckqk5ydRUMcwSO9HZ373KFpahz-JricIk39WiL4KXp3jWgc1IEhZurexJSOoqOvHVJl377aMrvULc3cdD33xN0DNWzmOo1dmfjmbc59ngi3sFW0g8bWB-hGYojgg3DH_x"
+        ],
+        "__at__": 1786804982.0055811,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had an absolutely amazing dinner at The Deck Cafe & Bar and it was easily one of the highlights of our trip. The location is simply unbeatable—perched right on the boardwalk with a magical outlook across the beach and the silhouette of Bali and Mt. Agung in the distance.\n​The food was also excell",
+            "author": "Lawrence Drake"
+          },
+          {
+            "rating": 5,
+            "text": "one of the most beautiful cafe in Nusa Lembongan! their view is a top notch, and what I like more is their service is great and friendly, even to locals. They serve vegetarian food and informed us regarding the halal and non-halal meals. very worth the price and the hype. their bougenville flowers a",
+            "author": "Kinantilla Tsaniyah"
+          },
+          {
+            "rating": 5,
+            "text": "I think The Deck could be one of the most beautiful restaurants in the world. The views are absolutely breathtaking and it is one of those places where you just want to sit and soak it all in.\n\nDuring our trip we visited on different days and enjoyed both breakfast and lunch, and also had some champ",
+            "author": "Trisha Weston"
+          },
+          {
+            "rating": 5,
+            "text": "The food, views, and service were all great. We stopped in for breakfast. The juices and coffee were all very good. They have good menu with vegetarian and plant based options as well!",
+            "author": "Stephen Roller"
+          },
+          {
+            "rating": 5,
+            "text": "The Deck Cafe is a must-visit in Lembongan! The atmosphere is super chill, and the view is honestly next-level. The food and drinks were both spot on, and the staff couldn't have been friendlier. While mornings are great for photos during high tide, I went for sunset and the view was breathtaking. I",
+            "author": "Egi Jonathan"
+          }
+        ]
+      },
+      "flight: bangalore to bali (denpasar)|bali": {
+        "place_id": "ChIJM2khUBZE0i0RH8x73W3acd8",
+        "name": "I Gusti Ngurah Rai International Airport",
+        "address": "Jl. Airport Ngurah Rai, Tuban, Kec. Kuta Sel., Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.4,
+        "review_count": 45800,
+        "price_level": null,
+        "website": "https://ngurahrai.injourneyairports.id/",
+        "editorial_summary": "A gateway to Bali, this international airport features a range of eateries & shops.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": -8.7469933,
+        "lng": 115.1681655,
+        "photo_refs": [
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydgchsAv3ctyT5D1Sc-WwEaaC9m6i4TAYxpqlc7ItghEnSKeja5TPDU1KWJGg45phxJLOEqO33OYUPgzd76IoKtonOtq5BfJbML0Isk-6pAurPrnMp1EL0h1gFAmdF_-9R0IOWvLzhS6OqJhvrb4briZek0jobL_6G2c28vECXAsMHH8fc_ga19fSy4fYs7E7MdkXeHiEW2RJ2_lI5nblXEhlkFVpzQXCV_Ac5NhWYZxF6lj0tuV3wy7UZAJqUwmyYkT9ujebtdD5HX-4t-mFeTBzxBk2mtp1JHwFQAqplEJ8vbx6dXoOR-jksE8Fmd8DcK6Yhk6_EhtLCJJSxOr7KMzm1PkU5GR-dv3cB4eHd6wXCeO8TfwPFp8qRgI-M_8F1IMHLCypIRez_AbSnnYLcUN5mf-Dgl1uX9Xzl8",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydgaTbkHpgRyZvKBqRiRNmTCC53gs2zOTVQuDI1AE7Fiwrksouy34-4REKhX7XoWr64Rd164xe1kr9NbA12XGC_2rUGfM_4VuLE91JYBGmr_ulsaGtJMVGQadbdqBnKenZRSj06Z8M5MrdR3bv2mFPy6rE7FKuchljMPs-Tm4WH6dPwrWWYLHfboO5SYpqIDYZQZFt1TDX4TqjTKSlIYNzv9YuDSkVaf-h-C81FbcReseuGVNYV2IRBV5jsofz_VWyjA6Gmm4Li1RRuuXZdyHBCDCVTVRQC3IGpCfD3PkChIAGBlWzpIMpSCT_QzH3g_lp0Q2rt0clTaAyQMR02vQig0QRvt6hMOPr8wxBRZBw8je8VAsBBa04eJW-XhWOxH0-MrLelcIgqT3O3YSaIRnyksVRPvm5JCPZoOutN7jHV83g",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydhySNyAUKcmkz_vKRibkAPsDw9yAociTSZrvu9WCJrr3Uwvz6xpd7KualNFKi1gqVhqQVZF4zxat29rrR3XfDFHcNhFVnrpP_oEYYvNqZKbfsvKGKNVUcXLHrPqvIhx5JAG3Jcn-s6VLqMqh-fGtvU21uTiLx6NHmJqeQqx2DM28ScuWq0uzYRmdg1vJlINXMXh6s6x6w2kZbvnixM34UtPfgb9d5LsMEd0g5NcL3s2zQgFChfbzn51TbPorLhVG2EUnU7NO1B9GmCkuHOe-0O3_4GuYJGLQ-DoTrF9Fp5o8LVpQbI80ceG73bpHXOtcpKmECKzkMwheSNlb6iCWNXQNVbfxYt3hP36tPEfgwAnlx17NuIJCvTEpLE_SVf5PiK8ZOVwxT3AEDGeEDW2pVKvOiZFj0ckwYlDiMmXTqWneA",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydjoy8fphHcRkbRZtVITCJe3mqJ6G5S4rB-BTd3bItvHJ0zhWpcOHqTnbbSjn_yYuGZygiBTS4H4jtiJPc94bKbFs628NEfoKLr09oMn79IXEANIAcNsxJiy9X5QRICCZbtZtWbvOgGetazaRmdqx9BLq3y9vIK6il5I1DiQN5I7qqb3o80NrAv-tag-Sy7HFE30lgb2vdHqam__9vck9QBUp_TLK81PQ1PWYmb0xJQX_S2M6gduILjMA4Qjw0TgLFg9HzzJuL7oGkvzv1zhWYc9wq6Me_YKrSLQ0igrDV8DORGlP50FVXKKl3xdavqKpCxihsktQHCpZFqKOJQVVXa1NvZQItJ_0jsMRGZuIhQUMGw8p-GmaN8BJw1S2-_cscY5q0Y4d-h2DBOpSw0fm0XfwIstbcoX5Z93cJFlCEmf2mub",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydjONBtSsTgr68tXOWXmN8n1_tu2AyFMK55hZqI6mPuJ7JHMPg8Ydyd0f_NJsLB4rIgPQXcKLqnRD8dYkd0nCAhEG7Zw7NsJy0DEStODIPrHRfMjPubeKUVxuaCQzOPa63SRcBhaNK8H-ZhdBU-cDlza0SoYjkO0IPQ34e-k1Ugrv_0km3uSL46x70-yef0UisGYkn5bfjwabldGTJrKFVd6N04r-CM-D5RP9qIOlHq80G31uAznvAlI739o0_5OCdq3rUe862HELm5KC8Lne91OTc6ttEGLHh0pdc5FFYWiLOD1fSl5E7h6cPd9GyyDcFbLWs2bwp0ln_ogO8KHJkw2X0hvWyYRpKBV8SRdJuzkQ04ws_b6Xu0Uk5_GrtLVR0VaT-zINOJhovz-eGpPsYWCEId5TUUM6X91Mb3FoIFJ8w",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydiJNV58uzE03lj2fyKhCeUSVdmMXsyYk-Jn58s7TnAgnHiaojltuCeD4kOORDNiTWvsJwTNXjZr3GKOno6WBQDsmfZZyeJKB1a7tXceiHWC2RFp36YWwPp3Uwux2J3uoVLe_hyhe7l6Z9758Bnt0ltS7nmeMyjoZw3Hj4DyeH4nDP_YkkvAOcQ6tFXik4B0GOE_V_224wCjLibl_85b3KZbgdRFmRh9YGC0oXwKg_SPtcvebAecJrODO06POO_3W5T3apaRSBqNHTRK9ZRo0BJ5dojFu_ki0WVsYXcf8Hyb3xIaykCqEFUom57-hMGjnZliyUgoxUMYDwxztzpfdVuOVbGCdGIojf6jO8giNCA47pMNu1hiqP65_9qx9vyr93K1sAIEUkGCiiRnFUkqqWP4uwyUzZPIYZOuR-baEfOVSjht",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydhtf_ltS2u4sT_VrPxbO5DcgOTAbIMUQSRfnrvTNW70DnJpxxRZx06sVvLOKBjUVfg_ehPwdKarNLZAybYb4ZgzcUFo5qmT_709Ks8OQ5NXifbm3Rt6SMFQAztdVx0zE1rid0k2HpwZkvpadu_Xh9RhJzWTf6QTIpxqOIDWDy7ikYv9sFGq5-ivzrKyHCbcCW0ak--NAN5gHPDg7fwyY8oJKQQEqNtHuYRiimml3Xid8l9i2ZE_3FPTce9f67v3J5x1DYE-UlVAv4ihGTXPxLZDP3eUmCJcEg4R6t5_a-_FLSZsGg8PFJcGrwziKhCk8OvaFS1Fb4lL9TE-mP9oZzw9sE-QB2ZxoG0yUN4n7oQqU-pQdDpZQYSbJFGOul4aKqmu4eFNMjCehTOsEE0VJBU_yJC7iGJ2_R-uaen1HAV57MU",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydiQeUoycrvmDiYtwwPPAhp4N8knE1E245ZD2uiwnKDkqvc_O6YS2M6ho2Q0d0aWjn1EpEWurkkoMEmGlYuXtxqJ0B_mJ5VyuWtQjgEow49t_at76JRGLfKnC1bZ_aE27oYLFsCSkCFYb4CiTlOVgz5cjuGRoGBQxDlL_xjKQ5vkXv0BYhImTTCs_uccMOI62aufWGuTgrWALQ9rewXc57rWLWKvf4vq68azEMNig27TWbAZxGqHy9cGcc3dCpkgQg7X5hRr0ScCAiJPDmENkgcEbnMgOgfkRGMOE7CFBomANMDdB37jwgsjlXtPVqwaYhOCJtgV_JEwubugiAv3qwsmvin2NIfeJ7vC1e2EIxkwx5iq2xwAuydfJi83cP3xOOfbNRGwyYVzCpkY7-WrVVcHZayY2oFTvZyRm4ki5nIC7RM",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydgWI7VJ0VMJEuGD_-KzgsNL7Zz8MSQ401X_gtm4_OLloCnuYu4Pf9EmVaXhSgNYDh91pf5iPYnQITFvSk2J5PC68X6UbFGz4hfiOHOx1ctQZIkqTV4Z8eeX892F-XaEDSpsj-LaJ1XfFr1zpWU1JsG30l2gtUqGOqa7Ptr808Q7mxAj6oqJDoEZfIn8Uh28dhXbzIirrh4iEbsNm_x14eWGk3l6DGr2n3WBGssqWJHDYXmAySdA_6WehAIQYybCuJhN8Ih5hTD4uwmN4Kp-msEmL0jNssczDxlf0w7lSt6RpICmzECb1HRENzK_VwkF1Cvg2Xy2kSe83VAGNhMfr1GMs_T3gr-VgPOYJHtSR7CbypQ4dzxpoymg7ykIdU-ZMf5ngE48_lj4praqBMk14_eJx97-fyMSter1vzEk5S3iezg",
+          "places/ChIJM2khUBZE0i0RH8x73W3acd8/photos/AWCwydgJCQZz4xgDsn7a2w-wXFV99xkPUpiOhUgYrFgjZPCmNuLP3Ki6dQZi3Rsa_RfMMfHbMdiZFfdrjnHtaoZd2Cu-hB1vIqdJvUozLdhmRugetFcGs0Ynt-124t5M2OJFAt1AZct6aBzbvMDAAAk7HieCLXC5R5jHvumeUrI948V8JUiPy3eBf7pazrJLrfxRawep1UjQtyPRZMaWSKrGaTwiMaq7a5sLRlcz69flGW9_aqMShege2Mfg1b39tee6CjgIYGMmqzD7y5NE_DcTIyYGcwQVDIj3IFS7S7PUlInf2OhDi5sk4LeKQy7EquICzzLWScOB6FURXBAtl7M2qsx9cwgO2lYsPDAodEc7W5bFvTOpcNRuMdG265E4MFQgrxUKll7WOXxWunykNimOCr3keCe6wnGOq62-PTNJNhZ-9kxj4y2ck-vJ_SPSn2yF"
+        ],
+        "__at__": 1786804982.482744,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A beautiful airport and a lovely introduction to Bali. I really appreciated the traditional Balinese artwork and cultural displays throughout the terminal, which gave it a unique sense of place rather than feeling like just another airport.\n\nEverything was clearly signposted on arrival, including di",
+            "author": "Global With DS (부인)"
+          },
+          {
+            "rating": 5,
+            "text": "Bandar Udara Internasional I Gusti Ngurah Rai is a modern and well-organised airport that serves as a great gateway to Bali. The terminals are clean, easy to navigate, and offer a good range of shops, restaurants, lounges, and services for travellers.\nSecurity and immigration can get busy during pea",
+            "author": "Andrew Hubbard"
+          },
+          {
+            "rating": 5,
+            "text": "Interestingly, this Starbucks does not appear in the official directory of I Gusti Ngurah Rai International Airport, making it somewhat of a hidden gem for travelers.\n\nI was pleasantly surprised to find this Starbucks inside the airport. The store was clean, well-maintained, and provided a comfortab",
+            "author": "Edward Loo"
+          },
+          {
+            "rating": 5,
+            "text": "Bali has a very nice airport and recently has become way more easy for travelers to check in the country. Electronic passport control and other features make it much easier now. My last entrance took absolutely no time to check in. Just made the trammits and visa online. Both the internarional and d",
+            "author": "Pablo LM"
+          },
+          {
+            "rating": 5,
+            "text": "A Cultural Gateway to Bali\n​Ngurah Rai International (DPS) is easily one of the most aesthetically pleasing airports in Southeast Asia. From the moment you land, you feel the spirit of the \"Island of the Gods.\"\n\n​​Warm Welcome: The immigration officers were surprisingly friendly and efficient, which",
+            "author": "Sridhar Shankar"
+          }
+        ]
+      },
+      "transfer: seminyak to nusa dua|bali": {
+        "place_id": "ChIJ13UNQjBH0i0RWXwyWgJEkz0",
+        "name": "Bintang Bali Taxi & Daily tour",
+        "address": "Jl. Raya Seminyak, Seminyak, Kec. Kuta, Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 5,
+        "review_count": 88,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 11:00 PM",
+          "Tuesday: 6:00 AM – 11:00 PM",
+          "Wednesday: 6:00 AM – 11:00 PM",
+          "Thursday: 6:00 AM – 11:00 PM",
+          "Friday: 6:00 AM – 11:00 PM",
+          "Saturday: 6:00 AM – 11:00 PM",
+          "Sunday: 6:00 AM – 11:00 PM"
+        ],
+        "lat": -8.6941252,
+        "lng": 115.16806,
+        "photo_refs": [
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydgafUyWt9v4J7jcG6us0EqpqCDg-yGxEI8_1GiWUWxVly-FolNNfXwRDCDA1sA8fMcWPKR1LeaTSOabq4sXg6or2e_zmEzaqBUfCXk_Cz24obUkXC_UABq-HvbJ56JH_QM5kxEZQ7BVOCHBO3M3wBsNgq3ZhJ9ILHMGKs3KSnh7JPY5MEKGaITzMmaj9E7ZUkCLXFrjQWjRbMxSjiBYiWEFE3YLZo5zRTGEIwPFgw1I2HqtDgdK1orKgklH6rvkahMD_YUp5WLizTdOXMq9VqVafZvkBwXxpv5kUZrYBELl91y9awCUlhWUgzuAzexcIJrg1ZeZMGIaQJ8JVx3Y0XHvw2v6FUsPFc0T57Cd3jGnoSw4A2RUnyKcOy4UlRPqfyREddXcSukT2F6s4jogOLVY-VAmDg5yRXKmrYrMaQLTpptsxKmBKcrkvkvhxg",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydj77MNsBIzxB-YdnrBE5TfynCTJR-nexr6W8Ig3zNtsWfAFJT4hzADJKhl2YJoSf7CLqcA-px8ifNokfa968oDUapIpFuawXeWnjK1VVqAKvQypt558OTbFOUk2WGUQRQDe4YSEVoRjYylgX5ISyoaXwewcJApOvCKxx15mTuMO6HsH7tREUD4mPphB8Jq_lW8FjkBAvARJn103ZZs0nzzlIMldslyYgVCGOZR-bbcn6_ioVf1ubZ4iCDg8I7xNvhwjTyoqi8c9ICUbSlGpnrL35WzyCchvwYJMX6WAJD43wTn0MKiUM63bKJ1UTmCIGGEBNMtLbtoAr2k_6OnPnf2P26fe4U4pfYcaEsgcNpomHOgqiQ-Iei4Wyd_No_WcJzJKQt80oBP2y5P2XcxwbQ2oWtqlrIBoLJBkmGXjQFA",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydgX1Jbjpvk5ytoMN4a0OJsjySLFEgfYeu69WtqZ-tD57y5NrlIxWZXFDhVirahZetQxv07nkeoU0RpcpRuQKqrLKvo8s0v-zaNiCUIN7ZmPhSkHwJl_pRH_ZbTY_o-vzTtk0dJPnqnngvYsvaqITGVlUp0wktn7mKI72XIyOxydQfZQ1gI1TlupXvGnoeSmv8MkOTz0M8OxKCywawBc7pCLgafTu-w_PnuL17GaX2QKwRvRtujE2HHFK2pSl4m3P3VBlql3cetvYs3LbQVmkK8qXAWBSKxP5YApiWcOJxSaERGn9m1kunmZCV_31iYKOkiDrVMk_DPXDlw2YtGjfGr6UftlEcBt6vhThUV2CvbN1UlIe5_foyudGYJKWcslyVdhT_4FGvTGWXrIwpObknVgUahSL-hAcWqbAKrLlwgMGQ",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydgo7ABzCkuwYai9EEg9js8AYDvmwCucTSDny3XTwy3eq7OyweLL7zSMZ3WQkayAS8GHgcZyvfua_iQulwMEVqktDG2IhgyJ2fTdTg3C1mzqvPUo0jK0UbrMALDjWQD_Nvg8FCFt8GmYxQbuXLE_RPEwisHsdMwgSEnDvqUpQbhHqB2f4mFWJXyWA6wWIXU50rEr4chNUJFdtAiWHKNnDNPddfRPxxH4VDopWA-Lfeu_DS2H1hKviFhigBmCtdA2wdDVTjpaNZniQyxJCxWQJlOhhAy-r-ay0V__c0IRX4BX3mqWiS5zRMzXC3oJPUWtR2HMZw9IUn1Aj_TsnQuYRUKl9T-FkIfb6gCtULHtOBazR4TKRisDicfm61PsJMhHXa2X0m4FBeUoCT-iMecidCuSdrzTnzQYF53Ofo9icQCWfQzQ",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydiXOKx7mjBFx56cSg-Srz-Huj7YCZIlfn3d0AAVLY8FWGEXhXpUaqtzAJq42W3y9Vm9PKCq5fRLnaPtKOgJnKBCU8v7ADam0YvYSeMcz57lbaav81XskQF1YovkYVJErxDDJ4duEj271Q9pjaza2tYIH8obl3FRYMkPHSe54wOA2cm7L6JkdMjuyEUonzImjcZx_T0QZmK5iagyK2ArkCp9vtcG3ur_GdwPRuTAQ3J2By-QWls-vhw45O9HNZwGLrq5xcG_JLO_SwYL8OROCgV-A5YlaqHvsHqpRmocG5UDUKVgKfzaAz3J48o-qarnIt1liwpcV_3-RYAu02624bQAmaV9hZ-Hm3Iag5546TddF0wdkoD90ETZQvpK21DkLUoV29m8fWXKArg-F_ZyirqOfdP149JCNwMAfOQzFosnXxcE",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydgkO5OyCvHynzZeR-PBUIeHV1XmwGlyp4RjgEij2qxuAK9YCLyqnADRVCbXkDqLRoasGg3Ho7oB8MgPEkTYzx7-cURGX3NBrRy2sbDW9bXPlzUGXppo74S1KVNa_PQzb7Q1k4_J07-K6h17S8kQBGblJVqXacr-RKqCFb9hVinNWseSgMy1IG0NBi5_EubMWRtUqWTKN85eulmqW_Rwm1W0FaupaM8cW3dknV5Yogzh6wt0dAi9m_mQn8K1mtWAtyYtBjvLlE2PQZmXtomT0wuCwsNXK56U05xYB5uFX04LIQZ2xiX4lPzXXzsSoU1ip1eiAN9pkcV_J7jq1vdxtLnlKpnOdBG9xqTMn3AiDkZHX5rbzEU7JP9YvDgjyR5OUbMh3IRTlSR2jO0mZS7xagmmPzOZwuAAAIK3x_BXkNKzELOD",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydjp1jJQ6_1I37wx-edj15rPgHCLq0KDgN3d_DeFZDzQqRGZqct8uv3QpeJvvWc3IGoWue2FlcvnrqM521TnHMTNfhbWeBjwSOfNaPjSZ-JjY0AqjP2bG2mxS3mb7Wd_QvVukWehOU2BKmNEbqNSMHqaAQOTbInwst9GV-JULHGvpZE7-PPt80DBojE3h-QZvY42LuCJBcBbsOy-RYIcqNBwff-sI816XFCI-1dUoEwiYcfPNvnmevW4cOV5kRwDppbXvohiENp-r3J6x8MvnypqkKBslG17RyopDNlrMouHtEzV7rg2eJst3p2VAO-YcdMjteSzdtUkR8448c7aLm7KK9nM_MM5iIforXKQbv0EzMAV1HivUQeMQx-7pT6CcBe0TTQpqoOqUkTAovMp4c05-GxGFEsdwspx0swarHCgxr71Ph82UlSeVPZFlS9c",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydjZAakk8rFUoz1QzPRwhTOxUpd3ZiGOFDFzksgHWTrFEIXlrLEa4SBZrT2fzIOJw03QPGLwnE1Rghr-2ZqRQmPBM-QI72uwrBRtC4oh_74CJA16gGXacU91IVkjWNMmnDWW48LhyDi01LmV4Xgp0ErTeIZp0QKphbXDmCsNM_Zt14wOXqMFZn6VUyXiCmAXz9SVQemxBwCRed4iZWwKq0uiPlbyxRlVZbOTdbxCQ7s7eCm6vds0IuCziBLsfIHofYvUDr9feHTPOkPZwb4qXhdwiPd-pgAxMwLZmGQ_6dlDZk85MGS3HFNdrf97Dd12kro2CoUqJ6j1yvJuVrSEIw7DYM8lRsHNXT96J5oV3ECSXldS4LgN3JeMcDMKX2Kv7VZ8QF2u2YVX6CEqrBSoRNRU-kJSQEVY3HnfxHAYb0dxBKCE",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydgXcUq63BMtjmhKnJ_YAMvMmuoegcG6woVl9H9zqey73686Jv8SEx3ToZV0UiwMONgO89lGwl_k75LDJojzk8soHalMkeQltQM6A-Z2YFr7FAWKa4MKGzPvlk1LZ6O4PdZX1jjNT4COKL8X6TM61GkVt9QwcDkkR885BirMjKZlp-YRaEMuvysPLgTO5OmEZ4zI_eZ-bxRVeTR4xnEbWwg_vZCBSCM7oYjXzf3hY2on0keifKUrr2r8fEymQGiDnQb3dkgrU9dpnd5RZE4Y_zSqi70HEllCAjgaSjCIPou_OxWtGLzVg7xZgvY9c0IrgJ-LsuJ3yZNv0PSzVqyvMtI437s260wOzAdHeQ8dnpbhlDofEsK1TC5SJfYpyjodXjXH_VKL_B87NgyilKoGvIjUBmLPK2L1TaABvTN3p_F92W0",
+          "places/ChIJ13UNQjBH0i0RWXwyWgJEkz0/photos/AWCwydjLXc9rVPajdVLROfIWX5Lccq5L6JVTQF9YtrBJf2nDS_dKC6lyuWuMIzitWvubX4cXG9OMjPcyDEkwlBiNVdXDsYYhxAvimUdZbAGnaS6XYPRt93htGnVo_1WD3RXSE8hU-3fw5F9_8ZaibeQmgfLn7K5wXTigzJIfhqo5_Kb8YANUJW1Y1t3fn4Znixas_ROx_Dd_tFc11LcdY6EZxFPyXfzPtQ8NRotozMlPpvsBC_VGqlj050cVUqX55Mzym62BQoywcc50zlfNoxMjpLzS9v2ny-i3UwmAtQl3JvUH0aFN0BnlBPyQIRl4Gyvc2NTACQ_lTyMnMdQ07RHfe-jp7tkzF2neHHWLqym_ZM-zsfkN2EUuzD9QcfdFTfuXjScsv9mV_yluel3eWj8jMrtbpFrFREKSgS8RXPwhsKVUqw"
+        ],
+        "__at__": 1786804983.297389,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Had a wonderful trip in Bali, thanks to Komang for guiding us so well. As it was our first international trip, we did have a few apprehensions but his honest advice made everything smooth for us. His prices seemed very reasonable and transparent and we never felt being overcharged.\nHe is super fun t",
+            "author": "Dhawal Pathak"
+          },
+          {
+            "rating": 5,
+            "text": "Ngoman driver was awesome! So reliable and friendly. He was happy to take us anywhere and wait until we were ready to move on to the next. We will use his service on our next Bali trip. Highly recommend ++",
+            "author": "Kelly Dixon"
+          },
+          {
+            "rating": 5,
+            "text": "Komeng was our driver at Bali, who took us for a day tour. Komeng is a safe driver, trustworthy, friendly and can speak good English. He helped us to fetch tickets for fire dance and took alternative route to reach airport on time. I recommend Komeng  100%. - Prashanth",
+            "author": "Prashanth Basavaraju"
+          },
+          {
+            "rating": 5,
+            "text": "Great service. Driver was on time and professional. Price was good. Drove safely and got us there is good time. Would highly recommend.",
+            "author": "Zafraan Zathar"
+          },
+          {
+            "rating": 5,
+            "text": "Great taxi driver with good prices. Took us on a day tour and dropped us off at the next stop. we saw views of rice fields, beautiful waterfalls, temples.",
+            "author": "Wira Darma"
+          }
+        ]
+      },
+      "romantic resort, seminyak|bali": {
+        "place_id": "ChIJzcxjwRpH0i0RkCvrbJ5wmL8",
+        "name": "The Seminyak Beach Resort & Spa",
+        "address": "8573+VJ8, Jl. Kayu Aya, Pantai, Seminyak, Kec. Kuta, Kabupaten Badung, Bali 80361, Indonesia",
+        "rating": 4.8,
+        "review_count": 2790,
+        "price_level": null,
+        "website": "http://www.theseminyak.com/",
+        "editorial_summary": "High-end quarters on a seafront resort with multiple restaurants, plus an outdoor pool & a spa.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": -8.686074699999999,
+        "lng": 115.15422779999999,
+        "photo_refs": [
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydg5vdxipQB0SRfkxO8E0NFzITNzaut7wMP_bRBgRKQZS9pFdu6JuCKJoVtOg3DOyyw9FpwevbhwupJRAIbOQmifbR41WzM_iqHCpftdIW6_M853CS3jex6Je9jzjIsBLhd9El1XO1gLsrGJ0vut_KYYiPb-kZr8WuvwD547pLfWIg7PQ4qPt8TdqP-RM9xuzKiM81keIxjd_RoHuccXlkI-FcJ-UmjQ8TpzzJpY5a7KPl4pOn3V3H_n7GgeMwdTVGwV-9ZKLfjMMiqcBBo_ItPRQkM5sz0XG7nVLY3hTNPKAU3pHgWbUOGcuGH-7JEKS9eeheiqY-zHyeq441xFV59QisDqEUGhr2DoKsSbWUi-Pc3wRL8WI_4IHrqYzuvzy9TQMaQcObCRWj8za0dyJfHTrXvIHmvsNv48qPELx2oasCKULeGSoa7iCTK2maza",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydiNeXv-XJ6n0mgmgVtJuEHFWmt5KNo1h8rmPYY_kJJLdZx9LG36zN9xWaiiNXYLN37qjmgIcAvjcTgniebvr2WOroVK6FvQJyB2mzGWAG0NikFUnTJsLl9JY1YlHTev1n5_BlzND9p8n8WTH7yKLM8QUVDou7PCBYzUl0kSDe-MLsN75EUJkBDAMBd87SHcL4uv4PVmnexb4UihaXqJzkDD3W-JfvLnA0-VSvMh6VqMr18JltvMhjFoyMQ1czhaPVU0uzQUHee3czuN44RoOS50AEk2YsGzEg8nT8PezxjPe6va0Rq-iWGNFQOLf7vqZdDOU5BuSkFaoypl47_NcBY9-v4inGItDhOzZOYSKaNspSeAt_BjJGkSez8PIL8kvyOz2OOTwz7ukWJKs4_nPyp_pkIEvaU5bSFNSjgQDetG9l5M_fSvAl8On14SChO0",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydgo9ccsnXtPbiuGnE8mtUtxCkacHvnJGSziAFrGZu0QqlJokwskz5Zek4PyM8Z1bIt8aSPy9KksNeDztmRySf9orL-ci5CH-3pdWv4wmfzy_Z5cD__lm0lbF88VQWeFYOV2o9Powo3F2hL49kE8jeC0ETIlOr9pQO_ehIAKXjMu_PhKZX0DV6yqjJ5VhMoqn8d_n1-JFJmWelUczKBKHekMKvZfSENS-UyJKn-r3hGV9xMrBKVTX4F9V5hRFLas6-05zDwIuDeRFfjieHDlx2Sk_Wx9aQO-PrjtwtokvAEFroiU2me4H8SKtNPBVC7PH0q_9BezmtiKyCyIEmCZOF2AUPmYJLUn1uh9lGVIlxqdOdFnSYdaw23W2owhteIrKUIH_sM2aMhZa4572m0MM-jdT9eUpk3H0m0aDtyvdaZ9q-vc6J9k5XvJjTtuOlz_",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydg3pTwpw9GvcQvpNwTKsjc7DmSvch1r4lMqC-ldzYX6WOjFLwxpTKv-2tys8S8ELY_w_KkVmH_7vIeFzc6YFNY_-zSNJojGGmevAzD2t0Z7FnkHEuXulYArQSdczF15Ahb15eMYKXxUIu_AJeAsjs4JN2rdvG9uPaidVLsL8FGzgWfHbXEyvDwmNevh7OwBPHk_Sh77NvZLzJjPFb4vm_RK2iEr7qmMuv1Y29oktpbTZ6idvLyNGyBoFMEBA2Ta6gra3q_axASJOaT03E4deD8rxX8N0O5LMoRbvUL1QW_-2W54nKKEt-UETN6Vi6rMUGWKrLERjbhbMkbnybBY487zBLQRrfGbVsu5hs6Rxa9h26zXILMIACQixmNTsC3w5FnJY6Ehn3s6GOCSVeX6rcd2IVmzVkjAt2HDpWs",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydhb3jhtkSBZdWIdQ7_8KCIwJdSYT3b0fvAEeh6mBWgwmPz9tYo0RJ8dy_Gyy7FAvx-7BdIv247kwDsvR7HBl4BLcWg-2EigqzBfo5k63taLUuid_jUjQi6JSvAjSZa5hCMSA4rwqCX4wa5XNVHm9DxskuD89nA2CzMDMJ6Vu7xb1bctmxE2rX1gUbI16JxKpre38x83yDEYCZtaeOVah_RmCjwwVTFRFIylNBKmXfeNkY14qCP5msdBpXaqQhUxGgpGzkp7YBj56TLy5ACBF9eHYBgNXyutosMXWlJzfgq7C3OCA-BURho52rOZ5nbdsV1LYM0tyUVaBjhRSbVc-2hyC8RNsN5KxOAnOvQxKAU-vt73h-FA0xZI17GCozSIgJa2FGWRobTuazNVeHoL_iwKfXASegx3e58Wx6jLT4k1rYeD",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydheRG-aywbmag6sBIE4RfRtZWL9JjCq3QQ9PgQ2f-eqSsnpKbWpdmlxfPcEODfsVkVxk5BYLONfPIH1aDwGgRuNEohixYzH052uqKLBNjNhC0vkpczqDf3e5irPXM8siSK8Lamt8osJJssR8wnVDypdKZwkVFHFSaZQpsW9teR-_sP2ZV306Kq4hwquvWeBFK10yO4fZaKPKQ6YddRxX2l0DbOFueseRraQ-Rwz-1XS7h8vHbSju_HVgMBIrifOgllmcBdIpKZCc1eBYc58jhfCPPddQOL4ElfeW4HoeaCln642A9Frjh09rK8DsZQXZYMyX-LKpMxH3HTJShH-Y50m8-dv8-SYSgGLs2ua9WMvvLoBq6hAY9wyZG2LFE47FGcIKJV7oIVRpfWkv35okw-owE_HJMkykSFZG_qB9Yzmz-L6uOEc_pkgxOQIBmkR",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydjcja9FlH_qBHqXgPml_qKN9sT1_HokoqTEZQEbTQbt0Q8wRBxoLNfwsXKTe0dyCHnZewl2PNJyoVCNa8SgAxQ0YQ4CY_HUBd-_Nd33cZvde8pB8buNNQ5zlZRUEi5lkjG6JTG59675HP12HReLUdhOQcqlUi1_dkhDXUlM8NuuxBvtaBNgxpZWU-heRCjUU9HGUCr21MFcTa-ttQNijge7Pg643eClFmv5DXqXJzJZBSyBB91TrqlBEeNHaZ1vE7InSY2A10izr5ZMT5q15bTlk48kd_CY28fmys6F3xt63H9I4l4JE3RdKXGqV37GPU98K49LTkG7vADMsk5nTxYq4Feeht0mPuD1h0C0iq5E7SpV08sp-UdeqgWi984jx90of0wlNiAOirBHFQK8ETj3IqkETRO1x__89EvlDTHadoNW1HeiKXkAvTNnVw",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydgRiQiaU39eXCEdOT5A7-r7vfonXreznnW9YJP6GqJhbu6x7c8pu0EMzgPHbHk0upAmpmaaIwUVHV3BFTKGGcs83CU7UWS22FBKYIteF6O9krL4tdjkYbEi_dIZRb9ExSqS09HTGeNt_dw2pPYhxItv0vFFSonZ_h8E1lfrxD4XUetQUSomhjGF_hcLelOuf34Q-wvXou0IN4bqveQ56ghybW2OCtKR3m2F_U6QO-mN3P-ftwTvVG42xQkNJdc961PY5TqtPFGwnTDOE2RzELFWLObLKLuY8ggnQE-kunbnLCDpH_X-JpyWkQuZwSXjt4KHip8pHXFCZRA4DpOMgQdQfx3Wi5kBTceQmRVbfH_pSG49CehWtcYZl2CkHwUmCfAfdxKnuz3Wb7O4eKSCe6cs1oOw2Eg_fK41CzlwHVJO6Q",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydiYOhjuMLRIj9ogPxoEP0XDUDUtht8XN_8s-b2rdLD358nN3J_s5oUMZ_j1mMgq5XW0Ln0NRzruYsbqN3bwFCY8F9Ks8-N8AyH15g4Xlwdl-NPrgrpCvXjxIGpCynycLEkiiUkSD0KAHq_Oi3S70E2BZ1amWmlEAxHNM680MLRA-YY-8yxWCa4u0Cc77zOnjT8a185U7fYZmpXGJ4YwB_FfD1L0kGa4lEKAiMKttRxqD05ZCOVEMzHiftWNSZB35fu6ToBfU_RXaQUPqgSMvQaHcTUs_mYvNEhz_Tn1Y8CPQEsbmZUtU7plc_Sl95Gzp3i_h-UfilPCi5Y5hLgHdKLEwvi26idUp_QltXgrq51JK74JGncEPBHsnRwjo4VAXPFyrGpUUFPP_Y6HQzkDiyCeuLvQ-JcCvx12nCGYdkLcV-5DwEZZmePcfIS4Qm80",
+          "places/ChIJzcxjwRpH0i0RkCvrbJ5wmL8/photos/AWCwydjxw7p0lo9C7Kpl3zg44xnlXBlmNsXllD63lxyaRSTf-99zCIvxdurNj2HwFSg0Ur9mb-I2jtxc4nYx1yRxZBk6W0jxZEP-imjnDNt7AwqIhuFTwXDnmFKzpMHOzabm84rh39GGTXLjB0zDX0DcRlbb83jNgpAuU07rx37aFT05B4aAaYjDwivRnXbMGeJt6ZCxOxZdoxWN_aMG6su5Mbg7ltmmQ3FX80MtIm3wg4ofn2oInjJ3jHxYHrA--lGdOn4SA50JD7ho7tVtyB-rl7q51pCb5TJHnw8cN3AcEb49WIYUMS02FrSlyJ71mmzrpVAo5QaUt6Aiy7byDfPNanPIGE8B6RB3eW7XUROqLKhIYcbEHJJpyuEICKd-Fgl1ed4ILi0OLDm1S-VCc9bJ2BRK58yIkeQGB0UqNXSkuWxU3dJy284X4d2Rrvx1cZph"
+        ],
+        "__at__": 1786804984.0758421,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐\n\nI am currently staying at The Seminyak Beach Resort & Spa, and I couldn’t be happier with my experience. Everything has been perfect from the moment I arrived.\n\nThe resort is beautiful, the food is delicious, and the customer service is truly outstanding. Every staff member has been friendly,",
+            "author": "Biniam Alene"
+          },
+          {
+            "rating": 5,
+            "text": "We stayed here for 10 days at the end of May for my 40th birthday. We were beyond spoiled by the staff, views, room service & delicious food. This is the perfect location in Seminyak. We stayed in an Ocean View room with jacuzzi tub.  The room & view of the ocean was beautiful!\n\nThe most important t",
+            "author": "Elizabeth O"
+          },
+          {
+            "rating": 5,
+            "text": "Fantastic stay at a lovely hotel.  The location is really second to none, the hotel super clean and nicely set up with immaculate gardens.  The infinity pool must be one of the best in Bali.  Service here is exceptional.  All of the staff were amazing. Special shout out to Nika who was incredible an",
+            "author": "Josh Barton"
+          },
+          {
+            "rating": 5,
+            "text": "We had our wedding at The Seminyak Beach Resort & Spa and it was absolutely incredible! Naura and the entire team went above and beyond to make sure every single detail was perfect. From the very beginning, the whole planning process was seamless and completely stress-free.\nI highly recommend having",
+            "author": "Rita Phiri"
+          },
+          {
+            "rating": 5,
+            "text": "An Exceptional Stay at The Seminyak Beach Resort & Spa\n\nOur stay at The Seminyak Beach Resort & Spa was nothing short of exceptional. We were initially drawn to the property by its breathtaking beachfront setting in Seminyak, complemented by its iconic infinity pool, beautifully landscaped gardens, ",
+            "author": "fiona xu"
+          }
+        ]
+      },
+      "romantic resort, nusa dua|bali": {
+        "place_id": "ChIJ3-R1AixD0i0RHYkIPOgXP0I",
+        "name": "Ulu Segara Luxury Suites & Villas",
+        "address": "Jl. Raya Nusa Dua Selatan, Benoa, Kec. Kuta Sel., Kabupaten Badung, Bali 80363, Indonesia",
+        "rating": 4.5,
+        "review_count": 784,
+        "price_level": null,
+        "website": "https://ulusegara.com/",
+        "editorial_summary": "Refined oceanfront hotel with sophisticated suites & villas, plus dining, an infinity pool & a spa.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": -8.8345483,
+        "lng": 115.2103461,
+        "photo_refs": [
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydhoAKNxDoK8RxM92771dO5524RlXSXRZKCwmCo1Scbp_6peVg7kOxOjkdtGzM5CHnFEZWhE_7UIxoa8ilLQpkErWj8bpcNJmzKgJX00UfN2lhIRLMCDawtybbklFYntOfI8TKlEDnydjnTt90XdbmfwM8ysBHM_E3dEIyuhdnnzz5BycfdMw2gyTVqvLeVsoExwAB-L4tt_PThPtR1Wq5ckKZPZxcMKJDcOnC3rGjrtVXxVxl5i8Ua7pXr_CgXtoQOUqKi5MKwjTt6-rUJUQulDBWN6FUFrG_srGM6rClrlIoyQ2AdZxwnF-XMscMcp31AOIDfzDxRFd0jjxW4BXiLXBqobw8XRTbP6TdEKRm7kmDsnEEsGkZeuRvYILbo2nFdvOYK4jhrMRLUSXF-x1GAXRD7HhzMoooMTk-BE4F0nsA",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydjXKVphuCQM_2KsNZxMvR9EWIAGG7y9bS0CV8eIsODMH87CrddEi6v9fYOc4l1AN8QLADIipTiMuOKO3DBoIZJEpCwgLkEZ36i7GTMx_a2-k-2TviiHkluprMHPoGElz8bF2ILae85IK0YAVVPtyyhAEJEUS6yL1Vo5SihcfBslJ9yu-1MqGFofEjaetnh49WDLxSthUKeSKZ8_VO4hoapEWJlHSauVRUMD9-LMspV9P2wuwNXCTD8SDgCOS4h0sbDZeZyZLMMFw-EcyssoDgjp7R5tK6Jl1lyvv1O4ne_SkLJ99zsIsMnI-N0404FYPjDD-MyuNqLc6qhVl9prJG9A183QB1erfrednQDZbE6qnZZ_uzbQjfxH0BuQ2oetEhrRVVCTbw8pqSWLIchhdxvEGzOIcU9WhZ0E7sMBnHgsBEYw",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydjwbtj1bve4faWTt2p9g72fKeuH2TwmIFfeIDGus5mNNo6Jeapd2iiDlphcZSls-o02dHd7ON_6TLbYpkn9g01JXQK3Qv7qzkeFDAvjRSgXSxrCKVDpEtV1SA-RYkpsLBOiXfgaM4Vke19AfBv5qu2xWl0ovRIH0foQQXyfxHJjHohFXP7eF_uzw9NVD7lxEPTx5-OYiN1wqNbBhUVeIFzCL9r3OfkYOqyCnJ0J9GuRN9ZuaJEC_t087lFzW1-pOwEXk1Al2ydII7OtRLJxiHAl-jOs9xmK5aMeurNnbBjb_9hIyeCVxfSjCDne_9V0HdftLBFtmOzkm0zduREklBwH5xkDNPwDoVXUIl-sJxgx-zij2a15CmB7oSOM3VNaWo6SOSwWqqjoLdV65wZW4E0Xb_I7bKJ3simvq85TSQlbqrM8v_npzr1w5pMlOMRU",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydj5Ew6DPIQxMkp43C10mRuN5HjmSEROq24PZoWAFNkN9qs74hfCu80vcJ36Rffgd_V51se7ZK1oz6NFV2Vmw6hqnlFT4BEZJ8m6Q9i5IDn5_zywZ6uuIfk531NiRWfYsJYdfJUg54XDMGm0fCHfQpetrhcOJBPLM4CJ4dgqJjEepeImQP5w02cnRTZwhOoxBnZD8UQZ_Og2Rbbq-puFcd9QerQZ65VbltElugM8rAwRB7Pnbez_jA-MAIWPj6qh8QY5TJ7rao6aNPjtBfislnXXSTqSMfFYgKZGxWSDbb6ekM0ReIndrFJnloUF77BH8U-GDmUUtMOvxjWRiBmsQVZ-PTDH6SjUYr8wQkF6zbPlH_kFEtjNuhYx-2tfujRM8yL3H0n5W4BDY1Wx4unXhcrbUDDKBQNOGf0wIo5HHc0",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydhr7nmseQdvzJ6Qj60hrOHSgibMEsKrxTt2XfY9M8OUIM2t-BzKMGQPHZMUOoBrfLy1_d19iXbOsJE4yTqwDXysWXPQwh_VOolZ1uCO7TZlyuAN8147bqluRufqKn3eMJmrSUd9_l_ufmVv5WfyoZUoiqRHAe5XTN-08hH1a9Nhecak1VNL1aJvReo_W7NSoO7yAJYMjVme__5BDZHtKJybTQJLlqi8HUzp1AKQRkencqmhufjdTuAZN8NR-6h-im-r_m7SEEBSxm6wB_24wvgugAVYi8YX1bOCPZhCA4_dQdCzjW8OGcz--LPRnS_9EBl0I3TsAtXO9aPFQw_fmFQuoMY5u6KsAdxLsP36FBWM3jFz59WgNbMMyTeWr6tzXm4TxnJakdZFizKuhEsu9gCxccTGC42XuSJpED9bVzdNI_DR",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydjTV2G_9-luL7wlb213pA93kueQqW0V6jef377DrKnRmBDuDZiXl_KWS_iIVyRlzIDkm8P6qyGrf1TA0PEIMkmEyvevgcW_i5cbikBmSpjtiCWLoSi-A9HD7RWt0-IY0Rwi9gssBS_waxnt1pYXv1Wpqbkse9-PkkP19mqJFaCM2Urk0fcYjC-jIYdDcVuzMp8D0TZi1S0JMH0BhZu8nzPjRu1sZSQu3oNKbTQTYp2f2nSpiIeXq3WA4RA13Quec3ELhjwNkrd1Bbme6PhW-01JnvCCYbqNxPXjwsucwC-vSjtT0n6sufe190-zwaqkv5gc_fN6XTypCYAQtIRqjf4kk2exwAEbitPHsN1FhTBvQd-er_Ss4XI7r_SZ3HrK9reeRA0dX_wyeCTMNqGDG3x_GKX6zsxHdmdSS3ybSrN_2Q",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydhfZcqXmdyl_UNZ7XrCAjypDpv27_k5g3u_lO1o1HuxTkRLAKdL7P561pcpTa16av05ehOU-3rUjuRWrAQbT4nZ49932SKm3sK2Ucgc-Gc32kjCs8mdzyfhRP6CAxtlv24vTSUhiGgztVtk5a0mjWLQkdjlrTL9rQUrbGSZzD-FgkMU5GPvPf5eMaSuNZlEtkRHxVUd4X2XQ4MLhV6b0T5NmAsTuGWLPOfK_Y7wwA8sYjC76InaJH1rwVTDYtjuOx644zsMD9Gq5ngH6s1WLbSRQl8ODVJ0WbzNgc7RcTWiejIaIQ8j2iBz7N4FcoAkmn1yAUj2CqpDK33hNX2hOVjdFwgCqnYqKajHtHAa_cgwqT2JZF2hSA6qA6RBWd49CpV5bKb289cgZ8yVdsqzkzdWG5OJCcFnU-vdeBIB3QGrE6_7",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydhBiSCLTTqNgDJPivjGU6_D0pQEbodGi3-wQIxQ2LKh2vFQKXySWAjbY6Qd4xRFPrDewmAmjTPm0wTm5Nq9-naz9ioI_G804EvkMLTrqrQPgmyIEBUhCYbvRMDiRYYXSdYI-yqHRDppN1J1lh_uiEsAvqPYcx-eCWHQRAwRi3hCELm9GJx0pcg77dsupjPaaNPepT4vkceoLiZC2ZC5K9s7Xj4YfnV-hJmAiW_6puiaYlRM6RF65d4zbmLipGRn3GU8zEepuNsFoZr6lUChoqTahBtYhAP5XE6l_q0X1HQJ-1M_fWQzZzBYpVy-JKzh5qUADng7vxZ122Za5FSsV_8ZGiq73m8p7HELebzgA0LRkYlO_RGCdENPNpANheDQIJluJMySgdOLPiDO5UX-fyAG0rJHJ7DbZgSLEwIe_NCFpQ",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydgMv1ikkUFfmENMrlTrFFrpNN0VD35_lOFm83eTKmE6Fs0ghudkFQnMI357CiNX-dGPJNPEjAF2ks2RChLldF_DMNBi5OQykocl8Qi_fI5NlknOuEKUvRf97GdEqL9dUcJ7eB1BjmyezbZPvdE522O8fekEgpthZGZqqMRF1m9kr9JL3OpChkHd4h2yCt5G6CVf2AGLPGeD1WJTVMDpN-6feiECgr6aC_pFc2vRx5CtbUo8Tc9vfTsFXt6eyPQsM6PIghrbvL_sat7XKPwmA4hv9-WvFcxNqz-OVoiCiV-6SRAiqKPcUly3Dno4pw0EO7pWoWZYLRsmO3pn-oGBwNPE7U6pwaPYM4gDR8Q1rxZbGX0S5ml5D_8axUr8XzUIlrm3m1nLq7StLCMrg-PzDUrXPvlss1dUTX4mBtbpD74",
+          "places/ChIJ3-R1AixD0i0RHYkIPOgXP0I/photos/AWCwydjaCyM3CY9vP2NdLbRi5t7bZY_jPaeGzzinXqvej-Hs4yDrTmnwpBvXFwMF0hwUP-A1dZ7BdMAJCswSZHfyayW46W7s549FDABkpeABZXFiotnJtxeHf7s1VpdNaqNkzQQOYDOUrJ8X2CEiq2MnRbh5_E6muafuQNrUHj6F5Acp9Ux7A3cPE-Uvn34gzs-VrKpsf82wth9D3yOpNQzXtb-L6DfgbEyMMKW-JCsNpCSRzBFioN-JIBq0hY-p3uUSKYC67dCPNHVQ-ljV1eU5OPpnix9KKj5mdeENGS7mAVfKrOsAtc1m0wwQr-W-UURJLnMC4o_2viQo7vQtrUDuhgGmp9o5Gfy1lAP-MNP6lyCLWDxnG54bnQQL8msDobB-X217CMESPpZcirUzBMTXkaPfyha-0qgzMNimKomja-lXKs5p"
+        ],
+        "__at__": 1786804985.560385,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Oh my goodness, where do I start?\nSimply the best.\nOriginally booked through Luxury Escapes but having further communication directly with the hotel, whether by telephone or WhatsApp, everything was effortless. Arriving at 1am, we were warmly welcomed by staff who already knew us by name, before bei",
+            "author": "Sabrina Lynsdale"
+          },
+          {
+            "rating": 1,
+            "text": "The rooms at Ulu Segara are spacious and offer stunning ocean views, but unfortunately, that’s where the positives ended for us.\n\nOn our first night, the shower flooded due to drainage issues that were clearly not functioning properly. Despite reporting the problem, we were not allowed to change roo",
+            "author": "Michael Roldan"
+          },
+          {
+            "rating": 5,
+            "text": "A very nice and super spacious staycation place in Sawangan Nusa Dua area with reasonable room rate. The pool view is so breathtaking with spacious and comfortable room with kitchen set. Private and quiet ambience are guaranteed here. Direct booking is highly recommended so you can get welcome drink",
+            "author": "Lucia Roly Prihandini"
+          },
+          {
+            "rating": 5,
+            "text": "We really enjoyed our stay at this beautiful hotel.\nIt was truly very peaceful, and the sunrise view was indescribable.\n\nThe hotel staff were also very professional.\nI would especially like to thank Ankida for his smile and kindness.\n\nI hope to return again because of him — he was truly wonderful.\nB",
+            "author": "Yaz (Mr)"
+          },
+          {
+            "rating": 1,
+            "text": "“DO NOT BOOK ”\nWorst hotel experience EVER.\nThe property is very old, and the room had a strong, noticeable moldy smell. It was obvious that cleaning had not been done properly—on the tiles, the carpet, and in the bathroom. The facilities were poorly maintained, and the room decor looked worn and un",
+            "author": "HC C"
+          }
+        ]
+      },
+      "ferry: bali to nusa lembongan|bali": {
+        "place_id": "ChIJj62T7Qpt0i0RMf3xKM8iI1Y",
+        "name": "Arthamas Express",
+        "address": "Jungutbatu, Nusa Penida, Klungkung Regency, Bali 80771, Indonesia",
+        "rating": 4.4,
+        "review_count": 264,
+        "price_level": null,
+        "website": "https://www.arthamasexpress.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 6:00 PM",
+          "Tuesday: 7:00 AM – 6:00 PM",
+          "Wednesday: 7:00 AM – 6:00 PM",
+          "Thursday: 7:00 AM – 6:00 PM",
+          "Friday: 7:00 AM – 6:00 PM",
+          "Saturday: 7:00 AM – 6:00 PM",
+          "Sunday: 7:00 AM – 6:00 PM"
+        ],
+        "lat": -8.6728218,
+        "lng": 115.4475345,
+        "photo_refs": [
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydht05FCmBG1AOaLtKb-8Fd8PtbqMEsE_HuhodNoukCU86UlJvIQ8nns7dXyTJtJB_UOe0kuTLkWiDcnKF041ZX90No9Wemj5r4iX90mKi285Gw44SGfqGGe-Ql3Xlg3ayJdjcM9xj8ZkzLeQTOLc3b4KDPcshIgKxvwYbQRScfk5HxUhKi0wTVjCLhaDBVrYfbt-o4fiSL_kQG3oyvC-gPZ04OLpkpLIPx2Odv7hCJDas_IJASGcGctwgoPj7GdQyBNThrNOK6P7RT09Mzc9pJINGfGeWcX0MbI3NQZQlDmh2kEnSar5DSOSkOtwEeQARgmzJL5Wu4F36qZlLy7QoaqHnMiidSjD7-aroUJ3Si02nT9hXUrz1ywDYlW2YE76v_i4aXuDvZ-3nmYmtd5Gxb_5TGUzcRAGUP0PaxP1XRq2uf_fNj0F4dQb_Io2z7D",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydiWJmNaPYwJiFaNLP1T4xxBcsCXjz7qUZz5nVIMqo3sJO1K7o5W5xxGBxalBUuUGzmraqeOGCFw-E_kUaqAdLDSwyR1zzCBmZIRh-0dpXCO_ThGXDD9JCU6PfNmXfkwbC7BQTnGFKBVvvqfaT37TN0BFcwWGG-CI_Rszd3iiMViZCu7I1_bEnBp5iNF51TK6iCVCsulByLiqv7V4fH4Mkn2fa-T7GHyN7Jns8FtDlJiT62fDr_DWzAk_cJrgeenOy3GbBHRcvFmgHH-I0vq_xkSXBtoGtZo5wffnQajljaKuiaehxdn85mVgnCwLrmbhd8bgwW5djWKUUwtyh5VYX52KtUvnUlYV5sg15PqqZjZzVqoZ6Sw4ANpxyaNzxaeAANDLsPC5ARfJ6u1JxK02Fid6QV7ojcCLE_u8tmh520AeoauHgeact6oW98Kfg",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydhk_qXIEGoiJHexQ9ktFd_8BdbYCYw93GpRYTeYH57sk8sceYSllHlpHr06cn8MMYKG10fkhLrjEfBk_Bp2kDR-liWkbBGoNwlB6AfzmohHsS16i4z3vV7FkbU5n08qH0nUO_PFb8gBlL87Q8p4fYoERN3O5wergB1LQRiMP8nnyyte6mEFa5n5KMT2YW27TbaFqZ9mQk_J9SznXjjKBkOFQnJHpP_SGdift5uI1KuDaJ9NIrmg1lvayunDB3obhOb-qGFBpvMnR6WvRUJ5vtjKuJCtDb-7dST10fmVuZV5lbDCqfgkg0VVGS5OiA6lKkBAFI6ZCtVEJEi3eesxmm7R348YCCxi4dv6_UZbjKK1WBfB8DItciXjpJ_Gh7FiUOPjMLo0h6NYRrqb6Ht7lKaJUMipxJ-8yqu-CFhR24Aedg",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydjOunpyDQwuS3RuqSZvKoN6p_28MBbD0iuEG-7D3iRNZ7eqvaPHqEhmSNIQaG_cGvJqrNvu7UsTRxlMUSS2-uvVIfX6oWSN9wBVxHHduFfirVAGoUhImCKX1APpGPz6cnbIbMc8-wqlPPI-ey2dntr3-R1RSCstNq-7dLsz8qieT6ZM5TCDCaTbaAz83i1oFNwx_mnYve9wsfTLGGkkWG36LbQFWcIPfBJi8-CkgAXgf4RnTmPBOcmKACZWgoFvUwz71kSXFPDnN-y5jvDyE8P5-keNNfIsCjrxOsdcBo-ZPrO6DQAtjplK7yo7Nn4o9XR0W9sri9707_v3OP5RKs9-L5d6gTVjTrx0XkYskbndH_bsQUaebNpHBWtAe3n5lwl6uo4k-GtMrMj2ZS-8UgJYevm7p-e_vo-Z5k0ro_QHUUw",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydilugghb4qFB_L_ayQl5PoVbP8M8FUjDcH8oY8Yqk-zcPihPP7vZce0-yUrUn-BAG9ae-I55Skfy_2CCkOOS_K_F2Qc60fstzvWmvm1eq4-wbzXx0A1PZNsGpSUIjlZC_QXL9CbRrI83o3iZFXOn9owKGAjT6O0OjsgiYf9Rd3VtJA2VvAQbZSSR3ih7XjZxmG4BBV9ZwOXFomP3Xhj48FBxCwLfAz6Rm97hlyp-03or5OkehIOSifMuMv3xWAltI8Utx1uC3cWw-o-jVdrPSsOepF-CtN4U9vW9bVcGn9gFobVyVIAaYDWrPFV-8Ekdv-H-GkujnnebJy04-FsSre3Exf74bLvArvmbirUR48X5BHF_Z8MTrQT7R6a4GwALBMD2W4anRGNoUhhy5OSdd2EZVx-gukyYd6ROrm829hMvH9n",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydggIQgoN9Z73_KjIOJtvdk1nqo36iU5zgHspXF5fZnUgXMTqlkIMUci7PCjiWDw_x_e7jB8oakm9iz-vk6SCjCEcBtvn_5PgQLdi7mdYHHJQ_tNRzuZShy7qaFAL1Bn-2Cyds0DoJnXDnQblKyn4hJFob9ZipcIG0BNdRfNTf6INYSccBeMT98KA-rKFAxHT6tb4SFbvjjl1wrP79JUJshZcw_XHjtlEwgDY_vFBqvwTG2WYFTEvQORTMmpSdxSZHH2re0lZ6K3T8yocfpEEUU_x3XL3M1EHGaZ6_4g3H22TG-epq3f6bUL0hsCMY3CB6b73Evr5qY-cn0UgLCiCAlwRmPkqkSf8ns8vtIpVQkKlyKJaek_pzaBHc8tmVBwvH6_aGSYXpWVjT1Eo1pprR0RWn3LhmR9Uej9h2Q0GA",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydjfiUgjj3L_6q7QS4PuVB4OeHH5LC3TGYDah4fkkCzqH9IT9dfEwzUkfkoOuUdM2P7OBnvAs6S_pCRtkP_b37Tr52i69oDiR-9BiG47vY8jIwhJAmuR3cD1nJxT7pFtAC32mE1g9Ok6hAfoALPFStQL8vGDOq_huGCnNyAMOSdTc0UzgQD0jN13yxA7AszQxtOCMjecGbp1p8ttkLIZ8iCuTz0MnP9GBAtGO4TCEq_yMo1Ao1vrv4jV8Fyf3AxhEX5dQNB4gCIyTfaLIIEIBPyVvEsvC8bX4rDdJuKenU8kZfwRJr_MtVsH_PbZwjOkvuyeW53y-mH3rPsRsLl1yYK1g0_1_IlM_l2T3UxHBe4rRey8xMoE6gH7i1-abq90sqb3ypKUSwASNQd2ob9kpQx_WJ-ZRiayN-0M6P-FErs",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydjRBgU3xFnolpB6jK1j9jag5pWuiYAKBufFIPpF2fhPaLjDiDHVTpIaTfH4KvfK38W7eKJPj_1jMVnQ_UWGesjMhFJCK0oCU1QS9Q7K19zgx9A6cJy2vvEVbU_5PRq0Sbd5e4fBX5ybVYPln91WuJrLk631cxs9c0m5laHwvlwYZXPUQVns7ruenvuw0cpZcg2IZfYt53_9fPrbNzBRiYLS-vlHYYHH9AbP1OE7PcjjZ7CyQjcpeEq_6mRU7-P6Vfv1esTeuGldrqc9PEa-DqjFD4HjT85F_eiIuHUwlYXRIkVVQQSmdoQZ8bQ9Jg6_RxjbxaT5AulVEOTmo0c7DZGhsoIBuFNIq82RKUfVn7YXO7BfHkR4kc009b4vNn3WUBwiDCd44fhP609AMwB5YqqilRwgb6jepXfHtSRKRWP_NQ",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydjfua4SwDV91NPDw3riuoabaB_JXaKOE1eVlHEDoum3Hpq4yYr3-G7bo-UqNUWbLGZCxrT9iVhkQJXftnUMfK8Hqjv99EZ3bNDlzZZwMVsvXt0Mdn4I977qqWhG4ChMrYzZEkFfeYXPf8e1aw3NzuCdz_bPs5eglyOj2Gxc1q0r3bynhX7VIgXqeqd6ljwts_A0k4ac55J_85nUIirsM7tiYwZNyplDZ4X4ZOZ6rkQ_nuaamcMNLJHfJoIsCRwM9CIAL0e45WlPoYORoFlCbKM-AslDklAZsAxK2FrOejuD13wuB87tvgdA6doxv5DLoWtHbzayZVMUYk_QagDay92oT4FuQjwOkiE5q4cSzr_hkmTDHKX_yIArAm4X81aTg3e3q09qGAXjwb5JFqPyHmeRP8dtHGo80MHagMdvkP_r5gwT",
+          "places/ChIJj62T7Qpt0i0RMf3xKM8iI1Y/photos/AWCwydi4UAb-Pgk_8ccD_HLwnZumP_47Q6dgQI2aqMPynfi-0EmHh424bxWsLFiStq0swuQ83Rqj3_bD4QsC6xTQ-tuKsLjoJFcFhS2Rp76dgbH4gAswynwB0VBxSax3Cv-82kAuOq4lWrg5QDBXyMd1o4DKE3qK2LwUKDYVSkIcjSrMPHbtTkQ8friBeVJdZ7xLpccoE5sdTBMMbX8sfVKoFpsCEIoVMjgU9n5K1_7Kq7bed1YTvPKTSx4fflp8wRqiCrqijuQ-LlJZ9bg31NuGJV7bqxarnIOcDCtJeb4l8WPFQN2P74YIZxA3yPlacLseiGSvY19jOsKbvTv3RCUnke0zCS5Pw_oDyzvnklT4yN-psbo0NhIR2ys-ybuQJsN3JQ2Ca14Ws0ArFNjLhlvYFyCi-52kxja5onRNxHw2qf8s8AGC"
+        ],
+        "__at__": 1786804985.960821,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Great boat service to Nusa Lembongan!\n\nThe whole process was smooth and well organised from start to finish. One thing we really appreciated was that the staff handled all of our luggage for us – we simply dropped our bags off and they loaded everything onto the boat, making the trip completely stre",
+            "author": "Jess"
+          },
+          {
+            "rating": 5,
+            "text": "We had an excellent experience with this transportation company and would highly recommend their services. From the very beginning, the staff were incredibly kind, attentive, and professional. They made the entire journey between Sanur and Nusa Lembongan smooth, comfortable, and stress-free.\n\nThe bo",
+            "author": "Giovanni G. Minicucci"
+          },
+          {
+            "rating": 4,
+            "text": "I have been to Lembongan twice now and have used Arthamas Express both times. I texted through whatsapp to book my ticket then paid at the counter. It is a little annoying to have to walk from the front desk in Sanur to the harbor, especially with luggage so I wish maybe they had a taxi service to t",
+            "author": "Kailey Cooper"
+          },
+          {
+            "rating": 5,
+            "text": "Used Arthamas Express for the first time and it was the best boat trip I’ve had to Lembongan.\nQuick trip 20 minutes and straight up on the beach.",
+            "author": "Michio Strating"
+          },
+          {
+            "rating": 5,
+            "text": "We booked the ticket including the transfers through the reception of our hotel in Sanur. Bus arrived on time, luggage was  taken care of and we only had to walk to the newly build port building. The ticket included also  the return to Bali. When arriving on the island, the drive to the hotel was ta",
+            "author": "WTP76"
+          }
+        ]
+      },
+      "ferry: nusa lembongan to bali|bali": {
+        "place_id": "ChIJaW1cyf9t0i0RqyBaZbhEtzs",
+        "name": "D'STARS Fast Ferry Lembongan Office",
+        "address": "Nusa Lembongan, Pantai, Jungutbatu, Nusa Penida, Klungkung Regency, Bali 80771, Indonesia",
+        "rating": 4.8,
+        "review_count": 88,
+        "price_level": null,
+        "website": "https://dstarsfastferry.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 8:00 PM",
+          "Tuesday: 7:00 AM – 8:00 PM",
+          "Wednesday: 7:00 AM – 8:00 PM",
+          "Thursday: 7:00 AM – 8:00 PM",
+          "Friday: 7:00 AM – 8:00 PM",
+          "Saturday: 7:00 AM – 8:00 PM",
+          "Sunday: 7:00 AM – 8:00 PM"
+        ],
+        "lat": -8.678622299999999,
+        "lng": 115.4459315,
+        "photo_refs": [
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydjuV4N9_N1cgYnzbWXuk5SNg-4-67eo6D_qJ71l6i1pWVdvCKyOSeAE8Xd8Xz8pywuBihgk_bwadLS_ZHee4m5Y5FmdHH0SSH4IZNxX9W8j3AmUXH3HsqVmG3P5Nc1OPgHwQR69OwxyOqfbN567MaIHxgGHK3OCvtE4oma9eHQW9cLwhMBctn6uULFUJLR4I3ppaiRQhxePIop1Xkxl6Z3O50YQQLnCbxi-zpedm6QVzctCNmU5W3UF6ZZzq5jX9pcaaKjK_11P7k2Q4Un0MW5Lng8ao5BotZSUpv20cHab5ttKQQhTqBXhLn6LBh4QHEEkOK_CBDC7XCW8LskGdHyCBhm9L3J95p-oKFMZJlK3A_xrNayNSyjXLz_FAVlv4BujuMSldxtWra4C0OIGOx-YupqjPV8vd_4HZjJxb7ZRkqxt",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydhlu1seI7sUKZDri0JWPkLA2Io__9q4NwBxO2gVc67yng4e7btFzJiixdMxn3BUeL6AZVHnIrC6Qk-dgYwHsCJYDX137-d6PtpR7t9b-YSgd0SFU-uJoMgFMn1y6rYI-02LcVh31x_SYdc-YU0oUf_vRyGyjdzgH1tWtISuwK4mygrcgHhhmVm4d2cLe1_io_ARyPiv_zwJCOqeyLQZQgw7vi7DsAjsrs99G5T2Jw0t_qEuNBPjXigNUsJNtNdHSY49Oa3cm1hyjpLJSC4Qh9vbr7wgZ_otCZifigyVHlTEPP3Ucr-xznfWyyCuBsdPgZbn1_LcVb5MhwwtI6eYqupMQQrmPhrK75vrplU19bvcSLGQt_EaYvtUbf8nOGfiYzihHEKriLFGvKW42BI5Aja-NORmT6fbSWespCMUg9M9kN5Ol69n4NdFbxTeqw",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydiOb6MoBLRiCgX3wH0o7AlqRjPk5pJ5t_gN1uf87-rP8pxsoYNTzXRBMP_hTSIseW1K0r4QnQbrc695SXNIb8oicfsJ4wFxtV7PgrD1QYofDGUBOxfbAemSmTWqkU7w5f7OfjLXjFj_fFlHEoqsnkp9RNWg2tTCCQevn3bdjzeR9wWl7xwru0lD3sBGTGBPNf_xRoF-k-FSwUSa4Kbkgz41mi7hRmUAWRsmBQKio9ANGdfQciMpYmBxN6EendCcI-cK2X5KPVuni-n9SB34tvVJoNL-Cym34ohnHhm78Q88LUfCjtyADhrIam2WhdD8yqOpeCo0MDbsM68gL6QqghOll_nLfi2UskEY0YyAHSODaIuiiKh1MlIOs42aDjZBwyV0NgDaAw-o-j1g6lmkpMcGTTAulmY36z5Vqr4DSPU",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydiOUCI7X6ZJUYprM7fgvPyfFzXEsBgv_kxAJl0552AgaFH1h-iKvLUtQi4fre-1NmFIv845Ybez6sp2ajLOtciYAg28nwSNDuTBm_oumnQ7pedoXsEI3p3pj0V11B_c8zy9uaHHNB8xaaTgtB08P6wZygHAo06wGcJmFW5PgrkEchB7wRMtWyXtLPojB83a3uYE3t5wkB8Uq2TzQgn89uHB9GWbT3-5rWsm1J2Y_vGjePGzdfVuZYMOrgiUyAvt96eK8sWzg9sN_rePmM18VS9FlTQVYlsXwCGCSzER79QTYhOhvyH03-LPWflHzcrf_23Am1WLQO1tLyYKOwbbJtfYDaWY_mKCFWj7KMaxenuWRdvSh28dCJ_VVUQheMZpks4Fe33unexIhcR9npshWB6FgsD-4N24RW2VvhR9veOvptB0Z8iFyK8zU_vmwRP8",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydgvgHpMLzlJ8AiIEAXWYMzevNhJlhh1Ac2QMUnCCxODdUnlXMzS2G0QVGm6zWxVqUEUtaqXkqrxX0WDh2HZd7eS2V7lJxnvOcOF-pKNYVyyg6RayCpoLOBrx6GA9j-JjpsPy1YUoCSf6Zv44twFv9nrREqz5cratq2a_AHQAtdyzpPnTXJeUzel4VUSRcJj6PkRzEsCYoPih12VLHQUj27yM11HlR0DbeHFJUBK0M8z0BjAauZYKL08VXNC7Prylz9zd_fjKGpgLQA_u7qRF7QIhbT91zccaSpFtqIvLHvNu0Fhg82MU4C7zmq_qQI4StggNfT1z_suUVlx5Me-xrl_fNlvHwYaaM_O4AvWbnCuz2Jji-iFeox6joPMu_olxxuuw8hTHHvZe3aZ9FvmNbM4B3Sa0uAonqT3uHFe8XcjIwvq-Lj5DGcW-6RF9w",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydgluecWep78dSIFOyXviiuZR3xvXmWKKA184RTqN-Klr1cQkevAhpIyxKKOE4rXGtFNGhA_doFaxZegoOS_5nHlSLFcoFmUOYxDEcs_9xQiJ1cSB7BaPpWkJkMQRH6A8qOD92E9K0Kf0ysIT_i-5enWR0VN4RBYLEVGGrLpgxHGzxxoIBw8M1NtEWhzOZ3urff-qz3awvBe0fzWquOy8ZBKyfLk0J0-onJoo7nyH0OYyW0aj_1EQD3aOhdCJZC8Goyq0MJHwEMBkrnCieSuCaNpiFeo3-vTDvzndFJa3STm2Wve00C3yAzV49Ns2yYVFYgd13dTTd94IKhY-HlFmsOl3RZSYoCNWlRoRzPyz23oUeqW_0sYU0dB128WQ5Uqq8Z881hh0aIqA_MSPd_E8dlXc4afoiWvLaSu2js_iGtsiQ",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwyditEXlZxVDWObrZTrxikOl3GSAxlpBxMAyeg-r32msN2KcsJr22vRUTSJHJ8ZepPl9ibcqb8WlKm3lFVVagIP9bEVXIr4IgpOWYbLzUBef_xlw1MF_1PLUDriFMLcTbdM1GJtzlO7cPDNUJaarSIiXIKD4voV-YWa28-_tbskKaXw6q6wWzK5G9as9CnREBUnUHaWAuOOcSjhSUJnOYvy4fXhFiAcW5gnZIA7GWI6-rf_7-GjMilehTzoiDnCO0IAlLw9sept13rF1jHGgEqoHHQg29tpS00iJqK8gOf9xztj_8ryPHf6RTxgPi2s_2_YFoof1sW5tHNDwpGMRZl0gbj3uIdAJ9zf6gtQXPFMEj8XcImH6vxaUIliFSCMtqolyVO1B0jBQLjnzA12oqLGwilH8eFMJGKI4PRmoiiuNxmDbr",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydgdjSCkDUsIiBJXahAOGtgog2B4MnaYeobb2Pvn9a5aNxMTMNMbNgBRNZb6HBc9iA6iAWwvVqcQvt28lJoxSq1DE52R0tXP3YaH31VxynZY7TQIlbD7z3UrxDF-jwccWEfszUC7otF-6d1m6bnbd6ag9CeGS8e6259d4qO9kmkdAYIcVW7tqlNcxjNmLmyqHRhxMO_QH529yNnrlrdHqgmMd8Bjcs142rzKphwzquIWhlEBEaHXJy8rVKv7ZKY1Hhjf1sWeCMoQX9lpaAlwYYy8iTELFfBl8RafLt8mXwWmeQ01D1qOB5SKXiBmdPeKn2kfuZQNSCtRDkp4o_JA-bQPAt3XPfNtYn61gkCEJATWtKK1trP2wEacSsc2zlgKeBfm0g4PGECGhSEcGlzjw5UxfbROkNiynjGnOr1mHOyAuuEh1bPhSsu8ITbYaWvq",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydhLEg5pTipIA4WKjnta-gg9TUyyNMclL1nAZKCM2erJO6efPtG3yaNba_qoOHw0t8njbov3Ijn4Dk2wOwfe916Wp-44Yf9XIVQfL7Pg8K6ILVLAH2I3zuUOtYkR6iptLvD9VvbVrGIg3g-ZnW1DHqAWlxvM37MF5TJy1n1l0XDcRSJuMD0QDMrDn9_7krUENPjP2DCOXRU8dtYYrH5H85wUbC4O1dKDjPzjEQWfuySmPYuZT7iHQM2o7xfbtz1dGLPomGmuAxvyabjfNMWGP-cb5KcEarhsuq-k9bHxr8KLx7LsI5LRjeSclgxJTLmzTgSMQrRJsUl2sc-hfoUVXBBZx4xFvTzZxTF7M7jw-o1YFlFgQgT4TrsvZtprv72cKEYh44Lu91sEGmZh931uyGZ3msdANkHyzJDIucjxzBg",
+          "places/ChIJaW1cyf9t0i0RqyBaZbhEtzs/photos/AWCwydifiZMTy1hNKJVHARHMj0rWxKq4Q-1v0d_B-MJjTwVV7ZdwbLWu_UqEhyIcGvmc1Ef9OgQkt3rdNHibKOzQPZBEE6v1tVzASJccQwWa5EeGfjFZOfS73K6d9ODAwbNzju8EMTNCgCJnC6kGN_d_ioVZw5FPbLT6v5HUyZU4kWkXpnHzWkEer3F6CrjBBz91EeOO9ujoJMgMm0q1k7vfQZ4rIfh1cifF2gPwen4hLbDkXJqm1rWT9XyLf6D1k4y_Z4O-Z4k8ydhIyHac3fvLtmusnLYxfIKKLAj0fCUG2le8MshJnWh7HDDeb8jnZb4Swpu8t6GvXMN3K40nRDklYLLFYclIijkl3bR-w3A6RlHIRYGPImP2ZfqhdRNp5ZIRG3S_PhHdISgvR--FQf4ApOPYiVhgR7kzLBMtDa9tektI6cPS"
+        ],
+        "__at__": 1786804986.379282,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Solid ferry experience. The ferry had AC running and seemed reliable. It doesn’t sound like much but trust me this is good for bali ferries. The thing you need to know there is no dock in Nusa Lembongan you are being taken to a different transport boat and onto the beach d day style but without the ",
+            "author": "Ervin Cosic"
+          },
+          {
+            "rating": 2,
+            "text": "Ferry was fine, though bumpy. I wouldn't book transport from the port through them again. We were dropped off half a kilometer from our hotel because he refused to enter the road leading to our hotel. We saw several other cars enter through there and it definitely wasn't \"too narrow\", as he claimed.",
+            "author": "Anne Kroon"
+          },
+          {
+            "rating": 5,
+            "text": "Can't thank Dstars enough for the great customer service.  Our plane arrives late and we missed their Ferry so they organised for us to get on another ferry that was leaving shortly for only an extra 100k.   so happy with this.  Also the communication was fantastic. They were whatsapping me in Austr",
+            "author": "David Ernst"
+          },
+          {
+            "rating": 5,
+            "text": "Professional crew, everything was perfect. The boat was on time, the crew closed the windows on the left side where water could come in, and the boat was extremely clean.\nThe captain even slowed down when big waves were coming. The boat had 72 seats and 80+ life jackets.",
+            "author": "Dávid Harmath"
+          },
+          {
+            "rating": 5,
+            "text": "booked online the day before for a ticket to sanur which includes land transport. hadn’t heard about pick up timing on the day itself so whatsapped them to confirm the timing. pick up was timely; registration at the office counter was smooth\n\nno issues with ferry ride to sanur; took 30mins. if you b",
+            "author": "RAY"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Bali",
+    "departure_date": "2027-11-12",
+    "return_date": "2027-11-19",
+    "nights": 7,
+    "month_year": "Nov 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 2,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Bali",
+      "THE HAVEN Bali Seminyak",
+      "Mulia Resort - Nusa Dua, Bali",
+      "Arrival in Bali · Romantic Welcome",
+      "Flight: Bangalore to Bali (Denpasar)",
+      "La Lucciola",
+      "Ubud Culture & Rice Terraces",
+      "Tegalalang Rice Terrace",
+      "Cretya Ubud",
+      "Ubud Palace",
+      "Beach Day & Spa Indulgence",
+      "Seminyak Beach",
+      "Prana Spa",
+      "Potato Head Beach Club",
+      "Nusa Dua Relaxation & Water Sports",
+      "Transfer: Seminyak to Nusa Dua",
+      "Nusa Dua Beach",
+      "Bumbu Bali",
+      "Kayuputi Restaurant",
+      "Uluwatu Temple & Sunset Kecak Dance",
+      "Uluwatu Temple",
+      "Sundara Beach Club",
+      "Kecak Dance at Uluwatu",
+      "Lembongan Island Day Trip",
+      "Ferry: Bali to Nusa Lembongan",
+      "Dream Beach, Nusa Lembongan",
+      "The Deck Cafe & Bar",
+      "Ferry: Nusa Lembongan to Bali",
+      "Leisure & Departure",
+      "Flight: Bali (Denpasar) to Bangalore"
+    ],
+    "auto_summary": "7-night Bali, Nov 2027, 2 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:44:19Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:42:03Z"
+    }
+  ]
+}

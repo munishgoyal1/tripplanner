@@ -1,0 +1,551 @@
+{
+  "archive_no": 11,
+  "trip_id": "kerala_2026-12-12_2026-12-18",
+  "user_id": "corpus-kerala-family-kids",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:01:41Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:01:41Z",
+      "content_hash": "528ccfa7d9a22d09",
+      "plan": {
+        "status": "draft",
+        "trip_id": "kerala_2026-12-12_2026-12-18",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:31:41.861535",
+        "destination": "Kerala",
+        "origin": "Chennai",
+        "departure_date": "2026-12-12",
+        "return_date": "2026-12-18",
+        "travelers": "2 adults, 2 children (ages 4 and 7)",
+        "notes": "Keep travel days short. Include a houseboat experience. Balanced pace, 3-star or above hotels.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Kerala",
+          "estimated_planned_minutes": 1059,
+          "evidence_place_count": 5,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "5 preference-matched places account for about 1059 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            3,
+            5
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:31:41.861565"
+      }
+    },
+    {
+      "at": "2026-08-15T14:02:25Z",
+      "content_hash": "f111c32d395ed914",
+      "plan": {
+        "status": "draft",
+        "trip_id": "kerala_2026-12-12_2026-12-18",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:31:41.861535",
+        "destination": "Kerala",
+        "origin": "Chennai",
+        "departure_date": "2026-12-12",
+        "return_date": "2026-12-18",
+        "travelers": "2 adults, 2 children (ages 4 and 7)",
+        "notes": "Keep travel days short. Include a houseboat experience. Balanced pace, 3-star or above hotels.",
+        "planning_recommendation": {
+          "confidence": "high",
+          "destination": "Kerala",
+          "estimated_planned_minutes": 1059,
+          "evidence_place_count": 5,
+          "reasons": [
+            "The user's explicit 6-day duration is authoritative",
+            "5 preference-matched places account for about 1059 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 6,
+          "recommended_range": [
+            3,
+            5
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-12-12",
+            "title": "Arrival in Kochi",
+            "summary": "Fly from Chennai to Kochi, check in to hotel, and relax. Explore Fort Kochi in the evening.",
+            "stops": [
+              {
+                "name": "Flight: Chennai to Kochi",
+                "kind": "flight",
+                "time": "09:00",
+                "arrival_time": "10:30",
+                "duration_min": 90,
+                "note": "Morning flight for a relaxed start"
+              },
+              {
+                "name": "Hotel in Kochi",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Fort Kochi",
+                "kind": "attraction",
+                "time": "16:00",
+                "duration_min": 120,
+                "note": "Evening stroll and sightseeing"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-12-13",
+            "title": "Kochi to Munnar",
+            "summary": "Drive to Munnar with scenic stops. Check in and visit local tea gardens.",
+            "stops": [
+              {
+                "name": "Drive: Kochi to Munnar",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 270,
+                "distance_km": 130,
+                "note": "Private cab with a short break"
+              },
+              {
+                "name": "Hotel in Kochi",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "14:00"
+              },
+              {
+                "name": "Hotel in Munnar",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "16:00"
+              },
+              {
+                "name": "Munnar Tea Gardens",
+                "kind": "attraction",
+                "time": "18:00",
+                "duration_min": 90,
+                "note": "Tea estate walk"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-12-14",
+            "title": "Explore Munnar",
+            "summary": "Visit Eravikulam National Park and Mattupetty Dam. Leisure evening.",
+            "stops": [
+              {
+                "name": "Hotel in Munnar",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Eravikulam National Park",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 120,
+                "note": "See Nilgiri Tahr, easy walk"
+              },
+              {
+                "name": "Mattupetty Dam",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 90,
+                "note": "Boating and picnic"
+              },
+              {
+                "name": "Hotel in Munnar",
+                "kind": "hotel",
+                "note": "Return and relax"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-12-15",
+            "title": "Munnar to Thekkady (Periyar)",
+            "summary": "Drive to Thekkady, visit Periyar Wildlife Sanctuary, and enjoy a spice plantation tour.",
+            "stops": [
+              {
+                "name": "Drive: Munnar to Thekkady",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 210,
+                "distance_km": 90,
+                "note": "Private cab with a break"
+              },
+              {
+                "name": "Hotel in Munnar",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "13:00"
+              },
+              {
+                "name": "Hotel in Thekkady",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "15:00"
+              },
+              {
+                "name": "Periyar Wildlife Sanctuary",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 120,
+                "note": "Boat safari, kid-friendly"
+              },
+              {
+                "name": "Spice Plantation Tour",
+                "kind": "attraction",
+                "time": "19:30",
+                "duration_min": 60,
+                "note": "Short, easy walk"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2026-12-16",
+            "title": "Thekkady to Alleppey (Houseboat)",
+            "summary": "Drive to Alleppey and board a private houseboat for an overnight backwater cruise.",
+            "stops": [
+              {
+                "name": "Drive: Thekkady to Alleppey",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 240,
+                "distance_km": 140,
+                "note": "Private cab with a break"
+              },
+              {
+                "name": "Hotel in Thekkady",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "time": "13:30"
+              },
+              {
+                "name": "Alleppey Houseboat",
+                "kind": "hotel",
+                "note": "Check-in, overnight on the backwaters",
+                "time": "15:30"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2026-12-17",
+            "title": "Alleppey to Kochi & Return",
+            "summary": "Disembark houseboat, drive to Kochi, fly back to Chennai.",
+            "stops": [
+              {
+                "name": "Alleppey Houseboat",
+                "kind": "hotel",
+                "note": "Disembark after breakfast"
+              },
+              {
+                "name": "Drive: Alleppey to Kochi",
+                "kind": "transport",
+                "time": "10:00",
+                "duration_min": 90,
+                "distance_km": 53,
+                "note": "Private cab"
+              },
+              {
+                "name": "Flight: Kochi to Chennai",
+                "kind": "flight",
+                "time": "16:00",
+                "arrival_time": "17:30",
+                "duration_min": 90,
+                "note": "Evening flight"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:32:25.817898"
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:02:25Z",
+    "user_id": "corpus-kerala-family-kids",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "spice plantation tour|goa": {
+        "place_id": "ChIJ0bVnNrm6vzsRIZDi6tHyqmM",
+        "name": "Tropical Spice Plantation",
+        "address": "H.No. A-14, Arla Bazar, Ponda, Keri, Goa 403404, India",
+        "rating": 4.1,
+        "review_count": 2253,
+        "price_level": null,
+        "website": "http://www.tropicalspiceplantation.com/",
+        "editorial_summary": "Scenic, tropical area featuring guided tours with meals, rare & endangered birds & elephant rides.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 4:00 PM",
+          "Tuesday: 10:00 AM – 4:00 PM",
+          "Wednesday: 10:00 AM – 4:00 PM",
+          "Thursday: 10:00 AM – 4:00 PM",
+          "Friday: 10:00 AM – 4:00 PM",
+          "Saturday: 10:00 AM – 4:00 PM",
+          "Sunday: 10:00 AM – 4:00 PM"
+        ],
+        "lat": 15.452744699999998,
+        "lng": 74.01073079999999,
+        "photo_refs": [
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydikXpXXRVAX0BtJPQgV4pLLYuNNyohXoGmsobj-LSUwbkUqMCLLtht8CLBefIyY3CcruKgZAMtgJ89CRPMiEwM9hwFY0yrHXoVag3NBD2oASVm1FTusvnJ3INLLAEgDAVnzjy8qQVrocWY8rXbEoKB287yneTAJ27YgoVReMWZQ7xhKKHTgvt003CqZIEIdVGl7UxJ4HKVQ0oEsb6fKhI9K5g88LJidA5pwGH9h3iq57J0ouZ_wg8w5uj3tFeZRdlIn_ZLGBLoZ6dpdjWrgAk2kx5zeju8DdfEKPEnzjMq3FuCdx5FnF-6PJw85eCQP9sclyJwDjdqulJ59Mh1NzbM9SVzal5YUQnGuFM5icPVhvBkOsgn3OCDQLmb4vvIRjufadOF8u4GDtvsGv48zTJBc-_kMwl3qwqow1K898U7lIQ",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydj2O12f-1VKgbuPP7eHM6e2yhz00tsXs3Ze89ZOV73_s8TsdXn21goWpHeanzK82WE7-q2H5SUfn_DbH5YMA5TPA8m0NU6uEusslu_W7qvAFLseLA7yOp9DJdJJzgbrYaCmLiVLBu5ONMk3iphbEmz9UgSWZzYuJjWSAFrxowFW0v98qQG75YWUC_dEL_yLcABpOx5B1eax6cBLyuEn0-mzpteywSpcFwxNX6b3rpucxXaTG3txNndz5PkMyUJAks1_KK_GvAWlSYeGgertcRxXE6JsDa1USO6u4fi9SpvHJLJ7nXl6BhN7yFVEc9a3a_kUQe3OVHxmzhlkbrrwiv2ksblFqRX7HRDBe5KP1EJ7PGiCK-JNOKjcBKq89tz-am1O_20_U7cX-NcX6X5nPEN87UQ-skYMe7Jzwkx7uuQbDdxy",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydgpfUWiekobKRXRDpjwbR9h7uV9buqYE7uzCYAg6N0hF_nbYTZVc486ro1zUcxD7KRCLD6ABSkfCz1xqLmoj5SOO-HHZh4PONKV6tP94VCk40iBAvGZvKgdesgHtMprF8Y_Tf45HAw_RGp0AjuLS-lD-R1rJ6P2xx3pHb7wSTC2CeG1u07LBar9ysYUY-tyj34v1hhUem41fyNmWsbIwoDZf0rKz1a3tSzeWZN23QiK84n2Um5VT2gCAmP2g6H4IznLK5-mrew_I1QvZO6n-sF6WOqmUR5PBlcrhcgZUGQ2WkuWMxGWIXLqhpFsBR2sPPQu4xxUJfdT3BZTAml0uDURzxCWg1IauiUxcXBdq77lvnoObKMtzAyzYzGRyyrCPCBKZYBBkNCIW3BWNyl8wJsXxp3TaEUCXKFMlF2n5rTBiwKe",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydiv1eRD-Cv2nPPwd2Efrv37Ie7Mw88E8BN0VpvAzQ5D1zYdNywLZYYD-5SeMZ0BtnkGeGhbnsQZ4h-NwYzM4kVpSJVkCBps4bi1lkljwFj65lEr6qZsusUzAyWoqnSZ-Tcc7j-IRgyS1qxkb679iKhitArM8leGmTMJM4BClJAWsTmlD4QHPlX4sbprX_0qnqWv8UFtP4B9HA4tX3kyyR4SZthigc93Dk61ynq7AWYGgEI2RcaXL_hgMgSVVXdl0zs0eJQJJ0DhX3yZuMbBjfQYMkjAfrKsfWVDI9_E95cAv0qttXQQMdqd-N48yPrykARisQEyMPYpiC71yDFcCJUsm0JEMfPsxc1EG96MVJSPieXRF3PKMBl54YuMFZLXx_ugYsVhdPOvpOr0V69n2VAZ0whbapP9-w4MicFgYA",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydgI9alb563gS0GHBMio4IELkoV39idk-iVRkbjg3eq9HKYD1AmNSoYNgGDDoOV95Zz2FPODkcFnQBkLyYC1meNBMufwO6WN3B-FrgVd-MNSK_Zpnkj0C1rYkVfvqxdrqA-zn8k-lPYXxQ3vgU_0zAiGILedZyS_iZY2Vi8q5aV62xIc1w3n_0P-r6Wmm_7k_vCkJbeIbu8sculIo4yvGKQdjTB_BAL_JRkEcGG4hQBq9CTsbO1jRD438_jce_lBX8qJ18vYK9eOYLsWSwrvK3i-a3gB2r536GruVijpMvTi4G9EE4eZHvoZTu_Q1QlPUaI9juf1O28J2ZVwKnqRhsUvmOSsrf2QburyyzPMWsC2V_2Ep_dzUUUA2MAa-H4WNlXIjf10oweu0HBUmY1Z9U0oKdBt-WY4M1W9vpNjs-Gm78Y",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydgdcYhN-zrKTtO-fJFQlmPaXj8pbaJCH6PMXaBmL-hP0d-mlulgycS13WLYyeZSxvskCuOI57eTxmL3_DC5qSL9FMSv8lqMZ7VDrlXkn5SiFLB5XEbk96l9FNrHo7EJZJvJRXm5JoKgJ4PUrqBGpUwWagDLz7RBQ5G7ybU0aC9c-yoWNH3cTNiYo78ZjUc29ZwZmIJLD60MFxcUTRRZMzQqb-qG62AGuVojqeXKd5uQUcunVisQZnCn6xugsmcyaA59Fa1u5iG4twYBfPbf7vQRc-KQo12a38r82vPtOmbTODYhDbgKiZaypIVDyoWiXxoorOrIDoGsK2OT77oyMH2QH52ynsKfn0LAEOVMRcMaqBtmN2aKXEd-EzsF4LnXvVRXDJrelzoHFuM3-F-CXBrBr7yvImH2VQMw-S1c2QZhag",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydj-xXzVcR6nDrQ5GyxO-ueIWvoMJkLcuGiQbvTxcmVSrGQLsoZM3uKZ6_kJkQxYwfvBz8v5AQmhL3cTTzU9dFsNRAWbIcrxZMeOUVEX2OrFYWwOQUgBVsMyfTezIJDlXX3lW0F1yFiK942fJ55CzIYmC6TskCnDRBobctvl7gO9nIaYp9MkfqKeBmQxVP1A-tIC61H_Qsk9ttkdIAQ2EsrWnOEc73o2Bv3LIc5-WM_Nj55beIiD6ODhWebNg_XVIoDd49i16edSdYZSLb_8rqWPCJiUWv1NkGJXpJCTOvNm3SUsXOC7CkN3NGHaToFUXv9hh-D9dgwxpQJoxOVxd4-iXXa58HI5wnXyARLqVqpJ6ITM17U3Gaptn69sN8DQTblGJya6mg778iaisv2MSGpU79VwfS1xYZi0UDwNwcEnvTUf",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydiZuqxg4Md6Pq6KjlsHqSyqqaAChekbVtlYoWnIxSLhNVOmUoozp1fw8DEByPKnqGnC62-2LL3zAaBzwYcLUSE2bGZu9znPj3JVLRZrbXVGDv3HnZ5rrBIYEVmuKZX2I7T1M74Fi3o3YbtP4vyCmnv5bkZzQUvno2luqN8Y7rEe4y-OL1g976GxtgAGTj7Px7mwjJkZBCM1Z6AyjwUWAjUsppeG5FqIkRjuElP02FEWsrZNVptCJNhVHYZxfPB2Zrw8SKmRHZl-7Hd2CqgLL7fDjcDQSc-A3cEEEktfJGkMUUyrFndfQ9WkVLImpbCeyXKc-onUjXFZT-QIXnPmPTfBhiVUf-NtNrZlVPGTj6uLLjU2tddCLr4rHcsVxHHuaMpOdY6Dme96D9zQhYYqmIl7dTTdzQnKQoGDc_yXvhm2VYup4eg675l13v8jMX0d",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwydj_6bwtsnQwndjympdvZSxoDVy9eOXGbtIRmDIr0nXy0JBAdU3gFvPlR_0RdTU1PGr3wDF2mY4_gHlWhFKrhFz0BZ0KPR6u-W4RG2wEwjzyh5QDTZdmWiMzdDYi9amDa4f6Kr8bMzStFSUeimpJmqOUtKfJka1gflnqxPqb5XAf8x3WY7lic4-EQB0RiEZ4rVGRtxTMgDbuCIpNRgEldtGwE0CYiVuFPDX0BNgTKQKBBdH3CMWA5-kLnAnCz_0hVfKh1Ueux_tUzgN1VJU-bbcS99Wo_LBQ3MiNM3s2aOd4QooJlFSJl2dsqrYVCqiQN7KrhwNxWkdfdgFRVrUBFZ3hPQoxskAcCNywbmw9eRiiLaI78mXPbFj_np6_tXHQ1hiD_T7_AC742c6eeJy8wxR-2PJkId0EQUDoHt64gRc",
+          "places/ChIJ0bVnNrm6vzsRIZDi6tHyqmM/photos/AWCwyditVak3Bp7A7oHHusbZIfUzLjMajPW-vmYawZcRJoS_hNuijormkF4xm9Uk8x-Kywn5mOFJ_THQayBYLaJOG7Iy4iMikxnLqMfaIEPTJh-gR_gXCAqnKlc4NTeOs64bsA6WxYmmxr37wR_bE4_d-I71O1YnpffusCb21By8NnyJaZw2fOj-Gcw_fiOZ2FjOWbijpJtbkkC51lNYedAdqdmnKIdLEc8P6WPYntPxOvHHPXgnZFtOYcPVDLK7Yi5JDuFdR2PjYlThD4WoTwyaZKyYmzeXrXqDA4AuqPRZLX9nFAuvpK7SodQyvPZN2ASQC9E7HrIqO6N3LJYS4arYrRoI_J7GULWdwXO-59TcqlVJi_Qe_Gj5ubDXZo5bzNz-YySVIdMJdBhrBPE7L0kTZ5KkBaffsK_qPffRzp7Su4uQvw"
+        ],
+        "__at__": 1786801569.247767,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "A wonderful place to experience Goa’s natural beauty and rich spice heritage. The guided tour is informative, giving you a chance to learn about a variety of spices, herbs, and tropical plants. The lush greenery and peaceful atmosphere make it a refreshing escape from the city’s hustle.",
+            "author": "DARSHAN MALAVIYA"
+          },
+          {
+            "rating": 5,
+            "text": "Lovely experience in a beautiful and well maintained plantation . Their products they sell were good. If you like Feni the masala one is awesome. Tour guide Sangam was excellent , spoke well and very knowledgeable on spices. Food was too delicious like home made , I wouldn’t mind going there again j",
+            "author": "Steve Nazareth"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful experience at Tropical Spice Plantation. The entire plantation is beautifully maintained, peaceful, and truly one of the best spice farms I’ve visited so far. The guided tour was excellent, and the girl who explained everything was extremely knowledgeable and welcoming. The food was ",
+            "author": "Jyoti mishra"
+          },
+          {
+            "rating": 4,
+            "text": "Visit Tropical spice plantation today, entry fee is 500 Rs per person, on the entrance they welcomed us with flower petals and welcome drink ( lemongrass, ginger drink) we waited in the huge waiting area, within 5-10 mins we were taken to the spice plantation tour, which was around 30 mins, cinammon",
+            "author": "Shedly Patrick"
+          },
+          {
+            "rating": 5,
+            "text": "Educational experience where visitors learn about spices like cinnamon, cardamom, vanilla, and pepper, as well as the process of making feni (local cashew liquor).\n\nGoan buffet lunch, which receives high praise for being delicious, warm, and served on traditional banana leaves or betel nut plates.\n\n",
+            "author": "Pravin Chopda"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Kerala",
+    "departure_date": "2026-12-12",
+    "return_date": "2026-12-18",
+    "nights": 6,
+    "month_year": "Dec 2026",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 0,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Kerala",
+      "Arrival in Kochi",
+      "Flight: Chennai to Kochi",
+      "Hotel in Kochi",
+      "Fort Kochi",
+      "Kochi to Munnar",
+      "Drive: Kochi to Munnar",
+      "Hotel in Munnar",
+      "Munnar Tea Gardens",
+      "Explore Munnar",
+      "Eravikulam National Park",
+      "Mattupetty Dam",
+      "Munnar to Thekkady (Periyar)",
+      "Drive: Munnar to Thekkady",
+      "Hotel in Thekkady",
+      "Periyar Wildlife Sanctuary",
+      "Spice Plantation Tour",
+      "Thekkady to Alleppey (Houseboat)",
+      "Drive: Thekkady to Alleppey",
+      "Alleppey Houseboat",
+      "Alleppey to Kochi & Return",
+      "Drive: Alleppey to Kochi",
+      "Flight: Kochi to Chennai"
+    ],
+    "auto_summary": "6-night Kerala, Dec 2026",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:02:25Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:01:41Z"
+    }
+  ]
+}

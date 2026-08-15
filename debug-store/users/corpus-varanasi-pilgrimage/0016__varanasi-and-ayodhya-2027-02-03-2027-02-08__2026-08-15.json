@@ -1,0 +1,1666 @@
+{
+  "archive_no": 16,
+  "trip_id": "varanasi_and_ayodhya_2027-02-03_2027-02-08",
+  "user_id": "corpus-varanasi-pilgrimage",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:22:02Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:22:58Z",
+      "content_hash": "3eb4c6bef1ce1166",
+      "plan": {
+        "status": "draft",
+        "trip_id": "varanasi_and_ayodhya_2027-02-03_2027-02-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:52:02.172567",
+        "destination": "Varanasi and Ayodhya",
+        "origin": "Pune",
+        "departure_date": "2027-02-03",
+        "return_date": "2027-02-08",
+        "travelers": "2 adults",
+        "notes": "",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Varanasi and Ayodhya",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-02-03",
+            "title": "Day 1 · Arrival in Varanasi",
+            "summary": "Fly from Pune to Varanasi, check in to hotel, evening visit to Dashashwamedh Ghat for Ganga Aarti.",
+            "stops": [
+              {
+                "name": "Flight: Pune to Varanasi",
+                "kind": "flight",
+                "time": "09:00",
+                "duration_min": 180,
+                "note": "Morning flight, direct preferred"
+              },
+              {
+                "name": "Hotel in Varanasi",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Dashashwamedh Ghat",
+                "kind": "attraction",
+                "time": "18:00",
+                "duration_min": 90,
+                "note": "Attend Ganga Aarti"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-02-04",
+            "title": "Day 2 · Varanasi Temples & Sarnath",
+            "summary": "Morning temple visits, afternoon excursion to Sarnath, evening at Assi Ghat.",
+            "stops": [
+              {
+                "name": "Hotel in Varanasi",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Kashi Vishwanath Temple",
+                "kind": "attraction",
+                "time": "08:00",
+                "duration_min": 90,
+                "note": "Early morning visit"
+              },
+              {
+                "name": "Sankat Mochan Hanuman Temple",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Sarnath",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 120,
+                "note": "Buddhist site, museum"
+              },
+              {
+                "name": "Assi Ghat",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 60,
+                "note": "Evening stroll"
+              },
+              {
+                "name": "Hotel in Varanasi",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-02-05",
+            "title": "Day 3 · Varanasi to Ayodhya",
+            "summary": "Travel to Ayodhya by train, check in, visit Ram Janmabhoomi and Hanuman Garhi.",
+            "stops": [
+              {
+                "name": "Train: Varanasi to Ayodhya",
+                "kind": "transport",
+                "time": "08:00",
+                "duration_min": 300,
+                "distance_km": 200,
+                "note": "Morning train, approx. 5 hours"
+              },
+              {
+                "name": "Hotel in Varanasi",
+                "kind": "hotel",
+                "note": "Check out",
+                "time": "13:30"
+              },
+              {
+                "name": "Hotel in Ayodhya",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "15:30"
+              },
+              {
+                "name": "Ram Janmabhoomi Temple",
+                "kind": "attraction",
+                "time": "17:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Hanuman Garhi",
+                "kind": "attraction",
+                "time": "19:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel in Ayodhya",
+                "kind": "hotel",
+                "note": "Return to hotel",
+                "time": "21:00"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-02-06",
+            "title": "Day 4 · Ayodhya Pilgrimage",
+            "summary": "Explore key temples and ghats in Ayodhya, evening at Saryu River.",
+            "stops": [
+              {
+                "name": "Hotel in Ayodhya",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Kanak Bhawan",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Nageshwarnath Temple",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Saryu River Ghat",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90,
+                "note": "Evening Aarti"
+              },
+              {
+                "name": "Hotel in Ayodhya",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-02-07",
+            "title": "Day 5 · Return to Pune",
+            "summary": "Morning free time in Ayodhya, travel to Varanasi, fly back to Pune.",
+            "stops": [
+              {
+                "name": "Hotel in Ayodhya",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Train: Ayodhya to Varanasi",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 300,
+                "distance_km": 200,
+                "note": "Morning train, approx. 5 hours"
+              },
+              {
+                "name": "Flight: Varanasi to Pune",
+                "kind": "flight",
+                "time": "16:00",
+                "duration_min": 180,
+                "note": "Afternoon flight"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-02-08",
+            "title": "Day 6 · Arrival in Pune",
+            "summary": "Arrive in Pune, trip concludes.",
+            "stops": [
+              {
+                "name": "Pune",
+                "kind": "other",
+                "note": "Trip ends"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:52:58.467492",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:52:58",
+            "expires_at": "2026-08-16T07:52:58"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:23:35Z",
+      "content_hash": "6d2ca1e0d5c8697f",
+      "plan": {
+        "status": "draft",
+        "trip_id": "varanasi_and_ayodhya_2027-02-03_2027-02-08",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:52:02.172567",
+        "destination": "Varanasi and Ayodhya",
+        "origin": "Pune",
+        "departure_date": "2027-02-03",
+        "return_date": "2027-02-08",
+        "travelers": "2 adults",
+        "notes": "",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Varanasi and Ayodhya",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 5-day duration is authoritative",
+            "No place-duration evidence was supplied; used the region scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 5,
+          "recommended_range": [
+            4,
+            6
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Hotel Madin",
+            "city": "Varanasi",
+            "checkin": "2027-02-03",
+            "checkout": "2027-02-05",
+            "star_rating": 4,
+            "price_per_night": 6500,
+            "currency": "INR"
+          },
+          {
+            "name": "Clarks Inn Express Ayodhya",
+            "city": "Ayodhya",
+            "checkin": "2027-02-05",
+            "checkout": "2027-02-07",
+            "star_rating": 3,
+            "price_per_night": 4800,
+            "currency": "INR"
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2027-02-03",
+            "title": "Day 1 · Arrival in Varanasi",
+            "summary": "Fly from Pune to Varanasi, check in to Hotel Madin, evening visit to Dashashwamedh Ghat for Ganga Aarti.",
+            "stops": [
+              {
+                "name": "Flight: Pune to Varanasi",
+                "kind": "flight",
+                "time": "09:00",
+                "duration_min": 180,
+                "note": "Morning flight, direct preferred"
+              },
+              {
+                "name": "Hotel Madin",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Dashashwamedh Ghat",
+                "kind": "attraction",
+                "time": "18:00",
+                "duration_min": 90,
+                "note": "Attend Ganga Aarti"
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2027-02-04",
+            "title": "Day 2 · Varanasi Temples & Sarnath",
+            "summary": "Morning temple visits, lunch at Baati Chokha, afternoon excursion to Sarnath, evening at Assi Ghat.",
+            "stops": [
+              {
+                "name": "Hotel Madin",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Kashi Vishwanath Temple",
+                "kind": "attraction",
+                "time": "08:00",
+                "duration_min": 90,
+                "note": "Early morning visit"
+              },
+              {
+                "name": "Sankat Mochan Hanuman Temple",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Baati Chokha",
+                "kind": "meal",
+                "time": "12:00",
+                "duration_min": 60,
+                "note": "Traditional local cuisine"
+              },
+              {
+                "name": "Sarnath",
+                "kind": "attraction",
+                "time": "13:30",
+                "duration_min": 120,
+                "note": "Buddhist site, museum"
+              },
+              {
+                "name": "Assi Ghat",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 60,
+                "note": "Evening stroll"
+              },
+              {
+                "name": "Hotel Madin",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2027-02-05",
+            "title": "Day 3 · Varanasi to Ayodhya",
+            "summary": "Travel to Ayodhya by morning train, check in to Clarks Inn Express, lunch at Brij Bhog, visit Ram Janmabhoomi and Hanuman Garhi.",
+            "stops": [
+              {
+                "name": "Train: Varanasi to Ayodhya",
+                "kind": "transport",
+                "time": "07:30",
+                "duration_min": 300,
+                "distance_km": 200,
+                "note": "Morning train, approx. 5 hours"
+              },
+              {
+                "name": "Hotel Madin",
+                "kind": "hotel",
+                "note": "Check out",
+                "time": "13:00"
+              },
+              {
+                "name": "Clarks Inn Express Ayodhya",
+                "kind": "hotel",
+                "note": "Check-in",
+                "time": "15:00"
+              },
+              {
+                "name": "Brij Bhog",
+                "kind": "meal",
+                "time": "17:00",
+                "duration_min": 60,
+                "note": "Lunch in Ayodhya"
+              },
+              {
+                "name": "Ram Janmabhoomi Temple",
+                "kind": "attraction",
+                "time": "18:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Hanuman Garhi",
+                "kind": "attraction",
+                "time": "20:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Clarks Inn Express Ayodhya",
+                "kind": "hotel",
+                "note": "Return to hotel",
+                "time": "22:00"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2027-02-06",
+            "title": "Day 4 · Ayodhya Pilgrimage",
+            "summary": "Explore key temples and ghats in Ayodhya, lunch at Shri Kanak Rasoi, evening at Saryu River.",
+            "stops": [
+              {
+                "name": "Clarks Inn Express Ayodhya",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Kanak Bhawan",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Nageshwarnath Temple",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Shri Kanak Rasoi",
+                "kind": "meal",
+                "time": "13:00",
+                "duration_min": 60,
+                "note": "Vegetarian thali"
+              },
+              {
+                "name": "Saryu River Ghat",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90,
+                "note": "Evening Aarti"
+              },
+              {
+                "name": "Clarks Inn Express Ayodhya",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2027-02-07",
+            "title": "Day 5 · Return to Pune",
+            "summary": "Morning free time in Ayodhya, travel to Varanasi, fly back to Pune.",
+            "stops": [
+              {
+                "name": "Clarks Inn Express Ayodhya",
+                "kind": "hotel",
+                "note": "Check out"
+              },
+              {
+                "name": "Train: Ayodhya to Varanasi",
+                "kind": "transport",
+                "time": "09:00",
+                "duration_min": 300,
+                "distance_km": 200,
+                "note": "Morning train, approx. 5 hours"
+              },
+              {
+                "name": "Flight: Varanasi to Pune",
+                "kind": "flight",
+                "time": "16:00",
+                "duration_min": 180,
+                "note": "Afternoon flight"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2027-02-08",
+            "title": "Day 6 · Arrival in Pune",
+            "summary": "Arrive in Pune, trip concludes.",
+            "stops": [
+              {
+                "name": "Pune",
+                "kind": "other",
+                "note": "Trip ends"
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "INR",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:53:35.862352",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:52:58",
+            "expires_at": "2026-08-16T07:52:58"
+          },
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:53:35",
+            "expires_at": "2026-08-15T20:23:35"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:23:22Z",
+    "user_id": "corpus-varanasi-pilgrimage",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "dashashwamedh ghat|varanasi and ayodhya": {
+        "place_id": "ChIJZx9BBB4ujjkRPMgcoTbvGqY",
+        "name": "Dashashwamedh Ghat",
+        "address": "Dashashwamedh Ghat Rd, Ghats of Varanasi, Godowlia, Varanasi, Uttar Pradesh 221001, India",
+        "rating": 4.6,
+        "review_count": 71619,
+        "price_level": null,
+        "website": "https://kashi.gov.in/listing-details/dashashwamedh-ghat",
+        "editorial_summary": "Bustling riverside steps down to the Ganges River, used for religious rituals daily.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.306253899999998,
+        "lng": 83.0102193,
+        "photo_refs": [
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydgOM6G7j01tpFXOQ8Vk0OrAZfQE376rY5jsWie8EtDs6wGwqXzNzIqAN2Ms6v0MM9nSiEu03tFa8LN3Wpq09cuUy7_VJFNNRuAyNH5lJKd6oQcYDRZrlnP7eE8a9pVj2hoaB7n4UpSID25tYl_AKwRefcw1PViJkAs1n5PzUaPb_HKbpywMiMAgJoLGKML9NAwi44rZaadG_CHa_AmU6my3kyTUaosi4owAccBs82kdcd3ivywxlwvPATJ0WXswUj9l6FP3W3z71z1ChM-YT332Ih1eVb14Bf0l0c9KG7nxlq5fM3WV_GVh5lTbylZG--9p93Y270pd8lnQ66_xsv0Kpgc1BYPBQVAoRzS8bYiUpy89rYdlQ6RAdAj3kBzznnaDoAO_B6TY3px7C7F7Vxcxaq_01RULUo6UE_ER2ayWGGI",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydjxEJ5d83z8S8GPxV4RzrsHIVwT-vDFa_GLYS87VA_y98lgQpoKDencJ0w754N9icNFvdBPWQN9JgHbvd-1gqBP9or2czBjeLAasY8Xw2uIBEtjkvdzQq77Js_pFHE6-VSpeOWyCKcpVIcr8-UgEZpvSpHcO5unEnD4VJmoXcuaJzloHPKO8-aaelJN3KnEfJuVMLZwos52U8IoFttiASGKluRwUrU32ZcI0Ro-kAf58UTkDNeXoODw22h3CqNNk3GyDH3gv8WLZeLuGlCSq1amzBr9Rke4lE_sxUTytewhDjuNeSVowiV_G4Or9ImR2ImKn5Jw0bColhnUTSErechv1AFkwZ71kpf1rakobNjWMQ1Nbmbw3OLXKLKh-2BG-ClOGh3ckhAPQFYFuBYhlKf-Hu5ifloOh-g76lG57Q0",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydjShRttD9S2gyrtxB2ROpOci3Q1i54sqIKe6Y8OzYzzreJ8vBzA9uR1gsIJKHMliU8brpYv2q4jyyeizTlH4hq0NjP-0ZIn1jMi695BMQ7NgnjewPTshsVk0OdsKpsTtzp8QkmhEYjzIpkUfkV9HooMbAmVRuSZcdsoKb_0HlTavt4hiQe0OVJ6h35dbR9RqO3g-ljZq-qpa_LSAZkJkaCX8j7bj59Y0QmQNu9FDjEgODcqhMmB1OtaAzkBExU-zTIJ6JP4_whYKmaS6q7Y6q4C8XHqL5Wd-ydXgva2IyFZS7gCrutC4qK4SNU-nHbTYXjaTdbPwqOYJehaFpOFDub9iii1d-WHWCCFKHB_1MeOeyAjc82T8JK2do6Ok7YaqNDCekZN91e6-PYyq9vPlBlwd08DXp_cTmjtbLZRE_M",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydg3PlmKM_qDgCX2K4-DNzUP9pvMHCB4a3Lh73i3b65-8oK7g3dcb2N8Z2LyFN1VLGxcDHsN3rT-AQuS0dC3tQ_330K4nH2Df8sD9rcDNWkW41TGK0lLKGpE8E3h7lgDeidutbKZpv1FkD7QcR6j-z7Ji4CajVbLv46jw0c7CtxBflBSxFTPLnhLt9x73e9kR1Xp-LqcpuIink1HdO3skmtEY89dKCIVGQVgUICRSC1oO6d56Y6wTPiXWodY1DQQQodd6LJuB-s56IatwubfRaKCNvxB4AozrbtxUeic6CtMNcbeei3JGO7fabdsZnup23BfJdD8GUhGELOqpGa6yVd8G5X5PzKDUUpPwxrzmTzppHkA9GtuLaEb-7DwWgvMK77qmT3riQ4nknNLVEIsKaCY5zJov_Tq6vNp06BGD9U",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydj9cubvUX6qJgmI9l42ud4GhVuLp58sW3_Qbx-DevRPGvr6NEZiBg2G3peu_UYwAE6UwwQV-ZCisJxZ3mURG4W2O5vwOQ9V7qK0upZ70MwlqBOt4rpW0UebZxEA35L_UMGikfNBZSPyb975qw0EsNZB63CmmF3bXlUfvdDU0-Mslp5u-gBJ0-v-mXj_oi7jDYtUiuQjv-6aY_cW4JFRqbm1vmThOg0GI-U0HMrVnCu-19WwfnZLqoSOxM5M1GooDHs0SfjmdtApLILZjNRlKNoOeBIgIWkAn-q-3RfnjXa1fHREV6mzLkFzHCcGWojg9ogTxc2lUAsjTPvZVPM9YJgd2g-qH8Nz19cXJnopblZkexksRPSJVCkf3cOQBRE-K8tWgTE-myg2pmpZdY9MIhoHtWx0PLh6KHOefpNWG1E",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydjNdSnFRCZ3NA85x56nZQr5LCpbyYu0NGeUpcxtr4YpDsRNioNeTBgetYmYLb3utbN9URdGNImbGRtbS9rFritBFKfJ6MYzKu9fFBwIxGBia-9qgIqWZPDqYqqkK3VJoeWjg1azhtxszJbfpVad3htorAn28eIx_03opRhqUpZIVnLxxxnEirY8FpodDz93Z7NxZceDnthe3vsHVegy5X2Z394uyll6DRA_d2IjAaiVyvbryBYg7ImBuMKXTXR6o5URPVtoFcTPrTeUCofGK1cdok7WuAiL6TWpU1lxMhh58tzWfYO2GE12MpyP8X8IVPJvItwissxKTfWC9CRclIVV9gsJJFtaSztZiXBZ_cbpYvMQDwaWSDJ_j0wUL7y4xlrlsMwqlUASYcHPaXL0HQJ8sAaoajrFzk-Q15IxAqvNEg",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydgBkPR9gP_qsZhJ8nmUQJVqL36MtiGKqF9moPdh4haVs2QyYgzV9-htfJMhSXYK38E097Kdum77WKEWZIOnd8eLdApO-q1VkXJOo4lsFknqvh4D908UvfsqwP3BJG16HqoAuTIfRNgmz45l57Z_UKqe3QJJ5dgFsAs0p3DCv16LcSrSfxND_erSP5qD_kivBvxIuoOwppTw4gRGS9u9DqS2iuLn6_CTfVGr7-bYBARN1JI0azCtBQBD5TRLDOzW6vLaC0odxXY2hmQLHZ53EtV_bHmFVx1lvzmkbKcbYVwdqq1ecXvVqynkBH9KNuFx8LbS6COTIlJPwgiI00hce1G_VDfHQWK5HIgUKMsDdDFOc9Idbch5QqRJjNN6wl4sOH-QDuH9u09WUT1QrjrCsO5THRoFQGB7Y41TUmKn2wvOtljJ",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydjF6fnxAqxwN0tYP8-1IIsU4mCkAbZdLxCcNn4PGS7vtF7HyR7YsRPVQJnyJNUGtiAkRAFcrfBVYBM47JSUBdQJHR-L8RA7Lx8aQ_2SrjuV6h-koKlyS7NpNnVy7q-vCM1J_n_K6COYY_3br2mky5POecf1ldcc4CGKBwPcxOL0U4Fv7p871dEfufEnoOoDt4oTZ3QvRD8D7AoSD5bBwSUnCpbfZ8x_L13kGQLT4wdG1EATq9kSuGRhM9kO-8vMMvFiadCdUdVOwPbfssVNfbMeMdxpp4DZuFvRNcfnoYBiIiRwCtpHMIhrOKXWaDa66e3zUTIqA7tVqRLsGpXb0sxYkM5m2QGp9YpkYNbDyUnClIzHTHOJslQY47NMovSZR_HBRJdibjlCa9E6O25VqC7JsbsUuAmWX630cUi-4a6Uww",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydhvof0vpLDVnon4HWOTnMgX7EVoh2eWlUJa1yuNXU2mGY3GsOJsmg5QQr86Coi7P7K8hOtErFvSPezdgNxgbxUb4r-Mg11UlWvS4tPGqQX6l85VHyi6qdrha8751cWBPafsslnJAOxdAb7lIIVwaWr6WdcFMgkuTO4P0MrLsjLgsU6XAA07kg_Uc5JhustdOY8iX4UiR4OALBczXI4064Pr0Pdu5FMu94sFiLhB3sum11rvIatUqhCLQTPu15PszzsdEAPVpfc3rY4nxT2KaPzC3LtNtwbFTi0EJxiaeOpfQ_UfRdZrb-H9qCicPwiF-wadBcOIAGg9DbtD56hNHAd41IboXwFC4ayTb9EFRgNHI5zB0ZMJ8Ml1pntaIw5ezOAxfVn6rB_jkkFzwUhXqtJm-V6h-TC1WdSR5escyHmZzp7S",
+          "places/ChIJZx9BBB4ujjkRPMgcoTbvGqY/photos/AWCwydgGlBh5ZhYKRsC1N2sqjMTmNGQXaszzPPY_owJx9yu5m7DaD8I2Mq2pNJTKQRhBJ8Lm_GG6n-4V13oUqAUyUl3d0VemF9Xy0N8tvcujyKr3w227KOW7QLrA0jLnCu5jOfclrkREASkbeaKSD7fBzcWDyMuu6AALB0IRt8dKV51tLE2b_oxk9TvE34-a0sf-WdDurcyGnztn4np2Bos8LfoTky6Z-kcG0duj53Kij5KbMAHRJrVsCsSWXMw-1GyogNAnHSfzetW4XKpsV5cqHqCNYJMpisQ8Njr_xd4SpiE1wqAsfsBQYvKQPz_FKKa0OxduadHZcDeCdkTqvZvwmD4OvKok0F-BG7dSqFHK3OBl44ylzS1cKSkhrnn19nJ_pld7ACVIWIccAKlOs_mXtAC0vV7GaPq3mW6xQPdDniZFObI_u9dAFLGdZUN9wDS-"
+        ],
+        "__at__": 1786803756.167896,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Dashashwamedh Ghat is one of the most famous and oldest ghats located on the banks of the River Ganga in Varanasi. It is an important religious and tourist destination visited by thousands of people every day.\n\nAccording to Hindu mythology, Lord Brahma performed a grand sacrifice of ten horses, know",
+            "author": "Aman Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Dashashwamedh Ghat is the most prominent ghat in Varanasi and a must-visit spot to witness the iconic Ganga Aarti. It gets crowded, so it’s advisable to reach by 4 PM to find a good place to sit and enjoy the ceremony. Many boats offer terrace-view seating for around ₹100, and boats on the river hal",
+            "author": "s"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐ 5/5\n\nDashashwamedh Ghat is the most vibrant and iconic ghat in Varanasi. The atmosphere is filled with spirituality, devotion, and cultural beauty. The highlight of the ghat is the magnificent Ganga Aarti held every evening, where priests perform rituals with lamps, chants, and music, creating",
+            "author": "BAJRANGI"
+          },
+          {
+            "rating": 5,
+            "text": "Dashashwamedh Ghat is one of the oldest and most prominent ghats in Varanasi. According to legend, Lord Brahma performed ten Ashwamedha Yajnas here to welcome Lord Shiva, which is how the ghat got its name. It has been a central religious site for centuries.\n\n🛕 Religious Significance\n\nThe ghat is fa",
+            "author": "Durgesh Isokar"
+          },
+          {
+            "rating": 5,
+            "text": "Visited the iconic  and experienced one of the most divine and mesmerizing evenings of my life.\nI got the opportunity to attend the famous evening Ganga Aarti from a boat near Dashashwamedh Ghat, and it was truly a deeply devotional and unforgettable experience.\n\nThe best part was the moment when al",
+            "author": "Manpreet Singh Phull"
+          }
+        ]
+      },
+      "kashi vishwanath temple|varanasi and ayodhya": {
+        "place_id": "ChIJFwuU7iEujjkRE3v7zU8OYEg",
+        "name": "Shri Kashi Vishwanath Temple",
+        "address": "Lahori Tola, Varanasi, Uttar Pradesh 221001, India",
+        "rating": 4.7,
+        "review_count": 120155,
+        "price_level": null,
+        "website": "https://shrikashivishwanath.org/",
+        "editorial_summary": "Landmark riverside temple to Shiva, known for its 18th-century gold-plated spire and sacred well.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 3:00 AM – 11:00 PM",
+          "Tuesday: 3:00 AM – 11:00 PM",
+          "Wednesday: 3:00 AM – 11:00 PM",
+          "Thursday: 3:00 AM – 11:00 PM",
+          "Friday: 3:00 AM – 11:00 PM",
+          "Saturday: 3:00 AM – 11:00 PM",
+          "Sunday: 3:00 AM – 11:00 PM"
+        ],
+        "lat": 25.3108532,
+        "lng": 83.0106783,
+        "photo_refs": [
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydgORIt4mZhIJMNtkuKKohp15k_apclr-mgMP5pqekNcRwvce6e3B3ZIi3cP7tEzaq8JTduWwti4OaJkGAPV3eZbFQK_F3muqvIbfe4b0TJoV6AV3BFGGI2wwW0bQyKkk_fNCUxByZkRuQSqeMddlXkO2kS69OlB7Xm_T_tN21eMkljhWUJvKb2r344FRvpSSQnwKdgxXJRE7ToTFaG7zPNvFs-I3KJ_3LChN2Q_bIwhaKRAHVV-5MYzrAQJqMD0ZbthxWAX9gScCp8VJghZAjOa2UBa3Ca8FIYSpLi8KTd5an4hZNt5crpiWE9GLm6Rv5UmYHKWKnt9bwA9ZRUDZoqBSHNI4V7pG13a-7cZz4U4vM0BwTY-zZZMv-wz8BMyNwUbFIsVQMSim3CFWQOmWXwkYOYF3YjgB3BqSslXZ1u_ey4G7pXtsooHPc01WAT4",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydiTPrTzPJFEUWQT8KIiUwk4eWamFBNkr8GtBcfWXyDEQsKRAPSelcmHb7WpAhQ_NR3f5hy6enX4UBBoQb7EQ8kig0PCDBAOMHzt-SUAdah7StWBcIpM7881erV9nwOAsDd9Tpv9KQX8mWM1FlvWCW7c_muFa0sTs-Ptssj0BWsMQeC5_529nst4yJB7bZ4RE22RUwsSCmdC-DM9tHWt-5uo6L6_wAR06D-g5GoPTKiOsF1ZtBW9IUadfAm-eSJWLvjEYcXKxf1gEMTnHVObM3bqWLxNHbPFRjrMO0_s6nf8MHAfmEtluQemhfRDi0GfJLBJ8u_FNcginEpAA9dq9-elqxF-L7I94FypcCQ_uOgc9zoI3UlcPtjYgB51sCJyK5FwX6tqoq-jT_Knbzvwdrtw22zwFElO7yyctWOnwy3U63IhXPv2QE-TCYrpT3rQ",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydgLxkCVrOCzsKRLwEVHolJmrhhy4HCXjoGsadkdEnN380uAoL-s-36lbVF47BcH_vS44rbSzxiE2AIH4ZJzKkVeL7VK9tBDOKUNE7DH6ZQ6Ufh8z45QelATP6aOIHj1C3l18YnxXCcRBEA0sZCCqjr7--2u3X4agoa_wjFRUfQU5PRo6VukqdyXaKkrHSgt_uVjbq7mabizBQwReZeScW8LvXoOWuBrRGdPZq5jBYWQ3lYEATdfOELgFYS2g4XcnFvx0Ek_FfB6m1CgvJetRkvlIFW3soxK-ZotLwlbZC_eVQT2AuVFZ1NYJcngpOTaCHMp8wO96e63haXHX51yM2goBJeLANYi7DZb1bdRyAuOgyItbBid3ohZ2lMwL2uc0cuY2Jer5dMs6lGYYLNuv9G1AeY46cN2LfcOIIUJvBJLRBGaqQFDperC4DF0kA",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydjsz1Ghh-1bJpdbGktnVq7T7MUYn9UzQ4E3iOextaCRS7V3pmdcHZMC5cQF2gwvsLtFESZ2HnZmR8La0z6mkZrsZfjBEjqLKwD-prFyxHjBHTrYWBs1drNgUUtUBqFmtKLBe84yOWqE2hJF181-dkFt6TCEpKM1Pu0EIOOPGAvrwkQ8CJyJWGCV4Jfr28DZlwEMSI5s2CcWl3u-tkMzurRV4qy_TEH0HyL9l0RQJSHXYAwQXlF1kOCzZPt95xJnl9sDsp7_k-54Ida3d70k0g5TgsFGwzcjAWdpKt4Fv9A-2soM-rvTmxilEVytlqGl2PhGIEDwmVR14LhfyNNlfU3EL9IBWUJt4GBs8dnMuLoTnDbuX7iQjpzWk5iQ7xzr2j5kntaRjpZqO9pNwLJW4dOjAwRRjGYVuVQ2FdTvap7QbssvStxJx56sKAyggw",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydjheOjYJek4g4TSHFkTX5rdboPHMLbzJGrGC8gxXW7UQ-tXabuM91faBGM3NSHSdL4hP9pfwQozeSu2mgN7chjdl46BkiwAosUS7ozUlXEuHjv5Ij6jBCrm02HIYXTcMq6E8DOdw3KDClEWiKoicQFSed9T3x6oys--qUXsrDfRot6FuCI2m1wP1md59LkEB7ZEcLJjaS0v0frZhBJuOoMeAiP1c1ZCYeE4ODHi7dYt_ZtNSF7xXZAOENHegjOyhwtMMBowGwaH0_LLAMucCateWuJHOvZXzo78Pfvms2-oK7b8ad4czbtwy45V1u9gZxwxrneU6OcfTomfK1SBSCjm6mia8Umvz1eCPg3mUK60qxZilGCCaf5w-MQ6Cqqb2SW3NihTT351a63O7h4ObteeaSHZRPXoatR9qlJyz93hFnB11LVvGGT641MgTAow",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydik4zunNwSIz-DxJvqKSG0smg5mLDrvZfByS_s_zjvW6w30VSBdvDVdjH7MP-pAqkB9GStHp5OMuHZDvearfMH9WGj1YWLXOkJnRQGlDBCfYbSFU_nAK1Wi7IjLfYlybqzde3NTOtVwCTULvbknmKR-EF2uk9B-nlZeqK5URk3jjg04vzV-jqj6xOzKYQrL8VqruTkegpGy3aBCik1tRopn6XZeF8Gd3pdi0jQTt59mj_xjmsNZgYyEDywbau7e1jsRAZKN_QRDq3k-_QufHwbfBztashlW_D-kU8c5tKCYQ5NgYYYCiAb-inX-oux17Pwne97U7RcxE-Qp628rmIlTJaG8jJ9NzfLzUqXKX7qX67pFagSmOrsOlY5QaBAzRqsamgk0CjfSM959f9bSD0hvMKjqUZ9jIdFGaLyPBXImod2zl10t6v-ueb8i6g",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydivlK8QVf9WaAbjxm0HuopzblMWbBMQ3einyWzA-YBZSeAEKyuhnSq8nGG9mIZdOseahm75WhYec8aDuRkdqV_YoOCGIszeALR8dGL2dIiPAxRIVADQ3AdGJHBTg_HsG7yST9iKVvRX3WgbajUuoRfSjUfDbuvYjeKZQ_PpM0r26UnjsntlpIzWx0ke7A8Daf1Gn-LhOjFZ8OC2gpfmXilrko9CeajqULM8uVPNSrE7C72VZiyS4-pNZef5DpwGsvNR5m1oBul-7GAcGw6pt7I9nx6WR08tlv71XSgAqoqRW5hIZ3u6P8dko-yc-H90FqqmWdXqxdmvOZB_i-cZfYfKWr9xORYOqws3W8UTdDJWhUpUdwSpndB3bvN9N5lDlGFgI-oyJoJg_zPrvYFxBvkh0ZKf8q7s-FXHXqH5hrSPc7Dw-8GjHd39CkTQ_A",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydjbUEA51JjcetBvpnVAiVxqkBUke6irelKGdxg48xHplEO3c46TsecfJVqDkn5fFr6efF9KSrAf2MlbAuHw-J0AbIqh8dXNtZe3IFAU4jNI9CfAYOehENtC7VusjdppcvjzXZkhZCK--6R_NDzH98DL2A3o55E3KuSf2XmTmndyAR3OtjduhD2eFCJDpYGZhi4IkdP1sw6TJNkIlGk9GQTvvAy2QcyFMO4vdOJUozu_6HvKLFSC2778bA1MAk08YRS97mUi54wttDzkQbQXxQB8CGSeulYb0-REkZn04g3m4v0tYj6q1fQ3FYI9VXighSvZJg5cE6QJuGPk59BXTt6AmSFpI_LOVQ-VZlst1RyYo_8Cd5JyEi2_hxmagfkR-7majl67WM2173EPZSq3YmZvFtWBIZjxTyaflfCvv-3NP0U",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydjf_2K6A3lkbTUd-zxjyaSL35jYeeNtuKLxVGPniW4zPErlR6sCGILOfuze3EZvSy2mtzpDQVsc8MG5XZ9TAHQgvFaD218cWtFdnnVND01E6Oqdxfq51IU3GQy-eVDOAmgbeOnHuditnPh5A6pD2PCDeQUbbn36OdPIte8K1eBG6WllytBOM0u3BnQFrIMOWGvdZ6htiK_3sA-g9ax9M8nq7CylsvoirMlFm8IE9fA_0TqsjwD-D-wu0DUKfV-CrA1IVpyz9gUDxlEHl_cWw-hWX2PU2s6NActTG5vDm34b0sr6zMUnVw6HZTvPKgIh7XBvfbZq84iaPwAdYuZQ-ZdIRBQfaIqY-RLbCaEisM0axqBH47yKNCUWlIFN1f1ZHv9GrsIX9qigGMSs4486g7S1NAj1yVNVSQ3qbyQcu7zx3g",
+          "places/ChIJFwuU7iEujjkRE3v7zU8OYEg/photos/AWCwydiEY2SvzSKwh2DVAJMjslvzVdQ0UDE0cYA7HPbh3go8UbfR4biVN9jTyXRAOhLxXM2cq4ydULwt-jHWKY3iO158B3lKsJoIfos184x_plCNV5D1JNKIYBbYR9xmyCKvPjaW7OWP8wRSaZ-fDzV_OxET80R0Rmbq7SOyLPifYKhe465tHhBzTUsuAtcYInPioYi_9ajNS8suSyyJuak5l3TJt-2dhgqz8KZLhSeZRt_ZQIKNAw-H8obmgcWP070H6pRl9M--BZyjjrjBKNoCtucQ2yVtLVGf9NrF6Kz5cskVRrfkA3UW9W47zFG4rH3j30UIT6NdARcVt5empwYgX4p29hwCqkXpQxGYpGsT828W6Drw4pX16UGDWY7ycQG161c2Ok4fidQtvD8S-I3FFbfdqLvUw6Xy_6K8GYDRYyTgdw"
+        ],
+        "__at__": 1786803756.77816,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "🛕 Kashish Vishwanath Mandir is a peaceful and beautifully maintained temple with a calm spiritual atmosphere. 🙏✨ The architecture is impressive, and the surroundings are clean and well-kept. 🌿 It is a wonderful place to offer prayers, experience serenity, and spend a few quiet moments away from the ",
+            "author": "Ankit Kaushik"
+          },
+          {
+            "rating": 4,
+            "text": "An absolutely divine and surreal experience visiting the heart of spiritual Kashi. The new corridor expansion has completely revitalized the temple area—it is clean, wide, well-managed, and offers stunning views connecting the temple to the holy Ganga. The energy inside the inner sanctum is powerful",
+            "author": "abhinav jha"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Kashi Vishwanath Temple is an unforgettable experience. The evening Ganga Aarti is divine, but the ultimate highlight is the laser light show right afterward, which projects Kashi's grand history directly onto the temple structure itself. Plus, you get a direct view of the sacred Manikarnik",
+            "author": "Aditi"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting the sacred Kashi Vishwanath Temple was a truly divine and unforgettable experience. The spiritual atmosphere, the chants of \"Har Har Mahadev,\" and the presence of Baba Vishwanath fill the heart with peace and devotion. The temple premises are well-maintained, and the darshan arrangements ar",
+            "author": "Sanjay mahato"
+          },
+          {
+            "rating": 5,
+            "text": "The Kashi Vishwanath Temple in Varanasi, Uttar Pradesh, is one of the 12 sacred Jyotirlinga shrines dedicated to Lord Shiva. Located on the western banks of the Ganges, its current structure was built in 1780 by Maharani Ahilyabai Holkar. It is frequently called the \"Golden Temple\" due to its stunni",
+            "author": "Nandan Kumar"
+          }
+        ]
+      },
+      "sankat mochan hanuman temple|varanasi and ayodhya": {
+        "place_id": "ChIJFekJmQsxjjkR0rn-P-nKYgw",
+        "name": "Shri Sankat Mochan Hanuman Temple, (Varanasi)",
+        "address": "Durgakund, Jawahar Nagar Colony, Bhelupur, Varanasi, Uttar Pradesh 221005, India",
+        "rating": 4.8,
+        "review_count": 11529,
+        "price_level": null,
+        "website": "https://sankatmochanmandirvaranasi.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM",
+          "Tuesday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM",
+          "Wednesday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM",
+          "Thursday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM",
+          "Friday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM",
+          "Saturday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM",
+          "Sunday: 4:30 AM – 12:00 PM, 3:00 – 10:00 PM"
+        ],
+        "lat": 25.2827795,
+        "lng": 83.0001741,
+        "photo_refs": [
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydgubLWDCGOay6_pGB8EErwqIPSLUnb3-9I5xHzcT1R2AEcXF8Q0Wh56yVanSVndAKSJ29p_9TCIDi7FKtFQhaMJJrQbBEYVcyYd_An8uLFWXkGY_NSq9cWTxDjoVTazMOPpQN9CTiOkiTNe-_oYwEWR9Ju0okq9dHYOjXsRqe1FkA9ir9YRf_tlUfAh7DCym_dgsGEBkoGbRhR_UHTH-jpLH5Dohf3aqzCxn_4gyX62Eo5I1JbHTh8q-V7w85CVsMFJp7m1xC-n7pDxmiqLPHeAonXwdrrY2TC7tokccQxrnuihH4_xwgaprMNQnJUfPu7KD9v7J_g6sd1tXQxGwJiKY6Wp3z8uN_hnWtjsUvmc5wBS0W0sWh3ALknvCiCv8unXAZHlLgJTuLUfqUsNt6f9EoFDf-FCJX_nvve0Phs_Xpjn8d8Nwm8dz2-COjYd",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydjxafEgrPBic4y7prwCz6CVeJF_t2blXhya_3wxvyEaBuCk0HKA-0hj2JW_GDOsAKDcd1eYqG7C6bshIHw_zuLoOJAsVwQE5-QmO_Jv3dfD3P9ywhsu3xUgsfAySWhAnDKXprKiVnIMO0J2yMt3nJlXHNzLsiBH45a1AwB2A0muHBmtQonqLRfv2YQYkp7gyLuZwPcNyF1ZTg1iYSie5_AeGUDkVu9Tb8NcnJguLYhJCMmqJ9UF2NYCvfecyrw8_a71dkEm0BTo59liSZztvAqb-VjWc-rHuCR_4EeQIXBE0PnLzFypS9KtD4n0aLnOmgePRvcqLXfIzDJqpG5yV86B6pzZR6gdal5mwcXuqzqbOpYoeelQKra0nfs4xS6x-M-FW9CIRdwJEEOseh8d6RJBbU1bAAtHLY6SAEUeoTszt6AB85bPgilH0XY_wGHk",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydiSWBpRS-Zazbs9DDtlrkV2JlUKqv4xzDLdQEUmUP_6FWRmJU9sYESHfdPiwDkmz2k35kKE_lwQSOU3q4xGOfSc6Lj6SL5PmlqZIRn-uS441yaS_jlkRPufxXDP0E0e0yK2AiYeJt3s_jbtKRGWaY1mXViPLac3TDbSXvxdvgsV5lcK_6c_aseuMk46biISBaW56GtLS61oV4xwB38P5hfoys17R8vKnBRdMMjwfRhnkVrigi-VR8E30o1NkIBfPqWjVgaM9piIgzOxcErCYF0-yeJf5dhepm-RWdw3gMoTDv0mnu3JM7pC3h_70O5SvCO1ta14m4X5K6XNJAdUrt9tYN29EgGwKj7CJJ43jbPRvyh1FEi33w9AtYmUdw39HmW8EvfnNHsQT91CIJx7bqJp6equeU5guXSJ8yNcjTbED1gFRYcsbgjJdYgfqQVS",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydjkAZRy7l3kq8nzd18gzObrgDFeihqxFiL45DzL5WoYL9VHsqijUYd6ZLeUsOWpCzgcFSIop_Q54UFRumeXqvKmRWE2sWz3IYYnHpQINSD0i9trJBOQk_3oITRzL0idP1TLEHlOnQSzqjecEp7Jesvca_vDnk1-E3Y90-DCDLecwbJWw2C9SUnkdZyFV5qHVLiQBxkhZVTo-qOvmLv6zwMH5RsLP9F7Gey-Oxy-uipOM5gWh6Z8h0jKOZAq5vBWHhYBn0sT5eOG454gXa2CAQClDgRSj__SJNolhIiixiuAWQLqFElRosCFOAh8fgpfWyN8o1XyCpkbU54qOHr2YsLH4-CC0jgUJk1RbjdIo_YCQ-J6qW1Id8tHtdp1_UxGh8xM16MEucw23gRFkhY4W5iyB8BnBydHqOWQV8la1YyhohTZ",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydiHYvu5EYEYrHTiA1JAdLaHm9r-H7Dy3LxjW4qBKQkx1acGkbM0ivLZmPhvWjfLdzDeSJpitVZNae0WpVehjevw1upMczDIf11T81-DBqiG2pla96da1EpLNp4n_QP0UO8am6NVm7UI6UqGgDfjxS8f7lk8KI-FrnRQv80sbkk9GDXYf6_TeWKqc5QBmexpgSTJ4Bsbd1J_vp7kECUkvFurxQR-eK_KZJhHzqjh-Y0OSSM2ZPXJmVP19ebF675xRSz3yhbc9qzCrQxaSRkdZe8U0Db2UahoDLBscSQeacSJLcKARR50NsLFxOA5ePhKR2Nl4wpuvCDXL-C7y_h__guH_y7ZDDjqZVlZjiJ2zu76pUqwT0FHumMaw8zgtR2uQ4_D-K53IZiV5g0UeyZUWisL0U0FurKM3fiOn_BrrMOm-h8",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydgZHnr22jpkGGu8yqgH0udOjrVPxzi9GuHglZ9I8xOhXsq9luy9vrVgUNz6qcdp-1xhNufUZuFAcRFQ-vNbH7zJZk6xPONIBZSc5oTJyQv5Jwg9vMyiynvq4eCK6Df5iGzOR6dWCQYa-qdpygrOci7vAU_4DHOhj9f8K4OlfHMWFDokZRja27x2hGm1rdy5igjEw0adcJUgALHGPH4xj_JREC2YLYczYiqFvsjCUkCkzQqXg78KL0RTH7VXOJJbELxD0H1NbA3eR95S4SqjSqTT7j-OEb8oqleRRMs0IukVqNSRHqR4r9o28VxnQ3XCECfYhB92g_vF_7epiRm7CI7tKvSRNYPYooTfQl3TEqReWVDEYO1wWitCejqPMxXUkQ9mUPT-5cYhbfv43Hje50wsG6YGpTfbtysRlH6IZmygGqwXB5b2ZaKqNfK4xtjS",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydjdC5YSXs8h3LJFTwvrkhzqvbUD9rMeWST_kZG8eYGRqH2W4bKLNaS99gzaJhOG5C3ejYXCB1wz2U_KZ4KFLNewgwy1QGmayfoPZQMyXpV8T3l0enOBdVn2zUQcnnB3asAR_1ZAaNaffhc0DJ2cYI7k_o7gW_iRSppWNNLWbNEd1k67rOz7GINRF30Z5ibFfJvIZPL2KJVj8uRmteePEDTspoWBLPSFAMVOpYkhNfP3QCna5CMTazynKiMmQlcLxTX0s-yaFCeYFtXLJsX1Lv4_M9QC9c624oUxs7ou04qW1pJhs_FKL8smF3KBUKfBXYh-HNW1fLyeAvKvpAuXt5H1u-p8BicBHUAt_rWMJoVZLt9QcGe6Fotj_8YN1IhRPABtiLrQSYBAibODy_0q-Lyk-EKvgLotLnfYXO36s3HCOw",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydiwxvAHzfrOBNAlcVALQ_qY2OEfuCfCwnSc9JoomCdwybdUoXG4cbziYkkbmsR5tFxRwvSvMtVh_N1ID8LVn2YyVNZkEvyfKr8SPB5a-j9_ozey5BHB4P44D7fbc_ZaFlffI3FzJVuCIgUrHylqmEgTguJLxcYeOEAiTcQKQZaWyyWbOafHMhfRg5iRSGOO9OjZhHCEjTkbi_zUe_Wd7Rm4ghpmJtos-HSGO2vGBJ-dz5nP6CsfWOFHzLLS-GrSttzShar7O7nZ509exzTNtP5TqgrhjFFYby4WgByPFcp3g22DqkfpaQERBEBhmIFU1YQoVe85W0ybRK11LsC4TPWQxMTOvFBoDq7lyRvQ9nDjnoIARegZiZLFI1gPE3FKE6OorrV3Z9ZBVPxKVJrYiCG6-ez8MBA1Plli1lLy03M1uA",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydhstXXOe4E2rcmDO4csaEB7Z_rryELmfVk0LzQn8MikuKn6WexYZpK_MmakVTZQlsbbl4LaQKh57jsL2gLtVTCOaAT9CNy7cXOE7DJ3eDDboW1fBW4FYt0AaX9r1msVNeALLSKnpG18ozuepDP57MUjpemsyItN3E_sEHlWvsRx_qrqi58-oMDnFFJ4kWL2aWLfUhmXTPbn72RMXk3udOMGTPT-R1UpJkTy-NbQsdr9fdLmk13NCrKhEX3Yd1VOVap-sDRuzEHOBslZi-LluDcb6HIVHxq5PDhPi69ws5U1bE-sChP_kOOJeKBPiTltKo3Iouv1p6ZaTUjQdAlNkEDxpjU63sgVQkKE2hrEaD2KNMHWarstqZN4u5cUvg6Z8_KyaFIwNhRzcUmYtNtuJXujL3I7_ZIQg86lX0A60quK2NpE",
+          "places/ChIJFekJmQsxjjkR0rn-P-nKYgw/photos/AWCwydjAR5VF6W-_vNNyeiGheoOjp9WLw_qlg1dj-FWW18e4sk1an2BAQhUUDqM_k63OZ0L9E3jBA6Lk5VOxYWmIoofkNoJdwM4ZtDnevAbx2T3bxqVHyaFsXZglPK2pISspFAXZHLMiKEaqA9Q9RKgABTwxqCasEaOIHDYdbpFF-XYpRmfSUzwQt9HQv9Ll6YZ-YJsiuHk9HYbpu_BB4d9DzV0QMkQ2SZ1H3elxnhn0rqJFp9XOfN43kU5A1D2DNVnv__oF7meB307hOF_v_6jqZ-dxaIKl6c1jW_2cCJKEEfA8Okj6OMImMPQmuhBxN8DmMxu7DioD0R3-iYUy9PQ63jIKaiJNhByHbwlFN5TIPKrf7qoBBKRscIRkJXZDRjQ-U-7GuFoFCsI1I2RNS8PbdpYrH1kPZTrsAmrXbmR6P_Q3mi6zGBQjnoKz1phZELh5"
+        ],
+        "__at__": 1786803757.505135,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visited Sankat Mochan Temple during our stay in Varanasi, and it was a very peaceful and positive experience. The temple has a strong spiritual atmosphere, and despite being a popular place with many devotees, there is a sense of calm once you are inside.\n\nThe darshan was well worth the visit. One t",
+            "author": "suraj singh"
+          },
+          {
+            "rating": 5,
+            "text": "The Sankat Mochan Temple in Varanasi is one of India's most revered shrines. Dedicated to Lord Hanuman, its name translates to \"reliever of troubles\". It is situated on the tranquil banks of the Assi River\n\nFounded by Tulsidas: The temple was established in the early 16th century by the renowned poe",
+            "author": "Nandan Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Sankat Mochan Hanuman Temple is a truly powerful and divine experience. The energy of the place is incredible, and you can deeply feel the presence of Lord Hanuman.\nSitting in front of the idol and reading the Hanuman Chalisa feels very special, as if you are directly connected to the sourc",
+            "author": "Gray Coins"
+          },
+          {
+            "rating": 5,
+            "text": "Sankat Mochan Hanuman Temple is one of the most peaceful and spiritually uplifting places in Varanasi. Visiting this temple brings a deep sense of calm and inner happiness.\n\nAlthough it gets quite crowded on Tuesdays and Saturdays, the management is very well organized, so the waiting time for darsh",
+            "author": "Pragati Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Sankat Mochan Hanuman Temple was a truly peaceful and divine experience. Dedicated to Lord Hanuman, the temple has a calming and positive energy that instantly soothes the mind.\n\nThe atmosphere is filled with devotion, especially with the continuous chanting and prayers that create a very s",
+            "author": "PRIYA"
+          }
+        ]
+      },
+      "sarnath|varanasi and ayodhya": {
+        "place_id": "ChIJL5PJGPIujjkRA39qi6yNiKw",
+        "name": "Sarnath Buddhist Temple, (Varanasi)",
+        "address": "92JG+8MW, Sarnath Sta Rd, Pandeypur, Sarnath, Varanasi, Uttar Pradesh 221007, India",
+        "rating": 4.6,
+        "review_count": 23715,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Expansive Buddhist temple complex with a museum, multiple shrines & an archaeological excavation.",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 6:00 PM",
+          "Tuesday: 6:00 AM – 6:00 PM",
+          "Wednesday: 6:00 AM – 6:00 PM",
+          "Thursday: 6:00 AM – 6:00 PM",
+          "Friday: 6:00 AM – 6:00 PM",
+          "Saturday: 6:00 AM – 6:00 PM",
+          "Sunday: 6:00 AM – 6:00 PM"
+        ],
+        "lat": 25.3808682,
+        "lng": 83.0267015,
+        "photo_refs": [
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydhr-oSbNAjbfUwa5bk4WzU7mNUcsaXUr4jOuq9it-cWzWQS7kd4ianYQzkHWwxaEVbAdbIXWJwVgqVfwD9mM5v9He5g6AfToAe62obAaf7rrLJWzlPiuwH3CoeiMlg1YbTXpzh-LUgkrkctdBxE1Xb84u-9zabLIs4aZscman4QFfEuYh4zwqIR1Ip1vAIVBA1tVKUgReHof_SC52AJubCu87on88GWMfWvS1H3hJLJ-uXto2FwHAGO3-na1dp30n0tmlj9eNYaT3XEzBVoh1wpMpoheLY06Qrsj_alojFahU9McDPZawPlqPsQlUSB0l1D2iJMtD_Gglg_kfIMRMverz-G0TBSITWkqJpPeTRFx6BzMEFEWWY8t4tpEUyjPTWp_QjB0weZiEdUQP4l5IyJxsF10Ol9wU9JdfuZZYjn2A",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydjb3Da8CTO2b5xA1TCanTCZ8_3_0GikChWmgfjDbGCsad5aZodgCucUkpbyEaHFWC8OGH9zlv8DZQeCTVD2uFbHHmjq8F2WbHbZ_nZXdFNpnO_zJRJczo73x7T1CiTZuxfEm4yaBgAm9BrD7Zn9O09k2duiILtS3zAI_ZytPV_pTQ7nPzZE1xBCd8nKRwu7y00CtjfEvbYX8BZwA3aiV1Hs7oU-idl4GZKTkkZhLdw4zh19Ic7rSX1inl-ekG8EpSo-EXbFaVMEKWmQC9ZxG9Tlyg5CtmxmQKvssvghBCxamqyhNlaQCn3EsbM9ssyfr0WHds-8rCqK9D81EGO6-lS_80KLfobktjf9sJ6rwkXOf6iU7rf_W2VeZKmoVf3QtzWY1mdx4i8-0EnhMEhhGFMIAA9D-HoDtkmE9mSRhetjoUg2",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydino3rD7ebqDKIIVkofZ3KNxY9PW92vsvyZ-dwNnftKO7_7_PSARIEYbfhDjRF4H9X5OBNKdRZNoWV-GnPCou-gy_FdYRx5EDvAjgc44YcehAN4Ba_reA0t0kLhLHcAbKHxIVZkKZKz4hMb6VNpMuHfhVfHQ0PjtNKEW601Tffwphps5DAdclNi46uCf5X_pk8p7Cfw0hBdJX4F25UEv5qc7yFOr8BT_zIrqXN2YIfZCm_gRm-ee0Ax-GdNTfmgUADGK6F2genPfAe-87yxtgGP_KofT3rh3TVritmFHtUAHVpnNrS0nZobfFkvNikztPoeAgc4FwblR0dQg5AR40ayOKfVo7PUliRwMop6ZwpLB5xtt_hPZUcR-z_wsOMU4qRq5b9_9yLtRztd03UPaQ_FRAuIgKQb0a4nxnjuCQ4VbnASEVdF1_bz8yw-Ytj1",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydh-zKurOxMBhNXWvEOXXWcHASySzlAoM2J1PwuohhICeknEt35Jgk1nMMVpmS6_ogKMnLMtU1jY5fGUYDR4siYibPzNaMCovpc1we2uV15LvRFYW3qCQMAMp_JFA7kMFtpP3E0nvrvgcpjYlDgQALwo6wxAIo-qtRNhtjOIaJdUzgmMHFYuXWR32sLpNW8-fgFV5KIusk_3XZMmP0VsLvTJFACdCqHZGjAXNMqrJtQs9cG8fGHWyoAmeF-w6ENGmAJhvNz9UIoGTVmqUTk1cozBAdqqQFs1efkjkQ_BDfqW-ra6AynxyWlAhsAjqbl30dLpg424drEJPzKeptfB-9g3o9xOZfmdCyaHMUVwBKRvsrvCRBeS46dTx8bMvTxGKjJN-57y1kBRUnsQolyxzFl8nFUtweNrSK2DpM9ih_Sx",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydjxmPQ3S7GmvsTQrJtNDQHYmeKAfAzqFp5A_O3pyYT_4cnoCFcdm6esfUB2xFLa6ZToMo2W20palalNyjF_9sPeXZZhi9eb-315pENY-Y2iL4HcTTyHeDthNC8ssnJ4J9LFghzB_4ybE9q20hEG8OEoSVsh0OR38vB0wZd4x9vIIay8Mpl6eMpLgMU14UbaPE2zFCY5xaYfjfOXSeOKemS1rP7JDiigjgJcpv8GmQpFmu25HCKc6upSILNNqlOoRDjwbeK8VGKewe3ynePCvtdKx6_d0EJttV7ZdRB5H2GBC2FFiH4Ha1vF_J6rtWLfDMo6ombQf89RlqZu4hO3pq9z2qkOxvHIokngS4Z9a7UXIt_BcDpaQWgQWj6Ji7IFQLCDl4BVdMRBMgASmZmdIqEmUW6yksJksY-ng-QjaEdFGCg",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydhzbF2D3-IfTIIywJqIV7JPKbuaI-1JPMWTXqN0wjSfHLy8PlEqFvB2g1J1-gi2pKGUoK5X3xEU_rFSvfaLaVpbUc2LqtFo9hgdbwy_u1tiK8M0eTdDHyPFtgZKlSZ94tIoT1EeUyfwEhjCVGT1PijBxIxKGjvnP9PE6VvDCU2dRErW-c0vj4qDhYdF9Lnl3vGbvuIWfcQ7DPU31kuleUR2hybTHXWlVdTo143rBfgAEdQe8u85hYtKv5eDHBpvExIjqrWmHRyBdauOYwE_IEJWJMfzKJ-R9Mr8u0IY-mW5Uhrt-Kim7xMLCPEySJLNSjvUCI1-CmNtPy7cyTbZzge8pYVkVmH8omRQqUi_PGuvJu3OXOcbds2GGMypuQdB8N8oNHTlGJ_s5z5izq-p5o5CoQrC-oMSyBt5WCsFAcsAFR7F",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydiV2GmxbReDT2xrRqql_6kAdvvaCgxFVENR9rNmYLvlD8MaIGN9oFcIfu5S14DFjS1OW08Msi49RfIQ0ZlMqD-aCo5L6xZcFc-6HZMrKj2ye8AgmSQJoTkSoZFm_zoxtm6QEhXHs2-0I3joaP0CSPXc6Jcat4AeeGO8eTicF6Z11nuQlxKX3tW7e0TYii4mQrwnVkio2wC8BEraw-H9T_FRklBmPdYfBdHyQdEa4iGcgfyCb7FzEJBjg7eDqke-fRCiaZYz3xzp6SbXU8v9zmCfTVVCXrpv2j-qFMaxclco7zz-RDQfZnOGWKAvk2BQ1ULTcP1rkojzXxGTIfWw4K07tgkpm3h3w-XYMDvYMwKebNoMO8FjcA8iMwy9D8Wb8eBYt88VGT5fWDhYuaLAl0l420hCju7w1ZNm6eo9JbHBZeU",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydgJxOuMW7S_XWUgMwJ0KQQEg82lqJWpQM6o9vDshpj7fPmmk57c6AsnUOXnxQx79KmVNB4fvbpKIJwqsPjUqT7n9AWpfAv_uHfUreEyICar0x2fFmYnEsGub3rBK19xadIOEBNYSqI4S4xehK5V7P2cAVUYNxMlHswite2Drdv-efl9O-R2IZk_HEBDqFQ_k9FB2DrduE_Z-WIX3C_B4vNJhD_t3zHxpKjBb-kWZ_B3I8nQv1WBh7Xx_1pIIbhjsyt3ktNgesOfoXUlSeh2C4PBrr7K-mNZ6WxJt3wCipQDxMM9a39JHjwoYP8Fu25eAseGl_g-xa4lYNwGthRbZ14eduEl9MaeYbxt0RlOpyhcsTCzeCM0IWnuVfEmUfOqnPjS3CArs-KFYzNot-4javSZnR7dNPFfU4TRG7XCow_w4NjWM_9VP87NGEa03q_Q",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydgT8Jf6FkEOSdBOC0N_M4rqmL8Txk2njfsj-1udQay2pU2zphh1OKbs1XBMsdOc-3WyrmWx4cjIyC6_2Vpq8U9mR_dXOWqPBWfLUdNzeFZO0ATM5LBteqqOKs8wK6g3dlfaX0VMVOUCIpVCnIOXBkaXJAKrHMaYfyy6RXkQd-xcfcYNyfSD0OUcku1iAZgnqmyP42i9RHj3Jcmw-ZXeJpVz2wIbjwulyrxcu3JlRvdB5S9UhpflWeBoJgM3NbJ-AjwqvdmwIsiKKwRWq9XOaI4Lh1cB4l1oy_MX34eJidR6WSdNexvgqaVct0OeIUbn1BLpNojKU3UVnkWgypW6baaSBqMtxgFqcsinStLXo7L6zWJKB1b-vb2Wl_zE7pMCYkRcTboET1kAI9Ig3CwQPqZ6HQyNwZ43PK5tuXUiwxlfdQ3AlCTa8WR1u8fvVqTi",
+          "places/ChIJL5PJGPIujjkRA39qi6yNiKw/photos/AWCwydjD82GYQKWQhEpbPAt2kvsitxhcIbNK4dBsl-ot31JGdASSoN6dKPVBtAysP_rNqxNaLtryILFRq_6VVZZkR5_GIaleImkS9pG9rhK7pv_wjnSzjL5XYgGPyOD29hp-uYJ3Ll8RGNYK6rz7TW_wJh-aWa1wTNVmX6PUd1sWr4mRZMt7VDmY-IOzWWdOexFzfB2zFohjrKGiOxP7h8c31WbbLWgombeCCiXPL-M0DJEIjjdICsjiaexqCyXyrNm-oub5mOsslGyOivNxFJSZtPrFSh9djrKzmGcBZwGKJYIsq1YgFJd7PAAcjJZAqDzk50cO8TSLsLY4EP0usR_jmUPfDRbOLeKyR1Y2rZ3M8lAVSV9LTi-0ecBYxgZuuuub_hg_owRoGqtBsfZiGt_CbL0PDhljoIfXfvabsnPggao-rg"
+        ],
+        "__at__": 1786803758.0276191,
+        "reviews": [
+          {
+            "rating": 3,
+            "text": "This place has so much to offer, the history, the culture, the tradition, that has shaped buddhism ☸️ is present times. The place is important in life of buddha because he delivered his first sermon here on a stupa, called sermon stupa or Dhammek stupa. It was later constructed huge by Ashoka to mar",
+            "author": "pahadi food blogger"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited Sarnath in Varanasi, and the experience was truly unforgettable. The view around the site is serene, with lush greenery and ancient structures that instantly transport you into a calm, reflective state. The ambience is peaceful and filled with a quiet spiritual energy that makes s",
+            "author": "Chandan Deka"
+          },
+          {
+            "rating": 3,
+            "text": "Sarnath is an important historical and Buddhist pilgrimage site, and the Thai Buddhist Temple is peaceful and well-maintained. The surroundings are clean, and it’s a nice place to spend some quiet time if you’re interested in Buddhism or history.\n\nHowever, the overall experience felt average, and th",
+            "author": "Tamil Explorer"
+          },
+          {
+            "rating": 5,
+            "text": "Owsm place. Peaceful area garden infrastructure was amazing fresh and positive feeling Knowledgeful place. Neat & clean. There is also a mini Zoo inside the temple and also a fish pond there are too many types of fishes. Mini zoo has Deer and crocodile and soo many species. Amazing experience of my ",
+            "author": "Anupam kashyap"
+          },
+          {
+            "rating": 4,
+            "text": "Sarnath is situated like a 30-45 min ride from Banaras city. It holds a great significance in Buddhism as it is one of the four holy cities associated with the life of Lord Buddha. This is the place where he gave his first sermon to his five companions after getting enlightenment at Bodh Gaya. The S",
+            "author": "VIPUL TALWARIA"
+          }
+        ]
+      },
+      "assi ghat|varanasi and ayodhya": {
+        "place_id": "ChIJtQtO8e0xjjkRjFhDS1MEuIA",
+        "name": "Assi Ghat Varanasi",
+        "address": "Shivala, Varanasi, Uttar Pradesh 221005, India",
+        "rating": 4.6,
+        "review_count": 75778,
+        "price_level": null,
+        "website": "https://kashiarchan.in/assi-ghat/",
+        "editorial_summary": "Religious festivals, performances & yoga classes are held at this iconic riverfront gathering place.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.289431,
+        "lng": 83.006079,
+        "photo_refs": [
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydgEPKFlRsTn7k_iqw2YEliCY7PWoQ4NAY6l1bhsAK1fhw3rShJToECbcCOu_HCrp_EPLP1G6s3nhbImRxd6DZMFpnCuDwAdTvn1JxZLJ1FdRUUHxDgZ3tNDEonwiso5vm0n9rpEKE1fOGUMWKINUAbn39dR9u20vp0DpEx7bUowwvmLarBijZ08G7ukhbuMJXiIcff65iaOF9aKxBt2QBQtd9q8qV-PNDh6U_J6J8oyIBG37-i9zgGkbDeDYfo5x9yzzhmXBhD1o8jv0aAHemjIRZEeFbgsC08AOVBF6K2dQ6zswHp_K-N_E-GsPSlESZo2B-t8MugTQmy1WHxeidkOiMQaaLW3zT9RU236Ir7afmthrJcT4llznzhO3lmfhOTJ2rvPEfBcAnWHG-20B1c2d5wVsNeGyQzSOAKhI4LlOA",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydhUWbJ6CGXLL1bsOhqgZY4n_f7LEHsTUO9OZaxsoPqZaIFZgHfmdXRvJoBKX3VNaAyoT4nYF_A2eJNy8zS7Jsnb9SyEar0vUpud_svfL7YjPuNrM4Sf6ST6F9fJZRNliuyxRmvNQhWlAsROUicIyTK3--8-vAXAVuLwldebQuiblIoLw8IHlq_gh2UuapnHMERP5Ol8nLOBEnas9c-shqM2px4FxNTKOnMWp_fC_u_KBGeNwbgbDlZISkpOM_kZr5j9bHvDbylpWmGE8bO_9S8oa-wWYaFMDqXreACesNyrXegp8MJzvmTFUux4oRKKA0v-M2tyelKps6eHhsQDDJFOQn-X4E5pGGSlB7wee-drZizmOmcOJhwB23SQAXwT7arWvoyMS3enPOAObk23LeF8y1i_Nv8DMPNOOLGI_DQ",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydiZGn8HYslgkHIMHN73BpdJg9551bu43N-G586m0n3EjqoFmR7jYVxROnlOUJnIbEfJyf4j8q0PZ9jaCvHse4akNWSqo0CzTX9R3MeHhA2CfC9HXQMzXyiyktOIDPxl-hEJnjaRt8Lq8qXFceFvJO4HrZa_pqEcVorBfUY3LIvovWhQ2ZJpcAZ2nMARCRpJS-_BzDAIWCndz9SZXATVvjOqdE7kvlnVSKhIICLXPUF2fcCzqbrMXkEsM1V6zvnUJo3LMWaUIU7tI1gR86rpP9clCX2YUQ1Ap_7MLmNZaalvfgcl_ew_OPwoEJsJnte6C93olUX4M4VD6dSi5t0SIEVcfL2R1SudbfkXj5bUn5MIipYJy4t7nqPWRRPdFSOBgz9hD2CkC8c48dgGmqYQtDSo4r3X5fzXlMh-bg-q6PDe2Ey99uC0a0o3Haczfqz-",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydhgtYzdqLVVyzeHEGi3C7VFOdITCKRQDNkKsDqQ7G66xAAJpxYm40Zo_k3Id813jnkCJyzCISgdSn-6GEj4ut5bYyKO1UFVP2Fu4KnLWMxj2TxacOvDc7RdOymPNwMJaG4XiE32ZstIcS76mNrRukjc33OBGRf1A0yfLSaLhXWyyxAjtSEdh_zqFeeLdSlMo4Ni0Cko2z3JCZ_O5wG0WTw_jG4AE3Mbd7o04qqT1tnd3x4XFy-4ICCmaseQhg81psOZHL6yoCJkvF3r5FZRS4p6C5D6XYs2osrWEETP4cnfQuFO2qpwCY4sM5_Czp479l0x7YgjfcUI9Xg_pnIyejcOKJI_acN5pDRsEmXNYhYpc4yQoJ_MO7iA3NFxH7zgIALeUdaLSfyChZuvD6et5kZLPjE9weYWUNU5WfUEiT4",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydgD6pvdIUyCH9eONrzV-kamwACOL-PPLwFfoJKjbKE3VYbnrP5mWD0_tGaFIlI-3CD-cMVHMvJ21iOk2S_nJ2DeSOI1Pm1erV01Ls-eWq65hyVZqxk1Gsp3sktWtuMSRgVksbTKP12xSzQBxthS_LHFcn4p7AbbJvzQcX2rKatg9MkB-Q-ctnuAQcdzAQd-qM24BCD_vvoREAFPeHK60WrStiJ276nNpJ_rOnULT2gi6klYwJBjvF1Y7alz7RWyefHqusVEYK9lj74TGQaXz3b6IlMZIeI-WiO_7ay5NH_iPceO826nvNfDIJEKUnjZ-u_TdEX2kZOPd5qpPmcOIuiVVzgnyW59aulJngsZVmkMLOs4FonSQzdU5YLkPdc2nP_hYwFHzwMCtEKLOvW00jJPl_ihImc8A2KHLCRvCuM",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydh9sNxOhPsRbi3ePWWvQoiMvNu0WfDEU_MWXl6ie-OsLQ0f0HzYBRzlztl6gKaLkYkd66QBCCWGJz_ivxyRyUUAlaOnkPuyFfSL56PWfqUYaGYGF5vepSEY-NYXtBC4H2Q-tHxJope_XmrQvagkNlMIYdZEhiFux1KCCdSkwc2SPtEG3FWqWWMpHxz8Ulf3GQDCzeJQl0g8pI3XfqlXWJNgC2JA6pmYERvbOZIi6G9YViyGS-cuT5QfLvDf-xwzYHgVkLzXvqBDeCcsFKQvIqOwZmpqitfwPvg4bYQ6e1KbKOGw58oKEwvM8WHtjQ3VFKhkeLi7F8ANrZZ4Ui7ZbVvXXun_JR7st4SPBFfdkrbslBrJr_mbAYQiYws5qzfUMrcu_WmAe1d-S7O3PVwuPAdBITZ0glG_4phAAdVS3nwtgEw",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydga793F1oo6Dh7ZIx4oK1MkMQvycoMmMcY885Ngay-Wupol4Ps1sasb7UbglvP61Np35uoCe2jYrTUcumITeEnnvjDvU8g4Sl400b99eibZVw36Nw0C9A0SrlQdvvvaj9yscNQKJYqwVOq3GOB7eG06R4k0QWZXdMLXXy-FEVFKKg2UNGJ6rv_PX8omR7dKXM85kv5XyScs-ZSkrUCqTiuNFLx4fD1f-odD9xxgNPGL5iKuUn5gBE9mk65PXyQwAIP1VKv2lbwt4YKuvYdLmqX0q458MHLsJmHdAm-eTHwxN0LSDUECvmbCbd-IVSin1yxiOdJokmBFkqPLyXobkolihNsY_X0WXnk8On4Ox6pyHdOnrYGD0Yipf1oaulMT0D2eTcPi15IvzWqqj4VjDZKt3cF5suIv9bP-8FNp0W6axnbuKX9XfQnIfbpmj9iE",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydheNtgoYdkvz18Hnp-og47VCOFprOkPBHdy4p-yIeodqYOQdYz6J-_JGjP3qAQDQSDP9EPTGix6QoIrhvVXfJNDXZW2aRAun-rhg3vawsTNuHtes1GCOsgOI-acPlCZb7-5-EU3P0fiyPepqbYdY6QavxpQErOp6nKCzunvmDG2kpQpgLPRtc0nHlUI8xK9vfsw3zKVq4EJ2yWK2jXShAAVPhGP1ngQ97FlWIniiOXnsl5wR9xCfNxaPLvDwrACVWZ6LQdbKzCbzfetA6lSshniC7Hs5YDZS8g3oiJ8tA821bG92M_MpBLxdtAbJHzsoGZ32qU6vvvyPa1rHUMj-ea5phjaymwEMGPWmZ7OAvWsEzprcvxIkwOGFVTxVEGP1bEB--mIWdnRWUMVm6bDWkc4CdOVkNthXaRnITmzxpxS8Q",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydgtWyCVCAGfRG23vFYntEqDzLjO8cy7_G3DpBwvgyK119-UInwyk5uFVTWYdRGXsc8DlJ1xsBsasH8yuZs3399BJwbDsQL2A7Ilx7to9v3wLS5xwswj8bLmUT9rSy4obbBSXWEGDHSrHxzUP-lwHBz-s-mSc-cXtStwyrcbVipodvY0lPOegIAPa6cMqFWiM-wCKXAeq6xmqTH35CnpoBSeGvGWRig-VHEQlEq8rl4ATGgvdJaNmose82whlSjRCytofuSRY991oZcEr0h-dCwV4DWM0TSsRqeDFcdvVHclEYtxi_nifMiNYrE6sDEcce1OEy1HZbQ5YMgy-JBF7TvGTi-4mn6Aj5ELhIjjNRPSv8oGsA1FidR2sKn6PtWjiJYzDo5TE6fggjgf_tiE1F12H8YvSXsEzMXZ3ZT-ZZJmXA",
+          "places/ChIJtQtO8e0xjjkRjFhDS1MEuIA/photos/AWCwydheJokKtbSOHUbnyKhF8zpnj2EUNygDJaYlLUc2NoWnCp4UbDsVF1i0gQvqwOca3CN-Qdl4buAPH1tBqasd4ZvY9KxnXnklYJD8S2Q31TRQUHq7rCb-IuK3vbSqSgsAwpTxJg38FZZIyVy16BGq4peK7JrbeB3Oh5cp5x0jf7hZoeIoV7Qz45mlQSpxLWc6UenW90CdkFu3l8pHywIh3alVA5iZ2oHejo7n0SQvKWNLx9kTN8oWSMFuZi1QiUWktgsHySfWD4-LT6t6dxIt0iQD4wCjnhaSeNMQuumZxhv97JA_HnnWyhnSAlpqcawy9y48LSAr33jFDHPndcRx2io2PiZkHMmHg-HjAAp3OQ55CM4XFxDKFZhjsA2xgpPCw0PJ5ASdPp19hjmpgibDle5aXc4lJ1gV63zlYQhP1HH09yfs"
+        ],
+        "__at__": 1786803758.538692,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visited Assi Ghat for Subah e Banaras ( Morning Ganga Aarti 🙏 )\n\nMorning Aarti is truly magical. Got to experience it up close, spiritual vibes, sunrise views over the Ganges.\n\nCalm, peaceful vibes with locals performing rituals & street vendors selling local delights.\n\nYou can also enjoy sunrise & ",
+            "author": "Akshay Davda"
+          },
+          {
+            "rating": 4,
+            "text": "Visiting Assi Ghat was a truly memorable and spiritually enriching experience. The Ganga Aarti was beautifully organized and created a profound sense of connection with Lord Shiva and Maa Ganga. The atmosphere was peaceful, devotional, and deeply uplifting.\n\nThe Subah-e-Banaras cultural program was ",
+            "author": "Avadh upadhyay"
+          },
+          {
+            "rating": 5,
+            "text": "Magical place to experience the true essence of Banaras. Clean, vibrant, and culturally rich. The morning vibe with the sunrise, music, and boat rides is surreal, and the evening aarti is breathtaking. A must-visit landmark in Varanasi!",
+            "author": "Ashish.Bhandare"
+          },
+          {
+            "rating": 5,
+            "text": "One of my favorite places in Banaras! The vibe at Assi Ghat is unmatched. Whether you want to witness the beautiful morning aarti, take a peaceful boat ride, or just sit by the river with a kulhad chai, this place never disappoints. It's spacious, lively, and deeply spiritual. Highly recommended!",
+            "author": "Rojoni"
+          },
+          {
+            "rating": 4,
+            "text": "Assi Ghat in Varanasi offers a unique and vibrant experience. The atmosphere here is truly captivating, especially in the evenings with all the lights and people around. It's a lovely place to soak in the local culture. ✨ I enjoyed my visit. 💡 Definitely worth seeing. 😊",
+            "author": "NIRAJ KUMAR"
+          }
+        ]
+      },
+      "ram janmabhoomi temple|varanasi and ayodhya": {
+        "place_id": "ChIJv_B5MM0HmjkR3Kk7siPoiVU",
+        "name": "Shree Ramjanmbhumi Temple Ayodhya",
+        "address": "127, Ram Mandir Rd, near Ayodhya Railway Staion, near Hanuman ghadi ramkot, सीखवाल नगर, Sai Nagar, Ayodhya, Uttar Pradesh 224123, India",
+        "rating": 4.7,
+        "review_count": 14716,
+        "price_level": null,
+        "website": "https://srjbtkshetra.org/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 7:00 – 11:30 AM, 2:00 – 7:00 PM",
+          "Tuesday: 7:00 – 11:30 AM, 2:00 – 7:00 PM",
+          "Wednesday: 7:00 – 11:30 AM, 2:00 – 7:00 PM",
+          "Thursday: 7:00 – 11:30 AM, 2:00 – 7:00 PM",
+          "Friday: 7:00 – 11:30 AM, 2:00 – 7:00 PM",
+          "Saturday: 7:00 – 11:30 AM, 2:00 – 7:00 PM",
+          "Sunday: 7:00 – 11:30 AM, 2:00 – 7:00 PM"
+        ],
+        "lat": 26.7955933,
+        "lng": 82.194407,
+        "photo_refs": [
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydjCjvau7Oze1PBnl9tijzwOBAXpTT9CZ_ukg1LvD6WqTmdtTyaun8f9jZ-dJwJe30829_wiZ8w9Qfn_jD-5DCpqLPfsuE-6a2NaQXdB0qEUxHJMReD5SGOC0WetP6OCPzNBmce4IzrzxRym4Srzxggv5a0vliwBer7AcKSZ_fAPqKmqtiyzApqId-zlLNh6xmAppw-1dLV2UOiH7SrggDUU3GP4xBOfuRLGGq7-gkpHywkbONZakQkVGxBqOVSBhcQbb72hdLQZWUq8-KlnNcma96ZGi6hbnPNOWAZFh1cWc2YbhwkhBXyGIEnTwO3yWB65ZhPkaQmDgVTfxquipm9xVfuIusfYZLViGREEL3e1bxc9BwTUOVAB66n7KbWU7v6N8_OfNYjR5YBgsRjm0u5ggg1LjbWncTmni9xB41gwdGg2uv-bZECdG07ssw",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydjb3gLlHUAOWX0GN5nyHxF2E-sXS1PIVhdTt3YLVv39PacQxqOgrS-2KDa88oZXSijD7-02BZNRPWz3gkFzhJvs1Qw2c9Kj1HUDTtuVqzdLUHVhRVHD1s-74fz7AuaoPA0ESI9ZHKY0LzEz49Iy4Amm8WU4jVL6wfbqTQSNNDIG6wvJKYkxte_xDtg6TSUomWloW04XGOC8Ch0_UeeHfS3ObOKgNrpYoNUx6go8Ikt8ma1oUvMI8t_2Kzk0GLFovDTTNRViYIiPAuU7nV4i1iBBFA4f-19OFDlhWhmDOYN5i79Q5dM-y86o490NerQ8suR2JHceH4HVZs-AgtI6P9kikRGk27Kv9tys1Z9Q-U7S4HGgl105Nkl1y3t1YukwmoBVj81FArUNY9NcyCqyGHDX8lYLBr5IfDcLJQyEjmKucy4",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydhR6W-2lSDgBfPvnzjg6Om-iFdz8TmsJbPvC0eQJQtgFJE564-46Vrvc-t_qjVq-mo21Z_nSjRCXFzMBYsya8yn2DqOdb7EEbATn3pBu7MqtP-PdP-AwrZLUY6GF3q6uefD6w_HoePKXmmM63swcsyc8ZwqQFp6z4RR8MGdUGIEFpYhIpnYzR05l49dAVShIMmTWMbOtNFUU7eMZ6N2mk3fVj-4Mf2RE6rI7QWVGTq7sj2HolCR9RLaEStPF2Due-dOaurX8hSZ0Fm09KNmlPPOvTDnptvefUl_xaUrxQ3bjOEbCgCqY4Ad76AT1tCt7uPLaEL77GCXDRRP46UsoyB9J38PFtB65DgSulnLY6tdcrRh-JAM7ZrsUMVy96iVOg3bvrzsxSBeYA6YR1Jgo-yuCnuchJ4RjmWbdmx7827z7xzY",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydh0DOYvdXaRQaZLuRYJdd4utQOu_SZ_rz3ExSTEOSpAsO-9RuODj-Xjssh5FxrAEGdCNBs-VxPKxKES9P5dGOK0vbpwvP1bT1fwMR0_uRoTc4w2NNFFn44b3e8OQMrpX8dgjsCEgBnwJOfHcUhNPyPAp_5-0KOFgOz6BZJve3TrekNxupMXRhYAqOS9igUnJ5sL2vNyovf4hhpRdseLcEgIxZG6ytUmPGnv6w3YQa9yqVv4GIXTNjUcnXUVdeHnR1lpto_dTjS1Dc00rF6n3LtSbFVKW7etkuIuOzqzYpok7y2wHeDLU_7MVRSDqZguG1HQZanZKghyUCUb0D-JMyCXHZRMQtrh8U7VTp4cg8PSaQA3X5_iUFHMriOGXc8OvY39aGqk7AFgNqjWfCj_IOA9MD8GHGHe_AK-TJCzeDkf_Vwu",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydju_P4h2fEsPDtY5Hd8m-CbQe3ms_sm0Ab6qMIDp1lIYzuEi6YJYU6kYT6-OA1BfhS1hIKE8W1K2XI_fOz35IzimgvtVY3uBWuoeN9LXMu37D9DX2qtWNrGt2n9u2hWd_OlvzRxDroABbHAlb5IXRyLYgPjKScr48pPwY9c9UjlwsFwF_xr3X-4tGqKeXCVrGDY9WzOQT8n-GCPLrid_mSZBxRzUA_ILzadfAf3Dwr2NZ25K4UMzQLuBeFAJZQFqSQNAszBLW9A2Fw4GaIBKnnvvjxN5GsnR75kb6YVBPt9hDkoKfGKkY3V5uPmTru9_-m_VdpfXaP5Rc90oSTdaCpkCkK113mjC8a9arBSzpf8lzTjQh0KbyBKNKtBOHs3QWCrPZ8UfDfeEoMSR4R-cFdQm3zK8AyaLGyzhoQJAMpv_arz",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydhy9Ri5Mg7cRvbf_RWRs-lNc_yAWv4E4yZHnS7EvDsPKB2TlJM4a4YpLA6Qgk0ZJgnY_K8M2b4mq8HBknCEzDTYWwS3dFeIpOzjyv2eDoqA41NaK36IE1cZdxwWYrtEAsSGK1Ugvd8FJTevMH4uU3bfZ_eFQXhsBSBEtw2bz0S2mCNWNJn8ouoXMdELGxs5spSuqnKbHx8UMJ_EanZDa7-9z0tBCqV0zoFvdtkRQMV4UQmAYe8lRI5e52l5BSVgQt6ppNVBqk-g5ZTpnXE93X0T3ZRXLdBN4FxOAVACtVxHIXVDv8KuyXj5GItvlibTL9esSKCD7MMuSo_hP-pa6CDbBkMRaOyaaWaOZEw_HIv56x5DjCQnjtbO9x2KHg4ESCTxJbX40T9iPeVmTm9F9h05RLEeH8OhL0G-UBXdhlJ7N0O6aH0oPyUu2YEbvY_B",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydj0eEHCkcNQW5UKv_qykeblfolHuQOZ57LpjcNCKoLp9y97YFqNDo2RGitPHgYtDfT2YeAYaMG0nwo6PG64tGkIPpxkmy5Sy3HbsqeK65f_d1A4bg0WXWN-Er7lwtPDHNYdFR5BCa1gMtJoekZgAXTC_Z6cynjd14b19LMtv-NzwSdqDQCGMXHqOcLeo3J7P6VGqdIsEFrHdWgTQ_feADOGIcmAUZ3-bVKSQeoP9RJlnlLNRBlCegCXNeodJDb543IKOAAUKN-j-oYthCTlt_a07SwLQ1ALTh8swrw8qZo5FFFp-YSKU_4b9S3VJh_JMisYj6eHL5aeB_Fk0ZHizghk0jYu-DPlVGa2NPy2_QDc-Y8u0ii_MQhf18YASviGBGYyHpCpx4mNvTQGIAyebN10J85NkhyX7rbtm75DQlkDTngFBDKTF_0FhA_5QA",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydgO0F15FYhQykDDBuY5RvUwtWJVlq10sY_zbk57rirJug-Ch1Ip_gXDb4JtJIEsh5ecx2Wy8pnDw3r0KXskJMaliE0CVSVyftC956SC4wWOJ4ZLwAEhgyLvTxtJSB3fwUzYiF0wmID4wpxZtJVqergTh3IZJXWmbvx9hzT_jBfM6_048Dmj_hViSyj5wwrGgaoZ5frv-8GzgWEl7KJSrT8ggIJIQdWe63XI7YR_UodIWNqOKg2ySkUjC_SgN3TClvQB4XaAQCkbl86r6obcaQKTiyNQHpPl9VvDU-BxdyuGsZVOjaSedKRZJqqkx777zpqme1K2BfxZ4Et4Imv27o8fsaVlga8-hdwTs-9T9T6sEcryZVWm_fei-ePa7lLo4QtkS6Pura2u4tQaTlLPgE9vk2VR9cGiQ8Vy7OxK8qspze4",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydhGOW1cAG5gGxj5aiL3SuItkA48Am4VrUUEsWq6v3-QRWU-TivHrjL23cwxoMxOPu23kUd4w3trCyweUxveCZOdDsT_sGlIfqUw2olpRi7sYnV82cQARhe-H-ilf53_k_mTjR6tl8eJfIhhF8Qgjw0vgxvZIEdxac0U7IEzXm1GxvLq-Y78AuEc3p1K3y2h2E6bxlVhC7gZVpZEUly14-O6UIVYgvi4O45caHIDRwYvNYZ6a24R9-_UvZF4UPtfdOZoFd4gS_M7dKrzM0oJDnDsOCjmj_ik3LeaPyR2UY_zGRVRfqU2yDhAZhNLe3FXMUFL7uEpbSjuW15Cdt0NJVQldrHLaaAtgmwU49PHWjB5ih3_BoCMHNXmbhdz51Da46mjZFHRyLb4Lyf12mRFVtoPU7k2-gfQ50UtB7HKwmB2ZYk",
+          "places/ChIJv_B5MM0HmjkR3Kk7siPoiVU/photos/AWCwydiEHzY0_Yqd-_4H6FbQVJFAL7_lIpTIStzMaP4GWjPlUWbMoj2Cdm5i7jd0OQu-z1CBOddgENxWAFrWZWSfbQZ6D38AhxEgqsTim3GAhJmk1sOgjEBFX0HDMCcQ1Y9K7hCTFVKvJE0Pji9a3urFrnTUDFJahdRINeaKSwAl5Y8fPEtik2XFNswF82gb4uePqmFv7D3PyOtcZJ9zPLCcTMTKQdp9OS54wPcE5vX2wrgI2MaNR9uDawFrisT6KjSzXYbgRq7LC9uN9s-SgmhFSIK0YxBfawYGy_3h5oYKHjEyeabcSYJbMKfrbldmrve2aSPyeuKg0oVkUXDJG3lJjmNCYKO6fN2F0JEEaf1WQeSRYJ__u1EJgAWMZvIzARCGv4yOuanhzorcsjgOvaGlwBICXNvIHFC3FMcEOrSb_-8f5awlZpdHsdo_mDQ5-fxa"
+        ],
+        "__at__": 1786803759.23707,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A truly divine and unforgettable experience. Visiting Shri Ram Janmabhoomi Mandir was a dream come true. The moment I had darshan of Sawla Salona Ram Lalla, I felt immense peace and devotion.\n\nThe temple is beautifully built, and the overall atmosphere is calm, well-organised, and spiritually uplift",
+            "author": "N M"
+          },
+          {
+            "rating": 5,
+            "text": "Ram Mandir Ayodhya is a magnificent spiritual destination and one of the most important pilgrimage sites in India. The grand temple architecture, peaceful atmosphere, and deep connection with the history of Lord Shri Ram make this place truly divine and inspiring. The entire temple परिसर is very cle",
+            "author": "Dilip Bagdanawala"
+          },
+          {
+            "rating": 5,
+            "text": "The Shri Ram Mandir in Ayodhya, Uttar Pradesh, is a grand Hindu temple built on the sacred site of Ram Janmabhoomi.\n\nIt is situated 1 Km from Ayodhya dham railway station, 12 Kms from Ayodhya airport.\n\nThis grand temple is constructed exactly at the birthplace of Lord Rama.\n\nAfter waithing for centu",
+            "author": "Amit Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Shri Ram Janmabhoomi Temple in Ayodhya was a truly divine and unforgettable experience. The atmosphere is filled with devotion, peace, and spiritual energy that touches the heart the moment you step into the temple complex.\n\nThe temple’s architecture is magnificent and beautifully reflects ",
+            "author": "The Amazing Gaurav"
+          },
+          {
+            "rating": 5,
+            "text": "A recent visit to the sacred precincts of Ram Janmabhoomi Temple left a deep and lasting impression. Beyond its spiritual aura and magnificent architecture — truly an architectural marvel of the 21st century — what stands out most is its exceptional cleanliness, discipline, and organisation. It is, ",
+            "author": "Ashutosh Sirothia"
+          }
+        ]
+      },
+      "hanuman garhi|varanasi and ayodhya": {
+        "place_id": "ChIJFWr525IHmjkRnR3jcg8FyWg",
+        "name": "Shri Hanuman Garhi Mandir",
+        "address": "Sai Nagar, Ayodhya, Uttar Pradesh 224123, India",
+        "rating": 4.7,
+        "review_count": 46075,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Prominent temple to Lord Hanuman with many steps leading to its entrance & a large statue.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM",
+          "Tuesday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM",
+          "Wednesday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM",
+          "Thursday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM",
+          "Friday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM",
+          "Saturday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM",
+          "Sunday: 6:00 AM – 12:00 PM, 4:00 – 10:00 PM"
+        ],
+        "lat": 26.795607999999998,
+        "lng": 82.20189500000001,
+        "photo_refs": [
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydi0sJrFZCH4n4mbDZWd-rf7VwYtvuuxRogBgfjinJkDIXb7VI4ztAmDYhknLl5A5-DPnb_GXiTyZ4UFTY74AP5fEUKy_w0axRLzD47s_XtgePaerfYViWDIp2dwipcWhrPSOgvkVlGSyXqfxKDHBabBY78Ss4tRFPI4Zc8KxBDp1TDhzXjNWSypsZdUgviG-speUuvZqBU9DNE9_tnb3cfNXi_vLv8JOXKHROuwu7ySS9bfka7mR0q-XBJuQCbodmYY-5CAKJf3jmQdemZiLgVKYwtWXdOZY_PKWclaaZGcHvrOYGFXXwNLFem8Dx7OYZ3QkMGFQXPLbCFofSrTQ8S2t8i8ogsJgY6fRpPCKOyk0nxSEo5BkHHkqXzCHvwXaOF1UOGjCm9jtQd6CjylCYruVrnko4sd3-aN7WGS_YjFxku3jtNEDYFR_Z14_4iJ",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydisFb3EAxrLJg6BR-qBg4D0gK7rnp7hqI-06HJnd69njNqt6TO0qoGvqZMxFmD6U4hCBab_TnjwmH0JNc_NguA3zckMecpGYbk8DX4dWNWc2nuJ4U41ibG01OmeIJXsna-zvlGwIcmANOfmOyj3CZM3sBoeGgR-VPN0wVP5a34xHYGiB1yLOUzCcneT90WXpYrtA6KBASJtk2vVrCZ3jh19kQzrEWRwSbvyYR9dmT2Pjudx2GHEqI3n6MQUB-WQXVxLm1BH2akccNxihtx4dwdeoqucjtGNcWca1Os5TnixteOnOmt1pUnUnHKXiST0bK7A-yLr17pXF8LgE1MRdoG0f3LS1h4YSz6q2EW18VEatSEKlfVJ6sKuj2bDIu3mpx8-p4VyxleZ1kJId5eaCPnOuxZJnt_LWxpTs3Y1Hq9-Zuw",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydh2mIbTsRZpWO6dLmObRTZy6WkBqXHEuBw0Bx5S1J8ob7w-xKX3vG20p2FcoPD_QPYzuXYJA_jMBY2O-rN5_QLKxCDOJki1pII12mhZAwbbE6UiA5OU-3Nvrnh2FW_J1wL5pETebBd3WN2_HmS2U0wGogRRm-yXWaIDn92-eZKY2QkzJQbRdzAJauEIGNQBBVVtaJmCNSvMLMiUycFmLTZz73MMwJIuiH1BE80pL0d61pAWG9lcy9X5X7V6sCoivdjL_h6kiWiF0tX83q3SSIcYDYrPlQxuJBbdNCz3HI1DEQgVS3qkq6Chawf12Ou1ALTZXrP-wpZkag9JODi5EyPLrdP8AWJLe5S7Q1EEP6_hkhi793AM56HeFUwQJVmaM3D3Mp7DFdBIj5csT11EN0g_C-RpHH0rigQ-X5GEnjKQaQ",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydi7R6pm2IiY6RaY2RDFxKla6p94eDoH8lGyEMW_JtAvMSw2nSjRdvfmk7K1JT70pI-gfzW77WIPlfWLXZxUnH-YkdlAysWS5TiMd_ETTe1fxpavDqa4iF-QUdZUcs48WBo2UZP05UE6GksrgmF9jxNTSdfjp0TGUlwuqz7ixUXzuaHlk6y97sQHAc2WOxETnqsYJJsvU4OveG6dQ0VMzPvKZFnkxuT8HpTd7DcH4-IpbDJR6n72JiPcsIi-v1vNClgiTJLWEofwx1S5-MzEywpbONZSngORtB3zAY5HOdBTdJXK2KQRdPK7nqXKGzPKovrOp5XBUcnXgQryjCAAKZyCrClDs_6Jvdd4P52ks67ft5-0oaoN2_isVkmWSFVZ3Gl3W1_-bmjxTtvj4TV97sqqgkaYJgJtcRgGJLoTQnk",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydihMK4YWrV6gjT7aiMJ1PZtA871oDqYtcyMKXNwt5tgLt4daz1FN3VAiSjMV_wWRJ-vg2QNloyP3Kt8pbfYnaQMiJoSZV0iTwubtSEFYFDgjnCI9Y9waz7SJtBA8TPsw-UgqB9BdAVuVArjNdPU1det86HiqYDx-QWMTiB9Cj-uDdCS8AprnW4WfYYsdIulHu9XdeGLRUvm3b9Dwjw1RJliGK14BYkw9MAJpt0b9ZQzSEcmkQBjdyxadFEsaEo2iAUdiDpvEmGNHcECcuEO_IRS1CeUNJeQGHn5km_rjGDcy55vi1cJxCXKDhruq19-QW_KEPj2nPCZQYxZiv5L7dg6Fv9C2wL5FgBZNdhq0MshcmDQgzSu1wOAv0RcTBm8pB8K2kARpJEL1_DosAggGZVRMJoY5I8A7lw6SOWKQa2Tc3M-",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydiYrtuXVKtBA-NWvLDEPawPmN7MjwYtFbzFRJaq425kWalGbwRI3GjMO-ysXhZK0bDHX5Em2bc32nZ5m7AV4BmpdkSU1A7Yg2OiUSMW3sfIj_cRIHBkzfPGbeZPEvOk2KFAkC-FfSvui6Q_aS40zhrNLWgQSb5Q9ZLTWqThnINFbshYJxHUbutXFPzCSQ8BcckCiFvU6gg1DsfTiPqB_COBsm8mDlUJpCfcuxQ6ICIZzDsDCmTNlVgLYOk6G-dXstLpH9aXf-Rt37lc8EjjBCP_HFklc_4HzOSBMvxEJ-7XISPDHmbZZyYoy2yP9BDa-wJ_0vzWPjRnSEjf_K_CP_miij2D_k5gSTVUIebRAMs3xIK8yPyPDjeBmzwcQLqzobQm7fgJ2a3bV_kkgIlpldEtWtBaHj8D_O31dFPufdDJew",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydj-jehcpQyB_gWWKdbzKBpBaCat1PQL-kAt-BrItvyR0-Qa5z8R6uxUyhVu14Teb8M23o4gC_G2nxioe6cXtUTWDoJS1F1mW4hSPR-GDWeL5Edvg23TloIumOn-8B0XsbiQOh7Gj_ngDuktVSmn9GvQEJAhhTJxGoIu-GEt9vSTXgX9GHQB7gtdd-fPK8sEfhebQmkuYWz_OCvduyxdEq2eWyqawvVKG8_MTQuIv_NgIbjEac7JdPo8ZtN0QxRfO5BHuBqEAxIFg-f6SeZIFZlPs9FDQzjD1e2nlfDjcVXIitSqQ06tkdUiwAzaopO3hObCUbTSFbhgNyGDLShstbNOFvneb5atpKqm8pg70OB8v6OeMRcbQErcjhNexeRuhvWJ4Npzix4het133YnDBX4zsmjpSFZb5Of0tTysgUmPxJJ5U8bDiwvMirZ1Bgw3",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydhoumE7UkfgCgYHpl0RjWS8H0NLNVULogoN_uLV93HDHYTssEt2pcyfVgiB-w1XAgBAjief4AAQitBN0M7lsqUPieaY1LhNOtsqrvLjS590OHEfVDWZpwpquvxESmgNqgosVwxBmglu-Pgh3mmMjBWifDtZQJ-vUz_hhXqjN4aFKsXTSnyrDIP2v2i_uyIQwW6gfB0SE1NFf8Vp3mUG2otVy8BAL90SLkMS6mRDhqmEir0E2cdTfgl1B2gQNSe4Om5wOqYt7ciWhIuze19EbS0WV6x-KanuWujrjZRXMM9yflUhPgkgErxmvKnjNiwgDEAtZD92Jjh2tTM07d2M_T9r1TH9Pvpkgs4W_wxgD94szfVkg0cygrfG4J0UeAx7pbjWIX0bRa4BWwflgFzMlHw8Anoz_J7P89YF-_hkpRChWOsU",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydjG-TmGsoq6XcH1AG-X9hPAAzWRPBa4UdEtpvyKViIbE7spVrapBTrZcCoTxBrqxs1MtgGJ7Idrp0pdZs9aiauSiMTp_DzBEOQMZPMV9BdOcbkJrg4oNLtodRrFFqsEYj2HwQPulzqFqANS3-uzHCRrMGUhfqXSxLr73ohc2glRt5OMtZRAOaYjpPf0uwpYmys2WOHoHJgloO0shn7z_eRLlQeCsrfaxhnzlREkXJ7ynan5PCU0Wh5cOkL7Rf2oKCzTn7zvR_3NEcEF0GHvoD8Zu3r8hzcRJaMeIdsjv1K6fbTSiVGcqDFqG2ErXlVdmpv_zXb2Esw34VnqLXYfns1Il79FTJEq10W-tz7vCgdeLkZFZnTjlkt66V4W6z_Ly9ZOUmEiC-RUD--3cGBxZ4pqV_8B0v5Ec5QO9hKBg8Y",
+          "places/ChIJFWr525IHmjkRnR3jcg8FyWg/photos/AWCwydizENM9fBIHQeBUJO2tKX7QwzPyMuPaX8lssb5ojw7evXeCQzXEoHPsG-Pb-awdsbeeo3HAQo6BYVtGF_3ncYkXdCwQeG_oagiOBEVticH48mAsDJW1HlBJ-bypnL8oPAtAXyEQKfiz-ojGsslHn0kPyg8SyH7b5SYajymgcbhD-IB40n-A5tduB3Nr1fQwKc1Msz-cmXthvhuBbmZMgKmEDESG2ldY5oYnW3xpBNmoI8OKmOy4kKV2JbM26uTr6Z08X6JZCfgApyeVilih9EjcSpppvclQfyNYcIoQEb8vgIutUsPk2JbP2GrW2gTByHm4UEGmfnXR_6eaLHz-mVAOXqpKaAU29vDCr0bj01w0mAX8XgQXehjCdmbevpv7Tx_bV2cdIyHlPDGaAzCyVjpsDMTmdwoD1uMiVn6DT0fc-A"
+        ],
+        "__at__": 1786803759.664819,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Wow, what an incredible experience at Shri Hanuman Garhi Mandir! 🙏 The atmosphere was absolutely electric with so many devotees! I visited on a public holiday, and even with the crowd, the spiritual energy was truly uplifting. ✨ It was a bustling scene, full of life and devotion! Definitely a must-v",
+            "author": "Rahul Mittal"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Hanuman Garhi Temple in Ayodhya was a truly divine and peaceful experience. The temple's spiritual atmosphere, beautiful architecture, and rich history make it a must-visit destination for devotees and tourists alike. The view from the temple is breathtaking, and the positive energy felt th",
+            "author": "Suyash Mishra"
+          },
+          {
+            "rating": 5,
+            "text": "Hanuman Garhi is one of the most revered and spiritually enriching temples in Ayodhya, dedicated to Lord Hanuman. Situated on a hilltop, the temple requires climbing around 70–80 steps, which itself feels like a symbolic journey of devotion and faith. As you ascend, the excitement and spiritual ener",
+            "author": "Rakesh Mike"
+          },
+          {
+            "rating": 5,
+            "text": "Sri Hanuman Garhi mandir in Ayodhya is a 10th-century cave temple famous for its Awadh architecture. It is believed that Sri Hanuman ji resides here to guard and protect the city.\n\nइस भव्य मंदिर के हनुमान जी को \"अयोध्या का कोतवाल\" भी कहा जाता है।\n\nIt is believed that devotees to seek Hanuman ji's bl",
+            "author": "Amit Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Shri Hanuman Garhi Mandir is one of the most famous and sacred temples in Ayodhya, dedicated to Lord Hanuman. Located near the Ram Janmabhoomi area, this temple holds immense spiritual importance and is considered a must-visit pilgrimage site in Ayodhya.\nThe temple is situated on a small hill, and d",
+            "author": "Anshumaan Shukla"
+          }
+        ]
+      },
+      "kanak bhawan|varanasi and ayodhya": {
+        "place_id": "ChIJwQzUx7kHmjkRFWocXybBkZQ",
+        "name": "Kanak Bhawan",
+        "address": "Janmabhoomi Path, Tulsi Nagar, Ayodhya, Uttar Pradesh 224123, India",
+        "rating": 4.7,
+        "review_count": 4014,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM",
+          "Tuesday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM",
+          "Wednesday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM",
+          "Thursday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM",
+          "Friday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM",
+          "Saturday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM",
+          "Sunday: 8:00 AM – 12:00 PM, 4:30 – 9:45 PM"
+        ],
+        "lat": 26.7980174,
+        "lng": 82.1992155,
+        "photo_refs": [
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydhcJp9arZtgcycuqsPmurw-i-frQBN2XH4BvKtiYxg5YopPg5-JokqSjJHPm9XmFzIpjGd3c6Fz22GpRYgk3ZU-1SLw7SWy8BSC0mZjboE6hDUGHP4dwYgx8xjE5tIOMXptev8sHI3rlpSymRRLQsKNVac6tsHoEwZXh8DCGy8JCWAjznY-XXVTAS9H-37c4RUZ6kAc_jkMNdJk9pLszTZc1xEOxjM5j3MFnd24B53aoY3k7q_3DYEKjLj6TYxbS3AZio9xrvhPHubHo70hgg-Ix0SwtQM5KnH-VmrrXb5Oxa8cX2XstVgpdQNAC9ElGXNYyl9LUUlZc2_g0L4gVd0H40-biMGSaGEg0fdQx9OCrovgKiTRLlCz9rSnJ-BQc66xoLXAIzj57u1toB0V_Qty1QUUYfxfELmwubDDBvzGhBwBPw4Vq4MIMrYitg",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydjzgQbaS7_s9tvEydsURwnauVPdYVmqkUmtdpcFWQEPUfQ-WNPvTEOdQTWUM_8RFkywVqQRRm_cx_vi-5AKgiiUA9XXmeoyZmqXe0en0yqO8NeL_Zh-MRBbkMmyVGoUQDjFWkGzZdFCQCCdTbWzo_7bsMsrW2HMntZJAlcQBDlYWRvozaAXEY-Q4SRtS9TXozbARDkFt9zY6akJVSCDMOOVjunUzYNIpBErPFAxV5Mo8RehUHgpcY0TW7O_j7LuAllZ_n8IJgnYBCELjMGzVIC6eq45FsBr6Kub-sk3XSr9YH8sVAy_27FEYUb0Q3N0dqdyAiZAgY_aNqnoIqLvvpSIZ15ZK2c5RTWWoAhdHBYabsjDopMvRsKbDCGDXMujdhbSLyq5kGkvl4N8tPcuQwqViCXuqnfWea1gKffymbB9sCE",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydj4ZxiYTLKLJoZ5NwN962KM9YxORg5pan9h1qvtr1ALKiTq8VyogRt4Op5q0JpXV9NEjA5xC5SOul8oaRWSLe0iYCumJovVtyozW94wI_eWU_WrK81gSQrHSZhjOuLWZ9n1Mg65Epi67HHu0fjzIbG2TEu2-SE6NR2LMfn1kwcxO2Rfq4QYiQq7WCY2rylVovDmC9MLKqoBfkMnc1xOVyeYxdiyaevKSl97uhmqjuoBNY3u7D_NdbnWKTciddCXZsK6RXwOpt2gwKFr4-VwlaxJ42c9wK6H2ua5tkiqpRN5rJ341wzHbdh__NXP0QV6RkLnmDTtREyTcNmO6VVI4gOVs2ZjDnuQHE-04ODUlyZMdmTabI07VD6ziAze-dIQ0bJPqstZxFX5G11OWMsntamrYCoRONH19dWspgK46WqfhA",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydh2jLOLd30hCK-CAt-MlFQuSNySK8oUhjF9anE5lpfO10Nn0kiZawBIh5c8QiyO1uuY3X1chalTiRu-L3RU0Ow8jlTmDssoNEC8wAQdTNC3zTHkUx34vdpeW9BoI4lwFyQ49Vzt2Bsoo7XdDls08Tco719HUzTlTdhp6u0oe2pt507z0Hm3oKf3D_Qhk6OaHGIU-mHAyKOL23-_TI0aKLUH-wxllsCukqUKWydHOp1n3LJA-vusFOWXfaDphf9th1ZxtcdXn9eAWewMPqITwJdYlOFnBpxv-RjXVKK5GSCfrjAyLkNpivjeb6f08pgMd_hDsB3Ww8OmDhF4FsCZyDs3GsgF06WwElvc9uRzy3kQz83cHoQKyK_ZSgnFiZ2LWE59EzFaQ0SqJZndtl3V81LTCTOqATNrZh4gzUW0aY_35l9jNpyYWPMtLpQW1M1s",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydioYYPQQKvRxMb_l5bXEL43fM5PHL7vyN7qcZzFeFL7NKwEXGZrBcOfzpRw7VZsWOG-j520fHeHHSMrsZbEgfCBTIqTyz2Aa-u9B6Q3ZJGNHJsUxd1MDTPiT_8k6H1la-76vv7G2sdlpVjPPHW2duD0JR8MQykhp443Ay0JesijR-JkTYA9Nra7yO7lH5yDEeHU2xCMHfWy5MRNiUZlh2hhEjm7NYqlvAYUr-35U-d2vUaiuDqP5y4HJ-l141I56ER2rZPSuJ5xGs37K74AUFtHyxsRob1c7tfSOdwW208odYNzg_EDUSF6VViYgfIwQYg-2oYC8erXi4pmXL8FsIFY3dXx4T_dyGoNmBo1hkoFK9LWqiH-sPP_3hFCNJvA7IryPyhEw8zSWGJkbt69S7uavCBzCg0mPaNiYyyPCLI58dIw",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydgubsa0-nL-HZCniuhZBUhIDEfTZoOWJnmaSW7H0oG4qnBGhoWu1zPO4ZDE5y2pPLl-FIqjfVxt0HjVJFRgmiwyVrfInnlTzdpAuzBwRuJ4pF0URf6ueKWGzUDhM8eASEyBcqKlUYIAVVf-7rE_ju2s6bizks-B1F751BRy1qFmzPsAbWJL756KANGdnrtRBddmg2uTCEchroqJzrWdLwtRBTbKvfJI_ASV8RpEP7iVw5koYRUsqR2zGv9uOv8JffLbOWU-tnUk76Okzk4GyPHI2RgJP60EqfFdSQqf4QMapqjX24iD7GswKk1zVKL_BQg0vGsgcffzU78pf2G38Onk-IMbEb8oThdm-1dxd_OdKj1VnXbFVPR8v8uum4X6jO00bmMrrCaXDTIuQ1paDokvHDZxxbp8GVA94r-CcPh2Gack",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydgRSsz2rLrXjAkOjB-gwAB2cDh7cv_K2HkW6YXhc1OVMMw57b7bKEVhR7PNupWvU6GNBPPEbBSlpizW7HFYugQGMUKhJbTJIXxKDEy560A9oLh1aZo8BsEfB3BTZUYQy2zxKWJcD4D_Qm6y1n_4hAgs4qwUQpvXEPVD-QpYhs-EsgAw-bOYq57YA_VDkCyICdyCf2-duMQF3bYlD_HbPoPIXIa0f9nU2vf0CT2nDATIWGZUAbXWwdHrhR9mHAGPmu58mdHHO3l7DyQuhjMolTDahhiX1g2Qd8Hge3mYBIREdqPFRHUwP7euiD6lzTgX1geOH3Sh0cnXbTqkCgCbPRRMcVMWvMC8f1jaYXgmFNWR5EUtbPGkJ9RaWobAV8GUr9BN3_sEtyIkiR2XUSg2LI7-3s2wP7gQFTwxZA2yqwzHACRdCzk7kV9XUyULZlj3",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydi2bNQzbeZi0zVyHN6ShpD_T4HIKj7hoq4iqtujeXuO0s5lguG9uBjaSBkaa-cXmSa2D4vDGEo3l8dtn8BYbZ0lBN-R_-c8rf57HU3IYHKStg1rlJbD5GfnxrwIRvCTOMGpNuZiSGOF7j3-qzfZz4wNXq4Md9YpzLITeAaImX7KL33ql9N8os7t0PcrbqCXxWUmTfhoDiy0bPt4XiBz74-E19yCszfTVS8CPe1Ky8I7R0EocViCAbCt2r18eGpsXSDlxGpGTSn2P6z9GinivNAppjCyO3ap6mL0Ofn1NqhawI-1OevtAzL0iVueXHzsyUDzsjVcooNPxFk8etVVdR2o1NNuOLmFD63j8VXK7nLdVDVktyN_RtDdc0TsXIJgOIOIUAuZhxg6c79HDzHKoUjifKDabhg5NZRlwknq-ihhV19G6KJP2kWRPpARkYVi",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydhj3TZeDzmOwkLvJF-IKFtA5bP_A_QZGZi2Uanv9W9qaNxgiQCR_6PRQ1bMhpCQBFpRj9SAGPNWXBfsDnLbxrm8pzZ0cYPc8IHJGNn8bwTMhR_yWAWwC8zLWC1beEr7wJ_PG-r7ImH_xolsuj6KhhZ7_EltHMA6leew-WD6xYpy0scfBS993DEkG1cQRpSTVpFG-vGMHysm5dKdbAs4wTFniMSM_SUq6ExQHonqG2n0JQgipCda-jfjattkO9uMCGsQi28QgE5_ZAmgX4MUC5YqUkFgGF_wr2AuswUHxIdI-inSTpmwZUoQrH11nA17-oEjfTP7KJfYnSH7roUBWGDjJnC04KFetDA63DqFwCwtEhjitUdMidkMk9dJqX0D87TSb23Gr3xXyby-WG0uPwFiL3mNM_V-qW2PzVkfvwXVv8iv66h4WDT_iJJLXQ",
+          "places/ChIJwQzUx7kHmjkRFWocXybBkZQ/photos/AWCwydjlvNVMYpRnbzEDnP8j02n4ONoyBqr_7K8EfkqKE0qane5g-rGT5NrMafANSnl4nulnh6AhnxW4J3a_OXsmmghat1Xg6wZWNH4FmGY5bRlYPtUEB1EA6v3wt0cIS8NDIKg3zZJkmnQw1eOaBBgq05_cin-5dolrq3_La9fbqcAvXVTqLxg2khlaMD9K9arYKjptlUSkgpX6kI7VnROdfnPZbyp83lzIAKY0VzEw2zuaMXpCA9zflRZH8PLaGkUyvbBi3BXFnB-2S8k8ecoI9_zHovW8cjSlL_OMoqqhzAbubJ6Ed3IgfnsT8RbAxHsALoX_NzUDnwbzPXO26xcRzkK4EnGOMx1RbL2cmuQyf4kqgeVPvAomyPY4eMUoIDR87C4jdVnoQRv-uZHgV-9-wB3o57eRql4PWg4WRroD9I0iT3BX"
+        ],
+        "__at__": 1786803760.106336,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Kanak bhawan is a famous Archeological structure made during Sri Ramayan kaal and is situated very near to Sri Ram Janmabhoomi mandir and walking distance (300 metres) from Sri Hanuman garhi mandir.\n\nIt is very famour since ancient times, as Queen Kekeyi gifted this beautiful palace to her daughter ",
+            "author": "Amit Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Kanak Bhawan is one of the most famous and beautiful temples in Ayodhya. It is also known as the “Golden Palace” of Lord Ram and Mata Sita. According to belief, this palace was gifted to Mata Sita after her marriage, which makes this place very special for devotees.\n\nThe temple is well-maintained, c",
+            "author": "Anshumaan Shukla"
+          },
+          {
+            "rating": 5,
+            "text": "Recently visited Kanak Bhawan in Ayodhya. The temple is beautifully maintained and has a peaceful, divine atmosphere. The intricate architecture and the idols of Shri Ram and Mata Sita are truly mesmerizing. The spiritual energy of the place makes it a must-visit for devotees and tourists alike. A m",
+            "author": "Parth chitroda"
+          },
+          {
+            "rating": 4,
+            "text": "Visiting Kanak Bhawan in Ayodhya was an absolutely beautiful and peaceful experience. This temple is dedicated to **Lord Ram and Goddess Sita**, and it is considered one of the most sacred and charming temples in the city. The moment you enter the temple complex, you feel a deep sense of devotion an",
+            "author": "The Amazing Gaurav"
+          },
+          {
+            "rating": 4,
+            "text": "We visited Kanak Bhawan during our stay in Ayodhya, and it was a highlight of our trip! On our first day, the temple was closed due to the lunar eclipse, but we made sure to come back the second day—and I am so glad we did.\n\nThe architecture is absolutely mesmerizing. Unlike other temples, this feel",
+            "author": "Raju Timsina"
+          }
+        ]
+      },
+      "nageshwarnath temple|varanasi and ayodhya": {
+        "place_id": "ChIJkf6P4YQHmjkRcYACSK4mQMI",
+        "name": "Shri Nageshwar Nath Mandir Ayodhya",
+        "address": "near Ram Ki Paidi, Swargdwar, Theri Bazar, Ayodhya, Uttar Pradesh 224123, India",
+        "rating": 4.6,
+        "review_count": 523,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 4:00 AM – 9:00 PM",
+          "Tuesday: 4:00 AM – 9:00 PM",
+          "Wednesday: 4:00 AM – 9:00 PM",
+          "Thursday: 4:00 AM – 9:00 PM",
+          "Friday: 4:00 AM – 9:00 PM",
+          "Saturday: 4:00 AM – 9:00 PM",
+          "Sunday: 4:00 AM – 9:00 PM"
+        ],
+        "lat": 26.8090765,
+        "lng": 82.2057541,
+        "photo_refs": [
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydg2E2b3GEY6lyYcJxGOG3og3Xo-lky_hL_z9ycznVEjRTUQgzWnCfvpc52BB3_9yQjYbdzgXYf8a5hxufnJ03kp2jh3kF_0H57JxVNhojGK39k-YyGTYESF9UPHXbjyS5YG6ZD_Va6NPFrjQ8mslKFvRBt7KLH5uUUcy0WHM7JCFG7WUbGIfJmLRmmSFIQH8mancXp8qI1rz6iPF8mUYAkO5VUkI3VoNzXX3inb0qT71LGAqtlAzO9h0XTJPkUl3WDF4gIIzkEoGS54Bhey-EZwpIk9E2VCtld3cfSz-6Xj_hIvVXnkb-3NFF2LiELry5XuG_68cVJ7d8PA-9z-Lj1SWeWj6mlEmJSZixhLEr2ACbgMvIErgoImU0C9Bxei1WghTSTKdewMYJ7ftm8nzpNbIAOUupUYXxe_vfc",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydhi_EoV4eD7kJkT_1FdJNLyBXwT3bA1q0mv1GocWf2XHtybYeYajhr1b9msvRYaRIl0kjKsYJ2aePKVsAcYkd1AVeVyqebiWflbHMV_9UKb87J3a_Owa7mQgtdryBPUCWFXHu35I46u3EIGgZfCN8x_WtWqTuyjruQ_Qs7ggQSPnWSnl6efuI3wxaNNzJbmPYVCzJqhx_ZgXXF7J4sQnAwfnQwtfYG6LwjBBlyQjtpwvwyLO9Yxv4d61iw3lYi3pIXfRGvcEVP3kFHjHhTpzoH0Bgov6q5U4UPZ52GZnDJrlGBFjS3ivLacoxOe9Lx7jiLf5d6aoJdODvJDgc3uWM2oPBF4ETEj_zu7l46zmaQB3pT2fg4Ir63FtfVxvbXw3JWdUzZLpma58-REJKnfuUS7UFwBD3eWAKcX3FoE5o6QdxnfAWI8KJB68zDg_CPs",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydhlcsvSCdzy7S51MHjyfllc1grH4GHjeASDRxA59C3yweAB1Rd_fMY2IIs8vqqTcwl_JMUNakqMEYJnY-Lnq5oBaVL9XFWPr3B0gL5pualPVvpIda2fhlqYusAU03JGK2fCpLFeuuQAtLe9_7FFViJHXXBXvrV8PzsHD1Fzk2NINyfIJz3VZ-NyQOZN1HwkHO3KJWYXbG-ooaxFlRkH-_lmphDB4oYBxaM2IEUBWIVnhazfETsTVyWbV0qpULBMDTB-XkJfgpWS65YHyFNkyfiaPY2gYnDKfet_gxyf_S9oUFrZV8VsHWGrHsRLGFD8RU1O8aVWoqV8_Tc-7joSQBR1DPORwxMCjXXizefP10hyPQCCUqeCMLtnfKByee0fJRx6ShXMaRtgjr-o7Rhmv40mvvM5z67FyR23cq66wKmYC5n7",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydgzyKrviPG0oJlo-fnFbqwaimU29HsGZWUoTZ6xZpNDPIuyIG-z6og1Lsmfm5Ru5839kcpvGSsnF3Rl9uAXf69WGdPc2ObqyvNwyLJbv4-auWhdElFOFbf1cKPo11PMja2GriaW-kra2enZ7Exnk7sZ2GlW3EuRwNr7fJ5CDseZzML7ROIcaYDl6RFus75YYaAKljWNoDDnEFF2H7bFcSFKKQ9EjWxKRW5ESVoP0F0mntLck8nE6eYlOD-T0BSFEgeNjDbuyDz7kClgM9o72ay2l4WhiSmRFyS-DYEOVUZxqnENH94FVQOiX8bzBytk0TRHc9TRCG_sfdZ_v5-SRL6q10tAxlKyU9x2u4DeXCJOxvTwJMw2ZWnaDl2nc2d5i0pKnuZgpiLogGeJ_Dz91IO48RDdwnqVFe37EVY-ViJerceE5i3-Q96__BwtH3eL",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydhAA3SK6VG7x-g7PwKyLnewLvjdFz9F-DfP9konjT4rGNb7HuAwNvz8-YNN_p97bP5nzX42RFSI9mLOvQwa-aZLQmPBy_MQzA-2JBIYJpmud5fyDNHYFQfR5xt7zMlqmUPNeZHRdyUL3xwbF37i1_Y9bkr_F2ysecq-AiUgyM7DF2SrF_TuazBDqdJoAqqKMjwj-Rx5sYapyWWPP8pl1Kd2qkrrcyzfLMM8huhP5aEPKthzC8sPhf6FaX-hDmuSBXZWMgnOqGRM1keJ2TlOedQe_fMT8AcJzU32Vb7Kuh8Xk3m6ifLGKv8HYm7B7Yw-m4v2IR9iyYtjV3a8ip8dIexRn8cpwX61LdAVaaXOMN6jbQ1sNI0txlg0kjnXoDdi1_FF-2iV6KzpbT9z2xWWXQm9TlIxYSQrURWaVak",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydjFOWL6GKSM6P0BX27bFnJDqB3BxsTrxFMsionarCdBnkyIFgTAg3_-fx2P_CAGiR0YV9io80dVh4C-qU49eEilsgxoXqUUMn6zuO57PE67-yv24DrK34G1p3nLbYXC0CyNAlXfqbkHaOq241N3hpNgNeOJICMwwTZODBc7iaHLjquvlVx3zXDDPRV_FcVlSSPAajfTB3PDxlQixBmQ1FDUNZVeezmmZgwXFEPHRYHRoNr1CNibA2rWgxNiCa3LBoxgH3OAwyZ4R-LhTDydVmdeGHL__YW2i8gStEku3MtUZ4VkyDMNd6zT8xc1sogavnp3-SFdcuN_vr_hkO-2ePEmhrq-OFBi7ghFKA4lfUWlGXbI_iczetEYCrqsanQYL6u2qhlXU-nIvE-pkaY5DaRmwvinw0FoanpkofCkA2kvdLkzrhdkBJAglvDJPA",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydggZZxXTsM-LQxV1flDNOuYYEH96JjtwR36qLnf3_bGifq699EUsCkwjhnWTOJr-_Tt-9eqemfHPrewHDpGIJsfjmwa6eb_K6Y78h_FM__4Y6f-5x-b6haJqXNMH0GnQyQANYVrMeeu5ZElLNo6E5ZhuC_BLdBzDmOWmr-EUolbSKVWnHvN8MkS4TSEnFHRK20zCNLsA_YQ1nDp_ocPvysaXJgG7mSgStucvd1xFXPPGiy5CFY_c4VXvAm4wDN5o3AbIAL5NXnjPzUzRKrgBlkvzAKKTmZBwH8qMjbI5Hkpcak0h7DhmjZTQ_CoeFqAgaPJFWsBI0EudhUhKTumLYBTtt_OV4_J-6y3EM3j18i07wxs8MegQLU0r70nKc0sDogmeeMIrNBExQQqcWPU462oH_oolWaWeX8AXpmAEG31hp6u-UWYQ8gPIj11Cg",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydhnd1YtvK9KxIhh6wfl5ixhytsR0T710EcNyIqT0bYyv8SQlDypjsnqx05DhmCis_2jsnREDDHZpcR-UG4dOw874pu-qJH7UqPpNfkzrvSzVm0Q1DRXNWhVrvQRz4BSIRFC4Gmsviq4BWTRqrr6IT23_g92wSTcGLSmckibEeDYMUug-GdrBE5OhwyWNj2uwI5jx8975BzAIwJ8d1IHwC2BlTmAtghEzM3wufq3DHMU3vLE4gMhR3qOD0AcXuruYgZpKtbGC8fefhmxjDzP6hxbdX_HmpSBzhQq6cs4Y8fkyqORuLkIOxd1nFbGL93vqvKeDGunM5zpyN1SX54TSwzb_fCUkYMJfUDMldV2YF6wAm3RCQRybCBPpgKM0qaBaXn5JuAxm5fE9pubXZWiwFUKdUhVZDsUi6QNV6fTXhXHH7xmQNwNgg65xDTfAgOj",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydjaftScU24NUASrmBQ3t41jHw-dIgU6JMLEOn9moDdtF_CxjkTmyHMv7lzVCm8eFr2hH0FC074-90-B_WxCBBBvdFNCz3NREjb2yaxIDgnw3Ctx2HXCEqjnD-iiBN_S748SexRe0IoGF-5rG5NeqVrBNGK8oYRrjmwbJH5EtELf7V7nXip6eAVFp4SeFtze2w9FNsrsTSdZsU_8WKwcJ_fhtlMpJG9eTjhs8YrQrp22f6bCgBxX7grKIMORUrmeEvFRNPOzhWKs-mfg8fmtJ9nHOLClDpNwkDfUPxdC6MFqnrrJeTse4wKcMipNxUJ0OwPY_sP_2qsRXveGv2UD40GzA9FWEzf-O-i9r3tdYqmskfduoxgF_qxvLviEdx-gd0KkZo83rE-lH5YdSB5MaVRsoHGpHWXcFlPAONcHI8Gh1vsBTlzpE3hUXScaPQHb",
+          "places/ChIJkf6P4YQHmjkRcYACSK4mQMI/photos/AWCwydjJqE8BZ4DLZswM-lIGjTDcMIfiEuGnnSWLmoTqwxaPqGQV6ka9GmtQ6ISwxCZFANBbB0DbBY2U6UNfX8RcmOqHumknUI3mjoZAE6wSxSd0sxG-Y_t-CSHVj8xc_5i9FJ3FDllsC7Ys-3GVchRkRZVzQoV3x1O4OqwGDVdYW7ifIv6wSyprJiO_phsNhC09BoV44hvDxO-g11qiMnyZlYNRBrZo8E3mR0LWPVRUNW_-swerqZC1OgxQIEas6D4L950rpC8q2QWk64LcAlrc-Ba2gnYFi7jE7KCopifAL1qjDKK02Ho5siA1dHTasCTkbiTmoQEjgz4rC-1D1BSRkPa7Ln3d0j3hKRzFou1ZYGqZevxa9uhxO5VcScVJqT9YNWt6Iw61IkGfoVulMnP44kty5k9-o1vSy7y5IOK9TwdyFA"
+        ],
+        "__at__": 1786803760.5452101,
+        "reviews": [
+          {
+            "rating": 4,
+            "text": "Visiting the sacred Nageshwar Nath Mandir in Ayodhya was truly a divine and peaceful experience. 🛕✨\n\nThe temple carries deep spiritual significance and is believed to have been established by Kush, the son of Lord Rama. The atmosphere here is incredibly serene, filled with devotion and positive ener",
+            "author": "The Amazing Gaurav"
+          },
+          {
+            "rating": 5,
+            "text": "This famous Shiva Temple is located on Ram ki Paidi in the heart of Ayodhya.\n\nIt approximately 100 m walk from Lata mangeshkar chowk, 1 km from Sri Hanuman garhi temple, 1 km from Dashrath mahal, 1.1 km from Kanak mahal, 1.1 km from Sri Ram Janmabhoomi temple and 12 kms from ayodhya airport respecti",
+            "author": "Amit Gupta"
+          },
+          {
+            "rating": 5,
+            "text": "Shri Nageshwar Nath Mandir Ayodhya Trust is one of the most significant and ancient spiritual landmarks in Ayodhya, believed to have been established by Lord Ram's son, Kush. Located right next to the beautiful Ram Ki Paidi, this temple dedicated to Lord Shiva offers a peaceful yet powerful atmosphe",
+            "author": "Kunal Singh"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Shri Nageshwar Nath Mandir during my Ayodhya spiritual journey, and it was a very peaceful and divine experience. The temple carries a deep spiritual atmosphere and a strong connection with the ancient history of Ayodhya and Lord Shri Ram’s era.\n\nThe moment I entered the temple premises, I f",
+            "author": "Karan Kharat"
+          },
+          {
+            "rating": 4,
+            "text": "Visited on March 24.hri Nageshwar Nath Mandir Ayodhya Trust is one of the most significant and ancient spiritual landmarks in Ayodhya. Located right next to the beautiful Ram Ki Paidi, this temple dedicated to Lord Shiva offers a peaceful yet powerful atmosphere that contrasts beautifully with the b",
+            "author": "D G BERA"
+          }
+        ]
+      },
+      "saryu river ghat|varanasi and ayodhya": {
+        "place_id": "ChIJSc4Qm4QHmjkR_eXAR85jMCk",
+        "name": "Saryu Ghat",
+        "address": "R664+G97, Manjha Kala, Uttar Pradesh 271303, India",
+        "rating": 4.6,
+        "review_count": 11114,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 26.811279199999998,
+        "lng": 82.2059163,
+        "photo_refs": [
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydgh0NnOLX9Bf4hzGgYrkHQyauWVdkwU-WWyerOGoCd2C2Ael9eqzjxr19e2JfVHu-obJ7CzdF_UvngDzQqn0vVhV-yHec48m81E2GT6aleg0TlyDMpExywXpu6qWee8bFHM3qCK39OB7LWL-nXP1LxvGInHSwRHJO5bzrjX_oRqM3eEj-SgOQQ77Rsrr_Fa2eHmMKBdXYF8ddnoJhkDR4DZIJqeNGENXLoaIVzcUYMitWrmzsCYC6VudnoXppCakRTR_yosGnM36Ka1FcQe6VXSBI3S4JjqWpEZ4X1SyZY5kdFYwcGHtehKnhsDnTetibTWBdqBaxeODvhmbPvsvWeL81qz5VugI3b7dBQTy9aBLlH3FCDrGFOJn33BnPctOX8Z6clBgGgqiXq6bGtQpPbXxYx_D0SI3rgVUkPH7rqzd-PR",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydiSXfZU2jbqhQ-W5WuRB6ygMAglG58TLhFKDSL66BFPcza9inLXsDABIEEIJ-HS5lxRrhKX8YdlBVtUc-k5PtUsWFjPnn0kfpzLB4K1TZYebO4zyC5y8NOdyny0npoAKdtomfdMuu1p0shYEVdErgbUNp_Yt7rV2YPKskM5UG9QbGzqme8VssjHUkvjWvvsChw5ZyVIKHDhxFUGF9ouqmIZEMGZLXrutDmmD4u60DvN8s-felUJyIvcPinqKWMLiPIH2CM1y7Q7BcvG4qYw5funFKOLUmGpakhODrZvE8B9yK_br1XL2VNsMwAhUyoJ-wQ76UHJdzLfbxtNQWDPy4XGGDSx8l-qHihWcuBK-MTMC0bOMBRIyri2TDvDcWZOsLjOVSh_vk0x_Y_JLy1FRLZzSdHEvI5Yx3fp8ZCU5-edRSah",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydj5LrH-LwxRRKqLvvI_p-ZAFb1YRwaAp2_9Q5z9TVBPIgZPzDvv5F4Xldsw64QdP-M3KtF1qJnsi-5TPjuWuNQ6Dmzl4emPRE-t3xcg_N0xIBuT9db_lEfEy7PtWSvBw4llYw0lbSZSgmwaLbhAeBY3fs_ri0Ja3_VJQHxs3HjRS-bBMbldGArSUdEGKNsfrOrDZjzypx9-3tz_9zDKowoSMUnGOclS6OTD17P11YwQ3Kk2FHrI0IZ2FnMswp8fqkGl5Fl2BG5U-yfNETmymUar9iGpw3HBKzUkiap-cSU4-XlurUwkS2PXJr4gLp6mEsu79wrV1gPRV8TI8HUykpVrJjHTYn1PFTNmld4SVxT_noa90BwYTDB04pTPQT88KMkUgzNW7wc_89dxg4we3W1UVvvaFbxWq5T5XHut10U",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydgS7fwstfVx9Fpra0udO29DJS6Ct2oGrzQMf8PPWGgeA7R3BmrLpEsxYI3xZfA07wgqMms1oP_Q4pa3MQT4Ikw777RxQqH1XAbuo7Pu-nlZGi8RobGMqhWhFY_fGzVfugIJ-ne_OBPAUdMZEPUOXWgnMTva6p7MAeZf4CVTv7Ipnfx4QDsmai8C8XklsT224e51YfcfMrVp2QQA0Os9I57A38rqwMvg7HDQQfYR1sHZk9JyBkniyjjSYC8urZsgjirL0coMebsHelbwctge05GOJqKUnSsBAn2xM7kubTywD55KseSQpWGQQ9rxDwHhZof_aJ0W3cVzB0FodJey4F5fEb3txDEoBgEeXWDgptVMgOEFqqNngVKBWvaUlr6wAMFXyqlYHkbqJyI05rIS0bA1h9fk3AnXFQ66zU_CVVv-Z0Bs",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydjEjMXrw8v9RqEUXaSHcyrrAyB-HlnurFYwb80BNa1uZcn8pVBgJn-ast9NZAX7E8N89Qe_suKPDNTh_VkXhncbkA6_i2oaA7mCfTP4A53sc7VUFHFA6C9uJuo7Cx5aGMSHVeWwRbk6C9zxrM6Jbo4aM_OBwkIBGJtEwdS8_shox5SXc9F8d9IpnXAD7LugsiTKdfkkfCYe05HVkMga2--zBPxbojVE6hUXycu-_H_3JQ-X3TigQKYnCyCWJM1wS-POFn50OxuvNFwrIrRv-VJdmFVxL5V2_IQYTLT_f_P_yjcKS5IhRS-qtA1TBWE8_xSi32GPDomOHncEZ_DtFv6qXHECqQpdEK06P0VhI7QPXpANrtMc0W8WYSZwHdxXoZqvd9Z-4J0sdZK4zup1Ld5BgPGSt1jtE6IGOLV1I9e1ag",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydjMnWP7XO2PeC01zjLi95T6CWKba574a3hquVwlRiUBxkTyJdHPhidOePVpiUQea1SCoPH6RztYwM8ldFEdN365tfUjGq-3dV2IuuJIhhyyWshLrtyqv7Rkn0nIBttYtZ0ceab86ZHD2YsOx2k9ea9jzCRLj0N4uxSb7TaBSGdpjnBDrk-NBIM618QHe_t8a4171D3z0P43zyR2N9VZb_b9t5uVjFmfa6OueGehHZOf0ZqomAOLHcm2Id-KuW3D23OZXBohXJt659sGN7Tv5dOIB2Vs4x5IKX71f9AYX0KPxBS5oAM70FVtObWCPhyvOJl25HdkeB9CGWBVcq3-vJLQhc7HYirwzr8HZdHkPSiPEgbK4rTE0l4Y0ptn9q5tW_IciQAlCRuJcq75qOiK_0k5tNLFoBELWLnGgXr-MvwbNQ",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydhi3BFsvuFMfEL40WLMkJzNFFx_vP3-DCdJbGC3CzVzlQgyHwe7yzv4r1WHDISJKzjrqHj0MPqW3vZwSwpdAdJdJntu4bzfIBlvAFLPbmkHic4fV6qzH7XOlKb76rdKY4QaiVYbB3_yxFIWN0jpNF32DVppoHSFsr6oaqLRKXPNtjRbsrH4JkpRiz_Sr2Y3z89hdlj0akGiGEQNGZFjXikg8PW4I6YxudeQcTkA1Vuq38QTD0Qb-TgUx8tF9rnq8n6MbAPJdeb12fjlsBVSnzdw2qo0jmJw6oJPgc2paMMsN1IUFXG3wca2Jb7z94jvcQtqDqqkD4ZT0_Em6az0cBWetkI7hjx3HoiEpxP0lPE4aTWIvMbpLEGJEPIBz_gvIMNMeELPG-MJpc4BcE_Pc7VExReWuDjLckOQCz_1jadqGA",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydjIEAwiLF4fTICmR8hVJ7uNsc8D20QI2jAuuD-qOcGX8Oy8hnWRZ7lBs0HAy6vwxMHBI5hRieSjtHdIbuV3RBww-0rT4wSrFNBr4ktOlLCWg5vX-4zQT7ojzKUdOarGY8g626MFI6vHZvrzuKFmDgDbxUI0xKc3cUdvZytoxfqjEC29FlXu2CkNw1p9N8N0JnJWOTr6WOQ5jjNyHgWK8N4ZLcDKbn0oj0lDL3vyvli9NkVTjXf_hv196wVfiqyNUHHB7fGb1Y5CX-EZkNO15mvr_hJ6dK1bNviHVtSXIrV0lRJu2YxqxAzy7-Q6Va0cL-CcxP6LeN0b5D7Ujfq1PzHiXRx1fi_QGKvdf83EwNVFqRTZ91mc8FvMWsGy0QPI2aYiRIvII4CD36NTfgrAhR6aLFNGmaWyUuouVDU2IN11tr2ztCOU4LH4JwLWKA",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydi615SEPsphExYYjeYWN6mGpEaFftI-UdB6KXlVfwiwwM4Q9e2ijoiKvnHJCCPvJw50a5TeuBL82cr_pvNtqwsL7fjG6a5iJZXUTaYmXymoMzRmO5Ie5E0_xBZFtE4tUcOHsjr10S0bDqXhPolR2L2FshaJNLyXi00_m9s-SwPFajveD_ZoiOuJ3D_PO2DnkuXYSogilQQJo59WNxX6Owgk6zWYDjZ7IsVR9PybCx-qUO5oIgvi4d7QKDc2pmald5IrxeiGo1tcLhOI3Ex0epTLLF0ESVeHnfIRXnxQgBsTfIwSGT6CzbzdGSVdeh5Cq_jQkurQKgECayWD6eqztrtk7g9TLwAeTJTxor9dzYUavaG1qNZAlOMXR4vZWqCT90aWlf55PGczEmc1pHqbSJeHcjLwIH0Wm3X4D0ePxlANH3yu8BCrQAp0ppYjW7nT",
+          "places/ChIJSc4Qm4QHmjkR_eXAR85jMCk/photos/AWCwydgA2Jug0qntc9Qc4xyfh_tfAmUlkdDEzrqwg4eq-vh3oEkHvkuuA7_lENbfkXnwOHN_wSHixmqTJni42LAPB_wiF-wJtgZRaDlkXHG5fTb8ynPpqq4wgsOudZ3sMzY5xY8E9B0k33VAYetnKMkXi-6mGcAN_doGz2tZeus0Fs3F-0mwZfjW1qMz00ezqhXbff2RP9j7ovJFGPxObgOHr0UtQSI7DTmhOdfjfIGPZdCbE5YYhr__cmDcm2ptrJrieGj6OLEGNfCHcK9_lRTEZtPUbtXJA-aDsRV-A2_CvHUsnzZ4R7yE_XUiCWxaTc-ndfdGQCygjzkaomTwpoKlKuW61vsw9QN60NAYw-sfEG6UuL9EHD-osByDXyPt6B6FAddMeYpj6A7L_GbRb7JmfA05sv71GO3gdrWcPn3ScnM"
+        ],
+        "__at__": 1786803760.926435,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A Majestic Symphony of Light, Devotion, and Timeless Heritage\n\nOur visit to the sacred Saryu Ghat in Ayodhya was an absolutely transcendent and amazing experience. Steeped in profound spiritual significance as the holy river intimately tied to the life of Lord Rama, the ghat offers an incredibly pea",
+            "author": "Deepak Nagpal"
+          },
+          {
+            "rating": 5,
+            "text": "Saryu ghat is a very sacred place of Ayodhya like Sri Ram Janmabhoomi temple and it is said that pilgrims need to take a compulsory dip in River Saryu to make the darshans of Sri Ram Mandir more memorable.\n\nIt is 100 m from Lata mangeshkar chowk, 1 km from Sri Hanuman garhi temple, 1 Km from Dashrat",
+            "author": "Amit Gupta"
+          },
+          {
+            "rating": 4,
+            "text": "Saryu Ghat is a peaceful and well-maintained place in Ayodhya. The aarti is beautiful and creates a calm, spiritual atmosphere by the river.\n\nSecurity is present throughout the area, which helps you feel safe and relaxed while spending time there.\n\nBoat rides are available at around ₹100 per person,",
+            "author": "Vibhu Singh"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Saryu Ghat was truly an amazing experience. The atmosphere was peaceful, spiritual, and full of positive energy. I enjoyed every moment there, especially taking a dip in the holy river and spending quality time with friends and family. The devotional vibe around the ghat felt very calming a",
+            "author": "Manish Thakur"
+          },
+          {
+            "rating": 5,
+            "text": "Saryu Ghat is one of the most peaceful and beautiful places in Ayodhya. Located on the banks of the sacred Saryu River, it is famous for its spiritual atmosphere, evening aarti, and stunning sunrise and sunset views.\nCalm and spiritual environment perfect for relaxation and prayer.\nBeautiful evening",
+            "author": "Surendra Pratap Singh"
+          }
+        ]
+      },
+      "flight: pune to varanasi|varanasi and ayodhya": {
+        "place_id": "ChIJYTnTmK7VjzkRp_V--C6IpuA",
+        "name": "Lal Bahadur Shastri International Airport, Varanasi",
+        "address": "Varanasi, Babatpur, Uttar Pradesh 221006, India",
+        "rating": 4.3,
+        "review_count": 29191,
+        "price_level": null,
+        "website": "https://www.aai.aero/en/airports/varanasi",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: 9:00 AM – 12:00 AM",
+          "Wednesday: 12:00 AM – 5:00 PM",
+          "Thursday: 9:00 AM – 5:00 PM",
+          "Friday: 9:00 AM – 5:00 PM",
+          "Saturday: 9:00 AM – 5:00 PM",
+          "Sunday: 9:00 AM – 5:00 PM"
+        ],
+        "lat": 25.450656499999997,
+        "lng": 82.8559854,
+        "photo_refs": [
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydhs_Q9K85bzEAttIvNcKs4V64xrY0UpRNHH4uT_Ff4qffTGvEZ95Rw9VXTnGw_bQYe1wGATx2W31-os0eFRPyUwL2MNy83FmiB1sUk37ebO2zTFEwCG0ivQsG6kNBLq4VnhHaz4c-v1fiJeqy8skTjIfkRDiPOpdf2gkuQ3UXeBhKZi3aj_wnQLMwJuXEPFXS8F_2j8YhCYDoxWC8r5QOm_haG_8yCRxzF5Fmt2nn9I374tP9rFtvJDcCQBzCVM1J6eSR1onagym9JE36oSwMrjO8gG7KD2BzkqksVardggFu7glwQL4RwaJcScJwcD1WWkc7zEqeExiozNbNWiQNG3G-y4Ri32EWkG7yC-F-s4j6jLlmGNWnXdDa2tXPL8Qepatob9Bjt9N_cnoXoS3BEls_FvqRzSALAwAwiwY98NFg",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydhzMaDldKuOgTqmJ272YDJo0UO6Iyqw7buERlDMk0DHGPOyDXtTkLPAJ7gbHw_izdHTVTgHQM2Oo-x_M9njikew6Psv_XN5LVBlskhIMvuPZReYY1hMUpHutN3JqqzTIvMikaYKHQAxiHIuFzHiberZ4Sbz58qOgBH-fm8GyfKmBDFPLXXVNDu80QlBOG3Voi3Jpi_nIuezKUOCzm-XAHCytvgRBcyjXaccJ158xSv2W-ifdOejiwPKrT5fQhcshv2ViWHMAtrmwz2t4Axksixbj4r3atzynBJSpQ2BcJiPGLX4r5p_SDNAY3huN-Xdr2giWl2-6W6NPLD0JPwLZl51T_rNJk6-sbepk8YShy02GtjgfO1qCerPqNTsgFFlGDwKUnNHcST6yfeNd9NeNSy9qlmPEHQ-oAHIhApL03oBGA",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydgAZRSYwvPn9-bvlHb_6vr1gZew115-7paTzdBN5AI9v1YkDHj78gVLISNcyj_o1DjdbqcpnPGY8TRls71J-5pyWNhLEsCoj2IoEXal2YKCUTRcieI1AultjMu4C71hjN_Xq9Slz7hNiqM48TBZlthoEidE1rrFaV4KkYOc4PVeSy_tP24QBEH4evivKdaQH5B4p4fiu8Ss8ITbPmUqeS4iSKbBQT9pgoHG_lHYnn9-ZnF0afv_DrRtVHnwoyXD0RUAVNM9lmFWUK3lnqguW8uDcWhhx_ojd89NdYjS-mD418twOXIi9bwowzjtMcLs_eCqAN3dBkY-ckLxRrUsddzxuPjt-DWHMO56nH6z7kP-5AXN3GoFd0Oc2qo5e0CSkCB2defhemIUlFUrsZNqte72RO2OdVd37D1Nx4BVvoE_YpTY",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydjAUfOU4cM-pOJdAU6ZO3o2o16oa-9NRP7qSzxcafviDs-sAvoyuGA30-wxxJgNwA6du43R5I9jUq7XYIemkkex0OnPSKf-OqeW8gUI8WCmlX5lmx0V3DKAcUc7vLGq9OYjSo1fbcFNri1PhsxpjJtZL39uahHmUSSZ3u4xfWYrVkrWTe3LmI2KeUM0aTTrkv0awoCaJUV6omWShgw4bgT8Q_6R80vcQCBBtDZ0bR-1JwZB7yBoIhqJOHViA6eAMpxUQTpMRSxh-VOkrwUWHmeeT-I9jodDceYAqeByW3Hw0CQIBAx3PatRw-XjO2emnzyMZPD8eglxuGzdHbxgDNbPxsqOaMR0LEis_RQ5iC3ldRmmBj1ca6aWjksb8YyCdt5trTns03WWwKRnCI_3m56zONpfOlkpa0kVLY-1LcFYKQ",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydi7zqZKk5a3TtexXTNrPTaQ_L-3_V4Cc3NEGPqWrq5lX8y57ACw7bTNDXEGmabDHqMRLTOdemTeQ9l6UN9k1VrMrxXSyMyABYqFAZFZ5GejGGIJojdUu8PAr-5s4Ai6kCeASnnzzyovrPUShlKrZUnxupLHAlMPRmeB3W6BrVUXlsC0X5E-CcnhnRHi401KTD7Hcn0vJVxID1K78s38YphkZW1xbHtRwgMZjlRTcy2G37HxQ44B8h8aW50czALJb9nC6KABj5PejfEN0ioqYlLxJTcA1PvJRwQGd8d9I-U14qCyE20-NGWBWilRyo2ur0WQIbbM_4X40I9Cq-2FksY6gneUr5-v26rwGF2rKSrTCnQUWo7yr1oeUoDa1-xI9_xtPDIs4IMHnsS6n-7jK_56-jzsJqt8Hs6o_0Fus4ylF_ni",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydh_yqAYwCo-45mJfjSFBVINuBWaAVSTYgdwGmi2vssxDJIOcqxImBFW0W2jKywBQN3M0h6jy3ne0A_7J1GxLOZNYm_GjjDIofTgyO54Ue2xswMJSQTUQvXGnC7JG-0fPW9yZAJFygduLQOptSPCcPyqvg11XC_l5mnfXGDY-4aPOwiFdzziFyP1jb5RMRYZo_dZDuzwMxzWm6bjEcakchi0E7HFUseMBv7ZwlLaGTtR5J97oNr-3xMfsYjSGjR0LYBeBNBEBnvxQI58YfhN8NPJ3wJYPDViDqXLPXX_aS25QCE4T0CXAwcLT9J71p5INGQXGVn0ddueCjIm-UCniDBM0fDa5q2MoNIhRGAuuc-YLK2PDcdoPrGUtL9glusCeq5AVKFvT3gjPCbx9fPLnCeNLg6PHaUHvzzYzWePeVmJnPs",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydjih94dT7Yd_H9dsJIpJ9m5RDl45qKoNlxPPlp2xrwci0NS9gOGQBK9q3IfFWwm1T6Lnj0Ij6eQUpjJhcCEuWAIJgw3Okke_1gZFYB2dzEBKq-swG46eCoJxdoNcaYymmjZVaXp7apk_PV3ZmLBt1PMcRBSxh6Udep_NbOScFvqYbdpkp3zGY8wzKkAjG9AxTx-wPFxh5aAyIzcBTKQm7AY1XM-3FW6yI7VfGUy9oggt40x_gwt5qAFRwkwmYCGKg1yUaqz4-6aCFzbnx0T80xUwtXuNH3ugRhIM_20ptP5-U3Q4j_H0fzHIDQOkn3k4TXhuAa5L9vN7Ly0BG7V-fdgLk15oJBH5in_Ii1h4UGm3Kt4DAox4o-X8SP2UWa1B7RQox6e-SWAaUsVsUbROftcG5Z4jMUWBo3RyRNstOFCz0CJ",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydhJLdgeNvkuLCnTCphhq7LyhauPilAql4ZOHiio9cCz6f82xJnnhTYU3yBRmcQuHMikBU6Y0I53RGmsFf5lfZsTW4Xp9iqm-tuHe6MnEHfWltcJCYaIrbRH2A3KZw2kIE0yAyyk_CU-V_0enbjCgzJVdezDlLSyfYTh_Jikfd7XSV3RQ2PZesocgmw_hUr-8Y8-tpvFXOBB1AQxKBZseHqQT409KMiYpj_F5ATmxvz0tRme2OO71_3nilzqAqMjR5fC005XrHRG2MoGl9lUDJMjEGXfOmnSz8yXo3T9QWgLOHN8d1J6CXVI-dACnDYnT8tTs2sYF0Xqr9F7hWT1FfqyYC9wokN0WRp-4th5ciZUMSu6ZRkJFp0frpU0vozlQm1By-Ollkk1j6Bls9olezrTtRTq7xTlt-16QmjEd-3-KY4",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydhSIg6qzl2DQIL2Fg7rwgbuinjlx8FJDD9Spr_mxsjqHphn4IqNmMByJG4zeaV3YE8C5OMtUoFO4j01JXxDsvDHo3Por4eeuj_xbg7PCXfdVKeQnzTSHTRs-1TAObqqBh3HsEWbvLyJ54OECWuKwvVS_omo_6VJb8bvMRv9UngPrbYVLB459UHmhT7CUu9Nhbl3xQkp_THvxegrzmc5f2IlfwBFpdVQ1B5MroGcYzsSq007IU_EKl2Yi1F2ie_RjWhG4A13tYY8qZAns7NG1jvb-7BF-iEUOJOnGCPo6GThxJRyJyHX7El31HvaaBmF3_wUAC645okYCJxY3TidxZbjKsnQUSuAUu1mMTWApF3cAM1bnDHiziFN5s5Pc-dHijA8NUHxLD0rBeIxKH5kj5ukTIiIgT02A70nKAh6Ckub2jZterj7kb1TbnY9eJQH",
+          "places/ChIJYTnTmK7VjzkRp_V--C6IpuA/photos/AWCwydgyfYdJlBCfAuWfsusyDaZ9xV7ZOqYgg1LQZGDjCr3EqxgGQBX6FIgCdxmRX2u71IizGqAu0hMI6WWgM1Qjcesu99K-JsNyqYki_uRnSSiupmOdfUUDHI40VDJxXefYUazYIWOvZXFgL6lYkuc-N06q8nlOE4dnr7PBFpbRi_Zygs1JV5y1xmAup_zunHw9XwULkfSk7sQ-myU56w98Cahj6jAoS_HEd5iyVGfRa6QG92X_mNVaCMo4VCrZ6a8mQyOriECmvtzM3O55dM_L_vDtnWgEQniYBJxgVAoetmzeL-fv8gJXvQjyf3j_ot6NsqNffkhyrZjLgvzZdnkPAf9EYSVaX-ajysbaCxbEO-KL-9V-m9CsP5PArejhXpbbmIYAbJZinlofRpU6nYqRfCN7ETHXxHa3h-o_y821ufEwbw"
+        ],
+        "__at__": 1786803761.3679821,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Good international airport 🛫 with very neat and clean place 👌. Management and functioning very well-kept. Security and staff very good ad helpfull. Hassle-free checking and check out process. Operating on latest high tech equipment.  Public utility services good healthy. Airline staff ad process ver",
+            "author": "Dinesh Yadav"
+          },
+          {
+            "rating": 5,
+            "text": "Lal Bahadur Shastri International Airport is well connected to all major cities in India and is one of the cleanest and best-managed airports. The airport is easy to navigate and well maintained.\nThe washrooms are clean, and for travelers with kids, there is a dedicated children’s play area in front",
+            "author": "Abhijeet Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Nice airport. Prefer Sugam darshan booking online for smoother experience else visit early mornings or late nights.\n\nEnjoy walking by the numerous ghats by foot near the Kashi temple to feel the real Banaras vibes, take a dip in the holy river and don't miss out on the Banarasi chat, paan, lassi and",
+            "author": "Shekhar A"
+          },
+          {
+            "rating": 5,
+            "text": "Visited Lal Bahadur Shastri International Airport recently and had a smooth overall experience. The airport is clean, well-maintained, and relatively easy to navigate even during busy hours. The staff was cooperative and security checks were managed efficiently.\nThe waiting areas are comfortable wit",
+            "author": "Parimal P. Patel"
+          },
+          {
+            "rating": 5,
+            "text": "My experience at Lal Bahadur Shastri International Airport was truly excellent! ✈️ The facilities were top-notch, and the airport staff provided outstanding service. I was impressed with how smoothly everything went, from check-in to boarding. Definitely a great start to any journey! ✨ Highly recomm",
+            "author": "shubham singh"
+          }
+        ]
+      },
+      "train: varanasi to ayodhya|varanasi and ayodhya": {
+        "place_id": "ChIJT9AoKOwHmjkROjjuSK8Lnao",
+        "name": "Ayodhya Junction",
+        "address": "Dharmakata, Ayodhya, Uttar Pradesh 224123, India",
+        "rating": 4.2,
+        "review_count": 20418,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 26.7878796,
+        "lng": 82.2005827,
+        "photo_refs": [
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydiSUX7uQiQ1z2-VSfP0c2ai5ihQp4jXKyKb5xHdDMZUScTXY_bMUrYI7rp0HHUGLgiikVP7BDo-ScwI7QpdBD2IMKq0Nfjh7BX4LaJGJNFiZL6uhaLmCIeoHLMYNWlsLeb2YrL1yzHMDpgCwPcDVviZ_k1Z4k4agFOUSYl1hL-7PVwO0bTXag2CrWeM2TKBGHQqFb1WoPCoblCLVxYxN114W0YEGRGtPeptAl2n-CecMQCjDIqH8ic462vsd-G3q3vUlbMZPR_LhHiaf8DLqbUcH2_iZ0JkIBEmZO_KXiK4-hauMZopU4xau32P8l2OFXK_aSxkR56ng1GsXU5uk6EUyN04Uf4tLUVVTmztmHJ4WQ7lty3LlfWBcMRb_QHYEY0kpTdZo2wpCRK323wcc2akpKl1o3aR-aeV82gTVRSBQrY",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydgFDdD6Y88oFdlHFPB-GZXeAaw7JHrRrf6zb9B_s5l6ZA7p_xbMKhE2971sWjOoq5BT09N6jTcdiFF1cXv2Sj5pecFUQMQCXMFUngMxSePtfX-fg1QxpwQx0sMw3kAO2q25Nop1rPJ48jQxVtmSjQI876fW6--NDi_4_JjsfW-xKfPFd5PzyI8KBiyc98iSrjIgO3VleLL3vwRrjtswjd7tsq-FtuB-wAAqdLYWhKHYiMlxxe2htt9wiO7rJ271rNu_GO5CbOClkbETGhNkDvHkFkIdlJwdlwRL9XifvMkBdjOBIEUDkXGLPjZreQQntiP6y7tsPSsWx2lfkiCiD4_NEILRUXtmAyOeKxuTdjZpCv72Isfsbhws_bE5hco2LZYYW7YVuuZnqPzedJ3aOXXK_KyfjDCv8hdbZOdUGTTVDrM6b26HrsifIxTkg2pZ",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydg1q8KvI0p7aC4FFzDdl7GXrEZc6293EvTPZkhBDvQO3JohE3N1aKxT8yzYzoE_OjZy-1NQu6rh8q2uu0f-ftdgnXNmGrI9-7bxwR6sJbnuJwfiwOwAoQ9KV0doxbhcH5cGea2YEB9Bdj0QeWUIifGbKS7he6mLr_i7xwE9hGTc79_tIQSQRg3kRTwWf3kk5T_AFlWXWdzgIFiLy7bitQR3hkJ6tIWzbaUZ80oc0lrqk9oM7tU7X5LaXOZAHRZlMBW4ZkadZ68XGX5M9z_ufSGEWvZCx4LN2PG0n_3-sTmUPI4tCBuPK3Q8BrPJPxS54MjClcNp9OQZAW-yPfVfDZKpMEnT0dVJJZy2bM-pdHgBXIdU7TZ6HH1CojK1-nh3shDlZxvlsjQZnc_M5ZfI2Iz6BtzyL34O-4AXhxqtUbRprUzGd72vXPc4Z5X5vXcL",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydgJD7QmEtvCR6-4nbny5UAP9-oO7UES7e0Oxw8FExkSVwFJgEZNSEwLsye_ATsb7C8FANFKzV-jL9-lHn5lJuNSDs3VdWGFGIQAuuJzEAzwqJJnJepIQPH886VKMI-Pb1XnNj_aTUB-1P64w1uoyJuYd-T3Q2-KLZXjlX0VhLjOsKS6ASgNomrs4L-mSwW_a_a35q77-lsqEEQr7bfJHlNFiKupJhjNBVGSdK6wr_GN2TEm-K5A45zOhpVEQr1u-Hxr-V1u7U4ioEyh3YHxBEBA_H9WN-d08iufL5e5DyCkcYl3Dp7QBUI7Q5HOFSVCOU8O0RSisOQA0oNeG_v6Qsd66XNF5UHgKGm4evK6SUhjLqAKf1qV_dQhfJTerVQa2VrKpdpdq36cwn_dFjHPI05sfWCeQvrcxwi_kmPb9lus8dnXIhxmdyXcvECu-g",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydhMfGNnMLwl1n1_14-_0AlBlztoAphks3_0ELTqfa6grpnN_n1Ce3LwTQnLnn4igkTpLpAqDV8j00j4k8VNzAjGgPwLEibbhRUPEIuKHyuLO_H-9-HkvLwDDmHCn06_HLpSmcNFfJF6ZAixwH6JY-tReKA3q08i9SJrG47YY1kge5p056rfjKW_FezDZdb5q0EX2f7kvmp2NQZ3TGHp4Qukr26YAzWYsbUfRhWjNVz-pKVg1cnzG-h-13gfdEKrTuy0YLTbjRvHecjq9--76hHdPGBWSwEjQ2D0NcHUZRzRw1n3pZevitCUtGgaIabqmvGJbPlwfX82RG735ejd59-KavDRGluj5LsPXwWgZKJDqC9eJnHyoKhpFhgoW9m9Tz6wkhrYDXUF8Ur1jr3P9oIz5_Tdkm-DIsyl_1iiaUJEUQ",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydildhcf2RIx3MacgekuQvbQ1EvrlSovEUx77apvy8j2UjiUrOuwqs-L9IvGEQ3eE5Fg9sxaNacT2khR7wv6Ev1UkeAT9AoJusQqTYRFWgp_vj0KXwqNCFoePtIzXW3R0lrHMtkNJnaYY6r-eTwvdKPy6EFDOI8wLjIkzOf44aTY4bk_kaFN8fdvGBq50U7enZIzl3CzalCbZYJczlrAy3nsC-TzJRoNJMmqflI-xO5FRJLr0d376GtdGOcDEPJpP_yTHmgKLYecTlh0U7cTsdLEYmjdQtNotc75qLIldOute62Zign2Txxg9X7pxCLn_F8uwHw-0ogLlPuRtKaBOIEZl5EpaF5uVQpxhgO2nKiZWnowpdDtvG_5sJdlq1VyJb3AEQCSk5SLjArQFZ4TU8z2Kzq9kkPV__zyptWuESfJqP5HHF692yRMu9pinA",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydiF0lJkN8gbzYJmqSoe-2bZ6JY7VEEJ_H1k0JP70WyOiJl-_cGOReAOMhSl0eKWQu8eqyzsbZGzcnPj1ukn0V1oNbFs3ZSL86jx-1GBKw-30kri-F1tVIyMSuU_hraTAhYCr3x1W6RzLuyC7eYxHVa8_wvbblpv--HVw-LER1o45yp562F-0t_eNKBQtf3Lob6HfWFW_2rUrsGakbOUyBzo5lkljUh7hwU7R5dhv1aECPob9Fx6fUDVvRJJszEy7wYr-a_wh7ZSnUq48oBUEbK_qB-KB-XOs1FUBbXH9fJ6-3Mjqn9xDgCkkGVgzwL08NBmXRW9GjXspOGygDN9pxf7k6M_Ayeqqqzd5ZPz_uYqcuLsi3qMMXjscitDUnouDy08yg9JnFpjhmkdVbHjYnIpbZFLZwdV5wVPOa8lqNg",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydghrDgam40yJWIiNh__tJTW7I7rcLUZNmsNUnSeD0LjF2m9rcj2Bj1jPxTEtACJcxKAScwbIjIAqIRNLJ3CKWBjIJZjDpED7hajn1H1Bq5IJBy58g4KVpedPSgFh7dQgLC5uiVkun1GGk1f57wtvZXS9XdAyrrewMaoRZhhFMLTxCxihGXkxKL5ev77P-b4i8I3SnUKEFoDS_FlhjUm0khyRPfObyCM8ce8fFOTnD-6_Z0AsH6r1cESkOo_6eNkrCusYO8MzhiIayH3sL6zuj2xAWEzcwtCG-RH_TzhF2HOr_4SW9hyuuFU472uuKscuKZYGEzPpUO0xbc1pYByiwQWQ9VjH-EAuWfXpj5O0VeJatVkddiFhSq6fc7BvAvlpKllZVqcfm0li9oFJeR0YooDOyKZaB3DNGIGurhHQGoJTdE",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydhPAbpsX78Hgq6lA5jPVTxq5l0xTYxEBTnqWDqpIA7Dh9chZeHYfBc03WKFSd20KTWvXPuvEzcya_sdIH4qUauRA2reA6M99kF5Sj9bmPC9FsLs3LQi4K_4R_UvAl_OPFDnZ1u1zvRcF-ywIabRF1W7FZNXC5PaIgr-HzgxxU57qXDClbLzsOh9YDSyAN6Ly2C61Dbuy6tg6TpMGjvm9OX6GUZv6l-G9OYfFW8-4vz7kH4Lg4hXlvTsI_rCcyn11EaU-gZ1rJ6nK_Bi_SXsphChwfHpABZ_9CnyIIQIiRWTDeFxTiCbMidcmhGtMJ_hQgRn_IwXtAPKi_dotAR-GRGdAMMFmrry2J-STbvm_u6x1M1ga3KVRCe2g4ZWVou_KSuj00xo3H0Vwo2aAn3dg11c8ydSof_0DSwvj1Ij4HVpWVLm1Vs7DQqu1YpJjQ",
+          "places/ChIJT9AoKOwHmjkROjjuSK8Lnao/photos/AWCwydj-FQT5y6-jkdVABTSYG9CxbbJP0HGYeXU5d97iZc48QJXfJ9lJCoyTunO9refmdAVMhKFeQjPq95JckOztOTumCftzsDU-HuoHBwtfMY_lodplahArqCYyipHXBBsXeUM6kjvGXi1il9sMqsHghG_k4QgsiSoyu_UDX6XnNJb8pSmoOg07hhTiRFFuHL_aELWu8IlZtjmHQz3Gk_LS3FUrlZmhjM8ZHJjznBAAAMWzvolBK0TmqHfnaoshSJv8lMgDcs4d8WVL1pF4ZOvTD6yAH_MWB8tAcNMGPaOclPCIkekMiNC68GrMZ6jvEdloMpW-bmbFqWeglkbK-ozr-ARC1bb5QHzNQ97jNDlopt8hwZAmjWxtDw3OivfQ0sVNSwRHYixeBBJ1NnBxiiDbsXeDDttzh3sUId73inLzy3a-KS0"
+        ],
+        "__at__": 1786803761.875885,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "An Absolute Architectural Marvel..\n\nAyodhya Dham Junction doesn’t even feel like a railway station anymore—it feels like walking into a modern airport crossed with a grand heritage palace!\n\nThe new construction and architecture are absolutely stunning. The outer structure perfectly mirrors the tradi",
+            "author": "Kaushik Kumar Baral"
+          },
+          {
+            "rating": 5,
+            "text": "Honestly, stepping off the train didn't feel like arriving at a typical railway station. The whole place has this incredible temple-like design that instantly gives you such a peaceful, divine feel. You really catch the spiritual vibe of the city before you even walk outside.\nAlso, I was super impre",
+            "author": "Pawan Singh"
+          },
+          {
+            "rating": 5,
+            "text": "For a moment it gives the impression that we are in a foreign country. Excellent facilities for passengers,  superb connectivity.name it and the utility is.there. escalators...milti.storied building,  with different gates for a cess. One of.its kind railway stations..a.small tribute by ruling dispen",
+            "author": "Jivraj Sandhu"
+          },
+          {
+            "rating": 5,
+            "text": "A state of art Railway station with all modern amenities. Several escalators, air conditioned waiting halls and food courts. Neatly maintained. Ac waiting halls come with a fee of Rs 20 per hour per person. Room comprises of nice sofa and clean toilet. Besides some refreshments are also available on",
+            "author": "Anil Mishra"
+          },
+          {
+            "rating": 5,
+            "text": "Ayodhaya Dham Junction (AY) is an important train station of Lucknow Division in Northern Railway.\nTo mitigate tourist interest, Ultra mordern facilitate are maintained at this station. Luxrious waiting halls, loungs, retiring rooms, display boards are properly maintained, well spacious & design wai",
+            "author": "Vivek Kumar Dixit"
+          }
+        ]
+      },
+      "hotel in varanasi|varanasi and ayodhya": {
+        "place_id": "ChIJRzgbGj8vjjkRlGiJg3UKWOI",
+        "name": "Hotel Ananda Kashi | Best Hotel in Varanasi",
+        "address": "near Maidagin petrol pump, K 53/48-5, near Maidaigin petrol pump, Madhyameshwar, Daranagar, Kotwali, Varanasi, Uttar Pradesh 221001, India",
+        "rating": 4.6,
+        "review_count": 685,
+        "price_level": null,
+        "website": "http://www.hotelanandakashi.com/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.320507,
+        "lng": 83.0140282,
+        "photo_refs": [
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydiFj5P834-Hu9GCM-f6dXPwj8sqJ-DYEDzza19d4K2EMDcLuaGvzq2OE4OWEThRgtBa_UQN6CTgDd30pKqp-UtkaERNaEIaHFRSw7GHTEPqTMUnDqMqrWDoJ1EjyPiJYjZW7zEZERjJnYOjG67xWST9WnwpSKa37OxX5lS6eNYDJ76VkGXbTVoDPdltq_JYUnXnetgw_Kep26tQyb5byN5dAl2S0dA-GgkHECPLyN_BSLpRSM6EjhOgR7oTf_4toCO4gaVxP5oS5qiFZcveLfNWuk4BN-g04fH55-b47TguS9CQczfEOrwJrEbakDzA2ytqLrYjmKV5Tm3nxg0pjvlDVPYJV7a5FYnF0USZWfzBRGdKDOMtakOUSp43cDr28L7iDlYa31amkZp21WqT5Vg-i9qo0uf8sB38d1B5RZv6nA1AJBeKKLk53UInjlCc",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydhovAoJKzpW7Fe3aV9bheRhAo7R3agHfc5RKsqoCFtMc1_1h5e-w8IvvX7YzSZ15UCtX6IxytnFN_K8ly9PM5yHjJ0afViZ98lHEabU0BmvPa33MdJ8ebse9fz9Zerix9g6TocDJnRodxJ-pRVtOXqOy-5Tky4bQHaXccxUtKa-njgzQygQevJLBPYeFnofr54Siy9po7i50b14ORD-te60z03Qw_UCkYP3WdmzXDufdi5OnC_cE1GpZ1M_1t2tb2MAeP-2yolldnpDlaSP5S3R_qXHwFJPIaW_k5C8IYhUkzP8-4oo6C862GdtxTQaH0cb8ixj51-aKqNOxcNJjEKrewB8Z7iWAnpLZoKnYLftZiKSWde5giUUvn1VDXS1v8Un0NrWk5yoF8QTM3Sjkz8nC6c6h_RQZr2gAtEl56Y_W_K3moXNCgcVu6LDr26e",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydjVkwhz6ZUBu5WGNNT-TAJgeM1_qylqhZqZNmkRF4TbwJ7yo4A1VCYrbUuNrdtzF3IaMOEHD2NSJKSXPWoZiy8e2oLOVpxQOjUWRzQDFt1TNHSBvSX3ndsYZH7S0hvk7_vp4LJ67fxh4AQATbkupsCYjb_zNaoUjPHlvkMIhhdqitHncHHi3zq72J5JgTAMausNIuEgEnEKlC7dhMvtsRo-sEhJrR8Nza_ZbCPp5KtQR42dsKHVoWj0hAqISMAdurbil1yGjuCLDo5Wl-ChS7Y_PCJCKfCgeaJCAmtBv7otnzBQBd4ktI_I4RrRLfAIW7jjoT63VuRQSYqtEntEBUPhdOk5rQ0bQzB_NrhudVrTW-LgUMi-fPCVe58VKEveH8Jrm9t88EsiCYXo7HVRwuihwTadIsWBrGnUGe6mM9lLphH2CvWyOpDsG6uun7bs",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydi3fUucOMJYfGjX9ztHtMQtzN_VaeeUwTzz837GjjntFObfoSvoNm15tsK5WWxghZ8rSDgUVJhK3EsxjUmdlU1rbcPVFmnT64rPE8xd_0hnLNxqclHWinAf9a1cTlbsIKLxkcEPOsYRUH3ZpmGuuzX3G6RYt7HfUHaEKfiDDg8hBedwCvfJhHD4jbE-NIAD4Bi5WUUxRg2t63W8UOBL1UICWgeNqviLw_iwx-4ZnulHSwUdyUV9An-QT60Tyoz8a1edNSEEI2s4T5iPWXHxYbSwRjiSEpWmjf62BX_BwdmWNoD_jrCtEniBmBeNqcWEVyL0Km6B0SpRS6bWDcN0YNQgRyLxGZiI308dagI4cX5B5r2zV3-ReJD9VPCQKfit0JBeZrScFQhHXn-3vrZJ7mxKruLTYwVLu-DVqbCgjEmdbXY",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydhvw9pDDee8mFT3wX-76xCx06oQ6i4M8eTyCH_9uwxX2pkxT-DTNGW3G5mMrwHGGQtoQi7iqMAapFIY53j0grA3d060_a6W30ssnilDLUInSy4Z8rJxmEYnDvdOuhT1_9Ua4Z6p2f7ux5bXwRugwJ-_iMOwxhvoUj4550try8VCj7Q5dMvayOfMzTqxcOGsQ407Hqc-Nckbxj80ojv04Wm1507ltGhavkZySHpkdZZeMANL23LmzM8iTysDY_9pTiIPdfbux8wlJnW9FHp_Ws84D9Io7GyYM0hR6dtw6wdwx6GQgcR65CNIdx6TB6L0GTfN8gh_dnMusLR1dR0tkcl-bNtkM39QIANJGa3xrkcYaR-z_96FdZMBYJWSysjQbbzII7vwJUNqnsgX1CiwGyDoU8hxbT2xm5WaIKv2cBD8zA",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydjd3j2VbCc4NjxtUspP2zZn_VCYEDprKswBV0hRP8JpuBsBg6Nxdo8-Pul6WU9cAK8HmholDi4HszwOmKKduz1ognqSLduE3rVVeeSH4xMYanWas9QKu440sIf4_nOfnuK12xGcqzpv0YMX5N2O2FFeId-dsObuwCe2rjgpdqn_5HH5tM_exKQq47K4VXXKI15trrsjqCW14HYRyIZIfyr3UuWIlCdbwkp8j9JNH8T2K6ZF8mbh33LhzUAq3TKc6C11FVuHw16xixeOJBvpfncMYc5N-lGuiYoD8XTrWdtzQSFFOL0DPdyzAnMhOYxyd1zW_6BDfH3YNofJ9TSFQtytc46TrU2qZORmSikQCAU0skr4vLCNDu35Xh-Wrdsm9b1kM7BGqbFYRh2kd9m3Ru8J81ZnfOrXrSIR7XBxAv3ieSWC6OEdBxdlUXyTtMGW",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydgjYVcIHPqF0pt4xng-b94yvFkDf78Hje0UcKRc8gVr0z6T13RuvEbltI-hB4d3l0WZs4MP8vt5xdMnwfIGxTwXzDkZG1u9XrLHSKtSlfpvfoD78bYrbaHzUeTx6n0aEPFuhQ7FKXxuhpRPzmdCJO2nHgAIUbxI74emHaA-IQh5y0jXQCYePZEP7lyCuvaN2aQ_mHWPQjjWK8fFDkczXNdPAY71a0TTe_BwPTgODnONVik5Kiw1gDswwOZemu--ksgNVWm8HgOYyaOD6oYNb7Dt4o0i6NkV6eM7bFUOhA6-xEak-bbf8ADYzKyikj4F3tWFOoW_8daqxywPChQ0ALWsFjNN1xMArYChauKM1UtqQr09l2bQQQhJ1CFT7J4R3nztDxWiVzLFKn39zTgU2Bb2KnfAKG2GTgX5tEjAzHn91A",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydiBBQ2dyA4HdpRLFyuYC2Pr1--nQ41nmG8Or5v9TlPbjgljDQWt4xCi1eLhROp3jZo-CzT2eO-FJCfudhd2yh-I6zpnj4fhMMhYjir0OYDev6U2SBgfdtlptciiuRqN8gbPFOMdg5Rjk8zyLc-KTHcMTs0GhclrZsM-WIa-0rcVu2ImNLJyZqbUaAsJFUWlLK2_l2Bz11F1nsf3ctxGKYDHLARts2_WCEO4s2E0qGVufofBzkGID_XhROzQETjx55EPtxFgv1CcFF8gcXC-_VdV7xNo50iUBXMPHWTM9DPNyAFyHoUqg1Cz3GnXTeoujdeSlE1LNxRV3dA3a3Zq7VN1hdEL41dRWrumkCYwiVMrcKXUNhexf4Bs19mX-tH8x0WwXeadHbIDbLV_HBlkPRu_ftxAHdgymuKoleNKBAk",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydhIxtOF2IO3lWtwiYGw54zROCJu-87L0FWew287G9wIFMT2QYOmWRZkGAVB0g-Xdsf3lSu0blJRsxdyffn-hXN9weQtjIJepSuq1ZHPfzTlnzld2CucpBqW2laDFiCe6XToA-VikYLY6nbZuDEJdc6R6QVqy70WYtnV8qkYYEv7hyF65jDlYqBPkS2ivIaH99LrcKrRkoq0DibAX04bi0OvELIu4s3Pk3dXh5rGYAkBFHn2VdcNycrAj03LGpRz_XOh8x0YsuM2QGDSEogKi1RioDU1yzxZgVlRQSJKlNn2P60DTBlDq2nh1k3tMQKWSjIx7OFtUqKKJL_J-jmtfMrWbcON_vBvh7pgC4yVpldrmvZF5if0iqzRd2xN5PhH-WQ2VXeBci2ggwWFhmJRZEbU78rmAC4VvAxjDxRYFtsYOTDYvxe-dBzk-Dw4BZEo",
+          "places/ChIJRzgbGj8vjjkRlGiJg3UKWOI/photos/AWCwydhIRO1JGq70uIsGB3XqwFeegsbGMAccu2fq4cZz98NgKi78N4MT25jx5N-kVCoL-yb0vhk7bxGSs5r6qiRtwsS2Rz41FaqNUKn0_0kJUyDlfl19YTJvZa-XwgWRZVLIav7AOFUsDPf5ek5kMwApOuAuvrGszLJnXQR9VoetN8QbdvJk3QfjAtAOR6FCc_zjFKFhmyMfMVd0fmTNdwwwfzUOqgS9GQ53vB9IdmoS58BiJalTm0znqHTXX1hL5TJRkFbb_YbyqNxifYtfJLYFwCt8MHPjptH1KHUnVVIhw37y3Lyhdt3CoUGEzR3LRxks9M4Z5GvIRK5BrUxAt_snChVjNPq_PoAS_cPZht1QvQ7UMDkmstBR_H1jTjdDGxxOWj3_1nhbv8Lt46QzlUSWGVgDIuY5yf5pV2v1smsLPugruKZG85hdfu-E-vA3ig"
+        ],
+        "__at__": 1786803762.953814,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We recently stayed at Ananda Kashi, and it was an unforgettable experience. From the moment we arrived, we were treated with so much warmth and respect.\nThe service here is truly excellent. Every single staff member goes above and beyond to make you feel welcome. They are always smiling, incredibly ",
+            "author": "Chandan Kumar"
+          },
+          {
+            "rating": 5,
+            "text": "Had a wonderful stay at Hotel Ananda Kashi. The location is undoubtedly one of its biggest strengths, with both Kashi Vishwanath Temple and Kal Bhairav Temple situated within walking distance. The surrounding markets are also easily accessible, making it very convenient for pilgrims and tourists to ",
+            "author": "Shivam Saxena"
+          },
+          {
+            "rating": 4,
+            "text": "We recently stayed at Anand Kashi. The rooms are spacious, clean and comfortable.The location is also quiet and peaceful which is rare in that area. Also the hotel is very near to kaal bhairav temple.Great hospitality.They were very responsive to our requirements and immediately made required adjust",
+            "author": "Vaishnavi Shrivastav"
+          },
+          {
+            "rating": 3,
+            "text": "Mixed Experience: Good Amenities but Poor Service & Rigid Policies\n\nI recently stayed at Hotel Ananda Kashi. While there were some positive aspects, several service-related issues significantly impacted the overall experience.\n\nReaching the hotel for location guidance was a struggle. I tried three d",
+            "author": "Akash Bhatia"
+          },
+          {
+            "rating": 4,
+            "text": "Very good staffs, food is also good. But often gets very tasteless too.. Easy access to auto and other vehicles.\n\nGood Location for devottees.\n\nWith reasonable price and good room quality.\n\nDon't add meals, you can order from their menu, which is quite reasonable. But they are not good in making Chi",
+            "author": "Dr. Ankuran Saha"
+          }
+        ]
+      },
+      "hotel in ayodhya|varanasi and ayodhya": {
+        "place_id": "ChIJWy_bFOgJmjkRrmdd4-F7DFQ",
+        "name": "The Ramayana Hotel, Ayodhya",
+        "address": "Shahnewazpur Manjha, Booth No 4, Ayodhya, Uttar Pradesh 224135, India",
+        "rating": 4.2,
+        "review_count": 2650,
+        "price_level": null,
+        "website": "http://theramayana.in/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 26.770367399999998,
+        "lng": 82.21092929999999,
+        "photo_refs": [
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydihgrYm-P8D6j8jPJRO70fOheeXOQ_nPj5fBHtFEfmuUUtLv9zpppFVbwXH7VoOaYNrT9Lw9WmSqROTD139Bsp_iXUxbAFPNH8vZ8kyV-0cnMtckiI65iKdXhlpkRMHQqaB0o_bkVLlTUx1-K05VLcCdyEDF3FoqiIE_pOOwGCFh_1EpxuY71FCaRXPGPFrRUrulklTSEOhaRTvzx5ucymAbDeXsR7wyhljEyh9nmazDPB0fAmcDIkjlvSuz4NzJVRz6KlZf1dKnECoJJzpa8hJVdbFaj5ypO6J5OA6RbpNYSSTKPqOUQaowE2dBawGVZT-jeufc3qZzEwx7ea484EVUXampBHQTCF47aY-3UaTkZFAdaiwD8p_G6ND6c6EFq65_Qoup_O1niii3CtDYMpMm7nFUm5U5tauFfzeJEOHJVaX",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydh3_ggWb688Mv5BJ9ooHT5H6B4lx6kLuObbqzvXGU-ri_nVnpotNNnjZO4CW8sK1k3qXc-kmwVwLKAy_4rX5dlXdw_poNX8MlANq6ohVrDJmLxTOwYZU2D1ELBhlKB0nWcgjKd1VtWuSK23O_zPE8wt44g1QtscgQBK1EUcedqGgekZwYaf0bhfdvsR0MCQHNhOYk6jBDch_Uwba55qzc_zKd01qpl_zO_KUhAYHHFZvaEPycpLL3HiNjl4idhJ0PciAQP9kWWHoykGJBTeE6fetFkCl0y2uV-eo0NSmk-Uohm2Q72hwYkk4XgXE1b1x0VF-8w7agNM4U7Mxqxbx4vojyZT_9x3dGs716qoukCrNKIMVKZ-7HKZdZTCB7WTWxhbmWwrjmnaap4BWypNzPHie7t0ozOPi0bFJDhMG7uYcA",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydhv3z8dMmHyxRCkUCyV0piYGz4HliH_qD0LiZ8yf2-kiDG2cQMLfs5KLFOZvgeV8qH8r6CZpOjZMsXAe8jQvKbi2dRGkjH5JdptfwqSYaJSagbdBOY2lOXt1zPo0PAEkmfy_1xutIvAxiMNn9Ld4PSAd0J9AYXn4UlGQOyS6_aKR5KpwP6hdpZRMu7Zk7fGwMGfNlVZxzSUrlarrVC4i5scx2T2RdRg-7Gdh_Q1C78gAVU3NBhVG1DOAIulg0f28WpvwaL9F26M1hcrPcNVrw3ZZp0Y9F4ksod1SXwhly1zhxFs-WLr2Z_DciPNK0xMLSDERl1ULWAwhzrn83F75P1tNE3lSXoUBy50ED-jgU63vMRjl5yQIZr-CUS93pGk4K4P09FDYyvLhUyjFAQ1ZhA5us0v0ql6dEGn_rkhNkWue3VyHKI-PByAHn4JPSH6",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydjBfXLCbzy0E9AHQoF993sZmqLo0vt828UfyQYfly8B8J1elEaDTM__bO_f2dC2xWRVY4GqukWFI5_FDCLAGJemwh5KtUB7qNPB53NMT1ec0UckRJYlTEKx0Ns-rldTHjaChZ-0bDKiT_wsecR592jaNNXGcISEoMlL4pha0kuYEHTg5VvLhi6xazz16nREx9wQ01lnQSNfSPQtbBxU_i4o39TtoDdA92ROEq3temw5qnNxkDouC2Xx0qWYgX6Gfh5HfWe2ahFKxmhmWABN38m3YXBYZECqDclHdbcro7BTjH3ixdY6epAcvGM74gATGZDI_cbHBDRjjL39g7vr2heQ6_gsTi-ZPLqkuYJQiyUpTos8gMp1zvCv24C3YcHZZ5DB121ldX3_9xOpk2eq3avUyEEePb-HKN5xQVWhAbOgBBw",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydhC8jplrb2vJH6dAmgd_wEoDG0yTdPo4_u2McneLvHuc1R8eHdIT9E-_-IBjqNx3EtiOg9bx7R-TkWtIkEFI0W4bhDmrydnWh8__hBSshz89AcXhq8eQK4gsody_q4z1w86FmvUwNWY3lmTdZzMstFmjA_GVUbMLczHSxrjh7AF-kLDlSJ6INwJ8ggX326lMIrUczmIYdeGVxEojKy745vKIpuAjk_uBNJc5cgj-UY6KiO6sr0WhwoyMawW_dpqshc7cWznUE-qx2jnYBuiP56JgMmhcbVLXt9foDsu725Arj6KO-jkvr7GHmCwsLvW62nU71MjheXoc5cnwztHG_mYiVBEOamPtTJQQ2h8LCWed9mOEczbeMEKXVbi1ZwinwmjgUEyaQDbdHrhZAumMf1OTDANkadeRyNOu9SiP2I",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydhDgbThHKH_acFcQ0qKRgiZrTS4At84AHulYejCtgAT83bK4jYkQnAh7BbfPz32xWYf3W3VlT2mg0LJsRoCXX3TyZuEN4pJHGfJdU3U7pQ1_hoLwT84SLShyS0tvtMHDmOp5Jb7q7sxyyc48mVZzlGeq8up8C_6VWBJq6FaurYIol2gytnExCNI_gp5Cg4zyMIz6JIvoVrsiuH47aK-Yj7WCdAsmS4h0KGv4SF-773-r06ThSU7PBXx9eGSutRwIgyeqF7yzIBD9hhfCqxtsFMyVyNXpKRLQj-tW1H78D588_JJ93OGq6uH4QvZ-38jVsNkXGMBc4kpra9svILC-K-Y4SYOKL_n89lwYC4eLInkCJqCMVXXDmtj_1lcwWEdFw71kxoMw1Rn7aYWVCCNjHFH-Kqg9wFqlxBeZDCZO_GPr2P3",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydio8mafdcieZ-yDdL1A-NUr0ZIaVgMn5g3ccjMgjxiM6wPH9xxz-z_r4w7C_oa8UCi_BDra4Nz6qglbAvvrtiQP7maChRwhQ-i1eh9OL8njgg0UQFNQes7nvs1EXEUS2EMgOWrQNS5uh2t6RQ03bAGSTkwRloHB2Y4KGcyUjgHm2AzfXCU1b4p05urhk3soUgKCVQ0PbqjmN7dTdWEJa14ivCmkpP-56qptcBlOJpcg_nXmPR61ADfBnPRFSx46fwn75SmIIpnvad8iAwmFMUN6dGWwKSWk4bvuRm7p54l0tjKmYYbuUsqVzme9KOF_adm68_9P91aSivCJscEsbUIurruKn05fphOSRuWuMbjCJP9wdOmH4PnlMxXkAJdJgV5z9pGy4qr0XKX7RPMV-GXGlivGz4Lw7IiUnIjwNeU",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydjlVOFfBsPC_XTWZweYC4bVPNke191NqNSStcAuIKGLJUHynIrGh49twz56EyWl0YWj4n-ai-U2hb4rMFpTUze0XmTijeh5mejpgQIy3MCpJJjtz_vI6tf-L0PeTgiybC3CAF1PH0TmOLYSZRWvNeRAKNB-38R57ofB_RYHn04hYKWp1JteCDex3xKr86IMKIGEa3g0xGFNufYz5B4THjsWMp2M8y3HNFdEKqgQNlQNVkEDVKrpCI4PJhUaA8yM_p5JQPCq7rU6vpSbB_duyGELlxSfpUaeOKfZvGnttHbTfaYC9UR78OYSQhkIaoGh73uw4LD5wsj-sEfpgFYGTFfUCVRLCKj-AfMg_wdJfXJU_xJEsjXrd6PBArIQMZ63gPKFyRy0mRsk-gWFaPnUf_nhpcwIxWLxiZHUhbNgPH11IXzs",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydizylQ0FKLGgiCSJwMiEs3NLgJioEYcv1pqEGnnII5_8SoCDBHkXK2hp4vAw7qsIY6fMrLFK-1-WsSpE1vzWsBk51sCzmUXbewvXsXoFOXhcYRTzzpULGBA5YvYA1YT8-8JVtM1EhifKs3jTZlQEWhuahxBw6OP_23LWMtnVVWL9dvuBwydiBHBVqp1ytp-iT0WDu7nW7nQqD5gNZa3ypdWyM85FkoPaNmyTkwlypEo-P7sUelz3J7t-0Tp04k5dh0fDxasQxphqOb_wQ3J7FOtOxtc8T2kZ1MhaCsxLiqMZ-TagR06mLAwFRAP1gIvwS-_AwkO_xFToz4IDSEE3R019-9KSUGfhTvSgr-K3LP4pE9-Bkzvp7QoUn2y_c5WAhM4s6vNcdwsNNGJwG4CI43ZoK4R4Iu42s9CeVuIUjo1ZA",
+          "places/ChIJWy_bFOgJmjkRrmdd4-F7DFQ/photos/AWCwydioOosymgfW_ilXj9YeSg5L9lMQW7Y7_azOdjj3dW4vAs4hpUwaJvLfwYnZNePtKGnpui3qHl3PL6cQrDa5tG5BSNVCIdrZc5HzkkfJd_QIr6GMVTNbCODo5FfUZPMbz9UsmUIsMG3i95C1wAMIH9v54zKVS32Tib5Zi8KuwU5yl1_grL1Yoh3IwSVCzBSyoEERKQ__vDusvawlAkmVfHTJZ8JCMb18UyVWyEDoEH4fR66Y3m5k8xYag3uSpEEAWYEL7IzYdbBPz1_Iq9TxvzLr3Ro0pDXZoYxFS3hUpEu8kvIsIw4_4Abu5LWpY2VWtNQV6uIcYUHOYb1EiohwSIu8cyfX76vcKE-r-W0ztU2Hi0TU8FBMd9upeDjLkIJlH0LBWbEiUZOViYjslxfOoqnu0HcQ2vipRbLMLQodqCjnQ84u"
+        ],
+        "__at__": 1786803764.0713012,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Nice Stay and truly value for money. Courteous staff and everything was perfect location, room size, food, cleanliness and all. Best part to happen was the cab which was provided and Vishal Tiwari was the cab driver and a perfect guide. They way he interacted and took us around to all the places we ",
+            "author": "Jiwat Ramdasani"
+          },
+          {
+            "rating": 5,
+            "text": "We had a fantastic trip to Ayodhya! We stayed at the Ramayana Hotel and had a wonderful experience; a big thank you to the hotel staff for their excellent hospitality. We also want to highly recommend Pawan Travels and Pandey ji for their outstanding service. They managed our itinerary perfectly, ta",
+            "author": "Bhavik Gandhi"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐\n\nI had an excellent stay at The Ramayana Hotel, Ayodhya. The rooms were clean, spacious, and very comfortable. The staff was courteous, professional, and always ready to help. The pure vegetarian food was delicious, with a great variety of options. The hotel’s peaceful atmosphere and convenien",
+            "author": "Sawai Suthar"
+          },
+          {
+            "rating": 5,
+            "text": "It was a great experience including the transportation from Pawan transport. The driver Sonu Dubey was excellent in accompanying throughout the Ram mandir journey as I was accompanying my elderly mother on wheelchair. He took away most of the anxiety and gave suggestions on early morning Arti which ",
+            "author": "Ashish Thakur"
+          },
+          {
+            "rating": 5,
+            "text": "Really loved staying at this hotel. Our booking was for 5 nights and we really enjoyed it.\nA great shout out to the chef as the food is really tasty and the menu is quite varied.\nAdditionally we had booked our cab from hotel using Pawan Pandey's services and it was really good too. Pawanji was with ",
+            "author": "Neha Aggarwal"
+          }
+        ]
+      },
+      "pune|varanasi and ayodhya": {
+        "place_id": "ChIJSZQwLxUsjjkRabY5ucgQ3HE",
+        "name": "Kashi tour Package",
+        "address": "E96, VDA E St, Phase 2, Baralalpur, Lamhi, Varanasi, Uttar Pradesh 221002, India",
+        "rating": 5,
+        "review_count": 36,
+        "price_level": null,
+        "website": "https://www.kashitourpackage.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.379248999999998,
+        "lng": 82.9722226,
+        "photo_refs": [
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydiczdqL5FUKxDV2u_-zB5hSX62eJrnBR7_DTCTQsmUsrRM8We-Nd8L730E-3tWyxEWq1o0liqlpPrEJ27CNvB8cq7o4ZfRb0_9iG_8Qvf0jy29CGgHNkgtljE8VQLkTm5lq5RuY50OahR6qg6mEJThjiqQR-L58bbTZq8Hj-gNV8S9f_0kABLUKrOOXm5eKumyfs_LToq79EnHi8b1_f0Mx-lI41nj4txj9nkMlY3T6UQ3M8c9ZOVBDKDQJEieaIKuLis6kQjuQYyAOnDZKBpBXDrlfDBlVlKGhCnkmN75n61b0zXNM7wOf1ljnEZQUU5Za1DFyKvMH_vLF-gMrXfpbRYZsP46lJWH5-oLh3S-en49WLUyTc3sjxgg5P2WoMinzmAGNeeRLFP9q4ewotqDr3kzEtcr2nvypwIrh_BFPKSpU",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydiBXSXBBvE0cytKeS8iTYvpxlJmVlqz3ZIiiv--66-Lo5u4bCms0zU_k25aRkKmPRvw9ZxMkRWENth8YOByUdiXlrwrHFwUQ8ttBcrJu55SgNStpHlS09LZahzJmAYzCvCzibSvbx7sJUWwPehoLqe6eNeeC69cPpIIHfWb3yO6bw5MD7lbgeqVnp63R_vqyJDmQPd1Jh6K2Jei1Idy8W4D--yrIOW_54BxSLRww3LfVSu2nVG1sp4q2JXvg-pjH9xk-4lJrH9pxT6rkT9BKtXCaabogweJGinsj17XN3HOtgV8lBuLqX-bFsyDaWOPWk_rSwIibq7WPystDpBMn-dyAWRqfs8_qkpYhRGZfu1zNt_WC6tP5aJvdeIue3Y3yC-eTH_JDf4y4CHTSegeVl_gBN1-6ZwCi-vpeUN8KBL5q-Fy",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydjNz3m7BjAwARAaqu0CXwQnMvapaNmg0ze5yAfMgBwrmUzFrgbwTjnwdWFbO37nJc5sOboLE87y_WLKzeRFYlFxwrKacgxrIZ49oeQMz3QfJQ4AiNYCk9-EBGqbjvUrOLGoE_KkkfERD-Y-jQi95lAUcim2VsPPoMH3dTZz8UKCWn0wyQbZ2RgM-v3zfcGFumNkTAEEFo2ItT7RhG2JkSGDS_0a50tYtAh-tW7WWA3Iv8KiwBgGGcXWL4PhYEhO2Ndy4EVyP4hSh5jGTMC8yE-GWEBpLjZSdYgKSwUnHLaVyZHgzVzq25OJ4Rnf3loUhLL8OOl_USxglNiI5TkWg8iVAQC-7rVJ0KTIu4Jd2RZBUVHfwUXTp2WTUI9oKv3iYjelayrXMzlNAAK_dDC0fbnsVOfIfNNi0fYEDsPttcY",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydjYuW3iXqqJCVCAqISfMttvgfK0hzailx360jORdTDmPZ0_5fC-qfUVUMQZnS8t_M87z4t9F7lQRD6vF67vW3iZATuRTqVmjmplFlwekeKNn2euTyUG6yMIfdQC-NJMHUGFHaOcJFj-t1oh6fTpeUTOEAoTMwGAY_0grelP7aGU6i5lT34dXP84vMyQnl05l9nJD2LOivICTpbaarKU5LithrZP_dN6A2C3SPiE8ly2lfUYrNHC6CizL9HQTtrXgRTycIFdah4thaDtF8trLA1qIypFSkXohSqk8xOb9Nzb2mTmE3Cf1nWfjg7OXVzQhil1MMsrIQFegbU7myMvsIatCpFaB3Ar5Q2Ob-qNcxl03aXwXPjVy4P3h0doJUyObNWs_Dh8uDkizxt0TpEWgfhMzBprKzlIHPEjKNsS6wg",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydhNOR10Ktv2oW-lVdy9VP7YUJ5-7vUNe5onFANtfN4N54iDink_OWn4B0wlbqt5xVm5Btn3U9eJC3cS_Trt4GiQ5568Y-KLWDOZZqDwAI5PVB9PwsxCR4ObZ7yYan5Yf3zGrufj5-vJfwVCnY4_2vjuQo6HJI8zt3TPW9Lbm4hm44-ALfFkDmXSOFyCkx2rEer-Y9HWe0V90G9Awy7dfYOdfPB5eb1r80WS3_gwEOvWNxEEe1wPAM1702yYKR78PtxuiJyKIxjNdk5_eLE77FjEeobIe4CRdnynQJuby-adyzU_CMBBquPMEU13eSj3Bxzh7D-XiZe08ITKhWNVT7gN597aHxySFXSTBXHthPVi_MzUfhRNHa2CNqhTps8MDJzO_BhCPpgTprvSeqVE_1-pyCeQum7LdPRLCRX1brdRpQ",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydiMR5brmbNA8WIqoOFH2-bCv9r9FCEk2EzbGwZiH79rCyI1OmQA7cOjPhgsJxvGO-tj_iO5oM1klajO-bF5ilrAqXxF8BR0RMA1j5mCLmTAU17rqXCRuRPpuV3lZl7KB4i_ynkKaduZkciqrXBvTKtrMgAaDlDmplssliho2FIPJTZkvYHOXkU-1wfEudFZXKXdZSvHEoguon6K4l3Qe-5iPWCn_j8S-N1yseLBARHcyiWUWgiAahLbH87VFzBg4RaS0i3ZKPiOE_OC5awE8UnUgn5i8mz8GnhIF1Q83OJrSlYX6aiuOxXgSgMVlw1lzG5KqeDi4p5s14dVv51wFz8uTXCKY6t_I0ZU42jGQBtbrxh56S96mygyiDr5tQ-MkUW94F5CGDatxTDaayxvLLOuIDR_yz4iQ57UHEmkIr9bQg",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydhUmDW3yHyKxzTw0dG7LgG0DjhT5A72tEiek9tangzXGtHEfG05fOnfzbQ5gaITSSGke3A7Bt1XYQ2rvFodvTLCYbdnXkRLCpbtLIZDKdSspmiicVEhi6461U1kZb7onef6GszyPGGQiovvKL3JidXv0_ga5FhYMtvwBrFZRL9j7NxqD6VydCPenX2foFKDwNzLIz2CdeAbB3YgvslYzaFsSgJ5pfYUQf495hiLjjakNyO0ouoqvbbIDYv_sQRH1xHlc8l_sM9gk1BSlKw5zDKvG0OvvtHYSr6On2un4hZJKOAvb8hY5z7A4vjEbC_JY1JhQEKzUgimV39jKbMnXdECR_rOkhV4195N-d7F6meMZRYtrBsVG8M_a6dhw_xmqJpYsaKXA-fHj6tiCk2hKMlNmDJEac9UBwsrvwbjHGKl1uU",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydhECrWtiV9-HFJVN7hjUwraYG6-UmBSoahvzeuGvTQLHpUUDledlXBdXGD6_zP2Ge7H235fRhPUgfzmPhe9UqQaFo3JD8nuSA9OTnW8kp-sGexv8r1iJhwlHIFZRDbPtN8icQYW-lV9U2eUqH041AcwQ5QvMXiOzBNgBthh15YnvitiRA_gx_fhouZKwlC7roda98pnDTXazoi5b7MByQQS_BfHesbX1ZeZL8j-6pSmXRobmVPdLC2J0oycmUITWlHERxfQwcV8iYQ3OxLUh_yOTY_tNPLnam_rmGMI5j9TvVBzCIvRn063bT4MsLEDKd60xVHssuQ5Y-PNtbidLLk4ZO3OoQ9D_n9pTtTw3uBRiBZy2Wv52OijXPhsQmm4RynsNICPd-vLAcupjsXYViXxgy6IiO2TKHt2jrkrsm4N_Gk",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydgjbfvvMy4YNNODuMrH7_jxcKt9ZmC_gyIX47lFCV_bwZikK62jgpeZc7b1iSgDfCCOogilwB2BD7CuXOcSZd-61JlaalqvdNobkLNYllC_OyjMwU6D3yLk1AKVDUDOA1cmZG8Q2CuUwFY5QegIZTld5hmfYa8Rh7TleYO-6ctaqN8rsrkAxYrpzN5cgoMSg1ExyzJMGwIfpTZ3p56h1wXYljotDYdEtDdL_Cr2qUhhAcZ4i5MOGS7gQlFnYiqEXjn7mp0sZLKiMVsUHoOLVIEmVLwoNxXb1qW5g3GoPhnJnVdRKMP4IZY67TzBv3x5gFUoWNMOtfySbXUWKxJ3Ditwby0hJyPo1zMjwBG7ucDy-_YauK5EDv2gC7nHX7fa7KHg4e3bi2QzooGJ46rx_ZiwQtn94NBD28l_3qMVDeuIVA",
+          "places/ChIJSZQwLxUsjjkRabY5ucgQ3HE/photos/AWCwydhaeKZGNOt4TD_lAHtYwf_eLzz9isbWSPvnA6ZNLLIJo2FJwCsFe9CS6n-AddWocNrcJ_8ej9a4F-hxp8Bc3lN_zYiIaAB9qQH0foLHFRjpNy6ePdusEiSgXEsIiJTusKW1jyUNfbUkIx-Oc9i_KR-vTS7-evLQTm3ol3mNOM2hy0gb88lYO8I-TSrQ60u-BlGjoKbCiMZ32ZujOcAISEXF_YYcU2ZFaOPJUKgWbBWMDcQkPK9qC57bmf2sYc_Xw6dBWDkxB4X1MwexjZwIq9IxXXaeL2tArziGSDtYP20t9fAIqV5cWT5VHC8bdohDIn_Jl5iIIphKeoHPV3hZBBOVIUVQ6vboxT2rE1AXmjVG6gxLvWpJ35HqeoPbE_7rTatXY-OzqAW0H92tRnu7cV2kQUOrthIBK5DNFwCgg50blL8a"
+        ],
+        "__at__": 1786803764.443578,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "I was traveling to varnasi for a mantra deeksha and meditation program. In the meanwhile i thought of exploring varnasi, prayagraj and also planned to visit Bodh Gaya and do pind dhan in Gaya. I was exploring travel agencies for an organized trip. It is then i happened to stumble upon Moving India t",
+            "author": "Naganand Chandrashekar"
+          },
+          {
+            "rating": 5,
+            "text": "My experience was beyond the expectation. Vinay ji ensured the trip was well planned as per my requirement and driver cum guide Raj Kumar was awesome who knew everybit of each places we visited. He knew the peak hours and well established contacts to ensure our journey and rituals were hasselfree. I",
+            "author": "Charms"
+          },
+          {
+            "rating": 5,
+            "text": "My parents had a great experience visiting Varanasi, Prayagraj & Bosh Gaya with Kashi tour package. Vinayji was very responsive & provided frequent updates & check ins, as my parents were traveling alone. The hotel, car, food & hospitality was great. Rajkumarji drove my parents around & was very res",
+            "author": "SHREYA NANDY"
+          },
+          {
+            "rating": 5,
+            "text": "I went to kashi, prayagraj and ayodhya with my family, the stay and food was awesome and the vechile and driver was comfortable. The owner himself made sure everything is handled safely. Me and my family were happy and satisfied with the company. I was delighted to choose kashi tours.",
+            "author": "Rushali Tatewar"
+          },
+          {
+            "rating": 5,
+            "text": "Our 6-day trip to Kashi was well-organized by Mr.Vinay, covering all the important places.\nWe were a group of 10 people, split into two cars, and the travel arrangements were smooth. The drivers to be mentioned Raj ,Vinod were friendly, punctual, and had great knowledge about the places, which made ",
+            "author": "karthik c7"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Varanasi and Ayodhya",
+    "departure_date": "2027-02-03",
+    "return_date": "2027-02-08",
+    "nights": 5,
+    "month_year": "Feb 2027",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 2,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Varanasi and Ayodhya",
+      "Hotel Madin",
+      "Varanasi",
+      "Clarks Inn Express Ayodhya",
+      "Ayodhya",
+      "Day 1 · Arrival in Varanasi",
+      "Flight: Pune to Varanasi",
+      "Dashashwamedh Ghat",
+      "Day 2 · Varanasi Temples & Sarnath",
+      "Kashi Vishwanath Temple",
+      "Sankat Mochan Hanuman Temple",
+      "Baati Chokha",
+      "Sarnath",
+      "Assi Ghat",
+      "Day 3 · Varanasi to Ayodhya",
+      "Train: Varanasi to Ayodhya",
+      "Brij Bhog",
+      "Ram Janmabhoomi Temple",
+      "Hanuman Garhi",
+      "Day 4 · Ayodhya Pilgrimage",
+      "Kanak Bhawan",
+      "Nageshwarnath Temple",
+      "Shri Kanak Rasoi",
+      "Saryu River Ghat",
+      "Day 5 · Return to Pune",
+      "Train: Ayodhya to Varanasi",
+      "Flight: Varanasi to Pune",
+      "Day 6 · Arrival in Pune",
+      "Pune"
+    ],
+    "auto_summary": "5-night Varanasi and Ayodhya, Feb 2027, 2 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:23:35Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:22:02Z"
+    }
+  ]
+}

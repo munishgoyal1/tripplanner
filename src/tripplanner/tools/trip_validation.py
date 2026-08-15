@@ -23,7 +23,7 @@ from tripplanner.tools.trip_common import (
     _stop_name,
     _style_caps,
 )
-from tripplanner.tools.trip_guard import leg_touches_home, validate_plan
+from tripplanner.tools.trip_guard import leg_touches_home, plans_own_arrival, validate_plan
 
 #: Invariants that mean the itinerary contradicts itself about time or place.
 #: Opening hours and travel feasibility are left out on purpose: they degrade
@@ -94,12 +94,15 @@ def _round_trip_transport_warnings(plan: dict[str, Any]) -> list[str]:
         return []
     if not isinstance(itinerary, list) or not itinerary:
         return []
-    # Without an origin this check used to return nothing, so a trip that never
-    # said where it starts passed every transport gate by being unaskable.
+    # A traveller who is getting there on their own owes no outbound leg, and a
+    # trip that has simply never been asked is a question, not a fault.
+    if plans_own_arrival(plan):
+        return []
     if not origin:
         return [
-            "The trip does not say where it starts from. Set origin so the outbound "
-            "and return journeys can be planned and checked."
+            "The trip does not say where it starts from. Ask the traveller which city "
+            "they are travelling from, or whether they are arranging their own way "
+            "there, and save the answer as origin or travel_scope."
         ]
     if origin.casefold() == destination.casefold():
         return []

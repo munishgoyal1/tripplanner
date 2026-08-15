@@ -1,0 +1,272 @@
+{
+  "status": "draft",
+  "trip_id": "kerala_2026-12-12_2026-12-18",
+  "trip_number": 1,
+  "created_at": "2026-08-15T19:31:41.861535",
+  "destination": "Kerala",
+  "origin": "Chennai",
+  "departure_date": "2026-12-12",
+  "return_date": "2026-12-18",
+  "travelers": "2 adults, 2 children (ages 4 and 7)",
+  "notes": "Keep travel days short. Include a houseboat experience. Balanced pace, 3-star or above hotels.",
+  "planning_recommendation": {
+    "confidence": "high",
+    "destination": "Kerala",
+    "estimated_planned_minutes": 1059,
+    "evidence_place_count": 5,
+    "reasons": [
+      "The user's explicit 6-day duration is authoritative",
+      "5 preference-matched places account for about 1059 planned minutes",
+      "balanced pace targets about 360 active minutes on a full day"
+    ],
+    "recommended_days": 6,
+    "recommended_range": [
+      3,
+      5
+    ],
+    "target_active_minutes_per_full_day": 360,
+    "user_duration_is_authoritative": true
+  },
+  "preferences_snapshot": {
+    "trip_style": "balanced",
+    "planning_preferences": {
+      "target_active_minutes_per_full_day": null,
+      "preferred_free_time_ratio": null,
+      "major_attractions_per_day": null,
+      "preferred_day_start": null,
+      "preferred_day_end": null
+    },
+    "budget_level": "moderate",
+    "hotel_preferences": {
+      "star_rating_min": 3,
+      "preferred_amenities": [],
+      "preferred_chains": [],
+      "room_type": "standard"
+    },
+    "transport_preferences": {
+      "flight_class": "economy",
+      "prefer_direct_flights": true,
+      "open_to_trains": true,
+      "open_to_rental_car": true,
+      "open_to_bus": false,
+      "preferred_road_transport": null,
+      "max_continuous_drive_min": null,
+      "road_break_duration_min": null,
+      "road_break_preferences": []
+    },
+    "food_preferences": {
+      "dietary": [],
+      "cuisine_likes": [],
+      "cuisine_dislikes": []
+    }
+  },
+  "selected_flights": [],
+  "selected_hotels": [],
+  "selected_activities": [],
+  "day_wise_itinerary": [
+    {
+      "day": 1,
+      "date": "2026-12-12",
+      "title": "Arrival in Kochi",
+      "summary": "Fly from Chennai to Kochi, check in to hotel, and relax. Explore Fort Kochi in the evening.",
+      "stops": [
+        {
+          "name": "Flight: Chennai to Kochi",
+          "kind": "flight",
+          "time": "09:00",
+          "arrival_time": "10:30",
+          "duration_min": 90,
+          "note": "Morning flight for a relaxed start"
+        },
+        {
+          "name": "Hotel in Kochi",
+          "kind": "hotel",
+          "note": "Check-in and freshen up"
+        },
+        {
+          "name": "Fort Kochi",
+          "kind": "attraction",
+          "time": "16:00",
+          "duration_min": 120,
+          "note": "Evening stroll and sightseeing"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2026-12-13",
+      "title": "Kochi to Munnar",
+      "summary": "Drive to Munnar with scenic stops. Check in and visit local tea gardens.",
+      "stops": [
+        {
+          "name": "Drive: Kochi to Munnar",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 270,
+          "distance_km": 130,
+          "note": "Private cab with a short break"
+        },
+        {
+          "name": "Hotel in Kochi",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "14:00"
+        },
+        {
+          "name": "Hotel in Munnar",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "16:00"
+        },
+        {
+          "name": "Munnar Tea Gardens",
+          "kind": "attraction",
+          "time": "18:00",
+          "duration_min": 90,
+          "note": "Tea estate walk"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2026-12-14",
+      "title": "Explore Munnar",
+      "summary": "Visit Eravikulam National Park and Mattupetty Dam. Leisure evening.",
+      "stops": [
+        {
+          "name": "Hotel in Munnar",
+          "kind": "hotel",
+          "note": "Start from hotel"
+        },
+        {
+          "name": "Eravikulam National Park",
+          "kind": "attraction",
+          "time": "09:30",
+          "duration_min": 120,
+          "note": "See Nilgiri Tahr, easy walk"
+        },
+        {
+          "name": "Mattupetty Dam",
+          "kind": "attraction",
+          "time": "13:00",
+          "duration_min": 90,
+          "note": "Boating and picnic"
+        },
+        {
+          "name": "Hotel in Munnar",
+          "kind": "hotel",
+          "note": "Return and relax"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2026-12-15",
+      "title": "Munnar to Thekkady (Periyar)",
+      "summary": "Drive to Thekkady, visit Periyar Wildlife Sanctuary, and enjoy a spice plantation tour.",
+      "stops": [
+        {
+          "name": "Drive: Munnar to Thekkady",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 210,
+          "distance_km": 90,
+          "note": "Private cab with a break"
+        },
+        {
+          "name": "Hotel in Munnar",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "13:00"
+        },
+        {
+          "name": "Hotel in Thekkady",
+          "kind": "hotel",
+          "note": "Check-in",
+          "time": "15:00"
+        },
+        {
+          "name": "Periyar Wildlife Sanctuary",
+          "kind": "attraction",
+          "time": "17:00",
+          "duration_min": 120,
+          "note": "Boat safari, kid-friendly"
+        },
+        {
+          "name": "Spice Plantation Tour",
+          "kind": "attraction",
+          "time": "19:30",
+          "duration_min": 60,
+          "note": "Short, easy walk"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2026-12-16",
+      "title": "Thekkady to Alleppey (Houseboat)",
+      "summary": "Drive to Alleppey and board a private houseboat for an overnight backwater cruise.",
+      "stops": [
+        {
+          "name": "Drive: Thekkady to Alleppey",
+          "kind": "transport",
+          "time": "09:00",
+          "duration_min": 240,
+          "distance_km": 140,
+          "note": "Private cab with a break"
+        },
+        {
+          "name": "Hotel in Thekkady",
+          "kind": "hotel",
+          "note": "Start from hotel",
+          "time": "13:30"
+        },
+        {
+          "name": "Alleppey Houseboat",
+          "kind": "hotel",
+          "note": "Check-in, overnight on the backwaters",
+          "time": "15:30"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2026-12-17",
+      "title": "Alleppey to Kochi & Return",
+      "summary": "Disembark houseboat, drive to Kochi, fly back to Chennai.",
+      "stops": [
+        {
+          "name": "Alleppey Houseboat",
+          "kind": "hotel",
+          "note": "Disembark after breakfast"
+        },
+        {
+          "name": "Drive: Alleppey to Kochi",
+          "kind": "transport",
+          "time": "10:00",
+          "duration_min": 90,
+          "distance_km": 53,
+          "note": "Private cab"
+        },
+        {
+          "name": "Flight: Kochi to Chennai",
+          "kind": "flight",
+          "time": "16:00",
+          "arrival_time": "17:30",
+          "duration_min": 90,
+          "note": "Evening flight"
+        }
+      ]
+    }
+  ],
+  "cost_breakdown": {},
+  "total_cost": 0,
+  "budget": 0,
+  "currency": "INR",
+  "weather": {},
+  "visa": {},
+  "trip_constraints": [],
+  "updated_at": "2026-08-15T19:32:25.817898",
+  "id": "kerala_2026-12-12_2026-12-18",
+  "user_id": "corpus-kerala-family-kids"
+}

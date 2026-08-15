@@ -5,6 +5,7 @@
 3. passive-learning trip-scope guard — routes one-offs to the trip, not durable prefs.
 """
 
+import os
 import shutil
 from pathlib import Path
 
@@ -19,7 +20,10 @@ from tripplanner.tools import (
 )
 from tripplanner.tools.user_preferences import load_preferences, save_preferences
 
-_TEST_DIR = Path.home() / ".tripplanner_test_profile"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_DIR = Path.home() / f".tripplanner_test_profile-{os.getpid()}"
 _TEST_FILE = _TEST_DIR / "user_preferences.json"
 _TEST_ACTIVE_TRIP = _TEST_DIR / "active_trip.json"
 _TEST_TRIP_HISTORY = _TEST_DIR / "trips"

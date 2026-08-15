@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "cap_inr": 5000.0,
+  "runs": [
+    {
+      "at": "2026-08-15T15:15:50+00:00",
+      "model": "unknown",
+      "trips": 22,
+      "spent_inr": 908.01,
+      "usd_inr": 88.0,
+      "stopped_because": "matrix"
+    }
+  ]
+}

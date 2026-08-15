@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import shutil
 from pathlib import Path
 
@@ -13,7 +14,10 @@ from tripplanner import storage_cosmos
 from tripplanner.user_context import get_user_id, set_user_id
 from tripplanner.web import chat_store
 
-_TEST_CHATS = Path.home() / ".tripplanner_chat_test" / "chats"
+# Parallel sandboxes run this suite at the same time against one home
+# directory, so a shared name means one run's teardown deletes another
+# run's fixture mid-test. The pid keeps them disjoint.
+_TEST_CHATS = Path.home() / f".tripplanner_chat_test-{os.getpid()}" / "chats"
 
 
 @pytest.fixture(autouse=True)

@@ -1,0 +1,247 @@
+{
+  "version": 1,
+  "produced": [
+    {
+      "slug": "goa-relaxed",
+      "shape": "short domestic beach, relaxed pacing",
+      "trip_id": "goa_2027-03-10_2027-03-14",
+      "days": 4,
+      "stops": 17,
+      "spent_inr": 38.0,
+      "seconds": 187.0,
+      "user_id": "corpus-goa-relaxed",
+      "at": "2026-08-15T13:43:10.503219+00:00"
+    },
+    {
+      "slug": "goa-see-it-all",
+      "shape": "same destination, opposite pacing",
+      "trip_id": "goa_2027-03-10_2027-03-14",
+      "days": 4,
+      "stops": 29,
+      "spent_inr": 43.0,
+      "seconds": 264.7,
+      "user_id": "corpus-goa-see-it-all",
+      "at": "2026-08-15T13:47:35.321557+00:00"
+    },
+    {
+      "slug": "paris-longhaul",
+      "shape": "international long haul with a connection",
+      "trip_id": "paris_2027-04-05_2027-04-12",
+      "days": 7,
+      "stops": 39,
+      "spent_inr": 43.82,
+      "seconds": 280.8,
+      "user_id": "corpus-paris-longhaul",
+      "at": "2026-08-15T13:52:16.262765+00:00"
+    },
+    {
+      "slug": "tokyo-rail",
+      "shape": "destination where rail should beat driving",
+      "trip_id": "japan_tokyo_kyoto_2027-04-03_2027-04-09",
+      "days": 6,
+      "stops": 31,
+      "spent_inr": 39.08,
+      "seconds": 232.6,
+      "user_id": "corpus-tokyo-rail",
+      "at": "2026-08-15T13:56:09.013683+00:00"
+    },
+    {
+      "slug": "rajasthan-multicity",
+      "shape": "regional multi-city circuit by road",
+      "trip_id": "rajasthan_2027-02-02_2027-02-10",
+      "days": 9,
+      "stops": 50,
+      "spent_inr": 41.44,
+      "seconds": 246.9,
+      "user_id": "corpus-rajasthan-multicity",
+      "at": "2026-08-15T14:00:15.989364+00:00"
+    },
+    {
+      "slug": "kerala-family-kids",
+      "shape": "family with young children",
+      "trip_id": "kerala_2026-12-12_2026-12-18",
+      "days": 6,
+      "stops": 22,
+      "spent_inr": 27.0,
+      "seconds": 181.0,
+      "user_id": "corpus-kerala-family-kids",
+      "at": "2026-08-15T14:03:17.063501+00:00"
+    },
+    {
+      "slug": "ladakh-altitude",
+      "shape": "altitude and acclimatisation constraints",
+      "trip_id": "leh_ladakh_2027-07-01_2027-07-08",
+      "days": 7,
+      "stops": 34,
+      "spent_inr": 39.23,
+      "seconds": 255.0,
+      "user_id": "corpus-ladakh-altitude",
+      "at": "2026-08-15T14:12:04.123903+00:00"
+    },
+    {
+      "slug": "dubai-visa",
+      "shape": "visa-required short international",
+      "trip_id": "dubai_2026-11-20_2026-11-24",
+      "days": 4,
+      "stops": 18,
+      "spent_inr": 38.25,
+      "seconds": 272.5,
+      "user_id": "corpus-dubai-visa",
+      "at": "2026-08-15T14:16:36.749387+00:00"
+    },
+    {
+      "slug": "andaman-ferry",
+      "shape": "island hopping where the leg is a ferry",
+      "trip_id": "andaman_port_blair_havelock_2027-01-08_2027-01-14",
+      "days": 7,
+      "stops": 32,
+      "spent_inr": 40.72,
+      "seconds": 260.8,
+      "user_id": "corpus-andaman-ferry",
+      "at": "2026-08-15T14:20:57.691017+00:00"
+    },
+    {
+      "slug": "varanasi-pilgrimage",
+      "shape": "religious circuit across nearby cities",
+      "trip_id": "varanasi_and_ayodhya_2027-02-03_2027-02-08",
+      "days": 6,
+      "stops": 27,
+      "spent_inr": 39.23,
+      "seconds": 224.1,
+      "user_id": "corpus-varanasi-pilgrimage",
+      "at": "2026-08-15T14:24:41.910876+00:00"
+    },
+    {
+      "slug": "coorg-monsoon",
+      "shape": "monsoon season, weather-sensitive",
+      "trip_id": "coorg_2027-07-15_2027-07-19",
+      "days": 4,
+      "stops": 19,
+      "spent_inr": 37.56,
+      "seconds": 244.7,
+      "user_id": "corpus-coorg-monsoon",
+      "at": "2026-08-15T14:28:46.677191+00:00"
+    },
+    {
+      "slug": "singapore-budget",
+      "shape": "tight budget, international",
+      "trip_id": "singapore_2027-06-04_2027-06-09",
+      "days": 5,
+      "stops": 25,
+      "spent_inr": 34.42,
+      "seconds": 240.3,
+      "user_id": "corpus-singapore-budget",
+      "at": "2026-08-15T14:32:47.064904+00:00"
+    },
+    {
+      "slug": "swiss-luxury",
+      "shape": "high budget, scenic rail",
+      "trip_id": "switzerland_2027-09-10_2027-09-18",
+      "days": 8,
+      "stops": 34,
+      "spent_inr": 36.52,
+      "seconds": 227.4,
+      "user_id": "corpus-swiss-luxury",
+      "at": "2026-08-15T14:36:34.629688+00:00"
+    },
+    {
+      "slug": "manali-roadtrip",
+      "shape": "self-drive road trip with stops en route",
+      "trip_id": "manali_2027-10-01_2027-10-07",
+      "days": 6,
+      "stops": 39,
+      "spent_inr": 39.14,
+      "seconds": 251.8,
+      "user_id": "corpus-manali-roadtrip",
+      "at": "2026-08-15T14:40:46.558698+00:00"
+    },
+    {
+      "slug": "bali-honeymoon",
+      "shape": "couple, single destination, international",
+      "trip_id": "bali_2027-11-12_2027-11-19",
+      "days": 7,
+      "stops": 32,
+      "spent_inr": 40.46,
+      "seconds": 245.3,
+      "user_id": "corpus-bali-honeymoon",
+      "at": "2026-08-15T14:44:51.925464+00:00"
+    },
+    {
+      "slug": "meghalaya-offbeat",
+      "shape": "offbeat destination, sparse provider data",
+      "trip_id": "meghalaya_2027-11-02_2027-11-08",
+      "days": 6,
+      "stops": 27,
+      "spent_inr": 27.79,
+      "seconds": 173.4,
+      "user_id": "corpus-meghalaya-offbeat",
+      "at": "2026-08-15T14:47:45.458668+00:00"
+    },
+    {
+      "slug": "weekend-pondicherry",
+      "shape": "very short trip, two days only",
+      "trip_id": "pondicherry_2027-03-06_2027-03-08",
+      "days": 2,
+      "stops": 12,
+      "spent_inr": 23.62,
+      "seconds": 165.3,
+      "user_id": "corpus-weekend-pondicherry",
+      "at": "2026-08-15T14:50:30.869911+00:00"
+    },
+    {
+      "slug": "srilanka-multicountry",
+      "shape": "international multi-city with internal flights",
+      "trip_id": "sri_lanka_2027-08-04_2027-08-13",
+      "days": 9,
+      "stops": 44,
+      "spent_inr": 52.19,
+      "seconds": 307.7,
+      "user_id": "corpus-srilanka-multicountry",
+      "at": "2026-08-15T14:55:38.746769+00:00"
+    },
+    {
+      "slug": "vegetarian-jain-gujarat",
+      "shape": "strict dietary constraint",
+      "trip_id": "gujarat_2026-12-07_2026-12-12",
+      "days": 6,
+      "stops": 23,
+      "spent_inr": 36.71,
+      "seconds": 231.2,
+      "user_id": "corpus-vegetarian-jain-gujarat",
+      "at": "2026-08-15T15:02:32.615913+00:00"
+    },
+    {
+      "slug": "pet-friendly-lonavala",
+      "shape": "travelling with a pet",
+      "trip_id": "lonavala_2027-01-20_2027-01-23",
+      "days": 4,
+      "stops": 15,
+      "spent_inr": 37.75,
+      "seconds": 276.4,
+      "user_id": "corpus-pet-friendly-lonavala",
+      "at": "2026-08-15T15:07:09.087649+00:00"
+    },
+    {
+      "slug": "solo-hampi",
+      "shape": "solo traveller, heritage",
+      "trip_id": "hampi_2027-01-05_2027-01-09",
+      "days": 4,
+      "stops": 18,
+      "spent_inr": 37.33,
+      "seconds": 247.2,
+      "user_id": "corpus-solo-hampi",
+      "at": "2026-08-15T15:11:16.389926+00:00"
+    },
+    {
+      "slug": "newyork-business",
+      "shape": "long haul with fixed working hours",
+      "trip_id": "new_york_2027-10-09_2027-10-14",
+      "days": 6,
+      "stops": 21,
+      "spent_inr": 40.89,
+      "seconds": 274.3,
+      "user_id": "corpus-newyork-business",
+      "at": "2026-08-15T15:15:50.835076+00:00"
+    }
+  ]
+}

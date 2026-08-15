@@ -1,0 +1,1446 @@
+{
+  "archive_no": 14,
+  "trip_id": "dubai_2026-11-20_2026-11-24",
+  "user_id": "corpus-dubai-visa",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T14:13:28Z",
+  "revisions": [
+    {
+      "at": "2026-08-15T14:14:23Z",
+      "content_hash": "1408627d78ead7a3",
+      "plan": {
+        "status": "draft",
+        "trip_id": "dubai_2026-11-20_2026-11-24",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:43:28.932149",
+        "destination": "Dubai",
+        "origin": "Hyderabad",
+        "departure_date": "2026-11-20",
+        "return_date": "2026-11-24",
+        "travelers": "2 adults on Indian passports",
+        "notes": "Mid-range budget, balanced pace, 3-star hotel, economy flights.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Dubai",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-11-20",
+            "title": "Day 1 · Arrival & Downtown Dubai",
+            "summary": "Arrive in Dubai, check in to hotel, explore Downtown Dubai including Dubai Mall and Burj Khalifa area.",
+            "stops": [
+              {
+                "name": "Flight: Hyderabad to Dubai",
+                "kind": "flight",
+                "time": "09:00",
+                "arrival_time": "12:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in and freshen up"
+              },
+              {
+                "name": "Dubai Mall",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Burj Khalifa",
+                "kind": "attraction",
+                "time": "17:30",
+                "duration_min": 90
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-11-21",
+            "title": "Day 2 · Old Dubai & Creek",
+            "summary": "Discover Dubai's heritage: Al Fahidi Historical Neighbourhood, Dubai Museum, Abra ride on Dubai Creek, evening at Deira souks.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Al Fahidi Historical Neighbourhood",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Dubai Museum",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Dubai Creek Abra Ride",
+                "kind": "attraction",
+                "time": "13:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Deira Gold Souk",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-11-22",
+            "title": "Day 3 · Desert Safari & Marina",
+            "summary": "Morning at leisure, afternoon desert safari with dinner, evening stroll at Dubai Marina.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Desert Safari",
+                "kind": "activity",
+                "time": "14:00",
+                "duration_min": 300,
+                "note": "Includes dinner"
+              },
+              {
+                "name": "Dubai Marina Walk",
+                "kind": "attraction",
+                "time": "19:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Return to hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-11-23",
+            "title": "Day 4 · Palm Jumeirah & Departure",
+            "summary": "Visit Palm Jumeirah, Atlantis, relax, then depart for Hyderabad.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Start from hotel"
+              },
+              {
+                "name": "Palm Jumeirah",
+                "kind": "attraction",
+                "time": "09:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Atlantis, The Palm",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Flight: Dubai to Hyderabad",
+                "kind": "flight",
+                "time": "16:00",
+                "arrival_time": "19:00",
+                "duration_min": 240
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:44:23.762764",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:44:23",
+            "expires_at": "2026-08-16T07:44:23"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-15T14:16:04Z",
+      "content_hash": "5f2eb3fbad6841bf",
+      "plan": {
+        "status": "draft",
+        "trip_id": "dubai_2026-11-20_2026-11-24",
+        "trip_number": 1,
+        "created_at": "2026-08-15T19:43:28.932149",
+        "destination": "Dubai",
+        "origin": "Hyderabad",
+        "departure_date": "2026-11-20",
+        "return_date": "2026-11-24",
+        "travelers": "2 adults on Indian passports",
+        "notes": "Mid-range budget, balanced pace, 3-star hotel, economy flights.",
+        "planning_recommendation": {
+          "confidence": "low",
+          "destination": "Dubai",
+          "estimated_planned_minutes": 0,
+          "evidence_place_count": 0,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "The user's explicit 4-day duration is authoritative",
+            "No place-duration evidence was supplied; used the city scope baseline",
+            "balanced pace targets about 360 active minutes on a full day"
+          ],
+          "recommended_days": 4,
+          "recommended_range": [
+            2,
+            4
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": true
+        },
+        "preferences_snapshot": {
+          "trip_style": "balanced",
+          "planning_preferences": {
+            "target_active_minutes_per_full_day": null,
+            "preferred_free_time_ratio": null,
+            "major_attractions_per_day": null,
+            "preferred_day_start": null,
+            "preferred_day_end": null
+          },
+          "budget_level": "moderate",
+          "hotel_preferences": {
+            "star_rating_min": 3,
+            "preferred_amenities": [],
+            "preferred_chains": [],
+            "room_type": "standard"
+          },
+          "transport_preferences": {
+            "flight_class": "economy",
+            "prefer_direct_flights": true,
+            "open_to_trains": true,
+            "open_to_rental_car": true,
+            "open_to_bus": false,
+            "preferred_road_transport": null,
+            "max_continuous_drive_min": null,
+            "road_break_duration_min": null,
+            "road_break_preferences": []
+          },
+          "food_preferences": {
+            "dietary": [],
+            "cuisine_likes": [],
+            "cuisine_dislikes": []
+          }
+        },
+        "selected_flights": [],
+        "selected_hotels": [
+          {
+            "name": "Rove Downtown",
+            "provider": "liteapi",
+            "provider_ref": {
+              "hotel_id": "lp9db42",
+              "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+              "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+            },
+            "checkin": "2026-11-20",
+            "checkout": "2026-11-24",
+            "price": 2160,
+            "currency": "AED",
+            "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+            "room_type": "Standard Double Room",
+            "star_rating": 3,
+            "guest_rating": 4.9,
+            "reviews_count": 26995
+          }
+        ],
+        "selected_activities": [],
+        "day_wise_itinerary": [
+          {
+            "day": 1,
+            "date": "2026-11-20",
+            "title": "Day 1 · Arrival & Downtown Dubai",
+            "summary": "Arrive in Dubai, check in to hotel, explore Downtown Dubai including Dubai Mall and Burj Khalifa area.",
+            "stops": [
+              {
+                "name": "Flight: Hyderabad to Dubai",
+                "kind": "flight",
+                "time": "09:00",
+                "arrival_time": "12:00",
+                "duration_min": 240
+              },
+              {
+                "name": "Rove Downtown",
+                "kind": "hotel",
+                "note": "Check-in and freshen up",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp9db42",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+                  "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+                },
+                "checkin": "2026-11-20",
+                "checkout": "2026-11-24",
+                "price": 2160,
+                "currency": "AED",
+                "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+                "room_type": "Standard Double Room",
+                "star_rating": 3,
+                "guest_rating": 4.9,
+                "reviews_count": 26995,
+                "time": "13:30"
+              },
+              {
+                "name": "Dubai Mall",
+                "kind": "attraction",
+                "time": "15:30",
+                "duration_min": 120
+              },
+              {
+                "name": "Dubai Creek Abra Ride",
+                "kind": "attraction",
+                "time": "18:00",
+                "duration_min": 60
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "date": "2026-11-21",
+            "title": "Day 2 · Old Dubai & Creek",
+            "summary": "Discover Dubai's heritage: Al Fahidi Historical Neighbourhood, Dubai Museum, Abra ride on Dubai Creek, evening at Deira souks.",
+            "stops": [
+              {
+                "name": "Rove Downtown",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp9db42",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+                  "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+                },
+                "checkin": "2026-11-20",
+                "checkout": "2026-11-24",
+                "price": 2160,
+                "currency": "AED",
+                "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+                "room_type": "Standard Double Room",
+                "star_rating": 3,
+                "guest_rating": 4.9,
+                "reviews_count": 26995,
+                "time": "09:00"
+              },
+              {
+                "name": "Burj Khalifa",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Deira Gold Souk",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Palm Jumeirah",
+                "kind": "attraction",
+                "time": "17:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Atlantis, The Palm",
+                "kind": "attraction",
+                "time": "19:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Rove Downtown",
+                "kind": "hotel",
+                "note": "Return to hotel",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp9db42",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+                  "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+                },
+                "checkin": "2026-11-20",
+                "checkout": "2026-11-24",
+                "price": 2160,
+                "currency": "AED",
+                "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+                "room_type": "Standard Double Room",
+                "star_rating": 3,
+                "guest_rating": 4.9,
+                "reviews_count": 26995,
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-11-22",
+            "title": "Day 3 · Desert Safari & Marina",
+            "summary": "Morning at leisure, afternoon desert safari with dinner, evening stroll at Dubai Marina.",
+            "stops": [
+              {
+                "name": "Rove Downtown",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp9db42",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+                  "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+                },
+                "checkin": "2026-11-20",
+                "checkout": "2026-11-24",
+                "price": 2160,
+                "currency": "AED",
+                "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+                "room_type": "Standard Double Room",
+                "star_rating": 3,
+                "guest_rating": 4.9,
+                "reviews_count": 26995,
+                "time": "09:00"
+              },
+              {
+                "name": "Desert Safari",
+                "kind": "activity",
+                "time": "14:00",
+                "duration_min": 300,
+                "note": "Includes dinner"
+              },
+              {
+                "name": "Al Fahidi Historical Neighbourhood",
+                "kind": "attraction",
+                "time": "19:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Rove Downtown",
+                "kind": "hotel",
+                "note": "Return to hotel",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp9db42",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+                  "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+                },
+                "checkin": "2026-11-20",
+                "checkout": "2026-11-24",
+                "price": 2160,
+                "currency": "AED",
+                "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+                "room_type": "Standard Double Room",
+                "star_rating": 3,
+                "guest_rating": 4.9,
+                "reviews_count": 26995,
+                "time": "21:30"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-11-23",
+            "title": "Day 4 · Palm Jumeirah & Departure",
+            "summary": "Visit Palm Jumeirah, Atlantis, relax, then depart for Hyderabad.",
+            "stops": [
+              {
+                "name": "Rove Downtown",
+                "kind": "hotel",
+                "note": "Start from hotel",
+                "provider": "liteapi",
+                "provider_ref": {
+                  "hotel_id": "lp9db42",
+                  "offer_id": "3gAWonJzkd4AEaRzcmlk2gEIRzRaRE1aUlhHWTNES05aU0dJWURPTVJXTVkzR01OVEVQUVlTR01SUUdJM0RDTUpTR0I2REVNQlNHWVlUQ01SVVBSU1c0WDJWS042RVNUVDRJRkNVSTdCU0lFWUVHN0JVR1VaRFM3REpLQlRWS1NENEdFM1RRTlJZR0FaVEVOSlZHVVlEUVpMT0pWTkNHTlJVR1U0VEtOQkRHRTNUS01CTkdZMkRLT0pWR1I2RTRVU0dKWjZERU1CU0dZWURRTUpTR0VZREFNRDRHRjZGRU1KUUhBM1hZTUpWR00zRFFOUkRJSkJDR1RTU0laSENHTVJRR0kzQzJNQllGVVlURUlCUkdBNURBTUJEo3ByY8tAmANwo9cKPaVvcl9wcssAAAAAAAAAAKVvcl9jbcsAAAAAAAAAAKJjbcsAAAAAAAAAAKNwY2SgonJ0pE5SRk6jYnJkokJJpG1yaWTAo21ybsCjaGRwwKNmcm6go3NybqpSb3ZlciBSb29to29jbgGkcHJrc8CjZGV0ywAAAAAAAAAAomNwgqFwkKJydKROUkZOpHNoaWSmNjQ1OTU0o3NpZAKjaGlkp2xwOWRiNDKjb2NjkYGhYQKjY3Vyo0FFRKJnbqJJTqJjaaoyMDI2LTExLTIwomNvqjIwMjYtMTEtMjSjZ2lkoKJjcssAAAAAAAAAAKRzc2lk2TBzZXNzaW9uXzAxYTAwNWM1ZjhhNldPRzNFcFlGOFdKQXN4aW9jRjRhbGlLb0ptcjmjaXNowqNzc3CrYm9va2luZy5jb22jaWZtwqVpZmNocsKjaWZywqVzZWFpZKCibmuxbGl0ZWFwaW9uYm9hcmRpbmeidHiRhKFpwqFkpVRheGVzoWHLQEQOFHrhR66hY6NBRUSibHDAo2JrdAc=",
+                  "rate_id": "I42FURCNLJJFQR2ZGNCEWTS2KNDUSWKEJ5GVEV2NLEZUOTKOKRCVAUKZKNDU2USRI5ETGRCDJVFFGR2CGZCEKTKCKNDVSWKUINGVEVKQKJJVONCYGJLEWTRWIVJVIVBUJFDEGVKJG5BFGSKFLFCUON2CKVDVKWSEKM3UISSLIJKFMS2TIQ2EORJTKRIU4USZI5AVUVCFJZFFMR2VLFCFCWSMJ5FFMTSDI5HFEVKHKU2FIS2O"
+                },
+                "checkin": "2026-11-20",
+                "checkout": "2026-11-24",
+                "price": 2160,
+                "currency": "AED",
+                "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+                "room_type": "Standard Double Room",
+                "star_rating": 3,
+                "guest_rating": 4.9,
+                "reviews_count": 26995,
+                "time": "09:00"
+              },
+              {
+                "name": "Dubai Museum",
+                "kind": "attraction",
+                "time": "11:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Dubai Marina Walk",
+                "kind": "attraction",
+                "time": "12:30",
+                "duration_min": 60
+              },
+              {
+                "name": "Flight: Dubai to Hyderabad",
+                "kind": "flight",
+                "time": "16:00",
+                "arrival_time": "19:00",
+                "duration_min": 240
+              }
+            ]
+          }
+        ],
+        "cost_breakdown": {},
+        "total_cost": 0,
+        "budget": 0,
+        "currency": "",
+        "weather": {},
+        "visa": {},
+        "trip_constraints": [],
+        "updated_at": "2026-08-15T19:46:04.016767",
+        "price_checks": [
+          {
+            "kind": "lodging",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:44:23",
+            "expires_at": "2026-08-16T07:44:23"
+          },
+          {
+            "kind": "flights",
+            "provider": "liteapi",
+            "checked_at": "2026-08-15T19:46:04",
+            "expires_at": "2026-08-15T20:16:04"
+          }
+        ]
+      }
+    }
+  ],
+  "bundle": {
+    "captured_at": "2026-08-15T14:15:44Z",
+    "user_id": "corpus-dubai-visa",
+    "chat": {
+      "buckets": {},
+      "operations": {}
+    },
+    "preferences": {
+      "profile": {
+        "display_name": null,
+        "home_city": null,
+        "home_area": null,
+        "home_country": null,
+        "display_region": null,
+        "display_language": "en",
+        "passport_country": null,
+        "age_band": null,
+        "occupation": null
+      },
+      "family_members": [],
+      "interests": [],
+      "dislikes": [],
+      "past_trip_mentions": [],
+      "family": {
+        "adults": 1,
+        "children": 0,
+        "child_ages": [],
+        "elderly": 0,
+        "pets": false
+      },
+      "trip_style": "balanced",
+      "planning_preferences": {
+        "target_active_minutes_per_full_day": null,
+        "preferred_free_time_ratio": null,
+        "major_attractions_per_day": null,
+        "preferred_day_start": null,
+        "preferred_day_end": null
+      },
+      "budget_level": "moderate",
+      "hotel_preferences": {
+        "star_rating_min": 3,
+        "preferred_amenities": [],
+        "preferred_chains": [],
+        "room_type": "standard"
+      },
+      "transport_preferences": {
+        "flight_class": "economy",
+        "prefer_direct_flights": true,
+        "open_to_trains": true,
+        "open_to_rental_car": true,
+        "open_to_bus": false,
+        "preferred_road_transport": null,
+        "max_continuous_drive_min": null,
+        "road_break_duration_min": null,
+        "road_break_preferences": []
+      },
+      "food_preferences": {
+        "dietary": [],
+        "cuisine_likes": [],
+        "cuisine_dislikes": []
+      },
+      "accessibility_needs": [],
+      "past_trips": [],
+      "learned_notes": [],
+      "behavior_signals": {},
+      "about_me": "",
+      "profile_summary": "",
+      "profile_summary_updated_at": null,
+      "planning_mode": "direct",
+      "display_currency": "USD",
+      "profile_summary_digest": ""
+    },
+    "places": {
+      "dubai mall|dubai": {
+        "place_id": "ChIJB1zIKShoXz4RnbaTPPup7aU",
+        "name": "Dubai Mall",
+        "address": "Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 288178,
+        "price_level": null,
+        "website": "https://thedubaimall.com/",
+        "editorial_summary": "Huge shopping and leisure centre, with department stores, plus an ice rink, aquarium and a cinema.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 12:00 AM",
+          "Tuesday: 10:00 AM – 12:00 AM",
+          "Wednesday: 10:00 AM – 12:00 AM",
+          "Thursday: 10:00 AM – 12:00 AM",
+          "Friday: 10:00 AM – 1:00 AM",
+          "Saturday: 10:00 AM – 1:00 AM",
+          "Sunday: 10:00 AM – 1:00 AM"
+        ],
+        "lat": 25.1972295,
+        "lng": 55.279747,
+        "photo_refs": [
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydiNAsenZbpnh_90LGub_Edwjcnv7r77090l_EXDGsy2xMcwnFx4Eqr8z1tm2qiuihgHg4UQYLmZFBj6IyQcWWlahY5n8DpYgRjj6CGTbkEqZQBRTos5zCf5hSS1e8Y0O7b630z1qqeL-hdaRib0YgcGml4Owgexnnh3_MV0cu7-_eaqMW0G5Ghifzk8mqhcfjiGxtRkaC8u2eaTNdyRRdm2vAvXmcCZZcEuVpM2T6mM_hrqowyz4Q_14GWOEEpSak8wNzR55Ae0yAiEjhuS2aODV1lxTJX3DfrBsy6R4kR1Iyc5EsuRlq9paoOm8P28pKH7Jq0C5LmPKLOqEqx_Nnj2odwKwnd9l9Eg1c9GgJX4RINKGf1ciPTqs9fntsfw9JnxFiKnNE-I-Xv20bjwgoz4gI1wATcIVddRra52Ak1iOxeDZa6JmtRxmO8OgQ",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydhr76QSsqAAEIdkaFIkAz82LG0y_OnLtsj0RMwKHamSv5Wy97XK6VgHEXsvLl4zQaOQT8XcWwhjKFCQ3pgY3TmZT5dr93Bo1hzygne4s7pLrigW7XjuKTpBF5WsMiIFsQPXgyXRG0ufnLbZdCclC83OI5x1ic0n4gSDOter0KlWlx-4lwnXYpimfDTOvQzr6uJnWe0KLGZWU8kEIx--a0SJg_Lflwusf35QJeIE6n76XCIIGa-1UmyK-5fKiDSQiduEkbSvyazZNSEbcrtbe8BU-d2POGhfnFiwUXjZjmVjBGGWj-0p7WQhH7mDprs3LtYkcZTVb3ui2GGHI9-e9bLVBNo2Je7PjHhznP6wtcpZYLPXpqaCPpdWcV92Fdcob79wvh_rvuzuM3zsJEzs-jpMszFVMfCSgHQlFAw_n74",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydg49FqvZM6PXrLuV1MReImGkrO3o2s8nyos6fgat4dpyAMSw-Kk4zLecLTW8p3y5nzIKa5ZtY75qD68JjGZtrtpXchrYAZ8hHBiCF9SOHiNjdvSwgy5awvmoCr-XcWzmOF_MLpOCii_r6zJ44-eeXgS78hCGy_MiIdILEqUnKGe1iVawQDBf071pipRpAIsjArvjtzYRhDfqz3UrUfG5mJVKgEd2HfEj6S9iKF9EvWAOVwnvQVvLWeHZtKfvHAvIQFoHE5yeY4rBz5nhIv_aIIanENuxYtGPQf8Jswd_qNpQxMGUS7sXsS6VFT9IUCdLRJgD6iKtLY78HDRCyYPXRL77V0O5sYN7-EsH03ZrocBA7gq1JdrH5qtzelhruV816Hv9le0WML4PCUbhWJ0KnPj1IzH6E2w9IGg_HHNTaTTwQ",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydhRw4mH1TONf037ueK0y8hTAY6gR1_-YWLAltTcSBcrP6EkC_aeum3O1XS2ljNxntutqNdYVR7C9Xq5WGoioJai1DThwfnH9b-NhLbZh1xnZ1k3FlvW0my5qd2nbP63m0yFsETAxtoVUBkPmFFmdstoFXWcRMaIFkAeLWcv7icOZ7BUGilz30gHFN-dR7R0tF8OctydnUeifbQYw-7uRsUXa7RO-3rDjT2rAuEiXfzLFvzYjKT48ivAVl7OPGbKavUm4gkt97WmM9lCpb7vKqPcRG0rlYTdwXWnmYzVU_8ydtjQ5VRtZaGRRhHhaVbc-2pUIylGKN2fuag-GI2ksUyNlDR6DP_bPkVmfiDGp70obbKqVsXeciU0k7Jo9C_syZPrNBi7PVFElpdLLFRmQcZ92n5YTKIAiHOBk_11MJoNfg",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydgLQJXhP4GMXLkNa_14DXkxMqF91BmfiFDXdohXjrNtdCS2s8ObuQbJBvB-fOIJhI4NTqjb01_WkqFS_tsZefiZRi_XiLg_yF3LhLBCkydoieItKUAdw5ZFXVDZN7NhpvBizVOZ_wxIXWc7oi38LYp8l_-5J3VeZrIrLeKJB_y5AeBJLdZHMpnNuwilJVbq6P1sy-L1PTTjo2LfcQF-RYB-gpGSjLLpzaBWhNy3OY_F1qw6942FeMU3SaXAk06WaF12Jqsx2UWVZLvLxi4VtThJ1TyLkGyuqKVqF5vV6SIrm1PjQcTgpmMDJMo10jX7oCnQyJh7Tgtl2pwC4bSHTpz0MpxqQ5R8bE05qffHFjmq9eTUGBwul4Y1uxQaOAqR-1CY_KUdMfkkoO3iIqyJBjhBJ2-XrTwKqfRp6rA2o13swzdO",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydg0wNE7Q_tHtUQwLPXMmmYXscfO_GvKT7yt1-lN_bbnsBnnPIF3HKAXmrxb3_--JYh7I97nS2EKbqWyY8oS2UUpskMQIAlhP88WW8g1PsZG-hYExy2hdQZXchdBBY2TwzCYGsF2eH6KzSjNOjQ-INqUoSJ2bN1A7knhg9sLwvs1vvbGgoun2eXRO1z7jiGXbpa7T9w8OPUyk9itT2R1iipfDaIyzukKX8qZYLjyQy31laZ-atE4pMrI2CWIYD8ZvcUjOUrm4wfRhIMWc0SkoYElqJNBXKZH2cRK2vUWwPjN6Xq81XzAxn6l9pBPuNGx5M1uQfbXdLh7V_hR8gq5dB2PAn7uxCxYoAT5RpdJIIMKl5Uel5MOss7vnsoer9U5dBaulmaAndTG4SJkulOGKXKxYlp--cGZnohkGM5gPLo",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydgOvXIFS4y2aaXQZO1Nqg4Vay51Q30F_IupM539YQBbEtktxhw8DK_ABg5xEWtsaD9vYNFSU1m8p2xSrHHv-6brX3BxKyddgV3JXDWzYp9xNssmtGATsz6AnKXjRC3iCmnGpFAEmrXv1MoL7RBX7wL9VX-wAMlSOIV9DR-vQLHHzv8OLqr9wQMNMfq6X5KsStNAL46l9yQfaZ3p5he542bvU3LlZhs9fITq1gGShL1fpGrL5WwQSmspTnxy_nf77qxxywTEMBoW4t0oZsEXSFianH5z4jjuK9gnLltr_n8DHwZ7gEySLPXzWYOQcT0jxDAO5Ryccr-9Do3PunZPdKfzY_YVsD5vueW5TpbVlBn0dX7M9lKOU7lC-yGhrn48ni5-GiYJ5oaZyhWHUgyz0D8yxCOi6tHTshQ3IfFE7tEMvB6tQkSS0GtWOepn371Z",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydhWD9m75jEKLN5f8GvLgGsgUsoWOlldwAzwtfxV0sbhrz3Pf8LDH9pfw3H1ickYKHrkp32yynb8esZCR5YHabfayQ8MAfUZ8atRheGGx-56fDZVu9peU8cl7itnx8XkCYJZz9bN62kKcF9t1jhCW5Q8xnsT7mPor5U0AjQFjNBEvBfRQ7LotjwxS0_RdNzZootGGPTd_fpt8wWu5J37omgf-r-ea8d2yCpZ8O9cPYl_trs2PFg6SK8W-Bi1BAx8SFzfaag384QveAsXG9SvdlbRhEKH7V1scKzeGJ5rTvj7Yh57NM4DtKTq7sbayKGlxs4WFOx5A6lhIqMGfBPnJ-Lue4Rf1heO9bkX7lyPYmyFTHQ_jd2doE0bwAJ9OYG5oLuR0JAbxV_YkcPxs3fFENJC-HZa7xCBNaH2seVIz20",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydi5TMatja-6aAHB9VhQ14ARZjdZ0kS1bloLKhNdh4U6ETxn72faM478CeT7yDEMm2BajwLEXcwBikwccqDJOyIeRuIg_tcNcgUtyCX0HdWbdnaoVAYgftlPYkPgl2jCSCp_vVaXXCK-UwkOT6BED0C1JAA8Z-SEiH5_lvvUbnbJh0bMLAHaYCDTJSl2ECz1jEUu1665vqTbFSfpefpQogWTnm6emC7YX_CMnQmwy6DnXgwhqwqze4vcdI2AoiskhekYEMDRoGipNza6BwQhFwcq5W6CeknJW2j1-n3hp5atOVsgZGws6GcOx5YXAcUw4DzSue7ivfBDnbG-7nWr7XKF9nBx_SDdjD_IfKDF8rTC1hJh5Sxb1SxrGH3TL5lG84_LT5u3zLqRHzOGv8b59iVmu6CBkgEj-yYXL2S0WO3DwG8qLK1fUwn48XBsi3vl",
+          "places/ChIJB1zIKShoXz4RnbaTPPup7aU/photos/AWCwydhwJAwohrlRvdOcOE6lBov5JLlSOTLONLA5aZX45dHDURtw9ULOU81qY4Bqy3yBogVFxFcLu0GsI7ICouEJEZgMPELwyLU_ngmxyPq093ZvbIjjhaHWFz7DzuUjOArCWH9U6RjzaxruINfkZxtTQssEIgCCt1-iRZjC9IsbDH-zDrQtLySKldnudSBSg2Zz73NlVIpniLcl2spfObtzosLYh6XSyxcoIguL42pVhbvHueUz0E_C0m-v1D0qr3EAzac6CQZZwbflS5uG8QwrYV83uvHG-A3U3e0AmnqeBdBlQQfkoT5j3bQD6hakz_rIvhRbo1vfQIbj1sXLw3ZiZtjYLiiT7pZHglpBe8vZMiHrd4FgJRfN9na6IV0_TOdFh3tzoVil5LH7OZhNVa1WBSwYykGRihpQc5JQpFRQ5fDBVQ"
+        ],
+        "__at__": 1786803239.3764071,
+        "reviews": []
+      },
+      "burj khalifa|dubai": {
+        "place_id": "ChIJS-JnijRDXz4R4rfO4QLlRf8",
+        "name": "Burj Khalifa",
+        "address": "1 Sheikh Mohammed bin Rashid Blvd - Burj Khalifa - Downtown Dubai - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 171860,
+        "price_level": null,
+        "website": "https://www.burjkhalifa.ae/",
+        "editorial_summary": "Spired 828-metre skyscraper with a viewing deck, a restaurant, a hotel and offices.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.197197,
+        "lng": 55.274376399999994,
+        "photo_refs": [
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydj3VZlmea5h-wjGtHY5aENWcWfZtZwsWQzaRWx88bJ0QEmTt_APyLQlbnYLLtHZMF3CK-kiPuxlrncMeVObHwlTfMamf_D6n7Udu_5ZKqjxkQaB007fTqtZ6BaQC-hLUteGMaQPspj47EPyyPPmpEvpoJDVPQOb6BymWSl8gih3FNXFb5D0tiC-IkhPnHHVsC86Fb8RvwLEQd20zTxjfx9iYGre1Qzm0aox9lIU11kXeUOL73pURXksFSF0_pC39FtmvpH7TEFwJ8JIkgko-_jY6NSTrZLNrwPbnzIv9_NYEQtmdqWNOURfW3MP3OrygYARqVYq79mSFxGu3M1bu4pT6DECPJfxEqLPnDh_Iv-Sm2BQwfl6u_FW6y_nr2GDamDCZJU3q8BQ_1i7-M8Nf00W4zvZR3je9LmlVabeF3IU_A",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydjDR615zHiRlz8AnwBKHKk70PJ5G9tE0KAExixhzZiVgoyEkMi-RJpYeFxnQh7VXVqLXqdfHizvcg-gAWWT89jPugUrIWYJUhQ4SsmpuiWb53zsw3_n7Zo1xwNfIO1ex-JM7qAt66-2IOwkwbt6x7E8Hzkuy2K7qQ8PXG3VZe2LuTvNR5eZqYNJLRKZEoqbt-vTexWKvFAjZoDtVIHODr4KKnflsf6Kt-4KRrJ7o8sQS1lZe5Wku1ltpCnzl1PeBp7jYAE9VnRIE8_oqDCIVJ3gvZL9cD_7m1EO3zDjl662_9rpS-dWfAp58r_sVyaoorTXNNDXrHiuXcIPmfzMI9ec2ueFSsbY2PBBTnbpdmqXO8DQeDeAi52xy5ZnfbWVkTTQgvFd5vNBoU1whleE34Jt934gkvdzjiTcFWH2kRoQmQ",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydgIhCMokYtoyepgVrYxugHxK9IQKH0sPygHKum3KYOAKGS8hvcnor6zK2MBywrUeWZemK7QEwcmaFt83dU0egiOL0k0CgSUdTm7y0EAwEecilniHVjgtk3kBo6xHALUHNEuzJ1aMfGUiRSFSu0zLNs2xN2fYzwW9J0Ww5yOQWKxpNgKDIqo8oeDv7QJfY8OC4RJB2jI73p1icY4JGX2nhjedPjyK8kw7r_hejGYkFe6VxCoCy0gPZdmM_-GRieNowMm9DkrZVxwbySJ37XoZvNlDm2lv-wan6ndubdG0nTymdM9RcI_wHWM2bJlaa7pAordZ4LqwyC36_Gs-874KS9drd26YdbxBitKsaEFGa4Nyg95-35kM_5vFoGtWNuy5IpnwZVXOY8llHGfqs0vEsWZqw_Rst9fvrKyB34CtiYsnXG71Up-AkB_CCXGWQ",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydji0Z_o5_F_QMRiEQNrU78pVbIh6tDI3BW2DkUv-ULNP09yaI3HLgJThlTX6eAvYRmFZjYHIzoquEvi7RzvIFdjA13gSjlPI1rxLj6DgHM2fb24avcuHG0_r9Z7OO6dhZSdOezTFumvX7VMgPEkdt3AC0EGpGNRXVVJJsPDhXEsHHB_V0bFV8eENoSDX1ephjn71VjI1VrjcoXoDVUtbjNJHZkHWDSM3rblTNzON0930jxdYcZ68vKUqW-sdxHC0rFUBtFCi6CJfIiwNN2YqS8YiuS0qmo-4AiMxpy_qphhxvAWy8DD3N_pdzcv4iX8hSDVCXPAUgv989l3GKrf6d-RidD-7cW7MxrKVJ1J_OZS3GSp2GCZZSVnVe7Vk4aBxX2aJ1iVTDQnU9O3iTzAwSXCXr9QtcQmj3P39yPOQdHMBXqN",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydjjTGxEvzmrf3kV-8Kd_U9kHSREkpFaLtB8sbtvUp8JlIb0DknWxsnc40TNL_60QIPP3_Hnra0zL9irk7A0wQ3zNovviazby4JKrZU_WsBi8YTBwm3m8XcrzeGCqx5zEbVILMxGfz8L4xEKzgnQLlemoWNdkIcISvYODW3uD4TpmTU1Q62V2L4f34n63PQMEaeWppcsvGMMQLvK9RGJh_MNL4z2sEYQS8cPXEVnSoxozBeJbTFR056Xbj7wsGxn7PpUSLVm_LtDE8Z129niksXtK7ESkXUgEevcI__Rfya-FyODEjjBXKsduE0REiCZ1IaXxS-eSYmqvJV_0keGIeWTJWVJxOqEaRsNgjo_Mx4iJfeF08qjzCzDJ30rNPHC6pukx_Z7e7cYzfr4XgWUEaArwzAH9VKS9WtkpjPjQ9DBHA",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydhaHSEJ-86E9fHgbgkTJCc0rWoFdLEZfhJWZxgvfSvSqBptzfqJPMxz09nVkRdgkFx242h43P9GcwPGdwjaMNPTeKsgA8K_blu1-TcCPscvixUXT_3ke0FrJAM7QJNE8Mi5SEtKM1o9ATt5bhMcjGhEe_Y07iXuTlaFExJB3X3_H9x2LFq2aguh_URF9fE7ixRUIuQW2V3Fplr9kzygVBcqEjhGE9vksbLW4Az8afC7iHHKX-mcTrbm4tT5mIKkf3DOtKMKbzaxizlHc2d6lmPydiPVarl8r1L2UQStqk-_YTzXbTtLvFr7D45ihGC3p7dH7ZJ5wLJbTMUgmyVXa71XDDEF6k4mqa69hKwVY8S4eubtldEiq57fLwwnD4IWn3PUnWUgHFPnkeocHp3CgfYDMQnlIxUniIZzZ7BtvbIDrA",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydjJUQzPAx4JuLetGxpEwvjEzVemM56_bbluwidavttFheGMDn8A6XHr8d38L9gUZZSIGFIXWQ0Qt28IlsyYhvNv1MMzrk6nomE7LUakQLwzsR-UufL62Z7DKTvwBiQqvtLfcksJW_hZ3mpiFVmz08DoYPAigKGo6sPlgLDB_M7OIrHXeZ2-KtS_kg09nCqX3P6C9QeXJblqyiInlC6KneaJRyi1_fMpbGCfTa6SQ3fieTFYiMyqefT61Ux3B9fH_5XeOpfXg6lJsbfhMiBgP1vb_hBKjwgF9vCPqhR0IbaJDk9jDhtV0ZziIFWU-p2LT2cSa2s0-6EiihAdYNXMTQuNvr77RGjbq0yVwi8XjOPApJLJiACurGRsTnNWzNZdSLWVwa7MNkN2cTwGbXwfj1HkQghIYgKRRKDIeRPeJgSlwOrq",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydhg2hsa8HnngsRciIcIfpcVHaScSNaQkqk_C3qYBhQjs1DpQuFDcDYnw4f8iwQEdEGOpUuPv6qED69S-I0j1N98J6NBLiUuyalUOKrsGwgVRje39ET06wa8VgOeGnWFr3l3sGfFZ0yA05q1nzoUATRGzbf0otnnIw7_SXwpnR2vmP6hDhV6XQjU2ZtXTcONVldcEL_m521xS0FwLjBYtxlVyT7s9066qf9CNh7KRozBUQFBFRhRUgBpoYfS3T6W3ZaQIa4g0Eq8WwowFsNuSAOAil1L6A1iQRzs3WqPI5bKgaJN5JfCHNHcvsi0sLAUtuG6_XAVKJZm_ON-yX_5Ry3DPoIr7QNVD_4n7TZEv1qRo7fJcGy4D9CX4h55R4dpWj7b5fKcrv6PlL3zmtUHoX0uzVG8mhtec6vMu60ezcyMb8A",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydiGEcR3_8k0ubJa5cDW3cZZZh-OefuK5XkGUxyrEUF-LcspahSYkOOLf1vg8Cq6EikP3WEfhTpe9Xa23tzZnVPqru8yK09nKYJCpH6YLJxreLljgBYSmBCNwaz9lyezgdhTyNKz0Q_ZknUWawB2ikZZ3rEWDZN-ny1Y_R7ShZURoC7vbgpdpSKEn4VirkH2yL-5qxyYO6YIby9S1GHPV_aFdHh9SFzOhRvIzHQmXKbPEB40TmTsz2OXvDTCBGE411KNrBXQjjRixmQCZPx6JhzlHaIWAM-3WKI3iHvxq77AUmDi5j9j765G9oGKsnjJYT-4ZcmIShQyzoRzWHROJYDSw_9E_kAgQQv8mLaNd85W3nrtOGZMvx-yn2Y6ODkfVbr-y2Dsq_JsjyQwFyuwBUsPIxLdVMFE0GvUxYrI_E2OKg",
+          "places/ChIJS-JnijRDXz4R4rfO4QLlRf8/photos/AWCwydjcaJLSRY-IW0ZZyTRV2qaEzuBW_OKPg925A0X_4zg-XNn1Nn9cXsLb74wxzlNgKzwfiAB3lkimOO4qLc0z_WJ-bzbhgXyAohkR7Sf9v_hvmNucbysBNeiK0_raNnqtk_xC3vRIOqMJ6v7GXGZwFJUtP3KjRQSh73uFkxzQRADdiB80P_qeMcBvIpLHJAx7WH6tUtuxu_4-K8NP4MSn5dKbLS-RyALNDWIEPu7ASr-xQtGODWBdNesVOd__j_DZw6WlEcx7bkITC1VPNiv3J5x2t4vJkpSUwBZkwOrtYkgJRFOqpEaSuRuq7TbpPnwyVlaC0rwW00P38Zh_wbs1q-KT9Uaqmofqt4RutBCSH5JNxew2xnogECy_9yhb_ah2gf0gdh4YDQO251z9PHE6OWrACZ5pCH8Eisik-_qOsu1N1Q"
+        ],
+        "__at__": 1786803240.10207,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Visiting the Burj Khalifa is one of those experiences you simply can't miss while in Dubai. From the moment you enter, it almost feels like you've stepped into the future. Everything is incredibly modern, sleek, and exceptionally well organized.\n\nWe purchased our tickets online before flying to Duba",
+            "author": "The Well-Wandered Traveller"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting the Burj Khalifa is truly a once in a lifetime experience. As the tallest building in the world, it dominates Dubai’s skyline and offers breathtaking views from its observation decks. The elevator ride itself is thrilling, taking you to the 124th or 148th floor in seconds. From the top, you",
+            "author": "Arnab Roy"
+          },
+          {
+            "rating": 5,
+            "text": "World's tallest building with a height of 828 meters (2,717 ft), located in Dubai, UAE.\nStunning observation decks offer breathtaking 360° views of the Dubai skyline.\nExceptional architecture and engineering, making it a global symbol of innovation.\nPremium visitor experience with excellent cleanlin",
+            "author": "VineeT"
+          },
+          {
+            "rating": 5,
+            "text": "My visit to the Burj Khalifa was truly an unforgettable experience. I opted for the Platinum Lounge Access ticket, and it was worth every penny.\n\nThe breathtaking panoramic views of Dubai from the top were simply spectacular, especially during sunset when the city lights began to illuminate the skyl",
+            "author": "Praveen Mohanram"
+          },
+          {
+            "rating": 5,
+            "text": "The Burj Khalifa is an incredible landmark and a must-visit attraction in Dubai. The building is even more impressive in person, with its stunning design and remarkable height. The observation decks offer breathtaking views of the city, especially around sunset. The surrounding area is clean, lively",
+            "author": "farooq khan"
+          }
+        ]
+      },
+      "al fahidi historical neighbourhood|dubai": {
+        "place_id": "ChIJpUWZXTdDXz4R_lcmpwt-qFQ",
+        "name": "Al Fahidi Historical Neighbourhood",
+        "address": "Dubai - Al Souq Al Kabeer - Al Fahidi - Dubai - United Arab Emirates",
+        "rating": 4.6,
+        "review_count": 16914,
+        "price_level": null,
+        "website": "https://dubaiculture.gov.ae/ar/attractions/heritage-sites/al-fahidi-historical-neighbourhood",
+        "editorial_summary": "Area of traditional-style buildings in typical materials housing arts & cultural exhibits & museums.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: 7:00 AM – 8:00 PM",
+          "Tuesday: 7:00 AM – 8:00 PM",
+          "Wednesday: 7:00 AM – 8:00 PM",
+          "Thursday: 7:00 AM – 8:00 PM",
+          "Friday: 7:00 AM – 8:00 PM",
+          "Saturday: 7:00 AM – 8:00 PM",
+          "Sunday: 7:00 AM – 8:00 PM"
+        ],
+        "lat": 25.2642363,
+        "lng": 55.300264299999995,
+        "photo_refs": [
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydjsEQuVUutJKUBs7qkLCzISTl_15MX_QBgIKdRnIfd_YTIP7RKo4x0DDy17sMALBVO00PUe19Acy8oAakj-Wqkcu76uo89jiKPXQxFm5c8DotambHHdesC4ZlXj1ZKGnzBjr46cYA-KxTzndLfy48GoJSpjDm6gHRJjSwiCb0oLutQTglZQQjc8z2h5EovGSn7YEMVUITvb_3yVz1PtEv9sgP4VO7rVKcmISVFDey3iYwOqP_cIYkz8BNPsi3tjPDN_UKvv1EEf5FCvfp4pNNx9lwy2wwDSly5BFU8UmttKWdl7KQjgw-oOL8LMaWhOzSIK1GzFpVsU9vd3f_gXmbvfmMl8kFxgcv1v3EwA9cSoM3uwG83e0oik5WEjeaJ32b9PSqht8qNHX-ZEegC9gKrytFo_oAJd2KXRuvCSrcLQY2o68p-Q7mNErNTkRoQc",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydilu_SKadxGMAfTSI-7U1odcNSS1Br1h9CkQUDJHyxM3oP5mWP5pGjIvqe27kR9rfsyiaSLNncwFK8jZHPwLoTGfmqS306IYtA2KaHZgJFzktn1tmskXPtveVIEGehZU7XPOPyKUHxYJ7XLbHwRuW-FmbsHiddz0JR6FYu1hiNS_twbi6ikxGxaI1D6rlcLcB2sKCmt40kPgTaI4WG3KHoLa7Hum63IMT95RxgjJpKwXjtQj0-48yoqTVPHFBzJNPDXS224q-ZjD21S4Q-Sle-mnI4GZ2UatP9H2PU4UmOdMwcmpu3zmpl8qCtPtGZIB1QV4jUIdBWB1ltu4mhAjRk8T_h5bZfwgKm_2fL3rYFG_Uq6WdVEW2jIBDRVzGCUq2BwcdlwMy5nt8wWAOxv7aa1FMOSx6ocrcpm1om_aUbC0XLk",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydj0-sMiuDMXPKrdXcP5MFxZ0Ccnc5Fif14GtZhyrd9k8eT3-KngIZ6c_R4O6uo7Wey4ZwA9qiyHF7SVdF-0dHLcUQjNvCGp1kL9kv5PX32liRMO_pT1QRdtR1VJIKITTMmO0KfJc00WoVOoEjpqZ7Yjk9MgT6Xn2JfcKvorCZataAxDbr2te9nq9JgVgeO7aFojs8IGYn97K8wHWmFMwBUiJ0MjZMTCp81kZM9w433Rfyt3y3MFIDCcrD5LelGotjGfHrys8Wp4q-5qH_0tO6JDf8rqvdl23r9kByJlmTt6azOMwMK-PZglb0l3pTiiaXTWeMuqvEBOjkA2ElZIdZOI8X4uikAwmBvgMoRCuLlzZY17Q22pJjZaf4KbgkzmaS7dZKIW2JwArV9waaYz_hOr5rVQcJ0Vt7tl_IhJr0PobQ",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydi9ImMUXnByswcOm-fSyXmqx5BQJYIvyZVMOEQPdjkN6tp3jrfCv3K15Syl5i6Y5di0LgJ0PbEXeQbDRrZdz6ct1-RgLXtreI92nWM8q3YbUspNA7u2AStXYbiTD5Pt1JYY8Srv_46WAnwpCdXfEwWj7_LQI-pY0fu1Iq4Fg6YYkF92m_lXYJn6cTgTIXvLK-tNpWB2tJeQLaxp4k3_omtY9MKEIwVJDMHlDJEyxais2NrpVtK27iGqMT4PyCPzLGoOgZCBoMlQITD6g-NyEOI67TWPVLNz47oUOrWLa_KhsR3qkRqUEbYFfDbNOyzj_AjX8Ar6Q3rJQuH9fQTW88tMYhLm0bd5dqKPArd7-1Y30Y6bYh19rykxrFNhJxX3JctP35L9dkpsmFWhJ6T_lzwf7e4lmYKwVl5WSGQT7ZFKkbfb",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydgimT99RpEL9tLadF1jNlDZZTG-B2wglaHnXM3WgYIPIYq6HjyKdTKd-wjrcI7laW2nQc5UfMxu8xbUyqjHhe5O5ZWi3ZjrbclvoW1TsD6MeXDt3w9XFqPFZwTC6_n1vCZICc28OqIAptHdR2MMqH6Fj2NAgeQXQlSKWdyPteYCT3mhrp4tG0aAr4X19PF8EZPN_dkIRrhwQx04vQA6jzwVyqkad9o2vxaDiT_xq_VZRdi97UQY-8bguoBXqeKBzlCd133gh8A9EL5rs7EuQEeU7wKO7BS_TeaPN1oMkapDLelnlxao8Q1FEfSnpLakCuJ58pVq-MtZItLQvoJQNjSlrf2EqwFWiwl2TgOkyoL9lvRhhPMJbK14fOf2Nq6YW7VzWZ4e8Adx8AkTfxnwx10SGh06NyKrdsvmVRXbyXB6JWU",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydg0dDremuiioyh9ZP82n3pgYMRqprOP5wBjrHxx9d_aDAR0PoyjYR-D0IbjWhRTu7T6um7gCN0bnerXavFt00oTwhCI5VsvBsDI6BR-w8_jqlh3573Rn-b3GBQQKjPWWfzRYzPaO59z9j7ZHwQKchPobt6zOpgXL7Urkyqn_1jhMX5vZN8Ug1PSpdrMSXIEseD06Jtq2V21lvHev8sN-S7vIWAOKus8tKf3sm0wKV06L0riH7wcFKtCHfPV9p4ApJl17TLtVVUeR52t5u0MCJdXBAAjvEtzQiKFK7RVws69bccS4O8XfnH1BRmKvKMBcpjxQpHODSi2SYZTTV3mQqHceXpoFhTexcWKbqmXfwylx95uPhxvQQ-2zoXcl_sC1Urdu-f-SWj6WpBiUU6cC8Pq9Jp1SIrE3rnddzWzunHryA",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydif0I43g0rWmcZ335TNRRBNAwOqT1xkOB-Yrpp0mKcNJpT7u-L3Tx5jdcS9bdtwV_zINrYLcvdetaSTok64uGj598g1MBmcVPNR8tc_EsddiCHUiX_C4PQ6XLvmqEzVQU07CZ1vVAsRQIK5kPZxrFyZk2XsJp88sn9wg5BfPGLXgjMOd55-tTj3MfNV6gUTAldQCYvx0dsmYq3bJGZ9QDKd3rmSeMl5Hoiqx2JnUJiVM1A1e0B85yCTJyK6Y09vg_T85yT9ozquSc8sA07-B-PaiUgxvek3DFzo-8_jzg6ZqenFoD_YHmG8qVLEDRhawgVp3udbppgOFR3dufHMxGbtkfvKLrFGoPmc96uN3MfUtR8FhWFlSFzR2FB7Pnrd8CuM1KGrTgiD831R67zlyIMvJrI87kSNGfimxhBB0NdU5A",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydj4UYdbLkjjxg2fTe7WM78dYs8hq7yffTPp1aq7P0iC6MaGJknNQqjcTUOSMK7ReeFAR3tOxRxYkonIObyiqW6M3pyOZRb68lbUyOyuYOFClF6HGIeNo5xykzCeRHbZgjsh_bPkgJmqCX8HgETXBU6y4xuNKZAKW2wbPGCrGhJkYrHg9BxM1DVsVUv5VpI4q9WbXztAy3TC1rc39VNwY73nbHxr6hn5qeMmvEfNI0Nh9ZegzPqaQKNAuj0wkWP8bxyp0hh1SFxlKtMnC1FakKtxT1wzhMEHL6ieKR6HAFuQLfxcy5YAKQXHqQS1ZsVYw6DopgiCZpfrLUYYpmfHWc_vD0DjTFEwBTZT6Y5RM-ynr7QPBYXq_ZQtPJOlCxGaGaWm5W7HAgskrpfBhLWQpNKBJxUmrFGXUf42MzaEcfIrpcTUBpEMqlSurW-2TxFj",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydidpuFIlMD08kHTCuDQZnX9lmJo0JofncJZ_h74mtBSQ1aBuiJEofE1Jrn459yar-8TTPc47cP3sXcvoCsq0nD7pThZxNNUlSVvREMuwzdl1ihTqiqS1vkJfvHFH03scrjxPMU1jeeNCJdyGejL82b6sGVJi_jjQTL6xormrB-cANzzqXH6Vy5fHSUdCOMewFxkM-xw0TUyJAheV_kGh9zG_wR1q6KBCUBv1WHOgQbM4ycsQkr4etpRliWMS_nivE9u0ywdlIn52tmXHnB4PcSF5I-0XQmyyh5zCtu-TLQVAxcZjZJyEbMrdfXTXJfNFgdqEcnVTCOYl7qW80NLsPHY6SjhkFjhQuFvwjvSeTvNISY8zEMBfvwWWfHoYrL8AwN1_PUr4hCGBaXAnj2gluReWTPM-om3vx17dCN9Qd_XwNg",
+          "places/ChIJpUWZXTdDXz4R_lcmpwt-qFQ/photos/AWCwydgwX2JXfBuSV0Q7rrlopJmbTeqSszrAQNXOvEOuf4YTqyNCcFhl2DEKmEjObJjUhJUO0qNwOqMI-5lbrvb-09fEixYxDp0CC1sLjqQOKIBXTkWUfnLO5J8vnuOCMUZvaj_DhUN-KZ9vlB7VM8Iis0JLEuzJ6iPkau1HfnPxW7Fc0yriHmvXjZ3MAHdm1W-t3T5O1HgGd_JMHgMyBppqy_q26_VH1yNuyRwp-sR8-a65y0CtRrep3tJKC8aULyo9ujFmic_AGIIbGI6pAtbhZNZcng-pF3KqLdE4_W5xaZLATVlKZdK82sPjfSIZQw9-LJ987zJ3SuJ7Zi8BrbgGJCV99lTWZO3NO-wXK_rUOuByF8jpBEyEnKYrW7Ygga049C3czX0fX-wdhmiThWcpn-kuvgJw6t7gcnbsc4s_3j2Ih4Nc"
+        ],
+        "__at__": 1786803240.862272,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Al Fahidi Historical Neighbourhood is a must-visit if you want to experience the cultural roots of Dubai. The narrow lanes, traditional wind-tower houses, and restored courtyards give a glimpse of life before the skyscrapers. It’s home to museums, art galleries, and cozy cafés, making it perfect for",
+            "author": "Arnab Roy"
+          },
+          {
+            "rating": 4,
+            "text": "Great to find tourist attractions that are free to enjoy! The old neighborhood is well preserved and interesting. Lots of souvenirs and coffee shops. I was there early in the day and so not many tourists and not all the hikes were open. But definitely worth the visit",
+            "author": "Brent Brading"
+          },
+          {
+            "rating": 4,
+            "text": "Al Fahidi Historical Neighbourhood is a really nice place to visit with a calm, peaceful atmosphere and a beautiful old-Dubai vibe. The ambience is very good, and the narrow lanes, wind-tower houses, and courtyards give you a relaxing feeling away from the busy city.\n\nIt’s a great spot to walk aroun",
+            "author": "Akhilraj L"
+          },
+          {
+            "rating": 4,
+            "text": "appearance of old dubai city has been conserved well. feels like visit arabic style thme park. it doesn't big size. quite small. most of merchandise are louder and luring customer and travelers. anyway. just keep focus on seeing old dubai atmosphere.",
+            "author": "Paramount Ace"
+          },
+          {
+            "rating": 5,
+            "text": "Worth visiting to see Dubai from the other perspective! It is located by the channel and you can take a boat from there. It is a Labirynth of narrow streets with historical buildings reconstructed the way they used to be. It is cooler and full of shade, perfect for visiting. Lots of souvenir shops a",
+            "author": "Martyna Piskorska"
+          }
+        ]
+      },
+      "dubai museum|dubai": {
+        "place_id": "ChIJNT40vT9DXz4RBIFRVC4e7bw",
+        "name": "Dubai Museum",
+        "address": "Al Fahidi Fort - Al Fahidi St - opp. Nova Hotel - Al Souq Al Kabeer - Al Fahidi - Dubai - United Arab Emirates",
+        "rating": 4.3,
+        "review_count": 14111,
+        "price_level": null,
+        "website": "https://dubaiculture.gov.ae/",
+        "editorial_summary": "18th-century fort housing a museum with multimedia exhibits on local history & cultural heritage.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.2633966,
+        "lng": 55.297164699999996,
+        "photo_refs": [
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydi1BeEXgO4-pDUrPZwMYHekcs99aVZoNYC-FWnMpHrFowlsCWbg9jhl1594kpXQvXVFnZ9x4rbUMUHAeBUHcLRH1-xfl3cNg7TWTu2PToP1yJKW8LEvwPsARMRStQgsuSLN3C5lDMzZ3W-8EHk-9WcqxSEnebuqXAq3ywrU-XIRjRJIdwuwlv1ko3a5S3h77cUxxk12RLUQwKuQdypYHWUII7N_YPeIp6IgGXVZmbOyNp3rkYprePN7BrkIZ7eHIChlI4dyIv-j_6OaiXwBML-32v-YK4x2yuFe8w2305-TvcyYiSe4G8-wjkxHAjfWwVv9yjHxRNVpdQX11IeiwwGlp3WVZEzU1XpdMHwP82piN2w6stivIu6kmic5rxVCobyHLPu62H6TcMQpmLYYlajya-TvrJ1PLgtX0xBPhl_iTzfP",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydiIA1SYkupLFv8wtCuIGIrmU6zlSlZLW7q3qx1CHC4WjqSs3tvgjodopFtoFhxmIr7AC8oEZQ9YRF18kiBVSFOis57t8u0GSd_D8dmXU-XIuhouUVQ29wtXDHD6xVbOWqK7H2bVkxjQ3o8iKx3B0y_lbtcsAKpLrpT1bBakkr_taCgNZlm5UPPUtY7IPmtln08mhg8BXPrq_ZGd-aK5Wy2EWix9maFQmy35iDy7NFcqWJEVJzeBxc9Ddryq0-SSoSrvDsh22sddJBZmsx0jhTc9nneTZbdpPtR2Gs3r1W3w7euQ2Ufpiz3_J7th58Dc-sPLZowRmvTeGgr3Ky_Ipggpn76HCHKfxf0Zpey7CtA1guTBSPT0ICg4VQHwwChn2FQTZHwBHgFg5p0KlGrWYteU3aD7A5elxp6TsIKobJyvn8Q",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydhnKEATlJGKJJ5QqMDeOj9ezs5WGFl49KsbFflK-0-kiFhBH7vMzdEbazJFj8YVTHIMIkJWxSSyg0BKZQQnNfzf6XcbHNKzopzHlMZEnTppq29BcwPaEWIN_h00ELarjTsIIjVpyHs6qC6bK8FhiJQxeiCZuMO8Gg58ZLBfdZOkrXv7WUPdhGg1_RrJHMmKFyLcKt_5OheNVYwk1HIGQwEE24s-HT1yRHJDyBMM3wgu3HgZXAfs501YZp0txrVKoOqwxLV10CF22io48hmEoNTH2VV21mRahQN6hNh3cu_W-TBDtyqf2_5qCh4g-9B6jy7XAwG-1w09nEqQyQdHP15fvTQf2mC0MxxwEvhauwXF2mzh5WLPk4gw_4VozJHOIqLmbhVm8V7kaJD9Tdoh7mn3lrhsgenWrltm1VPCaikvjcAi",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydjiFXXkDEjXrJ7bfdaiMbwhxicxluMbf2r6viJRGK4jnM6uIHF8vQNl3lniKWv8zK2Vt_vPhqpsqtqcYovf1zBw5WbKhDd8JBRXYzktjaDvBfYkXoZDVAo9HdafXxJksqhdtFMf0buHEoYsjSV17iXiQUCOpeEibmzDeugY_RZFwj2Y51vUqRjj1XpHvHZ28CTA7xJjA3E7cBZsvoUB0G9DgyUC8SjCPv2-fjldXajg2MgI1Pu92z0DvE6JrtZHJSwdmWBdzH5qR1dsRKU2bq1yKCeu3eTb5aMcCvfFe_la9YvPHC7DMStrrRDvkTtrmFZwgkXHvHwbkpFaMb5G6vmyOrH67iqenA_unru1QcNDNDdYuPP_2xOvZ8imRCqs-0s4KxwXWDG02EgYBjrl-7qb5zrSJSdZkvw1OwdhiDhiP1I",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydhLhzO8gCH6V8_ogwv-8jwXuKQRMSL9_2Vfk_Ds-vZVV3XiX7NUNqhiEb8qHgr_KKOn8a2Qewl1gZfPQSk5b_S4to4pj2VN8gK6wSJgrw_NmOZFbClOr6RsqwRiTipPjKEOQOrVMJE12SgtH_kP5MJBO-gqJ2scI72TK7ZejRLdbGY0NTg8BYtb2Jed42oR3Ay0TJIhker63jitBY_mYta_lthR02EfgwcPyrV16ZP1Ex9bFjU0hQcR7LmUxXtpfIA0qCSSvgVzwm_oATudGUq1r-7vFqalrxgxHLL8C0A-V2EmUWE4EZrPlXrEI68ZZ80ssmTNTuePPqGHQgaxGcivuiXcr6Y1pxr5ZeVX1iPTMWu8myXB4iEn2bHrxmsIOCNZJf81whsxPpDTZm7czFlaRQ5MZrgrKgILd9nX9VfDkW29",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydhfB9tomPEUb5Xfz6GyLohwFS8iv7ZSBQz8MSXM-K3PndKQZVcR6D4MuC4ANa5d9YKY2d9IyySotlMDKziq95qRvrZCJNRUWcM0TuRCj3aodXHMBb3hDx-kPKkYifv-aWTdvMvl0i5ATwAAfwXc7HFwMc4kZhXUpysOokBV1NxAWVVunc5Mi5ajQO84CSZ6yisYy930ffVI7msYDC7YmNh9bbriA47kAlOqSgfgYq1DQfa9w_Gpwff1Bwm8GAZ4Nu4v5ScVg5HhzBwFPFOn11YSx7NsF4h0PoL78Fx2ckhegB4KgaqQrZdU3SG10Q8rSA01p1B4SMlgEOrYUOImFFIx5XHPxby5v4dw3KYiwXam_xF-9ooBdCcZvfp9WvITA3S-4OA-qf_M19zjLesvcDxWpBN7fvmAL5x2VAGCaBSO7Q",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydiiNMbKKs1jRUrklDw7Yp6UVvYznVAVDt8PW8K5Ti8-S_oBb4QwsZ6smq_RN6AWmDuxZbMgkNd07WaezX1QXeXhK7oopuQuP8rMJE9lWfRswAn3R61B23D_JyiYeD8UAtIEqT76Ax9yFbMz77PjiqpxgIw-IkCt8bbwyEPAXP2zMTjAqRZk6szuZZAdCjFd1GFiqlniN_R5o1Cg1u4ERwD0kMk2GhLj2HwJXqoV3I8N2q5e1ogUxx2j1gZBeH0_iy1ysRGycd9FYyUAx_3s2bAOx2bhxhRq6jOHysFKur6YtuEnrEKb7wZsOT-7R5htcDocn34Grokt13MjfymICRUYFmEClSK9yPxhrFnWCedul5HndaBXICiFFjtD6nGk_wVkuL1OD-v2FbtxqBpb5ZwHlp8rf9wAZT3otImFoUyRRA",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydgeOUpHzB39ENXIc9PYrStrBYmb8kIs-DQO5rL8l47YLduPlFBEt6tif8z9Tk3BkGsjnJw2TJlHPQ6wU6WyFS3Su_iSH65OO7xhdO3IX2P24nn0yY24St2-k-G-sI44uNME9SCxBQ2K7UiCxX73Vl8YPNjkPtGfKPycwQZMbLTJ30TdRIVcv234Z5VKwfgzD4KzuKTZjJW2DTMIN_2dS497ZcW0U0rTOwLDYXOYNvFal-9LtzObIguARJ0oPmTf8EkJkBbax69fTn5kuqwXhvSDR8jjJ-OsFVp1Ne_rfh_g5_ucNWpsDU9WKaj2732a0jXtCA2ZWP8Wo_KdXjNLNhMduArnl5bLoePG1TPIuyJEawwPtGxYkdnSgWVxB1RAW1fYyFl57onBiPOL5hOncgpQTvSHYnZbRBSrsI0Rztg",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydgmdoJ-lYsso9u0HbJWwltKl7bfG82L_ZDDt3y2AQh3XBXtifrHCTPqMa20s5jJfsfTCSCaze_nTJKD8Vv7LfTXRpD1TGxMBUK9NbzvQK4RrNQvrUBavUAnY3_Ck5P_sEiUS5wgqa_hMxOWQp9kmPAS6bKm-PTxIsF8PFP9NBxUqGnilKCwIQkC8-bG3iZSwHfqMOilfdTViPmjFiP5-ZVSdJ97Q5uiclCOZIkXz_CHMb9Xtg02bCTDiwf2Dmd4j2-SovOPH1YSYcDnFQgBlTdspjywvqEDHQ0K81vW6HGsm3AJnXu9KYV3ofNYTkOw-NyO8WxXfU634SiMKG_Bo2nGE_2b5qZRaTXKsBenx2rYntT30AAFvuwZKtdx4mjAopsk3GN0PsSKyPF0e75rAX8ZNIZkI7seFYNNew41sof0nE0u",
+          "places/ChIJNT40vT9DXz4RBIFRVC4e7bw/photos/AWCwydjwjakKPbMzbaifcgjirb6DQxAXEGPiL4f_ZUifI0db1-6FLP_xoLaGF3qEtXXFlayNYsdz2ACnikKLISfhIenKtFDZKZ0m2eAx8r0xDWo62Qxk20La_HChzOxspzrhJipExnWeA3HWclWMf4iUUedDoBp2c34SvGJQ3ynJSmmwKTRLq2c8P4eEkzL-H83c2Gxwb9xpOKopJTOCQVNEc5nmpQQh9ysjLVSbu9CSKdBz-j5s0IvpeIajMuas6S74sPnhjFHak4-AHgpt3kSPP2uqfS_ll-p_6mZUqVyHE67be_-mBmt6ypyaDNTWNZeEx79mVbX8f8st34_HSUZ_eKrqohu8k2ejgnCr5VREPFSATJUjIrQrVvDeYQR_F-_vRgtLQO4cBsjsZOm0zhQuZyoUGk0hoEUJNImlpSkwYhwF1w"
+        ],
+        "__at__": 1786803241.403709,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Dubai Museum is a wonderful place to explore the rich history and culture of Dubai. The traditional architecture and historical exhibits give a fascinating glimpse into life before the city's modern development. The displays are informative and well-maintained. A must-visit destination for anyone in",
+            "author": "mukesh joshi"
+          },
+          {
+            "rating": 5,
+            "text": "The Dubai Museum is one of the oldest museums in the city, housed in the Al Fahidi Fort, which dates back to 1787. The museum provides an immersive experience, showcasing Dubai’s transformation from a small fishing and pearl diving village to a bustling modern metropolis.\n\nExhibits\nThe museum featur",
+            "author": "MOHAMMAD SHAIFULLAH"
+          },
+          {
+            "rating": 4,
+            "text": "Would have loved to go here but it was closed and not sure when it will re open. Looks very nice and we can only wait what the leadership of this museum turns it into during its grand reopening. Hope to visit this in the future if it is nice!",
+            "author": "Josh Baltazar"
+          },
+          {
+            "rating": 5,
+            "text": "The museum of the future was my great  journey to learn the history of the United  Arab Emirates. First floor there is no fee and then take a ticket.",
+            "author": "Remya Sivan"
+          },
+          {
+            "rating": 5,
+            "text": "This is a nice museum, looks like is small but it has a lot of rooms and information. A fort converted into a museum.\nGetting to explore Dubai history at such a nominal price is absolutely worth mentioning.\nVery nice and detailed display of the history and heritage of Dubai as it grew from a small v",
+            "author": "Aman Bhandari"
+          }
+        ]
+      },
+      "dubai creek abra ride|dubai": {
+        "place_id": "ChIJ5_y9mVRDXz4RsmsasDPJRU8",
+        "name": "Abra Dubai",
+        "address": "90 Baniyas Rd - Al Sabkha - Deira - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 571,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.267213700000003,
+        "lng": 55.303252699999994,
+        "photo_refs": [
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydiAAyXcAJ20PmdZGDGfo2acylsJCGoOYADcDQyXWrG2dAaYmZTEEVQpybLyiTQ3YYNPh6jHacJQ3NxQEuqAHFe7B5U64qraSv0zUhq87Z3-oYSwN5eIxb3NxIAujbcQ2FJqT5WuoVQAWe8z8ISLK10DVPjXgPxgI2OCWCZkXBC4Sz3J1FlCpmzQozfiWYGLzoDmayU4d1sgzni4IRjP8xoR47rt_55v8tCrqEYECpJdG428iFvsNXKNKANmkdqztFdDV3njpnaKf0q5CNBe1cbfhbvY1Sxzd9F0V3X_1oK_pfXeouS8ChE9s2RxxQNO20zUfdm_lSm90ZVWNN98wvwpUgWSvAAepHGxASFUOZod0JyCx0dR1yQ7N0eqMIo4c8ntI_WZIeQVY_bK8rOWbtR9B_6siJjKNprRecIhZYof2Q",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydgQeD0Hwj9SlI5uE0xz6KHNQzAOzexCaoR70tYyxFwEDj-gfJ8IdfA84hAI-Jr-58qxsQLbbXYCtre_asIGh2KO9tkeTRHlIQ--T6F9jo8Jyy6-6CFUdySL_by-h5Xx4fMQi1aC_vndm5OxwA2Od7sOsxWWlowJU3EDafxRZsEFJY-g6DluK2QAozt0g7zJKcCUCsFd6EsnF4Bcxw8Sq0RWhlX4yZ5TgHvSO3fq23Fam3UWMidm4Q-lNFo0doJp7DLlDiVVjM9qC-dzrH4OlJdeTWfS_o1pQUe3AyLOmDlBcmrbfui9t1BPK8VO8NjfX-Eo7mFuSrqlzcLfej8bcVD3pr9TYfHXJfwVVAeYrnIpPyw2HJE3rzsHJXFQjeHE8cwFGMPlrmITMPXG57XEzIRcAs3AFJV5iLbsP4EECQ-kcOI",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydhYy2YU_L93p9oteUjGJE9HgwsF5H_yObn9T7We9OLK5QgTi8qXfl8P0cVeK9Z5G8ulHQ-lugNNy_Sss0aVr1ZhhgFa1c--9aI-ckTxvPfPn8xkl-i9R3QXofYnkhj1gKI_CAED7sNy8x5gqXAU0d1tXX1AFKtt9Md_IHZwhUQMzVPUb6gKv_0bgDuNIJr-KULcDmg2JWqdNmg7d35RjfAIBgo452-HUSZvbZQcjQUfQi_ebQP4Mtmxo_JgZSc4S5xjVDG-qtt57gvlsGIg4sFN8DhDzX2A3E34uxfGAHukc5VTdsEliwEnTKJZsv7uUA9zTvzNnVyVr7OFu1EZfHaXjLKNMWAVIzqAtRj7bf86BxBBZlYH4MgBL8WeVnBb5RgD_I8rD0qVCVweHx-qHfKU0VtYK27AAHwKEwc6MvpT-Q",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydj9bbTE2vQiqubBEQlgXR5Kh3edcENCgsdCB4TAa68bxggCS6FgX6JU4jkTBkq85wPbGoTEDL6w0REXI7TTNHhv1usMTUDN-cu2y6qqqaWMij_8tAfqmQ__ectklgIgK5tqvjUrpfrCjsZc8u-d4UEMlRQvWA0VVG3LkcPXorXFKujxmWtGjRXK8Id4rnxOTA-wFOs8qYrruy4DqyMCJ_q-9FtHp3Fq1DjI9GTnSpqPj0slm6K243ka9kYHq6pBUKiAivtlohNA490nhBcn0Kf-US7B4fi4Zcrdw1SBjPPYyt0yl7RXQ4x6frdF2Az_bld1D_36IhoJHWppzHiLmWQtVIjlDccrJCKmQqGO2KwEJ3vQS0m-6yBRik9I9XM74hc27VlKDM4Lk_Ch3Yt0PeR7SxvcqsLwfKyBASZMctlBOA",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydj8MGl7FHoIbO5FJxAcs65isycVU0B7UEuwtB35xZLBwULJgaK1-_9wErU7oxBmbA-lRd0BwpewHqtezbc1bl74BzFHDRuvaWoVU24lyB634aLJN0Mzrkxv89pgaOx0HM4krPpBQfIi0R4Fwy2mNQ3EaR4iGCAcDMtV7z98rehvowCQaY4e_EdZXEZeVLA95RhxBooQW8iylbRZcuBelrWfnnakiWdZN3bzh_aFzmBrbOdmjpZDJ-HPsjg0BFI1P_G4WJM14If0Ig_GHnaaBEt7ud8BN8a5lLhwMh9lmcKpvZPHD57OKYYeo5-ldBOju8BqK8vINilCW4Xiw0UOVKmvQRZmR1_rusJOJ4KmOp-2oG1k2fyb95rklYe8hn5v637Wa6ncNW_MvXJtW93-Rm3OJDcNTzfBTxzzDKYnXWQ",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydjjmhidT7cU_rCCfkvQObxn9KucX8Ct3T-V3wUydhmveZp5LeYFsrEshqWctnEZrgKkcTmrIGJFwKScHUGzzoFP5FyBeVGvRollR2SXPHGYtFjv5aZQ0wJoUEQ__5PcQcfCyV4WeDNGECjXDM4R2vBNFffn5BlO6JGS7lJtzest_fCMmdxrJj9fuJsZuXfYB9KKJAy6jw1zlTeSbORdu61s38XJAe4oc1Kc4GyxyMH4irBlYN3OMrU_I42hVrcvQFk6_nYZNCSES2iMR_VRvWt6GgrcIRGjSvAzTGP3_0VIuDhEoG2XlrKPOI1k3AnPOiV3iP0yu5LIMubfb8F0id9rXgdypy0qQLjSYczoiolP-Xx5SoEwVmyH_z8g44_gAUz6oc4qa380qlcBcykNrGuKvfPAAUeSGfSK644G5Oo",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydj85zuEqgtRSbveQHXgvTLTUuEC8pW-a-5dcGEgJ3G1YbsvpY-Vmoxj_eoG6ixHPK9tqEZRmTIiGq9l0JpTPg4jUspdc7qahKyHfqVDA73-ODELVxI3CTCzoFdSqX5fUO6H8bgGH9FekZhbWti5C_X9o71RijGfTgZgycRruoWUtTWyJtnBMrFhI9KcrSozZtOcHje3zhkJdlDnfHHAA4KoKBK3iWFj6f02j4K6HDFj_EBm08Xitb0wxm8crzMS7gfXmLJ5OXW42GGbNx1KIERkKrD2lrBLkh_wO9A2JD1qKbeBlD0zQIZv3sHZn6FotbwkjLp4CMJ8-UUniE6oG_V_HfzRCkPfkduU5PKJRKZyVQleIReHgmKiiwVhIafNsyoV7xWyY4ilvwE6nKdgXzP8X9JjmXquFNmgjllhwg7u2w",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydi_bJPbylfriAWnjcO7oup1Levm18GF6c4mKjymfyNvHyEBer1SvvK3dTkc6webABY33jQLd6rfDLwE5BUAcyPtXSEQbxnDXekB1CnKkJmgmvvwCvoLHgbxiDYEszUR2X6w-WyJ3Pmnoikvqa80fw6vTwtUvvJ5cAA69kSmgpcpuwNd7quAeGhz6KCncGkKMdvONdYZrqYTfAlx15Itk9H50gvu3In-tAOCO_B7sobsuOxdcn30xjGgMJ7dECCHw3wPuJLziDMeEw3MYzfKlNYaXRAky9NffDNj7pKKeut4RpPBSPXEaYz8lGwNcf9GtJ0fZHkEydILtLSRlMxlschshCFmqKkXd8g3ULshJmJwSPEu37hRDqQgZATLMqj7V30W9lNdj2UOxQsDx2r7lF6pQgUPvGvyz0UuEJOq7fV2uDS_",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydjV96hx7BHhY_pdtyY2j3_gtVYZCvInIXplGxm8xt2e1j3dFH4TaKygHMEYcbblslNqOY9yZCmg4w2zZHL3aiT9qX7v__S6xNbwXBdMCKMY237ZyYT3OvHnr1p-sbnOn1GiEv56wYdaxVtIoiyNx03vlSsazhtkRcfAE6vXBw8n8hvm3br9MZXyK3C_h1coxM9nJoMYTqmi-08jwuh9FumZxtAsuMGrmwSVfVBVYyVXuzu8lHN1Pp9RRh2DJyo3tY1fR-jYbKJyO35B5FmAoq1QAzlWsuSa57t9uEr9Z5zgFFHAGH7B97J5tyHwbcptJtPUkGB8215vMZxAQUDouLl2A4SWidFRcZWdFOMJP8IE9FqQl9W0amVEoZBBNosF-b5pTY9swMGu8TaeuOT15XEjDDgnF23smIM-gfuA9LrqYEY",
+          "places/ChIJ5_y9mVRDXz4RsmsasDPJRU8/photos/AWCwydjz4RBXx0gSumOGzJTmgFw87xlVfOfa2ZXlN5cJDQmSFOMlwME3ydC8CR5goGHBsar66QNF0zTaBYuaFZUFoLQcHIgHdyfdTN440FFUK1-F4wNub5SU41TKb9H3z4lSaguHplklNMq6io1GdP9Q5AtL5S525XM-X50PW2pWXtM5tsX7FTPa7PzqTB82n_az2CRDF6sHmikKiEaJfpKER8c88SkeTYVDvxUibgivkVDkvsJIyGAGRsAwJXf547wHLzrpxgOnptfuNxYFovG0KOBahSfTGuZbVJ-_8vaLRBjRKEw9-Mf-8JxGzzqAT3gGNKmNyalWhpg8hlSB0VS1hl6CRl397h_hMSSfJOSLrm-KT1_zS-ETy3wHRrXd_XaeYoQsVPEV9GAUwZEW2ptmJ526sD74Uacd19jgoL7cEipClgw"
+        ],
+        "__at__": 1786803242.020048,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Riding the **Dubai Abra** is one of the most authentic experiences in the city. The traditional wooden boat offers a relaxing journey across Dubai Creek, with beautiful views of both the historic and modern parts of Dubai. It is a simple yet unforgettable way to experience the city's rich heritage.\n",
+            "author": "bledea andrei"
+          },
+          {
+            "rating": 5,
+            "text": "The Dubai Abra ride is one of the most authentic and memorable experiences you can have in the city. It is more than just a form of transportation; it is a journey through the heart of Dubai’s history.\nWhat Makes It Special:\n• Cultural Connection: The word \"Abra\" comes from the Arabic verb abara, me",
+            "author": "afreed"
+          },
+          {
+            "rating": 5,
+            "text": "I spent a wonderful evening taking an abra ride; the trip across to Deira is beautiful and incredibly affordable at only one dirham. The Abra station area is a great place to visit, with many excellent food spots nearby. It’s definitely one of the best ways to experience the city's charm on a budget",
+            "author": "Sabah Nishad"
+          },
+          {
+            "rating": 5,
+            "text": "my favorite place to visit Abra Dubai , every time I stop by or visit Dubai, to the surprise of people visiting Dubai in decades! Abra ride still charge same one UAE dirham for each side of the river, the ride itself is a treat and the bur dubai side is mesmerizing, lots of locally produced clothing",
+            "author": "Sohail Kisat"
+          },
+          {
+            "rating": 5,
+            "text": "One of the simplest and most authentic experiences in Dubai. Crossing Dubai Creek by abra offers a refreshing contrast to the skyscrapers. Just simple and functional, and deeply rooted in daily life. It’s a short ride, but it gives real context to how the city functioned before the mega-buildings.",
+            "author": "Sara Govero"
+          }
+        ]
+      },
+      "deira gold souk|dubai": {
+        "place_id": "ChIJzWDbjkNDXz4RbTVr4eR-BLw",
+        "name": "Dubai Gold Souk",
+        "address": "Dubai - Al Ras - Dubai - United Arab Emirates",
+        "rating": 4.4,
+        "review_count": 10694,
+        "price_level": null,
+        "website": "https://www.visitdubai.com/ar/places-to-visit/the-gold-souk",
+        "editorial_summary": "Marked by a wooden arch, this bustling bazaar features many stores selling dazzling gold jewellery.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.270023499999997,
+        "lng": 55.2981361,
+        "photo_refs": [
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydgR3aa6wqWo5DWbmEvgZjm38PNzNqCCF3-9u51IEvHhdmGovlH9aueSqPZi-j1oJIz1jWODTUx-t7PwrBO_k6ianjYM3OaDd1HUE6f2Z7aMxE4dQK5-ZGkPiBxAR_3tEJC90gPAq0QvhPqTrzCu_b0UK5zPIeeV6JCmjoq0I_Q0CC4TOpWfNrH7smixNBEYe89us-_Rh_9VxaN10Pgny1LckDX_lLl-lconYFCwAfR97sK_64C2WnEoV5MYrnKZJxKEpSy9fyQOojYoql8h3GbPSa9-pyEjzplRONz0iNfKSNaTU8pzoHhfDcuM15jOZxxqXXTFu4pECODsuiW1rkFlRctSqqCLRfTTBSxWVTOc0UrP9LSSNoqBCzSmKnmKgWpIRQ7ptkNkrL0nBaYgMenvqfv6GNpOTmJ8u6A-ZL0qbNCJ",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydj9vCYKrvfZ-OnGykBJTHXhMOPtBSrENy19GWayJxrAZ92Zs_j8ew3YOyNdlA7eoQqJOIQ6k50aKO1fC60jMLMs05kbOmWgVxo7guHW-JM7I-L3Lb45Os5mkGYGDQKhOLLlpOQKX85kcREGMWulyN_Fhz0ebwABUqK8RDXe89C3kc2CogdPg-ECisLEQLChQvN_o1_yYj0Bw8VNhZU1ytfyFrM2c1pap4xaJwnkxBPDeZiq1I7XVyjRzF59IdwsU3lKFpt0Can6mFVpBQDx6qKcAkoxEE4CAnRZJK0nraPmhWbeG5MUIzaNDLNW9FSDvkQYav4cdfwYxBDF0SrRs5yrCiB6TZyDlNed-JZ9fKhCCL1AzmTLHyBAoYU_XX7La-uJ7N3V30h-S96dzrgRaO1h0GMmYuvg6kdhQi2NOPrF8-V_cjGKQEtHWbSzyg",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydgewqQN-SNLzgk1E1xboK0JoA49wAlWRu0mQodmNcvqEA0FWsGcyrxB92-tqMwbbGULGEMeZIeRU3B5jqzya1M961yp90nQ9Z-S_a1YnsmzSCi8X0_8XWAGn3YcuD_r2lRZAGzglpCHFjVNNLp_YAaGAvWMZhLRqKp9_6hcJ1ubQ_e70K8yAD2Ymz9aCrtZDRxmskA03xlaXyQ8i7ZRdmhy0e7jnJ6qSj0yJB_tA8atbGEwy0nxXxusS1vLMB6WMb_Qusmsj2PBf7KpV-ouND55qYK6z5HHR2gVU5bjIxPaca5dek8d3cx60-aG-5RQqoRSNASG3r0qapPLW0LCKy7sN6k_rGgrxuyzxO0r5aUQTy0AoCIszIu9iAxFS80QKlkkQdKEb-80c_wTyi0I_ll5Jp99aavRORjopHVk01g",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydi_oi874CiGKpPLDv102hU5Bj_I3fG6ngaN-xsRKgeXCJp42pk2lPNLodvaEVMUaG-z2vwqZ8P8MN3vhPRVnWQEKV2yfkJWiaW6NWxiIRL3UFv92D72IIt0vUdpmMTZA7THkW7d1RRCGxl0qY6OGGHffINmHiajVodotz4dMn6VAF34e6cX4QUhK-QHvGrZCyBJdDrqy1fkVkXI19EOZxSY-H-PCPfFDs2_BXswAktFPFwHPIhqHxSP1cJxLdxSd8TGRueBSdPEd5xLOuQYoOzg7iRN6INkW5Qjy9_0XQPDN7ZmR4cL9KcQ8QQK6a4V0iRR6E4-XnnC40GJewoHVdYBwREdr0cpKSzlXM-xOME9b_nwB3-u49NZtgljFhKlQj3f4PVonM5b5Z_TtxT8VR_Pa4ok3jft10SZ3mQd3jiESQ",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydhJNYzqIP4TWbBWnI7jFfo0rQgYxwTu8tqVPBZlkopGGBTFuHf1SURYTUbWCEajz5IV-CLdSO6laYhctKleHfQ_Ya8xtZr5XRME_LtodRvJPEhWYmItPv98J-rz70tcXqfOk5yOKewhAxbpBZEZwLmSYS62OJc-pXl6iHHUpbKtqAVdTAwcyFT6ivLrT_XQfgaXUK8JuwZ12J-p_8ttvw2K0mCdXH3E0uAfSP5Ei0fmEuw2nc4PpswH1i1hjAY8LyZyduN4RchQ73Gwb-h31GUT31eQgTasQ1b1KR-1hvICks8prBfqhZIMy1a20FA54_giQ-rDG6uLEbf2IVkUsl-d30wfHeAitqIopl8Iht3X1IopEorTEfPjD3MUEZxn1Jezb7IdEAr3ggv7CxOqf3GH54zBi6DXIPeBx84gpOZRjMxQZ3_lMLszwAHTaX7w",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydgNc8HiupuQ2rR8Tg7Uciyu7Pwm9y0-sosf3yndflX38chn-xwRixVubn6meFEBU-Ac9k7SeYIfCecIR7riR2ss9OLHxXBLVlXkTwhmPbOnDYhWc1_AHjYxcTyJHJxDhqcAN3DF7TXUk2_7icJdfaefk9pwfxbCardXT_gyuAa3MHiAt-hdtFGIj8-0JhmKUDN1XWOCyVBMrgHVTvLCT488sf9sziEbQbqYn-A-1qbsozZKKH1nRmatZJkocPV4tomZj0t-s8654zl1QyjioxPvTjRYSb5yd0X_SIIEvwem-9iqLpj4Ujm26THHLoetUOanb4xhiRY8enkfZWoS0XvMOUeWRfkcxMlxZw1lTQj--bSY3deGOjUH3eKPE3JvuPYg002JGzTJEBNcBpfveMchxSUCx1v8Py-mWPJt1J2_E8rd",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydhoRzwjfcfgAg-PgGS6lX-SYpbnGhhU2Sabo_VQa6qlmcTxNMSgmZpKk8ZjLsHzJjFM-qFvDf-biCPESFhxOnBeLUbhAYJ2oHpZB4lKeRF4QEeMV0mAWNJDpcYIJKeuOuNBQYl3hNFXCcYnK1p07G4oXN5J1ykv1mndyhuMZfg8ozmEL9fj4qRgwr0FI2hTIq_4YSmP-6ZYSqClhx8ycfMep-kEmWzIWIRGnODtmo-YYuyPBlNYrqiNVxKEUSrGtxA6oYUPvUj7pad9uYzTfeuVdr8Hv69VWzRNIasJf17KbZPIv7QyzLDLcDJkxxW7cxXd4vwpC_bBhGg5ulYUftjKtGACs6Uc4TrkMk6_uN7SVA1UV5n1bSOPq_dzmSXaytTvOHbvRHvsYt5jBy4w6duSE2HDcu4zf757LI_htG6Y-TU",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydgIwD1m5SbVEq4dGsyV3LKvFsjNs6Lxe1LURKym-ctFXsC4RWRoJZv_BRbgDVIvsfFafokC5_fdAptBHZ2djDkDRmAjtI91uC5inLwmHw_JvWtzSgmMyTdJlMimRjdiNrZ_q-gy21Llzm6u_xNQ2XSlnJVGn5B9ZP1AG3wCDc0vn5ZW2FwKn_nLuNj3PoAeqbU1r69hMcgflc-BcsXqeACUiedjGZLxkxEJojPNfr9vRzvS8--54r1bsoSYk0xXefrqXMSuomR9yS_exfyfr750oemFRSOgYh9YfOChB55nc1I2o1-DBact5NtFKP0NU4QpLIiiv9e2nQMLWS_KxfrznWROK0mQxf0fAE5qbgJEZzH_iGx1yKzJUBpfB3TcIZV7VIC72fC9dIo8dZvm8Chy0lwKmtA2fJMrupE-PRVqv6ir",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydinABucYaKdHhn_s8C2OM1vtH7dzysNLJOWjz_cQ_gUZnbViFDeIKHNGOeBVekB5PiOgdb85pk-81RTHDYLOLha3Z2ATdVtj5Bme1iNZvWgTw3HxiGPg6p7a0cauNmZ-RGfNvmPAL-nRxpRJUcwaGrnv09WVcb6jP1m_-pyBd7ebLZ6bBRHVieL1j6FGQ4ogfadqDHbBMEymkYeRe1X9eUagFD0C91e8A9S97GhqqId4sWIcWrPcDx1fEjehbCOrchYoxPJ9uC7SfACDPPPN-Bk4wrjsrRf7Am9ePLpmut028WdxCTWLCs2X8LI_h680ylxOWAxU0w5LtH-Q7s--ixWAwyE-vUY73Exi4QnoIPLWmkVSvomCsO9_Y8uMn5tEfBNRHcqiMi49Rh_IgjsQmtKBsEVSKNPMMIkwL_H-1abaOF0",
+          "places/ChIJzWDbjkNDXz4RbTVr4eR-BLw/photos/AWCwydgY-0TFj2C9Ahc-2d8jDh1acR1rnDV9b-q8hGPX9wKQB5BNmhP9yQoHnH7-2Oe6fhQ0u4daAg09nDWipXavI7CUIh98wz5rBRTqPZQrbQEBCkRltMUILwlCoxV6eM3EcRE5afls-FAFOrjl8oUqbWB059btFbbqOAQLvsLbeBne_ui_TEPD2k5nIoppet2s4KSb2sroexWwnrZo9BLnNgU5pYNTMjrg7dBlXech8ji8rbfj6qUGzJpmNPWl2uQuA6g-NCjIAgqIEE3bZLXDDU8L6LVzs8Re9SOD8meh_PDg3L6yqEXuU7FMEw3ZAY2J_ehwC74MZTqBwWIl0aB_wDH5JrhWL9919ofsh1vnCkTWstIc_YFqwrcpGu7cseooX0jnQFJuOFsHOjBpHbVpCZL-B-14G-EkXwRlA3P9Dmz5hlNK"
+        ],
+        "__at__": 1786803242.542024,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "If you are looking to discover the magic of the Oldest Area in Dubai.. this is definitely the place to be!\n\nAlso great place to find Gold Options for investment of personal use, abayas and spices will be another extra local purchase you can do during this visit.. highly recommend 🌎",
+            "author": "Heidy Villacreses"
+          },
+          {
+            "rating": 5,
+            "text": "Visited the famous Dubai Gold Souk during my 2023 visit and it was truly an overwhelming experience to see so many gold shops and stunning jewellery designs all in one place. The entire area shines with gold and gives a completely different vibe that you rarely get to see anywhere else.\n\nWhile visit",
+            "author": "Officially Tintin"
+          },
+          {
+            "rating": 4,
+            "text": "Dubai Gold Souk is one of the oldest traditional markets in the Emirates. It is home to more than 380 merchants. There are many excellent goldsmiths, spice sellers and other beautiful delicacies. We were transported to the market from the other side of the sea channel. We rode in fast traditional bo",
+            "author": "Bogdan Marcelan"
+          },
+          {
+            "rating": 5,
+            "text": "It offers a stunning variety of gold jewelry, from traditional to modern designs, all at competitive prices. The atmosphere is vibrant and authentic, giving a glimpse into Dubai’s rich trading culture. Even if you’re not shopping, it’s a great place to walk around and experience the charm of old Dub",
+            "author": "Ruqeiya zainab"
+          },
+          {
+            "rating": 5,
+            "text": "Dubai Gold Souk is a fascinating place full of sparkle and culture. You can find an amazing variety of gold, diamonds, and traditional jewelry with beautiful craftsmanship. The atmosphere is lively and full of energy, especially in the evenings. It’s fun to walk around, explore, and bargain a bit. A",
+            "author": "Shehan Akalanka"
+          }
+        ]
+      },
+      "desert safari|dubai": {
+        "place_id": "ChIJpT0wHmRpXz4Rz1eTeQiBsFQ",
+        "name": "Desert Safari Tours Dubai",
+        "address": "Room#409 A,4the floor,Al Firoshi Building,Salahuddin Road - Al Qouz Fourth - Al Quoz - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 1394,
+        "price_level": null,
+        "website": "http://www.desertsafaritours.com/",
+        "editorial_summary": "",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.1514047,
+        "lng": 55.250782,
+        "photo_refs": [
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydiA4XZyqZsg_1fwkmqMm2Cwcywk9Dr6-sCy7ViX6GoZdcb013vx-WsbPWHAYO4hzW2gi7VIss5Bx8_-fg3U-aNwMQO5EHZGuTqEB7jhbusj94n4aaBU-3cPm-lwx0G68GO6A4qKVWCcyMg7Hiq0MKff8Kf3l0w-3-0a_VlKaUQ4udXSZKBFeVq_ZF050KOXnLAQ2ExEL-aUGL916hp39HwtHmhAnsEtwhZHLSep-FTcCF5nNTjTP8-pXrR_KpLg-Rdr1Y0hvS6zVbd3R7Uf5f2ntt2TN4lZKRcxFrzPdkDjYlR1eKuhmbiLJ95_UQ8sEAxR9VIbSy-565Pm3eggyInC3gnpQL2YUEmKoxpCvsDW5KkG39tBQhrmmVf66FXjzKG9ACbmsPgc6hnfXN-qY5jm2dgMA6sUYdrrd8OBQN65Og",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydjSIv-sFh6l3KCp0JSy_GKhiZ5Gvp0QHxgZ3oojII3pEA2EDF5w8GQuUlxEpLJjNk1hHIhDPjlTlwE8QxOVJzvYpik5zq5h2EXGVXGmIdWUic0ny9uy6MPnBg_aPO_opUIUQMatyJQCJA3HKQouV8wMwSEYJn4cgw9zXDhAj7caAfsvLnkHf7Y0gyMJvOKrp5wITsk1Sz-z8zaDixWTcJCBybP3PN6buA3kvYDHlSUvE55kUm99Q2seCvQk1shpCx5WtIlifiyZBWXFqOsYkQniaewBQffq3_owHDuEJC76tf8hLOExia_SkolnCTjKX9Wd3aQuwhHS1yG-2yOhZcM-UAFs_2p7SyO6K4IZTlvkCRA05c81hlXBkjGWpFbGve5QFwuPJ-EzH-jkTXyG7i7KcP0vlkZICQ_-fsLc6_Nsqm1qG5SBlZ9ovRm5Yg",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydhULEKhRTY7AfTu5RIqiDcbg5-DXSj5jejWrpkd8Cv-YYTHvWi8MQ-gfMtzZ1H_Z6n4wzh8oXhQGMW0heoKOL8YiqIDpwEWmmcJVQMpa4tBjeDxJ6BkQsrixMxNr0SN9qBQprsSu_LXAx3rXBiCq7XIztg8T7WsfMghvc5Y0SleFp0P5zigviaBzzqP4D4G9n_e3xVU8M2L1tRIZshK67UKRJ-CdD8CuiTazX26MRuVmyFwFBlDk6m2KFhp6XCulEUXhr5RYXZDkabRHqObcOJTUhIAfOYLOklKhAtLhWKADg8-w_JoW3MlcQU2gfQ2nGCMxwmGanUzd0fxyw2FVKBR75UjGNZ3E_vfSROejh8cQuCvb-DNje5dmTTN3T6uAmh9JuNEgKVjpTAVFYULtbEOVcL8NB3gx4Dx-_fv3dYKgJWKQm1ntWfxVxhFKaR6",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydhlk9mrSce1ivjBatvtSD7muZX925ttY81UBpJBLwpGVU7WdVO9IYkAfKUEn-tZlT45D2ef14HJaq5RHS7laDzFtODBDTbaSw4Jc6S3SNMDjAnjrx8FF-rsRNOxxbet82slP0KW6Rxbo-amdZ-91kc9w5plEh4ej0Cejyvm56TQPXZtJq62weyvNh47MAIQn_M0pHfqPZtkYyTmiUjNTSccvvhwagk9AV_6bH0sdiqDyBy6cd_ZFlafsvTBAFVBtRAp7scL1LYE2YpuSXo85AwF0M5VgpSt_V5uWB67jItMcKii1WbwzEVYD2CyPGT5o6DfBsZVYlYBYLGmPmqeYBL0sc-n_0xHzO_HHS7wPZ5e2B7DfcyU9iRKQ-QOIMHQz8_S_NZWbrXZyBpfNeDKUlxG9biBWzX13itA5hYh-5PEAAuYyGCn5OGjYy1BWTIJ",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydiocZDb6rKFG_ORscjEzNHH2i1WBNu0tnxfUnLnIgpbNvN7f9pH-VhqM2Q8qrlTOjqmOV6QLTrR9aN7XMTLOD-V1JcYkDjtYSqZIDW9C8deW1WsuLMpIgKzq0qF395VraP_VsPmPXt-qnSe_rrWTHl0KlzpprbiUOdtW-7CINkkaTzRdFcRZ3Og3MI3k-QhoG2gVs5L4xEztsAe2ZaaE7ret93lxmWe9qJMJwSWkt_2SPSbItsYLcI_E0ACooysjqO2AQzvGKqweifiIusMmIeOCDrRKnzXE3KaODDsgQvODn7feQHKxbjLfua8ZOFg7DZc2XtSRl-HSBwHx3saXuOqv7gqqlqR6IbXYkAVK8TaG0mfdU_L7AdN2KPo__r9TejtOi-elVDDOmI_JKsHp61SEz2yn8-3LfkA5wLzNqFYRK6YqfOLriyBYD8GLEmR",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydg7Aou3bZzll4WDFkLvTm8gkFdCpixt0-Pt-qLpxt3NPIBmeZROtOnQ2qvDlh2vTUJa8rkeHqTsDVY2p4GKwgWh1Hta4IDzS17a3VM-AvhcznugMGhcdkI1R8Z5QD0RNBKeF0zN1cMGuoBmfRSYrkvNuk8cDVofCKsg11tFDG10Jp1U2ouR4D2aFGiwoSCFCts-ZE_0fg88Q8x21OfLYHcq8dcapxGFW4_4pYHvuyzANhDFjTBqmYosT5-q2rXU3830ZLKvTHcP_wiqc1O1kdPLjyyZyL8-MnMYcun-GaksgCwyD7bf3KIzZ7V1GaRzgBw1UPmtkDjXMU4kWljY2XqIL-Z4r57_68mZHEcgipf3b7zETJH1IGHnFnlr0L_-mwIMfuyRb1pMr9LJJ_IN4LMTddjAyaPOCDOfwuKEIWb3MlqABO-4UJkhA9GbVbBp",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydiN8-H0D4QLmPqxlsgqY6lokjd8qDo7l4KbCaGhWBV7ssfuCZMfTMfzyV7kl72ssmquIP5bILNQjtVG6L1Vd1_QVLCwXIohrnQ3GHBIsMIsjmOb96m3KzV3NPs9bUglbqJBTpcfPBJ23KkfSKiKbS9CTNnWa2q771nI-Rs6xnL9sKcO5FkRGnMbmYzBnj9hPnemAWmlfyfe_vD5q-m-btKEIOqZckcZTRG7zbspj7JW0kUOlOJZKSdrBehebQuttgNoKHPwMEeJHaooMjiWFH1hk_XkYtfXLDRKIzOwi996BkCvHMTy84MdF2sBrTOb4nWDGUd4wNxcJF56UnGOrHjk9t6woEE1Buo2hOJlG7g27mf_blX0S_DYpyIqnPaJbN_FRiHFN9_ReVrz5P8mpXSmAkWbzrYKK_TkkdcwRC44Ap6G2xVshVIeMz-R-g",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydjRvAGDNbbWF3gzmoDS7IueNDHvVkxayXQ6lWyYUmZnuPvHMKiSUg8dQaZaQTKFsGByv_9r7Eq-qPh5ZWFUkfYdvNd1yCAuuxjRAELpLbLbCaFLelfhQAYiNRS7BxnkQoAcWLY8mZkytrhqdj5yU6aQbDQ1A2x2xgPx4r1l5_tvf-J8ip1GNTAgFb1xFIhQF8FmX612_Skk3cpNS7MwGQTFlLDU5nG0YMJ6om6kq9saWQHxsbEuKR1z4eIaUGVQtR3PWjioNaQMuwq6LrBDDdr-KYb6lTuIQhrn7pZLBZ-sRz0zfPvV34TsqbxbH0tRR6hvumEaTrHwgGRMcO37aA_quaBSVXtM8JwFAPsR7WBXyeRaL4TgNx_tLzu4uwy8LtqfqV1AwSauVXvDa7UCZzdx6AT8l-R0IDMj9qBqGIOZhQycIWa7B2mHl-FeRKMZ",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydjcrusyLoT0AgklKET5gkmue866c6Fa9bcFE0GRq0DluKgEYnx_GifUuZDeIWHv1Vfeoy4-BciOyTiGnG_Bwew1hiZBl1nqqrSy4qms0iiG2YaoiAGlplV3z8uj1WFbRhbWOrdjHTaRs-oll7SQUG_cjLje9U2IF-biXVIP2ago_DhxBgh__4-lzmSCK1E-zW8ZIXaPZgEnnVji4DMI9re6b6ODISDdhgahxT1T-gAXXRgxG4yjugr4mwpIvxHAJYljsPw1JY1EHwioApbRZsRk7fQdEVh5coONeR5p2AhOl6a6IlGSjLeUsCBQyS1jvFe1NnSX807zp7XWr0lwhQoOpparHl55JhpFTiao3jX6udS6QeXbuupjRLlR-OnlkOAFZ4ymnHTcdsbCUiI27fuBkgqrRMzTrq0P-wCjuuDTWYxGR4q8X_BsL6UFJ9tt",
+          "places/ChIJpT0wHmRpXz4Rz1eTeQiBsFQ/photos/AWCwydgJow27EQwKBRSKulvcqvVgXcLrpqsqyho-3JqrRlfGWk8rlGoLM6Cr4tLvCvZZqvSo8RcbE_-JTBz0JNemcbPA50tCuqnPb-S8an7CfqNydnGKMVmGNLnVCc2mKzXRqgNCWGvg84Ec7dNj58FkquxnMz4XWHxufo2FJnVKbYt3PwbYp2J_8jE_XUr-iivNYr1OJEVjMqGiloUJauKBiG7h2vojBbKIvFi_jnvXJMdWhxS_VwjKgkgWCm4kwgQb6fjwtSgcwxrJAqv2ZSAHp5_PcAOM9elnJxI13KJzeO8jnUMokd3RNYYOxSuCKNtr8YL0bsQgZ2q5viLZfGfy168GFUbZJnVTkWUTj1ACZAJhU66M1K1SAlHsEaWsbIpdIyi-7N6_3u8VDqDeakhVqy6EPIwrjgNCceyjbxhB9eqW8RTwwRdJ45o7Lsgov2Jh"
+        ],
+        "__at__": 1786803243.3369641,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "We had an incredible experience on our desert safari and it was all thanks to our amazing guide Sunil. Since we were traveling with an infant we were a bit nervous but Sunil went above and beyond to make us feel safe. He adjusted the dune bashing to a moderate level to ensure the baby was comfortabl",
+            "author": "Jay Suthar"
+          },
+          {
+            "rating": 5,
+            "text": "No word to describe today….a great experience where we had a great time all thanks to Desert safari tours and our driver sadan where we opted for the evening desert safari with barbeque dinner package and had an unbelievable time sepcially during the drive there and all thanks to our driver sadan ag",
+            "author": "ReVoxz"
+          },
+          {
+            "rating": 5,
+            "text": "An amazing desert safari experience made even better by our guide professional, caring, and great with families.\nHe ensured our infant was comfortable while still making the trip exciting for everyone.\nBeautiful camp, fun activities, and unforgettable memories\nhighly recommended!",
+            "author": "Muhammad Luqman Hakeem"
+          },
+          {
+            "rating": 5,
+            "text": "⭐️⭐️⭐️⭐️⭐️ Amazing Desert Safari – Highly Recommended!\n\nI had an incredible experience with Desert Safari Tours. From the moment we were picked up, everything was smooth, professional, and super enjoyable. Our guide (Sadan) was friendly, experienced, and made the whole trip feel safe and fun.\n\nThe d",
+            "author": "Sina Hatami"
+          },
+          {
+            "rating": 5,
+            "text": "Desert Safari is the best!!  The tour was amazing!  Our driver was the best we've ever had.  He knew exactly where to go, how to take good care of us and explained everything, every step of the way!  Thanks to Desert Safari for a memorable experience.  Can't wait to do again.  Oh and try the persona",
+            "author": "D P"
+          }
+        ]
+      },
+      "dubai marina walk|dubai": {
+        "place_id": "ChIJX47nvlBrXz4RVW5QiQ0Xvjw",
+        "name": "Dubai Marina Walk",
+        "address": "Dubai Marina Walk - 34JR+64M - دبي مارينا - دبي - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 28608,
+        "price_level": null,
+        "website": "https://www.emaar.com/en/our-communities/dubai-marina?utm_source=google&utm_campaign=local_search&utm_medium=organic",
+        "editorial_summary": "7km palm-lined waterfront walkway dotted with global cafes, food outlets and restaurants.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.085563999999998,
+        "lng": 55.147801099999995,
+        "photo_refs": [
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydimFqveicM-nCAkIhBVYcKbkipYjpJAc97PtgTwT3XUyPNPu4Ooe2DjHJM0cz9Kkre1Zc8UrrTDeWFIpWEGTZ_kMHifsZLaQnDtKvNY7JlDd5O9I3W9VXIkB0gLMwKBoK_leLpfYXu8M-2srMKXp8VxWLvuAmsYqncHJ5zB0wumnzxT7EnV8OTkkKcq4hV7fn5CSrUSQod_JJdrNiihLFxIQ-1XHIoCLTwaTO-fZVxh8kscHRzymFygl-wv2fYcnlpD6jOE74QYYKFZmHicgVZOM9wwJwJeNvASS5GsgjMrvkqyvUL9VH5tzBoax1gpRbUReaU4-y9LvuRCzxmM9ndYek4eLHT1JIF6S67X3ZEvle8RJRnVNfudJ0sDNyc-3eV_KGRyj9gTmzvrcHoPKutOa50mYbm2Z34D6mGJE--tDw",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydiSwW4Krx4onRQvy8jssDWtP6Qm48RJcEerNV2c5--1F4maBx4qDuLeyC6tP_2rxRdWapaXCRdvxxiiEktL8hIlMqVIV9iqsMZePB5zj96DOFQXIdlziofbTHMQMmhtEO3G6FmbIx9uXNrZVdO3Fg6JsUadwqvi_SkNbD0pBMg_pINj4XCZpN6DIjEyycDijCDjnVlLHb6idRQdtYvg8KXugtSyvcxMfKmz3tkkjMl3b_8lXj_BNvtPCzdCftNQwZwFdKBuDG34zfE71nrTsW3m1igRU2Dp_DlvOuDAKWbemhyPfKJamm3vt0t9dKdfdni91x7eSTLr9wg40NKgKR-WFXXgqJiZQ8ZFk2OTaVyewHb2_HuRYDSDstsfbsLPqYhL0qrf3OMa85dh8ZAiOFBCrbyBTTnhlCnk9TVD-KrCgQMv",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydhnwNzfLWygkMu3QDrNp7KmaWBOR_rKo8lNyFJaV5cRO0WZvhbF93zES_FPYTS08Rq7KK-Th_5wzL8jNlLxrt6yxPM-Feu-BU5JOypOqZkN00iFUdEjjPdh2z57D0kwEEHFAUAVS0q84sql003IWrUR8xOzpuqry36He6xRPdmJYUwEX81tRG_uyhtdQHuFA6ZVZBWPkOhDEbqfDhQuFLxG5HNPC24XjCwMaVDC50fn5QJvTzVg_-eaOnS_QzaBjCDY2u5461TlMbByKo52ZAMle5F1MLRGGJRpKiiTZ_HyEboA2cwoIQ6BBYozVR28hbvZpfhx_PH0jmXwzGd-TI6liaurhv5_6xBals2Ne_mJ-wn1s2jHr1Qml4Om928UZ5GMKT_Gdvv-i7B1MdpPojA7f85nHUtGnsHE11mq8TZ6_yfN",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydhgMaAkb0t4n3L8m0m6h2bTi9ozuq4mhHOi-lWc6CZydA5hgtsTDEawpyzosEu-sPgbZWcq-s0Qw1j9Gvg0NcQBNtBAGb4t_c8pIdJoLhMKuisSboOS2FN33RdsOkwsrMIp6ic82Tst8u249VFAtEn8AwDnO21ICqbJI6HDM3HaYC7JC6dl0D_cfC2Es1Lmp5_8Arz4sLVDicip7LlOFanUQrIosroc4zgEZddSTGQDzVgvLlG7wNH-IMrIgr9xMI4OHNszwgfXbNbfhBhGhQMV2CVwe-gRXVtjUVlmTiLrtRlfVgwDHMFSHOSajeNxrZ9zvITQd5FjqSGWBrAO37GSFhwhhOGXb_xjfzTBKfJKsNbVCHKONlKClSl6jeXw8uJIUbc7g7xIYCJA7kC9Wm_au1Ejpbo2pIVdJnJxadxPprVEFz2Y4K79hhraJQ",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydjuCvp6Z51zY8YZyMb4HPncHGkyFVLEYztYadC0B7BmolQOSrX6dZtQTVJMpWptYNemRlBr9I58aLmxMSBxv9wyOViKaImVOG2egsV-ygoHP7RcwbyQuxEni3ByBS2VFixXkLyyUEYqAWi-wfSpI5yD_F4QVFbd9Hxm0zbDZ3dIvP0y4Ln_0kCjQP2ACr9gH7Bfb2vQGyuiftaSbnONIj9YoJQuRWy43qME_5YhKtmkut7gek1YXwdF_nu3Ux7sXG-2lL0aiO2okFR3MOmEqrg5hgV7IGm25tNdio08bJLDilq097U81rZC9OtVB_fdloNdXwrAwywXD8nJVrlx8U-Twe-ZGMp9yNASoydULV-NGTEjVH2LILwjQjFM4-GGFPQBqkrNUliX2m9dEz9DKvB_gXu5XHAuPiJctOutGIqcvA",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydhS0qNJ4McP8Z2OyAcVk9kYgQZYu2aYCqHAZ7Jz1tdm4_l8VjLNktRfTSFdTSNk0nRL_-uA0fH032C6wwMGXqbvtvFa0W0Iwgrp01Jo1KPw4mIvQmQzqvdJ8S_ndL5aWfJTYpncJG6v3egej040m_czcUM2K75wIKnWx-DVQtg9X84pWEcJNJ_Q069Th6EIcNZruSr-YJw2kLLuUweOG2bSgeam3DvpREA-_cPiHo6JWQul7so_iarSObiyvJR59Ch6B-za9ZbtOadHBZV4C_Mpg-e9v_nzkoSPh55xZD_aUo-WpstohK-bNNlYvdQwjUO3hOkYocVL5GJdznXlHTP_AX1W3Msy-ZHIr-jp8dRyLGAQlfJn81cO5YWvMRYBqAa4_CrgR4W2lq5k5cekekDxUIp1hFVWQeJiDu5K9hQ",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydhl3-TWV8KmTT7gzFcjAgSbBXv3CMnJzTFAWLUiOIEJ9N1nNUiSI4Ua1AVCCW_Ot8FapwbEQO28noqsMIp9-q3K5eCT1NHABC3_WCf6TQKHL48L9HcXdCGuLE7H8Dmt96d0LKkjjRT2ifoa3dvPJXg7B-r-DLcUsn_-Vn1IYnKLgs80Q_GedD2Jyq_iP3RGyHxzoqolA0FqxZ6M-Ij95vuf6_xDywZgAjanlBMHv7sZlmY0ZbW-o84ZtuK0D2dpBEUK_HFcWKxDcJvVjb4b1RIxpU1p0KqIn9PUob9K87a2EG_KD-Aw_RgZEjnaurVhvN8ags-K2D2bC8gvcP89-GppoQraxAXaove3VgjrZLIooJw3QhzZl4FbZT0NrvwbdmsFtjnT0IvykuXIgehP5Yld4wcPM_qYEQoElt-h3Og",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydiuRZ8i6DHjzDMV01JWeeg9hpQvh_q9mrixR4jUZSMUieV-8U5gbGoPU705zoPrSulNSdGicLMgQOL7rSalDlskEXx9wqxtexGjZNS4EX_-l-HXeRXS89SGIIsnCCQwIrDfyaJD8wzCmhZcTYuzR9iUYFM-poBNnt2_8M--ZI1PYUxAbYlWWgBb4E5galuQL7tJfcqKDeGmUVepDLQbbk57W_r5lQIq4eAlcHFcO7h9k6bGospRJHLyyHjka7D2rwwDqwgp03e6rQDWwFpoEiiY8h__R0EKfLoXfkgYYPak5NmP6RTEtrzz84Zd8fAQeomshnO9ViE3rCSc-ohPB8zyjMm32jHveCgONW7NPQbsDS5Qnq21bHcikVCV1IvlnJ_JyJ-0lOe_PQxN2hkzL06sEKSzhFFiFhbCqMSX0pvr1pbh",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydggWJEzgZoA8G_dPBuoeb2gR0ZRwQ8cx4bm0WV0KYkF2h37XabUg0dPc7Dm4xVRQVLzhffwcgXsnlt0muLxtQ6PyLxAI1j6pb-pzAbdNEkuaJ7zfMdHns6ZQuSUg6sAsl7xQ_124YIS2voasoyJreM9c9cii3I87j6ZOy9Uq97h2tDqZ1aNnc-0UFTtwLemSz9P4M6XvzqLVSpaPNoRF0AZWB7DJtYJ-wW_ibJ8yKx-8wzUbljTLJoksuwJnreJNp7vijOETbv6l2HZWO_6aRNhTarpJArDy2wWpwtA9o9399ByTFiu6k8kJLFlWn3CejS0N7WvzWGncuQu3PdKNxOXnEtMT1l-c9cE5suVl4uZibabPSmm1F7p1C26F64cJKHFrq0loLYCR8bP8dx_D7qoWuaB5F3QTw352XlClN4",
+          "places/ChIJX47nvlBrXz4RVW5QiQ0Xvjw/photos/AWCwydjH6NO7_m6085gA7fhooyAWq-yh9-K8jHEWBO8ROqHxTSKpuhsz2Js21bEKZc3kjA4jzr_flYuf3kdVvDg82OfY6zHfKfc3eVkoUmF6aFcONE2SxbcOPg2eQfDKtlrECYQQmGjn7s_OyM692hPq3BS7Mrm-P2wyZCIUSel2HNRM1W0tAZweZKfeeUQDczmhZfqEPYnnsQ9DBKwWoGEHo5TDn6-oJe80Zcp-NiHOV2rbEip9XN0yLC11ItSoUpLYu4F8v364OSxptsoMLj_y6f3CEIU1YtpbBTU3QCnK54PWTVb0Nc7IoCOr48I3cnoOHNYnSJP-jrNFkg-XowxLxbLS6EaO3OX07tAvluSnYCgWBOvax_umzCJluVt2ZwzUHXXu2opmyZ8snJG0biPRwK1gL1Jz9F6PyeLa9379KflscQTg"
+        ],
+        "__at__": 1786803244.0543418,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Beautiful location, filled with sights, restaurants and shopping. The people are friendly and helpful. Enjoy a casual stroll along the promenade take sight of the breathtaking yachts lined up in the marina. The marina is bigger than expected so ensure you sit back and relax for a while in one of the",
+            "author": "lee jones"
+          },
+          {
+            "rating": 5,
+            "text": "Visiting Dubai Marina Walk was an absolutely spectacular experience and one of the most impressive places in Dubai.\nThe atmosphere is vibrant, modern, and full of energy. Walking along the waterfront surrounded by luxury yachts, futuristic skyscrapers, restaurants, and cafés creates an unforgettable",
+            "author": "marcos contreras"
+          },
+          {
+            "rating": 5,
+            "text": "Dubai Marina Walk has become one of my favorite locations for both work and relaxation. It offers a unique lifestyle that strikes an ideal balance between productivity and leisure.\n\nThe atmosphere is consistently inspiring and lively, yet remains calm enough to allow for deep focus. I often find mys",
+            "author": "Multi Vitamins"
+          },
+          {
+            "rating": 5,
+            "text": "Hello happy people. Today we are in the largest city in the United Arab Emirates, namely Dubai. The city has many attractions that are worth visiting. One of these places is “Dubai Marina Walk”. This is one of the most popular coastal promenades in Dubai. It is about 7 km long pedestrian promenade t",
+            "author": "Kaloyan Blagoev"
+          },
+          {
+            "rating": 5,
+            "text": "Dubai Marina Walk is one of the places I come to the most, especially when I want to spend quality time alone while working. The atmosphere here is always amazing — lively, inspiring, yet calm enough to focus. I love coming on my own, finding a small restaurant or a cozy café, ordering a shisha, and",
+            "author": "VIEW BUILDER"
+          }
+        ]
+      },
+      "palm jumeirah|dubai": {
+        "place_id": "ChIJFTtlwikVXz4RFj5Kdq68yj0",
+        "name": "Palm Jumeirah",
+        "address": "Palm Jumeirah - Nakhlat Jumeira - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 7113,
+        "price_level": null,
+        "website": "",
+        "editorial_summary": "Artificial, palm tree–shaped island featuring high-end hotels & apartment towers, plus beach clubs.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.1124317,
+        "lng": 55.138977999999994,
+        "photo_refs": [
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydiW8T0HkxJs-z_tIqFjDz_Qs-diSAHcP_p-q-0MKWDh_F8x8bT4KHggTglzVzBsM0bAv3Zi_DYIR9V0ID6QiSJiUEK88OrDcFbCijx5ImgIBZbuHtvTvbr31qVpgqZFUNIOIKV87RH_9fPsF_BJwl4NXFm5-IZHSNmMGEDhrFMSzRc_dfKnPEAmtFoQSYyyykNH0ZcE40EXHrx7tnKTHQDqTMHoq_IM3h1LwZHe1295LixUC-KgGrTrcdu-XpNbP2SYyl8p5TBJGTmaEvFNPQ7iNH2kCdaEnoEfNxU4PX3d7bvyMYnAyaXF7f50WIsJJ6Ygc75CVRNGxWLD2LkSmCHOtc8Rf0mwpUNxcrX-usCt6rN3pgx7RvknQb7fEvd_efgVY90Z9jVjr01G2ED-h5SaP1FmMPf1XW_6TzPm0-OaADQ",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydh4JtgME6loOK_pXHocQ2nsnvTS-9BP0HKO1JFSRBf2oQ30X9K8WB6cvhZvKiqHMMnMQ3GB9Xg1wkJy2e3tBMO3keYCnflrJbw6UHVKgrPQRqMMnwA62hr3bM1xwzcJF8XO_4NcOcgTLFNA8xwyM0zEDat44A2EitggfPncaLTuDlVy8JPi6_NOar9tcmhdD9OjqCfiSV4XShv-eIKSzrWnW2RVSDbT_j5v3MTB6EPALUnZ1s5Ba9aBcFuHHWebM1JvBSYqKB326SoScrxmosYySCU7TTCGC5-t5UspQilgYKDogdhBMMclHKWKMSBSlLWDJinuNwwUxqEPH5k5sK9Q-j302GzK7T7VU0A7nLPEIOQKYzsSBIUkUAnsl0YNx53TjgEdXqiKAwdwrbUKW0W8YfD1ylyatp5Xd6hLsfuM2A",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydjxaWMjV8YClBwHN4U-0kAJ7LlLsgXB3q3AhU9dpGONqQo4wJZp6FbRIB-IhIEQpJDumhHh0g5p4HtS8gzn6W6bBQXKcAv3OzT1SqO--47znaAReIX-HmvCcl4z18dEDQD-0_d4qHMuxSCYMQIQL0qBwY7KXyTXgX7qGoInQbuEjOpvcUqg6Fp4NR3wsS9WTGeD82V7hxVb2w1cky8H_H-K3D96ihME_wWsuIJOW0rkmpmY7bsFnrBra8N1ErGFZl2w2GI8QKJN9j-wfjP1pPRPBWGzw2r6H20y-BPq1cX10nyz0MMZJOjW1IVpTZweMpapV8fTMHvt-2oUdaVdjFyW6Y5gM7KxXp93dn1NdCpT74EOV2oI_svTjN_YAfCASFFkXDlDyDNRwE2CHsZHyrCXcrZIPJdbMvVTGLAk4DTPuBQy",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydiIkX6jfAP8Nfk1-tK-5yibRIP1faU8b-Qgy1lSRnF-t8J6X3j9j_zaBYynb6fn4xehTCDcEKw_EnsyveXUug5lNTAHM3Xuk-djGpE2ohaKZCErmiRvhFIj2Rz1JlM8zH7XCEDlVG--0u3o4Dy0yy36BpWrt04u_6RjAhQ3tF_QFtx6lGXPc1dZjbrGAfa15GTBCPqiiMc-oLg-s9y2eDa1ousRHkfcYlnYDd85dYi4ikcd7ibGB9RqZjbQDpRHT8qG8yapMCVvrpbdyHpEg4QklhcNNnM87HQrqHn7HdldGESPtQVCMW9Mq0TePlISZ0pT85x6wPd19oJT-2099r26TidSVOmevSrEWjb4BXHuAKi12y_i6npoWE2FtAoWtj3UEg2neRKVosEMDLDNnaYXRlTj-YGfjxYhotQPOqLY1A",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydhAtnZx09ve0S6BvImKSxUpS0HY-RUvUZz889UAVkK0CovalAhR4AtkzQwI5OevimX-1ieKRIz1GLAgX-XP8_ezHpVBpIj9PZqlgG9WItisHsTdNErzuycjckK9zHabvRdIcSQ9RdCdgQz-3frSQ3NosqRStdUYm5jG81jUARm2vFtuKzroAL2rbZi2UnrqWhzBOeJJgMsS78gVxjrMJh1dSyIZye3zPJMT8NAtbRm1ORfDpioY0zvn75RYKsJnVnzz86-1JUBLocolUsmUe13H0dzNg6x19oMG-q1JkyXqN1fmwE0cmW6PeRNg8_6vFe2E66kIsiMsm08xNX-uMqSRgHOGORlUx-WH1-jyDsmYDZDDC8V1LrYFTmJ6T83J9frOgKxGV1PVgAvnc1zpsGu19JYJfMTI54mjTla1UVdGWwsNWxf5faj32VFYKqg1",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydiGatyVgbwcVJ65n3Y5RMwu8idkhvlQQNsuMsxAFCXborQ3_qJmHPuJ6FhcCydwbcHgC5PCb7umBPyMKLCyOCl8KYGFgvqGrOfY1Yq85X2HF7dC5WCNaN62w79nVj1gv0Ud4X1l7FYePALrkBiER4YDURHmXXy3RAmAe2sZO4U0La8BTAPyrl4ZJQ0sBqHjGgyeCqu_C00GAMEvzO4le3Iv1bnW68-7LkKDKqR_eABEjMxnzQz-KbzCVmTbcLC9vJ3zEZjVaMGTo6EkVMkdNdN5nwwZMAHOqmkGFTQq0MgUQnWCh378KQ3rhwCfNsh-PaihqFspQGfQzQy3JdM__ZuoC6T-0ZKJ_-tXYa9rsWKMGY-8i0oELhCwwUDMvb0IvyFtu-A-VcCllooc4OcDcdZLEb5DXQpJtqWadK_ZPKNENw",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydhRP1mUthK7q-Zz5OSSrYA8wp-xtiQ2spTJyak33xdMY3CM0DXf9_vJWUe12Zpa8fa4gkxOYThysJ_wklR0O0vAJw7KUBmwOo4VdY8rvFl5vCqyAPPwWynzf3xnjXJGakaKWP_fTtCytqk4GF9RwiGSCHwhMvaqZr33exU8xJ61alHt8yG_HwqeT1-tIpe3kOfob4xD5qFi1R-TPdWRf8lpqz7DR7VdOHDNCr8eUkLyDUmRKOukKHaO9NlEkkR3sbcuyjLzA8SqR_YLb4EZpzyajKmZAHbPB-edUgEe3vAMECzeWT0c0gz8sHJ003ywji31ZpG4CtL34ATjmOGt4cbvyo5ZAnVq4BeS6kRKUpYEOPVZJ_Bs9HaR3d2hkV80RqpJkmAJQMKDOs5EXsfP6lUrLVOQrX5mq3j0kSVU43zf8Q",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydidkkU4KwMEi702emxkmeyuAee428xo9-pmZgu80EIYF92OwRTAqXahwQsYpHUScz_h6r2_NFlcMe2TWecQ2OjiqzlsyZ7_V3Wn9ovJm1Q_ADi00cSEL4TVT7WZI_ei9XwTy6Bs1EQzkk8iSY9bs9ckLUVb-LP6Ol9rEtGApZWDvLTECCloNn58XPVIocEIwpG-nKIpuBjADLzP0BnXPj68yvi4OyiaXAfoXzxQB2_7Z6k0tPU-ZTlhVpQ2ZBTAgiBCyXcKVr6LmcuhGyM6ShAQkzDOigBs-gXuJKMEXa4Yae2rtWDzdHyQ0N6ARG-M0JJvRMCFIs5zuBFLrKIZgdUiuflCNOU4_ZRiVhk0ZmKEXSXBth2qns5K15otL3s0KTu5imi7ir4W6b5pjfvBgEcjJMddL4fiUyVU1a-jMPc0Xyf9",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydh_VNLvVaEP4kewCGyo_mXfHxQl3g5c36TN2sY5kCTPfDjPHzvYYDcd0AFM2JtJfboPAGBomCt46h9eL9PhpuIaWfiDX3iTnvPFVoX4lgvG1d83-nJ2_JyMXFuCYRZKfGhWPZZ0GDi6yXT8yzOvBvGfFwBXe60Wd8mlZUeF1tBrt1EUN-ZFIfHnxOYWNRiumcs51pCjGAUJjwklSzab1cIcOzeSpiOqc9c2naMbzWHug28T90eBPvg65CPxZ5r_oAHDvcWTcVQeqjUYdQn8FrppcMsfWbbfrZ22A4t8lC3YlSeCR8raJCvqbBsnNtvCQLV79wbBkt1bfYlsX00qODn84eUcHDJP2GYXPEIMM5wgm7O2eI5uY2R5jrKPCKx8YVzJ1qbYDyw1lK5gZik3sqgnYLQDFZxM4yyAJKwtoAGQYsXi",
+          "places/ChIJFTtlwikVXz4RFj5Kdq68yj0/photos/AWCwydhOqhOe3F9bwmURWGgMoZyiqofW8xgd7TWwq8RzJwThuiqEmLi4uwdogZL4E4FiQn3P1q_B8dnsljS6Luo5j0W-r6pqSLU_U7uIeGO_xXCqYfYrtJC1xWBi4wsi8b7_IYSKqlk9zQEfKDD2KGqv_lad5c-OwA4hxR0a6ltGMMGG9jsPNV32vSDfLamPgU5NxC2t54S4ByjPm7z7uYzQ41gXI0pei1e4hnv_wB9kMaNTDDEIVgzt6agM6KndnYFs-DziuNt_GxJA8BYlvHbEYFxqaDFgvhykh03F_NtlUUP3pSbZPyF-q66B-6u2LLAM2n6UlFHO1bRQe7sdnoob0huB8WLFGyQ5KluVovMoMok10Xs0h-_vpVoy0S5euVnqWWsBa2dxG2vigSrxmwTr7cStgwIhWw1mAKfEOxYXew1TAw"
+        ],
+        "__at__": 1786803244.4382231,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Staying at Palm Jumeirah was an amazing experience. The place feels luxurious and peaceful at the same time, with beautiful views of the sea and skyline all around. Everything is well maintained, and there are plenty of great restaurants, beach spots, and attractions nearby. Walking around in the ev",
+            "author": "Vivek"
+          },
+          {
+            "rating": 5,
+            "text": "Palm Jumeirah is located alongside the Persian Gulf (also referred to as the Arabian Gulf).\nIt stands as one of the most renowned artificial islands globally and is also recognized as one of the most ambitious engineering feats ever accomplished.\nPalm Atlantis hotel is expensive but you can always h",
+            "author": "Priya Das"
+          },
+          {
+            "rating": 5,
+            "text": "don’t miss the observation deck of the Palm tower when visiting Palm Jumeirah.\nit offers best view of Palm Jumeirah as a whole and other buildings such as Burj Al Arab.",
+            "author": "For Time Never Waits"
+          },
+          {
+            "rating": 5,
+            "text": "Palm Jumeirah is truly massive and fascinating. Even just driving through is impressive. It’s ideal for spending time as a family. The view is a 10/10, especially the Marina lights at night are wonderful. Traffic can be very heavy in the evening hours. it’s a must-see when you come to Dubai.",
+            "author": "cdakingtamudo"
+          },
+          {
+            "rating": 5,
+            "text": "I recently visited Palm Jumeirah, and it was quite an experience. The man-made island is impressive, with its unique tree-like shape visible from above. Walking along the beach, I enjoyed the stunning views of the skyline, and the atmosphere was really relaxing.\n\nThe resorts there are luxurious, and",
+            "author": "Linu L Prabhakar"
+          }
+        ]
+      },
+      "atlantis, the palm|dubai": {
+        "place_id": "ChIJeckJNj4VXz4RxUqAikFalAU",
+        "name": "Atlantis - The Palm",
+        "address": "44J8+5V - Crescent Rd - Nakhlat Jumeira - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 102449,
+        "price_level": null,
+        "website": "https://www.atlantis.com/dubai/atlantis-the-palm?utm_source=googleplaces&utm_medium=location&utm_campaign=atp&utm_content=listing",
+        "editorial_summary": "Luxury resort offering a water park & an aquarium, plus a spa & multiple upscale restaurants.",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.130437999999998,
+        "lng": 55.117188,
+        "photo_refs": [
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydiR-_z6gmnc4j01_YQcK4vxLB74OIDiROEo1BMnmDWzeEzQHj8-gb5dta1k-apQX3lyx9g8DflAibLvlPALPfQoVRWCO8WFCc2yod4l-xwZ3jm6e-Hpfb_P-ooq7kvSa8_RY9zztFUpGBhOqSErzL7XyPqdzhTN8iWogH4d_mz9CbVIZiL_n0negvfskhk5oi5R0UMUAA6h1acligVZ55d0cAls4rNd1aI4z4nC3iAsnHGjCxj3baVnH_rEE1AJhiCjGGUVA_AzlFFvXf47jJOD7R7Ro8dJ9B89YzncGSm9BgPZLaavLMGzsDlYbO226Y0aV-0u1NdAZ2iOp4w8U7rHZHakyyP4IMZZugZC4-p3xEd6vaq0sCvHOcmh97h4CxNYxBL7BaXGmlMl3wg4PxZvpP1OOJcpSgxJJlXiAG4HJWE",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydiFFSS6443jYX2kztfkLe5bbj6IWVfNEF3t5SkHamT3CkCFaQTM70FdX8Gu67naIiWwObOiP0ESMDPYrnfmS188Y3m8Zz7956NcvGcrRM96kwJ0DM_Yqkhz0RuX5WrbbyKboU5nDxakCg9oCGcQ4zwR9oZX0wC_ikDF5FywxRxN4MQfHGEKZ-HutSahl8B_XuadJ3MTR5nJh4aFxNgUX_d_aUyK4acMBoBZyo0-1k1k19uTts11QgU3wa8jvtcm-URmZKVgruQd09Kv2UWexevHH2jgYX-50t8rXZoOSrI1UQ2vLWP_LutLzbA1D2vqpOlKRzeT44Y5SYVNYFzsMdZGlgqBzlXHnoMpZ8sJlDrZVYyMB08sqKwpYkzw3KBO_8WEDOOiKO8aib330bKqr68qqOBdKMcw6CCEH0QDwiuo9t0sIJvFW-5h3P0giwUu",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydhKeSLcSv9n5wh5ie_2DlOcH0PwAoNJQAZ7mmgkJmP2rVqocRN6jKn3klTrhkjDPhSSWiUm3hd16weOBEDeFiUhVGI6r93sFImsVEZp2b6LQJ1enwUszR4Y01p_lVYiJH0-vwgGnlgt7vz-nqR2RXeRb8Ym34aRYf_aqDpwjvXF14cdFqhYgL1-O-YYJLjrXUb8gzHKJQd0_PHJY5f2AG-fDzIWQCviWCN3c3ryP7_0G0psbTeQtV7slOIjkgwjp5F0aRRXu2Ckc365Dj8MZUNmpaBrcAChr2oz3gRyBd7PlCkd30JNvAzPDdq2tJrAqh8BbpvbAbxo_Xobq1E7YBrWlZxNYetN4MxIvoYlsWU-Iz9xlbOf-A4sPlHRHF2BI3WEAnFe6ODzBRCUc6QS1mzrk3GuG54d-YYPFjXVJqTMng",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydi3VYIHGBZyPo_JxZ77QZoERVaKaQyW_7THqt8rSNvz-EoP_aTxx-q6MsJJfeHaBbp1XMmT86XV9tR8l4lAwzQV2Oc2H68lLvFzeKEj3dXYAiMIL_ner6QfXORUsD5uk0ZJku2U8L0hIAOrFm6gs06qXfMa58hoX3O6PjT3l0IsDzWst_o5NPZc4siDi5YktNMkOLq11mmTcj5fPZlofAQElm0x0DipilRSNvjikx-uXViN9pZJ9NnioGgE_2-GyD6Pcx1XcD64HWPAqKlWPit8pMo1w3lqg05-WzXspd5TqMZ-xQ0cGcmDc_MtzVM7solwyk-IM6lsTGeFIqB8deMphmmhWPch_KpsTlpq_85ZBWZGXgrasFl4Tl1sAIcUeaP5BUOMdw0pUMXZ4rUzyoBMEEOHJaV6HFyOjw3beuAAJQ_T",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydiLUzxF1pE6QtDWOpuBP50gELy30K4ZdqMlVnBkY1Bu1_4tGZWCkOTbJeAOQZ5pSvFwzZcgHrRVfHrkgQI0udiTETgKAQlqZdZxobLBnygjRC3c_PXXXW7QlsE77ddWcpXF73KSRVqyNXthAc9sHO_a6TgTzrj7_uOjFEs8qJyJDCRiv4aw95GGog86YLeH38BsXFKdnIDnAvrafW1dTQRKtoqFVOkJrCKYosLqVcAe5f3B8pqKaNwRfXe9sGkjvTDUJBwWZSpGMwHTzNqkXfq4yvN3cA76vlkxF3b5FohgIpTeLbaNSO1-cXtb-2TBwyo1S_fs_0JAZY_C5W_BorMr8jYJ1RzMlEYVW2ndg_2m4E0CYPUumdTdDKyxHK-dutJKHxTvS6SDuGXzKXIVDcl9a-h9RSEhypNamX1dChjp5w",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydgVlo8qtEp76qlfjHW_ABV1Oe9RxrQkuO-cqlCADjH2cImk2TOO6eQ9th7wGoy5vHK0a3n0KkqqUi1r0EQxYIqbiRYygJK2FSz5pIrrIHxnqU2t2pzHYQbAcpe1PVaei1KGp9GUku9_tIY5udkfYcEIHonzqzQ73dEJHi4gt23nexrgI4O7O9AiFFZvCVZN1cK6bx4VHnbOwacA7btftYdZGR1nNZXW9J4tJxU9BRgu50_h7btbYAq4qvVnHxF_TNJvE47b9T7jyIJZJ27Mjds2ingt5BWNwytoZYNdsJJwmZEvFq3IM2la2AI8ovTmANyaiW_P1DxE50_qTYVuz9keiCRVZxQKE8-oZVvRCeiAx5Q6-BW6HW7mnIvtJtn7XAFWx5Y74JJThyuEPqwmONzC5olKnAiYI16WiTadg_B4Bnrb6eiRWqXvGf_sCw",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydgWbCobwGk-z2T-OjfGcWDr31PpGXSHy6-GOTDvK93JT4k1k-0_sQYZCOoVki2199UCDgkCcmFd3-b5DsLPHKWVgrxr7VNNwLVONDnb5sUBagm67ZJpVKIDGSx14bhAgwxERqoLiyvB9MOmhaVUftavPs29ocmMYyp7vjAQr9OAGhXWSNwi1-_SHwhMY0jWbOEkij5dn-yYv_nkZX6VSv5akaHX6lGWK0Odk0Vy6hqe6rdQEWtNlICLxcDZVmFkzwlRM_4Eb_8DIsqOtIcfJ2uPg3PSRvJJBeTIwCY0sHeCre58QUUbGtC05p88V4MLCsYdpz1xgNn5oWR-fEOsTVioDCpvxJQ3B5CnfziOqghUa2QK-nMMZNU8ghyPdq2RpzKfVTPok43M_XSunYvXk_cgjriAz4VqdZhnBJKYAVX6ooypL4ChrFAqgC-J9g",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydgaIbMn8HG33QX8s5EO8SH-UC75b_UDpYVbnPsjWyAHMg-FxgSRq8YG66VMu34xHkc2sxZHO5u8BCODzW3qZkapJNuou9Qj-6SSncr-4nFO98X6io_ZwTsjpqgY88zorGruOShKWBL_hvV2U-za7_RvQI8P7cawaU7LYpQTRdsfX2z8Ye9q7uaU--XGKTssSdUDsQDj5YrqgeW7uNigEN-GzjV5LHzhXQE99cFKTii1M8_74cLPfJlu-OJwTuW0E2oZfu0XfGTtmWZqbtuABBysFro3qYssta-S-kflb_T2tFNwIpEMhIkLSKAxULlN4eBi6b1s2EHANPUcp2AfbGojvW3l2L00lME6Bs0QA5xZkFiune0qOeDgJpSHe6isZTDu6Re_GAAk2Fzsq3MH2sdrcUr2W7WiYkQwwaaU3zsgjA",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydgncfZAYuNflw0K26NwJmLPusvS7E9d1dK6MJ-LkLmgT3j_IMzgoEjDZR3q4zptnrv076fCMjGSrpqrs55GGRz8Yc2067lnQ9PTGKe28qXilkMQuOYQkbrmjvseZevm3EeImy4k6APt2ARRcWPQUXO-uiY2B0TsYGQubA-3O9daRFMWgRghMdflRBkLEnHQrQS7ZdZD7YyLYP8gd8s1G5q2m-NnLXHVuVArSsDLj4PRPm5lHe_9ZcIms8J42XC7HHo93poDiRlOQ6QrxSfEArF3LG6qh7FcDph6fEa0SVDz5HbDXmzKKDUtzdBJV6O7krbAQW3YyH8ceFCTkoTMBVAAiA-xBEpfGvmmkuHy_kGetwsecRf6SUHacosbs_T--oECoiLtALEdH60NMkgEoEZmDlQ8Q-zQtWm-G4XxXe0Wjvf8",
+          "places/ChIJeckJNj4VXz4RxUqAikFalAU/photos/AWCwydgNjnkabuU8Itk2XKjsBBGJwU7OJn411CgVFVR7csRwsf82iHL_s5sw8E_SISwKST3u72mi_xDygQp45gf-MOs1v6Vw4vGPuofPdfN8IvoQU2XJhHcqBNRRnl5M5UyHCGxakN8SjnrMUIDYkus3YNabZtroW5XqCpPfFI6dyYvGBMqiSbL32Wzz9S-oAaD3CeSl5W4CR0YdpFXIDCiDMoAgLZJxYP8ntTCIUCtyWRcjYWtXrN596kKksvt71ZXmZb1QPmNRmAD1cwCzOWaKfnuUQ9Wd26XNCOiI3Hh2KdjrRTiuAjY_fuE4k-6qF7dku6xuquWBcIoGSnC9X6F9Q0Ny_lzyINgVL1hUhqXx0TE5vd563sHnf1t0wohcoSMSL1IiSOrJNlvXQJHKtm_0akTfpb4mMi-XDB6EmIiW_clkG2iFCY_ezGsMqy1Y7w"
+        ],
+        "__at__": 1786803246.520991,
+        "reviews": [
+          {
+            "rating": 2,
+            "text": "Very disappointing – the service was nowhere near the expected standard.\n\nWe are a family of 4 with 2 young children. We booked 2 nights during Eid for a total of AED 4,400, including breakfast, dinner, and access to the water park.\n\nAs soon as we checked in and arrived in the room, we had to wait 1",
+            "author": "pierre anton"
+          },
+          {
+            "rating": 4,
+            "text": "Great time with the family. Pricing could be a little better. Check in was fairly smooth except having to pay extra due to my kids not being on the reservation causing an increase in price even though the room sleeps 4 people. 2100 aed for a room and park/aquarium access with nothing else added at t",
+            "author": "Austin McGinnis"
+          },
+          {
+            "rating": 5,
+            "text": "Our stay at Atlantis The Palm in Dubai was an unforgettable experience. From the moment we arrived, the hotel felt truly luxurious, with stunning architecture, a grand lobby, and exceptional attention to detail. The staff were welcoming, friendly, and always willing to help, making us feel well look",
+            "author": "s singh"
+          },
+          {
+            "rating": 5,
+            "text": "My stay at Atlantis The Palm was genuinely a memorable experience from start to finish. What stands out most about this place is the atmosphere—it has a unique vibe that feels both luxurious and welcoming at the same time. From the moment you arrive, there’s a sense of excitement and elegance in the",
+            "author": "Zayed_ add"
+          },
+          {
+            "rating": 5,
+            "text": "I didn't stay at the hotel, but I visited it and it was an amazing experience. Getting there on the Palm Monorail was already part of the adventure, with incredible views all the way. The hotel is absolutely stunning, and the huge aquarium inside is something you have to see in person. I also loved ",
+            "author": "Edilson Bulku"
+          }
+        ]
+      },
+      "flight: hyderabad to dubai|dubai": {
+        "place_id": "ChIJh7PwreCZyzsRlwl_yfSziHU",
+        "name": "flydubai",
+        "address": "Himayatnagar, Hyderabad, Telangana 500029, India",
+        "rating": 2.6,
+        "review_count": 81,
+        "price_level": null,
+        "website": "http://www.flydubai.com/",
+        "editorial_summary": "",
+        "open_now": false,
+        "weekday_descriptions": [
+          "Monday: 10:00 AM – 6:00 PM",
+          "Tuesday: 10:00 AM – 6:00 PM",
+          "Wednesday: 10:00 AM – 6:00 PM",
+          "Thursday: 10:00 AM – 6:00 PM",
+          "Friday: 10:00 AM – 6:00 PM",
+          "Saturday: 10:00 AM – 6:00 PM",
+          "Sunday: Closed"
+        ],
+        "lat": 17.4015994,
+        "lng": 78.4855492,
+        "photo_refs": [
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydiBsYsp3cYUdlRkx8uG4DKz03HoPVig4iXnXe8iXuJOrFykNciCBDYK0Tm0v9a79Cri5dCgxACNpTF6QkL1yo8bTw20UVg97kl9XoXjHf5gOOCXIFMctWJrdVMZU5wDwc3KHjy2Sx81_BOUrc5IBwCUTKj48ROFTKhUhMjKe9Eezh0SOANH1GaKto8sHBo4t7xvEZJQ83RtSXPq9RwTPR_TtHSz7OVK2RcglSk572fEAHeJOfIGl8aHKWEwx_fesYvgCeYzW83uT3JI9BVzAmG7cdxF2vQKtbeQS-GwTPcZMmmH0mHjdKI25jQ_SVbo7fRygmt1Dl1h4mVOU67akBbtLAu_C8U4TFrlnHx8s2GLO-Lr0_7WALNTBx6vwfid7f2tKZadIzqx_-4eY-QjB3Rmx1vQ2GDTKQN8Qxff5pg",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydiXT5tX1Wu23GFvf2UmpJkAPlbqjVXAE9oUdXQJZtpeixFprUULLVFIkTWzZpbE_zFoCkoYP9wohihDz6IkgfL9IFOBZQi3x5xb1qBznLNjYzUtwWfWHYjNO12puQICmWxPdxLGvm2xiJVsSPlenk5PGLgRb6ma2ClamHgr9KhTOMdqG-EAX8n_qvRjzgnPl244QmKIJqpz8WcOg7IhUqPRlPtmVxPe1ba1Hh3wEeAn0R5yPDNfB52EyYN8XFbBuDdo6bz5p5MN8Q7IduTc2yJ-LaOKhdDb236Pbmm-ci2aWbwZ7D8tufgei9_cXlC2dqcwKoDlmNE6Sdssk4-tXCxPdHIII2yfEVjJ1Bpk5atgllg5hqiOaY58ZCnDHAhu7avkft49_eXkZqIbPytbrRBJX7SIe6SZviIHlfcbIicf4w",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydgJyLrR7BrnUdpLD5sxOoLXcfUWVbwPwl2glsKfxjA-va2B-MOKWjfPsw4ccB0UJrS7hsfN7dX7MAn6I_bCdYue0WAREVLxunfxAAf6FfHfWVTMwsZoWCTMlJRBnQ5TAlOZRIyx3xwAQiG6pEEPwFcaPI8GKmFkLQigx9HkHpqWqDcjVZYBXn1sNqjbh-d2rYOaLhxhWM2h89RAlQBHzPeSjbXq_4wSfrdSXykGPzEt0CZcWMVz2oPtJskFkzp6w6PCUeLRoEdCC2s3XPh1TLi5zck6MnOsWJrwog1kbbDmHGPrq0uhtDKs1P8qexnkwG7K1mcOw5H5KLi7j3ipUsgyqlwWSH-vJAc_l4kr7EX_SocisRdc-93L0IiP24RRpE6JVuYOH2EdPHwAfwAdZPgVzbVsP_DJmPUc-Gc1yVlLaeo",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydjcVb1VAa7DXylujSs1rxniTR3RyubjJGGK_J0iKCayREpG9hr1nGuMSHhfNOHMfNrLX970eMu69eGbkbxA3sUecWkPDvUMz7-iqALv9xPiRCNL-9u5fYn0w6HcF6uWjTrqPAzxP--RzSOLii00G-Ye8E-aSr4WNhpkDpD4bqW_9lTxhgxc5BtH7yoIPwRL5WXutciRi9TjK2UD24vEUJYXz-qGqF5GQasZrkE8MZNsIwY1iCJ5U73QFgayoEe5XE6xrpT50tnd_EGJ-j2geVcuKsnjKVBJTZHxeLF9mp2yAMUiJgAeYAuHusAoCvWeGtKRf5UvLXo7oLfFsl9NI6HsGyBj8GRa4iFbBK5tnRt6lUrCiaXUabuVa7M4028DrQ0zEVJ54yIy7_dYeAXv_-rI0zVLCHT4b-_tt41qLC7MYA",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydh699PArDcVrmZWd5I76irS8J_9DENHRXYNDP-33lrfi5BdMpgnixyvuxu4j1USx6CErIhFBAoUN1_iH-Ys5MGqpZAzU2UGFV2C-s9zUonCGK6zR_tC6pW_h_Dhzrfq0O6hDMEwMrdkEHcId4FNWVhn5w4Y-M4BnzvA39Xkp-BB43SASwAIHMItvu8Eq-4jkkvwnxfRIVPVGdX1-3nGfOKnTMBKz2Xo909c86PabHL6wlWky5uf2lalXdUqKsHHehoK4CdczCzhvSgpIVr2R5tTzyeTcLAsGvzBDFYbdpXk9hMGJjRIu6aq3ZSSKF-V3ipsYV0ZxUysw1k5owzffrrD3Sd2R39IoGmPmnFa99DkVhNwSlAnyth-YQEkoJefUBXk-nSTWkK9Iqettg4zJhK_fVuIqeHMaSc73VFWCeHkhP6v",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydhdl6LWxwh3OK80SHIAKAlyGTZQwCSB_94svhCOsJH6-Sjy-_suDxVyc1BIyFBrNixP8B1Gm8jRnTFLhlGWoQHM3wxmwEI4PNp-G_3PntY7nbuUDrBZ5BqYnBJCOXD652hGIqwVcmibdWbCQwxri1uGWLx_ue4umfF1Dm_SdmSnkL_59hRwPJxvriAKEwK3DUdvQ2qUm1mCZymvAQJDcKymaQwi-d6IVWCoC3eoHNrGH6pgKjwbf8M13LVLchEL5ZU2_zlSbjiqmSxKCGZC2lXqbGXvq0Ca1nQLinLUgzsjHRF1hlC24KqvIX79EAI0vnpATyIdZ4-qytkKIugyBOjyXVZn5abqACf_qT_jxaDPWZmmtsAdMM-RRVyqko4PVZu40orv8q6HbJVFGxhI89plp-DWlZ0LuKOuKskzGilj4Q",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydjjyaXUP1JYqN0RwnwqMHuv3wOk0D641W3XEz05gOIcF4nJMRkav8rP0xnSdGjT6lIngyJ-J5BPybld--uDt6x8wkbebPUHqCuKm3eNZw0ADV3be8dDtGWAj60XGeH1CtjapNUtyfOCG_dHeGZTYF-9461Fz6LB01wjTuJBOSouqf70hV4SeWQ2MsniRipYP8rv_QU6gSn5aYTpXJiJYrVqx7_AijGxiNm3FitEv921vcte9KM3KTqx6UHB1FJeteeRAMLudLfyS4KpXvG4QSnBj0vBPaBQiCEiroBa0cywBea3zGLVbg2n6dARVIW1hHWsDZ8UKhOEJzYlfaeccT7x26rZhplZBsJ5owx0hz7hbF9uE-NVsn8j-pfYAV5g92XMki7fcvFKQ7HwV5YYD_ikpKL-csGygoLZtvf-XrkdDX2E",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydj8uEvC5sLaVQKF-X1LV-odaKu5FfmAvVLHv6w7eCZT8FvnDQyeEbvDwV6JfuI-H3w6tg9o0z5_xCpASq9uy5RaN7_bzNKvWDebunnxEseXCq8ehg_05rXy9rrJ3NDZYLldoxabXhMSHCtsCxVTq1vQwxzx6v42GhToQ_QrBai0G-ZvgashRWzeChcqMhhmv2YT818HGdpLmeh6MlmJbn-lRe6a3lqefKiC7cz9mDTH_s7jzfoJKKK3OSiOtu-Lx3ohHdIFEX5jy6ZPrBWPCgNCd-ptGUo5ilnRcdGe8eHCympD5272KU8c_g5YTrzMy2am0Vh2IgvGCErkqrvrIez5OPJi7kGxRuU6rjyc-ULxKfec1-Je4XrX45aNzoBf9JkDWev9nsn6Sohxb76RosprDRym1lPK9sIjJ5_Z3kUViLgc",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydjGHVRIbVcxKw7lQahbQhGZ8chUpPNLIdvMU4YLcGIzyXzKKV3u6rAWXKejYwu2pAU_SO3s15n3q0wGJtT_8Yqpxutp1lzQldLxBvoG3yQjB_asX_odddouD8EuS7G0Eeb2kLovG0I9Y3nlFVGiU3OlWxTKnDNKZv5OnuAcZFL9Foce-NMOYnoFRx6TiVjqdeybLtVGAS4q-xW4LJUSyvQn5gG1fCUUcY-TQwqDGIIhN1xR1SvzaI7Um805_FxyfOO3ySg8ATPki6KDqLx6lJh-ep7r4UhQnZL8C6KoirH11rfgtzD2mPqSlz9Lm_Rr8M1WQ66wfH7kjW1nzwTMRBvEyLC4YDLdLCm1s9SUQV9Zeh-0tZ5W8NKJDeq1bJQMgWK3J3TYs4l3mIbC2FhX1gP9iu487UYTyoLni2LpnhXXaA",
+          "places/ChIJh7PwreCZyzsRlwl_yfSziHU/photos/AWCwydgy3_-AtrdjPJ3BIOBQMg-A7v5SB7S2T-N6TTTj7zD2V4M-zEdco9-RorLDfOKMxDgkteek9OItKErlXrUWDaIlNZgsJ_WQjpF7-B36ppTQCk4IwPo6_jQbprIW0dxQc4VjfeeijvTSBrfhysl9ZD8lIpdJR8_7uwkpbwmXRKjnJYKP_W__oZgevmi0gHVLk_85uUTYrNkXdM-8T4eDMqVRGCuf8rXPNyfkkMsvW2d6q3zlgwY0HP2CjFtHeifLFtpB43qc_6SUKxWycoffieaZVdmO_zFF7qzN8ptxT1MltFu9fDrzYEpqo5SJFePzqbHVbx16yOKwd39KNNvY3byZjGjiq1Nusk5_N5GK3euGBYXFrmgQo1ziKpM4PuskUvOQcpd0JNCSdMchuV3EQ6F1qq95kXs8D2p5QM8EBZUuow"
+        ],
+        "__at__": 1786803247.325731,
+        "reviews": [
+          {
+            "rating": 2,
+            "text": "Extremely poor crisis management and…\nExtremely poor crisis management and communication – stranded passengers left without clear support\n\nOur experience with flydubai has been extremely disappointing and stressful.\nDue to airspace closures, our flight was diverted to Hyderabad, India. While we unde",
+            "author": "Robert"
+          },
+          {
+            "rating": 1,
+            "text": "They don't know how to communicate with the customer, very unprofessional behaviour with no proper knowledge on ticket booking. Don't waste your time by coming here for an inquiry.",
+            "author": "Mohammed Mujahid"
+          },
+          {
+            "rating": 1,
+            "text": "They don’t know how to board passengers on flight. Long queues make everyone tired and restless. Very unhappy with the experience. Flying from Hyderabad to Dubai on 19th Jan 2026 @2.40 AM flight!! Bad experience!!",
+            "author": "Praveen Chakravarthy"
+          },
+          {
+            "rating": 1,
+            "text": "Shitty airline with zero care on luggage. Only cares business class passengers.\nThey think economy passengers are travelling for free.",
+            "author": "Sriharshith"
+          },
+          {
+            "rating": 1,
+            "text": "If I could leave a -1 I would. The worst flying experience of my life. We broke journey in Dubai and stayed a few days before going to Hyderabad. Only had 10 kg luggage allowance. Rude person checking tickets to board. Trying to separate our family. Seats uncomfortable and small and dirty. Screens d",
+            "author": "Judea Sires"
+          }
+        ]
+      },
+      "hotel (tbd)|dubai": {
+        "place_id": "ChIJ0ye2phNrXz4RtqqaQf7_XIk",
+        "name": "The Biltmore Hotel Villas",
+        "address": "24th St - Al Barsha First - Al Barsha - Dubai - United Arab Emirates",
+        "rating": 4.7,
+        "review_count": 228,
+        "price_level": null,
+        "website": "https://www.thebiltmorehotels.com/en/biltmore-hotel-villas-dubai/",
+        "editorial_summary": "",
+        "open_now": null,
+        "weekday_descriptions": [],
+        "lat": 25.114189999999997,
+        "lng": 55.1988273,
+        "photo_refs": [
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydh1kfzaAFbnIGF_PPIUqwdZy9C-6rc3PG2D0we3-SrWtvDeMgbdrAmYE-4e243SMzNDekuneTBc6KwufF9c2kxv4JpxIKfZ-_1EECoLyaS9zoVoP4eKWKt9JB7sKiHrNy9tQukHAv0kcJGco7clE6KcO7p-ooKAefHP71wFTaI_5j_gBAH5dTxu0V_9ZIOFb82MprLRIH_KqzhTngam67zCbWnYk5gIlRgE6HD2FY4DgB99rllDhegkJQoWxGpZhSAWJXQ1EgOwAUEUjyCJWnmMJcYcAj7uAKNn7tQApQ8bdB-JetHbycJiqd5NsHaTxKs8lr8a0BbLP4eQmI0-pTRecrmGmqTgMO76ZGjq17fb6wKghpQFtPAJsReJVC6Ci9y5SS00OWk2WnWb-XG9_Jpxdf3QbRT9rYSwbzGIB8g",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhmnSLjYLraVxLm1pOH-8n2osuW62TvZyhuBHU5jReE7FHaIOgGEu3iimKptFtqa7BJoBEKvavhrrmik9IjTRbIhCFz8LOdVsyP4PLEAdOxoOUrz0NE3iwMDqXQCQCSKumxWPj5W1UqFgFGuHgtHY6NQBE20bX2vsZYvA7b-X5tbaT3pRUY3OnrvG_nFz499xwtfISdD4d2XsIjIcGi_jCgx9GFdiUtYnrx-hOfQKHp2WV-lpSVn2UVQNuIJYpCpachj1NU_pBR7qgmtnPuA3UDyXHNkAKUliSCVRPpCqks6wFzTamvyqF23r5-NzSQj5aHf8HY0_Os68Uf6S9pco-eq6Kj8ToJf0TUjsN627BAgkHRntznb61tUBfEBZrNecsm21CzZeVH6cOggMSxG2zlgAgWKwoQqG_RJNDc6qgIRNJL",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhXM2yZasO509o5rMhtv7A_QtjJ5qlUH7py4F9dzxrsoJWC6LIGTv1RTqTVqRPBu4NtUZEgYc_lENRDSo7RSreNmJuAJg0BtaQfyafxxgldVT9ih_ZU_JAArEvVFgF7jWbhsDxJWonU9abjZeY0rRspXYtd_WB1Rkr6sH6tZJNClv-92sB9yARXB0i8ZSE9DMVn1j7L15XuErONpNqjkLi6lfjiYFejHhiIJLPVAKVxYWLfCumNGsNQgaTnDKc8EUPhCGx7tvRw3s3j4kV5zwiXX1zLMJlCSA4iQG-F2xLunuFaRQVkfPAHGuoIcGdRKJYZNDivfqPbYHKGorc-h3H4oT7DoIIkhDt3Mg8Qrt2R4AcbmAOGYp3aY_JfDXzaklR-seGmdWBGCMQpOFf7iWRJNs_6WeNFg_HJXpqWyDJiJf58",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydiJ0XG2KWUEgJVZz2clYpFZy9cEzeJQgks1EmPCHNUDdLlstpqHJFFeZ5ObFr_0R4lyETdja9chBs2LnKdzLZ6Rs2QZnz9kFF2_GRwnt-zt8tDI6KvDEYGdIrqV3B3x6maPMxQLW-tEg0XmtaxbLEmD_QKkcYoXmG-Elc3geboxDIVD3tFukq5LJM2H5kG45BkcutlWv6nxagVSIouFWCg9FwPHj39WJcemTpnqyYUB_eXPDYZ7wJiD7k6v_tctXlMCVKc8vUjnK_c-6NsX5KDhPDBnxSVZSZC4mBEjMF0g34bLKWuyjpXPnLulbKGHbjj9tTcN1RK5esrr6HtFKQxrkGyJhEGqm8mgQkE7ZK2JXK7OLdfxB9sCu4YtGOTyUFQtP27DS723W44KfLFqBF7A4NcVQwO1JkT0qCXsFH5lnw",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydjA1EHyQWK9ntGQlDOHRs94Wcs9lgSkPeqWYd5M-WMbpyI8WVXYwRFhw2XettxzRTNmbiV2Qev04q2M8cUw4iLciFQSBwXVavfF-Cize8XySd11qoN3MHg-k-eBl8AO5ptHY7FS88Whf7THoBo8m_cVbl_WNn-HGllHZWmM-lXU2YDa4xDu2tez-egKMJ7WEEiZk9ZicurD-mhUabLLTzYt90e82va_C7f_EJxt-YaBG8tcZTBccsXFg7CrmpdVCHkbZ6_NvyMsHrH-ZbVstEnL449mMwcgqc1HGC7YuxkB5ouecOEqM1LpOSkanqnteKsWpsAEHd-ix5kUuNdUFH8mCZqOFxUEjw-e5fGP05ER_S3pjGXZ02k4d2eNmVlWITFjQjQ65WR-GxEQHODGarpMuM1pSsk4SkjOuckrFco",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhT-eWwISVm_TTVfVmulSxHRv0fzbdnwnkQqc1YyG8C_HlgkMSeINrjAD0nefmc5B4CtZWistnAag4qiuJr4FN-6EgOPZCbxeQchoqUN67e1k7Vfy26nbigIv60ZVS25h63STF_9D0xu6Usw6D8tX7PDvMoWEeBBFy05yW7E6iXsjscuYlg5zkJzfe8ASMyQrdXz6rWmysAlTwpyDMFRBbem5R42FruFl-MZdgVvI3fVUGJ23T8dXn0mWyiP_bPRwlmEnIDeSSukVTCGpSeT9y3VamplIImfgAiRxDza-vKumCviCRdvTWp38Y6Iz7j3WdGQZmcN1UdbxJuUnph8VZ2z4Z3t78koRoahngyvDRN8i9rg7YM0aVo5CRuked77ANhuvMidIZHdCmsdJDT71wwoHHZffRuD34_oAm-5Sk",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydgcFGsdfCYCqAJUNiN-UZbjwyiCty7bqDkKpb6uiGuye9xsrTFui1vhXWi7gY7ceqkUuEVHQ_oreKeHoGJ3D9nhiN6jn7-dUEAk7vfZlOrTUJsWimJi8pHPtMv4CeqR7L_vtH622GM2caPO2aFC-WOvSyfcitE6yNXIXb8BOrWHHFix7cJHSlhobrIuR9ch7aQxqeVUPX_FqWQ0NV3T5n5NmSRIoW_tGG65Gpb7_STlo1wzW0PoVb0W2mkaYZ_MQo_F5SDMwNmXhzp5kj2h3J0ObzLk73BU8fq8eXHZcEoLKVWMYTI6cHL3vdc_iN82aOpPYX65tqDnsRSvruHMfw0pgDdF19xb2FFWvBnsFM2FS5tHXBTHjtQsnimaeDq1xflj8DAdrFO7NHcnibZoiBxlFkzYf2RVfCxgy4E_nkRAxg",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydhx9nynEmO16quTz-JxYz-BA1-CE3dpwPLeheJRBbbt_n-JhBOS2bEuU5Hdxsx_Ar_G0WDrHdXIEWWafi4cgn4Rg-YxRWtkylplG07qWmGPZzCk1Caev8iBkKJmORyLx5qwHfXOxvcWxHGlS-gIaKJqIiSZnc-8gJTDQYDIzElkj-kFwZw0uRJNx4DgbucXs2LPQ5rhueNoxnKhhXBufKy_3g7TSy89RnSTqRUMgg-7mR2DUKAyQsKJA-6rtw09lT-hm_O2cXTUHUZ88ORU4CNYc2csufxcsy5nYmKs8Nug8vBuk9D5TsccqsfXXfoYJCGQL2C4vZxBfI1CIMAtBhm6qHOhFBLLLY7mClmnm0yRDRrEZ149gtWN1UWVXxyStAjINJ6r12AaJMk7-aeZ5fKPPheWkbNEV77bKm_LXJQ",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydjuRZDw0QrHeRN94il15-2dMMO3mrNcFjzUH7K8w0d5SAUFeBbNKs2n4A4u0KpfiSgzr5sOkZABEguOHW2LG2MM8wdSZRJoFGfv3jy5lJscnwIy2MDoYVlg2TfqYQPlL-M5EO8lRIcMJlCxGcMBHmi1filpOEnZjlmB7IIZLzIsnvwh-fE4eWqqoY_ph5EWkOlqBN4jWAToRut4jV3VhG-_ynfqgBj0dNlMF-_aoOBX-JAjrrUaB-niT9dK31cM5EfF1CjYlMJ9YQobV-Mr8kEGbPEbhi1creCXqQqBo7DefXpeqLbd44e922Hfrb39E0LmFary8qoxDFNCfqckaWWQZNWvdgUyNQPaRKlV_XOcTs8K3NWv7dHIpqH2MYu5_UNwG48xLXQ8So_AAIfldLu3GhonEX7hHH4GSFXBrIAGY1U",
+          "places/ChIJ0ye2phNrXz4RtqqaQf7_XIk/photos/AWCwydiAD_EJRIVxDJCD9b2LYmnWay9sT0EX_imxHu_pBRQBgKQjWE7Gd413r10JJdSl9fUabEOPLihAjAFFihK95f6mlvJsUCy3_N8VY_53-aUlmj2wd5nhCKNwPpYu-DbmQ_0DGUNI5sST7vM3ZSP21QBaFgyNk_zdXmRFMku_goFcjWMiaT2FTfb-pAg4Z4v5ROunBe4m1ppKbAqLiJAA08OkAY6NPaNlA-RQ8G9CdnVmX8DNwgY-wF-DDLdquo2YA2qcIi7viHCIRdOnRhfsuNb0yIm5wFyeDWecf3QjqbiCfklzFjzH-lknpRRisu2ZLlEHmNvlVRmXG--pWqVXilfHm_7GUjtjuYEE2-75tEB9_szpTN8xY4nHEmL6NuZHJEci2lKXlO1byQWTPqtg9VH4DAfiemAdpCVkxeNAQe_ejfRp"
+        ],
+        "__at__": 1786803248.5911539,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "A group of friends and I had a lovely afternoon at their afternoon tea. They offered an earlier time to accommodate our party. The service was great and the value was superb. The staff was very friendly and professional. They welcomed us and made sure we had everything we needed and more. We will be",
+            "author": "Tessa Johnson"
+          },
+          {
+            "rating": 5,
+            "text": "Amazing experience at the Brasserie at Biltmore! The food was delicious, the atmosphere was elegant, and the service was outstanding. The warm hospitality and genuine care from the team made our visit truly memorable. Highly recommended!",
+            "author": "MOHAMED MORTADA"
+          },
+          {
+            "rating": 5,
+            "text": "What a wonderful stay at this hotel! From the moment of arrival, a warm welcome was given by the doorman Ali and the amazing front office team, especially Gucci, whose professionalism and kindness truly stood out.\n\nExceptional service was experienced throughout the entire stay. Special appreciation ",
+            "author": "Andrijana Nedeljkovic"
+          },
+          {
+            "rating": 5,
+            "text": "Our family stay at Biltmore Villas last weekend was way above our expectations. This is undoubtedly the most luxurious and serene villa resort in the country. Location was amazing too being right next to the Mall of Emirates (literally three minutes walk). Villa design was simply giving us the feeli",
+            "author": "husham osman"
+          },
+          {
+            "rating": 5,
+            "text": "You enter this place and don’t want to leave. I’m a type of a person that loves going out and discovering new places but every time I enter the Biltmore, I want to sit and chill and enjoy the beautiful place. You have a spacious living room with great lighting, private pool, jacuzzi, cinema, basemen",
+            "author": "Shamma"
+          }
+        ]
+      },
+      "rove downtown|dubai": {
+        "place_id": "ChIJ4bjdQYNCXz4RUN7vxDANHsU",
+        "name": "Rove Downtown",
+        "address": "312 Al Mustaqbal St - Zaa'beel Second - Za'abeel - Dubai - United Arab Emirates",
+        "rating": 4.9,
+        "review_count": 26995,
+        "price_level": null,
+        "website": "https://www.rovehotels.com/en/hotels/downtown/?utm_source=google&utm_medium=local-search&utm_campaign=googlemybusiness",
+        "editorial_summary": "Contemporary high-rise lodging with a hip bar/restaurant, an outdoor pool & a 24-hour gym.",
+        "open_now": true,
+        "weekday_descriptions": [
+          "Monday: Open 24 hours",
+          "Tuesday: Open 24 hours",
+          "Wednesday: Open 24 hours",
+          "Thursday: Open 24 hours",
+          "Friday: Open 24 hours",
+          "Saturday: Open 24 hours",
+          "Sunday: Open 24 hours"
+        ],
+        "lat": 25.203047899999998,
+        "lng": 55.2790883,
+        "photo_refs": [
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydgfhQ5sknLmt1E7D0QFc07hlcsK76GtGgNt1_52jQIXVcgObPMCPoaJYi1Gk8PpBBj8L_PWEYy_yG8A7cMCuU-eeQFFOlb_EFzjKzbAHKVdv7eKxr4dJTq2BfoRbN-ubXjjSNfGOzGloVuI0Cs7FrOV88Y9llzwtyBQIZRJbklArocMxeyBWUpWQJDA-aiPGhklRfviW4LTgEgg35w4ZN0G-YTRt57HemoP4hY9RrPzXSJLKpMXLJqn4DXZA_6-a5obyb9S_SHDdtPd1XkriQzg9ZFxVa-u_VI29wRgYQewlzUqpxH1qiwu5aFkHYJKIDFWauEWfN7NRXz6Qc0UAY1PwFzdxBcZW_V7TLx5zcI39wtN433fpJZLFCyKt5IyVJFcdsRKEbPE5t3kjT9PRIySOyLTRmaJHXZbRDvosgP8So1l",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydhQYytvnKsEcrDAriAu_eSh6scgpM-2CURbcwiMupzcdbLzZS3NozayT1EZ4vkveXUgKFPULXPzS0cWaReu65DgtzIEazxmzcIDcPGhoRGFU0gUnPL6ASTxuuUseEAGmBRu6ktpShgaTG9z2Y0h3E_zUQ482hJgJZPb3BYeJEAOwmwsGKz8jx7HFomwi9QD9NvLpMtDLvU1aMB-yH658erjAweDypamvKFgNXCsowSREqOco5cXDrQrtM-QXefOy--YuYJu8sN_351B5C6ioGbbYQfc4XzBszceFLYTroaxEKAsCeIeVdsWgzPr0DjH3NNCLSo1E17KJs5LkJ--OqJHQNSQW-tfuoKJaqpvQq67mt5JNcGmWPVczdcaVW3t3xMB08NzW2Fll_HhslWbZYWtECIOatoF39T0dIhmkg0Vow",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydiq5HSg7QHx-dzRgXK5z8l9YvDkZSIgSEK2wD04wnhef3C6mAxmn4cpLQohd5jtO9XoAANWEc9-vFpGam3mCYAnfzsbZbGBTLFGSgScoOJesptcbqrUZ-R4dT-lxwCEdZG9Hp4bPGk3tMWVuPPEEaV2Q9Ko-tvG0hWoR7_GKdG9_Z6xolxdxAlCFZk3NnLHViRTfxbyQwA2apLgIpGVfBt-AaaZShhxZ-PtXZb402k-WSVAeCzzioHb7jJkwcy_cfJl-Q_eFIgzffTojd2A3bP-LRo2TxqRcEfZ9ZHNHx2NZdydwHH2-Bdns4cbf2YkjGIO737AlM9GOdRwyi3ci5tA5ymLx_anD6feoserViV1Pi8P6gyH1OC-RWnz_fThjv7O4WKK5VkXNULDJ0cDpGIUbnNIUnsuPuCfY-54QJhasNunpMm3zdNy2BzUDg",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydhJd3RIq7wXu40spO6q3glSsRHKeVK6nB-U2jhRYN0kPXss_xpEMPlvym4LIxjZPwmq__PUlngd_dDdljc3mP4rVp86F0sGuRpMnJRAE3_8PJDyY8gdqSup-LLPnlPP6l8Hej8cqBnaJhqd67mYKOLjFtjBUP6xt4dC23RIm7J5BTpWEXExSydl2-8vgHE6iWKDfpIgeumLc_vtYEOjicrHkQoUQ_ReWvAo53oce7wYjdsmSoBzEJIflLxRdbLqug9n3vJkqfbVVKyexrIK5hPE6ryOVsGKLtX12nbhvXXiv5rQuZO9YPsw5nH4-jNVRc458PDhxXuBZMoxU3vxcSAAbZbOW8pC9YKqr77F1m-SzoA9rl2BDhyGxunVgVxED3DWrjexA6LKGk0nxCc8kPFY3qKrubQ5jLvTlpvqH9FMR1Ko7tWMDeQaI1b3CZ1f",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydgtqj-WrOw63LQIa0ozt5vJtzzs-LBH83VaEMmaBInViSC2NXGzOVvmqKKN8yJoTZrQIs-ow0yCvjam0L8OoJ97Uky3UuUmxuZcjJCW8d0mpwl0jUQAC_-fmRbfTnn5Oxfnw74J2irbgvEp1-Q4T3J9INc2D3N5945ADocvJPrZdRE4GoO18HXc9AWY5-Mk9h1o2lDDpb1syQQQUfuxhTK6CaGzoew4NoDvYd9V-jkUeN5V6xC2_cu8Mfm3rccCiJ_5pX0v3e4L8SKoluN_gUc3AvG26djjdn4svFnyqJREloFOmJKabMfU9FPDQiaEMevAmsH2Rv80q4yKsrnv_PdCefyN3-ApD63ZYveGw93fraQK8uje5W0h-28womjSWSd5UZVcZ-0XtcTIzxZCM73-aKFCi88-wc0a1aUUTMvxHg",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydhHMtk1WfywhCdJ-z3dzBrui-LpC4ODNXiiCARjR9ndFh_F4eGro_71UdYcFxdbnp5Y9WThKxvik7DM1xZlj-t0AsM5FmrMlB640kDu3n27_bM_TNpFSIpetUCCi5jG80bqI-n2fYfk-LCA4L09xTvZ9iaT0z2zUlRS660bl7sSYwC-s7Rxw-WBPO514s6Kdvks1Fzjk013TKwo0zK0sMONgKXGCDWAfVlYR_EzdQCfuzpQdWqt_Qz4ImORQNzQEReJw-gkScaG-m0QRMnztFedxdUHRYSRAFwAbEF-q7Q6Nb59hLGFGXL9NHKlSTOMKZcmyw_DSFKmTawR4HHAupfbHa7X2t1fbo0cEpVEf2f3VF2_yTdrTLuic5NBNOxzw2Ed_urvQDNTfxmBR5z3p7M6tpizM-uekfS_asl1EOVtQO8VOd7RfenCgHhKRbyI",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydhDL00W2-P85KcMSvhWpi2nIN8p4aqE3sanehfDcadIl9xlZRS19uHFgoCBmI_J6BlDDJN1eMJf2emihBY86d7Fqsm3PhTBwMq2SfLJBmxaCtpHbGJMSPUsfxOFcf3yhivKOQENrMVu4BkeEMTgBFbFGKWERCHQFVjuXuJR2-kTG74AiujsaG8rWVQV-IJGy9g07m7rEjpjNtzOSoUAVAj8j4mUV-PKJk42PJA2OUPC1u3xIcgxHUzR-uHRUmDDvzPLXjY1gJ7yYPJuFYMJdBc8DRs2kAWm8rwRAMMQ28tBr4ZIc-Kl6mPQjMBxDJmDhkFrv_JYWFg3rZ9tmpqZdHtFw5WtRzlZ-WZX7aIUP2cuIATmgRjSDlB8Vp2Fyp_3NcEyj34M4sbcJK5mlgrNgEEmf2kfX3LLWHNc0kM8CqCzttn2",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydhtJqlvGmiBfe_mGX2pU7GzU9fEXO5pWgs72xLBID85xrWs3mERzKfPQkJVZDjgTuTXIIIvplvyi9z3HfuB-XouFTc5vO8HyTWx003mx-Ft4bYJQaFRXS6CqS8m_LAJ5WjV7LN4jeItK-4TdJ0yhXDk360xltS6iqNpVYVNIFjKebJRLAifBh8NeOsifeFQirr2PLtkrfLbscDJafvL3urGCbWJKuXWyjKhU8UIza_GeQZp7k3pYkagZmeOF4OYg_32mXKqNLId7tTSyvsuul2GMGXBmV0pGEWZFEhfPs21QR8AiSagexHL4Hp7EXKXhSoBphNoboRWKqtgNCMxPHJwybkHmBJxl35FIs7w-UqSKK1YWXCPxvl_p-x4sxuMPH5KB6YREYcuGQGZ-qm2ppp-_txJYlenbMyPIMp1q0TQ8r-H",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydgvzEzvJXgW_JZ9Lqilh-G_mNzT-dUVJX9xfaAzANpj4iyMnDhCmTdD3RjICgfySrXTYMgm27iHxLLMUK8go03v4UwXZdX5Gt7qzN2YvTsvF15dPGQG-Q-7xZAlY4bLQeeiyIE_jK082yojgqJbt6GGa0KM0ejl20hHtERv7fNt9i3KeJ3lJpEV5efsuYqzzuHZgovsNyjeEYTuHgMj97z01UyDP_eclVlBuyPiygIOvEj3KgWHOYXRYKV_CTDE5fJEUM6qqusMbQXef5V0zcCi8DTLkIXlHr2qsXB7ciu-3OlZt3XybwDeS46EgE3eJVsVWnUYux3fV294gLYes9UdJJpcO9BYFDEFDNT4ZHFoaNqRGbEyS0WpePybtlBWnIFBL_pmDaio0_s8KbHg6Ox-Olk_qcvqsHuaJrhT9bhYtw",
+          "places/ChIJ4bjdQYNCXz4RUN7vxDANHsU/photos/AWCwydj3vhm4C63YkKtcS7iR5j7tSouHBuFsYWAV4oMpO5SpWAUJSr76sW_H6muKL8grL2mVeotKWtwiacwfK_bIBFhQ6lkJgCEr27ycnHBfJ1bmCZUMeyNZXEMbl5grYg0Kgrlu0Pnca7fbNArcqlkHsbED4aVZHiL1qd47anWUfo6QMVcZ_VC0PjY453UkPZ4L-9vJM7tjJm3KU8jpgedLTP3ahZE3fF5qAxnTQxMhmOddzy2Qasier9mg0OHtuH1m_n9Px5A64ZXIVRzSXT5CQtXhd4hh-YcnJ91GC6t_dyngoG7pZ1eZqmF_iUolC_WkkNi4qGAUaPOw6OyaK1VPL-jrzS7Hf8qYIE9mWeaWOggYsvbPGlhkRsoICQ2gPYRpm8QRU5H802MZ2fCQPs2CYB5U8FB9yHEzwkM6yPDhiMLYu5RY"
+        ],
+        "__at__": 1786803343.7580311,
+        "reviews": [
+          {
+            "rating": 5,
+            "text": "Headline: An absolutely flawless and unforgettable stay!\n​I recently stayed at this hotel, and it was nothing short of spectacular. Everything was top-notch—from the amazing facilities and spotless cleanliness to the incredible service and atmosphere. They truly nailed every single detail.\n​A specia",
+            "author": "Mohammed elarbi Gasba"
+          },
+          {
+            "rating": 5,
+            "text": "had a great stay at this hotel and was really impressed. If I had known the service would be this good, I would have stayed longer.\n\nThe staff were always friendly and helpful, and the hotel has everything you need. There’s also a 24-hour supermarket right next door, which is very convenient.\n\nI wou",
+            "author": "Rashid Rashid"
+          },
+          {
+            "rating": 5,
+            "text": "Manager Arshad and his team was super awesome. They made us feel so welcome and gave us a lovely room with a view of Burj Khalifa and the pool. Will definitely recommend this hotel to our friends and family in Canada. Special mention to the great staff especially Kisor and Hamed. The amenities and p",
+            "author": "Norman Bedasse"
+          },
+          {
+            "rating": 5,
+            "text": "Such warm hospitality, big smiles, and they went above and beyond to make my friend’s birthday so special.\nSpecial mention to Ms Farma- Arabic receptionist who truly stands out during our check in. Also to Male Arabic Receptionist who assisted us quickly during my endless calls 😅\nRove Hotel itself i",
+            "author": "Sarah Ejem"
+          },
+          {
+            "rating": 5,
+            "text": "⭐⭐⭐⭐⭐\nWe had a wonderful stay at Rove Hotel! The rooms were clean, comfortable, and the entire staff was friendly and accommodating.\nA special mention goes to Lifeguard MD Hosen, who was exceptionally professional, attentive, and always greeted us with a smile. His dedication to guest safety and exc",
+            "author": "Julie Ann Garcia"
+          }
+        ]
+      }
+    }
+  },
+  "descriptor": {
+    "destination": "Dubai",
+    "departure_date": "2026-11-20",
+    "return_date": "2026-11-24",
+    "nights": 4,
+    "month_year": "Nov 2026",
+    "status": "draft",
+    "counts": {
+      "flights": 0,
+      "hotels": 1,
+      "activities": 0,
+      "days": 0
+    },
+    "keywords": [
+      "Dubai",
+      "Rove Downtown",
+      "Day 1 · Arrival & Downtown Dubai",
+      "Flight: Hyderabad to Dubai",
+      "Dubai Mall",
+      "Dubai Creek Abra Ride",
+      "Day 2 · Old Dubai & Creek",
+      "Burj Khalifa",
+      "Deira Gold Souk",
+      "Palm Jumeirah",
+      "Atlantis, The Palm",
+      "Day 3 · Desert Safari & Marina",
+      "Desert Safari",
+      "Al Fahidi Historical Neighbourhood",
+      "Day 4 · Palm Jumeirah & Departure",
+      "Dubai Museum",
+      "Dubai Marina Walk",
+      "Flight: Dubai to Hyderabad"
+    ],
+    "auto_summary": "4-night Dubai, Nov 2026, 1 hotels",
+    "label": "",
+    "notes": []
+  },
+  "last_seen_at": "2026-08-15T14:16:04Z",
+  "schema_version": 1,
+  "seen_in": [
+    {
+      "workspace": "sbx-2-auto-validation",
+      "branch": "sandbox/2-auto-validation",
+      "database": "tripplanner-sbx-2-auto-validation",
+      "at": "2026-08-15T14:13:28Z"
+    }
+  ]
+}
