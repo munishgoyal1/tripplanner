@@ -64,6 +64,9 @@ def get_travel_preferences() -> str:
     # never surface it to the agent — it's noise in the reasoning context.
     prefs.pop("behavior_signals", None)
     prefs.pop("_promoted_signals", None)
+    prefs["configured_preference_fields"] = sorted(
+        str(field) for field in prefs.get("_explicit_fields") or []
+    )
     return json.dumps(prefs, indent=2)
 
 
@@ -369,6 +372,18 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
     • "interactive" — Use the same one-step kickoff and include any unresolved
                       critical dates, companions, accessibility, budget, or
                       long-drive mode/break preferences.
+  PREFERENCE-AWARE KICKOFF (both modes): Treat a value as known when the user
+  stated it in the current prompt or it appears in configured_preference_fields.
+  Default schema values such as balanced trip_style or moderate budget_level are
+  not user choices unless their field is configured. When unresolved, prefer one
+  consolidated request with budget_level (budget/moderate/premium/luxury),
+  trip_style (leisure/balanced/packed_sightseeing/adventure), and pace when the
+  request supports it. Ask only for fields that materially change this trip,
+  keep every field prefilled, preserve a distinct skip or not-answered path, and
+  map labels to the existing structured values. Include origin only when it is
+  missing and a home city is available; destination-only travel is valid, so
+  never invent an origin.
+
   For every NEW trip, call request_trip_input ONCE before create_trip_plan so
   capable clients render pre-filled controls instead of forcing the user to type.
   Include the relevant saved or inferred facts already applied in
@@ -376,7 +391,9 @@ STEP 1 — LOAD PREFERENCES (silent, automatic)
   After the tool call, ask one short natural-language question for clients that
   do not support structured inputs. Never repeat the choices as a long numbered
   list and never ask again after the user submits or skips the kickoff.
-  Save answers/extractions immediately via the appropriate tool.
+  Save durable preference answers/extractions immediately via the appropriate
+  tool. Treat choices that are explicitly limited to this trip as trip inputs,
+  not permanent defaults.
 
   When the prefs blob is large or a specific concern surfaces ("does my dad
   still need an elevator?", "did we like Goa last time?"), call

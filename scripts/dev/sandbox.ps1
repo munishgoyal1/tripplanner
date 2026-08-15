@@ -25,7 +25,11 @@
 
 .NOTES
   Every verb except -New takes the number, the full name, or the short name
-  without its number prefix.
+  without its number prefix. -Serve, -Stop, -Update, -Promote, -Merge, and
+  -Discard also accept a comma-separated list (e.g. -Promote 4,6) or the
+  literal "all" for every registered sandbox, to run that verb across several
+  sandboxes in one call; each one still goes through that verb's normal gates
+  and gets its own transcript, and one failure does not stop the rest.
 
   -Run holds the terminal; -Serve starts the same stack detached and waits for
   the endpoints to answer, so a sandbox is verifiable the moment it is created.
@@ -36,6 +40,11 @@
     the endpoints answer, so an iteration loop ends at -Promote with no separate step.
     Pass -IterationSummary to either -Serve or -Promote to choose that wording instead
     of the commit subjects. Verified promotion appends Completed before sandbox cleanup.
+
+    Every recorded Lab version note is stamped with the lane, its branch, the commit,
+    the UTC recording time, and the agent chat session title. Supply that title with
+    -SessionTitle or the TRIPPLANNER_AGENT_SESSION environment variable; an omitted
+    title records "(unlabelled)" rather than guessing.
 
     -New and -Update fetch the latest origin/master before branching or merging, so
     each sandbox starts from the current canonical baseline. Pass -NoSync to skip
@@ -136,6 +145,10 @@ param(
     [Parameter(ParameterSetName = "Serve")]
     [Parameter(ParameterSetName = "Promote")]
     [string]$IterationSummary = "",
+
+    [Parameter(ParameterSetName = "Serve")]
+    [Parameter(ParameterSetName = "Promote")]
+    [string]$SessionTitle = "",
 
     [Parameter(ParameterSetName = "New")]
     [switch]$NoOpen,
@@ -464,6 +477,16 @@ function Save-SandboxLabIteration {
     Save-Registry -Entries $entries
 }
 
+function Get-AgentSessionTitle {
+    # The agent chat session has no machine-readable name, so the caller supplies it via
+    # -SessionTitle or TRIPPLANNER_AGENT_SESSION; an unlabelled run stays honest about it.
+    $title = if ($script:SessionTitle) { $script:SessionTitle } else { $env:TRIPPLANNER_AGENT_SESSION }
+    $title = "$title".Trim() -replace "\s+", " "
+    if (-not $title) { return "(unlabelled)" }
+    if ($title.Length -gt 80) { return $title.Substring(0, 77) + "..." }
+    return $title
+}
+
 function Write-SandboxLabVersion {
     param(
         [Parameter(Mandatory = $true)][object]$Entry,
@@ -497,7 +520,13 @@ function Write-SandboxLabVersion {
             throw "Sandbox '$($Entry.slug)' HEAD is not descended from its Lab baseline or last recorded iteration."
         }
     }
-    $evidence = "$($Summary.Trim())`nSandbox: $($Entry.slug); commit: $($commit.Substring(0, 12))"
+    $marker = @(
+        "Lane: $($Entry.slug) ($($Entry.branch))"
+        "Commit: $($commit.Substring(0, 12))"
+        "Recorded: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm')) UTC"
+        "Session: $(Get-AgentSessionTitle)"
+    ) -join "; "
+    $evidence = "$($Summary.Trim())`n$marker"
     # The recorder defaults its store to the lane that launched this script, which wrote
     # sandbox records into whichever worktree happened to invoke it. An iteration belongs
     # to the sandbox branch so it travels with the PR; a completed record outlives the
@@ -1270,6 +1299,61 @@ if ($PSCmdlet.ParameterSetName -eq "RunAll") {
                 $number, $entry.slug, $child.Id, $entry.frontendPort) -ForegroundColor Green
     }
     Write-Host "Each sandbox writes output to $runLogRoot" -ForegroundColor DarkGray
+    return
+}
+
+# -Serve/-Stop/-Update/-Promote/-Merge/-Discard accept a comma-separated list
+# (e.g. -Promote 4,6) or the literal "all" for every registered sandbox, so a
+# batch needs one call instead of one per sandbox. Each target re-invokes this
+# same script with the other bound parameters forwarded, so it gets that
+# verb's normal gates and its own transcript. A failure is recorded but does
+# not stop the remaining sandboxes, except the last one still throws so a
+# calling script sees a non-zero exit.
+$multiTargetVerbs = @("Serve", "Stop", "Update", "Promote", "Merge", "Discard")
+$isAllTarget = $reference -and $reference.Trim().ToLowerInvariant() -eq "all"
+if ($multiTargetVerbs -contains $PSCmdlet.ParameterSetName -and ($reference -match "," -or $isAllTarget)) {
+    $verb = $PSCmdlet.ParameterSetName
+    $targets = if ($isAllTarget) {
+        $registered = @(Get-Registry | Sort-Object { [int]$_.slot })
+        if ($registered.Count -eq 0) {
+            throw "No sandboxes are registered."
+        }
+        @($registered | ForEach-Object { $_.slug })
+    } else {
+        @($reference -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    }
+    if ($targets.Count -eq 0) {
+        throw "No sandbox reference given for -$verb."
+    }
+    Write-Host "Running -$verb across $($targets.Count) sandbox(es): $($targets -join ', ')" -ForegroundColor Cyan
+    $failed = [System.Collections.Generic.List[string]]::new()
+    $pwshExe = (Get-Command pwsh -ErrorAction Stop).Source
+    foreach ($target in $targets) {
+        Write-Host ""
+        Write-Host "== -$verb $target ==" -ForegroundColor Green
+        $forward = [System.Collections.Generic.List[object]]::new()
+        $forward.Add("-$verb"); $forward.Add($target)
+        foreach ($key in $PSBoundParameters.Keys) {
+            if ($key -eq $verb) { continue }
+            $value = $PSBoundParameters[$key]
+            if ($value -is [switch]) {
+                if ($value.IsPresent) { $forward.Add("-$key") }
+            } else {
+                $forward.Add("-$key"); $forward.Add($value)
+            }
+        }
+        # A plain array splat on this script's own call operator binds each element
+        # positionally instead of re-parsing "-Verb" as a flag, so route through a
+        # fresh pwsh process instead, exactly as a caller on the command line would.
+        & $pwshExe -NoProfile -File $PSCommandPath @forward
+        if ($LASTEXITCODE -ne 0) {
+            $failed.Add($target)
+            Write-Warning "-$verb $target failed; continuing with the remaining sandboxes."
+        }
+    }
+    if ($failed.Count -gt 0) {
+        throw "-$verb failed for: $($failed -join ', ')."
+    }
     return
 }
 

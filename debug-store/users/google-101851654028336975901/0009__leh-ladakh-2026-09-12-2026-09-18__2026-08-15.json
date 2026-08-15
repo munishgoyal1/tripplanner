@@ -1,44 +1,42 @@
 {
-  "archive_no": 2,
-  "trip_id": "rajasthan_2026-09-10_2026-09-17",
+  "archive_no": 9,
+  "trip_id": "leh_ladakh_2026-09-12_2026-09-18",
   "user_id": "google-101851654028336975901",
-  "created_date": "2026-08-13",
-  "first_captured_at": "2026-08-15T11:32:23Z",
+  "created_date": "2026-08-15",
+  "first_captured_at": "2026-08-15T12:33:50Z",
   "revisions": [
     {
-      "at": "2026-08-15T11:35:26Z",
-      "content_hash": "2e0fb197ab1070c3",
+      "at": "2026-08-15T12:33:56Z",
+      "content_hash": "e17eb5dbe018376d",
       "plan": {
         "status": "draft",
-        "trip_id": "rajasthan_2026-09-10_2026-09-17",
-        "created_at": "2026-08-13T13:32:42.481600",
-        "destination": "Rajasthan",
-        "origin": "Bangalore",
-        "departure_date": "2026-09-10",
-        "return_date": "2026-09-17",
-        "travelers": "2 adults",
-        "notes": "User prefers itinerary focused only on Rajasthan, no flight links from originating city.",
+        "trip_id": "leh_ladakh_2026-09-12_2026-09-18",
+        "trip_number": 9,
+        "created_at": "2026-08-15T18:03:50.351672",
+        "destination": "Leh Ladakh",
+        "origin": "",
+        "departure_date": "2026-09-12",
+        "return_date": "2026-09-18",
+        "travelers": "Munish (solo)",
+        "notes": "",
         "planning_recommendation": {
-          "recommended_days": 7,
-          "anchor_experiences": [
-            {
-              "city": "Jaipur",
-              "days": 2
-            },
-            {
-              "city": "Jodhpur",
-              "days": 2
-            },
-            {
-              "city": "Udaipur",
-              "days": 2
-            },
-            {
-              "city": "Pushkar",
-              "days": 1
-            }
+          "confidence": "high",
+          "destination": "Leh Ladakh",
+          "estimated_planned_minutes": 1665,
+          "evidence_place_count": 8,
+          "platform_prior_applied": false,
+          "platform_prior_version": null,
+          "reasons": [
+            "8 preference-matched places account for about 1665 planned minutes",
+            "balanced pace targets about 360 active minutes on a full day"
           ],
-          "rationale": "Classic Rajasthan circuit covering Jaipur, Jodhpur, Udaipur, and Pushkar. Balanced pace, covers forts, palaces, lakes, and local culture. 7 days is ideal for this route without feeling rushed."
+          "recommended_days": 6,
+          "recommended_range": [
+            5,
+            7
+          ],
+          "target_active_minutes_per_full_day": 360,
+          "user_duration_is_authoritative": false
         },
         "preferences_snapshot": {
           "trip_style": "balanced",
@@ -51,7 +49,7 @@
           },
           "budget_level": "moderate",
           "hotel_preferences": {
-            "star_rating_min": 3,
+            "star_rating_min": 4,
             "preferred_amenities": [],
             "preferred_chains": [],
             "room_type": "standard"
@@ -74,303 +72,192 @@
           }
         },
         "selected_flights": [],
-        "selected_hotels": [
-          {
-            "city": "Jaipur",
-            "name": "Samode Haveli"
-          },
-          {
-            "city": "Jodhpur",
-            "name": "RAAS Jodhpur"
-          },
-          {
-            "city": "Udaipur",
-            "name": "Amet Haveli"
-          }
-        ],
+        "selected_hotels": [],
         "selected_activities": [],
         "day_wise_itinerary": [
           {
             "day": 1,
-            "date": "2026-09-10",
-            "title": "Fly to Jaipur, Arrival & Old City",
-            "summary": "Morning flight from Bangalore to Jaipur, check-in, explore Johari Bazaar.",
+            "date": "2026-09-12",
+            "title": "Day 1 · Arrival in Leh",
+            "summary": "Arrive in Leh, acclimatize to altitude, check in to hotel, light local exploration.",
             "stops": [
               {
-                "name": "Flight: Bangalore to Jaipur",
-                "kind": "flight",
-                "time": "07:00",
-                "arrival_time": "09:30",
-                "duration_min": 150,
-                "note": "Direct morning flight"
-              },
-              {
-                "name": "Samode Haveli",
+                "name": "Hotel (TBD)",
                 "kind": "hotel",
-                "note": "Check-in and freshen up"
+                "note": "Check-in and rest"
               },
               {
-                "name": "Tapri Central",
-                "kind": "meal",
-                "time": "13:00",
-                "note": "Lunch with city views"
-              },
-              {
-                "name": "Johari Bazaar",
+                "name": "Leh Market",
                 "kind": "attraction",
-                "time": "17:00",
-                "note": "Evening stroll and shopping"
-              },
-              {
-                "name": "Samode Haveli",
-                "kind": "hotel",
-                "note": "Return for overnight"
+                "time": "16:00",
+                "duration_min": 60,
+                "note": "Explore local market and cafes"
               }
             ]
           },
           {
             "day": 2,
-            "date": "2026-09-11",
-            "title": "Jaipur Forts & Palaces",
-            "summary": "Explore Amber Fort, City Palace, Hawa Mahal, and enjoy local cuisine.",
-            "stops": [
-              {
-                "name": "Samode Haveli",
-                "kind": "hotel",
-                "note": "Start from hotel"
-              },
-              {
-                "name": "Amber Fort",
-                "kind": "attraction",
-                "time": "09:00",
-                "duration_min": 120,
-                "note": "Go early to avoid crowds"
-              },
-              {
-                "name": "City Palace",
-                "kind": "attraction",
-                "time": "12:00",
-                "duration_min": 90
-              },
-              {
-                "name": "Hawa Mahal",
-                "kind": "attraction",
-                "time": "14:00",
-                "duration_min": 60
-              },
-              {
-                "name": "Laxmi Mishthan Bhandar",
-                "kind": "meal",
-                "time": "15:30",
-                "note": "Traditional Rajasthani lunch"
-              },
-              {
-                "name": "Samode Haveli",
-                "kind": "hotel",
-                "note": "Return for overnight"
-              }
-            ]
-          },
-          {
-            "day": 3,
-            "date": "2026-09-12",
-            "title": "Jaipur to Jodhpur",
-            "summary": "Drive to Jodhpur, lunch en route, evening market visit.",
-            "stops": [
-              {
-                "name": "Samode Haveli",
-                "kind": "hotel",
-                "note": "Checkout"
-              },
-              {
-                "name": "Drive: Jaipur to Jodhpur",
-                "kind": "transport",
-                "time": "08:00",
-                "duration_min": 360,
-                "distance_km": 340,
-                "note": "Private car with driver"
-              },
-              {
-                "name": "Gypsy Restaurant",
-                "kind": "meal",
-                "time": "13:00",
-                "note": "Lunch stop"
-              },
-              {
-                "name": "RAAS Jodhpur",
-                "kind": "hotel",
-                "note": "Check-in"
-              },
-              {
-                "name": "Clock Tower Market",
-                "kind": "attraction",
-                "time": "18:00",
-                "note": "Evening market stroll"
-              },
-              {
-                "name": "RAAS Jodhpur",
-                "kind": "hotel",
-                "note": "Return for overnight"
-              }
-            ]
-          },
-          {
-            "day": 4,
             "date": "2026-09-13",
-            "title": "Jodhpur Forts & Culture",
-            "summary": "Visit Mehrangarh Fort, Jaswant Thada, and enjoy local cuisine.",
+            "title": "Day 2 · Leh Local Sightseeing",
+            "summary": "Visit Leh Palace, Shanti Stupa, and Magnetic Hill.",
             "stops": [
               {
-                "name": "RAAS Jodhpur",
-                "kind": "hotel",
-                "note": "Start from hotel"
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
               },
               {
-                "name": "Mehrangarh Fort",
+                "name": "Leh Palace",
                 "kind": "attraction",
-                "time": "09:00",
-                "duration_min": 120
-              },
-              {
-                "name": "Jaswant Thada",
-                "kind": "attraction",
-                "time": "11:30",
-                "duration_min": 60
-              },
-              {
-                "name": "Indique Restaurant",
-                "kind": "meal",
-                "time": "13:00",
-                "note": "Lunch with fort views"
-              },
-              {
-                "name": "RAAS Jodhpur",
-                "kind": "hotel",
-                "note": "Return for overnight"
-              }
-            ]
-          },
-          {
-            "day": 5,
-            "date": "2026-09-14",
-            "title": "Jodhpur to Udaipur via Ranakpur",
-            "summary": "Drive to Udaipur with a stop at Ranakpur Jain Temple.",
-            "stops": [
-              {
-                "name": "RAAS Jodhpur",
-                "kind": "hotel",
-                "note": "Checkout"
-              },
-              {
-                "name": "Drive: Jodhpur to Udaipur",
-                "kind": "transport",
-                "time": "08:00",
-                "duration_min": 330,
-                "distance_km": 250,
-                "note": "Private car with driver"
-              },
-              {
-                "name": "Ranakpur Jain Temple",
-                "kind": "attraction",
-                "time": "12:00",
-                "duration_min": 90,
-                "note": "Midway stop"
-              },
-              {
-                "name": "Amet Haveli",
-                "kind": "hotel",
-                "note": "Check-in, lakeside hotel"
-              }
-            ]
-          },
-          {
-            "day": 6,
-            "date": "2026-09-15",
-            "title": "Udaipur Palaces & Lakes",
-            "summary": "City Palace, boat ride to Jag Mandir, lakeside dining.",
-            "stops": [
-              {
-                "name": "Amet Haveli",
-                "kind": "hotel",
-                "note": "Start from hotel"
-              },
-              {
-                "name": "City Palace Udaipur",
-                "kind": "attraction",
-                "time": "09:00",
-                "duration_min": 120
-              },
-              {
-                "name": "Jag Mandir (boat ride)",
-                "kind": "attraction",
-                "time": "12:00",
+                "time": "09:30",
                 "duration_min": 90
               },
               {
-                "name": "Ambrai Restaurant",
-                "kind": "meal",
-                "time": "14:00",
-                "note": "Lunch with lake views"
-              },
-              {
-                "name": "Amet Haveli",
-                "kind": "hotel",
-                "note": "Return for overnight"
-              }
-            ]
-          },
-          {
-            "day": 7,
-            "date": "2026-09-16",
-            "title": "Udaipur to Pushkar & Return to Bangalore",
-            "summary": "Drive to Pushkar, visit temples/lake, then fly Jaipur to Bangalore.",
-            "stops": [
-              {
-                "name": "Amet Haveli",
-                "kind": "hotel",
-                "note": "Checkout"
-              },
-              {
-                "name": "Drive: Udaipur to Pushkar",
-                "kind": "transport",
-                "time": "08:00",
-                "duration_min": 300,
-                "distance_km": 270,
-                "note": "Private car with driver"
-              },
-              {
-                "name": "Brahma Temple",
+                "name": "Shanti Stupa",
                 "kind": "attraction",
-                "time": "13:30",
+                "time": "12:00",
                 "duration_min": 60
               },
               {
-                "name": "Pushkar Lake",
+                "name": "Magnetic Hill",
                 "kind": "attraction",
                 "time": "15:00",
                 "duration_min": 60
               },
               {
-                "name": "The Laughing Buddha Café",
-                "kind": "meal",
-                "time": "16:30",
-                "note": "Vegetarian, lake views"
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "date": "2026-09-14",
+            "title": "Day 3 · Monasteries & Khardung La",
+            "summary": "Visit Thiksey Monastery, Hemis Monastery, and drive to Khardung La Pass.",
+            "stops": [
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
               },
               {
-                "name": "Drive: Pushkar to Jaipur Airport",
+                "name": "Thiksey Monastery",
+                "kind": "attraction",
+                "time": "09:00",
+                "duration_min": 90
+              },
+              {
+                "name": "Hemis Monastery",
+                "kind": "attraction",
+                "time": "11:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Khardung La Pass",
+                "kind": "attraction",
+                "time": "15:00",
+                "duration_min": 120
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel"
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "date": "2026-09-15",
+            "title": "Day 4 · Nubra Valley Excursion",
+            "summary": "Drive to Nubra Valley, visit Diskit Monastery, Hunder Sand Dunes, overnight in Nubra.",
+            "stops": [
+              {
+                "name": "Drive: Leh to Nubra Valley",
                 "kind": "transport",
-                "time": "18:00",
-                "duration_min": 150,
-                "distance_km": 145,
-                "note": "Private car"
+                "time": "08:00",
+                "duration_min": 360,
+                "note": "Scenic drive via Khardung La"
               },
               {
-                "name": "Flight: Jaipur to Bangalore",
-                "kind": "flight",
-                "time": "21:30",
-                "arrival_time": "23:55",
-                "duration_min": 145,
-                "note": "Direct evening flight"
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-out from Leh hotel",
+                "time": "14:30"
+              },
+              {
+                "name": "Diskit Monastery",
+                "kind": "attraction",
+                "time": "16:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Hunder Sand Dunes",
+                "kind": "attraction",
+                "time": "18:30",
+                "duration_min": 90
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-in Nubra Valley",
+                "time": "20:30"
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "date": "2026-09-16",
+            "title": "Day 5 · Pangong Lake Day Trip",
+            "summary": "Drive to Pangong Lake, enjoy the scenic beauty, return to Leh.",
+            "stops": [
+              {
+                "name": "Drive: Nubra Valley to Pangong Lake",
+                "kind": "transport",
+                "time": "07:00",
+                "duration_min": 420,
+                "note": "Early morning drive"
+              },
+              {
+                "name": "Pangong Lake",
+                "kind": "attraction",
+                "time": "14:30",
+                "duration_min": 180
+              },
+              {
+                "name": "Drive: Pangong Lake to Leh",
+                "kind": "transport",
+                "time": "17:00",
+                "duration_min": 420
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-out Nubra Valley",
+                "time": "23:59"
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "date": "2026-09-17",
+            "title": "Day 6 · Leisure & Departure",
+            "summary": "Leisure day in Leh, visit local cafes, depart for airport.",
+            "stops": [
+              {
+                "name": "Leh Market",
+                "kind": "attraction",
+                "time": "10:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Transport: Leh to Airport",
+                "kind": "transport",
+                "time": "13:00",
+                "duration_min": 60
+              },
+              {
+                "name": "Hotel (TBD)",
+                "kind": "hotel",
+                "note": "Check-out",
+                "time": "14:30"
               }
             ]
           }
@@ -378,92 +265,19 @@
         "cost_breakdown": {},
         "total_cost": 0,
         "budget": 0,
-        "currency": "INR",
+        "currency": "",
         "weather": {},
         "visa": {},
         "trip_constraints": [],
-        "updated_at": "2026-08-13T14:46:37.894924",
-        "price_checks": [
-          {
-            "kind": "lodging",
-            "provider": "liteapi",
-            "checked_at": "2026-08-13T13:41:51",
-            "expires_at": "2026-08-14T01:41:51"
-          }
-        ],
-        "trip_number": 2
+        "updated_at": "2026-08-15T18:03:56.887297"
       }
     }
   ],
   "bundle": {
-    "captured_at": "2026-08-15T11:32:23Z",
+    "captured_at": "2026-08-15T12:33:50Z",
     "user_id": "google-101851654028336975901",
     "chat": {
-      "buckets": {
-        "rajasthan_2026-09-10_2026-09-17": {
-          "messages": [
-            {
-              "role": "assistant",
-              "text": "Great, we’re switching gears to plan your Rajasthan adventure! I’ll keep in mind that you’re traveling as two adults from Bangalore, prefer a moderate budget and balanced pace, and like comfortable 4-star hotels. Let me know your preferred travel dates and any special interests or requirements for Rajasthan, and I’ll tailor the itinerary for you."
-            },
-            {
-              "role": "user",
-              "text": "Plan a trip to rajasthan for 7 days, just showing the rajasthan in itinerary without flight links from originating city"
-            },
-            {
-              "role": "assistant",
-              "text": "Here’s your 7-day Rajasthan itinerary, focused only on the Rajasthan circuit (no flight links from your originating city), covering Jaipur, Jodhpur, Udaipur, and Pushkar. Each day features real hotels, top attractions, and local cuisine:\n\nDay 1 · Arrival in Jaipur (Sep 10)\n- Check in to a central Jaipur hotel (e.g., Samode Haveli or similar)\n- Evening stroll at Johari Bazaar\n\nDay 2 · Jaipur Forts & Palaces\n- Amber Fort (morning)\n- City Palace & Hawa Mahal (midday)\n- Lunch at Laxmi Mishthan Bhandar (traditional Rajasthani cuisine)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Drive from Jaipur to Jodhpur (approx. 6 hrs, 340 km)\n- Lunch at Gypsy Restaurant (en route)\n- Check in to a Jodhpur hotel (e.g., RAAS Jodhpur or similar)\n- Evening at Clock Tower Market\n\nDay 4 · Jodhpur Forts & Culture\n- Mehrangarh Fort (morning)\n- Jaswant Thada (late morning)\n- Lunch at Indique Restaurant (fort views)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Drive from Jodhpur to Udaipur (approx. 5.5 hrs, 250 km)\n- Stop at Ranakpur Jain Temple (midway)\n- Check in to a lakeside Udaipur hotel (e.g., Amet Haveli or similar)\n\nDay 6 · Udaipur Palaces & Lakes\n- City Palace Udaipur (morning)\n- Boat ride to Jag Mandir on Lake Pichola (midday)\n- Lunch at Ambrai Restaurant (lake views)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Departure\n- Drive from Udaipur to Pushkar (approx. 5 hrs, 270 km)\n- Visit Brahma Temple & Pushkar Lake\n- Lunch at The Laughing Buddha Café (vegetarian, lake views)\n\nThis plan is focused entirely within Rajasthan, with all intercity travel by private car and no flight links from Bangalore or elsewhere. All hotels, attractions, and restaurants are real, well-rated options. \n\nWould you like to see live hotel options for each city or adjust any part of the route?"
-            },
-            {
-              "role": "user",
-              "text": "can you include the flight connectiopns as we are based at banagalore"
-            },
-            {
-              "role": "assistant",
-              "text": "Here’s your 7-day Rajasthan itinerary starting and ending in Bangalore, now including explicit flight connections as required. All intercity transfers are clearly shown, and each day features real hotels, attractions, and meal stops. (Currency: INR)\n\nDraft Itinerary\n\nDay 1 · Fly to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (IndiGo, morning direct)\n- Samode Haveli (hotel, check-in)\n- Lunch suggestion: Tapri Central (Jaipur, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Checkout from Samode Haveli\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Checkout from RAAS Jodhpur\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Fly Back to Bangalore\n- Checkout from Amet Haveli\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:30)\n- The Laughing Buddha Café (17:00, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (evening direct)\n\nNext Steps:\n- I’ll now fetch real flight and hotel options for your dates and update the itinerary with concrete selections and prices.\n- Would you like to adjust any cities, add more experiences, or see specific hotel/flight classes?\n\nLet me know if you want to refine anything, or I’ll proceed with live searches for the best options!"
-            },
-            {
-              "role": "user",
-              "text": "add return flight also back to bangalore"
-            },
-            {
-              "role": "assistant",
-              "text": "Here’s your updated 7-day Rajasthan itinerary from Bangalore, now including both the outbound and return flights, all intercity transfers, and real hotel/restaurant/attraction stops. All travel is in INR.\n\nDraft — I’ll refine with real prices and availability next.\n\nDay 1 · Fly Bangalore to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (direct, morning)\n- Samode Haveli (hotel, check-in)\n- Tapri Central (lunch, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n- Samode Haveli (overnight)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Samode Haveli (overnight)\n\nDay 3 · Jaipur to Jodhpur\n- Samode Haveli (checkout)\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n- RAAS Jodhpur (overnight)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- RAAS Jodhpur (overnight)\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- RAAS Jodhpur (checkout)\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Amet Haveli (overnight)\n\nDay 7 · Udaipur to Pushkar & Return to Bangalore\n- Amet Haveli (checkout)\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:00)\n- The Laughing Buddha Café (16:30, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (direct, evening, arrives late night)\n\nAll major intercity connections and both flights are now included. Next, I’ll search for live flight and hotel options and update with real prices. Would you like to adjust anything before I proceed?"
-            }
-          ],
-          "recent_operations": [
-            {
-              "key": "c443402fb186eb7ab6801e6f3b3912a160017e57f700e83373c381ffa4ecbfe3",
-              "status": "completed",
-              "reply": "Here’s your 7-day Rajasthan itinerary, focused only on the Rajasthan circuit (no flight links from your originating city), covering Jaipur, Jodhpur, Udaipur, and Pushkar. Each day features real hotels, top attractions, and local cuisine:\n\nDay 1 · Arrival in Jaipur (Sep 10)\n- Check in to a central Jaipur hotel (e.g., Samode Haveli or similar)\n- Evening stroll at Johari Bazaar\n\nDay 2 · Jaipur Forts & Palaces\n- Amber Fort (morning)\n- City Palace & Hawa Mahal (midday)\n- Lunch at Laxmi Mishthan Bhandar (traditional Rajasthani cuisine)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Drive from Jaipur to Jodhpur (approx. 6 hrs, 340 km)\n- Lunch at Gypsy Restaurant (en route)\n- Check in to a Jodhpur hotel (e.g., RAAS Jodhpur or similar)\n- Evening at Clock Tower Market\n\nDay 4 · Jodhpur Forts & Culture\n- Mehrangarh Fort (morning)\n- Jaswant Thada (late morning)\n- Lunch at Indique Restaurant (fort views)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Drive from Jodhpur to Udaipur (approx. 5.5 hrs, 250 km)\n- Stop at Ranakpur Jain Temple (midway)\n- Check in to a lakeside Udaipur hotel (e.g., Amet Haveli or similar)\n\nDay 6 · Udaipur Palaces & Lakes\n- City Palace Udaipur (morning)\n- Boat ride to Jag Mandir on Lake Pichola (midday)\n- Lunch at Ambrai Restaurant (lake views)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Departure\n- Drive from Udaipur to Pushkar (approx. 5 hrs, 270 km)\n- Visit Brahma Temple & Pushkar Lake\n- Lunch at The Laughing Buddha Café (vegetarian, lake views)\n\nThis plan is focused entirely within Rajasthan, with all intercity travel by private car and no flight links from Bangalore or elsewhere. All hotels, attractions, and restaurants are real, well-rated options. \n\nWould you like to see live hotel options for each city or adjust any part of the route?",
-              "agent": "trip",
-              "trip_id": "rajasthan_2026-09-10_2026-09-17",
-              "message": "Plan a trip to rajasthan for 7 days, just showing the rajasthan in itinerary without flight links from originating city"
-            },
-            {
-              "key": "aa43b93c1576694efeb07ecc058296b0e203a2d440b176646474b737d87ed2b6",
-              "status": "completed",
-              "reply": "Here’s your 7-day Rajasthan itinerary starting and ending in Bangalore, now including explicit flight connections as required. All intercity transfers are clearly shown, and each day features real hotels, attractions, and meal stops. (Currency: INR)\n\nDraft Itinerary\n\nDay 1 · Fly to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (IndiGo, morning direct)\n- Samode Haveli (hotel, check-in)\n- Lunch suggestion: Tapri Central (Jaipur, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Return to hotel\n\nDay 3 · Jaipur to Jodhpur\n- Checkout from Samode Haveli\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- Return to hotel\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- Checkout from RAAS Jodhpur\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Return to hotel\n\nDay 7 · Udaipur to Pushkar & Fly Back to Bangalore\n- Checkout from Amet Haveli\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:30)\n- The Laughing Buddha Café (17:00, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (evening direct)\n\nNext Steps:\n- I’ll now fetch real flight and hotel options for your dates and update the itinerary with concrete selections and prices.\n- Would you like to adjust any cities, add more experiences, or see specific hotel/flight classes?\n\nLet me know if you want to refine anything, or I’ll proceed with live searches for the best options!",
-              "agent": "trip",
-              "trip_id": "rajasthan_2026-09-10_2026-09-17",
-              "message": "can you include the flight connectiopns as we are based at banagalore"
-            },
-            {
-              "key": "ac138dbaf905191f6023e6aaf9b63500f8b3fd35ab3d74cbad1dfb0c3e63a9eb",
-              "status": "completed",
-              "reply": "Here’s your updated 7-day Rajasthan itinerary from Bangalore, now including both the outbound and return flights, all intercity transfers, and real hotel/restaurant/attraction stops. All travel is in INR.\n\nDraft — I’ll refine with real prices and availability next.\n\nDay 1 · Fly Bangalore to Jaipur, Arrival & Old City (Sep 10)\n- Flight: Bangalore to Jaipur (direct, morning)\n- Samode Haveli (hotel, check-in)\n- Tapri Central (lunch, rooftop café)\n- Johari Bazaar (evening stroll/shopping)\n- Samode Haveli (overnight)\n\nDay 2 · Jaipur Forts & Palaces\n- Samode Haveli (start)\n- Amber Fort (09:00)\n- City Palace (12:00)\n- Hawa Mahal (14:00)\n- Laxmi Mishthan Bhandar (lunch)\n- Samode Haveli (overnight)\n\nDay 3 · Jaipur to Jodhpur\n- Samode Haveli (checkout)\n- Drive: Jaipur to Jodhpur (private car, 340 km, 6 hrs)\n- Gypsy Restaurant (lunch en route)\n- RAAS Jodhpur (hotel, check-in)\n- Clock Tower Market (evening)\n- RAAS Jodhpur (overnight)\n\nDay 4 · Jodhpur Forts & Culture\n- RAAS Jodhpur (start)\n- Mehrangarh Fort (09:00)\n- Jaswant Thada (11:30)\n- Indique Restaurant (lunch)\n- RAAS Jodhpur (overnight)\n\nDay 5 · Jodhpur to Udaipur via Ranakpur\n- RAAS Jodhpur (checkout)\n- Drive: Jodhpur to Udaipur (private car, 250 km, 5.5 hrs)\n- Ranakpur Jain Temple (midway stop)\n- Amet Haveli (Udaipur, check-in)\n\nDay 6 · Udaipur Palaces & Lakes\n- Amet Haveli (start)\n- City Palace Udaipur (09:00)\n- Jag Mandir (boat ride, 12:00)\n- Ambrai Restaurant (lunch)\n- Amet Haveli (overnight)\n\nDay 7 · Udaipur to Pushkar & Return to Bangalore\n- Amet Haveli (checkout)\n- Drive: Udaipur to Pushkar (270 km, 5 hrs)\n- Brahma Temple (13:30)\n- Pushkar Lake (15:00)\n- The Laughing Buddha Café (16:30, lunch)\n- Drive: Pushkar to Jaipur Airport (2.5 hrs, 145 km)\n- Flight: Jaipur to Bangalore (direct, evening, arrives late night)\n\nAll major intercity connections and both flights are now included. Next, I’ll search for live flight and hotel options and update with real prices. Would you like to adjust anything before I proceed?",
-              "agent": "trip",
-              "trip_id": "rajasthan_2026-09-10_2026-09-17",
-              "message": "add return flight also back to bangalore"
-            }
-          ],
-          "recent_writes": [
-            "c443402fb186eb7ab6801e6f3b3912a160017e57f700e83373c381ffa4ecbfe3",
-            "aa43b93c1576694efeb07ecc058296b0e203a2d440b176646474b737d87ed2b6",
-            "ac138dbaf905191f6023e6aaf9b63500f8b3fd35ab3d74cbad1dfb0c3e63a9eb"
-          ]
-        }
-      },
+      "buckets": {},
       "operations": {
         "recent_operations": [
           {
@@ -577,6 +391,38 @@
             "agent": "trip",
             "trip_id": "varanasi_ayodhya_and_nearby_religious_sites_2026-09-10_2026-09-16",
             "message": "plan a varanasi and ayodhya circuit trip, include any other releigious sites nearby. maximum duration of 7-8 days minimum could be 5 days. medium 3star hotel budget, keep it simple as it is relgiious"
+          },
+          {
+            "key": "6f10b95d06e09c1e36259991a84b69c9518846b9c5c51411d1e4f98896de7f3d",
+            "status": "completed",
+            "reply": "Draft Manali itinerary for 7 days is ready, featuring top-rated hotels, restaurants, and balanced sightseeing:\n\nDay 1 · Arrival in Manali\n- Check in at The Himalayan (4.7★, Hadimba Road)\n- Explore Mall Road\n\nDay 2 · Solang Valley Adventure\n- Solang Valley (paragliding/ropeway)\n- Lunch at Cafe 1947 (riverside)\n- Jogini Waterfall trek\n\nDay 3 · Rohtang Pass Excursion\n- Rohtang Pass (snow activities)\n- Lunch at Chopsticks Restaurant\n\nDay 4 · Old Manali & Local Culture\n- Hadimba Temple\n- Manu Temple\n- Lunch at The Johnson's Cafe\n- Stroll Old Manali\n\nDay 5 · Naggar Castle & Art Day\n- Naggar Castle\n- Nicholas Roerich Art Gallery\n- Lunch at Nightingale Restaurant\n\nDay 6 · Nature & Relaxation\n- Van Vihar National Park\n- Lunch at Cafe Amigos\n- Relax by Beas River, spa evening\n\nDay 7 · Leisure & Departure\n- Tibetan Monastery\n- Lunch at Cafe 1986 (Mall Road)\n- Last-minute shopping\n\nDraft — I'll refine with real prices and transport next.\n\nOne thing: Please confirm your origin city (where you'll travel from), so I can add the round-trip transport (flight/train/drive) and complete the plan.",
+            "agent": "trip",
+            "trip_id": "manali_2026-09-12_2026-09-19",
+            "message": "I want to plan a manali trip for 7 days"
+          },
+          {
+            "key": "460f7395d65dc02a6cd3f626207445b4c97ea2ce81c461fa5165a09e43035d1f",
+            "status": "completed",
+            "reply": "Here’s a draft Mussoorie itinerary for you (solo, 4 days, balanced style, moderate budget):\n\nDraft — I'll refine with real prices, transport, and availability next.\n\nDay 1 · Arrival & Mall Road\n- Arrive in Mussoorie, check in to a 4-star hotel, and stroll Mall Road for shopping and local snacks.\n\nDay 2 · Kempty Falls & Company Garden\n- Morning at Kempty Falls, afternoon at Company Garden, return to hotel.\n\nDay 3 · Gun Hill & Lal Tibba\n- Cable car to Gun Hill for views, then visit Lal Tibba, Mussoorie’s highest point.\n\nDay 4 · Mussoorie Lake & Cloud’s End\n- Boating at Mussoorie Lake, walk at Cloud’s End, then depart.\n\nNext steps (need your input):\n1. Please confirm your origin city (where you’ll start the trip) so I can plan your transport to and from Mussoorie.\n2. I’ll add top-rated restaurants for each day and recommend the best available 4-star hotels based on reviews (live hotel rates are currently unavailable).\n\nOnce you confirm your starting city, I’ll complete the plan with real transport, hotel, and dining options.",
+            "agent": "trip",
+            "trip_id": "mussoorie_2026-09-12_2026-09-16",
+            "message": "I want to plan a mussoirre trip"
+          },
+          {
+            "key": "6da6c4871246dac361a98e29f41ae4ee9f3055adc553ee8a1a36829713aaad05",
+            "status": "completed",
+            "reply": "Here’s a draft day-wise itinerary for your Dehradun trip, with a balanced pace and moderate budget. (Draft — I'll refine with real prices and availability next.)\n\nDay 1 · Arrival in Dehradun\n- Arrive and check in to your 4-star hotel.\n- Evening stroll and shopping at Paltan Bazaar.\n\nDay 2 · Nature & Heritage\n- Visit Robber's Cave (morning).\n- Explore Sahastradhara (midday).\n- Lunch at a local restaurant.\n- Return to hotel and rest.\n\nDay 3 · Culture & Wildlife\n- Mindrolling Monastery (morning).\n- Forest Research Institute (late morning).\n- Lunch at a local restaurant (after FRI).\n- Malsi Deer Park (afternoon).\n- Return to hotel.\n\nDay 4 · Temples & Landmarks\n- Tapkeshwar Temple (morning).\n- Clock Tower (late morning).\n- Lunch at a local restaurant.\n- Last-minute shopping at Paltan Bazaar.\n- Return to hotel.\n\nDay 5 · Departure\n- Check out and depart from Dehradun.\n\nNext, I’ll search for real flights, 4-star hotels, activities, and top restaurants, then update with real prices and names. Currency for this plan: INR ₹.\n\nDoes this draft look good, or would you like to adjust anything before I proceed?",
+            "agent": "trip",
+            "trip_id": "dehradun_2026-09-12_2026-09-16",
+            "message": "plana trip to dehradun"
+          },
+          {
+            "key": "f79285f95df78ddff67963fc0d9527dcd69c98caf2563f77f3bdc4e935c48968",
+            "status": "completed",
+            "reply": "Here’s a draft 4-day itinerary for your solo trip to Kolkata (2026-09-12 to 2026-09-16), with a balanced mix of sightseeing and downtime. Currency for all costs will be INR (₹).\n\nDraft — I'll refine with real prices and availability next.\n\nDay 1 · Arrival & Park Street\n- Arrive in Kolkata, check in to hotel (4-star, moderate budget)\n- Explore Park Street for food and nightlife\n\nDay 2 · Heritage & Museums\n- Visit Victoria Memorial (must-see landmark)\n- Indian Museum (largest museum in India)\n- Return to hotel\n\nDay 3 · Temples & Riverfront\n- Dakshineswar Kali Temple\n- Howrah Bridge\n- Kumartuli (famous for clay idol artisans)\n- Return to hotel\n\nDay 4 · Palaces & Departure\n- Marble Palace\n- South Park Street Cemetery\n- Depart Kolkata\n\nNext steps:\n- I’ll search for real flights, hotels, and top-rated restaurants to complete your plan.\n- Please confirm your origin city so I can include round-trip transport options.\n- I’ll also add named restaurant stops and update with real hotel choices.\n\nLet me know your departure city, or if you’d like to adjust anything in the plan!",
+            "agent": "trip",
+            "trip_id": "kolkata_2026-09-12_2026-09-16",
+            "message": "plan a trip to kolkata"
           }
         ]
       }
@@ -649,15 +495,15 @@
           "economy": 6
         },
         "hotel_rating_floor": {
-          "4": 5
+          "4": 8
         }
       },
       "about_me": "",
-      "profile_summary": "Munish typically travels solo, prefers a balanced trip style, and maintains a moderate budget. He consistently selects hotels rated four stars or higher and opts for standard rooms. For transportation, he favors economy flights—preferably direct—and is open to trains and rental cars but not buses. There are no stated dietary restrictions or strong cuisine preferences. Munish has shown interest in destinations such as Varanasi, Ayodhya, Rajasthan, and Paris.",
-      "profile_summary_updated_at": "2026-08-13T22:41:47.736256",
+      "profile_summary": "Munish travels solo and prefers a balanced trip style with moderate comfort, consistently choosing 4-star or higher hotels and standard rooms. He favors economy flights, direct routes, and is open to trains and rental cars but not buses. There are no dietary or accessibility constraints noted. Munish has shown interest in destinations such as Kolkata, Dehradun, Mussoorie, Manali, Varanasi, Ayodhya and nearby religious sites, Paris, and Rajasthan.",
+      "profile_summary_updated_at": "2026-08-15T18:00:02.106454",
       "planning_mode": "direct",
       "display_currency": "INR",
-      "profile_summary_digest": "0cd0321cf2b3757959faac74866c239f439b00a7d7d7cd96718f404a903b4737",
+      "profile_summary_digest": "9a2a03ccdbae8aaed4bc8f5396f74145ba2a738555f6340ec843309cda689544",
       "_explicit_fields": [
         "display_currency",
         "profile.display_region"
@@ -674,83 +520,54 @@
     "places": {}
   },
   "descriptor": {
-    "destination": "Rajasthan",
-    "departure_date": "2026-09-10",
-    "return_date": "2026-09-17",
-    "nights": 7,
+    "destination": "Leh Ladakh",
+    "departure_date": "2026-09-12",
+    "return_date": "2026-09-18",
+    "nights": 6,
     "month_year": "Sep 2026",
     "status": "draft",
     "counts": {
       "flights": 0,
-      "hotels": 3,
+      "hotels": 0,
       "activities": 0,
       "days": 0
     },
     "keywords": [
-      "Rajasthan",
-      "Jaipur",
-      "Jodhpur",
-      "Udaipur",
-      "Pushkar",
-      "Samode Haveli",
-      "RAAS Jodhpur",
-      "Amet Haveli",
-      "Fly to Jaipur, Arrival & Old City",
-      "Flight: Bangalore to Jaipur",
-      "Tapri Central",
-      "Johari Bazaar",
-      "Jaipur Forts & Palaces",
-      "Amber Fort",
-      "City Palace",
-      "Hawa Mahal",
-      "Laxmi Mishthan Bhandar",
-      "Jaipur to Jodhpur",
-      "Drive: Jaipur to Jodhpur",
-      "Gypsy Restaurant",
-      "Clock Tower Market",
-      "Jodhpur Forts & Culture",
-      "Mehrangarh Fort",
-      "Jaswant Thada",
-      "Indique Restaurant",
-      "Jodhpur to Udaipur via Ranakpur",
-      "Drive: Jodhpur to Udaipur",
-      "Ranakpur Jain Temple",
-      "Udaipur Palaces & Lakes",
-      "City Palace Udaipur",
-      "Jag Mandir (boat ride)",
-      "Ambrai Restaurant",
-      "Udaipur to Pushkar & Return to Bangalore",
-      "Drive: Udaipur to Pushkar",
-      "Brahma Temple",
-      "Pushkar Lake",
-      "The Laughing Buddha Café",
-      "Drive: Pushkar to Jaipur Airport",
-      "Flight: Jaipur to Bangalore"
+      "Leh Ladakh",
+      "Day 1 · Arrival in Leh",
+      "Hotel (TBD)",
+      "Leh Market",
+      "Day 2 · Leh Local Sightseeing",
+      "Leh Palace",
+      "Shanti Stupa",
+      "Magnetic Hill",
+      "Day 3 · Monasteries & Khardung La",
+      "Thiksey Monastery",
+      "Hemis Monastery",
+      "Khardung La Pass",
+      "Day 4 · Nubra Valley Excursion",
+      "Drive: Leh to Nubra Valley",
+      "Diskit Monastery",
+      "Hunder Sand Dunes",
+      "Day 5 · Pangong Lake Day Trip",
+      "Drive: Nubra Valley to Pangong Lake",
+      "Pangong Lake",
+      "Drive: Pangong Lake to Leh",
+      "Day 6 · Leisure & Departure",
+      "Transport: Leh to Airport"
     ],
-    "auto_summary": "7-night Rajasthan, Sep 2026, 3 hotels",
+    "auto_summary": "6-night Leh Ladakh, Sep 2026",
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T12:44:03Z",
+  "last_seen_at": "2026-08-15T12:33:56Z",
   "schema_version": 1,
   "seen_in": [
     {
-      "workspace": "sbx-7-lab25-profile",
-      "branch": "sandbox/7-lab25-profile",
-      "database": "tripplanner-sbx-7-lab25-profile",
-      "at": "2026-08-15T11:32:23Z"
-    },
-    {
-      "workspace": "sbx-6-lab-factory",
-      "branch": "sandbox/6-lab-factory",
-      "database": "tripplanner-sbx-6-lab-factory",
-      "at": "2026-08-15T11:35:26Z"
-    },
-    {
-      "workspace": "tripplanner",
-      "branch": "master",
-      "database": "tripplanner-local",
-      "at": "2026-08-15T12:44:03Z"
+      "workspace": "sbx-5-lab27-agent-inputs",
+      "branch": "sandbox/5-lab27-agent-inputs",
+      "database": "tripplanner-sbx-5-lab27-agent-inputs",
+      "at": "2026-08-15T12:33:50Z"
     }
   ]
 }

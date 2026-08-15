@@ -3,7 +3,7 @@
   "trip_id": "paris_2026-09-06_2026-09-11",
   "user_id": "google-101851654028336975901",
   "created_date": "2026-08-09",
-  "first_captured_at": "2026-08-15T11:35:26Z",
+  "first_captured_at": "2026-08-15T11:32:23Z",
   "revisions": [
     {
       "at": "2026-08-15T11:35:26Z",
@@ -416,7 +416,7 @@
     }
   ],
   "bundle": {
-    "captured_at": "2026-08-15T11:35:26Z",
+    "captured_at": "2026-08-15T11:32:23Z",
     "user_id": "google-101851654028336975901",
     "chat": {
       "buckets": {
@@ -799,14 +799,26 @@
     "label": "",
     "notes": []
   },
-  "last_seen_at": "2026-08-15T11:35:26Z",
+  "last_seen_at": "2026-08-15T12:44:03Z",
   "schema_version": 1,
   "seen_in": [
+    {
+      "workspace": "sbx-7-lab25-profile",
+      "branch": "sandbox/7-lab25-profile",
+      "database": "tripplanner-sbx-7-lab25-profile",
+      "at": "2026-08-15T11:32:23Z"
+    },
     {
       "workspace": "sbx-6-lab-factory",
       "branch": "sandbox/6-lab-factory",
       "database": "tripplanner-sbx-6-lab-factory",
       "at": "2026-08-15T11:35:26Z"
+    },
+    {
+      "workspace": "tripplanner",
+      "branch": "master",
+      "database": "tripplanner-local",
+      "at": "2026-08-15T12:44:03Z"
     }
   ]
 }
