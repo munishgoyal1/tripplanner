@@ -385,3 +385,42 @@ def test_token_counts_are_read_from_wherever_the_client_reports_them() -> None:
     assert _token_counts(modern) == (31000, 900)
     assert _token_counts(older) == (5, 1)
     assert _token_counts(SimpleNamespace(llm_output={}, generations=[])) == (0, 0)
+
+
+def test_the_logged_prompt_size_counts_tool_calls_too() -> None:
+    """Counting content alone hid tool arguments, understating context growth."""
+    from types import SimpleNamespace
+
+    from tripplanner.graph import _message_chars
+
+    plain = SimpleNamespace(content="hello", additional_kwargs={})
+    with_call = SimpleNamespace(
+        content="hello",
+        additional_kwargs={
+            "tool_calls": [{"function": {"name": "search_hotels", "arguments": '{"city":"Goa"}'}}]
+        },
+    )
+
+    assert _message_chars(plain) == 5
+    assert _message_chars(with_call) > _message_chars(plain)
+
+
+def test_cached_prompt_tokens_are_counted_when_the_provider_reports_them() -> None:
+    from types import SimpleNamespace
+
+    from tripplanner.graph import _cached_tokens
+
+    modern = SimpleNamespace(
+        generations=[[SimpleNamespace(
+            message=SimpleNamespace(usage_metadata={"input_token_details": {"cache_read": 6144}})
+        )]],
+        llm_output={},
+    )
+    legacy = SimpleNamespace(
+        generations=[],
+        llm_output={"token_usage": {"prompt_tokens_details": {"cached_tokens": 2048}}},
+    )
+
+    assert _cached_tokens(modern) == 6144
+    assert _cached_tokens(legacy) == 2048
+    assert _cached_tokens(SimpleNamespace(generations=[], llm_output={})) == 0

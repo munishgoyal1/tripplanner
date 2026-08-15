@@ -92,6 +92,38 @@ def _token_counts(response: Any) -> tuple[int, int]:
     return prompt, completion
 
 
+def _message_chars(message: Any) -> int:
+    """Everything the message actually sends, not only its prose.
+
+    Counting ``content`` alone hid the tool calls and their arguments, so the
+    logged prompt size grew nine percent while real tokens more than doubled.
+    """
+    size = len(str(getattr(message, "content", "") or ""))
+    extra = getattr(message, "additional_kwargs", None) or {}
+    for call in extra.get("tool_calls") or []:
+        function = (call or {}).get("function") or {}
+        size += len(str(function.get("name") or "")) + len(str(function.get("arguments") or ""))
+    return size
+
+
+def _cached_tokens(response: Any) -> int:
+    """Prompt tokens the provider served from its cache, when it says so.
+
+    Caching is the cheapest saving available on a prompt this size, and the only
+    way to know whether it is working is to count what it returns.
+    """
+    for batch in getattr(response, "generations", None) or []:
+        for generation in batch or []:
+            message = getattr(generation, "message", None)
+            details = (getattr(message, "usage_metadata", None) or {}).get(
+                "input_token_details"
+            ) or {}
+            if details.get("cache_read") is not None:
+                return int(details.get("cache_read") or 0)
+    usage = (getattr(response, "llm_output", None) or {}).get("token_usage") or {}
+    return int((usage.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
+
+
 class _UsageCallback(BaseCallbackHandler):
     """Record per-user LLM token usage after every chat completion.
 
@@ -124,7 +156,7 @@ class _UsageCallback(BaseCallbackHandler):
         context = _RunContext(
             started_at=time.monotonic(),
             message_count=len(batch),
-            prompt_chars=sum(len(str(message.content or "")) for message in batch),
+            prompt_chars=sum(_message_chars(message) for message in batch),
         )
         with self._lock:
             self._runs[run_id] = context
@@ -146,6 +178,7 @@ class _UsageCallback(BaseCallbackHandler):
                 prompt_chars=context.prompt_chars,
                 prompt_tokens=prompt,
                 completion_tokens=completion,
+                cached_tokens=_cached_tokens(response),
             )
             if prompt == 0 and completion == 0:
                 return
@@ -194,6 +227,9 @@ def _build_llm(
         # this is what lets the web UIs render the reply as it's typed instead
         # of waiting for the whole turn (which felt "stuck").
         streaming=True,
+        # Without this a streamed turn reports no tokens at all, so everything
+        # the web UI does would go unpriced.
+        stream_usage=True,
         callbacks=[_UsageCallback(deployment)],
     )
 
